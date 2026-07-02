@@ -13,13 +13,64 @@ from .inventory_capacity import (
     set_inventory_sizes_for_all_party,
     set_inventory_sizes_for_party_index,
 )
+from . import player_economy
 from .party_helpers import _kick_party_player_by_index, _list_party_players
 from .shinies import DEFAULT_ITEM_LEVEL as _SHINY_DEFAULT_LEVEL, drop_all_shinies
 from .travel import _exec_console
 
+CURRENCY_KINDS = ["cash", "eridium", "vaultcard1", "vaultcard2", "vaultcard3"]
+EXP_TRACKS = ["player", "specialization", "vaultcard_xp_1", "vaultcard_xp_2", "vaultcard_xp_3"]
+MAX_WALLET_AMOUNT = 2147483647
+MAX_PLAYER_LEVEL = 60
+MAX_SPEC_LEVEL = 701
+MAX_VAULT_CARD_LEVEL = 9999999
+
 _selected_player_index: int | None = None
 _selected_player_name: str = ""
 _last_refresh_error: str = ""
+
+
+def _clamp_int(value: object, min_value: int, max_value: int) -> int:
+    return max(int(min_value), min(int(value), int(max_value)))
+
+
+def _max_level_for_track(track: object) -> int:
+    try:
+        track_index = int(track)
+    except Exception:
+        key = str(track or "").strip().lower()
+        track_index = EXP_TRACKS.index(key) if key in EXP_TRACKS else 0
+    if track_index == 0:
+        return MAX_PLAYER_LEVEL
+    if track_index == 1:
+        return MAX_SPEC_LEVEL
+    return MAX_VAULT_CARD_LEVEL
+
+
+def _kind_from_input(kind_or_index: object) -> str | None:
+    raw = str(kind_or_index or "").strip().lower()
+    try:
+        idx = int(raw)
+        if 0 <= idx < len(CURRENCY_KINDS):
+            return CURRENCY_KINDS[idx]
+    except Exception:
+        pass
+    if raw in CURRENCY_KINDS:
+        return raw
+    return None
+
+
+def _track_from_input(track_or_index: object) -> str | None:
+    raw = str(track_or_index or "").strip().lower()
+    try:
+        idx = int(raw)
+        if 0 <= idx < len(EXP_TRACKS):
+            return EXP_TRACKS[idx]
+    except Exception:
+        pass
+    if raw in EXP_TRACKS:
+        return raw
+    return None
 
 
 def _players() -> list[tuple[int, str]]:
@@ -194,3 +245,94 @@ def set_inventory_sizes_all_party(backpack_size: object, bank_size: object) -> d
         return {"ok": True, "message": f"Set inventory sizes for {count} party player(s): backpack {bp}, bank {bank}."}
     except Exception as exc:
         return {"ok": False, "message": f"Set backpack/bank size for all party players failed: {exc!r}"}
+
+
+def give_currency(kind_or_index: object, amount: object) -> dict[str, Any]:
+    name = get_selected_player_name()
+    if not name:
+        return {"ok": False, "message": "No party player selected."}
+    kind = _kind_from_input(kind_or_index)
+    if kind is None:
+        return {"ok": False, "message": f"Unsupported currency kind: {kind_or_index}"}
+    try:
+        amount_i = _clamp_int(amount, -MAX_WALLET_AMOUNT, MAX_WALLET_AMOUNT)
+    except Exception:
+        return {"ok": False, "message": "Currency amount must be a number."}
+    try:
+        player_economy._do_give_currency(kind, amount_i, name)
+        return {"ok": True, "message": f"Give {amount_i} {kind} requested."}
+    except Exception as exc:
+        return {"ok": False, "message": f"Give currency failed: {exc!r}"}
+
+
+def give_experience(track_or_index: object, level: object) -> dict[str, Any]:
+    name = get_selected_player_name()
+    if not name:
+        return {"ok": False, "message": "No party player selected."}
+    track = _track_from_input(track_or_index)
+    if track is None:
+        return {"ok": False, "message": f"Unsupported XP track: {track_or_index}"}
+    try:
+        level_i = _clamp_int(level, 0, _max_level_for_track(track))
+    except Exception:
+        return {"ok": False, "message": "Level must be a number."}
+    try:
+        player_economy._do_give_experience(track, level_i, name)
+        return {"ok": True, "message": f"Set {track} level {level_i} requested."}
+    except Exception as exc:
+        return {"ok": False, "message": f"Set level failed: {exc!r}"}
+
+
+def max_player_level() -> dict[str, Any]:
+    name = get_selected_player_name()
+    if not name:
+        return {"ok": False, "message": "No party player selected."}
+    try:
+        player_economy._do_give_experience("player", MAX_PLAYER_LEVEL, name)
+        return {"ok": True, "message": "Max player level requested."}
+    except Exception as exc:
+        return {"ok": False, "message": f"Max player level failed: {exc!r}"}
+
+
+def max_spec_level() -> dict[str, Any]:
+    name = get_selected_player_name()
+    if not name:
+        return {"ok": False, "message": "No party player selected."}
+    try:
+        player_economy._do_give_experience("specialization", MAX_SPEC_LEVEL, name)
+        return {"ok": True, "message": "Max specialization requested."}
+    except Exception as exc:
+        return {"ok": False, "message": f"Max specialization failed: {exc!r}"}
+
+
+def max_currency() -> dict[str, Any]:
+    name = get_selected_player_name()
+    if not name:
+        return {"ok": False, "message": "No party player selected."}
+    try:
+        player_economy._do_give_currency("cash", MAX_WALLET_AMOUNT, name)
+        return {"ok": True, "message": "Max cash requested for selected player."}
+    except Exception as exc:
+        return {"ok": False, "message": f"Max cash failed: {exc!r}"}
+
+
+def max_eridium() -> dict[str, Any]:
+    name = get_selected_player_name()
+    if not name:
+        return {"ok": False, "message": "No party player selected."}
+    try:
+        player_economy._do_give_currency("eridium", MAX_WALLET_AMOUNT, name)
+        return {"ok": True, "message": "Max eridium requested for selected player."}
+    except Exception as exc:
+        return {"ok": False, "message": f"Max eridium failed: {exc!r}"}
+
+
+def max_sdu() -> dict[str, Any]:
+    name = get_selected_player_name()
+    if not name:
+        return {"ok": False, "message": "No party player selected."}
+    try:
+        player_economy._do_msbt_maxsdu(["name", name])
+        return {"ok": True, "message": "Max SDU requested."}
+    except Exception as exc:
+        return {"ok": False, "message": f"Max SDU failed: {exc!r}"}

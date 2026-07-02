@@ -480,25 +480,30 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
             payload.get("backpack_size") or 1000,
             payload.get("bank_size") or 1000,
         )
+    if action == "max_currency":
+        return backend_actions.max_currency()
+    if action == "max_eridium":
+        return backend_actions.max_eridium()
+    if action == "max_player_level":
+        return backend_actions.max_player_level()
+    if action == "max_spec_level":
+        return backend_actions.max_spec_level()
+    if action == "max_sdu":
+        return backend_actions.max_sdu()
+    if action == "give_currency":
+        return backend_actions.give_currency(
+            payload.get("currency_kind") if "currency_kind" in payload else payload.get("currency_index", "cash"),
+            payload.get("amount") or 0,
+        )
+    if action == "set_level":
+        return backend_actions.give_experience(
+            payload.get("xp_track") if "xp_track" in payload else payload.get("xp_track_index", "player"),
+            payload.get("level") or 0,
+        )
     p = _panel()
     if action == "max_all":
         p._max_all_selected()
         return {"ok": True, "message": "MAX ALL requested for selected player."}
-    if action == "max_currency":
-        p._max_currency_selected()
-        return {"ok": True, "message": "Max cash requested for selected player."}
-    if action == "max_eridium":
-        p._max_eridium_selected()
-        return {"ok": True, "message": "Max eridium requested for selected player."}
-    if action == "max_player_level":
-        p._max_player_level_selected()
-        return {"ok": True, "message": "Max player level requested."}
-    if action == "max_spec_level":
-        p._max_spec_level_selected()
-        return {"ok": True, "message": "Max specialization requested."}
-    if action == "max_sdu":
-        p._max_sdu_selected()
-        return {"ok": True, "message": "Max SDU requested."}
     if action == "toggle_debug_cam":
         p._toggle_debug_cam_selected()
         return {"ok": True, "message": "Toggle Debug Cam requested."}
@@ -509,28 +514,6 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
         perk = int(action.split("_", 1)[1])
         p._activate_devperk_selected(perk)
         return {"ok": True, "message": f"Dev perk {perk} requested."}
-    if action == "give_currency":
-        kind = str(payload.get("currency_kind") or "cash").lower()
-        amount = int(payload.get("amount") or 0)
-        if kind not in ("cash", "eridium"):
-            return {"ok": False, "message": f"Unsupported currency kind: {kind}"}
-        try:
-            p._currency_kind_index = list(p._CURRENCY_KINDS).index(kind)
-        except Exception:
-            p._currency_kind_index = 0
-        p._currency_amount = amount
-        p._give_currency_selected()
-        return {"ok": True, "message": f"Give {amount} {kind} requested."}
-    if action == "set_level":
-        track = str(payload.get("xp_track") or "player").lower()
-        level = int(payload.get("level") or 0)
-        try:
-            p._exp_track_index = list(p._EXP_TRACKS).index(track)
-        except Exception:
-            p._exp_track_index = 0
-        p._exp_level = level
-        p._give_experience_selected()
-        return {"ok": True, "message": f"Set {track} level {level} requested."}
     if action == "serial_convert":
         text = str(payload.get("serial_input") or "")
         p._serial_tools_input = text
