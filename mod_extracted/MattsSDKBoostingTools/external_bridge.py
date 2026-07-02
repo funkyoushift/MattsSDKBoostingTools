@@ -7,6 +7,7 @@ SDK/game calls still happen from the loaded mod runtime instead of the external 
 from __future__ import annotations
 
 import json
+import sys
 import threading
 import time
 import uuid
@@ -14,6 +15,8 @@ import pkgutil
 from collections import deque
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any, Callable
+
+from . import backend_actions
 
 try:
     from mods_base import hook
@@ -341,7 +344,11 @@ def _log(msg: str) -> None:
     global _last_action
     _last_action = str(msg)
     try:
-        _panel()._log("[external] " + str(msg))
+        package = __package__ or "MattsSDKBoostingTools"
+        panel = sys.modules.get(f"{package}.blimgui_panel") or sys.modules.get("MattsSDKBoostingTools.blimgui_panel")
+        panel_log = getattr(panel, "_log", None) if panel is not None else None
+        if callable(panel_log):
+            panel_log("[external] " + str(msg))
     except Exception:
         pass
 
@@ -407,21 +414,10 @@ def _apply_legit_external_payload(payload: dict[str, Any]) -> None:
 
 
 def _set_selected_player_from_payload(payload: dict[str, Any]) -> dict[str, Any]:
-    try:
-        raw = str(payload.get("target_player") or "").split("|", 1)[0].strip()
-        if raw == "":
-            return {"ok": False, "message": "No target player was selected."}
-        wanted_party_index = int(raw)
-        p = _panel()
-        players = list(p._party_players_for_ui(force=True))
-        for combo_index, (party_index, name) in enumerate(players):
-            if int(party_index) == wanted_party_index:
-                p._selected_player_index = int(combo_index)
-                _log(f"External target player set to {party_index}: {name}")
-                return {"ok": True, "message": f"Target player set to {party_index}: {name}", "selected_player": name, "selected_player_index": party_index}
-        return {"ok": False, "message": f"Could not find party player index {wanted_party_index}. Press Refresh Players and try again."}
-    except Exception as exc:
-        return {"ok": False, "message": f"Set target player failed: {exc!r}"}
+    result = backend_actions.set_target_player(payload.get("target_player"))
+    if result.get("ok"):
+        _log(str(result.get("message") or "External target player updated."))
+    return result
 
 
 def _apply_movement_external_payload(payload: dict[str, Any]) -> None:
@@ -457,14 +453,14 @@ def _apply_movement_external_payload(payload: dict[str, Any]) -> None:
 
 def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[str, Any]:
     payload = payload or {}
-    p = _panel()
     if action == "status":
         return _status()
     if action == "refresh_players":
-        p._request_party_refresh(0.0, "external")
-        return {"ok": True, "message": "Requested party/player refresh.", "status": _status()}
+        backend_actions.refresh_players()
+        return {"ok": True, "message": "Refreshed party/player list.", "status": _status()}
     if action == "set_target_player":
         return _set_selected_player_from_payload(payload)
+    p = _panel()
     if action == "kick_player":
         try:
             p._kick_selected_player()
@@ -758,19 +754,7 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
 
 
 def _status() -> dict[str, Any]:
-    selected = None
-    selected_idx = None
-    players_payload = []
-    try:
-        p = _panel()
-        players = list(p._party_players_for_ui(force=False))
-        players_payload = [{"index": int(idx), "name": str(name)} for idx, name in players]
-        selected = p._selected_player_name()
-        selected_idx = p._selected_player_index_value()
-    except Exception:
-        selected = None
-        selected_idx = None
-        players_payload = []
+    backend_status = backend_actions.get_status()
     return {
         "ok": True,
         "name": "MattsSDKBoostingTools external bridge",
@@ -778,11 +762,11 @@ def _status() -> dict[str, Any]:
         "port": _PORT,
         "started": _started,
         "queue": len(_queue),
-        "players": players_payload,
-        "selected_player": selected or "",
-        "selected_player_index": selected_idx,
+        "players": backend_status.get("players", []),
+        "selected_player": backend_status.get("selected_player") or "",
+        "selected_player_index": backend_status.get("selected_player_index"),
         "last_action": _last_action,
-        "last_error": _last_error,
+        "last_error": _last_error or backend_status.get("last_refresh_error", ""),
     }
 
 
