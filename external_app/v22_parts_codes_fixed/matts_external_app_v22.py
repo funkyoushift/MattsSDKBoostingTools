@@ -530,7 +530,7 @@ class App(V9App):
         ).pack(fill='x', padx=8, pady=(6,2))
 
         tk.Label(inner, text='Input', bg='#090d17', fg='#cfd8f3', font=('Segoe UI',8,'bold'), anchor='w').pack(fill='x', padx=8, pady=(4,0))
-        inp = self._serial_tools_text_area(inner, 'serial_input', 6)
+        inp = self._serial_tools_text_area(inner, 'serial_input', 5)
         inp.bind('<KeyRelease>', self._serial_tools_input_changed)
 
         buttons = tk.Frame(inner, bg='#090d17')
@@ -547,27 +547,18 @@ class App(V9App):
         self.widgets['serial_tools_status'] = tk.Label(inner, textvariable=status, bg='#090d17', fg='#21e05f', font=('Segoe UI',8), anchor='w', justify='left', wraplength=1100)
         self.widgets['serial_tools_status'].pack(fill='x', padx=8, pady=(0,6))
 
-        tk.Frame(inner, bg='#333a48', height=1).pack(fill='x', padx=8, pady=(2,6))
-        tk.Label(inner, text='Deserialized Output', bg='#090d17', fg='#cfd8f3', font=('Segoe UI',8,'bold'), anchor='w').pack(fill='x', padx=8)
-        self._serial_tools_text_area(inner, 'serial_tools_deserialized', 8)
-        self._serial_tools_copy_button(inner, 'Copy Deserialized', 'serial_tools_deserialized', 'deserialized serial')
+        self._serial_tools_output_section(inner, 'Deserialized Output', 'serial_tools_deserialized', 5, 'Copy Deserialized', 'deserialized serial')
+        self._serial_tools_output_section(inner, 'Parts Breakdown', 'serial_tools_parts_breakdown', 7, 'Copy Parts Breakdown', 'parts breakdown')
+        self._serial_tools_output_section(inner, '@U Serialized Output', 'serial_tools_serialized', 3, 'Copy Serialized', 'serialized @U serial')
 
-        tk.Frame(inner, bg='#333a48', height=1).pack(fill='x', padx=8, pady=(6,6))
-        tk.Label(inner, text='Parts Breakdown', bg='#090d17', fg='#cfd8f3', font=('Segoe UI',8,'bold'), anchor='w').pack(fill='x', padx=8)
-        self._serial_tools_text_area(inner, 'serial_tools_parts_breakdown', 9)
-        self._serial_tools_copy_button(inner, 'Copy Parts Breakdown', 'serial_tools_parts_breakdown', 'parts breakdown')
-
-        tk.Frame(inner, bg='#333a48', height=1).pack(fill='x', padx=8, pady=(6,6))
-        tk.Label(inner, text='@U Serialized Output', bg='#090d17', fg='#cfd8f3', font=('Segoe UI',8,'bold'), anchor='w').pack(fill='x', padx=8)
-        self._serial_tools_text_area(inner, 'serial_tools_serialized', 4)
-        self._serial_tools_copy_button(inner, 'Copy Serialized', 'serial_tools_serialized', 'serialized @U serial')
-
-    def _serial_tools_copy_button(self, parent, label, fid, copy_label):
-        row = tk.Frame(parent, bg='#090d17')
-        row.pack(fill='x', padx=6, pady=(0,2))
+    def _serial_tools_output_section(self, parent, title, fid, height, copy_button, copy_label):
+        tk.Frame(parent, bg='#333a48', height=1).pack(fill='x', padx=8, pady=(5,5))
+        header = tk.Frame(parent, bg='#090d17')
+        header.pack(fill='x', padx=8, pady=(0,1))
+        tk.Label(header, text=title, bg='#090d17', fg='#cfd8f3', font=('Segoe UI',8,'bold'), anchor='w').pack(side='left')
         tk.Button(
-            row,
-            text=label,
+            header,
+            text=copy_button,
             command=lambda f=fid, c=copy_label: self._copy_text_v13(self._serial_tools_get_text(f), c) if self._serial_tools_get_text(f).strip() else self.log(f'No {c} to copy.'),
             bg='#172033',
             activebackground='#22304c',
@@ -577,7 +568,8 @@ class App(V9App):
             padx=8,
             pady=5,
             font=('Segoe UI',8,'bold'),
-        ).pack(side='left', padx=3, pady=3)
+        ).pack(side='right', padx=3, pady=1)
+        self._serial_tools_text_area(parent, fid, height)
 
     def _serial_tools_input_changed(self, _event=None):
         widget = self.widgets.get('serial_input')
@@ -589,7 +581,7 @@ class App(V9App):
                 self.after_cancel(pending)
             except Exception:
                 pass
-        self._serial_tools_after_id = self.after(350, self._serial_convert_local)
+        self._serial_tools_after_id = self.after(350, lambda: self._serial_convert_local(auto=True))
 
     def _field_row_combo_v13(self, parent, label, fid, values, readonly=True):
         row = tk.Frame(parent, bg='#090d17'); row.pack(fill='x', padx=8, pady=2)
@@ -975,20 +967,13 @@ class App(V9App):
             return self._serial_tools_get_text('serial_input')
         return self.field_vars.get('serial_input', tk.StringVar(value='')).get()
 
-    def _serial_tools_write_output(self, message):
+    def _serial_tools_set_status(self, message, *, log_message=None, log_global=True):
         if 'serial_tools_status' in self.field_vars:
             self.field_vars['serial_tools_status'].set(str(message or ''))
-        self.log(message)
-        if getattr(self, 'output_text', None):
-            try:
-                self.output_text.configure(state='normal')
-                self.output_text.delete('1.0', 'end')
-                self.output_text.insert('1.0', str(message))
-                self.output_text.configure(state='disabled')
-            except Exception:
-                pass
+        if log_global:
+            self.log(log_message if log_message is not None else message)
 
-    def _serial_convert_local(self):
+    def _serial_convert_local(self, auto=False):
         text = self._serial_tools_input_value()
         try:
             res = convert_serial_tool(text)
@@ -996,30 +981,25 @@ class App(V9App):
             self._serial_tools_set_text('serial_tools_serialized', '')
             self._serial_tools_set_text('serial_tools_deserialized', '')
             self._serial_tools_set_text('serial_tools_parts_breakdown', '')
-            return self._serial_tools_write_output(f'Conversion failed: {exc}')
+            return self._serial_tools_set_status(f'Conversion failed: {exc}', log_message=f'Serial conversion failed: {exc}', log_global=not auto)
         if res.get('ok') != 'true':
             self._serial_tools_set_text('serial_tools_serialized', '')
             self._serial_tools_set_text('serial_tools_deserialized', '')
             self._serial_tools_set_text('serial_tools_parts_breakdown', '')
-            return self._serial_tools_write_output(res.get('message') or 'Conversion failed.')
+            status = res.get('message') or 'Conversion failed.'
+            return self._serial_tools_set_status(status, log_message=status, log_global=not auto)
         self._serial_tools_set_text('serial_tools_deserialized', res.get('deserialized') or '')
         self._serial_tools_set_text('serial_tools_parts_breakdown', res.get('breakdown') or '')
         self._serial_tools_set_text('serial_tools_serialized', res.get('serialized') or '')
-        msg = (
-            f"{res.get('message')}\n\n"
-            f"deserialized:\n{res.get('deserialized')}\n\n"
-            f"breakdown:\n{res.get('breakdown')}\n\n"
-            f"serialized:\n{res.get('serialized')}"
-        )
-        self._serial_tools_write_output(msg)
+        self._serial_tools_set_status('Converted locally.', log_message='Serial converted locally.', log_global=not auto)
 
     def _serial_breakdown_local(self):
         text = self._serial_tools_input_value()
         if not str(text or '').strip():
-            return self._serial_tools_write_output('No serial input to break down.')
+            return self._serial_tools_set_status('No serial input to break down.', log_message='No serial input to break down.')
         out = serial_parts_breakdown_for_value(text)
         self._serial_tools_set_text('serial_tools_parts_breakdown', out or '')
-        self._serial_tools_write_output(out or 'No parts breakdown.')
+        self._serial_tools_set_status('Parts breakdown generated locally.' if out else 'No parts breakdown.', log_message='Serial parts breakdown generated locally.' if out else 'No parts breakdown.')
 
     def run_action(self,action):
         aid = action.get('id')
