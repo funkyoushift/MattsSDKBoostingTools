@@ -532,6 +532,22 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
         return backend_actions.clear_serial_tools()
     if action == "serial_convert":
         return backend_actions.serial_convert(payload.get("serial_input") or "")
+    if action in ("give_serial_selected", "give_serial_all"):
+        override_level = str(payload.get("serial_override_level") or "false").lower() in ("1", "true", "yes", "on")
+        return backend_actions.give_serials(
+            payload.get("serial_text") or "",
+            "all" if action.endswith("all") else "selected",
+            override_level,
+            payload.get("serial_level") or 60,
+        )
+    if action == "give_serial_nonhost":
+        override_level = str(payload.get("serial_override_level") or "false").lower() in ("1", "true", "yes", "on")
+        return backend_actions.give_serials(
+            payload.get("serial_text") or payload.get("bookmark_serial") or payload.get("code_serial") or "",
+            "nonhost",
+            override_level,
+            payload.get("serial_level") or payload.get("code_delivery_level") or 60,
+        )
     p = _panel()
     if action == "max_all":
         p._max_all_selected()
@@ -540,12 +556,6 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
         text = str(payload.get("serial_input") or "")
         out = p._serial_parts_breakdown_for_value(text)
         return {"ok": True, "message": out[:4000] if out else "No parts breakdown."}
-    if action in ("give_serial_selected", "give_serial_all"):
-        p._serial_text = str(payload.get("serial_text") or "")
-        p._serial_delivery_override_level = str(payload.get("serial_override_level") or "false").lower() in ("1", "true", "yes", "on")
-        p._serial_delivery_level = int(payload.get("serial_level") or 60)
-        p._give_serial_selected("all" if action.endswith("all") else "selected")
-        return {"ok": True, "message": "Serial delivery requested."}
     if action == "legit_apply_max_passives":
         _apply_legit_external_payload(payload)
         p._legit_apply_max_passive_points()
@@ -620,13 +630,6 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
     if action == "movement_reset_time":
         p._movement_reset_time()
         return {"ok": True, "message": "Reset time requested."}
-    if action == "give_serial_nonhost":
-        p._serial_text = str(payload.get("serial_text") or payload.get("bookmark_serial") or payload.get("code_serial") or "")
-        p._serial_delivery_override_level = str(payload.get("serial_override_level") or "false").lower() in ("1", "true", "yes", "on")
-        p._serial_delivery_level = int(payload.get("serial_level") or payload.get("code_delivery_level") or 60)
-        p._give_serial_selected("nonhost")
-        return {"ok": True, "message": "Serial non-host delivery requested."}
-
     if action == "rarity_apply":
         # If individual fields are provided by a later UI, honor them; otherwise apply the current in-game rarity panel values.
         try:
