@@ -526,15 +526,16 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
         return {"ok": True, "message": "Import to bookmarks is handled locally by the external app."}
     if action in ("serial_bookmark_new", "serial_bookmark_import", "serial_bookmark_save", "serial_bookmark_duplicate", "serial_bookmark_delete", "serial_bookmark_copy", "clear_external_log"):
         return {"ok": False, "message": f"{action} is present in the copied V3 UI but is not wired to a bridge action yet."}
+    if action == "clear_serials":
+        return backend_actions.clear_serials()
+    if action == "clear_serial_tools":
+        return backend_actions.clear_serial_tools()
+    if action == "serial_convert":
+        return backend_actions.serial_convert(payload.get("serial_input") or "")
     p = _panel()
     if action == "max_all":
         p._max_all_selected()
         return {"ok": True, "message": "MAX ALL requested for selected player."}
-    if action == "serial_convert":
-        text = str(payload.get("serial_input") or "")
-        p._serial_tools_input = text
-        p._serial_tools_convert()
-        return {"ok": True, "message": getattr(p, "_serial_tools_status", "Converted."), "serialized": getattr(p, "_serial_tools_serialized", ""), "deserialized": getattr(p, "_serial_tools_deserialized", ""), "breakdown": getattr(p, "_serial_tools_parts_breakdown", "")}
     if action == "serial_breakdown":
         text = str(payload.get("serial_input") or "")
         out = p._serial_parts_breakdown_for_value(text)
@@ -626,14 +627,6 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
         p._give_serial_selected("nonhost")
         return {"ok": True, "message": "Serial non-host delivery requested."}
 
-    if action == "clear_serials":
-        p._serial_text = ""
-        return {"ok": True, "message": "Cleared boosting serial input in the in-game panel state."}
-    if action == "clear_serial_tools":
-        for name, value in (("_serial_tools_input", ""), ("_serial_tools_serialized", ""), ("_serial_tools_deserialized", ""), ("_serial_tools_parts_breakdown", "")):
-            try: setattr(p, name, value)
-            except Exception: pass
-        return {"ok": True, "message": "Cleared Serial Tools state."}
     if action == "rarity_apply":
         # If individual fields are provided by a later UI, honor them; otherwise apply the current in-game rarity panel values.
         try:
@@ -699,7 +692,7 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
         return {"ok": True, "message": "Applied Fast Glide movement preset."}
 
     # UI-only/export-not-yet-wired actions: report clearly instead of silently failing.
-    if action in ("clear_serials", "clear_serial_tools", "codes_mattmab_validation", "validator_basic", "validator_clear", "validator_bulk", "movement_save_preset", "movement_load_saved", "movement_preset_fast", "movement_preset_veryfast", "movement_preset_moon", "movement_preset_wallwalk", "movement_preset_fastglide", "rarity_apply", "rarity_reset", "rarity_only_legendary", "rarity_only_pearlescent", "set_backpack_bank_selected", "set_backpack_bank_all", "devperk_5"):
+    if action in ("codes_mattmab_validation", "validator_basic", "validator_clear", "validator_bulk", "movement_save_preset", "movement_load_saved", "movement_preset_fast", "movement_preset_veryfast", "movement_preset_moon", "movement_preset_wallwalk", "movement_preset_fastglide", "rarity_apply", "rarity_reset", "rarity_only_legendary", "rarity_only_pearlescent", "set_backpack_bank_selected", "set_backpack_bank_all", "devperk_5"):
         return {"ok": False, "message": f"{action} is present in the copied V3 UI but is not wired to a bridge action yet."}
     return {"ok": False, "message": f"Unknown action: {action}"}
 

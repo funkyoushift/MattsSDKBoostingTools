@@ -20,6 +20,7 @@ from .dev_tools import toggle_debug_cam as _toggle_debug_cam
 from .item_pool_spawning import spawn_item_pool
 from .movement_adjustments import delete_ground_items, zero_vault_power_costs_all_players
 from .party_helpers import _kick_party_player_by_index, _list_party_players
+from .serial_converter import human_to_serial as _human_to_serial, serial_to_human as _serial_to_human
 from .shinies import DEFAULT_ITEM_LEVEL as _SHINY_DEFAULT_LEVEL, drop_all_shinies
 from .travel import _exec_console, travel_to_map as _travel_to_map, travel_to_station as _travel_to_station
 
@@ -33,6 +34,12 @@ MAX_VAULT_CARD_LEVEL = 9999999
 _selected_player_index: int | None = None
 _selected_player_name: str = ""
 _last_refresh_error: str = ""
+serial_text: str = ""
+serial_tools_input: str = ""
+serial_tools_serialized: str = ""
+serial_tools_deserialized: str = ""
+serial_tools_parts_breakdown: str = ""
+serial_tools_status: str = "Paste a @U serial or deserialized serial text above."
 
 
 def _clamp_int(value: object, min_value: int, max_value: int) -> int:
@@ -411,3 +418,66 @@ def movement_zero_vault() -> dict[str, Any]:
         return {"ok": True, "message": msg}
     except Exception as exc:
         return {"ok": False, "message": f"Zero vault cooldown failed: {exc!r}"}
+
+
+def clear_serials() -> dict[str, Any]:
+    global serial_text
+    serial_text = ""
+    return {"ok": True, "message": "Cleared boosting serial input in the backend state."}
+
+
+def clear_serial_tools() -> dict[str, Any]:
+    global serial_tools_input, serial_tools_serialized, serial_tools_deserialized, serial_tools_parts_breakdown, serial_tools_status
+    serial_tools_input = ""
+    serial_tools_serialized = ""
+    serial_tools_deserialized = ""
+    serial_tools_parts_breakdown = ""
+    serial_tools_status = "Paste a @U serial or deserialized serial text above."
+    return {"ok": True, "message": "Cleared Serial Tools state."}
+
+
+def serial_convert(text: object) -> dict[str, Any]:
+    global serial_tools_input, serial_tools_serialized, serial_tools_deserialized, serial_tools_parts_breakdown, serial_tools_status
+    serial_tools_input = str(text or "").strip()
+    if not serial_tools_input:
+        serial_tools_serialized = ""
+        serial_tools_deserialized = ""
+        serial_tools_parts_breakdown = ""
+        serial_tools_status = "Paste a @U serial or deserialized serial text above."
+        return {
+            "ok": False,
+            "message": serial_tools_status,
+            "serialized": "",
+            "deserialized": "",
+            "breakdown": "",
+        }
+    try:
+        if serial_tools_input.startswith("@U"):
+            human = _serial_to_human(serial_tools_input)
+            serial = _human_to_serial(human)
+        else:
+            serial = _human_to_serial(serial_tools_input)
+            human = _serial_to_human(serial)
+        serial_tools_serialized = serial
+        serial_tools_deserialized = human
+        serial_tools_parts_breakdown = ""
+        serial_tools_status = "Converted successfully."
+        return {
+            "ok": True,
+            "message": serial_tools_status,
+            "serialized": serial_tools_serialized,
+            "deserialized": serial_tools_deserialized,
+            "breakdown": serial_tools_parts_breakdown,
+        }
+    except Exception as exc:
+        serial_tools_serialized = ""
+        serial_tools_deserialized = ""
+        serial_tools_parts_breakdown = ""
+        serial_tools_status = f"Conversion failed: {exc}"
+        return {
+            "ok": False,
+            "message": serial_tools_status,
+            "serialized": "",
+            "deserialized": "",
+            "breakdown": "",
+        }
