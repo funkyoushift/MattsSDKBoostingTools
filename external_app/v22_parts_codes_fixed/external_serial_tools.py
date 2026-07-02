@@ -580,7 +580,7 @@ def convert_serial_tool(text: str) -> dict[str, str]:
         human = serial_to_human(serial)
     return {
         "ok": "true",
-        "message": "Converted locally.",
+        "message": "Converted successfully.",
         "serialized": serial,
         "deserialized": human,
         "breakdown": serial_parts_breakdown_text(human),
