@@ -460,16 +460,27 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
         return {"ok": True, "message": "Refreshed party/player list.", "status": _status()}
     if action == "set_target_player":
         return _set_selected_player_from_payload(payload)
-    p = _panel()
     if action == "kick_player":
-        try:
-            p._kick_selected_player()
-            return {"ok": True, "message": "Kick selected player requested."}
-        except Exception as exc:
-            return {"ok": False, "message": f"Kick failed: {exc!r}"}
+        return backend_actions.kick_selected_player()
     if action == "open_bank":
-        p._open_bank_anywhere()
-        return {"ok": True, "message": "Open Bank Anywhere requested."}
+        return backend_actions.open_bank_anywhere()
+    if action == "open_golden_chest":
+        return backend_actions.open_golden_chest()
+    if action == "close_golden_chest":
+        return backend_actions.close_golden_chest()
+    if action == "drop_all_shinies":
+        return backend_actions.drop_all_shinies_selected()
+    if action == "set_backpack_bank_selected":
+        return backend_actions.set_inventory_sizes_selected(
+            payload.get("backpack_size") or 1000,
+            payload.get("bank_size") or 1000,
+        )
+    if action == "set_backpack_bank_all":
+        return backend_actions.set_inventory_sizes_all_party(
+            payload.get("backpack_size") or 1000,
+            payload.get("bank_size") or 1000,
+        )
+    p = _panel()
     if action == "max_all":
         p._max_all_selected()
         return {"ok": True, "message": "MAX ALL requested for selected player."}
@@ -488,15 +499,6 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
     if action == "max_sdu":
         p._max_sdu_selected()
         return {"ok": True, "message": "Max SDU requested."}
-    if action == "open_golden_chest":
-        p._open_golden_chest()
-        return {"ok": True, "message": "Open Golden Chest requested."}
-    if action == "close_golden_chest":
-        p._close_golden_chest()
-        return {"ok": True, "message": "Close Golden Chest requested."}
-    if action == "drop_all_shinies":
-        p._drop_all_shinies_selected()
-        return {"ok": True, "message": "Drop All Shinies requested."}
     if action == "toggle_debug_cam":
         p._toggle_debug_cam_selected()
         return {"ok": True, "message": "Toggle Debug Cam requested."}
@@ -662,22 +664,6 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
             try: setattr(p, name, value)
             except Exception: pass
         return {"ok": True, "message": "Cleared Serial Tools state."}
-    if action == "set_backpack_bank_selected":
-        try:
-            p._backpack_size = int(payload.get("backpack_size") or getattr(p, "_backpack_size", 1000))
-            p._bank_size = int(payload.get("bank_size") or getattr(p, "_bank_size", 1000))
-        except Exception:
-            return {"ok": False, "message": "Backpack and Bank Size must be numbers."}
-        p._set_inventory_sizes_selected()
-        return {"ok": True, "message": "Set backpack/bank size for selected player."}
-    if action == "set_backpack_bank_all":
-        try:
-            p._backpack_size = int(payload.get("backpack_size") or getattr(p, "_backpack_size", 1000))
-            p._bank_size = int(payload.get("bank_size") or getattr(p, "_bank_size", 1000))
-        except Exception:
-            return {"ok": False, "message": "Backpack and Bank Size must be numbers."}
-        p._set_inventory_sizes_all_party()
-        return {"ok": True, "message": "Set backpack/bank size for all party players."}
     if action == "rarity_apply":
         # If individual fields are provided by a later UI, honor them; otherwise apply the current in-game rarity panel values.
         try:
