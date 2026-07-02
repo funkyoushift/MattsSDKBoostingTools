@@ -7,7 +7,7 @@ import hashlib
 from pathlib import Path
 from urllib import request
 import webbrowser
-from external_serial_tools import convert_serial_tool, serial_parts_breakdown_for_value
+from external_serial_tools import convert_serial_tool, serial_parts_breakdown_for_value, human_to_serial
 import external_legit_builder
 from matts_external_core_v20 import ACCENT_COLORS, http_json, RESOURCE_DIR
 from matts_external_legit_travel_v20 import App as V9App
@@ -616,7 +616,7 @@ class App(V9App):
         self.serial_bookmarks_listbox=tk.Listbox(panes, height=18, selectmode='browse', bg='#0e1320', fg='#d7def5', selectbackground='#1f3b63', relief='flat', font=('Consolas',8), exportselection=False)
         self.serial_bookmarks_listbox.grid(row=3,column=0,sticky='nsew',pady=(4,0))
         self.serial_bookmarks_listbox.bind('<<ListboxSelect>>', lambda e:self._serial_bookmark_selected())
-        self.serial_bookmarks_listbox.bind('<Double-Button-1>', lambda e:self._toggle_active_bookmark_checked())
+        self.serial_bookmarks_listbox.bind('<Double-Button-1>', lambda e:'break')
         details=tk.Frame(panes, bg='#090d17')
         details.grid(row=1,column=1,rowspan=3,sticky='nsew',padx=(8,0),pady=(0,0))
         details.grid_columnconfigure(0, weight=1)
@@ -1179,7 +1179,7 @@ class App(V9App):
     def _save_bookmark_store(self, rows):
         import json
         p=self._bookmark_store_path(); p.parent.mkdir(parents=True,exist_ok=True)
-        p.write_text(json.dumps(rows,indent=2),encoding='utf-8')
+        p.write_text(json.dumps({'entries': rows},indent=2),encoding='utf-8')
 
     def _bookmark_generated_id(self, row):
         basis='|'.join(str((row or {}).get(k) or '') for k in ('serial','name','group','source','url'))
@@ -1255,7 +1255,7 @@ class App(V9App):
         checked='[X]' if bid in getattr(self, 'checked_bookmark_ids', set()) else '[ ]'
         group=row.get('group') or 'Default'
         name=row.get('name') or 'Untitled Serial'
-        return f"{active}{checked} {name} | {group}"
+        return f"{active}{checked} {name}        {group}"
 
     def _bookmark_groups(self, rows):
         groups=sorted({str(r.get('group') or 'Default') for r in rows})
@@ -1326,6 +1326,10 @@ class App(V9App):
         self._set_bookmark_field('bookmark_name', row.get('name') or '')
         self._set_bookmark_field('bookmark_group', row.get('group') or '')
         self._set_bookmark_field('bookmark_serial', row.get('serial') or '')
+        if self.active_bookmark_id in self.checked_bookmark_ids:
+            self.checked_bookmark_ids.discard(self.active_bookmark_id)
+        else:
+            self.checked_bookmark_ids.add(self.active_bookmark_id)
         self._refresh_serial_bookmarks_ui()
 
     def _toggle_active_bookmark_checked(self):
@@ -1349,46 +1353,105 @@ class App(V9App):
         self._ensure_bookmark_state()
         self.checked_bookmark_ids.clear()
         self._refresh_serial_bookmarks_ui()
-        self._set_bookmark_status('Cleared selected bookmarks.', log_global=True)
 
     def _checked_bookmark_rows(self):
         self._ensure_bookmark_state()
         rows=[self._normalize_bookmark_row(r) for r in self._load_bookmark_store()]
         return [r for r in rows if self._bookmark_id(r) in self.checked_bookmark_ids]
 
-    def _copy_checked_bookmark_serials(self):
-        rows=self._checked_bookmark_rows()
-        serials=[str(r.get('serial') or '').strip() for r in rows if str(r.get('serial') or '').strip()]
-        if not serials:
-            self._set_bookmark_status('Select one or more bookmarked serials to copy.', log_global=True)
-            return
-        self._copy_text_v13('\n'.join(serials), f'{len(serials)} selected bookmarked serial(s)')
-        self._set_bookmark_status(f'Copied {len(serials)} selected bookmarked serial(s).')
-
-    def _bookmark_delivery_rows(self):
+    def _selected_bookmark_rows(self):
         rows=self._checked_bookmark_rows()
         if rows:
             return rows
         active=self._bookmark_row_by_id(getattr(self, 'active_bookmark_id', ''))
         return [active] if active else []
 
+    def _bookmark_parse_serial_text(self, raw):
+        tokens=[]
+        for line in (raw or '').splitlines():
+            text=line.strip()
+            if not text:
+                continue
+            if '|' in text:
+                tokens.append(text)
+                continue
+            starts=[m.start() for m in re.finditer(r'(?=@U)', text)]
+            if len(starts) > 1:
+                starts.append(len(text))
+                for i in range(len(starts)-1):
+                    part=text[starts[i]:starts[i+1]].strip()
+                    if part:
+                        tokens.append(part)
+                continue
+            tokens.append(text)
+        return tokens
+
+    def _bookmark_resolve_deliverable_serials(self, raw_serials):
+        out=[]
+        for raw in raw_serials or []:
+            text=str(raw or '').strip()
+            if not text:
+                continue
+            if text.startswith('@U'):
+                out.append(text)
+                continue
+            if '|' in text:
+                try:
+                    out.append(human_to_serial(text))
+                except Exception as exc:
+                    self.log(f'Serial Bookmarks: serialize failed for bookmarked serial: {exc!r}')
+                    return []
+                continue
+            out.append(text)
+        return out
+
+    def _bookmark_serials_from_entries(self, rows):
+        serials=[]
+        seen=set()
+        for row in rows or []:
+            serial=str((row or {}).get('serial') or '').strip()
+            if not serial or serial in seen:
+                continue
+            seen.add(serial)
+            serials.append(serial)
+        return serials
+
+    def _copy_checked_bookmark_serials(self):
+        rows=self._selected_bookmark_rows()
+        serials=self._bookmark_serials_from_entries(rows)
+        if not serials:
+            self._set_bookmark_status('Select one or more bookmarked serials to copy.', log_global=True)
+            return
+        self._copy_text_v13('\n'.join(serials), f'{len(serials)} selected bookmarked serial(s)')
+        self._set_bookmark_status(f'Copied {len(serials)} selected bookmarked serial(s) to clipboard.')
+
+    def _bookmark_delivery_rows(self):
+        return self._selected_bookmark_rows()
+
     def _refresh_bookmark_delivery_preview(self):
         rows=self._bookmark_delivery_rows()
-        serials=[str(r.get('serial') or '').strip() for r in rows if r and str(r.get('serial') or '').strip()]
+        serials=[]
+        for row in rows:
+            serials.extend(self._bookmark_parse_serial_text(str((row or {}).get('serial') or '').strip()))
         if hasattr(self, 'bookmark_delivery_status_var'):
             self.bookmark_delivery_status_var.set(f'{len(rows)} selected')
         if hasattr(self, 'bookmark_split_preview_var'):
             if not serials:
-                self.bookmark_split_preview_var.set('Delivery preview: no checked bookmarks.')
+                self.bookmark_split_preview_var.set('Delivery split: no valid serials selected yet.')
             else:
-                total=sum(len(s) for s in serials)
-                self.bookmark_split_preview_var.set(f'Delivery preview: {len(serials)} serial(s), {total} character(s).')
+                total=sum(len(str(s or '').strip()) for s in serials if str(s or '').strip())
+                self.bookmark_split_preview_var.set(f'Delivery split: 1 part | {len(serials)} serial(s) | {total} raw chars | {total} estimated payload chars.')
 
     def _deliver_bookmark_serials(self, mode):
         rows=self._bookmark_delivery_rows()
-        serials=[str(r.get('serial') or '').strip() for r in rows if r and str(r.get('serial') or '').strip()]
-        if not serials:
+        if not rows:
             return self._set_bookmark_status('Select one or more saved serials first.', log_global=True)
+        raw=[]
+        for row in rows:
+            raw.extend(self._bookmark_parse_serial_text(str((row or {}).get('serial') or '').strip()))
+        serials=self._bookmark_resolve_deliverable_serials(raw)
+        if not serials:
+            return self._set_bookmark_status('Selected entries did not resolve to any deliverable serials.', log_global=True)
         payload={'serial_text':'\n'.join(serials)}
         aid={'selected':'give_serial_selected','all':'give_serial_all','nonhost':'give_serial_nonhost'}[mode]
         self.log(f'Delivering {len(serials)} bookmarked serial(s) to {mode}...')
@@ -1431,8 +1494,8 @@ class App(V9App):
     def _bookmark_current_payload(self):
         self._ensure_bookmark_state()
         payload={
-            'name': self.field_vars.get('bookmark_name',tk.StringVar()).get().strip() or 'Untitled Serial',
-            'group': self.field_vars.get('bookmark_group',tk.StringVar()).get().strip(),
+            'name': self.field_vars.get('bookmark_name',tk.StringVar()).get().strip(),
+            'group': self.field_vars.get('bookmark_group',tk.StringVar()).get().strip() or 'Default',
             'serial': self.field_vars.get('bookmark_serial',tk.StringVar()).get().strip(),
         }
         if self.active_bookmark_id:
@@ -1445,54 +1508,56 @@ class App(V9App):
         if aid=='serial_bookmark_new':
             self.active_bookmark_id=''
             self._set_bookmark_field('bookmark_name', '')
-            self._set_bookmark_field('bookmark_group', '')
+            self._set_bookmark_field('bookmark_group', 'Default')
             self._set_bookmark_field('bookmark_serial', '')
             lb=getattr(self, 'serial_bookmarks_listbox', None)
             if lb: lb.selection_clear(0,'end')
             self._refresh_serial_bookmarks_ui()
-            self._set_bookmark_status('Ready for a new saved serial.', log_global=True)
+            self._set_bookmark_status('Ready for a new saved serial.')
             return
         if aid=='serial_bookmark_import':
             src=self._serial_tools_import_source()
             if not src:
-                return self._set_bookmark_status('Serial Tools has no output/input to import.', log_global=True)
+                return self._set_bookmark_status('Serial Tools has no output/input to import.')
             self._set_bookmark_field('bookmark_serial', src)
-            self._set_bookmark_status('Imported text from Serial Tools. Add a name/group, then save.', log_global=True)
+            self._set_bookmark_status('Imported text from Serial Tools. Add a name/group, then save.')
             return
         if aid=='serial_bookmark_save':
-            if not cur['serial']: return self.log('No bookmark serial to save/import.')
+            if not cur['name']:
+                return self._set_bookmark_status('Name is required before saving.', log_global=True)
+            if not cur['serial']:
+                return self._set_bookmark_status('Serial is required before saving.', log_global=True)
+            expanded=self._bookmark_parse_serial_text(cur['serial'])
+            resolved=self._bookmark_resolve_deliverable_serials(expanded)
+            if not resolved:
+                return self._set_bookmark_status('Could not resolve the serial text into a deliverable serial.', log_global=True)
             created=self._save_current_bookmark(cur)
-            self._set_bookmark_status(f"Saved {cur['name']}." if created else f"Updated {cur['name']}.", log_global=True)
+            self._set_bookmark_status(f"Saved {cur['name']}." if created else f"Updated {cur['name']}.")
             return
         if aid=='serial_bookmark_duplicate':
             active=self._bookmark_row_by_id(self.active_bookmark_id)
             if not active: return self._set_bookmark_status('Select a saved serial before duplicating.', log_global=True)
-            dup=dict(active)
-            dup.pop('id', None)
-            dup['name']=((dup.get('name') or 'Serial').strip() or 'Serial')+' Copy'
-            rows=[self._normalize_bookmark_row(r) for r in self._load_bookmark_store()]
-            dup=self._normalize_bookmark_row(dup)
-            dup['id']=f"{dup['id']}_{int(time.time()*1000)}"
-            rows.append(dup)
-            self.active_bookmark_id=dup['id']
-            self._save_bookmark_store(rows)
-            self._set_bookmark_field('bookmark_name', dup.get('name') or '')
-            self._set_bookmark_field('bookmark_group', dup.get('group') or '')
-            self._set_bookmark_field('bookmark_serial', dup.get('serial') or '')
+            self.active_bookmark_id=''
+            self._set_bookmark_field('bookmark_name', ((active.get('name') or 'Serial').strip() or 'Serial')+' Copy')
+            self._set_bookmark_field('bookmark_group', active.get('group') or 'Default')
+            self._set_bookmark_field('bookmark_serial', active.get('serial') or '')
             self._refresh_serial_bookmarks_ui()
-            return self._set_bookmark_status(f"Duplicated bookmark: {dup['name']}", log_global=True)
+            return self._set_bookmark_status('Duplicated into a new unsaved entry. Review, then Save.')
         if aid=='serial_bookmark_delete':
-            serial=cur['serial']; before=len(rows); rows=[self._normalize_bookmark_row(r) for r in rows]
-            if self.active_bookmark_id:
-                if messagebox.askyesno('Delete Bookmark','Delete the active serial bookmark?') is False:
-                    return
-                deleted_id=self.active_bookmark_id
-                rows=[r for r in rows if self._bookmark_id(r)!=deleted_id]
-                self.checked_bookmark_ids.discard(self.active_bookmark_id)
-                self.active_bookmark_id=''
-            else:
-                rows=[r for r in rows if r.get('serial')!=serial]
-            self._save_bookmark_store(rows); self._refresh_serial_bookmarks_ui(); return self._set_bookmark_status(f'Deleted {before-len(rows)} saved serial(s).', log_global=True)
+            if not self.active_bookmark_id:
+                return self._set_bookmark_status('No saved serial selected to delete.')
+            before=len(rows)
+            rows=[self._normalize_bookmark_row(r) for r in rows]
+            deleted_id=self.active_bookmark_id
+            rows=[r for r in rows if self._bookmark_id(r)!=deleted_id]
+            self.checked_bookmark_ids.discard(deleted_id)
+            self._save_bookmark_store(rows)
+            self.active_bookmark_id=''
+            self._set_bookmark_field('bookmark_name', '')
+            self._set_bookmark_field('bookmark_group', 'Default')
+            self._set_bookmark_field('bookmark_serial', '')
+            self._refresh_serial_bookmarks_ui()
+            return self._set_bookmark_status(f'Deleted {before-len(rows)} saved serial(s).')
         if aid=='serial_bookmark_copy':
             serial=cur['serial']
             if not serial: return self.log('No bookmark serial to copy.')
