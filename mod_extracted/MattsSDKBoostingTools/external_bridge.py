@@ -500,20 +500,36 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
             payload.get("xp_track") if "xp_track" in payload else payload.get("xp_track_index", "player"),
             payload.get("level") or 0,
         )
+    if action == "toggle_debug_cam":
+        return backend_actions.toggle_debug_cam()
+    if action == "teleport_debug_cam":
+        return backend_actions.teleport_debug_cam()
+    if action.startswith("devperk_"):
+        return backend_actions.activate_devperk(action.split("_", 1)[1])
+    if action == "spawn_itempool":
+        return backend_actions.spawn_itempool(
+            payload.get("itempool_name"),
+            payload.get("itempool_count") or 1,
+            payload.get("itempool_level") or 60,
+        )
+    if action == "travel_to_map":
+        return backend_actions.travel_to_map(payload.get("travel_map"))
+    if action == "travel_to_station":
+        return backend_actions.travel_to_station(payload.get("travel_station"))
+    if action == "movement_delete_ground_items":
+        return backend_actions.movement_delete_ground_items()
+    if action == "movement_zero_vault":
+        return backend_actions.movement_zero_vault()
+    if action in ("codes_load_cache", "codes_refresh_gzo", "codes_reload_lootlemon"):
+        return {"ok": True, "message": f"{action}: static code resources are bundled in the external app; use Reconnect/Reload in the app to refresh the local view."}
+    if action == "codes_import_bookmarks":
+        return {"ok": True, "message": "Import to bookmarks is handled locally by the external app."}
+    if action in ("serial_bookmark_new", "serial_bookmark_import", "serial_bookmark_save", "serial_bookmark_duplicate", "serial_bookmark_delete", "serial_bookmark_copy", "clear_external_log"):
+        return {"ok": False, "message": f"{action} is present in the copied V3 UI but is not wired to a bridge action yet."}
     p = _panel()
     if action == "max_all":
         p._max_all_selected()
         return {"ok": True, "message": "MAX ALL requested for selected player."}
-    if action == "toggle_debug_cam":
-        p._toggle_debug_cam_selected()
-        return {"ok": True, "message": "Toggle Debug Cam requested."}
-    if action == "teleport_debug_cam":
-        p._teleport_pawn_to_debug_cam_selected()
-        return {"ok": True, "message": "Teleport Pawn to Debug Cam requested."}
-    if action.startswith("devperk_"):
-        perk = int(action.split("_", 1)[1])
-        p._activate_devperk_selected(perk)
-        return {"ok": True, "message": f"Dev perk {perk} requested."}
     if action == "serial_convert":
         text = str(payload.get("serial_input") or "")
         p._serial_tools_input = text
@@ -548,15 +564,6 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
     if action == "legit_clear_parts":
         p._legit_clear_selected_parts()
         return {"ok": True, "message": "Cleared active Legit Builder selected parts."}
-    if action == "spawn_itempool":
-        name = str(payload.get("itempool_name") or "").strip()
-        if name:
-            p._itempool_search = name
-            p._select_itempool_by_name(name)
-        p._itempool_count = int(payload.get("itempool_count") or 1)
-        p._itempool_level = int(payload.get("itempool_level") or 60)
-        p._spawn_selected_item_pool()
-        return {"ok": True, "message": "Spawn item pool requested."}
     if action == "toggle_itempool_favorite":
         name = str(payload.get("itempool_name") or "").strip()
         if name:
@@ -564,20 +571,6 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
             p._select_itempool_by_name(name)
         p._toggle_selected_itempool_favorite()
         return {"ok": True, "message": "Toggle item-pool favorite requested."}
-    if action == "travel_to_map":
-        name = str(payload.get("travel_map") or "").strip()
-        if name:
-            p._travel_map_search = name
-            p._select_travel_map_by_name(name)
-        p._travel_to_selected_map()
-        return {"ok": True, "message": "Travel to map requested."}
-    if action == "travel_to_station":
-        name = str(payload.get("travel_station") or "").strip()
-        if name:
-            p._travel_station_search = name
-            p._select_travel_station_by_name(name)
-        p._travel_to_selected_station()
-        return {"ok": True, "message": "Travel to station requested."}
     if action == "toggle_map_favorite":
         name = str(payload.get("travel_map") or "").strip()
         if name:
@@ -620,12 +613,6 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
     if action == "movement_toggle_noclip":
         p._movement_toggle_noclip()
         return {"ok": True, "message": "Toggle noclip requested."}
-    if action == "movement_delete_ground_items":
-        p._movement_delete_ground_items()
-        return {"ok": True, "message": "Delete ground items requested."}
-    if action == "movement_zero_vault":
-        p._movement_zero_vault_now()
-        return {"ok": True, "message": "Zero vault cooldown requested."}
     if action == "movement_set_time":
         p._movement_set_time()
         return {"ok": True, "message": "Set time requested."}
@@ -688,11 +675,6 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
             return {"ok": True, "message": "Queued Mattmab validation for GZO codes."}
         p._catalog_validator_start("Lootlemon")
         return {"ok": True, "message": "Queued Mattmab validation for Lootlemon codes."}
-    if action in ("codes_load_cache", "codes_refresh_gzo", "codes_reload_lootlemon"):
-        # External app owns static resources. This bridge response makes the button explicit instead of dead.
-        return {"ok": True, "message": f"{action}: static code resources are bundled in the external app; use Reconnect/Reload in the app to refresh the local view."}
-    if action == "codes_import_bookmarks":
-        return {"ok": True, "message": "Import to bookmarks is handled locally by the external app."}
     if action == "movement_save_preset":
         _apply_movement_external_payload(payload)
         p._movement_save_current_preset()
@@ -717,7 +699,7 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
         return {"ok": True, "message": "Applied Fast Glide movement preset."}
 
     # UI-only/export-not-yet-wired actions: report clearly instead of silently failing.
-    if action in ("clear_serials", "clear_serial_tools", "serial_bookmark_new", "serial_bookmark_import", "serial_bookmark_save", "serial_bookmark_duplicate", "serial_bookmark_delete", "serial_bookmark_copy", "codes_load_cache", "codes_refresh_gzo", "codes_reload_lootlemon", "codes_mattmab_validation", "codes_import_bookmarks", "validator_basic", "validator_clear", "validator_bulk", "movement_save_preset", "movement_load_saved", "movement_preset_fast", "movement_preset_veryfast", "movement_preset_moon", "movement_preset_wallwalk", "movement_preset_fastglide", "rarity_apply", "rarity_reset", "rarity_only_legendary", "rarity_only_pearlescent", "set_backpack_bank_selected", "set_backpack_bank_all", "devperk_5", "clear_external_log"):
+    if action in ("clear_serials", "clear_serial_tools", "codes_mattmab_validation", "validator_basic", "validator_clear", "validator_bulk", "movement_save_preset", "movement_load_saved", "movement_preset_fast", "movement_preset_veryfast", "movement_preset_moon", "movement_preset_wallwalk", "movement_preset_fastglide", "rarity_apply", "rarity_reset", "rarity_only_legendary", "rarity_only_pearlescent", "set_backpack_bank_selected", "set_backpack_bank_all", "devperk_5"):
         return {"ok": False, "message": f"{action} is present in the copied V3 UI but is not wired to a bridge action yet."}
     return {"ok": False, "message": f"Unknown action: {action}"}
 

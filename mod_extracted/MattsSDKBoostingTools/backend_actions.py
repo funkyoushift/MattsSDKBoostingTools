@@ -14,9 +14,14 @@ from .inventory_capacity import (
     set_inventory_sizes_for_party_index,
 )
 from . import player_economy
+from .dev_tools import activate_devperk as _activate_devperk
+from .dev_tools import teleport_pawn_to_debug_cam as _teleport_pawn_to_debug_cam
+from .dev_tools import toggle_debug_cam as _toggle_debug_cam
+from .item_pool_spawning import spawn_item_pool
+from .movement_adjustments import delete_ground_items, zero_vault_power_costs_all_players
 from .party_helpers import _kick_party_player_by_index, _list_party_players
 from .shinies import DEFAULT_ITEM_LEVEL as _SHINY_DEFAULT_LEVEL, drop_all_shinies
-from .travel import _exec_console
+from .travel import _exec_console, travel_to_map as _travel_to_map, travel_to_station as _travel_to_station
 
 CURRENCY_KINDS = ["cash", "eridium", "vaultcard1", "vaultcard2", "vaultcard3"]
 EXP_TRACKS = ["player", "specialization", "vaultcard_xp_1", "vaultcard_xp_2", "vaultcard_xp_3"]
@@ -336,3 +341,73 @@ def max_sdu() -> dict[str, Any]:
         return {"ok": True, "message": "Max SDU requested."}
     except Exception as exc:
         return {"ok": False, "message": f"Max SDU failed: {exc!r}"}
+
+
+def toggle_debug_cam() -> dict[str, Any]:
+    idx = get_selected_player_index()
+    try:
+        message = _toggle_debug_cam(idx)
+        return {"ok": True, "message": message}
+    except Exception as exc:
+        return {"ok": False, "message": f"Toggle Debug Cam failed: {exc!r}"}
+
+
+def teleport_debug_cam() -> dict[str, Any]:
+    idx = get_selected_player_index()
+    try:
+        message = _teleport_pawn_to_debug_cam(idx)
+        return {"ok": True, "message": message}
+    except Exception as exc:
+        return {"ok": False, "message": f"Teleport Pawn to Debug Cam failed: {exc!r}"}
+
+
+def activate_devperk(perk: object) -> dict[str, Any]:
+    idx = get_selected_player_index()
+    try:
+        label = _activate_devperk(int(perk), idx)
+        return {"ok": True, "message": f"Dev perk {int(perk)} requested.", "label": label}
+    except Exception as exc:
+        return {"ok": False, "message": f"Dev perk failed: {exc!r}"}
+
+
+def spawn_itempool(pool_name: object, count: object, level: object) -> dict[str, Any]:
+    name = str(pool_name or "").strip()
+    if not name:
+        return {"ok": False, "message": "No item pool selected."}
+    try:
+        spawned = spawn_item_pool(name, int(level), int(count))
+        return {"ok": True, "message": f"Spawned item pool {name} x{spawned} at level {int(level)}."}
+    except Exception as exc:
+        return {"ok": False, "message": f"Spawn item pool failed: {exc!r}"}
+
+
+def travel_to_map(map_name: object) -> dict[str, Any]:
+    try:
+        msg = _travel_to_map(str(map_name or "").strip())
+        return {"ok": True, "message": msg}
+    except Exception as exc:
+        return {"ok": False, "message": f"Travel to map failed: {exc!r}"}
+
+
+def travel_to_station(station_name: object) -> dict[str, Any]:
+    try:
+        msg = _travel_to_station(str(station_name or "").strip())
+        return {"ok": True, "message": msg}
+    except Exception as exc:
+        return {"ok": False, "message": f"Travel to station failed: {exc!r}"}
+
+
+def movement_delete_ground_items() -> dict[str, Any]:
+    try:
+        msg = delete_ground_items()
+        return {"ok": True, "message": msg}
+    except Exception as exc:
+        return {"ok": False, "message": f"Delete ground items failed: {exc!r}"}
+
+
+def movement_zero_vault() -> dict[str, Any]:
+    try:
+        msg = zero_vault_power_costs_all_players()
+        return {"ok": True, "message": msg}
+    except Exception as exc:
+        return {"ok": False, "message": f"Zero vault cooldown failed: {exc!r}"}
