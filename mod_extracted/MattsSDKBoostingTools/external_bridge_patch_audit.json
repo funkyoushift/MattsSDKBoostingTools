@@ -1,0 +1,13 @@
+{
+  "patch": "external_bridge_prototype_v1",
+  "description": "Adds a localhost bridge inside MattsSDKBoostingTools and an external UI layout registry for the first standalone control panel prototype.",
+  "host": "127.0.0.1",
+  "port": 49774,
+  "endpoints": ["GET /status", "GET /layout", "POST /action"],
+  "prototype_tabs": ["Boosting", "Serial Tools placeholder", "Legit Builder placeholder", "Activity Log"],
+  "notes": [
+    "The external app reads the layout from the in-game SDK bridge.",
+    "The game and SDK mod must be running; the EXE/Python UI is a remote control, not a replacement for the SDK backend.",
+    "Action execution is queued onto the SDK tick hook to avoid direct game calls from the HTTP server thread."
+  ]
+}

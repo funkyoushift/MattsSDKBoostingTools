@@ -1,0 +1,7 @@
+{
+  "patch": "open_bank_anywhere_button",
+  "command": "gbx.ui.view.stateadd MENU_BANK",
+  "ui_location": "Boosting tab -> Cheats / Debug Cam card",
+  "button_label": "Open Bank Anywhere",
+  "notes": "Runs the GBX UI console command through the same console execution helper used by map travel."
+}

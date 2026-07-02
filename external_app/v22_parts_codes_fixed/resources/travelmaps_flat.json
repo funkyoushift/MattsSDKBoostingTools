@@ -1,0 +1,176 @@
+{
+  "source": "Curated existing BL4 maps only",
+  "count": 17,
+  "maps": [
+    {
+      "map": "World_P",
+      "display_name": "World_P - Main World",
+      "map_key": "world_p",
+      "source_file": "Nexus-Data-Map0.json",
+      "mappath": "Asset'/Game/Maps/WorldLevels/World_P.World_P'",
+      "defaultstation": "World_P.Game_Start",
+      "canbecooked": "true",
+      "curated_existing": true
+    },
+    {
+      "map": "Fortress_Grasslands_P",
+      "display_name": "Fortress_Grasslands_P - Fadefields Fortress",
+      "map_key": "fortress_grasslands_p",
+      "source_file": "Nexus-Data-Map0.json",
+      "mappath": "Asset'/Game/Maps/WorldLevels/Grasslands/Region2/Fortress/Fortress_Grasslands_P.Fortress_Grasslands_P'",
+      "defaultstation": "Fortress_Grasslands_P.FT_GRA_Fortress_Start",
+      "canbecooked": "true",
+      "curated_existing": true
+    },
+    {
+      "map": "Vault_Grasslands_P",
+      "display_name": "Vault_Grasslands_P - Fadefields Vault",
+      "map_key": "vault_grasslands_p",
+      "source_file": "Nexus-Data-Map6.json",
+      "mappath": "Asset'/Game/Maps/WorldLevels/Grasslands/Vault/Vault_Grasslands_P.Vault_Grasslands_P'",
+      "defaultstation": "Vault_Grasslands_P.LT_Vault_Start",
+      "canbecooked": "true",
+      "curated_existing": true
+    },
+    {
+      "map": "Fortress_Shatteredlands_P",
+      "display_name": "Fortress_Shatteredlands_P - Carcadia Fortress",
+      "map_key": "fortress_shatteredlands_p",
+      "source_file": "Nexus-Data-Map4.json",
+      "mappath": "Asset'/Game/Maps/WorldLevels/ShatteredLands/Region2/Fortress/Fortress_Shatteredlands_P.Fortress_Shatteredlands_P'",
+      "defaultstation": "Fortress_Shatteredlands_P.FT_Fortress_SHA_Start",
+      "canbecooked": "true",
+      "curated_existing": true
+    },
+    {
+      "map": "Vault_ShatteredLands_P",
+      "display_name": "Vault_ShatteredLands_P - Carcadia Vault",
+      "map_key": "vault_shatteredlands_p",
+      "source_file": "Nexus-Data-Map0.json",
+      "mappath": "Asset'/Game/Maps/WorldLevels/ShatteredLands/Vault/Vault_ShatteredLands_P.Vault_ShatteredLands_P'",
+      "defaultstation": "Vault_ShatteredLands_P.LT_SHA_Vault_Start",
+      "canbecooked": "true",
+      "curated_existing": true
+    },
+    {
+      "map": "Fortress_Mountains_P",
+      "display_name": "Fortress_Mountains_P - Terminus Range Fortress",
+      "map_key": "fortress_mountains_p",
+      "source_file": "Nexus-Data-Map0.json",
+      "mappath": "Asset'/Game/Maps/WorldLevels/Mountains/Region2/Fortress/Fortress_Mountains_P.Fortress_Mountains_P'",
+      "defaultstation": "Fortress_Mountains_P.FT_Fortress_MOU_Start",
+      "canbecooked": "true",
+      "curated_existing": true
+    },
+    {
+      "map": "Vault_Mountains_P",
+      "display_name": "Vault_Mountains_P - Terminus Range Vault",
+      "map_key": "vault_mountains_p",
+      "source_file": "Nexus-Data-Map6.json",
+      "mappath": "Asset'/Game/Maps/WorldLevels/Mountains/Vault/Vault_Mountains_P.Vault_Mountains_P'",
+      "defaultstation": "Vault_Mountains_P.FT_Vault_Mou_Start",
+      "canbecooked": "true",
+      "curated_existing": true
+    },
+    {
+      "map": "UpperCity_P",
+      "display_name": "UpperCity_P - Upper Dominion",
+      "map_key": "uppercity_p",
+      "source_file": "Nexus-Data-Map0.json",
+      "mappath": "Asset'/Game/Maps/WorldLevels/City/Dungeon/UpperCity/UpperCity_P.UpperCity_P'",
+      "defaultstation": "UpperCity_P.FT_UpperCity_AfterPod",
+      "canbecooked": "true",
+      "curated_existing": true
+    },
+    {
+      "map": "Raid1_P",
+      "display_name": "Raid1_P - Bloomreaper Raid",
+      "map_key": "raid1_p",
+      "source_file": "Nexus-Data-Map4.json",
+      "mappath": "Asset'/Game/DLC/Raid1/Maps/Raid1_P.Raid1_P'",
+      "defaultstation": "Raid1_P.FT_Raid1_Approach",
+      "canbecooked": "true",
+      "curated_existing": true
+    },
+    {
+      "map": "Raid2_P",
+      "display_name": "Raid2_P - Raid 2",
+      "map_key": "raid2_p",
+      "source_file": "Nexus-Data-Map4.json",
+      "mappath": "Asset'/Game/DLC/Raid2/Maps/Raid2_P.Raid2_P'",
+      "defaultstation": "Raid2_P.FT_Raid2_Entrance",
+      "canbecooked": "true",
+      "curated_existing": true
+    },
+    {
+      "map": "Cello_P",
+      "display_name": "Cello_P - Bounty Pack 2",
+      "map_key": "cello_p",
+      "source_file": "Nexus-Data-Map4.json",
+      "mappath": "Asset'/Game/DLC/Cello/Maps/Cello_P.Cello_P'",
+      "defaultstation": "Cello_P.FT_Cello_P",
+      "canbecooked": "true",
+      "curated_existing": true
+    },
+    {
+      "map": "Banjo_P",
+      "display_name": "Banjo_P - Bounty Pack 1",
+      "map_key": "banjo_p",
+      "source_file": "Nexus-Data-Map4.json",
+      "mappath": "Asset'/Game/DLC/Banjo/Maps/Banjo_P.Banjo_P'",
+      "defaultstation": "Banjo_P.FT_BanjoStart",
+      "canbecooked": "true",
+      "curated_existing": true
+    },
+    {
+      "map": "Cowbell_P",
+      "display_name": "Cowbell_P - Mad Ellie",
+      "map_key": "cowbell_p",
+      "source_file": "Nexus-Data-Map0.json",
+      "mappath": "Asset'/Game/DLC/Cowbell/Maps/Cowbell_P.Cowbell_P'",
+      "defaultstation": "Cowbell_P.LTS_CowbellToZadraHouse",
+      "canbecooked": "true",
+      "curated_existing": true
+    },
+    {
+      "map": "VaultoftheDamned_P",
+      "display_name": "VaultoftheDamned_P - Mad Ellie Vault",
+      "map_key": "vaultofthedamned_p",
+      "source_file": "Nexus-Data-Map4.json",
+      "mappath": "Asset'/Game/DLC/Cowbell/Maps/VaultoftheDamned_P.VaultoftheDamned_P'",
+      "defaultstation": "VaultoftheDamned_P.FT_VotD_Bridge",
+      "canbecooked": "true",
+      "curated_existing": true
+    },
+    {
+      "map": "Elpis_P",
+      "display_name": "Elpis_P - Elpis",
+      "map_key": "elpis_p",
+      "source_file": "Nexus-Data-Map0.json",
+      "mappath": "Asset'/Game/Maps/WorldLevels/City/Dungeon/Elpis/Elpis_P.Elpis_P'",
+      "defaultstation": "Elpis_P.fast_travel",
+      "canbecooked": "true",
+      "curated_existing": true
+    },
+    {
+      "map": "ElpisElevator_P",
+      "display_name": "ElpisElevator_P - Elpis Elevator",
+      "map_key": "elpiselevator_p",
+      "source_file": "Nexus-Data-Map0.json",
+      "mappath": "Asset'/Game/Maps/WorldLevels/ShatteredLands/Missions/ElpisElevator_P.ElpisElevator_P'",
+      "defaultstation": "ElpisElevator_P.FT_ElpisElevator",
+      "canbecooked": "true",
+      "curated_existing": true
+    },
+    {
+      "map": "Bespoke_VisionQuest",
+      "display_name": "Bespoke_VisionQuest - Vision Quest",
+      "map_key": "bespoke_visionquest",
+      "source_file": "Nexus-Data-Map0.json",
+      "mappath": "Asset'/Game/Maps/WorldLevels/Mountains/Region2/Mission_Bespoke/Bespoke_VisionQuest.Bespoke_VisionQuest'",
+      "defaultstation": "none",
+      "canbecooked": "true",
+      "curated_existing": true
+    }
+  ]
+}

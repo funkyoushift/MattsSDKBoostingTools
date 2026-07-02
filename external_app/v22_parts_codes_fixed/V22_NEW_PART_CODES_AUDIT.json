@@ -1,0 +1,65 @@
+{
+  "version": "V22",
+  "purpose": "Sync new weapon part codes decoded from user-provided BL4 serials into external bundled resources.",
+  "decoded": [
+    {
+      "name": "Hard Dark",
+      "serial": "@Ugfs(8FnkbU=0DI/)SwD=sJ5sus84Mw4=NQZ7OEEN7HS",
+      "decoded": "13, 0, 1, 60 | 2, 2035 || {87} {1} {2} {3} {86} {16} {15} {13} {28} {36} {40} {42} {43}|",
+      "family": "13 | DAD_AR",
+      "new_missing_parts": [
+        {
+          "code": "{13:86}",
+          "name": "part_barrel_02_hard_dark",
+          "role": "Hard Dark unique barrel"
+        },
+        {
+          "code": "{13:87}",
+          "name": "comp_05_legendary_hard_dark",
+          "role": "Hard Dark legendary component"
+        }
+      ]
+    },
+    {
+      "name": "Raiden",
+      "serial": "@UgwSAs35E/MjJ6DFiRy",
+      "decoded": "20, 0, 1, 60 | 2, 3178 || {70} {14:235}",
+      "family": "20 | DAD_SM",
+      "new_missing_parts": [
+        {
+          "code": "{20:70}",
+          "name": "comp_06_pearl_raiden",
+          "role": "Raiden pearlescent component"
+        }
+      ],
+      "note": "{20:14} already existed as DAD_SM.part_mag_02; serial uses it with an integer subtype value 235."
+    }
+  ],
+  "updated_resources": [
+    "resources/gzo_parts_map.json",
+    "resources/legit_rules_flat.json"
+  ],
+  "patches": [
+    {
+      "resource": "gzo_parts_map.json",
+      "family": "13 | DAD_AR",
+      "partId": 86,
+      "old": null,
+      "new": "part_barrel_02_hard_dark"
+    },
+    {
+      "resource": "gzo_parts_map.json",
+      "family": "13 | DAD_AR",
+      "partId": 87,
+      "old": null,
+      "new": "comp_05_legendary_hard_dark"
+    },
+    {
+      "resource": "gzo_parts_map.json",
+      "family": "20 | DAD_SM",
+      "partId": 70,
+      "old": null,
+      "new": "comp_06_pearl_raiden"
+    }
+  ]
+}

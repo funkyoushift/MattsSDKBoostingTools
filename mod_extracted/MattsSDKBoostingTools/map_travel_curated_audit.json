@@ -1,0 +1,6 @@
+{
+  "curated_map_count": 17,
+  "station_count": 677,
+  "removed_worlds": "FrontEnd_P and Intro_P/test/non-extant maps removed from UI list",
+  "mainmenu": "MainMenu stations remain category Experimental because their camera can be locked"
+}

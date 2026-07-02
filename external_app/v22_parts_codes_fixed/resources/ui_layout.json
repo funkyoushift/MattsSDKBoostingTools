@@ -1,0 +1,1087 @@
+{
+  "title": "Matt's SDK Boosting Tools - External Control",
+  "version": 6,
+  "notes": "V6 external app bundles static resources locally and adds live player target selection from the in-game bridge.",
+  "tabs": [
+    {
+      "id": "boosting",
+      "label": "Boosting",
+      "cards": [
+        {
+          "id": "target_player",
+          "label": "TARGET PLAYER",
+          "accent": "cyan",
+          "actions": [
+            {
+              "id": "refresh_players",
+              "label": "Refresh Players",
+              "accent": "cyan"
+            },
+            {
+              "id": "set_target_player",
+              "label": "Use Selected Target",
+              "accent": "green",
+              "uses_fields": [
+                "target_player"
+              ]
+            },
+            {
+              "id": "kick_player",
+              "label": "Kick Player",
+              "accent": "red"
+            }
+          ],
+          "text": "Select which party player the boosting buttons should target. Refresh pulls the live party list from the SDK bridge.",
+          "fields": [
+            {
+              "id": "target_player",
+              "label": "Target Player",
+              "type": "player_choice",
+              "default": ""
+            }
+          ]
+        },
+        {
+          "id": "quick_max",
+          "label": "QUICK MAX",
+          "accent": "gold",
+          "actions": [
+            {
+              "id": "max_all",
+              "label": "MAX ALL",
+              "accent": "gold"
+            },
+            {
+              "id": "max_currency",
+              "label": "MAX CASH",
+              "accent": "green"
+            },
+            {
+              "id": "max_eridium",
+              "label": "MAX ERIDIUM",
+              "accent": "purple"
+            },
+            {
+              "id": "max_player_level",
+              "label": "MAX PLAYER 60",
+              "accent": "cyan"
+            },
+            {
+              "id": "max_spec_level",
+              "label": "MAX SPEC 701",
+              "accent": "purple"
+            }
+          ]
+        },
+        {
+          "id": "serial_rewards",
+          "label": "SERIAL REWARDS",
+          "accent": "purple",
+          "text": "Paste one or more serials below. Rewards are created with GiveRewardAllPlayers, then custom serials are patched onto the selected target packages.",
+          "fields": [
+            {
+              "id": "serial_text",
+              "label": "Serial Input",
+              "type": "multiline",
+              "default": ""
+            },
+            {
+              "id": "serial_override_level",
+              "label": "Override delivery level?",
+              "type": "choice",
+              "choices": [
+                "false",
+                "true"
+              ],
+              "default": "false"
+            },
+            {
+              "id": "serial_level",
+              "label": "Level",
+              "type": "int",
+              "default": 60
+            }
+          ],
+          "actions": [
+            {
+              "id": "give_serial_selected",
+              "label": "Give Selected",
+              "accent": "purple",
+              "uses_fields": [
+                "serial_text",
+                "serial_override_level",
+                "serial_level"
+              ]
+            },
+            {
+              "id": "give_serial_all",
+              "label": "Give All",
+              "accent": "gold",
+              "uses_fields": [
+                "serial_text",
+                "serial_override_level",
+                "serial_level"
+              ]
+            },
+            {
+              "id": "give_serial_nonhost",
+              "label": "Give Non-Host",
+              "accent": "cyan",
+              "uses_fields": [
+                "serial_text",
+                "serial_override_level",
+                "serial_level"
+              ]
+            },
+            {
+              "id": "clear_serials",
+              "label": "Clear Serials",
+              "accent": "red"
+            }
+          ]
+        },
+        {
+          "id": "experience",
+          "label": "EXPERIENCE",
+          "accent": "cyan",
+          "fields": [
+            {
+              "id": "xp_track",
+              "label": "XP Track",
+              "type": "choice",
+              "choices": [
+                "player",
+                "specialization"
+              ],
+              "default": "player"
+            },
+            {
+              "id": "level",
+              "label": "Target Level",
+              "type": "int",
+              "default": 60
+            }
+          ],
+          "actions": [
+            {
+              "id": "set_level",
+              "label": "Set Player Level",
+              "accent": "cyan",
+              "uses_fields": [
+                "xp_track",
+                "level"
+              ]
+            },
+            {
+              "id": "max_player_level",
+              "label": "Max Player Level",
+              "accent": "cyan"
+            },
+            {
+              "id": "max_spec_level",
+              "label": "Set Spec 701",
+              "accent": "purple"
+            }
+          ]
+        },
+        {
+          "id": "currency",
+          "label": "CURRENCY",
+          "accent": "green",
+          "fields": [
+            {
+              "id": "currency_kind",
+              "label": "Currency Kind",
+              "type": "choice",
+              "choices": [
+                "cash",
+                "eridium"
+              ],
+              "default": "cash"
+            },
+            {
+              "id": "amount",
+              "label": "Currency Amount",
+              "type": "int",
+              "default": 1000000
+            }
+          ],
+          "actions": [
+            {
+              "id": "give_currency",
+              "label": "Give Currency",
+              "accent": "green",
+              "uses_fields": [
+                "currency_kind",
+                "amount"
+              ]
+            },
+            {
+              "id": "max_currency",
+              "label": "Max Currency",
+              "accent": "green"
+            },
+            {
+              "id": "max_eridium",
+              "label": "Max Eridium",
+              "accent": "purple"
+            },
+            {
+              "id": "max_all",
+              "label": "Max All",
+              "accent": "gold"
+            }
+          ]
+        },
+        {
+          "id": "backpack_bank",
+          "label": "BACKPACK / BANK SIZE",
+          "accent": "cyan",
+          "fields": [
+            {
+              "id": "backpack_size",
+              "label": "Backpack Size",
+              "type": "int",
+              "default": 999
+            },
+            {
+              "id": "bank_size",
+              "label": "Bank Size",
+              "type": "int",
+              "default": 1500
+            }
+          ],
+          "actions": [
+            {
+              "id": "set_backpack_bank_selected",
+              "label": "Set Backpack + Bank for Selected",
+              "accent": "cyan",
+              "uses_fields": [
+                "backpack_size",
+                "bank_size"
+              ]
+            },
+            {
+              "id": "set_backpack_bank_all",
+              "label": "Apply to All Party",
+              "accent": "purple",
+              "uses_fields": [
+                "backpack_size",
+                "bank_size"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "rarity_weights",
+          "label": "RARITY DROP WEIGHTS",
+          "accent": "purple",
+          "text": "Mirrors the BLImGui rarity controls. V3 exposes quick actions first; sliders will be copied in the next pass.",
+          "actions": [
+            {
+              "id": "rarity_apply",
+              "label": "Apply",
+              "accent": "purple"
+            },
+            {
+              "id": "rarity_reset",
+              "label": "Reset All",
+              "accent": "gold"
+            },
+            {
+              "id": "rarity_only_legendary",
+              "label": "Only Legendary",
+              "accent": "gold"
+            },
+            {
+              "id": "rarity_only_pearlescent",
+              "label": "Only Pearlescent",
+              "accent": "purple"
+            }
+          ]
+        },
+        {
+          "id": "cheats_debug",
+          "label": "CHEATS / DEBUG CAM",
+          "accent": "pink",
+          "actions": [
+            {
+              "id": "devperk_0",
+              "label": "Give Experience",
+              "accent": "cyan"
+            },
+            {
+              "id": "devperk_1",
+              "label": "Give 1 Million Cash",
+              "accent": "gold"
+            },
+            {
+              "id": "devperk_2",
+              "label": "Give 100k Eridium",
+              "accent": "purple"
+            },
+            {
+              "id": "devperk_3",
+              "label": "Kill All Enemies",
+              "accent": "red"
+            },
+            {
+              "id": "devperk_4",
+              "label": "All Customs + Hovers",
+              "accent": "pink"
+            },
+            {
+              "id": "devperk_5",
+              "label": "Infinite Ammo [OFF]",
+              "accent": "cyan"
+            },
+            {
+              "id": "open_bank",
+              "label": "Open Bank Anywhere",
+              "accent": "cyan"
+            },
+            {
+              "id": "toggle_debug_cam",
+              "label": "Toggle Debug Cam",
+              "accent": "gold"
+            },
+            {
+              "id": "teleport_debug_cam",
+              "label": "Teleport Pawn to Debug Cam",
+              "accent": "cyan"
+            }
+          ]
+        },
+        {
+          "id": "sdu_shinies",
+          "label": "SDU / GOLDEN CHEST / SHINIES",
+          "accent": "gold",
+          "actions": [
+            {
+              "id": "max_sdu",
+              "label": "Max SDU for Selected",
+              "accent": "cyan"
+            },
+            {
+              "id": "open_golden_chest",
+              "label": "Open Golden Chest",
+              "accent": "gold"
+            },
+            {
+              "id": "close_golden_chest",
+              "label": "Close Golden Chest",
+              "accent": "red"
+            },
+            {
+              "id": "drop_all_shinies",
+              "label": "Drop All Shinies",
+              "accent": "gold"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "serial_tools",
+      "label": "Serial Tools",
+      "cards": [
+        {
+          "id": "serial_convert",
+          "label": "SERIAL TOOLS",
+          "accent": "cyan",
+          "text": "Paste a @U serialized value or deserialized human-readable serial below. The converter returns both formats.",
+          "fields": [
+            {
+              "id": "serial_input",
+              "label": "Input",
+              "type": "multiline",
+              "default": ""
+            }
+          ],
+          "actions": [
+            {
+              "id": "serial_convert",
+              "label": "Convert",
+              "accent": "cyan",
+              "uses_fields": [
+                "serial_input"
+              ]
+            },
+            {
+              "id": "clear_serial_tools",
+              "label": "Clear",
+              "accent": "red"
+            },
+            {
+              "id": "serial_breakdown",
+              "label": "Copy Parts Breakdown",
+              "accent": "purple",
+              "uses_fields": [
+                "serial_input"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "serial_output",
+          "label": "OUTPUTS",
+          "accent": "purple",
+          "text": "Deserialized Output / Parts Breakdown / @U Serialized Output are returned in the external activity output and mirrored into the in-game Serial Tools state."
+        }
+      ]
+    },
+    {
+      "id": "serial_bookmarks",
+      "label": "Serial Bookmarks",
+      "cards": [
+        {
+          "id": "serial_bookmarks_main",
+          "label": "SERIAL BOOKMARKS",
+          "accent": "purple",
+          "text": "Browse saved serials, edit the active entry, then deliver checked items from the footer. Full bookmark list export is a V3 resource target.",
+          "fields": [
+            {
+              "id": "bookmark_search",
+              "label": "Search",
+              "type": "text",
+              "default": ""
+            },
+            {
+              "id": "bookmark_name",
+              "label": "Name",
+              "type": "text",
+              "default": "Default"
+            },
+            {
+              "id": "bookmark_group",
+              "label": "Group",
+              "type": "text",
+              "default": "Default"
+            },
+            {
+              "id": "bookmark_serial",
+              "label": "Serial",
+              "type": "multiline",
+              "default": ""
+            }
+          ],
+          "actions": [
+            {
+              "id": "serial_bookmark_new",
+              "label": "+ New Serial",
+              "accent": "cyan"
+            },
+            {
+              "id": "serial_bookmark_import",
+              "label": "Import",
+              "accent": "gold"
+            },
+            {
+              "id": "serial_bookmark_save",
+              "label": "Save",
+              "accent": "cyan"
+            },
+            {
+              "id": "serial_bookmark_duplicate",
+              "label": "Duplicate",
+              "accent": "purple"
+            },
+            {
+              "id": "serial_bookmark_delete",
+              "label": "Delete",
+              "accent": "red"
+            },
+            {
+              "id": "serial_bookmark_copy",
+              "label": "Copy",
+              "accent": "gold"
+            },
+            {
+              "id": "give_serial_selected",
+              "label": "Deliver Selected",
+              "accent": "purple",
+              "uses_fields": [
+                "bookmark_serial"
+              ]
+            },
+            {
+              "id": "give_serial_all",
+              "label": "Deliver All",
+              "accent": "gold",
+              "uses_fields": [
+                "bookmark_serial"
+              ]
+            },
+            {
+              "id": "give_serial_nonhost",
+              "label": "Deliver Non-Host",
+              "accent": "cyan",
+              "uses_fields": [
+                "bookmark_serial"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bl4_codes",
+      "label": "BL4 Codes",
+      "cards": [
+        {
+          "id": "bl4_codes_catalog",
+          "label": "BL4 CODES",
+          "accent": "gold",
+          "text": "Merged BL4 codes catalog. The external app can use the local Lootlemon/cache JSON without the game; delivery still goes through the bridge.",
+          "fields": [
+            {
+              "id": "code_entry",
+              "label": "Code / Item",
+              "type": "resource_choice",
+              "source": "lootlemon_codes",
+              "default": "",
+              "sets": {
+                "code_serial": "serial"
+              }
+            },
+            {
+              "id": "code_search",
+              "label": "Search",
+              "type": "text",
+              "default": ""
+            },
+            {
+              "id": "code_serial",
+              "label": "Serial",
+              "type": "multiline",
+              "default": ""
+            },
+            {
+              "id": "code_delivery_level",
+              "label": "Delivery Level",
+              "type": "int",
+              "default": 60
+            }
+          ],
+          "actions": [
+            {
+              "id": "codes_load_cache",
+              "label": "Load Cache",
+              "accent": "cyan"
+            },
+            {
+              "id": "codes_refresh_gzo",
+              "label": "Refresh GZO",
+              "accent": "gold"
+            },
+            {
+              "id": "codes_reload_lootlemon",
+              "label": "Reload Lootlemon Cache",
+              "accent": "gold"
+            },
+            {
+              "id": "codes_mattmab_validation",
+              "label": "Mattmab Validation",
+              "accent": "green"
+            },
+            {
+              "id": "codes_import_bookmarks",
+              "label": "Import Selected To Bookmarks",
+              "accent": "purple"
+            },
+            {
+              "id": "give_serial_selected",
+              "label": "Deliver Selected",
+              "accent": "purple",
+              "uses_fields": [
+                "code_serial",
+                "code_delivery_level"
+              ]
+            },
+            {
+              "id": "give_serial_all",
+              "label": "Deliver All",
+              "accent": "gold",
+              "uses_fields": [
+                "code_serial",
+                "code_delivery_level"
+              ]
+            },
+            {
+              "id": "give_serial_nonhost",
+              "label": "Deliver Non-Host",
+              "accent": "cyan",
+              "uses_fields": [
+                "code_serial",
+                "code_delivery_level"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "legit_builder",
+      "label": "Legit Builder",
+      "cards": [
+        {
+          "id": "legit_builder_main",
+          "label": "STRIPPED LEGIT BUILDER",
+          "accent": "cyan",
+          "text": "External resource-backed Legit Builder. Pick Type \u2192 Manufacturer \u2192 Root \u2192 Parts outside the game; only final build/give is sent through the SDK bridge.",
+          "fields": [
+            {
+              "id": "legit_unlock_modded",
+              "label": "Unlock rules for modded gear",
+              "type": "choice",
+              "choices": [
+                "false",
+                "true"
+              ],
+              "default": "false"
+            },
+            {
+              "id": "legit_type",
+              "label": "Type",
+              "type": "legit_type",
+              "default": "pistol"
+            },
+            {
+              "id": "legit_manufacturer",
+              "label": "Manufacturer",
+              "type": "legit_manufacturer",
+              "default": "Daedalus"
+            },
+            {
+              "id": "legit_root_serial",
+              "label": "Root Variant",
+              "type": "legit_root",
+              "default": ""
+            },
+            {
+              "id": "legit_part_select",
+              "label": "Available Part",
+              "type": "legit_part",
+              "default": ""
+            },
+            {
+              "id": "legit_selected_parts",
+              "label": "Selected Parts",
+              "type": "multiline",
+              "default": ""
+            }
+          ],
+          "actions": [
+            {
+              "id": "local_legit_add_part",
+              "label": "Add Selected Part",
+              "accent": "cyan"
+            },
+            {
+              "id": "legit_apply_max_passives",
+              "label": "Add All Max Passives",
+              "accent": "gold",
+              "uses_fields": [
+                "legit_root_serial",
+                "legit_selected_parts",
+                "legit_unlock_modded"
+              ]
+            },
+            {
+              "id": "legit_validate_build",
+              "label": "Validate / Build Active",
+              "accent": "cyan",
+              "uses_fields": [
+                "legit_root_serial",
+                "legit_selected_parts",
+                "legit_unlock_modded"
+              ]
+            },
+            {
+              "id": "legit_give_selected",
+              "label": "Give Active to Selected",
+              "accent": "gold",
+              "uses_fields": [
+                "legit_root_serial",
+                "legit_selected_parts",
+                "legit_unlock_modded"
+              ]
+            },
+            {
+              "id": "legit_give_all",
+              "label": "Give Active to All",
+              "accent": "purple",
+              "uses_fields": [
+                "legit_root_serial",
+                "legit_selected_parts",
+                "legit_unlock_modded"
+              ]
+            },
+            {
+              "id": "legit_clear_parts",
+              "label": "Clear Selected Parts",
+              "accent": "red"
+            }
+          ]
+        },
+        {
+          "id": "legit_slot_grid",
+          "label": "RESOURCE-BACKED PART PICKER",
+          "accent": "purple",
+          "text": "V4 loads legit_rules_flat.json and gzo_parts_map.json in the external app. The current picker is a root-wide part dropdown plus Selected Parts text; the next pass can split it into Matt's exact 3-column slot cards."
+        }
+      ]
+    },
+    {
+      "id": "validator",
+      "label": "Validator",
+      "cards": [
+        {
+          "id": "validator_basic",
+          "label": "VALIDATOR",
+          "accent": "cyan",
+          "text": "Validate one serial or a large pasted list. Validation can mostly run externally once the serial/rules code is moved into the app.",
+          "fields": [
+            {
+              "id": "validator_basic_input",
+              "label": "Basic validation input",
+              "type": "multiline",
+              "default": ""
+            },
+            {
+              "id": "validator_bulk_input",
+              "label": "Bulk validator input",
+              "type": "multiline",
+              "default": ""
+            }
+          ],
+          "actions": [
+            {
+              "id": "validator_basic",
+              "label": "Validate Basic",
+              "accent": "cyan"
+            },
+            {
+              "id": "validator_clear",
+              "label": "Clear Validator",
+              "accent": "red"
+            },
+            {
+              "id": "validator_bulk",
+              "label": "Validate Bulk",
+              "accent": "gold"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "item_pool_spawning",
+      "label": "Item Pool Spawning",
+      "cards": [
+        {
+          "id": "item_pool_main",
+          "label": "ITEM POOL SPAWNING",
+          "accent": "gold",
+          "text": "Filter item pools, then spawn the selected pool near the local player. Turrets, terminals, and cosmetics are intentionally excluded.",
+          "fields": [
+            {
+              "id": "itempool_name",
+              "label": "Selected Item Pool",
+              "type": "resource_choice",
+              "source": "item_pools",
+              "default": ""
+            },
+            {
+              "id": "itempool_search",
+              "label": "Search Item Pools",
+              "type": "text",
+              "default": ""
+            },
+            {
+              "id": "itempool_level",
+              "label": "Level",
+              "type": "int",
+              "default": 60
+            },
+            {
+              "id": "itempool_count",
+              "label": "Quantity",
+              "type": "int",
+              "default": 1
+            }
+          ],
+          "actions": [
+            {
+              "id": "spawn_itempool",
+              "label": "Spawn Selected Item Pool",
+              "accent": "gold",
+              "uses_fields": [
+                "itempool_name",
+                "itempool_count",
+                "itempool_level"
+              ]
+            },
+            {
+              "id": "toggle_itempool_favorite",
+              "label": "Favorite Selected",
+              "accent": "purple",
+              "uses_fields": [
+                "itempool_name"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "map_travel",
+      "label": "Map Travel",
+      "cards": [
+        {
+          "id": "map_travel_main",
+          "label": "MAP TRAVEL",
+          "accent": "pink",
+          "text": "Select a map first, then choose a travel station on that map. Travel commands are host-side server travel helpers.",
+          "fields": [
+            {
+              "id": "travel_map",
+              "label": "Selected Map",
+              "type": "resource_choice",
+              "source": "travel_maps",
+              "default": ""
+            },
+            {
+              "id": "travel_station",
+              "label": "Selected Station",
+              "type": "resource_choice",
+              "source": "travel_stations",
+              "default": ""
+            },
+            {
+              "id": "travel_map_search",
+              "label": "Search Maps",
+              "type": "text",
+              "default": ""
+            },
+            {
+              "id": "travel_station_search",
+              "label": "Search Travel Stations",
+              "type": "text",
+              "default": ""
+            }
+          ],
+          "actions": [
+            {
+              "id": "toggle_map_favorite",
+              "label": "Favorite Map",
+              "accent": "purple",
+              "uses_fields": [
+                "travel_map"
+              ]
+            },
+            {
+              "id": "travel_to_map",
+              "label": "Travel to Selected Map",
+              "accent": "cyan",
+              "uses_fields": [
+                "travel_map"
+              ]
+            },
+            {
+              "id": "toggle_station_favorite",
+              "label": "Favorite Station",
+              "accent": "purple",
+              "uses_fields": [
+                "travel_station"
+              ]
+            },
+            {
+              "id": "travel_to_station",
+              "label": "Travel to Selected Station",
+              "accent": "gold",
+              "uses_fields": [
+                "travel_station"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "player_movement",
+      "label": "Player Movement",
+      "cards": [
+        {
+          "id": "movement_presets",
+          "label": "PRESETS / SAVE / APPLY",
+          "accent": "green",
+          "text": "UI-only controls. Slider changes are debounced and apply after you stop dragging.",
+          "actions": [
+            {
+              "id": "movement_apply_all",
+              "label": "Apply Now",
+              "accent": "green"
+            },
+            {
+              "id": "movement_save_preset",
+              "label": "Save Preset",
+              "accent": "cyan"
+            },
+            {
+              "id": "movement_load_saved",
+              "label": "Load Saved",
+              "accent": "purple"
+            },
+            {
+              "id": "movement_reset_all",
+              "label": "Reset Defaults",
+              "accent": "gold"
+            },
+            {
+              "id": "movement_preset_fast",
+              "label": "Fast",
+              "accent": "purple"
+            },
+            {
+              "id": "movement_preset_veryfast",
+              "label": "Very Fast",
+              "accent": "purple"
+            },
+            {
+              "id": "movement_preset_moon",
+              "label": "Moon",
+              "accent": "purple"
+            },
+            {
+              "id": "movement_preset_wallwalk",
+              "label": "Wall Walk",
+              "accent": "green"
+            },
+            {
+              "id": "movement_preset_fastglide",
+              "label": "Fast Glide",
+              "accent": "cyan"
+            }
+          ]
+        },
+        {
+          "id": "movement_speed",
+          "label": "SPEED",
+          "accent": "cyan",
+          "fields": [
+            {
+              "id": "movement_speed_scale",
+              "label": "Speed Scale",
+              "type": "text",
+              "default": "1.00x"
+            },
+            {
+              "id": "movement_walk_speed",
+              "label": "Walk / Ground Speed",
+              "type": "int",
+              "default": 600
+            }
+          ],
+          "actions": [
+            {
+              "id": "movement_apply_all",
+              "label": "Apply Movement Settings",
+              "accent": "cyan"
+            }
+          ]
+        },
+        {
+          "id": "movement_jump",
+          "label": "JUMP / GRAVITY",
+          "accent": "purple",
+          "fields": [
+            {
+              "id": "movement_jump_height",
+              "label": "Master JumpGoal Height",
+              "type": "int",
+              "default": 198
+            },
+            {
+              "id": "movement_gravity_scale",
+              "label": "Gravity Scale",
+              "type": "text",
+              "default": "1.00"
+            }
+          ],
+          "actions": [
+            {
+              "id": "movement_toggle_no_target",
+              "label": "Toggle No Target",
+              "accent": "purple"
+            },
+            {
+              "id": "movement_toggle_noclip",
+              "label": "Toggle Noclip",
+              "accent": "gold"
+            }
+          ]
+        },
+        {
+          "id": "movement_utility",
+          "label": "WORLD / UTILITY",
+          "accent": "pink",
+          "actions": [
+            {
+              "id": "movement_set_time",
+              "label": "Set Time",
+              "accent": "gold"
+            },
+            {
+              "id": "movement_reset_time",
+              "label": "Reset Time",
+              "accent": "purple"
+            },
+            {
+              "id": "movement_delete_ground_items",
+              "label": "Delete Ground Items",
+              "accent": "red"
+            },
+            {
+              "id": "movement_zero_vault",
+              "label": "Zero Vault Cooldown",
+              "accent": "cyan"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "activity_log",
+      "label": "Activity Log",
+      "cards": [
+        {
+          "id": "activity_log_main",
+          "label": "ACTIVITY LOG",
+          "accent": "purple",
+          "actions": [
+            {
+              "id": "status",
+              "label": "Refresh Status",
+              "accent": "cyan"
+            },
+            {
+              "id": "clear_external_log",
+              "label": "Clear Log",
+              "accent": "red"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "resources": {
+    "lootlemon_codes": "/resource/lootlemon_codes",
+    "item_pools": "/resource/item_pools",
+    "travel_maps": "/resource/travel_maps",
+    "travel_stations": "/resource/travel_stations",
+    "gzo_parts_map": "/resource/gzo_parts_map",
+    "legit_rules": "/resource/legit_rules"
+  },
+  "resource_mode": "bundled_external"
+}

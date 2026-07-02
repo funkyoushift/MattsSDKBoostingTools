@@ -1,0 +1,11 @@
+[project]
+name = "MattsSDKBoostingTools"
+version = "1"
+authors = [{ name = "Matt" }]
+description = "Boosting-focused SDK mod with custom BLImGui panel."
+
+[tool.sdkmod]
+name = "MattsSDKBoostingTools"
+license = { name = "GPL3", url = "https://choosealicense.com/licenses/gpl-3.0/" }
+version = "1"
+coop_support = "Unknown"

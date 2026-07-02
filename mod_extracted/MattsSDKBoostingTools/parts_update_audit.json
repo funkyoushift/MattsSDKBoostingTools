@@ -1,0 +1,1454 @@
+{
+  "patchedAt": "2026-06-30",
+  "basis": "MattsSDKBoostingTools_C4SH_fixed.sdkmod + uploaded master-parts(4).json",
+  "masterGeneratedAt": "2026-06-09T18:57:09.645Z",
+  "masterStats": {
+    "totalParts": 6543,
+    "totalFamilies": 423,
+    "totalFamiliesInByFamily": 423,
+    "headerOnlyFamilies": 315,
+    "ncsInvFamilies": 450,
+    "ncsCustomizationSkins": 162,
+    "excludedFamilies": 28,
+    "byCategory": {
+      "camos": 164,
+      "elements": 61,
+      "guns": 2298,
+      "rarities": 163,
+      "classmods": 2772,
+      "shields": 216,
+      "all": 25,
+      "repkits": 185,
+      "heavies": 165,
+      "grenades": 197,
+      "enhancements": 292,
+      "gadgets": 5
+    },
+    "byItemType": {
+      "Armor Shield": 35,
+      "Assault Rifle": 548,
+      "Atlas": 4,
+      "Class Mod": 48,
+      "Classmod": 2772,
+      "CoV": 4,
+      "Daedalus": 4,
+      "default_repair_kit": 2,
+      "Element": 55,
+      "Energy Shield": 33,
+      "Enhancement": 57,
+      "Firmware": 43,
+      "Grenade": 197,
+      "Heavy Weapon": 165,
+      "Hyperion": 4,
+      "Jakobs": 4,
+      "Main Body": 5,
+      "Maliwan": 4,
+      "Order": 4,
+      "Ordnance": 6,
+      "Perk": 32,
+      "Pistol": 444,
+      "Repkit": 185,
+      "Resistance": 6,
+      "Ripper": 4,
+      "Secondary Rarity": 5,
+      "Shield": 88,
+      "Shotgun": 526,
+      "SMG": 369,
+      "Sniper": 411,
+      "Sniper Rifle": 21,
+      "Stats": 216,
+      "Tediore": 4,
+      "Torgue": 4,
+      "Vladof": 4,
+      "Weapon": 6,
+      "Weapon Skin": 164,
+      "Weapon_Brute_FaceLaser": 8,
+      "Weapon_DahlGrunt_CrashFlamer": 2,
+      "Weapon_DahlGrunt_LaserRifle": 2,
+      "Weapon_DahlGrunt_ShoulderLaserRifle": 2,
+      "Weapon_DahlGrunt_Sprayer": 2,
+      "Weapon_DahlMech_Chaingun": 2,
+      "Weapon_DahlMech_EMP": 2,
+      "Weapon_DahlMech_EnergyGun": 2,
+      "Weapon_DahlMech_FlameSpitter": 2,
+      "Weapon_DahlMech_FlameSpitterUnderbarrel": 2,
+      "Weapon_GunShip_MainGun": 2,
+      "Weapon_Meathead_Chaingun": 2,
+      "Weapon_Meathead_Flamethrower": 2,
+      "Weapon_Meathead_Rocket": 2,
+      "Weapon_MissionTurret_Chaingun": 2,
+      "Weapon_OrderDrone": 9,
+      "Weapon_RipperTurret_Flamethrower": 2,
+      "Weapon_Ripperturret_Rocket": 2,
+      "Weapon_Soldier_Sprayer": 3,
+      "Weapon_SpliceSpiderJumbo_RocketGun": 2,
+      "Weapon_Turret_Chaingun": 2,
+      "Weapon_Turret_DahlChaingun": 2,
+      "Weapon_UberHead": 2
+    }
+  },
+  "gzoPartsMap": {
+    "familiesBefore": 132,
+    "familiesAfter": 450,
+    "partsBefore": 6637,
+    "partsAfter": 6814,
+    "addedFamiliesCount": 318,
+    "addedPartsCount": 177
+  },
+  "addedFamiliesSample": [
+    {
+      "familyId": 0,
+      "label": "Customization Weapon Skin",
+      "partCount": 164
+    },
+    {
+      "familyId": 28,
+      "label": "Inv_EchoLogDefault",
+      "partCount": 0
+    },
+    {
+      "familyId": 29,
+      "label": "Inv_ContractItem_ThresherLiver",
+      "partCount": 0
+    },
+    {
+      "familyId": 30,
+      "label": "Inv_ContractItem_ThresherBrain",
+      "partCount": 0
+    },
+    {
+      "familyId": 31,
+      "label": "Inv_ContractItem_PowerTools",
+      "partCount": 0
+    },
+    {
+      "familyId": 32,
+      "label": "Inv_ContractItem_Ingot",
+      "partCount": 0
+    },
+    {
+      "familyId": 33,
+      "label": "Inv_ContractItem_FireRod",
+      "partCount": 0
+    },
+    {
+      "familyId": 34,
+      "label": "Inv_ContractItem_CyberCore",
+      "partCount": 0
+    },
+    {
+      "familyId": 35,
+      "label": "Inv_ContractItem_DroneParts",
+      "partCount": 5
+    },
+    {
+      "familyId": 36,
+      "label": "Inv_ContractItem_CatTail",
+      "partCount": 0
+    },
+    {
+      "familyId": 37,
+      "label": "Inv_ContractItem_CatHeart",
+      "partCount": 0
+    },
+    {
+      "familyId": 38,
+      "label": "Inv_ContractItem_Bottle",
+      "partCount": 0
+    },
+    {
+      "familyId": 39,
+      "label": "Inv_ContractItem_BeastHorn",
+      "partCount": 0
+    },
+    {
+      "familyId": 40,
+      "label": "Inv_ContractItem_BeastBone",
+      "partCount": 0
+    },
+    {
+      "familyId": 41,
+      "label": "Inv_ContractItem_BatWing",
+      "partCount": 0
+    },
+    {
+      "familyId": 42,
+      "label": "Inv_ContractItem_BatKidney",
+      "partCount": 0
+    },
+    {
+      "familyId": 43,
+      "label": "Inv_ContractItem_Tools",
+      "partCount": 0
+    },
+    {
+      "familyId": 44,
+      "label": "Inv_ContractItem_CreepBrain",
+      "partCount": 0
+    },
+    {
+      "familyId": 45,
+      "label": "Inv_ContractItem_SparkPlug",
+      "partCount": 0
+    },
+    {
+      "familyId": 46,
+      "label": "Inv_ContractItem_PangolinParts",
+      "partCount": 0
+    },
+    {
+      "familyId": 47,
+      "label": "Inv_ContractItem_CreepParts",
+      "partCount": 0
+    },
+    {
+      "familyId": 48,
+      "label": "Inv_ContractItem_BloodPack",
+      "partCount": 0
+    },
+    {
+      "familyId": 49,
+      "label": "Inv_ContractItem_Poster",
+      "partCount": 0
+    },
+    {
+      "familyId": 50,
+      "label": "Inv_ContractItem_base",
+      "partCount": 0
+    },
+    {
+      "familyId": 51,
+      "label": "InvDef_Booster",
+      "partCount": 0
+    },
+    {
+      "familyId": 52,
+      "label": "InvDef_DrillKey",
+      "partCount": 0
+    },
+    {
+      "familyId": 53,
+      "label": "InvDef_Pitchfork",
+      "partCount": 0
+    },
+    {
+      "familyId": 54,
+      "label": "InvDef_Scythe",
+      "partCount": 0
+    },
+    {
+      "familyId": 55,
+      "label": "InvDef_Shovel",
+      "partCount": 0
+    },
+    {
+      "familyId": 56,
+      "label": "InvDef_GardenSeeds",
+      "partCount": 0
+    },
+    {
+      "familyId": 57,
+      "label": "InvDef_OxygenCanister",
+      "partCount": 0
+    },
+    {
+      "familyId": 58,
+      "label": "InvDef_Key",
+      "partCount": 0
+    },
+    {
+      "familyId": 59,
+      "label": "InventoryDef_ElpisOxygenKit",
+      "partCount": 0
+    },
+    {
+      "familyId": 60,
+      "label": "InvDef_Package",
+      "partCount": 0
+    },
+    {
+      "familyId": 61,
+      "label": "InvDef_MissionTemp_Pickup",
+      "partCount": 0
+    },
+    {
+      "familyId": 62,
+      "label": "InvDef_AccessCard",
+      "partCount": 0
+    },
+    {
+      "familyId": 63,
+      "label": "InvDef_DroneBrain",
+      "partCount": 0
+    },
+    {
+      "familyId": 64,
+      "label": "InvDef_Crawler_VehiclePart_SHA_4",
+      "partCount": 0
+    },
+    {
+      "familyId": 65,
+      "label": "InvDef_Crawler_VehiclePart_SHA_3",
+      "partCount": 0
+    },
+    {
+      "familyId": 66,
+      "label": "InvDef_Crawler_VehiclePart_SHA_2",
+      "partCount": 0
+    },
+    {
+      "familyId": 67,
+      "label": "InvDef_Crawler_VehiclePart_SHA_1",
+      "partCount": 0
+    },
+    {
+      "familyId": 68,
+      "label": "InvDef_Crawler_VehiclePart_GRA_4",
+      "partCount": 0
+    },
+    {
+      "familyId": 69,
+      "label": "InvDef_Crawler_VehiclePart_GRA_3",
+      "partCount": 0
+    },
+    {
+      "familyId": 70,
+      "label": "InvDef_Crawler_VehiclePart_MT_4",
+      "partCount": 0
+    },
+    {
+      "familyId": 71,
+      "label": "InvDef_Crawler_VehiclePart_MT_2",
+      "partCount": 0
+    },
+    {
+      "familyId": 72,
+      "label": "InvDef_Crawler_VehiclePart_MT_3",
+      "partCount": 0
+    },
+    {
+      "familyId": 73,
+      "label": "InvDef_Crawler_VehiclePart_MT_1",
+      "partCount": 0
+    },
+    {
+      "familyId": 74,
+      "label": "InvDef_Crawler_VehiclePart_GRA_2",
+      "partCount": 0
+    },
+    {
+      "familyId": 75,
+      "label": "InvDef_Crawler_VehiclePart_GRA_1",
+      "partCount": 0
+    },
+    {
+      "familyId": 76,
+      "label": "InvDef_Crawler_VehiclePart_Parent",
+      "partCount": 0
+    }
+  ],
+  "addedParts": [
+    {
+      "familyId": 0,
+      "partId": 1,
+      "label": "Shiny Goldengod",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 2,
+      "label": "Shiny Goremaster",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 3,
+      "label": "Shiny Hellfire",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 4,
+      "label": "Shiny Prince",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 5,
+      "label": "Shiny Stray",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 6,
+      "label": "Shiny Vamoose",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 7,
+      "label": "Shiny Lumberjack",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 8,
+      "label": "Shiny Om",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 9,
+      "label": "Shiny Star Helix",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10,
+      "label": "Shiny Rangefinder",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 11,
+      "label": "Shiny Zipgun",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 12,
+      "label": "Shiny Bod",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 13,
+      "label": "Shiny Heartgun",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 14,
+      "label": "Shiny Bloodstarved",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 15,
+      "label": "Shiny Crowdsourced",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 16,
+      "label": "Shiny Loarmaster",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 17,
+      "label": "Shiny Luty",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 18,
+      "label": "Shiny Bonnieclyde",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 19,
+      "label": "Shiny Rowan",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 20,
+      "label": "Shiny Convergence",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 21,
+      "label": "Shiny Kingsgambit",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 22,
+      "label": "Shiny Phantom Flame",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 23,
+      "label": "Shiny Quickdraw",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 24,
+      "label": "Shiny Seventh Sense",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 25,
+      "label": "Shiny Hellwalker",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 26,
+      "label": "Shiny Rainbowvomit",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 27,
+      "label": "Shiny Slugger",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 28,
+      "label": "Shiny Tkswave",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 29,
+      "label": "Shiny Ballista",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 30,
+      "label": "Shiny Boomslang",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 31,
+      "label": "Shiny Truck",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 32,
+      "label": "Shiny Kaleidosplode",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 33,
+      "label": "Shiny Kickballer",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 34,
+      "label": "Shiny Sweet Embrace",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 35,
+      "label": "Shiny Commbd",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 36,
+      "label": "Shiny Ohmigot",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 37,
+      "label": "Shiny Plasmacoil",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 38,
+      "label": "Shiny Asher",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 39,
+      "label": "Shiny Complex Root",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 40,
+      "label": "Shiny Katagawa",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 41,
+      "label": "Shiny Gmr",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 42,
+      "label": "Shiny Goalkeeper",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 43,
+      "label": "Shiny Bully",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 44,
+      "label": "Shiny Noisycricket",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 45,
+      "label": "Shiny Rocketreload",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 46,
+      "label": "Shiny Fisheye",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 47,
+      "label": "Shiny Symmetry",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 48,
+      "label": "Shiny Chuck",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 49,
+      "label": "Shiny Dividedfocus",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 50,
+      "label": "Shiny Atlien",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 51,
+      "label": "Shiny Rubysgrasp",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 52,
+      "label": "Shiny Sideshow",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 53,
+      "label": "Shiny Anarchy",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 54,
+      "label": "Shiny Heavyturret",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 55,
+      "label": "Shiny Bugbear",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 56,
+      "label": "Shiny Coldshoulder",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 57,
+      "label": "Shiny Potatothrower",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 58,
+      "label": "Shiny Queensrest",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 59,
+      "label": "Shiny Roach",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 60,
+      "label": "Shiny Leadballoon",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 61,
+      "label": "Shiny Linebacker",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 62,
+      "label": "Shiny Dualdamage",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 63,
+      "label": "Shiny Lucian",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 64,
+      "label": "Shiny Wf",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 65,
+      "label": "Shiny Wombocombo",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 66,
+      "label": "Shiny Beegun",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 67,
+      "label": "Shiny Kaoson",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 68,
+      "label": "Shiny Onslaught",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 69,
+      "label": "Shiny Finnty",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 70,
+      "label": "Shiny Stopgap",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 71,
+      "label": "Ratatataclysm",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 72,
+      "label": "Sugar Coated",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 73,
+      "label": "Firehawk's Fury",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 74,
+      "label": "Hazard Pay",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 75,
+      "label": "Broken Order",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 76,
+      "label": "Gearbox\u00ae Gear",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 77,
+      "label": "Smiley",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 78,
+      "label": "Weirdo",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 79,
+      "label": "Eternal Defender",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 80,
+      "label": "Splash Damage",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 81,
+      "label": "Bird of Prey",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 82,
+      "label": "Soused",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 83,
+      "label": "Self Excision",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 84,
+      "label": "Highrise",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 85,
+      "label": "Wellspring-Loaded",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 86,
+      "label": "Devourer",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 87,
+      "label": "The System",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 88,
+      "label": "Future Proof",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 89,
+      "label": "Frenzy Forever",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 90,
+      "label": "Afterparty",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 91,
+      "label": "Halt",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 92,
+      "label": "Meltdown",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 93,
+      "label": "High Impact",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 94,
+      "label": "With the Grain",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 95,
+      "label": "Bestia Rossa",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 96,
+      "label": "Pixel Perfect",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 97,
+      "label": "Chain of Command",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 98,
+      "label": "Gloss",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 99,
+      "label": "Awoooooo!",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 100,
+      "label": "Sprinked",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 101,
+      "label": "Prison Buddy",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 102,
+      "label": "Never Say DIY",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 103,
+      "label": "Game Bot",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 104,
+      "label": "Itty Bitty Kitty Committee",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 105,
+      "label": "Carcade Shooter",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 106,
+      "label": "Fran's Frogurt",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 107,
+      "label": "Drawn This Way",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 108,
+      "label": "Coast to Coast",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 109,
+      "label": "The Gun is Lava",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 110,
+      "label": "Solar Flair",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 111,
+      "label": "customization-skin",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 112,
+      "label": "customization-skin",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10001,
+      "label": "Shiny Falke",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10002,
+      "label": "Shiny Fearstalker",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10003,
+      "label": "Shiny Flashcyclone",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10004,
+      "label": "Shiny Follower",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10005,
+      "label": "Shiny Hemorrhage",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10006,
+      "label": "Shiny Lasercutter",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10007,
+      "label": "Shiny Reminisce",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10008,
+      "label": "Shiny Scootshoot",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10009,
+      "label": "Shiny Soulsurvivor",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10010,
+      "label": "Shiny Sunspot",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10011,
+      "label": "Shiny Unstable",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10012,
+      "label": "Hex Appeal",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10013,
+      "label": "Silent Fight",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10014,
+      "label": "It's The Thought That Counts",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10015,
+      "label": "Baby You're Cold Inside",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10016,
+      "label": "So Much More Than A Bag",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10017,
+      "label": "Eat Me",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10018,
+      "label": "Congratulations!",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10019,
+      "label": "Gear?!",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10020,
+      "label": "Volt Hunter",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10021,
+      "label": "Beast Mode",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10022,
+      "label": "Kaiju Killa",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10023,
+      "label": "Hand that Feeds",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10024,
+      "label": "Discontent",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10025,
+      "label": "Shoot What Thou Wilt",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10026,
+      "label": "Stock and Stone",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10027,
+      "label": "Shiny Arctic",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10028,
+      "label": "Shiny Breadth",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10029,
+      "label": "Shiny Bubbles",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10030,
+      "label": "Shiny Crazedearl",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10031,
+      "label": "Shiny Demo",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10032,
+      "label": "Shiny Doeshot",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10033,
+      "label": "Shiny Fleabag",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10034,
+      "label": "Shiny Inscriber",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10035,
+      "label": "Shiny Jailbroken",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10036,
+      "label": "Shiny Laserdisc",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10037,
+      "label": "Shiny Lockjaw",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10038,
+      "label": "Shiny Locust",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10039,
+      "label": "Shiny Mantra",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10040,
+      "label": "Shiny Mercredi",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10041,
+      "label": "Shiny Mercury",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10042,
+      "label": "Shiny Misslaser",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10043,
+      "label": "Shiny Murder",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10044,
+      "label": "Shiny Rainmaker",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10045,
+      "label": "Shiny Roil",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10046,
+      "label": "Shiny Roulette",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10047,
+      "label": "Shiny Rowdy",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10048,
+      "label": "Shiny Seamstress",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10049,
+      "label": "Shiny Shalashaska",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10050,
+      "label": "Shiny Shammy",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10051,
+      "label": "Shiny Songbird",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 0,
+      "partId": 10052,
+      "label": "Shiny Tankbuster",
+      "family": "Customization Weapon Skin"
+    },
+    {
+      "familyId": 20,
+      "partId": 59,
+      "label": "part_rarity",
+      "family": "Daedalus SMG"
+    },
+    {
+      "familyId": 35,
+      "partId": 6,
+      "label": "part_rarity",
+      "family": "Inv_ContractItem_DroneParts"
+    },
+    {
+      "familyId": 35,
+      "partId": 7,
+      "label": "part_rarity",
+      "family": "Inv_ContractItem_DroneParts"
+    },
+    {
+      "familyId": 35,
+      "partId": 8,
+      "label": "part_rarity",
+      "family": "Inv_ContractItem_DroneParts"
+    },
+    {
+      "familyId": 35,
+      "partId": 9,
+      "label": "part_rarity",
+      "family": "Inv_ContractItem_DroneParts"
+    },
+    {
+      "familyId": 35,
+      "partId": 11,
+      "label": "part_rarity",
+      "family": "Inv_ContractItem_DroneParts"
+    },
+    {
+      "familyId": 266,
+      "partId": 115,
+      "label": "part_aug_unique_geigerroid_shock_sec",
+      "family": "Maliwan Repkit"
+    },
+    {
+      "familyId": 266,
+      "partId": 116,
+      "label": "part_aug_unique_geigerroid_radiation_sec",
+      "family": "Maliwan Repkit"
+    },
+    {
+      "familyId": 266,
+      "partId": 117,
+      "label": "part_aug_unique_geigerroid_fire_sec",
+      "family": "Maliwan Repkit"
+    },
+    {
+      "familyId": 266,
+      "partId": 118,
+      "label": "part_aug_unique_geigerroid_cryo_sec",
+      "family": "Maliwan Repkit"
+    },
+    {
+      "familyId": 266,
+      "partId": 119,
+      "label": "part_aug_unique_geigerroid_corrosive_sec",
+      "family": "Maliwan Repkit"
+    },
+    {
+      "familyId": 491,
+      "partId": 1,
+      "label": "part_body_uberhead",
+      "family": "Weapon_UberHead"
+    },
+    {
+      "familyId": 491,
+      "partId": 2,
+      "label": "comp_uberhead",
+      "family": "Weapon_UberHead"
+    }
+  ],
+  "legitRulesFlat": {
+    "patchedRuleParts": [
+      {
+        "familyId": 266,
+        "partId": 115,
+        "key": "part_aug_unique_geigerroid_shock_sec",
+        "slot": "secondary_augment"
+      },
+      {
+        "familyId": 266,
+        "partId": 116,
+        "key": "part_aug_unique_geigerroid_radiation_sec",
+        "slot": "secondary_augment"
+      },
+      {
+        "familyId": 266,
+        "partId": 117,
+        "key": "part_aug_unique_geigerroid_fire_sec",
+        "slot": "secondary_augment"
+      },
+      {
+        "familyId": 266,
+        "partId": 118,
+        "key": "part_aug_unique_geigerroid_cryo_sec",
+        "slot": "secondary_augment"
+      },
+      {
+        "familyId": 266,
+        "partId": 119,
+        "key": "part_aug_unique_geigerroid_corrosive_sec",
+        "slot": "secondary_augment"
+      }
+    ],
+    "note": "Added the missing Maliwan Geiger-Roid secondary augment parts referenced by comp_05_legendary_geigerroid so dropdowns have selectable rows."
+  },
+  "remainingMissingAgainstMaster": [],
+  "notes": [
+    "Existing gzo_parts_map labels were preserved; only missing families/part IDs were added from master-parts.",
+    "C4SH class mod root 404 remains exposed in _BUILDABLE_ROOTS as C4SH Class Mod."
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "patch": "external bridge v2",
+  "changes": [
+    "expanded shared external UI layout",
+    "added external action handlers for serial tools, active legit builder, item pools, travel, and movement utilities",
+    "kept original BLImGui fallback"
+  ],
+  "port": 49774
+}

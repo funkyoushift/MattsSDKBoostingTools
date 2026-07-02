@@ -1,0 +1,5420 @@
+{
+  "added_from_gzo_count": 57,
+  "added_from_gzo": [
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 7,
+      "part": "part_barrel_01",
+      "table": "barrel"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 8,
+      "part": "part_barrel_02",
+      "table": "barrel"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 9,
+      "part": "part_barrel_licensed_ted_shooting",
+      "table": "barrel_licensed"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 10,
+      "part": "part_barrel_licensed_ted_mirv",
+      "table": "barrel_licensed"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 11,
+      "part": "part_barrel_licensed_ted_combo",
+      "table": "barrel_licensed"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 12,
+      "part": "part_barrel_licensed_ted_replicator",
+      "table": "barrel_licensed"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 14,
+      "part": "part_multi_ted_shooting",
+      "table": "unknown"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 15,
+      "part": "part_multi_ted_mirv",
+      "table": "unknown"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 16,
+      "part": "part_multi_ted_combo",
+      "table": "unknown"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 17,
+      "part": "part_multi_ted_replicator",
+      "table": "unknown"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 18,
+      "part": "part_shield_default",
+      "table": "unknown"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 19,
+      "part": "part_shield_ricochet",
+      "table": "unknown"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 20,
+      "part": "part_shield_ammo",
+      "table": "unknown"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 21,
+      "part": "part_shield_amp",
+      "table": "unknown"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 22,
+      "part": "part_mag_01",
+      "table": "unknown"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 23,
+      "part": "part_mag_02",
+      "table": "unknown"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 24,
+      "part": "part_mag_03_tor",
+      "table": "unknown"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 25,
+      "part": "part_mag_04_cov",
+      "table": "unknown"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 26,
+      "part": "part_mag_05_borg",
+      "table": "unknown"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 27,
+      "part": "part_mag_torgue_normal",
+      "table": "unknown"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 28,
+      "part": "part_mag_torgue_sticky",
+      "table": "unknown"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 42,
+      "part": "part_grip_05c_ted_jav",
+      "table": "grip"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 43,
+      "part": "part_grip_05b_ted_homing",
+      "table": "grip"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 44,
+      "part": "part_grip_05a_ted_legs",
+      "table": "grip"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 45,
+      "part": "part_grip_04_hyp",
+      "table": "grip"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 46,
+      "part": "part_grip_01",
+      "table": "grip"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 47,
+      "part": "part_grip_02",
+      "table": "grip"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 48,
+      "part": "part_grip_03",
+      "table": "grip"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 49,
+      "part": "part_underbarrel_05_ammoswitcher",
+      "table": "underbarrel"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 50,
+      "part": "part_underbarrel_03_shotgun",
+      "table": "underbarrel"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 51,
+      "part": "part_underbarrel_06_malswitch",
+      "table": "underbarrel"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 52,
+      "part": "part_underbarrel_04_atlas_ball",
+      "table": "underbarrel"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 53,
+      "part": "part_foregrip_01",
+      "table": "foregrip"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 54,
+      "part": "part_foregrip_03",
+      "table": "foregrip"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 55,
+      "part": "part_barrel_licensed_ted_replicator_multi",
+      "table": "barrel_licensed"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 61,
+      "part": "part_secondary_ammo_sm",
+      "table": "secondary_ammo"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 62,
+      "part": "part_secondary_ammo_sg",
+      "table": "secondary_ammo"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 63,
+      "part": "part_secondary_ammo_ar",
+      "table": "secondary_ammo"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 64,
+      "part": "part_secondary_ammo_sr",
+      "table": "secondary_ammo"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 68,
+      "part": "part_barrel_01_a",
+      "table": "barrel"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 69,
+      "part": "part_barrel_01_b",
+      "table": "barrel"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 70,
+      "part": "part_barrel_01_c",
+      "table": "barrel"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 71,
+      "part": "part_barrel_01_d",
+      "table": "barrel"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 72,
+      "part": "part_barrel_02_a",
+      "table": "barrel"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 73,
+      "part": "part_barrel_02_b",
+      "table": "barrel"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 74,
+      "part": "part_barrel_02_c",
+      "table": "barrel"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 75,
+      "part": "part_barrel_02_d",
+      "table": "barrel"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 76,
+      "part": "part_barrel_licensed_jak",
+      "table": "barrel_licensed"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 77,
+      "part": "part_barrel_licensed_hyp",
+      "table": "barrel_licensed"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 78,
+      "part": "part_barrel_licensed_multi",
+      "table": "barrel_licensed"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 79,
+      "part": "part_underbarrel_02_rockets",
+      "table": "underbarrel"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 80,
+      "part": "part_underbarrel_01_drone",
+      "table": "underbarrel"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 81,
+      "part": "part_underbarrel_04_atlas",
+      "table": "underbarrel"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 82,
+      "part": "part_foregrip_02",
+      "table": "foregrip"
+    },
+    {
+      "root_key": "ted_ps",
+      "root_serial": 5,
+      "root_inv": "TED_PS",
+      "serial": 83,
+      "part": "part_grip_05a_ted_legs_mirv",
+      "table": "grip"
+    },
+    {
+      "root_key": "weapon_soldier_sprayer",
+      "root_serial": 381,
+      "root_inv": "Weapon_Soldier_Sprayer",
+      "serial": 3,
+      "part": "Comp_Soldier_Sprayer_0",
+      "table": "inv_comp"
+    },
+    {
+      "root_key": "weapon_orderdrone",
+      "root_serial": 389,
+      "root_inv": "Weapon_OrderDrone",
+      "serial": 8,
+      "part": "comp_camera",
+      "table": "inv_comp"
+    }
+  ],
+  "roots": [
+    {
+      "key": "weapon",
+      "serial": 1,
+      "inv": "Weapon",
+      "parts": 61,
+      "comps": 6,
+      "comp_keys": [
+        "base_comp_02_uncommon",
+        "base_comp_03_rare",
+        "base_comp_04_epic",
+        "base_comp_05_legendary",
+        "base_comp_01_common",
+        "base_comp_06_pearlescent"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "dad_ps",
+      "serial": 2,
+      "inv": "DAD_PS",
+      "parts": 86,
+      "comps": 9,
+      "comp_keys": [
+        "comp_05_legendary_zipgun",
+        "comp_first_gun",
+        "comp_05_legendary",
+        "comp_05_legendary_rangefinder",
+        "comp_05_legendary_soulsurvivor",
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "jak_ps",
+      "serial": 3,
+      "inv": "JAK_PS",
+      "parts": 87,
+      "comps": 13,
+      "comp_keys": [
+        "comp_moxxi_weapon",
+        "comp_zane_weapon",
+        "comp_cine_weapon",
+        "comp_05_legendary",
+        "comp_05_legendary_kingsgambit",
+        "comp_05_legendary_phantom_flame",
+        "comp_05_legendary_quickdraw",
+        "comp_05_legendary_seventh_sense",
+        "comp_05_legendary_shalashaska",
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "ord_ps",
+      "serial": 4,
+      "inv": "ORD_PS",
+      "parts": 89,
+      "comps": 12,
+      "comp_keys": [
+        "comp_05_legendary_rocketreload",
+        "comp_tkhuman_weapon",
+        "comp_zadra_weapon",
+        "comp_05_legendary_bully",
+        "comp_05_legendary",
+        "comp_05_legendary_noisycricket",
+        "comp_05_legendary_sunspot",
+        "comp_05_legendary_roulette",
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "ted_ps",
+      "serial": 5,
+      "inv": "TED_PS",
+      "parts": 92,
+      "comps": 10,
+      "comp_keys": [
+        "comp_05_legendary_sideshow",
+        "comp_05_legendary",
+        "comp_05_legendary_atlien",
+        "comp_05_legendary_rubysgrasp",
+        "comp_05_legendary_inscriber",
+        "comp_05_legendary_shammy",
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic"
+      ],
+      "gzo_fallback_added": 55
+    },
+    {
+      "key": "tor_ps",
+      "serial": 6,
+      "inv": "TOR_PS",
+      "parts": 90,
+      "comps": 11,
+      "comp_keys": [
+        "comp_05_legendary_roach",
+        "comp_05_legendary_queensrest",
+        "comp_05_legendary",
+        "comp_05_legendary_scootshoot",
+        "comp_05_legendary_breadth",
+        "comp_05_legendary_handcannon",
+        "comp_06_pearl_herald",
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "bor_sg",
+      "serial": 7,
+      "inv": "BOR_SG",
+      "parts": 87,
+      "comps": 10,
+      "comp_keys": [
+        "comp_05_legendary_goldengod",
+        "comp_05_legendary_goremaster",
+        "comp_05_legendary_crazedearl",
+        "comp_05_legendary_demo",
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary",
+        "comp_05_legendary_convergence"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "dad_sg",
+      "serial": 8,
+      "inv": "DAD_SG",
+      "parts": 82,
+      "comps": 8,
+      "comp_keys": [
+        "comp_05_legendary",
+        "comp_05_legendary_bod",
+        "comp_05_legendary_heartgun",
+        "comp_05_legendary_misslaser",
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "jak_sg",
+      "serial": 9,
+      "inv": "JAK_SG",
+      "parts": 102,
+      "comps": 11,
+      "comp_keys": [
+        "comp_05_legendary_slugger",
+        "comp_05_legendary",
+        "comp_05_legendary_hellwalker",
+        "comp_05_legendary_rainbowvomit",
+        "comp_05_legendary_tkswave",
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary_doeshot",
+        "comp_06_pearl_constable"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "mal_sg",
+      "serial": 10,
+      "inv": "MAL_SG",
+      "parts": 86,
+      "comps": 10,
+      "comp_keys": [
+        "comp_05_legendary_kaleidosplode",
+        "comp_05_legendary_sweet_embrace",
+        "comp_05_legendary_reminisce",
+        "comp_05_legendary_mantra",
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary",
+        "comp_05_legendary_kickballer"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "ted_sg",
+      "serial": 11,
+      "inv": "TED_SG",
+      "parts": 86,
+      "comps": 9,
+      "comp_keys": [
+        "comp_05_legendary",
+        "comp_05_legendary_anarchy",
+        "comp_05_legendary_commbd",
+        "comp_05_legendary_heavyturret",
+        "comp_05_legendary_eigenburst",
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "tor_sg",
+      "serial": 12,
+      "inv": "TOR_SG",
+      "parts": 83,
+      "comps": 9,
+      "comp_keys": [
+        "comp_05_legendary_linebacker",
+        "comp_05_legendary",
+        "comp_05_legendary_leadballoon",
+        "comp_05_legendary_unstable_kor",
+        "comp_05_legendary_arctic",
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "dad_ar",
+      "serial": 13,
+      "inv": "DAD_AR",
+      "parts": 93,
+      "comps": 12,
+      "comp_keys": [
+        "comp_gnpc_weapon",
+        "comp_05_legendary_lumberjack",
+        "comp_05_legendary_star_helix",
+        "comp_ds_as_phaseshard_specter_weapon",
+        "comp_05_legendary_mercredi",
+        "comp_05_legendary_firstimpression",
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary",
+        "comp_05_legendary_om"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "ted_ar",
+      "serial": 14,
+      "inv": "TED_AR",
+      "parts": 90,
+      "comps": 10,
+      "comp_keys": [
+        "comp_05_legendary_chuck",
+        "comp_05_legendary_dividedfocus",
+        "comp_05_legendary",
+        "comp_nudge_weapon",
+        "comp_05_legendary_murder",
+        "comp_05_legendary_laserdisc",
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "ord_ar",
+      "serial": 15,
+      "inv": "ORD_AR",
+      "parts": 82,
+      "comps": 8,
+      "comp_keys": [
+        "comp_05_legendary",
+        "comp_05_legendary_gmr",
+        "comp_05_legendary_goalkeeper",
+        "comp_05_legendary_crowsourced",
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "vla_sr",
+      "serial": 16,
+      "inv": "VLA_SR",
+      "parts": 92,
+      "comps": 9,
+      "comp_keys": [
+        "comp_05_legendary_finnty",
+        "comp_05_legendary_stopgap",
+        "comp_05_legendary_crowdsourced",
+        "comp_05_legendary",
+        "comp_05_legendary_hemorrhage",
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "tor_ar",
+      "serial": 17,
+      "inv": "TOR_AR",
+      "parts": 89,
+      "comps": 11,
+      "comp_keys": [
+        "comp_05_legendary_bugbear",
+        "comp_05_legendary",
+        "comp_brenda_weapon",
+        "comp_05_legendary_coldshoulder",
+        "comp_05_legendary_potatothrower",
+        "comp_05_legendary_fleabag",
+        "comp_05_legendary_lockjaw",
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "vla_ar",
+      "serial": 18,
+      "inv": "VLA_AR",
+      "parts": 103,
+      "comps": 11,
+      "comp_keys": [
+        "comp_05_legendary_lucian",
+        "comp_05_legendary_wombocombo",
+        "comp_05_legendary",
+        "comp_05_legendary_dualdamage",
+        "comp_05_legendary_wf",
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary_bubbles",
+        "comp_05_legendary_lasercutter"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "bor_sm",
+      "serial": 19,
+      "inv": "BOR_SM",
+      "parts": 85,
+      "comps": 10,
+      "comp_keys": [
+        "comp_05_legendary_prince",
+        "comp_05_legendary",
+        "comp_05_legendary_hellfire",
+        "comp_05_legendary_roil",
+        "comp_05_legendary_falke",
+        "comp_05_legendary_jailbroken",
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "dad_sm",
+      "serial": 20,
+      "inv": "DAD_SM",
+      "parts": 89,
+      "comps": 10,
+      "comp_keys": [
+        "comp_05_legendary_follower",
+        "comp_05_legendary",
+        "comp_05_legendary_bloodstarved",
+        "comp_05_legendary_luty",
+        "comp_05_legendary_loarmaster",
+        "comp_06_pearl_screwed",
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "mal_sm",
+      "serial": 21,
+      "inv": "MAL_SM",
+      "parts": 93,
+      "comps": 12,
+      "comp_keys": [
+        "comp_05_legendary",
+        "comp_01_common",
+        "comp_05_legendary_ohmigot",
+        "comp_05_legendary_plasmacoil",
+        "comp_amara_weapon",
+        "comp_05_legendary_songbird",
+        "comp_05_legendary_firework",
+        "comp_05_legendary_flashcyclone",
+        "comp_06_pearl_juliet",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "vla_sm",
+      "serial": 22,
+      "inv": "VLA_SM",
+      "parts": 101,
+      "comps": 10,
+      "comp_keys": [
+        "comp_05_legendary_onslaught",
+        "comp_05_legendary",
+        "comp_05_legendary_kaoson",
+        "comp_05_legendary_beegun",
+        "comp_05_legendary_mercury",
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_06_pearl_locust"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "bor_sr",
+      "serial": 23,
+      "inv": "bor_sr",
+      "parts": 85,
+      "comps": 10,
+      "comp_keys": [
+        "comp_05_legendary_vamoose",
+        "comp_05_legendary",
+        "comp_05_legendary_stray",
+        "comp_05_legendary_tankbuster",
+        "comp_05_legendary_rainmaker",
+        "comp_05_legendary_abyss",
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "jak_sr",
+      "serial": 24,
+      "inv": "JAK_SR",
+      "parts": 84,
+      "comps": 9,
+      "comp_keys": [
+        "comp_05_legendary_boomslang",
+        "comp_05_legendary",
+        "comp_05_legendary_ballista",
+        "comp_05_legendary_truck",
+        "comp_05_legendary_fearstalker",
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "mal_sr",
+      "serial": 25,
+      "inv": "MAL_SR",
+      "parts": 86,
+      "comps": 9,
+      "comp_keys": [
+        "comp_05_legendary",
+        "comp_05_legendary_complex_root",
+        "comp_05_legendary_katagawa",
+        "comp_05_legendary_asher",
+        "comp_05_legendary_conflux",
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "ord_sr",
+      "serial": 26,
+      "inv": "ORD_SR",
+      "parts": 85,
+      "comps": 9,
+      "comp_keys": [
+        "comp_05_legendary_fisheye",
+        "comp_05_legendary",
+        "comp_05_legendary_symmetry",
+        "comp_05_legendary_seamstress",
+        "comp_05_legendary_temper",
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "jak_ar",
+      "serial": 27,
+      "inv": "JAK_AR",
+      "parts": 86,
+      "comps": 11,
+      "comp_keys": [
+        "comp_05_legendary_bonnieclyde",
+        "comp_zane_weapon",
+        "comp_05_legendary",
+        "comp_05_legendary_rowan",
+        "comp_05_legendary_screenwriter",
+        "comp_05_legendary_rowdy",
+        "comp_05_legendary_gomie",
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "inv_echologdefault",
+      "serial": 28,
+      "inv": "Inv_EchoLogDefault",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "inv_contractitem_thresherliver",
+      "serial": 29,
+      "inv": "Inv_ContractItem_ThresherLiver",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "inv_contractitem_thresherbrain",
+      "serial": 30,
+      "inv": "Inv_ContractItem_ThresherBrain",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "inv_contractitem_powertools",
+      "serial": 31,
+      "inv": "Inv_ContractItem_PowerTools",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "inv_contractitem_ingot",
+      "serial": 32,
+      "inv": "Inv_ContractItem_Ingot",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "inv_contractitem_firerod",
+      "serial": 33,
+      "inv": "Inv_ContractItem_FireRod",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "inv_contractitem_cybercore",
+      "serial": 34,
+      "inv": "Inv_ContractItem_CyberCore",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "inv_contractitem_droneparts",
+      "serial": 35,
+      "inv": "Inv_ContractItem_DroneParts",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "inv_contractitem_cattail",
+      "serial": 36,
+      "inv": "Inv_ContractItem_CatTail",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "inv_contractitem_catheart",
+      "serial": 37,
+      "inv": "Inv_ContractItem_CatHeart",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "inv_contractitem_bottle",
+      "serial": 38,
+      "inv": "Inv_ContractItem_Bottle",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "inv_contractitem_beasthorn",
+      "serial": 39,
+      "inv": "Inv_ContractItem_BeastHorn",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "inv_contractitem_beastbone",
+      "serial": 40,
+      "inv": "Inv_ContractItem_BeastBone",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "inv_contractitem_batwing",
+      "serial": 41,
+      "inv": "Inv_ContractItem_BatWing",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "inv_contractitem_batkidney",
+      "serial": 42,
+      "inv": "Inv_ContractItem_BatKidney",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "inv_contractitem_tools",
+      "serial": 43,
+      "inv": "Inv_ContractItem_Tools",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "inv_contractitem_creepbrain",
+      "serial": 44,
+      "inv": "Inv_ContractItem_CreepBrain",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "inv_contractitem_sparkplug",
+      "serial": 45,
+      "inv": "Inv_ContractItem_SparkPlug",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "inv_contractitem_pangolinparts",
+      "serial": 46,
+      "inv": "Inv_ContractItem_PangolinParts",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "inv_contractitem_creepparts",
+      "serial": 47,
+      "inv": "Inv_ContractItem_CreepParts",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "inv_contractitem_bloodpack",
+      "serial": 48,
+      "inv": "Inv_ContractItem_BloodPack",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "inv_contractitem_poster",
+      "serial": 49,
+      "inv": "Inv_ContractItem_Poster",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "inv_contractitem_base",
+      "serial": 50,
+      "inv": "Inv_ContractItem_base",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_booster",
+      "serial": 51,
+      "inv": "InvDef_Booster",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_drillkey",
+      "serial": 52,
+      "inv": "InvDef_DrillKey",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_pitchfork",
+      "serial": 53,
+      "inv": "InvDef_Pitchfork",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_scythe",
+      "serial": 54,
+      "inv": "InvDef_Scythe",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_shovel",
+      "serial": 55,
+      "inv": "InvDef_Shovel",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_gardenseeds",
+      "serial": 56,
+      "inv": "InvDef_GardenSeeds",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_oxygencanister",
+      "serial": 57,
+      "inv": "InvDef_OxygenCanister",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_key",
+      "serial": 58,
+      "inv": "InvDef_Key",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "inventorydef_elpisoxygenkit",
+      "serial": 59,
+      "inv": "InventoryDef_ElpisOxygenKit",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_package",
+      "serial": 60,
+      "inv": "InvDef_Package",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_missiontemp_pickup",
+      "serial": 61,
+      "inv": "InvDef_MissionTemp_Pickup",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_accesscard",
+      "serial": 62,
+      "inv": "InvDef_AccessCard",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_dronebrain",
+      "serial": 63,
+      "inv": "InvDef_DroneBrain",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_crawler_vehiclepart_sha_4",
+      "serial": 64,
+      "inv": "InvDef_Crawler_VehiclePart_SHA_4",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_crawler_vehiclepart_sha_3",
+      "serial": 65,
+      "inv": "InvDef_Crawler_VehiclePart_SHA_3",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_crawler_vehiclepart_sha_2",
+      "serial": 66,
+      "inv": "InvDef_Crawler_VehiclePart_SHA_2",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_crawler_vehiclepart_sha_1",
+      "serial": 67,
+      "inv": "InvDef_Crawler_VehiclePart_SHA_1",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_crawler_vehiclepart_gra_4",
+      "serial": 68,
+      "inv": "InvDef_Crawler_VehiclePart_GRA_4",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_crawler_vehiclepart_gra_3",
+      "serial": 69,
+      "inv": "InvDef_Crawler_VehiclePart_GRA_3",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_crawler_vehiclepart_mt_4",
+      "serial": 70,
+      "inv": "InvDef_Crawler_VehiclePart_MT_4",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_crawler_vehiclepart_mt_2",
+      "serial": 71,
+      "inv": "InvDef_Crawler_VehiclePart_MT_2",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_crawler_vehiclepart_mt_3",
+      "serial": 72,
+      "inv": "InvDef_Crawler_VehiclePart_MT_3",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_crawler_vehiclepart_mt_1",
+      "serial": 73,
+      "inv": "InvDef_Crawler_VehiclePart_MT_1",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_crawler_vehiclepart_gra_2",
+      "serial": 74,
+      "inv": "InvDef_Crawler_VehiclePart_GRA_2",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_crawler_vehiclepart_gra_1",
+      "serial": 75,
+      "inv": "InvDef_Crawler_VehiclePart_GRA_1",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_crawler_vehiclepart_parent",
+      "serial": 76,
+      "inv": "InvDef_Crawler_VehiclePart_Parent",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_crawler_vehiclepart_demo",
+      "serial": 77,
+      "inv": "InvDef_Crawler_VehiclePart_Demo",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "inventorydef_fishing_legendaryfish",
+      "serial": 78,
+      "inv": "InventoryDef_Fishing_LegendaryFish",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "inventorydef_fishing_rarefish",
+      "serial": 79,
+      "inv": "InventoryDef_Fishing_RareFish",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "currency_eridium_multistack",
+      "serial": 80,
+      "inv": "Currency_Eridium_MultiStack",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "currency_eridium_singlestack",
+      "serial": 81,
+      "inv": "Currency_Eridium_SingleStack",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "currency_eridium",
+      "serial": 82,
+      "inv": "currency_eridium",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "currency_money",
+      "serial": 83,
+      "inv": "currency_money",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "currency_money_singlestack",
+      "serial": 84,
+      "inv": "currency_money_singlestack",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "currency_money_triplestack",
+      "serial": 85,
+      "inv": "currency_money_triplestack",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "ammo",
+      "serial": 86,
+      "inv": "Ammo",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "ammo_assaultrifle",
+      "serial": 87,
+      "inv": "ammo_assaultrifle",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "ammo_pistol",
+      "serial": 88,
+      "inv": "ammo_pistol",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "ammo_shotgun",
+      "serial": 89,
+      "inv": "ammo_shotgun",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "ammo_smg",
+      "serial": 90,
+      "inv": "ammo_smg",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "ammo_sniperrifle",
+      "serial": 91,
+      "inv": "ammo_sniperrifle",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "health",
+      "serial": 92,
+      "inv": "Health",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "mission_pickup",
+      "serial": 93,
+      "inv": "mission_pickup",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_pickup_firstrepkit_intro",
+      "serial": 100,
+      "inv": "InvDef_Pickup_FirstRepkit_Intro",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_pickup_grapplebox_intro",
+      "serial": 101,
+      "inv": "InvDef_Pickup_GrappleBox_Intro",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_broombaplaceable",
+      "serial": 102,
+      "inv": "InvDef_BroombaPlaceable",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_genivivcore",
+      "serial": 103,
+      "inv": "InvDef_GenIVIVCore",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_genconstructor",
+      "serial": 104,
+      "inv": "InvDef_GenConstructor",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_geniviv",
+      "serial": 105,
+      "inv": "InvDef_GenIVIV",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_broomba",
+      "serial": 106,
+      "inv": "InvDef_Broomba",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_genconstruct",
+      "serial": 107,
+      "inv": "InvDef_GenConstruct",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_pickup_thebossdrive",
+      "serial": 108,
+      "inv": "InvDef_Pickup_TheBossDrive",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_thresheregg",
+      "serial": 109,
+      "inv": "InvDef_IO_Pickup_ThresherEgg",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_ms_pickup_transponder",
+      "serial": 110,
+      "inv": "InvDef_MS_Pickup_Transponder",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_controlcircuit",
+      "serial": 111,
+      "inv": "InvDef_IO_Pickup_ControlCircuit",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_efm1_boomstickpickup",
+      "serial": 112,
+      "inv": "InvDef_EFM1_BoomstickPickup",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_rocketmonters_catchtainerpickup",
+      "serial": 113,
+      "inv": "InvDef_RocketMonters_CatchtainerPickup",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_thresherfood",
+      "serial": 114,
+      "inv": "InvDef_IO_Pickup_ThresherFood",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_efm1_detonatorpickup",
+      "serial": 115,
+      "inv": "InvDef_EFM1_DetonatorPickup",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_efm1_ripperexplosive",
+      "serial": 116,
+      "inv": "InvDef_EFM1_RipperExplosive",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_bmb_bolts_dropped",
+      "serial": 117,
+      "inv": "InvDef_IO_Pickup_BMB_Bolts_Dropped",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_wni_chairmaterialpickup",
+      "serial": 118,
+      "inv": "InvDef_WNI_ChairMaterialPickup",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_ignitionsource",
+      "serial": 119,
+      "inv": "InvDef_IO_Pickup_IgnitionSource",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_twwh_cavebombpickup",
+      "serial": 120,
+      "inv": "InvDef_TWWH_CaveBombPickUp",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_twwh_votivepickup",
+      "serial": 121,
+      "inv": "InvDef_TWWH_VotivePickup",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_pickup_mfaction4_lictordrive",
+      "serial": 122,
+      "inv": "InvDef_Pickup_MFaction4_LictorDrive",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_fueltank",
+      "serial": 123,
+      "inv": "InvDef_IO_Pickup_FuelTank",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_pickup_mfaction4_lictorvirus",
+      "serial": 124,
+      "inv": "InvDef_Pickup_MFaction4_LictorVirus",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_transponderpack",
+      "serial": 125,
+      "inv": "InvDef_IO_Pickup_TransponderPack",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_pickup_mfaction4_flashdrive",
+      "serial": 126,
+      "inv": "InvDef_Pickup_MFaction4_FlashDrive",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_vendpicture",
+      "serial": 127,
+      "inv": "InvDef_VendPicture",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_pickup_hof_nahelibolt",
+      "serial": 128,
+      "inv": "InvDef_Pickup_HOF_NaheliBolt",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_catglands",
+      "serial": 129,
+      "inv": "InvDef_IO_Pickup_CatGlands",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_electrobomb",
+      "serial": 130,
+      "inv": "InvDef_IO_Pickup_ElectroBomb",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_efm3_emppickup_part3",
+      "serial": 131,
+      "inv": "InvDef_EFM3_EMPPickup_Part3",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_efm3_emppickup_part1",
+      "serial": 132,
+      "inv": "InvDef_EFM3_EMPPickup_Part1",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_efm3_emppickup_part2",
+      "serial": 133,
+      "inv": "InvDef_EFM3_EMPPickup_Part2",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_convoybomb",
+      "serial": 134,
+      "inv": "InvDef_IO_Pickup_ConvoyBomb",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_dronerocket",
+      "serial": 135,
+      "inv": "InvDef_IO_Pickup_DroneRocket",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_sl1_pickup_toy",
+      "serial": 136,
+      "inv": "InvDef_SL1_Pickup_Toy",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_efm3_pickup_empcomplete",
+      "serial": 137,
+      "inv": "InvDef_EFM3_Pickup_EMPComplete",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_sl1_pickup_explosives",
+      "serial": 138,
+      "inv": "InvDef_SL1_Pickup_Explosives",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_machinepart",
+      "serial": 139,
+      "inv": "InvDef_IO_Pickup_MachinePart",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_agd_pickup_zadrakeycard",
+      "serial": 140,
+      "inv": "InvDef_AGD_Pickup_ZadraKeycard",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_pickup_epilogue_sirenitem",
+      "serial": 141,
+      "inv": "InvDef_Pickup_Epilogue_SirenItem",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "pickup_bioengineeredseed_irradiated",
+      "serial": 142,
+      "inv": "PickUp_BioEngineeredSeed_Irradiated",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "pickup_bioengineeredseed",
+      "serial": 143,
+      "inv": "PickUp_BioEngineeredSeed",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "def_sumofhisparts_antenna",
+      "serial": 144,
+      "inv": "Def_SumOfHisParts_Antenna",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "def_sumofhisparts_arms",
+      "serial": 145,
+      "inv": "Def_SumOfHisParts_Arms",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "def_sumofhisparts_eye",
+      "serial": 146,
+      "inv": "Def_SumOfHisParts_Eye",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "def_sumofhisparts_wheel",
+      "serial": 147,
+      "inv": "Def_SumOfHisParts_Wheel",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "def_sumofhisparts_shell",
+      "serial": 148,
+      "inv": "Def_SumOfHisParts_Shell",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "newitem",
+      "serial": 149,
+      "inv": "NewItem",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_city1_b_ordonitepickup",
+      "serial": 150,
+      "inv": "InvDef_City1_B_OrdonitePickup",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_cop_pickup_boatbomb",
+      "serial": 151,
+      "inv": "InvDef_CoP_Pickup_BoatBOmb",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_cop_pickup_keycard",
+      "serial": 152,
+      "inv": "InvDef_CoP_Pickup_Keycard",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_grasslandscommanderbolt",
+      "serial": 153,
+      "inv": "InvDef_IO_Pickup_GrasslandsCommanderBolt",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_cop_pickup_mask",
+      "serial": 154,
+      "inv": "InvDef_CoP_Pickup_Mask",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_yatlc_materialburdenspickup",
+      "serial": 155,
+      "inv": "InvDef_YATLC_MaterialBurdensPickup",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_detonator",
+      "serial": 156,
+      "inv": "InvDef_IO_Pickup_Detonator",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_cop_pickup_portrait",
+      "serial": 157,
+      "inv": "InvDef_CoP_Pickup_Portrait",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_yatlc_trachbagpickup",
+      "serial": 158,
+      "inv": "InvDef_YATLC_TrachbagPickup",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_cop_pickup_voicemodule",
+      "serial": 159,
+      "inv": "InvDef_CoP_Pickup_VoiceModule",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_drinkcan03",
+      "serial": 160,
+      "inv": "InvDef_IO_Pickup_DrinkCan03",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_drinkcan02",
+      "serial": 161,
+      "inv": "InvDef_IO_Pickup_DrinkCan02",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_drinkcan01",
+      "serial": 162,
+      "inv": "InvDef_IO_Pickup_DrinkCan01",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_missilebody",
+      "serial": 163,
+      "inv": "InvDef_IO_Pickup_MissileBody",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_yatlc_trashcanlidpickup",
+      "serial": 164,
+      "inv": "InvDef_YATLC_TrashcanLidPickup",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_scoutslog02",
+      "serial": 165,
+      "inv": "InvDef_IO_Pickup_ScoutsLog02",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_scoutslog01",
+      "serial": 166,
+      "inv": "InvDef_IO_Pickup_ScoutsLog01",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_yatlc_trashcanpickup",
+      "serial": 167,
+      "inv": "InvDef_YATLC_TrashcanPickup",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_takeoutbox",
+      "serial": 168,
+      "inv": "InvDef_IO_Pickup_TakeOutBox",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_beer",
+      "serial": 169,
+      "inv": "InvDef_IO_Pickup_Beer",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_bfr_pickup_bolt",
+      "serial": 170,
+      "inv": "InvDef_BFR_Pickup_Bolt",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_guidescore",
+      "serial": 171,
+      "inv": "InvDef_IO_Pickup_GuidesCore",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_brokenships2_zanegiftpickup3",
+      "serial": 172,
+      "inv": "InvDef_BrokenShips2_ZaneGiftPickup3",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_brokenships2_zanegiftpickup2",
+      "serial": 173,
+      "inv": "InvDef_BrokenShips2_ZaneGiftPickup2",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_brokenships2_zanegiftpickup",
+      "serial": 174,
+      "inv": "InvDef_BrokenShips2_ZaneGiftPickup",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_missilecone",
+      "serial": 175,
+      "inv": "InvDef_IO_Pickup_MissileCone",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_missilemiddle",
+      "serial": 176,
+      "inv": "InvDef_IO_Pickup_MissileMiddle",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_brokenships_dronepiecepickup",
+      "serial": 177,
+      "inv": "InvDef_BrokenShips_DronePiecePickup",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_missiletail",
+      "serial": 178,
+      "inv": "InvDef_IO_Pickup_MissileTail",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_pickup_bolt",
+      "serial": 179,
+      "inv": "InvDef_Pickup_Bolt",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_missilelaunchsystem",
+      "serial": 180,
+      "inv": "InvDef_IO_Pickup_MissileLaunchSystem",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_lifecoach_viberockpickup",
+      "serial": 181,
+      "inv": "InvDef_LifeCoach_VibeRockPickup",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_sfl_pickup_bolt_callis",
+      "serial": 182,
+      "inv": "InvDef_SFL_Pickup_Bolt_Callis",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_toolbox",
+      "serial": 183,
+      "inv": "InvDef_IO_Pickup_ToolBox",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_efm2_creepmeatpickup",
+      "serial": 184,
+      "inv": "InvDef_EFM2_CreepMeatPickup",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_sfl_pickup_bolt_lictor",
+      "serial": 185,
+      "inv": "InvDef_SFL_Pickup_Bolt_Lictor",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_efm2_damagedusb",
+      "serial": 186,
+      "inv": "InvDef_EFM2_DamagedUSB",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "inventorydef_elpis_ozkit",
+      "serial": 187,
+      "inv": "InventoryDef_Elpis_OzKit",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_pickup_zanzibolt",
+      "serial": 188,
+      "inv": "InvDef_Pickup_Zanzibolt",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_computercore",
+      "serial": 189,
+      "inv": "InvDef_IO_Pickup_ComputerCore",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_sfl_pickup_bolt_sol",
+      "serial": 190,
+      "inv": "InvDef_SFL_Pickup_Bolt_Sol",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_intel",
+      "serial": 191,
+      "inv": "InvDef_IO_Pickup_Intel",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_books",
+      "serial": 192,
+      "inv": "InvDef_IO_Pickup_Books",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_glidepack",
+      "serial": 193,
+      "inv": "InvDef_IO_Pickup_GlidePack",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "pickup_explosive_oldraymondpart1",
+      "serial": 194,
+      "inv": "PickUp_Explosive_OldRaymondPart1",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_orderpowercore",
+      "serial": 195,
+      "inv": "InvDef_IO_Pickup_OrderPowercore",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_ripperkey",
+      "serial": 196,
+      "inv": "InvDef_IO_Pickup_RipperKey",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_board",
+      "serial": 197,
+      "inv": "InvDef_Board",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_hoop",
+      "serial": 198,
+      "inv": "InvDef_Hoop",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_vaultpowerorb",
+      "serial": 199,
+      "inv": "InvDef_VaultPowerOrb",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_towerbolt",
+      "serial": 200,
+      "inv": "InvDef_IO_Pickup_TowerBolt",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_rations",
+      "serial": 201,
+      "inv": "InvDef_IO_Pickup_Rations",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_pickup_mountains3_brucecore",
+      "serial": 202,
+      "inv": "InvDef_Pickup_Mountains3_BruceCore",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_synthhead",
+      "serial": 203,
+      "inv": "InvDef_IO_Pickup_SynthHead",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_underconstructionlog",
+      "serial": 204,
+      "inv": "InvDef_IO_Pickup_UnderConstructionLog",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_pickup_mountains3_lictorbolt",
+      "serial": 205,
+      "inv": "InvDef_Pickup_Mountains3_LictorBolt",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_pickup_mfaction1_augermask",
+      "serial": 206,
+      "inv": "InvDef_Pickup_MFaction1_AugerMask",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "pickup_devicepart_whatlurksbeneath",
+      "serial": 207,
+      "inv": "PickUp_DevicePart_WhatLurksBeneath",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_pickup_mfaction2_crackeddevice",
+      "serial": 208,
+      "inv": "InvDef_Pickup_MFaction2_CrackedDevice",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_htbripperpbj_grossingredient",
+      "serial": 209,
+      "inv": "InvDef_HTBRipperPBJ_GrossIngredient",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_pickup_mfaction2_cashcase",
+      "serial": 210,
+      "inv": "InvDef_Pickup_MFaction2_CashCase",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_shatcommanderbolt",
+      "serial": 211,
+      "inv": "InvDef_IO_Pickup_ShatCommanderBolt",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "io_pickup_device_balloon",
+      "serial": 212,
+      "inv": "IO_Pickup_Device_Balloon",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_relic",
+      "serial": 213,
+      "inv": "InvDef_IO_Pickup_Relic",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_efm2_pangospitpickup",
+      "serial": 214,
+      "inv": "InvDef_EFM2_PangoSpitPickup",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_reactorpart",
+      "serial": 215,
+      "inv": "InvDef_IO_Pickup_ReactorPart",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_boosterplaceable",
+      "serial": 216,
+      "inv": "InvDef_BoosterPlaceable",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_beacons",
+      "serial": 217,
+      "inv": "InvDef_IO_Pickup_Beacons",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_dynamite",
+      "serial": 218,
+      "inv": "InvDef_Dynamite",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_giftbag",
+      "serial": 219,
+      "inv": "InvDef_IO_Pickup_GiftBag",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_commanderdoor_boltkey",
+      "serial": 220,
+      "inv": "InvDef_CommanderDoor_BoltKey",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_ltbolt",
+      "serial": 221,
+      "inv": "InvDef_IO_Pickup_LTBolt",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_pickup_mfaction3_brutepart4",
+      "serial": 222,
+      "inv": "InvDef_Pickup_MFaction3_BrutePart4",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_pickup_mfaction3_brutepart3",
+      "serial": 223,
+      "inv": "InvDef_Pickup_MFaction3_BrutePart3",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_pickup_mfaction3_brutepart2",
+      "serial": 224,
+      "inv": "InvDef_Pickup_MFaction3_BrutePart2",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_pickup_mfaction3_brutepart1",
+      "serial": 225,
+      "inv": "InvDef_Pickup_MFaction3_BrutePart1",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_antenna",
+      "serial": 226,
+      "inv": "InvDef_IO_Pickup_Antenna",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_pickup_efpmole_moledevice",
+      "serial": 227,
+      "inv": "InvDef_Pickup_EFPMole_MoleDevice",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_vehiclepowercore",
+      "serial": 228,
+      "inv": "InvDef_IO_Pickup_VehiclePowercore",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_efpagri_cratepickup",
+      "serial": 229,
+      "inv": "InvDef_EFPAgri_CratePickup",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "inv_echologdefault_modified_terry",
+      "serial": 230,
+      "inv": "Inv_EchoLogDefault_Modified_Terry",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_digidongle",
+      "serial": 231,
+      "inv": "InvDef_DigiDongle",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "inv_event_helpnpc_key",
+      "serial": 232,
+      "inv": "Inv_Event_HelpNPC_Key",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "pickup_transmitter_resistance",
+      "serial": 233,
+      "inv": "PickUp_Transmitter_Resistance",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "classmod",
+      "serial": 234,
+      "inv": "ClassMod",
+      "parts": 105,
+      "comps": 5,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "gadget",
+      "serial": 235,
+      "inv": "Gadget",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "shield_armor_pickup",
+      "serial": 236,
+      "inv": "shield_armor_pickup",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "armor_shield",
+      "serial": 237,
+      "inv": "Armor_Shield",
+      "parts": 31,
+      "comps": 5,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "default_repair_kit",
+      "serial": 238,
+      "inv": "default_repair_kit",
+      "parts": 2,
+      "comps": 1,
+      "comp_keys": [
+        "default_repkit_comp_01"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "weapon_vehicle_mg",
+      "serial": 239,
+      "inv": "Weapon_Vehicle_MG",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "weapon_vehicle_rl",
+      "serial": 240,
+      "inv": "Weapon_Vehicle_RL",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "inv_contractitem_powertools_c",
+      "serial": 241,
+      "inv": "Inv_ContractItem_PowerTools_C",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "inv_contractitem_powertools_b",
+      "serial": 242,
+      "inv": "Inv_ContractItem_PowerTools_B",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "repair_kit",
+      "serial": 243,
+      "inv": "repair_kit",
+      "parts": 119,
+      "comps": 5,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "heavy_weapon_gadget",
+      "serial": 244,
+      "inv": "heavy_weapon_gadget",
+      "parts": 28,
+      "comps": 5,
+      "comp_keys": [
+        "comp_05_legendary",
+        "comp_04_epic",
+        "comp_03_rare",
+        "comp_02_uncommon",
+        "comp_01_common"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "grenade_gadget",
+      "serial": 245,
+      "inv": "grenade_gadget",
+      "parts": 89,
+      "comps": 5,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "shield",
+      "serial": 246,
+      "inv": "Shield",
+      "parts": 66,
+      "comps": 5,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "enhancement",
+      "serial": 247,
+      "inv": "Enhancement",
+      "parts": 249,
+      "comps": 5,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "energy_shield",
+      "serial": 248,
+      "inv": "energy_shield",
+      "parts": 27,
+      "comps": 5,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "magazine_refresher",
+      "serial": 249,
+      "inv": "magazine_refresher",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "overshield_booster_pickup",
+      "serial": 250,
+      "inv": "overshield_booster_pickup",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "power_booster_pickup",
+      "serial": 251,
+      "inv": "power_booster_pickup",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "health_booster_pickup",
+      "serial": 252,
+      "inv": "health_booster_pickup",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "shield_booster_pickup",
+      "serial": 253,
+      "inv": "shield_booster_pickup",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "classmod_dark_siren",
+      "serial": 254,
+      "inv": "classmod_dark_siren",
+      "parts": 542,
+      "comps": 13,
+      "comp_keys": [
+        "comp_05_legendary_06",
+        "comp_05_legendary_05",
+        "comp_05_legendary_04",
+        "comp_05_legendary_03",
+        "comp_05_legendary_02",
+        "comp_05_legendary_01",
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary_raid1",
+        "comp_05_legendary_cowbell",
+        "comp_05_legendary_raid2"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "classmod_paladin",
+      "serial": 255,
+      "inv": "classmod_paladin",
+      "parts": 543,
+      "comps": 13,
+      "comp_keys": [
+        "comp_05_legendary_06",
+        "comp_05_legendary_05",
+        "comp_05_legendary_04",
+        "comp_05_legendary_03",
+        "comp_05_legendary_02",
+        "comp_05_legendary_01",
+        "comp_04_epic",
+        "comp_03_rare",
+        "comp_02_uncommon",
+        "comp_01_common",
+        "comp_05_legendary_raid1",
+        "comp_05_legendary_cowbell",
+        "comp_05_legendary_raid2"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "classmod_exo_soldier",
+      "serial": 256,
+      "inv": "classmod_exo_soldier",
+      "parts": 543,
+      "comps": 13,
+      "comp_keys": [
+        "comp_05_legendary_06",
+        "comp_05_legendary_05",
+        "comp_05_legendary_04",
+        "comp_05_legendary_03",
+        "comp_05_legendary_02",
+        "comp_05_legendary_01",
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary_raid1",
+        "comp_05_legendary_cowbell",
+        "comp_05_legendary_raid2"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "weapon_ps",
+      "serial": 257,
+      "inv": "Weapon_PS",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "weapon_sm",
+      "serial": 258,
+      "inv": "Weapon_SM",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "classmod_gravitar",
+      "serial": 259,
+      "inv": "classmod_gravitar",
+      "parts": 545,
+      "comps": 13,
+      "comp_keys": [
+        "comp_05_legendary_06",
+        "comp_05_legendary_05",
+        "comp_05_legendary_04",
+        "comp_05_legendary_03",
+        "comp_05_legendary_02",
+        "comp_05_legendary_01",
+        "comp_04_epic",
+        "comp_03_rare",
+        "comp_02_uncommon",
+        "comp_01_common",
+        "comp_05_legendary_raid1",
+        "comp_05_legendary_cowbell",
+        "comp_05_legendary_raid2"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "weapon_sg",
+      "serial": 260,
+      "inv": "Weapon_SG",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "tor_repair_kit",
+      "serial": 261,
+      "inv": "tor_repair_kit",
+      "parts": 7,
+      "comps": 5,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary_shinywarpaint"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "weapon_sr",
+      "serial": 262,
+      "inv": "Weapon_SR",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "mal_grenade_gadget",
+      "serial": 263,
+      "inv": "mal_grenade_gadget",
+      "parts": 13,
+      "comps": 7,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary",
+        "comp_05_legendary_disco_disc",
+        "comp_05_legendary_recursive"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "hyp_enhancement",
+      "serial": 264,
+      "inv": "HYP_Enhancement",
+      "parts": 9,
+      "comps": 5,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "jak_repair_kit",
+      "serial": 265,
+      "inv": "jak_repair_kit",
+      "parts": 7,
+      "comps": 5,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary_defibrillator"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "mal_repair_kit",
+      "serial": 266,
+      "inv": "mal_repair_kit",
+      "parts": 8,
+      "comps": 6,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary_bloodanalyzer",
+        "comp_05_legendary_geigerroid"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "jak_grenade_gadget",
+      "serial": 267,
+      "inv": "jak_grenade_gadget",
+      "parts": 20,
+      "comps": 8,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary",
+        "comp_05_spinning_blade",
+        "comp_05_legendary_shokunai",
+        "comp_05_legendary_bismuth"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "jak_enhancement",
+      "serial": 268,
+      "inv": "JAK_Enhancement",
+      "parts": 9,
+      "comps": 5,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "vla_repair_kit",
+      "serial": 269,
+      "inv": "vla_repair_kit",
+      "parts": 7,
+      "comps": 5,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary_adrenalinepump"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "dad_grenade_gadget",
+      "serial": 270,
+      "inv": "dad_grenade_gadget",
+      "parts": 10,
+      "comps": 7,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary",
+        "comp_05_legendary_axe",
+        "comp_05_legendary_fuse"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "mal_enhancement",
+      "serial": 271,
+      "inv": "MAL_Enhancement",
+      "parts": 9,
+      "comps": 5,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "ord_grenade_gadget",
+      "serial": 272,
+      "inv": "ord_grenade_gadget",
+      "parts": 12,
+      "comps": 8,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary",
+        "comp_05_legendary_swarm",
+        "comp_05_legendary_aggrovator",
+        "comp_05_legendary_skully"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "tor_hw",
+      "serial": 273,
+      "inv": "TOR_HW",
+      "parts": 43,
+      "comps": 10,
+      "comp_keys": [
+        "comp_05_legendary",
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary_javelin",
+        "comp_05_legendary_ravenfire",
+        "comp_05_legendary_sidewinder",
+        "comp_02_uncommon_unique_heavyturret",
+        "comp_05_legendary_dahlfather"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "bor_repair_kit",
+      "serial": 274,
+      "inv": "BOR_REPAIR_KIT",
+      "parts": 7,
+      "comps": 5,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary_augmenter"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "bor_hw",
+      "serial": 275,
+      "inv": "BOR_HW",
+      "parts": 34,
+      "comps": 8,
+      "comp_keys": [
+        "comp_05_legendary",
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary_discjockey",
+        "comp_05_legendary_streamer",
+        "comp_05_legendary_jetset"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "weapon_ar",
+      "serial": 276,
+      "inv": "Weapon_AR",
+      "parts": 5,
+      "comps": 5,
+      "comp_keys": [
+        "comp_04_epic",
+        "comp_03_rare",
+        "comp_02_uncommon",
+        "comp_01_common",
+        "comp_05_legendary"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "dad_repair_kit",
+      "serial": 277,
+      "inv": "dad_repair_kit",
+      "parts": 9,
+      "comps": 6,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary_pacemaker",
+        "comp_05_legendary_healthraiser"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "borg_grenade_gadget",
+      "serial": 278,
+      "inv": "borg_grenade_gadget",
+      "parts": 15,
+      "comps": 8,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary",
+        "comp_05_legendary_rubber",
+        "comp_05_legendary_buoy",
+        "comp_05_legendary_transmission"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "mal_shield",
+      "serial": 279,
+      "inv": "mal_shield",
+      "parts": 12,
+      "comps": 8,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary",
+        "comp_05_momento",
+        "comp_05_supernova",
+        "comp_05_elpisstar"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "terminal_gadget_barrier",
+      "serial": 280,
+      "inv": "terminal_gadget_barrier",
+      "parts": 1,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "ord_enhancement",
+      "serial": 281,
+      "inv": "ORD_Enhancement",
+      "parts": 9,
+      "comps": 5,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "vla_hw",
+      "serial": 282,
+      "inv": "VLA_HW",
+      "parts": 31,
+      "comps": 8,
+      "comp_keys": [
+        "comp_05_legendary_splatoon",
+        "comp_05_legendary",
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary_atlinggun",
+        "comp_05_legendary_flak"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "vla_shield",
+      "serial": 283,
+      "inv": "vla_shield",
+      "parts": 12,
+      "comps": 8,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary",
+        "comp_05_legendary_hoarder",
+        "comp_05_legendary_heavyweight",
+        "comp_05_legendary_undershield"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "atl_enhancement",
+      "serial": 284,
+      "inv": "ATL_Enhancement",
+      "parts": 9,
+      "comps": 5,
+      "comp_keys": [
+        "comp_05_legendary",
+        "comp_04_epic",
+        "comp_03_rare",
+        "comp_02_uncommon",
+        "comp_01_common"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "ord_repair_kit",
+      "serial": 285,
+      "inv": "ord_repair_kit",
+      "parts": 9,
+      "comps": 6,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary_triplebypass",
+        "comp_05_legendary_paleblood"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "cov_enhancement",
+      "serial": 286,
+      "inv": "COV_Enhancement",
+      "parts": 9,
+      "comps": 5,
+      "comp_keys": [
+        "comp_05_legendary",
+        "comp_04_epic",
+        "comp_03_rare",
+        "comp_02_uncommon",
+        "comp_01_common"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "ted_shield",
+      "serial": 287,
+      "inv": "ted_shield",
+      "parts": 12,
+      "comps": 8,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary",
+        "comp_05_legendary_shieldboi",
+        "comp_05_legendary_timekeeper",
+        "comp_05_legendary_hopscotch"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "turret_gadget",
+      "serial": 288,
+      "inv": "turret_gadget",
+      "parts": 57,
+      "comps": 5,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "mal_hw",
+      "serial": 289,
+      "inv": "MAL_HW",
+      "parts": 28,
+      "comps": 8,
+      "comp_keys": [
+        "comp_05_legendary_bottledlightning",
+        "comp_05_legendary",
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary_gammavoid",
+        "comp_05_legendary_ichor"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "ted_repair_kit",
+      "serial": 290,
+      "inv": "ted_repair_kit",
+      "parts": 7,
+      "comps": 5,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary_killspring"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "vla_grenade_gadget",
+      "serial": 291,
+      "inv": "vla_grenade_gadget",
+      "parts": 12,
+      "comps": 8,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary",
+        "comp_05_legendary_blockbuster",
+        "comp_05_legendary_waterfall",
+        "comp_05_legendary_barb"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "ted_enhancement",
+      "serial": 292,
+      "inv": "TED_Enhancement",
+      "parts": 9,
+      "comps": 5,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "ord_shield",
+      "serial": 293,
+      "inv": "ord_shield",
+      "parts": 12,
+      "comps": 8,
+      "comp_keys": [
+        "comp_05_legendary_proteancell",
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary",
+        "comp_05_legendary_cindershelly",
+        "comp_05_legendary_collector"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "terminal_gadget",
+      "serial": 294,
+      "inv": "Terminal_Gadget",
+      "parts": 66,
+      "comps": 5,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "terminal_gadget_combat",
+      "serial": 295,
+      "inv": "terminal_gadget_combat",
+      "parts": 3,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "bor_enhancement",
+      "serial": 296,
+      "inv": "BOR_Enhancement",
+      "parts": 9,
+      "comps": 5,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_05_legendary",
+        "comp_04_epic",
+        "comp_03_rare",
+        "comp_02_uncommon"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "terminal_gadget_healing",
+      "serial": 297,
+      "inv": "terminal_gadget_healing",
+      "parts": 3,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "tor_grenade_gadget",
+      "serial": 298,
+      "inv": "tor_grenade_gadget",
+      "parts": 12,
+      "comps": 8,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary",
+        "comp_05_legendary_firepot",
+        "comp_05_legendary_slippy",
+        "comp_05_legendary_flare"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "dad_enhancement",
+      "serial": 299,
+      "inv": "DAD_Enhancement",
+      "parts": 9,
+      "comps": 5,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "bor_shield",
+      "serial": 300,
+      "inv": "bor_shield",
+      "parts": 12,
+      "comps": 8,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary",
+        "comp_05_legendary_lightning",
+        "comp_05_legendary_watts4dinner",
+        "comp_05_legendary_firewall"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "hover_drive",
+      "serial": 301,
+      "inv": "hover_drive",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "hover_drive_tests",
+      "serial": 302,
+      "inv": "hover_drive_tests",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "tor_enhancement",
+      "serial": 303,
+      "inv": "TOR_Enhancement",
+      "parts": 9,
+      "comps": 5,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "turret_weapon_chaingun",
+      "serial": 304,
+      "inv": "turret_weapon_chaingun",
+      "parts": 6,
+      "comps": 2,
+      "comp_keys": [
+        "comp_turret_weapon",
+        "exosoldier_turret_base"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "bor_terminal_barrier",
+      "serial": 305,
+      "inv": "BOR_TERMINAL_BARRIER",
+      "parts": 6,
+      "comps": 5,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "jak_shield",
+      "serial": 306,
+      "inv": "jak_shield",
+      "parts": 10,
+      "comps": 7,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary",
+        "comp_05_legendary_barrelaged",
+        "comp_05_legendary_onionlayeredguard"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "dad_terminal_combat",
+      "serial": 307,
+      "inv": "DAD_TERMINAL_COMBAT",
+      "parts": 7,
+      "comps": 6,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary",
+        "comp_05_hotoffthepress"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "turret_weapon_longrifle",
+      "serial": 308,
+      "inv": "turret_weapon_longrifle",
+      "parts": 5,
+      "comps": 1,
+      "comp_keys": [
+        "comp_turret_weapon"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "jak_terminal_combat",
+      "serial": 309,
+      "inv": "JAK_TERMINAL_COMBAT",
+      "parts": 7,
+      "comps": 6,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary",
+        "comp_05_melaymen"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "vla_enhancement",
+      "serial": 310,
+      "inv": "VLA_Enhancement",
+      "parts": 9,
+      "comps": 5,
+      "comp_keys": [
+        "comp_05_legendary",
+        "comp_04_epic",
+        "comp_03_rare",
+        "comp_02_uncommon",
+        "comp_01_common"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "ted_grenade_gadget",
+      "serial": 311,
+      "inv": "ted_grenade_gadget",
+      "parts": 12,
+      "comps": 8,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary",
+        "comp_05_legendary_faultydetonator",
+        "comp_05_legendary_predatordrone",
+        "comp_05_legendary_urchin"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "dad_shield",
+      "serial": 312,
+      "inv": "dad_shield",
+      "parts": 12,
+      "comps": 8,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary",
+        "comp_05_legendary_angel",
+        "comp_05_legendary_supersoldier",
+        "comp_05_legendary_honeybadger"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "mal_hover_drive_rank_05",
+      "serial": 313,
+      "inv": "mal_hover_drive_rank_05",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "mal_hover_drive_rank_04",
+      "serial": 314,
+      "inv": "mal_hover_drive_rank_04",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "mal_hover_drive_rank_03",
+      "serial": 315,
+      "inv": "mal_hover_drive_rank_03",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "mal_hover_drive_rank_02",
+      "serial": 316,
+      "inv": "mal_hover_drive_rank_02",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "mal_hover_drive_rank_01",
+      "serial": 317,
+      "inv": "mal_hover_drive_rank_01",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "mal_hover_drive",
+      "serial": 318,
+      "inv": "mal_hover_drive",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "mal_terminal_healing",
+      "serial": 319,
+      "inv": "MAL_TERMINAL_HEALING",
+      "parts": 7,
+      "comps": 6,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary",
+        "comp_05_stabilizer"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "turret_weapon_rocketlauncher",
+      "serial": 320,
+      "inv": "turret_weapon_rocketlauncher",
+      "parts": 6,
+      "comps": 2,
+      "comp_keys": [
+        "comp_turret_weapon",
+        "exosoldier_turret_rocket"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "tor_shield",
+      "serial": 321,
+      "inv": "tor_shield",
+      "parts": 10,
+      "comps": 7,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary",
+        "comp_05_legendary_firewerks",
+        "comp_05_legendary_compleat"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "ord_terminal_healing",
+      "serial": 322,
+      "inv": "ORD_TERMINAL_HEALING",
+      "parts": 8,
+      "comps": 7,
+      "comp_keys": [
+        "comp_05_bogo",
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary",
+        "comp_05_onthego"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "vla_turret_gadget",
+      "serial": 323,
+      "inv": "vla_turret_gadget",
+      "parts": 6,
+      "comps": 5,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "turret_weapon_shotgun",
+      "serial": 324,
+      "inv": "turret_weapon_shotgun",
+      "parts": 6,
+      "comps": 2,
+      "comp_keys": [
+        "comp_turret_weapon",
+        "exosoldier_turret_shotgun"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "ted_terminal_barrier",
+      "serial": 325,
+      "inv": "TED_TERMINAL_BARRIER",
+      "parts": 7,
+      "comps": 6,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary",
+        "comp_05_sitrep"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "ord_turret_gadget",
+      "serial": 326,
+      "inv": "ord_turret_gadget",
+      "parts": 8,
+      "comps": 6,
+      "comp_keys": [
+        "comp_05_legendary_anchor",
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "tor_terminal_combat",
+      "serial": 327,
+      "inv": "TOR_TERMINAL_COMBAT",
+      "parts": 7,
+      "comps": 6,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary",
+        "comp_05_novabomb"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "vla_terminal_barrier",
+      "serial": 328,
+      "inv": "VLA_TERMINAL_BARRIER",
+      "parts": 6,
+      "comps": 5,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "jak_hover_drive_rank_05",
+      "serial": 329,
+      "inv": "jak_hover_drive_rank_05",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "jak_hover_drive_rank_04",
+      "serial": 330,
+      "inv": "jak_hover_drive_rank_04",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "jak_hover_drive_rank_03",
+      "serial": 331,
+      "inv": "jak_hover_drive_rank_03",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "jak_hover_drive_rank_02",
+      "serial": 332,
+      "inv": "jak_hover_drive_rank_02",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "jak_hover_drive_rank_01",
+      "serial": 333,
+      "inv": "jak_hover_drive_rank_01",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "jak_hover_drive",
+      "serial": 334,
+      "inv": "jak_hover_drive",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "bor_turret_gadget",
+      "serial": 335,
+      "inv": "bor_turret_gadget",
+      "parts": 6,
+      "comps": 5,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "tor_hover_drive_rank_05",
+      "serial": 336,
+      "inv": "tor_hover_drive_rank_05",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "tor_hover_drive_rank_04",
+      "serial": 337,
+      "inv": "tor_hover_drive_rank_04",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "tor_hover_drive_rank_03",
+      "serial": 338,
+      "inv": "tor_hover_drive_rank_03",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "tor_hover_drive_rank_02",
+      "serial": 339,
+      "inv": "tor_hover_drive_rank_02",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "tor_hover_drive_rank_01",
+      "serial": 340,
+      "inv": "tor_hover_drive_rank_01",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "tor_hover_drive",
+      "serial": 341,
+      "inv": "tor_hover_drive",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "ted_hover_drive_rank_05",
+      "serial": 342,
+      "inv": "ted_hover_drive_rank_05",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "ted_hover_drive_rank_04",
+      "serial": 343,
+      "inv": "ted_hover_drive_rank_04",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "ted_hover_drive_rank_03",
+      "serial": 344,
+      "inv": "ted_hover_drive_rank_03",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "ted_hover_drive_rank_02",
+      "serial": 345,
+      "inv": "ted_hover_drive_rank_02",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "ted_hover_drive_rank_01",
+      "serial": 346,
+      "inv": "ted_hover_drive_rank_01",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "ted_hover_drive",
+      "serial": 347,
+      "inv": "ted_hover_drive",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "bor_hover_drive_rank_05",
+      "serial": 348,
+      "inv": "bor_hover_drive_rank_05",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "bor_hover_drive_rank_04",
+      "serial": 349,
+      "inv": "bor_hover_drive_rank_04",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "bor_hover_drive_rank_03",
+      "serial": 350,
+      "inv": "bor_hover_drive_rank_03",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "bor_hover_drive_rank_02",
+      "serial": 351,
+      "inv": "bor_hover_drive_rank_02",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "bor_hover_drive_rank_01",
+      "serial": 352,
+      "inv": "bor_hover_drive_rank_01",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "bor_hover_drive",
+      "serial": 353,
+      "inv": "bor_hover_drive",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "vla_hover_drive_rank_05",
+      "serial": 354,
+      "inv": "vla_hover_drive_rank_05",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "vla_hover_drive_rank_04",
+      "serial": 355,
+      "inv": "vla_hover_drive_rank_04",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "vla_hover_drive_rank_03",
+      "serial": 356,
+      "inv": "vla_hover_drive_rank_03",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "vla_hover_drive_rank_02",
+      "serial": 357,
+      "inv": "vla_hover_drive_rank_02",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "vla_hover_drive_rank_01",
+      "serial": 358,
+      "inv": "vla_hover_drive_rank_01",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "vla_hover_drive",
+      "serial": 359,
+      "inv": "vla_hover_drive",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "dad_turret_gadget",
+      "serial": 360,
+      "inv": "dad_turret_gadget",
+      "parts": 6,
+      "comps": 5,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "dad_hover_drive_rank_05",
+      "serial": 361,
+      "inv": "dad_hover_drive_rank_05",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "dad_hover_drive_rank_04",
+      "serial": 362,
+      "inv": "dad_hover_drive_rank_04",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "dad_hover_drive_rank_03",
+      "serial": 363,
+      "inv": "dad_hover_drive_rank_03",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "dad_hover_drive_rank_02",
+      "serial": 364,
+      "inv": "dad_hover_drive_rank_02",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "dad_hover_drive_rank_01",
+      "serial": 365,
+      "inv": "dad_hover_drive_rank_01",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "dad_hover_drive",
+      "serial": 366,
+      "inv": "dad_hover_drive",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "ord_hover_drive_rank_05",
+      "serial": 367,
+      "inv": "ord_hover_drive_rank_05",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "ord_hover_drive_rank_04",
+      "serial": 368,
+      "inv": "ord_hover_drive_rank_04",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "ord_hover_drive_rank_03",
+      "serial": 369,
+      "inv": "ord_hover_drive_rank_03",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "ord_hover_drive_rank_02",
+      "serial": 370,
+      "inv": "ord_hover_drive_rank_02",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "ord_hover_drive_rank_01",
+      "serial": 371,
+      "inv": "ord_hover_drive_rank_01",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "ord_hover_drive",
+      "serial": 372,
+      "inv": "ord_hover_drive",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "jak_turret_gadget",
+      "serial": 373,
+      "inv": "jak_turret_gadget",
+      "parts": 6,
+      "comps": 5,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "mal_turret_gadget",
+      "serial": 374,
+      "inv": "mal_turret_gadget",
+      "parts": 6,
+      "comps": 5,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "weapon_gadget_turret",
+      "serial": 375,
+      "inv": "weapon_gadget_turret",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "turret_weapon_basic",
+      "serial": 376,
+      "inv": "turret_weapon_basic",
+      "parts": 5,
+      "comps": 1,
+      "comp_keys": [
+        "comp_turret_weapon"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "ted_turret_gadget",
+      "serial": 377,
+      "inv": "ted_turret_gadget",
+      "parts": 6,
+      "comps": 5,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "tor_turret_gadget",
+      "serial": 378,
+      "inv": "tor_turret_gadget",
+      "parts": 6,
+      "comps": 5,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "turret_weapon_beam",
+      "serial": 379,
+      "inv": "turret_weapon_beam",
+      "parts": 7,
+      "comps": 2,
+      "comp_keys": [
+        "comp_turret_weapon_beam_anchor",
+        "comp_turret_weapon"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "weapon_ai_custombase",
+      "serial": 380,
+      "inv": "Weapon_AI_CustomBase",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "weapon_soldier_sprayer",
+      "serial": 381,
+      "inv": "Weapon_Soldier_Sprayer",
+      "parts": 3,
+      "comps": 2,
+      "comp_keys": [
+        "comp_soldier_sprayer",
+        "comp_soldier_sprayer_0"
+      ],
+      "gzo_fallback_added": 1
+    },
+    {
+      "key": "weapon_missionturret_chaingun",
+      "serial": 382,
+      "inv": "Weapon_MissionTurret_Chaingun",
+      "parts": 2,
+      "comps": 1,
+      "comp_keys": [
+        "comp_missionturret_chaingun"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "weapon_meathead_rocket",
+      "serial": 383,
+      "inv": "Weapon_Meathead_Rocket",
+      "parts": 2,
+      "comps": 1,
+      "comp_keys": [
+        "comp_meathead_rocket"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "weapon_turret_chaingun",
+      "serial": 384,
+      "inv": "Weapon_Turret_Chaingun",
+      "parts": 2,
+      "comps": 1,
+      "comp_keys": [
+        "comp_turret_chaingun"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "weapon_ripperturret_flamethrower",
+      "serial": 385,
+      "inv": "Weapon_RipperTurret_Flamethrower",
+      "parts": 2,
+      "comps": 1,
+      "comp_keys": [
+        "comp_ripperturret_flamethrower"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "weapon_ripperturret_rocket",
+      "serial": 386,
+      "inv": "Weapon_Ripperturret_Rocket",
+      "parts": 2,
+      "comps": 1,
+      "comp_keys": [
+        "comp_ripperturret_rocket"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "weapon_brute_facelaser",
+      "serial": 387,
+      "inv": "Weapon_Brute_FaceLaser",
+      "parts": 8,
+      "comps": 4,
+      "comp_keys": [
+        "comp_badass",
+        "comp_cannon",
+        "comp_brute_facelaser",
+        "comp_missile"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "weapon_gunship_maingun",
+      "serial": 388,
+      "inv": "Weapon_GunShip_MainGun",
+      "parts": 2,
+      "comps": 1,
+      "comp_keys": [
+        "comp_gunship_maingun"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "weapon_orderdrone",
+      "serial": 389,
+      "inv": "Weapon_OrderDrone",
+      "parts": 9,
+      "comps": 5,
+      "comp_keys": [
+        "comp_zanedrone",
+        "comp_wideangle",
+        "comp_badass",
+        "comp_default",
+        "comp_camera"
+      ],
+      "gzo_fallback_added": 1
+    },
+    {
+      "key": "weapon_meathead_chaingun",
+      "serial": 390,
+      "inv": "Weapon_Meathead_Chaingun",
+      "parts": 2,
+      "comps": 1,
+      "comp_keys": [
+        "comp_meathead_chaingun"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "weapon_meathead_flamethrower",
+      "serial": 391,
+      "inv": "Weapon_Meathead_Flamethrower",
+      "parts": 2,
+      "comps": 1,
+      "comp_keys": [
+        "comp_meathead_flamethrower"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "weapon_splicearm_launcher",
+      "serial": 392,
+      "inv": "Weapon_SpliceArm_Launcher",
+      "parts": 2,
+      "comps": 1,
+      "comp_keys": [
+        "comp_splicearm_launcher"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "inv_contractitem_powertools_a",
+      "serial": 393,
+      "inv": "Inv_ContractItem_PowerTools_A",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "inv_contractitem_tools_c",
+      "serial": 394,
+      "inv": "Inv_ContractItem_Tools_C",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "inv_contractitem_tools_b",
+      "serial": 395,
+      "inv": "Inv_ContractItem_Tools_B",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "inv_contractitem_tools_a",
+      "serial": 396,
+      "inv": "Inv_ContractItem_Tools_A",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "currency_money_smallamount",
+      "serial": 397,
+      "inv": "currency_money_smallamount",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_thesupply_shammylog",
+      "serial": 398,
+      "inv": "InvDef_TheSupply_ShammyLog",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "weapon_splicespiderjumbo_rocketgun",
+      "serial": 399,
+      "inv": "Weapon_SpliceSpiderJumbo_RocketGun",
+      "parts": 2,
+      "comps": 1,
+      "comp_keys": [
+        "compsplicejumborocket"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "io_pickup_powercell",
+      "serial": 400,
+      "inv": "IO_Pickup_PowerCell",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "io_pickup_flat_kairos",
+      "serial": 401,
+      "inv": "IO_Pickup_Flat_Kairos",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_pickup_mfaction4_lictordrive_child",
+      "serial": 403,
+      "inv": "InvDef_Pickup_MFaction4_LictorDrive_Child",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "classmod_robodealer",
+      "serial": 404,
+      "inv": "classmod_robodealer",
+      "parts": 542,
+      "comps": 13,
+      "comp_keys": [
+        "comp_01_common",
+        "comp_02_uncommon",
+        "comp_03_rare",
+        "comp_04_epic",
+        "comp_05_legendary_06",
+        "comp_05_legendary_05",
+        "comp_05_legendary_04",
+        "comp_05_legendary_03",
+        "comp_05_legendary_02",
+        "comp_05_legendary_01",
+        "comp_05_legendary_raid1",
+        "comp_05_legendary_dlc1",
+        "comp_05_legendary_raid2"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "weapon_dahlgrunt_laserrifle",
+      "serial": 405,
+      "inv": "Weapon_DahlGrunt_LaserRifle",
+      "parts": 2,
+      "comps": 1,
+      "comp_keys": [
+        "comp_dahlgrunt_laserrifle"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_dahlkeycard",
+      "serial": 406,
+      "inv": "InvDef_IO_Pickup_DahlKeycard",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "weapon_dahlgrunt_shoulderlaserrifle",
+      "serial": 407,
+      "inv": "Weapon_DahlGrunt_ShoulderLaserRifle",
+      "parts": 2,
+      "comps": 1,
+      "comp_keys": [
+        "comp_dahlgrunt_shoulderlaserrifle"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "weapon_dahlgrunt_sprayer",
+      "serial": 408,
+      "inv": "Weapon_DahlGrunt_Sprayer",
+      "parts": 2,
+      "comps": 1,
+      "comp_keys": [
+        "comp_dahlgrunt_sprayer"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_dahlbeefylegs",
+      "serial": 409,
+      "inv": "InvDef_IO_Pickup_DahlBeefyLegs",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_dahlbeefyarms",
+      "serial": 410,
+      "inv": "InvDef_IO_Pickup_DahlBeefyArms",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_dahloglegs",
+      "serial": 411,
+      "inv": "InvDef_IO_Pickup_DahlOGLegs",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_dahlogarms",
+      "serial": 412,
+      "inv": "InvDef_IO_Pickup_DahlOGArms",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_dahltorso",
+      "serial": 413,
+      "inv": "InvDef_IO_Pickup_DahlTorso",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_m3_plantroot",
+      "serial": 414,
+      "inv": "InvDef_M3_PlantRoot",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_keepsake1",
+      "serial": 415,
+      "inv": "InvDef_IO_Pickup_Keepsake1",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_keepsake2",
+      "serial": 416,
+      "inv": "InvDef_IO_Pickup_Keepsake2",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_towel",
+      "serial": 417,
+      "inv": "InvDef_IO_Pickup_Towel",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "weapon_dahlmech_chaingun",
+      "serial": 418,
+      "inv": "Weapon_DahlMech_Chaingun",
+      "parts": 2,
+      "comps": 1,
+      "comp_keys": [
+        "comp_dahlmech_chaingun"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "weapon_dahlmech_emp",
+      "serial": 419,
+      "inv": "Weapon_DahlMech_EMP",
+      "parts": 2,
+      "comps": 1,
+      "comp_keys": [
+        "comp_dahlmech_emp"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "weapon_dahlmech_flamespitter",
+      "serial": 420,
+      "inv": "Weapon_DahlMech_FlameSpitter",
+      "parts": 2,
+      "comps": 1,
+      "comp_keys": [
+        "comp_dahlmech_flamespitter"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "weapon_dahlmech_grenadelauncher",
+      "serial": 421,
+      "inv": "Weapon_DahlMech_GrenadeLauncher",
+      "parts": 2,
+      "comps": 1,
+      "comp_keys": [
+        "comp_dahlmech_grenadelauncher"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "inv_sc_pickup_suggarathegg",
+      "serial": 422,
+      "inv": "Inv_SC_Pickup_SuggarathEgg",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_sc_pickup_heart",
+      "serial": 423,
+      "inv": "InvDef_SC_Pickup_Heart",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_keystone",
+      "serial": 424,
+      "inv": "InvDef_IO_Pickup_Keystone",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_gifts",
+      "serial": 425,
+      "inv": "InvDef_IO_Pickup_Gifts",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_picture",
+      "serial": 426,
+      "inv": "InvDef_IO_Pickup_Picture",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_lights",
+      "serial": 427,
+      "inv": "InvDef_IO_Pickup_Lights",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_passwordlog",
+      "serial": 428,
+      "inv": "InvDef_IO_Pickup_PasswordLog",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_dahlbadarm1",
+      "serial": 433,
+      "inv": "InvDef_IO_Pickup_DahlBadArm1",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_dahlbadarm2",
+      "serial": 434,
+      "inv": "InvDef_IO_Pickup_DahlBadArm2",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_dahlbadarm3",
+      "serial": 435,
+      "inv": "InvDef_IO_Pickup_DahlBadArm3",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_keepsake3",
+      "serial": 436,
+      "inv": "InvDef_IO_Pickup_Keepsake3",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "inv_m3_pickup_glowleaf",
+      "serial": 442,
+      "inv": "Inv_M3_Pickup_Glowleaf",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_pickup_gumpyhat",
+      "serial": 443,
+      "inv": "InvDef_Pickup_GumpyHat",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "inv_dbd_pickup_driftwood",
+      "serial": 444,
+      "inv": "Inv_DBD_Pickup_Driftwood",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "health_booster_pickup_healthraiser",
+      "serial": 445,
+      "inv": "health_booster_pickup_healthraiser",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_m3_pickup_keystone",
+      "serial": 449,
+      "inv": "InvDef_M3_Pickup_Keystone",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_m4_pickup_dahlkeycard_warroom",
+      "serial": 450,
+      "inv": "InvDef_M4_Pickup_DahlKeycard_WarRoom",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_m4_pickup_dahlkeycard_powercore",
+      "serial": 451,
+      "inv": "InvDef_M4_Pickup_DahlKeycard_Powercore",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_dbd_pickup_dahlkeycard",
+      "serial": 452,
+      "inv": "InvDef_DBD_Pickup_DahlKeycard",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_dbd_dogtag_samuels",
+      "serial": 453,
+      "inv": "InvDef_DBD_DogTag_Samuels",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_dbd_dogtag_cooper",
+      "serial": 454,
+      "inv": "InvDef_DBD_DogTag_Cooper",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_dbd_dogtag_austin",
+      "serial": 455,
+      "inv": "InvDef_DBD_DogTag_Austin",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_dbd_dogtag_hays",
+      "serial": 456,
+      "inv": "InvDef_DBD_DogTag_Hays",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_dbd_dogtag_turner",
+      "serial": 457,
+      "inv": "InvDef_DBD_DogTag_Turner",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "weapon_dahlmech_flamespitterunderbarrel",
+      "serial": 459,
+      "inv": "Weapon_DahlMech_FlameSpitterUnderbarrel",
+      "parts": 2,
+      "comps": 1,
+      "comp_keys": [
+        "comp_dahlmech_flamespitter"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_staff",
+      "serial": 460,
+      "inv": "InvDef_IO_Pickup_Staff",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "invdef_io_pickup_bomb",
+      "serial": 461,
+      "inv": "InvDef_IO_Pickup_Bomb",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "inv_echologdefault_cello",
+      "serial": 462,
+      "inv": "Inv_EchoLogDefault_Cello",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "inv_contractitem_dahljetpack",
+      "serial": 466,
+      "inv": "Inv_ContractItem_DahlJetpack",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "inv_contractitem_dahlhelmet",
+      "serial": 467,
+      "inv": "Inv_ContractItem_DahlHelmet",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "inv_contractitem_scavgrenade",
+      "serial": 468,
+      "inv": "Inv_ContractItem_ScavGrenade",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "inv_contractitem_kraggoncore",
+      "serial": 469,
+      "inv": "Inv_ContractItem_KraggonCore",
+      "parts": 0,
+      "comps": 0,
+      "comp_keys": [],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "weapon_turret_dahlchaingun",
+      "serial": 470,
+      "inv": "Weapon_Turret_DahlChaingun",
+      "parts": 2,
+      "comps": 1,
+      "comp_keys": [
+        "comp_turret_dahlchaingun"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "weapon_dahlmech_energygun",
+      "serial": 471,
+      "inv": "Weapon_DahlMech_EnergyGun",
+      "parts": 2,
+      "comps": 1,
+      "comp_keys": [
+        "comp_dahlmech_energygun"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "weapon_dahlgrunt_crashflamer",
+      "serial": 472,
+      "inv": "Weapon_DahlGrunt_CrashFlamer",
+      "parts": 2,
+      "comps": 1,
+      "comp_keys": [
+        "comp_dahlgrunt_crashflamer"
+      ],
+      "gzo_fallback_added": 0
+    },
+    {
+      "key": "weapon_uberhead",
+      "serial": 491,
+      "inv": "Weapon_UberHead",
+      "parts": 2,
+      "comps": 1,
+      "comp_keys": [
+        "comp_uberhead"
+      ],
+      "gzo_fallback_added": 0
+    }
+  ]
+}

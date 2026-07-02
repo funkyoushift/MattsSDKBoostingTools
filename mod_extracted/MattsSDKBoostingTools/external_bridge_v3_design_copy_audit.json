@@ -1,0 +1,9 @@
+{
+  "version": 3,
+  "changes": [
+    "Expanded external bridge layout to mirror BLImGui tab names/order and major cards",
+    "Added /resource/<name> endpoints for catalogs usable without live game actions",
+    "Kept game-touching actions routed through in-game SDK bridge",
+    "Some UI-only actions are visible but explicitly report not wired yet instead of silently doing nothing"
+  ]
+}

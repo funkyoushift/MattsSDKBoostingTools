@@ -1,0 +1,8 @@
+{
+  "version": "v4",
+  "changes": [
+    "resource-backed dropdown metadata",
+    "external legit builder root/part payload bridge",
+    "BL4 codes/item pool/map/station sources exposed to external app"
+  ]
+}
