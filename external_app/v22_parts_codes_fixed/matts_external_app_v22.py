@@ -18,6 +18,11 @@ class App(V9App):
         self.legit_human_output = ''
         self.legit_base85_output = ''
         self.legit_status_message = 'Select a root, add parts, then Validate or Build Base85.'
+        self.bl4_active_id = ''
+        self.bl4_selected_ids = set()
+        self.bl4_status_message = ''
+        self.bl4_cache_autoload_attempted = False
+        self.bl4_selection_refreshing = False
         super().__init__()
         self.title("Matt's SDK Boosting Tools - External V22 Parts Codes GZO Visible")
 
@@ -472,7 +477,8 @@ class App(V9App):
             return []
 
     def _refresh_gzo_catalog_async(self):
-        self.log('Refreshing GZO BL4 codes from save-editor.be catalog API...')
+        self._set_bl4_status('Refreshing GZO BL4 codes from save-editor.be catalog API...', log_global=True)
+        self._set_bl4_progress('Refreshing GZO catalog locally...')
         def work():
             try:
                 rows = self._fetch_gzo_catalog_entries()
@@ -480,10 +486,14 @@ class App(V9App):
                 def done():
                     self._populate_bl4_filter_values()
                     self._populate_bl4_codes_v13()
-                    self.log(f'Refreshed GZO catalog: {len(rows)} code(s) cached locally. Use Listing = Modded or Legit to filter GZO rows.')
+                    self._set_bl4_progress('')
+                    self._set_bl4_status(f'Refreshed GZO catalog: {len(rows)} code(s) cached locally. Use Listing = Modded or Legit to filter GZO rows.', log_global=True)
                 self.after(0, done)
             except Exception as exc:
-                self.after(0, lambda:self.log(f'GZO refresh failed: {exc!r}'))
+                def failed():
+                    self._set_bl4_progress('')
+                    self._set_bl4_status(f'GZO refresh failed: {exc!r}', log_global=True)
+                self.after(0, failed)
         threading.Thread(target=work, daemon=True).start()
 
     def _get_lootlemon_entries(self):
@@ -523,19 +533,25 @@ class App(V9App):
 
     def _code_display(self, e):
         name = e.get('name') or 'Unnamed'
-        cat = e.get('type') or e.get('category') or 'Unknown'
-        rarity = e.get('rarity') or ''
-        man = e.get('manufacturer') or ''
-        source = e.get('source') or 'Local'
         listing = e.get('listing') or ''
-        status = e.get('mattmab_validator') or 'Unchecked'
-        pieces = [f"[ ] [{source}/{listing}] {name}", f"[{cat}]", rarity, status]
-        if man: pieces.append(man)
-        return ' | '.join([p for p in pieces if p])
+        eid=self._bl4_row_id(e)
+        active='> ' if eid == getattr(self, 'bl4_active_id', '') else '  '
+        checked='[X]' if eid in getattr(self, 'bl4_selected_ids', set()) else '[ ]'
+        prefix=f"[{listing.upper()}] " if listing in ('Legit','Modded') else ''
+        meta=' | '.join(x for x in [
+            self._mattmab_validator_short_local(e),
+            str(e.get('type') or ''),
+            str(e.get('manufacturer') or ''),
+            str(e.get('rarity') or ''),
+            str(e.get('character_class') or ''),
+            str(e.get('creator') or ''),
+        ] if x and x != 'GZO')
+        return f"{active}{checked} {prefix}{name}    {meta}"
 
     def _code_value(self, e, key):
-        if key == 'category': return str(e.get('type') or e.get('category') or '').strip()
-        if key == 'source': return str(e.get('creator') or e.get('source') or '').strip()
+        if key in ('category','type'): return str(e.get('type') or e.get('category') or '').strip()
+        if key == 'creator': return str(e.get('creator') or '').strip()
+        if key == 'source': return str(e.get('source') or '').strip()
         return str(e.get(key) or '').strip()
 
     def _code_filter_values(self, key, label_all='All'):
@@ -544,11 +560,11 @@ class App(V9App):
 
     def _populate_bl4_filter_values(self):
         mapping = {
-            'code_listing':['All','GZO','Legit','Modded','Lootlemon','Local Cache'],
-            'code_type':self._code_filter_values('category'),
+            'code_listing':self._bl4_listing_values(),
+            'code_type':self._code_filter_values('type'),
             'code_manufacturer':self._code_filter_values('manufacturer'),
             'code_rarity':self._code_filter_values('rarity'),
-            'code_creator':self._code_filter_values('source'),
+            'code_creator':self._code_filter_values('creator'),
         }
         for fid, values in mapping.items():
             cb=self.widgets.get(fid)
@@ -827,45 +843,66 @@ class App(V9App):
         return w
 
     def _tab_bl4_codes_v13(self, body, cards):
+        self._ensure_bl4_state()
+        if not self.bl4_cache_autoload_attempted:
+            self.bl4_cache_autoload_attempted=True
+            self._load_bl4_cache_local(silent=True)
         wrap, inner = self._card_wrap(body, 'BL4 Codes', '#b37a00')
         wrap.pack(fill='both', expand=True, padx=6, pady=5)
-        tk.Label(inner, text='Merged local BL4 codes catalog. Search, details, bookmarks, and parts breakdown run locally; live delivery uses the SDK bridge.', bg='#090d17', fg='#9fb3d9', font=('Segoe UI',8), anchor='w').pack(fill='x', padx=8, pady=(6,2))
+        tk.Label(inner, text='Merged BL4 Codes catalog', bg='#090d17', fg='#cfd8f3', font=('Segoe UI',8,'bold'), anchor='w').pack(fill='x', padx=8, pady=(6,1))
+        tk.Label(inner, text='Single merged codes tab. Refresh GZO updates from save-editor.be. Local Lootlemon JSON is used only as a serial/link cache and local-only fallback rows. This never scrapes lootlemon.com.', bg='#090d17', fg='#9fb3d9', font=('Segoe UI',8), anchor='w', justify='left', wraplength=1200).pack(fill='x', padx=8, pady=(0,2))
+        tk.Label(inner, text='Mattmab Validation labels: Legit = the serial structure passed the conservative real-count/rule validator with no hard errors. Modded = the validator found hard structural problems such as wrong-root parts, unresolved parts, disallowed selected components, duplicate/slot-count breaks, or obvious cross-root modded tokens. Error = the serial could not be parsed/validated. This is a tooling classification, not a Gearbox/official authenticity guarantee.', bg='#090d17', fg='#9fb3d9', font=('Segoe UI',8), anchor='w', justify='left', wraplength=1200).pack(fill='x', padx=8, pady=(0,4))
 
-        top = tk.Frame(inner, bg='#090d17'); top.pack(fill='x', padx=8, pady=4)
+        cache_buttons = tk.Frame(inner, bg='#090d17'); cache_buttons.pack(fill='x', padx=8, pady=(0,5))
+        for i,(txt,cmd,col) in enumerate([
+            ('Load Cache', self._load_bl4_cache_local, 'cyan'),
+            ('Refresh GZO', self._refresh_gzo_catalog_async, 'gold'),
+            ('Reload Lootlemon Cache', self._reload_bl4_lootlemon_cache_local, 'gold'),
+            ('Mattmab Validation', self._run_bl4_mattmab_validation_local, 'green'),
+            ('Import Selected To Bookmarks', self._import_selected_bl4_bookmarks, 'purple'),
+        ]):
+            tk.Button(cache_buttons, text=txt, command=cmd, bg='#172033', fg=ACCENT_COLORS.get(col,'#00d4ff'), relief='flat', font=('Segoe UI',8,'bold')).grid(row=0,column=i,sticky='ew',padx=3,pady=3)
+            cache_buttons.grid_columnconfigure(i, weight=1)
+
+        self.bl4_progress_var=tk.StringVar(value=getattr(self,'bl4_progress_message',''))
+        tk.Label(inner, textvariable=self.bl4_progress_var, bg='#090d17', fg='#9fb3d9', font=('Segoe UI',8), anchor='w', justify='left', wraplength=1200).pack(fill='x', padx=8, pady=(0,3))
+        tk.Frame(inner, bg='#333a48', height=1).pack(fill='x', padx=8, pady=(2,5))
+        tk.Label(inner, text='Filters', bg='#090d17', fg='#cfd8f3', font=('Segoe UI',8,'bold'), anchor='w').pack(fill='x', padx=8)
+
+        top = tk.Frame(inner, bg='#090d17'); top.pack(fill='x', padx=8, pady=(1,4))
         left_filters = tk.Frame(top, bg='#090d17'); left_filters.pack(side='left', fill='x', expand=True)
         right_filters = tk.Frame(top, bg='#090d17'); right_filters.pack(side='left', fill='x', expand=True, padx=(10,0))
 
         self._field_row_entry_v13(left_filters, 'Search', 'code_search', '')
-        self._field_row_combo_v13(left_filters, 'Listing', 'code_listing', ['All','Lootlemon','Local Cache'])
-        self._field_row_combo_v13(left_filters, 'Type', 'code_type', self._code_filter_values('category'))
+        self._field_row_combo_v13(left_filters, 'Listing', 'code_listing', self._bl4_listing_values())
+        self._field_row_combo_v13(left_filters, 'Type', 'code_type', self._code_filter_values('type'))
         self._field_row_combo_v13(right_filters, 'Manufacturer', 'code_manufacturer', self._code_filter_values('manufacturer'))
         self._field_row_combo_v13(right_filters, 'Rarity', 'code_rarity', self._code_filter_values('rarity'))
-        self._field_row_combo_v13(right_filters, 'Creator', 'code_creator', self._code_filter_values('source'))
-        self._field_row_combo_v13(right_filters, 'Mattmab Result', 'code_mattmab_result', ['All','Unchecked','Legit','Modded','Error','?'])
+        self._field_row_combo_v13(right_filters, 'Creator', 'code_creator', self._code_filter_values('creator'))
+        self._field_row_combo_v13(right_filters, 'Mattmab Result', 'code_mattmab_result', ['All','Legit','Modded','Error','Unchecked'])
 
         filter_buttons = tk.Frame(inner, bg='#090d17'); filter_buttons.pack(fill='x', padx=8, pady=(0,4))
-        for i,(txt,val,col) in enumerate([('All Results','All','cyan'),('Legit','Legit','green'),('Modded','Modded','purple'),('Error','Error','red'),('?','?','purple')]):
+        for i,(txt,val,col) in enumerate([('All Results','All','cyan'),('Legit','Legit','green'),('Modded','Modded','purple'),('Error','Error','gold'),('?','Unchecked','purple')]):
             tk.Button(filter_buttons, text=txt, command=lambda v=val:self._set_bl4_result_filter(v), bg='#172033', fg=ACCENT_COLORS.get(col,'#00d4ff'), relief='flat', font=('Segoe UI',8,'bold')).grid(row=0, column=i, sticky='ew', padx=3, pady=3)
         for i in range(5): filter_buttons.grid_columnconfigure(i, weight=1)
 
-        # V21: show the code-cache/GZO controls directly in this custom BL4 Codes tab.
-        # Earlier builds had the actions in ui_layout.json, but this tab renderer replaced the generic
-        # card renderer, so Refresh GZO was wired but never drawn.
-        cache_buttons = tk.Frame(inner, bg='#090d17'); cache_buttons.pack(fill='x', padx=8, pady=(0,6))
+        self.bl4_count_var=tk.StringVar(value='0 shown / 0 merged | 0 selected')
+        tk.Label(inner, textvariable=self.bl4_count_var, bg='#090d17', fg='#9fb3d9', font=('Segoe UI',8), anchor='w').pack(fill='x', padx=8, pady=(0,2))
+
+        list_buttons = tk.Frame(inner, bg='#090d17'); list_buttons.pack(fill='x', padx=8, pady=(0,4))
         for i,(txt,cmd,col) in enumerate([
-            ('Load Cache', lambda:self._codes_local_action('codes_load_cache'), 'cyan'),
-            ('Refresh GZO', self._refresh_gzo_catalog_async, 'gold'),
-            ('Reload Lootlemon Cache', lambda:self._codes_local_action('codes_reload_lootlemon'), 'gold'),
-            ('Mattmab Validation', lambda:self.run_action({'id':'codes_mattmab_validation','label':'Mattmab Validation','uses_fields':['code_serial']}), 'green'),
+            ('Select All', self._select_all_bl4_codes, 'purple'),
+            ('Clear', self._clear_bl4_code_selection, 'pink'),
+            ('Copy Selected Serials', self._copy_selected_bl4_serials, 'gold'),
         ]):
-            tk.Button(cache_buttons, text=txt, command=cmd, bg='#172033', fg=ACCENT_COLORS.get(col,'#00d4ff'), relief='flat', font=('Segoe UI',8,'bold')).grid(row=0,column=i,sticky='ew',padx=3,pady=3)
-        for i in range(4): cache_buttons.grid_columnconfigure(i, weight=1)
+            tk.Button(list_buttons, text=txt, command=cmd, bg='#172033', fg=ACCENT_COLORS.get(col,'#00d4ff'), relief='flat', font=('Segoe UI',8,'bold')).grid(row=0,column=i,sticky='ew',padx=3,pady=3)
+            list_buttons.grid_columnconfigure(i,weight=1)
 
         main = tk.Frame(inner, bg='#090d17'); main.pack(fill='both', expand=True, padx=8, pady=4)
         main.grid_columnconfigure(0, weight=3); main.grid_columnconfigure(1, weight=2); main.grid_rowconfigure(1, weight=1)
         tk.Label(main, text='CODES', bg='#090d17', fg='#cfd8f3', font=('Segoe UI',8,'bold'), anchor='w').grid(row=0,column=0,sticky='ew')
         tk.Label(main, text='DETAILS', bg='#090d17', fg='#cfd8f3', font=('Segoe UI',8,'bold'), anchor='w').grid(row=0,column=1,sticky='ew',padx=(8,0))
-        self.bl4_codes_listbox = tk.Listbox(main, height=18, selectmode='extended', bg='#0e1320', fg='#d7def5', selectbackground='#1f3b63', relief='flat', font=('Consolas',8), exportselection=False)
+        self.bl4_codes_listbox = tk.Listbox(main, height=18, selectmode='browse', bg='#0e1320', fg='#d7def5', selectbackground='#1f3b63', relief='flat', font=('Consolas',8), exportselection=False)
         self.bl4_codes_listbox.grid(row=1,column=0,sticky='nsew',pady=4)
         self.bl4_codes_listbox.bind('<<ListboxSelect>>', lambda e:self._bl4_code_selected())
         details = tk.Frame(main, bg='#090d17'); details.grid(row=1,column=1,sticky='nsew',padx=(8,0),pady=4); details.grid_rowconfigure(1,weight=1); details.grid_rowconfigure(3,weight=1); details.grid_columnconfigure(0,weight=1)
@@ -876,48 +913,125 @@ class App(V9App):
         self.bl4_breakdown_text = tk.Text(details, height=8, bg='#181417', fg='#f1f5ff', insertbackground='#f1f5ff', relief='flat', wrap='word', font=('Consolas',8))
         self.bl4_breakdown_text.grid(row=3,column=0,sticky='nsew',pady=(5,0))
         detail_buttons = tk.Frame(details, bg='#090d17'); detail_buttons.grid(row=4,column=0,sticky='ew',pady=(4,0))
-        for i,(txt,cmd,col) in enumerate([
-            ('Copy Parts Breakdown', self._copy_bl4_breakdown, 'purple'),
-            ('Copy Serial', self._copy_bl4_serial, 'cyan'),
-            ('Bookmark This', self._bookmark_bl4_selected, 'gold'),
-            ('Open Lootlemon', self._open_bl4_lootlemon, 'gold'),
-            ('Run Parts Breakdown', self._run_bl4_parts_breakdown, 'cyan'),
-        ]):
-            tk.Button(detail_buttons, text=txt, command=cmd, bg='#172033', fg=ACCENT_COLORS.get(col,'#00d4ff'), relief='flat', font=('Segoe UI',8,'bold')).grid(row=0,column=i,sticky='ew',padx=2,pady=2)
-        for i in range(5): detail_buttons.grid_columnconfigure(i,weight=1)
+        self.bl4_detail_buttons = detail_buttons
 
-        list_buttons = tk.Frame(inner, bg='#090d17'); list_buttons.pack(fill='x', padx=8, pady=(0,4))
-        for i,(txt,cmd,col) in enumerate([
-            ('Select All', self._select_all_bl4_codes, 'purple'),
-            ('Clear Selection', self._clear_bl4_code_selection, 'red'),
-            ('Copy Selected Serials', self._copy_selected_bl4_serials, 'gold'),
-            ('Import Selected To Bookmarks', self._import_selected_bl4_bookmarks, 'purple'),
-        ]):
-            tk.Button(list_buttons, text=txt, command=cmd, bg='#172033', fg=ACCENT_COLORS.get(col,'#00d4ff'), relief='flat', font=('Segoe UI',8,'bold')).grid(row=0,column=i,sticky='ew',padx=3,pady=3)
-        for i in range(4): list_buttons.grid_columnconfigure(i,weight=1)
-
+        tk.Frame(inner, bg='#333a48', height=1).pack(fill='x', padx=8, pady=(3,5))
         footer = tk.Frame(inner, bg='#090d17'); footer.pack(fill='x', padx=8, pady=(4,8))
         self._field_row_combo_v13(footer, 'BL4 Codes Target', 'code_target_player', self.player_options, readonly=True)
         self._field_row_combo_v13(footer, 'Override delivery level?', 'code_override_level', ['false','true'], readonly=True)
         self._field_row_entry_v13(footer, 'Delivery Level', 'code_delivery_level', '60')
+        self.bl4_delivery_status_var=tk.StringVar(value='0 selected | Delivery uses GiveRewardAllPlayers, then patches requested target(s)')
+        tk.Label(footer, textvariable=self.bl4_delivery_status_var, bg='#090d17', fg='#9fb3d9', font=('Segoe UI',8), anchor='w').pack(fill='x', padx=8, pady=(2,0))
         deliver = tk.Frame(footer, bg='#090d17'); deliver.pack(fill='x', padx=8, pady=(3,0))
         for i,(txt,mode,col) in enumerate([('Deliver Selected','selected','purple'),('Deliver All','all','gold'),('Deliver Non-Host','nonhost','cyan')]):
             tk.Button(deliver, text=txt, command=lambda m=mode:self._deliver_bl4_codes(m), bg='#172033', fg=ACCENT_COLORS.get(col,'#00d4ff'), relief='flat', font=('Segoe UI',8,'bold')).grid(row=0,column=i,sticky='ew',padx=3,pady=3)
         tk.Button(deliver, text='Refresh Players', command=self.poll_status, bg='#172033', fg='#00d4ff', relief='flat', font=('Segoe UI',8,'bold')).grid(row=0,column=3,sticky='ew',padx=3,pady=3)
         for i in range(4): deliver.grid_columnconfigure(i,weight=1)
+        self.bl4_split_preview_var=tk.StringVar(value='Delivery split: no valid serials selected yet.')
+        tk.Label(footer, textvariable=self.bl4_split_preview_var, bg='#090d17', fg='#9fb3d9', font=('Segoe UI',8), anchor='w', justify='left', wraplength=1200).pack(fill='x', padx=8, pady=(3,0))
+        self.bl4_status_var=tk.StringVar(value=self.bl4_status_message)
+        tk.Label(footer, textvariable=self.bl4_status_var, bg='#090d17', fg='#21e05f', font=('Segoe UI',8), anchor='w', justify='left', wraplength=1200).pack(fill='x', padx=8, pady=(2,0))
         self.bl4_filtered_entries=[]
         self._populate_bl4_filter_values()
         self._populate_bl4_codes_v13()
 
+    def _ensure_bl4_state(self):
+        if not hasattr(self, 'bl4_active_id'):
+            self.bl4_active_id=''
+        if not hasattr(self, 'bl4_selected_ids'):
+            self.bl4_selected_ids=set()
+        if not hasattr(self, 'bl4_status_message'):
+            self.bl4_status_message=''
+        if not hasattr(self, 'bl4_cache_autoload_attempted'):
+            self.bl4_cache_autoload_attempted=False
+        if not hasattr(self, 'bl4_selection_refreshing'):
+            self.bl4_selection_refreshing=False
+
+    def _set_bl4_status(self, message, log_global=False):
+        self._ensure_bl4_state()
+        self.bl4_status_message=str(message or '')
+        if hasattr(self, 'bl4_status_var'):
+            self.bl4_status_var.set(self.bl4_status_message)
+        if log_global and self.bl4_status_message:
+            self.log(self.bl4_status_message)
+
+    def _set_bl4_progress(self, message):
+        self.bl4_progress_message=str(message or '')
+        if hasattr(self, 'bl4_progress_var'):
+            self.bl4_progress_var.set(self.bl4_progress_message)
+
+    def _load_bl4_cache_local(self, silent=False):
+        rows=self._get_code_entries()
+        if rows and not self.bl4_active_id:
+            self.bl4_active_id=str(rows[0].get('id') or self._gzo_entry_id(rows[0]))
+        if not silent:
+            self._set_bl4_status(f'Loaded {len(rows)} merged BL4 code(s) from local cache.', log_global=True)
+        self._populate_bl4_filter_values()
+        self._populate_bl4_codes_v13()
+
+    def _reload_bl4_lootlemon_cache_local(self):
+        self._populate_bl4_filter_values()
+        self._populate_bl4_codes_v13()
+        local_count=len(self._get_lootlemon_entries())
+        self._set_bl4_status(f'Reloaded local Lootlemon cache: {local_count} local row(s) available. Direct lootlemon.com scraping is disabled.', log_global=True)
+
+    def _run_bl4_mattmab_validation_local(self):
+        self._set_bl4_status('Local Mattmab validation port pending.', log_global=True)
+
+    def _bl4_listing_values(self):
+        vals=sorted({str(e.get('listing') or '').strip() for e in self._get_code_entries() if str(e.get('listing') or '').strip()}, key=lambda x:x.lower())
+        preferred=[x for x in ('Legit','Modded','Lootlemon','GZO') if x in vals]
+        rest=[x for x in vals if x not in preferred]
+        return ['All'] + preferred + rest
+
+    def _mattmab_entry_matches_filter_local(self, row, filt):
+        want=str(filt or 'All').strip().upper()
+        if want == 'ALL':
+            return True
+        status=str((row or {}).get('mattmab_validator') or '').strip().upper()
+        if want == 'UNCHECKED':
+            return status not in ('PASS','FAIL','ERROR')
+        if want == 'LEGIT':
+            return status == 'PASS'
+        if want == 'MODDED':
+            return status == 'FAIL'
+        return status == want
+
+    def _mattmab_validator_label_local(self, row):
+        status=str((row or {}).get('mattmab_validator') or '').strip().upper()
+        if status == 'PASS':
+            return 'Mattmab Validation: Legit'
+        if status == 'FAIL':
+            return 'Mattmab Validation: Modded'
+        if status == 'ERROR':
+            return 'Mattmab Validation: Error'
+        return 'Mattmab Validation: not checked'
+
+    def _mattmab_validator_short_local(self, row):
+        status=str((row or {}).get('mattmab_validator') or '').strip().upper()
+        if status == 'PASS':
+            return '[Legit]'
+        if status == 'FAIL':
+            return '[Modded]'
+        if status == 'ERROR':
+            return '[Validation Error]'
+        return '[Unchecked]'
+
+    def _gzo_meta_label_local(self, row):
+        return ' | '.join(str(row.get(k) or '').strip() for k in ('listing','type','manufacturer','rarity','creator','tags') if str(row.get(k) or '').strip())
+
+    def _bl4_row_id(self, row):
+        return str((row or {}).get('id') or self._gzo_entry_id(row or {}))
+
+    def _bl4_active_entry(self):
+        rows=self._get_code_entries()
+        for row in rows:
+            if self._bl4_row_id(row) == self.bl4_active_id:
+                return row
+        return rows[0] if rows else None
+
     def _set_bl4_result_filter(self, value):
-        # In Matt's BLImGui, GZO has a separate Legit/Modded listing filter.
-        # In this external tab the quick Legit/Modded buttons should be useful immediately,
-        # so they switch the GZO Listing filter instead of hiding rows behind Mattmab status.
-        if value in ('Legit','Modded') and 'code_listing' in self.field_vars:
-            self.field_vars['code_listing'].set(value)
-            if 'code_mattmab_result' in self.field_vars:
-                self.field_vars['code_mattmab_result'].set('All')
-        elif 'code_mattmab_result' in self.field_vars:
+        if 'code_mattmab_result' in self.field_vars:
             self.field_vars['code_mattmab_result'].set(value)
         self._populate_bl4_codes_v13()
 
@@ -931,41 +1045,56 @@ class App(V9App):
         result=self.field_vars.get('code_mattmab_result', tk.StringVar(value='All')).get()
         rows=[]
         for e in self._get_code_entries():
-            hay=' '.join(str(e.get(k) or '') for k in ('name','category','type','manufacturer','rarity','source','creator','listing','url','serial','tags')).lower()
+            hay=' '.join(str(e.get(k) or '') for k in ('name','listing','type','rarity','manufacturer','creator','character_class','tags','extra_tags','serial')).lower()
             if q and q not in hay: continue
             listing=str(e.get('listing') or e.get('source') or '').strip()
-            src=str(e.get('source') or '').strip()
             if self.field_vars.get('code_listing'):
                 lf=self.field_vars['code_listing'].get()
-                if lf == 'GZO' and src != 'GZO': continue
-                elif lf == 'Lootlemon' and src != 'Lootlemon': continue
-                elif lf == 'Local Cache' and src not in ('GZO','Lootlemon'): continue
-                elif lf not in ('All','GZO','Lootlemon','Local Cache') and listing != lf: continue
-            if cat!='All' and self._code_value(e,'category')!=cat: continue
+                if lf != 'All' and listing.lower() != lf.lower(): continue
+            if cat!='All' and self._code_value(e,'type')!=cat: continue
             if man!='All' and self._code_value(e,'manufacturer')!=man: continue
             if rar!='All' and self._code_value(e,'rarity')!=rar: continue
-            if creator!='All' and self._code_value(e,'source')!=creator: continue
-            status=str(e.get('mattmab_validator') or '').strip() or 'Unchecked'
-            if result != 'All' and status.upper() != result.upper(): continue
+            if creator!='All' and self._code_value(e,'creator')!=creator: continue
+            if not self._mattmab_entry_matches_filter_local(e, result): continue
             rows.append(e)
         self.bl4_filtered_entries=rows
+        all_ids={self._bl4_row_id(r) for r in self._get_code_entries()}
+        self.bl4_selected_ids={bid for bid in self.bl4_selected_ids if bid in all_ids}
         self.bl4_codes_listbox.delete(0,'end')
-        for e in rows: self.bl4_codes_listbox.insert('end', self._code_display(e))
+        visible=rows[:240]
+        if len(rows) > len(visible):
+            self.bl4_codes_listbox.insert('end', f'Showing first {len(visible)} row(s); narrow Search/Filters for more. Select All still selects all filtered rows.')
+        for e in visible:
+            self.bl4_codes_listbox.insert('end', self._code_display(e))
+        if rows and not self.bl4_active_id:
+            self.bl4_active_id=self._bl4_row_id(rows[0])
+        if rows and not any(self._bl4_row_id(r) == self.bl4_active_id for r in rows):
+            self.bl4_active_id=self._bl4_row_id(rows[0])
         if rows:
-            self.bl4_codes_listbox.selection_set(0)
-            self._bl4_code_selected()
+            self._set_bl4_active_detail(self._bl4_active_entry())
+            offset=1 if len(rows) > len(visible) else 0
+            for idx,row in enumerate(visible):
+                if self._bl4_row_id(row) == self.bl4_active_id:
+                    self.bl4_selection_refreshing=True
+                    try:
+                        self.bl4_codes_listbox.selection_clear(0,'end')
+                        self.bl4_codes_listbox.selection_set(idx+offset)
+                        self.bl4_codes_listbox.see(idx+offset)
+                    finally:
+                        self.bl4_selection_refreshing=False
+                    break
         else:
             self._set_bl4_detail('', '', '')
-        self.log(f'BL4 Codes: showing {len(rows)} / {len(self._get_code_entries())} merged local entries. GZO cache: {len(self._get_gzo_entries())}.')
+        if hasattr(self, 'bl4_count_var'):
+            self.bl4_count_var.set(f'{len(rows)} shown / {len(self._get_code_entries())} merged | {len(self.bl4_selected_ids)} selected')
+        self._refresh_bl4_delivery_preview()
 
     def _selected_bl4_entries(self):
-        if not hasattr(self, 'bl4_codes_listbox'): return []
-        sel=list(self.bl4_codes_listbox.curselection())
-        if not sel and self.bl4_filtered_entries: sel=[0]
-        out=[]
-        for i in sel:
-            if 0 <= i < len(self.bl4_filtered_entries): out.append(self.bl4_filtered_entries[i])
-        return out
+        rows=[e for e in self._get_code_entries() if self._bl4_row_id(e) in self.bl4_selected_ids]
+        if rows:
+            return rows
+        active=self._bl4_active_entry()
+        return [active] if active else []
 
     def _set_bl4_detail(self, detail, serial, breakdown):
         for widget, text in [(getattr(self,'bl4_detail_text',None), detail), (getattr(self,'bl4_serial_text',None), serial), (getattr(self,'bl4_breakdown_text',None), breakdown)]:
@@ -973,11 +1102,36 @@ class App(V9App):
                 widget.configure(state='normal'); widget.delete('1.0','end'); widget.insert('1.0', text); widget.configure(state='normal')
         self.field_vars['code_serial']=self.field_vars.get('code_serial') or tk.StringVar(value='')
         self.field_vars['code_serial'].set(serial)
+        if not detail and not serial and not breakdown:
+            parent=getattr(self, 'bl4_detail_buttons', None)
+            if parent:
+                for child in parent.winfo_children():
+                    child.destroy()
 
     def _bl4_code_selected(self):
-        entries=self._selected_bl4_entries()
-        if not entries: return self._set_bl4_detail('', '', '')
-        e=entries[0]
+        if getattr(self, 'bl4_selection_refreshing', False):
+            return
+        lb=getattr(self, 'bl4_codes_listbox', None)
+        if not lb:
+            return
+        sel=list(lb.curselection())
+        if not sel:
+            return
+        visible_offset=1 if len(getattr(self,'bl4_filtered_entries',[])) > 240 else 0
+        idx=sel[0]-visible_offset
+        if idx < 0 or idx >= min(len(getattr(self,'bl4_filtered_entries',[])), 240):
+            return
+        e=self.bl4_filtered_entries[idx]
+        eid=self._bl4_row_id(e)
+        self.bl4_active_id=eid
+        if eid in self.bl4_selected_ids:
+            self.bl4_selected_ids.discard(eid)
+        else:
+            self.bl4_selected_ids.add(eid)
+        self._populate_bl4_codes_v13()
+
+    def _set_bl4_active_detail(self, e):
+        if not e: return self._set_bl4_detail('', '', '')
         detail='\n'.join([
             f"Name: {e.get('name','')}",
             f"Source: {e.get('source','Local')}",
@@ -986,23 +1140,28 @@ class App(V9App):
             f"Manufacturer: {e.get('manufacturer','')}",
             f"Rarity: {e.get('rarity','')}",
             f"Creator: {e.get('creator','')}",
-            f"Mattmab Validation: {e.get('mattmab_validator') or 'Unchecked'}",
+            self._mattmab_validator_label_local(e),
+            str(e.get('mattmab_validator_detail') or ''),
             f"URL: {e.get('url','')}",
         ])
         serial=e.get('serial') or ''
         breakdown=self._bl4_parts_breakdown_text(serial, quiet=True)
         self._set_bl4_detail(detail, serial, breakdown)
+        self._draw_bl4_detail_buttons(e)
 
     def _select_all_bl4_codes(self):
         if hasattr(self,'bl4_codes_listbox'):
-            self.bl4_codes_listbox.selection_set(0,'end'); self.log(f'Selected {len(self.bl4_filtered_entries)} BL4 code rows.')
+            for row in getattr(self, 'bl4_filtered_entries', []):
+                self.bl4_selected_ids.add(self._bl4_row_id(row))
+            self._populate_bl4_codes_v13()
 
     def _clear_bl4_code_selection(self):
         if hasattr(self,'bl4_codes_listbox'):
-            self.bl4_codes_listbox.selection_clear(0,'end'); self.log('Cleared BL4 code selection.')
+            self.bl4_selected_ids.clear()
+            self._populate_bl4_codes_v13()
 
     def _selected_bl4_serials(self):
-        return [str(e.get('serial') or '').strip() for e in self._selected_bl4_entries() if str(e.get('serial') or '').strip()]
+        return [str(e.get('serial') or '').strip() for e in self._selected_bl4_entries() if self._is_valid_bl4_serial(e.get('serial',''))]
 
     def _copy_text_v13(self, text, label):
         try:
@@ -1011,8 +1170,10 @@ class App(V9App):
 
     def _copy_selected_bl4_serials(self):
         serials=self._selected_bl4_serials()
-        if not serials: return self.log('No BL4 codes selected.')
-        self._copy_text_v13('\n'.join(serials), f'{len(serials)} selected serial(s)')
+        if not serials:
+            return self._set_bl4_status('Select one or more BL4 serials to copy.', log_global=True)
+        self._copy_text_v13('\n'.join(serials), f'{len(serials)} selected BL4 serial(s)')
+        self._set_bl4_status(f'Copied {len(serials)} selected BL4 serial(s) to clipboard.')
 
     def _copy_bl4_serial(self):
         serial=self.field_vars.get('code_serial', tk.StringVar()).get()
@@ -1023,6 +1184,24 @@ class App(V9App):
         text=getattr(self,'bl4_breakdown_text',None).get('1.0','end-1c') if getattr(self,'bl4_breakdown_text',None) else ''
         if not text: return self.log('No parts breakdown to copy.')
         self._copy_text_v13(text, 'parts breakdown')
+
+    def _draw_bl4_detail_buttons(self, active):
+        parent=getattr(self, 'bl4_detail_buttons', None)
+        if not parent:
+            return
+        for child in parent.winfo_children():
+            child.destroy()
+        buttons=[
+            ('Copy Parts Breakdown', self._copy_bl4_breakdown, 'purple'),
+            ('Copy Serial', self._copy_bl4_serial, 'purple'),
+        ]
+        url=str((active or {}).get('lootlemon_url') or (active or {}).get('url') or '').strip()
+        if url and 'lootlemon.com' in url.lower():
+            buttons.append(('Open Lootlemon', self._open_bl4_lootlemon, 'gold'))
+        buttons.append(('Bookmark This', self._bookmark_bl4_selected, 'cyan'))
+        for i,(txt,cmd,col) in enumerate(buttons):
+            tk.Button(parent, text=txt, command=cmd, bg='#172033', fg=ACCENT_COLORS.get(col,'#00d4ff'), relief='flat', font=('Segoe UI',8,'bold')).grid(row=0,column=i,sticky='ew',padx=2,pady=2)
+            parent.grid_columnconfigure(i,weight=1)
 
     def _bl4_bookmark_payload(self, e):
         return {
@@ -1041,20 +1220,19 @@ class App(V9App):
         }
 
     def _bookmark_bl4_selected(self):
-        entries=self._selected_bl4_entries()
-        if not entries: return self.log('No selected code to bookmark.')
-        e=entries[0]
-        row=self._bl4_bookmark_payload(e)
-        if not row['serial']: return self.log('Selected BL4 code has no serial to bookmark.')
-        self._add_bookmarks_local([row], update_existing=True)
-        self.log('Bookmarked selected code locally.')
+        active=self._bl4_active_entry()
+        if not active:
+            return self._set_bl4_status('No selected code to bookmark.', log_global=True)
+        self.bl4_selected_ids.add(self._bl4_row_id(active))
+        self._import_selected_bl4_bookmarks()
 
     def _import_selected_bl4_bookmarks(self):
         entries=self._selected_bl4_entries()
-        if not entries: return self.log('No BL4 codes selected to import.')
-        rows=[self._bl4_bookmark_payload(e) for e in entries]
+        rows=[self._bl4_bookmark_payload(e) for e in entries if self._is_valid_bl4_serial(e.get('serial',''))]
+        if not rows:
+            return self._set_bl4_status('No selected valid @U BL4 Codes serials to import.', log_global=True)
         added=self._add_bookmarks_local(rows, update_existing=False)
-        self.log(f'Imported {added} selected code(s) to bookmarks.')
+        self._set_bl4_status(f'Imported {added} BL4 Codes serial(s) to Serial Bookmarks.', log_global=True)
 
     def _bl4_parts_breakdown_text(self, serial, quiet=False):
         serial=str(serial or '').strip()
@@ -1081,9 +1259,9 @@ class App(V9App):
         self._set_bl4_breakdown_text(self._bl4_parts_breakdown_text(serial))
 
     def _open_bl4_lootlemon(self):
-        entries=self._selected_bl4_entries()
-        if not entries: return self.log('No selected code to open.')
-        url=str(entries[0].get('url') or '').strip()
+        active=self._bl4_active_entry()
+        if not active: return self.log('No selected code to open.')
+        url=str(active.get('lootlemon_url') or active.get('url') or '').strip()
         if not url: return self.log('Selected BL4 code has no Lootlemon URL.')
         if not re.match(r'^https?://', url, re.I): return self.log('Selected BL4 code URL is not a web link.')
         try:
@@ -1094,10 +1272,7 @@ class App(V9App):
 
     def _deliver_bl4_codes(self, mode):
         serials=self._selected_bl4_serials()
-        if not serials:
-            serial=(self.field_vars.get('code_serial', tk.StringVar()).get() or '').strip()
-            if serial: serials=[serial]
-        if not serials: return self.log('No BL4 serial selected to deliver.')
+        if not serials: return self._set_bl4_status('Select one or more valid GZO serials first.', log_global=True)
         try: level=int(str(self.field_vars.get('code_delivery_level', tk.StringVar(value='60')).get()).replace(',','').strip())
         except Exception: return messagebox.showerror('Invalid value','Delivery Level must be a number.')
         override=str(self.field_vars.get('code_override_level', tk.StringVar(value='false')).get()).lower() in ('1','true','yes','on')
@@ -1112,6 +1287,20 @@ class App(V9App):
             except Exception as exc:
                 self.after(0, lambda:self.log('Delivery failed: '+repr(exc)))
         threading.Thread(target=work, daemon=True).start()
+
+    def _refresh_bl4_delivery_preview(self):
+        rows=self._selected_bl4_entries()
+        serials=[str(e.get('serial') or '').strip() for e in rows if e and self._is_valid_bl4_serial(e.get('serial',''))]
+        if hasattr(self, 'bl4_delivery_status_var'):
+            self.bl4_delivery_status_var.set(f'{len(self.bl4_selected_ids)} selected | Delivery uses GiveRewardAllPlayers, then patches requested target(s)')
+        if hasattr(self, 'bl4_split_preview_var'):
+            if not serials:
+                self.bl4_split_preview_var.set('Delivery split: no valid serials selected yet.')
+            else:
+                total=sum(len(s) for s in serials)
+                self.bl4_split_preview_var.set(f'Delivery split: 1 part | {len(serials)} serial(s) | {total} raw chars | {total} estimated payload chars.')
+        if hasattr(self, 'bl4_status_var'):
+            self.bl4_status_var.set(self.bl4_status_message)
 
     def _update_player_options(self, status):
         super()._update_player_options(status)
@@ -1567,17 +1756,14 @@ class App(V9App):
     def _codes_local_action(self, aid):
         if aid == 'codes_refresh_gzo':
             return self._refresh_gzo_catalog_async()
-        if aid in ('codes_load_cache','codes_reload_lootlemon'):
-            try:
-                self._populate_bl4_filter_values(); self._populate_bl4_codes_v13(); self.log('Reloaded bundled Lootlemon + local GZO cache resources.')
-            except Exception as exc: self.log(f'Reload code resources failed: {exc!r}')
-            return
+        if aid == 'codes_load_cache':
+            return self._load_bl4_cache_local()
+        if aid == 'codes_reload_lootlemon':
+            return self._reload_bl4_lootlemon_cache_local()
         if aid=='codes_import_bookmarks':
-            entries=self._selected_bl4_entries()
-            if not entries: return self.log('No BL4 codes selected to import.')
-            added=self._add_bookmarks_local([self._bl4_bookmark_payload(e) for e in entries], update_existing=False)
-            self.log(f'Imported {added} selected code(s) to bookmarks.')
-            return
+            return self._import_selected_bl4_bookmarks()
+        if aid == 'codes_mattmab_validation':
+            return self._run_bl4_mattmab_validation_local()
 
     def _serial_tools_input_value(self):
         if hasattr(self, '_serial_tools_get_text'):
@@ -1642,7 +1828,7 @@ class App(V9App):
         if aid in ('codes_load_cache','codes_refresh_gzo','codes_reload_lootlemon','codes_import_bookmarks'):
             return self._codes_local_action(aid)
         if aid == 'codes_mattmab_validation':
-            action=dict(action); action['uses_fields']=['code_serial']
+            return self._codes_local_action(aid)
         if aid == 'validator_basic':
             action=dict(action); action['uses_fields']=['validator_basic_input']
         if aid == 'validator_bulk':
