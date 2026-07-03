@@ -509,13 +509,36 @@ class App(V9App):
         except Exception:
             return str(key or '').strip().lower()
 
+    def _legit_root_is_class_mod(self, root):
+        if not root:
+            return False
+        root_key = str(root.get('key') or '').strip()
+        for field in ('item_type', '_item_type', 'type'):
+            value = str(root.get(field) or '').strip().lower().replace(' ', '_')
+            if value in ('class_mod', 'classmod'):
+                return True
+        try:
+            core_root = external_legit_builder.get_root(root_key)
+        except Exception:
+            core_root = None
+        if core_root:
+            value = str(core_root.get('item_type') or core_root.get('_item_type') or '').strip().lower().replace(' ', '_')
+            if value in ('class_mod', 'classmod'):
+                return True
+        try:
+            if self._root_item_type(root) == 'class_mod':
+                return True
+        except Exception:
+            pass
+        return bool(root_key.lower().startswith('classmod_') and core_root and str(core_root.get('item_type') or '').strip().lower() == 'class_mod')
+
     def _legit_apply_max_passives_local(self):
         import re
         self._sync_legit_selection_from_text()
         root = self._legit_current_root()
         if not root:
             return self._set_legit_status('Choose a class mod root first before using Add All Max Passives.')
-        if str(root.get('item_type') or '').strip().lower() != 'class_mod':
+        if not self._legit_root_is_class_mod(root):
             return self._set_legit_status('Add All Max Passives is only for class mod roots.')
         unlock = str(self.field_vars.get('legit_unlock_modded', tk.StringVar(value='false')).get() or '').lower() in ('1','true','yes','on')
         if not unlock:
