@@ -21,7 +21,16 @@ from .dev_tools import activate_devperk as _activate_devperk
 from .dev_tools import teleport_pawn_to_debug_cam as _teleport_pawn_to_debug_cam
 from .dev_tools import toggle_debug_cam as _toggle_debug_cam
 from .item_pool_spawning import spawn_item_pool
-from .movement_adjustments import delete_ground_items, zero_vault_power_costs_all_players
+from .movement_adjustments import (
+    apply_movement_advanced_to_all_players,
+    delete_ground_items,
+    refresh_jump_counts_all_players,
+    reset_movement_advanced_all_players,
+    set_no_target,
+    set_noclip,
+    set_time_dilation,
+    zero_vault_power_costs_all_players,
+)
 from .party_helpers import _gbc_session_world_and_gamestate, _kick_party_player_by_index, _list_party_players
 from .serial_converter import human_to_serial as _human_to_serial, serial_to_human as _serial_to_human
 from .shinies import DEFAULT_ITEM_LEVEL as _SHINY_DEFAULT_LEVEL, drop_all_shinies
@@ -43,6 +52,8 @@ serial_tools_serialized: str = ""
 serial_tools_deserialized: str = ""
 serial_tools_parts_breakdown: str = ""
 serial_tools_status: str = "Paste a @U serial or deserialized serial text above."
+_movement_no_target_enabled = False
+_movement_noclip_enabled = False
 
 
 def _clamp_int(value: object, min_value: int, max_value: int) -> int:
@@ -421,6 +432,178 @@ def movement_zero_vault() -> dict[str, Any]:
         return {"ok": True, "message": msg}
     except Exception as exc:
         return {"ok": False, "message": f"Zero vault cooldown failed: {exc!r}"}
+
+
+def _movement_float(value: object, default: float) -> float:
+    raw = str(value if value is not None else "").replace("x", "").replace("X", "").strip()
+    if raw == "":
+        return float(default)
+    return float(raw)
+
+
+def _movement_apply_values(
+    *,
+    speed_scale: float = 1.0,
+    walk_speed: float = 600.0,
+    jump_goal: float = 198.0,
+    jump_velocity: float = 840.0,
+    gravity_scale: float = 1.0,
+    max_step_height: float = 45.0,
+    jump_count: int = 2,
+    jump_off_z_factor: float = 0.5,
+    walkable_floor_angle: float = 44.76508331298828,
+    walkable_floor_z: float = 0.7099999785423279,
+    sprint_jump_goal: float | None = 198.0,
+    jump_hold_time: float | None = 0.0,
+    glide_speed: float = 1200.0,
+    glide_boost: float = 0.0,
+    glide_air_control: float = 0.6000000238418579,
+    dash_speed: float = 2500.0,
+    vault_cost: float | None = None,
+    double_jump_goal: float | None = 225.0,
+    slide_jump_goal: float | None = 198.0,
+    reset_jump_defaults: bool = False,
+) -> dict[str, Any]:
+    try:
+        msg = apply_movement_advanced_to_all_players(
+            speed_scale,
+            walk_speed,
+            jump_goal,
+            jump_velocity,
+            gravity_scale,
+            max_step_height,
+            jump_count,
+            jump_off_z_factor,
+            walkable_floor_angle,
+            walkable_floor_z,
+            sprint_jump_goal,
+            jump_hold_time,
+            glide_speed,
+            glide_boost,
+            glide_air_control,
+            dash_speed,
+            vault_cost,
+            double_jump_goal=double_jump_goal,
+            slide_jump_goal=slide_jump_goal,
+            sections={"speed", "jump", "gravity", "wall", "glide", "vault", "jump_count"},
+            reset_jump_defaults=reset_jump_defaults,
+        )
+        return {"ok": True, "message": msg}
+    except Exception as exc:
+        return {"ok": False, "message": f"Apply movement settings failed: {exc!r}"}
+
+
+def movement_apply_all(payload: dict[str, Any] | None = None) -> dict[str, Any]:
+    payload = payload or {}
+    try:
+        jump_goal = _movement_float(payload.get("movement_jump_height"), 198.0)
+        floor_angle = _movement_float(payload.get("movement_floor_angle"), 44.76508331298828)
+        return _movement_apply_values(
+            speed_scale=_movement_float(payload.get("movement_speed_scale"), 1.0),
+            walk_speed=_movement_float(payload.get("movement_walk_speed"), 600.0),
+            jump_goal=jump_goal,
+            jump_velocity=_movement_float(payload.get("movement_jump_velocity"), 840.0),
+            gravity_scale=_movement_float(payload.get("movement_gravity_scale"), 1.0),
+            max_step_height=_movement_float(payload.get("movement_step_height"), 45.0),
+            jump_count=_clamp_int(payload.get("movement_jump_count") or 2, 1, 50),
+            walkable_floor_angle=floor_angle,
+            walkable_floor_z=_movement_float(payload.get("movement_floor_z"), 0.7099999785423279),
+            sprint_jump_goal=jump_goal,
+            double_jump_goal=jump_goal,
+            slide_jump_goal=jump_goal,
+            glide_speed=_movement_float(payload.get("movement_glide_speed"), 1200.0),
+            glide_boost=_movement_float(payload.get("movement_glide_boost"), 0.0),
+            glide_air_control=_movement_float(payload.get("movement_glide_air_control"), 0.6000000238418579),
+            dash_speed=_movement_float(payload.get("movement_dash_speed"), 2500.0),
+        )
+    except Exception as exc:
+        return {"ok": False, "message": f"Movement values must be numeric: {exc!r}"}
+
+
+def movement_reset_all() -> dict[str, Any]:
+    try:
+        msg = reset_movement_advanced_all_players()
+        return {"ok": True, "message": msg}
+    except Exception as exc:
+        return {"ok": False, "message": f"Reset movement settings failed: {exc!r}"}
+
+
+def movement_apply_preset(name: object) -> dict[str, Any]:
+    key = str(name or "").strip().lower()
+    presets: dict[str, dict[str, Any]] = {
+        "fast": {
+            "speed_scale": 5.0, "walk_speed": 3200.0, "jump_goal": 560.0, "jump_velocity": 560.0,
+            "glide_speed": 2600.0, "glide_boost": 4200.0, "glide_air_control": 6.0, "dash_speed": 3000.0,
+            "sprint_jump_goal": 560.0, "double_jump_goal": 560.0, "slide_jump_goal": 560.0,
+        },
+        "veryfast": {
+            "speed_scale": 8.0, "walk_speed": 5200.0, "jump_goal": 700.0, "jump_velocity": 700.0,
+            "glide_speed": 3800.0, "glide_boost": 6500.0, "glide_air_control": 10.0, "dash_speed": 5200.0,
+            "sprint_jump_goal": 700.0, "double_jump_goal": 700.0, "slide_jump_goal": 700.0,
+        },
+        "moon": {
+            "jump_goal": 1200.0, "jump_velocity": 1200.0, "gravity_scale": 0.45,
+            "sprint_jump_goal": 1200.0, "double_jump_goal": 1200.0, "slide_jump_goal": 1200.0,
+        },
+        "wallwalk": {
+            "speed_scale": 5.0, "walk_speed": 3200.0, "jump_goal": 560.0, "jump_velocity": 560.0,
+            "max_step_height": 700.0, "walkable_floor_angle": 89.9, "walkable_floor_z": 0.001,
+            "sprint_jump_goal": 560.0, "double_jump_goal": 560.0, "slide_jump_goal": 560.0,
+        },
+        "fastglide": {
+            "speed_scale": 5.0, "walk_speed": 3200.0, "jump_goal": 560.0, "jump_velocity": 560.0,
+            "glide_speed": 5200.0, "glide_boost": 8500.0, "glide_air_control": 14.0, "dash_speed": 4500.0,
+            "sprint_jump_goal": 560.0, "double_jump_goal": 560.0, "slide_jump_goal": 560.0,
+        },
+    }
+    if key not in presets:
+        return {"ok": False, "message": f"Unknown movement preset: {name}"}
+    result = _movement_apply_values(**presets[key])
+    if result.get("ok"):
+        result["message"] = f"Applied {key} movement preset. {result.get('message') or ''}".strip()
+    return result
+
+
+def movement_toggle_no_target() -> dict[str, Any]:
+    global _movement_no_target_enabled
+    _movement_no_target_enabled = not _movement_no_target_enabled
+    try:
+        msg = set_no_target(_movement_no_target_enabled)
+        return {"ok": True, "message": msg}
+    except Exception as exc:
+        _movement_no_target_enabled = not _movement_no_target_enabled
+        return {"ok": False, "message": f"Toggle no target failed: {exc!r}"}
+
+
+def movement_toggle_noclip() -> dict[str, Any]:
+    global _movement_noclip_enabled
+    _movement_noclip_enabled = not _movement_noclip_enabled
+    try:
+        msg = set_noclip(_movement_noclip_enabled)
+        return {"ok": True, "message": msg}
+    except Exception as exc:
+        _movement_noclip_enabled = not _movement_noclip_enabled
+        return {"ok": False, "message": f"Toggle noclip failed: {exc!r}"}
+
+
+def movement_set_time(value: object) -> dict[str, Any]:
+    try:
+        msg = set_time_dilation(_movement_float(value, 1.0))
+        return {"ok": True, "message": msg}
+    except Exception as exc:
+        return {"ok": False, "message": f"Set time failed: {exc!r}"}
+
+
+def movement_reset_time() -> dict[str, Any]:
+    return movement_set_time(1.0)
+
+
+def movement_infinite_jump_refresh() -> dict[str, Any]:
+    try:
+        msg = refresh_jump_counts_all_players()
+        return {"ok": True, "message": msg}
+    except Exception as exc:
+        return {"ok": False, "message": f"Infinite jump refresh failed: {exc!r}"}
 
 
 def clear_serials() -> dict[str, Any]:

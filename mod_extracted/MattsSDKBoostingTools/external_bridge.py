@@ -520,6 +520,34 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
         return backend_actions.movement_delete_ground_items()
     if action == "movement_zero_vault":
         return backend_actions.movement_zero_vault()
+    if action == "movement_apply_all":
+        return backend_actions.movement_apply_all(payload)
+    if action == "movement_reset_all":
+        return backend_actions.movement_reset_all()
+    if action == "movement_toggle_no_target":
+        return backend_actions.movement_toggle_no_target()
+    if action == "movement_toggle_noclip":
+        return backend_actions.movement_toggle_noclip()
+    if action == "movement_set_time":
+        return backend_actions.movement_set_time(
+            payload.get("movement_time_dilation") or payload.get("time_dilation") or payload.get("time") or 1.0
+        )
+    if action == "movement_reset_time":
+        return backend_actions.movement_reset_time()
+    if action == "movement_preset_fast":
+        return backend_actions.movement_apply_preset("fast")
+    if action == "movement_preset_veryfast":
+        return backend_actions.movement_apply_preset("veryfast")
+    if action == "movement_preset_moon":
+        return backend_actions.movement_apply_preset("moon")
+    if action == "movement_preset_wallwalk":
+        return backend_actions.movement_apply_preset("wallwalk")
+    if action == "movement_preset_fastglide":
+        return backend_actions.movement_apply_preset("fastglide")
+    if action in ("movement_infinite_jump_all_on", "movement_infinite_jump_all_off", "movement_infinite_jump_toggle_selected"):
+        return backend_actions.movement_infinite_jump_refresh()
+    if action in ("movement_save_preset", "movement_load_saved"):
+        return {"ok": False, "message": f"{action} is local UI preset storage and is not handled by the SDK bridge."}
     if action in ("codes_load_cache", "codes_refresh_gzo", "codes_reload_lootlemon"):
         return {"ok": True, "message": f"{action}: static code resources are bundled in the external app; use Reconnect/Reload in the app to refresh the local view."}
     if action == "codes_import_bookmarks":
