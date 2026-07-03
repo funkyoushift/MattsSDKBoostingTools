@@ -9,6 +9,7 @@ from urllib import request
 import webbrowser
 from external_serial_tools import convert_serial_tool, serial_parts_breakdown_for_value, human_to_serial
 import external_legit_builder
+import external_validator
 from matts_external_core_v20 import ACCENT_COLORS, http_json, RESOURCE_DIR
 from matts_external_legit_travel_v20 import App as V9App
 
@@ -580,7 +581,183 @@ class App(V9App):
             return self._tab_bl4_codes_v13(body, cards)
         if tab.get('id') == 'serial_bookmarks':
             return self._tab_serial_bookmarks_local(body, cards)
+        if tab.get('id') == 'validator':
+            return self._tab_validator_blimgui(body)
         return super()._tab_two_col(body, tab, cards)
+
+    def _validator_text_area(self, parent, fid, height, initial=''):
+        self.field_vars[fid] = self.field_vars.get(fid) or tk.StringVar(value=str(initial or ''))
+        txt = tk.Text(parent, height=height, bg='#181417', fg='#f1f5ff', insertbackground='#f1f5ff', relief='flat', wrap='word', font=('Consolas',8))
+        txt.insert('1.0', self.field_vars[fid].get())
+        txt.pack(fill='x', padx=8, pady=(2,6))
+        txt.bind('<KeyRelease>', lambda e,v=self.field_vars[fid],w=txt:v.set(w.get('1.0','end-1c')))
+        self.widgets[fid] = txt
+        return txt
+
+    def _validator_get_text(self, fid):
+        widget = self.widgets.get(fid)
+        if isinstance(widget, tk.Text):
+            return widget.get('1.0', 'end-1c')
+        return self.field_vars.get(fid, tk.StringVar(value='')).get()
+
+    def _validator_set_text(self, fid, value):
+        value = str(value or '')
+        self.field_vars[fid] = self.field_vars.get(fid) or tk.StringVar(value='')
+        self.field_vars[fid].set(value)
+        widget = self.widgets.get(fid)
+        if isinstance(widget, tk.Text):
+            widget.delete('1.0', 'end')
+            widget.insert('1.0', value)
+
+    def _validator_set_progress(self, label='Idle', done=0, total=0, passed=0, failed=0, running=False):
+        self.validator_progress = {
+            "running": bool(running),
+            "label": str(label or 'Idle'),
+            "done": int(done or 0),
+            "total": int(total or 0),
+            "passed": int(passed or 0),
+            "failed": int(failed or 0),
+        }
+        self._validator_refresh_progress()
+
+    def _validator_progress_text(self):
+        p = getattr(self, 'validator_progress', {}) or {}
+        label = str(p.get('label') or 'Idle')
+        total = int(p.get('total') or 0)
+        done = int(p.get('done') or 0)
+        passed = int(p.get('passed') or 0)
+        failed = int(p.get('failed') or 0)
+        if total > 0:
+            return f"{label} ({done}/{total}) legit {passed} / modded {failed}"
+        return label
+
+    def _validator_refresh_progress(self):
+        if hasattr(self, 'validator_progress_var'):
+            self.validator_progress_var.set(self._validator_progress_text())
+        btn = getattr(self, 'validator_cancel_button', None)
+        if btn:
+            if (getattr(self, 'validator_progress', {}) or {}).get('running'):
+                btn.pack(side='left', padx=(8,0))
+            else:
+                btn.pack_forget()
+
+    def _tab_validator_blimgui(self, body):
+        wrap, inner = self._card_wrap(body, 'Validator', '#00a3d7')
+        wrap.pack(fill='both', expand=True, padx=6, pady=5)
+        tk.Label(inner, text='Validate one serial or a large pasted list. Validation runs on a background thread so the menu does not stall the game thread. Bulk input expects one serial per line.', bg='#090d17', fg='#9fb3d9', font=('Segoe UI',8), anchor='w', justify='left', wraplength=1300).pack(fill='x', padx=8, pady=(6,2))
+        tk.Label(inner, text=external_validator.validator_definition(), bg='#090d17', fg='#9fb3d9', font=('Segoe UI',8), anchor='w', justify='left', wraplength=1300).pack(fill='x', padx=8, pady=(0,2))
+        tk.Label(inner, text='DISCLAIMER: This tool has not been fully verified for Legit loot and all outputs should still be verified against https://save-editor.be.', bg='#090d17', fg='#9fb3d9', font=('Segoe UI',8), anchor='w', justify='left', wraplength=1300).pack(fill='x', padx=8, pady=(0,5))
+
+        prow = tk.Frame(inner, bg='#090d17')
+        prow.pack(fill='x', padx=8, pady=(0,6))
+        self.validator_progress_var = tk.StringVar(value=self._validator_progress_text())
+        tk.Label(prow, textvariable=self.validator_progress_var, bg='#181417', fg='#f1f5ff', font=('Segoe UI',8), anchor='w', padx=6, pady=4).pack(side='left', fill='x', expand=True)
+        self.validator_cancel_button = tk.Button(prow, text='Cancel', command=self._validator_cancel_current, bg='#172033', fg=ACCENT_COLORS.get('pink','#ff5db7'), relief='flat', padx=10, pady=4, font=('Segoe UI',8,'bold'))
+        self._validator_refresh_progress()
+
+        tk.Frame(inner, bg='#333a48', height=1).pack(fill='x', padx=8, pady=(2,5))
+        tk.Label(inner, text='Basic validation', bg='#090d17', fg='#cfd8f3', font=('Segoe UI',8,'bold'), anchor='w').pack(fill='x', padx=8)
+        self._validator_text_area(inner, 'validator_basic_input', 4)
+        basic_buttons = tk.Frame(inner, bg='#090d17')
+        basic_buttons.pack(fill='x', padx=6, pady=(0,3))
+        for i,(txt,cmd,col) in enumerate([
+            ('Validate Basic', self._validator_validate_basic, 'cyan'),
+            ('Clear Validator', self._validator_clear, 'pink'),
+        ]):
+            tk.Button(basic_buttons, text=txt, command=cmd, bg='#172033', fg=ACCENT_COLORS.get(col,'#00d4ff'), relief='flat', font=('Segoe UI',8,'bold')).grid(row=0,column=i,sticky='ew',padx=3,pady=3)
+        for i in range(2): basic_buttons.grid_columnconfigure(i, weight=1)
+        self._validator_text_area(inner, 'validator_basic_output', 5, 'Paste one @U/Base85 or decoded human serial, then Validate Basic.')
+
+        tk.Frame(inner, bg='#333a48', height=1).pack(fill='x', padx=8, pady=(5,5))
+        tk.Label(inner, text='Bulk validation', bg='#090d17', fg='#cfd8f3', font=('Segoe UI',8,'bold'), anchor='w').pack(fill='x', padx=8)
+        self._validator_text_area(inner, 'validator_bulk_input', 9)
+        bulk_buttons = tk.Frame(inner, bg='#090d17')
+        bulk_buttons.pack(fill='x', padx=6, pady=(0,3))
+        for i,(txt,cmd,col) in enumerate([
+            ('Validate Bulk', self._validator_validate_bulk, 'gold'),
+            ('Clear Validator', self._validator_clear, 'pink'),
+        ]):
+            tk.Button(bulk_buttons, text=txt, command=cmd, bg='#172033', fg=ACCENT_COLORS.get(col,'#00d4ff'), relief='flat', font=('Segoe UI',8,'bold')).grid(row=0,column=i,sticky='ew',padx=3,pady=3)
+        for i in range(2): bulk_buttons.grid_columnconfigure(i, weight=1)
+        self._validator_text_area(inner, 'validator_bulk_output', 12, 'Paste one serial per line, then Validate Bulk.')
+
+    def _validator_worker_active(self):
+        thread = getattr(self, 'validator_thread', None)
+        return bool(thread is not None and thread.is_alive())
+
+    def _validator_start(self, rows, mode):
+        if self._validator_worker_active():
+            self.log('Validator is already running.')
+            return False
+        self.validator_cancel_event.clear()
+        self.validator_run_id += 1
+        run_id = self.validator_run_id
+        total = len(rows)
+        self._validator_set_progress(f'Validating {mode}', 0, total, 0, 0, True)
+        def progress(snapshot):
+            self.after(0, lambda s=dict(snapshot): self._validator_set_progress(
+                s.get('label') or f'Validating {mode}',
+                s.get('done') or 0,
+                s.get('total') or total,
+                s.get('passed') or 0,
+                s.get('failed') or 0,
+                s.get('running', True),
+            ))
+        def work():
+            result = external_validator.validate_many(
+                rows,
+                cancel_check=self.validator_cancel_event.is_set,
+                progress_callback=progress,
+            )
+            def finish():
+                if run_id != self.validator_run_id:
+                    return
+                output = result.get('output') or result.get('summary') or ''
+                if mode == 'basic':
+                    if result.get('results'):
+                        output = external_validator.format_validation_result(result['results'][0])
+                    self._validator_set_text('validator_basic_output', output)
+                else:
+                    self._validator_set_text('validator_bulk_output', output)
+                self._validator_set_progress('Validation cancelled' if result.get('cancelled') else 'Validation complete', result.get('processed') or 0, result.get('total') or total, result.get('passed') or 0, result.get('failed') or 0, False)
+                self.log(result.get('summary') or 'Validation complete.')
+            self.after(0, finish)
+        self.validator_thread = threading.Thread(target=work, daemon=True)
+        self.validator_thread.start()
+        return True
+
+    def _validator_validate_basic(self):
+        text = self._validator_get_text('validator_basic_input').strip()
+        if not text:
+            self._validator_set_text('validator_basic_output', 'Paste one @U/Base85 or decoded human serial first.')
+            return
+        self._validator_set_text('validator_basic_output', 'Queued basic validation...')
+        self._validator_start([text], 'basic')
+
+    def _validator_validate_bulk(self):
+        text = self._validator_get_text('validator_bulk_input')
+        rows = external_validator.parse_serial_text(text)
+        if not rows:
+            self._validator_set_text('validator_bulk_output', 'Paste one serial per line first.')
+            return
+        self._validator_set_text('validator_bulk_output', f'Queued {len(rows)} serials for background validation...')
+        self._validator_start(rows, 'bulk')
+
+    def _validator_cancel_current(self):
+        self.validator_cancel_event.set()
+        total = int((getattr(self, 'validator_progress', {}) or {}).get('total') or 0)
+        done = int((getattr(self, 'validator_progress', {}) or {}).get('done') or 0)
+        self._validator_set_progress(f'Cancelled after {done}/{total} serials.', done, total, int((getattr(self, 'validator_progress', {}) or {}).get('passed') or 0), int((getattr(self, 'validator_progress', {}) or {}).get('failed') or 0), False)
+
+    def _validator_clear(self):
+        self._validator_cancel_current()
+        self.validator_run_id += 1
+        self._validator_set_text('validator_basic_input', '')
+        self._validator_set_text('validator_bulk_input', '')
+        self._validator_set_text('validator_basic_output', 'Paste one @U/Base85 or decoded human serial, then Validate Basic.')
+        self._validator_set_text('validator_bulk_output', 'Paste one serial per line, then Validate Bulk.')
+        self._validator_set_progress('Idle', 0, 0, 0, 0, False)
+        self.log('Validator cleared.')
 
     def _tab_serial_bookmarks_local(self, body, cards):
         self._ensure_bookmark_state()
@@ -1830,11 +2007,11 @@ class App(V9App):
         if aid == 'codes_mattmab_validation':
             return self._codes_local_action(aid)
         if aid == 'validator_basic':
-            action=dict(action); action['uses_fields']=['validator_basic_input']
+            return self._validator_validate_basic()
         if aid == 'validator_bulk':
-            action=dict(action); action['uses_fields']=['validator_bulk_input']
+            return self._validator_validate_bulk()
         if aid == 'validator_clear':
-            action=dict(action); action['uses_fields']=[]
+            return self._validator_clear()
         if aid in ('set_backpack_bank_selected','set_backpack_bank_all'):
             action=dict(action); action['uses_fields']=['backpack_size','bank_size']
         if aid == 'local_legit_validate':

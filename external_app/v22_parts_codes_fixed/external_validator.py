@@ -466,7 +466,7 @@ def validate_many(
             "failed": failed,
         })
 
-    return {
+    payload = {
         "ok": not cancelled,
         "cancelled": cancelled,
         "total": total,
@@ -477,6 +477,14 @@ def validate_many(
         "summary": summary,
         "output": summary + ("\n" + "\n".join(output_lines) if output_lines else ""),
     }
+    if total == 1 and results:
+        payload.update({
+            "status": results[0].get("status"),
+            "result": results[0].get("result"),
+            "label": results[0].get("label"),
+            "message": results[0].get("message"),
+        })
+    return payload
 
 
 def validate_basic_input(text: str) -> dict[str, Any]:
