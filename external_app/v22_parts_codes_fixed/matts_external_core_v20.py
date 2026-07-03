@@ -12,6 +12,7 @@ RESOURCE_DIR = BASE_DIR / "resources"
 SUPPORT_LINKS = {
     "Support on Ko-fi": "https://ko-fi.com/mattmab",
     "FunkYouSHiFT Twitch": "https://www.twitch.tv/FunkYouSHiFT",
+    "FunkYouSHiFT YouTube": "https://www.youtube.com/@Funkyoushift",
 }
 LOCAL_RESOURCE_FILES = {
     "lootlemon_codes": "MattsSDKBoostingTools_lootlemon_codes.json",
