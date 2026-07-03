@@ -462,7 +462,12 @@ def _selected_parts(root: dict[str, Any], selected: Iterable[str | int | dict[st
                 table = item.get("table")
                 p = _find_part(root, key, table)
             else:
-                p = _find_part(root, item)
+                text = str(item or "").strip()
+                if ":" in text and not text.startswith("{"):
+                    table, key = text.split(":", 1)
+                    p = _find_part(root, key.strip(), table.strip())
+                else:
+                    p = _find_part(root, item)
             if p is not None:
                 out.append(p)
     return out

@@ -255,6 +255,12 @@ class App(V9App):
             widget.delete('1.0','end')
             widget.insert('1.0',str(value or ''))
 
+    def _clear_legit_outputs(self):
+        self.legit_human_output=''
+        self.legit_base85_output=''
+        self._text_set('legit_human_output','')
+        self._text_set('legit_base85_output','')
+
     def _legit_payload_values(self):
         self._sync_legit_selection_from_text()
         return {
@@ -378,7 +384,8 @@ class App(V9App):
                     pass
             self.legit_selected_by_slot[slot]=picks
         self._sync_legit_selected_text()
-        self._render_legit_slots()
+        self._clear_legit_outputs()
+        self._set_legit_status(f'Updated selected parts: {len(self._legit_selected_lines_for_core())} selected.', log_global=False)
 
     def _legit_is_part_line_allowed(self, selected_for_test, line):
         root = self._legit_current_root()
@@ -576,11 +583,7 @@ class App(V9App):
         # Replace existing passive_points selection with exactly the max-tier set, preserving all other selected slots.
         self.legit_selected_by_slot['passive_points'] = list(max_lines)
         self._sync_legit_selected_text()
-        self._render_legit_slots()
-        self.legit_human_output = ''
-        self.legit_base85_output = ''
-        self._text_set('legit_human_output', '')
-        self._text_set('legit_base85_output', '')
+        self._clear_legit_outputs()
         self._set_legit_status(f'Added {len(max_lines)} max-tier passive point parts for {root.get("build_label") or root_key}. Replaced existing passive_points selections.')
 
 
