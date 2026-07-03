@@ -151,7 +151,10 @@
               "type": "choice",
               "choices": [
                 "player",
-                "specialization"
+                "specialization",
+                "vaultcard_xp_1",
+                "vaultcard_xp_2",
+                "vaultcard_xp_3"
               ],
               "default": "player"
             },
@@ -195,7 +198,10 @@
               "type": "choice",
               "choices": [
                 "cash",
-                "eridium"
+                "eridium",
+                "vaultcard1",
+                "vaultcard2",
+                "vaultcard3"
               ],
               "default": "cash"
             },
