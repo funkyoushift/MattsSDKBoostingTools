@@ -162,6 +162,7 @@ class App(V9App):
         tk.Label(inner, textvariable=self.field_vars['legit_status'], bg='#090d17', fg='#21e05f', font=('Segoe UI',8), anchor='w', justify='left', wraplength=1200).pack(fill='x', padx=8, pady=(5,4))
         self._legit_output_box(inner, 'Human Serial Output', 'legit_human_output', 'Copy Human', 'human serial', height=4)
         self._legit_output_box(inner, 'Base85 @U Output', 'legit_base85_output', 'Copy Base85', 'Base85 serial', height=3)
+        self._external_player_target_row(inner, 'legit_target_player', 'Legit Builder Target')
 
     def _legit_output_box(self, parent, label, widget_id, button_text, copy_label, height=4):
         row=tk.Frame(parent,bg='#090d17'); row.pack(fill='x',padx=8,pady=(4,2))
@@ -842,16 +843,7 @@ class App(V9App):
 
         footer=tk.Frame(inner, bg='#090d17')
         footer.pack(fill='x', padx=8, pady=(6,8))
-        target_row=tk.Frame(footer, bg='#090d17')
-        target_row.pack(fill='x', padx=8, pady=2)
-        self.field_vars['bookmark_target_player']=self.field_vars.get('bookmark_target_player') or tk.StringVar(value='')
-        target_cb=ttk.Combobox(target_row, textvariable=self.field_vars['bookmark_target_player'], values=self.player_options, state='readonly')
-        target_cb.pack(side='left', fill='x', expand=True)
-        tk.Label(target_row, text='Serial Bookmarks Target', bg='#090d17', fg='#cfd8f3', anchor='w', font=('Segoe UI',8)).pack(side='left', padx=(6,12))
-        tk.Button(target_row, text='Refresh Players', command=self.poll_status, bg='#172033', fg='#00d4ff', relief='flat', font=('Segoe UI',8,'bold'), padx=8, pady=5).pack(side='left')
-        self.widgets['bookmark_target_player']=target_cb
-        if self.player_options and not self.field_vars['bookmark_target_player'].get():
-            self.field_vars['bookmark_target_player'].set(self.player_options[0])
+        self._external_player_target_row(footer, 'bookmark_target_player', 'Serial Bookmarks Target')
         footer_buttons=tk.Frame(footer, bg='#090d17')
         footer_buttons.pack(fill='x', padx=8, pady=(3,0))
         self.bookmark_delivery_status_var=tk.StringVar(value='0 selected')
@@ -1023,6 +1015,37 @@ class App(V9App):
         self.widgets[fid] = w
         return w
 
+    def _external_player_target_row(self, parent, field_id, label):
+        row = tk.Frame(parent, bg='#090d17'); row.pack(fill='x', padx=8, pady=2)
+        tk.Label(row, text=label, bg='#090d17', fg='#cfd8f3', width=18, anchor='w', font=('Segoe UI',8)).pack(side='left')
+        var = self.field_vars.get(field_id) or tk.StringVar(value='')
+        self.field_vars[field_id] = var
+        cb = ttk.Combobox(row, textvariable=var, values=self.player_options, state='readonly')
+        cb.pack(side='left', fill='x', expand=True)
+        self.widgets[field_id] = cb
+        if self.player_options and not var.get():
+            var.set(self.player_options[0])
+        tk.Button(row, text='Set Target', command=lambda f=field_id, l=label:self._set_bridge_target_from_field_async(f, l), bg='#172033', fg='#21e05f', relief='flat', font=('Segoe UI',8,'bold'), padx=8, pady=4).pack(side='left', padx=(5,0))
+        tk.Button(row, text='Refresh Players', command=self.poll_status, bg='#172033', fg='#00d4ff', relief='flat', font=('Segoe UI',8,'bold'), padx=8, pady=4).pack(side='left', padx=(5,0))
+        return cb
+
+    def _set_bridge_target_from_field(self, field_id, label='Target'):
+        value = self.field_vars.get(field_id, tk.StringVar(value='')).get()
+        if not str(value or '').strip():
+            return False, f'{label}: no player selected.'
+        try:
+            res = http_json('POST', '/action', {'action':'set_target_player','payload':{'target_player':value},'timeout':10.0}, timeout=12.0)
+        except Exception as exc:
+            return False, f'{label}: set target failed: {exc!r}'
+        return bool(res.get('ok', True)), str(res.get('message') or f'{label} set.')
+
+    def _set_bridge_target_from_field_async(self, field_id, label='Target'):
+        def work():
+            ok, msg = self._set_bridge_target_from_field(field_id, label)
+            self.after(0, lambda:self.log(msg if ok else 'Target failed: ' + msg))
+            self.after(0, self.poll_status)
+        threading.Thread(target=work, daemon=True).start()
+
     def _tab_bl4_codes_v13(self, body, cards):
         self._ensure_bl4_state()
         if not self.bl4_cache_autoload_attempted:
@@ -1098,7 +1121,7 @@ class App(V9App):
 
         tk.Frame(inner, bg='#333a48', height=1).pack(fill='x', padx=8, pady=(3,5))
         footer = tk.Frame(inner, bg='#090d17'); footer.pack(fill='x', padx=8, pady=(4,8))
-        self._field_row_combo_v13(footer, 'BL4 Codes Target', 'code_target_player', self.player_options, readonly=True)
+        self._external_player_target_row(footer, 'code_target_player', 'BL4 Codes Target')
         self._field_row_combo_v13(footer, 'Override delivery level?', 'code_override_level', ['false','true'], readonly=True)
         self._field_row_entry_v13(footer, 'Delivery Level', 'code_delivery_level', '60')
         self.bl4_delivery_status_var=tk.StringVar(value='0 selected | Delivery uses GiveRewardAllPlayers, then patches requested target(s)')
@@ -1462,6 +1485,10 @@ class App(V9App):
         self.log(f'Delivering {len(serials)} BL4 code serial(s) to {mode}...')
         def work():
             try:
+                ok, msg = self._set_bridge_target_from_field('code_target_player', 'BL4 Codes Target')
+                if not ok:
+                    self.after(0, lambda m=msg:self._set_bl4_status(m, log_global=True))
+                    return
                 res=http_json('POST','/action',{'action':aid,'payload':payload,'timeout':10.0},timeout=18.0)
                 self.after(0, lambda:self.log(res.get('message') or 'BL4 code delivery requested.'))
                 self.after(0, self.poll_status)
@@ -1496,6 +1523,11 @@ class App(V9App):
                 cb.configure(values=self.player_options)
                 cur=self.field_vars.get('bookmark_target_player', tk.StringVar()).get()
                 if not cur and self.player_options: self.field_vars['bookmark_target_player'].set(self.player_options[0])
+            cb=self.widgets.get('legit_target_player')
+            if isinstance(cb, ttk.Combobox):
+                cb.configure(values=self.player_options)
+                cur=self.field_vars.get('legit_target_player', tk.StringVar()).get()
+                if not cur and self.player_options: self.field_vars['legit_target_player'].set(self.player_options[0])
         except Exception: pass
 
 
@@ -1827,6 +1859,10 @@ class App(V9App):
         self.log(f'Delivering {len(serials)} bookmarked serial(s) to {mode}...')
         def work():
             try:
+                ok, msg = self._set_bridge_target_from_field('bookmark_target_player', 'Serial Bookmarks Target')
+                if not ok:
+                    self.after(0, lambda m=msg:self._set_bookmark_status(m, log_global=True))
+                    return
                 res=http_json('POST','/action',{'action':aid,'payload':payload,'timeout':10.0},timeout=18.0)
                 self.after(0, lambda:self._set_bookmark_status(res.get('message') or 'Bookmark delivery requested.', log_global=True))
                 self.after(0, self.poll_status)
