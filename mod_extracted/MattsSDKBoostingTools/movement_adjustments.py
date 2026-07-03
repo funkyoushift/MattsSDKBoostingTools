@@ -6,9 +6,10 @@ are best-effort and skip class defaults.
 """
 from __future__ import annotations
 
+import time
 from typing import Any
 
-from mods_base import ENGINE, get_pc
+from mods_base import ENGINE, get_pc, hook
 import unrealsdk
 from unrealsdk import logging
 
@@ -72,6 +73,10 @@ _VAULT_COST_FIELDS = (
     "VaultPowerCost_GroundSlam",
     "VaultPower_Forgiveness",
 )
+
+_INFINITE_JUMP_INDICES: set[int] = set()
+_INFINITE_JUMP_CONTEXT_CACHE: list[tuple[int, str, Any, Any | None]] = []
+_INFINITE_JUMP_CONTEXT_CACHE_TIME: float = 0.0
 
 
 
@@ -1238,6 +1243,270 @@ def refresh_jump_counts_all_players() -> str:
             except Exception:
                 pass
     return f"Gentle jump refresh cleared counters on {len(objects)} movement object(s). Writes: {writes}."
+
+
+def _infinite_jump_move_for_pawn(pawn: Any) -> Any | None:
+    if pawn is None:
+        return None
+    for attr in ("OakCharacterMovement", "CharacterMovement", "GbxCharacterMovement", "MovementComponent", "PawnMovement", "Movement"):
+        try:
+            move = getattr(pawn, attr, None)
+            if move is not None and not _is_default(move):
+                return move
+        except Exception:
+            pass
+    for meth in ("GetMovementComponent", "GetCharacterMovement"):
+        move = _call0(pawn, meth)
+        if move is not None and not _is_default(move):
+            return move
+    return None
+
+
+def _set_if_needed(obj: Any, attr: str, value: Any) -> bool:
+    try:
+        if obj is None or not hasattr(obj, attr):
+            return False
+        try:
+            if getattr(obj, attr) == value:
+                return False
+        except Exception:
+            pass
+        setattr(obj, attr, value)
+        return True
+    except Exception:
+        return False
+
+
+def _force_infinite_jump_ready(pawn: Any, move: Any | None = None) -> bool:
+    if pawn is None or _is_default(pawn):
+        return False
+    try:
+        move = move or _infinite_jump_move_for_pawn(pawn)
+    except Exception:
+        pass
+    changed = False
+    for attr, value in (
+        ("JumpCurrentCount", 0),
+        ("JumpCurrentCountPreJump", 0),
+        ("JumpedCount", 0),
+        ("CurrentJumpCount", 0),
+        ("CurrentJumpCountPreJump", 0),
+        ("JumpMaxCount", 999),
+        ("JumpMaxCountPreJump", 999),
+        ("bProxyIsJumpForceApplied", False),
+        ("JumpKeyHoldTime", 0.0),
+        ("JumpForceTimeRemaining", 0.0),
+    ):
+        if _set_if_needed(pawn, attr, value):
+            changed = True
+    if move is not None and not _is_default(move):
+        for attr, value in (
+            ("JumpedCount", 0),
+            ("JumpCurrentCount", 0),
+            ("JumpCurrentCountPreJump", 0),
+            ("CurrentJumpCount", 0),
+            ("CurrentJumpCountPreJump", 0),
+            ("JumpMaxCount", 999),
+            ("JumpMaxCountPreJump", 999),
+        ):
+            if _set_if_needed(move, attr, value):
+                changed = True
+    return changed
+
+
+def _player_label_for_controller(idx: int, pc: Any | None) -> str:
+    try:
+        ps = getattr(pc, "PlayerState", None) if pc is not None else None
+        for attr in ("PlayerName", "SavedNetworkAddress", "Name"):
+            value = getattr(ps, attr, None) if ps is not None else None
+            if value:
+                return str(value)
+    except Exception:
+        pass
+    return f"P{int(idx) + 1}"
+
+
+def _infinite_jump_contexts(now: float | None = None) -> list[tuple[int, str, Any, Any | None]]:
+    global _INFINITE_JUMP_CONTEXT_CACHE, _INFINITE_JUMP_CONTEXT_CACHE_TIME
+    try:
+        now = time.monotonic() if now is None else float(now)
+    except Exception:
+        now = 0.0
+    try:
+        if _INFINITE_JUMP_CONTEXT_CACHE and now - float(_INFINITE_JUMP_CONTEXT_CACHE_TIME) < 1.0:
+            return [(idx, name, pawn, move) for idx, name, pawn, move in _INFINITE_JUMP_CONTEXT_CACHE if pawn is not None and not _is_default(pawn)]
+    except Exception:
+        pass
+    contexts: list[tuple[int, str, Any, Any | None]] = []
+    controllers = live_player_controllers()
+    seen: set[str] = set()
+    for idx, pc in enumerate(controllers):
+        pawn = pawn_for_controller(pc)
+        if pawn is None or _is_default(pawn):
+            continue
+        key = str(pawn)
+        seen.add(key)
+        contexts.append((idx, _player_label_for_controller(idx, pc), pawn, _infinite_jump_move_for_pawn(pawn)))
+    for pawn in live_player_pawns():
+        if pawn is None or _is_default(pawn):
+            continue
+        key = str(pawn)
+        if key in seen:
+            continue
+        idx = len(contexts)
+        seen.add(key)
+        contexts.append((idx, f"P{idx + 1}", pawn, _infinite_jump_move_for_pawn(pawn)))
+    _INFINITE_JUMP_CONTEXT_CACHE = list(contexts)
+    _INFINITE_JUMP_CONTEXT_CACHE_TIME = now
+    return contexts
+
+
+def _enabled_infinite_jump_names() -> str:
+    contexts = _infinite_jump_contexts()
+    names = [name for idx, name, _pawn, _move in contexts if int(idx) in _INFINITE_JUMP_INDICES]
+    return ", ".join(names) if names else "none"
+
+
+def _hook_arg_to_pawn(obj: Any) -> Any | None:
+    if obj is None or _is_default(obj):
+        return None
+    for attr in ("Object", "object", "obj", "self", "This", "this", "Caller", "caller", "Context", "context"):
+        try:
+            inner = getattr(obj, attr, None)
+        except Exception:
+            inner = None
+        if inner is not None and inner is not obj:
+            pawn = _hook_arg_to_pawn(inner)
+            if pawn is not None:
+                return pawn
+    for attr in ("OakCharacter", "Pawn", "AcknowledgedPawn", "Character", "ControlledPawn"):
+        try:
+            pawn = getattr(obj, attr, None)
+        except Exception:
+            pawn = None
+        if pawn is not None and not _is_default(pawn):
+            return pawn
+    return obj if obj in live_player_pawns() else None
+
+
+def _party_index_for_pawn(pawn: Any) -> int | None:
+    if pawn is None:
+        return None
+    pawn_s = str(pawn)
+    for idx, _name, ctx_pawn, _move in _infinite_jump_contexts():
+        try:
+            if ctx_pawn is pawn or str(ctx_pawn) == pawn_s:
+                return int(idx)
+        except Exception:
+            pass
+    return None
+
+
+def _camera_infinite_jump_hook(*args, **kwargs):
+    try:
+        if not _INFINITE_JUMP_INDICES:
+            return None
+        touched: set[str] = set()
+        for idx, _name, pawn, move in _infinite_jump_contexts():
+            if int(idx) not in _INFINITE_JUMP_INDICES or pawn is None or _is_default(pawn):
+                continue
+            key = str(pawn)
+            if key in touched:
+                continue
+            touched.add(key)
+            _force_infinite_jump_ready(pawn, move)
+    except Exception:
+        pass
+    return None
+
+
+def _jump_pre_hook(*args, **kwargs):
+    try:
+        for obj in list(args) + list(kwargs.values()):
+            pawn = _hook_arg_to_pawn(obj)
+            if pawn is None:
+                continue
+            idx = _party_index_for_pawn(pawn)
+            if idx is not None and int(idx) in _INFINITE_JUMP_INDICES:
+                _force_infinite_jump_ready(pawn, _infinite_jump_move_for_pawn(pawn))
+                break
+    except Exception:
+        pass
+    return None
+
+
+def _register_infinite_jump_hooks() -> None:
+    try:
+        hook(
+            "/Script/Engine.CameraModifier:BlueprintModifyCamera",
+            immediately_enable=True,
+            hook_identifier="matts_sdk_boosting_tools_backend_infinite_jump_camera_v1",
+        )(_camera_infinite_jump_hook)
+        _log("Backend Infinite Jump camera hook installed.")
+    except Exception as exc:
+        _log(f"Backend Infinite Jump camera hook skipped: {exc!r}")
+    targets = (
+        "/Script/Engine.Character:CanJumpInternal",
+        "/Script/Engine.Character:CanJump",
+        "/Script/Engine.Character:Jump",
+        "/Script/GbxGame.OakCharacter:CanJumpInternal",
+        "/Script/GbxGame.OakCharacter:CanJump",
+        "/Script/GbxGame.OakCharacter:Jump",
+        "/Script/OakGame.OakCharacter:CanJumpInternal",
+        "/Script/OakGame.OakCharacter:CanJump",
+        "/Script/OakGame.OakCharacter:Jump",
+    )
+    for i, target in enumerate(targets):
+        try:
+            hook(
+                target,
+                immediately_enable=True,
+                hook_identifier=f"matts_sdk_boosting_tools_backend_infinite_jump_gate_v1_{i}",
+            )(_jump_pre_hook)
+        except Exception as exc:
+            _log(f"Backend Infinite Jump hook skipped {target}: {exc!r}")
+
+
+def set_infinite_jump_all(enabled: bool) -> str:
+    global _INFINITE_JUMP_CONTEXT_CACHE_TIME
+    contexts = _infinite_jump_contexts(0.0)
+    if enabled:
+        _INFINITE_JUMP_INDICES.clear()
+        for idx, _name, pawn, move in contexts:
+            if pawn is not None and not _is_default(pawn):
+                _INFINITE_JUMP_INDICES.add(int(idx))
+                _force_infinite_jump_ready(pawn, move)
+    else:
+        _INFINITE_JUMP_INDICES.clear()
+    _INFINITE_JUMP_CONTEXT_CACHE_TIME = 0.0
+    msg = f"Infinite Jump enabled for: {_enabled_infinite_jump_names()}."
+    _log(msg)
+    return msg
+
+
+def set_infinite_jump_for_index(idx: int, enabled: bool) -> str:
+    global _INFINITE_JUMP_CONTEXT_CACHE_TIME
+    idx = int(idx)
+    if enabled:
+        _INFINITE_JUMP_INDICES.add(idx)
+    else:
+        _INFINITE_JUMP_INDICES.discard(idx)
+    _INFINITE_JUMP_CONTEXT_CACHE_TIME = 0.0
+    for ctx_idx, _name, pawn, move in _infinite_jump_contexts(0.0):
+        if int(ctx_idx) == idx and enabled:
+            _force_infinite_jump_ready(pawn, move)
+            break
+    msg = f"Infinite Jump enabled for: {_enabled_infinite_jump_names()}."
+    _log(msg)
+    return msg
+
+
+def toggle_infinite_jump_for_index(idx: int) -> str:
+    idx = int(idx)
+    return set_infinite_jump_for_index(idx, idx not in _INFINITE_JUMP_INDICES)
+
+
+_register_infinite_jump_hooks()
 
 def set_time_dilation(value: float) -> str:
     value = max(0.01, min(64.0, float(value)))

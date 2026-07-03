@@ -31,6 +31,24 @@ class App(V9App):
         super().__init__()
         self.title("Matt's SDK Boosting Tools - External V22 Parts Codes GZO Visible")
 
+    def _movement_apply_fields(self):
+        return [
+            'movement_speed_scale',
+            'movement_walk_speed',
+            'movement_jump_height',
+            'movement_jump_velocity',
+            'movement_gravity_scale',
+            'movement_jump_count',
+            'movement_step_height',
+            'movement_floor_angle',
+            'movement_floor_z',
+            'movement_glide_speed',
+            'movement_glide_boost',
+            'movement_glide_air_control',
+            'movement_dash_speed',
+            'movement_zero_vault_on_apply',
+        ]
+
     def _tab_movement(self, body, cards):
         # Closer copy of Matt's Player Movement tab, including Infinite Jump controls.
         self._place_card(body,cards['movement_presets']).pack(fill='x',padx=6,pady=4)
@@ -41,7 +59,7 @@ class App(V9App):
         self._movement_infinite_jump_card(grid).grid(row=0,column=2,sticky='nsew',padx=(4,0),pady=4)
         self._movement_wall_card(grid).grid(row=1,column=0,sticky='nsew',padx=(0,4),pady=4)
         self._movement_glide_card(grid).grid(row=1,column=1,sticky='nsew',padx=4,pady=4)
-        self._place_card(grid,cards['movement_utility']).grid(row=1,column=2,sticky='nsew',padx=(4,0),pady=4)
+        self._movement_utility_card(grid).grid(row=1,column=2,sticky='nsew',padx=(4,0),pady=4)
         for r in range(2): grid.grid_rowconfigure(r,weight=1)
 
     def _custom_card(self, title, color):
@@ -62,10 +80,12 @@ class App(V9App):
     def _movement_jump_card(self, parent):
         wrap, inner = self._make_card(parent,'Jump / Gravity','#8a2be2')
         self._field_row_simple(inner,'Master JumpGoal Height','movement_jump_height','198')
+        self._field_row_simple(inner,'JumpZ Velocity','movement_jump_velocity','840')
         self._field_row_simple(inner,'Gravity Scale','movement_gravity_scale','1.00')
+        self._field_row_simple(inner,'Jump Count','movement_jump_count','2')
         bf=tk.Frame(inner,bg='#090d17'); bf.pack(fill='x',padx=6,pady=(4,6))
         for i,a in enumerate([
-            {'id':'movement_apply_all','label':'Apply Movement Settings','accent':'cyan','uses_fields':['movement_speed_scale','movement_walk_speed','movement_jump_height','movement_gravity_scale','movement_step_height','movement_floor_angle','movement_glide_speed','movement_dash_speed']},
+            {'id':'movement_apply_all','label':'Apply Movement Settings','accent':'cyan','uses_fields':self._movement_apply_fields()},
             {'id':'movement_reset_all','label':'Reset Defaults','accent':'gold'},
         ]): self._button(bf,a,i,cols=2)
         return wrap
@@ -74,17 +94,33 @@ class App(V9App):
         wrap, inner = self._make_card(parent,'Wall / Step','#d28b00')
         self._field_row_simple(inner,'Max Step Height','movement_step_height','45')
         self._field_row_simple(inner,'Walkable Floor Angle','movement_floor_angle','44.8')
+        self._field_row_simple(inner,'Walkable Floor Z','movement_floor_z','0.710')
         bf=tk.Frame(inner,bg='#090d17'); bf.pack(fill='x',padx=6,pady=(4,6))
-        self._button(bf,{'id':'movement_apply_all','label':'Apply Wall / Step','accent':'cyan','uses_fields':['movement_speed_scale','movement_walk_speed','movement_jump_height','movement_gravity_scale','movement_step_height','movement_floor_angle','movement_glide_speed','movement_dash_speed']},0,cols=1)
+        self._button(bf,{'id':'movement_apply_all','label':'Apply Wall / Step','accent':'cyan','uses_fields':self._movement_apply_fields()},0,cols=1)
         return wrap
 
     def _movement_glide_card(self,parent):
         wrap, inner = self._make_card(parent,'Glide / Dash / Vault','#0075c9')
         self._field_row_simple(inner,'Gliding Speed','movement_glide_speed','1200')
+        self._field_row_simple(inner,'Gliding Speed Boost','movement_glide_boost','0')
+        self._field_row_simple(inner,'Gliding Air Control','movement_glide_air_control','0.60')
         self._field_row_simple(inner,'Dash Speed','movement_dash_speed','2500')
+        self._field_row_simple(inner,'Set vault power costs to 0 on apply','movement_zero_vault_on_apply','false')
         bf=tk.Frame(inner,bg='#090d17'); bf.pack(fill='x',padx=6,pady=(4,6))
         self._button(bf,{'id':'movement_zero_vault','label':'Zero Vault Cooldown','accent':'cyan'},0,cols=2)
-        self._button(bf,{'id':'movement_apply_all','label':'Apply Glide / Dash','accent':'cyan','uses_fields':['movement_speed_scale','movement_walk_speed','movement_jump_height','movement_gravity_scale','movement_step_height','movement_floor_angle','movement_glide_speed','movement_dash_speed']},1,cols=2)
+        self._button(bf,{'id':'movement_apply_all','label':'Apply Glide / Dash','accent':'cyan','uses_fields':self._movement_apply_fields()},1,cols=2)
+        return wrap
+
+    def _movement_utility_card(self,parent):
+        wrap, inner = self._make_card(parent,'World / Utility','#8a2be2')
+        self._field_row_simple(inner,'Time Dilation','movement_time_dilation','1.00x')
+        bf=tk.Frame(inner,bg='#090d17'); bf.pack(fill='x',padx=6,pady=(4,6))
+        self._button(bf,{'id':'movement_set_time','label':'Set Time','accent':'gold','uses_fields':['movement_time_dilation']},0,cols=3)
+        self._button(bf,{'id':'movement_reset_time','label':'Reset Time','accent':'purple'},1,cols=3)
+        self._button(bf,{'id':'movement_delete_ground_items','label':'Delete Ground Items','accent':'red'},2,cols=3)
+        self._button(bf,{'id':'movement_zero_vault','label':'Zero Vault Cooldown','accent':'cyan'},3,cols=3)
+        self._button(bf,{'id':'movement_toggle_no_target','label':'Toggle No Target','accent':'purple'},4,cols=3)
+        self._button(bf,{'id':'movement_toggle_noclip','label':'Toggle Noclip','accent':'gold'},5,cols=3)
         return wrap
 
     def _movement_infinite_jump_card(self,parent):
@@ -2108,7 +2144,7 @@ class App(V9App):
             return self._legit_apply_max_passives_local()
         # Route all movement apply buttons with current field values even if the original card action did not declare them.
         if aid=='movement_apply_all':
-            action=dict(action); action['uses_fields']=['movement_speed_scale','movement_walk_speed','movement_jump_height','movement_gravity_scale','movement_step_height','movement_floor_angle','movement_glide_speed','movement_dash_speed']
+            action=dict(action); action['uses_fields']=self._movement_apply_fields()
         # Ensure bridge build/give receives only selected part lines; root is already sent separately.
         if aid in ('legit_validate_build','legit_give_selected','legit_give_all'):
             self.field_vars['legit_selected_parts'].set('\n'.join(self._legit_selected_lines_without_root()))

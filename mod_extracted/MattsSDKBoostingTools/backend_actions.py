@@ -26,9 +26,12 @@ from .movement_adjustments import (
     delete_ground_items,
     refresh_jump_counts_all_players,
     reset_movement_advanced_all_players,
+    set_infinite_jump_all,
+    set_infinite_jump_for_index,
     set_no_target,
     set_noclip,
     set_time_dilation,
+    toggle_infinite_jump_for_index,
     zero_vault_power_costs_all_players,
 )
 from .party_helpers import (
@@ -510,6 +513,10 @@ def _movement_float(value: object, default: float) -> float:
     return float(raw)
 
 
+def _truthy(value: object) -> bool:
+    return str(value or "").strip().lower() in ("1", "true", "yes", "on", "checked")
+
+
 def _movement_apply_values(
     *,
     speed_scale: float = 1.0,
@@ -584,6 +591,7 @@ def movement_apply_all(payload: dict[str, Any] | None = None) -> dict[str, Any]:
             glide_boost=_movement_float(payload.get("movement_glide_boost"), 0.0),
             glide_air_control=_movement_float(payload.get("movement_glide_air_control"), 0.6000000238418579),
             dash_speed=_movement_float(payload.get("movement_dash_speed"), 2500.0),
+            vault_cost=0.0 if _truthy(payload.get("movement_zero_vault_on_apply")) else None,
         )
     except Exception as exc:
         return {"ok": False, "message": f"Movement values must be numeric: {exc!r}"}
@@ -673,6 +681,50 @@ def movement_infinite_jump_refresh() -> dict[str, Any]:
         return {"ok": True, "message": msg}
     except Exception as exc:
         return {"ok": False, "message": f"Infinite jump refresh failed: {exc!r}"}
+
+
+def movement_infinite_jump_all(enabled: bool) -> dict[str, Any]:
+    try:
+        msg = set_infinite_jump_all(bool(enabled))
+        return {"ok": True, "message": msg}
+    except Exception as exc:
+        return {"ok": False, "message": f"Infinite jump all toggle failed: {exc!r}"}
+
+
+def movement_infinite_jump_selected(index_or_name: object | None = None) -> dict[str, Any]:
+    try:
+        idx: int | None
+        raw = "" if index_or_name is None else str(index_or_name).strip()
+        if raw:
+            try:
+                idx = int(raw.split("|", 1)[0].strip())
+            except Exception:
+                result = set_target_player(raw)
+                if not result.get("ok"):
+                    return result
+                idx = get_selected_player_index()
+        else:
+            idx = get_selected_player_index()
+        if idx is None:
+            return {"ok": False, "message": "No selected player for Infinite Jump. Press Refresh Players and choose a target."}
+        msg = toggle_infinite_jump_for_index(int(idx))
+        return {"ok": True, "message": msg}
+    except Exception as exc:
+        return {"ok": False, "message": f"Infinite jump selected toggle failed: {exc!r}"}
+
+
+def movement_infinite_jump_set_selected(index_or_name: object | None, enabled: bool) -> dict[str, Any]:
+    try:
+        result = set_target_player(index_or_name)
+        if not result.get("ok"):
+            return result
+        idx = get_selected_player_index()
+        if idx is None:
+            return {"ok": False, "message": "No selected player for Infinite Jump. Press Refresh Players and choose a target."}
+        msg = set_infinite_jump_for_index(int(idx), bool(enabled))
+        return {"ok": True, "message": msg}
+    except Exception as exc:
+        return {"ok": False, "message": f"Infinite jump selected set failed: {exc!r}"}
 
 
 def _rarity_current_gamestate() -> object | None:

@@ -553,8 +553,14 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
         return backend_actions.movement_apply_preset("wallwalk")
     if action == "movement_preset_fastglide":
         return backend_actions.movement_apply_preset("fastglide")
-    if action in ("movement_infinite_jump_all_on", "movement_infinite_jump_all_off", "movement_infinite_jump_toggle_selected"):
-        return backend_actions.movement_infinite_jump_refresh()
+    if action == "movement_infinite_jump_all_on":
+        return backend_actions.movement_infinite_jump_all(True)
+    if action == "movement_infinite_jump_all_off":
+        return backend_actions.movement_infinite_jump_all(False)
+    if action == "movement_infinite_jump_toggle_selected":
+        return backend_actions.movement_infinite_jump_selected(
+            payload.get("infinite_jump_target") or payload.get("target_player")
+        )
     if action in ("movement_save_preset", "movement_load_saved"):
         return {"ok": False, "message": f"{action} is local UI preset storage and is not handled by the SDK bridge."}
     if action == "rarity_apply":
