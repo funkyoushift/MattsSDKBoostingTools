@@ -23,6 +23,10 @@ class App(V9App):
         self.bl4_selected_ids = set()
         self.bl4_status_message = ''
         self.bl4_cache_autoload_attempted = False
+        self.validator_thread = None
+        self.validator_cancel_event = threading.Event()
+        self.validator_run_id = 0
+        self.validator_progress = {"running": False, "label": "Idle", "done": 0, "total": 0, "passed": 0, "failed": 0}
         self.bl4_selection_refreshing = False
         super().__init__()
         self.title("Matt's SDK Boosting Tools - External V22 Parts Codes GZO Visible")
