@@ -420,6 +420,13 @@ def _set_selected_player_from_payload(payload: dict[str, Any]) -> dict[str, Any]
     return result
 
 
+def _external_app_owned(action: str, feature: str) -> dict[str, Any]:
+    return {
+        "ok": False,
+        "message": f"{action} is handled locally by the standalone external app ({feature}); no SDK bridge call is needed.",
+    }
+
+
 def _apply_movement_external_payload(payload: dict[str, Any]) -> None:
     """Apply external movement fields to the in-game panel globals before calling Matt's existing functions."""
     try:
@@ -562,7 +569,31 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
         return {"ok": True, "message": f"{action}: static code resources are bundled in the external app; use Reconnect/Reload in the app to refresh the local view."}
     if action == "codes_import_bookmarks":
         return {"ok": True, "message": "Import to bookmarks is handled locally by the external app."}
-    if action in ("serial_bookmark_new", "serial_bookmark_import", "serial_bookmark_save", "serial_bookmark_duplicate", "serial_bookmark_delete", "serial_bookmark_copy", "clear_external_log"):
+    if action == "codes_mattmab_validation":
+        return _external_app_owned(action, "BL4 Codes validation")
+    if action == "serial_breakdown":
+        return _external_app_owned(action, "Serial Tools parts breakdown")
+    if action in ("validator_basic", "validator_clear", "validator_bulk"):
+        return _external_app_owned(action, "Validator")
+    if action in (
+        "legit_apply_max_passives",
+        "legit_validate_build",
+        "legit_clear_parts",
+    ):
+        return _external_app_owned(action, "Legit Builder")
+    if action in ("legit_give_selected", "legit_give_all", "legit_give_nonhost"):
+        return {
+            "ok": False,
+            "message": f"{action} should generate a serial locally, then call give_serial_selected/give_serial_all/give_serial_nonhost.",
+        }
+    if action in ("toggle_itempool_favorite", "toggle_map_favorite", "toggle_station_favorite"):
+        return {"ok": True, "message": f"{action} is local favorite state in the external app."}
+    if action == "clear_external_log":
+        global _last_action, _last_error
+        _last_action = ""
+        _last_error = ""
+        return {"ok": True, "message": "Cleared bridge status markers. The external app owns its local activity log."}
+    if action in ("serial_bookmark_new", "serial_bookmark_import", "serial_bookmark_save", "serial_bookmark_duplicate", "serial_bookmark_delete", "serial_bookmark_copy"):
         return {"ok": False, "message": f"{action} is present in the copied V3 UI but is not wired to a bridge action yet."}
     if action == "clear_serials":
         return backend_actions.clear_serials()
