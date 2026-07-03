@@ -8,7 +8,7 @@ from __future__ import annotations
 import re
 from typing import Any
 
-from mods_base import get_pc
+from mods_base import ENGINE, get_pc
 
 from . import player_economy, serial_rewards
 from .golden_chest_keybinds import _close_golden_chest, _open_golden_chest
@@ -31,7 +31,12 @@ from .movement_adjustments import (
     set_time_dilation,
     zero_vault_power_costs_all_players,
 )
-from .party_helpers import _gbc_session_world_and_gamestate, _kick_party_player_by_index, _list_party_players
+from .party_helpers import (
+    _gbc_find_pc_for_player_state,
+    _gbc_session_world_and_gamestate,
+    _kick_party_player_by_index,
+    _list_party_players,
+)
 from .serial_converter import human_to_serial as _human_to_serial, serial_to_human as _serial_to_human
 from .shinies import DEFAULT_ITEM_LEVEL as _SHINY_DEFAULT_LEVEL, drop_all_shinies
 from .travel import _exec_console, travel_to_map as _travel_to_map, travel_to_station as _travel_to_station
@@ -42,6 +47,14 @@ MAX_WALLET_AMOUNT = 2147483647
 MAX_PLAYER_LEVEL = 60
 MAX_SPEC_LEVEL = 701
 MAX_VAULT_CARD_LEVEL = 9999999
+RARITY_ROWS: tuple[tuple[str, str, tuple[str, ...]], ...] = (
+    ("common", "Common", ("CommonModifier",)),
+    ("uncommon", "Uncommon", ("UncommonModifier",)),
+    ("rare", "Rare", ("RareModifier",)),
+    ("epic", "Epic", ("VeryRareModifier", "EpicModifier")),
+    ("legendary", "Legendary", ("LegendaryModifier",)),
+    ("pearlescent", "Pearlescent", ("PearlModifier", "PearlescentModifier")),
+)
 
 _selected_player_index: int | None = None
 _selected_player_name: str = ""
@@ -54,6 +67,7 @@ serial_tools_parts_breakdown: str = ""
 serial_tools_status: str = "Paste a @U serial or deserialized serial text above."
 _movement_no_target_enabled = False
 _movement_noclip_enabled = False
+_rarity_weights: dict[str, float] = {key: 1.0 for key, _label, _fields in RARITY_ROWS}
 
 
 def _clamp_int(value: object, min_value: int, max_value: int) -> int:
@@ -364,6 +378,61 @@ def max_sdu() -> dict[str, Any]:
         return {"ok": False, "message": f"Max SDU failed: {exc!r}"}
 
 
+def _selected_player_controller() -> Any | None:
+    idx = get_selected_player_index()
+    if idx is None:
+        return None
+    world, gs = _gbc_session_world_and_gamestate()
+    pa = getattr(gs, "PlayerArray", None) if gs is not None else None
+    if pa is None:
+        return get_pc() if idx == 0 else None
+    try:
+        ps = pa[int(idx)]
+    except Exception:
+        return get_pc() if idx == 0 else None
+    pc = _gbc_find_pc_for_player_state(ps, world)
+    return pc or (get_pc() if idx == 0 else None)
+
+
+def max_all() -> dict[str, Any]:
+    name = get_selected_player_name()
+    if not name:
+        return {"ok": False, "message": "No party player selected."}
+    try:
+        player_economy._do_give_experience("player", MAX_PLAYER_LEVEL, name)
+        player_economy._do_give_experience("specialization", MAX_SPEC_LEVEL, name)
+        player_economy._do_give_currency("cash", MAX_WALLET_AMOUNT, name)
+        player_economy._do_give_currency("eridium", MAX_WALLET_AMOUNT, name)
+        player_economy._do_msbt_maxsdu(["name", name])
+        vc_msg = ""
+        pc = _selected_player_controller()
+        if pc is not None:
+            try:
+                from .vault_card_boost import max_all_vault_cards_for_pc
+
+                vc_ok, vc_detail = max_all_vault_cards_for_pc(pc)
+                vc_msg = f" Vault cards {'OK' if vc_ok else 'partial'}: {vc_detail[:120]}"
+            except Exception as exc:
+                vc_msg = f" Vault-card PC path failed; economy fallback used: {exc!r}"
+                pc = None
+        if pc is None:
+            for vc_kind in ("vaultcard1", "vaultcard2", "vaultcard3"):
+                player_economy._do_give_currency(vc_kind, MAX_WALLET_AMOUNT, name)
+            for vc_xp in ("vaultcard_xp_1", "vaultcard_xp_2", "vaultcard_xp_3"):
+                player_economy._do_give_experience(vc_xp, MAX_VAULT_CARD_LEVEL, name)
+            if not vc_msg:
+                vc_msg = " Vault cards requested through economy fallback."
+        return {
+            "ok": True,
+            "message": (
+                f"Max All requested for {name}: player {MAX_PLAYER_LEVEL}, spec {MAX_SPEC_LEVEL}, "
+                f"cash/eridium {MAX_WALLET_AMOUNT:,}, max SDU.{vc_msg}"
+            ),
+        }
+    except Exception as exc:
+        return {"ok": False, "message": f"Max All failed: {exc!r}"}
+
+
 def toggle_debug_cam() -> dict[str, Any]:
     idx = get_selected_player_index()
     try:
@@ -604,6 +673,107 @@ def movement_infinite_jump_refresh() -> dict[str, Any]:
         return {"ok": True, "message": msg}
     except Exception as exc:
         return {"ok": False, "message": f"Infinite jump refresh failed: {exc!r}"}
+
+
+def _rarity_current_gamestate() -> object | None:
+    try:
+        viewport = getattr(ENGINE, "GameViewport", None)
+        world = getattr(viewport, "World", None) if viewport is not None else None
+        return getattr(world, "GameState", None) if world is not None else None
+    except Exception:
+        return None
+
+
+def _rarity_state_for_gamestate(gs: object | None) -> object | None:
+    if gs is None:
+        return None
+    for attr in ("RarityState", "RarityModifier", "RarityModifiers", "GameRarityState"):
+        try:
+            candidate = getattr(gs, attr, None)
+            if candidate is not None:
+                return candidate
+        except Exception:
+            pass
+    return None
+
+
+def _rarity_get_modifier(state: object | None, fields: tuple[str, ...]) -> object | None:
+    if state is None:
+        return None
+    for field in fields:
+        try:
+            mod = getattr(state, field, None)
+            if mod is not None:
+                return mod
+        except Exception:
+            pass
+    return None
+
+
+def _rarity_set_float(mod: object | None, value: float) -> int:
+    if mod is None:
+        return 0
+    writes = 0
+    value = max(0.0, min(1.0, float(value)))
+    for name in ("Value", "CurrentValue", "Current", "BaseValue", "InitialValue", "Base"):
+        try:
+            if hasattr(mod, name):
+                setattr(mod, name, value)
+                writes += 1
+        except Exception:
+            pass
+    for name in ("SetValue", "SetBaseValue", "SetCurrentValue"):
+        try:
+            fn = getattr(mod, name, None)
+            if callable(fn):
+                fn(value)
+                writes += 1
+        except Exception:
+            pass
+    return writes
+
+
+def _rarity_apply_current() -> dict[str, Any]:
+    state = _rarity_state_for_gamestate(_rarity_current_gamestate())
+    if state is None:
+        return {"ok": False, "message": "No GameState.RarityState found yet. Load into a world and try again."}
+    writes = 0
+    parts: list[str] = []
+    for key, label, fields in RARITY_ROWS:
+        target = max(0.0, min(1.0, float(_rarity_weights.get(key, 1.0))))
+        writes += _rarity_set_float(_rarity_get_modifier(state, fields), target)
+        parts.append(f"{label}={int(round(target * 100.0))}%")
+    return {"ok": True, "message": "Rarity drop weights applied: " + ", ".join(parts) + f". Writes: {writes}."}
+
+
+def rarity_apply(payload: dict[str, Any] | None = None) -> dict[str, Any]:
+    payload = payload or {}
+    for key, _label, _fields in RARITY_ROWS:
+        try:
+            if key in payload:
+                _rarity_weights[key] = max(0.0, min(1.0, float(payload[key])))
+            pct_key = f"rarity_{key}_percent"
+            if pct_key in payload:
+                _rarity_weights[key] = max(0.0, min(1.0, float(payload[pct_key]) / 100.0))
+        except Exception:
+            return {"ok": False, "message": f"Rarity value for {key} must be numeric."}
+    return _rarity_apply_current()
+
+
+def rarity_reset() -> dict[str, Any]:
+    for key, _label, _fields in RARITY_ROWS:
+        _rarity_weights[key] = 1.0
+    return _rarity_apply_current()
+
+
+def rarity_only(allowed_key: object) -> dict[str, Any]:
+    allowed = str(allowed_key or "").strip().lower()
+    valid = {key for key, _label, _fields in RARITY_ROWS}
+    if allowed not in valid:
+        return {"ok": False, "message": f"Unsupported rarity key: {allowed_key}"}
+    for key, _label, _fields in RARITY_ROWS:
+        _rarity_weights[key] = 1.0 if key == allowed else 0.0
+    return _rarity_apply_current()
 
 
 def clear_serials() -> dict[str, Any]:

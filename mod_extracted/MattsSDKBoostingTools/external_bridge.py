@@ -490,6 +490,8 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
         return backend_actions.max_spec_level()
     if action == "max_sdu":
         return backend_actions.max_sdu()
+    if action == "max_all":
+        return backend_actions.max_all()
     if action == "give_currency":
         return backend_actions.give_currency(
             payload.get("currency_kind") if "currency_kind" in payload else payload.get("currency_index", "cash"),
@@ -548,6 +550,14 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
         return backend_actions.movement_infinite_jump_refresh()
     if action in ("movement_save_preset", "movement_load_saved"):
         return {"ok": False, "message": f"{action} is local UI preset storage and is not handled by the SDK bridge."}
+    if action == "rarity_apply":
+        return backend_actions.rarity_apply(payload)
+    if action == "rarity_reset":
+        return backend_actions.rarity_reset()
+    if action == "rarity_only_legendary":
+        return backend_actions.rarity_only("legendary")
+    if action == "rarity_only_pearlescent":
+        return backend_actions.rarity_only("pearlescent")
     if action in ("codes_load_cache", "codes_refresh_gzo", "codes_reload_lootlemon"):
         return {"ok": True, "message": f"{action}: static code resources are bundled in the external app; use Reconnect/Reload in the app to refresh the local view."}
     if action == "codes_import_bookmarks":
