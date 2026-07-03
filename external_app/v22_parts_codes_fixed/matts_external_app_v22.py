@@ -346,24 +346,27 @@ class App(V9App):
         root = self._legit_current_root()
         if not root:
             return self.log('Choose a class mod root first before using Add All Max Passives.')
-        root_name = (str(root.get('key') or '') + ' ' + str(root.get('name') or '') + ' ' + str(root.get('display') or '') + ' ' + str(root.get('basetype') or '')).lower()
-        if 'classmod' not in root_name and 'class_mod' not in root_name and 'class mod' not in root_name:
+        if str(root.get('item_type') or '').strip().lower() != 'class_mod':
             return self.log('Add All Max Passives is only for class mod roots.')
         unlock = str(self.field_vars.get('legit_unlock_modded', tk.StringVar(value='false')).get() or '').lower() in ('1','true','yes','on')
         if not unlock:
             return self.log('Turn on Unlock rules for modded gear before adding every max passive.')
+        root_key = str(root.get('key') or '').strip()
+        if not root_key:
+            return self.log('No class mod root key selected.')
         best = {}
-        scanned = 0
-        for p in root.get('parts', []) or []:
-            if str(p.get('table') or '').strip() != 'passive_points':
-                continue
+        try:
+            parts = external_legit_builder.search_parts(root_key, 'passive_', table='passive_points', limit=2000)
+        except Exception as exc:
+            return self.log(f'Legit passive max scan failed for {root_key}: {exc!r}')
+        scanned = len(parts)
+        for p in parts:
             key = str(p.get('key') or p.get('internal') or '').strip()
             if not key.lower().startswith('passive_'):
                 continue
             m = re.search(r'_tier_(\d+)$', key.lower())
             if not m:
                 continue
-            scanned += 1
             try:
                 tier = int(m.group(1))
             except Exception:
@@ -377,12 +380,12 @@ class App(V9App):
                 best[base] = (tier, line)
         max_lines = [line for _tier, line in sorted(best.values(), key=lambda item: item[1].lower())]
         if not max_lines:
-            return self.log(f'No passive_points max-tier parts found for {root.get("key") or root.get("display") or "selected root"}. Scanned {scanned} passive parts.')
+            return self.log(f'No passive_points max-tier parts found for {root_key}. Scanned {scanned} passive parts.')
         # Replace existing passive_points selection with exactly the max-tier set, preserving all other selected slots.
         self.legit_selected_by_slot['passive_points'] = list(max_lines)
         self._sync_legit_selected_text()
         self._render_legit_slots()
-        self.log(f'Added {len(max_lines)} max-tier passive point parts for {root.get("display") or root.get("key")}. Replaced existing passive_points selections.')
+        self.log(f'Added {len(max_lines)} max-tier passive point parts for {root.get("build_label") or root_key}. Replaced existing passive_points selections.')
 
 
 
