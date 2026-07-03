@@ -282,12 +282,82 @@
           "id": "rarity_weights",
           "label": "RARITY DROP WEIGHTS",
           "accent": "purple",
-          "text": "Mirrors the BLImGui rarity controls. V3 exposes quick actions first; sliders will be copied in the next pass.",
+          "text": "These sliders control drop-weight multipliers from GameState.RarityState. 100% is the normal vanilla weight, 50% is half weight, and 0% effectively removes that rarity from the drop pool.",
+          "fields": [
+            {
+              "id": "rarity_common_percent",
+              "label": "Common Weight",
+              "type": "slider",
+              "default": "100",
+              "min": 0,
+              "max": 100,
+              "step": 1,
+              "suffix": "%"
+            },
+            {
+              "id": "rarity_uncommon_percent",
+              "label": "Uncommon Weight",
+              "type": "slider",
+              "default": "100",
+              "min": 0,
+              "max": 100,
+              "step": 1,
+              "suffix": "%"
+            },
+            {
+              "id": "rarity_rare_percent",
+              "label": "Rare Weight",
+              "type": "slider",
+              "default": "100",
+              "min": 0,
+              "max": 100,
+              "step": 1,
+              "suffix": "%"
+            },
+            {
+              "id": "rarity_epic_percent",
+              "label": "Epic Weight",
+              "type": "slider",
+              "default": "100",
+              "min": 0,
+              "max": 100,
+              "step": 1,
+              "suffix": "%"
+            },
+            {
+              "id": "rarity_legendary_percent",
+              "label": "Legendary Weight",
+              "type": "slider",
+              "default": "100",
+              "min": 0,
+              "max": 100,
+              "step": 1,
+              "suffix": "%"
+            },
+            {
+              "id": "rarity_pearlescent_percent",
+              "label": "Pearlescent Weight",
+              "type": "slider",
+              "default": "100",
+              "min": 0,
+              "max": 100,
+              "step": 1,
+              "suffix": "%"
+            }
+          ],
           "actions": [
             {
               "id": "rarity_apply",
               "label": "Apply",
-              "accent": "purple"
+              "accent": "purple",
+              "uses_fields": [
+                "rarity_common_percent",
+                "rarity_uncommon_percent",
+                "rarity_rare_percent",
+                "rarity_epic_percent",
+                "rarity_legendary_percent",
+                "rarity_pearlescent_percent"
+              ]
             },
             {
               "id": "rarity_reset",

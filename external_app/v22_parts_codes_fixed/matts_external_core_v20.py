@@ -220,6 +220,18 @@ class App(tk.Tk):
             cb.pack(side='left',fill='x',expand=True); self.widgets[fid]=cb
             if values and not var.get(): var.set(values[0])
             cb.bind('<<ComboboxSelected>>',lambda e,f=field:self._field_changed(f))
+        elif typ=='slider':
+            try: min_v=float(field.get('min',0))
+            except Exception: min_v=0.0
+            try: max_v=float(field.get('max',100))
+            except Exception: max_v=100.0
+            try: step=float(field.get('step',1))
+            except Exception: step=1.0
+            scale=tk.Scale(row,from_=min_v,to=max_v,resolution=step,orient='horizontal',variable=var,showvalue=False,bg='#090d17',fg='#cfd8f3',troughcolor='#211b1f',highlightthickness=0,relief='flat')
+            scale.pack(side='left',fill='x',expand=True)
+            ent=ttk.Entry(row,textvariable=var,width=6); ent.pack(side='left',padx=(6,0))
+            tk.Label(row,text=field.get('suffix',''),bg='#090d17',fg='#8c99b5',font=('Segoe UI',8)).pack(side='left',padx=(3,0))
+            self.widgets[fid]=scale
         elif typ=='multiline':
             h=4 if compact else 6
             if fid in ('serial_text','bookmark_serial','validator_bulk_input'): h=8
@@ -294,6 +306,18 @@ class App(tk.Tk):
         box=tk.Text(parent,height=8,bg='#0e1320',fg='#d7def5',insertbackground='#f1f5ff',relief='flat',wrap='word',font=('Consolas',8)); box.configure(state='disabled'); box.pack(fill='both',expand=True,padx=8,pady=(5,8)); self.output_text=box
     def run_action(self,action):
         aid=action.get('id')
+        if aid=='rarity_reset':
+            for key in ('common','uncommon','rare','epic','legendary','pearlescent'):
+                var=self.field_vars.get(f'rarity_{key}_percent')
+                if var: var.set('100')
+        elif aid=='rarity_only_legendary':
+            for key in ('common','uncommon','rare','epic','legendary','pearlescent'):
+                var=self.field_vars.get(f'rarity_{key}_percent')
+                if var: var.set('100' if key=='legendary' else '0')
+        elif aid=='rarity_only_pearlescent':
+            for key in ('common','uncommon','rare','epic','legendary','pearlescent'):
+                var=self.field_vars.get(f'rarity_{key}_percent')
+                if var: var.set('100' if key=='pearlescent' else '0')
         if aid=='local_legit_add_part':
             part=self.field_vars.get('legit_part_select',tk.StringVar()).get().split('|',1)[0].strip()
             if not part: return self.log('No legit part selected.')
