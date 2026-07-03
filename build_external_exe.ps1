@@ -58,6 +58,7 @@ if (-not (Test-Path $ResourcesSource)) {
     throw "Resources folder not found: $ResourcesSource"
 }
 
+Remove-Item -Recurse -Force $ResourcesDest -ErrorAction SilentlyContinue
 Copy-Item -Recurse -Force $ResourcesSource $ResourcesDest
 Copy-Item -Force (Join-Path $RepoRoot "Launch_MSBT_External_App.bat") (Join-Path $DistApp "Launch_MSBT_External_App.bat")
 Copy-Item -Force (Join-Path $AppSource "Launch_MattsBoostingTools_External.bat") (Join-Path $DistApp "Launch_MattsBoostingTools_External.bat")

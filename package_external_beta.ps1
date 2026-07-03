@@ -4,6 +4,8 @@ $RepoRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $PackageRoot = Join-Path $RepoRoot "MSBT_External_Beta"
 $ExternalFolder = Join-Path $PackageRoot "MattsSDKBoostingTools_external"
 $ExeBuildFolder = Join-Path $RepoRoot "dist\MattsBoostingToolsExternal"
+$AppSource = Join-Path $RepoRoot "external_app\v22_parts_codes_fixed"
+$ResourcesSource = Join-Path $AppSource "resources"
 $SdkMod = Join-Path $RepoRoot "MattsSDKBoostingTools.sdkmod"
 $ZipPath = Join-Path $RepoRoot "MSBT_External_Beta.zip"
 
@@ -22,6 +24,9 @@ if (-not (Test-Path (Join-Path $ExeBuildFolder "MattsBoostingToolsExternal.exe")
 if (-not (Test-Path $SdkMod)) {
     throw "SDK mod package not found: $SdkMod"
 }
+if (-not (Test-Path $ResourcesSource)) {
+    throw "Current external app resources folder not found: $ResourcesSource"
+}
 
 Assert-UnderRepo $PackageRoot
 Assert-UnderRepo $ZipPath
@@ -31,6 +36,8 @@ Remove-Item -Force $ZipPath -ErrorAction SilentlyContinue
 
 New-Item -ItemType Directory -Force $ExternalFolder | Out-Null
 Copy-Item -Recurse -Force (Join-Path $ExeBuildFolder "*") $ExternalFolder
+Remove-Item -Recurse -Force (Join-Path $ExternalFolder "resources") -ErrorAction SilentlyContinue
+Copy-Item -Recurse -Force $ResourcesSource (Join-Path $ExternalFolder "resources")
 Copy-Item -Force $SdkMod (Join-Path $PackageRoot "MattsSDKBoostingTools.sdkmod")
 Copy-Item -Force (Join-Path $RepoRoot "Launch_MSBT_External_App.bat") (Join-Path $PackageRoot "Launch_MSBT_External_App.bat")
 
