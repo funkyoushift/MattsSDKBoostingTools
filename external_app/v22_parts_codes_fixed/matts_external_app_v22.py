@@ -2340,8 +2340,5 @@ class App(V9App):
             self.field_vars['legit_selected_parts'].set('\n'.join(self._legit_selected_lines_without_root()))
         return super().run_action(action)
 
-if __name__=='__main__': App().mainloop()
-
-
 if __name__ == '__main__':
     App().mainloop()
