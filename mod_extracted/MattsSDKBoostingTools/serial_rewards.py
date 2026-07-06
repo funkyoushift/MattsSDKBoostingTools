@@ -58,10 +58,14 @@ _TICK_PATCH_LOG_EVERY = 30
 # so hard-cap each serial reward package at a much smaller 20k estimated payload budget.
 _MAX_SERIAL_DELIVERY_CHARS = 20000
 _SERIAL_DELIVERY_SAFE_CHARS = 20000
+_SERIAL_DELIVERY_SAFE_SERIALS_SELECTED = 10
+_SERIAL_DELIVERY_SAFE_SERIALS_MULTI = 15
 _SERIAL_DELIVERY_PER_SERIAL_OVERHEAD_CHARS = 16
 # Automatic chunk delivery pacing.  Keep this main-thread/tick driven; no sleeps.
 _SERIAL_DELIVERY_PRE_OPEN_DELAY_SEC = 1.00
 _SERIAL_DELIVERY_POST_OPEN_DELAY_SEC = 0.50
+_SERIAL_DELIVERY_SELECTED_POST_OPEN_DELAY_SEC = 1.25
+_SERIAL_DELIVERY_MULTI_POST_OPEN_DELAY_SEC = 1.50
 _SERIAL_DELIVERY_PATCH_MAX_ATTEMPTS = 120
 _SERIAL_DELIVERY_PATCH_LOG_EVERY = 30
 _SERIAL_DELIVERY_BACKPACK_HEADROOM = 100
@@ -86,6 +90,29 @@ def set_serial_delivery_timing(pre_open_delay: float | None = None, post_open_de
 def serial_delivery_timing() -> tuple[float, float]:
     """Return current automatic chunk-delivery delays: post-delivery, post-open."""
     return (_SERIAL_DELIVERY_PRE_OPEN_DELAY_SEC, _SERIAL_DELIVERY_POST_OPEN_DELAY_SEC)
+
+
+def _serial_delivery_mode_key(mode: str | None) -> str:
+    key = str(mode or "selected").strip().lower().replace("-", "_")
+    if key in ("all", "party", "all_party"):
+        return "all"
+    if key in ("nonhost", "non_host", "all_non_host"):
+        return "nonhost"
+    return "selected"
+
+
+def _serial_delivery_max_serials_per_chunk(mode: str | None = None) -> int:
+    key = _serial_delivery_mode_key(mode)
+    if key in ("all", "nonhost"):
+        return _SERIAL_DELIVERY_SAFE_SERIALS_MULTI
+    return _SERIAL_DELIVERY_SAFE_SERIALS_SELECTED
+
+
+def _serial_delivery_post_open_delay(mode: str | None = None) -> float:
+    key = _serial_delivery_mode_key(mode)
+    if key in ("all", "nonhost"):
+        return _SERIAL_DELIVERY_MULTI_POST_OPEN_DELAY_SEC
+    return _SERIAL_DELIVERY_SELECTED_POST_OPEN_DELAY_SEC
 
 
 # Same contract as Legit Builder SERIAL_API_URL (POST JSON {"deserialized": "…"} → {"serial_b85": "…"}).
@@ -754,23 +781,32 @@ def _serial_delivery_estimated_payload_chars(serials: List[str]) -> int:
     return total
 
 
-def _chunk_serials_for_delivery(serials: List[str], max_chars: int = _SERIAL_DELIVERY_SAFE_CHARS) -> List[List[str]]:
+def _chunk_serials_for_delivery(
+    serials: List[str],
+    max_chars: int = _SERIAL_DELIVERY_SAFE_CHARS,
+    max_serials: int | None = None,
+) -> List[List[str]]:
     """Split serials into reward-package sized chunks.
 
     BL4 remote reward-package delivery becomes unreliable when a single
     SerialNumbers payload gets too large. Keep each package under a 20k
-    estimated payload budget. Individual serials are never split.
+    estimated payload budget and below the per-package serial count cap.
+    Individual serials are never split.
     """
     chunks: List[List[str]] = []
     current: List[str] = []
     current_chars = 0
     limit = max(1, int(max_chars or _SERIAL_DELIVERY_SAFE_CHARS))
+    try:
+        serial_limit = max(1, int(max_serials)) if max_serials is not None else 0
+    except Exception:
+        serial_limit = 0
     for raw in serials:
         text = str(raw or "").strip()
         if not text:
             continue
         n = len(text) + _SERIAL_DELIVERY_PER_SERIAL_OVERHEAD_CHARS
-        if current and current_chars + n > limit:
+        if current and (current_chars + n > limit or (serial_limit and len(current) >= serial_limit)):
             chunks.append(current)
             current = []
             current_chars = 0
@@ -790,15 +826,18 @@ def _chunk_serials_for_delivery(serials: List[str], max_chars: int = _SERIAL_DEL
     return chunks
 
 
-def _serial_delivery_chunks(serials: List[str]) -> List[List[str]]:
+def _serial_delivery_chunks(serials: List[str], mode: str | None = None) -> List[List[str]]:
     """Public-ish helper for the UI: preview exactly how delivery will split."""
-    return _chunk_serials_for_delivery(serials)
+    return _chunk_serials_for_delivery(
+        serials,
+        max_serials=_serial_delivery_max_serials_per_chunk(mode),
+    )
 
 
-def _serial_delivery_chunk_stats(serials: List[str]) -> List[dict[str, int]]:
+def _serial_delivery_chunk_stats(serials: List[str], mode: str | None = None) -> List[dict[str, int]]:
     """Return per-package stats for display without exposing engine objects."""
     out: List[dict[str, int]] = []
-    for i, chunk in enumerate(_chunk_serials_for_delivery(serials), 1):
+    for i, chunk in enumerate(_serial_delivery_chunks(serials, mode), 1):
         out.append({
             "index": i,
             "serials": len(chunk),
@@ -1204,8 +1243,8 @@ def _next_loyalty_reward_name() -> Tuple[str, int, int]:
     return DEFAULT_REWARD_DEF_NAME, 1, 1
 
 
-def _queue_serial_delivery_sequence(serials: List[str], player_indices: List[int], *, scope_label: str) -> None:
-    chunks = _chunk_serials_for_delivery(serials)
+def _queue_serial_delivery_sequence(serials: List[str], player_indices: List[int], *, scope_label: str, mode: str | None = None) -> None:
+    chunks = _serial_delivery_chunks(serials, mode)
     if not chunks:
         _log_error("No serial strings after delivery chunking.")
         return
@@ -1261,7 +1300,7 @@ def _process_pending_serial_delivery_sequences() -> None:
             idx = int(seq.get("index") or 0)
             stage = str(seq.get("stage") or "deliver")
             if idx >= len(chunks):
-                msg = f"Serial delivery complete for {scope_label} ({len(chunks)} package part(s))."
+                msg = f"Serial delivery submitted and opened reward packages for {scope_label} ({len(chunks)} package part(s))."
                 _set_serial_delivery_status(msg, hold_sec=20.0, log=True)
                 continue
 
@@ -1278,7 +1317,7 @@ def _process_pending_serial_delivery_sequences() -> None:
                     seq["stage"] = "deliver"
                     seq["attempts"] = 0
                     if idx + 1 >= len(chunks):
-                        msg = f"Serial delivery complete for {scope_label} ({len(chunks)} package part(s))."
+                        msg = f"Serial delivery submitted and opened reward packages for {scope_label} ({len(chunks)} package part(s))."
                         _set_serial_delivery_status(msg, hold_sec=20.0, log=True)
                         continue
                     idx = idx + 1
@@ -1359,7 +1398,13 @@ def _process_pending_serial_delivery_sequences() -> None:
     _pending_serial_delivery_sequences[:] = remaining
 
 
-def _do_give_serial_to_player_indices(serials: List[str], player_indices: List[int], *, scope_label: str = "selected players") -> None:
+def _do_give_serial_to_player_indices(
+    serials: List[str],
+    player_indices: List[int],
+    *,
+    scope_label: str = "selected players",
+    mode: str | None = None,
+) -> None:
     """
     Hybrid party-safe serial delivery.
 
@@ -1394,7 +1439,10 @@ def _do_give_serial_to_player_indices(serials: List[str], player_indices: List[i
         _log_error("Give_Serial: no target player indices to patch.")
         return
 
-    chunks = _chunk_serials_for_delivery(serials)
+    mode_key = _serial_delivery_mode_key(mode)
+    max_serials = _serial_delivery_max_serials_per_chunk(mode_key)
+    gap = _clamp_serial_delivery_delay(_serial_delivery_post_open_delay(mode_key))
+    chunks = _chunk_serials_for_delivery(serials, max_serials=max_serials)
     if not chunks:
         _log_error("No serial strings after delivery chunking.")
         return
@@ -1409,14 +1457,15 @@ def _do_give_serial_to_player_indices(serials: List[str], player_indices: List[i
     _ensure_backpack_capacity_for_indices(targets, len(serials))
     _gbc_run_session_timer_from_give_serial()
     _set_serial_delivery_status(
-        f"Hybrid serial delivery starting: {len(chunks)} part(s), {len(serials)} serial(s) to {scope_label}",
+        f"Submitting {len(serials)} serial(s) in {len(chunks)} chunk(s), max {max_serials} serial(s) per chunk, delay {gap:.2f}s ({scope_label})",
         hold_sec=30.0,
         log=True,
     )
     if len(chunks) > 1:
         _log_info(
             f"Hybrid chunk delivery for {scope_label}: {len(serials)} serial(s), "
-            f"{_serial_delivery_chunks_desc(chunks)}. Each chunk uses old immediate delivery + forced open."
+            f"{_serial_delivery_chunks_desc(chunks)}. Max {max_serials} serial(s) per chunk; "
+            f"{gap:.2f}s post-open delay. Each chunk uses immediate delivery + forced open."
         )
 
     for chunk_index, chunk in enumerate(chunks, 1):
@@ -1483,7 +1532,6 @@ def _do_give_serial_to_player_indices(serials: List[str], player_indices: List[i
         _open_all_live_reward_packages()
 
         if chunk_index < len(chunks):
-            gap = _clamp_serial_delivery_delay(_SERIAL_DELIVERY_POST_OPEN_DELAY_SEC)
             if gap > 0:
                 _set_serial_delivery_status(
                     f"Serial delivery {chunk_index}/{len(chunks)} opened; next part in {gap:.2f}s",
@@ -1493,7 +1541,7 @@ def _do_give_serial_to_player_indices(serials: List[str], player_indices: List[i
                 time.sleep(gap)
 
     _set_serial_delivery_status(
-        f"Hybrid serial delivery complete for {scope_label} ({len(chunks)} package part(s)).",
+        f"Hybrid serial delivery submitted, patched, and opened reward packages for {scope_label} ({len(chunks)} chunk(s)).",
         hold_sec=20.0,
         log=True,
     )

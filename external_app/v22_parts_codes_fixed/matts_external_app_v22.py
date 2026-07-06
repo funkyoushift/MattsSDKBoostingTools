@@ -1126,7 +1126,6 @@ class App(V9App):
         return bool(root_key.lower().startswith('classmod_') and core_root and str(core_root.get('item_type') or '').strip().lower() == 'class_mod')
 
     def _legit_apply_max_passives_local(self):
-        import re
         self._sync_legit_selection_from_text()
         root = self._legit_current_root()
         if not root:
@@ -1139,38 +1138,26 @@ class App(V9App):
         root_key = str(root.get('key') or '').strip()
         if not root_key:
             return self._set_legit_status('No class mod root key selected.')
-        best = {}
         try:
-            parts = external_legit_builder.search_parts(root_key, 'passive_', table='passive_points', limit=2000)
+            chains = external_legit_builder.max_passive_point_chains(root_key, limit=5000)
         except Exception as exc:
             return self._set_legit_status(f'Legit passive max scan failed for {root_key}: {exc!r}')
-        scanned = len(parts)
-        for p in parts:
-            key = str(p.get('key') or p.get('internal') or '').strip()
-            if not key.lower().startswith('passive_'):
-                continue
-            m = re.search(r'_tier_(\d+)$', key.lower())
-            if not m:
-                continue
-            try:
-                tier = int(m.group(1))
-            except Exception:
-                tier = 0
-            base = self._legit_passive_base_key(key)
-            line = self._slot_line_from_part(p) if hasattr(self, '_slot_line_from_part') else f"{p.get('table')}:{p.get('key')}"
-            if not line or ':' not in line:
-                continue
-            old = best.get(base)
-            if old is None or tier > old[0]:
-                best[base] = (tier, line)
-        max_lines = [line for _tier, line in sorted(best.values(), key=lambda item: item[1].lower())]
+        scanned = sum(len(c.get('parts') or []) for c in chains)
+        max_lines = []
+        for chain in chains:
+            for line in chain.get('lines') or []:
+                if line and ':' in str(line):
+                    max_lines.append(str(line))
         if not max_lines:
-            return self._set_legit_status(f'No passive_points max-tier parts found for {root_key}. Scanned {scanned} passive parts.')
-        # Replace existing passive_points selection with exactly the max-tier set, preserving all other selected slots.
+            return self._set_legit_status(f'No passive_points tier chains found for {root_key}. Scanned {scanned} passive parts.')
+        # Replace existing passive_points selection with full max-point chains, preserving all other selected slots.
         self.legit_selected_by_slot['passive_points'] = list(max_lines)
         self._sync_legit_selected_text()
         self._clear_legit_outputs()
-        self._set_legit_status(f'Added {len(max_lines)} max-tier passive point parts for {root.get("build_label") or root_key}. Replaced existing passive_points selections.')
+        self._set_legit_status(
+            f'Added max passive points for {len(chains)} passive(s), {len(max_lines)} total passive point parts '
+            f'for {root.get("build_label") or root_key}. Replaced existing passive_points selections.'
+        )
 
 
 

@@ -930,7 +930,9 @@ class _Handler(BaseHTTPRequestHandler):
                 with _lock:
                     result = _results.pop(rid, None)
                 if result is not None:
-                    self._send(200 if result.get("ok") else 500, result)
+                    # Handled action failures are still useful JSON responses for
+                    # the external app. Reserve HTTP 500 for bridge/server errors.
+                    self._send(200, result)
                     return
                 time.sleep(0.05)
             self._send(202, {"ok": False, "queued": True, "message": "Action queued but not processed yet. Make sure the game is loaded and the SDK mod is active."})

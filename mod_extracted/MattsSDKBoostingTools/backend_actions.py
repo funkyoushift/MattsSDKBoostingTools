@@ -54,6 +54,8 @@ MAX_WALLET_AMOUNT = 2147483647
 MAX_PLAYER_LEVEL = 60
 MAX_SPEC_LEVEL = 701
 MAX_VAULT_CARD_LEVEL = 9999999
+MAX_SELECTED_SERIAL_DELIVERY = 50
+MAX_MULTI_SERIAL_DELIVERY = 150
 RARITY_ROWS: tuple[tuple[str, str, tuple[str, ...]], ...] = (
     ("common", "Common", ("CommonModifier",)),
     ("uncommon", "Uncommon", ("UncommonModifier",)),
@@ -1034,37 +1036,67 @@ def _non_host_party_player_indices() -> list[int]:
     return [idx for idx in all_indices if idx != host_idx]
 
 
-def _deliver_serials_with_target(serials: list[str], mode: str) -> dict[str, Any]:
+def _serial_delivery_count_note(parsed_count: int | None, resolved_count: int) -> str:
+    if parsed_count is None or int(parsed_count) == int(resolved_count):
+        return ""
+    return f" Parsed {int(parsed_count)} input row(s), resolved {int(resolved_count)} deliverable serial(s)."
+
+
+def _deliver_serials_with_target(serials: list[str], mode: str, parsed_count: int | None = None) -> dict[str, Any]:
     if not serials:
         return {"ok": False, "message": "No valid serials to deliver."}
     mode_key = str(mode or "selected").lower().strip()
-    chunks = serial_rewards._serial_delivery_chunks(serials)
-    split_note = f" Split into {len(chunks)} package part(s)." if chunks else ""
+    if mode_key in ("non_host", "all_non_host"):
+        mode_key = "nonhost"
+    if mode_key not in ("selected", "all", "nonhost"):
+        mode_key = "selected"
+    total_serials = len(serials)
+    if mode_key == "selected" and total_serials > MAX_SELECTED_SERIAL_DELIVERY:
+        return {
+            "ok": False,
+            "message": "Too many selected serials for reliable selected-player delivery. Select 50 or fewer, or use smaller batches.",
+        }
+    if mode_key in ("all", "nonhost") and total_serials > MAX_MULTI_SERIAL_DELIVERY:
+        return {
+            "ok": False,
+            "message": (
+                f"Too many serials for reliable {mode_key} delivery. Select {MAX_MULTI_SERIAL_DELIVERY} "
+                "or fewer, or use smaller batches."
+            ),
+        }
+    chunks = serial_rewards._serial_delivery_chunks(serials, mode_key)
+    max_per_chunk = serial_rewards._serial_delivery_max_serials_per_chunk(mode_key)
+    delay = serial_rewards._serial_delivery_post_open_delay(mode_key)
+    split_note = (
+        f" Submitting {total_serials} serial(s) in {len(chunks)} chunk(s), "
+        f"max {max_per_chunk} serial(s) per chunk, delay {delay:.2f}s."
+    ) if chunks else ""
+    count_note = _serial_delivery_count_note(parsed_count, total_serials)
     try:
         if mode_key == "all":
             indices = [int(idx) for idx, _name in _players()]
             if not indices:
                 return {"ok": False, "message": "No party players found."}
-            serial_rewards._do_give_serial_to_player_indices(serials, indices, scope_label="all party players")
+            serial_rewards._do_give_serial_to_player_indices(serials, indices, scope_label="all party players", mode=mode_key)
             return {
                 "ok": True,
-                "message": f"Requested {len(serials)} serial(s) for all party players ({len(indices)} target(s)).{split_note}",
+                "message": f"Requested {total_serials} serial(s) for all party players ({len(indices)} target(s)).{split_note}{count_note}",
             }
-        if mode_key in ("nonhost", "non_host", "all_non_host"):
+        if mode_key == "nonhost":
             indices = _non_host_party_player_indices()
             if not indices:
                 return {"ok": False, "message": "No non-host party players found."}
-            serial_rewards._do_give_serial_to_player_indices(serials, indices, scope_label="all non-host players")
+            serial_rewards._do_give_serial_to_player_indices(serials, indices, scope_label="all non-host players", mode=mode_key)
             return {
                 "ok": True,
-                "message": f"Requested {len(serials)} serial(s) for all non-host players ({len(indices)} target(s)).{split_note}",
+                "message": f"Requested {total_serials} serial(s) for all non-host players ({len(indices)} target(s)).{split_note}{count_note}",
             }
         idx = get_selected_player_index()
         name = get_selected_player_name() or "selected player"
         if idx is None:
             return {"ok": False, "message": "No party player selected."}
-        serial_rewards._do_give_serial_to_player_indices(serials, [idx], scope_label=f"selected player {idx} {name}")
-        return {"ok": True, "message": f"Requested {len(serials)} serial(s) for {name}.{split_note}"}
+        serial_rewards._do_give_serial_to_player_indices(serials, [idx], scope_label=f"selected player {idx} {name}", mode=mode_key)
+        return {"ok": True, "message": f"Requested {total_serials} serial(s) for {name}.{split_note}{count_note}"}
     except Exception as exc:
         return {"ok": False, "message": f"Serial delivery failed: {exc!r}"}
 
@@ -1088,7 +1120,7 @@ def give_serials(text: object, mode: str = "selected", override_level: object = 
     serials, changed, error = _serials_with_level_override(serials, bool(override_level), level_i)
     if error:
         return {"ok": False, "message": error}
-    result = _deliver_serials_with_target(serials, mode)
+    result = _deliver_serials_with_target(serials, mode, parsed_count=len(expanded))
     if result.get("ok") and changed:
         result["message"] = f"{result.get('message', '')} Level override: {changed} serial(s) set to level {level_i}."
     return result

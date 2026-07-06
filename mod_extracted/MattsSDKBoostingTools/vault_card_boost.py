@@ -14,9 +14,9 @@ def _economy_max_vault_cards(
     log: Callable[[str], None],
 ) -> tuple[bool, str]:
     from .player_economy import (
+        _CURRENCY_KIND_ALIASES,
         _MAX_WALLET_AMOUNT,
-        _do_give_currency,
-        _do_give_experience,
+        _give_currency_on_pc,
         _set_experience_level_via_bp,
     )
 
@@ -24,40 +24,21 @@ def _economy_max_vault_cards(
     if ps is None:
         return False, "no PlayerState"
 
-    name = ""
-    try:
-        name = str(getattr(ps, "PlayerName", None) or getattr(ps, "Name", "") or "").strip()
-    except Exception:  # noqa: BLE001
-        name = ""
-
     ok_bits: list[str] = []
     fail = False
 
     for kind in ("vaultcard1", "vaultcard2", "vaultcard3"):
-        if name:
-            _do_give_currency(kind, _MAX_WALLET_AMOUNT, name)
-            ok_bits.append(f"{kind}=GiveCurrency")
+        token = _CURRENCY_KIND_ALIASES.get(kind)
+        if token and _give_currency_on_pc(target_pc, token, _MAX_WALLET_AMOUNT):
+            ok_bits.append(f"{kind}=direct GiveCurrency")
         else:
             fail = True
 
-    for track in ("vaultcard_xp_1", "vaultcard_xp_2", "vaultcard_xp_3"):
-        if name:
-            _do_give_experience(track, _MAX_VAULT_XP_LEVEL, name)
-            ok_bits.append(f"{track}=BP_SetLevel")
+    for slot, label in ((2, "vaultcard_xp_1"), (3, "vaultcard_xp_2"), (4, "vaultcard_xp_3")):
+        if _set_experience_level_via_bp(ps, slot, _MAX_VAULT_XP_LEVEL):
+            ok_bits.append(f"{label}=BP_SetLevel")
         else:
             fail = True
-
-    es = getattr(ps, "ExperienceState", None)
-    if es is not None:
-        try:
-            n = len(es)
-        except Exception:  # noqa: BLE001
-            n = 0
-        for slot in range(2, min(n, 5)):
-            if _set_experience_level_via_bp(ps, slot, _MAX_VAULT_XP_LEVEL):
-                ok_bits.append(f"slot{slot}=BP")
-            else:
-                fail = True
 
     summary = ", ".join(ok_bits) if ok_bits else "no writes"
     return not fail, summary
@@ -113,11 +94,14 @@ def max_vault_card_three_for_pc(
     except Exception as exc:  # noqa: BLE001
         log_fn(f"ULM raid3 path failed ({exc!r}) — economy fallback")
 
-    from .player_economy import _do_give_currency, _do_give_experience
+    from .player_economy import _CURRENCY_KIND_ALIASES, _give_currency_on_pc, _set_experience_level_via_bp
 
-    name = str(getattr(ps, "PlayerName", None) or getattr(ps, "Name", "") or "").strip()
-    if not name:
-        return False, "could not resolve player name for economy commands"
-    _do_give_currency("vaultcard3", _MAX_WALLET, name)
-    _do_give_experience("vaultcard_xp_3", _MAX_VAULT_XP_LEVEL, name)
-    return True, "vaultcard3 tokens + XP via GiveCurrency/BP_SetExperienceLevel"
+    ok_bits: list[str] = []
+    token = _CURRENCY_KIND_ALIASES.get("vaultcard3")
+    if token and _give_currency_on_pc(target_pc, token, _MAX_WALLET):
+        ok_bits.append("vaultcard3=direct GiveCurrency")
+    if _set_experience_level_via_bp(ps, 4, _MAX_VAULT_XP_LEVEL):
+        ok_bits.append("vaultcard_xp_3=BP_SetLevel")
+    if len(ok_bits) >= 2:
+        return True, ", ".join(ok_bits)
+    return False, ", ".join(ok_bits) or "vaultcard3 direct fallback made no writes"

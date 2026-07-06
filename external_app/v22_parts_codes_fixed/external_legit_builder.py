@@ -1136,6 +1136,62 @@ def search_parts(root_key: str, text: str = "", table: str | None = None, limit:
     return out
 
 
+_PASSIVE_TIER_RE = re.compile(r"_tier_(\d+)$")
+
+
+def passive_base_key(key: Any) -> str:
+    """Return the shared passive family key without the point-tier suffix."""
+    return _PASSIVE_TIER_RE.sub("", _norm(key))
+
+
+def max_passive_point_chains(root_key: str, limit: int = 5000) -> list[dict[str, Any]]:
+    """Return passive_points chains for class mod max-passive selection.
+
+    Each class mod passive is represented by several distinct passive_points
+    parts, usually tier_1 through tier_5.  Maxing a passive means selecting the
+    whole ordered chain, not duplicating one row and not keeping only one tier.
+    """
+    groups: dict[str, list[dict[str, Any]]] = {}
+    for part in search_parts(root_key, "passive_", table="passive_points", limit=limit):
+        key = str(part.get("key") or part.get("internal") or "").strip()
+        if not key.lower().startswith("passive_"):
+            continue
+        match = _PASSIVE_TIER_RE.search(key.lower())
+        if not match:
+            continue
+        table = str(part.get("table") or "").strip()
+        if table.lower() != "passive_points":
+            continue
+        line = f"{table}:{key}" if table and key else ""
+        if not line:
+            continue
+        try:
+            tier = int(match.group(1))
+        except Exception:
+            tier = 0
+        entry = dict(part)
+        entry["tier"] = tier
+        entry["line"] = line
+        groups.setdefault(passive_base_key(key), []).append(entry)
+
+    chains: list[dict[str, Any]] = []
+    for base, entries in groups.items():
+        unique: dict[str, dict[str, Any]] = {}
+        for entry in entries:
+            unique.setdefault(str(entry.get("line") or ""), entry)
+        ordered = sorted(unique.values(), key=lambda e: (int(e.get("tier") or 0), str(e.get("key") or "")))
+        if not ordered:
+            continue
+        chains.append({
+            "base": base,
+            "parts": ordered,
+            "tiers": [int(e.get("tier") or 0) for e in ordered],
+            "lines": [str(e.get("line") or "") for e in ordered if str(e.get("line") or "")],
+            "serial_tokens": [str(e.get("serial_token") or "") for e in ordered if str(e.get("serial_token") or "")],
+        })
+    return sorted(chains, key=lambda c: str(c.get("base") or ""))
+
+
 def _clamp_int(value: Any, min_value: int, max_value: int, default: int) -> int:
     try:
         number = int(str(value).replace(",", "").strip())
