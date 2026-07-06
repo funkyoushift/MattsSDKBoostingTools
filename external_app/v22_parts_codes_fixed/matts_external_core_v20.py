@@ -362,7 +362,6 @@ class App(tk.Tk):
                 current=self.field_vars.get('target_player',tk.StringVar()).get(); cb.configure(values=opts)
                 selected_idx=status.get('selected_player_index'); selected_name=status.get('selected_player') or ''; wanted=f'{selected_idx} | {selected_name}' if selected_idx not in (None,'') and selected_name else ''
                 if wanted and wanted in opts and current!=wanted: self.field_vars['target_player'].set(wanted)
-                elif not current and opts: self.field_vars['target_player'].set(opts[0])
         except Exception: pass
     def poll_status(self):
         def work():

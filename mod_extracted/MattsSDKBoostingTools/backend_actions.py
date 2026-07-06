@@ -132,13 +132,14 @@ def refresh_players() -> list[dict[str, Any]]:
     _last_refresh_error = ""
     players = _players()
     if players:
-        if _selected_player_index is None or all(idx != _selected_player_index for idx, _name in players):
-            _selected_player_index, _selected_player_name = players[0]
-        else:
+        if _selected_player_index is not None and any(idx == _selected_player_index for idx, _name in players):
             for idx, name in players:
                 if idx == _selected_player_index:
                     _selected_player_name = name
                     break
+        else:
+            _selected_player_index = None
+            _selected_player_name = ""
     else:
         _selected_player_index = None
         _selected_player_name = ""
@@ -926,11 +927,13 @@ def _host_player_index_value() -> int | None:
     _world, gs = _gbc_session_world_and_gamestate()
     pa = getattr(gs, "PlayerArray", None) if gs is not None else None
     if pa is None:
-        return 0
+        return None
     try:
         count = len(pa)
     except Exception:
-        return 0
+        return None
+    if host_ps is None:
+        return None
     host_name = ""
     try:
         host_name = str(getattr(host_ps, "PlayerName", "") or getattr(host_ps, "SavedNetworkAddress", "") or "")
@@ -957,13 +960,15 @@ def _host_player_index_value() -> int | None:
                     return i
             except Exception:
                 pass
-    return 0
+    return None
 
 
 def _non_host_party_player_indices() -> list[int]:
     all_indices = [int(idx) for idx, _name in _players()]
     host_idx = _host_player_index_value()
-    return [idx for idx in all_indices if host_idx is None or idx != host_idx]
+    if host_idx is None:
+        return []
+    return [idx for idx in all_indices if idx != host_idx]
 
 
 def _deliver_serials_with_target(serials: list[str], mode: str) -> dict[str, Any]:
@@ -974,8 +979,14 @@ def _deliver_serials_with_target(serials: list[str], mode: str) -> dict[str, Any
     split_note = f" Split into {len(chunks)} package part(s)." if chunks else ""
     try:
         if mode_key == "all":
-            serial_rewards._do_give_serial(serials, True)
-            return {"ok": True, "message": f"Requested {len(serials)} serial(s) for all party players.{split_note}"}
+            indices = [int(idx) for idx, _name in _players()]
+            if not indices:
+                return {"ok": False, "message": "No party players found."}
+            serial_rewards._do_give_serial_to_player_indices(serials, indices, scope_label="all party players")
+            return {
+                "ok": True,
+                "message": f"Requested {len(serials)} serial(s) for all party players ({len(indices)} target(s)).{split_note}",
+            }
         if mode_key in ("nonhost", "non_host", "all_non_host"):
             indices = _non_host_party_player_indices()
             if not indices:

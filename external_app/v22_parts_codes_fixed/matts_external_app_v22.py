@@ -1414,6 +1414,35 @@ class App(V9App):
             self.after(0, self.poll_status)
         threading.Thread(target=work, daemon=True).start()
 
+    def _uses_global_target(self, action_id):
+        return action_id in {
+            'kick_player',
+            'give_serial_selected',
+            'set_level',
+            'give_currency',
+            'max_player_level',
+            'max_spec_level',
+            'max_currency',
+            'max_eridium',
+            'max_sdu',
+            'max_all',
+            'set_backpack_bank_selected',
+            'drop_all_shinies',
+            'toggle_debug_cam',
+            'teleport_debug_cam',
+        } or str(action_id or '').startswith('devperk_')
+
+    def _run_action_with_global_target(self, action):
+        aid = action.get('id')
+        self.log(f'Setting target before {aid}...')
+        def work():
+            ok, msg = self._set_bridge_target_from_field('target_player', 'Target Player')
+            if not ok:
+                self.after(0, lambda m=msg:self.log(m))
+                return
+            self.after(0, lambda a=action: super(App, self).run_action(a))
+        threading.Thread(target=work, daemon=True).start()
+
     def _tab_bl4_codes_v13(self, body, cards):
         self._ensure_bl4_state()
         if not self.bl4_cache_autoload_attempted:
@@ -1901,8 +1930,6 @@ class App(V9App):
                     replacement=next((opt for opt in self.player_options if opt.split('|',1)[0].strip()==cur_idx), '')
                 if replacement:
                     self.field_vars[fid].set(replacement)
-                elif not cur and self.player_options:
-                    self.field_vars[fid].set(self.player_options[0])
         except Exception: pass
 
 
@@ -2434,6 +2461,8 @@ class App(V9App):
             return self._validator_validate_bulk()
         if aid == 'validator_clear':
             return self._validator_clear()
+        if self._uses_global_target(aid):
+            return self._run_action_with_global_target(action)
         if aid in ('set_backpack_bank_selected','set_backpack_bank_all'):
             action=dict(action); action['uses_fields']=['backpack_size','bank_size']
         if aid == 'local_legit_validate':

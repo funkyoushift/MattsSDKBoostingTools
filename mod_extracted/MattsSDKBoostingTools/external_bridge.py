@@ -427,6 +427,14 @@ def _external_app_owned(action: str, feature: str) -> dict[str, Any]:
     }
 
 
+def _payload_serial_text(payload: dict[str, Any]) -> str:
+    for key in ("serial_text", "bookmark_serial", "code_serial", "serial_input"):
+        value = str(payload.get(key) or "").strip()
+        if value:
+            return value
+    return ""
+
+
 def _apply_movement_external_payload(payload: dict[str, Any]) -> None:
     """Apply external movement fields to the in-game panel globals before calling Matt's existing functions."""
     try:
@@ -616,15 +624,15 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
     if action in ("give_serial_selected", "give_serial_all"):
         override_level = str(payload.get("serial_override_level") or "false").lower() in ("1", "true", "yes", "on")
         return backend_actions.give_serials(
-            payload.get("serial_text") or "",
+            _payload_serial_text(payload),
             "all" if action.endswith("all") else "selected",
             override_level,
-            payload.get("serial_level") or 60,
+            payload.get("serial_level") or payload.get("code_delivery_level") or 60,
         )
     if action == "give_serial_nonhost":
         override_level = str(payload.get("serial_override_level") or "false").lower() in ("1", "true", "yes", "on")
         return backend_actions.give_serials(
-            payload.get("serial_text") or payload.get("bookmark_serial") or payload.get("code_serial") or "",
+            _payload_serial_text(payload),
             "nonhost",
             override_level,
             payload.get("serial_level") or payload.get("code_delivery_level") or 60,
