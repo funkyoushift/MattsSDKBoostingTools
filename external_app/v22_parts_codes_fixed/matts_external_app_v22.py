@@ -13,6 +13,94 @@ import external_validator
 from matts_external_core_v20 import ACCENT_COLORS, http_json, RESOURCE_DIR
 from matts_external_legit_travel_v20 import App as V9App
 
+MOVEMENT_DEFAULTS = {
+    'movement_speed_scale': '1.00',
+    'movement_walk_speed': '600',
+    'movement_jump_height': '198',
+    'movement_jump_velocity': '840',
+    'movement_sprint_jump_goal': '198',
+    'movement_double_jump_goal': '225',
+    'movement_slide_jump_goal': '198',
+    'movement_individual_jump_goals': 'false',
+    'movement_jump_count': '2',
+    'movement_jump_off_z_factor': '0.5',
+    'movement_gravity_scale': '1.00',
+    'movement_step_height': '45',
+    'movement_floor_angle': '44.8',
+    'movement_floor_z': '0.710',
+    'movement_glide_speed': '1200',
+    'movement_glide_boost': '0',
+    'movement_glide_air_control': '0.60',
+    'movement_dash_speed': '2500',
+    'movement_zero_vault_on_apply': 'false',
+    'movement_time_dilation': '1.00',
+}
+
+MOVEMENT_PRESETS = {
+    'fast': {
+        'movement_speed_scale': '5.00',
+        'movement_walk_speed': '3200',
+        'movement_jump_height': '560',
+        'movement_jump_velocity': '560',
+        'movement_sprint_jump_goal': '560',
+        'movement_double_jump_goal': '560',
+        'movement_slide_jump_goal': '560',
+        'movement_individual_jump_goals': 'false',
+        'movement_jump_count': '2',
+        'movement_glide_speed': '2600',
+        'movement_glide_boost': '4200',
+        'movement_glide_air_control': '6.00',
+        'movement_dash_speed': '3000',
+        'movement_zero_vault_on_apply': 'true',
+    },
+    'veryfast': {
+        'movement_speed_scale': '8.00',
+        'movement_walk_speed': '5200',
+        'movement_jump_height': '700',
+        'movement_jump_velocity': '700',
+        'movement_sprint_jump_goal': '700',
+        'movement_double_jump_goal': '700',
+        'movement_slide_jump_goal': '700',
+        'movement_individual_jump_goals': 'false',
+        'movement_jump_count': '2',
+        'movement_glide_speed': '3800',
+        'movement_glide_boost': '6500',
+        'movement_glide_air_control': '10.00',
+        'movement_dash_speed': '5200',
+        'movement_zero_vault_on_apply': 'true',
+    },
+    'moon': {
+        'movement_jump_height': '1200',
+        'movement_jump_velocity': '1200',
+        'movement_sprint_jump_goal': '1200',
+        'movement_double_jump_goal': '1200',
+        'movement_slide_jump_goal': '1200',
+        'movement_individual_jump_goals': 'false',
+        'movement_gravity_scale': '0.45',
+        'movement_jump_count': '2',
+        'movement_zero_vault_on_apply': 'true',
+    },
+    'wallwalk': {
+        'movement_speed_scale': '5.00',
+        'movement_walk_speed': '3200',
+        'movement_step_height': '700',
+        'movement_floor_angle': '89.9',
+        'movement_floor_z': '0.001',
+        'movement_jump_count': '2',
+        'movement_zero_vault_on_apply': 'true',
+    },
+    'fastglide': {
+        'movement_speed_scale': '5.00',
+        'movement_walk_speed': '3200',
+        'movement_glide_speed': '5200',
+        'movement_glide_boost': '8500',
+        'movement_glide_air_control': '14.00',
+        'movement_dash_speed': '4500',
+        'movement_jump_count': '2',
+        'movement_zero_vault_on_apply': 'true',
+    },
+}
+
 class App(V9App):
     def __init__(self):
         self.legit_duplicate_qty_var = None
@@ -39,8 +127,12 @@ class App(V9App):
         self.auto_inventory_in_flight = False
         self.auto_inventory_last_log = 0.0
         self.auto_inventory_interval_ms = 2000
+        self.movement_saved_preset = {}
+        self.movement_auto_apply_saved = False
+        self.movement_status_message = 'Movement ready.'
         super().__init__()
         self.title("Matt's SDK Boosting Tools - External V22 Parts Codes GZO Visible")
+        self._load_movement_settings_local()
         try:
             icon_path = RESOURCE_DIR / "app_icon.ico"
             if icon_path.exists():
@@ -154,14 +246,203 @@ class App(V9App):
                 self.after(0, lambda e=exc: failed(e))
         threading.Thread(target=work,daemon=True).start()
 
+    def _movement_settings_file(self):
+        return RESOURCE_DIR / 'user_movement_preset.json'
+
+    def _load_movement_settings_local(self):
+        self.movement_saved_preset = {}
+        self.movement_auto_apply_saved = False
+        try:
+            path = self._movement_settings_file()
+            if not path.exists():
+                return
+            data = json.loads(path.read_text(encoding='utf-8') or '{}')
+            preset = data.get('preset') if isinstance(data, dict) else {}
+            if isinstance(preset, dict):
+                self.movement_saved_preset = {str(k): str(v) for k, v in preset.items() if str(k) in MOVEMENT_DEFAULTS}
+            self.movement_auto_apply_saved = self._truthy(data.get('auto_apply_on_load', False)) if isinstance(data, dict) else False
+        except Exception:
+            self.movement_saved_preset = {}
+            self.movement_auto_apply_saved = False
+
+    def _save_movement_settings_local(self):
+        data = {
+            'preset': dict(getattr(self, 'movement_saved_preset', {}) or {}),
+            'auto_apply_on_load': bool(getattr(self, 'movement_auto_apply_saved', False)),
+        }
+        self._movement_settings_file().write_text(json.dumps(data, indent=2, sort_keys=True), encoding='utf-8')
+
+    def _movement_set_status(self, message, *, log_global=True):
+        self.movement_status_message = str(message or '')
+        if 'movement_status' in self.field_vars:
+            self.field_vars['movement_status'].set(self.movement_status_message)
+        if log_global:
+            self.log(self.movement_status_message)
+
+    def _movement_set_field_value(self, fid, value):
+        if fid not in self.field_vars:
+            self.field_vars[fid] = tk.StringVar(value=str(value))
+        self.field_vars[fid].set(str(value))
+        w = self.widgets.get(fid)
+        try:
+            if isinstance(w, tk.Text):
+                w.delete('1.0', 'end')
+                w.insert('1.0', str(value))
+        except Exception:
+            pass
+
+    def _movement_apply_values_to_fields(self, values):
+        for fid, value in (values or {}).items():
+            if fid in MOVEMENT_DEFAULTS:
+                self._movement_set_field_value(fid, value)
+
+    def _movement_current_field_values(self):
+        out = {}
+        for fid, default in MOVEMENT_DEFAULTS.items():
+            var = self.field_vars.get(fid)
+            out[fid] = str(var.get() if var else default)
+        return out
+
+    def _movement_parse_float(self, fid, label, default=None, minimum=None, maximum=None):
+        raw = self.field_vars.get(fid, tk.StringVar(value='' if default is None else str(default))).get()
+        text = str(raw).replace(',', '').replace('x', '').replace('X', '').strip()
+        if text == '' and default is not None:
+            value = float(default)
+        else:
+            value = float(text)
+        if minimum is not None:
+            value = max(float(minimum), value)
+        if maximum is not None:
+            value = min(float(maximum), value)
+        return value
+
+    def _movement_parse_int(self, fid, label, default=None, minimum=None, maximum=None):
+        value = int(round(self._movement_parse_float(fid, label, default, minimum, maximum)))
+        if minimum is not None:
+            value = max(int(minimum), value)
+        if maximum is not None:
+            value = min(int(maximum), value)
+        return value
+
+    def _movement_payload(self):
+        try:
+            jump_goal = self._movement_parse_float('movement_jump_height', 'Master JumpGoal Height', 198, 0, 10000)
+            individual = self._truthy(self.field_vars.get('movement_individual_jump_goals', tk.StringVar(value='false')).get())
+            return {
+                'movement_speed_scale': self._movement_parse_float('movement_speed_scale', 'Speed Scale', 1.0, 0.05, 25.0),
+                'movement_walk_speed': self._movement_parse_float('movement_walk_speed', 'Walk / Ground Speed', 600, 50, 10000),
+                'movement_jump_height': jump_goal,
+                'movement_jump_velocity': self._movement_parse_float('movement_jump_velocity', 'JumpZ Velocity', jump_goal, 0, 10000),
+                'movement_sprint_jump_goal': self._movement_parse_float('movement_sprint_jump_goal', 'SprintJump GoalHeight', jump_goal, 0, 20000) if individual else jump_goal,
+                'movement_double_jump_goal': self._movement_parse_float('movement_double_jump_goal', 'DoubleJump GoalHeight', jump_goal, 0, 20000) if individual else jump_goal,
+                'movement_slide_jump_goal': self._movement_parse_float('movement_slide_jump_goal', 'SlideJump GoalHeight', jump_goal, 0, 20000) if individual else jump_goal,
+                'movement_individual_jump_goals': 'true' if individual else 'false',
+                'movement_gravity_scale': self._movement_parse_float('movement_gravity_scale', 'Gravity Scale', 1.0, 0, 10),
+                'movement_step_height': self._movement_parse_float('movement_step_height', 'Max Step Height', 45, 0, 1000),
+                'movement_jump_count': self._movement_parse_int('movement_jump_count', 'Jump Count', 2, 1, 50),
+                'movement_jump_off_z_factor': self._movement_parse_float('movement_jump_off_z_factor', 'Jump Off Z Factor', 0.5, 0, 80),
+                'movement_floor_angle': self._movement_parse_float('movement_floor_angle', 'Walkable Floor Angle', 44.76508331298828, 0, 89.9),
+                'movement_floor_z': self._movement_parse_float('movement_floor_z', 'Walkable Floor Z', 0.7099999785423279, 0, 1),
+                'movement_glide_speed': self._movement_parse_float('movement_glide_speed', 'Gliding Speed', 1200, 0, 30000),
+                'movement_glide_boost': self._movement_parse_float('movement_glide_boost', 'Gliding Speed Boost', 0, 0, 30000),
+                'movement_glide_air_control': self._movement_parse_float('movement_glide_air_control', 'Gliding Air Control', 0.6, 0, 50),
+                'movement_dash_speed': self._movement_parse_float('movement_dash_speed', 'Dash Speed', 2500, 0, 30000),
+                'movement_zero_vault_on_apply': self.field_vars.get('movement_zero_vault_on_apply', tk.StringVar(value='false')).get(),
+            }
+        except Exception as exc:
+            raise ValueError(f'Movement value must be numeric: {exc}')
+
+    def _movement_bridge_action(self, action_id, payload=None, *, success_status=None):
+        payload = dict(payload or {})
+        self._movement_set_status(f'Sending {action_id}...', log_global=False)
+        def work():
+            try:
+                res = http_json('POST', '/action', {'action':action_id, 'payload':payload, 'timeout':10.0}, timeout=18.0)
+                msg = res.get('message') or success_status or f'{action_id} requested.'
+                self.after(0, lambda m=msg:self._movement_set_status(m))
+                self.after(0, self.poll_status)
+            except Exception as exc:
+                self.after(0, lambda e=exc:self._movement_set_status(f'Movement action failed: {e!r}'))
+        threading.Thread(target=work, daemon=True).start()
+
+    def _movement_apply_now(self):
+        try:
+            payload = self._movement_payload()
+        except ValueError as exc:
+            self._movement_set_status(str(exc))
+            return messagebox.showerror('Invalid movement value', str(exc))
+        self._movement_bridge_action('movement_apply_all', payload, success_status='Apply movement settings requested.')
+
+    def _movement_reset_defaults(self, *, apply_now=True):
+        self._movement_apply_values_to_fields(MOVEMENT_DEFAULTS)
+        self._movement_set_status('Movement fields reset to defaults.' + (' Applying defaults...' if apply_now else ''))
+        if apply_now:
+            self._movement_bridge_action('movement_reset_all', {}, success_status='Reset movement settings requested.')
+
+    def _movement_apply_preset_local(self, name):
+        key = str(name or '').strip().lower()
+        if key not in MOVEMENT_PRESETS:
+            return self._movement_set_status(f'Unknown movement preset: {name}')
+        values = dict(MOVEMENT_PRESETS[key])
+        if key in ('wallwalk', 'fastglide'):
+            try:
+                cur_speed = self._movement_parse_float('movement_speed_scale', 'Speed Scale', 1.0)
+                cur_walk = self._movement_parse_float('movement_walk_speed', 'Walk / Ground Speed', 600)
+                values['movement_speed_scale'] = f'{max(cur_speed, float(values.get("movement_speed_scale", 1.0))):.2f}'
+                values['movement_walk_speed'] = str(int(max(cur_walk, float(values.get('movement_walk_speed', 600)))))
+            except Exception:
+                pass
+        if key == 'moon':
+            for fid in ('movement_speed_scale', 'movement_walk_speed', 'movement_glide_speed', 'movement_glide_boost', 'movement_glide_air_control', 'movement_dash_speed'):
+                if fid in self.field_vars and fid not in values:
+                    values[fid] = self.field_vars[fid].get()
+        self._movement_apply_values_to_fields(values)
+        self._movement_set_status(f'Applied {key} preset to fields. Sending to bridge...')
+        self._movement_apply_now()
+
+    def _movement_save_preset_local(self):
+        self.movement_saved_preset = self._movement_current_field_values()
+        self.movement_auto_apply_saved = self._truthy(self.field_vars.get('movement_auto_apply_on_load', tk.StringVar(value='false')).get())
+        try:
+            self._save_movement_settings_local()
+            self._movement_set_status('Saved current movement values as the movement preset.')
+        except Exception as exc:
+            self._movement_set_status(f'Movement preset save failed: {exc!r}')
+
+    def _movement_load_saved_preset_local(self, *, apply_now=True):
+        if not getattr(self, 'movement_saved_preset', None):
+            self._load_movement_settings_local()
+        if not getattr(self, 'movement_saved_preset', None):
+            return self._movement_set_status('No movement preset saved yet.')
+        self._movement_apply_values_to_fields(self.movement_saved_preset)
+        self._movement_set_status('Loaded saved movement preset into the UI.' + (' Applying now...' if apply_now else ''))
+        if apply_now:
+            self._movement_apply_now()
+
+    def _movement_auto_apply_toggle_changed(self):
+        self.movement_auto_apply_saved = self._truthy(self.field_vars.get('movement_auto_apply_on_load', tk.StringVar(value='false')).get())
+        try:
+            self._save_movement_settings_local()
+        except Exception:
+            pass
+        if self.movement_auto_apply_saved:
+            self._movement_set_status('Auto apply saved preset on game load enabled. It will not run from the external app startup; use Load Saved to apply now.')
+        else:
+            self._movement_set_status('Auto apply saved preset on game load disabled.')
+
     def _movement_apply_fields(self):
         return [
             'movement_speed_scale',
             'movement_walk_speed',
             'movement_jump_height',
             'movement_jump_velocity',
+            'movement_sprint_jump_goal',
+            'movement_double_jump_goal',
+            'movement_slide_jump_goal',
+            'movement_individual_jump_goals',
             'movement_gravity_scale',
             'movement_jump_count',
+            'movement_jump_off_z_factor',
             'movement_step_height',
             'movement_floor_angle',
             'movement_floor_z',
@@ -174,16 +455,17 @@ class App(V9App):
 
     def _tab_movement(self, body, cards):
         # Closer copy of Matt's Player Movement tab, including Infinite Jump controls.
-        self._place_card(body,cards['movement_presets']).pack(fill='x',padx=6,pady=4)
+        self._movement_presets_card(body).pack(fill='x',padx=6,pady=4)
         grid=tk.Frame(body,bg='#090d17'); grid.pack(fill='both',expand=True,padx=6,pady=0)
         for c in range(3): grid.grid_columnconfigure(c,weight=1,uniform='move')
-        self._place_card(grid,cards['movement_speed']).grid(row=0,column=0,sticky='nsew',padx=(0,4),pady=4)
+        self._movement_speed_card(grid).grid(row=0,column=0,sticky='nsew',padx=(0,4),pady=4)
         self._movement_jump_card(grid).grid(row=0,column=1,sticky='nsew',padx=4,pady=4)
         self._movement_infinite_jump_card(grid).grid(row=0,column=2,sticky='nsew',padx=(4,0),pady=4)
         self._movement_wall_card(grid).grid(row=1,column=0,sticky='nsew',padx=(0,4),pady=4)
         self._movement_glide_card(grid).grid(row=1,column=1,sticky='nsew',padx=4,pady=4)
         self._movement_utility_card(grid).grid(row=1,column=2,sticky='nsew',padx=(4,0),pady=4)
-        for r in range(2): grid.grid_rowconfigure(r,weight=1)
+        self._movement_teleport_card(grid).grid(row=2,column=2,sticky='nsew',padx=(4,0),pady=4)
+        for r in range(3): grid.grid_rowconfigure(r,weight=1)
 
     def _custom_card(self, title, color):
         wrap, inner = self._card_wrap(self._tmp_parent, title, color)  # overwritten by caller pattern
@@ -200,65 +482,150 @@ class App(V9App):
         ent=ttk.Entry(row,textvariable=var); ent.pack(side='left',fill='x',expand=True); self.widgets[fid]=ent
         return ent
 
+    def _checkbox_row_simple(self, parent, label, fid, default='false', command=None, width=24):
+        row=tk.Frame(parent,bg='#090d17'); row.pack(fill='x',padx=8,pady=2)
+        var=self.field_vars.get(fid) or tk.StringVar(value='true' if self._truthy(default) else 'false'); self.field_vars[fid]=var
+        chk=tk.Checkbutton(row,text=label,variable=var,onvalue='true',offvalue='false',command=command,bg='#090d17',activebackground='#090d17',fg='#cfd8f3',activeforeground='#f1f5ff',selectcolor='#211b1f',relief='flat',font=('Segoe UI',8),anchor='w')
+        chk.pack(side='left',fill='x',expand=True); self.widgets[fid]=chk
+        return chk
+
+    def _movement_button(self, parent, label, command, accent='cyan', index=0, cols=3):
+        color=ACCENT_COLORS.get(accent,'#00d4ff')
+        b=tk.Button(parent,text=label,command=command,bg='#172033',activebackground='#22304c',fg=color,activeforeground=color,relief='flat',padx=8,pady=5,font=('Segoe UI',8,'bold'))
+        b.grid(row=index//cols,column=index%cols,padx=3,pady=3,sticky='ew')
+        for c in range(cols): parent.grid_columnconfigure(c,weight=1,uniform='btn')
+        return b
+
+    def _movement_presets_card(self, parent):
+        wrap, inner = self._make_card(parent,'Presets / Save / Apply','#00aa55')
+        tk.Label(inner,text='UI-only controls. Button actions apply live movement through the SDK bridge; normal field edits do not auto-run.',bg='#090d17',fg='#9fb3d9',font=('Segoe UI',8),anchor='w',wraplength=1200).pack(fill='x',padx=8,pady=(5,2))
+        row=tk.Frame(inner,bg='#090d17'); row.pack(fill='x',padx=6,pady=(4,2))
+        buttons=[
+            ('Apply Now', self._movement_apply_now, 'green'),
+            ('Save Preset', self._movement_save_preset_local, 'cyan'),
+            ('Load Saved', lambda:self._movement_load_saved_preset_local(apply_now=True), 'purple'),
+            ('Reset Defaults', lambda:self._movement_reset_defaults(apply_now=True), 'gold'),
+            ('Fast', lambda:self._movement_apply_preset_local('fast'), 'cyan'),
+            ('Very Fast', lambda:self._movement_apply_preset_local('veryfast'), 'purple'),
+            ('Moon', lambda:self._movement_apply_preset_local('moon'), 'gold'),
+            ('Wall Walk', lambda:self._movement_apply_preset_local('wallwalk'), 'green'),
+            ('Fast Glide', lambda:self._movement_apply_preset_local('fastglide'), 'cyan'),
+        ]
+        for i,(label,cmd,accent) in enumerate(buttons):
+            self._movement_button(row,label,cmd,accent,i,cols=5)
+        self._checkbox_row_simple(inner,'Auto apply saved preset on game load','movement_auto_apply_on_load','true' if getattr(self,'movement_auto_apply_saved',False) else 'false',command=self._movement_auto_apply_toggle_changed)
+        self.field_vars['movement_status']=self.field_vars.get('movement_status') or tk.StringVar(value=getattr(self,'movement_status_message','Movement ready.'))
+        tk.Label(inner,textvariable=self.field_vars['movement_status'],bg='#090d17',fg='#9fb3d9',font=('Segoe UI',8),anchor='w',justify='left',wraplength=1200).pack(fill='x',padx=8,pady=(2,6))
+        return wrap
+
+    def _movement_speed_card(self, parent):
+        wrap, inner = self._make_card(parent,'Speed','#00a3d7')
+        self._field_row_simple(inner,'Speed Scale','movement_speed_scale',MOVEMENT_DEFAULTS['movement_speed_scale'])
+        self._field_row_simple(inner,'Walk / Ground Speed','movement_walk_speed',MOVEMENT_DEFAULTS['movement_walk_speed'])
+        tk.Label(inner,text='Writes speed scale and walk speed fields.',bg='#090d17',fg='#8c99b5',font=('Segoe UI',8),anchor='w',wraplength=360).pack(fill='x',padx=8,pady=(2,3))
+        bf=tk.Frame(inner,bg='#090d17'); bf.pack(fill='x',padx=6,pady=(4,6))
+        self._movement_button(bf,'Apply Movement Settings',self._movement_apply_now,'cyan',0,cols=1)
+        return wrap
+
     def _movement_jump_card(self, parent):
         wrap, inner = self._make_card(parent,'Jump / Gravity','#8a2be2')
-        self._field_row_simple(inner,'Master JumpGoal Height','movement_jump_height','198')
-        self._field_row_simple(inner,'JumpZ Velocity','movement_jump_velocity','840')
-        self._field_row_simple(inner,'Gravity Scale','movement_gravity_scale','1.00')
-        self._field_row_simple(inner,'Jump Count','movement_jump_count','2')
+        self._field_row_simple(inner,'Master JumpGoal Height','movement_jump_height',MOVEMENT_DEFAULTS['movement_jump_height'])
+        self._checkbox_row_simple(inner,'Set individual jump goals','movement_individual_jump_goals',MOVEMENT_DEFAULTS['movement_individual_jump_goals'])
+        self._field_row_simple(inner,'SprintJump GoalHeight','movement_sprint_jump_goal',MOVEMENT_DEFAULTS['movement_sprint_jump_goal'])
+        self._field_row_simple(inner,'DoubleJump GoalHeight','movement_double_jump_goal',MOVEMENT_DEFAULTS['movement_double_jump_goal'])
+        self._field_row_simple(inner,'SlideJump GoalHeight','movement_slide_jump_goal',MOVEMENT_DEFAULTS['movement_slide_jump_goal'])
+        self._field_row_simple(inner,'JumpZ Velocity','movement_jump_velocity',MOVEMENT_DEFAULTS['movement_jump_velocity'])
+        self._field_row_simple(inner,'Gravity Scale','movement_gravity_scale',MOVEMENT_DEFAULTS['movement_gravity_scale'])
+        self._field_row_simple(inner,'Jump Count','movement_jump_count',MOVEMENT_DEFAULTS['movement_jump_count'])
+        self._field_row_simple(inner,'Jump Off Z Factor','movement_jump_off_z_factor',MOVEMENT_DEFAULTS['movement_jump_off_z_factor'])
         bf=tk.Frame(inner,bg='#090d17'); bf.pack(fill='x',padx=6,pady=(4,6))
-        for i,a in enumerate([
-            {'id':'movement_apply_all','label':'Apply Movement Settings','accent':'cyan','uses_fields':self._movement_apply_fields()},
-            {'id':'movement_reset_all','label':'Reset Defaults','accent':'gold'},
-        ]): self._button(bf,a,i,cols=2)
+        self._movement_button(bf,'Apply Movement Settings',self._movement_apply_now,'cyan',0,cols=2)
+        self._movement_button(bf,'Reset Defaults',lambda:self._movement_reset_defaults(apply_now=True),'gold',1,cols=2)
         return wrap
 
     def _movement_wall_card(self,parent):
         wrap, inner = self._make_card(parent,'Wall / Step','#d28b00')
-        self._field_row_simple(inner,'Max Step Height','movement_step_height','45')
-        self._field_row_simple(inner,'Walkable Floor Angle','movement_floor_angle','44.8')
-        self._field_row_simple(inner,'Walkable Floor Z','movement_floor_z','0.710')
+        self._field_row_simple(inner,'Max Step Height','movement_step_height',MOVEMENT_DEFAULTS['movement_step_height'])
+        self._field_row_simple(inner,'Walkable Floor Angle','movement_floor_angle',MOVEMENT_DEFAULTS['movement_floor_angle'])
+        self._field_row_simple(inner,'Walkable Floor Z','movement_floor_z',MOVEMENT_DEFAULTS['movement_floor_z'])
+        tk.Label(inner,text='Wall Walk preset uses 89.9 angle and FloorZ near 0.0.',bg='#090d17',fg='#8c99b5',font=('Segoe UI',8),anchor='w',wraplength=360).pack(fill='x',padx=8,pady=(2,3))
         bf=tk.Frame(inner,bg='#090d17'); bf.pack(fill='x',padx=6,pady=(4,6))
-        self._button(bf,{'id':'movement_apply_all','label':'Apply Wall / Step','accent':'cyan','uses_fields':self._movement_apply_fields()},0,cols=1)
+        self._movement_button(bf,'Apply Wall / Step',self._movement_apply_now,'cyan',0,cols=1)
         return wrap
 
     def _movement_glide_card(self,parent):
         wrap, inner = self._make_card(parent,'Glide / Dash / Vault','#0075c9')
-        self._field_row_simple(inner,'Gliding Speed','movement_glide_speed','1200')
-        self._field_row_simple(inner,'Gliding Speed Boost','movement_glide_boost','0')
-        self._field_row_simple(inner,'Gliding Air Control','movement_glide_air_control','0.60')
-        self._field_row_simple(inner,'Dash Speed','movement_dash_speed','2500')
-        self._field_row_simple(inner,'Set vault power costs to 0 on apply','movement_zero_vault_on_apply','false')
+        self._field_row_simple(inner,'Gliding Speed','movement_glide_speed',MOVEMENT_DEFAULTS['movement_glide_speed'])
+        self._field_row_simple(inner,'Gliding Speed Boost','movement_glide_boost',MOVEMENT_DEFAULTS['movement_glide_boost'])
+        self._field_row_simple(inner,'Gliding Air Control','movement_glide_air_control',MOVEMENT_DEFAULTS['movement_glide_air_control'])
+        self._field_row_simple(inner,'Dash Speed','movement_dash_speed',MOVEMENT_DEFAULTS['movement_dash_speed'])
+        self._checkbox_row_simple(inner,'Set vault power costs to 0 on apply','movement_zero_vault_on_apply',MOVEMENT_DEFAULTS['movement_zero_vault_on_apply'])
         bf=tk.Frame(inner,bg='#090d17'); bf.pack(fill='x',padx=6,pady=(4,6))
-        self._button(bf,{'id':'movement_zero_vault','label':'Zero Vault Cooldown','accent':'cyan'},0,cols=2)
-        self._button(bf,{'id':'movement_apply_all','label':'Apply Glide / Dash','accent':'cyan','uses_fields':self._movement_apply_fields()},1,cols=2)
+        self._movement_button(bf,'Zero Vault Cooldown',lambda:self._movement_bridge_action('movement_zero_vault'),'cyan',0,cols=2)
+        self._movement_button(bf,'Apply Glide / Dash',self._movement_apply_now,'cyan',1,cols=2)
         return wrap
 
     def _movement_utility_card(self,parent):
         wrap, inner = self._make_card(parent,'World / Utility','#8a2be2')
-        self._field_row_simple(inner,'Time Dilation','movement_time_dilation','1.00x')
+        self._field_row_simple(inner,'Time Dilation','movement_time_dilation',MOVEMENT_DEFAULTS['movement_time_dilation'])
         bf=tk.Frame(inner,bg='#090d17'); bf.pack(fill='x',padx=6,pady=(4,6))
-        self._button(bf,{'id':'movement_set_time','label':'Set Time','accent':'gold','uses_fields':['movement_time_dilation']},0,cols=3)
-        self._button(bf,{'id':'movement_reset_time','label':'Reset Time','accent':'purple'},1,cols=3)
-        self._button(bf,{'id':'movement_delete_ground_items','label':'Delete Ground Items','accent':'red'},2,cols=3)
-        self._button(bf,{'id':'movement_zero_vault','label':'Zero Vault Cooldown','accent':'cyan'},3,cols=3)
-        self._button(bf,{'id':'movement_toggle_no_target','label':'Toggle No Target','accent':'purple'},4,cols=3)
-        self._button(bf,{'id':'movement_toggle_noclip','label':'Toggle Noclip','accent':'gold'},5,cols=3)
+        self._movement_button(bf,'Set Time',self._movement_set_time_local,'gold',0,cols=3)
+        self._movement_button(bf,'Reset Time',self._movement_reset_time_local,'purple',1,cols=3)
+        self._movement_button(bf,'Players Only',lambda:self._movement_bridge_action('movement_players_only'),'purple',2,cols=3)
+        self._movement_button(bf,'No Target',lambda:self._movement_bridge_action('movement_toggle_no_target'),'cyan',3,cols=3)
+        self._movement_button(bf,'Delete Ground Items',lambda:self._movement_bridge_action('movement_delete_ground_items'),'red',4,cols=3)
+        self._movement_button(bf,'Noclip',lambda:self._movement_bridge_action('movement_toggle_noclip'),'gold',5,cols=3)
+        tk.Label(inner,text='No Target and Noclip are live toggles and are not cached between launches.',bg='#090d17',fg='#8c99b5',font=('Segoe UI',8),anchor='w',wraplength=360).pack(fill='x',padx=8,pady=(2,6))
         return wrap
 
     def _movement_infinite_jump_card(self,parent):
         wrap, inner = self._make_card(parent,'Infinite Jump','#00b060')
         tk.Label(inner,text='Enable per player. Use All ON for multi-jump on every current party player.',bg='#090d17',fg='#9fb3d9',font=('Segoe UI',8),anchor='w',wraplength=500).pack(fill='x',padx=8,pady=(5,2))
         bf=tk.Frame(inner,bg='#090d17'); bf.pack(fill='x',padx=6,pady=(4,3))
-        self._button(bf,{'id':'movement_infinite_jump_all_on','label':'All ON','accent':'green'},0,cols=2)
-        self._button(bf,{'id':'movement_infinite_jump_all_off','label':'All OFF','accent':'red'},1,cols=2)
+        self._movement_button(bf,'All ON',lambda:self._movement_bridge_action('movement_infinite_jump_all_on'),'green',0,cols=2)
+        self._movement_button(bf,'All OFF',lambda:self._movement_bridge_action('movement_infinite_jump_all_off'),'red',1,cols=2)
         row=tk.Frame(inner,bg='#090d17'); row.pack(fill='x',padx=8,pady=4)
         tk.Label(row,text='Player',bg='#090d17',fg='#cfd8f3',width=12,anchor='w',font=('Segoe UI',8)).pack(side='left')
         var=self.field_vars.get('infinite_jump_target') or tk.StringVar(value=''); self.field_vars['infinite_jump_target']=var
         cb=ttk.Combobox(row,textvariable=var,values=self.player_options,state='readonly'); cb.pack(side='left',fill='x',expand=True); self.widgets['infinite_jump_target']=cb
         bf2=tk.Frame(inner,bg='#090d17'); bf2.pack(fill='x',padx=6,pady=(2,6))
-        self._button(bf2,{'id':'movement_infinite_jump_toggle_selected','label':'Toggle Selected Infinite Jump','accent':'cyan','uses_fields':['infinite_jump_target']},0,cols=1)
+        self._movement_button(bf2,'Selected ON',lambda:self._movement_infinite_jump_selected(True),'green',0,cols=3)
+        self._movement_button(bf2,'Selected OFF',lambda:self._movement_infinite_jump_selected(False),'red',1,cols=3)
+        self._movement_button(bf2,'Toggle Selected',lambda:self._movement_infinite_jump_selected(None),'cyan',2,cols=3)
         return wrap
+
+    def _movement_teleport_card(self,parent):
+        wrap, inner = self._make_card(parent,'Teleport Selected Player','#00a3d7')
+        tk.Label(inner,text='Teleports the selected target player to the selected party slot pawn.',bg='#090d17',fg='#9fb3d9',font=('Segoe UI',8),anchor='w',wraplength=500).pack(fill='x',padx=8,pady=(5,2))
+        bf=tk.Frame(inner,bg='#090d17'); bf.pack(fill='x',padx=6,pady=(4,6))
+        for i in range(4):
+            self._movement_button(bf,f'To P{i+1}',lambda slot=i:self._movement_bridge_action('movement_teleport_to_slot', {'slot':slot}),'cyan',i,cols=4)
+        return wrap
+
+    def _movement_set_time_local(self):
+        try:
+            value = self._movement_parse_float('movement_time_dilation', 'Time Dilation', 1.0, 0.01, 64.0)
+        except Exception as exc:
+            self._movement_set_status(f'Time Dilation must be numeric: {exc}')
+            return messagebox.showerror('Invalid movement value', f'Time Dilation must be numeric: {exc}')
+        self._movement_set_field_value('movement_time_dilation', f'{value:.2f}')
+        self._movement_bridge_action('movement_set_time', {'movement_time_dilation': value})
+
+    def _movement_reset_time_local(self):
+        self._movement_set_field_value('movement_time_dilation', MOVEMENT_DEFAULTS['movement_time_dilation'])
+        self._movement_bridge_action('movement_reset_time')
+
+    def _movement_infinite_jump_selected(self, enabled):
+        raw = self.field_vars.get('infinite_jump_target', tk.StringVar()).get()
+        if not str(raw or '').strip():
+            return self._movement_set_status('No Infinite Jump player selected. Press Refresh/Status and choose a player.')
+        if enabled is True:
+            action = 'movement_infinite_jump_selected_on'
+        elif enabled is False:
+            action = 'movement_infinite_jump_selected_off'
+        else:
+            action = 'movement_infinite_jump_toggle_selected'
+        self._movement_bridge_action(action, {'infinite_jump_target': raw})
 
     def _update_player_options(self,status):
         super()._update_player_options(status)
@@ -2681,6 +3048,28 @@ class App(V9App):
             return self._validator_validate_bulk()
         if aid == 'validator_clear':
             return self._validator_clear()
+        if aid == 'movement_apply_all':
+            return self._movement_apply_now()
+        if aid == 'movement_reset_all':
+            return self._movement_reset_defaults(apply_now=True)
+        if aid == 'movement_save_preset':
+            return self._movement_save_preset_local()
+        if aid == 'movement_load_saved':
+            return self._movement_load_saved_preset_local(apply_now=True)
+        if aid == 'movement_set_time':
+            return self._movement_set_time_local()
+        if aid == 'movement_reset_time':
+            return self._movement_reset_time_local()
+        if aid in ('movement_zero_vault','movement_delete_ground_items','movement_toggle_no_target','movement_toggle_noclip','movement_players_only','movement_infinite_jump_all_on','movement_infinite_jump_all_off'):
+            return self._movement_bridge_action(aid)
+        if aid == 'movement_infinite_jump_toggle_selected':
+            return self._movement_infinite_jump_selected(None)
+        if aid == 'movement_infinite_jump_selected_on':
+            return self._movement_infinite_jump_selected(True)
+        if aid == 'movement_infinite_jump_selected_off':
+            return self._movement_infinite_jump_selected(False)
+        if aid.startswith('movement_preset_'):
+            return self._movement_apply_preset_local(aid.replace('movement_preset_', '', 1))
         if self._uses_global_target(aid):
             return self._run_action_with_global_target(action)
         if aid in ('set_backpack_bank_selected','set_backpack_bank_all'):
@@ -2705,9 +3094,6 @@ class App(V9App):
             self._set_legit_status('Cleared selected Legit Builder parts. Generated output cleared.')
             self._render_legit_slots()
             return
-        # Route all movement apply buttons with current field values even if the original card action did not declare them.
-        if aid=='movement_apply_all':
-            action=dict(action); action['uses_fields']=self._movement_apply_fields()
         # Ensure bridge build/give receives only selected part lines; root is already sent separately.
         if aid in ('legit_validate_build','legit_give_selected','legit_give_all'):
             self.field_vars['legit_selected_parts'].set('\n'.join(self._legit_selected_lines_without_root()))

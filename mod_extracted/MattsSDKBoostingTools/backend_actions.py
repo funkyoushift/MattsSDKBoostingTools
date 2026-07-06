@@ -25,6 +25,7 @@ from .item_pool_spawning import spawn_item_pool
 from .movement_adjustments import (
     apply_movement_advanced_to_all_players,
     delete_ground_items,
+    pawn_for_controller,
     refresh_jump_counts_all_players,
     reset_movement_advanced_all_players,
     set_infinite_jump_all,
@@ -32,7 +33,9 @@ from .movement_adjustments import (
     set_no_target,
     set_noclip,
     set_time_dilation,
+    teleport_pawn_to_pawn,
     toggle_infinite_jump_for_index,
+    toggle_players_only,
     zero_vault_power_costs_all_players,
 )
 from .party_helpers import (
@@ -409,6 +412,12 @@ def _selected_player_controller() -> Any | None:
     idx = get_selected_player_index()
     if idx is None:
         return None
+    return _party_controller_for_index(idx)
+
+
+def _party_controller_for_index(idx: int | None) -> Any | None:
+    if idx is None:
+        return None
     world, gs = _gbc_session_world_and_gamestate()
     pa = getattr(gs, "PlayerArray", None) if gs is not None else None
     if pa is None:
@@ -419,6 +428,26 @@ def _selected_player_controller() -> Any | None:
         return get_pc() if idx == 0 else None
     pc = _gbc_find_pc_for_player_state(ps, world)
     return pc or (get_pc() if idx == 0 else None)
+
+
+def _pawn_for_party_index(idx: int | None) -> Any | None:
+    pc = _party_controller_for_index(idx)
+    if pc is None:
+        return None
+    try:
+        pawn = pawn_for_controller(pc)
+        if pawn is not None:
+            return pawn
+    except Exception:
+        pass
+    for attr in ("OakCharacter", "Character", "Pawn", "AcknowledgedPawn"):
+        try:
+            pawn = getattr(pc, attr, None)
+            if pawn is not None:
+                return pawn
+        except Exception:
+            pass
+    return None
 
 
 def max_all() -> dict[str, Any]:
@@ -598,6 +627,7 @@ def movement_apply_all(payload: dict[str, Any] | None = None) -> dict[str, Any]:
     try:
         jump_goal = _movement_float(payload.get("movement_jump_height"), 198.0)
         floor_angle = _movement_float(payload.get("movement_floor_angle"), 44.76508331298828)
+        individual = _truthy(payload.get("movement_individual_jump_goals"))
         return _movement_apply_values(
             speed_scale=_movement_float(payload.get("movement_speed_scale"), 1.0),
             walk_speed=_movement_float(payload.get("movement_walk_speed"), 600.0),
@@ -606,11 +636,12 @@ def movement_apply_all(payload: dict[str, Any] | None = None) -> dict[str, Any]:
             gravity_scale=_movement_float(payload.get("movement_gravity_scale"), 1.0),
             max_step_height=_movement_float(payload.get("movement_step_height"), 45.0),
             jump_count=_clamp_int(payload.get("movement_jump_count") or 2, 1, 50),
+            jump_off_z_factor=_movement_float(payload.get("movement_jump_off_z_factor"), 0.5),
             walkable_floor_angle=floor_angle,
             walkable_floor_z=_movement_float(payload.get("movement_floor_z"), 0.7099999785423279),
-            sprint_jump_goal=jump_goal,
-            double_jump_goal=jump_goal,
-            slide_jump_goal=jump_goal,
+            sprint_jump_goal=_movement_float(payload.get("movement_sprint_jump_goal"), jump_goal) if individual else jump_goal,
+            double_jump_goal=_movement_float(payload.get("movement_double_jump_goal"), jump_goal) if individual else jump_goal,
+            slide_jump_goal=_movement_float(payload.get("movement_slide_jump_goal"), jump_goal) if individual else jump_goal,
             glide_speed=_movement_float(payload.get("movement_glide_speed"), 1200.0),
             glide_boost=_movement_float(payload.get("movement_glide_boost"), 0.0),
             glide_air_control=_movement_float(payload.get("movement_glide_air_control"), 0.6000000238418579),
@@ -697,6 +728,38 @@ def movement_set_time(value: object) -> dict[str, Any]:
 
 def movement_reset_time() -> dict[str, Any]:
     return movement_set_time(1.0)
+
+
+def movement_toggle_players_only() -> dict[str, Any]:
+    try:
+        msg = toggle_players_only()
+        return {"ok": True, "message": msg}
+    except Exception as exc:
+        return {"ok": False, "message": f"Players Only failed: {exc!r}"}
+
+
+def movement_teleport_selected_to_slot(slot: object) -> dict[str, Any]:
+    try:
+        slot_idx = _clamp_int(slot, 0, 3)
+    except Exception:
+        return {"ok": False, "message": "Teleport target slot must be P1, P2, P3, or P4."}
+    src_idx = get_selected_player_index()
+    if src_idx is None:
+        return {"ok": False, "message": "No selected player to teleport. Press Refresh Players and choose a target."}
+    if int(src_idx) == int(slot_idx):
+        return {"ok": False, "message": f"Selected player is already P{slot_idx + 1}."}
+    try:
+        src = _pawn_for_party_index(src_idx)
+        dst = _pawn_for_party_index(slot_idx)
+        if src is None:
+            return {"ok": False, "message": "Teleport failed: selected player pawn not found."}
+        if dst is None:
+            return {"ok": False, "message": f"Teleport failed: P{slot_idx + 1} pawn not found."}
+        msg = teleport_pawn_to_pawn(src, dst)
+        src_name = get_selected_player_name() or f"P{int(src_idx) + 1}"
+        return {"ok": True, "message": f"{msg} {src_name} -> P{slot_idx + 1}."}
+    except Exception as exc:
+        return {"ok": False, "message": f"Teleport selected player failed: {exc!r}"}
 
 
 def movement_infinite_jump_refresh() -> dict[str, Any]:

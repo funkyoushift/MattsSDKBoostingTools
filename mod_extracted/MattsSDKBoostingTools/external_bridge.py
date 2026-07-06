@@ -557,6 +557,10 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
         )
     if action == "movement_reset_time":
         return backend_actions.movement_reset_time()
+    if action == "movement_players_only":
+        return backend_actions.movement_toggle_players_only()
+    if action == "movement_teleport_to_slot":
+        return backend_actions.movement_teleport_selected_to_slot(payload.get("slot", 0))
     if action == "movement_preset_fast":
         return backend_actions.movement_apply_preset("fast")
     if action == "movement_preset_veryfast":
@@ -574,6 +578,14 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
     if action == "movement_infinite_jump_toggle_selected":
         return backend_actions.movement_infinite_jump_selected(
             payload.get("infinite_jump_target") or payload.get("target_player")
+        )
+    if action == "movement_infinite_jump_selected_on":
+        return backend_actions.movement_infinite_jump_set_selected(
+            payload.get("infinite_jump_target") or payload.get("target_player"), True
+        )
+    if action == "movement_infinite_jump_selected_off":
+        return backend_actions.movement_infinite_jump_set_selected(
+            payload.get("infinite_jump_target") or payload.get("target_player"), False
         )
     if action in ("movement_save_preset", "movement_load_saved"):
         return {"ok": False, "message": f"{action} is local UI preset storage and is not handled by the SDK bridge."}
