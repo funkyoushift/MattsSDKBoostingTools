@@ -53,6 +53,8 @@ _PATCH_RETRY_ATTEMPTS = 5
 _PATCH_RETRY_DELAY_SEC = 0.08
 _TICK_PATCH_MAX_ATTEMPTS = 180
 _TICK_PATCH_LOG_EVERY = 30
+_SERIAL_DELIVERY_VERIFY_ATTEMPTS = 40
+_SERIAL_DELIVERY_VERIFY_DELAY_SEC = 0.15
 # Keep reward SerialNumbers payloads comfortably below the observed client-delivery failure boundary.
 # Remote clients have shown unreliable delivery around ~30k+ raw Base85 chars per reward package,
 # so hard-cap each serial reward package at a much smaller 20k estimated payload budget.
@@ -1132,6 +1134,63 @@ except Exception as exc:
 _pending_serial_delivery_sequences: List[dict[str, Any]] = []
 _serial_delivery_status_message: str = "Idle"
 _serial_delivery_status_until: float = 0.0
+_active_serial_delivery_progress: dict[str, Any] = {
+    "active": False,
+    "fraction": 0.0,
+    "percent": 0,
+    "message": "",
+    "label": "",
+    "stage": "idle",
+    "mode": "",
+    "target_label": "",
+    "total_serials": 0,
+    "total_chunks": 0,
+    "current_chunk": 0,
+    "current_chunk_serials": 0,
+    "patched_targets": 0,
+    "expected_targets": 0,
+    "opened_managers": 0,
+    "next_delay_seconds": 0.0,
+    "last_message": "",
+    "last_error": "",
+}
+
+
+def _set_active_serial_delivery_progress(**updates: Any) -> dict[str, Any]:
+    """Update bridge-safe serial progress without ever storing serial payloads."""
+    global _active_serial_delivery_progress
+    data = dict(_active_serial_delivery_progress)
+    data.update({str(k): v for k, v in updates.items()})
+    active = bool(data.get("active", False))
+    total_chunks = max(0, int(data.get("total_chunks") or 0))
+    current_chunk = max(0, int(data.get("current_chunk") or 0))
+    stage = str(data.get("stage") or ("active" if active else "idle"))
+    message = str(data.get("message") or data.get("last_message") or "").strip()
+    if message:
+        data["last_message"] = message
+    if total_chunks > 0 and current_chunk > 0:
+        stage_weight = {
+            "starting": 0.00,
+            "deliver": 0.05,
+            "patch": 0.25,
+            "pre_open_wait": 0.45,
+            "open": 0.60,
+            "post_open_wait": 0.80,
+            "complete": 1.00,
+            "failed": 1.00,
+        }.get(stage, 0.0)
+        if stage in ("complete", "failed"):
+            fraction = 1.0
+        else:
+            fraction = (min(current_chunk - 1, total_chunks - 1) + stage_weight) / float(total_chunks)
+        data["fraction"] = max(0.0, min(1.0, float(fraction)))
+    else:
+        data["fraction"] = 0.0 if active else float(data.get("fraction") or 0.0)
+    data["percent"] = int(round(max(0.0, min(1.0, float(data.get("fraction") or 0.0))) * 100.0))
+    data["label"] = f"{current_chunk}/{total_chunks} | {data['percent']}%" if total_chunks else ""
+    data["active"] = active
+    _active_serial_delivery_progress = data
+    return dict(data)
 
 
 def _set_serial_delivery_status(message: str, *, hold_sec: float = 30.0, log: bool = False) -> None:
@@ -1162,8 +1221,37 @@ def serial_delivery_progress() -> dict[str, Any]:
     fraction is 0..1 across the whole multi-package delivery.  This is intentionally
     read-only so UI polling never mutates the delivery state machine.
     """
+    active_snapshot = dict(_active_serial_delivery_progress)
+    if bool(active_snapshot.get("active", False)):
+        return active_snapshot
     if not _pending_serial_delivery_sequences:
-        return {"active": False, "fraction": 0.0, "message": "", "label": "", "index": 0, "total": 0}
+        msg = ""
+        if _serial_delivery_status_message and time.time() <= float(_serial_delivery_status_until or 0.0):
+            msg = str(_serial_delivery_status_message or "")
+        if not msg:
+            msg = str(active_snapshot.get("last_message") or "")
+        return {
+            "active": False,
+            "fraction": 0.0,
+            "percent": 0,
+            "message": msg,
+            "label": "",
+            "index": 0,
+            "total": 0,
+            "stage": "idle",
+            "mode": str(active_snapshot.get("mode") or ""),
+            "target_label": str(active_snapshot.get("target_label") or ""),
+            "total_serials": int(active_snapshot.get("total_serials") or 0),
+            "total_chunks": int(active_snapshot.get("total_chunks") or 0),
+            "current_chunk": 0,
+            "current_chunk_serials": 0,
+            "patched_targets": int(active_snapshot.get("patched_targets") or 0),
+            "expected_targets": int(active_snapshot.get("expected_targets") or 0),
+            "opened_managers": int(active_snapshot.get("opened_managers") or 0),
+            "next_delay_seconds": 0.0,
+            "last_message": msg,
+            "last_error": str(active_snapshot.get("last_error") or ""),
+        }
     seq = _pending_serial_delivery_sequences[0]
     chunks = list(seq.get("chunks") or [])
     total = len(chunks)
@@ -1231,6 +1319,18 @@ def serial_delivery_progress() -> dict[str, Any]:
         "stage": stage,
         "index": idx + 1,
         "total": total,
+        "mode": str(seq.get("mode") or ""),
+        "target_label": scope,
+        "total_serials": sum(len(list(chunk or [])) for chunk in chunks),
+        "total_chunks": total,
+        "current_chunk": idx + 1,
+        "current_chunk_serials": len(list(chunks[idx] or [])) if 0 <= idx < len(chunks) else 0,
+        "patched_targets": 0,
+        "expected_targets": len(list(seq.get("targets") or [])),
+        "opened_managers": 0,
+        "next_delay_seconds": wait_remaining if stage in ("pre_open_wait", "post_open_wait", "wait") else 0.0,
+        "last_message": message,
+        "last_error": "",
         "scope": scope,
         "wait_remaining": wait_remaining,
     }
@@ -1471,6 +1571,25 @@ def _do_give_serial_to_player_indices(
     _ensure_backpack_capacity_for_indices(targets, len(serials))
     _gbc_run_session_timer_from_give_serial()
     mode_label = "selected" if mode_key == "selected" else ("all non-host" if mode_key == "nonhost" else "all-player")
+    _set_active_serial_delivery_progress(
+        active=True,
+        stage="starting",
+        mode=mode_key,
+        target_label=scope_label,
+        total_serials=len(serials),
+        total_chunks=len(chunks),
+        current_chunk=0,
+        current_chunk_serials=0,
+        patched_targets=0,
+        expected_targets=len(targets),
+        opened_managers=0,
+        next_delay_seconds=0.0,
+        last_error="",
+        message=(
+            f"Serial delivery starting: {len(serials)} serial(s), "
+            f"{len(chunks)} chunk(s), max {max_serials}/chunk, delay {gap:.2f}s ({scope_label})"
+        ),
+    )
     _set_serial_delivery_status(
         f"Submitting {len(serials)} serial(s) in {len(chunks)} chunk(s), max {max_serials} serial(s) per chunk, delay {gap:.2f}s ({scope_label})",
         hold_sec=30.0,
@@ -1489,6 +1608,21 @@ def _do_give_serial_to_player_indices(
 
     for chunk_index, chunk in enumerate(chunks, 1):
         reward_name, slot, n = _next_loyalty_reward_name()
+        _set_active_serial_delivery_progress(
+            active=True,
+            stage="deliver",
+            mode=mode_key,
+            target_label=scope_label,
+            total_serials=len(serials),
+            total_chunks=len(chunks),
+            current_chunk=chunk_index,
+            current_chunk_serials=len(chunk),
+            patched_targets=0,
+            expected_targets=len(targets),
+            opened_managers=0,
+            next_delay_seconds=0.0,
+            message=f"Serial delivery {chunk_index}/{len(chunks)}: sending {len(chunk)} serial(s) to {scope_label}",
+        )
         _set_serial_delivery_status(
             f"Serial delivery {chunk_index}/{len(chunks)}: sending {len(chunk)} serial(s) to {scope_label}",
             hold_sec=30.0,
@@ -1504,15 +1638,49 @@ def _do_give_serial_to_player_indices(
         # through GiveRewardAllPlayers; then only target package SerialNumbers are patched.
         before_counts = _snapshot_player_package_counts(targets)
         if not before_counts:
+            msg = f"Serial delivery stopped: no reward managers found for {scope_label}"
+            _set_active_serial_delivery_progress(
+                active=False,
+                stage="failed",
+                mode=mode_key,
+                target_label=scope_label,
+                total_serials=len(serials),
+                total_chunks=len(chunks),
+                current_chunk=chunk_index,
+                current_chunk_serials=len(chunk),
+                patched_targets=0,
+                expected_targets=0,
+                opened_managers=0,
+                next_delay_seconds=0.0,
+                message=msg,
+                last_error=msg,
+            )
             _set_serial_delivery_status(
-                f"Serial delivery stopped: no reward managers found for {scope_label}",
+                msg,
                 hold_sec=20.0,
                 log=True,
             )
             return
         if not _give_reward_def(reward_name, True):
+            msg = f"Serial delivery stopped: GiveRewardAllPlayers failed on part {chunk_index}/{len(chunks)}"
+            _set_active_serial_delivery_progress(
+                active=False,
+                stage="failed",
+                mode=mode_key,
+                target_label=scope_label,
+                total_serials=len(serials),
+                total_chunks=len(chunks),
+                current_chunk=chunk_index,
+                current_chunk_serials=len(chunk),
+                patched_targets=0,
+                expected_targets=len(before_counts),
+                opened_managers=0,
+                next_delay_seconds=0.0,
+                message=msg,
+                last_error=msg,
+            )
             _set_serial_delivery_status(
-                f"Serial delivery stopped: GiveRewardAllPlayers failed on part {chunk_index}/{len(chunks)}",
+                msg,
                 hold_sec=20.0,
                 log=True,
             )
@@ -1520,9 +1688,25 @@ def _do_give_serial_to_player_indices(
 
         patched = 0
         total = len(before_counts)
-        max_attempts = max(int(_PATCH_RETRY_ATTEMPTS or 0), 12)
+        max_attempts = max(int(_SERIAL_DELIVERY_VERIFY_ATTEMPTS or 0), 12)
         for attempt in range(max_attempts):
             patched, total = _patch_player_indices_since_counts(chunk, before_counts, 0)
+            if attempt == 0 or (attempt + 1) % 5 == 0 or patched >= total:
+                _set_active_serial_delivery_progress(
+                    active=True,
+                    stage="patch",
+                    mode=mode_key,
+                    target_label=scope_label,
+                    total_serials=len(serials),
+                    total_chunks=len(chunks),
+                    current_chunk=chunk_index,
+                    current_chunk_serials=len(chunk),
+                    patched_targets=patched,
+                    expected_targets=total,
+                    opened_managers=0,
+                    next_delay_seconds=0.0,
+                    message=f"Serial delivery {chunk_index}/{len(chunks)}: patched {patched}/{total} target(s)",
+                )
             if patched >= total and total > 0:
                 _log_info(
                     f"Serial delivery {chunk_index}/{len(chunks)} patched {patched}/{total} target(s) "
@@ -1530,7 +1714,7 @@ def _do_give_serial_to_player_indices(
                 )
                 break
             if attempt + 1 < max_attempts:
-                time.sleep(_PATCH_RETRY_DELAY_SEC)
+                time.sleep(_SERIAL_DELIVERY_VERIFY_DELAY_SEC)
 
         if patched <= 0:
             _log_warning(
@@ -1543,24 +1727,116 @@ def _do_give_serial_to_player_indices(
                 "forcing open for available packages."
             )
 
+        pre_open_delay = _clamp_serial_delivery_delay(_SERIAL_DELIVERY_PRE_OPEN_DELAY_SEC)
+        if pre_open_delay > 0:
+            _set_active_serial_delivery_progress(
+                active=True,
+                stage="pre_open_wait",
+                mode=mode_key,
+                target_label=scope_label,
+                total_serials=len(serials),
+                total_chunks=len(chunks),
+                current_chunk=chunk_index,
+                current_chunk_serials=len(chunk),
+                patched_targets=patched,
+                expected_targets=total,
+                opened_managers=0,
+                next_delay_seconds=pre_open_delay,
+                message=(
+                    f"Serial delivery {chunk_index}/{len(chunks)}: patched {patched}/{total} target(s); "
+                    f"opening in {pre_open_delay:.2f}s"
+                ),
+            )
+            time.sleep(pre_open_delay)
+
         _set_serial_delivery_status(
             f"Serial delivery {chunk_index}/{len(chunks)}: force-opening reward packages",
             hold_sec=30.0,
             log=True,
         )
-        _open_all_live_reward_packages()
+        _set_active_serial_delivery_progress(
+            active=True,
+            stage="open",
+            mode=mode_key,
+            target_label=scope_label,
+            total_serials=len(serials),
+            total_chunks=len(chunks),
+            current_chunk=chunk_index,
+            current_chunk_serials=len(chunk),
+            patched_targets=patched,
+            expected_targets=total,
+            opened_managers=0,
+            next_delay_seconds=0.0,
+            message=f"Serial delivery {chunk_index}/{len(chunks)}: opening reward packages",
+        )
+        opened = _open_all_live_reward_packages()
 
         if chunk_index < len(chunks):
             if gap > 0:
+                msg = (
+                    f"Serial delivery {chunk_index}/{len(chunks)}: patched {patched}/{total} target(s), "
+                    f"opened {opened} manager(s); next part in {gap:.2f}s"
+                )
+                _set_active_serial_delivery_progress(
+                    active=True,
+                    stage="post_open_wait",
+                    mode=mode_key,
+                    target_label=scope_label,
+                    total_serials=len(serials),
+                    total_chunks=len(chunks),
+                    current_chunk=chunk_index,
+                    current_chunk_serials=len(chunk),
+                    patched_targets=patched,
+                    expected_targets=total,
+                    opened_managers=opened,
+                    next_delay_seconds=gap,
+                    message=msg,
+                )
                 _set_serial_delivery_status(
-                    f"Serial delivery {chunk_index}/{len(chunks)} opened; next part in {gap:.2f}s",
+                    msg,
                     hold_sec=30.0,
                     log=True,
                 )
                 time.sleep(gap)
+        else:
+            _set_active_serial_delivery_progress(
+                active=True,
+                stage="open",
+                mode=mode_key,
+                target_label=scope_label,
+                total_serials=len(serials),
+                total_chunks=len(chunks),
+                current_chunk=chunk_index,
+                current_chunk_serials=len(chunk),
+                patched_targets=patched,
+                expected_targets=total,
+                opened_managers=opened,
+                next_delay_seconds=0.0,
+                message=(
+                    f"Serial delivery {chunk_index}/{len(chunks)}: patched {patched}/{total} target(s), "
+                    f"opened {opened} manager(s)"
+                ),
+            )
 
+    complete_msg = f"Throttled serial delivery queue complete for {scope_label} ({len(chunks)} chunk(s), {len(serials)} serial(s))."
+    _set_active_serial_delivery_progress(
+        active=False,
+        stage="complete",
+        mode=mode_key,
+        target_label=scope_label,
+        total_serials=len(serials),
+        total_chunks=len(chunks),
+        current_chunk=len(chunks),
+        current_chunk_serials=0,
+        patched_targets=0,
+        expected_targets=len(targets),
+        opened_managers=0,
+        next_delay_seconds=0.0,
+        message=complete_msg,
+        last_error="",
+    )
     _set_serial_delivery_status(
-        f"Throttled serial delivery queue complete for {scope_label} ({len(chunks)} chunk(s), {len(serials)} serial(s)).",
+        complete_msg,
         hold_sec=20.0,
         log=True,
     )

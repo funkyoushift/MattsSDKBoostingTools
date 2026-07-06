@@ -137,6 +137,7 @@ class App(V9App):
         self.movement_saved_preset = {}
         self.movement_auto_apply_saved = False
         self.movement_status_message = 'Movement ready.'
+        self.serial_delivery_last_message = ''
         super().__init__()
         self.title("Matt's SDK Boosting Tools - External V22 Parts Codes GZO Visible")
         self._load_movement_settings_local()
@@ -149,6 +150,48 @@ class App(V9App):
 
     def _truthy(self, value):
         return str(value).strip().lower() in ('1','true','yes','on')
+
+    def _serial_delivery_progress_message(self, progress):
+        if not isinstance(progress, dict):
+            return ''
+        msg = str(progress.get('message') or progress.get('last_message') or '').strip()
+        err = str(progress.get('last_error') or '').strip()
+        if err and not msg:
+            msg = err
+        return msg
+
+    def _handle_serial_delivery_progress(self, progress):
+        msg = self._serial_delivery_progress_message(progress)
+        if not msg:
+            return
+        active = bool((progress or {}).get('active'))
+        stage = str((progress or {}).get('stage') or '').lower()
+        err = str((progress or {}).get('last_error') or '').strip()
+        if msg == getattr(self, 'serial_delivery_last_message', ''):
+            return
+        self.serial_delivery_last_message = msg
+        if active or stage in ('complete', 'failed') or err:
+            self.log(f'SDK serial delivery: {msg}')
+
+    def poll_status(self):
+        def work():
+            try:
+                s = http_json('GET', '/status', timeout=3)
+                selected = s.get('selected_player') or 'no selected player'
+                text = f"Bridge online | selected: {selected} | players: {len(s.get('players') or [])} | queue: {s.get('queue',0)}"
+                delivery = s.get('serial_delivery') or {}
+                delivery_msg = self._serial_delivery_progress_message(delivery)
+                if delivery_msg:
+                    text += ' | serial: ' + delivery_msg
+                if s.get('last_error'):
+                    text += ' | last error: ' + str(s.get('last_error'))
+                self.after(0, lambda t=text: self.status_var.set(t))
+                self.after(0, lambda st=s: self._update_player_options(st))
+                self.after(0, lambda d=delivery: self._handle_serial_delivery_progress(d))
+            except Exception:
+                self.after(0, lambda: self.status_var.set('Bridge offline - local UI/resources still loaded'))
+        threading.Thread(target=work, daemon=True).start()
+        self.after(3000, self.poll_status)
 
     def _auto_inventory_enabled(self):
         var = self.field_vars.get('auto_inventory_sizes')

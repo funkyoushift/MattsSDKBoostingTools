@@ -215,11 +215,30 @@ def set_target_player(index_or_name: object) -> dict[str, Any]:
 
 def get_status() -> dict[str, Any]:
     players = refresh_players()
+    try:
+        delivery_progress = serial_rewards.serial_delivery_progress()
+    except Exception as exc:
+        delivery_progress = {
+            "active": False,
+            "message": "",
+            "last_error": f"serial delivery progress unavailable: {exc!r}",
+        }
+    try:
+        delivery_status = serial_rewards.serial_delivery_status()
+    except Exception:
+        delivery_status = ""
+    if isinstance(delivery_progress, dict):
+        delivery_progress = dict(delivery_progress)
+        delivery_progress.setdefault("last_message", delivery_status or delivery_progress.get("message", ""))
+        delivery_progress.setdefault("last_error", "")
+    else:
+        delivery_progress = {"active": False, "message": str(delivery_progress or ""), "last_error": ""}
     return {
         "players": players,
         "selected_player": _selected_player_name,
         "selected_player_index": _selected_player_index,
         "last_refresh_error": _last_refresh_error,
+        "serial_delivery": delivery_progress,
     }
 
 

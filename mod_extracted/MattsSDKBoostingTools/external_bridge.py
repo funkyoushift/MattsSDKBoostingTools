@@ -813,6 +813,7 @@ def _status() -> dict[str, Any]:
         "players": backend_status.get("players", []),
         "selected_player": backend_status.get("selected_player") or "",
         "selected_player_index": backend_status.get("selected_player_index"),
+        "serial_delivery": backend_status.get("serial_delivery", {}),
         "last_action": _last_action,
         "last_error": _last_error or backend_status.get("last_refresh_error", ""),
     }
