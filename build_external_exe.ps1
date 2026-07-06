@@ -8,6 +8,7 @@ $BuildRoot = Join-Path $RepoRoot "build\external_exe"
 $DistRoot = Join-Path $RepoRoot "dist"
 $Name = "MattsBoostingToolsExternal"
 $DistApp = Join-Path $DistRoot $Name
+$Python = $env:MSBT_PYTHON
 
 function Assert-UnderRepo {
     param([string]$Path)
@@ -25,9 +26,19 @@ if (-not (Test-Path $Icon)) {
     throw "External app icon not found: $Icon"
 }
 
-python -m PyInstaller --version *> $null
+if (-not $Python) {
+    $PythonCommand = Get-Command python -ErrorAction SilentlyContinue
+    if ($PythonCommand) {
+        $Python = $PythonCommand.Source
+    }
+}
+if (-not $Python) {
+    throw "Python is not available. Set MSBT_PYTHON to a Python executable with PyInstaller installed."
+}
+
+& $Python -m PyInstaller --version *> $null
 if ($LASTEXITCODE -ne 0) {
-    throw "PyInstaller is not available. Install it with: python -m pip install pyinstaller"
+    throw "PyInstaller is not available. Install it with: $Python -m pip install pyinstaller"
 }
 
 Assert-UnderRepo $BuildRoot
@@ -36,7 +47,7 @@ Assert-UnderRepo $DistApp
 Remove-Item -Recurse -Force $BuildRoot -ErrorAction SilentlyContinue
 Remove-Item -Recurse -Force $DistApp -ErrorAction SilentlyContinue
 
-python -m PyInstaller `
+& $Python -m PyInstaller `
     --noconfirm `
     --clean `
     --windowed `
@@ -64,6 +75,12 @@ Copy-Item -Force (Join-Path $RepoRoot "Launch_MSBT_External_App.bat") (Join-Path
 Copy-Item -Force (Join-Path $AppSource "Launch_MattsBoostingTools_External.bat") (Join-Path $DistApp "Launch_MattsBoostingTools_External.bat")
 
 Get-ChildItem -Recurse -Directory $DistApp -Filter "__pycache__" | Remove-Item -Recurse -Force
+
+$TkinterRuntime = Join-Path $DistApp "_internal\_tkinter.pyd"
+$TclInit = Join-Path $DistApp "_internal\_tcl_data\init.tcl"
+if (-not (Test-Path $TkinterRuntime) -or -not (Test-Path $TclInit)) {
+    throw "Built external exe is missing Tkinter/Tcl runtime files. Rebuild with a Python install where Tkinter can create a Tk root."
+}
 
 Write-Host "Built external app:"
 Write-Host (Join-Path $DistApp "$Name.exe")

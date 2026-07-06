@@ -13,9 +13,12 @@ import external_validator
 from matts_external_core_v20 import ACCENT_COLORS, http_json, RESOURCE_DIR
 from matts_external_legit_travel_v20 import App as V9App
 
-MAX_SELECTED_SERIAL_DELIVERY = 50
-MAX_MULTI_SERIAL_DELIVERY = 150
 MAX_SERIAL_DELIVERY_CHARS = 20000
+SELECTED_SERIALS_PER_CHUNK = 30
+SELECTED_CHUNK_DELAY_SECONDS = 2.0
+MULTI_SERIALS_PER_CHUNK = 25
+MULTI_CHUNK_DELAY_SECONDS = 2.5
+SERIAL_DELIVERY_PER_SERIAL_OVERHEAD_CHARS = 16
 
 MOVEMENT_DEFAULTS = {
     'movement_speed_scale': '1.00',
@@ -2342,6 +2345,29 @@ class App(V9App):
     def _selected_bl4_serials(self):
         return [str(e.get('serial') or '').strip() for e in self._selected_bl4_entries() if self._is_valid_bl4_serial(e.get('serial',''))]
 
+    def _serial_delivery_plan_local(self, serials, mode='selected'):
+        mode_key=str(mode or 'selected').lower()
+        max_serials=SELECTED_SERIALS_PER_CHUNK if mode_key == 'selected' else MULTI_SERIALS_PER_CHUNK
+        delay=SELECTED_CHUNK_DELAY_SECONDS if mode_key == 'selected' else MULTI_CHUNK_DELAY_SECONDS
+        chunks=[]
+        current=[]
+        current_chars=0
+        for raw in serials:
+            text=str(raw or '').strip()
+            if not text:
+                continue
+            n=len(text)+SERIAL_DELIVERY_PER_SERIAL_OVERHEAD_CHARS
+            if current and (len(current) >= max_serials or current_chars + n > MAX_SERIAL_DELIVERY_CHARS):
+                chunks.append(current)
+                current=[]
+                current_chars=0
+            current.append(text)
+            current_chars += n
+        if current:
+            chunks.append(current)
+        estimated_wait=max(0.0, (len(chunks)-1) * delay) if chunks else 0.0
+        return {'chunks':chunks,'max_serials':max_serials,'delay':delay,'estimated_wait':estimated_wait}
+
     def _copy_text_v13(self, text, label):
         try:
             self.clipboard_clear(); self.clipboard_append(text); self.log(f'Copied {label}.')
@@ -2452,19 +2478,25 @@ class App(V9App):
     def _deliver_bl4_codes(self, mode):
         serials=self._selected_bl4_serials()
         if not serials: return self._set_bl4_status('Select one or more valid GZO serials first.', log_global=True)
-        if mode == 'selected' and len(serials) > MAX_SELECTED_SERIAL_DELIVERY:
-            return self._set_bl4_status('Too many selected serials for reliable selected-player delivery. Select 50 or fewer, or use smaller batches.', log_global=True)
-        if mode in ('all', 'nonhost') and len(serials) > MAX_MULTI_SERIAL_DELIVERY:
-            return self._set_bl4_status(f'Too many serials for reliable {mode} delivery. Select {MAX_MULTI_SERIAL_DELIVERY} or fewer, or use smaller batches.', log_global=True)
         oversized=[i+1 for i,s in enumerate(serials) if len(str(s or '')) > MAX_SERIAL_DELIVERY_CHARS]
         if oversized:
             return self._set_bl4_status(f'Serial {oversized[0]} exceeds the {MAX_SERIAL_DELIVERY_CHARS} character delivery limit.', log_global=True)
+        plan=self._serial_delivery_plan_local(serials, mode)
         try: level=int(str(self.field_vars.get('code_delivery_level', tk.StringVar(value='60')).get()).replace(',','').strip())
         except Exception: return messagebox.showerror('Invalid value','Delivery Level must be a number.')
         override=str(self.field_vars.get('code_override_level', tk.StringVar(value='false')).get()).lower() in ('1','true','yes','on')
         payload={'serial_text':'\n'.join(serials),'serial_level':level,'serial_override_level':override}
         aid={'selected':'give_serial_selected','all':'give_serial_all','nonhost':'give_serial_nonhost'}[mode]
-        self.log(f'Delivering {len(serials)} BL4 code serial(s) to {mode}...')
+        chunk_count=len(plan['chunks'])
+        target_note=''
+        if mode == 'selected':
+            target_raw=str(self.field_vars.get('code_target_player', tk.StringVar()).get() or '').strip()
+            target_note=f' to {target_raw}' if target_raw else ' to selected target'
+        plan_msg=f"Submitting {len(serials)} {mode} serial(s){target_note} in {chunk_count} chunk(s), max {plan['max_serials']} per chunk, {plan['delay']:.1f}s delay."
+        if plan['estimated_wait'] >= 10:
+            plan_msg += f" Large delivery queued; this may take about {plan['estimated_wait']:.0f} seconds."
+        self._set_bl4_status(plan_msg, log_global=True)
+        timeout=max(30.0, plan['estimated_wait'] + (chunk_count * 6.0) + 20.0)
         def work():
             try:
                 if mode == 'selected':
@@ -2472,7 +2504,7 @@ class App(V9App):
                     if not ok:
                         self.after(0, lambda m=msg:self._set_bl4_status(m, log_global=True))
                         return
-                res=http_json('POST','/action',{'action':aid,'payload':payload,'timeout':10.0},timeout=18.0)
+                res=http_json('POST','/action',{'action':aid,'payload':payload,'timeout':timeout},timeout=timeout)
                 self.after(0, lambda:self.log(res.get('message') or 'BL4 code delivery requested.'))
                 self.after(0, self.poll_status)
             except Exception as exc:
@@ -2489,7 +2521,8 @@ class App(V9App):
                 self.bl4_split_preview_var.set('Delivery split: no valid serials selected yet.')
             else:
                 total=sum(len(s) for s in serials)
-                self.bl4_split_preview_var.set(f'Delivery split: 1 part | {len(serials)} serial(s) | {total} raw chars | {total} estimated payload chars.')
+                plan=self._serial_delivery_plan_local(serials, 'selected')
+                self.bl4_split_preview_var.set(f"Delivery split: {len(plan['chunks'])} part(s) | {len(serials)} serial(s) | max {plan['max_serials']}/chunk | {plan['delay']:.1f}s delay | {total} raw chars")
         if hasattr(self, 'bl4_status_var'):
             self.bl4_status_var.set(self.bl4_status_message)
 

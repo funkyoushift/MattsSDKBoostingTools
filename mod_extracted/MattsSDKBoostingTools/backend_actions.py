@@ -54,8 +54,6 @@ MAX_WALLET_AMOUNT = 2147483647
 MAX_PLAYER_LEVEL = 60
 MAX_SPEC_LEVEL = 701
 MAX_VAULT_CARD_LEVEL = 9999999
-MAX_SELECTED_SERIAL_DELIVERY = 50
-MAX_MULTI_SERIAL_DELIVERY = 150
 RARITY_ROWS: tuple[tuple[str, str, tuple[str, ...]], ...] = (
     ("common", "Common", ("CommonModifier",)),
     ("uncommon", "Uncommon", ("UncommonModifier",)),
@@ -1051,26 +1049,16 @@ def _deliver_serials_with_target(serials: list[str], mode: str, parsed_count: in
     if mode_key not in ("selected", "all", "nonhost"):
         mode_key = "selected"
     total_serials = len(serials)
-    if mode_key == "selected" and total_serials > MAX_SELECTED_SERIAL_DELIVERY:
-        return {
-            "ok": False,
-            "message": "Too many selected serials for reliable selected-player delivery. Select 50 or fewer, or use smaller batches.",
-        }
-    if mode_key in ("all", "nonhost") and total_serials > MAX_MULTI_SERIAL_DELIVERY:
-        return {
-            "ok": False,
-            "message": (
-                f"Too many serials for reliable {mode_key} delivery. Select {MAX_MULTI_SERIAL_DELIVERY} "
-                "or fewer, or use smaller batches."
-            ),
-        }
     chunks = serial_rewards._serial_delivery_chunks(serials, mode_key)
     max_per_chunk = serial_rewards._serial_delivery_max_serials_per_chunk(mode_key)
     delay = serial_rewards._serial_delivery_post_open_delay(mode_key)
+    estimated_wait = max(0.0, (len(chunks) - 1) * float(delay or 0.0)) if chunks else 0.0
     split_note = (
         f" Submitting {total_serials} serial(s) in {len(chunks)} chunk(s), "
         f"max {max_per_chunk} serial(s) per chunk, delay {delay:.2f}s."
     ) if chunks else ""
+    if estimated_wait >= 10.0:
+        split_note += f" Large delivery queued; estimated throttle wait is about {estimated_wait:.0f}s."
     count_note = _serial_delivery_count_note(parsed_count, total_serials)
     try:
         if mode_key == "all":

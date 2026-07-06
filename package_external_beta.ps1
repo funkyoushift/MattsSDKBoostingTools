@@ -22,6 +22,11 @@ function Assert-UnderRepo {
 if (-not (Test-Path (Join-Path $ExeBuildFolder "MattsBoostingToolsExternal.exe"))) {
     throw "External exe not found. Run .\build_external_exe.ps1 first."
 }
+$TkinterRuntime = Join-Path $ExeBuildFolder "_internal\_tkinter.pyd"
+$TclInit = Join-Path $ExeBuildFolder "_internal\_tcl_data\init.tcl"
+if (-not (Test-Path $TkinterRuntime) -or -not (Test-Path $TclInit)) {
+    throw "External exe build is missing Tkinter/Tcl runtime files. Rebuild it with a Python install where Tkinter works before packaging."
+}
 if (Test-Path $SdkBuildScript) {
     & $SdkBuildScript
 }

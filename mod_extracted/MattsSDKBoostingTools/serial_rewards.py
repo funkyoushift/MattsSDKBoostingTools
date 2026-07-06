@@ -58,14 +58,14 @@ _TICK_PATCH_LOG_EVERY = 30
 # so hard-cap each serial reward package at a much smaller 20k estimated payload budget.
 _MAX_SERIAL_DELIVERY_CHARS = 20000
 _SERIAL_DELIVERY_SAFE_CHARS = 20000
-_SERIAL_DELIVERY_SAFE_SERIALS_SELECTED = 10
-_SERIAL_DELIVERY_SAFE_SERIALS_MULTI = 15
+_SERIAL_DELIVERY_SAFE_SERIALS_SELECTED = 30
+_SERIAL_DELIVERY_SAFE_SERIALS_MULTI = 25
 _SERIAL_DELIVERY_PER_SERIAL_OVERHEAD_CHARS = 16
 # Automatic chunk delivery pacing.  Keep this main-thread/tick driven; no sleeps.
 _SERIAL_DELIVERY_PRE_OPEN_DELAY_SEC = 1.00
-_SERIAL_DELIVERY_POST_OPEN_DELAY_SEC = 0.50
-_SERIAL_DELIVERY_SELECTED_POST_OPEN_DELAY_SEC = 1.25
-_SERIAL_DELIVERY_MULTI_POST_OPEN_DELAY_SEC = 1.50
+_SERIAL_DELIVERY_POST_OPEN_DELAY_SEC = 2.00
+_SERIAL_DELIVERY_SELECTED_POST_OPEN_DELAY_SEC = 2.00
+_SERIAL_DELIVERY_MULTI_POST_OPEN_DELAY_SEC = 2.50
 _SERIAL_DELIVERY_PATCH_MAX_ATTEMPTS = 120
 _SERIAL_DELIVERY_PATCH_LOG_EVERY = 30
 _SERIAL_DELIVERY_BACKPACK_HEADROOM = 100
@@ -1470,14 +1470,19 @@ def _do_give_serial_to_player_indices(
 
     _ensure_backpack_capacity_for_indices(targets, len(serials))
     _gbc_run_session_timer_from_give_serial()
+    mode_label = "selected" if mode_key == "selected" else ("all non-host" if mode_key == "nonhost" else "all-player")
     _set_serial_delivery_status(
         f"Submitting {len(serials)} serial(s) in {len(chunks)} chunk(s), max {max_serials} serial(s) per chunk, delay {gap:.2f}s ({scope_label})",
         hold_sec=30.0,
         log=True,
     )
+    _log_info(
+        f"Throttled {mode_label} serial delivery starting: {len(serials)} serial(s), "
+        f"{len(chunks)} chunk(s), max {max_serials}/chunk, delay {gap:.2f}s ({scope_label})."
+    )
     if len(chunks) > 1:
         _log_info(
-            f"Hybrid chunk delivery for {scope_label}: {len(serials)} serial(s), "
+            f"Throttled chunk plan for {scope_label}: {len(serials)} serial(s), "
             f"{_serial_delivery_chunks_desc(chunks)}. Max {max_serials} serial(s) per chunk; "
             f"{gap:.2f}s post-open delay. Each chunk uses immediate delivery + forced open."
         )
@@ -1490,7 +1495,7 @@ def _do_give_serial_to_player_indices(
             log=True,
         )
         _log_info(
-            f"Hybrid serial package {chunk_index}/{len(chunks)} for {scope_label}: "
+            f"Throttled serial package {chunk_index}/{len(chunks)} for {scope_label}: "
             f"{len(chunk)} serial(s), {_serial_delivery_char_count(chunk)} raw chars / "
             f"{_serial_delivery_estimated_payload_chars(chunk)} est chars, reward {reward_name} ({slot}/{n})."
         )
@@ -1555,7 +1560,7 @@ def _do_give_serial_to_player_indices(
                 time.sleep(gap)
 
     _set_serial_delivery_status(
-        f"Hybrid serial delivery submitted, patched, and opened reward packages for {scope_label} ({len(chunks)} chunk(s)).",
+        f"Throttled serial delivery queue complete for {scope_label} ({len(chunks)} chunk(s), {len(serials)} serial(s)).",
         hold_sec=20.0,
         log=True,
     )
