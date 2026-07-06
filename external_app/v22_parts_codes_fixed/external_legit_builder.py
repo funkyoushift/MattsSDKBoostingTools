@@ -414,7 +414,8 @@ def _find_index(root: dict[str, Any]) -> dict[tuple[str | None, str], dict[str, 
 
 
 def _find_part(root: dict[str, Any], part: str | int, table: str | None = None) -> dict[str, Any] | None:
-    want = _norm(part)
+    ref = _inv_ref_part_key(part)
+    want = _norm(ref[1] if ref else part)
     if want.startswith("{") and want.endswith("}"):
         want = want[1:-1].strip().lower()
     table_n = _norm(table) if table else None

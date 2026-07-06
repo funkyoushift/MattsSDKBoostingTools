@@ -18,6 +18,9 @@ class App(V9App):
         self.legit_duplicate_qty_var = None
         self.legit_human_output = ''
         self.legit_base85_output = ''
+        self.legit_last_build_signature = ''
+        self.legit_rejected_part_lines = []
+        self.legit_last_root_value = ''
         self.legit_status_message = 'Select a root, add parts, then Validate or Build Base85.'
         self.bl4_active_id = ''
         self.bl4_selected_ids = set()
@@ -279,6 +282,8 @@ class App(V9App):
             var=self.field_vars.get(fid) or tk.StringVar(value=defaults.get(fid,'')); self.field_vars[fid]=var
             if typ=='choice':
                 w=ttk.Combobox(form,textvariable=var,values=['false','true'],state='readonly')
+                if fid == 'legit_unlock_modded':
+                    w.bind('<<ComboboxSelected>>', lambda e:self._legit_unlock_changed())
             elif typ in ('legit_type','legit_manufacturer','legit_root'):
                 fake=typ if fid!='legit_root_serial' else 'legit_root'
                 vals=self._values_for_field({'id':fid,'type':fake}); w=ttk.Combobox(form,textvariable=var,values=vals,state='readonly')
@@ -303,7 +308,7 @@ class App(V9App):
         selected.pack(fill='x', padx=6, pady=5)
         self.field_vars['legit_selected_parts'] = self.field_vars.get('legit_selected_parts') or tk.StringVar(value='')
         txt=tk.Text(sel_inner,height=5,bg='#0e1320',fg='#d7def5',insertbackground='#f1f5ff',relief='flat',wrap='word',font=('Consolas',8))
-        txt.pack(fill='x',padx=8,pady=8); txt.bind('<KeyRelease>',lambda e,w=txt:self.field_vars['legit_selected_parts'].set(w.get('1.0','end-1c'))); self.widgets['legit_selected_parts']=txt
+        txt.pack(fill='x',padx=8,pady=8); txt.bind('<KeyRelease>',lambda e:self._legit_selected_text_changed()); self.widgets['legit_selected_parts']=txt
         self._legit_output_area(body)
         slot_wrap, slot_inner = self._card_wrap(body,'Slots / Available Parts','#6b7280')
         slot_wrap.pack(fill='both',expand=True,padx=6,pady=5)
@@ -311,20 +316,28 @@ class App(V9App):
         tk.Label(top,text='Each panel is one Matt SDK slot/dependency. Add/Replace follows legit rules. Add x Qty preserves duplicates for modded/unlock builds.',bg='#090d17',fg='#9fb3d9',font=('Segoe UI',8)).pack(side='left')
         self.legit_slots_area=tk.Frame(slot_inner,bg='#090d17'); self.legit_slots_area.pack(fill='both',expand=True,padx=8,pady=6)
         self._refresh_combo('legit_manufacturer'); self._refresh_combo('legit_root_serial'); self._render_legit_slots()
+        self.legit_last_root_value=self.field_vars.get('legit_root_serial', tk.StringVar()).get()
 
     def _clear_legit_selected_parts_for_root_change(self):
         self.legit_selected_by_slot.clear()
+        self.legit_rejected_part_lines=[]
         self.field_vars['legit_selected_parts'].set('')
         txt=self.widgets.get('legit_selected_parts')
         if isinstance(txt, tk.Text):
             txt.delete('1.0','end')
-        self.legit_human_output=''
-        self.legit_base85_output=''
-        self._text_set('legit_human_output','')
-        self._text_set('legit_base85_output','')
+        self._clear_legit_outputs()
+
+    def _legit_unlock_changed(self):
+        self._clear_legit_outputs()
+        state = str(self.field_vars.get('legit_unlock_modded', tk.StringVar(value='false')).get() or '').lower()
+        if state in ('1','true','yes','on'):
+            self._set_legit_status('Unlock enabled: builder will ignore legit part rules and allow duplicate parts.', log_global=False)
+        else:
+            self._set_legit_status('Unlock disabled: builder is using legit part rules.', log_global=False)
+        self._render_legit_slots()
 
     def _legit_filter_changed(self, fid):
-        before=self.field_vars.get('legit_root_serial', tk.StringVar()).get()
+        before=getattr(self, 'legit_last_root_value', '')
         if fid == 'legit_type':
             self._refresh_combo('legit_manufacturer')
             self._refresh_combo('legit_root_serial')
@@ -334,16 +347,21 @@ class App(V9App):
         if fid in ('legit_type','legit_manufacturer','legit_root_serial') and after != before:
             self._clear_legit_selected_parts_for_root_change()
             self._set_legit_status('Root changed; selected parts and generated output cleared.', log_global=False)
+        self.legit_last_root_value=after
         self._render_legit_slots()
 
     def _refresh_legit_root_and_slots(self, fid=None):
         if fid == 'legit_root_filter':
-            before=self.field_vars.get('legit_root_serial', tk.StringVar()).get()
+            before=getattr(self, 'legit_last_root_value', '')
             self._refresh_combo('legit_root_serial')
             after=self.field_vars.get('legit_root_serial', tk.StringVar()).get()
             if after != before:
                 self._clear_legit_selected_parts_for_root_change()
                 self._set_legit_status('Root filter changed root; selected parts and generated output cleared.', log_global=False)
+            self.legit_last_root_value=after
+        elif fid in ('legit_level','legit_signature'):
+            self._clear_legit_outputs()
+            self._set_legit_status('Level/signature changed; generated output cleared. Rebuild before giving.', log_global=False)
         self._render_legit_slots()
 
     def _legit_output_area(self, body):
@@ -378,11 +396,17 @@ class App(V9App):
     def _clear_legit_outputs(self):
         self.legit_human_output=''
         self.legit_base85_output=''
+        self.legit_last_build_signature=''
         self._text_set('legit_human_output','')
         self._text_set('legit_base85_output','')
 
     def _legit_payload_values(self):
         self._sync_legit_selection_from_text()
+        rejected=list(getattr(self, 'legit_rejected_part_lines', []) or [])
+        if rejected:
+            preview='; '.join(rejected[:4])
+            more='' if len(rejected) <= 4 else f'; +{len(rejected)-4} more'
+            raise ValueError(f'Malformed or unresolved selected part line(s): {preview}{more}')
         return {
             'root_serial': self.field_vars.get('legit_root_serial', tk.StringVar()).get(),
             'selected_parts': '\n'.join(self._legit_selected_lines_for_core()),
@@ -390,6 +414,20 @@ class App(V9App):
             'level': self.field_vars.get('legit_level', tk.StringVar(value='60')).get(),
             'signature': self.field_vars.get('legit_signature', tk.StringVar(value='1')).get(),
         }
+
+    def _legit_build_signature_from_values(self, values):
+        payload={
+            'root_serial': str((values or {}).get('root_serial') or '').strip(),
+            'selected_parts': str((values or {}).get('selected_parts') or '').strip(),
+            'unlock_modded': str((values or {}).get('unlock_modded') or '').strip().lower(),
+            'level': str((values or {}).get('level') or '').strip(),
+            'signature': str((values or {}).get('signature') or '').strip(),
+        }
+        return json.dumps(payload, sort_keys=True)
+
+    def _legit_current_build_signature(self):
+        values=self._legit_payload_values()
+        return self._legit_build_signature_from_values(values)
 
     def _set_legit_status(self, message, log_global=True):
         self.legit_status_message=str(message or '')
@@ -401,17 +439,15 @@ class App(V9App):
     def _run_local_legit_validate(self):
         try:
             values=self._legit_payload_values()
-            result=external_legit_builder.validate_build(values['root_serial'], values['selected_parts'], values['unlock_modded'], values['level'], values['signature'])
-            self.legit_human_output=''
-            self.legit_base85_output=''
-            self._text_set('legit_human_output','')
-            self._text_set('legit_base85_output','')
+            result=external_legit_builder.build_base85_external(values['root_serial'], values['selected_parts'], values['unlock_modded'], values['level'], values['signature'])
+            self.legit_human_output=str(result.get('human') or '')
+            self.legit_base85_output=str(result.get('base85') or '')
+            self._text_set('legit_human_output', self.legit_human_output)
+            self._text_set('legit_base85_output', self.legit_base85_output)
+            self.legit_last_build_signature=self._legit_build_signature_from_values(values) if self.legit_base85_output else ''
             self._set_legit_status(result.get('status') or 'Validation complete.')
         except Exception as exc:
-            self.legit_human_output=''
-            self.legit_base85_output=''
-            self._text_set('legit_human_output','')
-            self._text_set('legit_base85_output','')
+            self._clear_legit_outputs()
             self._set_legit_status(f'Legit validation failed: {exc}')
 
     def _run_local_legit_build_base85(self):
@@ -422,29 +458,31 @@ class App(V9App):
             self.legit_base85_output=str(result.get('base85') or '')
             self._text_set('legit_human_output', self.legit_human_output)
             self._text_set('legit_base85_output', self.legit_base85_output)
+            self.legit_last_build_signature=self._legit_build_signature_from_values(values) if self.legit_base85_output else ''
             self._set_legit_status(result.get('status') or 'Build complete.')
         except Exception as exc:
-            self.legit_human_output=''
-            self.legit_base85_output=''
-            self._text_set('legit_human_output','')
-            self._text_set('legit_base85_output','')
+            self._clear_legit_outputs()
             self._set_legit_status(f'Legit build failed: {exc}')
 
     def _legit_current_base85(self):
         text = self._text_get('legit_base85_output').strip()
-        return text or str(getattr(self, 'legit_base85_output', '') or '').strip()
+        serial = text or str(getattr(self, 'legit_base85_output', '') or '').strip()
+        if not serial:
+            return ''
+        try:
+            if self._legit_current_build_signature() != getattr(self, 'legit_last_build_signature', ''):
+                return ''
+        except Exception:
+            return ''
+        return serial
 
     def _ensure_legit_base85(self):
-        serial = self._legit_current_base85()
-        if serial:
-            return serial
-        self._run_local_legit_build_base85()
         return self._legit_current_base85()
 
     def _deliver_legit_build(self, mode):
         serial = self._ensure_legit_base85()
         if not serial:
-            self._set_legit_status('No Base85 serial to give. Build failed or produced no output.')
+            self._set_legit_status('No current Base85 serial to give. Build Base85 after the latest root/part/level change, then try again.')
             return
         try:
             level = int(str(self.field_vars.get('legit_level', tk.StringVar(value='60')).get()).replace(',','').strip())
@@ -500,12 +538,28 @@ class App(V9App):
                     max_count=meta.get(str(slot).lower(),{}).get('max')
                     if max_count is not None:
                         picks=picks[:max(0,int(max_count))]
+                    accepted=[]
+                    base=self._legit_selected_lines_for_core(exclude_slot=slot)
+                    for line in picks:
+                        ok, _reason = self._legit_is_part_line_allowed(base + accepted, line)
+                        if ok and line not in accepted:
+                            accepted.append(line)
+                    picks=accepted
                 except Exception:
                     pass
             self.legit_selected_by_slot[slot]=picks
         self._sync_legit_selected_text()
         self._clear_legit_outputs()
         self._set_legit_status(f'Updated selected parts: {len(self._legit_selected_lines_for_core())} selected.', log_global=False)
+        self._render_legit_slots()
+
+    def _clear_slot(self, slot):
+        self._sync_legit_selection_from_text()
+        self.legit_selected_by_slot.pop(slot, None)
+        self._sync_legit_selected_text()
+        self._clear_legit_outputs()
+        self._set_legit_status(f'Cleared {slot} selected part(s). Generated output cleared.', log_global=False)
+        self._render_legit_slots()
 
     def _legit_is_part_line_allowed(self, selected_for_test, line):
         root = self._legit_current_root()
@@ -590,6 +644,30 @@ class App(V9App):
         table,key=text.split(':',1)
         return table.strip(), key.strip()
 
+    def _normalize_legit_part_line(self, line):
+        text=str(line or '').strip()
+        if not text or text.lower().startswith('root:') or text.startswith('#'):
+            return ''
+        table=''
+        key=text
+        if ':' in text and not text.startswith('{'):
+            table,key=text.split(':',1)
+            table=table.strip()
+            key=key.strip()
+        root=self._legit_current_root()
+        root_key=str(root.get('key') or '').strip() if root else ''
+        if root_key:
+            try:
+                part=external_legit_builder.describe_part(root_key, key, table=table or None)
+                if part:
+                    p_table=str(part.get('table') or table or '').strip()
+                    p_key=str(part.get('key') or key or '').strip()
+                    if p_table and p_key:
+                        return f'{p_table}:{p_key}'
+            except Exception:
+                pass
+        return f'{table}:{key}' if table and key else ''
+
     def _legit_selected_lines_for_core(self, exclude_slot=None):
         out=[]
         skip=str(exclude_slot or '').strip().lower()
@@ -609,15 +687,24 @@ class App(V9App):
             raw = txt.get('1.0','end-1c')
             self.field_vars['legit_selected_parts'].set(raw)
         rebuilt={}
+        rejected=[]
         for line in raw.splitlines():
-            table,key=self._split_legit_part_line(line)
+            stripped=str(line or '').strip()
+            if not stripped or stripped.lower().startswith('root:') or stripped.startswith('#'):
+                continue
+            normalized=self._normalize_legit_part_line(stripped)
+            table,key=self._split_legit_part_line(normalized)
             if table and key:
                 rebuilt.setdefault(table,[]).append(f'{table}:{key}')
+            else:
+                rejected.append(stripped)
         self.legit_selected_by_slot = rebuilt
+        self.legit_rejected_part_lines = rejected
 
     def _sync_legit_selected_text(self):
         # Keep the bridge payload clean: only selected part lines go into legit_selected_parts.
         # Root is already sent separately as legit_root_serial, so a root: comment line can break build/give actions.
+        self.legit_rejected_part_lines=[]
         parts=[]
         for slot in sorted(self.legit_selected_by_slot.keys()):
             for val in self.legit_selected_by_slot[slot]:
@@ -628,6 +715,18 @@ class App(V9App):
         txt=self.widgets.get('legit_selected_parts')
         if isinstance(txt, tk.Text):
             txt.delete('1.0','end'); txt.insert('1.0',value)
+
+    def _legit_selected_text_changed(self):
+        txt=self.widgets.get('legit_selected_parts')
+        if isinstance(txt, tk.Text):
+            self.field_vars['legit_selected_parts'].set(txt.get('1.0','end-1c'))
+        self._sync_legit_selection_from_text()
+        self._clear_legit_outputs()
+        if getattr(self, 'legit_rejected_part_lines', None):
+            self._set_legit_status(f'Selected parts edited; {len(self.legit_rejected_part_lines)} unresolved line(s). Generated output cleared.', log_global=False)
+        else:
+            self._set_legit_status(f'Selected parts edited: {len(self._legit_selected_lines_for_core())} selected. Generated output cleared.', log_global=False)
+        self._render_legit_slots()
 
     def _legit_passive_base_key(self, key):
         import re
@@ -2598,6 +2697,14 @@ class App(V9App):
             return self._deliver_legit_build('nonhost')
         if aid == 'legit_apply_max_passives':
             return self._legit_apply_max_passives_local()
+        if aid == 'legit_clear_parts':
+            self.legit_selected_by_slot.clear()
+            self.legit_rejected_part_lines=[]
+            self._sync_legit_selected_text()
+            self._clear_legit_outputs()
+            self._set_legit_status('Cleared selected Legit Builder parts. Generated output cleared.')
+            self._render_legit_slots()
+            return
         # Route all movement apply buttons with current field values even if the original card action did not declare them.
         if aid=='movement_apply_all':
             action=dict(action); action['uses_fields']=self._movement_apply_fields()
