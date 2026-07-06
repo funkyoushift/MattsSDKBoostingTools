@@ -1817,6 +1817,12 @@ class App(V9App):
     def _clear_boosting_serials_local(self):
         var=self.field_vars.get('serial_text')
         if var: var.set('')
+        widget=self.widgets.get('serial_text')
+        if isinstance(widget, tk.Text):
+            try:
+                widget.delete('1.0','end')
+            except Exception:
+                pass
         self.log('Cleared Boosting serial input.')
 
     def _bookmark_store_path(self):
