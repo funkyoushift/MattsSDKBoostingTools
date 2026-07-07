@@ -36,6 +36,20 @@ _last_error: str = ""
 _tick_registered = False
 
 
+def _is_optional_blimgui_error(value: object) -> bool:
+    text = str(value or "")
+    return "No module named 'blimgui'" in text or "No module named blimgui" in text
+
+
+def _format_action_exception(exc: Exception) -> str:
+    if _is_optional_blimgui_error(repr(exc)):
+        return (
+            "This action still requires the optional BLImGui panel. "
+            "The headless external bridge is online; use the external-app local workflow or install BLImGui."
+        )
+    return repr(exc)
+
+
 def _now() -> float:
     try:
         return time.monotonic()
@@ -803,6 +817,9 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
 
 def _status() -> dict[str, Any]:
     backend_status = backend_actions.get_status()
+    last_error = _last_error or backend_status.get("last_refresh_error", "")
+    if _is_optional_blimgui_error(last_error):
+        last_error = ""
     return {
         "ok": True,
         "name": "MattsSDKBoostingTools external bridge",
@@ -815,7 +832,7 @@ def _status() -> dict[str, Any]:
         "selected_player_index": backend_status.get("selected_player_index"),
         "serial_delivery": backend_status.get("serial_delivery", {}),
         "last_action": _last_action,
-        "last_error": _last_error or backend_status.get("last_refresh_error", ""),
+        "last_error": last_error,
     }
 
 
@@ -832,8 +849,9 @@ def _process_pending_actions(*_args: Any, **_kwargs: Any) -> None:
             result = _handle_action(str(action), dict(payload))
         except Exception as exc:
             global _last_error
-            _last_error = repr(exc)
-            result = {"ok": False, "message": repr(exc)}
+            message = _format_action_exception(exc)
+            _last_error = "" if _is_optional_blimgui_error(repr(exc)) else repr(exc)
+            result = {"ok": False, "message": message}
         with _lock:
             _results[str(rid)] = result
     return None

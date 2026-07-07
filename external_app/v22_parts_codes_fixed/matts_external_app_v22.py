@@ -160,6 +160,12 @@ class App(V9App):
             msg = err
         return msg
 
+    def _bridge_last_error_message(self, value):
+        text = str(value or '').strip()
+        if "No module named 'blimgui'" in text or 'No module named blimgui' in text:
+            return ''
+        return text
+
     def _handle_serial_delivery_progress(self, progress):
         msg = self._serial_delivery_progress_message(progress)
         if not msg:
@@ -183,8 +189,9 @@ class App(V9App):
                 delivery_msg = self._serial_delivery_progress_message(delivery)
                 if delivery_msg:
                     text += ' | serial: ' + delivery_msg
-                if s.get('last_error'):
-                    text += ' | last error: ' + str(s.get('last_error'))
+                last_error = self._bridge_last_error_message(s.get('last_error'))
+                if last_error:
+                    text += ' | last error: ' + last_error
                 self.after(0, lambda t=text: self.status_var.set(t))
                 self.after(0, lambda st=s: self._update_player_options(st))
                 self.after(0, lambda d=delivery: self._handle_serial_delivery_progress(d))
