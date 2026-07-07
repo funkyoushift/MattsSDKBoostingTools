@@ -9,7 +9,6 @@ from urllib import request
 import webbrowser
 from external_serial_tools import convert_serial_tool, serial_parts_breakdown_for_value, human_to_serial
 import external_legit_builder
-import external_modded_builder
 import external_validator
 from matts_external_core_v20 import ACCENT_COLORS, http_json, RESOURCE_DIR
 from matts_external_legit_travel_v20 import App as V9App
@@ -118,7 +117,6 @@ class App(V9App):
         self.legit_rejected_part_lines = []
         self.legit_last_root_value = ''
         self.legit_status_message = 'Select a root, add parts, then Validate or Build Base85.'
-        self.legit_experimental_summary = 'Experimental modded pattern check has not run.'
         self.bl4_active_id = ''
         self.bl4_selected_ids = set()
         self.bl4_status_message = ''
@@ -790,7 +788,6 @@ class App(V9App):
         tk.Label(inner, textvariable=self.field_vars['legit_status'], bg='#090d17', fg='#21e05f', font=('Segoe UI',8), anchor='w', justify='left', wraplength=1200).pack(fill='x', padx=8, pady=(5,4))
         self._legit_output_box(inner, 'Human Serial Output', 'legit_human_output', 'Copy Human', 'human serial', height=4)
         self._legit_output_box(inner, 'Base85 @U Output', 'legit_base85_output', 'Copy Base85', 'Base85 serial', height=3)
-        self._legit_experimental_pattern_panel(inner)
         self._external_player_target_row(inner, 'legit_target_player', 'Legit Builder Target')
 
     def _legit_output_box(self, parent, label, widget_id, button_text, copy_label, height=4):
@@ -800,36 +797,6 @@ class App(V9App):
         txt=tk.Text(parent,height=height,bg='#181417',fg='#f1f5ff',insertbackground='#f1f5ff',relief='flat',wrap='word',font=('Consolas',8))
         txt.pack(fill='x',padx=8,pady=(0,6))
         self.widgets[widget_id]=txt
-
-    def _legit_experimental_pattern_panel(self, parent):
-        wrap=tk.Frame(parent,bg='#090d17',highlightthickness=1,highlightbackground='#8a2be2')
-        wrap.pack(fill='x',padx=8,pady=(4,8))
-        header=tk.Frame(wrap,bg='#090d17'); header.pack(fill='x',padx=8,pady=(5,2))
-        tk.Label(header,text='Experimental Modded Pattern Check',bg='#090d17',fg='#c45cff',font=('Segoe UI',8,'bold'),anchor='w').pack(side='left')
-        tk.Button(header,text='Check Experimental Modded Pattern',command=self._run_legit_experimental_pattern_check,bg='#172033',fg='#ffd447',activeforeground='#ffd447',activebackground='#22304c',relief='flat',font=('Segoe UI',8,'bold')).pack(side='right')
-        warning=(
-            'This is read-only guidance based on known-working modded item patterns. '
-            'It does not mean the item is legit and does not guarantee every variation works.'
-        )
-        tk.Label(wrap,text=warning,bg='#090d17',fg='#9fb3d9',font=('Segoe UI',8),anchor='w',justify='left',wraplength=1250).pack(fill='x',padx=8,pady=(0,4))
-        self.field_vars['legit_experimental_status'] = self.field_vars.get('legit_experimental_status') or tk.StringVar(value='Experimental check has not run.')
-        tk.Label(wrap,textvariable=self.field_vars['legit_experimental_status'],bg='#090d17',fg='#21e05f',font=('Segoe UI',8),anchor='w',justify='left',wraplength=1250).pack(fill='x',padx=8,pady=(0,4))
-        txt=tk.Text(wrap,height=8,bg='#181417',fg='#f1f5ff',insertbackground='#f1f5ff',relief='flat',wrap='word',font=('Consolas',8))
-        txt.pack(fill='x',padx=8,pady=(0,8))
-        txt.insert('1.0', self.legit_experimental_summary)
-        txt.configure(state='disabled')
-        self.widgets['legit_experimental_pattern_output']=txt
-
-    def _set_legit_experimental_output(self, text, status=None):
-        self.legit_experimental_summary=str(text or '')
-        if status is not None and 'legit_experimental_status' in self.field_vars:
-            self.field_vars['legit_experimental_status'].set(str(status or ''))
-        widget=self.widgets.get('legit_experimental_pattern_output')
-        if isinstance(widget, tk.Text):
-            widget.configure(state='normal')
-            widget.delete('1.0','end')
-            widget.insert('1.0', self.legit_experimental_summary)
-            widget.configure(state='disabled')
 
     def _text_get(self, widget_id):
         widget=self.widgets.get(widget_id)
@@ -849,7 +816,6 @@ class App(V9App):
         self.legit_last_build_signature=''
         self._text_set('legit_human_output','')
         self._text_set('legit_base85_output','')
-        self._set_legit_experimental_output('Experimental modded pattern check cleared because the current build changed.', 'Experimental check cleared.')
 
     def _legit_payload_values(self):
         self._sync_legit_selection_from_text()
@@ -886,67 +852,6 @@ class App(V9App):
             self.field_vars['legit_status'].set(self.legit_status_message)
         if log_global:
             self.log(self.legit_status_message)
-
-    def _run_legit_experimental_pattern_check(self):
-        try:
-            values=self._legit_payload_values()
-        except Exception as exc:
-            message=f'Experimental result: Insufficient Data.\nResolve selected-part input first: {exc}'
-            self._set_legit_experimental_output(message, 'Experimental check needs valid selected-part input.')
-            self.log('Experimental modded pattern check needs valid selected-part input.')
-            return
-
-        root=self._legit_current_root()
-        root_key=str(root.get('key') or '').strip() if root else ''
-        selected_parts=str(values.get('selected_parts') or '').strip()
-        item_type=str((root or {}).get('item_type') or (root or {}).get('_item_type') or self.field_vars.get('legit_type', tk.StringVar()).get() or '').strip()
-        manufacturer=str((root or {}).get('manufacturer') or (root or {}).get('_manufacturer') or self.field_vars.get('legit_manufacturer', tk.StringVar()).get() or '').strip()
-        rarity=''
-
-        if not root_key or not selected_parts:
-            result=external_modded_builder.classify_modded_candidate(
-                root_key=root_key,
-                selected_parts=selected_parts,
-                legit_validation_result=None,
-                item_type=item_type,
-                manufacturer=manufacturer,
-                rarity=rarity,
-                context={'warnings':['No complete Legit Builder candidate is selected yet.']},
-            )
-            summary=external_modded_builder.summarize_modded_result(result)
-            summary += '\n\nChoose a root and selected parts, then run the experimental pattern check again.'
-            self._set_legit_experimental_output(summary, 'Experimental result: insufficient_data')
-            self.log('Experimental modded pattern check needs a root and selected parts.')
-            return
-
-        try:
-            validation=external_legit_builder.validate_build(
-                values['root_serial'],
-                selected_parts,
-                False,
-                values['level'],
-                values['signature'],
-            )
-        except Exception as exc:
-            validation={'ok':False,'valid':False,'errors':[str(exc)],'status':f'Validation error: {exc}'}
-
-        result=external_modded_builder.classify_modded_candidate(
-            root_key=root_key,
-            selected_parts=selected_parts,
-            legit_validation_result=validation,
-            item_type=item_type,
-            manufacturer=manufacturer,
-            rarity=rarity,
-            context={
-                'root_serial': values.get('root_serial'),
-                'selected_count': len([line for line in selected_parts.splitlines() if line.strip()]),
-            },
-        )
-        summary=external_modded_builder.summarize_modded_result(result)
-        label=str(result.get('experimental_result') or 'insufficient_data')
-        status=f'Experimental result: {label}'
-        self._set_legit_experimental_output(summary, status)
-        self.log(f'Experimental modded pattern check: {label}.')
 
     def _run_local_legit_validate(self):
         try:
@@ -1088,6 +993,12 @@ class App(V9App):
 
     def _render_legit_slots(self):
         if not hasattr(self,'legit_slots_area'): return
+        scroll_pos = None
+        canvas = getattr(self, 'canvas', None)
+        try:
+            scroll_pos = canvas.yview()[0] if isinstance(canvas, tk.Canvas) else None
+        except Exception:
+            scroll_pos = None
         for child in self.legit_slots_area.winfo_children(): child.destroy()
         self._sync_legit_selection_from_text()
         self.legit_slot_parts.clear(); root=self._legit_current_root()
@@ -1142,6 +1053,8 @@ class App(V9App):
             tk.Button(controls,text='Add x Qty',command=lambda slot=slot,lb=lb:self._slot_selection_changed(slot,lb,force=True,append=True,qty=self.field_vars.get('legit_duplicate_qty',tk.StringVar(value='1')).get()),bg='#172033',fg='#ffd447',relief='flat',font=('Segoe UI',8,'bold')).grid(row=0,column=1,sticky='ew',padx=2,pady=2)
             tk.Button(controls,text='Clear Slot',command=lambda slot=slot:self._clear_slot(slot),bg='#172033',fg='#ff5b5b',relief='flat',font=('Segoe UI',8,'bold')).grid(row=0,column=2,sticky='ew',padx=2,pady=2)
             for cc in range(3): controls.grid_columnconfigure(cc,weight=1)
+        if scroll_pos is not None and isinstance(canvas, tk.Canvas):
+            self.after_idle(lambda pos=scroll_pos, canv=canvas: canv.yview_moveto(pos))
 
 
 
