@@ -119,4 +119,4 @@ This project is not affiliated with Gearbox, 2K, or the Borderlands franchise ow
 
 ## License
 
-A public license has not been selected yet. Choose one before publishing the repository if you want others to legally fork, reuse, or redistribute the code.
+Released under the [MIT License](LICENSE).
