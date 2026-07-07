@@ -1381,6 +1381,16 @@ class App(V9App):
             return ''
         return self.CODE_CLASS_ALIASES.get(key, '')
 
+    def _normalize_code_classification(self, value):
+        key = self._code_norm_key(value)
+        if not key or self._looks_like_code_payload(value):
+            return ''
+        if key in ('modded', 'working modded', 'custom modded', 'non legit', 'nonlegit'):
+            return 'Modded'
+        if key in ('legit', 'official legit'):
+            return 'Legit'
+        return self._ascii_clean(value)[:64]
+
     def _normalize_code_creator(self, value):
         text = self._ascii_clean(value)
         if not text or self._looks_like_code_payload(text):
@@ -1438,6 +1448,7 @@ class App(V9App):
         manufacturer = self._normalize_code_manufacturer(row.get('manufacturer')) or self._normalize_code_manufacturer(row.get('maker')) or classified.get('manufacturer', '')
         rarity = self._normalize_code_rarity(row.get('rarity')) or classified.get('rarity', '')
         character_class = self._normalize_code_class(row.get('character_class')) or classified.get('character_class', '')
+        classification = self._normalize_code_classification(row.get('classification') or row.get('item_classification') or row.get('classify'))
         creator = self._normalize_code_creator(row.get('creator') or row.get('author') or row.get('creatorName') or row.get('owner'))
         tags = row.get('tags', '')
         if isinstance(tags, (list, tuple, set)):
@@ -1469,6 +1480,7 @@ class App(V9App):
             'manufacturer': manufacturer,
             'creator': creator,
             'character_class': character_class,
+            'classification': classification,
             'source': source or default_source or listing,
             'url': str(row.get('lootlemon_url') or row.get('url') or '').strip(),
             'lootlemon_url': str(row.get('lootlemon_url') or row.get('url') or '').strip(),
@@ -2552,10 +2564,10 @@ class App(V9App):
         rows=[]
         for e in self._get_code_entries():
             decoded = e.get('decoded_identity') if isinstance(e.get('decoded_identity'), dict) else {}
-            hay=' '.join(str(e.get(k) or '') for k in ('name','listing','source','type','rarity','manufacturer','creator','character_class','tags','extra_tags','notes','serial')).lower()
+            hay=' '.join(str(e.get(k) or '') for k in ('name','listing','source','type','rarity','manufacturer','creator','character_class','classification','tags','extra_tags','notes','serial')).lower()
             if decoded:
                 hay += ' ' + ' '.join(str(v or '') for v in decoded.values()).lower()
-            if q and q not in hay: continue
+            if q and not all(term in hay for term in q.split()): continue
             listing=self._code_value(e, 'listing')
             if self.field_vars.get('code_listing'):
                 lf=self.field_vars['code_listing'].get()
@@ -2649,6 +2661,7 @@ class App(V9App):
             f"Manufacturer: {e.get('manufacturer','')}",
             f"Rarity: {e.get('rarity','')}",
             f"Creator: {e.get('creator','')}",
+            f"Classification: {e.get('classification','')}",
             self._mattmab_validator_label_local(e),
             str(e.get('mattmab_validator_detail') or ''),
             f"Tags: {e.get('tags','')}",
@@ -2754,6 +2767,7 @@ class App(V9App):
             'manufacturer': e.get('manufacturer') or '',
             'rarity': e.get('rarity') or '',
             'creator': e.get('creator') or '',
+            'classification': e.get('classification') or '',
             'url': e.get('url') or '',
             'tags': e.get('tags') or '',
             'notes': e.get('notes') or '',
@@ -2970,6 +2984,7 @@ class App(V9App):
         row['manufacturer']=str(row.get('manufacturer') or '')
         row['rarity']=str(row.get('rarity') or '')
         row['creator']=str(row.get('creator') or '')
+        row['classification']=str(row.get('classification') or '')
         row['url']=str(row.get('url') or '')
         row['tags']=str(row.get('tags') or '')
         row['notes']=str(row.get('notes') or '')

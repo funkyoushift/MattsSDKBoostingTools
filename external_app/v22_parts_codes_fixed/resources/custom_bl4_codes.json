@@ -18,6 +18,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -28,7 +29,8 @@
         "manufacturer": "Order",
         "type": "Pistol"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:broken-wings-1ace5196e283",
@@ -45,6 +47,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -55,7 +58,8 @@
         "manufacturer": "Order",
         "type": "Pistol"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:rhythm-b6df44d1a2ac",
@@ -72,6 +76,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -82,7 +87,8 @@
         "manufacturer": "Maliwan",
         "type": "SMG"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:convergence-f722f1787c30",
@@ -99,6 +105,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -109,7 +116,8 @@
         "manufacturer": "Ripper",
         "type": "Shotgun"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:crazed-earl-70d9abe8c0a7",
@@ -126,6 +134,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -136,7 +145,8 @@
         "manufacturer": "Ripper",
         "type": "Shotgun"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:crow-sourced-f58b2aff2a6f",
@@ -153,6 +163,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -163,7 +174,8 @@
         "manufacturer": "Order",
         "type": "Assault Rifle"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:g-m-r-a3c9375bb76f",
@@ -180,6 +192,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -190,7 +203,8 @@
         "manufacturer": "Order",
         "type": "Assault Rifle"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:lockjaw-32ad1c28c6da",
@@ -207,6 +221,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -217,7 +232,8 @@
         "manufacturer": "Torgue",
         "type": "Assault Rifle"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:midnight-defiance-4a3bd60b50a7",
@@ -234,6 +250,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -244,7 +261,8 @@
         "manufacturer": "Vladof",
         "type": "Sniper"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:oscar-mike-ea132e0f0ee8",
@@ -261,6 +279,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -271,7 +290,8 @@
         "manufacturer": "Daedalus",
         "type": "Assault Rifle"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:item-391655ef7917",
@@ -288,6 +308,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -298,7 +319,8 @@
         "manufacturer": "Daedalus",
         "type": "Pistol"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:maintained-looming-flash-cylcone-48c123d0ddb7",
@@ -315,6 +337,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -325,7 +348,8 @@
         "manufacturer": "Jakobs",
         "type": "Assault Rifle"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:impactful-extolled-aegon-s-dream-acacffe0e32b",
@@ -342,6 +366,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -352,7 +377,8 @@
         "manufacturer": "Order",
         "type": "Pistol"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:dedauched-thrusting-queen-s-rest-a361ea57e314",
@@ -369,6 +395,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -379,7 +406,8 @@
         "manufacturer": "Torgue",
         "type": "Pistol"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:sent-poor-man-s-inscriber-eff6d8aab488",
@@ -396,6 +424,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -406,7 +435,8 @@
         "manufacturer": "Tediore",
         "type": "Pistol"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:zealous-extolled-rowan-s-charge-8c91401405c4",
@@ -423,6 +453,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -433,7 +464,8 @@
         "manufacturer": "Order",
         "type": "Pistol"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:maintained-whispering-seventh-sense-f8a810db806f",
@@ -450,6 +482,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -460,7 +493,8 @@
         "manufacturer": "Jakobs",
         "type": "Pistol"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:engorged-thrusting-herald-9c965e91df0a",
@@ -477,6 +511,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -487,7 +522,8 @@
         "manufacturer": "Torgue",
         "type": "Pistol"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:overproduced-lionized-brickhouse-7e90e1babb81",
@@ -504,6 +540,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -514,7 +551,8 @@
         "manufacturer": "Vladof",
         "type": "SMG"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:hallowed-jetsetter-075ca3e48703",
@@ -531,6 +569,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -541,7 +580,8 @@
         "manufacturer": "Ripper",
         "type": "Heavy Weapon"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:overproduced-socialized-light-gun-0677ca803b0a",
@@ -558,6 +598,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -568,7 +609,8 @@
         "manufacturer": "Vladof",
         "type": "Sniper"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:smashing-eliminating-raiden-2ad25e4822ed",
@@ -585,6 +627,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -595,7 +638,8 @@
         "manufacturer": "Daedalus",
         "type": "SMG"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:smashing-eliminating-raiden-0a1ee4d5d506",
@@ -612,6 +656,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -622,7 +667,8 @@
         "manufacturer": "Daedalus",
         "type": "SMG"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:smashing-eliminating-raiden-16521a3d1cfc",
@@ -639,6 +685,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -649,7 +696,8 @@
         "manufacturer": "Daedalus",
         "type": "SMG"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:dedauched-rallying-rowans-charge-61021d3fd4ae",
@@ -666,6 +714,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -676,7 +725,8 @@
         "manufacturer": "Vladof",
         "type": "SMG"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:forceful-fatel-hard-dard-e23dc06a3073",
@@ -693,6 +743,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -703,7 +754,8 @@
         "manufacturer": "Daedalus",
         "type": "Assault Rifle"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:sudden-whispering-shoals-a21fc99f7e62",
@@ -720,6 +772,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -730,7 +783,8 @@
         "manufacturer": "Jakobs",
         "type": "Pistol"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:smashing-fatal-darkbeast-39ff2435a949",
@@ -747,6 +801,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -757,7 +812,8 @@
         "manufacturer": "Daedalus",
         "type": "SMG"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:prosperous-extolled-ishmael-ec3302b64b4f",
@@ -774,6 +830,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -784,7 +841,8 @@
         "manufacturer": "Order",
         "type": "Sniper"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:prosperous-extolled-ishmael-e8963d951706",
@@ -801,6 +859,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -811,7 +870,8 @@
         "manufacturer": "Order",
         "type": "Sniper"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:prosperous-extolled-darkbeast-a69ec3609d41",
@@ -828,6 +888,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -838,7 +899,8 @@
         "manufacturer": "Order",
         "type": "Sniper"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:prosperous-extolled-bubbles-967c8e716502",
@@ -855,6 +917,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -865,7 +928,8 @@
         "manufacturer": "Order",
         "type": "Sniper"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:prosperous-extolled-ashers-rise-8eac8a995002",
@@ -882,6 +946,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -892,7 +957,8 @@
         "manufacturer": "Order",
         "type": "Sniper"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:prosperpus-extolled-aegons-dream-f0cb7cbc1bb5",
@@ -909,6 +975,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -919,7 +986,8 @@
         "manufacturer": "Order",
         "type": "Sniper"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:prosperous-extolled-bod-aa5caf3811b7",
@@ -936,6 +1004,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -946,7 +1015,8 @@
         "manufacturer": "Order",
         "type": "Sniper"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:prosperous-extolled-rowans-charge-ec6b06b6f846",
@@ -963,6 +1033,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -973,7 +1044,8 @@
         "manufacturer": "Order",
         "type": "Sniper"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:fragging-fatal-rowan-s-charge-37c59fa3bae9",
@@ -990,6 +1062,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -1000,7 +1073,8 @@
         "manufacturer": "Daedalus",
         "type": "Shotgun"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:maintained-looming-flash-cylcone-6a514e3f2b66",
@@ -1017,6 +1091,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -1027,7 +1102,8 @@
         "manufacturer": "Jakobs",
         "type": "Assault Rifle"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:put-ambushing-screwtonian-0f890f706a4c",
@@ -1044,6 +1120,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -1054,7 +1131,8 @@
         "manufacturer": "Jakobs",
         "type": "Pistol"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:impactful-extolled-aegon-s-dream-f66c081f2830",
@@ -1071,6 +1149,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -1081,7 +1160,8 @@
         "manufacturer": "Order",
         "type": "Pistol"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:catchy-extolled-countermeasure-aa36a3e1f59a",
@@ -1098,6 +1178,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -1108,7 +1189,8 @@
         "manufacturer": "Order",
         "type": "Assault Rifle"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:hellwalker-c94205ad386f",
@@ -1125,6 +1207,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -1135,7 +1218,8 @@
         "manufacturer": "Jakobs",
         "type": "Shotgun"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:deteropratomg-riotous-waterfall-5e5f5888ea33",
@@ -1152,6 +1236,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -1162,7 +1247,8 @@
         "manufacturer": "Vladof",
         "type": "Assault Rifle"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:booming-rapid-rapid-countermeasure-59b1accbb779",
@@ -1179,6 +1265,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -1189,7 +1276,8 @@
         "manufacturer": "Tediore",
         "type": "Gadget"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:smashing-fatal-rowan-s-charge-2b9dea1db30e",
@@ -1206,6 +1294,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -1216,7 +1305,8 @@
         "manufacturer": "Daedalus",
         "type": "Shotgun"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:consecrated-draupner-815bddbe5768",
@@ -1233,6 +1323,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -1243,7 +1334,8 @@
         "manufacturer": "Ripper",
         "type": "Heavy Weapon"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:consecrated-draupner-991170c1de8a",
@@ -1260,6 +1352,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -1270,7 +1363,8 @@
         "manufacturer": "Ripper",
         "type": "Heavy Weapon"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:consecrated-draupner-553cb6b1c60c",
@@ -1287,6 +1381,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -1297,7 +1392,8 @@
         "manufacturer": "Ripper",
         "type": "Heavy Weapon"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:consecrated-draupner-2a2c8934fa9c",
@@ -1314,6 +1410,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -1324,7 +1421,8 @@
         "manufacturer": "Ripper",
         "type": "Heavy Weapon"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:consecrated-draupner-7f9153494dc5",
@@ -1341,6 +1439,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -1351,7 +1450,8 @@
         "manufacturer": "Ripper",
         "type": "Heavy Weapon"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:consecrated-draupner-98cb2fea6f89",
@@ -1368,6 +1468,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -1378,7 +1479,8 @@
         "manufacturer": "Ripper",
         "type": "Heavy Weapon"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:hurled-prosumer-shammy-kablammy-057e9b998ed5",
@@ -1395,6 +1497,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -1405,7 +1508,8 @@
         "manufacturer": "Tediore",
         "type": "Pistol"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:maintained-looming-king-s-gamabit-4be6075ce805",
@@ -1422,6 +1526,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -1432,7 +1537,8 @@
         "manufacturer": "Jakobs",
         "type": "Pistol"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:juiliet-sparkels-7f3a950672ad",
@@ -1449,6 +1555,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -1459,7 +1566,8 @@
         "manufacturer": "Maliwan",
         "type": "SMG"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:mass-produced-loinized-hoarder-ed34897e02f4",
@@ -1476,6 +1584,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -1486,7 +1595,8 @@
         "manufacturer": "Vladof",
         "type": "SMG"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:scattering-vestigial-flash-cyclone-c0137d854176",
@@ -1503,6 +1613,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -1513,7 +1624,8 @@
         "manufacturer": "Maliwan",
         "type": "SMG"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:forceful-eliminating-screwstonian-3196aa9c0eea",
@@ -1530,6 +1642,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -1540,7 +1653,8 @@
         "manufacturer": "Daedalus",
         "type": "SMG"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:forceful-eliminating-screwstonian-e8ee09964387",
@@ -1557,6 +1671,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -1567,7 +1682,8 @@
         "manufacturer": "Daedalus",
         "type": "SMG"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:matador-s-match-126f0bf10ba0",
@@ -1584,6 +1700,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -1594,7 +1711,8 @@
         "manufacturer": "Maliwan",
         "type": "SMG"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:frangible-fatal-darkbeast-b8a88f83ce36",
@@ -1611,6 +1729,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -1621,7 +1740,8 @@
         "manufacturer": "Daedalus",
         "type": "SMG"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:frangible-fatal-darkbeast-35d7b7a0dfb8",
@@ -1638,6 +1758,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -1648,7 +1769,8 @@
         "manufacturer": "Daedalus",
         "type": "SMG"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:eviscerating-waterfall-fa0a2ab19221",
@@ -1665,6 +1787,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -1675,7 +1798,8 @@
         "manufacturer": "Ripper",
         "type": "SMG"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:smashing-fatal-raiden-8af166269a19",
@@ -1692,6 +1816,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -1702,7 +1827,8 @@
         "manufacturer": "Daedalus",
         "type": "SMG"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:smashing-fatal-raiden-bd38c9599078",
@@ -1719,6 +1845,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -1729,7 +1856,8 @@
         "manufacturer": "Daedalus",
         "type": "SMG"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:first-impression-bc7910256ea4",
@@ -1746,6 +1874,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -1756,7 +1885,8 @@
         "manufacturer": "Daedalus",
         "type": "Assault Rifle"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:star-helix-34fb2fdbccac",
@@ -1773,6 +1903,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -1783,7 +1914,8 @@
         "manufacturer": "Daedalus",
         "type": "Assault Rifle"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:domino-lionized-bubbles-8653b0265a8c",
@@ -1800,6 +1932,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -1810,7 +1943,8 @@
         "manufacturer": "Vladof",
         "type": "Assault Rifle"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:deteriorating-riotous-waterfall-7c09c4719392",
@@ -1827,6 +1961,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -1837,7 +1972,8 @@
         "manufacturer": "Vladof",
         "type": "Assault Rifle"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:domino-socialized-rowan-s-charge-0344606a1201",
@@ -1854,6 +1990,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -1864,7 +2001,8 @@
         "manufacturer": "Vladof",
         "type": "Assault Rifle"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:deteriorating-riatous-waterfall-ab3f8e6f4232",
@@ -1881,6 +2019,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -1891,7 +2030,8 @@
         "manufacturer": "Vladof",
         "type": "Assault Rifle"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:maintained-roaring-foshward-f4c819efd22b",
@@ -1908,6 +2048,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -1918,7 +2059,8 @@
         "manufacturer": "Jakobs",
         "type": "Assault Rifle"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:fishward-060b48bf9623",
@@ -1935,6 +2077,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -1945,7 +2088,8 @@
         "manufacturer": "Jakobs",
         "type": "Assault Rifle"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:sent-poor-man-s-divided-focus-f49bed7e00ae",
@@ -1962,6 +2106,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -1972,7 +2117,8 @@
         "manufacturer": "Tediore",
         "type": "Assault Rifle"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:accelerated-nadir-conflux-b415251ebb61",
@@ -1989,6 +2135,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -1999,7 +2146,8 @@
         "manufacturer": "Maliwan",
         "type": "Sniper"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:riddled-eviscerating-rainmaker-sticky-d0c2334150c2",
@@ -2016,6 +2164,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -2026,7 +2175,8 @@
         "manufacturer": "Ripper",
         "type": "Sniper"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:riddled-eviscerating-rainmaker-impact-e953a7027457",
@@ -2043,6 +2193,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -2053,7 +2204,8 @@
         "manufacturer": "Ripper",
         "type": "Sniper"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:riddled-eviscerating-rainmaker-sticky-9b8265b723ed",
@@ -2070,6 +2222,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -2080,7 +2233,8 @@
         "manufacturer": "Ripper",
         "type": "Sniper"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:riddled-eviscerating-rainmaker-impact-cac55a8a4a4b",
@@ -2097,6 +2251,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -2107,7 +2262,8 @@
         "manufacturer": "Ripper",
         "type": "Sniper"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:boomslang-2dd8ac2c8023",
@@ -2124,6 +2280,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -2134,7 +2291,8 @@
         "manufacturer": "Jakobs",
         "type": "Sniper"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:boomslang-78774e0017e5",
@@ -2151,6 +2309,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -2161,7 +2320,8 @@
         "manufacturer": "Jakobs",
         "type": "Sniper"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:synchrotron-nadir-marshall-s-claw-794839018f65",
@@ -2178,6 +2338,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -2188,7 +2349,8 @@
         "manufacturer": "Maliwan",
         "type": "Sniper"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:synchrotron-nadir-bod-ec0101176ff0",
@@ -2205,6 +2367,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -2215,7 +2378,8 @@
         "manufacturer": "Maliwan",
         "type": "Sniper"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:sudden-looming-tk-wave-6020907b96c0",
@@ -2232,6 +2396,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -2242,7 +2407,8 @@
         "manufacturer": "Jakobs",
         "type": "Shotgun"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:ceramic-fatel-bod-565fce225223",
@@ -2259,6 +2425,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -2269,7 +2436,8 @@
         "manufacturer": "Daedalus",
         "type": "Shotgun"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:ceramic-fatel-bod-85d1c4a7a3aa",
@@ -2286,6 +2454,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -2296,7 +2465,8 @@
         "manufacturer": "Daedalus",
         "type": "Shotgun"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:ceramic-fatel-bod-ec8ce2048da9",
@@ -2313,6 +2483,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -2323,7 +2494,8 @@
         "manufacturer": "Daedalus",
         "type": "Shotgun"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:ceramic-fatel-bod-f3aaab9eda81",
@@ -2340,6 +2512,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -2350,7 +2523,8 @@
         "manufacturer": "Daedalus",
         "type": "Shotgun"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:ceramic-fatel-bod-5bc24528dde5",
@@ -2367,6 +2541,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -2377,7 +2552,8 @@
         "manufacturer": "Daedalus",
         "type": "Shotgun"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:debauched-performative-kitty-d0b4bbf94068",
@@ -2394,6 +2570,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -2404,7 +2581,8 @@
         "manufacturer": "Torgue",
         "type": "Shotgun"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:harled-prosumer-sharkbait-cf772042c9cc",
@@ -2421,6 +2599,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -2431,7 +2610,8 @@
         "manufacturer": "Tediore",
         "type": "Shotgun"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:ceramic-fatal-bod-1b24c462d89c",
@@ -2448,6 +2628,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -2458,7 +2639,8 @@
         "manufacturer": "Daedalus",
         "type": "Shotgun"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:cormano-50f35ca60181",
@@ -2475,6 +2657,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -2485,7 +2668,8 @@
         "manufacturer": "Torgue",
         "type": "Shotgun"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:cormano-b5da4c291e30",
@@ -2502,6 +2686,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -2512,7 +2697,8 @@
         "manufacturer": "Torgue",
         "type": "Shotgun"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:cormano-98735914b9f4",
@@ -2529,6 +2715,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -2539,7 +2726,8 @@
         "manufacturer": "Torgue",
         "type": "Shotgun"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:put-looming-tk-wave-358dbcdbe0fb",
@@ -2556,6 +2744,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -2566,7 +2755,8 @@
         "manufacturer": "Jakobs",
         "type": "Shotgun"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:put-looming-tk-wave-1f255095c399",
@@ -2583,6 +2773,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -2593,7 +2784,8 @@
         "manufacturer": "Jakobs",
         "type": "Shotgun"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     },
     {
       "id": "custom:crayons82:consecrated-draupner-f6e3f66d6726",
@@ -2610,6 +2802,7 @@
       "tags": [
         "crayons82.0",
         "custom",
+        "static",
         "modded",
         "bl4"
       ],
@@ -2620,7 +2813,8 @@
         "manufacturer": "Ripper",
         "type": "Heavy Weapon"
       },
-      "enabled": true
+      "enabled": true,
+      "classification": "Modded"
     }
   ]
 }
