@@ -25,12 +25,15 @@ from typing import Any, Iterable
 from external_serial_tools import human_to_serial
 
 RULES_PATH = RESOURCE_DIR / "legit_rules_flat.json"
+OBSERVED_OPTIONS_PATH = RESOURCE_DIR / "observed_working_part_options.json"
 
 _RULES_CACHE: dict[str, Any] | None = None
 _ROOT_BY_KEY: dict[str, dict[str, Any]] | None = None
 _PARTS_CACHE: dict[str, list[dict[str, Any]]] = {}
 _LOOKUP_PARTS_CACHE: dict[str, list[dict[str, Any]]] = {}
 _FIND_INDEX_CACHE: dict[str, dict[tuple[str | None, str], dict[str, Any]]] = {}
+_OBSERVED_OPTIONS_CACHE: dict[str, Any] | None = None
+_OBSERVED_PART_INDEX_CACHE: dict[str, dict[tuple[str | None, str], dict[str, Any]]] = {}
 
 # Roots exposed in the in-game builder.  The flattened Nexus file contains many
 # pickup/currency/parent roots which are technically serializable but are not
@@ -413,6 +416,128 @@ def _find_index(root: dict[str, Any]) -> dict[tuple[str | None, str], dict[str, 
     return idx
 
 
+def load_observed_working_part_options() -> dict[str, Any]:
+    """Load generated observed-working picker options, if present."""
+    global _OBSERVED_OPTIONS_CACHE
+    if _OBSERVED_OPTIONS_CACHE is not None:
+        return _OBSERVED_OPTIONS_CACHE
+    if not OBSERVED_OPTIONS_PATH.exists():
+        _OBSERVED_OPTIONS_CACHE = {"version": 1, "roots": {}}
+        return _OBSERVED_OPTIONS_CACHE
+    try:
+        _OBSERVED_OPTIONS_CACHE = json.loads(OBSERVED_OPTIONS_PATH.read_text(encoding="utf-8"))
+    except Exception:
+        _OBSERVED_OPTIONS_CACHE = {"version": 1, "roots": {}}
+    return _OBSERVED_OPTIONS_CACHE
+
+
+def _observed_parts_for_root(root_key: str) -> list[dict[str, Any]]:
+    data = load_observed_working_part_options()
+    root_row = (data.get("roots") or {}).get(_norm(root_key)) or {}
+    rows = root_row.get("observed_parts") or []
+    return [dict(p) for p in rows if isinstance(p, dict)]
+
+
+def observed_working_slots(root_key: str) -> list[str]:
+    """Return extra observed-working slots for the selected root."""
+    root = get_root(root_key)
+    order = _slot_order_map(root or {})
+    seen: set[str] = set()
+    out: list[str] = []
+    for p in _observed_parts_for_root(root_key):
+        table = _norm(p.get("table"))
+        if table and table not in seen and not p.get("already_in_builder"):
+            seen.add(table)
+            out.append(table)
+    return sorted(out, key=lambda n: order.get(n, 9999))
+
+
+def _observed_search_row(root: dict[str, Any], p: dict[str, Any]) -> dict[str, Any]:
+    line = str(p.get("line") or "").strip()
+    token = str(p.get("serial_token") or "").strip()
+    table = str(p.get("table") or "").strip()
+    key = str(p.get("key") or "").strip()
+    return {
+        "key": key,
+        "line": line,
+        "serial": p.get("serial"),
+        "source_root_serial": p.get("source_root_serial"),
+        "source_root_key": p.get("source_root_key"),
+        "inherited_from": p.get("inherited_from") or "",
+        "serial_token": token or _serial_part_token(root, p),
+        "table": table,
+        "display": p.get("display") or p.get("debug") or p.get("internal") or key,
+        "debug": p.get("debug") or "",
+        "internal": p.get("internal") or key,
+        "row": p.get("row") or "",
+        "gestalt": p.get("gestalt") or [],
+        "base_tags": p.get("base_tags") or [],
+        "add": p.get("add") or [],
+        "dep": p.get("dep") or [],
+        "exclude": p.get("exclude") or [],
+        "rarity": p.get("rarity") or "",
+        "np_names": p.get("np_names") or [],
+        "name_parts": p.get("name_parts") or p.get("np_names") or [],
+        "observed_count": p.get("observed_count") or 0,
+    }
+
+
+def observed_working_parts(root_key: str, text: str = "", table: str | None = None, limit: int = 100) -> list[dict[str, Any]]:
+    """Search generated observed-working parts for unlocked/modded builder mode."""
+    root = get_root(root_key)
+    if not root:
+        return []
+    q = _norm(text)
+    tn = _norm(table) if table else None
+    out: list[dict[str, Any]] = []
+    for raw in _observed_parts_for_root(root_key):
+        if raw.get("already_in_builder"):
+            continue
+        if tn and _norm(raw.get("table")) != tn:
+            continue
+        hay = " ".join(str(raw.get(k) or "") for k in ("key", "line", "serial_token", "display", "debug", "internal", "row", "rarity"))
+        hay += " " + " ".join(str(x) for x in (raw.get("np_names") or raw.get("name_parts") or []))
+        if q and q not in _norm(hay):
+            continue
+        out.append(_observed_search_row(root, raw))
+        if len(out) >= limit:
+            break
+    return out
+
+
+def _observed_find_index(root: dict[str, Any]) -> dict[tuple[str | None, str], dict[str, Any]]:
+    cache_key = _norm(root.get("key"))
+    cached = _OBSERVED_PART_INDEX_CACHE.get(cache_key)
+    if cached is not None:
+        return cached
+    idx: dict[tuple[str | None, str], dict[str, Any]] = {}
+    for raw in _observed_parts_for_root(cache_key):
+        if raw.get("already_in_builder"):
+            continue
+        p = _observed_search_row(root, raw)
+        table_n = _norm(p.get("table"))
+        line = str(p.get("line") or "")
+        keys = {
+            _norm(p.get("key")),
+            _norm(line),
+            _norm(line.split(":", 1)[1] if ":" in line else ""),
+            _norm(p.get("serial_token")),
+        }
+        token = _norm(p.get("serial_token"))
+        if token.startswith("{") and token.endswith("}"):
+            keys.add(token[1:-1])
+        try:
+            if p.get("serial") is not None:
+                keys.add(str(int(p.get("serial"))))
+        except Exception:
+            pass
+        for key in {k for k in keys if k}:
+            idx.setdefault((None, key), p)
+            idx.setdefault((table_n, key), p)
+    _OBSERVED_PART_INDEX_CACHE[cache_key] = idx
+    return idx
+
+
 def _find_part(root: dict[str, Any], part: str | int, table: str | None = None) -> dict[str, Any] | None:
     ref = _inv_ref_part_key(part)
     want = _norm(ref[1] if ref else part)
@@ -424,7 +549,15 @@ def _find_part(root: dict[str, Any], part: str | int, table: str | None = None) 
         found = idx.get((table_n, want))
         if found is not None:
             return found
-    return idx.get((None, want))
+    found = idx.get((None, want))
+    if found is not None:
+        return found
+    observed_idx = _observed_find_index(root)
+    if table_n:
+        found = observed_idx.get((table_n, want))
+        if found is not None:
+            return found
+    return observed_idx.get((None, want))
 
 
 def _expand_serial_token(item: str | int | dict[str, Any]) -> list[str | int | dict[str, Any]]:
@@ -1078,6 +1211,7 @@ def describe_part(root_key: str, part: str | int, table: str | None = None) -> d
         return None
     return {
         "key": p.get("key"),
+        "line": p.get("line") or "",
         "serial": p.get("serial"),
         "source_root_serial": p.get("source_root_serial"),
         "source_root_key": p.get("source_root_key"),
@@ -1113,6 +1247,7 @@ def search_parts(root_key: str, text: str = "", table: str | None = None, limit:
             continue
         out.append({
             "key": p.get("key"),
+            "line": p.get("line") or "",
             "serial": p.get("serial"),
             "source_root_serial": p.get("source_root_serial"),
             "source_root_key": p.get("source_root_key"),
@@ -1124,6 +1259,7 @@ def search_parts(root_key: str, text: str = "", table: str | None = None, limit:
             "internal": p.get("internal") or p.get("key"),
             "row": p.get("row") or "",
             "gestalt": p.get("gestalt") or [],
+            "base_tags": p.get("base_tags") or [],
             "add": p.get("add"),
             "dep": p.get("dep"),
             "exclude": p.get("exclude"),

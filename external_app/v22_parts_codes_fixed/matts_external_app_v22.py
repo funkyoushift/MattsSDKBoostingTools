@@ -923,6 +923,9 @@ class App(V9App):
         threading.Thread(target=work, daemon=True).start()
 
     def _slot_line_from_part(self,p):
+        line=str(p.get('line') or '').strip()
+        if line:
+            return line
         table=str(p.get('table') or '').strip(); key=str(p.get('key') or '').strip()
         return f'{table}:{key}' if table and key else ''
 
@@ -1011,6 +1014,13 @@ class App(V9App):
             deps=list(external_legit_builder.slots(root_key))
         except Exception:
             deps=list(root.get('deps') or [])
+        if unlock:
+            try:
+                for observed_slot in external_legit_builder.observed_working_slots(root_key):
+                    if observed_slot and observed_slot not in deps:
+                        deps.append(observed_slot)
+            except Exception:
+                pass
         slot_meta={}
         try:
             slot_meta={str(x.get('slot') or '').lower():x for x in external_legit_builder.slot_counts(root_key,self._legit_selected_lines_for_core())}
@@ -1027,6 +1037,16 @@ class App(V9App):
                 candidates=external_legit_builder.search_parts(root_key,filter_text,table=slot,limit=1000)
             except Exception:
                 candidates=[]
+            if unlock:
+                try:
+                    seen={self._slot_line_from_part(p).lower() for p in candidates if self._slot_line_from_part(p)}
+                    for p in external_legit_builder.observed_working_parts(root_key,filter_text,table=slot,limit=1000):
+                        sig=self._slot_line_from_part(p).lower()
+                        if sig and sig not in seen:
+                            candidates.append(p)
+                            seen.add(sig)
+                except Exception:
+                    pass
             for p in candidates:
                 if not unlock:
                     try:
@@ -1085,6 +1105,9 @@ class App(V9App):
             try:
                 part=external_legit_builder.describe_part(root_key, key, table=table or None)
                 if part:
+                    p_line=str(part.get('line') or '').strip()
+                    if p_line:
+                        return p_line
                     p_table=str(part.get('table') or table or '').strip()
                     p_key=str(part.get('key') or key or '').strip()
                     if p_table and p_key:
