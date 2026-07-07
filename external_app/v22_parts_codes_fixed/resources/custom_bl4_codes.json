@@ -1,0 +1,2626 @@
+{
+  "version": 1,
+  "source": "My Codes.xlsx",
+  "description": "Custom static BL4 codes bundled outside the refreshable GZO cache.",
+  "entries": [
+    {
+      "id": "custom:crayons82:sent-to-mal-to-help-with-luv-on-primary-d3f5632b2302",
+      "name": "sent to mal to help with luv on primary",
+      "serial": "@Ugb)KvFnkbUcplI?RG/))sDsAD#KgqJP())#?1&vy54C0J4m2+>FE5Wq8E9gN43Qx+M25&f6OAYFB%Z{RcoI*j4Kyt+EiEmL1~sTb4Qfzz=mT1bdV/V?x`QgiA5b$26btnW^}{frb_SXd5fKp)5s{RXl$4Z/l$4Z/l$4Z/L~{%@BO@atBO@atBO@atBO?O<",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Pistol",
+      "manufacturer": "Order",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Sheet1 row 1; Imported from human-readable serial and converted to Base85 locally",
+      "decoded_identity": {
+        "type_id": "4",
+        "primary_set": "ORD_PS",
+        "manufacturer": "Order",
+        "type": "Pistol"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:broken-wings-1ace5196e283",
+      "name": "BROKEN WINGS",
+      "serial": "@Ugb)KvFnkbUyeH6GRG/{psJ5tnsCKA#sF$dfs5huPs641wsFVl",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Pistol",
+      "manufacturer": "Order",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Sheet1 row 3; Imported from human-readable serial and converted to Base85 locally",
+      "decoded_identity": {
+        "type_id": "4",
+        "primary_set": "ORD_PS",
+        "manufacturer": "Order",
+        "type": "Pistol"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:rhythm-b6df44d1a2ac",
+      "name": "RHYTHM",
+      "serial": "@Ugw$Yw35E/MjHU+~iz-y35;bHfENUg{B`PNBQ$JC4P<>E;P_<CuQ0))",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "SMG",
+      "manufacturer": "Maliwan",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Sheet1 row 4; Imported from human-readable serial and converted to Base85 locally",
+      "decoded_identity": {
+        "type_id": "21",
+        "primary_set": "MAL_SM",
+        "manufacturer": "Maliwan",
+        "type": "SMG"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:convergence-f722f1787c30",
+      "name": "Convergence",
+      "serial": "@Ugd77*Fme!K0+bq6s6!=cQ6W(+Q87_9QJ>m_`hyCEs)Z_t00",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Shotgun",
+      "manufacturer": "Ripper",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Sheet1 row 5",
+      "decoded_identity": {
+        "type_id": "7",
+        "primary_set": "BOR_SG",
+        "manufacturer": "Ripper",
+        "type": "Shotgun"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:crazed-earl-70d9abe8c0a7",
+      "name": "Crazed Earl",
+      "serial": "@Ugd77*FnkbUG(Au/RG/))s5PjQsFbLhsClS7s8gs^s9LCUsDXx$%mD",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Shotgun",
+      "manufacturer": "Ripper",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Sheet1 row 6",
+      "decoded_identity": {
+        "type_id": "7",
+        "primary_set": "BOR_SG",
+        "manufacturer": "Ripper",
+        "type": "Shotgun"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:crow-sourced-f58b2aff2a6f",
+      "name": "Crow-Sourced",
+      "serial": "@UgggUGFnkbUCQZ;zR83T)64et`4/NX}54EW/s5_`Us930$s39I`SO)+",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Assault Rifle",
+      "manufacturer": "Order",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Sheet1 row 7",
+      "decoded_identity": {
+        "type_id": "15",
+        "primary_set": "ORD_AR",
+        "manufacturer": "Order",
+        "type": "Assault Rifle"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:g-m-r-a3c9375bb76f",
+      "name": "G.M.R.",
+      "serial": "@UgggUGFnkbU{AJKhR83T(8da!xsC=k;sClSO4Qdps6zUbKB?1",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Assault Rifle",
+      "manufacturer": "Order",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Sheet1 row 8",
+      "decoded_identity": {
+        "type_id": "15",
+        "primary_set": "ORD_AR",
+        "manufacturer": "Order",
+        "type": "Assault Rifle"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:lockjaw-32ad1c28c6da",
+      "name": "Lockjaw",
+      "serial": "@Ugv4Ng35E/M%#;XPi%N$/)S=R%N}}qa?xDh<+Mw#7?x0qoY9as",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Assault Rifle",
+      "manufacturer": "Torgue",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Sheet1 row 10",
+      "decoded_identity": {
+        "type_id": "17",
+        "primary_set": "TOR_AR",
+        "manufacturer": "Torgue",
+        "type": "Assault Rifle"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:midnight-defiance-4a3bd60b50a7",
+      "name": "Midnight Defiance",
+      "serial": "@Uguq~c35E/MjHU-#i7M2h5/t7)2UQbw6Sb*3s6VJss9LCAsC%e>2m",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Sniper",
+      "manufacturer": "Vladof",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Sheet1 row 11",
+      "decoded_identity": {
+        "type_id": "16",
+        "primary_set": "VLA_SR",
+        "manufacturer": "Vladof",
+        "type": "Sniper"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:oscar-mike-ea132e0f0ee8",
+      "name": "Oscar Mike",
+      "serial": "@Ugfs(8FnkbUG(Avi)SwD=s7Ot!Qe#kcP<v3RP_a<8P`6O)P&W/",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Assault Rifle",
+      "manufacturer": "Daedalus",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Sheet1 row 12",
+      "decoded_identity": {
+        "type_id": "13",
+        "primary_set": "DAD_AR",
+        "manufacturer": "Daedalus",
+        "type": "Assault Rifle"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:item-391655ef7917",
+      "name": "Sheet1 Item 15",
+      "serial": "@Uga`vnFnkbUWIxbV7F4J((2$UjkdTm&kdTm&kdTm&kdTm&kdzdP)J3yNHldNIk*JZVk*JZVk*JZVk*JZVk*JfXlc<xZlc<xZlc<xZlc<xZlc<xZlc<xZlc<xZlc<xZlc<xZlc<xZlc<xZlc<xZFwkU@Op-}5NhZl8nIw~Bl1!3GGD#-MB$-5$XcA4LNi>Nj(IlEglW3An!U>Hs(8Q1!5<_B042dBzB!<M07-$Zv7OEDi7OEDi7OEDi7OEDi7OEDi7OEDi7OEDi7AhwyCn_f@Cn_f@Cn_f@Cn_f@Cn_f@Cn_f@Cn_gu9BLeD9BLeD9BLeD9BLeD9BLeDCu*RXBXgt<x@DkANl8gbNl8gbNl8gbNl8gbNl8gbNl8gbNl8gbNf{X#85#6G8ZN>`xCj^FB3y)va1k!TMYsqT;UZjwi*OMx!bP/U7uh3wWRL8TJ+epk$R61vdt{I7kv+0U_6R1yB$xz~U=mD%NiYc}!6cXjlVB1/f=OaZOo@rw8E8aAL<H3_(8Q1!5(C{b(1?hL2znpQF4=`*8E8fZ_3r`",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Pistol",
+      "manufacturer": "Daedalus",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Sheet1 row 15; Imported from human-readable serial and converted to Base85 locally",
+      "decoded_identity": {
+        "type_id": "2",
+        "primary_set": "DAD_PS",
+        "manufacturer": "Daedalus",
+        "type": "Pistol"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:maintained-looming-flash-cylcone-48c123d0ddb7",
+      "name": "Maintained Looming Flash Cylcone",
+      "serial": "@UgzR8/35E/M44nfSiz?Ki64j`K#>B+L#KgqJ&>GT$ZlZ3YZlZ3Y!lEX%(Xg<vu&}VOFdAi`i6Jp0hQyE<=u@Bi)Tcf*(RdP1;z>M-C-Een#1q<sszV=8D^x918UBFMq4J?dq6V5gqDS@!AGsrVWDaUWIZzG*O~^>1ABF+7Gth*Hh=_=Yh=_=Yh=_=Yh=`=5q@<*zq@<*zq@<*zBme",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Assault Rifle",
+      "manufacturer": "Jakobs",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: new row 2; DPS: 615k; Alt Fire: zip rocket/lingering; Element: kenetic",
+      "decoded_identity": {
+        "type_id": "27",
+        "primary_set": "JAK_AR",
+        "manufacturer": "Jakobs",
+        "type": "Assault Rifle"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:impactful-extolled-aegon-s-dream-acacffe0e32b",
+      "name": "Impactful Extolled Aegon's Dream",
+      "serial": "@Ugb)KvFnkbU=p4{h7F4K29qOPlF)=YQF)=h;s4S`sEkSpn*(94}6PntB+M(v5-l4V(-Qh!{3^Xw$hR6^ZA_Gk{p2U-Q5>Mg@y+qZ4#)tS2AL2uNpq8jNs51NkHKRaxP<c?VP_<CyP;F=p%3+`h8A<fRFran@nh+6@ltgn3G$R85",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Pistol",
+      "manufacturer": "Order",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: new row 3; DPS: 275k; Alt Fire: Locust Rocket; Element: Cryo",
+      "decoded_identity": {
+        "type_id": "4",
+        "primary_set": "ORD_PS",
+        "manufacturer": "Order",
+        "type": "Pistol"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:dedauched-thrusting-queen-s-rest-a361ea57e314",
+      "name": "Dedauched Thrusting Queen's Rest",
+      "serial": "@Ugct)%FnkbU=p4{h7F4K1CF-CtF)=YQF)=h$C>`nv3AzK#CfOvLWD^RBDv3&o+Gto<SXda{f#&7q(I^8=42dBzB!<Wk86rbupozwlcoI+INj!-s6b4m?KA<+JI;cCSGW-FJLajpOL=7~0WRLKXJCaB6pd1F8kdZ_`3<GLspa~HX5fKp)5lKl&Nl8gbNl8gbNl8gG$3QbOGBPqUGBPqUGBPq~47&g",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Pistol",
+      "manufacturer": "Torgue",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: new row 4; DPS: 321k; Alt Fire: Air Srike; Element: Corrosive",
+      "decoded_identity": {
+        "type_id": "6",
+        "primary_set": "TOR_PS",
+        "manufacturer": "Torgue",
+        "type": "Pistol"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:sent-poor-man-s-inscriber-eff6d8aab488",
+      "name": "Sent Poor Man's Inscriber",
+      "serial": "@UgcJizFnkbU=p4{h7F4K2HR_--F)=YQF)=YQG;C-s>KV`-Xg0/v*(94}lWdYrvPm/fn5d10g@uKMg@uLD9cW%&ULK7y(8Q1!B12?/43Qx+M25&fnVM)ki6`-d+Mw#t2h;~uhCiTY6sQ#H6zUdg`v)3_8fdTx53~=pzEq$b2AYsW?F=*_A/fIpA/fIpA/fIpA/fIwDJdx_DJdx_DJdx_DT(G7Xhudx2E8vP00",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Pistol",
+      "manufacturer": "Tediore",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: new row 5; DPS: 94307; Alt Fire: Grenade Launcher.; Element: Radiaton/Cryo",
+      "decoded_identity": {
+        "type_id": "5",
+        "primary_set": "TED_PS",
+        "manufacturer": "Tediore",
+        "type": "Pistol"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:zealous-extolled-rowan-s-charge-8c91401405c4",
+      "name": "Zealous Extolled Rowan's Charge",
+      "serial": "@Ugb)KvFnkbU=p4{h7F4K1CF-CtF)=YQF)<Xi1EodXfo79zl1;KnHlcc`e5ih?jfRDVg@uKMg@uKM(H&@BULK7y(8v%OB12@LiN=$75>Mg@g+aYR-9hC+mEjMl83lTUdcuKHqH-7p)XqQ?l9G~=l9G~=l9G~=l9G}lA/fIpA/fIpA/fIpA/e0",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Pistol",
+      "manufacturer": "Order",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: new row 6; DPS: 212k; Alt Fire: Lightning Beam; Element: kenetic/Shock",
+      "decoded_identity": {
+        "type_id": "4",
+        "primary_set": "ORD_PS",
+        "manufacturer": "Order",
+        "type": "Pistol"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:maintained-whispering-seventh-sense-f8a810db806f",
+      "name": "Maintained Whispering Seventh Sense",
+      "serial": "@UgbV{rFnkbU=p4{h7F4K1C2CQPYE+{d)u={=MYZ8A=ngcSWRq-?O/l7{L#0ElLv1uHEG#T6jP5}5^78U%lz}FO#1I)GLu7~yH1!0HLDiuTs1B+R>JO?6e?ZMB&@5DS3-k*$67/C{pmqkDkd%~^l$4Z/l$4Z/l#~<^5fKp)5fKp)5fKp)LBj?B",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Pistol",
+      "manufacturer": "Jakobs",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: new row 7; DPS: 89506; Alt Fire: Beam Tosser; Element: Radiation",
+      "decoded_identity": {
+        "type_id": "3",
+        "primary_set": "JAK_PS",
+        "manufacturer": "Jakobs",
+        "type": "Pistol"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:engorged-thrusting-herald-9c965e91df0a",
+      "name": "Engorged Thrusting Herald",
+      "serial": "@Ugct)%FnkbU=p4{h7F4K2HR_--F)=YQF)=i3s4eOaG@E3TY(n`^`%wK*8x0E!3kwSi3kwSi3kwUQJJ7tmyu7?T8fBn~Au%L/$PgJKLu7~yG/_kxPvS{Dp)jaA^Z~U&)j{1sm4W7m{6M2nt5C%+P+HVLb4Tuo9@!&&B#+>cIjEh1CPXA9B_$;#B_$;#B_$;#CD9xM&B(~e$jHdZ$jHdZ$jHc`_l*Sr",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Pistol",
+      "manufacturer": "Torgue",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: new row 8; DPS: 123k; Alt Fire: Tactical Knife Launcher; Element: Radiation",
+      "decoded_identity": {
+        "type_id": "6",
+        "primary_set": "TOR_PS",
+        "manufacturer": "Torgue",
+        "type": "Pistol"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:overproduced-lionized-brickhouse-7e90e1babb81",
+      "name": "Overproduced lionized Brickhouse",
+      "serial": "@UgxFw!35E/M44nhI%7O}Ys6-tN8ZNXKwHLJ)wHLJ)wHLJ)wHLJ)wHLJ)wHLJ)wHLJ)wHLJ)wHLJ)wHI{<noY7vHpwR0B%4r9R9I9`R7=!G!@/PC!ouhd9~xz#ks&ffhR6^ZB12?/43Qx+M25&f6OAYFB%V+m`hYgIsZDKaQ=8h<rZ%;yJE%XXP^dEe0X3sQxlr*?M=#Jl)DOde+8Jm<L_/bHL_/bHL_/bHL_/bVQc_Y<Qc_Y<Qc_Y<QWDKE8~^",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "SMG",
+      "manufacturer": "Vladof",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: new row 9; DPS: 126k; Alt Fire: zip rockets; Element: Cryo",
+      "decoded_identity": {
+        "type_id": "22",
+        "primary_set": "VLA_SM",
+        "manufacturer": "Vladof",
+        "type": "SMG"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:hallowed-jetsetter-075ca3e48703",
+      "name": "hallowed Jetsetter",
+      "serial": "@Ugr$iFm/*xI!q7ROKd4J(>Qi+LG$/=5DJdx_iN+XcU<eF>Aut4nzz`S$1C25~XsA#hR3B6yR3FqS)JDU?!otGB!otGB!otGB!otGB!otGB!otGB!ouhdG%qhNFE1}IFE5YA7-)D158)v^gop4D9>PO-2oK>QJcNhv5FWxqcnA;SAv}bK@DLutLwE=e;UPSPhwu;{!b5ln58)v^gop4D9>PO-2oK>QJcNhv5FWxqcnA+vyR@KzMvv?fK5/F$2p*Xub;OR)K@*K9@g$zalXwzO;z>M-C-DRT",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Heavy Weapon",
+      "manufacturer": "Ripper",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: new row 10; DPS: 2608; Element: Corrosive",
+      "decoded_identity": {
+        "type_id": "275",
+        "primary_set": "BOR_HW",
+        "manufacturer": "Ripper",
+        "type": "Heavy Weapon"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:overproduced-socialized-light-gun-0677ca803b0a",
+      "name": "Overproduced Socialized Light Gun",
+      "serial": "@Uguq~c35E/M44nhIiz-y35_Qm+n3$NDm>3!=R2Nm11-(Vxfo79zLN!r2QFBlm4GRkk3k#z=(7e37JQ`)7i6JpWhR6^ZB12?/3^dVr5>MhuJc%dqB%Z{RctV}3Lm$u`R2lw&no*!Xs6VJ#sBoxosBoxusC)<",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Sniper",
+      "manufacturer": "Vladof",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: new row 11; DPS: 1,052k; Alt Fire: Big Rocket; Element: Corrosive",
+      "decoded_identity": {
+        "type_id": "16",
+        "primary_set": "VLA_SR",
+        "manufacturer": "Vladof",
+        "type": "Sniper"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:smashing-eliminating-raiden-2ad25e4822ed",
+      "name": "Smashing Eliminating Raiden",
+      "serial": "@UgwSAs35E/M44ngNiRy<sRH7EusDsAD#KgqJ#L$qTd#I48m#8<?1KojUlWdYrvPm/fv8cAFxTw0Qx~RISjfRDVg@uKM(H&@BUS3`vjWW>0kQgFEWQYurAu>dU$PgJK17)fXeL$OP15HayOG`^jOG`^jOG`^jqm!tTs5Gc86{rn!KzmSSp!p#`<OgbKqDT}}3Y81B3zg*pokOjUMv6!gDI!Irh!l/`me3EwfZ7>oLPSJFL_/bHL_/bHL_/bHQc_Y<Qc_Y<Qc_Y<Qc@DlG0=>RjEszojEszojEszo3;+",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "SMG",
+      "manufacturer": "Daedalus",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: new row 12; DPS: 44835; Alt Fire: Rolling Thunder Grenade/lingering; Element: Fire",
+      "decoded_identity": {
+        "type_id": "20",
+        "primary_set": "DAD_SM",
+        "manufacturer": "Daedalus",
+        "type": "SMG"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:smashing-eliminating-raiden-0a1ee4d5d506",
+      "name": "Smashing Eliminating Raiden",
+      "serial": "@UgwSAs35E/M44ngNiRy<sRH7EusDsAD#KgqJ#L&>8d#I48m#8<?1KojUlWdYrvPm/fv8cAFxTw0Qx~RISjfRDVg@uKM(H&@BUS3`vjWW>0kQgFEWQYurAu>dU$PgJK17)fXeL$OP15HayOG`^jOG`^jOG`^jqm!tTs5Gc86{rn!KzmSSp!p#`<OgbKqDT}}3Y81B3zg*pokOjUhKf)TDndo52o<3sme3EwfZ7>oLPSJFL_/bHL_/bHL_/bHQc_Y<Qc_Y<Qc_Y<Qc@DlG0=>RjEszojEszojEszo3;+",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "SMG",
+      "manufacturer": "Daedalus",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: new row 13; DPS: 44835; Alt Fire: Rolling Thunder Grenade/lingering; Element: Shock",
+      "decoded_identity": {
+        "type_id": "20",
+        "primary_set": "DAD_SM",
+        "manufacturer": "Daedalus",
+        "type": "SMG"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:smashing-eliminating-raiden-16521a3d1cfc",
+      "name": "Smashing Eliminating Raiden",
+      "serial": "@UgwSAs35E/M44ngNiRy<sRH7EusDsAD#KgqJ#L#e/d#I48m#8<?1KojUlWdYrvPm/fHKYZNMYTo6Mb$;sMb$-ZG%PGEEG#UH?m+YM^78U%lz}FO#1I)GLu7~yks&ffhR6^ZC{uOl1KLy@Xj)oYT3T9KT3T9KT3T8fokW#Hr9o/}Ky8=<+Jh<s%@6q@KTtCYR0@>~wF{Ny0-ZyxkEV)Lkt$L}sz?>7B9_n(!+_cuXhK9pL_/bHL_/bHL_/bHL{d^xQc_Y<Qc_Y<Qc_Y9%`wo7jEszojEszojEszoj0^w",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "SMG",
+      "manufacturer": "Daedalus",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: new row 14; DPS: 44835; Alt Fire: Rolling Thunder Grenade/lingering; Element: Cryo",
+      "decoded_identity": {
+        "type_id": "20",
+        "primary_set": "DAD_SM",
+        "manufacturer": "Daedalus",
+        "type": "SMG"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:dedauched-rallying-rowans-charge-61021d3fd4ae",
+      "name": "Dedauched Rallying Rowans charge",
+      "serial": "@UgxFw!35E/M44nfya)JtVs6;jDpfNEqF)=YT(5NsfLrBo0?r;-S6BQOU%0LrCVn_^$Au%L/#E=*gLt;n_i6Jp0hQvS{4GRkk3kwSi3kwSi3kwSi3kwSi3kwSi3kwSi3k#!B1{xV6Lu7~yk%4}qk^yyUqVXi2#FKauPvS{Di6`+So=_juDpW%gMWRR)i6T)XibRnp5=Ej&6p12HB#K0lC=x}Ypfb?>kRS3xe#j5`AwT4Y{6M)-<xuZX`A`GR9GN3^q>k7TJ3>e32ps?",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "SMG",
+      "manufacturer": "Vladof",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: new row 15; DPS: 10705; Alt Fire: Rip Rocket; Element: Corrosive",
+      "decoded_identity": {
+        "type_id": "22",
+        "primary_set": "VLA_SM",
+        "manufacturer": "Vladof",
+        "type": "SMG"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:forceful-fatel-hard-dard-e23dc06a3073",
+      "name": "Forceful Fatel Hard Dard",
+      "serial": "@Ugfs(8FnkbU=p4{n)SwELsDsAD#KgqV(4n@dJJ4*BO/nTg$tKw(n@}6xg2JFWm8r0(v8bP@iN=$75>MhuJfSvhs1AKVsZg&_xlm>J18QiZNEC@8Q6!2)LF-UiF3>;J`ceS^",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Assault Rifle",
+      "manufacturer": "Daedalus",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: new row 16; DPS: 163k; Alt Fire: Rolling Thunder Grenade/lingering; Element: shock",
+      "decoded_identity": {
+        "type_id": "13",
+        "primary_set": "DAD_AR",
+        "manufacturer": "Daedalus",
+        "type": "Assault Rifle"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:sudden-whispering-shoals-a21fc99f7e62",
+      "name": "Sudden Whispering Shoals",
+      "serial": "@UgbV{rFnkbU=p4{mRG/))s79ql-9(i/-GOG4Y?4i~NjAwQG/E5/Lt;n_i6Jp02HI#?SXfwCSXfwCSXfwCSXfwCSXfwCSXfvX-GS!i<xx9S9cX-r5AlIMHPLtyPvS{Di6`+Sp2QQngDL~f5BVWK<OgbKqDT}}3RMf0<pRBrCYHpKSQ1NONi2yau_Ttnl2{T;Vxe{hnv/53l$4Z/l$4Z/ltgn3G$SJ;BO@atBO@atBLe^",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Pistol",
+      "manufacturer": "Jakobs",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Pistol (2) row 2; DPS: 252k; Alt Fire: Rolling Thunder Grenades; Element: Kenetic",
+      "decoded_identity": {
+        "type_id": "3",
+        "primary_set": "JAK_PS",
+        "manufacturer": "Jakobs",
+        "type": "Pistol"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:smashing-fatal-darkbeast-39ff2435a949",
+      "name": "Smashing Fatal Darkbeast",
+      "serial": "@UgwSAs35E/M44nh/hw6uF)S?b`(3qH*n3xzEDijiR2bxW?NjAwQ*(94}lWdYrC@v~2YAkA_VPRomVRQ$YmzS59mzS59mzPIp3^X_7hTM=Fazk#&4Y?sV<c8dk8)%~OB%Z{RcoI+INj!-s@r3F?<3oIi5AlJ<pvIuapvIuapvIt1qVk/Zp+=#~K=VU>$Pd)eM3E>GMWUcwsO=^w9jYEGhk+&}BqStcBqb#!CD9K9O-M*cpmqkD5D^g(5fPD;l$1ns3^XGnBO@atBO@aN00",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "SMG",
+      "manufacturer": "Daedalus",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Smg (2) row 2; DPS: 4670; Alt Fire: Space laser; Element: Corrosive",
+      "decoded_identity": {
+        "type_id": "20",
+        "primary_set": "DAD_SM",
+        "manufacturer": "Daedalus",
+        "type": "SMG"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:prosperous-extolled-ishmael-ec3302b64b4f",
+      "name": "Prosperous Extolled Ishmael",
+      "serial": "@Ugy>*^35E/M44nfiiz?Ki61Av<#>B+L#L#e/v8X%HY?4i~NjAwQ^r=l{s#6;c3kwSi3kwUQJJ7tmygV9Zpot+d&>U19R2<Yq<4HV;C-Een#FKbJeNcB$ZP-vMR2gV~$Pd)eM3E>G1*JnxyFl*@9a<j^6tN?9P&)%nN=iyfN=iyfN=iyfN=l+R2AYwPk&%&+k&%&+k&%&+0R",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Sniper",
+      "manufacturer": "Order",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: books row 2; DPS: 445k; Alt Fire: spread Launcher; Element: Cryo",
+      "decoded_identity": {
+        "type_id": "26",
+        "primary_set": "ORD_SR",
+        "manufacturer": "Order",
+        "type": "Sniper"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:prosperous-extolled-ishmael-e8963d951706",
+      "name": "Prosperous Extolled Ishmael",
+      "serial": "@Ugy>*^35E/M44nfiiz?Ki61Av<#>B+L#L!Tov8X%HY?4i~NjAwQ^r=l{s#6;c3kwSi3kwUQJJ7tmygV9Zpot+d&>U19R2<Yq<4HV;C-Een#FKbJeNcB$ZP-vMR2gV~$Pd)eM3E>G1*JnBy+H2_9a<j^6tN?9P&)%nN=iyfN=iyfN=iyfN=l+R2AYwPk&%&+k&%&+k&%&+0R",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Sniper",
+      "manufacturer": "Order",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: books row 3; DPS: 445k; Alt Fire: zipper rocket; Element: corrosive",
+      "decoded_identity": {
+        "type_id": "26",
+        "primary_set": "ORD_SR",
+        "manufacturer": "Order",
+        "type": "Sniper"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:prosperous-extolled-darkbeast-a69ec3609d41",
+      "name": "Prosperous Extolled Darkbeast",
+      "serial": "@Ugy>*^35E/M44nfiiz?Ki61Av<#>B+L#L$qTG=v0=McsjBlWdYrvPm/fPi-nwo!V$vSXfwCSXda{f#&7q<<TeuO$>>F=Ai1J;-DrPPvS{Di6`+Sp2QRCgSvxi!-i6!%0Tl&exQaXibRnpC>`qP1$t-b(E4bgh#jee+8Jn4Qc_Y<Qc_Y<Qc_Y<QWDKE(2R_XjEszojEszojEsy700",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Sniper",
+      "manufacturer": "Order",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: books row 4; DPS: 832k; Alt Fire: zipper rocket; Element: fire",
+      "decoded_identity": {
+        "type_id": "26",
+        "primary_set": "ORD_SR",
+        "manufacturer": "Order",
+        "type": "Sniper"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:prosperous-extolled-bubbles-967c8e716502",
+      "name": "Prosperous Extolled Bubbles",
+      "serial": "@Ugy>*^35E/M44nfiiz?Ki61Av<#>B+L#L%#zGMomDMcsjBlWdYrvPm/fPi-nwo!V$vSXfwCSXda{f#&7q<<TeuO$>>F=Ai1J;-DrPPvS{Di6`+Sp2QRCgSvxi!-i6!%0Tl&exQaXibRnpC>?6r1$t-b(E4bgh#jee+8Jn4Qc_Y<Qc_Y<Qc_Y<QWDKE(2R_XjEszojEszojEsy700",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Sniper",
+      "manufacturer": "Order",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: books row 5; DPS: 618; Alt Fire: spread Launcher; Element: radiation",
+      "decoded_identity": {
+        "type_id": "26",
+        "primary_set": "ORD_SR",
+        "manufacturer": "Order",
+        "type": "Sniper"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:prosperous-extolled-ashers-rise-8eac8a995002",
+      "name": "Prosperous Extolled Ashers Rise",
+      "serial": "@Ugy>*^35E/M44nfiiz?Ki61Av<#>B+L#L&>8Is62TMcsjBlWdYrvPm/fPi-nwo!V$vSXfwCSXda{f#&7q<<TeuO$>>F=Ai1J;-DrPPvS{Di6`+Sp2QRCgSvxi!-i6!%0Tl&exQaXibRnpC><&*2YP4d(E4bgh#jee+8Jn4Qc_Y<Qc_Y<Qc_Y<QWDKE(2R_XjEszojEszojEsy700",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Sniper",
+      "manufacturer": "Order",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: books row 6; DPS: 1280; Alt Fire: Flame blast; Element: shock",
+      "decoded_identity": {
+        "type_id": "26",
+        "primary_set": "ORD_SR",
+        "manufacturer": "Order",
+        "type": "Sniper"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:prosperpus-extolled-aegons-dream-f0cb7cbc1bb5",
+      "name": "Prosperpus Extolled Aegons Dream",
+      "serial": "@Ugy>*^35E/M44nfiiz?Ki61Av<#>B+L#L#e/GPDGZMcsjBlWdYrvPm/fPi-nwo!V$vSXfwCSXda{f#&7q<<TeuO$>>F=Ai1J;-DrPPvS{Di6`+Sp2QRCgSvxi!-i6!%0Tl&exQaXibRnpC>`oZ33_Mf(E4bgh#jee+8Jn4Qc_Y<Qc_Y<Qc_Y<QWDKE(2R_XjEszojEszojEsy700",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Sniper",
+      "manufacturer": "Order",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: books row 7; DPS: 496k; Alt Fire: Vial launcher; Element: cyro",
+      "decoded_identity": {
+        "type_id": "26",
+        "primary_set": "ORD_SR",
+        "manufacturer": "Order",
+        "type": "Sniper"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:prosperous-extolled-bod-aa5caf3811b7",
+      "name": "Prosperous Extolled Bod",
+      "serial": "@Ugy>*^35E/M44nfiiz?Ki61Av<#>B+L#L$qTC>`hyG@E3TY?4i~35`X4YEzl&)JDU?!otGB!ouhdG%qhNk4712Vn_@$2UQ0Z2Q/@n5>MhuJc%dqB%V+o)E!hCHk1lg2AUu812r^JB#J~q=}>3*1$t-b(E4bgh#jee+8Jn4Qc_Y<Qc_Y<Qc_Y<QWDKE(2R_XjEszojEszojEsy700",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Sniper",
+      "manufacturer": "Order",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: books row 8; DPS: 172k; Alt Fire: ripper rocker launcer; Element: fire",
+      "decoded_identity": {
+        "type_id": "26",
+        "primary_set": "ORD_SR",
+        "manufacturer": "Order",
+        "type": "Sniper"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:prosperous-extolled-rowans-charge-ec6b06b6f846",
+      "name": "Prosperous Extolled Rowans Charge",
+      "serial": "@Ugy>*^35E/M44nfiiz?Ki61Av<#>B+L#L%#zJJ4*BO/nTg$tE-w^{Gu/s#6;c3kwSi3kwUQJJ7tmygV9Zpot+d&>U19R2<Yq<4HV;C-Een#FKbJeNcB$ZP-vMR2gV~$Pd)eM3E>G1*Jos;TPzgp+oDVfg*OK4r*thNl8gbNl8gbNl8gbNl8gG$3QbOGBPqUGBPqUGBPqUG5`",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Sniper",
+      "manufacturer": "Order",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: books row 9; DPS: 754k; Alt Fire: ripper rocker launcer; Element: radiation",
+      "decoded_identity": {
+        "type_id": "26",
+        "primary_set": "ORD_SR",
+        "manufacturer": "Order",
+        "type": "Sniper"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:fragging-fatal-rowan-s-charge-37c59fa3bae9",
+      "name": "Fragging Fatal Rowan's Charge",
+      "serial": "@UgdhV<FnkbU=p0a4RG/))s6`z#CMG5(hK38ZL$yQQfo79zl1;J+r9*8rEG#T6EG#UH?m+YM^78U%lz}FO#1I)GLu7~yks&ffhR8sfnrJ+UC-Een#FKauPv}#dYQu)+pz5IFpzfghpvpk=Lw=x!CW=InC@2-`Ne6mo=+OFTpokr*gW4HrQc_Y<Qc_Y<Qc_Y<Qc@DlG0=>RjEszojEszojEszo40_*K00",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Shotgun",
+      "manufacturer": "Daedalus",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Group: book; Spreadsheet: books row 10; DPS: 233k; Alt Fire: luv; Element: cryo",
+      "decoded_identity": {
+        "type_id": "8",
+        "primary_set": "DAD_SG",
+        "manufacturer": "Daedalus",
+        "type": "Shotgun"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:maintained-looming-flash-cylcone-6a514e3f2b66",
+      "name": "Maintained Looming Flash Cylcone",
+      "serial": "@UgzR8/35E/M44nfSiz?Ki64j`K#>B+L#KgqJ&>GT$ZlZ3YZlZ3Y!lEX%(Xg<vu&}VOFdAi`i6Jp0hQyE<=u@Bi)Tcf*(RdP1;z>M-C-Een#1q<sszV=8D^x918UBFMq4J?dq6V5gqDS@!AGsrVWDa^~=ujKVfpQpVLPiq(Fbt@jfhI&mL_/bHL_/bHL_/bHL?k68B_$;#B_$;#B_$;#0R",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Assault Rifle",
+      "manufacturer": "Jakobs",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Group: book; Spreadsheet: books row 11; DPS: 609k; Alt Fire: zip rocket/lingering; Element: kenetic",
+      "decoded_identity": {
+        "type_id": "27",
+        "primary_set": "JAK_AR",
+        "manufacturer": "Jakobs",
+        "type": "Assault Rifle"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:put-ambushing-screwtonian-0f890f706a4c",
+      "name": "Put Ambushing Screwtonian",
+      "serial": "@UgbV{rFnkbU=p4{h7F4K1C8/-4YE+{d)u=`_s!?fp30lKk&>d(t$tKw(n`D!0l1*r%VPRomVPRomG/E5/Lt;n_i6JpiI#fQ?9cW%&US3{a9!=^~pZe6NJ~h#J5>MhuJc%dqB%Z_*szV>p9#k3rfLftyp`x*%k*I+tkLZy-!bk219+`vQ89J21Koc^O=!aoI?F=*_A/fIpA/fIpA/fIpA/fIwDJdx_DJdx_DJdx_DG2}",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Pistol",
+      "manufacturer": "Jakobs",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Group: book; Spreadsheet: books row 12; DPS: 105; Alt Fire: Cannonball; Element: kenetic",
+      "decoded_identity": {
+        "type_id": "3",
+        "primary_set": "JAK_PS",
+        "manufacturer": "Jakobs",
+        "type": "Pistol"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:impactful-extolled-aegon-s-dream-f66c081f2830",
+      "name": "Impactful Extolled Aegon's Dream",
+      "serial": "@Ugb)KvFnkbU=p4{h7F4K29qOPlF)=YQF)=h;s4S`sEkSpn*(94}6PntB+M(v5-l4V(-Qh!{3^Xw$hR6^ZA_Gk{p2U-Q5>Mg@y+qZ4#)tS2AL2uNpq8jNs51NkHKRaxP<c?VP_<CyQ11*KYC~&K4g*cdNTMHx0kt#GgoucwB${KO85sZ",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Pistol",
+      "manufacturer": "Order",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Group: book; Spreadsheet: books row 13; DPS: 275k; Alt Fire: Locust Rocket; Element: Cryo",
+      "decoded_identity": {
+        "type_id": "4",
+        "primary_set": "ORD_PS",
+        "manufacturer": "Order",
+        "type": "Pistol"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:catchy-extolled-countermeasure-aa36a3e1f59a",
+      "name": "Catchy Extolled Countermeasure",
+      "serial": "@UgggUGFnkbUa)F+9pqi*!h6^RCqZt_)85tQF8FbK?n3$Lt8Y<KiHHS2yJKO/iG@OK!a1u_!NjRbFCMX{&9;yvAm?V>El1=gnjWW>0kQfp}Vn_^$Au%L/#E=*gLt;n_i6Jr2L~}>($Q`*OcjS)Tkvnon?#LavBX{JE+>twSNAAcSxg&Svj@*$ua!2mS9l0ZS<c{2tJ90<v$Q`*OcjS)Tkvnon?#LavBX{JE+>t%9NA}1b*&};okL-~>vPbsF9@!&%WRL8TJ+epk$R61vdt{I7kv+0U_Q)RDBYR/z?2$dPNA}1b*&};okL-~>vPbsF9@!&%WRLg}KjKIHh#&DIe#DRX5kKNb{D>d%BYwn>_z^$iNBoE%@gsi3kN6Qk;z#_5AMqo8#E<w9KjKIHh#&DIe#DRX5kKNb{D>d%BYsfP5>%<B4yXwOnrJ+UC-Een#FKauPpH}nnuEH7D#IU8LlZ@!NEC@8Q6!2)kth-cO*A}&hwu;{!b5ln58)v^gop4D9>PO-2oK>QJcNhv5FWxqcnA;SAv}bK@DLutLwE=e;UPSPhwu;{!b5ln58)v^gop4D9>PO-2oHfGPy~uV5hwyhpa>L!B2Wa1KoKYcMW6^2fg(@@ia-%40!5$*6oDd81d2crC;~;G2o!-LPy~uV5hwyhpa>L!B2Wa1KoKYcMW6^2^a?f6U=b{WMX(4K!6H}$i(nBff<>?h7QrG/1dCu1EP_R_2o}L2SOkk;5iEj5um~2xB3J~AU=b{WMX(4K!6H}$i(nBff<>?h7QrG/1Pf}3YQsLzb`mtvP!dW)Nhk>=G/<cuI#NgMh#mCK(4qCw;1DSyMWl!nks?w=ibxSDB1NQ#6p<oQM2bieEP_R_2o}L2SOkk;5iEj5B1t5PB#/VNM3P7nNi2yau_Ttnl2{T;Vo5H^CAlP*<dR&HOL9pr$tAfYm*kRMl1p+400",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Assault Rifle",
+      "manufacturer": "Order",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Group: book; Spreadsheet: books row 14; DPS: 2,327k; Alt Fire: Fragcendiary Grenades; Element: Corrosive/Fire",
+      "decoded_identity": {
+        "type_id": "15",
+        "primary_set": "ORD_AR",
+        "manufacturer": "Order",
+        "type": "Assault Rifle"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:hellwalker-c94205ad386f",
+      "name": "Hellwalker",
+      "serial": "@Ugd_t@FnkbU=p4/~4pgW`9jXj8BqSsxBqSsxBqSsxgbo@L6B82?6GLBu%A)F`)<7dmWQi=1C9=>x)IHQaR6o=^)F=Z@42dBzBnG+z&CAQn%cGvCo~WLvo~WLvo~WLvo~Sl#s1AKV4NVk@B2grYL_x7oO)k(tgK/gmpm&B2%`wo7jEszojEszo3~FbfNl8gbNl8gbNl6g^",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Shotgun",
+      "manufacturer": "Jakobs",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Group: book; Spreadsheet: books row 15; DPS: 958k; Alt Fire: Maguum Rocket; Element: Fire/Corrosive",
+      "decoded_identity": {
+        "type_id": "9",
+        "primary_set": "JAK_SG",
+        "manufacturer": "Jakobs",
+        "type": "Shotgun"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:deteropratomg-riotous-waterfall-5e5f5888ea33",
+      "name": "Deteropratomg Riotous Waterfall",
+      "serial": "@Ugvelk35E/M44ng-Ls?LvP8lL}s6-tN8faV=wM5;4W/M4^O/nTgp_!<#sEvk&g@uKMg@uKMg@uKMh0z^8bg8K)=u>4-c~GHHqfpH#P%Tt0)Jjx4)H~Ek)R7WY548_9(BKh0vPbyH9mykeq>k7TI%s{TK<^A400",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Assault Rifle",
+      "manufacturer": "Vladof",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Group: book; Spreadsheet: books row 16; DPS: 17027; Alt Fire: vial launcher; Element: Shock/Corrosive",
+      "decoded_identity": {
+        "type_id": "18",
+        "primary_set": "VLA_AR",
+        "manufacturer": "Vladof",
+        "type": "Assault Rifle"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:booming-rapid-rapid-countermeasure-59b1accbb779",
+      "name": "Booming Rapid Rapid Countermeasure",
+      "serial": "@Ugr%DXm/*xI!q7ROO;zfYp+dC`7dmC2K/w*ZzC55#t&gUP@DV=3NB9UI;Uj#6kMI#b!bkWBAK@c>gpcqMKEg-%2p{1ie1wni5kA64_y`~2BYcF9@DV=3NB9UI;Uj#6kMI#b!bkWBAK@cj#EW<lFXBbKh!^o9Uc`%d5ijCJyoeX^B3{Icco8q+MZAa?@giQti+B+);zhiO7x5xq#EW<lFXBbKh!^o9Uc`%d5ijCJyvQH<BY)(N{E<KMNB+nk`6GYikNlB8@<;y2ANeDH<d4*l8d5`QNDZkWHKc~rkQ!1$YDf*KAvL6i)Q}odLof*@!6cXjlVB1/f=Mt5Ccz/_1e0JAOoB-;2`0fLm;{qx5=??gFbO8XB$xz~U=mD%NiYc}!6cXjlVB1/f=Mt5Ccz/_1e0JAOoB-;2`0fLm;{qx5=??gFbO8XB$xz~U=mD%NiYc}!6cXjlVB1/f=Mt5Ccz/_1e0JAOoB-;2`0fLm;{qx5=??gFbO8XB$xz~U=mD%NiYc}!6cT%l2{T;Vo5BCC9x!y#FAJNOJYeZi6yZlmc)`+5=&x9EQuwtB$mXISQ1NONi2yau_Ttnl2{T;Vo5BCC9x!y#FAJNOJYeZi6yZlmc)`+5=&x9EQuwtB$mXISQ1NONi2yau_Ttnl2{T;Vo5BCC9x!y#FAJNOJYeZi6yZlmc)`+5=&x9EQuwtB$mXISQ1NONi2ya$t0O1lVp-il1Va2Cdnk3B$H&4Op-}5$tAfYm*kRMl1p+)F3BaiB$wopT#`$2NiNAHxg?k5l3bEYa!D@9CAlP*<dR&HOL9pr$tAfYm*kRMl1p+)F3BaiB$wopT#`$2NiNAHxg?k5l3bEYa!D@9CAlP*<dR&HOL9pr$tAfYm*kRMl1p+)F3BaiB$wopT#`$2NiNAHxg?k5l3bEYa!D@9CAlP*<dR&HOL9pr$tAfYm(b9m_R&m{DMCf400",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Gadget",
+      "manufacturer": "Tediore",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Group: book; Spreadsheet: books row 17",
+      "decoded_identity": {
+        "type_id": "311",
+        "primary_set": "ted_grenade_gadget",
+        "manufacturer": "Tediore",
+        "type": "Gadget"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:smashing-fatal-rowan-s-charge-2b9dea1db30e",
+      "name": "Smashing Fatal Rowan's Charge",
+      "serial": "@UgdhV<FnkbU=p0a4RG/`esDsAD#KgqJ#KgqJ#85ue9d3eFqDG=hqBa^978Vv378Vv378XW#pm}+Dd3iJjRfj&HiN=$75>Mg@%/V4ijY5^-52&GuB2gp?s)ZVh8jAn",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Shotgun",
+      "manufacturer": "Daedalus",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Shotgun (2) row 2; DPS: 474k; Alt Fire: Cannon balls; Element: Kenetic",
+      "decoded_identity": {
+        "type_id": "8",
+        "primary_set": "DAD_SG",
+        "manufacturer": "Daedalus",
+        "type": "Shotgun"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:consecrated-draupner-815bddbe5768",
+      "name": "Consecrated Draupner",
+      "serial": "@Ugr$iFm/*xI!q7ROR;Wv5YEzvWW1xW{Fa(Cc5EueOU<eFU$3T;kl9G~=l9Ff@YNKIcVPRomVPRomVPRomVPRomVPSL!nwOVHqYPs}V+=Grgop4D9>PO-2oK>QJcNhv5FWxqcnA;SAv}bK@DLutLwE=e;UPSPhwu;{!b5nVfkuz)5k7K9@(3Q8BXz`%&_QMR1Da?&i6`+Sp2U-Q0s",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Heavy Weapon",
+      "manufacturer": "Ripper",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Heavy (2) row 2; DPS: 5,809k; Alt Fire: override; Element: kenetic",
+      "decoded_identity": {
+        "type_id": "275",
+        "primary_set": "BOR_HW",
+        "manufacturer": "Ripper",
+        "type": "Heavy Weapon"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:consecrated-draupner-991170c1de8a",
+      "name": "Consecrated Draupner",
+      "serial": "@Ugr$iFm/*xI!q7ROR;Wv5YEzvWW1xW{Fa(Cc5EueOU<eFU$3T;kl9G~=l9Fhs&??kM!@/PC!otGB!otGB!otGB!otGB=ngb5FONnU#(>5cXm/(@;UPSPhwu;{!b5ln58)v^gop4D9>PO-2oK>QJcNhv5FWxqcnA;SAv}bK@IV8N9@!&&<c{PKJTgb>h#jGW%J2s?(RdP1;z>M-C-DRT",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Heavy Weapon",
+      "manufacturer": "Ripper",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Heavy (2) row 3; DPS: 4647; Alt Fire: override; Element: Corrosive",
+      "decoded_identity": {
+        "type_id": "275",
+        "primary_set": "BOR_HW",
+        "manufacturer": "Ripper",
+        "type": "Heavy Weapon"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:consecrated-draupner-553cb6b1c60c",
+      "name": "Consecrated Draupner",
+      "serial": "@Ugr$iFm/*xI!q7ROR;Wv5YEzvWW1xW{Fa(Cc5EueOU<eFU$3T;kl9G~=l9Fh+&??kM!@/PC!otGB!otGB!otGB!otGB=ngb5FONnU#(>5cXm/(@;UPSPhwu;{!b5ln58)v^gop4D9>PO-2oK>QJcNhv5FWxqcnA;SAv}bK@IV8N9@!&&<c{PKJTgb>h#jGW%J2s?(RdP1;z>M-C-H<%80b>PC8/r4m!u~~kr)L4",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Heavy Weapon",
+      "manufacturer": "Ripper",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Heavy (2) row 4; DPS: 4647; Alt Fire: override; Element: Cryo",
+      "decoded_identity": {
+        "type_id": "275",
+        "primary_set": "BOR_HW",
+        "manufacturer": "Ripper",
+        "type": "Heavy Weapon"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:consecrated-draupner-2a2c8934fa9c",
+      "name": "Consecrated Draupner",
+      "serial": "@Ugr$iFm/*xI!q7ROR;Wv5YEzvWW1xW{Fa(Cc5EueOU<eFU$3T;kl9G~=l9Fi1&??kM!@/PC!otGB!otGB!otGB!otGB=ngb5FONnU#(>5cXm/(@;UPSPhwu;{!b5ln58)v^gop4D9>PO-2oK>QJcNhv5FWxqcnA;SAv}bK@IV8N9@!&&<c{PKJTgb>h#jGW%J2s?(RdP1;z>M-C-DRT",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Heavy Weapon",
+      "manufacturer": "Ripper",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Heavy (2) row 5; DPS: 4647; Alt Fire: override; Element: Fire",
+      "decoded_identity": {
+        "type_id": "275",
+        "primary_set": "BOR_HW",
+        "manufacturer": "Ripper",
+        "type": "Heavy Weapon"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:consecrated-draupner-7f9153494dc5",
+      "name": "Consecrated Draupner",
+      "serial": "@Ugr$iFm/*xI!q7ROR;Wv5YEzvWW1xW{Fa(Cc5EueOU<eFU$3T;kl9G~=l9FiH&??kM!@/PC!otGB!otGB!otGB!otGB=ngb5FONnU#(>5cXm/(@;UPSPhwu;{!b5ln58)v^gop4D9>PO-2oK>QJcNhv5FWxqcnA;SAv}bK@IV8N9@!&&<c{PKJTgb>h#jGW%J2s?(RdP1;z>M-C-DRT",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Heavy Weapon",
+      "manufacturer": "Ripper",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Heavy (2) row 6; DPS: 4647; Alt Fire: override; Element: Radiation",
+      "decoded_identity": {
+        "type_id": "275",
+        "primary_set": "BOR_HW",
+        "manufacturer": "Ripper",
+        "type": "Heavy Weapon"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:consecrated-draupner-98cb2fea6f89",
+      "name": "Consecrated Draupner",
+      "serial": "@Ugr$iFm/*xI!q7ROR;Wv5YEzvWW1xW{Fa(Cc5EueOU<eFU$3T;kl9G~=l9FiX&??kM!@/PC!otGB!otGB!otGB!otGB=ngb5FONnU#(>5cXm/(@;UPSPhwu;{!b5ln58)v^gop4D9>PO-2oK>QJcNhv5FWxqcnA;SAv}bK@IV8N9@!&&<c{PKJTgb>h#jGW%J2s?(RdP1;z>M-C-DRT",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Heavy Weapon",
+      "manufacturer": "Ripper",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Heavy (2) row 7; DPS: 4647; Alt Fire: override; Element: shock",
+      "decoded_identity": {
+        "type_id": "275",
+        "primary_set": "BOR_HW",
+        "manufacturer": "Ripper",
+        "type": "Heavy Weapon"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:hurled-prosumer-shammy-kablammy-057e9b998ed5",
+      "name": "Hurled Prosumer Shammy Kablammy",
+      "serial": "@UgcJizFnkbU=p0bf6I7@}CF-CtF)=YQF)=YQF)=YQG-N0)>JBuUWRq-?O/nTgp_HhVsGO)f(7e37ygb@ySXfwCSXfwCSXfwCSXfwCSXfwCSXfwCSXfwCSXfwCSXfwCSXfwCSQwR/Lv>ISjVJLWp2U-Q5>MhuJc%dN2UQAn3RQ+bpkAnh#*26nFXBbKpmnH$Mvv?fK5/F$2p*Xub;OR)0R",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Pistol",
+      "manufacturer": "Tediore",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Pistol row 2; DPS: 1,116k; Alt Fire: zip rocket; Element: fire",
+      "decoded_identity": {
+        "type_id": "5",
+        "primary_set": "TED_PS",
+        "manufacturer": "Tediore",
+        "type": "Pistol"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:maintained-looming-king-s-gamabit-4be6075ce805",
+      "name": "Maintained Looming King's gamabit",
+      "serial": "@UgbV{rFnkbU=p4{h7F4K4HL6jEO4OomqV8}L^bWPru&}T&x&zJ2%gdut2AUWWLt;n_i6Jr2MB_<3i6`+Sp2U-QLYt~XA5a}sAJiXI8EAgU5BY%_nkW(l%/b0dLA_8ZQR7fiJWvh;O~{}h2AYtNK<x}PAtH%#7$yJ",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Pistol",
+      "manufacturer": "Jakobs",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Pistol row 3; DPS: 439k; Alt Fire: Zipper Rockets/vial launcher; Element: Kenetic/Corrosive",
+      "decoded_identity": {
+        "type_id": "3",
+        "primary_set": "JAK_PS",
+        "manufacturer": "Jakobs",
+        "type": "Pistol"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:juiliet-sparkels-7f3a950672ad",
+      "name": "Juiliet Sparkels",
+      "serial": "@Ugw$Yw35E/M44nh2iz?Ki64j`K#>B+L#KgqJ#KgqJ#L#e/xu`qPY?4i~NjAwQ*@RZ2UZQ5ATB0@@78Vv378Vv378Vv378Vv378Vv378Vv378Vv378Vv378Vv378Vv37Di?0P^TsuPvS{Di6`+Sp2U-QLUmAmP=8RhP~lMRPy@{!!6SJ@kL(dXGDql09kGLIcM^05nwOUc",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "SMG",
+      "manufacturer": "Maliwan",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Smg row 2; DPS: 702k; Element: cyro",
+      "decoded_identity": {
+        "type_id": "21",
+        "primary_set": "MAL_SM",
+        "manufacturer": "Maliwan",
+        "type": "SMG"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:mass-produced-loinized-hoarder-ed34897e02f4",
+      "name": "Mass Produced Loinized Hoarder",
+      "serial": "@UgxFw!35E/M44ngNdV&gd$3SCZV(3tb8Y+/$bqAVFvPm/fu&9`*nW&nmjfRDVg@uKMg@uLD9X@oaOjT;4@g$zalXwzO;t7R8%/YEkg+i5q=7;=1xlrj)^HBLv`w#",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "SMG",
+      "manufacturer": "Vladof",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Smg row 3; DPS: 198k; Alt Fire: flame thrower; Element: cyro/fire",
+      "decoded_identity": {
+        "type_id": "22",
+        "primary_set": "VLA_SM",
+        "manufacturer": "Vladof",
+        "type": "SMG"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:scattering-vestigial-flash-cyclone-c0137d854176",
+      "name": "Scattering Vestigial Flash Cyclone",
+      "serial": "@Ugw$Yw35E/M44nhI%7O}&s6`z#CMG5(CMG6^h6/-dMd?6ypxGpw&`8uw)F=Z@42dBzBnH}OSXfwCSXda{f#&7q<>lqkMB_<3i6`+Sp3tW1&<9k}bdpZeNjjlBs4~#}kRS3xe#j5`fli@np_*KvxTt/fkL(dXa!2wA9sm",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "SMG",
+      "manufacturer": "Maliwan",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Smg row 4; DPS: 211k; Alt Fire: magnum rockets; Element: cyro/override",
+      "decoded_identity": {
+        "type_id": "21",
+        "primary_set": "MAL_SM",
+        "manufacturer": "Maliwan",
+        "type": "SMG"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:forceful-eliminating-screwstonian-3196aa9c0eea",
+      "name": "Forceful Eliminating Screwstonian",
+      "serial": "@UgwSAs35E/M44ngNdV>0)4wa}y9W*8;CMJf44826%fo79zl1;KnHpwR0B%9E66Eqf87IhYN#_$F-%0LrCVn_^$Au%L/#E=*gLt>yi(7e37ygb@ySXfwCSQu66Qkj})Jc%dqB%Z{RcoI+INj!-s@g$y5r/QrLR0lN*l?t^ARR)?L@<V>e57Y})4>i!}kv+mk?noZNgWAv<@G$m24Bzv1nVufczt?gY{&s(xVLEO0ox0z5bC}Hr",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "SMG",
+      "manufacturer": "Daedalus",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Smg row 5; DPS: 397k; Alt Fire: locust rocket; Element: Fire/over ride",
+      "decoded_identity": {
+        "type_id": "20",
+        "primary_set": "DAD_SM",
+        "manufacturer": "Daedalus",
+        "type": "SMG"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:forceful-eliminating-screwstonian-e8ee09964387",
+      "name": "Forceful Eliminating Screwstonian",
+      "serial": "@UgwSAs35E/M44ngNdV>0)4wa}y9W*8;CMJf43cW<#fo79zl1;KnHpwR0B%9E66Eqf87IhYN#_$F-%0LrCVn_^$Au%L/#E=*gLt>yi(7e37ygb@ySXfwCSQu66Qkj})Jc%dqB%Z{RcoI+INj!-s@g$y5r/LlCLwuk*s8Og?s8y&k(EN}e@<V>0UZ^wBe338m1=T/hG<sx@@R2)`NARFFv<Brc(1e79goKEQjEtnDB>G{X2?+_*&Oj3~;9=~07{2H2GCe(>f3M{*{O$fW!}QtgJCv8p@H_",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "SMG",
+      "manufacturer": "Daedalus",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Smg row 6; DPS: 429k; Alt Fire: Grenade Launcher; Element: Corrosive/over ride",
+      "decoded_identity": {
+        "type_id": "20",
+        "primary_set": "DAD_SM",
+        "manufacturer": "Daedalus",
+        "type": "SMG"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:matador-s-match-126f0bf10ba0",
+      "name": "Matador's Match",
+      "serial": "@Ugw$Yw35E/M44nhI%7O~Ds6#dCpfNEqF)=YQF)=Yz7Ig=jO/nTg$tKw(n@~a%OJbpzsF/oc(7e37yu7@;ygb@ySXfwCSQt$-p2U-Q5>MhuJc%dNsXEa35Fh9c>J+LJ>K5u8Y6u7VVW0^Kl*2$15+WipGLn+0oq;AKL_`1",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "SMG",
+      "manufacturer": "Maliwan",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Smg row 7; DPS: 586k; Alt Fire: Homing Rockets; Element: Kenetic/Corrosive",
+      "decoded_identity": {
+        "type_id": "21",
+        "primary_set": "MAL_SM",
+        "manufacturer": "Maliwan",
+        "type": "SMG"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:frangible-fatal-darkbeast-b8a88f83ce36",
+      "name": "Frangible Fatal Darkbeast",
+      "serial": "@UgwSAs35E/M44ng-Ls?Ki)S(vDsDsAD#KgqVK%=6fC?qN*YEXBe*(94}6N-x}i`r;dSXfvX-GS!i<>lq&(M01(Jc%dqB%b7!+>%>zOK!<6xh1#cmfVtCatm#$4t+pnP-ReCDo`F&DAXua8EAgU5BVWKP(u?%qM%%;Tc}&8Cmg8Q1xkmihZ<<E$Q8MQ)>jHt2AWDzNh+cD(O3~HVnwWo6#x",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "SMG",
+      "manufacturer": "Daedalus",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Smg row 8; DPS: 299k; Alt Fire: Lightening Beam; Element: Corrosive/Cryo",
+      "decoded_identity": {
+        "type_id": "20",
+        "primary_set": "DAD_SM",
+        "manufacturer": "Daedalus",
+        "type": "SMG"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:frangible-fatal-darkbeast-35d7b7a0dfb8",
+      "name": "Frangible Fatal Darkbeast",
+      "serial": "@UgwSAs35E/M44ng-Ls?Ki)S(u&s6{PmQHxqsqXrrk6-6OYAyI>hiwcVhiwcVhiwcVhiwcVxiyDg>iyDg>iyDg>iyDg>iyDh6iz<sMiz<sMiz<sMi`rBfR2kHk3X}&G3Ka?!3Ka?!3Ka?!3N;Ef3Uvx~3Uvx~3Y80$3zZ9%3zZ9%3zZAi3)KsC3v~;X4wVj-4wVj-4wVj-4s{N74s{N74s{N74s{N-4z&)o4z&)o4z&)o4pk2/&/Hx#as^E^x8#=Gl3Q/1ZpkgVCAZ/3+>%?U3^bLbl2k$m4JDz3-bZ6atcVq{B31w",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "SMG",
+      "manufacturer": "Daedalus",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Smg row 9; DPS: 97134; Alt Fire: vial launcher; Element: corrosive/cryo",
+      "decoded_identity": {
+        "type_id": "20",
+        "primary_set": "DAD_SM",
+        "manufacturer": "Daedalus",
+        "type": "SMG"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:eviscerating-waterfall-fa0a2ab19221",
+      "name": "Eviscerating Waterfall",
+      "serial": "@Ugv?-o35E/M44nhohbq)5LxdWYsDsAD#KgqVaG`vtJJ4*BO/nTg$tKw(n`9HJi7JUYiP~sbSXfwC7~O&9<>lq&(I^8=42dBzB!<M07%16L9r}PK8c*U$Jc%dqB%Z{RcoI+INj!-s@g$y5r`oWgJE%XXP^dD{{E#2=Lw=x!CW=InD5w@{qUj=Cq>FTsE~p)<A8Me<BXiLDXrzb~ks?w=ibxSD!bvy@C*dTVgp+VWa//>iBO@atBO@atgW4HrQc_Y<Qc_Y<Qc_Y<Qc@DVk0zGHl2{T;Vo5BCC9x!y#FAJNOJYeZi3I=",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "SMG",
+      "manufacturer": "Ripper",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Smg row 10; DPS: 8,292k; Alt Fire: spread launcher, lingering; Element: Cyro",
+      "decoded_identity": {
+        "type_id": "19",
+        "primary_set": "BOR_SM",
+        "manufacturer": "Ripper",
+        "type": "SMG"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:smashing-fatal-raiden-8af166269a19",
+      "name": "Smashing Fatal Raiden",
+      "serial": "@UgwSAs35E/M44ngNiRy<sRH7Pn(3qH*n3$NDn3xzEE_4qS67>>w2bxW?Nj9N3)B}Y@?M3ZH?M1~!#YM$M)kW1s)kSSIEG#T6EG#T6ER60z^YZfYXq16QhR6^ZA_HZr4m3W*hxia5;sZ@Ip2U-Q5>Mg@ZK@44EiElAEiElAEiEmLPNGVp(xA3fpf=0_)j_2~m4W7m{E#2=12v;SxlpxGwNSNC=}_xX;ZWgF;ZOsO9@!&&<c{PKJTgb>h#jGW+8HKv!m!2w00",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "SMG",
+      "manufacturer": "Daedalus",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Smg row 11; DPS: 380k; Alt Fire: Shotgun; Element: Cryo",
+      "decoded_identity": {
+        "type_id": "20",
+        "primary_set": "DAD_SM",
+        "manufacturer": "Daedalus",
+        "type": "SMG"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:smashing-fatal-raiden-bd38c9599078",
+      "name": "Smashing Fatal Raiden",
+      "serial": "@UgwSAs35E/M44ngNiRy<sRH7Pn(3qH*n3$NDn3xzEI&=>e67>>w2bxW?Nj9N3)B}Y@?M3ZH?M1~!#YM$M)kW1s)kSSIEG#T6EG#T6ER60z^YZfYXq16QhR6^ZA_HZr4m3W*hxia5;sZ@Ip2U-Q5>Mg@ZK@44EiElAEiElAEiEmLPNGVp(xA3fpf=0_)j_2~m4W7m{E#2=12v;SxlpxGwNSNC=}_xX;ZWgF;ZOsO9@!&&<c{PKJTgb>h#jGW+8HJQ",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "SMG",
+      "manufacturer": "Daedalus",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Smg row 12; DPS: 380k; Alt Fire: Shotgun; Element: Shock",
+      "decoded_identity": {
+        "type_id": "20",
+        "primary_set": "DAD_SM",
+        "manufacturer": "Daedalus",
+        "type": "SMG"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:first-impression-bc7910256ea4",
+      "name": "First Impression",
+      "serial": "@Ugfs(8FnkbU=p4/u6Evto9V$_aIvO-wXdWsp>JBuUWRq-?O/nTgp-qKBb?Q@h_)wD)G/_kxPvS{Di6`+Sp2U-Q5>IFjDitagsut=NsvW8wsvW8wsvW8wsvYX+1po",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Assault Rifle",
+      "manufacturer": "Daedalus",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Asr row 2; DPS: 33627; Alt Fire: zip rocket; Element: cyro",
+      "decoded_identity": {
+        "type_id": "13",
+        "primary_set": "DAD_AR",
+        "manufacturer": "Daedalus",
+        "type": "Assault Rifle"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:star-helix-34fb2fdbccac",
+      "name": "Star Helix",
+      "serial": "@Ugfs(8FnkbU=p4/u6Evto9V$_a8ZI;swG)*VbqAVFvPm/fO@%>q>Qi^1d3kwxd3iJkHPLtyPvS{Di6@i_6$@1hbqm!FwGY+Ma1k!34m3W*2LJ",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Assault Rifle",
+      "manufacturer": "Daedalus",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Asr row 3; DPS: 192k; Alt Fire: shotgun; Element: cyro",
+      "decoded_identity": {
+        "type_id": "13",
+        "primary_set": "DAD_AR",
+        "manufacturer": "Daedalus",
+        "type": "Assault Rifle"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:domino-lionized-bubbles-8653b0265a8c",
+      "name": "Domino Lionized Bubbles",
+      "serial": "@Ugvelk35E/M44nh/c7h6(s75t3BO@atgHEIFK(k3U$tKx^!lGiLW}@!!p^b)xg@uKM(WNp~sfp&6+>%>zOKzb}O+7(%P<>E;P_t0AP`gm;Q0-9lQ1ejxPy@{#(Ib51j^q(M00",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Assault Rifle",
+      "manufacturer": "Vladof",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Asr row 4; DPS: 71330; Alt Fire: smg; Element: over ride",
+      "decoded_identity": {
+        "type_id": "18",
+        "primary_set": "VLA_AR",
+        "manufacturer": "Vladof",
+        "type": "Assault Rifle"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:deteriorating-riotous-waterfall-7c09c4719392",
+      "name": "Deteriorating Riotous WaterFall",
+      "serial": "@Ugvelk35E/M44ng-Ls?LvP8lL}s6-tN8faV=wM5;4W/M4^O/nTgp_!<#sEvk&g@uKMg@uKMg@uKMh0z^8bg8K)=u>4-c~GHHqfpH#P%Tt0)Jjx4)H~Ek)R7WY548_9(BKh0vPbyH9mykeq>k7TI%s{T00",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Assault Rifle",
+      "manufacturer": "Vladof",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Asr row 5; DPS: 17,037K; Alt Fire: water,vial, lingering; Element: Shock/corrossive",
+      "decoded_identity": {
+        "type_id": "18",
+        "primary_set": "VLA_AR",
+        "manufacturer": "Vladof",
+        "type": "Assault Rifle"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:domino-socialized-rowan-s-charge-0344606a1201",
+      "name": "Domino Socialized Rowan's Charge",
+      "serial": "@Ugvelk35E/M44nhI%7O}&sDsAD#KgqJ#KgqJ(6FJ9sF0/TsF0/TsF0/TsF0/TsF0{T&}@=TvPm/{CKMBu6BQP<6LklgmzS59mq!~73kwUQQ3jeA5<_B042gj*m8nWiG@ithcoI+INj#xV)j_2~r9!1br9!1b{XzXf{XsP}Q6!2)kth-c%/hiuwL_Iel/+?9l/+?9Ek8j=FHk(x@CuZ}Kob%oA~G_PlIWI!MnupL15HRsNT7BG8WE8I",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Assault Rifle",
+      "manufacturer": "Vladof",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Asr row 6; DPS: 205k; Alt Fire: zip rocket; Element: Corrosive/Radiation",
+      "decoded_identity": {
+        "type_id": "18",
+        "primary_set": "VLA_AR",
+        "manufacturer": "Vladof",
+        "type": "Assault Rifle"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:deteriorating-riatous-waterfall-ab3f8e6f4232",
+      "name": "Deteriorating Riatous Waterfall",
+      "serial": "@Ugvelk35E/M44ng-Ls?LvP8lL}s6-tN8faElR#sM49JNH<fo79zl1;KnHldlQu&9lOg@uKMg@uKMg@uKMg@w@_K6I(6C+JgUP<c?HP@_=IC{Qg_F4Rg?JJdVWNz{=NR1dWeHPGM@J+epm$Q{WebEJ;g5jtpnG*zUERFNuDMXE>@00",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Assault Rifle",
+      "manufacturer": "Vladof",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Asr row 7; DPS: 5583; Alt Fire: water,vial, lingering; Element: Cryo/Corrosive",
+      "decoded_identity": {
+        "type_id": "18",
+        "primary_set": "VLA_AR",
+        "manufacturer": "Vladof",
+        "type": "Assault Rifle"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:maintained-roaring-foshward-f4c819efd22b",
+      "name": "Maintained Roaring Foshward",
+      "serial": "@UgzR8/35E/M44ng-Ls?Lvjs_*_P-RhNQ8!UHQ8!UHQ8!UhI?zVL!otGB=u@Bi)ThFrMj2>gNDPS~G0;TgNj!-s@r3Ho2Q&xu5>*D8AMyh=G*KjqL_sT2DN*ZC{ZI`J7vUmYgo/)NYuM1Wp<x3",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Assault Rifle",
+      "manufacturer": "Jakobs",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Asr row 8; DPS: 55854; Alt Fire: magnum rockets; Element: Radiation",
+      "decoded_identity": {
+        "type_id": "27",
+        "primary_set": "JAK_AR",
+        "manufacturer": "Jakobs",
+        "type": "Assault Rifle"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:fishward-060b48bf9623",
+      "name": "Fishward",
+      "serial": "@UgzR8/35E/M44ng-Ls?Lvjs_*_P-RhNQ8!UHQ8!UHQ8!UhI?zniM#I9w!ouiNpZe6N!k/VOXkthVi6Jr2MB_<3i6`-d>d*%?2epO`y+oCP=7;=14NVk@B2myvR7%u3R6o=ket~irXhKF3{V)uuoq;AqB+)?A(f/",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Assault Rifle",
+      "manufacturer": "Jakobs",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Asr row 9; DPS: 44622; Alt Fire: Seeker Missiles; Element: Radiation",
+      "decoded_identity": {
+        "type_id": "27",
+        "primary_set": "JAK_AR",
+        "manufacturer": "Jakobs",
+        "type": "Assault Rifle"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:sent-poor-man-s-divided-focus-f49bed7e00ae",
+      "name": "Sent Poor Man's Divided Focus",
+      "serial": "@Ugg66CFnkbU=p4{h7F4K19W*8;CMG5(CMG6^h7G+!y+XZ0y+YlAW/M4^O/nTgp*j2n6$6UHP0&We!otGB!otGn4m2+>FE5Wq8E9fi42dBzM25%^86rbuhzyY-GEh3yrRqTALwtx2bQU$ycoI+INj!-s6bDs?KcHq5s1E85>K7^wG+xAuco8q+1(ie%G<sx@@R2-%2mLS%D3)OY",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Assault Rifle",
+      "manufacturer": "Tediore",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Asr row 10; DPS: 119K; Alt Fire: Big Rocket; Element: Radiation",
+      "decoded_identity": {
+        "type_id": "14",
+        "primary_set": "TED_AR",
+        "manufacturer": "Tediore",
+        "type": "Assault Rifle"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:accelerated-nadir-conflux-b415251ebb61",
+      "name": "Accelerated Nadir Conflux",
+      "serial": "@Ugydj=35E/M44nfiiz?Ki61AvCjYXwF{Y2$M-Qgx^B&sCpBx)w=B`PIqqhVoTVRQ$YmzPJE%2cH$np<*9ZpkgVCAZL~CK^xT3Ee^cL4`t<Lft~;LiIxRLiIxRLajrsL#;!tL&ZZ4G<!sk@R2)`NARF_h5`LBOsJh<Lhl<300",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Sniper",
+      "manufacturer": "Maliwan",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Sniper row 2; DPS: 44146; Element: over ride",
+      "decoded_identity": {
+        "type_id": "25",
+        "primary_set": "MAL_SR",
+        "manufacturer": "Maliwan",
+        "type": "Sniper"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:riddled-eviscerating-rainmaker-sticky-d0c2334150c2",
+      "name": "Riddled Eviscerating Rainmaker (sticky)",
+      "serial": "@Ugxp/&35E/M44ng-Ls?Lv4z;Lys7FOA4QdUl4eAawn`D!0LM>4-Q7=(5Q5y{l3k#z=(7e37ygbU(r6yIWv8aj0lXwzO;t7pGg+bjx{XvC7-9qI;?LyT;{X(rn^+Sb3jYR!J4K#XWkMNN@l1K2!9H}FAgbsQiO)QBeu_TtnLUo/=AwB>",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Sniper",
+      "manufacturer": "Ripper",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Sniper row 3; DPS: 427k; Alt Fire: homing rocket; Element: over ride",
+      "decoded_identity": {
+        "type_id": "23",
+        "primary_set": "BOR_SR",
+        "manufacturer": "Ripper",
+        "type": "Sniper"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:riddled-eviscerating-rainmaker-impact-e953a7027457",
+      "name": "Riddled Eviscerating Rainmaker (impact)",
+      "serial": "@Ugxp/&35E/M44ng-Ls?Lv4z;Lys7FOA4QdUl4eAawn`D!0LM>4-Q7=(5Q5y{l3k#z=(7e37ygbU(r6yIWv8aj0lXwzO;tAD(#)tSoVNiEae^8-Nw@/rIyHK@IzfkK?{ZJuMBT@fQ1C1WpBYfnJ<PkhFN9u?jp@ZH>6H8)AEQuwt00",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Sniper",
+      "manufacturer": "Ripper",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Sniper row 4; DPS: 427k; Alt Fire: homing rocket; Element: over ride",
+      "decoded_identity": {
+        "type_id": "23",
+        "primary_set": "BOR_SR",
+        "manufacturer": "Ripper",
+        "type": "Sniper"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:riddled-eviscerating-rainmaker-sticky-9b8265b723ed",
+      "name": "Riddled Eviscerating Rainmaker (sticky)",
+      "serial": "@Ugxp/&35E/M44ng-Ls?Lv4z;L*#>B+L#85rdqau/CwFcD&bqAVFvPm/fmZ+Ghm#CSjjfRDV(H&@B9%brMld9BM)YKDH2O1yZLwukys5_`Xs8Fa=s9UI7sOlD/A1WkjB<de(pwT0Hgpb^jJc38&NFA{wbkG/E%?hGDh5-N",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Sniper",
+      "manufacturer": "Ripper",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Sniper row 5; DPS: 115k; Alt Fire: beam tosser; Element: over ride",
+      "decoded_identity": {
+        "type_id": "23",
+        "primary_set": "BOR_SR",
+        "manufacturer": "Ripper",
+        "type": "Sniper"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:riddled-eviscerating-rainmaker-impact-cac55a8a4a4b",
+      "name": "Riddled Eviscerating Rainmaker (impact)",
+      "serial": "@Ugxp/&35E/M44ng-Ls?Lv4z;L*#>B+L#85rdqau/CwFcD&bqAVFvPm/fmZ+Ghm#CSjjfRDV(H&@B9%brMld9BM)YKCc26YGZ2Neo+3Uv!r3sv0$^+Sb3jYR!J4K#XWkMNN@l1K2!9H}FAgbsRRxKJHve25S6f!-J*w8t<2",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Sniper",
+      "manufacturer": "Ripper",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Sniper row 6; DPS: 115k; Alt Fire: beam tosser; Element: over ride",
+      "decoded_identity": {
+        "type_id": "23",
+        "primary_set": "BOR_SR",
+        "manufacturer": "Ripper",
+        "type": "Sniper"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:boomslang-2dd8ac2c8023",
+      "name": "Boomslang",
+      "serial": "@Ugy3L+35E/M44ng-Ls?Lv4%MiG#>B+L#86Gt9cVVmCfOvLWRq+{`%oJV3kwSi3!^*Gyu7@;yu7?TnrJ+UC-Een#FKauPv}#1=mRQ)nu96>%@6q@Kjeq}kRS3xe#j5`AwT4Y{E#20p@//<Bnqm93Wo}Z3Wv&QxCj^FB3y(EYKO{Upa}^H2^kp~85v1QNlEm>Kob%Y5@?`VSy/N1Kob%Y5+WiZB9fAll9K3sG_fR>!~y",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Sniper",
+      "manufacturer": "Jakobs",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Sniper row 7; DPS: 188k; Alt Fire: Rolling Thunder Grenades; Element: Cryo",
+      "decoded_identity": {
+        "type_id": "24",
+        "primary_set": "JAK_SR",
+        "manufacturer": "Jakobs",
+        "type": "Sniper"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:boomslang-78774e0017e5",
+      "name": "Boomslang",
+      "serial": "@Ugy3L+35E/M44ng-Ls?Lv4%MiG#>B+L#86Gt9cVVmCfOvLWRq+{`%oJV3kwSi3!^*Gyu7@;yu7?TnrJ+UC-Een#FKauPv}#1=mRQ)nu96>%@6q@Kjeq}kRS3xe#j5`AwT4Y{E#20p@//<Bnqm93Wo}Z3Wv&QxCj^FB3y(EYKO{Upa}^H2^kp~85v1QNlEm>Kob%Y5@?`tadFhnKob%Y5+WiZB9fAll9K3sG_fR>!~y",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Sniper",
+      "manufacturer": "Jakobs",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Sniper row 8; DPS: 188k; Alt Fire: Rolling Thunder Grenades; Element: Shock",
+      "decoded_identity": {
+        "type_id": "24",
+        "primary_set": "JAK_SR",
+        "manufacturer": "Jakobs",
+        "type": "Sniper"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:synchrotron-nadir-marshall-s-claw-794839018f65",
+      "name": "Synchrotron Nadir Marshall's Claw",
+      "serial": "@Ugydj=35E/M44ng-Ls?Lv4t3C&n3$ND7#cdX7Ig=jO/nTg$tKw(o6t$rOw>lh!otGB!sre(FE1}IkH(<tK;uJvpozwlcoI+INj!-s@g$y5Thty@Dby%b8EAgU5BVWK<Oga-fo`EDnl92sx=0u4g36(W2(6Dsl0ZUp3^XGnBO@atBO@atBZJx*Xi`#AQc_Y<Qc_Y<Qc_Y9y^kiA#FAJNOJYeZi6yZlmc)`+5=&x9EQtjG",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Sniper",
+      "manufacturer": "Maliwan",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Sniper row 9; DPS: 2,187k; Alt Fire: spread launcher, Alchemic,; Element: Shock/Corrosive",
+      "decoded_identity": {
+        "type_id": "25",
+        "primary_set": "MAL_SR",
+        "manufacturer": "Maliwan",
+        "type": "Sniper"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:synchrotron-nadir-bod-ec0101176ff0",
+      "name": "Synchrotron Nadir Bod",
+      "serial": "@Ugydj=35E/M44nfiiz?Ki4jK~^6B83dLx-YtpgYiPl1;KnHpwR0gw~=?qGqBt8Wt8778XW#pm}+Dd3iL^coI+INj!-s@g$za6RHD^5AlJ<pxUDLph}@ep~^t>Lw?8)`5`}0GYWJIRSq>os12<_a//>iBO@atBO@atBO`;_8E8^cQc_Y<Qc_Y<Qc_Y<61/Tmmc)`+5=&x9EQuwtB$mXISQ1NONi2y400",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Sniper",
+      "manufacturer": "Maliwan",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Sniper row 10; DPS: 367k; Alt Fire: Locust Rockets; Element: Shock/Corrosive",
+      "decoded_identity": {
+        "type_id": "25",
+        "primary_set": "MAL_SR",
+        "manufacturer": "Maliwan",
+        "type": "Sniper"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:sudden-looming-tk-wave-6020907b96c0",
+      "name": "Sudden Looming TK Wave",
+      "serial": "@Ugd_t@FnkbU=p4{h7F4K1HEK~gQFT$RQFox(B%5TDY?4i~3Ee~OL-j*#G%PGEEG#T6ER60z^YZfY^78WNEvgPQKEwx_i;9EFgW7{?Xrf3IiGpIG#-YxkhBBZw(8v)vs0=ifq!Iu",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Shotgun",
+      "manufacturer": "Jakobs",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Shotgun row 2; DPS: 147k; Alt Fire: rainbow vomit; Element: kenetic/radiation",
+      "decoded_identity": {
+        "type_id": "9",
+        "primary_set": "JAK_SG",
+        "manufacturer": "Jakobs",
+        "type": "Shotgun"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:ceramic-fatel-bod-565fce225223",
+      "name": "Ceramic Fatel Bod",
+      "serial": "@UgdhV<FnkbU=p4{h7F4K1CF-CtF)=YQF)=YQF)=iBC>`n!G@E3TY?4i~NjAwQ*(94#P1Hui!otGB!otGB!otGB=ngb5FE1}IFE1}Ik1{pUcoI+INj!-s@g$zalXwzO=u<aQb5NsDp->G?6p12HBno<k`i1I=8ff&$9^oT*B#+>cIZ{XL2pu$saiBWT_z)lBLwtaTv6o`_p0~^N^mzWgmc#J3``ZlDX/eB=9+u1V&h!~g2L",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Shotgun",
+      "manufacturer": "Daedalus",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Shotgun row 3; DPS: 2,461k; Alt Fire: singularity; Element: shock/override",
+      "decoded_identity": {
+        "type_id": "8",
+        "primary_set": "DAD_SG",
+        "manufacturer": "Daedalus",
+        "type": "Shotgun"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:ceramic-fatel-bod-85d1c4a7a3aa",
+      "name": "Ceramic Fatel Bod",
+      "serial": "@UgdhV<FnkbU=p4{h7F4K1CF-CtF)=YQF)=YQG;}B(>JBuUWRq-?O/nTg$tKw(n@~;EM#I9w!otGB!otGB!ouhdG%qhNFE1}IFE1}IFE5WWHPLtyPvS{Di6``_o2WUcQK(R;h9-(ckth-cy+Zv$^+XLcdSs9Akvoz{@W>pgBX)!iszV>p_74C",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Shotgun",
+      "manufacturer": "Daedalus",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Shotgun row 4; DPS: 304k; Alt Fire: gernade launcher; Element: shock/override",
+      "decoded_identity": {
+        "type_id": "8",
+        "primary_set": "DAD_SG",
+        "manufacturer": "Daedalus",
+        "type": "Shotgun"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:ceramic-fatel-bod-ec8ce2048da9",
+      "name": "Ceramic Fatel Bod",
+      "serial": "@UgdhV<FnkbU=p4{h7F4K1CF-CtF)=YQF)=YQF*I~29qJA=n`D!0l1;KnHpwR0B%4r8)JDU?!otGB!otGB!otGB!sre(FE1}IFE1~TGBwe75>MhuJc%dqB%aWxZldO(MxjEXUZH-WdZGpzJ+epm$Q{Wecw~;$5j#Q$)u9h)>j!ukdntzRdAm$ckLTZOIShZhzs)e67W+==VYxi-OrOzo00",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Shotgun",
+      "manufacturer": "Daedalus",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Shotgun row 5; DPS: 527k; Alt Fire: mirco rocket pod; Element: shock/override",
+      "decoded_identity": {
+        "type_id": "8",
+        "primary_set": "DAD_SG",
+        "manufacturer": "Daedalus",
+        "type": "Shotgun"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:ceramic-fatel-bod-f3aaab9eda81",
+      "name": "Ceramic Fatel Bod",
+      "serial": "@UgdhV<FnkbU=p4{h7F4K09qLetO4LDPVq#)qVq#)qVq#)qVq#)qVq#)wpmA}O4wVjd2bxW?NjAwQ*(94}lWdYrvPm/{CfOvLWRq-?O/l8qMAbxXG%PGEEG#T6EG#T6EG#T6EG#T6EG#T6EG#T6EG&%fK=bnQ^78WX^78WX^78WX@@SNSCWge27!pHbNDPS~F;J#5HPLtyPvS{Di6`+Sp2U-Q5>MhuJc%dqB%Z{RcoI+INj!-s@g$za6Z+Jr>OkW/e4v}Co2WUcIjB*nQK(R;P^ed^SEyg8U#Om_o~VIFkLZy-vPbv`AGsrUB#-0~Jc38&$Q-F7b;OR?5jsK#wSmT(SQBdi",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Shotgun",
+      "manufacturer": "Daedalus",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Shotgun row 6; DPS: 57m; Alt Fire: locust rocket; Element: shock/override",
+      "decoded_identity": {
+        "type_id": "8",
+        "primary_set": "DAD_SG",
+        "manufacturer": "Daedalus",
+        "type": "Shotgun"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:ceramic-fatel-bod-5bc24528dde5",
+      "name": "Ceramic Fatel Bod",
+      "serial": "@UgdhV<FnkbU=p4{h7F4K1CF-CtF)=YQF)=YQF*I~29qJA=n`D!0l1;KnHpwR0B%4r8)JDU?!otGB!otGB!otGB!sre(FE1}IFE1~TMj2>gNDPS~F;J!^8c*U$Jc%dqB%Z{RcoI+INj!-s^r<@Z0o_E+L5)I%LcKyYxj?^AJy8RV9@!&&<c{PKJTgb>h#jGWuCky)9V$@=jfshgiHV7ciHV`1L+Ma=pxGpwWRq-?O/nTg$tKx^YN9q878Vv378Vv378Vv378XW#pm}+Dd3kwxc{IvE6GLK142gj<HPLtyPvS{Di6`+Sp2U-Q5>MhuJfTn3p%3ULY7S}?DirD!s>ucVh3bhKX!OV);Ujk>kKmCxQb+6v9RL",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Shotgun",
+      "manufacturer": "Daedalus",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Shotgun row 7; DPS: 1,098k; Alt Fire: magnum rockets; Element: shock/override",
+      "decoded_identity": {
+        "type_id": "8",
+        "primary_set": "DAD_SG",
+        "manufacturer": "Daedalus",
+        "type": "Shotgun"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:debauched-performative-kitty-d0b4bbf94068",
+      "name": "Debauched Performative Kitty",
+      "serial": "@UgfIh4FnkbU=p4{h7F4K44Har=PEJlvPEHPmMEygpM6E=vM6E=vM6E=vM6E=vM6E=PGSI}37!pHbNDOqwKyyQG$PKw6H{^!gkQ;JCZpaO}AvffP+(37rd3kwxG/_kxPvS{Di6`-d>d*(YsWqsECW=InC=x}YNEC@8Q6!2)L90;PKTtW;In+RtNA$=Z;Ujkh56WSn5fKp)5fKp)5fK>~85tQF85tQFNl6I_3G~ZABO)RqA/fIpA/fIpA/fIpA/fIp=!b!3WMpJyWMpJyWF*lo1C5BFb_SZ1l$4Z/l$4Z/l$4Z/ltk~Ni6yZlmc)`+5=&x9EQuwtB$mXISQ1NONi2yau_Ttnl3G$rYDq1rCAFlM)RJ0K3&k?fj0~zBjSkTvIz)%ukQ;JCZlL$k%#v9$OJ>O/nI*Gi7Mf$A85tQF85tQF85tQF85tP>",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Shotgun",
+      "manufacturer": "Torgue",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Shotgun row 8; DPS: 77319; Alt Fire: Grenade Launcher; Element: Cryo/over rides",
+      "decoded_identity": {
+        "type_id": "12",
+        "primary_set": "TOR_SG",
+        "manufacturer": "Torgue",
+        "type": "Shotgun"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:harled-prosumer-sharkbait-cf772042c9cc",
+      "name": "Harled Prosumer Sharkbait",
+      "serial": "@Uge(J0FnkbU=p0a8RG/)a(3qH*m>8Oix&zH7*(94}lWdYrvI(U`okX=nZ8R(_EG#T6ER60z^YZfY^78WX^780X6OAYFB%Z{RcoI+INj!-sR0kR#;scf852zUhIzu{88#Xk@aG-XE3B7MD00",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Shotgun",
+      "manufacturer": "Tediore",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Shotgun row 9; DPS: 705k; Alt Fire: shrapnel cannon; Element: Kenetic/Corrosive",
+      "decoded_identity": {
+        "type_id": "11",
+        "primary_set": "TED_SG",
+        "manufacturer": "Tediore",
+        "type": "Shotgun"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:ceramic-fatal-bod-1b24c462d89c",
+      "name": "Ceramic Fatal Bod",
+      "serial": "@UgdhV<FnkbUG(FH&7F4K1CF-CtF)=YQF)=Ze4z-4~pgYiPl1;KnHVG_L6SdK>u&}VOu&^*1WuS>6G0+`oUS3{aUS3{a9%brNpZe6NJ~h#J5>MhuJc%dqB%Z_*ssoJ=@gY9YP1GDzDAXua8UBD?p=zP-kPq/=)e/+)=#f3bNA5@-!6S1}8_I$1FcLJ%KqEtBhzyYd00",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Shotgun",
+      "manufacturer": "Daedalus",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Shotgun row 10; DPS: 1,589k; Alt Fire: Zip Rocket; Element: Kenetic",
+      "decoded_identity": {
+        "type_id": "8",
+        "primary_set": "DAD_SG",
+        "manufacturer": "Daedalus",
+        "type": "Shotgun"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:cormano-50f35ca60181",
+      "name": "Cormano",
+      "serial": "@UgfIh4FnkbU=p4{h7F4K29qOPlF)=YQF)=Ze7PZX-Md?6ypxGpwWRq-?O/l7%M4d#fL~S%IEG#T6ER60z^YZfY^78U%lz}FO$PgJKLu7~yk%8*a2lT0l#*=swPpA#541Yk)C{P{L9n>n+9BAMO9D#$%A^-",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Shotgun",
+      "manufacturer": "Torgue",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Shotgun row 11; DPS: 243k; Alt Fire: Shock Field; Element: Kentetic/Shock",
+      "decoded_identity": {
+        "type_id": "12",
+        "primary_set": "TOR_SG",
+        "manufacturer": "Torgue",
+        "type": "Shotgun"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:cormano-b5da4c291e30",
+      "name": "Cormano",
+      "serial": "@UgfIh4FnkbU=p4{h7F4K29qOPlF)=YQF)=YTTqrGS4QWB!JW!MlbO)MEvPm/{CfOvL&`8ut)JoJw!@/PC!otGn4m2+>FE1}Ik4712Vu%cpAu>dU$PgK*4t+qMnrJ+UC-H>Zpvv$E)QkevLES;ELd}5&j=&K(s4Qxr(Ib0=kKB<wf(HN",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Shotgun",
+      "manufacturer": "Torgue",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Shotgun row 12; DPS: 194k; Alt Fire: Flash Cyclone/Shock Field; Element: cryo/shock",
+      "decoded_identity": {
+        "type_id": "12",
+        "primary_set": "TOR_SG",
+        "manufacturer": "Torgue",
+        "type": "Shotgun"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:cormano-98735914b9f4",
+      "name": "Cormano",
+      "serial": "@UgfIh4FnkbU=p4{h7F4K29qOPlF)=YQF)=YTR46TK4QWB!JW!MlbO)MEvPm/{CfOvL&`8ut)JoJw!@/PC!otGn4m2+>FE1}Ik4712Vu%cpAu>dU$PgK*4t+qMnrJ+UC-H>Zpvv$E)QkevLES;ELd}5&j=&K(s4Qxr(Ib0=kKB<wf(HN",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Shotgun",
+      "manufacturer": "Torgue",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Shotgun row 13; DPS: 194k; Alt Fire: Corrosive/Shock Field; Element: Corrosive/Shock",
+      "decoded_identity": {
+        "type_id": "12",
+        "primary_set": "TOR_SG",
+        "manufacturer": "Torgue",
+        "type": "Shotgun"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:put-looming-tk-wave-358dbcdbe0fb",
+      "name": "Put looming TK Wave",
+      "serial": "@Ugd_t@FnkbU=p4{h7F4K1HEK~gQFT$RQFox(B%5TDY?4i~3Ee~OL-j*#G%PGEEG#T6ER60z^YZfY^78U1B<d}y4m3W*2bznDgUW;2gKB7^NEC^JVxh*N&Y{{sBS++*GSF0#N&o",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Shotgun",
+      "manufacturer": "Jakobs",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Shotgun row 14; DPS: 147k; Alt Fire: rainbow vomit/ LASER POINTER; Element: Kenetic",
+      "decoded_identity": {
+        "type_id": "9",
+        "primary_set": "JAK_SG",
+        "manufacturer": "Jakobs",
+        "type": "Shotgun"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:put-looming-tk-wave-1f255095c399",
+      "name": "Put Looming TK Wave",
+      "serial": "@Ugd_t@FnkbU=p4{h7F4K1HEK~gQFT$RQFox(B%5TDY?4i~3Ee~OL-j*#G%PGEEG#T6ER60z^YZfY^78Vip/K>E&/6d;XncqdG#3>Il?Sy4)zCzdC=vz5LXAV6Lk(p>ZJ?1Oa!?s)DoG^(",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Shotgun",
+      "manufacturer": "Jakobs",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Shotgun row 15; DPS: 147k; Alt Fire: rainbow vomit/ LASER POINTER; Element: kenetic/radiation",
+      "decoded_identity": {
+        "type_id": "9",
+        "primary_set": "JAK_SG",
+        "manufacturer": "Jakobs",
+        "type": "Shotgun"
+      },
+      "enabled": true
+    },
+    {
+      "id": "custom:crayons82:consecrated-draupner-f6e3f66d6726",
+      "name": "Consecrated Draupner",
+      "serial": "@Ugr$iFm/*xI!q7ROt1ReJnc7sR#u#W/2n>NCFa(Cc5Eudj)iKbdq@<*zq@*NTh1zIXSXfwCSXfwCSXfwCSXfwCSXda{f#&7q<>k>R15FHxfyNkUcnA;SAv}bK@DLutLwE=e;UPSPhwu;{!b5ln58)v^gop4D9>PO-2oK>QJcNhv5FWxqcnA;SAv}bK@DLutLwE=e;UPSPhwu;{!b5ln4>Zu/kv+mk?noZNBXgvV*bzFY41YiqjVJLWp2U-Q5>MhuJOK",
+      "source": "Custom Static",
+      "listing": "Custom Static",
+      "type": "Heavy Weapon",
+      "manufacturer": "Ripper",
+      "rarity": "",
+      "creator": "Crayons82.0",
+      "mattmab_result": "Unchecked",
+      "mattmab_validator": "",
+      "tags": [
+        "crayons82.0",
+        "custom",
+        "modded",
+        "bl4"
+      ],
+      "notes": "Spreadsheet: Heavy row 2; DPS: 10M; Alt Fire: over ride; Element: Kenetic",
+      "decoded_identity": {
+        "type_id": "275",
+        "primary_set": "BOR_HW",
+        "manufacturer": "Ripper",
+        "type": "Heavy Weapon"
+      },
+      "enabled": true
+    }
+  ]
+}

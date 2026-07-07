@@ -1215,11 +1215,49 @@ class App(V9App):
     GZO_CODES_URL = 'https://save-editor.be/GZO/Borderlands4/Codes.html'
     GZO_CATALOG_URL = 'https://save-editor.be/GZO/Borderlands4/codes/api.php?action=catalog'
     GZO_CACHE_NAME = 'MattsSDKBoostingTools_gzo_codes.json'
+    CUSTOM_BL4_CODES_NAME = 'custom_bl4_codes.json'
     GZO_CACHE_VERSION = 5
     GZO_SERIAL_RE = re.compile(r"@U[0-9A-Za-z!#$%&()*+\-;<=>?@^_`{/}~]{12,}")
+    CODE_MANUFACTURER_ALIASES = {
+        'atlas': 'Atlas', 'c4sh': 'C4SH', 'cov': 'COV', 'co v': 'COV', 'daedalus': 'Daedalus',
+        'deadlus': 'Daedalus', 'hyperion': 'Hyperion', 'jakobs': 'Jakobs', 'maliwan': 'Maliwan',
+        'order': 'Order', 'ripper': 'Ripper', 'borg': 'Ripper', 'bor': 'Ripper',
+        'tediore': 'Tediore', 'torgue': 'Torgue', 'vladof': 'Vladof',
+    }
+    CODE_TYPE_ALIASES = {
+        'armor': 'Armor', 'assault rifle': 'Assault Rifle', 'assault_rifle': 'Assault Rifle',
+        'asr': 'Assault Rifle', 'class mod': 'Class Mods', 'class_mod': 'Class Mods',
+        'classmod': 'Class Mods', 'class mods': 'Class Mods', 'energy': 'Energy',
+        'enhancement': 'Enhancements', 'enhancements': 'Enhancements', 'gadget': 'Gadget', 'grenade': 'Ordnance',
+        'grenades': 'Ordnance', 'ordnance': 'Ordnance', 'heavy': 'Heavy Weapon',
+        'heavy weapon': 'Heavy Weapon', 'other': 'Other', 'pistol': 'Pistol',
+        'repkit': 'Repkits', 'repkits': 'Repkits', 'repair kit': 'Repkits',
+        'repair_kit': 'Repkits', 'shield': 'Shields', 'shields': 'Shields',
+        'shotgun': 'Shotgun', 'shutgun': 'Shotgun', 'smg': 'SMG', 'sniper': 'Sniper',
+        'weapon': 'Weapons', 'weapons': 'Weapons',
+    }
+    CODE_RARITY_ALIASES = {
+        'common': 'Common', 'uncommon': 'Uncommon', 'rare': 'Rare', 'epic': 'Epic',
+        'legendary': 'Legendary', 'legendr': 'Legendary', 'pearlescent': 'Pearlescent',
+        'pearl': 'Pearlescent', 'perle': 'Pearlescent',
+    }
+    CODE_CLASS_ALIASES = {
+        'ai': 'AI', 'c4sh': 'C4SH', 'exo soldier': 'Exo Soldier', 'exo_soldier': 'Exo Soldier',
+        'forgeknight': 'Paladin', 'gravitar': 'Gravitar', 'paladin': 'Paladin', 'siren': 'Siren',
+        'vex': 'Siren', 'rafa': 'Exo Soldier', 'amon': 'Forgeknight', 'harlowe': 'Gravitar',
+    }
+    CODE_MATTMAB_STATUS_ALIASES = {
+        'pass': 'PASS', 'passed': 'PASS', 'legit': 'PASS',
+        'fail': 'FAIL', 'failed': 'FAIL', 'modded': 'FAIL',
+        'error': 'ERROR', 'skipped': 'SKIPPED', '?': 'ERROR',
+        'unchecked': '', 'not checked': '', '': '',
+    }
 
     def _gzo_cache_path_external(self):
         return RESOURCE_DIR / self.GZO_CACHE_NAME
+
+    def _custom_bl4_codes_path_external(self):
+        return RESOURCE_DIR / self.CUSTOM_BL4_CODES_NAME
 
     def _ascii_clean(self, text):
         text = str(text or '')
@@ -1235,7 +1273,12 @@ class App(V9App):
         return True
 
     def _gzo_entry_id(self, row):
-        return str(abs(hash('|'.join(str(row.get(k,'')) for k in ('name','serial','listing','source')))))
+        return self._stable_code_id('gzo', row)
+
+    def _stable_code_id(self, prefix, row):
+        basis = '|'.join(str((row or {}).get(k, '') or '') for k in ('serial', 'name', 'listing', 'source'))
+        digest = hashlib.sha1(basis.encode('utf-8', errors='ignore')).hexdigest()[:16]
+        return f'{prefix}:{digest}'
 
     def _norm_listing(self, *vals):
         text = ' '.join(str(v or '') for v in vals).lower()
@@ -1243,6 +1286,203 @@ class App(V9App):
         if 'legit' in text: return 'Legit'
         if 'lootlemon' in text: return 'Lootlemon'
         return 'GZO'
+
+    def _code_norm_key(self, value):
+        text = self._ascii_clean(value).lower().replace('_', ' ').replace('-', ' ')
+        return re.sub(r'\s+', ' ', text).strip()
+
+    def _looks_like_code_payload(self, value):
+        text = str(value or '').strip()
+        if not text:
+            return False
+        if text.startswith('@U') or self.GZO_SERIAL_RE.search(text):
+            return True
+        low = text.lower()
+        if low.startswith(('http://', 'https://', 'bl4(')):
+            return True
+        if len(text) > 96 and re.search(r'[{}|=@]', text):
+            return True
+        if text.count('{') >= 2 or text.count('|') >= 2:
+            return True
+        return False
+
+    def _code_token_values(self, value):
+        if value in (None, ''):
+            return []
+        if isinstance(value, dict):
+            raw = [str(v) for v in value.values() if v not in (None, '')]
+        elif isinstance(value, (list, tuple, set)):
+            raw = [str(v) for v in value if v not in (None, '')]
+        else:
+            raw = [str(value)]
+        out = []
+        for item in raw:
+            if self._looks_like_code_payload(item):
+                continue
+            for token in re.split(r'[,|;/]+', item):
+                clean = self._ascii_clean(token)
+                if clean:
+                    out.append(clean)
+        return out
+
+    def _normalize_code_listing(self, value, fallback=''):
+        text = self._ascii_clean(value)
+        if not text or self._looks_like_code_payload(text):
+            text = self._ascii_clean(fallback)
+        key = self._code_norm_key(text)
+        if key in self.CODE_MATTMAB_STATUS_ALIASES and key not in ('modded', 'legit'):
+            return ''
+        if 'custom static' in key or 'community' in key or 'crayons82' in key:
+            return 'Custom Static'
+        if 'lootlemon' in key:
+            return 'Lootlemon'
+        if 'modded' in key or 'non legit' in key or 'nonlegit' in key:
+            return 'Modded'
+        if 'legit' in key:
+            return 'Legit'
+        if 'gzo' in key:
+            return 'GZO'
+        return text if text in ('Custom Static', 'Community Modded') else ''
+
+    def _normalize_code_source(self, value, fallback=''):
+        text = self._ascii_clean(value) or self._ascii_clean(fallback)
+        if not text or self._looks_like_code_payload(text):
+            return ''
+        key = self._code_norm_key(text)
+        if 'custom' in key or 'crayons82' in key:
+            return 'Custom Static'
+        if 'lootlemon' in key:
+            return 'Local Lootlemon Cache' if 'local' in key or 'cache' in key else 'Lootlemon'
+        if 'gzo' in key:
+            return 'GZO'
+        return text[:64]
+
+    def _normalize_code_type(self, value):
+        key = self._code_norm_key(value)
+        if not key or self._looks_like_code_payload(value):
+            return ''
+        return self.CODE_TYPE_ALIASES.get(key, '')
+
+    def _normalize_code_manufacturer(self, value):
+        key = self._code_norm_key(value)
+        if not key or self._looks_like_code_payload(value):
+            return ''
+        return self.CODE_MANUFACTURER_ALIASES.get(key, '')
+
+    def _normalize_code_rarity(self, value):
+        key = self._code_norm_key(value)
+        if not key or self._looks_like_code_payload(value):
+            return ''
+        return self.CODE_RARITY_ALIASES.get(key, '')
+
+    def _normalize_code_class(self, value):
+        key = self._code_norm_key(value)
+        if not key or self._looks_like_code_payload(value):
+            return ''
+        return self.CODE_CLASS_ALIASES.get(key, '')
+
+    def _normalize_code_creator(self, value):
+        text = self._ascii_clean(value)
+        if not text or self._looks_like_code_payload(text):
+            return ''
+        key = self._code_norm_key(text)
+        if key in self.CODE_MANUFACTURER_ALIASES or key in self.CODE_TYPE_ALIASES or key in self.CODE_RARITY_ALIASES:
+            return ''
+        return text[:80]
+
+    def _normalize_code_mattmab_status(self, value):
+        key = self._code_norm_key(value)
+        return self.CODE_MATTMAB_STATUS_ALIASES.get(key, self._ascii_clean(value).upper() if key in ('pass', 'fail', 'error', 'skipped') else '')
+
+    def _classify_code_metadata_values(self, *values):
+        info = {'manufacturer': '', 'type': '', 'rarity': '', 'character_class': '', 'tags': ''}
+        extras = []
+        for value in values:
+            for token in self._code_token_values(value):
+                key = self._code_norm_key(token)
+                if not info['manufacturer'] and key in self.CODE_MANUFACTURER_ALIASES:
+                    info['manufacturer'] = self.CODE_MANUFACTURER_ALIASES[key]
+                elif not info['type'] and key in self.CODE_TYPE_ALIASES:
+                    info['type'] = self.CODE_TYPE_ALIASES[key]
+                elif not info['rarity'] and key in self.CODE_RARITY_ALIASES:
+                    info['rarity'] = self.CODE_RARITY_ALIASES[key]
+                elif not info['character_class'] and key in self.CODE_CLASS_ALIASES:
+                    info['character_class'] = self.CODE_CLASS_ALIASES[key]
+                elif len(token) <= 80 and not self._looks_like_code_payload(token):
+                    extras.append(token)
+        seen = set()
+        clean_extras = []
+        for token in extras:
+            norm = self._code_norm_key(token)
+            if norm and norm not in seen:
+                seen.add(norm); clean_extras.append(token)
+        info['tags'] = ', '.join(clean_extras)
+        return info
+
+    def _normalize_code_entry(self, raw, default_source='', default_listing=''):
+        if not isinstance(raw, dict):
+            return None
+        row = dict(raw)
+        serial = str(row.get('serial') or row.get('base85') or row.get('Base85') or row.get('code') or row.get('value') or '').strip()
+        if not self._is_valid_bl4_serial(serial):
+            return None
+        classified = self._classify_code_metadata_values(
+            row.get('category'), row.get('type'), row.get('manufacturer'), row.get('maker'),
+            row.get('rarity'), row.get('character_class'), row.get('tags'), row.get('extra_tags'),
+        )
+        source = self._normalize_code_source(row.get('source'), default_source)
+        listing = self._normalize_code_listing(row.get('listing'), default_listing or source)
+        if not listing:
+            listing = self._normalize_code_listing(source) or 'GZO'
+        type_value = self._normalize_code_type(row.get('type')) or self._normalize_code_type(row.get('category')) or classified.get('type', '')
+        manufacturer = self._normalize_code_manufacturer(row.get('manufacturer')) or self._normalize_code_manufacturer(row.get('maker')) or classified.get('manufacturer', '')
+        rarity = self._normalize_code_rarity(row.get('rarity')) or classified.get('rarity', '')
+        character_class = self._normalize_code_class(row.get('character_class')) or classified.get('character_class', '')
+        creator = self._normalize_code_creator(row.get('creator') or row.get('author') or row.get('creatorName') or row.get('owner'))
+        tags = row.get('tags', '')
+        if isinstance(tags, (list, tuple, set)):
+            tags = ', '.join(self._ascii_clean(t) for t in tags if self._ascii_clean(t))
+        tag_values = []
+        for group in (self._ascii_clean(tags), classified.get('tags', '')):
+            for token in self._code_token_values(group):
+                if token:
+                    tag_values.append(token)
+        seen_tags = set()
+        deduped_tags = []
+        for token in tag_values:
+            norm = self._code_norm_key(token)
+            if norm and norm not in seen_tags:
+                seen_tags.add(norm)
+                deduped_tags.append(token)
+        tags = ', '.join(deduped_tags)
+        category = self._normalize_code_type(row.get('category')) or type_value or self._ascii_clean(row.get('category'))[:64]
+        if self._normalize_code_manufacturer(category) or self._normalize_code_rarity(category) or self._looks_like_code_payload(category):
+            category = type_value or 'BL4 Codes'
+        normalized = {
+            'id': str(row.get('id') or ''),
+            'name': self._ascii_clean(row.get('name') or row.get('displayName') or row.get('title') or row.get('itemName')) or 'BL4 Code',
+            'serial': serial,
+            'listing': listing,
+            'category': category or 'BL4 Codes',
+            'type': type_value,
+            'rarity': rarity,
+            'manufacturer': manufacturer,
+            'creator': creator,
+            'character_class': character_class,
+            'source': source or default_source or listing,
+            'url': str(row.get('lootlemon_url') or row.get('url') or '').strip(),
+            'lootlemon_url': str(row.get('lootlemon_url') or row.get('url') or '').strip(),
+            'mattmab_validator': self._normalize_code_mattmab_status(row.get('mattmab_validator') or row.get('mattmab_result') or row.get('mattmabResult') or row.get('result')),
+            'mattmab_validator_detail': self._ascii_clean(row.get('mattmab_validator_detail') or row.get('validatorDetail') or row.get('detail')),
+            'tags': tags,
+            'extra_tags': self._ascii_clean(row.get('extra_tags')),
+            'notes': self._ascii_clean(row.get('notes')),
+            'decoded_identity': row.get('decoded_identity') if isinstance(row.get('decoded_identity'), dict) else {},
+        }
+        if not normalized['id'].startswith('custom:'):
+            prefix = self._code_norm_key(normalized['source'] or normalized['listing']).split(' ')[0] or 'code'
+            normalized['id'] = self._stable_code_id(prefix, normalized)
+        return normalized
 
     def _gzo_get_field(self, obj, *keys):
         if not isinstance(obj, dict): return ''
@@ -1370,18 +1610,42 @@ class App(V9App):
         out=[]
         for e in entries:
             if not isinstance(e,dict): continue
-            row=dict(e)
-            row.setdefault('listing','Lootlemon')
-            row.setdefault('source','Lootlemon')
-            row.setdefault('type', row.get('category',''))
-            out.append(row)
+            row = self._normalize_code_entry(e, default_source='Local Lootlemon Cache', default_listing='Lootlemon')
+            if row:
+                out.append(row)
         return out
 
     def _get_gzo_entries(self):
-        return self._load_gzo_cache_external()
+        out = []
+        for row in self._load_gzo_cache_external():
+            normalized = self._normalize_code_entry(row, default_source='GZO', default_listing=row.get('listing') or 'GZO')
+            if normalized:
+                out.append(normalized)
+        return out
+
+    def _get_custom_bl4_entries(self):
+        path = self._custom_bl4_codes_path_external()
+        if not path.exists():
+            return []
+        try:
+            payload = json.loads(path.read_text(encoding='utf-8') or '[]')
+        except Exception:
+            return []
+        entries = payload.get('entries', []) if isinstance(payload, dict) else payload
+        out = []
+        for row in entries if isinstance(entries, list) else []:
+            if not isinstance(row, dict) or row.get('enabled') is False:
+                continue
+            normalized = self._normalize_code_entry(row, default_source='Custom Static', default_listing='Custom Static')
+            if normalized:
+                if not normalized.get('id', '').startswith('custom:'):
+                    normalized['id'] = self._stable_code_id('custom', normalized)
+                out.append(normalized)
+        return out
 
     def _get_code_entries(self):
-        # Merge by serial, preferring GZO metadata because it carries Legit/Modded listing.
+        # Merge by exact serial. GZO fills catalog bucket metadata; custom static rows
+        # are applied last so refreshable cache updates cannot erase community entries.
         rows=[]; by_serial={}
         for e in self._get_lootlemon_entries():
             serial=str(e.get('serial') or '').strip()
@@ -1396,6 +1660,20 @@ class App(V9App):
                 by_serial[serial]=merged
             elif serial:
                 by_serial[serial]=g
+        for custom in self._get_custom_bl4_entries():
+            serial=str(custom.get('serial') or '').strip()
+            if not serial:
+                continue
+            if serial in by_serial:
+                merged=dict(by_serial[serial])
+                for key, value in custom.items():
+                    if value not in (None, '', [], {}):
+                        merged[key]=value
+                sources = [str(merged.get('source') or '').strip(), str(by_serial[serial].get('source') or '').strip()]
+                merged['merged_sources'] = ', '.join(sorted({s for s in sources if s}, key=str.lower))
+                by_serial[serial]=merged
+            else:
+                by_serial[serial]=custom
         rows += list(by_serial.values())
         results=getattr(self, 'bl4_mattmab_results', {}) or {}
         if results:
@@ -1424,10 +1702,13 @@ class App(V9App):
         return f"{active}{checked} {prefix}{name}    {meta}"
 
     def _code_value(self, e, key):
-        if key in ('category','type'): return str(e.get('type') or e.get('category') or '').strip()
-        if key == 'creator': return str(e.get('creator') or '').strip()
-        if key == 'source': return str(e.get('source') or '').strip()
-        return str(e.get(key) or '').strip()
+        if key == 'listing': return self._normalize_code_listing(e.get('listing') or e.get('source') or '')
+        if key in ('category','type'): return self._normalize_code_type(e.get('type') or e.get('category') or '')
+        if key == 'manufacturer': return self._normalize_code_manufacturer(e.get('manufacturer') or '')
+        if key == 'rarity': return self._normalize_code_rarity(e.get('rarity') or '')
+        if key == 'creator': return self._normalize_code_creator(e.get('creator') or '')
+        if key == 'source': return self._normalize_code_source(e.get('source') or '')
+        return self._ascii_clean(e.get(key) or '')
 
     def _code_filter_values(self, key, label_all='All'):
         vals = sorted({self._code_value(e,key) for e in self._get_code_entries() if self._code_value(e,key)})
@@ -2200,8 +2481,8 @@ class App(V9App):
         self.bl4_mattmab_thread.start()
 
     def _bl4_listing_values(self):
-        vals=sorted({str(e.get('listing') or '').strip() for e in self._get_code_entries() if str(e.get('listing') or '').strip()}, key=lambda x:x.lower())
-        preferred=[x for x in ('Legit','Modded','Lootlemon','GZO') if x in vals]
+        vals=sorted({self._code_value(e, 'listing') for e in self._get_code_entries() if self._code_value(e, 'listing')}, key=lambda x:x.lower())
+        preferred=[x for x in ('Legit','Modded','Lootlemon','GZO','Custom Static','Community Modded') if x in vals]
         rest=[x for x in vals if x not in preferred]
         return ['All'] + preferred + rest
 
@@ -2270,9 +2551,12 @@ class App(V9App):
         result=self.field_vars.get('code_mattmab_result', tk.StringVar(value='All')).get()
         rows=[]
         for e in self._get_code_entries():
-            hay=' '.join(str(e.get(k) or '') for k in ('name','listing','type','rarity','manufacturer','creator','character_class','tags','extra_tags','serial')).lower()
+            decoded = e.get('decoded_identity') if isinstance(e.get('decoded_identity'), dict) else {}
+            hay=' '.join(str(e.get(k) or '') for k in ('name','listing','source','type','rarity','manufacturer','creator','character_class','tags','extra_tags','notes','serial')).lower()
+            if decoded:
+                hay += ' ' + ' '.join(str(v or '') for v in decoded.values()).lower()
             if q and q not in hay: continue
-            listing=str(e.get('listing') or e.get('source') or '').strip()
+            listing=self._code_value(e, 'listing')
             if self.field_vars.get('code_listing'):
                 lf=self.field_vars['code_listing'].get()
                 if lf != 'All' and listing.lower() != lf.lower(): continue
@@ -2357,7 +2641,7 @@ class App(V9App):
 
     def _set_bl4_active_detail(self, e):
         if not e: return self._set_bl4_detail('', '', '')
-        detail='\n'.join([
+        detail_lines=[
             f"Name: {e.get('name','')}",
             f"Source: {e.get('source','Local')}",
             f"Listing: {e.get('listing','')}",
@@ -2367,8 +2651,16 @@ class App(V9App):
             f"Creator: {e.get('creator','')}",
             self._mattmab_validator_label_local(e),
             str(e.get('mattmab_validator_detail') or ''),
-            f"URL: {e.get('url','')}",
-        ])
+            f"Tags: {e.get('tags','')}",
+            f"Notes: {e.get('notes','')}",
+        ]
+        decoded = e.get('decoded_identity') if isinstance(e.get('decoded_identity'), dict) else {}
+        if decoded:
+            decoded_text = ' | '.join(f'{k}: {v}' for k, v in decoded.items() if v not in (None, '', [], {}))
+            if decoded_text:
+                detail_lines.append(f"Decoded: {decoded_text}")
+        detail_lines.append(f"URL: {e.get('url','')}")
+        detail='\n'.join(detail_lines)
         serial=e.get('serial') or ''
         breakdown=self._bl4_parts_breakdown_text(serial, quiet=True)
         self._set_bl4_detail(detail, serial, breakdown)
@@ -2463,6 +2755,9 @@ class App(V9App):
             'rarity': e.get('rarity') or '',
             'creator': e.get('creator') or '',
             'url': e.get('url') or '',
+            'tags': e.get('tags') or '',
+            'notes': e.get('notes') or '',
+            'decoded_identity': e.get('decoded_identity') if isinstance(e.get('decoded_identity'), dict) else {},
             'mattmab_validator': e.get('mattmab_validator') or '',
             'mattmab_validator_detail': e.get('mattmab_validator_detail') or '',
         }
@@ -2676,6 +2971,9 @@ class App(V9App):
         row['rarity']=str(row.get('rarity') or '')
         row['creator']=str(row.get('creator') or '')
         row['url']=str(row.get('url') or '')
+        row['tags']=str(row.get('tags') or '')
+        row['notes']=str(row.get('notes') or '')
+        row['decoded_identity']=row.get('decoded_identity') if isinstance(row.get('decoded_identity'), dict) else {}
         row['mattmab_validator']=str(row.get('mattmab_validator') or '')
         row['mattmab_validator_detail']=str(row.get('mattmab_validator_detail') or '')
         return row

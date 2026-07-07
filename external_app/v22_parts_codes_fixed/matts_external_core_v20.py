@@ -15,6 +15,7 @@ SUPPORT_LINKS = {
 }
 LOCAL_RESOURCE_FILES = {
     "lootlemon_codes": "MattsSDKBoostingTools_lootlemon_codes.json",
+    "custom_bl4_codes": "custom_bl4_codes.json",
     "item_pools": "item_pools.json",
     "travel_maps": "travelmaps_flat.json",
     "travel_stations": "travelstations.json",
