@@ -33,6 +33,13 @@ def _load_entries(path: Path) -> list[dict[str, Any]]:
     return [x for x in (entries or []) if isinstance(x, dict)]
 
 
+def _public_resource_path(path: Path) -> str:
+    try:
+        return str(path.relative_to(BASE_DIR)).replace("\\", "/")
+    except Exception:
+        return path.name
+
+
 def _entry_serial(entry: dict[str, Any]) -> str:
     for key in ("serial", "code", "base85", "value"):
         value = str(entry.get(key) or "").strip()
@@ -167,7 +174,7 @@ def generate() -> tuple[dict[str, Any], str]:
 
     for source_name, path in SOURCE_FILES:
         entries = _load_entries(path)
-        sources_seen.append({"source": source_name, "path": str(path), "entries": len(entries)})
+        sources_seen.append({"source": source_name, "path": _public_resource_path(path), "entries": len(entries)})
         for entry in entries:
             summary["entries_scanned"] += 1
             value = _entry_serial(entry)

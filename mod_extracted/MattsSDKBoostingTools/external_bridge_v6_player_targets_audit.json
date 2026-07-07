@@ -1,9 +1,0 @@
-{
-  "version": 6,
-  "changes": [
-    "added player target dropdown/action",
-    "status returns players list",
-    "external app updates Target Player dropdown from bridge status"
-  ],
-  "date": "2026-07-01"
-}

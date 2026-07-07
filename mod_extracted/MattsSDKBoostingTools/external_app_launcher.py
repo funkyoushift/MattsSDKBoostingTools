@@ -19,7 +19,6 @@ APP_ENTRY_NAMES = (
     "Launch_MattsBoostingTools_External.bat",
 )
 ENV_PATH_NAME = "MSBT_EXTERNAL_APP_PATH"
-DEV_FALLBACK = Path(r"C:\Users\mwenn\Desktop\MSBT_Codex_Work\working\external_app\v22_parts_codes_fixed")
 
 _external_app_process: subprocess.Popen[object] | None = None
 
@@ -94,7 +93,6 @@ def _resolve_external_app() -> tuple[Path | None, list[Path]]:
                 return entry, _dedupe_paths(searched_entries)
 
     candidate_dirs.extend(_sdk_mods_candidate_dirs())
-    candidate_dirs.append(DEV_FALLBACK)
 
     for folder in _dedupe_paths(candidate_dirs):
         for entry in _candidate_entries_from_path(folder):

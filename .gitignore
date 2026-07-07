@@ -1,21 +1,37 @@
-*.sdkmod
-*_test.zip
+# Python/runtime noise
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.spec
+.venv/
+venv/
 
 # Build/package outputs
 build/
 dist/
 MSBT_External_Beta/
+MSBT_External_Beta*/
 MSBT_External_Beta.zip
-MattsSDKBoostingTools_external_beta_sdkmod.zip
+*.sdkmod
+*.zip
 
-# External app runtime data
+# Local logs and scratch reports
+*.log
+unrealsdk.log
+*_AUDIT.md
+*_AUDIT.json
+*_REPORT.md
+BUG_FIX_PLAN.md
+DISCORD_BUG_REPORTS.md
+PARITY_AUDIT_REPORT.md
+QA_TEST_PLAN.md
+
+# External app runtime/user data
 external_app/v22_parts_codes_fixed/resources/MattsSDKBoostingTools_gzo_codes.json
 external_app/v22_parts_codes_fixed/resources/user_serial_bookmarks.json
 
-# External app runtime data
-external_app/v22_parts_codes_fixed/resources/MattsSDKBoostingTools_gzo_codes.json
-external_app/v22_parts_codes_fixed/resources/user_serial_bookmarks.json
-
-# External app runtime data
-external_app/v22_parts_codes_fixed/resources/MattsSDKBoostingTools_gzo_codes.json
-external_app/v22_parts_codes_fixed/resources/user_serial_bookmarks.json
+# Local data imports
+*.xlsx
+*.xls
+*.csv

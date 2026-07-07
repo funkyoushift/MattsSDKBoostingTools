@@ -105340,17 +105340,17 @@
   "sources": [
     {
       "entries": 2069,
-      "path": "C:\\Users\\mwenn\\Desktop\\MSBT_Codex_Work\\working\\external_app\\v22_parts_codes_fixed\\resources\\MattsSDKBoostingTools_gzo_codes.json",
+      "path": "resources/MattsSDKBoostingTools_gzo_codes.json",
       "source": "GZO"
     },
     {
       "entries": 316,
-      "path": "C:\\Users\\mwenn\\Desktop\\MSBT_Codex_Work\\working\\external_app\\v22_parts_codes_fixed\\resources\\MattsSDKBoostingTools_lootlemon_codes.json",
+      "path": "resources/MattsSDKBoostingTools_lootlemon_codes.json",
       "source": "Lootlemon"
     },
     {
       "entries": 97,
-      "path": "C:\\Users\\mwenn\\Desktop\\MSBT_Codex_Work\\working\\external_app\\v22_parts_codes_fixed\\resources\\custom_bl4_codes.json",
+      "path": "resources/custom_bl4_codes.json",
       "source": "Custom Static"
     }
   ],

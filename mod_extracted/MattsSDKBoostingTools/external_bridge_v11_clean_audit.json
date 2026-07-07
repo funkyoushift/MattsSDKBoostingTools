@@ -1,4 +1,0 @@
-{
-  "version": "V11 clean",
-  "changes": ["Clean external release package", "Bridge unchanged from V10 missing-controls build", "Static resources remain bundled with external app"]
-}

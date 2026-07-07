@@ -1,1 +1,0 @@
-V20 fixes BL4 Codes Refresh GZO. The external app now fetches save-editor.be/GZO/Borderlands4/codes/api.php?action=catalog, caches MattsSDKBoostingTools_gzo_codes.json locally, merges with bundled Lootlemon codes, and filters Listing = Legit/Modded from GZO.
