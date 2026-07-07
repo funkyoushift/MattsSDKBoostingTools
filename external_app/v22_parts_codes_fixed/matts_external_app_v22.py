@@ -2494,9 +2494,26 @@ class App(V9App):
 
     def _bl4_listing_values(self):
         vals=sorted({self._code_value(e, 'listing') for e in self._get_code_entries() if self._code_value(e, 'listing')}, key=lambda x:x.lower())
+        if any(self._normalize_code_classification(e.get('classification')) == 'Modded' for e in self._get_code_entries()):
+            vals.append('Modded')
+            vals=sorted(set(vals), key=lambda x:x.lower())
         preferred=[x for x in ('Legit','Modded','Lootlemon','GZO','Custom Static','Community Modded') if x in vals]
         rest=[x for x in vals if x not in preferred]
         return ['All'] + preferred + rest
+
+    def _bl4_entry_matches_listing_filter(self, row, filt):
+        want=str(filt or 'All').strip()
+        if want == 'All':
+            return True
+        if self._code_value(row, 'listing').lower() == want.lower():
+            return True
+        classification = self._normalize_code_classification((row or {}).get('classification'))
+        if classification and classification.lower() == want.lower():
+            return True
+        if want.lower() == 'modded':
+            tags = ' '.join(self._code_token_values((row or {}).get('tags'))).lower()
+            return 'modded' in tags.split()
+        return False
 
     def _mattmab_entry_matches_filter_local(self, row, filt):
         want=str(filt or 'All').strip().upper()
@@ -2571,7 +2588,7 @@ class App(V9App):
             listing=self._code_value(e, 'listing')
             if self.field_vars.get('code_listing'):
                 lf=self.field_vars['code_listing'].get()
-                if lf != 'All' and listing.lower() != lf.lower(): continue
+                if not self._bl4_entry_matches_listing_filter(e, lf): continue
             if cat!='All' and self._code_value(e,'type')!=cat: continue
             if man!='All' and self._code_value(e,'manufacturer')!=man: continue
             if rar!='All' and self._code_value(e,'rarity')!=rar: continue
