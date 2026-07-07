@@ -15,6 +15,9 @@ MSBT_External_Beta*/
 MSBT_External_Beta.zip
 *.sdkmod
 *.zip
+!releases/
+!releases/**
+!releases/*.zip
 
 # Local logs and scratch reports
 *.log

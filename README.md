@@ -2,6 +2,38 @@
 
 Matt's SDK Boosting Tools is a Borderlands 4 SDK mod plus a standalone external control panel for boosting, serial delivery, item tools, movement tools, travel helpers, and catalog workflows.
 
+## Download Latest
+
+Most users should download the packaged beta zip:
+
+[Download MSBT_External_Beta.zip](https://github.com/funkyoushift/MattsSDKBoostingTools/raw/main/releases/MSBT_External_Beta.zip)
+
+Developers or users who do not want the prebuilt EXE can download the source:
+
+[Download Source ZIP](https://github.com/funkyoushift/MattsSDKBoostingTools/archive/refs/heads/main.zip)
+
+The packaged beta contains the SDK mod, the standalone external app EXE, resources, and a launch batch file. Python is not required for normal users when using the packaged beta zip.
+
+## Quick Install
+
+1. Download [MSBT_External_Beta.zip](https://github.com/funkyoushift/MattsSDKBoostingTools/raw/main/releases/MSBT_External_Beta.zip).
+2. Extract it.
+3. Copy `MattsSDKBoostingTools.sdkmod` into your Borderlands 4 `sdk_mods` folder.
+4. Copy the `MattsSDKBoostingTools_external` folder into the same `sdk_mods` folder.
+5. Start Borderlands 4 with the SDK loaded.
+6. Launch the external app with `Launch_MSBT_External_App.bat`, `MattsBoostingToolsExternal.exe`, or the in-game SDK command `msbt_external_app`.
+
+Expected layout:
+
+```text
+Borderlands 4/
+  sdk_mods/
+    MattsSDKBoostingTools.sdkmod
+    MattsSDKBoostingTools_external/
+      MattsBoostingToolsExternal.exe
+      resources/
+```
+
 The current public direction is:
 
 - Keep the original BLImGui panel available when BLImGui is installed.
@@ -10,27 +42,18 @@ The current public direction is:
 - Move non-game UI/catalog/serial/build logic into a standalone Tkinter app.
 - Package the standalone app as an EXE for users who do not have Python installed.
 
-## Beta Install
+## Package Contents
 
-For normal users, use the packaged release zip from GitHub Releases.
-
-Expected install layout inside the Borderlands 4 `sdk_mods` folder:
+The packaged beta zip contains:
 
 ```text
-sdk_mods/
+MSBT_External_Beta/
+  Launch_MSBT_External_App.bat
   MattsSDKBoostingTools.sdkmod
   MattsSDKBoostingTools_external/
     MattsBoostingToolsExternal.exe
     resources/
 ```
-
-Launch the external app with either:
-
-- `Launch_MSBT_External_App.bat`
-- the in-game SDK command `msbt_external_app`
-- `MattsBoostingToolsExternal.exe` directly
-
-Python is not required when the packaged EXE is used.
 
 ## Build From Source
 
@@ -119,4 +142,6 @@ This project is not affiliated with Gearbox, 2K, or the Borderlands franchise ow
 
 ## License
 
-Released under the [MIT License](LICENSE).
+Released under the [PolyForm Noncommercial License 1.0.0](LICENSE).
+
+Commercial use, resale, paid redistribution, or selling packaged builds is not permitted without separate written permission from Matt / FunkYouSHiFT.
