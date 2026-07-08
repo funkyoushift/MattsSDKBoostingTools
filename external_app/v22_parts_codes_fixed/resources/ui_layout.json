@@ -935,7 +935,7 @@
             {
               "id": "dev_actor_name",
               "label": "Actor / Template",
-              "type": "choice",
+              "type": "editable_choice",
               "default": "Lost Loot | lostloot",
               "choices": [
                 "Lost Loot | lostloot",
@@ -1058,7 +1058,7 @@
             {
               "id": "dev_ai_name",
               "label": "Actor Def / Cache",
-              "type": "choice",
+              "type": "editable_choice",
               "default": "Target Dummy | Char_TargetDummy",
               "choices": [
                 "Target Dummy | Char_TargetDummy",

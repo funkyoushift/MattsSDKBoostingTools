@@ -99,28 +99,17 @@ class App(tk.Tk):
         st=ttk.Style(self)
         try: st.theme_use('clam')
         except Exception: pass
-        dropdown_options={
-            '*TCombobox*Listbox.background':'#111827',
-            '*TCombobox*Listbox.foreground':'#f8fafc',
-            '*TCombobox*Listbox.selectBackground':'#1f6f8b',
-            '*TCombobox*Listbox.selectForeground':'#ffffff',
-            '*TCombobox*Listbox.font':'Segoe UI 9',
-        }
-        for opt,value in dropdown_options.items():
-            try: self.option_add(opt,value)
-            except Exception: pass
         st.configure('TNotebook',background='#090d17',borderwidth=0)
         st.configure('TFrame',background='#090d17')
         st.configure('TLabel',background='#090d17',foreground='#cfd8f3',font=('Segoe UI',8))
         st.configure('TNotebook.Tab',padding=(12,5),background='#0b4e61',foreground='#f1f5ff',font=('Segoe UI',8))
         st.map('TNotebook.Tab',background=[('selected','#7a1d6b')],foreground=[('selected','#ffffff')])
-        st.configure('TCombobox',fieldbackground='#151923',background='#172033',foreground='#f8fafc',arrowcolor='#f8fafc',selectbackground='#1f6f8b',selectforeground='#ffffff',padding=2)
+        st.configure('TCombobox',fieldbackground='#211b1f',background='#172033',foreground='#f1f5ff',arrowcolor='#d7def5',selectbackground='#1f6f8b',selectforeground='#ffffff',padding=2)
         st.map('TCombobox',
-            fieldbackground=[('readonly','#151923'),('disabled','#252a35'),('!disabled','#151923')],
-            foreground=[('readonly','#f8fafc'),('disabled','#8c99b5'),('!disabled','#f8fafc')],
-            background=[('readonly','#172033'),('active','#22304c'),('disabled','#151923'),('!disabled','#172033')],
-            selectbackground=[('readonly','#1f6f8b'),('!disabled','#1f6f8b')],
-            selectforeground=[('readonly','#ffffff'),('!disabled','#ffffff')],
+            fieldbackground=[('disabled','#252a35')],
+            foreground=[('disabled','#8c99b5')],
+            selectbackground=[('!disabled','#1f6f8b')],
+            selectforeground=[('!disabled','#ffffff')],
             arrowcolor=[('disabled','#8c99b5'),('!disabled','#f8fafc')])
         st.configure('TEntry',fieldbackground='#211b1f',foreground='#f1f5ff',insertcolor='#f1f5ff',padding=2)
     def _header(self):
@@ -277,7 +266,7 @@ class App(tk.Tk):
         tk.Label(row,text=field.get('label',fid),bg='#090d17',fg='#cfd8f3',width=16 if compact else 18,anchor='w',font=('Segoe UI',8)).pack(side='left')
         var=tk.StringVar(value=str(field.get('default',''))); self.field_vars[fid]=var
         if typ in ('choice','editable_choice','resource_choice','player_choice','legit_type','legit_manufacturer','legit_root','legit_part'):
-            values=self._values_for_field(field); cb=ttk.Combobox(row,textvariable=var,values=values,state='normal' if typ in ('editable_choice','resource_choice') else 'readonly')
+            values=self._values_for_field(field); cb=ttk.Combobox(row,textvariable=var,values=values,state='normal' if typ in ('editable_choice','resource_choice') else 'readonly',height=max(5,min(20,len(values) or 5)))
             cb.pack(side='left',fill='x',expand=True); self.widgets[fid]=cb
             if values and not var.get(): var.set(values[0])
             cb.bind('<<ComboboxSelected>>',lambda e,f=field:self._field_changed(f))
