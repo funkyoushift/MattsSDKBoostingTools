@@ -51,10 +51,9 @@ _CURRENCY_KIND_ALIASES: Dict[str, str] = {
 #   3 — Vault card 02 XP
 #   4 — Vault card 03 XP (Raid 3)
 # Level changes now go through OakPlayerState.BP_SetExperienceLevel using an
-# FGbxDefPtr to /Script/GbxGame.GbxExperienceDef. This is much safer than
-# writing ExperienceState fields directly, because the engine updates related
-# level/XP state itself. For Character, the working token is exactly
-# FGbxDefPtr(name="Character", ref="/Script/GbxGame.GbxExperienceDef").
+# SDK 03 FGbxDefPtr(name, type) to /Script/GbxGame.GbxExperienceDef. This is much
+# safer than writing ExperienceState fields directly, because the engine updates
+# related level/XP state itself.
 _MAX_PLAYER_LEVEL_ENGINE = 60
 _MAX_SPEC_LEVEL_ENGINE = 701
 _MAX_VAULT_XP_LEVEL_ENGINE = 9_999_999
@@ -338,14 +337,10 @@ def _make_experience_def_ptr(token_name: str) -> Optional[FGbxDefPtr]:
     if not tail:
         return None
     try:
-        ptr = FGbxDefPtr()
+        return FGbxDefPtr(tail, struct_u)
     except Exception as e:
-        _log_err("FGbxDefPtr allocation failed for experience: %s", e)
+        _log_err("FGbxDefPtr(name, GbxExperienceDef) failed for experience token %r: %s", tail, e)
         return None
-    if not _assign_fgbx_def_ptr_fields(ptr, tail, struct_u):
-        _log_err("FGbxDefPtr: could not set name/ref for experience token %r.", tail)
-        return None
-    return ptr
 
 
 def _experience_state_token_name(row: Any) -> Optional[str]:
@@ -386,15 +381,6 @@ def _candidate_experience_tokens(track_index: int, row: Any) -> List[str]:
     return out
 
 
-def _assign_fgbx_def_ptr_fields(ptr: Any, name: str, ref: Any) -> bool:
-    try:
-        setattr(ptr, "name", name)
-        setattr(ptr, "ref", ref)
-        return True
-    except Exception:
-        return False
-
-
 def _find_currency_def_struct() -> Optional[Any]:
     for class_name in ("ScriptStruct", "Object"):
         for object_path in _CURRENCY_DEF_SCRIPT_PATHS:
@@ -422,13 +408,10 @@ def _make_currency_def_ptr(token_tail: str) -> Optional[FGbxDefPtr]:
     if not tail:
         return None
     try:
-        ptr = FGbxDefPtr()
-    except Exception:
+        return FGbxDefPtr(tail, struct_u)
+    except Exception as e:
+        _log_err("FGbxDefPtr(name, GbxCurrencyDef) failed for currency token %r: %s", tail, e)
         return None
-    if not _assign_fgbx_def_ptr_fields(ptr, tail, struct_u):
-        _log_err("FGbxDefPtr: could not set name/ref for currency.")
-        return None
-    return ptr
 
 
 def _get_currency_function_library() -> Optional[Any]:

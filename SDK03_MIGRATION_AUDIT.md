@@ -64,20 +64,25 @@ No hook migration was required in this pass.
 
 ## SDK 03 Fixes Applied
 
-### FGbxDefPtr field names
+### FGbxDefPtr construction
 
-Old SDK fallback code wrote both the SDK 03 fields and older experimental fields:
+Old SDK fallback code allocated empty pointers, then wrote both the SDK 03 fields
+and older experimental fields:
 
 - `_experimental_name`
 - `_experimental_ref`
 
-These were removed from:
+Live SDK 03 testing showed `FGbxDefPtr()` no longer supports a no-argument
+constructor. The working SDK 03 shape is:
+
+- `FGbxDefPtr(name, type)`
+
+MSBT now constructs reward, currency, and experience pointers with that shape in:
 
 - `player_economy.py`
 - `serial_rewards.py`
 
-MSBT now writes `FGbxDefPtr.name` and `FGbxDefPtr.ref`, which matches the SDK 03
-field shape.
+The old post-construction field assignment helper was removed.
 
 ### FGbxDefPtr resolved instance
 
