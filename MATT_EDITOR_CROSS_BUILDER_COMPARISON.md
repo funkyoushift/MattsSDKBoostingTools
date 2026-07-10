@@ -217,6 +217,14 @@ The strict builder and advanced modded editor should stay separate:
 
 Add a real cross-builder fixture/test harness before porting more item logic.
 
+Current harness:
+
+```powershell
+C:\tmp\msbt-python-3.12\python.exe .\tools\matt_editor_cross_builder_check.py
+```
+
+This checks the strict Python builder output, starts the local Matt editor host, verifies the editor bootstrap/adapter injection, and confirms the hosted `/api.php` route serializes/deserializes the same fixture.
+
 Recommended fixture:
 
 1. Keep the Python `dad_ps` sample above as the strict baseline.
