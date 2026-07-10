@@ -1,5 +1,5 @@
 (function () {
-  window.MSBT_MATT_EDITOR_ADAPTER_VERSION = "deliver-3-explicit-confirm";
+  window.MSBT_MATT_EDITOR_ADAPTER_VERSION = "deliver-4-target-selector";
 
   var BASE85_RE = /@U[0-9A-Za-z!#$%&()*+\-;<=>?@^_`{\/}~]+/g;
   var SOURCE_DEFS = [
@@ -12,7 +12,11 @@
     detected: [],
     pendingSerial: "",
     confirmedSerial: "",
-    stale: false
+    stale: false,
+    players: [],
+    selectedTarget: "",
+    selectedTargetLabel: "",
+    bridgeOnline: false
   };
 
   function byId(id) {
@@ -99,6 +103,88 @@
     el.style.color = ok ? "#43d17a" : "#ffcc33";
   }
 
+  function playerValue(player) {
+    var idx = player && player.index;
+    var name = player && player.name ? String(player.name) : "";
+    if (idx === null || idx === undefined || idx === "") return name;
+    return String(idx) + " | " + name;
+  }
+
+  function playerLabel(player) {
+    var idx = player && player.index;
+    var name = player && player.name ? String(player.name) : "";
+    if (idx === null || idx === undefined || idx === "") return name || "Unknown player";
+    return "Player " + String(idx) + ": " + (name || "Unknown");
+  }
+
+  function targetFromStatus(status) {
+    var idx = status && status.selected_player_index;
+    var name = status && status.selected_player ? String(status.selected_player) : "";
+    if (idx === null || idx === undefined || idx === "" || !name) return "";
+    return String(idx) + " | " + name;
+  }
+
+  function targetLabelFromValue(value) {
+    var text = String(value || "").trim();
+    if (!text) return "No target selected";
+    var parts = text.split("|");
+    if (parts.length >= 2) {
+      return "Player " + parts[0].trim() + ": " + parts.slice(1).join("|").trim();
+    }
+    return text;
+  }
+
+  function renderTargetSection() {
+    var bridge = byId("msbt-bridge-state");
+    var select = byId("msbt-target-select");
+    var display = byId("msbt-target-display");
+    if (bridge) {
+      bridge.textContent = state.bridgeOnline
+        ? "Bridge: connected | players: " + String(state.players.length)
+        : "Bridge: offline or unknown";
+      bridge.style.color = state.bridgeOnline ? "#43d17a" : "#ffcc33";
+    }
+    if (select) {
+      select.innerHTML = "";
+      var blank = document.createElement("option");
+      blank.value = "";
+      blank.textContent = state.players.length ? "Select target player" : "No players loaded";
+      select.appendChild(blank);
+      for (var i = 0; i < state.players.length; i += 1) {
+        var player = state.players[i];
+        var opt = document.createElement("option");
+        opt.value = playerValue(player);
+        opt.textContent = playerLabel(player);
+        if (opt.value === state.selectedTarget) opt.selected = true;
+        select.appendChild(opt);
+      }
+      select.disabled = !state.bridgeOnline || state.players.length === 0;
+    }
+    if (display) {
+      display.textContent = "Selected target: " + targetLabelFromValue(state.selectedTarget);
+      display.style.color = state.selectedTarget ? "#f1f5ff" : "#ffcc33";
+    }
+  }
+
+  function applyBridgeStatus(status, message, ok) {
+    status = status || {};
+    state.bridgeOnline = true;
+    state.players = Array.isArray(status.players) ? status.players : [];
+    state.selectedTarget = targetFromStatus(status);
+    state.selectedTargetLabel = targetLabelFromValue(state.selectedTarget);
+    renderTargetSection();
+    refreshPreview(message || ("Bridge online. " + state.selectedTargetLabel + " | Players: " + state.players.length), ok !== false);
+  }
+
+  function applyBridgeOffline(message) {
+    state.bridgeOnline = false;
+    state.players = [];
+    state.selectedTarget = "";
+    state.selectedTargetLabel = "";
+    renderTargetSection();
+    refreshPreview(message || "Game bridge offline.", false);
+  }
+
   function refreshPreview(message, ok) {
     var preview = byId("msbt-serial-preview");
     var selectWrap = byId("msbt-serial-select-wrap");
@@ -152,9 +238,11 @@
     }
 
     for (var j = 0; j < sendButtons.length; j += 1) {
-      sendButtons[j].disabled = !ready;
-      sendButtons[j].style.opacity = ready ? "1" : ".55";
-      sendButtons[j].style.cursor = ready ? "pointer" : "not-allowed";
+      var mode = sendButtons[j].getAttribute("data-msbt-deliver-mode") || "";
+      var modeReady = ready && (mode !== "selected" || !!state.selectedTarget);
+      sendButtons[j].disabled = !modeReady;
+      sendButtons[j].style.opacity = modeReady ? "1" : ".55";
+      sendButtons[j].style.cursor = modeReady ? "pointer" : "not-allowed";
     }
 
     if (message) setStatus(message, ok !== false);
@@ -222,15 +310,47 @@
       var response = await fetch("/msbt/status");
       var data = await response.json();
       if (!response.ok || !data.ok) {
-        setStatus(data.message || "SDK bridge is offline.", false);
+        applyBridgeOffline(data.message || "SDK bridge is offline.");
         return;
       }
       var status = data.status || {};
       var selected = status.selected_player || "no selected player";
       var count = Array.isArray(status.players) ? status.players.length : 0;
-      setStatus("Bridge online. Selected: " + selected + " | Players: " + count, true);
+      applyBridgeStatus(status, "Bridge online. Selected: " + selected + " | Players: " + count, true);
     } catch (err) {
-      setStatus("SDK bridge status failed: " + err, false);
+      applyBridgeOffline("SDK bridge status failed: " + err);
+    }
+  }
+
+  async function setTarget(value) {
+    state.selectedTarget = String(value || "").trim();
+    var requestedTarget = state.selectedTarget;
+    renderTargetSection();
+    refreshPreview(state.selectedTarget ? "Updating selected target..." : "Select a target player first.", !!state.selectedTarget);
+    if (!state.selectedTarget) return;
+    try {
+      var response = await fetch("/msbt/target", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ target_player: state.selectedTarget })
+      });
+      var data = await response.json();
+      if (!response.ok || !data.ok) {
+        setStatus(data.message || "Target update failed.", false);
+        refreshPreview("", false);
+        return;
+      }
+      if (data.status) {
+        applyBridgeStatus(data.status, data.message || ("Selected target: " + targetLabelFromValue(requestedTarget)), true);
+      } else {
+        state.selectedTarget = requestedTarget;
+        state.selectedTargetLabel = targetLabelFromValue(requestedTarget);
+        renderTargetSection();
+        refreshPreview(data.message || ("Selected target: " + state.selectedTargetLabel), true);
+      }
+    } catch (err) {
+      setStatus("Target update failed: " + err, false);
+      refreshPreview("", false);
     }
   }
 
@@ -249,6 +369,10 @@
       setStatus("No confirmed item serial is ready to send. Build or select an item first.", false);
       return;
     }
+    if (mode === "selected" && !state.selectedTarget) {
+      setStatus("Select a target player first.", false);
+      return;
+    }
     if (mode !== "selected") {
       var ok = window.confirm("Send this generated item to " + mode + "?");
       if (!ok) return;
@@ -258,7 +382,7 @@
       var response = await fetch("/msbt/deliver", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mode: mode, serial: serial, level: currentLevel() })
+        body: JSON.stringify({ mode: mode, serial: serial, level: currentLevel(), target_player: state.selectedTarget })
       });
       var data = await response.json();
       var message = data.message || (data.ok ? "Delivery requested." : "Delivery failed.");
@@ -307,9 +431,47 @@
     panel.appendChild(title);
 
     var hint = document.createElement("div");
-    hint.textContent = "MSBT sends only the final @U item serial. Item building stays local in the editor. Delivery uses the current MSBT/game bridge target state.";
+    hint.textContent = "MSBT sends only the final @U item serial. Item building stays local in the editor. Pick a target here before sending to Selected Player.";
     hint.style.cssText = "color:#9fb3d9;font-size:11px;margin-bottom:8px;line-height:1.35;";
     panel.appendChild(hint);
+
+    var targetBox = document.createElement("div");
+    targetBox.style.cssText = "border:1px solid #334155;background:#0d1422;padding:7px;margin-bottom:8px;";
+    var targetTitle = document.createElement("div");
+    targetTitle.textContent = "Target";
+    targetTitle.style.cssText = "color:#43d17a;font-weight:800;font-size:11px;margin-bottom:5px;";
+    targetBox.appendChild(targetTitle);
+    var bridgeState = document.createElement("div");
+    bridgeState.id = "msbt-bridge-state";
+    bridgeState.textContent = "Bridge: unknown";
+    bridgeState.style.cssText = "font-size:10px;color:#ffcc33;margin-bottom:5px;";
+    targetBox.appendChild(bridgeState);
+    var targetRow = document.createElement("div");
+    targetRow.style.cssText = "display:grid;grid-template-columns:1fr auto;gap:6px;margin-bottom:5px;";
+    var targetSelect = document.createElement("select");
+    targetSelect.id = "msbt-target-select";
+    targetSelect.style.cssText = "width:100%;background:#211b1f;color:#f1f5ff;border:1px solid #334155;padding:5px;font-size:11px;";
+    targetSelect.addEventListener("change", function () {
+      setTarget(targetSelect.value);
+    });
+    targetRow.appendChild(targetSelect);
+    var refreshTargetsBtn = document.createElement("button");
+    refreshTargetsBtn.type = "button";
+    refreshTargetsBtn.textContent = "Refresh";
+    refreshTargetsBtn.style.cssText = "padding:6px 9px;border:none;background:#172033;color:#00d4ff;font-weight:700;font-size:11px;cursor:pointer;";
+    refreshTargetsBtn.addEventListener("click", bridgeStatus);
+    targetRow.appendChild(refreshTargetsBtn);
+    targetBox.appendChild(targetRow);
+    var targetDisplay = document.createElement("div");
+    targetDisplay.id = "msbt-target-display";
+    targetDisplay.textContent = "Selected target: No target selected";
+    targetDisplay.style.cssText = "font-size:10px;color:#ffcc33;line-height:1.3;";
+    targetBox.appendChild(targetDisplay);
+    var targetHint = document.createElement("div");
+    targetHint.textContent = "Send to Selected Player uses the target selected here. All and Non-Host do not require a selected target.";
+    targetHint.style.cssText = "font-size:10px;color:#9fb3d9;line-height:1.3;margin-top:4px;";
+    targetBox.appendChild(targetHint);
+    panel.appendChild(targetBox);
 
     var refreshRow = document.createElement("div");
     refreshRow.style.cssText = "display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:6px;";
@@ -402,7 +564,9 @@
     panel.appendChild(statusRow);
 
     document.body.appendChild(panel);
+    renderTargetSection();
     refreshPreview("", false);
+    window.setTimeout(bridgeStatus, 200);
     window.setTimeout(refreshDetectedSerials, 600);
     document.addEventListener("input", markPreviewStale, true);
     document.addEventListener("change", markPreviewStale, true);

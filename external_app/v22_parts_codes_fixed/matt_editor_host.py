@@ -199,6 +199,9 @@ class _MattEditorHandler(BaseHTTPRequestHandler):
         if path == "/msbt/deliver":
             self._handle_msbt_deliver()
             return
+        if path == "/msbt/target":
+            self._handle_msbt_target()
+            return
         if path == "/blcrypt/api.php" or path.endswith("/blcrypt/api.php"):
             self._send_json(501, {"error": "Save encryption is not enabled in the MSBT local editor host yet."})
             return
@@ -324,6 +327,42 @@ class _MattEditorHandler(BaseHTTPRequestHandler):
             return
         self._send_json(200, {"ok": True, "status": status})
 
+    def _set_bridge_target(self, target_player: str) -> dict:
+        result = _bridge_json(
+            "POST",
+            "/action",
+            {"action": "set_target_player", "payload": {"target_player": target_player}, "timeout": 10.0},
+            timeout=10.0,
+        )
+        return result if isinstance(result, dict) else {"ok": True, "message": str(result)}
+
+    def _handle_msbt_target(self) -> None:
+        try:
+            data = self._read_json_body()
+        except Exception as exc:
+            self._send_json(400, {"ok": False, "message": f"Invalid JSON: {exc}"})
+            return
+
+        target_player = str(data.get("target_player") or data.get("target") or "").strip()
+        if not target_player:
+            self._send_json(400, {"ok": False, "message": "Select a target player first."})
+            return
+
+        try:
+            result = self._set_bridge_target(target_player)
+            if result.get("ok"):
+                try:
+                    status = _bridge_json("GET", "/status", timeout=5.0)
+                    if isinstance(status, dict):
+                        result["status"] = status
+                except Exception:
+                    pass
+        except Exception as exc:
+            self._send_json(503, {"ok": False, "message": f"Target update failed: {exc}"})
+            return
+
+        self._send_json(200 if result.get("ok") else 400, result)
+
     def _handle_msbt_deliver(self) -> None:
         try:
             data = self._read_json_body()
@@ -345,6 +384,20 @@ class _MattEditorHandler(BaseHTTPRequestHandler):
         if "\n" in serial or "\r" in serial or serial.count("@U") != 1 or not serial.startswith("@U"):
             self._send_json(400, {"ok": False, "message": "No single confirmed @U serial was received from the Mattmab editor."})
             return
+
+        if mode == "selected":
+            target_player = str(data.get("target_player") or data.get("target") or "").strip()
+            if not target_player:
+                self._send_json(400, {"ok": False, "message": "Select a target player first."})
+                return
+            try:
+                target_result = self._set_bridge_target(target_player)
+            except Exception as exc:
+                self._send_json(503, {"ok": False, "message": f"Target update failed: {exc}"})
+                return
+            if not target_result.get("ok"):
+                self._send_json(400, target_result)
+                return
 
         try:
             level = int(str(data.get("level") or "60").replace(",", "").strip())
