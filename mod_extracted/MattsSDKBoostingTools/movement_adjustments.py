@@ -370,14 +370,10 @@ def _write_jump_goal_def_instance(
             return 0
     except Exception:
         pass
-    inst = None
-    for attr in ("instance", "_experimental_instance"):
-        try:
-            inst = getattr(defptr, attr, None)
-        except Exception:
-            inst = None
-        if inst is not None:
-            break
+    try:
+        inst = getattr(defptr, "instance", None)
+    except Exception:
+        inst = None
     if inst is None:
         return 0
     for field, value in (

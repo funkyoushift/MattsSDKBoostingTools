@@ -607,21 +607,6 @@ def _find_rewards_def_struct() -> Optional[Any]:
     return None
 
 
-def _assign_fgbx_def_ptr_fields(ptr: Any, name: str, ref: Any) -> bool:
-    """
-    pyunrealsdk builds differ: some expose FGbxDefPtr as .name/.ref, others as _experimental_* only.
-    Try both so the same mod works across SDK drops (e.g. Apple vs Cr4nk DLL sets).
-    """
-    for name_attr, ref_attr in (("name", "ref"), ("_experimental_name", "_experimental_ref")):
-        try:
-            setattr(ptr, name_attr, name)
-            setattr(ptr, ref_attr, ref)
-            return True
-        except Exception:
-            continue
-    return False
-
-
 def _make_reward_def_ptr(reward_name: str) -> Optional[FGbxDefPtr]:
     """Build FGbxDefPtr from reward id string when UObject resolution fails (matches bl4_reward_generator)."""
     rewards_def_struct = _find_rewards_def_struct()
@@ -631,13 +616,10 @@ def _make_reward_def_ptr(reward_name: str) -> Optional[FGbxDefPtr]:
     if not tail:
         return None
     try:
-        reward_def = FGbxDefPtr()
-    except Exception:
+        return FGbxDefPtr(tail, rewards_def_struct)
+    except Exception as e:
+        _log_warning(f"FGbxDefPtr(name, GbxRewardsDef) failed for reward {tail!r}: {e}")
         return None
-    if not _assign_fgbx_def_ptr_fields(reward_def, tail, rewards_def_struct):
-        _log_warning("FGbxDefPtr: could not set name/ref on this pyunrealsdk build.")
-        return None
-    return reward_def
 
 
 def _resolve_def_for_give(pc: Any, lib: Any, def_path: str) -> Optional[Any]:

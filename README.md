@@ -2,6 +2,14 @@
 
 Matt's SDK Boosting Tools is a Borderlands 4 SDK mod plus a standalone external control panel for boosting, serial delivery, item tools, movement tools, travel helpers, and catalog workflows.
 
+## Required SDK Install
+
+MSBT now targets **SDK 03 / oak2-mod-manager v0.3**. Before installing MSBT, update Borderlands 4 to the current SDK/mod manager stack:
+
+[Download oak2-mod-manager v0.3](https://github.com/bl-sdk/oak2-mod-manager/releases/tag/v0.3)
+
+Older SDK 02 installs are not the target for current MSBT builds.
+
 ## Download Latest
 
 Most users should download the packaged beta zip:
@@ -16,12 +24,13 @@ The packaged beta contains the SDK mod, the standalone external app EXE, resourc
 
 ## Quick Install
 
-1. Download [MSBT_External_Beta.zip](https://github.com/funkyoushift/MattsSDKBoostingTools/raw/main/releases/MSBT_External_Beta.zip).
-2. Extract it.
-3. Copy `MattsSDKBoostingTools.sdkmod` into your Borderlands 4 `sdk_mods` folder.
-4. Copy the `MattsSDKBoostingTools_external` folder into the same `sdk_mods` folder.
-5. Start Borderlands 4 with the SDK loaded.
-6. Launch the external app with `Launch_MSBT_External_App.bat`, `MattsBoostingToolsExternal.exe`, or the in-game SDK command `msbt_external_app`.
+1. Install or update to [oak2-mod-manager v0.3](https://github.com/bl-sdk/oak2-mod-manager/releases/tag/v0.3).
+2. Download [MSBT_External_Beta.zip](https://github.com/funkyoushift/MattsSDKBoostingTools/raw/main/releases/MSBT_External_Beta.zip).
+3. Extract it.
+4. Copy `MattsSDKBoostingTools.sdkmod` into your Borderlands 4 `sdk_mods` folder.
+5. Copy the `MattsSDKBoostingTools_external` folder into the same `sdk_mods` folder.
+6. Start Borderlands 4 with the SDK loaded.
+7. Launch the external app with `Launch_MSBT_External_App.bat`, `MattsBoostingToolsExternal.exe`, or the in-game SDK command `msbt_external_app`.
 
 Expected layout:
 

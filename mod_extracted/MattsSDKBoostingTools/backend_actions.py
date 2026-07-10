@@ -6,7 +6,9 @@ external-bridge state needed by headless bridge actions.
 from __future__ import annotations
 
 import importlib
+import importlib.util
 import re
+import sys
 from typing import Any
 
 from mods_base import ENGINE, get_pc
@@ -142,6 +144,52 @@ def _run_actor_script_deployer_command(command_line: str) -> tuple[bool, str]:
         return False, f"ActorScriptDeployer command object {attr_name!r} is unavailable."
     handle(command_line, len(command_name))
     return True, "ActorScriptDeployer command object"
+
+
+def _module_available(name: str) -> bool:
+    try:
+        if name in sys.modules:
+            return True
+        return importlib.util.find_spec(name) is not None
+    except Exception:
+        return False
+
+
+def _module_version(name: str) -> str:
+    try:
+        module = sys.modules.get(name) or importlib.import_module(name)
+    except Exception:
+        return ""
+    for attr in ("__version__", "VERSION", "version"):
+        try:
+            value = getattr(module, attr, "")
+        except Exception:
+            value = ""
+        if value:
+            return str(value)
+    return ""
+
+
+def _sdk_diagnostics() -> dict[str, Any]:
+    """Lightweight SDK/runtime status for the external bridge.
+
+    Keep this best-effort only: diagnostics should never block startup or action
+    processing if an optional module is missing or an SDK build hides version
+    metadata.
+    """
+    try:
+        py_version = sys.version.split()[0]
+    except Exception:
+        py_version = ""
+    return {
+        "msbt_loaded": True,
+        "python_version": py_version,
+        "mods_base_version": _module_version("mods_base"),
+        "unrealsdk_version": _module_version("unrealsdk"),
+        "pyunrealsdk_version": _module_version("pyunrealsdk"),
+        "blimgui_available": _module_available("blimgui"),
+        "actor_script_deployer_available": _module_available("ActorScriptDeployer"),
+    }
 
 
 def _max_level_for_track(track: object) -> int:
@@ -302,6 +350,7 @@ def get_status() -> dict[str, Any]:
         "selected_player_index": _selected_player_index,
         "last_refresh_error": _last_refresh_error,
         "serial_delivery": delivery_progress,
+        "diagnostics": _sdk_diagnostics(),
     }
 
 

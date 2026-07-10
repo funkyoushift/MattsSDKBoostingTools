@@ -64,10 +64,14 @@ Copy-Item -Force (Join-Path $RepoRoot "Launch_MSBT_External_App.bat") (Join-Path
 @"
 Matt's SDK Boosting Tools external beta
 
+Requires SDK 03 / oak2-mod-manager v0.3:
+https://github.com/bl-sdk/oak2-mod-manager/releases/tag/v0.3
+
 Install:
-1. Copy MattsSDKBoostingTools.sdkmod into your Borderlands 4 sdk_mods folder.
-2. Copy the MattsSDKBoostingTools_external folder into the same sdk_mods folder.
-3. Launch the external app with Launch_MSBT_External_App.bat or the in-game command msbt_external_app.
+1. Install or update to oak2-mod-manager v0.3.
+2. Copy MattsSDKBoostingTools.sdkmod into your Borderlands 4 sdk_mods folder.
+3. Copy the MattsSDKBoostingTools_external folder into the same sdk_mods folder.
+4. Launch the external app with Launch_MSBT_External_App.bat or the in-game command msbt_external_app.
 
 Python is not required when MattsBoostingToolsExternal.exe is present.
 The resources folder stays beside the exe so bookmarks/cache files remain writable.
