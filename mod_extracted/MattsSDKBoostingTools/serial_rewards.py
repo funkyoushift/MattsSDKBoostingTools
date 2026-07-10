@@ -609,17 +609,14 @@ def _find_rewards_def_struct() -> Optional[Any]:
 
 def _assign_fgbx_def_ptr_fields(ptr: Any, name: str, ref: Any) -> bool:
     """
-    pyunrealsdk builds differ: some expose FGbxDefPtr as .name/.ref, others as _experimental_* only.
-    Try both so the same mod works across SDK drops (e.g. Apple vs Cr4nk DLL sets).
+    SDK 03 exposes FGbxDefPtr fields as .name/.ref.
     """
-    for name_attr, ref_attr in (("name", "ref"), ("_experimental_name", "_experimental_ref")):
-        try:
-            setattr(ptr, name_attr, name)
-            setattr(ptr, ref_attr, ref)
-            return True
-        except Exception:
-            continue
-    return False
+    try:
+        setattr(ptr, "name", name)
+        setattr(ptr, "ref", ref)
+        return True
+    except Exception:
+        return False
 
 
 def _make_reward_def_ptr(reward_name: str) -> Optional[FGbxDefPtr]:

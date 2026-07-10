@@ -387,14 +387,12 @@ def _candidate_experience_tokens(track_index: int, row: Any) -> List[str]:
 
 
 def _assign_fgbx_def_ptr_fields(ptr: Any, name: str, ref: Any) -> bool:
-    for name_attr, ref_attr in (("name", "ref"), ("_experimental_name", "_experimental_ref")):
-        try:
-            setattr(ptr, name_attr, name)
-            setattr(ptr, ref_attr, ref)
-            return True
-        except Exception:
-            continue
-    return False
+    try:
+        setattr(ptr, "name", name)
+        setattr(ptr, "ref", ref)
+        return True
+    except Exception:
+        return False
 
 
 def _find_currency_def_struct() -> Optional[Any]:

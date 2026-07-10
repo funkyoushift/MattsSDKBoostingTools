@@ -568,6 +568,8 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
 
 def _status() -> dict[str, Any]:
     backend_status = backend_actions.get_status()
+    diagnostics = dict(backend_status.get("diagnostics") or {})
+    diagnostics.setdefault("external_bridge_started", _started)
     last_error = _last_error or backend_status.get("last_refresh_error", "")
     if _is_optional_ui_dependency_error(last_error):
         last_error = ""
@@ -582,6 +584,7 @@ def _status() -> dict[str, Any]:
         "selected_player": backend_status.get("selected_player") or "",
         "selected_player_index": backend_status.get("selected_player_index"),
         "serial_delivery": backend_status.get("serial_delivery", {}),
+        "diagnostics": diagnostics,
         "last_action": _last_action,
         "last_error": last_error,
     }
