@@ -342,8 +342,8 @@ class _MattEditorHandler(BaseHTTPRequestHandler):
             return
 
         serial = str(data.get("serial") or "").strip()
-        if not serial.startswith("@U"):
-            self._send_json(400, {"ok": False, "message": "No generated @U serial found in Mattmab editor output."})
+        if "\n" in serial or "\r" in serial or serial.count("@U") != 1 or not serial.startswith("@U"):
+            self._send_json(400, {"ok": False, "message": "No single confirmed @U serial was received from the Mattmab editor."})
             return
 
         try:
@@ -412,14 +412,18 @@ class MattEditorHost:
             app_entry = BASE_DIR / "matts_external_app_v22.py"
             cmd = [sys.executable, str(app_entry), "--msbt-matt-editor-webview", url]
 
-        self._webview_process = subprocess.Popen(
-            cmd,
-            cwd=str(BASE_DIR),
-            stdin=subprocess.DEVNULL,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-            close_fds=True,
-        )
+        try:
+            self._webview_process = subprocess.Popen(
+                cmd,
+                cwd=str(BASE_DIR),
+                stdin=subprocess.DEVNULL,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                close_fds=True,
+            )
+        except Exception as exc:
+            webbrowser.open(url, new=2)
+            return url, False, f"Embedded WebView failed to launch; opened in browser instead. {exc}"
         return url, True, "Mattmab item editor opened in a native WebView window owned by the external app."
 
 

@@ -698,7 +698,7 @@ class App(V9App):
         except Exception: pass
 
     def _tab_legit_builder_v9(self, body, cards):
-        editor_wrap, editor_inner = self._card_wrap(body, 'Mattmab Item Editor', '#00a3d7')
+        editor_wrap, editor_inner = self._card_wrap(body, 'Advanced Mattmab Item Editor', '#00a3d7')
         editor_wrap.pack(fill='x', padx=6, pady=5)
         tk.Label(
             editor_inner,
@@ -712,7 +712,7 @@ class App(V9App):
         ).pack(fill='x', padx=8, pady=(5,2))
         editor_btns = tk.Frame(editor_inner, bg='#090d17')
         editor_btns.pack(fill='x', padx=8, pady=(4,8))
-        self._button(editor_btns, {'id':'open_matt_editor','label':'Open Full Mattmab Editor','accent':'gold'}, 0, cols=3)
+        self._button(editor_btns, {'id':'open_matt_editor','label':'Open Advanced Mattmab Item Editor','accent':'gold'}, 0, cols=3)
         tk.Label(
             editor_inner,
             text="Proof pass: opens embedded when WebView support is available; otherwise it opens in your browser. Delivery uses the current MSBT selected target.",
@@ -900,7 +900,7 @@ class App(V9App):
         if detail:
             self.log(detail)
         if 'legit_status' in self.field_vars:
-            self._set_legit_status('Mattmab item editor opened locally with MSBT delivery buttons.' if embedded else 'Mattmab item editor opened in your browser with MSBT delivery buttons.', log_global=False)
+            self._set_legit_status('Advanced Mattmab item editor opened locally with MSBT delivery buttons.' if embedded else 'Advanced Mattmab item editor opened in your browser with MSBT delivery buttons.', log_global=False)
 
     def _run_local_legit_validate(self):
         try:
