@@ -3,33 +3,59 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>MSBT Electron Proof of Concept</title>
+  <title>MSBT Electron Milestone Shell</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <header class="app-header">
     <div>
       <h1>Matt's SDK Boosting Tools</h1>
-      <p>Electron proof of concept: bridge status, serial delivery, and local Matt editor shell.</p>
+      <p>Electron milestone shell: bridge status, target selection, update check, and embedded Matt editor testing.</p>
     </div>
     <div class="header-actions">
-      <button id="statusBtn">Bridge Status</button>
+      <button id="statusBtn">Refresh Status</button>
+      <button id="updateBtn">Check Updates</button>
       <button id="repoBtn">GitHub</button>
     </div>
   </header>
 
   <main class="shell">
     <section class="panel status-panel">
-      <h2>Status</h2>
-      <pre id="statusOutput">Click Bridge Status to check the SDK bridge.</pre>
+      <h2>Bridge Status</h2>
+      <div id="bridgeSummary" class="status-line warning">Checking bridge...</div>
+      <label for="targetSelect">Target Player</label>
+      <select id="targetSelect">
+        <option value="">No players loaded</option>
+      </select>
+      <div class="button-row wrap">
+        <button id="setTargetBtn">Set Target</button>
+        <button id="firstTargetBtn">Use First Player</button>
+      </div>
+      <div id="targetSummary" class="status-line">Selected target: none</div>
+      <pre id="statusOutput">Click Refresh Status to check the SDK bridge.</pre>
+    </section>
+
+    <section class="panel update-panel">
+      <h2>Update Check</h2>
+      <div id="updateSummary" class="status-line">No update check yet.</div>
+      <div class="button-row wrap">
+        <button id="downloadBtn">Open Latest Download</button>
+      </div>
+      <pre id="updateOutput">Checks GitHub Releases metadata without changing files.</pre>
     </section>
 
     <section class="panel delivery-panel">
-      <h2>Delivery Smoke Test</h2>
-      <p>This uses the existing SDK bridge actions. It does not import SDK modules into Electron.</p>
-      <label for="serialInput">One @U serial</label>
+      <h2>Item Delivery</h2>
+      <p>Detect a generated @U serial from the embedded editor or paste one manually, then send through the SDK bridge.</p>
+      <div class="button-row wrap">
+        <button id="detectSerialBtn">Detect Serial From Editor</button>
+        <button id="confirmSerialBtn">Confirm Serial</button>
+        <button id="copySerialBtn">Copy Confirmed</button>
+      </div>
+      <label for="serialInput">Serial to Send</label>
       <textarea id="serialInput" spellcheck="false" placeholder="@U..."></textarea>
-      <div class="button-row">
+      <div id="serialSummary" class="status-line warning">No confirmed serial yet.</div>
+      <div class="button-row wrap">
         <button data-mode="selected">Give Selected</button>
         <button data-mode="all">Give All</button>
         <button data-mode="nonhost">Give Non-Host</button>
@@ -40,10 +66,13 @@
     <section class="panel editor-panel">
       <div class="section-heading">
         <div>
-          <h2>Local Matt Editor Frame</h2>
-          <p>First test: can Electron render the vendored editor assets inside the app shell?</p>
+          <h2>Embedded Matt Editor</h2>
+          <p>Build inside the editor, then use Detect Serial From Editor before delivery.</p>
         </div>
-        <button id="loadEditorBtn">Load Editor</button>
+        <div class="button-row">
+          <button id="loadEditorBtn">Load Editor</button>
+          <button id="reloadEditorBtn">Reload</button>
+        </div>
       </div>
       <iframe id="editorFrame" title="Matt editor local frame"></iframe>
     </section>

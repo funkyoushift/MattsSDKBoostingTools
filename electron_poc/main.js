@@ -1,9 +1,11 @@
 const { app, BrowserWindow, ipcMain, shell } = require("electron");
+const fs = require("fs/promises");
 const path = require("path");
 const { pathToFileURL } = require("url");
 
 const REPO_ROOT = path.resolve(__dirname, "..");
 const DEFAULT_BRIDGE = "http://127.0.0.1:49774";
+const LATEST_MANIFEST_URL = "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/releases/latest.json";
 const SMOKE_MODE = process.argv.includes("--smoke");
 const MATT_EDITOR_INDEX = path.join(
   REPO_ROOT,
@@ -60,6 +62,40 @@ async function requestBridge({ method = "GET", path: route = "/status", payload 
 ipcMain.handle("bridge:request", async (_event, args) => requestBridge(args || {}));
 
 ipcMain.handle("app:mattEditorUrl", async () => pathToFileURL(MATT_EDITOR_INDEX).toString());
+
+ipcMain.handle("app:checkUpdates", async () => {
+  let local = {};
+  const localManifestPath = path.join(REPO_ROOT, "releases", "latest.json");
+  try {
+    local = JSON.parse(await fs.readFile(localManifestPath, "utf8"));
+  } catch (error) {
+    local = { package_version: "unknown", error: String(error && error.message ? error.message : error) };
+  }
+
+  try {
+    const response = await fetch(LATEST_MANIFEST_URL, { cache: "no-store" });
+    const text = await response.text();
+    const remote = text ? JSON.parse(text) : {};
+    const localVersion = String(local.package_version || "");
+    const remoteVersion = String(remote.package_version || "");
+    return {
+      ok: response.ok,
+      local,
+      remote,
+      updateAvailable: Boolean(remoteVersion && localVersion && remoteVersion !== localVersion),
+      latestUrl: remote.download_url || "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest"
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      local,
+      remote: {},
+      updateAvailable: false,
+      latestUrl: "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest",
+      message: String(error && error.message ? error.message : error)
+    };
+  }
+});
 
 ipcMain.handle("app:openExternal", async (_event, url) => {
   await shell.openExternal(String(url || ""));
