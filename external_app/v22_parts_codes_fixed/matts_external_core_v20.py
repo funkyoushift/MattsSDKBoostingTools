@@ -28,7 +28,7 @@ LOCAL_RESOURCE_FILES = {
 SETTINGS_FILE = RESOURCE_DIR / "user_external_app_settings.json"
 VERSION_INFO_FILE = RESOURCE_DIR / "version_info.json"
 def load_local_json(filename):
-    with open(RESOURCE_DIR / filename, "r", encoding="utf-8") as f: return json.load(f)
+    with open(RESOURCE_DIR / filename, "r", encoding="utf-8-sig") as f: return json.load(f)
 ACCENT_COLORS={"cyan":"#00d4ff","gold":"#ffcc33","green":"#43d17a","purple":"#b36bff","pink":"#ff5db7","red":"#ff5b5b"}
 NUMERIC_FIELDS={"amount","level","serial_level","itempool_count","itempool_level","code_delivery_level","backpack_size","bank_size"}
 CARD_BORDER={"target_player":"#6b7280","quick_max":"#6b7280","serial_rewards":"#8a2be2","experience":"#00a3d7","currency":"#00aa55","backpack_bank":"#00a3d7","rarity_weights":"#8a2be2","cheats_debug":"#b01258","sdu_shinies":"#b37a00","movement_presets":"#00aa55","movement_speed":"#00a3d7","movement_jump":"#8a2be2","movement_utility":"#8a2be2","serial_convert":"#00a3d7","serial_output":"#00a3d7","legit_builder_main":"#00a3d7","legit_slot_grid":"#6b7280","item_pool_main":"#b37a00","dev_spawner_info":"#ff5b5b","dev_spawner_actor":"#00a3d7","dev_spawner_ai":"#8a2be2","dev_spawner_logo":"#b37a00","map_travel_main":"#b01258","activity_log_main":"#8a2be2","bl4_codes_catalog":"#b37a00","serial_bookmarks_main":"#8a2be2","validator_basic":"#00a3d7"}
@@ -70,7 +70,7 @@ class App(tk.Tk):
     def _load_app_settings(self):
         try:
             if SETTINGS_FILE.exists():
-                data=json.loads(SETTINGS_FILE.read_text(encoding='utf-8') or '{}')
+                data=json.loads((SETTINGS_FILE.read_text(encoding='utf-8-sig') or '{}').lstrip('\ufeff'))
                 return data if isinstance(data,dict) else {}
         except Exception:
             pass
@@ -94,7 +94,7 @@ class App(tk.Tk):
         }
         try:
             if VERSION_INFO_FILE.exists():
-                data=json.loads(VERSION_INFO_FILE.read_text(encoding='utf-8') or '{}')
+                data=json.loads((VERSION_INFO_FILE.read_text(encoding='utf-8-sig') or '{}').lstrip('\ufeff'))
                 if isinstance(data,dict):
                     defaults.update(data)
         except Exception:
@@ -166,7 +166,7 @@ class App(tk.Tk):
                 url=str(self.version_info.get('latest_manifest_url') or LATEST_MANIFEST_URL)
                 req=request.Request(url,headers={'User-Agent':'MSBT-External-App'})
                 with request.urlopen(req,timeout=5) as resp:
-                    remote=json.loads(resp.read().decode('utf-8',errors='replace') or '{}')
+                    remote=json.loads((resp.read().decode('utf-8-sig',errors='replace') or '{}').lstrip('\ufeff'))
                 if not isinstance(remote,dict):
                     raise ValueError('latest manifest was not a JSON object')
                 changed=self._summarize_update_diff(remote)

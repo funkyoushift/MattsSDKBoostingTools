@@ -24,6 +24,15 @@ function Assert-UnderRepo {
     }
 }
 
+function Write-Utf8NoBom {
+    param(
+        [Parameter(Mandatory=$true)][string]$Path,
+        [Parameter(Mandatory=$true)][string]$Text
+    )
+    $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+    [System.IO.File]::WriteAllText($Path, $Text, $utf8NoBom)
+}
+
 if (-not (Test-Path (Join-Path $ExeBuildFolder "MattsBoostingToolsExternal.exe"))) {
     throw "External exe not found. Run .\build_external_exe.ps1 first."
 }
@@ -102,9 +111,9 @@ $VersionInfo = [ordered]@{
     sdkmod_sha256 = $SdkHash
     ui_layout_sha256 = $ResourcesHash
 }
-$VersionInfo | ConvertTo-Json -Depth 4 | Set-Content -Encoding UTF8 (Join-Path $ExternalFolder "resources\version_info.json")
+Write-Utf8NoBom (Join-Path $ExternalFolder "resources\version_info.json") ($VersionInfo | ConvertTo-Json -Depth 4)
 
-@"
+$ReadmeText = @"
 Matt's SDK Boosting Tools external beta
 
 Package version:
@@ -122,7 +131,8 @@ Install:
 Python is not required when MattsBoostingToolsExternal.exe is present.
 The resources folder stays beside the exe so bookmarks/cache files remain writable.
 The matt_editor folder stays beside the exe so the embedded/local Mattmab item editor can run without internet, Electron, or Node.
-"@ | Set-Content -Encoding UTF8 (Join-Path $PackageRoot "README_FIRST.txt")
+"@
+Write-Utf8NoBom (Join-Path $PackageRoot "README_FIRST.txt") $ReadmeText
 
 Get-ChildItem -Recurse -Directory $PackageRoot -Filter "__pycache__" | Remove-Item -Recurse -Force
 
@@ -151,7 +161,7 @@ $LatestManifest = [ordered]@{
     ui_layout_sha256 = $ResourcesHash
     beta_zip_sha256 = $ZipHash
 }
-$LatestManifest | ConvertTo-Json -Depth 4 | Set-Content -Encoding UTF8 $LatestManifestPath
+Write-Utf8NoBom $LatestManifestPath ($LatestManifest | ConvertTo-Json -Depth 4)
 
 Write-Host "Packaged beta folder:"
 Write-Host $PackageRoot
