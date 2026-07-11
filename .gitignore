@@ -6,6 +6,7 @@ __pycache__/
 *.spec
 .venv/
 venv/
+node_modules/
 
 # Build/package outputs
 build/
@@ -16,8 +17,8 @@ MSBT_External_Beta.zip
 *.sdkmod
 *.zip
 !releases/
-!releases/**
-!releases/*.zip
+!releases/README.md
+!releases/latest.json
 
 # Local logs and scratch reports
 *.log

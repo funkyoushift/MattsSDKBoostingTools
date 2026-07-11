@@ -7,7 +7,7 @@
   "built_at_utc": "",
   "sdk_required": "oak2-mod-manager v0.3",
   "sdk_required_url": "https://github.com/bl-sdk/oak2-mod-manager/releases/tag/v0.3",
-  "download_url": "https://github.com/funkyoushift/MattsSDKBoostingTools/raw/main/releases/MSBT_External_Beta.zip",
+  "download_url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT_External_Beta.zip",
   "release_url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases",
   "latest_manifest_url": "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/releases/latest.json",
   "external_exe_sha256": "",

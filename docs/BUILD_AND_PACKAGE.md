@@ -63,6 +63,7 @@ Output:
 ```text
 MSBT_External_Beta/
 MSBT_External_Beta.zip
+releases/latest.json
 ```
 
 The package contains:
@@ -89,6 +90,18 @@ Source mode requires Python and Tkinter.
 ## Public Release Recommendation
 
 Do not commit generated EXE/ZIP files to normal source history. Put them on GitHub Releases, then keep source and build scripts in the repository.
+
+After building the beta zip, upload it to GitHub Releases:
+
+```powershell
+.\publish_github_release.ps1
+```
+
+The public "latest" download URL should stay:
+
+```text
+https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT_External_Beta.zip
+```
 
 Before publishing a release, run:
 

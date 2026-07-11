@@ -23,6 +23,12 @@ Upload these to a GitHub Release instead of committing them to source:
 - `MattsSDKBoostingTools.sdkmod`
 - checksums for release files
 
+The normal public beta ZIP link should be:
+
+```text
+https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT_External_Beta.zip
+```
+
 ## Smoke Tests
 
 External app:
@@ -60,7 +66,7 @@ Multiplayer:
 Matt's SDK Boosting Tools public beta is available.
 
 Download:
-<GitHub release link>
+https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT_External_Beta.zip
 
 Install:
 1. Extract the release zip.

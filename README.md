@@ -2,6 +2,10 @@
 
 Matt's SDK Boosting Tools is a Borderlands 4 SDK mod plus a standalone external control panel for boosting, serial delivery, item tools, movement tools, travel helpers, and catalog workflows.
 
+Website:
+[FunkYouSHiFT.com](https://www.funkyoushift.com/) |
+[Tools page](https://www.funkyoushift.com/tools)
+
 ## Required SDK Install
 
 MSBT now targets **SDK 03 / oak2-mod-manager v0.3**. Before installing MSBT, update Borderlands 4 to the current SDK/mod manager stack:
@@ -14,7 +18,10 @@ Older SDK 02 installs are not the target for current MSBT builds.
 
 Most users should download the packaged beta zip:
 
-[Download MSBT_External_Beta.zip](https://github.com/funkyoushift/MattsSDKBoostingTools/raw/main/releases/MSBT_External_Beta.zip)
+[Download MSBT_External_Beta.zip](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT_External_Beta.zip)
+
+Older beta packages are available from the
+[GitHub Releases page](https://github.com/funkyoushift/MattsSDKBoostingTools/releases).
 
 Developers or users who do not want the prebuilt EXE can download the source:
 
@@ -25,7 +32,7 @@ The packaged beta contains the SDK mod, the standalone external app EXE, resourc
 ## Quick Install
 
 1. Install or update to [oak2-mod-manager v0.3](https://github.com/bl-sdk/oak2-mod-manager/releases/tag/v0.3).
-2. Download [MSBT_External_Beta.zip](https://github.com/funkyoushift/MattsSDKBoostingTools/raw/main/releases/MSBT_External_Beta.zip).
+2. Download [MSBT_External_Beta.zip](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT_External_Beta.zip).
 3. Extract it.
 4. Copy `MattsSDKBoostingTools.sdkmod` into your Borderlands 4 `sdk_mods` folder.
 5. Copy the `MattsSDKBoostingTools_external` folder into the same `sdk_mods` folder.
@@ -101,6 +108,13 @@ The package script creates:
 ```text
 MSBT_External_Beta/
 MSBT_External_Beta.zip
+releases/latest.json
+```
+
+Publish `MSBT_External_Beta.zip` as a GitHub Release asset instead of committing the ZIP to source:
+
+```powershell
+.\publish_github_release.ps1
 ```
 
 ## Repository Layout

@@ -12,7 +12,6 @@ $SdkMod = Join-Path $RepoRoot "MattsSDKBoostingTools.sdkmod"
 $SdkBuildScript = Join-Path $RepoRoot "build_sdkmod.ps1"
 $ZipPath = Join-Path $RepoRoot "MSBT_External_Beta.zip"
 $ReleasesFolder = Join-Path $RepoRoot "releases"
-$ReleaseZipPath = Join-Path $ReleasesFolder "MSBT_External_Beta.zip"
 $LatestManifestPath = Join-Path $ReleasesFolder "latest.json"
 
 function Assert-UnderRepo {
@@ -91,7 +90,7 @@ $ExePath = Join-Path $ExternalFolder "MattsBoostingToolsExternal.exe"
 $ExeHash = (Get-FileHash -Algorithm SHA256 $ExePath).Hash.ToLowerInvariant()
 $UiLayoutPath = Join-Path $ExternalFolder "resources\ui_layout.json"
 $ResourcesHash = if (Test-Path $UiLayoutPath) { (Get-FileHash -Algorithm SHA256 $UiLayoutPath).Hash.ToLowerInvariant() } else { "" }
-$DownloadUrl = "https://github.com/funkyoushift/MattsSDKBoostingTools/raw/main/releases/MSBT_External_Beta.zip"
+$DownloadUrl = "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT_External_Beta.zip"
 $LatestManifestUrl = "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/releases/latest.json"
 $ReleaseUrl = "https://github.com/funkyoushift/MattsSDKBoostingTools/releases"
 
@@ -142,8 +141,7 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 New-Item -ItemType Directory -Force $ReleasesFolder | Out-Null
-Copy-Item -Force $ZipPath $ReleaseZipPath
-$ZipHash = (Get-FileHash -Algorithm SHA256 $ReleaseZipPath).Hash.ToLowerInvariant()
+$ZipHash = (Get-FileHash -Algorithm SHA256 $ZipPath).Hash.ToLowerInvariant()
 $LatestManifest = [ordered]@{
     package_version = $PackageVersion
     app_version = $PackageVersion
@@ -167,7 +165,7 @@ Write-Host "Packaged beta folder:"
 Write-Host $PackageRoot
 Write-Host "Packaged beta zip:"
 Write-Host $ZipPath
-Write-Host "Release beta zip:"
-Write-Host $ReleaseZipPath
 Write-Host "Latest update manifest:"
 Write-Host $LatestManifestPath
+Write-Host "Publish the ZIP to GitHub Releases with:"
+Write-Host ".\publish_github_release.ps1"

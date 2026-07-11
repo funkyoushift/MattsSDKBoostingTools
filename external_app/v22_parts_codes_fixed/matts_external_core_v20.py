@@ -9,7 +9,7 @@ from external_app_paths import BASE_DIR, RESOURCE_DIR
 
 BRIDGE = "http://127.0.0.1:49774"
 RELEASES_URL = "https://github.com/funkyoushift/MattsSDKBoostingTools/releases"
-BETA_ZIP_URL = "https://github.com/funkyoushift/MattsSDKBoostingTools/raw/main/releases/MSBT_External_Beta.zip"
+BETA_ZIP_URL = "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT_External_Beta.zip"
 LATEST_MANIFEST_URL = "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/releases/latest.json"
 SUPPORT_LINKS = {
     "Support on Ko-fi": "https://ko-fi.com/mattmab",
