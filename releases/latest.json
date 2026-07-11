@@ -1,0 +1,17 @@
+{
+    "package_version":  "beta-6c35268",
+    "app_version":  "beta-6c35268",
+    "sdkmod_version":  "beta-6c35268",
+    "resources_version":  "beta-6c35268",
+    "git_commit":  "6c352686d8d5f2f5d2884dc4e319514826e40da0",
+    "built_at_utc":  "2026-07-11T04:23:56Z",
+    "sdk_required":  "oak2-mod-manager v0.3",
+    "sdk_required_url":  "https://github.com/bl-sdk/oak2-mod-manager/releases/tag/v0.3",
+    "download_url":  "https://github.com/funkyoushift/MattsSDKBoostingTools/raw/main/releases/MSBT_External_Beta.zip",
+    "release_url":  "https://github.com/funkyoushift/MattsSDKBoostingTools/releases",
+    "latest_manifest_url":  "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/releases/latest.json",
+    "external_exe_sha256":  "8d0e4c3b49749966e97d396f38bc2cc45787047a70b22a484bf94ad0ffe82047",
+    "sdkmod_sha256":  "e9b149fe5b76cb2bfcdceb83147e4aabc3e986c3d8f6adebc28e78614e661e39",
+    "ui_layout_sha256":  "26b9145dbcfc82ead5c101f94d6733e0bba8927e7c9aa250b7aa41fbb00e6815",
+    "beta_zip_sha256":  "d209d9fd4be9a61492e67e6e18ef85bcf9c48b6ad112cecfea9d11ac214345b7"
+}
