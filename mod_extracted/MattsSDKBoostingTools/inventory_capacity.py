@@ -277,21 +277,33 @@ def _object_has_max_size(obj: Any) -> bool:
         return False
 
 
-def _resolve_container(ps: Any, container_name: str) -> tuple[str, Any] | tuple[None, None]:
-    if ps is None:
-        return None, None
+def _add_container_candidate(out: list[tuple[str, Any]], seen: set[str], name: str, container: Any) -> None:
+    if not _object_has_max_size(container):
+        return
+    obj_name = _safe_obj_name(container)
+    key = obj_name if obj_name != "unknown" else str(id(container))
+    if key in seen:
+        return
+    seen.add(key)
+    out.append((name, container))
 
+
+def _resolve_containers(ps: Any, container_name: str) -> list[tuple[str, Any]]:
+    if ps is None:
+        return []
+
+    out: list[tuple[str, Any]] = []
+    seen: set[str] = set()
     for candidate in _container_candidates(container_name):
         try:
             container = getattr(ps, candidate, None)
         except Exception:
             container = None
-        if _object_has_max_size(container):
-            return candidate, container
+        _add_container_candidate(out, seen, candidate, container)
 
     tokens = _CONTAINER_SEARCH_TOKENS.get(container_name, ())
     if not tokens:
-        return None, None
+        return out
     try:
         names = [name for name in dir(ps) if isinstance(name, str)]
     except Exception:
@@ -306,9 +318,15 @@ def _resolve_container(ps: Any, container_name: str) -> tuple[str, Any] | tuple[
             container = getattr(ps, name, None)
         except Exception:
             continue
-        if _object_has_max_size(container):
-            return name, container
-    return None, None
+        _add_container_candidate(out, seen, name, container)
+    return out
+
+
+def _resolve_container(ps: Any, container_name: str) -> tuple[str, Any] | tuple[None, None]:
+    containers = _resolve_containers(ps, container_name)
+    if not containers:
+        return None, None
+    return containers[0]
 
 
 def _container_max_size(ps: Any, container_name: str) -> Any | None:
@@ -439,20 +457,34 @@ def _related_items_names(container_name: str, resolved_name: str) -> tuple[str, 
 def _write_container_size_on_player_state(ps: Any, container_name: str, size: int) -> str:
     if ps is None:
         raise RuntimeError("PlayerState is not available.")
-    resolved_name, container = _resolve_container(ps, container_name)
-    if container is None:
+    containers = _resolve_containers(ps, container_name)
+    if not containers:
         aliases = ", ".join(_container_candidates(container_name))
         raise RuntimeError(f"{container_name} is not available on PlayerState. Tried: {aliases}.")
-    max_size = getattr(container, "MaxSize", None)
-    if max_size is None:
-        raise RuntimeError(f"{resolved_name}.MaxSize is not available.")
+
     size = clamp_container_size(size)
-    if not _set_attr_integer(max_size, size):
-        raise RuntimeError(f"Could not write {resolved_name}.MaxSize Value/BaseValue.")
-    _bump_replication(container)
-    for items_name in _related_items_names(container_name, resolved_name):
-        _bump_replication(getattr(ps, items_name, None))
-    return resolved_name
+    if container_name != "BankContainer":
+        containers = containers[:1]
+
+    written: list[str] = []
+    failures: list[str] = []
+    for resolved_name, container in containers:
+        max_size = getattr(container, "MaxSize", None)
+        if max_size is None:
+            failures.append(f"{resolved_name}.MaxSize missing")
+            continue
+        if not _set_attr_integer(max_size, size):
+            failures.append(f"{resolved_name}.MaxSize Value/BaseValue not writable")
+            continue
+        _bump_replication(container)
+        for items_name in _related_items_names(container_name, resolved_name):
+            _bump_replication(getattr(ps, items_name, None))
+        written.append(resolved_name)
+
+    if not written:
+        detail = "; ".join(failures[:4]) if failures else "no writable containers found"
+        raise RuntimeError(f"Could not write {container_name}: {detail}.")
+    return "/".join(written)
 
 
 def set_container_size_on_player_state(ps: Any, container_name: str, size: int) -> bool:

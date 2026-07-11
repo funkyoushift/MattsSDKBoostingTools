@@ -2,6 +2,7 @@ const BASE85_RE = /@U[0-9A-Za-z!#$%&()*+\-;<=>?@^_`{\/}~]+/g;
 
 const els = {
   activityOutput: document.getElementById("activityOutput"),
+  autoInventorySizes: document.getElementById("autoInventorySizes"),
   bankSize: document.getElementById("bankSize"),
   backpackSize: document.getElementById("backpackSize"),
   boostOutput: document.getElementById("boostOutput"),
@@ -20,6 +21,7 @@ const els = {
   itempoolOutput: document.getElementById("itempoolOutput"),
   itempoolSearch: document.getElementById("itempoolSearch"),
   itempoolSummary: document.getElementById("itempoolSummary"),
+  inventoryStatus: document.getElementById("inventoryStatus"),
   copyBreakdownBtn: document.getElementById("copyBreakdownBtn"),
   copyDeserializedBtn: document.getElementById("copyDeserializedBtn"),
   copySerializedBtn: document.getElementById("copySerializedBtn"),
@@ -60,6 +62,9 @@ const els = {
 
 const state = {
   activity: [],
+  autoInventoryInFlight: false,
+  autoInventoryLastMessage: "",
+  autoInventoryTimer: null,
   bridgeOnline: false,
   confirmedSerial: "",
   filteredItemPools: [],
@@ -121,6 +126,13 @@ function resultMessage(result) {
   return pretty(result);
 }
 
+function actionSucceeded(result) {
+  const data = result && result.data ? result.data : result;
+  if (data && data.ok === false) return false;
+  if (data && data.ok === true) return true;
+  return Boolean(result && result.ok);
+}
+
 function bridgeAction(action, payload = {}, timeoutMs = 15000) {
   return window.msbt.bridgeRequest({
     method: "POST",
@@ -152,6 +164,81 @@ function getInt(nodeOrId, minValue, maxValue, fallback) {
 
 function boolFromSelect(node) {
   return String(getValue(node)).toLowerCase() === "true";
+}
+
+function inventoryPayload(enabled = true) {
+  return {
+    enabled: Boolean(enabled),
+    backpack_size: getInt(els.backpackSize, 1, 999999, 999),
+    bank_size: getInt(els.bankSize, 1, 999999, 1500)
+  };
+}
+
+function setInventoryStatus(message, kind = "warning") {
+  setLine(els.inventoryStatus, message, kind);
+}
+
+function scheduleAutoInventory(delayMs = 2000) {
+  if (!els.autoInventorySizes || !els.autoInventorySizes.checked) return;
+  if (state.autoInventoryTimer) window.clearTimeout(state.autoInventoryTimer);
+  state.autoInventoryTimer = window.setTimeout(autoInventoryTick, delayMs);
+}
+
+function cancelAutoInventory() {
+  if (state.autoInventoryTimer) window.clearTimeout(state.autoInventoryTimer);
+  state.autoInventoryTimer = null;
+  state.autoInventoryInFlight = false;
+}
+
+async function autoInventoryTick() {
+  state.autoInventoryTimer = null;
+  if (!els.autoInventorySizes || !els.autoInventorySizes.checked) return;
+  if (state.autoInventoryInFlight) {
+    scheduleAutoInventory();
+    return;
+  }
+  state.autoInventoryInFlight = true;
+  try {
+    const result = await bridgeAction("auto_inventory_sizes", inventoryPayload(true), 12000);
+    const data = result && result.data ? result.data : result;
+    const applied = Number(data && data.applied ? data.applied : 0);
+    const message = resultMessage(result);
+    setInventoryStatus(message || "Automatic inventory sizing checked.", applied > 0 ? "ok" : "warning");
+    if (applied > 0 || message !== state.autoInventoryLastMessage) {
+      appendActivity(`auto_inventory_sizes: ${message}`);
+      state.autoInventoryLastMessage = message;
+    }
+  } catch (error) {
+    const message = `Bridge offline / waiting for players for automatic inventory sizing.`;
+    setInventoryStatus(message, "warning");
+    if (message !== state.autoInventoryLastMessage) {
+      appendActivity(message);
+      state.autoInventoryLastMessage = message;
+    }
+  } finally {
+    state.autoInventoryInFlight = false;
+    scheduleAutoInventory();
+  }
+}
+
+async function toggleAutoInventory() {
+  if (!els.autoInventorySizes) return;
+  if (els.autoInventorySizes.checked) {
+    state.autoInventoryLastMessage = "";
+    setInventoryStatus("Auto inventory enabled.", "ok");
+    appendActivity("Auto inventory enabled.");
+    scheduleAutoInventory(250);
+    return;
+  }
+
+  cancelAutoInventory();
+  setInventoryStatus("Auto inventory disabled.", "warning");
+  appendActivity("Auto inventory disabled.");
+  try {
+    await bridgeAction("auto_inventory_sizes", inventoryPayload(false), 8000);
+  } catch (_error) {
+    // Disabling is best-effort; the app-side timer is already stopped.
+  }
 }
 
 function playerValue(player) {
@@ -728,14 +815,15 @@ function wireEvents() {
     currency_kind: getValue(els.currencyKind),
     amount: getInt(els.currencyAmount, 0, 2147483647, 1000000)
   }, els.boostOutput, 30000));
-  document.getElementById("setInventorySelectedBtn").addEventListener("click", () => runAction("set_backpack_bank_selected", {
-    backpack_size: getInt(els.backpackSize, 1, 999999, 999),
-    bank_size: getInt(els.bankSize, 1, 999999, 1500)
-  }, els.boostOutput, 30000));
-  document.getElementById("setInventoryAllBtn").addEventListener("click", () => runAction("set_backpack_bank_all", {
-    backpack_size: getInt(els.backpackSize, 1, 999999, 999),
-    bank_size: getInt(els.bankSize, 1, 999999, 1500)
-  }, els.boostOutput, 30000));
+  document.getElementById("setInventorySelectedBtn").addEventListener("click", async () => {
+    const result = await runAction("set_backpack_bank_selected", inventoryPayload(true), els.boostOutput, 30000);
+    setInventoryStatus(resultMessage(result), actionSucceeded(result) ? "ok" : "warning");
+  });
+  document.getElementById("setInventoryAllBtn").addEventListener("click", async () => {
+    const result = await runAction("set_backpack_bank_all", inventoryPayload(true), els.boostOutput, 30000);
+    setInventoryStatus(resultMessage(result), actionSucceeded(result) ? "ok" : "warning");
+  });
+  els.autoInventorySizes.addEventListener("change", toggleAutoInventory);
 
   els.serialToolsConvertBtn.addEventListener("click", convertSerialTools);
   els.serialToolsClearBtn.addEventListener("click", clearSerialTools);

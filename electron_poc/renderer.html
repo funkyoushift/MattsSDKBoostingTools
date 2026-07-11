@@ -141,10 +141,15 @@
           <input id="backpackSize" type="number" min="1" value="999">
           <label for="bankSize">Bank Size</label>
           <input id="bankSize" type="number" min="1" value="1500">
+          <label class="checkbox-row">
+            <input id="autoInventorySizes" type="checkbox">
+            Automatic Backpack and Bank Size for Party
+          </label>
           <div class="button-row wrap">
             <button id="setInventorySelectedBtn">Set Selected</button>
             <button id="setInventoryAllBtn">Apply to All Party</button>
           </div>
+          <div id="inventoryStatus" class="status-line warning">Manual apply only. Enable auto to keep applying sizes while players load in.</div>
         </section>
 
         <section class="panel pink">
