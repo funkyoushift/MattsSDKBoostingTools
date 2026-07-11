@@ -598,10 +598,38 @@ class App(V9App):
         self._field_row_simple(inner,'Gravity Scale','movement_gravity_scale',MOVEMENT_DEFAULTS['movement_gravity_scale'])
         self._field_row_simple(inner,'Jump Count','movement_jump_count',MOVEMENT_DEFAULTS['movement_jump_count'])
         self._field_row_simple(inner,'Jump Off Z Factor','movement_jump_off_z_factor',MOVEMENT_DEFAULTS['movement_jump_off_z_factor'])
+        self._bind_movement_master_jump_sync()
         bf=tk.Frame(inner,bg='#090d17'); bf.pack(fill='x',padx=6,pady=(4,6))
         self._movement_button(bf,'Apply Movement Settings',self._movement_apply_now,'cyan',0,cols=2)
         self._movement_button(bf,'Reset Defaults',lambda:self._movement_reset_defaults(apply_now=True),'gold',1,cols=2)
         return wrap
+
+    def _bind_movement_master_jump_sync(self):
+        if getattr(self, '_movement_master_jump_trace_bound', False):
+            return
+        var = self.field_vars.get('movement_jump_height')
+        if var is None:
+            return
+
+        def sync_master_jump(*_args):
+            value = str(var.get() or '').strip()
+            if not value:
+                return
+            velocity_var = self.field_vars.get('movement_jump_velocity')
+            if velocity_var is not None:
+                velocity_var.set(value)
+            individual = self._truthy(self.field_vars.get('movement_individual_jump_goals', tk.StringVar(value='false')).get())
+            if not individual:
+                for fid in ('movement_sprint_jump_goal', 'movement_double_jump_goal', 'movement_slide_jump_goal'):
+                    goal_var = self.field_vars.get(fid)
+                    if goal_var is not None:
+                        goal_var.set(value)
+
+        try:
+            var.trace_add('write', sync_master_jump)
+            self._movement_master_jump_trace_bound = True
+        except Exception:
+            pass
 
     def _movement_wall_card(self,parent):
         wrap, inner = self._make_card(parent,'Wall / Step','#d28b00')
@@ -2315,7 +2343,6 @@ class App(V9App):
             'max_all',
             'set_backpack_bank_selected',
             'drop_all_shinies',
-            'toggle_debug_cam',
             'teleport_debug_cam',
         } or str(action_id or '').startswith('devperk_')
 
@@ -2997,6 +3024,8 @@ class App(V9App):
                     replacement=next((opt for opt in self.player_options if opt.split('|',1)[0].strip()==cur_idx), '')
                 if replacement:
                     self.field_vars[fid].set(replacement)
+                elif self.player_options and not cur:
+                    self.field_vars[fid].set(self.player_options[0])
         except Exception: pass
 
 

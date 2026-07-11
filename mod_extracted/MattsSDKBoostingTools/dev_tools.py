@@ -260,9 +260,17 @@ def _ensure_cheat_manager(pc: Any) -> Any:
 
 def toggle_debug_cam(player_index: int | None = None) -> str:
     # Debug cam is local-only. Do not try to toggle it for remote selected players.
-    pc = _live_pc()
-    if pc is None:
-        raise RuntimeError("No local PlayerController found.")
+    # Keep the toggle path intentionally close to the SDK Debug Menu/Mattmab
+    # console workaround: use the live OakLocalPlayer controller directly,
+    # create the native cheat manager if needed, then call ToggleDebugCamera.
+    lp = _live_local_player()
+    pc = _unwrap_debug_camera_controller(getattr(lp, "PlayerController", None) if lp is not None else None)
+    if pc is None or _is_debug_camera_controller(pc):
+        pc = _live_pc()
+    if pc is None or _is_debug_camera_controller(pc):
+        pc = _original_player_controller_for_debugcam()
+    if pc is None or _is_debug_camera_controller(pc):
+        raise RuntimeError("No local OakPlayerController found.")
     cm = getattr(pc, "CheatManager", None)
     if cm is None:
         cheat_class = getattr(pc, "CheatClass", None)
@@ -283,6 +291,10 @@ def toggle_debug_cam(player_index: int | None = None) -> str:
             _apply_debug_speed_to_controller(dcc, _debug_speed_value)
         except Exception:
             pass
+    try:
+        _log(f"ToggleDebugCamera pc={pc} cm={cm} debugcam={dcc}")
+    except Exception:
+        pass
     return "Debug camera toggled locally."
 
 
@@ -512,4 +524,3 @@ def teleport_pawn_to_debug_cam(player_index: int | None = None) -> str:
                     pawn.bActorEnableCollision = collision_was_enabled
             except Exception:
                 pass
-

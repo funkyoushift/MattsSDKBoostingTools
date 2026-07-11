@@ -352,6 +352,84 @@ def _apply_speed_to_obj(obj: Any, speed_scale: float, walk_speed: float) -> int:
     return changed
 
 
+_JUMP_GOAL_DEF_WRITE_FIELDS = (
+    "GoalHeight",
+    "InitialZVelocity",
+    "bUseGoalHeight",
+    "bUseInitialZVelocity",
+    "bClearGravityScaleAtApex",
+)
+
+
+def _looks_like_jump_goal_def(obj: Any) -> bool:
+    if obj is None:
+        return False
+    for field in _JUMP_GOAL_DEF_WRITE_FIELDS:
+        try:
+            if hasattr(obj, field):
+                return True
+        except Exception:
+            pass
+    return False
+
+
+def _jump_goal_def_targets(defptr: Any, depth: int = 0) -> list[Any]:
+    """Return concrete JumpGoalDef-like targets from SDK 02/03 wrapper shapes.
+
+    Older builds exposed GetJumpGoalForJumpType results through FGbxDefPtr.instance.
+    SDK 03 can hand back a direct reflected object or a differently wrapped struct,
+    so do not require the .instance attribute before trying to write the live def.
+    """
+    if defptr is None or depth > 3:
+        return []
+    out: list[Any] = []
+    seen: set[int] = set()
+
+    def add(obj: Any | None) -> None:
+        if obj is None:
+            return
+        try:
+            key = id(obj)
+        except Exception:
+            key = len(seen) + 1
+        if key in seen:
+            return
+        seen.add(key)
+        if _looks_like_jump_goal_def(obj):
+            out.append(obj)
+
+    add(defptr)
+    for attr in (
+        "instance",
+        "Instance",
+        "resolved",
+        "Resolved",
+        "object",
+        "Object",
+        "value",
+        "Value",
+        "Def",
+        "Data",
+    ):
+        try:
+            child = getattr(defptr, attr, None)
+        except Exception:
+            child = None
+        add(child)
+        for nested in _jump_goal_def_targets(child, depth + 1):
+            add(nested)
+    for method_name in ("get", "Get", "resolve", "Resolve", "GetObject", "get_object"):
+        try:
+            method = getattr(defptr, method_name, None)
+            child = method() if callable(method) else None
+        except Exception:
+            child = None
+        add(child)
+        for nested in _jump_goal_def_targets(child, depth + 1):
+            add(nested)
+    return out
+
+
 def _write_jump_goal_def_instance(
     defptr: Any,
     goal_height: float,
@@ -361,33 +439,35 @@ def _write_jump_goal_def_instance(
     use_initial_z_velocity: bool = False,
     clear_gravity_at_apex: bool = False,
 ) -> int:
-    """Mutate a live FGbxDefPtr JumpGoalDef resolved instance only."""
+    """Mutate a live JumpGoalDef from either FGbxDefPtr or direct SDK 03 objects."""
     if defptr is None:
         return 0
-    wrote = 0
     try:
         if hasattr(defptr, "valid") and not bool(getattr(defptr, "valid")):
             return 0
     except Exception:
         pass
-    try:
-        inst = getattr(defptr, "instance", None)
-    except Exception:
-        inst = None
-    if inst is None:
-        return 0
-    for field, value in (
-        ("GoalHeight", float(goal_height)),
-        ("InitialZVelocity", float(initial_z_velocity)),
-        ("bUseGoalHeight", bool(use_goal_height)),
-        ("bUseInitialZVelocity", bool(use_initial_z_velocity)),
-        ("bClearGravityScaleAtApex", bool(clear_gravity_at_apex)),
-    ):
-        try:
-            setattr(inst, field, value)
-            wrote += 1
-        except Exception:
-            pass
+    wrote = 0
+    for target in _jump_goal_def_targets(defptr):
+        wrote_target = 0
+        for field, value in (
+            ("GoalHeight", float(goal_height)),
+            ("InitialZVelocity", float(initial_z_velocity)),
+            ("bUseGoalHeight", bool(use_goal_height)),
+            ("bUseInitialZVelocity", bool(use_initial_z_velocity)),
+            ("bClearGravityScaleAtApex", bool(clear_gravity_at_apex)),
+        ):
+            try:
+                setattr(target, field, value)
+                wrote += 1
+                wrote_target += 1
+            except Exception:
+                pass
+        if wrote_target:
+            try:
+                _log(f"JumpGoalDef write target={target} fields={wrote_target} goal={float(goal_height):.0f} z={float(initial_z_velocity):.0f}")
+            except Exception:
+                pass
     return wrote
 
 
@@ -918,21 +998,29 @@ def apply_movement_to_all_players(speed_scale: float, walk_speed: float, jump_go
     pawns = live_player_pawns()
     touched = 0
     writes = 0
+    jump_writes = 0
 
     for pc in controllers:
-        c = _apply_speed_to_obj(pc, speed_scale, walk_speed) + _apply_jump_to_obj(pc, jump_goal, jump_velocity)
+        speed_w = _apply_speed_to_obj(pc, speed_scale, walk_speed)
+        jump_w = _apply_jump_to_obj(pc, jump_goal, jump_velocity)
+        c = speed_w + jump_w
         if c:
             touched += 1
             writes += c
+            jump_writes += jump_w
     for pawn in pawns:
         pawn_writes = 0
+        pawn_jump_writes = 0
         for obj in _movement_objects_for_pawn(pawn):
             pawn_writes += _apply_speed_to_obj(obj, speed_scale, walk_speed)
-            pawn_writes += _apply_jump_to_obj(obj, jump_goal, jump_velocity)
+            jump_w = _apply_jump_to_obj(obj, jump_goal, jump_velocity)
+            pawn_writes += jump_w
+            pawn_jump_writes += jump_w
         if pawn_writes:
             touched += 1
             writes += pawn_writes
-    msg = f"Applied movement to {len(pawns)} player pawn(s), {len(controllers)} controller(s): speed {speed_scale:.2f}x, walk {walk_speed:.0f}, JumpGoal {jump_goal:.0f}, JumpZ {jump_velocity:.0f}. Writes: {writes}."
+            jump_writes += pawn_jump_writes
+    msg = f"Applied movement to {len(pawns)} player pawn(s), {len(controllers)} controller(s): speed {speed_scale:.2f}x, walk {walk_speed:.0f}, JumpGoal {jump_goal:.0f}, JumpZ {jump_velocity:.0f}. Writes: {writes}; jump writes: {jump_writes}."
     _log(msg)
     return msg
 
@@ -1107,28 +1195,35 @@ def apply_movement_advanced_to_all_players(
     pawns = live_player_pawns()
     writes = 0
     touched = 0
+    jump_writes = 0
     for pc in controllers:
         c = 0
         if "speed" in sections:
             c += _apply_speed_to_obj(pc, speed_scale, walk_speed)
         if "jump" in sections:
-            c += _apply_jump_to_obj(pc, jump_goal, jump_velocity, sprint_jump_goal, jump_hold_time, double_jump_goal, slide_jump_goal, reset_jump_defaults)
+            jump_w = _apply_jump_to_obj(pc, jump_goal, jump_velocity, sprint_jump_goal, jump_hold_time, double_jump_goal, slide_jump_goal, reset_jump_defaults)
+            c += jump_w
+            jump_writes += jump_w
         if sections.intersection({"gravity", "wall", "glide", "vault", "jump_count"}):
             c += _apply_advanced_to_obj(pc, gravity_scale=gravity_scale, max_step_height=max_step_height, jump_count=jump_count, jump_off_z_factor=jump_off_z_factor, walkable_floor_angle=walkable_floor_angle, walkable_floor_z=walkable_floor_z, glide_speed=glide_speed, glide_boost=glide_boost, glide_air_control=glide_air_control, dash_speed=dash_speed, vault_cost=vault_cost, sections=sections)
         if c:
             touched += 1; writes += c
     for pawn in pawns:
         pawn_writes = 0
+        pawn_jump_writes = 0
         for obj in _movement_objects_for_pawn(pawn):
             if "speed" in sections:
                 pawn_writes += _apply_speed_to_obj(obj, speed_scale, walk_speed)
             if "jump" in sections:
-                pawn_writes += _apply_jump_to_obj(obj, jump_goal, jump_velocity, sprint_jump_goal, jump_hold_time, double_jump_goal, slide_jump_goal, reset_jump_defaults)
+                jump_w = _apply_jump_to_obj(obj, jump_goal, jump_velocity, sprint_jump_goal, jump_hold_time, double_jump_goal, slide_jump_goal, reset_jump_defaults)
+                pawn_writes += jump_w
+                pawn_jump_writes += jump_w
             if sections.intersection({"gravity", "wall", "glide", "vault", "jump_count"}):
                 pawn_writes += _apply_advanced_to_obj(obj, gravity_scale=gravity_scale, max_step_height=max_step_height, jump_count=jump_count, jump_off_z_factor=jump_off_z_factor, walkable_floor_angle=walkable_floor_angle, walkable_floor_z=walkable_floor_z, glide_speed=glide_speed, glide_boost=glide_boost, glide_air_control=glide_air_control, dash_speed=dash_speed, vault_cost=vault_cost, sections=sections)
         if pawn_writes:
             touched += 1; writes += pawn_writes
-    msg = f"Applied movement to {len(pawns)} player pawn(s), {len(controllers)} controller(s): speed {speed_scale:.2f}x, walk {walk_speed:.0f}, JumpGoal {jump_goal:.0f}, JumpZ {jump_velocity:.0f}, jump count {jump_count}, gravity {gravity_scale:.2f}, step {max_step_height:.0f}, floor angle {walkable_floor_angle:.1f}, glide {glide_speed:.0f}/{glide_boost:.0f}, vault cost {'unchanged' if vault_cost is None else vault_cost}. Writes: {writes}."
+            jump_writes += pawn_jump_writes
+    msg = f"Applied movement to {len(pawns)} player pawn(s), {len(controllers)} controller(s): speed {speed_scale:.2f}x, walk {walk_speed:.0f}, JumpGoal {jump_goal:.0f}, JumpZ {jump_velocity:.0f}, jump count {jump_count}, gravity {gravity_scale:.2f}, step {max_step_height:.0f}, floor angle {walkable_floor_angle:.1f}, glide {glide_speed:.0f}/{glide_boost:.0f}, vault cost {'unchanged' if vault_cost is None else vault_cost}. Writes: {writes}; jump writes: {jump_writes}."
     _log(msg)
     return msg
 
