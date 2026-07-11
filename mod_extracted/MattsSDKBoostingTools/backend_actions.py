@@ -87,10 +87,13 @@ _ASD_COMMAND_ATTRS = {
     "ASD_cache_status": "_cmd_cache_status",
     "ASD_targets": "_cmd_targets",
     "ASD_spawn": "_cmd_spawn",
+    "ASD_lostloot": "_cmd_lostloot",
     "ASD_spawnai": "_cmd_spawnai",
     "ASD_probeai": "_cmd_probeai",
     "ASD_cache": "_cmd_cache",
     "ASD_barrellogo": "_cmd_barrellogo",
+    "ASD_logo_options": "_cmd_logo_options",
+    "ASD_spawnerdiag": "_cmd_spawnerdiag",
 }
 
 
@@ -717,11 +720,42 @@ def run_dev_spawner_action(action: str, payload: dict[str, Any] | None = None) -
             cmd = "ASD_scriptdump"
         elif action == "dev_spawner_cache_status":
             cmd = "ASD_cache_status"
+        elif action == "dev_spawner_logo_options":
+            cmd = "ASD_logo_options"
+        elif action == "dev_spawner_spawnerdiag":
+            limit = _clamp_int(payload.get("dev_actor_target_limit") or 20, 1, 200)
+            distance = _clamp_float(payload.get("dev_actor_distance"), 0.0, 20000.0, 350.0)
+            cmd = f"ASD_spawnerdiag --limit {limit} --distance {distance:g}"
         elif action == "dev_spawner_targets":
             name = _dev_spawner_token(payload.get("dev_actor_name"), "Actor/template name", required=True)
             class_name = _dev_spawner_token(payload.get("dev_actor_class"), "Actor class")
             limit = _clamp_int(payload.get("dev_actor_target_limit") or 20, 1, 200)
             parts = ["ASD_targets", name, "--limit", str(limit)]
+            if class_name:
+                parts.extend(("--class", class_name))
+            if _dev_spawner_bool(payload.get("dev_actor_include_non_generated")):
+                parts.append("--include-non-generated")
+            cmd = " ".join(parts)
+        elif action == "dev_spawner_lostloot":
+            class_name = _dev_spawner_token(payload.get("dev_actor_class"), "Actor class")
+            count = _clamp_int(payload.get("dev_actor_count") or 1, 1, 50)
+            distance = _clamp_float(payload.get("dev_actor_distance"), 0.0, 20000.0, 350.0)
+            spacing = _clamp_float(payload.get("dev_actor_spacing"), 0.0, 5000.0, 125.0)
+            scale = _clamp_float(payload.get("dev_actor_scale"), 0.01, 20.0, 1.0)
+            z_offset = _clamp_float(payload.get("dev_actor_z_offset"), -10000.0, 10000.0, -100.0)
+            parts = [
+                "ASD_lostloot",
+                "--count",
+                str(count),
+                "--distance",
+                f"{distance:g}",
+                "--spacing",
+                f"{spacing:g}",
+                "--scale",
+                f"{scale:g}",
+                "--z-offset",
+                f"{z_offset:g}",
+            ]
             if class_name:
                 parts.extend(("--class", class_name))
             if _dev_spawner_bool(payload.get("dev_actor_include_non_generated")):
@@ -827,7 +861,10 @@ def run_dev_spawner_action(action: str, payload: dict[str, Any] | None = None) -
         if direct_ok:
             return {
                 "ok": True,
-                "message": f"Ran {cmd.split()[0]} through ActorScriptDeployer. Check unrealsdk.log for detailed ASD output.",
+                "message": (
+                    f"Sent {cmd.split()[0]} to ActorScriptDeployer. "
+                    "The bridge only confirms ASD received the command; check unrealsdk.log for spawn/result details."
+                ),
                 "command": cmd,
                 "mode": direct_message,
             }

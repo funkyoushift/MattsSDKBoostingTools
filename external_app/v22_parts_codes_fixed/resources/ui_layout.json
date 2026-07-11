@@ -930,7 +930,7 @@
           "id": "dev_spawner_actor",
           "label": "ACTOR TEMPLATE SPAWNING",
           "accent": "cyan",
-          "text": "Spawn or inspect live actor templates with ASD_spawn and ASD_targets. Recommended first tests: ASD Status, Cache Status, Targets: lostloot, Targets: bank, then Targets: barrel. A 0-result target scan usually means that actor is not loaded nearby yet.",
+          "text": "Spawn or inspect live actor templates with ASD_spawn and ASD_targets. Recommended first tests: ASD Status, Cache Status, Spawner Diagnostics, Spawn Lost Loot, then Targets: bank. Template scans can return 0 when the actor is not loaded nearby.",
           "fields": [
             {
               "id": "dev_actor_name",
@@ -1028,6 +1028,11 @@
               "accent": "gold"
             },
             {
+              "id": "dev_spawner_lostloot",
+              "label": "Spawn Lost Loot",
+              "accent": "gold"
+            },
+            {
               "id": "dev_spawner_activate_last",
               "label": "Activate Last",
               "accent": "purple"
@@ -1040,6 +1045,11 @@
             {
               "id": "dev_spawner_status",
               "label": "ASD Status",
+              "accent": "cyan"
+            },
+            {
+              "id": "dev_spawner_spawnerdiag",
+              "label": "Spawner Diagnostics",
               "accent": "cyan"
             },
             {
@@ -1228,6 +1238,11 @@
             }
           ],
           "actions": [
+            {
+              "id": "dev_spawner_logo_options",
+              "label": "Logo Options",
+              "accent": "cyan"
+            },
             {
               "id": "dev_spawner_barrel_logo",
               "label": "Run Barrel Logo",
