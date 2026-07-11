@@ -172,7 +172,7 @@ function bridgeAction(action, payload = {}, timeoutMs = 15000) {
   return window.msbt.bridgeRequest({
     method: "POST",
     path: "/action",
-    payload: { action, payload },
+    payload: { action, payload, timeout: Math.max(1, Math.ceil(timeoutMs / 1000)) },
     timeoutMs
   });
 }
@@ -1039,7 +1039,10 @@ async function runDevSpawnerAction(action) {
   }
   if (action === "dev_spawner_spawnai" || action === "dev_spawner_probeai" || action === "dev_spawner_cache") {
     if (!getValue(els.devAiName)) {
-      setOutput(els.devSpawnerOutput, "Enter an AI Actor Def / Cache value first.");
+      selectDevActorFromList();
+    }
+    if (!getValue(els.devAiName)) {
+      setOutput(els.devSpawnerOutput, "Select or enter an AI Actor Def / Cache value first.");
       return;
     }
   }
@@ -1145,6 +1148,10 @@ function wireEvents() {
   els.devActorList.addEventListener("change", selectDevActorFromList);
   els.devFavoriteList.addEventListener("change", selectDevFavorite);
   document.getElementById("devUseActorBtn").addEventListener("click", selectDevActorFromList);
+  document.getElementById("devSpawnSelectedActorBtn").addEventListener("click", () => {
+    selectDevActorFromList();
+    runDevSpawnerAction("dev_spawner_spawnai");
+  });
   document.getElementById("devUseFavoriteBtn").addEventListener("click", selectDevFavorite);
   document.getElementById("devSpawnFavoriteBtn").addEventListener("click", () => {
     selectDevFavorite();

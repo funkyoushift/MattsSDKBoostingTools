@@ -358,12 +358,12 @@
       <div class="grid two dev-spawner-layout">
         <section class="panel purple">
           <h2>Favorites</h2>
-          <p>Grouped favorites from the SDK Debug Menu source. Select one to populate the actor field.</p>
+          <p>Grouped favorites from the SDK Debug Menu source. Spawn Favorite uses ASD_spawnai, matching the source menu row behavior.</p>
           <div id="devFavoriteSummary" class="status-line">Loading favorites...</div>
           <select id="devFavoriteList" class="list-select compact-list" size="10"></select>
           <div class="button-row wrap">
             <button id="devUseFavoriteBtn">Use Favorite</button>
-            <button id="devSpawnFavoriteBtn">Spawn Favorite</button>
+            <button id="devSpawnFavoriteBtn">Spawn Favorite Actor Def</button>
           </div>
         </section>
 
@@ -381,11 +381,16 @@
           </div>
           <div id="devActorSummary" class="status-line">Loading actor catalog...</div>
           <select id="devActorList" class="list-select compact-list" size="14"></select>
+          <div class="button-row wrap">
+            <button id="devUseActorBtn">Use Selected Actor</button>
+            <button id="devSpawnSelectedActorBtn">Spawn Selected Actor Def</button>
+          </div>
         </section>
       </div>
 
       <section class="panel cyan">
-        <h2>Actor Template Spawning</h2>
+        <h2>Live Template / Utility Actions</h2>
+        <p>List Targets and Spawn Live Template are for live templates already loaded in the area. For source-catalog actors, use Spawn Selected Actor Def.</p>
         <div class="grid two compact">
           <label>
             Actor / Template
@@ -401,9 +406,8 @@
           Include Non-Generated
         </label>
         <div class="button-row wrap">
-          <button id="devUseActorBtn">Use Selected Actor</button>
           <button data-dev-spawner-action="dev_spawner_targets">List Targets</button>
-          <button data-dev-spawner-action="dev_spawner_spawn">Spawn Actor</button>
+          <button data-dev-spawner-action="dev_spawner_spawn">Spawn Live Template</button>
           <button data-dev-spawner-action="dev_spawner_lostloot">Spawn Lost Loot</button>
           <button data-dev-spawner-action="dev_spawner_activate_last">Activate Last</button>
           <button data-dev-spawner-action="dev_spawner_scriptdump">Script Dump Last</button>
@@ -413,7 +417,7 @@
 
       <div class="grid two">
         <section class="panel purple">
-          <h2>AI Actor Def Spawning</h2>
+          <h2>Catalog Actor Def Spawning</h2>
           <div class="grid two compact">
             <label>
               Actor Def / Cache
@@ -447,7 +451,7 @@
           <div class="button-row wrap">
             <button data-dev-spawner-action="dev_spawner_probeai">Probe AI</button>
             <button data-dev-spawner-action="dev_spawner_cache">Cache Live Actor</button>
-            <button data-dev-spawner-action="dev_spawner_spawnai">Spawn AI Actor Def</button>
+            <button data-dev-spawner-action="dev_spawner_spawnai">Spawn Actor Def</button>
           </div>
         </section>
 
