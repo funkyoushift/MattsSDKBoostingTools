@@ -43,6 +43,26 @@ _DEFAULT_SETTINGS = {
     "bank_size": _DEFAULT_BANK_SIZE,
 }
 
+_CONTAINER_ALIASES: dict[str, tuple[str, ...]] = {
+    "BackpackContainer": (
+        "BackpackContainer",
+        "InventoryContainer",
+        "PlayerInventoryContainer",
+    ),
+    "BankContainer": (
+        "BankContainer",
+        "PlayerBankContainer",
+        "SharedBankContainer",
+        "BankStorageContainer",
+        "PlayerBank",
+    ),
+}
+
+_CONTAINER_SEARCH_TOKENS: dict[str, tuple[str, ...]] = {
+    "BackpackContainer": ("backpack", "inventory"),
+    "BankContainer": ("bank",),
+}
+
 
 def _candidate_settings_paths() -> list[Path]:
     paths: list[Path] = []
@@ -237,8 +257,62 @@ def _bump_replication(container: Any) -> None:
                 pass
 
 
+def _container_candidates(container_name: str) -> tuple[str, ...]:
+    aliases = list(_CONTAINER_ALIASES.get(container_name, (container_name,)))
+    if container_name not in aliases:
+        aliases.insert(0, container_name)
+    out: list[str] = []
+    seen: set[str] = set()
+    for alias in aliases:
+        if alias and alias not in seen:
+            out.append(alias)
+            seen.add(alias)
+    return tuple(out)
+
+
+def _object_has_max_size(obj: Any) -> bool:
+    try:
+        return getattr(obj, "MaxSize", None) is not None
+    except Exception:
+        return False
+
+
+def _resolve_container(ps: Any, container_name: str) -> tuple[str, Any] | tuple[None, None]:
+    if ps is None:
+        return None, None
+
+    for candidate in _container_candidates(container_name):
+        try:
+            container = getattr(ps, candidate, None)
+        except Exception:
+            container = None
+        if _object_has_max_size(container):
+            return candidate, container
+
+    tokens = _CONTAINER_SEARCH_TOKENS.get(container_name, ())
+    if not tokens:
+        return None, None
+    try:
+        names = [name for name in dir(ps) if isinstance(name, str)]
+    except Exception:
+        names = []
+    for name in names:
+        lower = name.lower()
+        if not any(token in lower for token in tokens):
+            continue
+        if "container" not in lower and "bank" not in lower and "inventory" not in lower:
+            continue
+        try:
+            container = getattr(ps, name, None)
+        except Exception:
+            continue
+        if _object_has_max_size(container):
+            return name, container
+    return None, None
+
+
 def _container_max_size(ps: Any, container_name: str) -> Any | None:
-    container = getattr(ps, container_name, None) if ps is not None else None
+    _resolved_name, container = _resolve_container(ps, container_name)
     return getattr(container, "MaxSize", None) if container is not None else None
 
 
@@ -341,25 +415,48 @@ def _inventory_looks_loaded(ps: Any) -> bool:
     if ps is None:
         return False
     for container_name in ("BackpackContainer", "BankContainer"):
-        container = getattr(ps, container_name, None)
+        _resolved_name, container = _resolve_container(ps, container_name)
         if container is None or getattr(container, "MaxSize", None) is None:
             return False
     return True
 
-def set_container_size_on_player_state(ps: Any, container_name: str, size: int) -> bool:
+
+def _related_items_names(container_name: str, resolved_name: str) -> tuple[str, ...]:
+    names = [resolved_name.replace("Container", "Items"), container_name.replace("Container", "Items")]
+    if container_name == "BackpackContainer":
+        names += ["BackpackItems", "InventoryItems", "PlayerInventoryItems"]
+    elif container_name == "BankContainer":
+        names += ["BankItems", "PlayerBankItems", "SharedBankItems", "BankStorageItems"]
+    out: list[str] = []
+    seen: set[str] = set()
+    for name in names:
+        if name and name not in seen:
+            out.append(name)
+            seen.add(name)
+    return tuple(out)
+
+
+def _write_container_size_on_player_state(ps: Any, container_name: str, size: int) -> str:
     if ps is None:
         raise RuntimeError("PlayerState is not available.")
-    container = getattr(ps, container_name, None)
+    resolved_name, container = _resolve_container(ps, container_name)
     if container is None:
-        raise RuntimeError(f"{container_name} is not available on PlayerState.")
+        aliases = ", ".join(_container_candidates(container_name))
+        raise RuntimeError(f"{container_name} is not available on PlayerState. Tried: {aliases}.")
     max_size = getattr(container, "MaxSize", None)
     if max_size is None:
-        raise RuntimeError(f"{container_name}.MaxSize is not available.")
+        raise RuntimeError(f"{resolved_name}.MaxSize is not available.")
     size = clamp_container_size(size)
     if not _set_attr_integer(max_size, size):
-        raise RuntimeError(f"Could not write {container_name}.MaxSize Value/BaseValue.")
+        raise RuntimeError(f"Could not write {resolved_name}.MaxSize Value/BaseValue.")
     _bump_replication(container)
-    _bump_replication(getattr(ps, container_name.replace("Container", "Items"), None))
+    for items_name in _related_items_names(container_name, resolved_name):
+        _bump_replication(getattr(ps, items_name, None))
+    return resolved_name
+
+
+def set_container_size_on_player_state(ps: Any, container_name: str, size: int) -> bool:
+    _write_container_size_on_player_state(ps, container_name, size)
     return True
 
 
@@ -372,9 +469,12 @@ def set_bank_size_for_player_state(ps: Any, size: int) -> bool:
 
 
 def set_inventory_sizes_for_player_state(ps: Any, backpack_size: int, bank_size: int) -> tuple[bool, bool]:
-    bp = set_backpack_size_for_player_state(ps, backpack_size)
-    bank = set_bank_size_for_player_state(ps, bank_size)
-    return bp, bank
+    bp_size = clamp_container_size(backpack_size, _DEFAULT_BACKPACK_SIZE)
+    bank_size = clamp_container_size(bank_size, _DEFAULT_BANK_SIZE)
+    bp_name = _write_container_size_on_player_state(ps, "BackpackContainer", bp_size)
+    bank_name = _write_container_size_on_player_state(ps, "BankContainer", bank_size)
+    _log(f"Set inventory sizes via {bp_name}/{bank_name}: backpack {bp_size}, bank {bank_size}.")
+    return True, True
 
 
 def set_inventory_sizes_for_party_index(index: int | None, backpack_size: int, bank_size: int) -> str:

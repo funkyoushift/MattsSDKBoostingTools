@@ -686,6 +686,7 @@ def _give_reward_def(def_path: str, all_players: bool) -> bool:
         if not callable(give_all):
             _log_error("GiveRewardAllPlayers not callable.")
             return False
+        type_errors: List[str] = []
         for ptr in ptr_all:
             for order_name, args in _all_players_arg_variants(ptr):
                 try:
@@ -693,10 +694,12 @@ def _give_reward_def(def_path: str, all_players: bool) -> bool:
                     _log_info(f"GiveRewardAllPlayers OK ({order_name}).")
                     return True
                 except TypeError as e:
-                    _log_warning(f"GiveRewardAllPlayers {order_name} TypeError: {e}")
+                    type_errors.append(f"{order_name}: {e}")
                 except Exception as e:
                     _log_warning(f"GiveRewardAllPlayers {order_name}: {e}")
                     return False
+        for msg in type_errors[:4]:
+            _log_warning(f"GiveRewardAllPlayers TypeError fallback failed: {msg}")
         _log_error("GiveRewardAllPlayers: all variants failed.")
         return False
 
