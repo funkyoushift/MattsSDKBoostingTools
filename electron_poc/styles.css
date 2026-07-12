@@ -360,6 +360,11 @@ iframe {
   max-height: 360px;
 }
 
+.dev-hint {
+  color: var(--muted);
+  margin: 2px 0 8px;
+}
+
 .dev-actor-group {
   border-bottom: 1px solid rgba(52, 64, 82, .75);
   margin-bottom: 8px;
@@ -402,6 +407,11 @@ iframe {
 
 .dev-actor-row.selected {
   background: rgba(36, 68, 102, .42);
+}
+
+.dev-actor-row.quick-pick-row {
+  border-left: 3px solid rgba(255, 211, 77, .55);
+  padding-left: 6px;
 }
 
 .dev-actor-title,

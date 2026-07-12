@@ -36,6 +36,8 @@ const els = {
   devAiName: document.getElementById("devAiName"),
   devNextActorPageBtn: document.getElementById("devNextActorPageBtn"),
   devPrevActorPageBtn: document.getElementById("devPrevActorPageBtn"),
+  devQuickPickRows: document.getElementById("devQuickPickRows"),
+  devQuickPickSummary: document.getElementById("devQuickPickSummary"),
   devRefreshLogBtn: document.getElementById("devRefreshLogBtn"),
   devSpawnerOutput: document.getElementById("devSpawnerOutput"),
   devSpawnerWarning: document.getElementById("devSpawnerWarning"),
@@ -97,6 +99,7 @@ const state = {
   devActiveCategory: "",
   devSpawnerCatalog: null,
   devSpawnerFilteredActors: [],
+  devSpawnerFilteredQuickPicks: [],
   devSpawnerSelectedActor: "",
   devSpawnerWarningAccepted: false,
   filteredItemPools: [],
@@ -826,6 +829,85 @@ function devActorFavoriteLabel(actorName) {
   return String(favorites[actorName] || "").trim();
 }
 
+function devActorDerivedLabel(actorName) {
+  const cleaned = String(actorName || "")
+    .replace(/^(TESTChar|Char|AI|IO|BP|BPChar|BPActor|InteractiveObject|NPC)_?/i, "")
+    .replace(/_/g, " ")
+    .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+    .replace(/\s+/g, " ")
+    .trim();
+  return cleaned || String(actorName || "").trim();
+}
+
+function devSearchTokens(text) {
+  const normalized = devNormalizeSearch(text);
+  return normalized ? normalized.split(/\s+/).filter((token) => token.length > 2) : [];
+}
+
+function devHasTokenOverlap(left, right) {
+  const rightTokens = new Set(devSearchTokens(right));
+  return devSearchTokens(left).some((token) => rightTokens.has(token));
+}
+
+function devQuickPickLabelInfo(actorName) {
+  const reference = devActorFavoriteLabel(actorName);
+  const mapped = devActorDisplayName(actorName);
+  const derived = devActorDerivedLabel(actorName);
+  const categories = devActorCategories(actorName);
+  const reasons = [];
+
+  if (!reference) {
+    reasons.push("missing reference label");
+  }
+  if (/^\?+$/.test(reference) || /^[-_\s]+$/.test(reference)) {
+    reasons.push("malformed reference label");
+  }
+  if (reference && devNormalizeSearch(reference) === devNormalizeSearch(actorName)) {
+    reasons.push("reference label matches raw actor key");
+  }
+  if (reference && /^(io|char|ai|bp)[_\s]/i.test(reference)) {
+    reasons.push("reference label looks like a raw actor key");
+  }
+
+  const invalidReference = reasons.some((reason) => reason.includes("missing") || reason.includes("malformed") || reason.includes("raw actor key"));
+  const sourceSpecific = Boolean(reference && mapped && !devHasTokenOverlap(reference, `${mapped} ${actorName} ${derived} ${categories.join(" ")}`));
+  if (sourceSpecific) {
+    reasons.push("reference label differs from mapped display name");
+  }
+
+  let primary = "";
+  let secondary = "";
+  let source = "";
+
+  if (!invalidReference && !sourceSpecific) {
+    primary = reference;
+    secondary = mapped && devNormalizeSearch(mapped) !== devNormalizeSearch(reference) ? `Mapped: ${mapped}` : "";
+    source = "Reference Quick Pick label";
+  } else if (mapped) {
+    primary = mapped;
+    secondary = reference ? `Reference: ${reference}` : "";
+    source = "Mapped display name; reference label kept as metadata";
+  } else if (!invalidReference && reference) {
+    primary = reference;
+    secondary = derived && devNormalizeSearch(derived) !== devNormalizeSearch(reference) ? `Derived: ${derived}` : "";
+    source = "Reference Quick Pick label";
+  } else {
+    primary = derived || actorName;
+    secondary = actorName;
+    source = derived ? "Actor-key-derived label" : "Exact actor key";
+  }
+
+  return {
+    primary,
+    secondary,
+    source,
+    reasons,
+    reference,
+    mapped,
+    derived
+  };
+}
+
 function devActorCategories(actorName) {
   const catalog = state.devSpawnerCatalog || {};
   const categories = catalog.categories || {};
@@ -854,7 +936,7 @@ function devNormalizeSearch(text) {
 }
 
 function devActorSearchText(actorName) {
-  return devNormalizeSearch(`${actorName} ${devActorDisplayName(actorName)} ${devActorCategories(actorName).join(" ")}`);
+  return devNormalizeSearch(`${actorName} ${devActorDisplayName(actorName)} ${devActorFavoriteLabel(actorName)} ${devActorDerivedLabel(actorName)} ${devActorCategories(actorName).join(" ")}`);
 }
 
 function devCategoryNames() {
@@ -885,6 +967,39 @@ function devGroupedActorRows(actorNames, category) {
   });
 
   return groups;
+}
+
+function devReferenceQuickPickActors() {
+  const catalog = state.devSpawnerCatalog || {};
+  const favorites = catalog.favorites || {};
+  return Object.keys(favorites).filter((actorName) => devActorExistsInCatalog(actorName));
+}
+
+function devReferenceQuickPickGroupName(actorName) {
+  if (actorName.startsWith("IO_")) return "Interactive Objects";
+  if (actorName.startsWith("Char_") || actorName.startsWith("TESTChar_")) return "Characters";
+  return devActorPrimaryCategory(actorName);
+}
+
+function devGroupedQuickPickRows(actorNames) {
+  const groups = [];
+  const byName = new Map();
+  actorNames.forEach((actorName) => {
+    const groupName = devReferenceQuickPickGroupName(actorName);
+    if (!byName.has(groupName)) {
+      const group = { name: groupName, actors: [] };
+      byName.set(groupName, group);
+      groups.push(group);
+    }
+    byName.get(groupName).actors.push(actorName);
+  });
+  return groups;
+}
+
+function devFilteredReferenceQuickPicks(query) {
+  return devReferenceQuickPickActors().filter((actorName) => {
+    return !query || devActorSearchText(actorName).includes(query);
+  });
 }
 
 function clearDevActorSelection() {
@@ -998,6 +1113,9 @@ function renderDevCategories() {
 function makeDevActorRow(actorName, options = {}) {
   const row = document.createElement("div");
   row.className = "dev-actor-row";
+  if (options.rowClass) {
+    row.classList.add(options.rowClass);
+  }
   if (actorName === state.devSpawnerSelectedActor) {
     row.classList.add("selected");
   }
@@ -1018,7 +1136,7 @@ function makeDevActorRow(actorName, options = {}) {
   const displayName = devActorDisplayName(actorName);
   const title = document.createElement("span");
   title.className = "dev-actor-title";
-  title.textContent = displayName || actorName;
+  title.textContent = options.titleText || displayName || actorName;
 
   const key = document.createElement("span");
   key.className = "dev-actor-key";
@@ -1028,7 +1146,7 @@ function makeDevActorRow(actorName, options = {}) {
   meta.className = "dev-actor-meta";
   const categories = devActorCategories(actorName);
   const groupName = options.groupName || devActorPrimaryCategory(actorName);
-  meta.textContent = `Category: ${groupName}${categories.length > 1 ? ` | Also in: ${categories.filter((name) => name !== groupName).join(", ")}` : ""}`;
+  meta.textContent = options.metaText || `Category: ${groupName}${categories.length > 1 ? ` | Also in: ${categories.filter((name) => name !== groupName).join(", ")}` : ""}`;
 
   label.appendChild(title);
   label.appendChild(key);
@@ -1037,6 +1155,66 @@ function makeDevActorRow(actorName, options = {}) {
   row.appendChild(spawn);
   row.appendChild(label);
   return row;
+}
+
+function renderDevQuickPicks(query, rawQuery) {
+  if (!els.devQuickPickRows) return;
+
+  const catalog = state.devSpawnerCatalog || {};
+  const favorites = catalog.favorites || {};
+  const favoriteCount = Object.keys(favorites).length;
+  const availableActors = devReferenceQuickPickActors();
+  const omittedCount = Math.max(0, favoriteCount - availableActors.length);
+  state.devSpawnerFilteredQuickPicks = devFilteredReferenceQuickPicks(query);
+
+  els.devQuickPickRows.innerHTML = "";
+  if (!favoriteCount) {
+    const empty = document.createElement("div");
+    empty.className = "dev-empty-row";
+    empty.textContent = "No reference Quick Picks are packaged in the local catalog.";
+    els.devQuickPickRows.appendChild(empty);
+  } else if (!state.devSpawnerFilteredQuickPicks.length) {
+    const empty = document.createElement("div");
+    empty.className = "dev-empty-row";
+    empty.textContent = query
+      ? `No reference Quick Picks match "${rawQuery}". Clear Search actors to see all packaged Quick Picks.`
+      : "No reference Quick Picks are available in the active local actor catalog.";
+    els.devQuickPickRows.appendChild(empty);
+  } else {
+    devGroupedQuickPickRows(state.devSpawnerFilteredQuickPicks).forEach((group) => {
+      const groupNode = document.createElement("details");
+      groupNode.className = "dev-actor-group";
+      groupNode.open = true;
+      const summary = document.createElement("summary");
+      summary.textContent = `${group.name} (${group.actors.length})`;
+      groupNode.appendChild(summary);
+      group.actors.forEach((actorName) => {
+        const labelInfo = devQuickPickLabelInfo(actorName);
+        const categories = devActorCategories(actorName);
+        const primaryCategory = devActorPrimaryCategory(actorName);
+        const categoryText = `Category: ${primaryCategory}${categories.length > 1 ? ` | Also in: ${categories.filter((name) => name !== primaryCategory).join(", ")}` : ""}`;
+        const metaParts = [];
+        if (labelInfo.secondary) metaParts.push(labelInfo.secondary);
+        metaParts.push(categoryText);
+        metaParts.push(labelInfo.source);
+        groupNode.appendChild(makeDevActorRow(actorName, {
+          groupName: group.name,
+          metaText: metaParts.join(" | "),
+          rowClass: "quick-pick-row",
+          titleText: labelInfo.primary
+        }));
+      });
+      els.devQuickPickRows.appendChild(groupNode);
+    });
+  }
+
+  const searchNote = query ? ` | search: "${rawQuery}"` : "";
+  const omittedNote = omittedCount ? ` | ${omittedCount} omitted pending catalog review` : "";
+  setLine(
+    els.devQuickPickSummary,
+    `${state.devSpawnerFilteredQuickPicks.length} shown / ${availableActors.length} available / ${favoriteCount} reference Quick Picks${searchNote}${omittedNote}`,
+    state.devSpawnerFilteredQuickPicks.length ? "ok" : "warning"
+  );
 }
 
 function renderDevActors() {
@@ -1048,10 +1226,17 @@ function renderDevActors() {
   state.devSpawnerFilteredActors = allNames.filter((actorName) => {
     return !query || devActorSearchText(actorName).includes(query);
   });
+  state.devSpawnerFilteredQuickPicks = devFilteredReferenceQuickPicks(query);
 
-  if (state.devSpawnerSelectedActor && !state.devSpawnerFilteredActors.includes(state.devSpawnerSelectedActor)) {
+  if (
+    state.devSpawnerSelectedActor
+    && !state.devSpawnerFilteredActors.includes(state.devSpawnerSelectedActor)
+    && !state.devSpawnerFilteredQuickPicks.includes(state.devSpawnerSelectedActor)
+  ) {
     clearDevActorSelection();
   }
+
+  renderDevQuickPicks(query, rawQuery);
 
   const pageSize = 36;
   const totalPages = Math.max(1, Math.ceil(state.devSpawnerFilteredActors.length / pageSize));
