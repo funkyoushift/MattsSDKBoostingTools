@@ -161,6 +161,208 @@ def _actor_script_deployer_command(attr_name: str) -> tuple[Any | None, str]:
     return command_obj, "ActorScriptDeployer direct command object"
 
 
+def _install_asd_sdk03_actor_def_patch(asd: Any) -> tuple[bool, str]:
+    if getattr(asd, "_msbt_sdk03_actor_def_patch", False):
+        return True, "ActorScriptDeployer SDK 03 actor-def pointer patch already installed"
+
+    original = getattr(asd, "_make_actor_def_shell", None)
+    if not callable(original):
+        return True, "ActorScriptDeployer actor-def shell helper not present; SDK 03 patch not needed"
+
+    def _make_actor_def_shell_sdk03(actor_def: str) -> Any:
+        name = str(actor_def or "").strip()
+        if not name:
+            raise ValueError("ActorScriptDeployer SDK 03 actor-def pointer requires a non-empty actor name.")
+
+        try:
+            import unrealsdk as _unrealsdk
+        except Exception as exc:
+            raise RuntimeError(f"ActorScriptDeployer SDK 03 actor-def pointer could not import unrealsdk: {exc!r}") from exc
+
+        struct = None
+        find_object_fn = getattr(asd, "find_object", None)
+        if callable(find_object_fn):
+            for class_name in ("ScriptStruct", "Object"):
+                try:
+                    struct = find_object_fn(class_name, "/Script/GbxSpawn.GbxActorDef")
+                except Exception:
+                    struct = None
+                if struct is not None:
+                    break
+
+        struct_arg = struct or "/Script/GbxSpawn.GbxActorDef"
+        try:
+            return _unrealsdk.unreal.FGbxDefPtr(name, struct_arg)
+        except Exception as exc:
+            raise RuntimeError(
+                "ActorScriptDeployer SDK 03 actor-def pointer failed: "
+                f"FGbxDefPtr({name!r}, {struct_arg!r}) -> {exc!r}"
+            ) from exc
+
+    try:
+        setattr(asd, "_msbt_original_make_actor_def_shell", original)
+        setattr(asd, "_make_actor_def_shell", _make_actor_def_shell_sdk03)
+        setattr(asd, "_msbt_sdk03_actor_def_patch", True)
+    except Exception as exc:
+        return False, f"ActorScriptDeployer SDK 03 actor-def pointer patch failed: {exc!r}"
+
+    return True, "ActorScriptDeployer SDK 03 actor-def pointer patch installed: FGbxDefPtr(name, GbxActorDef)"
+
+
+def _capture_asd_logs(asd: Any, callback: Any) -> tuple[list[tuple[str, str]], Exception | None]:
+    logs: list[tuple[str, str]] = []
+    originals = {
+        "_log_info": getattr(asd, "_log_info", None),
+        "_log_warn": getattr(asd, "_log_warn", None),
+        "_log_error": getattr(asd, "_log_error", None),
+    }
+
+    def _wrap(level: str, original: Any) -> Any:
+        def _logger(message: str) -> None:
+            text = str(message)
+            logs.append((level, text))
+            if callable(original):
+                original(message)
+
+        return _logger
+
+    for attr, original in originals.items():
+        level = "info"
+        if attr.endswith("warn"):
+            level = "warning"
+        elif attr.endswith("error"):
+            level = "error"
+        try:
+            setattr(asd, attr, _wrap(level, original))
+        except Exception:
+            pass
+
+    error: Exception | None = None
+    try:
+        callback()
+    except Exception as exc:
+        error = exc
+    finally:
+        for attr, original in originals.items():
+            try:
+                setattr(asd, attr, original)
+            except Exception:
+                pass
+    return logs, error
+
+
+def _parse_asd_spawnai_result(
+    *,
+    name: str,
+    requested_count: int,
+    mode: str,
+    logs: list[tuple[str, str]],
+    error: Exception | None = None,
+) -> dict[str, Any]:
+    result: dict[str, Any] = {
+        "ok": False,
+        "message": "",
+        "mode": mode,
+        "requested_count": int(requested_count),
+        "verification_status": "unknown",
+        "spawn_verified": None,
+        "resolved": None,
+        "spawned_count": None,
+        "alive_count": None,
+        "dead_count": None,
+        "total_count": None,
+        "actor_names": [],
+        "warnings": [],
+        "asd_log_lines": [message for _level, message in logs],
+    }
+    if error is not None:
+        result["message"] = f"ActorScriptDeployer ASD_spawnai failed: {error!r}"
+        return result
+
+    actor_names: list[str] = []
+    warnings: list[str] = [
+        message
+        for level, message in logs
+        if level in ("warning", "error")
+        or "did not return an actor" in message
+        or "no alive actors" in message
+        or "resolved=False" in message
+    ]
+    count_pattern = re.compile(
+        r"ASD_spawnai thin-air actor_def=(?P<actor_def>\S+) resolved=(?P<resolved>True|False).*?"
+        r"counts=\(alive=(?P<alive>-?\d+), spawned=(?P<spawned>-?\d+), dead=(?P<dead>-?\d+), total=(?P<total>-?\d+)\) "
+        r"actors=(?P<actors>\[.*\])"
+    )
+    complete_pattern = re.compile(r"ASD_spawnai complete:\s*(?P<actor>.+)$")
+
+    for _level, message in logs:
+        count_match = count_pattern.search(message)
+        if count_match:
+            result["resolved"] = count_match.group("resolved") == "True"
+            result["alive_count"] = int(count_match.group("alive"))
+            result["spawned_count"] = int(count_match.group("spawned"))
+            result["dead_count"] = int(count_match.group("dead"))
+            result["total_count"] = int(count_match.group("total"))
+            actors_text = count_match.group("actors").strip()
+            if actors_text and actors_text != "[]":
+                actor_names.append(actors_text)
+            continue
+
+        complete_match = complete_pattern.search(message)
+        if complete_match:
+            actor_names.append(complete_match.group("actor").strip())
+
+    result["warnings"] = warnings
+    result["actor_names"] = actor_names
+
+    resolved = result.get("resolved")
+    alive_count = result.get("alive_count")
+    spawned_count = result.get("spawned_count")
+    saw_complete = bool(actor_names)
+    no_actor_warning = any(
+        "did not return an actor" in warning or "no alive actors" in warning
+        for warning in warnings
+    )
+
+    if resolved is False:
+        result["ok"] = True
+        result["verification_status"] = "queued_unverified"
+        result["message"] = (
+            f"ActorScriptDeployer accepted ASD_spawnai for {name}, but the immediate poll did not verify the actor. "
+            "Watch the game world; some ActorScriptDeployer spawns finish after this response."
+        )
+        return result
+    if alive_count == 0 and spawned_count == 0:
+        result["ok"] = True
+        result["verification_status"] = "queued_unverified"
+        result["message"] = (
+            f"ActorScriptDeployer accepted ASD_spawnai for {name}, but the immediate poll reported 0 spawned/alive actors. "
+            "Watch the game world; some ActorScriptDeployer spawns finish after this response."
+        )
+        return result
+    if no_actor_warning and not saw_complete:
+        result["ok"] = True
+        result["verification_status"] = "queued_unverified"
+        result["message"] = (
+            f"ActorScriptDeployer accepted ASD_spawnai for {name}, but did not return an actor immediately. "
+            "Watch the game world; some ActorScriptDeployer spawns finish after this response."
+        )
+        return result
+    if saw_complete or (resolved is True and (int(alive_count or 0) > 0 or int(spawned_count or 0) > 0)):
+        result["ok"] = True
+        result["verification_status"] = "verified_spawned"
+        result["spawn_verified"] = True
+        result["message"] = f"ActorScriptDeployer spawned {name}."
+        return result
+
+    result["verification_status"] = "unknown"
+    result["message"] = (
+        f"ActorScriptDeployer received ASD_spawnai for {name}, but MSBT could not verify a spawned actor from "
+        "the immediate command output."
+    )
+    return result
+
+
 def _run_actor_script_deployer_spawnai_like_debug_menu(
     *,
     name: str,
@@ -171,35 +373,60 @@ def _run_actor_script_deployer_spawnai_like_debug_menu(
     z_offset: float,
     extra_loads: list[str],
     direct_only: bool,
-) -> tuple[bool, str]:
+) -> dict[str, Any]:
     """Mirror SDK_Debug_Menu's AI spawn flow.
 
     The source menu calls _cmd_spawnai once, with count=1, then uses _cmd_spawn for
     extra copies.  Keeping the same call shape makes MSBT's bridge behavior easier
     to compare against the working debug-menu source.
     """
-    spawnai_fn, message = _actor_script_deployer_command("_cmd_spawnai")
-    if spawnai_fn is None:
-        return False, message
+    try:
+        asd = importlib.import_module("ActorScriptDeployer")
+    except Exception as exc:
+        return {"ok": False, "message": f"ActorScriptDeployer import failed: {exc!r}", "requested_count": count}
 
-    spawnai_fn(
-        argparse.Namespace(
-            name=name,
-            distance=distance,
-            count=1,
-            spacing=spacing,
-            scale=scale,
-            z_offset=z_offset,
-            zoffset=z_offset,
-            load=list(extra_loads),
-            direct_only=direct_only,
+    patch_ok, patch_message = _install_asd_sdk03_actor_def_patch(asd)
+    if not patch_ok:
+        return {"ok": False, "message": patch_message, "requested_count": count}
+
+    spawnai_fn = getattr(asd, "_cmd_spawnai", None)
+    if not callable(spawnai_fn):
+        return {
+            "ok": False,
+            "message": "ActorScriptDeployer command object '_cmd_spawnai' is unavailable.",
+            "requested_count": count,
+        }
+    message = f"ActorScriptDeployer direct command object; {patch_message}"
+
+    def _spawn_first() -> None:
+        spawnai_fn(
+            argparse.Namespace(
+                name=name,
+                distance=distance,
+                count=1,
+                spacing=spacing,
+                scale=scale,
+                z_offset=z_offset,
+                zoffset=z_offset,
+                load=list(extra_loads),
+                direct_only=direct_only,
+            )
         )
+
+    logs, error = _capture_asd_logs(asd, _spawn_first)
+    result = _parse_asd_spawnai_result(
+        name=name,
+        requested_count=count,
+        mode=message,
+        logs=logs,
+        error=error,
     )
 
     if count > 1:
         spawn_fn, spawn_message = _actor_script_deployer_command("_cmd_spawn")
         if spawn_fn is None:
-            return True, f"{message}; first actor requested; extra copies skipped: {spawn_message}"
+            result["warnings"].append(f"Extra copies skipped: {spawn_message}")
+            return result
         for idx in range(1, count):
             spawn_fn(
                 argparse.Namespace(
@@ -213,7 +440,7 @@ def _run_actor_script_deployer_spawnai_like_debug_menu(
                 )
             )
 
-    return True, f"{message}; SDK_Debug_Menu-style ASD_spawnai flow"
+    return result
 
 
 def _module_available(name: str) -> bool:
@@ -776,7 +1003,7 @@ def spawn_itempool(pool_name: object, count: object, level: object) -> dict[str,
 
 def run_dev_spawner_action(action: str, payload: dict[str, Any] | None = None) -> dict[str, Any]:
     payload = dict(payload or {})
-    direct_dev_spawner_result: tuple[bool, str] | None = None
+    direct_dev_spawner_result: dict[str, Any] | None = None
     try:
         if action == "dev_spawner_status":
             cmd = "ASD_status"
@@ -862,11 +1089,11 @@ def run_dev_spawner_action(action: str, payload: dict[str, Any] | None = None) -
             parts = [command, name]
             extra_loads: list[str] = []
             if action == "dev_spawner_spawnai":
-                count = _clamp_int(payload.get("dev_ai_count") or 1, 1, 50)
+                count = _clamp_int(payload.get("dev_ai_count") or 1, 1, 12)
                 distance = _clamp_float(payload.get("dev_ai_distance"), 0.0, 20000.0, 350.0)
-                spacing = _clamp_float(payload.get("dev_ai_spacing"), 0.0, 5000.0, 125.0)
-                scale = _clamp_float(payload.get("dev_ai_scale"), 0.01, 20.0, 1.0)
-                z_offset = _clamp_float(payload.get("dev_ai_z_offset"), -10000.0, 10000.0, 0.0)
+                spacing = _clamp_float(payload.get("dev_ai_spacing"), 1.0, 5000.0, 125.0)
+                scale = _clamp_float(payload.get("dev_ai_scale"), 0.05, 20.0, 1.0)
+                z_offset = _clamp_float(payload.get("dev_ai_z_offset"), -5000.0, 5000.0, 0.0)
                 direct_only = _dev_spawner_bool(payload.get("dev_ai_direct_only"))
                 parts.extend(
                     (
@@ -940,7 +1167,11 @@ def run_dev_spawner_action(action: str, payload: dict[str, Any] | None = None) -
             return {"ok": False, "message": f"Unsupported dev spawner action: {action}"}
 
         if direct_dev_spawner_result is not None:
-            direct_ok, direct_message = direct_dev_spawner_result
+            result = dict(direct_dev_spawner_result)
+            result.setdefault("command", cmd)
+            result.setdefault("accepted", bool(result.get("asd_log_lines")))
+            result.setdefault("message", "ActorScriptDeployer spawn request processed.")
+            return result
         else:
             direct_ok, direct_message = _run_actor_script_deployer_command(cmd)
         if direct_ok:
@@ -954,15 +1185,11 @@ def run_dev_spawner_action(action: str, payload: dict[str, Any] | None = None) -
                 "mode": direct_message,
             }
 
-        _exec_console(cmd)
         return {
-            "ok": True,
-            "message": (
-                f"Sent {cmd.split()[0]} to the SDK console fallback. "
-                f"Direct ActorScriptDeployer call was unavailable: {direct_message}"
-            ),
+            "ok": False,
+            "message": f"ActorScriptDeployer command was unavailable: {direct_message}",
             "command": cmd,
-            "mode": "console fallback",
+            "mode": "ActorScriptDeployer direct command unavailable",
         }
     except Exception as exc:
         return {"ok": False, "message": f"Dev spawner action failed: {exc!r}"}

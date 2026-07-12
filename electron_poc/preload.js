@@ -8,6 +8,7 @@ contextBridge.exposeInMainWorld("msbt", {
   validatorBasic: (text) => ipcRenderer.invoke("app:validatorBasic", text),
   validatorBulk: (text) => ipcRenderer.invoke("app:validatorBulk", text),
   readDevSpawnerCatalog: () => ipcRenderer.invoke("app:readDevSpawnerCatalog"),
+  readSdkLogTail: (options) => ipcRenderer.invoke("app:readSdkLogTail", options),
   readResourceJson: (resourceName) => ipcRenderer.invoke("app:readResourceJson", resourceName),
   openExternal: (url) => ipcRenderer.invoke("app:openExternal", url)
 });

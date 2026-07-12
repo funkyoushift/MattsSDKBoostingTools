@@ -308,189 +308,84 @@
 
     <section id="tab-dev-spawner" class="tab-panel">
       <section class="panel pink">
-        <h2>Experimental Dev Spawner</h2>
-        <p>Uses the SDK Debug Menu v35 actor catalog as the browser source, then sends live commands through the MSBT bridge to ActorScriptDeployer. These actions can crash the game or affect players in your lobby, so the app asks once before sending commands.</p>
+        <h2>SDK Debug Menu Source Port</h2>
+        <p>First slice of the SDK Debug Menu spawning workflow: choose a category, search the actor catalog, adjust compact spawn settings, then use a row Spawn button. Live actions still go through the MSBT bridge to ActorScriptDeployer.</p>
         <div id="devSpawnerWarning" class="status-line warning">No Dev Spawner action sent yet.</div>
       </section>
 
-      <div class="grid two">
-        <section class="panel cyan">
-          <h2>Status / Setup</h2>
-          <p>Good first checks: ASD Status, Cache Status, then select a favorite or category result and list targets.</p>
-          <div class="button-row wrap">
-            <button data-dev-spawner-action="dev_spawner_status">ASD Status</button>
-            <button data-dev-spawner-action="dev_spawner_cache_status">Cache Status</button>
-            <button data-dev-spawner-action="dev_spawner_spawnerdiag">Spawner Diagnostics</button>
-          </div>
-        </section>
-
-        <section class="panel gold">
-          <h2>Spawn Settings</h2>
-          <div class="grid three compact">
-            <label>
-              Distance
-              <input id="devActorDistance" type="number" value="350">
-            </label>
-            <label>
-              +Z
-              <input id="devActorZOffset" type="number" value="0">
-            </label>
-            <label>
-              Count
-              <input id="devActorCount" type="number" min="1" max="50" value="1">
-            </label>
-            <label>
-              Spacing
-              <input id="devActorSpacing" type="number" value="125">
-            </label>
-            <label>
-              Scale
-              <input id="devActorScale" type="number" step="0.05" value="1.0">
-            </label>
-            <label>
-              Target Limit
-              <input id="devActorTargetLimit" type="number" min="1" max="200" value="20">
-            </label>
-          </div>
-        </section>
-      </div>
-
-      <div class="grid two dev-spawner-layout">
-        <section class="panel purple">
-          <h2>Favorites</h2>
-          <p>Grouped favorites from the SDK Debug Menu source. Spawn Favorite uses ASD_spawnai, matching the source menu row behavior.</p>
-          <div id="devFavoriteSummary" class="status-line">Loading favorites...</div>
-          <select id="devFavoriteList" class="list-select compact-list" size="10"></select>
-          <div class="button-row wrap">
-            <button id="devUseFavoriteBtn">Use Favorite</button>
-            <button id="devSpawnFavoriteBtn">Spawn Favorite Actor Def</button>
-          </div>
-        </section>
-
-        <section class="panel cyan">
-          <h2>Actor Browser</h2>
-          <div class="grid two compact">
-            <label>
-              Category
-              <select id="devActorCategory"></select>
-            </label>
-            <label>
-              Search Actors
-              <input id="devActorSearch" type="search" placeholder="boss, bank, barrel, turret...">
-            </label>
-          </div>
-          <div id="devActorSummary" class="status-line">Loading actor catalog...</div>
-          <select id="devActorList" class="list-select compact-list" size="14"></select>
-          <div class="button-row wrap">
-            <button id="devUseActorBtn">Use Selected Actor</button>
-            <button id="devSpawnSelectedActorBtn">Spawn Selected Actor Def</button>
-          </div>
-        </section>
-      </div>
-
       <section class="panel cyan">
-        <h2>Live Template / Utility Actions</h2>
-        <p>List Targets and Spawn Live Template are for live templates already loaded in the area. For source-catalog actors, use Spawn Selected Actor Def.</p>
-        <div class="grid two compact">
+        <h2>Standard Spawning</h2>
+        <p>Count above 1 uses the source-menu chain: first spawn through ASD_spawnai, extra copies through ASD_spawn with distance plus spacing.</p>
+        <div class="grid five compact">
           <label>
-            Actor / Template
-            <input id="devActorName" type="text" placeholder="Char_Bat_Mine_Boss_Destroyer">
+            Distance
+            <input id="devActorDistance" type="number" min="0" max="20000" value="350">
           </label>
           <label>
-            Class Override
-            <input id="devActorClass" type="text" placeholder="optional">
+            +Z
+            <input id="devActorZOffset" type="number" min="-5000" max="5000" value="0">
+          </label>
+          <label>
+            Count
+            <input id="devActorCount" type="number" min="1" max="12" value="1">
+          </label>
+          <label>
+            Spacing
+            <input id="devActorSpacing" type="number" min="1" max="5000" value="125">
+          </label>
+          <label>
+            Scale
+            <input id="devActorScale" type="number" min="0.05" max="20" step="0.05" value="1.0">
           </label>
         </div>
-        <label class="checkbox-row">
-          <input id="devActorIncludeNonGenerated" type="checkbox">
-          Include Non-Generated
-        </label>
+        <div class="grid two compact">
+          <label>
+            Selected Actor
+            <input id="devAiName" type="text" placeholder="Select from actor results">
+          </label>
+          <label>
+            Target/List Limit
+            <input id="devActorTargetLimit" type="number" min="1" max="200" value="20">
+          </label>
+        </div>
         <div class="button-row wrap">
-          <button data-dev-spawner-action="dev_spawner_targets">List Targets</button>
-          <button data-dev-spawner-action="dev_spawner_spawn">Spawn Live Template</button>
-          <button data-dev-spawner-action="dev_spawner_lostloot">Spawn Lost Loot</button>
-          <button data-dev-spawner-action="dev_spawner_activate_last">Activate Last</button>
-          <button data-dev-spawner-action="dev_spawner_scriptdump">Script Dump Last</button>
-          <button data-dev-spawner-action="dev_spawner_clear" class="danger">Clear ASD Spawns</button>
+          <button data-dev-spawner-action="dev_spawner_spawnai">Spawn Selected Actor</button>
+          <button id="devRefreshLogBtn">Refresh SDK Log</button>
         </div>
       </section>
 
-      <div class="grid two">
-        <section class="panel purple">
-          <h2>Catalog Actor Def Spawning</h2>
-          <div class="grid two compact">
-            <label>
-              Actor Def / Cache
-              <input id="devAiName" type="text" value="Char_TargetDummy">
-            </label>
-            <label>
-              Cache Source Class
-              <input id="devAiClass" type="text" placeholder="optional">
-            </label>
-            <label>
-              Extra Load Path
-              <input id="devAiLoad" type="text" placeholder="optional">
-            </label>
-            <label>
-              Cache Pick Index
-              <input id="devAiIndex" type="number" min="0" max="99" value="0">
-            </label>
-            <label>
-              Cache List Limit
-              <input id="devAiLimit" type="number" min="1" max="100" value="10">
-            </label>
-            <label>
-              AI Count
-              <input id="devAiCount" type="number" min="1" max="50" value="1">
-            </label>
-          </div>
-          <label class="checkbox-row">
-            <input id="devAiDirectOnly" type="checkbox">
-            Direct Only
-          </label>
-          <div class="button-row wrap">
-            <button data-dev-spawner-action="dev_spawner_probeai">Probe AI</button>
-            <button data-dev-spawner-action="dev_spawner_cache">Cache Live Actor</button>
-            <button data-dev-spawner-action="dev_spawner_spawnai">Spawn Actor Def</button>
-          </div>
-        </section>
+      <section class="panel cyan">
+        <h2>Categories</h2>
+        <div id="devActorCategoryButtons" class="category-buttons"></div>
+      </section>
 
-        <section class="panel gold">
-          <h2>Barrel Logo</h2>
-          <label for="devLogoText">Logo Text</label>
-          <textarea id="devLogoText" class="output-box small" spellcheck="false" placeholder="Use | for line breaks"></textarea>
-          <div class="grid two compact">
-            <label>
-              Logo Actor
-              <input id="devLogoActor" type="text" value="barrel">
-            </label>
-            <label>
-              Distance
-              <input id="devLogoDistance" type="number" value="2500">
-            </label>
-            <label>
-              Height
-              <input id="devLogoHeight" type="number" value="750">
-            </label>
-            <label>
-              Spacing
-              <input id="devLogoSpacing" type="number" value="70">
-            </label>
-            <label>
-              Scale
-              <input id="devLogoScale" type="number" step="0.05" value="0.45">
-            </label>
-          </div>
-          <label class="checkbox-row">
-            <input id="devLogoIncludeNonGenerated" type="checkbox">
-            Include Non-Generated
+      <section class="panel cyan">
+        <h2>Actor Results</h2>
+        <div class="grid two compact">
+          <label>
+            Search actors
+            <input id="devActorSearch" type="text" autocomplete="off" spellcheck="false" placeholder="boss, bank, barrel, turret...">
           </label>
-          <div class="button-row wrap">
-            <button data-dev-spawner-action="dev_spawner_logo_options">Logo Options</button>
-            <button data-dev-spawner-action="dev_spawner_barrel_logo">Spawn Barrel Logo</button>
-          </div>
-        </section>
-      </div>
+          <label>
+            Live Template / Target Alias
+            <input id="devActorName" type="text" placeholder="Selected actor is copied here">
+          </label>
+        </div>
+        <input id="devActorClass" type="hidden">
+        <input id="devAiClass" type="hidden">
+        <input id="devAiLoad" type="hidden">
+        <input id="devAiIndex" type="hidden" value="0">
+        <input id="devAiLimit" type="hidden" value="10">
+        <input id="devAiCount" type="hidden" value="1">
+        <input id="devAiDirectOnly" type="checkbox" class="hidden-check">
+        <input id="devActorIncludeNonGenerated" type="checkbox" class="hidden-check">
+        <div id="devActorSummary" class="status-line">Loading actor catalog...</div>
+        <div class="button-row wrap">
+          <button id="devPrevActorPageBtn">Prev Page</button>
+          <button id="devNextActorPageBtn">Next Page</button>
+        </div>
+        <div id="devActorRows" class="dev-row-list"></div>
+      </section>
 
       <section class="panel">
         <h2>Dev Spawner Result</h2>

@@ -25,6 +25,34 @@ const ALLOWED_RESOURCE_FILES = new Set([
 ]);
 const LOCAL_VENV_PYTHON = path.join(REPO_ROOT, ".venv", "Scripts", "python.exe");
 const MATT_HOST_START_TIMEOUT_MS = 12000;
+const SDK_LOG_CANDIDATES = [
+  process.env.MSBT_UNREALSDK_LOG,
+  path.join(
+    process.env["ProgramFiles(x86)"] || "C:\\Program Files (x86)",
+    "Steam",
+    "steamapps",
+    "common",
+    "Borderlands 4",
+    "OakGame",
+    "Binaries",
+    "Win64",
+    "Plugins",
+    "unrealsdk.log"
+  ),
+  path.join(
+    process.env.ProgramFiles || "C:\\Program Files",
+    "Steam",
+    "steamapps",
+    "common",
+    "Borderlands 4",
+    "OakGame",
+    "Binaries",
+    "Win64",
+    "Plugins",
+    "unrealsdk.log"
+  )
+].filter(Boolean);
+const SDK_LOG_FILTER = /MattsSDKBoostingTools|ActorScriptDeployer|ASD_|dev_spawner|spawnai|ERR\||WARN\||Traceback|Exception|did not report/i;
 
 let mattHostProcess = null;
 let mattHostUrl = "";
@@ -95,6 +123,63 @@ ipcMain.handle("app:readDevSpawnerCatalog", async () => {
     return { ok: true, data: JSON.parse(text) };
   } catch (error) {
     return { ok: false, message: String(error && error.message ? error.message : error) };
+  }
+});
+
+async function findSdkLogPath() {
+  for (const candidate of SDK_LOG_CANDIDATES) {
+    try {
+      const stat = await fs.stat(candidate);
+      if (stat.isFile()) return candidate;
+    } catch {
+      // Try the next common install path.
+    }
+  }
+  return "";
+}
+
+async function readTextTail(filePath, maxBytes = 200000) {
+  const handle = await fs.open(filePath, "r");
+  try {
+    const stat = await handle.stat();
+    const length = Math.min(stat.size, maxBytes);
+    const buffer = Buffer.alloc(length);
+    await handle.read(buffer, 0, length, Math.max(0, stat.size - length));
+    return buffer.toString("utf8");
+  } finally {
+    await handle.close();
+  }
+}
+
+ipcMain.handle("app:readSdkLogTail", async (_event, options = {}) => {
+  const logPath = await findSdkLogPath();
+  if (!logPath) {
+    return {
+      ok: false,
+      message: `unrealsdk.log was not found. Checked: ${SDK_LOG_CANDIDATES.join("; ")}`
+    };
+  }
+
+  try {
+    const requestedLines = Number(options && options.lines) || 140;
+    const maxLines = Math.max(20, Math.min(400, requestedLines));
+    const text = await readTextTail(logPath);
+    const lines = text
+      .split(/\r?\n/)
+      .filter((line) => SDK_LOG_FILTER.test(line))
+      .slice(-maxLines);
+    return {
+      ok: true,
+      path: logPath,
+      lines,
+      text: lines.join("\n") || "No recent MSBT/ActorScriptDeployer log lines found."
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      path: logPath,
+      message: String(error && error.message ? error.message : error)
+    };
   }
 });
 

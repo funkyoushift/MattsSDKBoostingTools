@@ -13,13 +13,13 @@ const els = {
   currencyAmount: document.getElementById("currencyAmount"),
   currencyKind: document.getElementById("currencyKind"),
   deliveryOutput: document.getElementById("deliveryOutput"),
-  devActorCategory: document.getElementById("devActorCategory"),
+  devActorCategoryButtons: document.getElementById("devActorCategoryButtons"),
   devActorClass: document.getElementById("devActorClass"),
   devActorCount: document.getElementById("devActorCount"),
   devActorDistance: document.getElementById("devActorDistance"),
   devActorIncludeNonGenerated: document.getElementById("devActorIncludeNonGenerated"),
-  devActorList: document.getElementById("devActorList"),
   devActorName: document.getElementById("devActorName"),
+  devActorRows: document.getElementById("devActorRows"),
   devActorScale: document.getElementById("devActorScale"),
   devActorSearch: document.getElementById("devActorSearch"),
   devActorSpacing: document.getElementById("devActorSpacing"),
@@ -33,15 +33,9 @@ const els = {
   devAiLimit: document.getElementById("devAiLimit"),
   devAiLoad: document.getElementById("devAiLoad"),
   devAiName: document.getElementById("devAiName"),
-  devFavoriteList: document.getElementById("devFavoriteList"),
-  devFavoriteSummary: document.getElementById("devFavoriteSummary"),
-  devLogoActor: document.getElementById("devLogoActor"),
-  devLogoDistance: document.getElementById("devLogoDistance"),
-  devLogoHeight: document.getElementById("devLogoHeight"),
-  devLogoIncludeNonGenerated: document.getElementById("devLogoIncludeNonGenerated"),
-  devLogoScale: document.getElementById("devLogoScale"),
-  devLogoSpacing: document.getElementById("devLogoSpacing"),
-  devLogoText: document.getElementById("devLogoText"),
+  devNextActorPageBtn: document.getElementById("devNextActorPageBtn"),
+  devPrevActorPageBtn: document.getElementById("devPrevActorPageBtn"),
+  devRefreshLogBtn: document.getElementById("devRefreshLogBtn"),
   devSpawnerOutput: document.getElementById("devSpawnerOutput"),
   devSpawnerWarning: document.getElementById("devSpawnerWarning"),
   editorFrame: document.getElementById("editorFrame"),
@@ -98,6 +92,8 @@ const state = {
   autoInventoryTimer: null,
   bridgeOnline: false,
   confirmedSerial: "",
+  devActorPage: 0,
+  devActiveCategory: "",
   devSpawnerCatalog: null,
   devSpawnerFilteredActors: [],
   devSpawnerSelectedActor: "",
@@ -832,98 +828,107 @@ function devActorSearchText(actorName) {
   return `${actorName} ${devActorDisplayName(actorName)}`.toLowerCase();
 }
 
-function devFavoriteTopGroup(actorName) {
-  if (actorName.startsWith("IO_")) return "Interactive Objects";
-  if (actorName.startsWith("Char_")) {
-    const text = devActorSearchText(actorName);
-    if (text.includes("inactive")) return "Inactive Chars";
-    if (text.includes("boss") || text.includes("big encore") || actorName.toLowerCase().endsWith("true")) {
-      return "Active Boss Chars";
-    }
-    return "Characters";
-  }
-  return "Other / Uncategorized";
-}
-
 function populateDevSpawnerCatalog() {
   const catalog = state.devSpawnerCatalog || {};
   const categories = catalog.categories || {};
   const names = Object.keys(categories);
-  els.devActorCategory.innerHTML = "";
-  names.forEach((category) => {
-    const option = document.createElement("option");
-    option.value = category;
-    option.textContent = `${category} (${(categories[category] || []).length})`;
-    els.devActorCategory.appendChild(option);
-  });
-
   if (names.includes("Active Boss Chars")) {
-    els.devActorCategory.value = "Active Boss Chars";
+    state.devActiveCategory = "Active Boss Chars";
   } else if (names.includes("Characters")) {
-    els.devActorCategory.value = "Characters";
+    state.devActiveCategory = "Characters";
   } else if (names.length) {
-    els.devActorCategory.value = names[0];
+    state.devActiveCategory = names[0];
   }
 
-  renderDevFavorites();
+  renderDevCategories();
   renderDevActors();
 }
 
-function renderDevFavorites() {
+function renderDevCategories() {
   const catalog = state.devSpawnerCatalog || {};
-  const favorites = catalog.favorites || {};
-  const rows = Object.keys(favorites).sort((a, b) => {
-    const groupCompare = devFavoriteTopGroup(a).localeCompare(devFavoriteTopGroup(b));
-    if (groupCompare) return groupCompare;
-    return devActorLabel(a).localeCompare(devActorLabel(b));
+  const categories = catalog.categories || {};
+  if (!els.devActorCategoryButtons) return;
+  els.devActorCategoryButtons.innerHTML = "";
+  Object.keys(categories).forEach((category) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = category === state.devActiveCategory ? "active" : "";
+    button.textContent = `${category} (${(categories[category] || []).length})`;
+    button.addEventListener("click", () => {
+      state.devActiveCategory = category;
+      state.devActorPage = 0;
+      renderDevCategories();
+      renderDevActors();
+    });
+    els.devActorCategoryButtons.appendChild(button);
   });
+}
 
-  els.devFavoriteList.innerHTML = "";
-  rows.forEach((actorName) => {
-    const option = document.createElement("option");
-    const group = devFavoriteTopGroup(actorName);
-    const description = String(favorites[actorName] || "").trim();
-    option.value = actorName;
-    option.textContent = `[${group}] ${description ? `${description} | ` : ""}${devActorLabel(actorName)}`;
-    els.devFavoriteList.appendChild(option);
-  });
+function makeDevActorRow(actorName, options = {}) {
+  const row = document.createElement("div");
+  row.className = "dev-actor-row";
+  const spawn = document.createElement("button");
+  spawn.type = "button";
+  spawn.className = "dev-spawn-button";
+  spawn.textContent = "Spawn";
+  spawn.addEventListener("click", () => spawnDevActor(actorName));
 
-  setLine(
-    els.devFavoriteSummary,
-    `${rows.length} favorites loaded from SDK Debug Menu source.`,
-    rows.length ? "ok" : "warning"
-  );
+  const label = document.createElement("button");
+  label.type = "button";
+  label.className = "dev-actor-label";
+  const description = options.description ? `${options.description} | ` : "";
+  label.textContent = `${description}${devActorLabel(actorName)}`;
+  label.addEventListener("click", () => useDevActor(actorName));
+
+  row.appendChild(spawn);
+  row.appendChild(label);
+  return row;
 }
 
 function renderDevActors() {
   const catalog = state.devSpawnerCatalog || {};
   const categories = catalog.categories || {};
-  const category = getValue(els.devActorCategory) || "All";
+  const category = state.devActiveCategory || "All";
   const query = getValue(els.devActorSearch).toLowerCase();
   const allNames = categories[category] || [];
   state.devSpawnerFilteredActors = allNames.filter((actorName) => {
     return !query || devActorSearchText(actorName).includes(query);
   });
 
-  const previous = state.devSpawnerSelectedActor;
-  els.devActorList.innerHTML = "";
-  state.devSpawnerFilteredActors.slice(0, 500).forEach((actorName) => {
-    const option = document.createElement("option");
-    option.value = actorName;
-    option.textContent = devActorLabel(actorName);
-    if (actorName === previous) option.selected = true;
-    els.devActorList.appendChild(option);
-  });
+  const pageSize = 24;
+  const totalPages = Math.max(1, Math.ceil(state.devSpawnerFilteredActors.length / pageSize));
+  state.devActorPage = Math.max(0, Math.min(totalPages - 1, state.devActorPage || 0));
+  const start = state.devActorPage * pageSize;
+  const shown = state.devSpawnerFilteredActors.slice(start, start + pageSize);
 
-  if (!els.devActorList.value && els.devActorList.options.length) {
-    els.devActorList.options[0].selected = true;
-    state.devSpawnerSelectedActor = els.devActorList.value;
+  if (els.devActorRows) {
+    els.devActorRows.innerHTML = "";
+    shown.forEach((actorName) => {
+      els.devActorRows.appendChild(makeDevActorRow(actorName));
+    });
+    if (!shown.length) {
+      const empty = document.createElement("div");
+      empty.className = "dev-empty-row";
+      empty.textContent = "No actors match this category/search. Try another category or clear Search actors.";
+      els.devActorRows.appendChild(empty);
+    }
   }
 
-  const capped = state.devSpawnerFilteredActors.length > 500 ? " | showing first 500" : "";
+  if (!state.devSpawnerSelectedActor && shown.length) {
+    useDevActor(shown[0]);
+  }
+
+  if (els.devPrevActorPageBtn) {
+    els.devPrevActorPageBtn.disabled = state.devActorPage <= 0;
+  }
+  if (els.devNextActorPageBtn) {
+    els.devNextActorPageBtn.disabled = state.devActorPage >= totalPages - 1;
+  }
+
+  const range = shown.length ? `${start + 1}-${start + shown.length}` : "0";
   setLine(
     els.devActorSummary,
-    `${state.devSpawnerFilteredActors.length} shown / ${allNames.length} in ${category}${capped}`,
+    `${range} of ${state.devSpawnerFilteredActors.length} shown / ${allNames.length} in ${category} | page ${state.devActorPage + 1}/${totalPages}`,
     state.devSpawnerFilteredActors.length ? "ok" : "warning"
   );
 }
@@ -941,7 +946,6 @@ async function loadDevSpawnerCatalog() {
   } catch (error) {
     setLine(els.devSpawnerWarning, `Dev Spawner catalog failed to load: ${error.message || error}`, "bad");
     setLine(els.devActorSummary, "Actor catalog unavailable.", "bad");
-    setLine(els.devFavoriteSummary, "Favorites unavailable.", "bad");
   }
 }
 
@@ -949,17 +953,23 @@ function useDevActor(actorName) {
   const value = String(actorName || "").trim();
   if (!value) return;
   state.devSpawnerSelectedActor = value;
-  els.devActorName.value = value;
-  els.devAiName.value = value;
+  if (els.devActorName) els.devActorName.value = value;
+  if (els.devAiName) els.devAiName.value = value;
   setLine(els.devSpawnerWarning, `Selected actor: ${devActorLabel(value)}`, "ok");
 }
 
 function selectDevActorFromList() {
-  useDevActor(getValue(els.devActorList));
+  useDevActor(state.devSpawnerSelectedActor || state.devSpawnerFilteredActors[0] || "");
 }
 
-function selectDevFavorite() {
-  useDevActor(getValue(els.devFavoriteList));
+function syncDevSpawnerAdvancedControls() {
+  // Retained as a no-op for older event hooks. The source menu uses row-level Spawn
+  // with a single session warning instead of a separate risky-mode checkbox.
+}
+
+function spawnDevActor(actorName) {
+  useDevActor(actorName);
+  runDevSpawnerAction("dev_spawner_spawnai");
 }
 
 function devSpawnerConfirm() {
@@ -976,13 +986,13 @@ function devSpawnerConfirm() {
 
 function devSpawnerPayload() {
   const actorDistance = getFloat(els.devActorDistance, 0, 20000, 350);
-  const actorSpacing = getFloat(els.devActorSpacing, 0, 5000, 125);
-  const actorScale = getFloat(els.devActorScale, 0.01, 20, 1);
-  const actorZOffset = getFloat(els.devActorZOffset, -10000, 10000, 0);
+  const actorSpacing = getFloat(els.devActorSpacing, 1, 5000, 125);
+  const actorScale = getFloat(els.devActorScale, 0.05, 20, 1);
+  const actorZOffset = getFloat(els.devActorZOffset, -5000, 5000, 0);
   return {
     dev_actor_name: getValue(els.devActorName),
     dev_actor_class: getValue(els.devActorClass),
-    dev_actor_count: getInt(els.devActorCount, 1, 50, 1),
+    dev_actor_count: getInt(els.devActorCount, 1, 12, 1),
     dev_actor_distance: actorDistance,
     dev_actor_include_non_generated: Boolean(els.devActorIncludeNonGenerated && els.devActorIncludeNonGenerated.checked),
     dev_actor_scale: actorScale,
@@ -991,30 +1001,53 @@ function devSpawnerPayload() {
     dev_actor_z_offset: actorZOffset,
     dev_ai_name: getValue(els.devAiName),
     dev_ai_class: getValue(els.devAiClass),
-    dev_ai_count: getInt(els.devAiCount, 1, 50, 1),
+    dev_ai_count: getInt(els.devActorCount, 1, 12, 1),
     dev_ai_cache_index: getInt(els.devAiIndex, 0, 99, 0),
     dev_ai_cache_limit: getInt(els.devAiLimit, 1, 100, 10),
+    dev_ai_advanced_spawn: true,
     dev_ai_direct_only: Boolean(els.devAiDirectOnly && els.devAiDirectOnly.checked),
     dev_ai_distance: actorDistance,
     dev_ai_load: getValue(els.devAiLoad),
     dev_ai_scale: actorScale,
     dev_ai_spacing: actorSpacing,
-    dev_ai_z_offset: actorZOffset,
-    dev_logo_actor: getValue(els.devLogoActor),
-    dev_logo_distance: getFloat(els.devLogoDistance, 0, 30000, 2500),
-    dev_logo_height: getFloat(els.devLogoHeight, 0, 10000, 750),
-    dev_logo_include_non_generated: Boolean(els.devLogoIncludeNonGenerated && els.devLogoIncludeNonGenerated.checked),
-    dev_logo_scale: getFloat(els.devLogoScale, 0.01, 20, 0.45),
-    dev_logo_spacing: getFloat(els.devLogoSpacing, 1, 1000, 70),
-    dev_logo_text: getValue(els.devLogoText)
+    dev_ai_z_offset: actorZOffset
   };
 }
 
-function devSpawnerResultText(action, result) {
-  const lines = [pretty(result)];
+function devSpawnerResultText(action, payload, result, analysis) {
+  const lines = [];
+  lines.push("Electron request:");
+  lines.push(pretty({ action, payload }));
+  lines.push("");
+  if (analysis && analysis.details && analysis.details.length) {
+    lines.push("Dev Spawner diagnosis:");
+    analysis.details.forEach((line) => lines.push(`- ${line}`));
+    lines.push("");
+  }
+  lines.push("Bridge response:");
+  lines.push(pretty(result));
   const data = result && result.data ? result.data : {};
   if (data.command) {
     lines.push("", `Command sent: ${data.command}`);
+  }
+  if (action === "dev_spawner_spawnai" && (
+    Object.prototype.hasOwnProperty.call(data, "resolved")
+    || Object.prototype.hasOwnProperty.call(data, "spawned_count")
+    || Object.prototype.hasOwnProperty.call(data, "alive_count")
+  )) {
+    lines.push(
+      "",
+      "Spawn verification:",
+      `- accepted: ${data.accepted === false ? "no" : "yes"}`,
+      `- verification: ${data.verification_status || "unknown"}`,
+      `- actor definition resolved: ${data.resolved === null || typeof data.resolved === "undefined" ? "unknown" : String(data.resolved)}`,
+      `- spawned count: ${data.spawned_count === null || typeof data.spawned_count === "undefined" ? "unknown" : String(data.spawned_count)}`,
+      `- alive count: ${data.alive_count === null || typeof data.alive_count === "undefined" ? "unknown" : String(data.alive_count)}`
+    );
+    if (Array.isArray(data.warnings) && data.warnings.length) {
+      lines.push("- warnings:");
+      data.warnings.slice(0, 4).forEach((warning) => lines.push(`  ${warning}`));
+    }
   }
   if (action === "dev_spawner_targets") {
     lines.push(
@@ -1026,11 +1059,118 @@ function devSpawnerResultText(action, result) {
   return lines.join("\n");
 }
 
+async function readDevSpawnerLogTail() {
+  if (!window.msbt || typeof window.msbt.readSdkLogTail !== "function") {
+    return { ok: false, text: "SDK log reader is not available in this app build." };
+  }
+  return window.msbt.readSdkLogTail({ lines: 160 });
+}
+
+function formatDevSpawnerLogTail(logResult) {
+  if (!logResult || !logResult.ok) {
+    return `SDK log tail unavailable: ${logResult && logResult.message ? logResult.message : pretty(logResult)}`;
+  }
+  const header = logResult.path ? `Recent SDK log lines from ${logResult.path}` : "Recent SDK log lines";
+  return `${header}\n${logResult.text || "No recent MSBT/ActorScriptDeployer log lines found."}`;
+}
+
+function analyzeDevSpawnerOutcome(action, result, logResult) {
+  const data = result && result.data ? result.data : result;
+  const message = resultMessage(result);
+  const logLines = logResult && Array.isArray(logResult.lines)
+    ? logResult.lines
+    : String((logResult && logResult.text) || "").split(/\r?\n/).filter(Boolean);
+  let focusedLines = logLines.slice(-60);
+  if (data && data.command) {
+    const commandParts = String(data.command).split(/\s+/).filter(Boolean);
+    const commandName = commandParts[0] || "";
+    const commandSubject = commandParts[1] || "";
+    for (let idx = logLines.length - 1; idx >= 0; idx -= 1) {
+      const line = logLines[idx] || "";
+      if (line.includes(data.command) || (commandName && line.includes(commandName) && (!commandSubject || line.includes(commandSubject)))) {
+        focusedLines = logLines.slice(idx);
+        break;
+      }
+    }
+  }
+  const logText = focusedLines.join("\n");
+  const details = [];
+  let kind = actionSucceeded(result) ? "ok" : "bad";
+  let status = message;
+
+  if (data && data.queued) {
+    kind = "warning";
+    status = "Command is still queued; wait in-game or unpause, then refresh the SDK log.";
+    details.push("The bridge did not process this action before the app timeout. It may still run later, so avoid repeatedly clicking the same dangerous action.");
+  }
+  if (data && data.verification_status === "queued_unverified") {
+    kind = "warning";
+    status = "ASD accepted the spawn, but immediate verification is unknown.";
+    details.push("ActorScriptDeployer reported no alive actor during the first poll, but some spawns can finish shortly after the bridge response.");
+    details.push("Confirm visually in game, then use the SDK log tail only as supporting evidence.");
+  }
+
+  const spawnAction = [
+    "dev_spawner_spawn",
+    "dev_spawner_spawnai",
+    "dev_spawner_lostloot",
+    "dev_spawner_barrel_logo"
+  ].includes(action);
+  const lookupAction = [
+    "dev_spawner_targets",
+    "dev_spawner_probeai",
+    "dev_spawner_cache",
+    "dev_spawner_spawnerdiag"
+  ].includes(action);
+
+  const noLiveSource = /no live (template|actor-def source) found|did not return an actor|source_counts=\(0,\s*0,\s*0/i.test(logText);
+  const noSpawn = /did not report any newly spawned actors|spawned 0 actor|spawned_delta\s*=\s*0/i.test(logText) || noLiveSource;
+  const zeroTargets = /returned\s+0\/0|0\s+matches|0\s+result|no matching actor/i.test(logText);
+  const spawnComplete = /ASD_spawnai complete|spawned\s+[1-9]\d*\s+actor/i.test(logText);
+
+  if (spawnAction && data && data.verification_status === "queued_unverified") {
+    // Keep the warning above. ASD's immediate no-actor output can be a false
+    // negative for async spawns such as Char_TargetDummy.
+  } else if (spawnAction && noSpawn) {
+    kind = "bad";
+    status = "ASD received the command, but no actor spawned.";
+    details.push("ActorScriptDeployer could not resolve a live template/source for that actor in the current area or cache.");
+    details.push("Try List Targets, move near the object, enable Include Non-Generated, run Cache/Probe, or test the same name in SDK Debug Menu.");
+  } else if (lookupAction && (noLiveSource || zeroTargets)) {
+    kind = "warning";
+    status = "ASD ran the lookup, but found no matching live source.";
+    details.push("This is a normal 0-result scan, not a bridge failure. Try another preset/category, move near the object, or scan again after the area fully loads.");
+  } else if (spawnAction && spawnComplete) {
+    kind = "ok";
+    status = "ASD reported a spawned actor.";
+    details.push("ActorScriptDeployer reported a spawn in the SDK log.");
+  }
+
+  if (data && data.command) {
+    details.push(`Command: ${data.command}`);
+  }
+
+  return { details, kind, status };
+}
+
+async function refreshDevSpawnerLogTail() {
+  setOutput(els.devSpawnerOutput, "Reading SDK log...");
+  const logResult = await readDevSpawnerLogTail();
+  setOutput(els.devSpawnerOutput, formatDevSpawnerLogTail(logResult));
+  setLine(
+    els.devSpawnerWarning,
+    logResult && logResult.ok ? "SDK log refreshed." : "SDK log could not be read.",
+    logResult && logResult.ok ? "ok" : "warning"
+  );
+  appendActivity(logResult && logResult.ok ? "Dev Spawner SDK log refreshed." : "Dev Spawner SDK log unavailable.");
+}
+
 async function runDevSpawnerAction(action) {
   if (!devSpawnerConfirm()) {
     setOutput(els.devSpawnerOutput, "Dev Spawner action cancelled.");
     return;
   }
+  const shouldRestoreSearchFocus = document.activeElement === els.devActorSearch;
 
   if (action === "dev_spawner_spawn" || action === "dev_spawner_targets") {
     if (!getValue(els.devActorName)) {
@@ -1049,10 +1189,30 @@ async function runDevSpawnerAction(action) {
 
   appendActivity(`Sending ${action}...`);
   setOutput(els.devSpawnerOutput, `Sending ${action}...`);
-  const result = await bridgeAction(action, devSpawnerPayload(), 45000);
-  setOutput(els.devSpawnerOutput, devSpawnerResultText(action, result));
-  setLine(els.devSpawnerWarning, resultMessage(result), actionSucceeded(result) ? "ok" : "bad");
-  appendActivity(`${action}: ${resultMessage(result)}`);
+  try {
+    const payload = devSpawnerPayload();
+    const result = await bridgeAction(action, payload, 45000);
+    const logResult = await readDevSpawnerLogTail();
+    const analysis = analyzeDevSpawnerOutcome(action, result, logResult);
+    setOutput(
+      els.devSpawnerOutput,
+      `${devSpawnerResultText(action, payload, result, analysis)}\n\n${formatDevSpawnerLogTail(logResult)}`
+    );
+    setLine(els.devSpawnerWarning, analysis.status || resultMessage(result), analysis.kind || (actionSucceeded(result) ? "ok" : "bad"));
+    appendActivity(`${action}: ${analysis.status || resultMessage(result)}`);
+  } catch (error) {
+    const message = error && error.message ? error.message : String(error || "Unknown Dev Spawner error");
+    setOutput(els.devSpawnerOutput, `Dev Spawner action failed before the bridge returned:\n${message}`);
+    setLine(els.devSpawnerWarning, `Dev Spawner action failed: ${message}`, "bad");
+    appendActivity(`${action}: failed before bridge response`);
+  } finally {
+    if (els.devActorSearch) {
+      els.devActorSearch.disabled = false;
+      if (shouldRestoreSearchFocus) {
+        setTimeout(() => els.devActorSearch.focus(), 0);
+      }
+    }
+  }
 }
 
 function switchTab(tabId) {
@@ -1143,20 +1303,27 @@ function wireEvents() {
   });
   document.getElementById("spawnItempoolBtn").addEventListener("click", spawnItemPool);
 
-  els.devActorCategory.addEventListener("change", renderDevActors);
-  els.devActorSearch.addEventListener("input", renderDevActors);
-  els.devActorList.addEventListener("change", selectDevActorFromList);
-  els.devFavoriteList.addEventListener("change", selectDevFavorite);
-  document.getElementById("devUseActorBtn").addEventListener("click", selectDevActorFromList);
-  document.getElementById("devSpawnSelectedActorBtn").addEventListener("click", () => {
-    selectDevActorFromList();
-    runDevSpawnerAction("dev_spawner_spawnai");
-  });
-  document.getElementById("devUseFavoriteBtn").addEventListener("click", selectDevFavorite);
-  document.getElementById("devSpawnFavoriteBtn").addEventListener("click", () => {
-    selectDevFavorite();
-    runDevSpawnerAction("dev_spawner_spawnai");
-  });
+  if (els.devActorSearch) {
+    els.devActorSearch.addEventListener("input", () => {
+      state.devActorPage = 0;
+      renderDevActors();
+    });
+  }
+  if (els.devPrevActorPageBtn) {
+    els.devPrevActorPageBtn.addEventListener("click", () => {
+      state.devActorPage = Math.max(0, state.devActorPage - 1);
+      renderDevActors();
+    });
+  }
+  if (els.devNextActorPageBtn) {
+    els.devNextActorPageBtn.addEventListener("click", () => {
+      state.devActorPage += 1;
+      renderDevActors();
+    });
+  }
+  if (els.devRefreshLogBtn) {
+    els.devRefreshLogBtn.addEventListener("click", refreshDevSpawnerLogTail);
+  }
   document.querySelectorAll("[data-dev-spawner-action]").forEach((button) => {
     button.addEventListener("click", () => runDevSpawnerAction(button.dataset.devSpawnerAction));
   });
@@ -1186,6 +1353,7 @@ function wireEvents() {
 
 async function init() {
   wireEvents();
+  syncDevSpawnerAdvancedControls();
   await Promise.all([loadItemPools(), loadTravelResources(), loadDevSpawnerCatalog()]);
   await bridgeStatus();
   await checkUpdates();
