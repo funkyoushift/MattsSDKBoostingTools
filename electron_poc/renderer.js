@@ -16,6 +16,7 @@ const els = {
   devActorCategoryButtons: document.getElementById("devActorCategoryButtons"),
   devActorClass: document.getElementById("devActorClass"),
   devActorCount: document.getElementById("devActorCount"),
+  devActorDetails: document.getElementById("devActorDetails"),
   devActorDistance: document.getElementById("devActorDistance"),
   devActorIncludeNonGenerated: document.getElementById("devActorIncludeNonGenerated"),
   devActorName: document.getElementById("devActorName"),
@@ -819,6 +820,12 @@ function devActorDisplayName(actorName) {
   return String(displayNames[actorName] || "").trim();
 }
 
+function devActorFavoriteLabel(actorName) {
+  const catalog = state.devSpawnerCatalog || {};
+  const favorites = catalog.favorites || {};
+  return String(favorites[actorName] || "").trim();
+}
+
 function devActorCategories(actorName) {
   const catalog = state.devSpawnerCatalog || {};
   const categories = catalog.categories || {};
@@ -829,6 +836,12 @@ function devActorCategories(actorName) {
 
 function devActorPrimaryCategory(actorName) {
   return devActorCategories(actorName)[0] || "Other / Uncategorized";
+}
+
+function devActorExistsInCatalog(actorName) {
+  const catalog = state.devSpawnerCatalog || {};
+  const categories = catalog.categories || {};
+  return Array.isArray(categories.All) && categories.All.includes(actorName);
 }
 
 function devActorLabel(actorName) {
@@ -872,6 +885,67 @@ function devGroupedActorRows(actorNames, category) {
   });
 
   return groups;
+}
+
+function clearDevActorSelection() {
+  state.devSpawnerSelectedActor = "";
+  if (els.devActorName) els.devActorName.value = "";
+  if (els.devAiName) els.devAiName.value = "";
+}
+
+function makeDevDetailRow(label, value, className = "") {
+  const row = document.createElement("div");
+  row.className = "dev-detail-row";
+
+  const term = document.createElement("div");
+  term.className = "dev-detail-label";
+  term.textContent = label;
+
+  const detail = document.createElement("div");
+  detail.className = `dev-detail-value${className ? ` ${className}` : ""}`;
+  detail.textContent = value || "Not available in catalog.";
+
+  row.appendChild(term);
+  row.appendChild(detail);
+  return row;
+}
+
+function renderDevActorDetails() {
+  if (!els.devActorDetails) return;
+  els.devActorDetails.innerHTML = "";
+
+  const actorName = state.devSpawnerSelectedActor;
+  if (!actorName) {
+    const empty = document.createElement("div");
+    empty.className = "dev-empty-row";
+    empty.textContent = "Select an actor row to view local catalog details.";
+    els.devActorDetails.appendChild(empty);
+    return;
+  }
+
+  const displayName = devActorDisplayName(actorName);
+  const categories = devActorCategories(actorName);
+  const primaryCategory = devActorPrimaryCategory(actorName);
+  const alternateCategories = categories.filter((category) => category !== primaryCategory);
+  const favoriteLabel = devActorFavoriteLabel(actorName);
+  const catalog = state.devSpawnerCatalog || {};
+  const existsInCatalog = devActorExistsInCatalog(actorName);
+
+  els.devActorDetails.appendChild(makeDevDetailRow("Display name", displayName || actorName));
+  els.devActorDetails.appendChild(makeDevDetailRow("Actor key", actorName, "mono"));
+  els.devActorDetails.appendChild(makeDevDetailRow("Primary category", primaryCategory));
+  els.devActorDetails.appendChild(makeDevDetailRow("Alternate categories", alternateCategories.join(", ") || "None in local catalog."));
+  els.devActorDetails.appendChild(makeDevDetailRow("Display source", displayName ? "Mapped display name" : "Generated from actor key fallback"));
+  els.devActorDetails.appendChild(makeDevDetailRow("Runtime identifier", existsInCatalog ? "Actor key used for ASD_spawnai" : "Not present in local All catalog."));
+  els.devActorDetails.appendChild(makeDevDetailRow("Catalog source", String(catalog.source || "").trim()));
+  if (favoriteLabel) {
+    els.devActorDetails.appendChild(makeDevDetailRow("Reference favorite label", favoriteLabel));
+  }
+
+  const note = document.createElement("div");
+  note.className = "dev-detail-note";
+  note.textContent = "Package paths, object paths, aliases, and live-confirmed status are not present in this local catalog.";
+  els.devActorDetails.appendChild(note);
 }
 
 function populateDevSpawnerCatalog() {
@@ -924,6 +998,9 @@ function renderDevCategories() {
 function makeDevActorRow(actorName, options = {}) {
   const row = document.createElement("div");
   row.className = "dev-actor-row";
+  if (actorName === state.devSpawnerSelectedActor) {
+    row.classList.add("selected");
+  }
   const spawn = document.createElement("button");
   spawn.type = "button";
   spawn.className = "dev-spawn-button";
@@ -933,7 +1010,10 @@ function makeDevActorRow(actorName, options = {}) {
   const label = document.createElement("button");
   label.type = "button";
   label.className = "dev-actor-label";
-  label.addEventListener("click", () => useDevActor(actorName));
+  label.addEventListener("click", () => {
+    useDevActor(actorName);
+    renderDevActors();
+  });
 
   const displayName = devActorDisplayName(actorName);
   const title = document.createElement("span");
@@ -969,6 +1049,10 @@ function renderDevActors() {
     return !query || devActorSearchText(actorName).includes(query);
   });
 
+  if (state.devSpawnerSelectedActor && !state.devSpawnerFilteredActors.includes(state.devSpawnerSelectedActor)) {
+    clearDevActorSelection();
+  }
+
   const pageSize = 36;
   const totalPages = Math.max(1, Math.ceil(state.devSpawnerFilteredActors.length / pageSize));
   state.devActorPage = Math.max(0, Math.min(totalPages - 1, state.devActorPage || 0));
@@ -1003,10 +1087,6 @@ function renderDevActors() {
     }
   }
 
-  if (!state.devSpawnerSelectedActor && shown.length) {
-    useDevActor(shown[0]);
-  }
-
   if (els.devPrevActorPageBtn) {
     els.devPrevActorPageBtn.disabled = state.devActorPage <= 0;
   }
@@ -1021,6 +1101,7 @@ function renderDevActors() {
     `${range} of ${state.devSpawnerFilteredActors.length} shown / ${allNames.length} in ${category}${searchNote} | page ${state.devActorPage + 1}/${totalPages}`,
     state.devSpawnerFilteredActors.length ? "ok" : "warning"
   );
+  renderDevActorDetails();
 }
 
 async function loadDevSpawnerCatalog() {
@@ -1046,6 +1127,7 @@ function useDevActor(actorName) {
   if (els.devActorName) els.devActorName.value = value;
   if (els.devAiName) els.devAiName.value = value;
   setLine(els.devSpawnerWarning, `Selected actor: ${devActorLabel(value)}`, "ok");
+  renderDevActorDetails();
 }
 
 function selectDevActorFromList() {
