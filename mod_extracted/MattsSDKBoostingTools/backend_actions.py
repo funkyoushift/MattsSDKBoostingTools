@@ -374,12 +374,7 @@ def _run_actor_script_deployer_spawnai_like_debug_menu(
     extra_loads: list[str],
     direct_only: bool,
 ) -> dict[str, Any]:
-    """Mirror SDK_Debug_Menu's AI spawn flow.
-
-    The source menu calls _cmd_spawnai once, with count=1, then uses _cmd_spawn for
-    extra copies.  Keeping the same call shape makes MSBT's bridge behavior easier
-    to compare against the working debug-menu source.
-    """
+    """Run ActorScriptDeployer's native AI spawn command for standard row spawns."""
     try:
         asd = importlib.import_module("ActorScriptDeployer")
     except Exception as exc:
@@ -403,7 +398,7 @@ def _run_actor_script_deployer_spawnai_like_debug_menu(
             argparse.Namespace(
                 name=name,
                 distance=distance,
-                count=1,
+                count=count,
                 spacing=spacing,
                 scale=scale,
                 z_offset=z_offset,
@@ -421,25 +416,6 @@ def _run_actor_script_deployer_spawnai_like_debug_menu(
         logs=logs,
         error=error,
     )
-
-    if count > 1:
-        spawn_fn, spawn_message = _actor_script_deployer_command("_cmd_spawn")
-        if spawn_fn is None:
-            result["warnings"].append(f"Extra copies skipped: {spawn_message}")
-            return result
-        for idx in range(1, count):
-            spawn_fn(
-                argparse.Namespace(
-                    name=name,
-                    distance=distance + (spacing * idx),
-                    scale=scale,
-                    z_offset=z_offset,
-                    zoffset=z_offset,
-                    load=list(extra_loads),
-                    direct_only=direct_only,
-                )
-            )
-
     return result
 
 
