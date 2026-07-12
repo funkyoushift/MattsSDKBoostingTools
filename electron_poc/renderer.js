@@ -819,23 +819,69 @@ function devActorDisplayName(actorName) {
   return String(displayNames[actorName] || "").trim();
 }
 
+function devActorCategories(actorName) {
+  const catalog = state.devSpawnerCatalog || {};
+  const categories = catalog.categories || {};
+  return Object.keys(categories).filter((category) => {
+    return category !== "All" && Array.isArray(categories[category]) && categories[category].includes(actorName);
+  });
+}
+
+function devActorPrimaryCategory(actorName) {
+  return devActorCategories(actorName)[0] || "Other / Uncategorized";
+}
+
 function devActorLabel(actorName) {
   const displayName = devActorDisplayName(actorName);
   return displayName ? `${displayName} | ${actorName}` : actorName;
 }
 
+function devNormalizeSearch(text) {
+  return String(text || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+}
+
 function devActorSearchText(actorName) {
-  return `${actorName} ${devActorDisplayName(actorName)}`.toLowerCase();
+  return devNormalizeSearch(`${actorName} ${devActorDisplayName(actorName)} ${devActorCategories(actorName).join(" ")}`);
+}
+
+function devCategoryNames() {
+  const catalog = state.devSpawnerCatalog || {};
+  const categories = catalog.categories || {};
+  return Object.keys(categories);
+}
+
+function devActorsForActiveCategory() {
+  const catalog = state.devSpawnerCatalog || {};
+  const categories = catalog.categories || {};
+  const category = state.devActiveCategory || "All";
+  return Array.isArray(categories[category]) ? categories[category] : [];
+}
+
+function devGroupedActorRows(actorNames, category) {
+  const groups = [];
+  const byName = new Map();
+
+  actorNames.forEach((actorName) => {
+    const groupName = category && category !== "All" ? category : devActorPrimaryCategory(actorName);
+    if (!byName.has(groupName)) {
+      const group = { name: groupName, actors: [] };
+      byName.set(groupName, group);
+      groups.push(group);
+    }
+    byName.get(groupName).actors.push(actorName);
+  });
+
+  return groups;
 }
 
 function populateDevSpawnerCatalog() {
   const catalog = state.devSpawnerCatalog || {};
   const categories = catalog.categories || {};
   const names = Object.keys(categories);
-  if (names.includes("Active Boss Chars")) {
-    state.devActiveCategory = "Active Boss Chars";
-  } else if (names.includes("Characters")) {
+  if (names.includes("Characters")) {
     state.devActiveCategory = "Characters";
+  } else if (names.includes("All")) {
+    state.devActiveCategory = "All";
   } else if (names.length) {
     state.devActiveCategory = names[0];
   }
@@ -849,11 +895,22 @@ function renderDevCategories() {
   const categories = catalog.categories || {};
   if (!els.devActorCategoryButtons) return;
   els.devActorCategoryButtons.innerHTML = "";
-  Object.keys(categories).forEach((category) => {
+  const names = devCategoryNames();
+  if (!names.length) {
+    const empty = document.createElement("div");
+    empty.className = "dev-empty-row";
+    empty.textContent = "No actor categories loaded.";
+    els.devActorCategoryButtons.appendChild(empty);
+    return;
+  }
+  names.forEach((category) => {
     const button = document.createElement("button");
     button.type = "button";
     button.className = category === state.devActiveCategory ? "active" : "";
     button.textContent = `${category} (${(categories[category] || []).length})`;
+    button.title = category === "All"
+      ? "Search across every actor in the source catalog."
+      : `Show ${category} actors only. Search will filter inside this category.`;
     button.addEventListener("click", () => {
       state.devActiveCategory = category;
       state.devActorPage = 0;
@@ -876,9 +933,26 @@ function makeDevActorRow(actorName, options = {}) {
   const label = document.createElement("button");
   label.type = "button";
   label.className = "dev-actor-label";
-  const description = options.description ? `${options.description} | ` : "";
-  label.textContent = `${description}${devActorLabel(actorName)}`;
   label.addEventListener("click", () => useDevActor(actorName));
+
+  const displayName = devActorDisplayName(actorName);
+  const title = document.createElement("span");
+  title.className = "dev-actor-title";
+  title.textContent = displayName || actorName;
+
+  const key = document.createElement("span");
+  key.className = "dev-actor-key";
+  key.textContent = actorName;
+
+  const meta = document.createElement("span");
+  meta.className = "dev-actor-meta";
+  const categories = devActorCategories(actorName);
+  const groupName = options.groupName || devActorPrimaryCategory(actorName);
+  meta.textContent = `Category: ${groupName}${categories.length > 1 ? ` | Also in: ${categories.filter((name) => name !== groupName).join(", ")}` : ""}`;
+
+  label.appendChild(title);
+  label.appendChild(key);
+  label.appendChild(meta);
 
   row.appendChild(spawn);
   row.appendChild(label);
@@ -887,15 +961,15 @@ function makeDevActorRow(actorName, options = {}) {
 
 function renderDevActors() {
   const catalog = state.devSpawnerCatalog || {};
-  const categories = catalog.categories || {};
   const category = state.devActiveCategory || "All";
-  const query = getValue(els.devActorSearch).toLowerCase();
-  const allNames = categories[category] || [];
+  const rawQuery = getValue(els.devActorSearch).trim();
+  const query = devNormalizeSearch(rawQuery);
+  const allNames = devActorsForActiveCategory();
   state.devSpawnerFilteredActors = allNames.filter((actorName) => {
     return !query || devActorSearchText(actorName).includes(query);
   });
 
-  const pageSize = 24;
+  const pageSize = 36;
   const totalPages = Math.max(1, Math.ceil(state.devSpawnerFilteredActors.length / pageSize));
   state.devActorPage = Math.max(0, Math.min(totalPages - 1, state.devActorPage || 0));
   const start = state.devActorPage * pageSize;
@@ -903,13 +977,28 @@ function renderDevActors() {
 
   if (els.devActorRows) {
     els.devActorRows.innerHTML = "";
-    shown.forEach((actorName) => {
-      els.devActorRows.appendChild(makeDevActorRow(actorName));
+    devGroupedActorRows(shown, category).forEach((group) => {
+      const groupNode = document.createElement("details");
+      groupNode.className = "dev-actor-group";
+      groupNode.open = true;
+      const summary = document.createElement("summary");
+      summary.textContent = `${group.name} (${group.actors.length} on this page)`;
+      groupNode.appendChild(summary);
+      group.actors.forEach((actorName) => {
+        groupNode.appendChild(makeDevActorRow(actorName, { groupName: group.name }));
+      });
+      els.devActorRows.appendChild(groupNode);
     });
     if (!shown.length) {
       const empty = document.createElement("div");
       empty.className = "dev-empty-row";
-      empty.textContent = "No actors match this category/search. Try another category or clear Search actors.";
+      if (!allNames.length) {
+        empty.textContent = "This category has no actors in the local catalog.";
+      } else if (query) {
+        empty.textContent = `No actors match "${rawQuery}" in ${category}. Clear Search actors, try All, or search by display name, actor key, or category.`;
+      } else {
+        empty.textContent = "No actors match this category. Try All or another category.";
+      }
       els.devActorRows.appendChild(empty);
     }
   }
@@ -926,9 +1015,10 @@ function renderDevActors() {
   }
 
   const range = shown.length ? `${start + 1}-${start + shown.length}` : "0";
+  const searchNote = query ? ` | search: "${rawQuery}"` : "";
   setLine(
     els.devActorSummary,
-    `${range} of ${state.devSpawnerFilteredActors.length} shown / ${allNames.length} in ${category} | page ${state.devActorPage + 1}/${totalPages}`,
+    `${range} of ${state.devSpawnerFilteredActors.length} shown / ${allNames.length} in ${category}${searchNote} | page ${state.devActorPage + 1}/${totalPages}`,
     state.devSpawnerFilteredActors.length ? "ok" : "warning"
   );
 }

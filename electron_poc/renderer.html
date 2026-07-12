@@ -355,12 +355,7 @@
       </section>
 
       <section class="panel cyan">
-        <h2>Categories</h2>
-        <div id="devActorCategoryButtons" class="category-buttons"></div>
-      </section>
-
-      <section class="panel cyan">
-        <h2>Actor Results</h2>
+        <h2>Actor Browser</h2>
         <div class="grid two compact">
           <label>
             Search actors
@@ -380,11 +375,18 @@
         <input id="devAiDirectOnly" type="checkbox" class="hidden-check">
         <input id="devActorIncludeNonGenerated" type="checkbox" class="hidden-check">
         <div id="devActorSummary" class="status-line">Loading actor catalog...</div>
-        <div class="button-row wrap">
-          <button id="devPrevActorPageBtn">Prev Page</button>
-          <button id="devNextActorPageBtn">Next Page</button>
-        </div>
-        <div id="devActorRows" class="dev-row-list"></div>
+        <details class="dev-fold" open>
+          <summary>Categories</summary>
+          <div id="devActorCategoryButtons" class="category-buttons"></div>
+        </details>
+        <details class="dev-fold" open>
+          <summary>Actor Results</summary>
+          <div class="button-row wrap">
+            <button id="devPrevActorPageBtn">Prev Page</button>
+            <button id="devNextActorPageBtn">Next Page</button>
+          </div>
+          <div id="devActorRows" class="dev-row-list"></div>
+        </details>
       </section>
 
       <section class="panel">
