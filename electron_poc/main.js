@@ -3,6 +3,11 @@ const fs = require("fs/promises");
 const path = require("path");
 const { spawn } = require("child_process");
 const { pathToFileURL } = require("url");
+const {
+  favoritesFilePath,
+  readFavorites,
+  writeFavorites
+} = require("./dev_spawner_favorites_store");
 
 const REPO_ROOT = path.resolve(__dirname, "..");
 const DEFAULT_BRIDGE = "http://127.0.0.1:49774";
@@ -121,6 +126,20 @@ ipcMain.handle("app:readDevSpawnerCatalog", async () => {
   try {
     const text = await fs.readFile(catalogPath, "utf8");
     return { ok: true, data: JSON.parse(text) };
+  } catch (error) {
+    return { ok: false, message: String(error && error.message ? error.message : error) };
+  }
+});
+
+ipcMain.handle("app:loadDevSpawnerFavorites", async () => {
+  const filePath = favoritesFilePath(app.getPath("userData"));
+  return readFavorites(filePath);
+});
+
+ipcMain.handle("app:saveDevSpawnerFavorites", async (_event, payload) => {
+  const filePath = favoritesFilePath(app.getPath("userData"));
+  try {
+    return await writeFavorites(filePath, payload || {});
   } catch (error) {
     return { ok: false, message: String(error && error.message ? error.message : error) };
   }

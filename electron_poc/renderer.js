@@ -34,6 +34,10 @@ const els = {
   devAiLimit: document.getElementById("devAiLimit"),
   devAiLoad: document.getElementById("devAiLoad"),
   devAiName: document.getElementById("devAiName"),
+  devMyFavoriteAddBtn: document.getElementById("devMyFavoriteAddBtn"),
+  devMyFavoriteRemoveBtn: document.getElementById("devMyFavoriteRemoveBtn"),
+  devMyFavoriteRows: document.getElementById("devMyFavoriteRows"),
+  devMyFavoriteSummary: document.getElementById("devMyFavoriteSummary"),
   devNextActorPageBtn: document.getElementById("devNextActorPageBtn"),
   devPrevActorPageBtn: document.getElementById("devPrevActorPageBtn"),
   devQuickPickRows: document.getElementById("devQuickPickRows"),
@@ -99,7 +103,9 @@ const state = {
   devActiveCategory: "",
   devSpawnerCatalog: null,
   devSpawnerFilteredActors: [],
+  devSpawnerFilteredMyFavorites: [],
   devSpawnerFilteredQuickPicks: [],
+  devSpawnerMyFavorites: { version: 1, favorites: {} },
   devSpawnerSelectedActor: "",
   devSpawnerWarningAccepted: false,
   filteredItemPools: [],
@@ -829,6 +835,30 @@ function devActorFavoriteLabel(actorName) {
   return String(favorites[actorName] || "").trim();
 }
 
+function devMyFavoritesMap() {
+  const data = state.devSpawnerMyFavorites || {};
+  return data.favorites && typeof data.favorites === "object" ? data.favorites : {};
+}
+
+function devMyFavoriteEntry(actorName) {
+  return devMyFavoritesMap()[actorName] || null;
+}
+
+function devActorMyFavoriteLabel(actorName) {
+  const entry = devMyFavoriteEntry(actorName);
+  return String((entry && entry.label) || "").trim();
+}
+
+function devIsMyFavorite(actorName) {
+  return Object.prototype.hasOwnProperty.call(devMyFavoritesMap(), actorName);
+}
+
+function devMyFavoriteActors() {
+  return Object.keys(devMyFavoritesMap()).sort((left, right) => {
+    return devActorLabel(left).localeCompare(devActorLabel(right));
+  });
+}
+
 function devActorDerivedLabel(actorName) {
   const cleaned = String(actorName || "")
     .replace(/^(TESTChar|Char|AI|IO|BP|BPChar|BPActor|InteractiveObject|NPC)_?/i, "")
@@ -908,6 +938,20 @@ function devQuickPickLabelInfo(actorName) {
   };
 }
 
+function devMyFavoriteLabelInfo(actorName) {
+  const saved = devActorMyFavoriteLabel(actorName);
+  const mapped = devActorDisplayName(actorName);
+  const reference = devActorFavoriteLabel(actorName);
+  const derived = devActorDerivedLabel(actorName);
+  const primary = saved || mapped || reference || derived || actorName;
+  const secondary = mapped && devNormalizeSearch(mapped) !== devNormalizeSearch(primary)
+    ? `Mapped: ${mapped}`
+    : reference && devNormalizeSearch(reference) !== devNormalizeSearch(primary)
+      ? `Reference: ${reference}`
+      : actorName;
+  return { primary, secondary };
+}
+
 function devActorCategories(actorName) {
   const catalog = state.devSpawnerCatalog || {};
   const categories = catalog.categories || {};
@@ -936,7 +980,7 @@ function devNormalizeSearch(text) {
 }
 
 function devActorSearchText(actorName) {
-  return devNormalizeSearch(`${actorName} ${devActorDisplayName(actorName)} ${devActorFavoriteLabel(actorName)} ${devActorDerivedLabel(actorName)} ${devActorCategories(actorName).join(" ")}`);
+  return devNormalizeSearch(`${actorName} ${devActorDisplayName(actorName)} ${devActorFavoriteLabel(actorName)} ${devActorMyFavoriteLabel(actorName)} ${devActorDerivedLabel(actorName)} ${devActorCategories(actorName).join(" ")}`);
 }
 
 function devCategoryNames() {
@@ -996,8 +1040,29 @@ function devGroupedQuickPickRows(actorNames) {
   return groups;
 }
 
+function devGroupedMyFavoriteRows(actorNames) {
+  const groups = [];
+  const byName = new Map();
+  actorNames.forEach((actorName) => {
+    const groupName = devActorPrimaryCategory(actorName);
+    if (!byName.has(groupName)) {
+      const group = { name: groupName, actors: [] };
+      byName.set(groupName, group);
+      groups.push(group);
+    }
+    byName.get(groupName).actors.push(actorName);
+  });
+  return groups;
+}
+
 function devFilteredReferenceQuickPicks(query) {
   return devReferenceQuickPickActors().filter((actorName) => {
+    return !query || devActorSearchText(actorName).includes(query);
+  });
+}
+
+function devFilteredMyFavorites(query) {
+  return devMyFavoriteActors().filter((actorName) => {
     return !query || devActorSearchText(actorName).includes(query);
   });
 }
@@ -1025,9 +1090,22 @@ function makeDevDetailRow(label, value, className = "") {
   return row;
 }
 
+function renderDevMyFavoriteControls() {
+  const actorName = state.devSpawnerSelectedActor;
+  const isFavorite = Boolean(actorName && devIsMyFavorite(actorName));
+  if (els.devMyFavoriteAddBtn) {
+    els.devMyFavoriteAddBtn.disabled = !actorName || isFavorite;
+    els.devMyFavoriteAddBtn.textContent = isFavorite ? "Already In My Favorites" : "Add Selected Actor";
+  }
+  if (els.devMyFavoriteRemoveBtn) {
+    els.devMyFavoriteRemoveBtn.disabled = !isFavorite;
+  }
+}
+
 function renderDevActorDetails() {
   if (!els.devActorDetails) return;
   els.devActorDetails.innerHTML = "";
+  renderDevMyFavoriteControls();
 
   const actorName = state.devSpawnerSelectedActor;
   if (!actorName) {
@@ -1043,6 +1121,7 @@ function renderDevActorDetails() {
   const primaryCategory = devActorPrimaryCategory(actorName);
   const alternateCategories = categories.filter((category) => category !== primaryCategory);
   const favoriteLabel = devActorFavoriteLabel(actorName);
+  const myFavoriteLabel = devActorMyFavoriteLabel(actorName);
   const catalog = state.devSpawnerCatalog || {};
   const existsInCatalog = devActorExistsInCatalog(actorName);
 
@@ -1056,6 +1135,7 @@ function renderDevActorDetails() {
   if (favoriteLabel) {
     els.devActorDetails.appendChild(makeDevDetailRow("Reference favorite label", favoriteLabel));
   }
+  els.devActorDetails.appendChild(makeDevDetailRow("My Favorites", myFavoriteLabel ? `Saved as ${myFavoriteLabel}` : "Not saved in My Favorites."));
 
   const note = document.createElement("div");
   note.className = "dev-detail-note";
@@ -1217,6 +1297,66 @@ function renderDevQuickPicks(query, rawQuery) {
   );
 }
 
+function renderDevMyFavorites(query, rawQuery) {
+  if (!els.devMyFavoriteRows) return;
+
+  const favorites = devMyFavoritesMap();
+  const favoriteCount = Object.keys(favorites).length;
+  state.devSpawnerFilteredMyFavorites = devFilteredMyFavorites(query);
+
+  els.devMyFavoriteRows.innerHTML = "";
+  if (!favoriteCount) {
+    const empty = document.createElement("div");
+    empty.className = "dev-empty-row";
+    empty.textContent = "No My Favorites saved yet. Select an actor row, then use Add Selected Actor.";
+    els.devMyFavoriteRows.appendChild(empty);
+  } else if (!state.devSpawnerFilteredMyFavorites.length) {
+    const empty = document.createElement("div");
+    empty.className = "dev-empty-row";
+    empty.textContent = query
+      ? `No My Favorites match "${rawQuery}". Clear Search actors to see all saved favorites.`
+      : "No My Favorites are visible.";
+    els.devMyFavoriteRows.appendChild(empty);
+  } else {
+    devGroupedMyFavoriteRows(state.devSpawnerFilteredMyFavorites).forEach((group) => {
+      const groupNode = document.createElement("details");
+      groupNode.className = "dev-actor-group";
+      groupNode.open = true;
+      const summary = document.createElement("summary");
+      summary.textContent = `${group.name} (${group.actors.length})`;
+      groupNode.appendChild(summary);
+      group.actors.forEach((actorName) => {
+        const labelInfo = devMyFavoriteLabelInfo(actorName);
+        const categories = devActorCategories(actorName);
+        const primaryCategory = devActorPrimaryCategory(actorName);
+        const existsText = devActorExistsInCatalog(actorName) ? "Catalog actor" : "Not present in local All catalog";
+        const metaParts = [];
+        if (labelInfo.secondary) metaParts.push(labelInfo.secondary);
+        metaParts.push(`Category: ${primaryCategory}${categories.length > 1 ? ` | Also in: ${categories.filter((name) => name !== primaryCategory).join(", ")}` : ""}`);
+        metaParts.push(existsText);
+        groupNode.appendChild(makeDevActorRow(actorName, {
+          groupName: group.name,
+          metaText: metaParts.join(" | "),
+          rowClass: "my-favorite-row",
+          titleText: labelInfo.primary
+        }));
+      });
+      els.devMyFavoriteRows.appendChild(groupNode);
+    });
+  }
+
+  const searchNote = query ? ` | search: "${rawQuery}"` : "";
+  const selectedNote = state.devSpawnerSelectedActor
+    ? devIsMyFavorite(state.devSpawnerSelectedActor) ? " | selected actor is saved" : " | selected actor is not saved"
+    : "";
+  setLine(
+    els.devMyFavoriteSummary,
+    `${state.devSpawnerFilteredMyFavorites.length} shown / ${favoriteCount} My Favorites${searchNote}${selectedNote}`,
+    favoriteCount ? "ok" : "warning"
+  );
+  renderDevMyFavoriteControls();
+}
+
 function renderDevActors() {
   const catalog = state.devSpawnerCatalog || {};
   const category = state.devActiveCategory || "All";
@@ -1227,16 +1367,19 @@ function renderDevActors() {
     return !query || devActorSearchText(actorName).includes(query);
   });
   state.devSpawnerFilteredQuickPicks = devFilteredReferenceQuickPicks(query);
+  state.devSpawnerFilteredMyFavorites = devFilteredMyFavorites(query);
 
   if (
     state.devSpawnerSelectedActor
     && !state.devSpawnerFilteredActors.includes(state.devSpawnerSelectedActor)
     && !state.devSpawnerFilteredQuickPicks.includes(state.devSpawnerSelectedActor)
+    && !state.devSpawnerFilteredMyFavorites.includes(state.devSpawnerSelectedActor)
   ) {
     clearDevActorSelection();
   }
 
   renderDevQuickPicks(query, rawQuery);
+  renderDevMyFavorites(query, rawQuery);
 
   const pageSize = 36;
   const totalPages = Math.max(1, Math.ceil(state.devSpawnerFilteredActors.length / pageSize));
@@ -1305,6 +1448,91 @@ async function loadDevSpawnerCatalog() {
   }
 }
 
+async function loadDevSpawnerFavorites() {
+  if (!window.msbt || typeof window.msbt.loadDevSpawnerFavorites !== "function") {
+    state.devSpawnerMyFavorites = { version: 1, favorites: {} };
+    setLine(els.devMyFavoriteSummary, "My Favorites storage is not available in this build.", "warning");
+    return;
+  }
+
+  try {
+    const result = await window.msbt.loadDevSpawnerFavorites();
+    if (!result || !result.ok) {
+      throw new Error(result && result.message ? result.message : "My Favorites failed to load.");
+    }
+    state.devSpawnerMyFavorites = result.data || { version: 1, favorites: {} };
+    const warnings = Array.isArray(result.warnings) ? result.warnings.filter(Boolean) : [];
+    renderDevMyFavorites(devNormalizeSearch(getValue(els.devActorSearch)), getValue(els.devActorSearch).trim());
+    if (warnings.length) {
+      setLine(els.devMyFavoriteSummary, warnings[0], "warning");
+    }
+  } catch (error) {
+    state.devSpawnerMyFavorites = { version: 1, favorites: {} };
+    setLine(els.devMyFavoriteSummary, `My Favorites failed to load: ${error.message || error}`, "bad");
+  }
+}
+
+async function saveDevSpawnerFavorites(statusMessage) {
+  if (!window.msbt || typeof window.msbt.saveDevSpawnerFavorites !== "function") {
+    setLine(els.devMyFavoriteSummary, "My Favorites storage is not available in this build.", "warning");
+    return false;
+  }
+  const result = await window.msbt.saveDevSpawnerFavorites(state.devSpawnerMyFavorites);
+  if (!result || !result.ok) {
+    setLine(els.devMyFavoriteSummary, `My Favorites failed to save: ${result && result.message ? result.message : "Unknown save error"}`, "bad");
+    return false;
+  }
+  state.devSpawnerMyFavorites = result.data || state.devSpawnerMyFavorites;
+  const warning = Array.isArray(result.warnings) && result.warnings.length ? ` ${result.warnings[0]}` : "";
+  renderDevActors();
+  setLine(els.devMyFavoriteSummary, `${statusMessage}${warning}`, warning ? "warning" : "ok");
+  return true;
+}
+
+function devFavoriteLabelForActor(actorName) {
+  return devActorDisplayName(actorName) || devActorFavoriteLabel(actorName) || devActorDerivedLabel(actorName) || actorName;
+}
+
+async function addSelectedDevMyFavorite() {
+  const actorName = String(state.devSpawnerSelectedActor || getValue(els.devActorName) || "").trim();
+  if (!actorName) {
+    setLine(els.devMyFavoriteSummary, "Select an actor before adding it to My Favorites.", "warning");
+    return;
+  }
+  if (devIsMyFavorite(actorName)) {
+    setLine(els.devMyFavoriteSummary, `${devActorLabel(actorName)} is already in My Favorites.`, "warning");
+    renderDevMyFavoriteControls();
+    return;
+  }
+  const now = new Date().toISOString();
+  state.devSpawnerMyFavorites = {
+    version: 1,
+    favorites: {
+      ...devMyFavoritesMap(),
+      [actorName]: {
+        label: devFavoriteLabelForActor(actorName),
+        created_at: now,
+        updated_at: now
+      }
+    }
+  };
+  await saveDevSpawnerFavorites(`Added ${devFavoriteLabelForActor(actorName)} to My Favorites.`);
+}
+
+async function removeSelectedDevMyFavorite() {
+  const actorName = String(state.devSpawnerSelectedActor || getValue(els.devActorName) || "").trim();
+  if (!actorName || !devIsMyFavorite(actorName)) {
+    setLine(els.devMyFavoriteSummary, "Select a saved favorite before removing it.", "warning");
+    renderDevMyFavoriteControls();
+    return;
+  }
+  const favorites = { ...devMyFavoritesMap() };
+  const label = devFavoriteLabelForActor(actorName);
+  delete favorites[actorName];
+  state.devSpawnerMyFavorites = { version: 1, favorites };
+  await saveDevSpawnerFavorites(`Removed ${label} from My Favorites.`);
+}
+
 function useDevActor(actorName) {
   const value = String(actorName || "").trim();
   if (!value) return;
@@ -1313,6 +1541,7 @@ function useDevActor(actorName) {
   if (els.devAiName) els.devAiName.value = value;
   setLine(els.devSpawnerWarning, `Selected actor: ${devActorLabel(value)}`, "ok");
   renderDevActorDetails();
+  renderDevMyFavorites(devNormalizeSearch(getValue(els.devActorSearch)), getValue(els.devActorSearch).trim());
 }
 
 function selectDevActorFromList() {
@@ -1681,6 +1910,12 @@ function wireEvents() {
   if (els.devRefreshLogBtn) {
     els.devRefreshLogBtn.addEventListener("click", refreshDevSpawnerLogTail);
   }
+  if (els.devMyFavoriteAddBtn) {
+    els.devMyFavoriteAddBtn.addEventListener("click", addSelectedDevMyFavorite);
+  }
+  if (els.devMyFavoriteRemoveBtn) {
+    els.devMyFavoriteRemoveBtn.addEventListener("click", removeSelectedDevMyFavorite);
+  }
   document.querySelectorAll("[data-dev-spawner-action]").forEach((button) => {
     button.addEventListener("click", () => runDevSpawnerAction(button.dataset.devSpawnerAction));
   });
@@ -1711,7 +1946,7 @@ function wireEvents() {
 async function init() {
   wireEvents();
   syncDevSpawnerAdvancedControls();
-  await Promise.all([loadItemPools(), loadTravelResources(), loadDevSpawnerCatalog()]);
+  await Promise.all([loadItemPools(), loadTravelResources(), loadDevSpawnerCatalog(), loadDevSpawnerFavorites()]);
   await bridgeStatus();
   await checkUpdates();
 }

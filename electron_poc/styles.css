@@ -414,6 +414,11 @@ iframe {
   padding-left: 6px;
 }
 
+.dev-actor-row.my-favorite-row {
+  border-left: 3px solid rgba(73, 224, 121, .65);
+  padding-left: 6px;
+}
+
 .dev-actor-title,
 .dev-actor-key,
 .dev-actor-meta {

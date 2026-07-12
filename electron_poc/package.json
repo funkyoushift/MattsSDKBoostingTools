@@ -6,7 +6,7 @@
   "main": "main.js",
   "scripts": {
     "start": "node_modules\\electron\\dist\\electron.exe .",
-    "check": "node --check main.js && node --check preload.js && node --check renderer.js"
+    "check": "node --check main.js && node --check preload.js && node --check renderer.js && node --check dev_spawner_favorites_store.js"
   },
   "devDependencies": {
     "electron": "^37.2.0"
