@@ -1423,7 +1423,7 @@ function bl4DeliveryRowLabel(row, index) {
   return `${index + 1}. ${name}${source ? ` (${source})` : ""}`;
 }
 
-async function preflightBl4LevelOverride(rows, serialText) {
+async function preflightBl4LevelOverride(rows, serialText, deliveryLevel) {
   if (!window.msbt || typeof window.msbt.serialDecodeCheck !== "function") {
     return true;
   }
@@ -1860,7 +1860,7 @@ async function sendBl4Serial(mode) {
   const overrideLevel = boolFromSelect(els.bl4OverrideLevel);
   const deliveryLevel = getInt(els.bl4DeliveryLevel, 1, 60, 60);
   if (overrideLevel) {
-    const preflightOk = await preflightBl4LevelOverride(rows, serialText);
+    const preflightOk = await preflightBl4LevelOverride(rows, serialText, deliveryLevel);
     if (!preflightOk) return;
   }
 
