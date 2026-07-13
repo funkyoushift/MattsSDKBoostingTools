@@ -93,6 +93,23 @@ $ResourcesHash = if (Test-Path $UiLayoutPath) { (Get-FileHash -Algorithm SHA256 
 $DownloadUrl = "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT_External_Beta.zip"
 $LatestManifestUrl = "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/releases/latest.json"
 $ReleaseUrl = "https://github.com/funkyoushift/MattsSDKBoostingTools/releases"
+$ElectronVersion = ""
+$ElectronInstallerName = ""
+$ElectronDownloadUrl = ""
+$ElectronUpdaterManifestUrl = "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/latest.yml"
+$ElectronPackageJson = Join-Path $RepoRoot "electron_poc\package.json"
+if (Test-Path $ElectronPackageJson) {
+    try {
+        $ElectronPackage = Get-Content -Raw $ElectronPackageJson | ConvertFrom-Json
+        $ElectronVersion = [string]$ElectronPackage.version
+        if ($ElectronVersion) {
+            $ElectronInstallerName = "MattsSDKBoostingTools-Electron-Beta-Installer-$ElectronVersion-x64.exe"
+            $ElectronDownloadUrl = "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/$ElectronInstallerName"
+        }
+    } catch {
+        Write-Warning "Could not read Electron package version from $ElectronPackageJson."
+    }
+}
 
 $VersionInfo = [ordered]@{
     package_version = $PackageVersion
@@ -104,6 +121,11 @@ $VersionInfo = [ordered]@{
     sdk_required = "oak2-mod-manager v0.3"
     sdk_required_url = "https://github.com/bl-sdk/oak2-mod-manager/releases/tag/v0.3"
     download_url = $DownloadUrl
+    manual_zip_download_url = $DownloadUrl
+    electron_version = $ElectronVersion
+    electron_installer_name = $ElectronInstallerName
+    electron_installer_download_url = $ElectronDownloadUrl
+    electron_updater_manifest_url = $ElectronUpdaterManifestUrl
     release_url = $ReleaseUrl
     latest_manifest_url = $LatestManifestUrl
     external_exe_sha256 = $ExeHash
@@ -152,6 +174,11 @@ $LatestManifest = [ordered]@{
     sdk_required = "oak2-mod-manager v0.3"
     sdk_required_url = "https://github.com/bl-sdk/oak2-mod-manager/releases/tag/v0.3"
     download_url = $DownloadUrl
+    manual_zip_download_url = $DownloadUrl
+    electron_version = $ElectronVersion
+    electron_installer_name = $ElectronInstallerName
+    electron_installer_download_url = $ElectronDownloadUrl
+    electron_updater_manifest_url = $ElectronUpdaterManifestUrl
     release_url = $ReleaseUrl
     latest_manifest_url = $LatestManifestUrl
     external_exe_sha256 = $ExeHash
