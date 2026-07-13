@@ -18,6 +18,7 @@ _DEFAULT_DEBUG_SPEED = 1.0
 _debug_speed_value: float = _DEFAULT_DEBUG_SPEED
 _live_dcc_cache: Any | None = None
 _live_dcc_cache_until: float = 0.0
+_debug_cam_enabled_hint: bool | None = None
 _toggle_states_by_player: dict[str, dict[int, bool]] = {}
 
 _DEVPERK_LABELS = {
@@ -209,6 +210,17 @@ def _live_pc() -> Any | None:
         return None
 
 
+def _raw_live_pc() -> Any | None:
+    lp = _live_local_player()
+    pc = getattr(lp, "PlayerController", None) if lp is not None else None
+    if pc is not None:
+        return pc
+    try:
+        return get_pc()
+    except Exception:
+        return None
+
+
 def _live_dcc() -> Any | None:
     global _live_dcc_cache, _live_dcc_cache_until
     now = time.monotonic()
@@ -258,13 +270,242 @@ def _ensure_cheat_manager(pc: Any) -> Any:
     return cm
 
 
+def _debug_cam_actual_active(raw_pc: Any | None) -> bool:
+    if _is_debug_camera_controller(raw_pc):
+        return True
+    try:
+        if _is_debug_camera_controller(get_pc()):
+            return True
+    except Exception:
+        pass
+    return False
+
+
+def _debug_cam_looks_active(raw_pc: Any | None, cm: Any | None) -> bool:
+    if _debug_cam_enabled_hint is not None:
+        return bool(_debug_cam_enabled_hint)
+    if _debug_cam_actual_active(raw_pc):
+        return True
+    try:
+        return getattr(cm, "DebugCameraControllerRef", None) is not None
+    except Exception:
+        return False
+
+
+def _try_debug_cam_exec(label: str, target: Any | None, command: str) -> str:
+    if target is None:
+        return ""
+    for name in ("ConsoleCommand", "SendToConsole"):
+        fn = getattr(target, name, None)
+        if not callable(fn):
+            continue
+        for args in ((command,), (command, True), (command, False), (command, target)):
+            try:
+                fn(*args)
+                return f"{label}.{name}"
+            except TypeError:
+                continue
+            except Exception as exc:
+                return f"{label}.{name} failed: {exc!r}"
+    return ""
+
+
+def _try_debug_cam_method(
+    label: str,
+    target: Any | None,
+    method_name: str,
+    arg_options: tuple[tuple[Any, ...], ...] = (),
+) -> str:
+    fn = getattr(target, method_name, None) if target is not None else None
+    if not callable(fn):
+        return ""
+    last_type_error: Exception | None = None
+    for args in ((), *arg_options):
+        try:
+            fn(*args)
+            suffix = "" if not args else f"({len(args)} arg)"
+            return f"{label}.{method_name}{suffix}"
+        except TypeError as exc:
+            last_type_error = exc
+            continue
+        except Exception as exc:
+            return f"{label}.{method_name} failed: {exc!r}"
+    return f"{label}.{method_name} failed: {last_type_error!r}" if last_type_error else ""
+
+
+def _debug_cam_original_player(raw_pc: Any | None) -> Any | None:
+    for attr in ("OriginalPlayer", "Player"):
+        try:
+            player = getattr(raw_pc, attr, None) if raw_pc is not None else None
+            if player is not None:
+                return player
+        except Exception:
+            pass
+    return _live_local_player()
+
+
+def _try_restore_debug_cam_player(raw_pc: Any | None, pc: Any | None) -> str:
+    """Hand the local player back to the original controller when native disable sticks.
+
+    SDK 03/Oak sometimes leaves OakLocalPlayer.PlayerController pointed at the
+    DebugCameraController even after CheatManager.DisableDebugCamera().  The
+    debug controller keeps OriginalPlayer/OriginalControllerRef, while the
+    original OakPlayerController still has the pawn, so this only restores that
+    specific handoff and avoids touching party/remote controllers.
+    """
+    if raw_pc is None or pc is None or not _is_debug_camera_controller(raw_pc):
+        return ""
+    player = _debug_cam_original_player(raw_pc)
+    pawn = _pawn_for_pc(pc)
+    attempts: list[str] = []
+    if player is not None:
+        try:
+            pc.Player = player
+            attempts.append("pc.Player=debugcam.OriginalPlayer")
+        except Exception as exc:
+            attempts.append(f"pc.Player restore failed: {exc!r}")
+        try:
+            player.PlayerController = pc
+            attempts.append("OriginalPlayer.PlayerController=pc")
+        except Exception as exc:
+            attempts.append(f"OriginalPlayer.PlayerController restore failed: {exc!r}")
+    if pawn is not None:
+        for label, target, method_name, arg_options in (
+            ("pc", pc, "ClientSetViewTarget", ((pawn,),)),
+            ("pc", pc, "SetViewTargetWithBlend", ((pawn,), (pawn, 0.0))),
+            ("pc", pc, "Possess", ((pawn,),)),
+        ):
+            result = _try_debug_cam_method(label, target, method_name, arg_options)
+            if result:
+                attempts.append(result)
+                if not _debug_cam_actual_active(_raw_live_pc()):
+                    return " -> ".join(attempts)
+    return " -> ".join(attempts)
+
+
+def _try_force_debug_cam_exit(raw_pc: Any | None, pc: Any | None, cm: Any | None) -> str:
+    attempts: list[str] = []
+    for label, target, method_name in (
+        ("raw_pc", raw_pc, "DisableDebugCamera"),
+        ("raw_pc", raw_pc, "ToggleDebugCamera"),
+        ("pc", pc, "DisableDebugCamera"),
+        ("pc", pc, "ToggleDebugCamera"),
+    ):
+        result = _try_debug_cam_method(label, target, method_name)
+        if result:
+            attempts.append(result)
+            if not _debug_cam_actual_active(_raw_live_pc()):
+                return " -> ".join(attempts)
+    for label, target, method_name in (
+        ("cm", cm, "ViewSelf"),
+        ("raw_pc", _raw_live_pc(), "ServerViewSelf"),
+        ("pc", pc, "ServerViewSelf"),
+    ):
+        result = _try_debug_cam_method(label, target, method_name)
+        if result:
+            attempts.append(result)
+            if not _debug_cam_actual_active(_raw_live_pc()):
+                return " -> ".join(attempts)
+    for label, target in (("raw_pc", _raw_live_pc()), ("pc", pc), ("cm", cm)):
+        result = _try_debug_cam_exec(label, target, "ToggleDebugCamera")
+        if result:
+            attempts.append(result)
+            if not _debug_cam_actual_active(_raw_live_pc()):
+                return " -> ".join(attempts)
+    result = _try_restore_debug_cam_player(_raw_live_pc(), pc)
+    if result:
+        attempts.append(result)
+        if not _debug_cam_actual_active(_raw_live_pc()):
+            return " -> ".join(attempts)
+    return " -> ".join(attempts)
+
+
+def _debug_cam_filtered_names(obj: Any | None) -> str:
+    if obj is None:
+        return "<none>"
+    needles = (
+        "camera",
+        "cheat",
+        "controller",
+        "debug",
+        "disable",
+        "enable",
+        "input",
+        "original",
+        "pawn",
+        "player",
+        "possess",
+        "restore",
+        "toggle",
+        "view",
+    )
+    try:
+        names = sorted(
+            name
+            for name in dir(obj)
+            if any(needle in str(name).lower() for needle in needles)
+        )
+    except Exception as exc:
+        return f"<dir failed: {exc!r}>"
+    return ", ".join(names[:120]) or "<no matching names>"
+
+
+def _debug_cam_attrs(obj: Any | None) -> str:
+    if obj is None:
+        return "<none>"
+    parts: list[str] = []
+    for name in (
+        "Class",
+        "Name",
+        "Outer",
+        "Player",
+        "Pawn",
+        "AcknowledgedPawn",
+        "CheatManager",
+        "DebugCameraControllerRef",
+        "OriginalControllerRef",
+        "OriginalController",
+        "OriginalPlayer",
+        "OriginalPawn",
+        "PendingSwapConnection",
+        "PlayerCameraManager",
+        "ViewTarget",
+    ):
+        try:
+            parts.append(f"{name}={getattr(obj, name, None)!r}")
+        except Exception as exc:
+            parts.append(f"{name}=<failed {exc!r}>")
+    return "; ".join(parts)
+
+
+def _log_debug_cam_diagnostics(raw_pc: Any | None, pc: Any | None, cm: Any | None) -> None:
+    try:
+        raw_cm = getattr(raw_pc, "CheatManager", None) if raw_pc is not None else None
+    except Exception:
+        raw_cm = None
+    try:
+        _log(
+            "Debug camera diagnostics: "
+            f"raw_pc_attrs=[{_debug_cam_attrs(raw_pc)}]; "
+            f"raw_pc_names=[{_debug_cam_filtered_names(raw_pc)}]; "
+            f"raw_cm_attrs=[{_debug_cam_attrs(raw_cm)}]; "
+            f"raw_cm_names=[{_debug_cam_filtered_names(raw_cm)}]; "
+            f"pc_attrs=[{_debug_cam_attrs(pc)}]; "
+            f"pc_names=[{_debug_cam_filtered_names(pc)}]; "
+            f"cm_attrs=[{_debug_cam_attrs(cm)}]; "
+            f"cm_names=[{_debug_cam_filtered_names(cm)}]"
+        )
+    except Exception:
+        pass
+
+
 def toggle_debug_cam(player_index: int | None = None) -> str:
     # Debug cam is local-only. Do not try to toggle it for remote selected players.
-    # Keep the toggle path intentionally close to the SDK Debug Menu/Mattmab
-    # console workaround: use the live OakLocalPlayer controller directly,
-    # create the native cheat manager if needed, then call ToggleDebugCamera.
-    lp = _live_local_player()
-    pc = _unwrap_debug_camera_controller(getattr(lp, "PlayerController", None) if lp is not None else None)
+    # SDK_Debug_Menu exposes explicit EnableDebugCamera/DisableDebugCamera buttons.
+    # Prefer those for deterministic off/on behavior; fall back to ToggleDebugCamera
+    # when a build only exposes the native toggle.
+    raw_pc = _raw_live_pc()
+    pc = _unwrap_debug_camera_controller(raw_pc)
     if pc is None or _is_debug_camera_controller(pc):
         pc = _live_pc()
     if pc is None or _is_debug_camera_controller(pc):
@@ -278,24 +519,60 @@ def toggle_debug_cam(player_index: int | None = None) -> str:
             raise RuntimeError("Local PlayerController has no CheatClass.")
         cm = unrealsdk.construct_object(cheat_class, pc, "OakCheatManager_SDK")
         pc.CheatManager = cm
-    toggle = getattr(cm, "ToggleDebugCamera", None)
-    if not callable(toggle):
-        raise RuntimeError("Local CheatManager does not expose ToggleDebugCamera.")
-    global _live_dcc_cache, _live_dcc_cache_until
+    active_before = _debug_cam_looks_active(raw_pc, cm)
+    preferred = "DisableDebugCamera" if active_before else "EnableDebugCamera"
+    action = getattr(cm, preferred, None)
+    used = preferred
+    if not callable(action):
+        action = getattr(cm, "ToggleDebugCamera", None)
+        used = "ToggleDebugCamera"
+    if not callable(action):
+        raise RuntimeError(f"Local CheatManager does not expose {preferred} or ToggleDebugCamera.")
+    global _live_dcc_cache, _live_dcc_cache_until, _debug_cam_enabled_hint
     _live_dcc_cache = None
     _live_dcc_cache_until = 0.0
-    toggle()
-    dcc = getattr(cm, "DebugCameraControllerRef", None) or _live_dcc()
-    if dcc is not None:
+    action()
+    if used == "DisableDebugCamera":
+        _debug_cam_enabled_hint = False
+    elif used == "EnableDebugCamera":
+        _debug_cam_enabled_hint = True
+    else:
+        _debug_cam_enabled_hint = not active_before
+    raw_after = _raw_live_pc()
+    fallback_used = ""
+    if used == "DisableDebugCamera" and _debug_cam_actual_active(raw_after):
+        fallback_used = _try_force_debug_cam_exit(raw_after, pc, cm) or "none available"
+        raw_after = _raw_live_pc()
+    active_after = _debug_cam_actual_active(raw_after)
+    if used == "DisableDebugCamera":
+        _debug_cam_enabled_hint = bool(active_after)
+    elif used == "EnableDebugCamera":
+        _debug_cam_enabled_hint = True
+    else:
+        _debug_cam_enabled_hint = bool(active_after)
+    dcc_ref = getattr(cm, "DebugCameraControllerRef", None)
+    dcc = dcc_ref if _debug_cam_enabled_hint else None
+    if _debug_cam_enabled_hint and dcc is None:
+        dcc = _live_dcc()
+    if _debug_cam_enabled_hint and dcc is not None:
         try:
             _apply_debug_speed_to_controller(dcc, _debug_speed_value)
         except Exception:
             pass
     try:
-        _log(f"ToggleDebugCamera pc={pc} cm={cm} debugcam={dcc}")
+        _log(
+            "Debug camera "
+            f"{'disable' if active_before else 'enable'} requested via {used}; "
+            f"active_before={active_before}; active_hint={_debug_cam_enabled_hint}; "
+            f"active_after={active_after}; fallback={fallback_used or 'none'}; "
+            f"raw_before={raw_pc}; raw_after={raw_after}; pc={pc}; cm={cm}; debugcam_ref={dcc}"
+        )
     except Exception:
         pass
-    return "Debug camera toggled locally."
+    if active_before and active_after:
+        _log_debug_cam_diagnostics(raw_after, pc, cm)
+        return "Debug camera disable requested, but the game still reports debug cam active."
+    return "Debug camera disabled locally." if active_before else "Debug camera enabled locally."
 
 
 def _apply_debug_speed_to_controller(dcc: Any, speed: float) -> None:
