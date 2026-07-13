@@ -87,6 +87,20 @@ const els = {
   itempoolSearch: document.getElementById("itempoolSearch"),
   itempoolSummary: document.getElementById("itempoolSummary"),
   inventoryStatus: document.getElementById("inventoryStatus"),
+  reportActual: document.getElementById("reportActual"),
+  reportCopyBtn: document.getElementById("reportCopyBtn"),
+  reportDescription: document.getElementById("reportDescription"),
+  reportExpected: document.getElementById("reportExpected"),
+  reportGithubBtn: document.getElementById("reportGithubBtn"),
+  reportIncludeDiagnostics: document.getElementById("reportIncludeDiagnostics"),
+  reportKind: document.getElementById("reportKind"),
+  reportNotes: document.getElementById("reportNotes"),
+  reportPreview: document.getElementById("reportPreview"),
+  reportPreviewBtn: document.getElementById("reportPreviewBtn"),
+  reportSaveBtn: document.getElementById("reportSaveBtn"),
+  reportStatus: document.getElementById("reportStatus"),
+  reportSteps: document.getElementById("reportSteps"),
+  reportTitle: document.getElementById("reportTitle"),
   bookmarkCopyBtn: document.getElementById("bookmarkCopyBtn"),
   bookmarkCount: document.getElementById("bookmarkCount"),
   bookmarkDeleteBtn: document.getElementById("bookmarkDeleteBtn"),
@@ -118,6 +132,11 @@ const els = {
   serialToolsInput: document.getElementById("serialToolsInput"),
   serialToolsSerialized: document.getElementById("serialToolsSerialized"),
   serialToolsStatus: document.getElementById("serialToolsStatus"),
+  serialDeliveryBar: document.getElementById("serialDeliveryBar"),
+  serialDeliveryLabel: document.getElementById("serialDeliveryLabel"),
+  serialDeliveryMessage: document.getElementById("serialDeliveryMessage"),
+  serialDeliveryMeta: document.getElementById("serialDeliveryMeta"),
+  serialDeliveryPanel: document.getElementById("serialDeliveryPanel"),
   statusOutput: document.getElementById("statusOutput"),
   targetSelect: document.getElementById("targetSelect"),
   targetSummary: document.getElementById("targetSummary"),
@@ -189,6 +208,10 @@ const state = {
   latestDownloadUrl: "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT_External_Beta.zip",
   latestUpdateState: null,
   players: [],
+  reportPreviewText: "",
+  serialDeliveryIdlePolls: 0,
+  serialDeliveryLastMessage: "",
+  serialDeliveryTimer: null,
   selectedItemPool: "",
   selectedMap: "",
   selectedStation: "",
@@ -418,11 +441,62 @@ function renderPlayers(status = {}) {
   setLine(els.bl4TargetSummary, text, kind);
 }
 
-async function bridgeStatus() {
-  setLine(els.bridgeSummary, "Checking bridge...", "warning");
-  const result = await window.msbt.bridgeRequest({ method: "GET", path: "/status" });
-  setOutput(els.statusOutput, result);
+function serialDeliveryMessage(progress = {}) {
+  if (!progress || typeof progress !== "object") return "";
+  const message = String(progress.message || progress.last_message || "").trim();
+  const error = String(progress.last_error || "").trim();
+  return message || error;
+}
 
+function updateSerialDeliveryProgress(progress = {}) {
+  const message = serialDeliveryMessage(progress);
+  const active = Boolean(progress && progress.active);
+  const stage = String(progress && progress.stage ? progress.stage : active ? "active" : "idle");
+  const hasMessage = Boolean(message);
+  if (!els.serialDeliveryPanel) return;
+
+  if (!active && !hasMessage) {
+    els.serialDeliveryPanel.classList.add("hidden");
+    if (els.serialDeliveryBar) els.serialDeliveryBar.style.width = "0%";
+    if (els.serialDeliveryLabel) els.serialDeliveryLabel.textContent = "Idle";
+    if (els.serialDeliveryMessage) els.serialDeliveryMessage.textContent = "No active serial delivery.";
+    if (els.serialDeliveryMeta) els.serialDeliveryMeta.textContent = "";
+    return;
+  }
+
+  const percent = Number.isFinite(Number(progress.percent))
+    ? Math.max(0, Math.min(100, Number(progress.percent)))
+    : Math.max(0, Math.min(100, Number(progress.fraction || 0) * 100));
+  const totalChunks = Number(progress.total_chunks || progress.total || 0);
+  const currentChunk = Number(progress.current_chunk || progress.index || 0);
+  const totalSerials = Number(progress.total_serials || 0);
+  const currentChunkSerials = Number(progress.current_chunk_serials || 0);
+  const target = String(progress.target_label || progress.scope || "").trim();
+  const delay = Number(progress.next_delay_seconds || progress.wait_remaining || 0);
+
+  const metaParts = [];
+  if (totalChunks > 0 && currentChunk > 0) metaParts.push(`package ${currentChunk}/${totalChunks}`);
+  if (currentChunkSerials > 0) metaParts.push(`${currentChunkSerials} serial(s) in current package`);
+  if (totalSerials > 0) metaParts.push(`${totalSerials} serial(s) total`);
+  if (target) metaParts.push(target);
+  if (delay > 0.05) metaParts.push(`next step in ${delay.toFixed(1)}s`);
+
+  els.serialDeliveryPanel.classList.remove("hidden");
+  if (els.serialDeliveryBar) els.serialDeliveryBar.style.width = `${percent.toFixed(0)}%`;
+  if (els.serialDeliveryLabel) els.serialDeliveryLabel.textContent = progress.label || `${percent.toFixed(0)}%`;
+  if (els.serialDeliveryMessage) {
+    els.serialDeliveryMessage.textContent = message || (active ? "Serial delivery is running..." : "Serial delivery status updated.");
+    els.serialDeliveryMessage.className = `status-line ${progress.last_error ? "bad" : active ? "warning" : "ok"}`;
+  }
+  if (els.serialDeliveryMeta) els.serialDeliveryMeta.textContent = metaParts.length ? metaParts.join(" | ") : `stage: ${stage}`;
+
+  if (message && message !== state.serialDeliveryLastMessage) {
+    state.serialDeliveryLastMessage = message;
+    appendActivity(`SDK serial delivery: ${message}`);
+  }
+}
+
+function applyBridgeStatusResult(result, options = {}) {
   const data = result && result.data ? result.data : {};
   if (!result.ok || !data.ok) {
     state.bridgeOnline = false;
@@ -431,8 +505,8 @@ async function bridgeStatus() {
     renderPlayers({});
     setLine(els.bridgeSummary, data.message || "Bridge offline.", "bad");
     updateSerialState();
-    appendActivity(data.message || "Bridge offline.");
-    return result;
+    if (!options.quiet) appendActivity(data.message || "Bridge offline.");
+    return data;
   }
 
   state.bridgeOnline = true;
@@ -441,9 +515,53 @@ async function bridgeStatus() {
   const selected = data.selected_player || "none";
   const queue = data.queue || 0;
   setLine(els.bridgeSummary, `Bridge online | players: ${playerCount} | selected: ${selected} | queue: ${queue}`, "ok");
+  updateSerialDeliveryProgress(data.serial_delivery || {});
   updateSerialState();
-  appendActivity(`Bridge online | players: ${playerCount} | selected: ${selected} | queue: ${queue}`);
+  if (!options.quiet) appendActivity(`Bridge online | players: ${playerCount} | selected: ${selected} | queue: ${queue}`);
+  return data;
+}
+
+async function bridgeStatus(options = {}) {
+  if (!options.quiet) setLine(els.bridgeSummary, "Checking bridge...", "warning");
+  const result = await window.msbt.bridgeRequest({ method: "GET", path: "/status" });
+  if (!options.quiet) setOutput(els.statusOutput, result);
+  applyBridgeStatusResult(result, options);
   return result;
+}
+
+function scheduleSerialDeliveryPoll() {
+  if (state.serialDeliveryTimer) return;
+  state.serialDeliveryTimer = window.setTimeout(pollSerialDeliveryProgress, 750);
+}
+
+async function pollSerialDeliveryProgress() {
+  state.serialDeliveryTimer = null;
+  let keepPolling = false;
+  try {
+    const result = await window.msbt.bridgeRequest({ method: "GET", path: "/status" });
+    const data = applyBridgeStatusResult(result, { quiet: true });
+    const progress = data && data.serial_delivery ? data.serial_delivery : {};
+    const active = Boolean(progress && progress.active);
+    const hasMessage = Boolean(serialDeliveryMessage(progress));
+    if (active) {
+      state.serialDeliveryIdlePolls = 0;
+      keepPolling = true;
+    } else if (hasMessage && state.serialDeliveryIdlePolls < 8) {
+      state.serialDeliveryIdlePolls += 1;
+      keepPolling = true;
+    } else {
+      state.serialDeliveryIdlePolls = 0;
+    }
+  } catch (error) {
+    state.serialDeliveryIdlePolls += 1;
+    keepPolling = state.serialDeliveryIdlePolls < 4;
+  }
+  if (keepPolling) scheduleSerialDeliveryPoll();
+}
+
+function startSerialDeliveryProgressWatch() {
+  state.serialDeliveryIdlePolls = 0;
+  scheduleSerialDeliveryPoll();
 }
 
 async function setTarget(value) {
@@ -659,7 +777,8 @@ async function sendSerialPayload(mode, serialText, overrideLevel, level, outNode
     serial_level: level,
     code_delivery_level: level
   }, outNode, 60000);
-  await bridgeStatus();
+  startSerialDeliveryProgressWatch();
+  await bridgeStatus({ quiet: true });
   return result;
 }
 
@@ -1179,7 +1298,7 @@ function clearBl4Detail(message = "Select a BL4 code.") {
   setOutput(els.bl4Detail, message);
   setTextValue(els.bl4Serial, "");
   setTextValue(els.bl4Breakdown, "");
-  setBl4DeliveryStatus("Validate / Confirm Active before delivery. Delivery sends one active code at a time.", "warning");
+  setBl4DeliveryStatus("Delivery sends checked rows, or the active code if none are checked.", "warning");
 }
 
 async function loadBl4Breakdown(row) {
@@ -1211,7 +1330,7 @@ function selectBl4Entry(id) {
   state.bl4ConfirmedSerial = "";
   setOutput(els.bl4Detail, formatBl4Detail(row));
   setTextValue(els.bl4Serial, row.serial || "");
-  setBl4DeliveryStatus("Active code changed. Validate / Confirm Active before delivery.", "warning");
+  setBl4DeliveryStatus("Active code ready. Delivery sends checked rows, or this active code if none are checked.", "warning");
   loadBl4Breakdown(row);
   renderBl4Codes();
 }
@@ -1475,35 +1594,36 @@ async function validateBl4ActiveSerial() {
 }
 
 async function sendBl4Serial(mode) {
-  const row = activeBl4Entry();
-  if (!row) {
+  const rows = bl4ValidSerialEntries(bl4SelectedEntries());
+  if (!rows.length) {
     setBl4DeliveryStatus("Select a BL4 code before delivery.", "warning");
     return;
   }
-  const validation = serialValidationMessage(row.serial);
-  if (validation) {
-    setBl4DeliveryStatus(validation, "bad");
-    return;
-  }
-  if (state.bl4ConfirmedId !== bl4EntryId(row) || state.bl4ConfirmedSerial !== row.serial) {
-    setBl4DeliveryStatus("Validate / Confirm Active before delivery. Confirmation clears when the active code changes.", "warning");
-    return;
-  }
-  if (mode === "selected" && !state.selectedTarget) {
-    setBl4DeliveryStatus("Select and set a BL4 Codes target before Deliver Selected.", "warning");
-    return;
-  }
 
-  const destination = mode === "selected" ? "selected target" : mode === "all" ? "all players" : "non-host players";
-  const confirmed = window.confirm(`Deliver "${row.name || "selected BL4 code"}" to ${destination}?`);
+  const serialText = rows.map((row) => String(row.serial || "").trim()).join("\n");
+  const destination = mode === "selected" ? (state.selectedTarget || "selected target") : mode === "all" ? "all players" : "non-host players";
+  const label = rows.length === 1 ? `"${rows[0].name || "selected BL4 code"}"` : `${rows.length} selected BL4 codes`;
+  const confirmed = window.confirm(`Deliver ${label} to ${destination}?`);
   if (!confirmed) {
     setBl4DeliveryStatus("BL4 delivery cancelled.", "warning");
     return;
   }
 
+  const actionByMode = {
+    selected: "give_serial_selected",
+    all: "give_serial_all",
+    nonhost: "give_serial_nonhost"
+  };
+  setBl4DeliveryStatus(`Sending ${rows.length} BL4 serial(s) to ${destination}...`, "warning");
+  setOutput(
+    els.bl4Output,
+    `Sending BL4 code delivery:\nAction: ${actionByMode[mode] || mode}\nDestination: ${destination}\nSerial count: ${rows.length}\n${rows.map((row) => row.name || "Selected BL4 code").join("\n")}`
+  );
+  appendActivity(`BL4 delivery: sending ${rows.length} serial(s) via ${mode}.`);
+
   const result = await sendSerialPayload(
     mode,
-    row.serial,
+    serialText,
     boolFromSelect(els.bl4OverrideLevel),
     getInt(els.bl4DeliveryLevel, 1, 60, 60),
     els.bl4Output
@@ -2877,6 +2997,122 @@ async function runDevSpawnerAction(action) {
   }
 }
 
+function currentTabLabel() {
+  const active = document.querySelector(".tab-bar [data-tab].active");
+  return active ? active.textContent.trim() : "unknown";
+}
+
+function reportField(label, value) {
+  const text = String(value || "").trim();
+  return `## ${label}\n${text || "_Not provided._"}`;
+}
+
+function redactReportText(value) {
+  return String(value || "")
+    .replace(BASE85_RE, "[redacted serial]")
+    .replace(/[A-Z]:\\Users\\[^\\\r\n]+/gi, "C:\\Users\\[redacted]")
+    .replace(/"name"\s*:\s*"[^"]+"/gi, '"name":"[redacted]"')
+    .replace(/selected_player"\s*:\s*"[^"]*"/gi, 'selected_player":"[redacted]"');
+}
+
+function safeReportTitle() {
+  const title = getValue(els.reportTitle).replace(/\s+/g, " ").trim();
+  return title || (getValue(els.reportKind) === "feature" ? "Feature request" : "Bug report");
+}
+
+async function collectReportDiagnostics() {
+  const lines = [];
+  const versionInfo = state.versionInfo || await refreshVersionInfo() || {};
+  lines.push(`App version: ${versionInfo.appVersion || "unknown"}`);
+  lines.push(`Package version: ${versionInfo.packageVersion || "unknown"}`);
+  lines.push(`SDK mod version: ${versionInfo.sdkmodVersion || "unknown"}`);
+  lines.push(`Resources version: ${versionInfo.resourcesVersion || "unknown"}`);
+  lines.push(`Electron: ${versionInfo.electronVersion || "unknown"}`);
+  lines.push(`Platform: ${versionInfo.platform || "unknown"} ${versionInfo.osRelease || ""}`.trim());
+  lines.push(`Packaged: ${versionInfo.packaged === true ? "yes" : "no"}`);
+  lines.push(`Current tab: ${currentTabLabel()}`);
+
+  try {
+    const bridge = await window.msbt.bridgeRequest({ method: "GET", path: "/status", timeoutMs: 4000 });
+    const status = bridge && bridge.data ? bridge.data : bridge;
+    const diagnostics = status && status.diagnostics ? status.diagnostics : {};
+    lines.push(`Bridge online: ${status && status.ok ? "yes" : "no"}`);
+    lines.push(`Players loaded: ${Array.isArray(status && status.players) ? status.players.length : 0}`);
+    lines.push(`Bridge queue: ${status && Number.isFinite(Number(status.queue)) ? status.queue : "unknown"}`);
+    lines.push(`ActorScriptDeployer available: ${diagnostics.actor_script_deployer_available === true ? "yes" : "no"}`);
+    lines.push(`BLImGui available: ${diagnostics.blimgui_available === true ? "yes" : "no"}`);
+    lines.push(`unrealsdk: ${diagnostics.unrealsdk_version || "unknown"}`);
+    lines.push(`pyunrealsdk: ${diagnostics.pyunrealsdk_version || "unknown"}`);
+  } catch (error) {
+    lines.push(`Bridge status: unavailable (${error.message || error})`);
+  }
+
+  try {
+    const log = await window.msbt.readSdkLogTail({ lines: 80 });
+    if (log && log.ok && log.text) {
+      lines.push("");
+      lines.push("Recent filtered SDK log lines:");
+      lines.push(redactReportText(log.text).slice(-6000));
+    }
+  } catch (error) {
+    lines.push(`Recent SDK log lines unavailable: ${error.message || error}`);
+  }
+
+  return redactReportText(lines.join("\n"));
+}
+
+async function buildReportPreview() {
+  const kind = getValue(els.reportKind) === "feature" ? "Feature request" : "Bug report";
+  const parts = [
+    `# ${safeReportTitle()}`,
+    `Type: ${kind}`,
+    "",
+    reportField("Description", getValue(els.reportDescription)),
+    reportField("Reproduction Steps", getValue(els.reportSteps)),
+    reportField("Expected Behavior", getValue(els.reportExpected)),
+    reportField("Actual Behavior", getValue(els.reportActual)),
+    reportField("Optional Notes", getValue(els.reportNotes))
+  ];
+
+  if (els.reportIncludeDiagnostics && els.reportIncludeDiagnostics.checked) {
+    parts.push("## Redacted Diagnostics");
+    parts.push(await collectReportDiagnostics());
+  }
+
+  const report = redactReportText(parts.join("\n\n")).slice(0, 24000);
+  state.reportPreviewText = report;
+  setOutput(els.reportPreview, report);
+  setLine(els.reportStatus, "Report preview refreshed.", "ok");
+  return report;
+}
+
+async function copyReportPreview() {
+  const report = state.reportPreviewText || await buildReportPreview();
+  await navigator.clipboard.writeText(report);
+  setLine(els.reportStatus, "Report copied.", "ok");
+}
+
+async function saveReportPreview() {
+  const report = state.reportPreviewText || await buildReportPreview();
+  if (!window.msbt || typeof window.msbt.saveReportFile !== "function") {
+    setLine(els.reportStatus, "Save is not available in this build.", "bad");
+    return;
+  }
+  const result = await window.msbt.saveReportFile(report);
+  setLine(els.reportStatus, result && result.message ? result.message : "Save finished.", result && result.ok ? "ok" : "warning");
+}
+
+async function openReportIssue() {
+  const report = state.reportPreviewText || await buildReportPreview();
+  const kind = getValue(els.reportKind) === "feature" ? "feature" : "bug";
+  const url = new URL("https://github.com/funkyoushift/MattsSDKBoostingTools/issues/new");
+  url.searchParams.set("title", safeReportTitle());
+  url.searchParams.set("body", report.slice(0, 8000));
+  url.searchParams.set("labels", kind === "feature" ? "enhancement" : "bug");
+  await window.msbt.openExternal(url.toString());
+  setLine(els.reportStatus, "Opened prefilled GitHub issue.", "ok");
+}
+
 function switchTab(tabId) {
   document.querySelectorAll(".tab-bar [data-tab]").forEach((button) => {
     button.classList.toggle("active", button.dataset.tab === tabId);
@@ -2991,6 +3227,25 @@ function wireEvents() {
   document.getElementById("updateBtn").addEventListener("click", checkUpdates);
   if (els.updateDownloadBtn) els.updateDownloadBtn.addEventListener("click", downloadElectronUpdate);
   if (els.updateInstallBtn) els.updateInstallBtn.addEventListener("click", installDownloadedElectronUpdate);
+  if (els.reportPreviewBtn) els.reportPreviewBtn.addEventListener("click", buildReportPreview);
+  if (els.reportCopyBtn) els.reportCopyBtn.addEventListener("click", copyReportPreview);
+  if (els.reportSaveBtn) els.reportSaveBtn.addEventListener("click", saveReportPreview);
+  if (els.reportGithubBtn) els.reportGithubBtn.addEventListener("click", openReportIssue);
+  [
+    els.reportKind,
+    els.reportTitle,
+    els.reportDescription,
+    els.reportSteps,
+    els.reportExpected,
+    els.reportActual,
+    els.reportNotes,
+    els.reportIncludeDiagnostics
+  ].forEach((node) => {
+    if (node) node.addEventListener("input", () => {
+      state.reportPreviewText = "";
+      setLine(els.reportStatus, "Report changed. Refresh preview before sharing.", "warning");
+    });
+  });
   document.getElementById("downloadBtn").addEventListener("click", () => window.msbt.openExternal(state.latestDownloadUrl));
   const detectSdkModsBtn = document.getElementById("detectSdkModsBtn");
   if (detectSdkModsBtn) detectSdkModsBtn.addEventListener("click", detectSdkModsFolder);

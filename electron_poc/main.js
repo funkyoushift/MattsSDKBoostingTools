@@ -1,5 +1,6 @@
 const { app, BrowserWindow, dialog, ipcMain, shell } = require("electron");
 const fs = require("fs/promises");
+const os = require("os");
 const path = require("path");
 const { execFile, spawn } = require("child_process");
 const { pathToFileURL } = require("url");
@@ -244,6 +245,8 @@ async function localVersionInfo() {
     ok: true,
     appVersion: app.getVersion(),
     electronVersion: process.versions.electron,
+    platform: process.platform,
+    osRelease: os.release(),
     packageVersion: manifest.package_version || manifest.app_version || app.getVersion(),
     sdkmodVersion: manifest.sdkmod_version || "unavailable",
     resourcesVersion: manifest.resources_version || "unavailable",
@@ -737,6 +740,24 @@ ipcMain.handle("app:quitAndInstallUpdate", async () => {
   }
   autoUpdater.quitAndInstall(false, true);
   return { ok: true, message: "Restarting to install update." };
+});
+
+ipcMain.handle("app:saveReportFile", async (_event, text) => {
+  const content = String(text || "").slice(0, 64000);
+  if (!content.trim()) return { ok: false, message: "Report is empty." };
+  const result = await dialog.showSaveDialog({
+    title: "Save MSBT report",
+    defaultPath: `MSBT_Report_${new Date().toISOString().slice(0, 10)}.md`,
+    filters: [
+      { name: "Markdown", extensions: ["md"] },
+      { name: "Text", extensions: ["txt"] }
+    ]
+  });
+  if (result.canceled || !result.filePath) {
+    return { ok: false, canceled: true, message: "Save cancelled." };
+  }
+  await fs.writeFile(result.filePath, content, "utf8");
+  return { ok: true, path: result.filePath, message: "Report saved." };
 });
 
 ipcMain.handle("app:openExternal", async (_event, url) => {

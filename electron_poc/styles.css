@@ -219,6 +219,41 @@ iframe {
   color: #fff;
 }
 
+.serial-delivery-panel {
+  margin: 10px 12px 0;
+  border: 1px solid var(--gold);
+  background: #0d1320;
+  padding: 10px 12px;
+}
+
+.serial-delivery-panel.hidden {
+  display: none;
+}
+
+.serial-delivery-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--gold);
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.progress-track {
+  height: 9px;
+  margin: 8px 0;
+  overflow: hidden;
+  border: 1px solid #4b5563;
+  background: #070a12;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, var(--cyan), var(--green));
+  transition: width .18s ease-out;
+}
+
 .tab-shell {
   padding: 12px;
   min-height: calc(100vh - 128px);

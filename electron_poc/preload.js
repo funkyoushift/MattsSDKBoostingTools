@@ -28,5 +28,6 @@ contextBridge.exposeInMainWorld("msbt", {
   bl4PartsBreakdown: (serial) => ipcRenderer.invoke("app:bl4PartsBreakdown", serial),
   readSdkLogTail: (options) => ipcRenderer.invoke("app:readSdkLogTail", options),
   readResourceJson: (resourceName) => ipcRenderer.invoke("app:readResourceJson", resourceName),
+  saveReportFile: (text) => ipcRenderer.invoke("app:saveReportFile", text),
   openExternal: (url) => ipcRenderer.invoke("app:openExternal", url)
 });

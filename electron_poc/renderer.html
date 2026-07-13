@@ -31,8 +31,21 @@
     <button data-tab="dev-spawner">Dev Spawner</button>
     <button data-tab="map-travel">Map Travel</button>
     <button data-tab="activity">Activity Log</button>
+    <button data-tab="report">Report</button>
     <button data-tab="updates">Updates</button>
   </nav>
+
+  <section id="serialDeliveryPanel" class="serial-delivery-panel hidden" aria-live="polite">
+    <div class="serial-delivery-heading">
+      <strong>Serial Delivery</strong>
+      <span id="serialDeliveryLabel">Idle</span>
+    </div>
+    <div class="progress-track">
+      <div id="serialDeliveryBar" class="progress-bar" style="width: 0%"></div>
+    </div>
+    <div id="serialDeliveryMessage" class="status-line">No active serial delivery.</div>
+    <div id="serialDeliveryMeta" class="muted-line"></div>
+  </section>
 
   <main class="tab-shell">
     <section id="tab-boosting" class="tab-panel active">
@@ -394,7 +407,7 @@
               <input id="bl4DeliveryLevel" type="number" min="1" max="60" value="60">
             </label>
           </div>
-          <div id="bl4DeliveryStatus" class="status-line warning">Validate / Confirm Active before delivery. Delivery sends one active code at a time.</div>
+          <div id="bl4DeliveryStatus" class="status-line warning">Delivery sends checked rows, or the active code if none are checked.</div>
           <div class="button-row wrap">
             <button data-bl4-send-mode="selected">Deliver Selected</button>
             <button data-bl4-send-mode="all">Deliver All</button>
@@ -657,6 +670,53 @@
         <section class="panel cyan">
           <h2>Bridge Raw Status</h2>
           <pre id="statusOutput">Click Refresh Status to check the SDK bridge.</pre>
+        </section>
+      </div>
+    </section>
+
+    <section id="tab-report" class="tab-panel">
+      <div class="grid two">
+        <section class="panel purple">
+          <h2>Beta Bug / Feature Report</h2>
+          <p>Make a clean report for GitHub. Diagnostics are optional and redacted before preview.</p>
+          <label for="reportKind">Report Type</label>
+          <select id="reportKind">
+            <option value="bug">Report Bug</option>
+            <option value="feature">Suggest Feature</option>
+          </select>
+          <label for="reportTitle">Title</label>
+          <input id="reportTitle" type="text" autocomplete="off" placeholder="Short summary">
+          <label for="reportDescription">Description</label>
+          <textarea id="reportDescription" class="output-box small" spellcheck="true" placeholder="What happened or what should be added?"></textarea>
+          <label for="reportSteps">Reproduction Steps</label>
+          <textarea id="reportSteps" class="output-box small" spellcheck="true" placeholder="1.&#10;2.&#10;3."></textarea>
+          <div class="grid two compact">
+            <div>
+              <label for="reportExpected">Expected Behavior</label>
+              <textarea id="reportExpected" class="output-box small" spellcheck="true"></textarea>
+            </div>
+            <div>
+              <label for="reportActual">Actual Behavior</label>
+              <textarea id="reportActual" class="output-box small" spellcheck="true"></textarea>
+            </div>
+          </div>
+          <label for="reportNotes">Optional Notes</label>
+          <textarea id="reportNotes" class="output-box small" spellcheck="true"></textarea>
+          <label class="check-line">
+            <input id="reportIncludeDiagnostics" type="checkbox" checked>
+            Include redacted app and bridge diagnostics
+          </label>
+          <div class="button-row wrap">
+            <button id="reportPreviewBtn">Refresh Preview</button>
+            <button id="reportCopyBtn">Copy Report</button>
+            <button id="reportSaveBtn">Save Report</button>
+            <button id="reportGithubBtn">Open Prefilled GitHub Issue</button>
+          </div>
+          <div id="reportStatus" class="status-line">No report generated yet.</div>
+        </section>
+        <section class="panel cyan">
+          <h2>Preview</h2>
+          <pre id="reportPreview">Fill out the fields, then refresh the preview.</pre>
         </section>
       </div>
     </section>
