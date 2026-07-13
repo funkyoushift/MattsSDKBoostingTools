@@ -546,7 +546,7 @@
     <section id="tab-item-pool" class="tab-panel">
       <section class="panel gold">
         <h2>Item Pool Spawning</h2>
-        <p>Filter item pools, then spawn the selected pool near the local player.</p>
+        <p>Filter item pools, select one or more rows, then spawn the selected pool(s) near the local player.</p>
         <div class="grid three compact">
           <label>
             Search Item Pools
@@ -568,9 +568,9 @@
           </div>
         </div>
         <div id="itempoolSummary" class="status-line">Loading item pools...</div>
-        <select id="itempoolList" class="list-select" size="18"></select>
+        <select id="itempoolList" class="list-select" size="18" multiple></select>
         <div class="button-row wrap">
-          <button id="spawnItempoolBtn">Spawn Selected Item Pool</button>
+          <button id="spawnItempoolBtn">Spawn Selected Item Pool(s)</button>
         </div>
         <pre id="itempoolOutput">No item pool action sent yet.</pre>
       </section>

@@ -265,6 +265,7 @@ const state = {
   serialToolsAutoTimer: null,
   serialToolsRunId: 0,
   selectedItemPool: "",
+  selectedItemPools: new Set(),
   selectedMap: "",
   selectedStation: "",
   selectedTarget: "",
@@ -2151,22 +2152,43 @@ function renderItemPools() {
     return categoryOk && queryOk;
   });
 
-  const previous = state.selectedItemPool;
+  const previous = new Set(state.selectedItemPools);
+  if (state.selectedItemPool) previous.add(state.selectedItemPool);
   els.itempoolList.innerHTML = "";
   state.filteredItemPools.slice(0, 400).forEach((item) => {
     const option = document.createElement("option");
     option.value = item.itempool || "";
     option.textContent = `${itemPoolLabel(item)} | ${item.itempool || ""}`;
-    if (option.value === previous) option.selected = true;
+    if (previous.has(option.value)) option.selected = true;
     els.itempoolList.appendChild(option);
   });
   if (!els.itempoolList.value && els.itempoolList.options.length) {
     els.itempoolList.options[0].selected = true;
-    state.selectedItemPool = els.itempoolList.value;
   }
+  updateSelectedItemPoolsFromList();
+  updateItemPoolSummary();
+}
+
+function selectedItemPoolNames() {
+  const names = Array.from(state.selectedItemPools).filter(Boolean);
+  if (!names.length && getValue(els.itempoolList)) names.push(getValue(els.itempoolList));
+  return Array.from(new Set(names));
+}
+
+function updateSelectedItemPoolsFromList() {
+  const values = Array.from(els.itempoolList.selectedOptions || [])
+    .map((option) => String(option.value || "").trim())
+    .filter(Boolean);
+  state.selectedItemPools = new Set(values);
+  state.selectedItemPool = values[0] || "";
+}
+
+function updateItemPoolSummary() {
+  const selected = selectedItemPoolNames();
+  const selectedLabel = selected.length === 1 ? selected[0] : `${selected.length} selected`;
   setLine(
     els.itempoolSummary,
-    `${state.filteredItemPools.length} shown / ${state.itemPools.length} saved | selected: ${state.selectedItemPool || els.itempoolList.value || "none"}`,
+    `${state.filteredItemPools.length} shown / ${state.itemPools.length} saved | selected: ${selected.length ? selectedLabel : "none"}`,
     state.filteredItemPools.length ? "ok" : "warning"
   );
 }
@@ -2183,16 +2205,31 @@ async function loadItemPools() {
 }
 
 async function spawnItemPool() {
-  const name = state.selectedItemPool || getValue(els.itempoolList);
-  if (!name) {
+  const names = selectedItemPoolNames();
+  if (!names.length) {
     setOutput(els.itempoolOutput, "Select an item pool first.");
     return;
   }
-  await runAction("spawn_itempool", {
-    itempool_name: name,
-    itempool_level: getInt(els.itempoolLevel, 1, 60, 60),
-    itempool_count: getInt(els.itempoolCount, 1, 100, 1)
-  }, els.itempoolOutput, 30000);
+  const level = getInt(els.itempoolLevel, 1, 60, 60);
+  const count = getInt(els.itempoolCount, 1, 100, 1);
+  setOutput(els.itempoolOutput, `Spawning ${names.length} item pool(s)...`);
+
+  const results = [];
+  for (const name of names) {
+    appendActivity(`Sending spawn_itempool for ${name}...`);
+    const result = await bridgeAction("spawn_itempool", {
+      itempool_name: name,
+      itempool_level: level,
+      itempool_count: count
+    }, 30000);
+    results.push({ itempool: name, result });
+    appendActivity(`spawn_itempool ${name}: ${resultMessage(result)}`);
+  }
+  setOutput(els.itempoolOutput, {
+    ok: results.every(({ result }) => actionSucceeded(result)),
+    message: `Finished ${results.length} item pool spawn request(s).`,
+    results
+  });
 }
 
 function mapLabel(map) {
@@ -3602,8 +3639,8 @@ function wireEvents() {
   els.itempoolSearch.addEventListener("input", renderItemPools);
   els.itempoolCategory.addEventListener("change", renderItemPools);
   els.itempoolList.addEventListener("change", () => {
-    state.selectedItemPool = getValue(els.itempoolList);
-    renderItemPools();
+    updateSelectedItemPoolsFromList();
+    updateItemPoolSummary();
   });
   document.getElementById("spawnItempoolBtn").addEventListener("click", spawnItemPool);
 
