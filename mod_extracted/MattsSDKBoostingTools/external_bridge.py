@@ -134,7 +134,10 @@ UI_LAYOUT: dict[str, Any] = {
                 {"id":"max_sdu","label":"Max SDU for Selected","accent":"cyan"},
                 {"id":"open_golden_chest","label":"Open Golden Chest","accent":"gold"},
                 {"id":"close_golden_chest","label":"Close Golden Chest","accent":"red"},
-                {"id":"drop_all_shinies","label":"Drop All Shinies","accent":"gold"}
+                {"id":"drop_all_shinies","label":"Drop All Shinies","accent":"gold"},
+                {"id":"shiny_selected","label":"Shiny Selected","accent":"purple"},
+                {"id":"shiny_all","label":"Shiny All","accent":"gold"},
+                {"id":"shiny_nonhost","label":"Shiny Non-Host","accent":"cyan"}
             ]}
         ]},
         {"id":"serial_tools","label":"Serial Tools","cards":[
@@ -397,6 +400,12 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
         return backend_actions.close_golden_chest()
     if action == "drop_all_shinies":
         return backend_actions.drop_all_shinies_selected()
+    if action == "shiny_selected":
+        return backend_actions.deliver_shinies("selected")
+    if action == "shiny_all":
+        return backend_actions.deliver_shinies("all")
+    if action == "shiny_nonhost":
+        return backend_actions.deliver_shinies("nonhost")
     if action == "set_backpack_bank_selected":
         return backend_actions.set_inventory_sizes_selected(
             payload.get("backpack_size") or 1000,

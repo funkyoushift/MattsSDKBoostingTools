@@ -13,6 +13,9 @@ MAX_ITEM_LEVEL = 999999
 DEFAULT_ITEM_LEVEL = 60
 SPAWN_FORWARD_OFFSET = 90.0
 SPAWN_HEIGHT_OFFSET = 45.0
+SPAWN_GRID_COLUMNS = 10
+SPAWN_SIDE_SPACING = 95.0
+SPAWN_ROW_SPACING = 80.0
 
 SHINY_ITEMPOOLS: tuple[str, ...] = (
     "itempool_bor_sg_05_legendary_convergence_shiny",
@@ -210,13 +213,20 @@ def _get_player_pose(pc: UObject) -> tuple[Any, Any] | None:
     return pawn.K2_GetActorLocation(), pawn.K2_GetActorRotation()
 
 
-def _spawn_pose(player_location: Any, player_rotation: Any, _index: int) -> tuple[Any, Any]:
+def _spawn_pose(player_location: Any, player_rotation: Any, index: int) -> tuple[Any, Any]:
     yaw_rad = math.radians(player_rotation.Yaw)
     forward_x = math.cos(yaw_rad)
     forward_y = math.sin(yaw_rad)
+    right_x = -forward_y
+    right_y = forward_x
 
-    new_x = player_location.X + forward_x * SPAWN_FORWARD_OFFSET
-    new_y = player_location.Y + forward_y * SPAWN_FORWARD_OFFSET
+    column = int(index) % SPAWN_GRID_COLUMNS
+    row = int(index) // SPAWN_GRID_COLUMNS
+    side_offset = (column - ((SPAWN_GRID_COLUMNS - 1) / 2.0)) * SPAWN_SIDE_SPACING
+    forward_offset = SPAWN_FORWARD_OFFSET + (row * SPAWN_ROW_SPACING)
+
+    new_x = player_location.X + forward_x * forward_offset + right_x * side_offset
+    new_y = player_location.Y + forward_y * forward_offset + right_y * side_offset
     new_z = player_location.Z + SPAWN_HEIGHT_OFFSET
     location = _make_vector(new_x, new_y, new_z)
 
@@ -256,8 +266,13 @@ def _spawn_all_shinies(level: int, pools: Sequence[str] = SHINY_ITEMPOOLS) -> No
     spawned = 0
     failed: list[str] = []
 
-    _log_info(f"Spawning {len(pools)} shiny itempools at level {level}.")
-    for index, pool_name in enumerate(pools):
+    unique_pools = tuple(dict.fromkeys(str(pool) for pool in pools if str(pool).strip()))
+    duplicate_count = len(pools) - len(unique_pools)
+    if duplicate_count:
+        _log_info(f"Skipped {duplicate_count} duplicate shiny itempool entries.")
+
+    _log_info(f"Spawning {len(unique_pools)} shiny itempools at level {level}.")
+    for index, pool_name in enumerate(unique_pools):
         location, rotation = _spawn_pose(player_location, player_rotation, index)
         try:
             _spawn_pool(config, world, transform, level, pool_name, location, rotation)
@@ -267,7 +282,7 @@ def _spawn_all_shinies(level: int, pools: Sequence[str] = SHINY_ITEMPOOLS) -> No
             _log_warning(f"Failed to spawn {pool_name}: {exc}")
 
     if failed:
-        _log_warning(f"Spawned {spawned}/{len(pools)} shiny itempools. Failed: {', '.join(failed)}")
+        _log_warning(f"Spawned {spawned}/{len(unique_pools)} shiny itempools. Failed: {', '.join(failed)}")
     else:
         _log_info(f"Spawned all {spawned} shiny itempools.")
 

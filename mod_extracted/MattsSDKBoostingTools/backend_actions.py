@@ -8,6 +8,8 @@ from __future__ import annotations
 import argparse
 import importlib
 import importlib.util
+import json
+import pkgutil
 import re
 import sys
 from typing import Any
@@ -660,6 +662,36 @@ def drop_all_shinies_selected() -> dict[str, Any]:
         return {"ok": True, "message": "Drop All Shinies requested."}
     except Exception as exc:
         return {"ok": False, "message": f"Drop All Shinies failed: {exc!r}"}
+
+
+def _load_shiny_serials() -> list[str]:
+    package_name = __package__ or __name__.rpartition(".")[0]
+    blob = pkgutil.get_data(package_name, "shiny_serials.json")
+    if blob is None:
+        raise RuntimeError("Could not load shiny_serials.json from the mod package data.")
+    data = json.loads(blob.decode("utf-8"))
+    if not isinstance(data, list):
+        raise RuntimeError("shiny_serials.json must contain a JSON list.")
+
+    serials: list[str] = []
+    for entry in data:
+        if not isinstance(entry, dict):
+            continue
+        serial = str(entry.get("serial", "")).strip()
+        if serial:
+            serials.append(serial)
+    if not serials:
+        raise RuntimeError("No serial values found in shiny_serials.json.")
+    return serials
+
+
+def deliver_shinies(mode: str = "selected") -> dict[str, Any]:
+    try:
+        raw_serials = _load_shiny_serials()
+        serials = serial_rewards._resolve_give_serial_strings(raw_serials)
+        return _deliver_serials_with_target(serials, mode, parsed_count=len(raw_serials))
+    except Exception as exc:
+        return {"ok": False, "message": f"Shiny reward delivery failed: {exc!r}"}
 
 
 def open_bank_anywhere() -> dict[str, Any]:

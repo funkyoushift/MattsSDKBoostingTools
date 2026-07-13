@@ -764,7 +764,9 @@ ipcMain.handle("app:checkUpdates", async () => {
       installedSdkmod: versionInfo.installedSdkmod,
       updater,
       updateAvailable: Boolean(remoteVersion && localVersion && remoteVersion !== localVersion),
-      latestUrl: remote.download_url || "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest"
+      latestUrl: remote.electron_installer_download_url || remote.download_url || "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest",
+      electronInstallerUrl: remote.electron_installer_download_url || "",
+      manualZipUrl: remote.manual_zip_download_url || remote.download_url || ""
     };
   } catch (error) {
     return {
@@ -781,6 +783,8 @@ ipcMain.handle("app:checkUpdates", async () => {
       updater: latestUpdateState,
       updateAvailable: false,
       latestUrl: "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest",
+      electronInstallerUrl: "",
+      manualZipUrl: "",
       message: String(error && error.message ? error.message : error)
     };
   }

@@ -113,6 +113,7 @@ const els = {
   movementIndividualJumpGoals: document.getElementById("movementIndividualJumpGoals"),
   movementJumpHeight: document.getElementById("movementJumpHeight"),
   movementOutput: document.getElementById("movementOutput"),
+  movementSlideJumpGoal: document.getElementById("movementSlideJumpGoal"),
   movementSpeedScale: document.getElementById("movementSpeedScale"),
   movementSprintJumpGoal: document.getElementById("movementSprintJumpGoal"),
   movementStatus: document.getElementById("movementStatus"),
@@ -252,7 +253,9 @@ const state = {
   filteredMaps: [],
   filteredStations: [],
   itemPools: [],
+  latestInstallerUrl: "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest",
   latestDownloadUrl: "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT_External_Beta.zip",
+  manualZipDownloadUrl: "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT_External_Beta.zip",
   latestUpdateState: null,
   players: [],
   reportPreviewText: "",
@@ -368,6 +371,44 @@ function inventoryPayload(enabled = true) {
   };
 }
 
+const MOVEMENT_DEFAULTS = {
+  speedScale: "1.00",
+  walkSpeed: "600",
+  jumpHeight: "198",
+  gravityScale: "1.00",
+  stepHeight: "45",
+  floorAngle: "44.8",
+  floorZ: "0.71",
+  sprintJumpGoal: "198",
+  doubleJumpGoal: "198",
+  slideJumpGoal: "198",
+  glideSpeed: "1200",
+  glideBoost: "0",
+  glideAirControl: "0.60",
+  dashSpeed: "2500",
+  timeDilation: "1.00"
+};
+
+function resetMovementControlsToDefaults() {
+  setTextValue(els.movementSpeedScale, MOVEMENT_DEFAULTS.speedScale);
+  setTextValue(els.movementWalkSpeed, MOVEMENT_DEFAULTS.walkSpeed);
+  setTextValue(els.movementJumpHeight, MOVEMENT_DEFAULTS.jumpHeight);
+  setTextValue(els.movementGravityScale, MOVEMENT_DEFAULTS.gravityScale);
+  setTextValue(els.movementStepHeight, MOVEMENT_DEFAULTS.stepHeight);
+  setTextValue(els.movementFloorAngle, MOVEMENT_DEFAULTS.floorAngle);
+  setTextValue(els.movementFloorZ, MOVEMENT_DEFAULTS.floorZ);
+  setTextValue(els.movementSprintJumpGoal, MOVEMENT_DEFAULTS.sprintJumpGoal);
+  setTextValue(els.movementDoubleJumpGoal, MOVEMENT_DEFAULTS.doubleJumpGoal);
+  setTextValue(els.movementSlideJumpGoal, MOVEMENT_DEFAULTS.slideJumpGoal);
+  setTextValue(els.movementGlideSpeed, MOVEMENT_DEFAULTS.glideSpeed);
+  setTextValue(els.movementGlideBoost, MOVEMENT_DEFAULTS.glideBoost);
+  setTextValue(els.movementGlideAirControl, MOVEMENT_DEFAULTS.glideAirControl);
+  setTextValue(els.movementDashSpeed, MOVEMENT_DEFAULTS.dashSpeed);
+  setTextValue(els.movementTimeDilation, MOVEMENT_DEFAULTS.timeDilation);
+  if (els.movementIndividualJumpGoals) els.movementIndividualJumpGoals.checked = false;
+  if (els.movementZeroVaultOnApply) els.movementZeroVaultOnApply.checked = false;
+}
+
 function movementPayload() {
   const jumpGoal = getFloat(els.movementJumpHeight, 0, 10000, 198);
   const selectedTarget = getValue(els.movementTargetSelect) || state.selectedTarget;
@@ -398,6 +439,9 @@ function movementPayload() {
 }
 
 async function runMovementAction(action, extraPayload = {}) {
+  if (action === "movement_reset_all") {
+    resetMovementControlsToDefaults();
+  }
   const payload = { ...movementPayload(), ...extraPayload };
   setLine(els.movementStatus, `Sending ${action}...`, "warning");
   const result = await runAction(action, payload, els.movementOutput, 30000);
@@ -1925,7 +1969,9 @@ async function checkUpdates() {
   await refreshVersionInfo();
   const result = await window.msbt.checkUpdates();
   setOutput(els.updateOutput, result);
-  state.latestDownloadUrl = result.latestUrl || state.latestDownloadUrl;
+  state.latestInstallerUrl = result.electronInstallerUrl || result.latestUrl || state.latestInstallerUrl;
+  state.latestDownloadUrl = state.latestInstallerUrl;
+  state.manualZipDownloadUrl = result.manualZipUrl || result.remote && result.remote.manual_zip_download_url || state.manualZipDownloadUrl;
   renderVersionInfo(result);
   if (result.updater) renderUpdateState(result.updater);
   if (!result.ok) {
@@ -3526,6 +3572,8 @@ function wireEvents() {
     });
   });
   document.getElementById("downloadBtn").addEventListener("click", () => window.msbt.openExternal(state.latestDownloadUrl));
+  const manualZipBtn = document.getElementById("manualZipBtn");
+  if (manualZipBtn) manualZipBtn.addEventListener("click", () => window.msbt.openExternal(state.manualZipDownloadUrl));
   const detectSdkModsBtn = document.getElementById("detectSdkModsBtn");
   if (detectSdkModsBtn) detectSdkModsBtn.addEventListener("click", detectSdkModsFolder);
   const browseSdkModsBtn = document.getElementById("browseSdkModsBtn");
