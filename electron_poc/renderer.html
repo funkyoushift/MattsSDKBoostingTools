@@ -30,6 +30,7 @@
     <button data-tab="item-pool">Item Pool Spawning</button>
     <button data-tab="dev-spawner">Dev Spawner</button>
     <button data-tab="map-travel">Map Travel</button>
+    <button data-tab="player-movement">Player Movement</button>
     <button data-tab="activity">Activity Log</button>
     <button data-tab="report">Report</button>
     <button data-tab="updates">Updates</button>
@@ -181,6 +182,62 @@
           </div>
         </section>
       </div>
+
+      <section class="panel purple">
+        <h2>Rarity Drop Weights</h2>
+        <p>Control drop-weight multipliers from GameState.RarityState. 100% is vanilla weight, 50% is half weight, and 0% removes that rarity from the drop pool.</p>
+        <div class="rarity-grid">
+          <label>
+            Common Weight
+            <div class="range-row">
+              <input id="rarityCommonPercent" type="range" min="0" max="100" value="100">
+              <output id="rarityCommonValue">100%</output>
+            </div>
+          </label>
+          <label>
+            Uncommon Weight
+            <div class="range-row">
+              <input id="rarityUncommonPercent" type="range" min="0" max="100" value="100">
+              <output id="rarityUncommonValue">100%</output>
+            </div>
+          </label>
+          <label>
+            Rare Weight
+            <div class="range-row">
+              <input id="rarityRarePercent" type="range" min="0" max="100" value="100">
+              <output id="rarityRareValue">100%</output>
+            </div>
+          </label>
+          <label>
+            Epic Weight
+            <div class="range-row">
+              <input id="rarityEpicPercent" type="range" min="0" max="100" value="100">
+              <output id="rarityEpicValue">100%</output>
+            </div>
+          </label>
+          <label>
+            Legendary Weight
+            <div class="range-row">
+              <input id="rarityLegendaryPercent" type="range" min="0" max="100" value="100">
+              <output id="rarityLegendaryValue">100%</output>
+            </div>
+          </label>
+          <label>
+            Pearlescent Weight
+            <div class="range-row">
+              <input id="rarityPearlescentPercent" type="range" min="0" max="100" value="100">
+              <output id="rarityPearlescentValue">100%</output>
+            </div>
+          </label>
+        </div>
+        <div class="button-row wrap">
+          <button data-rarity-action="rarity_apply">Apply</button>
+          <button data-rarity-action="rarity_reset">Reset All</button>
+          <button data-rarity-action="rarity_only_legendary">Only Legendary</button>
+          <button data-rarity-action="rarity_only_pearlescent">Only Pearlescent</button>
+        </div>
+        <div id="rarityStatus" class="status-line warning">Adjust weights, then Apply. Reapply after travel if drops reset.</div>
+      </section>
 
       <section class="panel">
         <h2>Boosting Result</h2>
@@ -564,6 +621,31 @@
         </div>
       </section>
 
+      <section class="panel purple">
+        <h2>Setup / Inspect</h2>
+        <p>Non-spawn checks and cache helpers. These use the same MSBT bridge path and read the SDK log after each command.</p>
+        <div class="button-row wrap">
+          <button data-dev-spawner-action="dev_spawner_status">ASD Status</button>
+          <button data-dev-spawner-action="dev_spawner_cache_status">Cache Status</button>
+          <button data-dev-spawner-action="dev_spawner_spawnerdiag">Spawner Diagnostics</button>
+          <button data-dev-spawner-action="dev_spawner_targets">List Targets</button>
+          <button data-dev-spawner-action="dev_spawner_probeai">Probe AI</button>
+          <button data-dev-spawner-action="dev_spawner_cache">Cache Live Actor</button>
+        </div>
+        <details class="dev-fold">
+          <summary>Advanced Actions</summary>
+          <p class="dev-hint">These can change or inspect spawned actors. Use them only after a simple spawn or target check succeeds.</p>
+          <div class="button-row wrap">
+            <button data-dev-spawner-action="dev_spawner_spawn">Spawn Template</button>
+            <button data-dev-spawner-action="dev_spawner_lostloot">Spawn Lost Loot</button>
+            <button data-dev-spawner-action="dev_spawner_activate_last">Activate Last</button>
+            <button data-dev-spawner-action="dev_spawner_scriptdump">Script Dump Last</button>
+            <button data-dev-spawner-action="dev_spawner_logo_options">Logo Options</button>
+            <button data-dev-spawner-action="dev_spawner_clear">Clear ASD Spawns</button>
+          </div>
+        </details>
+      </section>
+
       <section class="panel cyan">
         <h2>Actor Browser</h2>
         <div class="grid two compact">
@@ -621,6 +703,45 @@
         </details>
       </section>
 
+      <section class="panel gold">
+        <h2>Barrel Logo Generator</h2>
+        <p>Source-menu workflow for ASD_barrellogo. Each line becomes one row; live spawning still goes through ActorScriptDeployer.</p>
+        <label>
+          Logo Text
+          <textarea id="devLogoText" class="output-box small" placeholder="MSBT&#10;BOOSTING&#10;TOOLS"></textarea>
+        </label>
+        <div class="grid five compact">
+          <label>
+            Actor
+            <input id="devLogoActor" type="text" value="barrel" autocomplete="off" spellcheck="false">
+          </label>
+          <label>
+            Distance
+            <input id="devLogoDistance" type="number" min="0" max="30000" value="2500">
+          </label>
+          <label>
+            Height
+            <input id="devLogoHeight" type="number" min="0" max="10000" value="750">
+          </label>
+          <label>
+            Spacing
+            <input id="devLogoSpacing" type="number" min="1" max="1000" value="70">
+          </label>
+          <label>
+            Scale
+            <input id="devLogoScale" type="number" min="0.01" max="20" step="0.01" value="0.45">
+          </label>
+        </div>
+        <label class="inline-check">
+          <input id="devLogoIncludeNonGenerated" type="checkbox">
+          Include Non-Generated
+        </label>
+        <div class="button-row wrap">
+          <button data-dev-spawner-action="dev_spawner_barrel_logo">Run Barrel Logo</button>
+          <button id="devLogoUseSelectedBtn">Use Selected Actor</button>
+        </div>
+      </section>
+
       <section class="panel">
         <h2>Dev Spawner Result</h2>
         <pre id="devSpawnerOutput">No Dev Spawner action sent yet.</pre>
@@ -653,6 +774,155 @@
           </div>
         </div>
         <pre id="travelOutput">No travel action sent yet.</pre>
+      </section>
+    </section>
+
+    <section id="tab-player-movement" class="tab-panel">
+      <section class="panel green">
+        <h2>Presets / Save / Apply</h2>
+        <p>UI-only controls. Apply Now sends the visible movement values through the SDK bridge.</p>
+        <div class="button-row wrap">
+          <button data-movement-action="movement_apply_all">Apply Now</button>
+          <button data-movement-action="movement_reset_all">Reset Defaults</button>
+          <button data-movement-action="movement_preset_fast">Fast</button>
+          <button data-movement-action="movement_preset_veryfast">Very Fast</button>
+          <button data-movement-action="movement_preset_moon">Moon</button>
+          <button data-movement-action="movement_preset_wallwalk">Wall Walk</button>
+          <button data-movement-action="movement_preset_fastglide">Fast Glide</button>
+        </div>
+        <div id="movementStatus" class="status-line warning">Movement actions use the SDK bridge. Apply Now uses the values below.</div>
+      </section>
+
+      <div class="grid three">
+        <section class="panel cyan">
+          <h2>Speed</h2>
+          <label for="movementSpeedScale">Speed Scale</label>
+          <input id="movementSpeedScale" type="number" min="0.05" max="25" step="0.05" value="1">
+          <label for="movementWalkSpeed">Walk / Ground Speed</label>
+          <input id="movementWalkSpeed" type="number" min="50" max="10000" step="1" value="600">
+          <div class="button-row wrap">
+            <button data-movement-action="movement_apply_all">Apply Movement Settings</button>
+          </div>
+        </section>
+
+        <section class="panel purple">
+          <h2>Jump / Gravity</h2>
+          <label for="movementJumpHeight">Master JumpGoal Height</label>
+          <input id="movementJumpHeight" type="number" min="0" max="10000" step="1" value="198">
+          <label class="checkbox-row">
+            <input id="movementIndividualJumpGoals" type="checkbox">
+            Set individual jump goals
+          </label>
+          <div class="grid three compact">
+            <label>
+              SprintJump
+              <input id="movementSprintJumpGoal" type="number" min="0" max="10000" step="1" value="198">
+            </label>
+            <label>
+              DoubleJump
+              <input id="movementDoubleJumpGoal" type="number" min="0" max="10000" step="1" value="198">
+            </label>
+            <label>
+              SlideJump
+              <input id="movementSlideJumpGoal" type="number" min="0" max="10000" step="1" value="198">
+            </label>
+          </div>
+          <label for="movementGravityScale">Gravity Scale</label>
+          <input id="movementGravityScale" type="number" min="0" max="10" step="0.01" value="1">
+        </section>
+
+        <section class="panel green">
+          <h2>Infinite Jump</h2>
+          <p>Enable per player. All ON applies to every current party player.</p>
+          <div class="button-row wrap">
+            <button data-movement-action="movement_infinite_jump_all_on">All ON</button>
+            <button data-movement-action="movement_infinite_jump_all_off" class="danger">All OFF</button>
+          </div>
+          <label for="movementTargetSelect">Player</label>
+          <select id="movementTargetSelect">
+            <option value="">No players loaded</option>
+          </select>
+          <div class="button-row wrap">
+            <button data-movement-action="movement_infinite_jump_selected_on">Selected ON</button>
+            <button data-movement-action="movement_infinite_jump_selected_off" class="danger">Selected OFF</button>
+            <button data-movement-action="movement_infinite_jump_toggle_selected">Toggle Selected</button>
+          </div>
+        </section>
+      </div>
+
+      <div class="grid three">
+        <section class="panel gold">
+          <h2>Wall / Step</h2>
+          <label for="movementStepHeight">Max Step Height</label>
+          <input id="movementStepHeight" type="number" min="0" max="1000" step="1" value="45">
+          <label for="movementFloorAngle">Walkable Floor Angle</label>
+          <input id="movementFloorAngle" type="number" min="0" max="89.9" step="0.1" value="44.8">
+          <label for="movementFloorZ">Walkable Floor Z</label>
+          <input id="movementFloorZ" type="number" min="0" max="1" step="0.01" value="0.71">
+          <div class="button-row wrap">
+            <button data-movement-action="movement_apply_all">Apply Wall / Step</button>
+          </div>
+        </section>
+
+        <section class="panel cyan">
+          <h2>Glide / Dash / Vault</h2>
+          <div class="grid two compact">
+            <label>
+              Gliding Speed
+              <input id="movementGlideSpeed" type="number" min="0" max="20000" step="1" value="1200">
+            </label>
+            <label>
+              Gliding Boost
+              <input id="movementGlideBoost" type="number" min="0" max="20000" step="1" value="0">
+            </label>
+            <label>
+              Gliding Air Control
+              <input id="movementGlideAirControl" type="number" min="0" max="20" step="0.01" value="0.6">
+            </label>
+            <label>
+              Dash Speed
+              <input id="movementDashSpeed" type="number" min="0" max="50000" step="1" value="2500">
+            </label>
+          </div>
+          <label class="checkbox-row">
+            <input id="movementZeroVaultOnApply" type="checkbox">
+            Set vault power costs to 0 on apply
+          </label>
+          <div class="button-row wrap">
+            <button data-movement-action="movement_apply_all">Apply Glide / Dash</button>
+            <button data-movement-action="movement_zero_vault">Zero Vault Cooldown</button>
+          </div>
+        </section>
+
+        <section class="panel purple">
+          <h2>World / Utility</h2>
+          <label for="movementTimeDilation">Time Dilation</label>
+          <input id="movementTimeDilation" type="number" min="0.01" max="64" step="0.01" value="1">
+          <div class="button-grid">
+            <button data-movement-action="movement_set_time">Set Time</button>
+            <button data-movement-action="movement_reset_time">Reset Time</button>
+            <button data-movement-action="movement_players_only">Players Only</button>
+            <button data-movement-action="movement_toggle_no_target">Toggle No Target</button>
+            <button data-movement-action="movement_toggle_noclip">Toggle Noclip</button>
+            <button data-movement-action="movement_delete_ground_items" class="danger">Delete Ground Items</button>
+          </div>
+        </section>
+      </div>
+
+      <section class="panel cyan">
+        <h2>Teleport Selected Player</h2>
+        <p>Teleports the selected target player to the selected party slot pawn.</p>
+        <div class="button-row wrap">
+          <button data-movement-teleport-slot="0">To P1</button>
+          <button data-movement-teleport-slot="1">To P2</button>
+          <button data-movement-teleport-slot="2">To P3</button>
+          <button data-movement-teleport-slot="3">To P4</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Player Movement Result</h2>
+        <pre id="movementOutput">No movement action sent yet.</pre>
       </section>
     </section>
 

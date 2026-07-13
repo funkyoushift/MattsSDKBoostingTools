@@ -10,6 +10,7 @@ $ErrorActionPreference = "Stop"
 $RepoRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $ZipPath = Join-Path $RepoRoot "MSBT_External_Beta.zip"
 $ManifestPath = Join-Path $RepoRoot "releases\latest.json"
+$ElectronDist = Join-Path $RepoRoot "dist_electron"
 
 function Write-Utf8NoBom {
     param(
@@ -26,6 +27,28 @@ if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
 
 if (-not (Test-Path $ZipPath)) {
     throw "Beta ZIP not found: $ZipPath. Run .\build_external_exe.ps1 and .\package_external_beta.ps1 first."
+}
+
+$ElectronInstaller = $null
+if (Test-Path $ElectronDist) {
+    $ElectronInstaller = Get-ChildItem -Path $ElectronDist -Filter "MattsSDKBoostingTools-Electron-Beta-Installer-*-x64.exe" -File -ErrorAction SilentlyContinue |
+        Sort-Object LastWriteTimeUtc -Descending |
+        Select-Object -First 1
+}
+
+$ElectronAssets = @()
+if ($ElectronInstaller) {
+    $ElectronAssets += $ElectronInstaller.FullName
+    $blockMap = "$($ElectronInstaller.FullName).blockmap"
+    if (Test-Path $blockMap) {
+        $ElectronAssets += $blockMap
+    }
+    $latestYml = Join-Path $ElectronDist "latest.yml"
+    if (Test-Path $latestYml) {
+        $ElectronAssets += $latestYml
+    }
+} else {
+    Write-Warning "Electron installer not found in dist_electron. The release will only upload the legacy ZIP."
 }
 
 $shortCommit = ""
@@ -60,7 +83,13 @@ Matt's SDK Boosting Tools external beta package.
 Requires SDK 03 / oak2-mod-manager v0.3:
 https://github.com/bl-sdk/oak2-mod-manager/releases/tag/v0.3
 
-Download MSBT_External_Beta.zip from this release, extract it, then copy the SDK mod and external app folder into your Borderlands 4 sdk_mods folder.
+Recommended download:
+- MattsSDKBoostingTools-Electron-Beta-Installer-*.exe
+
+Manual ZIP option:
+- MSBT_External_Beta.zip
+
+The ZIP can be extracted, then the SDK mod and external app folder can be copied into your Borderlands 4 sdk_mods folder.
 "@
 
 $NotesPath = Join-Path ([System.IO.Path]::GetTempPath()) "msbt_release_notes_$TagName.md"
@@ -73,16 +102,18 @@ if ($LASTEXITCODE -eq 0) {
 }
 
 if ($releaseExists) {
-    & gh release upload $TagName $ZipPath --repo $Repository --clobber
+    $assets = @($ZipPath) + $ElectronAssets
+    & gh release upload $TagName @assets --repo $Repository --clobber
     if ($LASTEXITCODE -ne 0) {
-        throw "Failed to upload ZIP to existing GitHub Release $TagName."
+        throw "Failed to upload assets to existing GitHub Release $TagName."
     }
     & gh release edit $TagName --repo $Repository --title $Title --notes-file $NotesPath --latest
     if ($LASTEXITCODE -ne 0) {
         throw "Failed to update GitHub Release $TagName metadata."
     }
 } else {
-    $ghArgs = @("release", "create", $TagName, $ZipPath, "--repo", $Repository, "--title", $Title, "--notes-file", $NotesPath, "--latest")
+    $assets = @($ZipPath) + $ElectronAssets
+    $ghArgs = @("release", "create", $TagName) + $assets + @("--repo", $Repository, "--title", $Title, "--notes-file", $NotesPath, "--latest")
     if ($Draft) {
         $ghArgs += "--draft"
     }
@@ -92,5 +123,5 @@ if ($releaseExists) {
     }
 }
 
-Write-Host "Published beta ZIP to GitHub Release:"
+Write-Host "Published beta assets to GitHub Release:"
 Write-Host "https://github.com/$Repository/releases/tag/$TagName"

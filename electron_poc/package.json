@@ -1,6 +1,6 @@
 {
   "name": "matts-sdk-boosting-tools-electron-beta",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "private": true,
   "description": "Electron beta shell for Matt's SDK Boosting Tools.",
   "author": "FunkYouSHiFT",
@@ -16,7 +16,7 @@
     "appId": "com.funkyoushift.msbt.electronbeta",
     "productName": "Matt's SDK Boosting Tools",
     "executableName": "MattsSDKBoostingTools",
-    "artifactName": "MSBT-Electron-Beta-${version}-${arch}.${ext}",
+    "artifactName": "MattsSDKBoostingTools-Electron-Beta-Installer-${version}-${arch}.${ext}",
     "directories": {
       "output": "../dist_electron"
     },

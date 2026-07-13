@@ -69,6 +69,14 @@ const els = {
   devAiLimit: document.getElementById("devAiLimit"),
   devAiLoad: document.getElementById("devAiLoad"),
   devAiName: document.getElementById("devAiName"),
+  devLogoActor: document.getElementById("devLogoActor"),
+  devLogoDistance: document.getElementById("devLogoDistance"),
+  devLogoHeight: document.getElementById("devLogoHeight"),
+  devLogoIncludeNonGenerated: document.getElementById("devLogoIncludeNonGenerated"),
+  devLogoScale: document.getElementById("devLogoScale"),
+  devLogoSpacing: document.getElementById("devLogoSpacing"),
+  devLogoText: document.getElementById("devLogoText"),
+  devLogoUseSelectedBtn: document.getElementById("devLogoUseSelectedBtn"),
   devMyFavoriteAddBtn: document.getElementById("devMyFavoriteAddBtn"),
   devMyFavoriteRemoveBtn: document.getElementById("devMyFavoriteRemoveBtn"),
   devMyFavoriteRows: document.getElementById("devMyFavoriteRows"),
@@ -94,6 +102,38 @@ const els = {
   inventoryStatus: document.getElementById("inventoryStatus"),
   installedSdkPath: document.getElementById("installedSdkPath"),
   installedSdkStatus: document.getElementById("installedSdkStatus"),
+  movementDashSpeed: document.getElementById("movementDashSpeed"),
+  movementDoubleJumpGoal: document.getElementById("movementDoubleJumpGoal"),
+  movementFloorAngle: document.getElementById("movementFloorAngle"),
+  movementFloorZ: document.getElementById("movementFloorZ"),
+  movementGlideAirControl: document.getElementById("movementGlideAirControl"),
+  movementGlideBoost: document.getElementById("movementGlideBoost"),
+  movementGlideSpeed: document.getElementById("movementGlideSpeed"),
+  movementGravityScale: document.getElementById("movementGravityScale"),
+  movementIndividualJumpGoals: document.getElementById("movementIndividualJumpGoals"),
+  movementJumpHeight: document.getElementById("movementJumpHeight"),
+  movementOutput: document.getElementById("movementOutput"),
+  movementSpeedScale: document.getElementById("movementSpeedScale"),
+  movementSprintJumpGoal: document.getElementById("movementSprintJumpGoal"),
+  movementStatus: document.getElementById("movementStatus"),
+  movementStepHeight: document.getElementById("movementStepHeight"),
+  movementTargetSelect: document.getElementById("movementTargetSelect"),
+  movementTimeDilation: document.getElementById("movementTimeDilation"),
+  movementWalkSpeed: document.getElementById("movementWalkSpeed"),
+  movementZeroVaultOnApply: document.getElementById("movementZeroVaultOnApply"),
+  rarityCommonPercent: document.getElementById("rarityCommonPercent"),
+  rarityCommonValue: document.getElementById("rarityCommonValue"),
+  rarityEpicPercent: document.getElementById("rarityEpicPercent"),
+  rarityEpicValue: document.getElementById("rarityEpicValue"),
+  rarityLegendaryPercent: document.getElementById("rarityLegendaryPercent"),
+  rarityLegendaryValue: document.getElementById("rarityLegendaryValue"),
+  rarityPearlescentPercent: document.getElementById("rarityPearlescentPercent"),
+  rarityPearlescentValue: document.getElementById("rarityPearlescentValue"),
+  rarityRarePercent: document.getElementById("rarityRarePercent"),
+  rarityRareValue: document.getElementById("rarityRareValue"),
+  rarityStatus: document.getElementById("rarityStatus"),
+  rarityUncommonPercent: document.getElementById("rarityUncommonPercent"),
+  rarityUncommonValue: document.getElementById("rarityUncommonValue"),
   reportActual: document.getElementById("reportActual"),
   reportCopyBtn: document.getElementById("reportCopyBtn"),
   reportDescription: document.getElementById("reportDescription"),
@@ -219,6 +259,8 @@ const state = {
   serialDeliveryIdlePolls: 0,
   serialDeliveryLastMessage: "",
   serialDeliveryTimer: null,
+  serialToolsAutoTimer: null,
+  serialToolsRunId: 0,
   selectedItemPool: "",
   selectedMap: "",
   selectedStation: "",
@@ -324,6 +366,96 @@ function inventoryPayload(enabled = true) {
     backpack_size: getInt(els.backpackSize, 1, 999999, 999),
     bank_size: getInt(els.bankSize, 1, 999999, 1500)
   };
+}
+
+function movementPayload() {
+  const jumpGoal = getFloat(els.movementJumpHeight, 0, 10000, 198);
+  const selectedTarget = getValue(els.movementTargetSelect) || state.selectedTarget;
+  return {
+    movement_speed_scale: getFloat(els.movementSpeedScale, 0.05, 25, 1),
+    movement_walk_speed: getFloat(els.movementWalkSpeed, 50, 10000, 600),
+    movement_jump_height: jumpGoal,
+    movement_jump_velocity: jumpGoal,
+    movement_gravity_scale: getFloat(els.movementGravityScale, 0, 10, 1),
+    movement_step_height: getFloat(els.movementStepHeight, 0, 1000, 45),
+    movement_jump_count: 2,
+    movement_jump_off_z_factor: 0.5,
+    movement_floor_angle: getFloat(els.movementFloorAngle, 0, 89.9, 44.8),
+    movement_floor_z: getFloat(els.movementFloorZ, 0, 1, 0.71),
+    movement_individual_jump_goals: Boolean(els.movementIndividualJumpGoals && els.movementIndividualJumpGoals.checked),
+    movement_sprint_jump_goal: getFloat(els.movementSprintJumpGoal, 0, 10000, jumpGoal),
+    movement_double_jump_goal: getFloat(els.movementDoubleJumpGoal, 0, 10000, jumpGoal),
+    movement_slide_jump_goal: getFloat(els.movementSlideJumpGoal, 0, 10000, jumpGoal),
+    movement_glide_speed: getFloat(els.movementGlideSpeed, 0, 20000, 1200),
+    movement_glide_boost: getFloat(els.movementGlideBoost, 0, 20000, 0),
+    movement_glide_air_control: getFloat(els.movementGlideAirControl, 0, 20, 0.6),
+    movement_dash_speed: getFloat(els.movementDashSpeed, 0, 50000, 2500),
+    movement_zero_vault_on_apply: Boolean(els.movementZeroVaultOnApply && els.movementZeroVaultOnApply.checked),
+    movement_time_dilation: getFloat(els.movementTimeDilation, 0.01, 64, 1),
+    target_player: selectedTarget,
+    infinite_jump_target: selectedTarget
+  };
+}
+
+async function runMovementAction(action, extraPayload = {}) {
+  const payload = { ...movementPayload(), ...extraPayload };
+  setLine(els.movementStatus, `Sending ${action}...`, "warning");
+  const result = await runAction(action, payload, els.movementOutput, 30000);
+  setLine(els.movementStatus, resultMessage(result), actionSucceeded(result) ? "ok" : "warning");
+  return result;
+}
+
+function rarityControls() {
+  return [
+    { key: "common", input: els.rarityCommonPercent, value: els.rarityCommonValue },
+    { key: "uncommon", input: els.rarityUncommonPercent, value: els.rarityUncommonValue },
+    { key: "rare", input: els.rarityRarePercent, value: els.rarityRareValue },
+    { key: "epic", input: els.rarityEpicPercent, value: els.rarityEpicValue },
+    { key: "legendary", input: els.rarityLegendaryPercent, value: els.rarityLegendaryValue },
+    { key: "pearlescent", input: els.rarityPearlescentPercent, value: els.rarityPearlescentValue }
+  ];
+}
+
+function updateRarityValueLabels() {
+  rarityControls().forEach(({ input, value }) => {
+    if (!input || !value) return;
+    value.textContent = `${getInt(input, 0, 100, 100)}%`;
+  });
+}
+
+function setRarityPreset(values) {
+  rarityControls().forEach(({ key, input }) => {
+    if (!input) return;
+    const nextValue = Object.prototype.hasOwnProperty.call(values, key) ? values[key] : 100;
+    input.value = String(Math.max(0, Math.min(100, Number(nextValue) || 0)));
+  });
+  updateRarityValueLabels();
+}
+
+function rarityPayload() {
+  const payload = {};
+  rarityControls().forEach(({ key, input }) => {
+    payload[`rarity_${key}_percent`] = getInt(input, 0, 100, 100);
+  });
+  return payload;
+}
+
+async function runRarityAction(action) {
+  if (action === "rarity_reset") {
+    setRarityPreset({});
+  } else if (action === "rarity_only_legendary") {
+    setRarityPreset({ common: 0, uncommon: 0, rare: 0, epic: 0, legendary: 100, pearlescent: 0 });
+  } else if (action === "rarity_only_pearlescent") {
+    setRarityPreset({ common: 0, uncommon: 0, rare: 0, epic: 0, legendary: 0, pearlescent: 100 });
+  } else {
+    updateRarityValueLabels();
+  }
+
+  const payload = action === "rarity_apply" ? rarityPayload() : {};
+  setLine(els.rarityStatus, `Sending ${action}...`, "warning");
+  const result = await runAction(action, payload, els.boostOutput, 30000);
+  setLine(els.rarityStatus, resultMessage(result), actionSucceeded(result) ? "ok" : "warning");
+  return result;
 }
 
 function setInventoryStatus(message, kind = "warning") {
@@ -439,6 +571,7 @@ function renderPlayers(status = {}) {
   fillSelect(els.targetSelect);
   fillSelect(els.bookmarkTargetSelect);
   fillSelect(els.bl4TargetSelect);
+  fillSelect(els.movementTargetSelect);
 
   const selectedPlayer = state.players.find((player) => String(playerValue(player)) === String(state.selectedTarget));
   const text = `Selected target: ${selectedPlayer ? playerLabel(selectedPlayer) : state.selectedTarget || "none"}`;
@@ -446,6 +579,7 @@ function renderPlayers(status = {}) {
   setLine(els.targetSummary, text, kind);
   setLine(els.bookmarkTargetSummary, text, kind);
   setLine(els.bl4TargetSummary, text, kind);
+  setLine(els.movementStatus, text, kind);
 }
 
 function serialDeliveryMessage(progress = {}) {
@@ -578,6 +712,7 @@ async function setTarget(value) {
     setLine(els.targetSummary, "Selected target: none", "warning");
     setLine(els.bookmarkTargetSummary, "Selected target: none", "warning");
     setLine(els.bl4TargetSummary, "Selected target: none", "warning");
+    setLine(els.movementStatus, "Selected target: none", "warning");
     updateSerialState();
     return null;
   }
@@ -585,6 +720,7 @@ async function setTarget(value) {
   setLine(els.targetSummary, `Setting target ${target}...`, "warning");
   setLine(els.bookmarkTargetSummary, `Setting target ${target}...`, "warning");
   setLine(els.bl4TargetSummary, `Setting target ${target}...`, "warning");
+  setLine(els.movementStatus, `Setting target ${target}...`, "warning");
   const result = await bridgeAction("set_target_player", { target_player: target }, 10000);
   setOutput(els.statusOutput, result);
   const ok = Boolean(result && result.data && result.data.ok);
@@ -596,6 +732,7 @@ async function setTarget(value) {
     setLine(els.targetSummary, message, "bad");
     setLine(els.bookmarkTargetSummary, message, "bad");
     setLine(els.bl4TargetSummary, message, "bad");
+    setLine(els.movementStatus, message, "bad");
     updateSerialState();
   }
   return result;
@@ -1856,24 +1993,48 @@ async function installBundledSdkMod() {
   setLine(els.sdkInstallSummary, result.message || "SDK mod install/update finished.", result.ok ? "ok" : "bad");
 }
 
-async function convertSerialTools() {
+function resetSerialToolsOutputs(status = "Paste a @U serial or deserialized serial text above.") {
+  setTextValue(els.serialToolsDeserialized, "");
+  setTextValue(els.serialToolsBreakdown, "");
+  setTextValue(els.serialToolsSerialized, "");
+  setLine(els.serialToolsStatus, status, "warning");
+}
+
+async function convertSerialTools(options = {}) {
+  const quiet = Boolean(options && options.quiet);
   const text = getValue(els.serialToolsInput);
+  const runId = ++state.serialToolsRunId;
+  if (!text) {
+    resetSerialToolsOutputs();
+    if (!quiet) appendActivity("Serial Tools input is empty.");
+    return null;
+  }
   setLine(els.serialToolsStatus, "Converting locally...", "warning");
   const result = await window.msbt.serialToolsConvert(text);
+  if (runId !== state.serialToolsRunId) return result;
   const ok = String(result && result.ok).toLowerCase() === "true" || result.ok === true;
   setTextValue(els.serialToolsDeserialized, result.deserialized || "");
   setTextValue(els.serialToolsBreakdown, result.breakdown || result.parts_breakdown || "");
   setTextValue(els.serialToolsSerialized, result.serialized || "");
   setLine(els.serialToolsStatus, result.message || (ok ? "Converted successfully." : "Conversion failed."), ok ? "ok" : "bad");
-  appendActivity(ok ? "Serial converted locally." : `Serial conversion failed: ${result.message || "unknown error"}`);
+  if (!quiet) appendActivity(ok ? "Serial converted locally." : `Serial conversion failed: ${result.message || "unknown error"}`);
+  return result;
+}
+
+function scheduleSerialToolsAutoConvert() {
+  if (state.serialToolsAutoTimer) window.clearTimeout(state.serialToolsAutoTimer);
+  state.serialToolsAutoTimer = window.setTimeout(() => {
+    state.serialToolsAutoTimer = null;
+    convertSerialTools({ quiet: true });
+  }, 450);
 }
 
 function clearSerialTools() {
+  if (state.serialToolsAutoTimer) window.clearTimeout(state.serialToolsAutoTimer);
+  state.serialToolsAutoTimer = null;
+  state.serialToolsRunId += 1;
   setTextValue(els.serialToolsInput, "");
-  setTextValue(els.serialToolsDeserialized, "");
-  setTextValue(els.serialToolsBreakdown, "");
-  setTextValue(els.serialToolsSerialized, "");
-  setLine(els.serialToolsStatus, "Paste a @U serial or deserialized serial text above.", "warning");
+  resetSerialToolsOutputs();
   appendActivity("Cleared Serial Tools.");
 }
 
@@ -2821,6 +2982,26 @@ function spawnDevActor(actorName) {
   runDevSpawnerAction("dev_spawner_spawnai");
 }
 
+function normalizedDevLogoText() {
+  return getValue(els.devLogoText)
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .join("|");
+}
+
+function useSelectedDevActorForLogo() {
+  const actorName = String(state.devSpawnerSelectedActor || getValue(els.devAiName) || getValue(els.devActorName) || "").trim();
+  if (!actorName) {
+    setLine(els.devSpawnerWarning, "Select an actor row before copying it into the Barrel Logo actor field.", "warning");
+    return;
+  }
+  if (els.devLogoActor) {
+    els.devLogoActor.value = actorName;
+  }
+  setLine(els.devSpawnerWarning, `Barrel Logo actor set to ${devActorLabel(actorName)}.`, "ok");
+}
+
 function devSpawnerConfirm() {
   if (state.devSpawnerWarningAccepted) return true;
   const accepted = window.confirm(
@@ -2859,7 +3040,14 @@ function devSpawnerPayload() {
     dev_ai_load: getValue(els.devAiLoad),
     dev_ai_scale: actorScale,
     dev_ai_spacing: actorSpacing,
-    dev_ai_z_offset: actorZOffset
+    dev_ai_z_offset: actorZOffset,
+    dev_logo_actor: getValue(els.devLogoActor) || "barrel",
+    dev_logo_distance: getFloat(els.devLogoDistance, 0, 30000, 2500),
+    dev_logo_height: getFloat(els.devLogoHeight, 0, 10000, 750),
+    dev_logo_include_non_generated: Boolean(els.devLogoIncludeNonGenerated && els.devLogoIncludeNonGenerated.checked),
+    dev_logo_scale: getFloat(els.devLogoScale, 0.01, 20, 0.45),
+    dev_logo_spacing: getFloat(els.devLogoSpacing, 1, 1000, 70),
+    dev_logo_text: normalizedDevLogoText()
   };
 }
 
@@ -3034,6 +3222,11 @@ async function runDevSpawnerAction(action) {
       setOutput(els.devSpawnerOutput, "Select or enter an AI Actor Def / Cache value first.");
       return;
     }
+  }
+  if (action === "dev_spawner_barrel_logo" && !normalizedDevLogoText()) {
+    setOutput(els.devSpawnerOutput, "Enter one or more Barrel Logo text lines before running the command.");
+    setLine(els.devSpawnerWarning, "Barrel Logo text is required.", "warning");
+    return;
   }
 
   appendActivity(`Sending ${action}...`);
@@ -3228,9 +3421,28 @@ function wireEvents() {
     setInventoryStatus(resultMessage(result), actionSucceeded(result) ? "ok" : "warning");
   });
   els.autoInventorySizes.addEventListener("change", toggleAutoInventory);
+  if (els.movementTargetSelect) {
+    els.movementTargetSelect.addEventListener("change", () => setTarget(els.movementTargetSelect.value));
+  }
+  document.querySelectorAll("[data-movement-action]").forEach((button) => {
+    button.addEventListener("click", () => runMovementAction(button.dataset.movementAction));
+  });
+  document.querySelectorAll("[data-movement-teleport-slot]").forEach((button) => {
+    button.addEventListener("click", () => runMovementAction("movement_teleport_to_slot", {
+      slot: Math.max(0, Math.min(3, parseInt(button.dataset.movementTeleportSlot, 10) || 0))
+    }));
+  });
+  rarityControls().forEach(({ input }) => {
+    if (input) input.addEventListener("input", updateRarityValueLabels);
+  });
+  updateRarityValueLabels();
+  document.querySelectorAll("[data-rarity-action]").forEach((button) => {
+    button.addEventListener("click", () => runRarityAction(button.dataset.rarityAction));
+  });
 
   els.serialToolsConvertBtn.addEventListener("click", convertSerialTools);
   els.serialToolsClearBtn.addEventListener("click", clearSerialTools);
+  els.serialToolsInput.addEventListener("input", scheduleSerialToolsAutoConvert);
   els.copyDeserializedBtn.addEventListener("click", () => copyText(els.serialToolsDeserialized.value, els.serialToolsStatus, "Deserialized output"));
   els.copyBreakdownBtn.addEventListener("click", () => copyText(els.serialToolsBreakdown.value, els.serialToolsStatus, "Parts breakdown"));
   els.copySerializedBtn.addEventListener("click", () => copyText(els.serialToolsSerialized.value, els.serialToolsStatus, "@U serialized output"));
@@ -3373,6 +3585,9 @@ function wireEvents() {
   }
   if (els.devMyFavoriteRemoveBtn) {
     els.devMyFavoriteRemoveBtn.addEventListener("click", removeSelectedDevMyFavorite);
+  }
+  if (els.devLogoUseSelectedBtn) {
+    els.devLogoUseSelectedBtn.addEventListener("click", useSelectedDevActorForLogo);
   }
   document.querySelectorAll("[data-dev-spawner-action]").forEach((button) => {
     button.addEventListener("click", () => runDevSpawnerAction(button.dataset.devSpawnerAction));

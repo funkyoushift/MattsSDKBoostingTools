@@ -317,6 +317,32 @@ iframe {
   margin-top: 12px;
 }
 
+.rarity-grid {
+  display: grid;
+  gap: 10px 16px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 10px 0 12px;
+}
+
+.range-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 54px;
+  gap: 10px;
+  align-items: center;
+}
+
+.range-row input[type="range"] {
+  min-height: 24px;
+  padding: 0;
+}
+
+.range-row output {
+  color: var(--text);
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 12px;
+  text-align: right;
+}
+
 .panel {
   border: 1px solid var(--line);
   background: var(--panel);
@@ -783,6 +809,7 @@ iframe {
   .grid.bl4-grid,
   .grid.sidecar,
   .update-card-grid,
+  .rarity-grid,
   .inline-fields {
     grid-template-columns: 1fr;
   }
