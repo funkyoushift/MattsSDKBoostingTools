@@ -19,17 +19,22 @@ Do not delay the Electron beta for exhaustive Tkinter parity.
 
 ## Immediate Priority Order
 
-1. Finish and commit Dev Spawner My Favorites.
-2. Port Serial Bookmarks.
-3. Port BL4 Codes.
-4. Build the Electron installer.
-5. Add versioning and update checks.
-6. Add an updater capable of delivering frequent beta builds.
-7. Add bug report and feature request tools.
-8. Run a focused beta-readiness test.
-9. Replace the current GitHub beta with the Electron beta.
+Current checkpoint as of July 13, 2026:
 
-Additional Dev Spawner features and minor UI polish are paused until Serial Bookmarks, BL4 Codes, installer, and updater work are moving.
+- Serial Bookmarks are present in Electron.
+- BL4 Codes are present in Electron and can deliver through the bridge.
+- Boosting, Item Pool Spawning, Map Travel, Movement, Updates, Report, Activity Log, and Matt Editor shells are present.
+- Installer/update foundation exists, but release/upload flow still needs a clean published Electron beta pass.
+- Dev Spawner has the verified SDK 03 `ASD_spawnai` path and actor browser/favorites work, but still needs a closer source-port pass from SDK Debug Menu / ActorScriptDeployer UX.
+
+Next priority order:
+
+1. Dev Spawner source-port pass: use SDK Debug Menu only as UX/source reference and keep SDK 03 runtime on MSBT's verified bridge/backend path.
+2. Electron tab parity pass: compare each Electron tab against BLImGui/Tkinter and close obvious missing buttons or workflows without redesigning.
+3. Published Electron beta release pass: rebuild, verify, upload installer and ZIP to GitHub Releases, and keep old Tkinter beta available as rollback.
+4. Update UX pass: startup update prompt, clearer installed-vs-latest app/SDK versions, download/install guidance.
+5. Matt Editor integration pass: remove the awkward separate "Load Editor" feeling and make the embedded save/item editor path feel native.
+6. Focused beta-readiness test.
 
 ## Beta Feature Classification
 
