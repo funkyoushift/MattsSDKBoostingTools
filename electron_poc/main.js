@@ -1,4 +1,5 @@
-const { app, BrowserWindow, dialog, ipcMain, shell } = require("electron");
+const { app, BrowserWindow, dialog, ipcMain, screen, shell } = require("electron");
+const fsSync = require("fs");
 const fs = require("fs/promises");
 const os = require("os");
 const path = require("path");
@@ -119,6 +120,78 @@ let latestUpdateState = {
   error: ""
 };
 
+const DEFAULT_WINDOW_BOUNDS = {
+  width: 1280,
+  height: 820,
+  minWidth: 980,
+  minHeight: 660
+};
+
+function windowStatePath() {
+  return path.join(app.getPath("userData"), "window-state.json");
+}
+
+function readWindowState() {
+  try {
+    const parsed = JSON.parse(fsSync.readFileSync(windowStatePath(), "utf8"));
+    const bounds = parsed && typeof parsed === "object" ? parsed.bounds || {} : {};
+    const width = Number.isFinite(bounds.width) ? Math.max(DEFAULT_WINDOW_BOUNDS.minWidth, bounds.width) : DEFAULT_WINDOW_BOUNDS.width;
+    const height = Number.isFinite(bounds.height) ? Math.max(DEFAULT_WINDOW_BOUNDS.minHeight, bounds.height) : DEFAULT_WINDOW_BOUNDS.height;
+    const state = { width, height, maximized: Boolean(parsed.maximized) };
+    if (Number.isFinite(bounds.x) && Number.isFinite(bounds.y)) {
+      state.x = bounds.x;
+      state.y = bounds.y;
+    }
+    return state;
+  } catch {
+    return { width: DEFAULT_WINDOW_BOUNDS.width, height: DEFAULT_WINDOW_BOUNDS.height, maximized: false };
+  }
+}
+
+function ensureWindowOnScreen(bounds) {
+  const displays = screen.getAllDisplays();
+  const isVisible = displays.some((display) => {
+    const area = display.workArea;
+    return (
+      bounds.x !== undefined &&
+      bounds.y !== undefined &&
+      bounds.x < area.x + area.width &&
+      bounds.x + bounds.width > area.x &&
+      bounds.y < area.y + area.height &&
+      bounds.y + bounds.height > area.y
+    );
+  });
+  if (isVisible) return bounds;
+  return { width: bounds.width, height: bounds.height, maximized: bounds.maximized };
+}
+
+function saveWindowState(win) {
+  if (!win || win.isDestroyed()) return;
+  try {
+    fsSync.mkdirSync(app.getPath("userData"), { recursive: true });
+    fsSync.writeFileSync(
+      windowStatePath(),
+      JSON.stringify({ bounds: win.getBounds(), maximized: win.isMaximized() }, null, 2),
+      "utf8"
+    );
+  } catch (error) {
+    console.warn(`[MSBT Electron] Could not save window state: ${error && error.message ? error.message : error}`);
+  }
+}
+
+function bindWindowState(win) {
+  let saveTimer = null;
+  const scheduleSave = () => {
+    if (saveTimer) clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => saveWindowState(win), 500);
+  };
+  win.on("resize", scheduleSave);
+  win.on("move", scheduleSave);
+  win.on("maximize", scheduleSave);
+  win.on("unmaximize", scheduleSave);
+  win.on("close", () => saveWindowState(win));
+}
+
 function updateState(patch) {
   latestUpdateState = { ...latestUpdateState, ...patch };
   for (const win of BrowserWindow.getAllWindows()) {
@@ -166,11 +239,12 @@ function configureAutoUpdater() {
 }
 
 function createWindow() {
-  const win = new BrowserWindow({
-    width: 1500,
-    height: 940,
-    minWidth: 1120,
-    minHeight: 760,
+  const savedBounds = ensureWindowOnScreen(readWindowState());
+  const windowOptions = {
+    width: savedBounds.width,
+    height: savedBounds.height,
+    minWidth: DEFAULT_WINDOW_BOUNDS.minWidth,
+    minHeight: DEFAULT_WINDOW_BOUNDS.minHeight,
     backgroundColor: "#090d17",
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
@@ -178,8 +252,17 @@ function createWindow() {
       nodeIntegration: false,
       sandbox: false
     }
-  });
+  };
+  if (Number.isFinite(savedBounds.x) && Number.isFinite(savedBounds.y)) {
+    windowOptions.x = savedBounds.x;
+    windowOptions.y = savedBounds.y;
+  }
+  const win = new BrowserWindow(windowOptions);
 
+  if (savedBounds.maximized) {
+    win.maximize();
+  }
+  bindWindowState(win);
   win.loadFile(path.join(__dirname, "renderer.html"));
 }
 
