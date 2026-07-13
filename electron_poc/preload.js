@@ -17,6 +17,7 @@ contextBridge.exposeInMainWorld("msbt", {
     return () => ipcRenderer.removeListener("app:updateState", listener);
   },
   serialToolsConvert: (text) => ipcRenderer.invoke("app:serialToolsConvert", text),
+  serialDecodeCheck: (text) => ipcRenderer.invoke("app:serialDecodeCheck", text),
   validatorBasic: (text) => ipcRenderer.invoke("app:validatorBasic", text),
   validatorBulk: (text) => ipcRenderer.invoke("app:validatorBulk", text),
   readDevSpawnerCatalog: () => ipcRenderer.invoke("app:readDevSpawnerCatalog"),

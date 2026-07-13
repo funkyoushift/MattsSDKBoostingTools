@@ -631,6 +631,37 @@ ipcMain.handle("app:serialToolsConvert", async (_event, text) => {
   return runExternalPythonJson(code, text, 15000);
 });
 
+ipcMain.handle("app:serialDecodeCheck", async (_event, payload) => {
+  const code = [
+    "import json, sys",
+    "import re",
+    "import external_serial_tools",
+    "raw = sys.stdin.read()",
+    "try:",
+    "    payload = json.loads(raw)",
+    "    text = str(payload.get('text') or '')",
+    "    level = int(payload.get('level') or 60)",
+    "except Exception:",
+    "    text = raw",
+    "    level = 60",
+    "level = max(1, min(60, level))",
+    "serials = [line.strip() for line in text.splitlines() if line.strip()]",
+    "results = []",
+    "for serial in serials:",
+    "    try:",
+    "        human = external_serial_tools.serial_to_human(serial) if serial.startswith('@U') else serial",
+    "        new_human, count = re.subn(r'^(\\s*\\d+\\s*,\\s*\\d+\\s*,\\s*\\d+\\s*,\\s*)\\d+', r'\\g<1>' + str(level), human, count=1)",
+    "        if count <= 0:",
+    "            raise ValueError('could not find leading item level in serial')",
+    "        external_serial_tools.human_to_serial(new_human)",
+    "        results.append({'ok': True, 'message': ''})",
+    "    except Exception as exc:",
+    "        results.append({'ok': False, 'message': str(exc)})",
+    "print(json.dumps({'ok': True, 'total': len(serials), 'results': results}))"
+  ].join("\n");
+  return runExternalPythonJson(code, typeof payload === "string" ? payload : JSON.stringify(payload || {}), 60000);
+});
+
 ipcMain.handle("app:validatorBasic", async (_event, text) => {
   const code = [
     "import json, sys",

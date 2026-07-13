@@ -90,6 +90,10 @@ button.danger {
   color: var(--red);
 }
 
+button.is-on {
+  color: var(--green);
+}
+
 label {
   display: block;
   margin: 12px 0 6px;

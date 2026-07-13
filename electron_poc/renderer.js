@@ -249,6 +249,7 @@ const state = {
   devSpawnerMyFavorites: { version: 1, favorites: {} },
   devSpawnerSelectedActor: "",
   devSpawnerWarningAccepted: false,
+  devperkToggles: { "5": false, "6": false },
   filteredItemPools: [],
   filteredMaps: [],
   filteredStations: [],
@@ -340,6 +341,34 @@ async function runAction(action, payload = {}, outNode = els.boostOutput, timeou
   const result = await bridgeAction(action, payload, timeoutMs);
   setOutput(outNode, result);
   appendActivity(`${action}: ${resultMessage(result)}`);
+  return result;
+}
+
+function inferToggleStateFromMessage(message, previousValue) {
+  const text = String(message || "").toLowerCase();
+  if (/\b(off|disabled|inactive)\b/.test(text)) return false;
+  if (/\b(on|enabled|active)\b/.test(text)) return true;
+  return !previousValue;
+}
+
+function updateDevperkToggleButtons() {
+  document.querySelectorAll("[data-devperk-toggle]").forEach((button) => {
+    const key = String(button.dataset.devperkToggle || "");
+    const label = button.dataset.devperkName || button.textContent.replace(/\s+\[(?:ON|OFF)\]$/i, "");
+    const isOn = Boolean(state.devperkToggles[key]);
+    button.textContent = `${label} [${isOn ? "ON" : "OFF"}]`;
+    button.classList.toggle("is-on", isOn);
+  });
+}
+
+async function runBoostActionButton(button) {
+  const action = button.dataset.action;
+  const result = await runAction(action, {}, els.boostOutput, 30000);
+  const toggleKey = button.dataset.devperkToggle;
+  if (toggleKey && actionSucceeded(result)) {
+    state.devperkToggles[toggleKey] = inferToggleStateFromMessage(resultMessage(result), state.devperkToggles[toggleKey]);
+    updateDevperkToggleButtons();
+  }
   return result;
 }
 
@@ -1388,6 +1417,44 @@ function bl4ValidSerialEntries(entries) {
   return entries.filter((row) => !serialValidationMessage(row.serial));
 }
 
+function bl4DeliveryRowLabel(row, index) {
+  const name = String(row && row.name ? row.name : "Selected BL4 code").trim();
+  const source = String(row && (row.source || row.listing) ? row.source || row.listing : "").trim();
+  return `${index + 1}. ${name}${source ? ` (${source})` : ""}`;
+}
+
+async function preflightBl4LevelOverride(rows, serialText) {
+  if (!window.msbt || typeof window.msbt.serialDecodeCheck !== "function") {
+    return true;
+  }
+
+  setBl4DeliveryStatus(`Checking ${rows.length} BL4 serial(s) for level override...`, "warning");
+  const result = await window.msbt.serialDecodeCheck({ text: serialText, level: deliveryLevel });
+  if (!result || result.ok === false) {
+    const message = result && result.message ? result.message : "Local level-override check is unavailable; trying bridge delivery.";
+    setBl4DeliveryStatus(message, "warning");
+    appendActivity(`BL4 level override preflight unavailable: ${message}`);
+    return true;
+  }
+
+  const results = Array.isArray(result.results) ? result.results : [];
+  const failures = rows
+    .map((row, index) => ({ item: results[index] || { ok: false, message: "No decode result returned." }, index, row }))
+    .filter((entry) => !entry.item.ok);
+  if (!failures.length) return true;
+
+  const shown = failures.slice(0, 8).map((entry) => (
+    `${bl4DeliveryRowLabel(entry.row, entry.index)} - ${entry.item.message || "could not decode"}`
+  ));
+  const extra = failures.length > shown.length ? `\n...and ${failures.length - shown.length} more.` : "";
+  const message = `Level override cannot be applied to ${failures.length} selected code(s). Clear those rows, turn override off, or fix the serial.`;
+  const details = `${message}\n\n${shown.join("\n")}${extra}`;
+  setBl4DeliveryStatus(message, "bad");
+  setOutput(els.bl4Output, details);
+  appendActivity(`BL4 level override blocked: ${failures.length} serial(s) could not be decoded.`);
+  return false;
+}
+
 function fillBl4Filter(selectNode, values, currentValue = "All") {
   if (!selectNode) return;
   const previous = currentValue || getValue(selectNode) || "All";
@@ -1790,6 +1857,13 @@ async function sendBl4Serial(mode) {
   }
 
   const serialText = rows.map((row) => String(row.serial || "").trim()).join("\n");
+  const overrideLevel = boolFromSelect(els.bl4OverrideLevel);
+  const deliveryLevel = getInt(els.bl4DeliveryLevel, 1, 60, 60);
+  if (overrideLevel) {
+    const preflightOk = await preflightBl4LevelOverride(rows, serialText);
+    if (!preflightOk) return;
+  }
+
   const destination = mode === "selected" ? (state.selectedTarget || "selected target") : mode === "all" ? "all players" : "non-host players";
   const label = rows.length === 1 ? `"${rows[0].name || "selected BL4 code"}"` : `${rows.length} selected BL4 codes`;
   const confirmed = window.confirm(`Deliver ${label} to ${destination}?`);
@@ -1813,8 +1887,8 @@ async function sendBl4Serial(mode) {
   const result = await sendSerialPayload(
     mode,
     serialText,
-    boolFromSelect(els.bl4OverrideLevel),
-    getInt(els.bl4DeliveryLevel, 1, 60, 60),
+    overrideLevel,
+    deliveryLevel,
     els.bl4Output
   );
   if (!result) return;
@@ -3477,7 +3551,7 @@ function wireEvents() {
   els.targetSelect.addEventListener("change", () => setTarget(els.targetSelect.value));
 
   document.querySelectorAll("[data-action]").forEach((button) => {
-    button.addEventListener("click", () => runAction(button.dataset.action, {}, els.boostOutput, 30000));
+    button.addEventListener("click", () => runBoostActionButton(button));
   });
   document.querySelectorAll("[data-boost-serial-mode]").forEach((button) => {
     button.addEventListener("click", () => sendBoostSerial(button.dataset.boostSerialMode));
@@ -3703,6 +3777,7 @@ function wireEvents() {
 
 async function init() {
   wireEvents();
+  updateDevperkToggleButtons();
   if (window.msbt && typeof window.msbt.onUpdateState === "function") {
     window.msbt.onUpdateState(renderUpdateState);
   }
