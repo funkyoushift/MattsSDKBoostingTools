@@ -1,0 +1,148 @@
+name: Electron Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: electron_poc/package-lock.json
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install Electron dependencies
+        working-directory: electron_poc
+        run: npm ci
+
+      - name: Validate release tag and package version
+        shell: pwsh
+        run: |
+          $version = (Get-Content -Raw .\electron_poc\package.json | ConvertFrom-Json).version
+          if ($version -notmatch '^\d+\.\d+\.\d+(-(?:alpha|beta)\.\d+)?$') {
+            throw "Invalid package version: $version"
+          }
+          $expectedTag = "v$version"
+          $actualTag = "${env:GITHUB_REF_NAME}"
+          if ($actualTag -ne $expectedTag) {
+            throw "Tag '$actualTag' does not match package version '$expectedTag'."
+          }
+
+      - name: Build Electron installer
+        shell: pwsh
+        run: .\build_electron_beta.ps1 -Installer
+
+      - name: Build portable package
+        shell: pwsh
+        run: |
+          .\build_external_exe.ps1
+          .\package_external_beta.ps1
+
+      - name: Create Electron unpacked ZIP
+        shell: pwsh
+        run: |
+          $version = (Get-Content -Raw .\electron_poc\package.json | ConvertFrom-Json).version
+          $zip = ".\dist_electron\MattsSDKBoostingTools-v$version-win-x64.zip"
+          if (Test-Path $zip) { Remove-Item -Force $zip }
+          Compress-Archive -Path ".\dist_electron\win-unpacked\*" -DestinationPath $zip
+
+      - name: Validate release assets
+        shell: pwsh
+        run: |
+          $version = (Get-Content -Raw .\electron_poc\package.json | ConvertFrom-Json).version
+          $required = @(
+            ".\dist_electron\MattsSDKBoostingTools-Setup-v$version.exe",
+            ".\dist_electron\MattsSDKBoostingTools-Setup-v$version.exe.blockmap",
+            ".\dist_electron\latest.yml",
+            ".\MattsSDKBoostingTools-Portable-v$version.zip",
+            ".\dist_electron\MattsSDKBoostingTools-v$version-win-x64.zip"
+          )
+          foreach ($path in $required) {
+            if (-not (Test-Path $path)) {
+              throw "Required release asset missing: $path"
+            }
+          }
+          $latest = Get-Content -Raw ".\dist_electron\latest.yml"
+          if ($latest -notmatch "(?m)^version:\s*$([regex]::Escape($version))\s*$") {
+            throw "latest.yml version does not match package version $version."
+          }
+
+      - name: Publish GitHub Release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $version = (Get-Content -Raw .\electron_poc\package.json | ConvertFrom-Json).version
+          $tag = "v$version"
+          $isPrerelease = $version -match '-(?:alpha|beta)\.\d+$'
+          if ($version -match '^(\d+\.\d+\.\d+)-beta\.(\d+)$') {
+            $title = "Matt's SDK Boosting Tools v$($Matches[1]) Beta $($Matches[2])"
+          } elseif ($version -match '^(\d+\.\d+\.\d+)-alpha\.(\d+)$') {
+            $title = "Matt's SDK Boosting Tools v$($Matches[1]) Alpha $($Matches[2])"
+          } else {
+            $title = "Matt's SDK Boosting Tools v$version"
+          }
+          $buildDate = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+          $notes = @(
+            "### What's new",
+            "",
+            "Electron release built from semantic tag `$tag`.",
+            "",
+            "### Fixed",
+            "",
+            "See commit history for fixes included in this build.",
+            "",
+            "### Known issues",
+            "",
+            "Electron remains beta until it fully replaces the legacy external app workflow.",
+            "",
+            "### Download",
+            "",
+            "Normal Windows users should download ``MattsSDKBoostingTools-Setup-v$version.exe``.",
+            "",
+            "Manual portable ZIP users should download ``MattsSDKBoostingTools-Portable-v$version.zip``.",
+            "",
+            "### Upgrade notes",
+            "",
+            "Requires SDK 03 / oak2-mod-manager v0.3:",
+            "https://github.com/bl-sdk/oak2-mod-manager/releases/tag/v0.3",
+            "",
+            "### Build information",
+            "",
+            "- Version: $version",
+            "- Commit: ${env:GITHUB_SHA}",
+            "- Build date: $buildDate"
+          ) -join [Environment]::NewLine
+          $notesPath = Join-Path $env:RUNNER_TEMP "msbt_release_notes.md"
+          Set-Content -Path $notesPath -Value $notes -Encoding UTF8
+          $assets = @(
+            ".\dist_electron\MattsSDKBoostingTools-Setup-v$version.exe",
+            ".\dist_electron\MattsSDKBoostingTools-Setup-v$version.exe.blockmap",
+            ".\dist_electron\latest.yml",
+            ".\MattsSDKBoostingTools-Portable-v$version.zip",
+            ".\dist_electron\MattsSDKBoostingTools-v$version-win-x64.zip"
+          )
+          $args = @("release", "create", $tag) + $assets + @("--title", $title, "--notes-file", $notesPath, "--verify-tag")
+          if ($isPrerelease) {
+            $args += "--prerelease"
+          } else {
+            $args += "--latest"
+          }
+          gh @args

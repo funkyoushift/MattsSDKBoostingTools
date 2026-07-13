@@ -16,28 +16,30 @@ Older SDK 02 installs are not the target for current MSBT builds.
 
 ## Download Latest
 
-Most users should download the packaged beta zip:
-
-[Download MSBT_External_Beta.zip](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT_External_Beta.zip)
-
-Older beta packages are available from the
+Most Windows users should download the current recommended beta installer from the
 [GitHub Releases page](https://github.com/funkyoushift/MattsSDKBoostingTools/releases).
+
+Look for assets named like:
+
+- `MattsSDKBoostingTools-Setup-v0.2.3-beta.1.exe`
+- `MattsSDKBoostingTools-Portable-v0.2.3-beta.1.zip`
+
+Older Tkinter/manual ZIP beta packages remain available on the Releases page as rollback builds.
 
 Developers or users who do not want the prebuilt EXE can download the source:
 
 [Download Source ZIP](https://github.com/funkyoushift/MattsSDKBoostingTools/archive/refs/heads/main.zip)
 
-The packaged beta contains the SDK mod, the standalone external app EXE, resources, and a launch batch file. Python is not required for normal users when using the packaged beta zip.
+The packaged beta contains the SDK mod, the standalone external app, resources, and launch/update helpers. Python is not required for normal users when using the packaged installer.
 
 ## Quick Install
 
 1. Install or update to [oak2-mod-manager v0.3](https://github.com/bl-sdk/oak2-mod-manager/releases/tag/v0.3).
-2. Download [MSBT_External_Beta.zip](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT_External_Beta.zip).
-3. Extract it.
-4. Copy `MattsSDKBoostingTools.sdkmod` into your Borderlands 4 `sdk_mods` folder.
-5. Copy the `MattsSDKBoostingTools_external` folder into the same `sdk_mods` folder.
-6. Start Borderlands 4 with the SDK loaded.
-7. Launch the external app with `Launch_MSBT_External_App.bat`, `MattsBoostingToolsExternal.exe`, or the in-game SDK command `msbt_external_app`.
+2. Download the current `MattsSDKBoostingTools-Setup-v...exe` installer from [GitHub Releases](https://github.com/funkyoushift/MattsSDKBoostingTools/releases).
+3. Run the installer and launch Matt's SDK Boosting Tools.
+4. Use the Updates tab to install/update `MattsSDKBoostingTools.sdkmod` into your Borderlands 4 `sdk_mods` folder.
+5. Start Borderlands 4 with the SDK loaded.
+6. Use the app's Refresh Status / target controls before sending live actions.
 
 Expected layout:
 
@@ -51,6 +53,8 @@ Borderlands 4/
       resources/
 ```
 
+Manual ZIP users can still extract the portable package and copy `MattsSDKBoostingTools.sdkmod` into `sdk_mods` manually.
+
 The current public direction is:
 
 - Keep the original BLImGui panel available when BLImGui is installed.
@@ -61,7 +65,7 @@ The current public direction is:
 
 ## Package Contents
 
-The packaged beta zip contains:
+Legacy/manual portable packages contain:
 
 ```text
 MSBT_External_Beta/
@@ -107,15 +111,17 @@ The package script creates:
 
 ```text
 MSBT_External_Beta/
-MSBT_External_Beta.zip
+MattsSDKBoostingTools-Portable-v<version>.zip
 releases/latest.json
 ```
 
-Publish `MSBT_External_Beta.zip` as a GitHub Release asset instead of committing the ZIP to source:
+Publish release assets to GitHub Releases instead of committing ZIP/EXE files to source:
 
 ```powershell
 .\publish_github_release.ps1
 ```
+
+Versioning and asset naming are documented in [VERSIONING.md](VERSIONING.md).
 
 ## Repository Layout
 

@@ -19,14 +19,14 @@ Use this before pushing the repository public or posting it in Discord.
 
 Upload these to a GitHub Release instead of committing them to source:
 
-- `MSBT_External_Beta.zip`
-- `MattsSDKBoostingTools.sdkmod`
+- `MattsSDKBoostingTools-Setup-v<version>.exe`
+- `MattsSDKBoostingTools-Portable-v<version>.zip`
 - checksums for release files
 
-The normal public beta ZIP link should be:
+The normal public beta download link should point users to the release page:
 
 ```text
-https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT_External_Beta.zip
+https://github.com/funkyoushift/MattsSDKBoostingTools/releases
 ```
 
 ## Smoke Tests
@@ -66,13 +66,13 @@ Multiplayer:
 Matt's SDK Boosting Tools public beta is available.
 
 Download:
-https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT_External_Beta.zip
+https://github.com/funkyoushift/MattsSDKBoostingTools/releases
 
 Install:
-1. Extract the release zip.
-2. Copy MattsSDKBoostingTools.sdkmod into your Borderlands 4 sdk_mods folder.
-3. Copy MattsSDKBoostingTools_external into the same sdk_mods folder.
-4. Launch the external app with Launch_MSBT_External_App.bat or the in-game command msbt_external_app.
+1. Install or update to oak2-mod-manager v0.3.
+2. Download the current MattsSDKBoostingTools-Setup installer from GitHub Releases.
+3. Run the installer.
+4. Use the app Updates tab to install/update the SDK mod.
 
 Please report:
 - host or non-host

@@ -10,9 +10,11 @@ $MattEditorSource = Join-Path $AppSource "matt_editor"
 $MattEditorAdapter = Join-Path $AppSource "matt_editor_adapter.js"
 $SdkMod = Join-Path $RepoRoot "MattsSDKBoostingTools.sdkmod"
 $SdkBuildScript = Join-Path $RepoRoot "build_sdkmod.ps1"
-$ZipPath = Join-Path $RepoRoot "MSBT_External_Beta.zip"
+$LegacyZipPath = Join-Path $RepoRoot "MSBT_External_Beta.zip"
+$ZipPath = $LegacyZipPath
 $ReleasesFolder = Join-Path $RepoRoot "releases"
 $LatestManifestPath = Join-Path $ReleasesFolder "latest.json"
+$ElectronPackageJson = Join-Path $RepoRoot "electron_poc\package.json"
 
 function Assert-UnderRepo {
     param([string]$Path)
@@ -30,6 +32,18 @@ function Write-Utf8NoBom {
     )
     $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
     [System.IO.File]::WriteAllText($Path, $Text, $utf8NoBom)
+}
+
+function Get-ElectronPackageVersion {
+    if (-not (Test-Path $ElectronPackageJson)) {
+        throw "Electron package.json not found: $ElectronPackageJson"
+    }
+    $pkg = Get-Content -Raw $ElectronPackageJson | ConvertFrom-Json
+    $version = [string]$pkg.version
+    if (-not ($version -match '^\d+\.\d+\.\d+(-(?:alpha|beta)\.\d+)?$')) {
+        throw "Electron package version must use public SemVer format, got: $version"
+    }
+    return $version
 }
 
 if (-not (Test-Path (Join-Path $ExeBuildFolder "MattsBoostingToolsExternal.exe"))) {
@@ -57,11 +71,18 @@ if (-not (Test-Path $MattEditorAdapter)) {
 }
 
 Assert-UnderRepo $PackageRoot
-Assert-UnderRepo $ZipPath
 Assert-UnderRepo $ReleasesFolder
+
+$ElectronVersion = Get-ElectronPackageVersion
+$PackageVersion = $ElectronVersion
+$ReleaseTag = "v$PackageVersion"
+$PortableZipName = "MattsSDKBoostingTools-Portable-v$PackageVersion.zip"
+$ZipPath = Join-Path $RepoRoot $PortableZipName
+Assert-UnderRepo $ZipPath
 
 Remove-Item -Recurse -Force $PackageRoot -ErrorAction SilentlyContinue
 Remove-Item -Force $ZipPath -ErrorAction SilentlyContinue
+Remove-Item -Force $LegacyZipPath -ErrorAction SilentlyContinue
 
 New-Item -ItemType Directory -Force $ExternalFolder | Out-Null
 Copy-Item -Recurse -Force (Join-Path $ExeBuildFolder "*") $ExternalFolder
@@ -83,33 +104,17 @@ try {
     $ShortCommit = ""
 }
 $BuiltAtUtc = [DateTime]::UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ")
-$DateVersion = [DateTime]::UtcNow.ToString("yyyy.MM.dd.HHmm")
-$PackageVersion = if ($ShortCommit) { "beta-$ShortCommit" } else { "beta-$DateVersion" }
 $SdkHash = (Get-FileHash -Algorithm SHA256 $SdkMod).Hash.ToLowerInvariant()
 $ExePath = Join-Path $ExternalFolder "MattsBoostingToolsExternal.exe"
 $ExeHash = (Get-FileHash -Algorithm SHA256 $ExePath).Hash.ToLowerInvariant()
 $UiLayoutPath = Join-Path $ExternalFolder "resources\ui_layout.json"
 $ResourcesHash = if (Test-Path $UiLayoutPath) { (Get-FileHash -Algorithm SHA256 $UiLayoutPath).Hash.ToLowerInvariant() } else { "" }
-$DownloadUrl = "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT_External_Beta.zip"
+$DownloadUrl = "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/$ReleaseTag/$PortableZipName"
 $LatestManifestUrl = "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/releases/latest.json"
 $ReleaseUrl = "https://github.com/funkyoushift/MattsSDKBoostingTools/releases"
-$ElectronVersion = ""
-$ElectronInstallerName = ""
-$ElectronDownloadUrl = ""
-$ElectronUpdaterManifestUrl = "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/latest.yml"
-$ElectronPackageJson = Join-Path $RepoRoot "electron_poc\package.json"
-if (Test-Path $ElectronPackageJson) {
-    try {
-        $ElectronPackage = Get-Content -Raw $ElectronPackageJson | ConvertFrom-Json
-        $ElectronVersion = [string]$ElectronPackage.version
-        if ($ElectronVersion) {
-            $ElectronInstallerName = "MattsSDKBoostingTools-Electron-Beta-Installer-$ElectronVersion-x64.exe"
-            $ElectronDownloadUrl = "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/$ElectronInstallerName"
-        }
-    } catch {
-        Write-Warning "Could not read Electron package version from $ElectronPackageJson."
-    }
-}
+$ElectronInstallerName = "MattsSDKBoostingTools-Setup-v$ElectronVersion.exe"
+$ElectronDownloadUrl = "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/$ReleaseTag/$ElectronInstallerName"
+$ElectronUpdaterManifestUrl = "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/$ReleaseTag/latest.yml"
 
 $VersionInfo = [ordered]@{
     package_version = $PackageVersion

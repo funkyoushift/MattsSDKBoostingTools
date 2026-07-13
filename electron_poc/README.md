@@ -39,6 +39,12 @@ To build the Windows installer:
 
 Installer builds use `electron-builder` with NSIS. They do not publish to GitHub automatically.
 
+Installer filenames are derived from `electron_poc/package.json`, for example:
+
+```text
+MattsSDKBoostingTools-Setup-v0.2.3-beta.1.exe
+```
+
 ## Updates
 
 The Electron beta includes a GitHub Releases update foundation:
@@ -49,7 +55,7 @@ The Electron beta includes a GitHub Releases update foundation:
 - there is no embedded GitHub token;
 - user data remains in Electron's `app.getPath("userData")` location across updates.
 
-Production update testing requires a GitHub Release containing the Electron builder artifacts such as the installer, `latest.yml`, and block map files. The app does not auto-publish those files.
+Production update testing requires a GitHub Release containing the Electron builder artifacts such as the installer, `latest.yml`, and block map files. The app does not auto-publish those files. Release/version rules are documented in [../VERSIONING.md](../VERSIONING.md).
 
 ## SDK Mod Install
 
