@@ -96,9 +96,15 @@ $NotesPath = Join-Path ([System.IO.Path]::GetTempPath()) "msbt_release_notes_$Ta
 Write-Utf8NoBom $NotesPath $notes
 
 $releaseExists = $false
-& gh release view $TagName --repo $Repository *> $null
-if ($LASTEXITCODE -eq 0) {
-    $releaseExists = $true
+$previousErrorActionPreference = $ErrorActionPreference
+try {
+    $ErrorActionPreference = "Continue"
+    & gh release view $TagName --repo $Repository 1>$null 2>$null
+    if ($LASTEXITCODE -eq 0) {
+        $releaseExists = $true
+    }
+} finally {
+    $ErrorActionPreference = $previousErrorActionPreference
 }
 
 if ($releaseExists) {
