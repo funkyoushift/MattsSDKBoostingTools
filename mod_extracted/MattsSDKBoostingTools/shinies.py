@@ -1,6 +1,8 @@
 """Shiny drop and shiny reward-package helpers for Matt's SDK Boosting Tools."""
 
+import json
 import math
+import pkgutil
 from collections.abc import Sequence
 from typing import Any
 
@@ -250,7 +252,56 @@ def _spawn_pool(config: UObject, world: UObject, transform: Any, level: int, poo
     config.SpawnInventoryFromItemPool(world, transform, level, pool_name)
 
 
-def _spawn_all_shinies(level: int, pools: Sequence[str] = SHINY_ITEMPOOLS) -> None:
+def _canonical_shiny_itempools(pools: Sequence[str]) -> tuple[str, ...]:
+    """Use catalog casing for shiny itempools while preserving embedded-only pools."""
+    canonical_by_lower: dict[str, str] = {}
+    try:
+        blob = pkgutil.get_data(__package__ or __name__.rpartition(".")[0], "item_pools.json")
+        if blob is not None:
+            data = json.loads(blob.decode("utf-8"))
+            if isinstance(data, list):
+                for entry in data:
+                    if not isinstance(entry, dict):
+                        continue
+                    pool = str(entry.get("itempool", "")).strip()
+                    if pool.lower().endswith("_shiny"):
+                        canonical_by_lower[pool.lower()] = pool
+    except Exception as exc:
+        _log_warning(f"Could not read shiny itempool catalog for canonical names: {exc}")
+
+    unique: list[str] = []
+    seen: set[str] = set()
+    renamed: list[tuple[str, str]] = []
+    missing: list[str] = []
+    for raw_pool in pools:
+        pool = str(raw_pool).strip()
+        if not pool:
+            continue
+        key = pool.lower()
+        if key in seen:
+            continue
+        seen.add(key)
+        canonical = canonical_by_lower.get(key, pool)
+        if canonical != pool:
+            renamed.append((pool, canonical))
+        elif canonical_by_lower and key not in canonical_by_lower:
+            missing.append(pool)
+        unique.append(canonical)
+
+    if renamed:
+        _log_info(
+            "Canonicalized shiny itempool casing: "
+            + ", ".join(f"{old} -> {new}" for old, new in renamed)
+        )
+    if missing:
+        _log_warning(
+            "Shiny itempool(s) not present in item_pools.json; using embedded names: "
+            + ", ".join(missing)
+        )
+    return tuple(unique)
+
+
+def _spawn_all_shinies(level: int, pools: Sequence[str] = SHINY_ITEMPOOLS) -> int:
     world = _get_world()
     pc = _get_runtime_pc()
     if world is None or pc is None:
@@ -266,8 +317,9 @@ def _spawn_all_shinies(level: int, pools: Sequence[str] = SHINY_ITEMPOOLS) -> No
     spawned = 0
     failed: list[str] = []
 
-    unique_pools = tuple(dict.fromkeys(str(pool) for pool in pools if str(pool).strip()))
-    duplicate_count = len(pools) - len(unique_pools)
+    raw_pools = tuple(str(pool).strip() for pool in pools if str(pool).strip())
+    unique_pools = _canonical_shiny_itempools(raw_pools)
+    duplicate_count = len(raw_pools) - len(unique_pools)
     if duplicate_count:
         _log_info(f"Skipped {duplicate_count} duplicate shiny itempool entries.")
 
@@ -285,9 +337,10 @@ def _spawn_all_shinies(level: int, pools: Sequence[str] = SHINY_ITEMPOOLS) -> No
         _log_warning(f"Spawned {spawned}/{len(unique_pools)} shiny itempools. Failed: {', '.join(failed)}")
     else:
         _log_info(f"Spawned all {spawned} shiny itempools.")
+    return spawned
 
 
-def drop_all_shinies(level: int = DEFAULT_ITEM_LEVEL) -> None:
+def drop_all_shinies(level: int = DEFAULT_ITEM_LEVEL) -> int:
     """Spawn every embedded shiny itempool near the local player."""
     level = max(1, min(MAX_ITEM_LEVEL, int(level)))
-    _spawn_all_shinies(level)
+    return _spawn_all_shinies(level)

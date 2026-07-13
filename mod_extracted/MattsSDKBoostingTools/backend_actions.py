@@ -658,8 +658,8 @@ def close_golden_chest() -> dict[str, Any]:
 
 def drop_all_shinies_selected() -> dict[str, Any]:
     try:
-        drop_all_shinies(_SHINY_DEFAULT_LEVEL)
-        return {"ok": True, "message": "Drop All Shinies requested."}
+        count = drop_all_shinies(_SHINY_DEFAULT_LEVEL)
+        return {"ok": True, "message": f"Drop All Shinies requested for {count} shiny itempool(s)."}
     except Exception as exc:
         return {"ok": False, "message": f"Drop All Shinies failed: {exc!r}"}
 
