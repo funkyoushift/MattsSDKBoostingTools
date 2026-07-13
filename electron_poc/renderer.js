@@ -46,6 +46,8 @@ const els = {
   currencyAmount: document.getElementById("currencyAmount"),
   currencyKind: document.getElementById("currencyKind"),
   deliveryOutput: document.getElementById("deliveryOutput"),
+  bundledSdkStatus: document.getElementById("bundledSdkStatus"),
+  bundledSdkVersion: document.getElementById("bundledSdkVersion"),
   devActorCategoryButtons: document.getElementById("devActorCategoryButtons"),
   devActorClass: document.getElementById("devActorClass"),
   devActorCount: document.getElementById("devActorCount"),
@@ -78,6 +80,9 @@ const els = {
   devRefreshLogBtn: document.getElementById("devRefreshLogBtn"),
   devSpawnerOutput: document.getElementById("devSpawnerOutput"),
   devSpawnerWarning: document.getElementById("devSpawnerWarning"),
+  electronAppCurrent: document.getElementById("electronAppCurrent"),
+  electronAppInstaller: document.getElementById("electronAppInstaller"),
+  electronAppLatest: document.getElementById("electronAppLatest"),
   editorFrame: document.getElementById("editorFrame"),
   itempoolCategory: document.getElementById("itempoolCategory"),
   itempoolCount: document.getElementById("itempoolCount"),
@@ -87,6 +92,8 @@ const els = {
   itempoolSearch: document.getElementById("itempoolSearch"),
   itempoolSummary: document.getElementById("itempoolSummary"),
   inventoryStatus: document.getElementById("inventoryStatus"),
+  installedSdkPath: document.getElementById("installedSdkPath"),
+  installedSdkStatus: document.getElementById("installedSdkStatus"),
   reportActual: document.getElementById("reportActual"),
   reportCopyBtn: document.getElementById("reportCopyBtn"),
   reportDescription: document.getElementById("reportDescription"),
@@ -1668,6 +1675,60 @@ function versionValue(value) {
   return value === null || value === undefined || value === "" ? "unavailable" : String(value);
 }
 
+function shortHash(value) {
+  const text = String(value || "");
+  return text ? text.slice(0, 10) : "no hash";
+}
+
+function installedSdkKind(installed) {
+  const status = String(installed && installed.status ? installed.status : "");
+  if (status === "current") return "ok";
+  if (status === "different" || status === "missing" || status === "not_detected") return "warning";
+  return installed && installed.available ? "ok" : "warning";
+}
+
+function renderUpdateCards(info) {
+  const data = info || {};
+  const remote = data.remote || data.remoteManifest || {};
+  const updater = data.updateState || data.updater || state.latestUpdateState || {};
+  const updaterStatus = String(updater && updater.status ? updater.status : "idle");
+  const updaterMessage = updater && updater.message ? updater.message : "Installer updater has not checked yet.";
+  const bundled = data.bundledSdkmod || {};
+  const installed = data.installedSdkmod || {};
+  const localManifest = data.localManifest || data.local || {};
+  const remotePackage = remote.package_version || "";
+
+  setLine(els.electronAppCurrent, `Current: app ${versionValue(data.appVersion)} | package ${versionValue(data.packageVersion || localManifest.package_version)}`);
+  setLine(
+    els.electronAppLatest,
+    remotePackage ? `Latest package: ${remotePackage}` : "Latest package: not checked yet.",
+    data.updateAvailable ? "warning" : ""
+  );
+  setLine(
+    els.electronAppInstaller,
+    `Installer updater: ${updaterMessage}`,
+    updaterStatus === "available" || updaterStatus === "progress" ? "warning" : updaterStatus === "error" ? "bad" : updaterStatus === "downloaded" || updaterStatus === "none" ? "ok" : ""
+  );
+
+  setLine(els.bundledSdkVersion, `Version: ${versionValue(data.sdkmodVersion || localManifest.sdkmod_version)}`);
+  setLine(
+    els.bundledSdkStatus,
+    bundled.available ? `Bundled file: ready (${shortHash(bundled.sha256)})` : "Bundled file: missing from this app build.",
+    bundled.available ? "ok" : "bad"
+  );
+
+  setLine(
+    els.installedSdkStatus,
+    installed.message || "Installed file: not detected yet.",
+    installedSdkKind(installed)
+  );
+  setLine(
+    els.installedSdkPath,
+    installed.path ? `Path: ${installed.path}` : "Path: not detected yet.",
+    installed.path ? "" : "warning"
+  );
+}
+
 function renderVersionInfo(info) {
   state.versionInfo = info || null;
   const data = info || {};
@@ -1681,6 +1742,7 @@ function renderVersionInfo(info) {
   const text = `${parts.join(" | ")} | ${required}`;
   setLine(els.appVersionLine, text);
   setLine(els.versionSummary, text, data.bundledSdkmod && data.bundledSdkmod.available ? "ok" : "warning");
+  renderUpdateCards(data);
 }
 
 async function refreshVersionInfo() {
@@ -1716,6 +1778,9 @@ function renderUpdateState(updateState) {
   } else if (status === "progress") {
     setLine(els.updateSummary, `${message}${progress}`, "warning");
   }
+  if (state.versionInfo) {
+    renderUpdateCards({ ...state.versionInfo, updateState });
+  }
 }
 
 async function checkUpdates() {
@@ -1724,14 +1789,7 @@ async function checkUpdates() {
   const result = await window.msbt.checkUpdates();
   setOutput(els.updateOutput, result);
   state.latestDownloadUrl = result.latestUrl || state.latestDownloadUrl;
-  renderVersionInfo({
-    appVersion: result.appVersion,
-    packageVersion: result.packageVersion,
-    sdkmodVersion: result.sdkmodVersion,
-    resourcesVersion: result.resourcesVersion,
-    sdkRequired: result.local && result.local.sdk_required ? result.local.sdk_required : "oak2-mod-manager v0.3",
-    bundledSdkmod: state.versionInfo && state.versionInfo.bundledSdkmod ? state.versionInfo.bundledSdkmod : {}
-  });
+  renderVersionInfo(result);
   if (result.updater) renderUpdateState(result.updater);
   if (!result.ok) {
     setLine(els.updateSummary, result.message || "Update check failed.", "bad");
@@ -1769,6 +1827,9 @@ async function detectSdkModsFolder() {
   const result = await window.msbt.detectSdkMods();
   if (result && result.path) setTextValue(els.sdkModsPath, result.path);
   setOutput(els.updateOutput, result);
+  if (result && result.installedSdkmod) {
+    renderVersionInfo({ ...(state.versionInfo || {}), installedSdkmod: { ...result.installedSdkmod, sdkModsPath: result.path } });
+  }
   setLine(els.sdkInstallSummary, result.message || "sdk_mods detection finished.", result.ok ? "ok" : "warning");
 }
 
@@ -1777,6 +1838,9 @@ async function browseSdkModsFolder() {
   const result = await window.msbt.browseSdkMods();
   if (result && result.path) setTextValue(els.sdkModsPath, result.path);
   setOutput(els.updateOutput, result);
+  if (result && result.installedSdkmod) {
+    renderVersionInfo({ ...(state.versionInfo || {}), installedSdkmod: { ...result.installedSdkmod, sdkModsPath: result.path } });
+  }
   setLine(els.sdkInstallSummary, result.message || "sdk_mods folder selection finished.", result.ok ? "ok" : "warning");
 }
 
@@ -1786,6 +1850,9 @@ async function installBundledSdkMod() {
   setLine(els.sdkInstallSummary, "Installing bundled MattsSDKBoostingTools.sdkmod...", "warning");
   const result = await window.msbt.installSdkMod(getValue(els.sdkModsPath));
   setOutput(els.updateOutput, result);
+  if (result && result.installedSdkmod) {
+    renderVersionInfo({ ...(state.versionInfo || {}), installedSdkmod: { ...result.installedSdkmod, sdkModsPath: result.path } });
+  }
   setLine(els.sdkInstallSummary, result.message || "SDK mod install/update finished.", result.ok ? "ok" : "bad");
 }
 

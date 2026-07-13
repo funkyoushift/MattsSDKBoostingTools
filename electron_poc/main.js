@@ -234,6 +234,67 @@ async function safeFileHash(filePath) {
   }
 }
 
+async function bundledSdkmodInfo() {
+  const available = await fileExists(BUNDLED_SDKMOD_PATH);
+  return {
+    available,
+    path: BUNDLED_SDKMOD_PATH,
+    sha256: available ? await safeFileHash(BUNDLED_SDKMOD_PATH) : "",
+    status: available ? "bundled" : "missing",
+    message: available
+      ? "Bundled MattsSDKBoostingTools.sdkmod is available in this app build."
+      : "Bundled MattsSDKBoostingTools.sdkmod is missing from this app build."
+  };
+}
+
+async function installedSdkmodInfo(destination, bundledHash = "") {
+  const installed = await fileExists(destination);
+  if (!installed) {
+    return {
+      available: false,
+      path: destination,
+      sha256: "",
+      status: "missing",
+      matchesBundled: false,
+      message: "No installed MattsSDKBoostingTools.sdkmod found at this sdk_mods path."
+    };
+  }
+
+  const sha256 = await safeFileHash(destination);
+  const matchesBundled = Boolean(bundledHash && sha256 && sha256 === bundledHash);
+  const status = matchesBundled ? "current" : bundledHash ? "different" : "detected";
+  return {
+    available: true,
+    path: destination,
+    sha256,
+    status,
+    matchesBundled,
+    message: matchesBundled
+      ? "Installed SDK mod matches the bundled Electron beta SDK mod."
+      : bundledHash
+        ? "Installed SDK mod differs from the bundled Electron beta SDK mod."
+        : "Installed SDK mod was detected; bundled comparison is unavailable."
+  };
+}
+
+async function detectInstalledSdkmodInfo(bundledHash = "") {
+  for (const candidate of BL4_SDK_MODS_CANDIDATES) {
+    const info = await sdkModsPathInfo(candidate, bundledHash);
+    if (info.ok || (info.installedSdkmod && info.installedSdkmod.available)) {
+      return { ...info.installedSdkmod, sdkModsPath: info.path };
+    }
+  }
+  return {
+    available: false,
+    path: "",
+    sdkModsPath: "",
+    sha256: "",
+    status: "not_detected",
+    matchesBundled: false,
+    message: "No Borderlands 4 sdk_mods folder was auto-detected."
+  };
+}
+
 async function localVersionInfo() {
   let manifest = {};
   try {
@@ -241,6 +302,8 @@ async function localVersionInfo() {
   } catch (error) {
     manifest = { package_version: "unknown", error: String(error && error.message ? error.message : error) };
   }
+  const bundledSdkmod = await bundledSdkmodInfo();
+  const installedSdkmod = await detectInstalledSdkmodInfo(bundledSdkmod.sha256);
   return {
     ok: true,
     appVersion: app.getVersion(),
@@ -254,10 +317,8 @@ async function localVersionInfo() {
     sdkRequiredUrl: manifest.sdk_required_url || "https://github.com/bl-sdk/oak2-mod-manager/releases/tag/v0.3",
     packaged: app.isPackaged,
     localManifest: manifest,
-    bundledSdkmod: {
-      available: await fileExists(BUNDLED_SDKMOD_PATH),
-      sha256: await safeFileHash(BUNDLED_SDKMOD_PATH)
-    },
+    bundledSdkmod,
+    installedSdkmod,
     updateState: latestUpdateState
   };
 }
@@ -282,7 +343,7 @@ function normalizeSdkModsPath(rawPath) {
   return path.resolve(value);
 }
 
-async function sdkModsPathInfo(rawPath) {
+async function sdkModsPathInfo(rawPath, bundledHash = "") {
   const sdkModsPath = normalizeSdkModsPath(rawPath);
   if (!sdkModsPath) return { ok: false, message: "No sdk_mods path was provided." };
   const baseName = path.basename(sdkModsPath).toLowerCase();
@@ -290,10 +351,13 @@ async function sdkModsPathInfo(rawPath) {
     return { ok: false, path: sdkModsPath, message: "Choose the Borderlands 4 sdk_mods folder." };
   }
   const exists = await fileExists(sdkModsPath);
+  const destination = path.join(sdkModsPath, "MattsSDKBoostingTools.sdkmod");
+  const bundledSha = bundledHash || (await bundledSdkmodInfo()).sha256;
   return {
     ok: exists,
     path: sdkModsPath,
-    destination: path.join(sdkModsPath, "MattsSDKBoostingTools.sdkmod"),
+    destination,
+    installedSdkmod: await installedSdkmodInfo(destination, bundledSha),
     message: exists ? "sdk_mods folder found." : "sdk_mods folder does not exist."
   };
 }
@@ -333,11 +397,13 @@ ipcMain.handle("app:installSdkMod", async (_event, rawPath) => {
   if (!info.ok) return info;
   await fs.mkdir(info.path, { recursive: true });
   await fs.copyFile(BUNDLED_SDKMOD_PATH, info.destination);
+  const bundled = await bundledSdkmodInfo();
   return {
     ok: true,
     path: info.path,
     destination: info.destination,
     sha256: await safeFileHash(info.destination),
+    installedSdkmod: await installedSdkmodInfo(info.destination, bundled.sha256),
     message: "MattsSDKBoostingTools.sdkmod installed/updated. Restart Borderlands 4 if it was open."
   };
 });
@@ -693,6 +759,9 @@ ipcMain.handle("app:checkUpdates", async () => {
       packageVersion: versionInfo.packageVersion,
       sdkmodVersion: versionInfo.sdkmodVersion,
       resourcesVersion: versionInfo.resourcesVersion,
+      sdkRequired: versionInfo.sdkRequired,
+      bundledSdkmod: versionInfo.bundledSdkmod,
+      installedSdkmod: versionInfo.installedSdkmod,
       updater,
       updateAvailable: Boolean(remoteVersion && localVersion && remoteVersion !== localVersion),
       latestUrl: remote.download_url || "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest"
@@ -706,6 +775,9 @@ ipcMain.handle("app:checkUpdates", async () => {
       packageVersion: versionInfo.packageVersion,
       sdkmodVersion: versionInfo.sdkmodVersion,
       resourcesVersion: versionInfo.resourcesVersion,
+      sdkRequired: versionInfo.sdkRequired,
+      bundledSdkmod: versionInfo.bundledSdkmod,
+      installedSdkmod: versionInfo.installedSdkmod,
       updater: latestUpdateState,
       updateAvailable: false,
       latestUrl: "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest",

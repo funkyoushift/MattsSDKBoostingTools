@@ -726,6 +726,24 @@
         <h2>Electron Beta Updates</h2>
         <div id="versionSummary" class="status-line">Loading local version info...</div>
         <div id="updateSummary" class="status-line">No update check yet.</div>
+        <div class="update-card-grid">
+          <div class="update-card">
+            <h3>Electron App</h3>
+            <div id="electronAppCurrent" class="version-detail">Current: checking...</div>
+            <div id="electronAppLatest" class="version-detail">Latest: not checked yet.</div>
+            <div id="electronAppInstaller" class="version-detail">Installer updater: not checked yet.</div>
+          </div>
+          <div class="update-card">
+            <h3>Bundled SDK Mod</h3>
+            <div id="bundledSdkVersion" class="version-detail">Version: checking...</div>
+            <div id="bundledSdkStatus" class="version-detail">Bundled file: checking...</div>
+          </div>
+          <div class="update-card">
+            <h3>Installed SDK Mod</h3>
+            <div id="installedSdkStatus" class="version-detail">Installed file: detecting...</div>
+            <div id="installedSdkPath" class="version-detail">Path: not detected yet.</div>
+          </div>
+        </div>
         <div class="button-row wrap">
           <button id="updateDownloadBtn">Download Electron Update</button>
           <button id="updateInstallBtn">Restart / Install Downloaded Update</button>

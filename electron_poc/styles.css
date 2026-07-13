@@ -343,6 +343,46 @@ iframe {
   border-color: var(--purple);
 }
 
+.update-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.update-card {
+  border: 1px solid var(--line);
+  background: #0b1220;
+  padding: 12px;
+  min-width: 0;
+}
+
+.update-card h3 {
+  color: var(--gold);
+  margin-bottom: 8px;
+}
+
+.version-detail {
+  border-top: 1px solid rgba(255, 255, 255, .08);
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+  padding: 7px 0;
+}
+
+.version-detail.ok {
+  color: var(--green);
+}
+
+.version-detail.warning {
+  color: var(--gold);
+}
+
+.version-detail.bad {
+  color: var(--red);
+}
+
 .editor-panel {
   display: flex;
   flex-direction: column;
@@ -742,6 +782,7 @@ iframe {
   .grid.bookmark-grid,
   .grid.bl4-grid,
   .grid.sidecar,
+  .update-card-grid,
   .inline-fields {
     grid-template-columns: 1fr;
   }
