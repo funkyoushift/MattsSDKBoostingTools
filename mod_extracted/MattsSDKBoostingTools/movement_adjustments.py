@@ -41,10 +41,17 @@ _SPEED_FLOAT_FIELDS = (
     "MaxCustomMovementSpeed",
     "MaxFlySpeed",
     "MaxSwimSpeed",
+    # Older BLImGui movement tuning wrote these names directly.  Keep them in
+    # the shared backend so Reset Defaults clears speed boosts on every build.
+    "GroundSpeed",
+    "RunSpeed",
+    "SprintSpeed",
+    "MoveSpeed",
 )
 _SPEED_ATTRIBUTE_FIELDS = (
     "MaxGroundSpeedScale",
     "MovementSpeedScale",
+    "PawnMovementSpeedScale",
     "MoveSpeedScale",
     "GroundSpeedScale",
     "SpeedScale",
