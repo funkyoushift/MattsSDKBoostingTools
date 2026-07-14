@@ -58,6 +58,9 @@ const LOCAL_MANIFEST_PATH = app.isPackaged
 const BUNDLED_SDKMOD_PATH = app.isPackaged
   ? path.join(RESOURCE_ROOT, "sdkmod", "MattsSDKBoostingTools.sdkmod")
   : path.join(SOURCE_ROOT, "MattsSDKBoostingTools.sdkmod");
+const BUNDLED_ACTOR_SCRIPT_DEPLOYER_PATH = app.isPackaged
+  ? path.join(RESOURCE_ROOT, "sdkmods", "ActorScriptDeployer")
+  : path.join(SOURCE_ROOT, "third_party", "sdk_mods", "ActorScriptDeployer");
 const ALLOWED_RESOURCE_FILES = new Set([
   "item_pools.json",
   "travelmaps_flat.json",
@@ -454,6 +457,34 @@ async function bundledSdkmodInfo() {
   };
 }
 
+async function bundledActorScriptDeployerInfo() {
+  const initPath = path.join(BUNDLED_ACTOR_SCRIPT_DEPLOYER_PATH, "__init__.py");
+  const projectPath = path.join(BUNDLED_ACTOR_SCRIPT_DEPLOYER_PATH, "pyproject.toml");
+  const available = (await fileExists(initPath)) && (await fileExists(projectPath));
+  return {
+    available,
+    path: BUNDLED_ACTOR_SCRIPT_DEPLOYER_PATH,
+    status: available ? "bundled" : "missing",
+    message: available
+      ? "Bundled ActorScriptDeployer is available in this app build."
+      : "Bundled ActorScriptDeployer folder is missing from this app build."
+  };
+}
+
+async function installedActorScriptDeployerInfo(destination) {
+  const initPath = path.join(destination, "__init__.py");
+  const projectPath = path.join(destination, "pyproject.toml");
+  const available = (await fileExists(initPath)) && (await fileExists(projectPath));
+  return {
+    available,
+    path: destination,
+    status: available ? "detected" : "missing",
+    message: available
+      ? "ActorScriptDeployer folder is installed at this sdk_mods path."
+      : "ActorScriptDeployer folder is not installed at this sdk_mods path."
+  };
+}
+
 async function installedSdkmodInfo(destination, bundledHash = "") {
   const installed = await fileExists(destination);
   if (!installed) {
@@ -510,6 +541,7 @@ async function localVersionInfo() {
     manifest = { package_version: "unknown", error: String(error && error.message ? error.message : error) };
   }
   const bundledSdkmod = await bundledSdkmodInfo();
+  const bundledActorScriptDeployer = await bundledActorScriptDeployerInfo();
   const installedSdkmod = await detectInstalledSdkmodInfo(bundledSdkmod.sha256);
   return {
     ok: true,
@@ -525,6 +557,7 @@ async function localVersionInfo() {
     packaged: app.isPackaged,
     localManifest: manifest,
     bundledSdkmod,
+    bundledActorScriptDeployer,
     installedSdkmod,
     updateState: latestUpdateState
   };
@@ -559,12 +592,15 @@ async function sdkModsPathInfo(rawPath, bundledHash = "") {
   }
   const exists = await fileExists(sdkModsPath);
   const destination = path.join(sdkModsPath, "MattsSDKBoostingTools.sdkmod");
+  const actorScriptDeployerDestination = path.join(sdkModsPath, "ActorScriptDeployer");
   const bundledSha = bundledHash || (await bundledSdkmodInfo()).sha256;
   return {
     ok: exists,
     path: sdkModsPath,
     destination,
+    actorScriptDeployerDestination,
     installedSdkmod: await installedSdkmodInfo(destination, bundledSha),
+    installedActorScriptDeployer: await installedActorScriptDeployerInfo(actorScriptDeployerDestination),
     message: exists ? "sdk_mods folder found." : "sdk_mods folder does not exist."
   };
 }
@@ -599,6 +635,10 @@ ipcMain.handle("app:installSdkMod", async (_event, rawPath) => {
   if (!sourceExists) {
     return { ok: false, message: "Bundled MattsSDKBoostingTools.sdkmod was not found in this app build." };
   }
+  const bundledActorScriptDeployer = await bundledActorScriptDeployerInfo();
+  if (!bundledActorScriptDeployer.available) {
+    return { ok: false, message: "Bundled ActorScriptDeployer folder was not found in this app build." };
+  }
   if (await isBorderlandsRunning()) {
     return { ok: false, message: "Borderlands4.exe is running. Close the game before installing or updating the SDK mod." };
   }
@@ -606,14 +646,22 @@ ipcMain.handle("app:installSdkMod", async (_event, rawPath) => {
   if (!info.ok) return info;
   await fs.mkdir(info.path, { recursive: true });
   await fs.copyFile(BUNDLED_SDKMOD_PATH, info.destination);
+  await fs.rm(info.actorScriptDeployerDestination, { recursive: true, force: true });
+  await fs.cp(BUNDLED_ACTOR_SCRIPT_DEPLOYER_PATH, info.actorScriptDeployerDestination, {
+    recursive: true,
+    force: true,
+    filter: (source) => !/(^|[\\/])__pycache__($|[\\/])|\.pyc$/i.test(source)
+  });
   const bundled = await bundledSdkmodInfo();
   return {
     ok: true,
     path: info.path,
     destination: info.destination,
+    actorScriptDeployerDestination: info.actorScriptDeployerDestination,
     sha256: await safeFileHash(info.destination),
     installedSdkmod: await installedSdkmodInfo(info.destination, bundled.sha256),
-    message: "MattsSDKBoostingTools.sdkmod installed/updated. Restart Borderlands 4 if it was open."
+    installedActorScriptDeployer: await installedActorScriptDeployerInfo(info.actorScriptDeployerDestination),
+    message: "MattsSDKBoostingTools.sdkmod and ActorScriptDeployer installed/updated. Restart Borderlands 4 if it was open."
   };
 });
 

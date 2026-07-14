@@ -52,6 +52,16 @@
         "to": "sdkmod/MattsSDKBoostingTools.sdkmod"
       },
       {
+        "from": "../third_party/sdk_mods/ActorScriptDeployer",
+        "to": "sdkmods/ActorScriptDeployer",
+        "filter": [
+          "**/*",
+          "!__pycache__/**",
+          "!**/__pycache__/**",
+          "!*.pyc"
+        ]
+      },
+      {
         "from": "../releases/latest.json",
         "to": "releases/latest.json"
       }

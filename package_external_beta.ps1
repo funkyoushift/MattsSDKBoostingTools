@@ -10,6 +10,7 @@ $MattEditorSource = Join-Path $AppSource "matt_editor"
 $MattEditorAdapter = Join-Path $AppSource "matt_editor_adapter.js"
 $SdkMod = Join-Path $RepoRoot "MattsSDKBoostingTools.sdkmod"
 $SdkBuildScript = Join-Path $RepoRoot "build_sdkmod.ps1"
+$ActorScriptDeployerSource = Join-Path $RepoRoot "third_party\sdk_mods\ActorScriptDeployer"
 $LegacyZipPath = Join-Path $RepoRoot "MSBT_External_Beta.zip"
 $ZipPath = $LegacyZipPath
 $ReleasesFolder = Join-Path $RepoRoot "releases"
@@ -60,6 +61,9 @@ if (Test-Path $SdkBuildScript) {
 if (-not (Test-Path $SdkMod)) {
     throw "SDK mod package not found: $SdkMod"
 }
+if (-not (Test-Path (Join-Path $ActorScriptDeployerSource "__init__.py"))) {
+    throw "ActorScriptDeployer dependency folder not found: $ActorScriptDeployerSource"
+}
 if (-not (Test-Path $ResourcesSource)) {
     throw "Current external app resources folder not found: $ResourcesSource"
 }
@@ -92,6 +96,7 @@ Remove-Item -Recurse -Force (Join-Path $ExternalFolder "matt_editor") -ErrorActi
 Copy-Item -Recurse -Force $MattEditorSource (Join-Path $ExternalFolder "matt_editor")
 Copy-Item -Force $MattEditorAdapter (Join-Path $ExternalFolder "matt_editor_adapter.js")
 Copy-Item -Force $SdkMod (Join-Path $PackageRoot "MattsSDKBoostingTools.sdkmod")
+Copy-Item -Recurse -Force $ActorScriptDeployerSource (Join-Path $PackageRoot "ActorScriptDeployer")
 Copy-Item -Force (Join-Path $RepoRoot "Launch_MSBT_External_App.bat") (Join-Path $PackageRoot "Launch_MSBT_External_App.bat")
 
 $GitCommit = ""
@@ -154,8 +159,9 @@ https://github.com/bl-sdk/oak2-mod-manager/releases/tag/v0.3
 Install:
 1. Install or update to oak2-mod-manager v0.3.
 2. Copy MattsSDKBoostingTools.sdkmod into your Borderlands 4 sdk_mods folder.
-3. Copy the MattsSDKBoostingTools_external folder into the same sdk_mods folder.
-4. Launch the external app with Launch_MSBT_External_App.bat or the in-game command msbt_external_app.
+3. Copy the ActorScriptDeployer folder into the same sdk_mods folder. Dev Spawner needs this dependency.
+4. Copy the MattsSDKBoostingTools_external folder into the same sdk_mods folder.
+5. Launch the external app with Launch_MSBT_External_App.bat or the in-game command msbt_external_app.
 
 Python is not required when MattsBoostingToolsExternal.exe is present.
 The resources folder stays beside the exe so bookmarks/cache files remain writable.

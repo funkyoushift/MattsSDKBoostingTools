@@ -43,6 +43,9 @@ Expected layout:
 ```text
 Borderlands 4/
   sdk_mods/
+    ActorScriptDeployer/
+      __init__.py
+      pyproject.toml
     MattsSDKBoostingTools.sdkmod
     MattsSDKBoostingTools_external/
       MattsBoostingToolsExternal.exe
@@ -50,7 +53,7 @@ Borderlands 4/
       resources/
 ```
 
-Manual ZIP users can still extract the portable package and copy `MattsSDKBoostingTools.sdkmod` into `sdk_mods` manually.
+Manual ZIP users can still extract the portable package and copy `MattsSDKBoostingTools.sdkmod` plus the bundled `ActorScriptDeployer/` folder into `sdk_mods` manually. The Dev Spawner tab needs ActorScriptDeployer.
 
 The current public direction is:
 
@@ -67,6 +70,9 @@ Legacy/manual portable packages contain:
 ```text
 MSBT_External_Beta/
   Launch_MSBT_External_App.bat
+  ActorScriptDeployer/
+    __init__.py
+    pyproject.toml
   MattsSDKBoostingTools.sdkmod
   MattsSDKBoostingTools_external/
     MattsBoostingToolsExternal.exe

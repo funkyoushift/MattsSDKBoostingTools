@@ -1,0 +1,11 @@
+[project]
+name = "actor_script_deployer"
+version = "28"
+authors = [{ name = "Matt" }]
+description = "Spawn deployable scripted actors from live templates. Adds ASD_spawnai --zoffset/--scale support."
+
+[tool.sdkmod]
+name = "ActorScriptDeployer"
+license = { name = "MIT", url = "https://choosealicense.com/licenses/mit/" }
+version = "28"
+coop_support = "ClientSide"

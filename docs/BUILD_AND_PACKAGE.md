@@ -71,11 +71,18 @@ The package contains:
 ```text
 MSBT_External_Beta/
   Launch_MSBT_External_App.bat
+  ActorScriptDeployer/
+    __init__.py
+    pyproject.toml
   MattsSDKBoostingTools.sdkmod
   MattsSDKBoostingTools_external/
     MattsBoostingToolsExternal.exe
     resources/
 ```
+
+`ActorScriptDeployer/` is bundled as a folder-form SDK mod dependency for the
+Dev Spawner tab. Manual ZIP users should copy it into the same `sdk_mods`
+folder as `MattsSDKBoostingTools.sdkmod`.
 
 ## Source Mode
 

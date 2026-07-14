@@ -61,12 +61,13 @@ Production update testing requires a GitHub Release containing the Electron buil
 
 Installer builds bundle the current `MattsSDKBoostingTools.sdkmod`. The Updates tab provides an explicit Install / Update SDK Mod action that:
 
-- copies only `MattsSDKBoostingTools.sdkmod`;
+- copies `MattsSDKBoostingTools.sdkmod`;
+- copies the bundled `ActorScriptDeployer` folder required by the Dev Spawner tab;
 - preserves unrelated mods;
 - refuses to run while `Borderlands4.exe` is open;
 - supports auto-detecting the common Steam `sdk_mods` folder or pasting another `sdk_mods` path.
 
-BLImGui remains optional. ActorScriptDeployer is not bundled by this installer slice.
+BLImGui remains optional. ActorScriptDeployer is bundled as a folder-form SDK mod dependency so Dev Spawner can import it after the SDK install/update action runs.
 
 ## Current Local Features
 
@@ -81,6 +82,6 @@ BLImGui remains optional. ActorScriptDeployer is not bundled by this installer s
 
 ## Known Beta Limits
 
-- The Matt editor host and some local serial/validator helpers still require a usable Python runtime unless a future build bundles Python beside the Electron app.
+- The Electron build bundles a portable Python runtime for local serial, validator, and Matt editor helper code.
 - The Electron installer/update path is a foundation, not a published release flow. Do not claim update delivery is production-proven until it is tested against a controlled GitHub Release.
 - Electron is still catching up to every Tkinter tab and workflow.
