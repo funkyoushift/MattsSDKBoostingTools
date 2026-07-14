@@ -3,8 +3,8 @@
     "app_version":  "0.2.3-beta.3",
     "sdkmod_version":  "0.2.3-beta.3",
     "resources_version":  "0.2.3-beta.3",
-    "git_commit":  "7fe7e12f8b603061024101d887f27a65c013edfe",
-    "built_at_utc":  "2026-07-14T05:49:25Z",
+    "git_commit":  "bc85e4e0ec8350648cf390b8613c2f0dbb9ca525",
+    "built_at_utc":  "2026-07-14T21:04:26Z",
     "sdk_required":  "oak2-mod-manager v0.3",
     "sdk_required_url":  "https://github.com/bl-sdk/oak2-mod-manager/releases/tag/v0.3",
     "download_url":  "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v0.2.3-beta.3/MattsSDKBoostingTools-Electron-Portable-v0.2.3-beta.3-win-x64.zip",
@@ -17,7 +17,7 @@
     "release_url":  "https://github.com/funkyoushift/MattsSDKBoostingTools/releases",
     "latest_manifest_url":  "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/latest.json",
     "external_exe_sha256":  "8d0e4c3b49749966e97d396f38bc2cc45787047a70b22a484bf94ad0ffe82047",
-    "sdkmod_sha256":  "061264b39b75aae5744399f89744e2f30abeff38a467deaaf397eadfcc80abd8",
+    "sdkmod_sha256":  "1cc06f193fffb8909c06b59138d403a835695933b11b686ff16478f36925a2b4",
     "ui_layout_sha256":  "e497ab3fa08b8a94ed2907abc46f32f75fa7da5bd6c77670e501ad515baa1ecb",
-    "beta_zip_sha256":  "5f46121e8d5911ffb4c3a4eb2867ae65fe49a730ca5c5f61b95cfc3d50f7c1a7"
+    "beta_zip_sha256":  "e4cdd64e7623655a2ef03498ea3adba7709db130d7146bc0f5bf4203fcbff602"
 }
