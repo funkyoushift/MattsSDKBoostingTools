@@ -95,7 +95,7 @@ const SDK_LOG_CANDIDATES = [
   )
 ].filter(Boolean);
 const SDK_LOG_FILTER = /MattsSDKBoostingTools|ActorScriptDeployer|ASD_|dev_spawner|spawnai|ERR\||WARN\||Traceback|Exception|did not report/i;
-const BL4_SDK_MODS_CANDIDATES = [
+const BL4_DEFAULT_SDK_MODS_CANDIDATES = [
   path.join(
     process.env["ProgramFiles(x86)"] || "C:\\Program Files (x86)",
     "Steam",
@@ -113,6 +113,63 @@ const BL4_SDK_MODS_CANDIDATES = [
     "sdk_mods"
   )
 ].filter(Boolean);
+
+function uniquePaths(paths) {
+  const seen = new Set();
+  const out = [];
+  for (const value of paths) {
+    const raw = String(value || "").trim();
+    if (!raw) continue;
+    const resolved = path.resolve(raw);
+    const key = process.platform === "win32" ? resolved.toLowerCase() : resolved;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(resolved);
+  }
+  return out;
+}
+
+function parseSteamLibraryFoldersVdf(text) {
+  const roots = [];
+  const re = /"path"\s+"([^"]+)"/g;
+  let match = re.exec(text || "");
+  while (match) {
+    roots.push(match[1].replace(/\\\\/g, "\\"));
+    match = re.exec(text || "");
+  }
+  return roots;
+}
+
+function steamRootCandidates() {
+  return uniquePaths([
+    path.join(process.env["ProgramFiles(x86)"] || "C:\\Program Files (x86)", "Steam"),
+    path.join(process.env.ProgramFiles || "C:\\Program Files", "Steam")
+  ]);
+}
+
+function steamLibraryRoots() {
+  const roots = [];
+  for (const steamRoot of steamRootCandidates()) {
+    roots.push(steamRoot);
+    const vdfPath = path.join(steamRoot, "steamapps", "libraryfolders.vdf");
+    try {
+      const text = fsSync.readFileSync(vdfPath, "utf8");
+      roots.push(...parseSteamLibraryFoldersVdf(text));
+    } catch {
+      // Steam may not be installed in the default location. Other candidates are still checked.
+    }
+  }
+  return uniquePaths(roots);
+}
+
+function bl4SdkModsCandidates() {
+  const candidates = [...BL4_DEFAULT_SDK_MODS_CANDIDATES];
+  for (const libraryRoot of steamLibraryRoots()) {
+    candidates.push(path.join(libraryRoot, "steamapps", "common", "Borderlands 4", "sdk_mods"));
+    candidates.push(path.join(libraryRoot, "common", "Borderlands 4", "sdk_mods"));
+  }
+  return uniquePaths(candidates);
+}
 
 let mattHostProcess = null;
 let mattHostUrl = "";
@@ -428,7 +485,7 @@ async function installedSdkmodInfo(destination, bundledHash = "") {
 }
 
 async function detectInstalledSdkmodInfo(bundledHash = "") {
-  for (const candidate of BL4_SDK_MODS_CANDIDATES) {
+  for (const candidate of bl4SdkModsCandidates()) {
     const info = await sdkModsPathInfo(candidate, bundledHash);
     if (info.ok || (info.installedSdkmod && info.installedSdkmod.available)) {
       return { ...info.installedSdkmod, sdkModsPath: info.path };
@@ -513,14 +570,16 @@ async function sdkModsPathInfo(rawPath, bundledHash = "") {
 }
 
 ipcMain.handle("app:detectSdkMods", async () => {
-  for (const candidate of BL4_SDK_MODS_CANDIDATES) {
+  const candidates = bl4SdkModsCandidates();
+  for (const candidate of candidates) {
     const info = await sdkModsPathInfo(candidate);
     if (info.ok) return info;
   }
   return {
     ok: false,
     path: "",
-    message: "Could not auto-detect Borderlands 4 sdk_mods. Paste or browse to the sdk_mods folder."
+    candidates,
+    message: "Could not auto-detect Borderlands 4 sdk_mods from the known Steam library folders. Paste or browse to the sdk_mods folder."
   };
 });
 
@@ -771,7 +830,12 @@ function pythonCandidates() {
 }
 
 function runPythonSnippet(pythonExe, code, inputText = "", timeoutMs = 15000) {
-  const args = pythonExe === "py" ? ["-3", "-c", code] : ["-c", code];
+  const bootstrappedCode = [
+    "import sys",
+    `sys.path.insert(0, ${JSON.stringify(EXTERNAL_APP_DIR)})`,
+    code
+  ].join("\n");
+  const args = pythonExe === "py" ? ["-3", "-c", bootstrappedCode] : ["-c", bootstrappedCode];
   const child = spawn(pythonExe, args, {
     cwd: EXTERNAL_APP_DIR,
     stdio: ["pipe", "pipe", "pipe"],

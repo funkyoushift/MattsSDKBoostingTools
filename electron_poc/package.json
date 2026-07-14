@@ -23,9 +23,19 @@
     "files": [
       "**/*",
       "!node_modules/.cache/**",
-      "!*.log"
+      "!*.log",
+      "!vendor/python/**",
+      "!vendor/*.zip",
+      "!vendor/_python_extract/**"
     ],
     "extraResources": [
+      {
+        "from": "vendor/python",
+        "to": "python",
+        "filter": [
+          "**/*"
+        ]
+      },
       {
         "from": "../external_app/v22_parts_codes_fixed",
         "to": "external_app/v22_parts_codes_fixed",

@@ -7,6 +7,9 @@ __pycache__/
 .venv/
 venv/
 node_modules/
+electron_poc/vendor/python/
+electron_poc/vendor/*.zip
+electron_poc/vendor/_python_extract/
 
 # Build/package outputs
 build/
