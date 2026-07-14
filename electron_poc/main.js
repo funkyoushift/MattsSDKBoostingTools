@@ -17,6 +17,11 @@ const {
   writeBookmarks
 } = require("./serial_bookmarks_store");
 const {
+  movementSettingsFilePath,
+  readMovementSettings,
+  writeMovementSettings
+} = require("./movement_settings_store");
+const {
   loadBl4Catalog
 } = require("./bl4_codes_catalog");
 
@@ -599,6 +604,20 @@ ipcMain.handle("app:saveSerialBookmarks", async (_event, payload) => {
   const filePath = bookmarksFilePath(app.getPath("userData"));
   try {
     return await writeBookmarks(filePath, payload || {});
+  } catch (error) {
+    return { ok: false, message: String(error && error.message ? error.message : error) };
+  }
+});
+
+ipcMain.handle("app:loadMovementSettings", async () => {
+  const filePath = movementSettingsFilePath(app.getPath("userData"));
+  return readMovementSettings(filePath);
+});
+
+ipcMain.handle("app:saveMovementSettings", async (_event, payload) => {
+  const filePath = movementSettingsFilePath(app.getPath("userData"));
+  try {
+    return await writeMovementSettings(filePath, payload || {});
   } catch (error) {
     return { ok: false, message: String(error && error.message ? error.message : error) };
   }

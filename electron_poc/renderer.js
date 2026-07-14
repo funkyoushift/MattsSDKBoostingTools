@@ -113,6 +113,7 @@ const els = {
   inventoryStatus: document.getElementById("inventoryStatus"),
   installedSdkPath: document.getElementById("installedSdkPath"),
   installedSdkStatus: document.getElementById("installedSdkStatus"),
+  movementAutoApplySaved: document.getElementById("movementAutoApplySaved"),
   movementDashSpeed: document.getElementById("movementDashSpeed"),
   movementDoubleJumpGoal: document.getElementById("movementDoubleJumpGoal"),
   movementFloorAngle: document.getElementById("movementFloorAngle"),
@@ -123,7 +124,10 @@ const els = {
   movementGravityScale: document.getElementById("movementGravityScale"),
   movementIndividualJumpGoals: document.getElementById("movementIndividualJumpGoals"),
   movementJumpHeight: document.getElementById("movementJumpHeight"),
+  movementLoadSavedBtn: document.getElementById("movementLoadSavedBtn"),
   movementOutput: document.getElementById("movementOutput"),
+  movementSavePresetBtn: document.getElementById("movementSavePresetBtn"),
+  movementSavedSummary: document.getElementById("movementSavedSummary"),
   movementSlideJumpGoal: document.getElementById("movementSlideJumpGoal"),
   movementSpeedScale: document.getElementById("movementSpeedScale"),
   movementSprintJumpGoal: document.getElementById("movementSprintJumpGoal"),
@@ -277,6 +281,9 @@ const state = {
   latestDownloadUrl: "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest",
   manualZipDownloadUrl: "https://github.com/funkyoushift/MattsSDKBoostingTools/releases",
   latestUpdateState: null,
+  movementAutoAppliedThisSession: false,
+  movementAutoApplyOnStart: false,
+  movementSavedPreset: null,
   players: [],
   reportPreviewText: "",
   serialDeliveryIdlePolls: 0,
@@ -457,6 +464,134 @@ function resetMovementControlsToDefaults() {
   setTextValue(els.movementTimeDilation, MOVEMENT_DEFAULTS.timeDilation);
   if (els.movementIndividualJumpGoals) els.movementIndividualJumpGoals.checked = false;
   if (els.movementZeroVaultOnApply) els.movementZeroVaultOnApply.checked = false;
+}
+
+function currentMovementPreset() {
+  return {
+    speedScale: getValue(els.movementSpeedScale) || MOVEMENT_DEFAULTS.speedScale,
+    walkSpeed: getValue(els.movementWalkSpeed) || MOVEMENT_DEFAULTS.walkSpeed,
+    jumpHeight: getValue(els.movementJumpHeight) || MOVEMENT_DEFAULTS.jumpHeight,
+    gravityScale: getValue(els.movementGravityScale) || MOVEMENT_DEFAULTS.gravityScale,
+    stepHeight: getValue(els.movementStepHeight) || MOVEMENT_DEFAULTS.stepHeight,
+    floorAngle: getValue(els.movementFloorAngle) || MOVEMENT_DEFAULTS.floorAngle,
+    floorZ: getValue(els.movementFloorZ) || MOVEMENT_DEFAULTS.floorZ,
+    sprintJumpGoal: getValue(els.movementSprintJumpGoal) || MOVEMENT_DEFAULTS.sprintJumpGoal,
+    doubleJumpGoal: getValue(els.movementDoubleJumpGoal) || MOVEMENT_DEFAULTS.doubleJumpGoal,
+    slideJumpGoal: getValue(els.movementSlideJumpGoal) || MOVEMENT_DEFAULTS.slideJumpGoal,
+    glideSpeed: getValue(els.movementGlideSpeed) || MOVEMENT_DEFAULTS.glideSpeed,
+    glideBoost: getValue(els.movementGlideBoost) || MOVEMENT_DEFAULTS.glideBoost,
+    glideAirControl: getValue(els.movementGlideAirControl) || MOVEMENT_DEFAULTS.glideAirControl,
+    dashSpeed: getValue(els.movementDashSpeed) || MOVEMENT_DEFAULTS.dashSpeed,
+    timeDilation: getValue(els.movementTimeDilation) || MOVEMENT_DEFAULTS.timeDilation,
+    individualJumpGoals: Boolean(els.movementIndividualJumpGoals && els.movementIndividualJumpGoals.checked),
+    zeroVaultOnApply: Boolean(els.movementZeroVaultOnApply && els.movementZeroVaultOnApply.checked)
+  };
+}
+
+function applyMovementPresetToControls(preset) {
+  const source = preset && typeof preset === "object" ? preset : {};
+  setTextValue(els.movementSpeedScale, source.speedScale || MOVEMENT_DEFAULTS.speedScale);
+  setTextValue(els.movementWalkSpeed, source.walkSpeed || MOVEMENT_DEFAULTS.walkSpeed);
+  setTextValue(els.movementJumpHeight, source.jumpHeight || MOVEMENT_DEFAULTS.jumpHeight);
+  setTextValue(els.movementGravityScale, source.gravityScale || MOVEMENT_DEFAULTS.gravityScale);
+  setTextValue(els.movementStepHeight, source.stepHeight || MOVEMENT_DEFAULTS.stepHeight);
+  setTextValue(els.movementFloorAngle, source.floorAngle || MOVEMENT_DEFAULTS.floorAngle);
+  setTextValue(els.movementFloorZ, source.floorZ || MOVEMENT_DEFAULTS.floorZ);
+  setTextValue(els.movementSprintJumpGoal, source.sprintJumpGoal || MOVEMENT_DEFAULTS.sprintJumpGoal);
+  setTextValue(els.movementDoubleJumpGoal, source.doubleJumpGoal || MOVEMENT_DEFAULTS.doubleJumpGoal);
+  setTextValue(els.movementSlideJumpGoal, source.slideJumpGoal || MOVEMENT_DEFAULTS.slideJumpGoal);
+  setTextValue(els.movementGlideSpeed, source.glideSpeed || MOVEMENT_DEFAULTS.glideSpeed);
+  setTextValue(els.movementGlideBoost, source.glideBoost || MOVEMENT_DEFAULTS.glideBoost);
+  setTextValue(els.movementGlideAirControl, source.glideAirControl || MOVEMENT_DEFAULTS.glideAirControl);
+  setTextValue(els.movementDashSpeed, source.dashSpeed || MOVEMENT_DEFAULTS.dashSpeed);
+  setTextValue(els.movementTimeDilation, source.timeDilation || MOVEMENT_DEFAULTS.timeDilation);
+  if (els.movementIndividualJumpGoals) els.movementIndividualJumpGoals.checked = Boolean(source.individualJumpGoals);
+  if (els.movementZeroVaultOnApply) els.movementZeroVaultOnApply.checked = Boolean(source.zeroVaultOnApply);
+}
+
+function hasMovementPreset(preset) {
+  return Boolean(preset && typeof preset === "object" && Object.keys(preset).length);
+}
+
+function setMovementSavedSummary(message, kind = "") {
+  setLine(els.movementSavedSummary, message, kind);
+}
+
+function movementSettingsPayload() {
+  return {
+    version: 1,
+    preset: currentMovementPreset(),
+    autoApplyOnStart: Boolean(els.movementAutoApplySaved && els.movementAutoApplySaved.checked)
+  };
+}
+
+async function loadMovementSettings() {
+  if (!window.msbt || typeof window.msbt.loadMovementSettings !== "function") {
+    setMovementSavedSummary("Movement preset storage is unavailable in this shell.", "warning");
+    return;
+  }
+  const result = await window.msbt.loadMovementSettings();
+  const data = result && result.data ? result.data : {};
+  if (!result || !result.ok) {
+    setMovementSavedSummary(resultMessage(result) || "Movement preset load failed.", "warning");
+    return;
+  }
+  state.movementSavedPreset = hasMovementPreset(data.preset) ? data.preset : null;
+  state.movementAutoApplyOnStart = Boolean(data.autoApplyOnStart);
+  if (els.movementAutoApplySaved) els.movementAutoApplySaved.checked = state.movementAutoApplyOnStart;
+  if (state.movementSavedPreset) {
+    applyMovementPresetToControls(state.movementSavedPreset);
+    setMovementSavedSummary(
+      state.movementAutoApplyOnStart
+        ? "Saved movement preset loaded. Auto apply is enabled."
+        : "Saved movement preset loaded.",
+      "ok"
+    );
+  } else {
+    setMovementSavedSummary("No saved movement preset yet.", "warning");
+  }
+}
+
+async function saveMovementSettings(message = "Saved current movement values as the movement preset.") {
+  if (!window.msbt || typeof window.msbt.saveMovementSettings !== "function") {
+    setMovementSavedSummary("Movement preset storage is unavailable in this shell.", "warning");
+    return null;
+  }
+  const result = await window.msbt.saveMovementSettings(movementSettingsPayload());
+  const data = result && result.data ? result.data : {};
+  if (result && result.ok) {
+    state.movementSavedPreset = hasMovementPreset(data.preset) ? data.preset : currentMovementPreset();
+    state.movementAutoApplyOnStart = Boolean(data.autoApplyOnStart);
+    if (els.movementAutoApplySaved) els.movementAutoApplySaved.checked = state.movementAutoApplyOnStart;
+    setMovementSavedSummary(message, "ok");
+  } else {
+    setMovementSavedSummary(resultMessage(result) || "Movement preset save failed.", "bad");
+  }
+  return result;
+}
+
+async function loadSavedMovementPresetIntoControls() {
+  if (!state.movementSavedPreset) {
+    setMovementSavedSummary("No saved movement preset to load.", "warning");
+    return;
+  }
+  applyMovementPresetToControls(state.movementSavedPreset);
+  setMovementSavedSummary("Loaded saved movement preset into the visible fields.", "ok");
+}
+
+async function autoApplySavedMovementPresetIfNeeded() {
+  if (state.movementAutoAppliedThisSession) return;
+  if (!state.bridgeOnline || !state.movementAutoApplyOnStart || !state.movementSavedPreset) return;
+  state.movementAutoAppliedThisSession = true;
+  applyMovementPresetToControls(state.movementSavedPreset);
+  setLine(els.movementStatus, "Auto applying saved movement preset...", "warning");
+  const result = await runMovementAction("movement_apply_all");
+  setMovementSavedSummary(
+    actionSucceeded(result)
+      ? "Auto-applied saved movement preset after bridge connection."
+      : "Saved movement preset auto-apply was attempted; check the movement result.",
+    actionSucceeded(result) ? "ok" : "warning"
+  );
 }
 
 function movementPayload() {
@@ -761,6 +896,7 @@ async function bridgeStatus(options = {}) {
   const result = await window.msbt.bridgeRequest({ method: "GET", path: "/status" });
   if (!options.quiet) setOutput(els.statusOutput, result);
   applyBridgeStatusResult(result, options);
+  await autoApplySavedMovementPresetIfNeeded();
   return result;
 }
 
@@ -3967,6 +4103,19 @@ function wireEvents() {
   if (els.movementTargetSelect) {
     els.movementTargetSelect.addEventListener("change", () => setTarget(els.movementTargetSelect.value));
   }
+  if (els.movementSavePresetBtn) {
+    els.movementSavePresetBtn.addEventListener("click", () => saveMovementSettings());
+  }
+  if (els.movementLoadSavedBtn) {
+    els.movementLoadSavedBtn.addEventListener("click", () => loadSavedMovementPresetIntoControls());
+  }
+  if (els.movementAutoApplySaved) {
+    els.movementAutoApplySaved.addEventListener("change", () => saveMovementSettings(
+      els.movementAutoApplySaved.checked
+        ? "Movement preset saved. Auto apply is enabled."
+        : "Movement preset saved. Auto apply is disabled."
+    ));
+  }
   document.querySelectorAll("[data-movement-action]").forEach((button) => {
     button.addEventListener("click", () => runMovementAction(button.dataset.movementAction));
   });
@@ -4215,7 +4364,7 @@ async function init() {
   }
   await refreshVersionInfo();
   syncDevSpawnerAdvancedControls();
-  await Promise.all([loadItemPools(), loadTravelResources(), loadDevSpawnerCatalog(), loadDevSpawnerFavorites(), loadSerialBookmarks(), loadBl4Catalog()]);
+  await Promise.all([loadItemPools(), loadTravelResources(), loadDevSpawnerCatalog(), loadDevSpawnerFavorites(), loadSerialBookmarks(), loadBl4Catalog(), loadMovementSettings()]);
   await bridgeStatus();
   await checkUpdates({ startup: true });
 }
