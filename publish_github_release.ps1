@@ -95,6 +95,14 @@ if ($latestYmlText -notmatch "(?m)^version:\s*$([regex]::Escape($PackageVersion)
 if (-not (Test-Path $ManifestPath)) {
     throw "Release update manifest not found: $ManifestPath. Run .\package_external_beta.ps1 first."
 }
+$PackagedManifestPath = Join-Path $ElectronDist "win-unpacked\resources\releases\latest.json"
+if (-not (Test-Path $PackagedManifestPath)) {
+    throw "Packaged Electron release manifest not found: $PackagedManifestPath. Run .\package_external_beta.ps1, then .\build_electron_beta.ps1 -Installer."
+}
+$PackagedManifest = Get-Content -Raw $PackagedManifestPath | ConvertFrom-Json
+if ([string]$PackagedManifest.package_version -ne $PackageVersion) {
+    throw "Packaged Electron release manifest package_version '$($PackagedManifest.package_version)' does not match package version '$PackageVersion'. Run .\package_external_beta.ps1, then .\build_electron_beta.ps1 -Installer."
+}
 
 $ElectronAssets = @($ElectronInstaller)
 $blockMap = "$ElectronInstaller.blockmap"

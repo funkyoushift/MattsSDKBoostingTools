@@ -9,6 +9,7 @@ $ElectronRoot = Join-Path $RepoRoot "electron_poc"
 $NodeModules = Join-Path $ElectronRoot "node_modules"
 $OutputRoot = Join-Path $RepoRoot "dist_electron"
 $ElectronPackageJson = Join-Path $ElectronRoot "package.json"
+$ReleaseManifest = Join-Path $RepoRoot "releases\latest.json"
 
 function Invoke-Checked {
     param(
@@ -32,11 +33,26 @@ function Get-ElectronPackageVersion {
     return $version
 }
 
+function Assert-ReleaseManifestVersion {
+    param([Parameter(Mandatory=$true)][string]$ExpectedVersion)
+
+    if (-not (Test-Path $ReleaseManifest)) {
+        throw "Release manifest not found: $ReleaseManifest. Run .\package_external_beta.ps1 before building Electron so the app bundles the current update manifest."
+    }
+
+    $manifest = Get-Content -Raw $ReleaseManifest | ConvertFrom-Json
+    $manifestVersion = [string]$manifest.package_version
+    if ($manifestVersion -ne $ExpectedVersion) {
+        throw "Release manifest package_version '$manifestVersion' does not match Electron version '$ExpectedVersion'. Run .\package_external_beta.ps1 before .\build_electron_beta.ps1 -Installer."
+    }
+}
+
 if (-not (Test-Path $NodeModules)) {
     throw "Electron dependencies are missing. Run 'npm.cmd install' inside electron_poc first."
 }
 
 $ElectronVersion = Get-ElectronPackageVersion
+Assert-ReleaseManifestVersion $ElectronVersion
 
 Push-Location $RepoRoot
 try {
