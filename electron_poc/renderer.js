@@ -2606,6 +2606,110 @@ function devActorFavoriteLabel(actorName) {
   return String(favorites[actorName] || "").trim();
 }
 
+function devActorMetadata(actorName) {
+  const catalog = state.devSpawnerCatalog || {};
+  const metadata = catalog.actor_metadata || {};
+  return metadata[actorName] && typeof metadata[actorName] === "object" ? metadata[actorName] : {};
+}
+
+function devSpawnMetadata(actorName) {
+  const catalog = state.devSpawnerCatalog || {};
+  const metadata = catalog.spawn_metadata || {};
+  return metadata[actorName] && typeof metadata[actorName] === "object" ? metadata[actorName] : {};
+}
+
+function devCatalogCategories() {
+  const catalog = state.devSpawnerCatalog || {};
+  return catalog.categories || {};
+}
+
+function devUniqueActorNames(values) {
+  return Array.from(new Set((values || []).filter(Boolean).map((value) => String(value).trim()).filter(Boolean)))
+    .sort((left, right) => devActorLabel(left).localeCompare(devActorLabel(right)));
+}
+
+function devActorLooksLikeCharacter(actorName) {
+  return /^(Char|TESTChar|AI)_/i.test(String(actorName || ""));
+}
+
+function devActorLooksLikeInteractiveObject(actorName) {
+  return /^(IO_|io_|InteractiveObject|BP_Interactive)/.test(String(actorName || ""));
+}
+
+function devAllKnownActors() {
+  const catalog = state.devSpawnerCatalog || {};
+  const categories = devCatalogCategories();
+  const values = [];
+  Object.values(categories).forEach((list) => {
+    if (Array.isArray(list)) values.push(...list);
+  });
+  values.push(...Object.keys(catalog.display_names || {}));
+  values.push(...Object.keys(catalog.favorites || {}));
+  values.push(...Object.keys(catalog.actor_metadata || {}));
+  values.push(...Object.keys(catalog.spawn_metadata || {}));
+  values.push(...Object.keys(devMyFavoritesMap()));
+  return devUniqueActorNames(values);
+}
+
+function devActorsForCategoryName(category) {
+  const catalog = state.devSpawnerCatalog || {};
+  const categories = devCatalogCategories();
+  const actorMetadata = catalog.actor_metadata || {};
+  const spawnMetadata = catalog.spawn_metadata || {};
+  const values = [];
+
+  if (category === "All") {
+    return devAllKnownActors();
+  }
+  if (Array.isArray(categories[category])) {
+    values.push(...categories[category]);
+  }
+  if (category === "Characters") {
+    values.push(...Object.keys(actorMetadata).filter(devActorLooksLikeCharacter));
+  }
+  if (category === "Interactive Objects") {
+    values.push(...Object.keys(spawnMetadata).filter(devActorLooksLikeInteractiveObject));
+  }
+  if (category === "Loot Reference") {
+    values.push(...Object.keys(actorMetadata));
+  }
+  if (category === "IO Spawn Catalog") {
+    values.push(...Object.keys(spawnMetadata));
+  }
+
+  return devUniqueActorNames(values);
+}
+
+function devMetadataSearchText(actorName) {
+  const actorMeta = devActorMetadata(actorName);
+  const spawnMeta = devSpawnMetadata(actorName);
+  const values = [
+    actorMeta.reference_display_name,
+    actorMeta.display_key,
+    actorMeta.true_boss_actor,
+    actorMeta.parent_actor,
+    actorMeta.balance_row,
+    actorMeta.dedicated_drop,
+    actorMeta.ai_path,
+    actorMeta.ai_category,
+    actorMeta.source_file,
+    spawnMeta.label,
+    spawnMeta.source_category,
+    spawnMeta.browser_category,
+    spawnMeta.command,
+    spawnMeta.source
+  ];
+  if (actorMeta.dedicated_drop && typeof actorMeta.dedicated_drop === "object") {
+    values.push(...Object.values(actorMeta.dedicated_drop));
+  }
+  if (Array.isArray(actorMeta.itempool_lists)) {
+    values.push(actorMeta.itempool_lists.join(" "));
+  }
+  if (actorMeta.is_boss) values.push("boss");
+  if (actorMeta.is_true_boss) values.push("true boss");
+  return values.filter(Boolean).join(" ");
+}
+
 function devMyFavoritesMap() {
   const data = state.devSpawnerMyFavorites || {};
   return data.favorites && typeof data.favorites === "object" ? data.favorites : {};
@@ -2724,21 +2828,43 @@ function devMyFavoriteLabelInfo(actorName) {
 }
 
 function devActorCategories(actorName) {
-  const catalog = state.devSpawnerCatalog || {};
-  const categories = catalog.categories || {};
-  return Object.keys(categories).filter((category) => {
+  const categories = devCatalogCategories();
+  const names = Object.keys(categories).filter((category) => {
     return category !== "All" && Array.isArray(categories[category]) && categories[category].includes(actorName);
   });
+  if (devActorMetadata(actorName).reference_display_name && devActorLooksLikeCharacter(actorName) && !names.includes("Characters")) {
+    names.push("Characters");
+  }
+  if (Object.keys(devSpawnMetadata(actorName)).length && devActorLooksLikeInteractiveObject(actorName) && !names.includes("Interactive Objects")) {
+    names.push("Interactive Objects");
+  }
+  if (Object.keys(devActorMetadata(actorName)).length && !names.includes("Loot Reference")) {
+    names.push("Loot Reference");
+  }
+  if (Object.keys(devSpawnMetadata(actorName)).length && !names.includes("IO Spawn Catalog")) {
+    names.push("IO Spawn Catalog");
+  }
+  return names;
 }
 
 function devActorPrimaryCategory(actorName) {
-  return devActorCategories(actorName)[0] || "Other / Uncategorized";
+  const categories = devActorCategories(actorName);
+  const sourceCategory = categories.find((category) => !["Loot Reference", "IO Spawn Catalog"].includes(category));
+  return sourceCategory || categories[0] || "Other / Uncategorized";
 }
 
 function devActorExistsInCatalog(actorName) {
+  const name = String(actorName || "").trim();
+  if (!name) return false;
   const catalog = state.devSpawnerCatalog || {};
-  const categories = catalog.categories || {};
-  return Array.isArray(categories.All) && categories.All.includes(actorName);
+  const categories = devCatalogCategories();
+  if (Array.isArray(categories.All) && categories.All.includes(name)) return true;
+  if (Object.prototype.hasOwnProperty.call(catalog.display_names || {}, name)) return true;
+  if (Object.prototype.hasOwnProperty.call(catalog.favorites || {}, name)) return true;
+  if (Object.prototype.hasOwnProperty.call(catalog.actor_metadata || {}, name)) return true;
+  if (Object.prototype.hasOwnProperty.call(catalog.spawn_metadata || {}, name)) return true;
+  if (Object.prototype.hasOwnProperty.call(devMyFavoritesMap(), name)) return true;
+  return Object.values(categories).some((list) => Array.isArray(list) && list.includes(name));
 }
 
 function devActorLabel(actorName) {
@@ -2751,20 +2877,27 @@ function devNormalizeSearch(text) {
 }
 
 function devActorSearchText(actorName) {
-  return devNormalizeSearch(`${actorName} ${devActorDisplayName(actorName)} ${devActorFavoriteLabel(actorName)} ${devActorMyFavoriteLabel(actorName)} ${devActorDerivedLabel(actorName)} ${devActorCategories(actorName).join(" ")}`);
+  const normalized = devNormalizeSearch(`${actorName} ${devActorDisplayName(actorName)} ${devActorFavoriteLabel(actorName)} ${devActorMyFavoriteLabel(actorName)} ${devActorDerivedLabel(actorName)} ${devActorCategories(actorName).join(" ")} ${devMetadataSearchText(actorName)}`);
+  const compact = normalized.replace(/\s+/g, "");
+  return `${normalized} ${compact}`.trim();
 }
 
 function devCategoryNames() {
   const catalog = state.devSpawnerCatalog || {};
-  const categories = catalog.categories || {};
-  return Object.keys(categories);
+  const categories = devCatalogCategories();
+  const names = Object.keys(categories);
+  if (Object.keys(catalog.actor_metadata || {}).length && !names.includes("Loot Reference")) {
+    names.push("Loot Reference");
+  }
+  if (Object.keys(catalog.spawn_metadata || {}).length && !names.includes("IO Spawn Catalog")) {
+    names.push("IO Spawn Catalog");
+  }
+  return names;
 }
 
 function devActorsForActiveCategory() {
-  const catalog = state.devSpawnerCatalog || {};
-  const categories = catalog.categories || {};
   const category = state.devActiveCategory || "All";
-  return Array.isArray(categories[category]) ? categories[category] : [];
+  return devActorsForCategoryName(category);
 }
 
 function devGroupedActorRows(actorNames, category) {
@@ -2854,11 +2987,29 @@ function makeDevDetailRow(label, value, className = "") {
 
   const detail = document.createElement("div");
   detail.className = `dev-detail-value${className ? ` ${className}` : ""}`;
-  detail.textContent = value || "Not available in catalog.";
+  let formatted = "";
+  if (Array.isArray(value)) {
+    formatted = value.filter(Boolean).join(", ");
+  } else if (value && typeof value === "object") {
+    formatted = Object.entries(value)
+      .filter((entry) => entry[1] !== undefined && entry[1] !== null && entry[1] !== "")
+      .map((entry) => `${entry[0]}: ${entry[1]}`)
+      .join(" | ");
+  } else {
+    formatted = String(value || "").trim();
+  }
+  detail.textContent = formatted || "Not available in catalog.";
 
   row.appendChild(term);
   row.appendChild(detail);
   return row;
+}
+
+function devDetailList(value) {
+  if (Array.isArray(value)) {
+    return value.length ? value.join(", ") : "";
+  }
+  return String(value || "").trim();
 }
 
 function renderDevMyFavoriteControls() {
@@ -2895,6 +3046,8 @@ function renderDevActorDetails() {
   const myFavoriteLabel = devActorMyFavoriteLabel(actorName);
   const catalog = state.devSpawnerCatalog || {};
   const existsInCatalog = devActorExistsInCatalog(actorName);
+  const actorMeta = devActorMetadata(actorName);
+  const spawnMeta = devSpawnMetadata(actorName);
 
   els.devActorDetails.appendChild(makeDevDetailRow("Display name", displayName || actorName));
   els.devActorDetails.appendChild(makeDevDetailRow("Actor key", actorName, "mono"));
@@ -2903,6 +3056,47 @@ function renderDevActorDetails() {
   els.devActorDetails.appendChild(makeDevDetailRow("Display source", displayName ? "Mapped display name" : "Generated from actor key fallback"));
   els.devActorDetails.appendChild(makeDevDetailRow("Runtime identifier", existsInCatalog ? "Actor key used for ASD_spawnai" : "Not present in local All catalog."));
   els.devActorDetails.appendChild(makeDevDetailRow("Catalog source", String(catalog.source || "").trim()));
+  if (actorMeta.reference_display_name && actorMeta.reference_display_name !== displayName) {
+    els.devActorDetails.appendChild(makeDevDetailRow("Loot reference name", actorMeta.reference_display_name));
+  }
+  if (actorMeta.display_key) {
+    els.devActorDetails.appendChild(makeDevDetailRow("Display key", actorMeta.display_key, "mono"));
+  }
+  if (actorMeta.is_boss || actorMeta.is_true_boss) {
+    els.devActorDetails.appendChild(makeDevDetailRow("Boss metadata", [
+      actorMeta.is_boss ? "Boss" : "",
+      actorMeta.is_true_boss ? "True boss" : "",
+      actorMeta.true_boss_actor ? `True-boss actor: ${actorMeta.true_boss_actor}` : ""
+    ].filter(Boolean).join(" | ")));
+  }
+  if (actorMeta.parent_actor) {
+    els.devActorDetails.appendChild(makeDevDetailRow("Parent actor", actorMeta.parent_actor, "mono"));
+  }
+  if (actorMeta.balance_row) {
+    els.devActorDetails.appendChild(makeDevDetailRow("Balance row", actorMeta.balance_row, "mono"));
+  }
+  if (actorMeta.dedicated_drop) {
+    els.devActorDetails.appendChild(makeDevDetailRow("Dedicated drop", actorMeta.dedicated_drop));
+  }
+  if (devDetailList(actorMeta.itempool_lists)) {
+    els.devActorDetails.appendChild(makeDevDetailRow("Item pool lists", devDetailList(actorMeta.itempool_lists), "mono"));
+  }
+  if (actorMeta.ai_path) {
+    els.devActorDetails.appendChild(makeDevDetailRow("AI path", actorMeta.ai_path, "mono"));
+  }
+  if (actorMeta.ai_category) {
+    els.devActorDetails.appendChild(makeDevDetailRow("AI category", actorMeta.ai_category));
+  }
+  if (actorMeta.source_file) {
+    els.devActorDetails.appendChild(makeDevDetailRow("Reference source file", actorMeta.source_file, "mono"));
+  }
+  if (Object.keys(spawnMeta).length) {
+    els.devActorDetails.appendChild(makeDevDetailRow("IO spawn label", spawnMeta.label || ""));
+    els.devActorDetails.appendChild(makeDevDetailRow("IO source category", spawnMeta.source_category || ""));
+    els.devActorDetails.appendChild(makeDevDetailRow("IO browser category", spawnMeta.browser_category || ""));
+    els.devActorDetails.appendChild(makeDevDetailRow("IO catalog command", spawnMeta.command || "", "mono"));
+    els.devActorDetails.appendChild(makeDevDetailRow("IO catalog source", spawnMeta.source || ""));
+  }
   if (favoriteLabel) {
     els.devActorDetails.appendChild(makeDevDetailRow("Reference favorite label", favoriteLabel));
   }
@@ -2910,7 +3104,7 @@ function renderDevActorDetails() {
 
   const note = document.createElement("div");
   note.className = "dev-detail-note";
-  note.textContent = "Package paths, object paths, aliases, and live-confirmed status are not present in this local catalog.";
+  note.textContent = "Details are read from local bundled catalog/reference data only. Live-confirmed status is not inferred from names.";
   els.devActorDetails.appendChild(note);
 }
 
@@ -2931,8 +3125,6 @@ function populateDevSpawnerCatalog() {
 }
 
 function renderDevCategories() {
-  const catalog = state.devSpawnerCatalog || {};
-  const categories = catalog.categories || {};
   if (!els.devActorCategoryButtons) return;
   els.devActorCategoryButtons.innerHTML = "";
   const names = devCategoryNames();
@@ -2947,7 +3139,7 @@ function renderDevCategories() {
     const button = document.createElement("button");
     button.type = "button";
     button.className = category === state.devActiveCategory ? "active" : "";
-    button.textContent = `${category} (${(categories[category] || []).length})`;
+    button.textContent = `${category} (${devActorsForCategoryName(category).length})`;
     button.title = category === "All"
       ? "Search across every actor in the source catalog."
       : `Show ${category} actors only. Search will filter inside this category.`;
