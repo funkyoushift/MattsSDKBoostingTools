@@ -14,9 +14,35 @@
       <p id="appVersionLine" class="muted-line">Loading version info...</p>
     </div>
     <div class="header-actions">
-      <button id="statusBtn">Refresh Status</button>
-      <button id="updateBtn">Check Updates</button>
-      <button id="repoBtn">GitHub</button>
+      <div class="header-main-actions">
+        <button id="statusBtn">Refresh Status</button>
+        <button id="updateBtn">Check Updates</button>
+        <button id="repoBtn">GitHub</button>
+      </div>
+      <div class="support-panel" aria-label="Support and follow links">
+        <div class="support-copy">
+          <strong>Support MSBT</strong>
+          <span>Tips, creator support, streams, and guides help keep the tools moving.</span>
+        </div>
+        <div class="support-links">
+          <button id="streamlabsBtn" class="support-link featured">
+            Tip FunkYouSHiFT
+            <span>Support testing, releases, and streams.</span>
+          </button>
+          <button id="mattmabKofiBtn" class="support-link">
+            Support Mattmab
+            <span>Thank the editor and item-work roots.</span>
+          </button>
+          <button id="twitchBtn" class="support-link">
+            Watch Twitch
+            <span>Live builds, testing, and BL4 chaos.</span>
+          </button>
+          <button id="youtubeBtn" class="support-link">
+            YouTube
+            <span>Guides, updates, and project videos.</span>
+          </button>
+        </div>
+      </div>
     </div>
   </header>
 
@@ -48,8 +74,38 @@
     <div id="serialDeliveryMeta" class="muted-line"></div>
   </section>
 
+  <section id="startupUpdateModal" class="modal-shell hidden" role="dialog" aria-modal="true" aria-labelledby="startupUpdateTitle">
+    <div class="modal-card update-modal">
+      <h2 id="startupUpdateTitle">Update Available</h2>
+      <p id="startupUpdateMessage">A newer MSBT update is available.</p>
+      <p id="startupUpdateRestartNote" class="status-line warning">
+        If the SDK mod updates, close and restart Borderlands 4 before testing live actions.
+      </p>
+      <div class="button-row wrap">
+        <button id="startupUpdateDownloadBtn">Download Electron Update</button>
+        <button id="startupUpdateInstallBtn">Restart / Install Now</button>
+        <button id="startupUpdateInstallerBtn">Open Installer Download</button>
+        <button id="startupUpdateUpdatesTabBtn">Open Updates Tab</button>
+        <button id="startupUpdateDismissBtn" class="secondary">Not Now</button>
+      </div>
+    </div>
+  </section>
+
   <main class="tab-shell">
     <section id="tab-boosting" class="tab-panel active">
+      <section id="boostUpdateNotice" class="update-notice hidden" aria-live="polite">
+        <div class="update-notice-copy">
+          <h2 id="boostUpdateTitle">Update Available</h2>
+          <p id="boostUpdateMessage">A newer MSBT build is available.</p>
+        </div>
+        <div class="button-row wrap">
+          <button id="boostUpdateDownloadBtn">Download Electron Update</button>
+          <button id="boostUpdateInstallBtn">Restart / Install Now</button>
+          <button id="boostUpdateOpenInstallerBtn">Open Installer Download</button>
+          <button id="boostUpdateOpenUpdatesBtn">Open Updates Tab</button>
+        </div>
+      </section>
+
       <div class="grid two">
         <section class="panel cyan">
           <h2>Target Player</h2>

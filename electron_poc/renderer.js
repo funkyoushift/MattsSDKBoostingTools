@@ -42,6 +42,13 @@ const els = {
   boostSerialLevel: document.getElementById("boostSerialLevel"),
   boostSerialOverride: document.getElementById("boostSerialOverride"),
   boostSerialText: document.getElementById("boostSerialText"),
+  boostUpdateDownloadBtn: document.getElementById("boostUpdateDownloadBtn"),
+  boostUpdateInstallBtn: document.getElementById("boostUpdateInstallBtn"),
+  boostUpdateMessage: document.getElementById("boostUpdateMessage"),
+  boostUpdateNotice: document.getElementById("boostUpdateNotice"),
+  boostUpdateOpenInstallerBtn: document.getElementById("boostUpdateOpenInstallerBtn"),
+  boostUpdateOpenUpdatesBtn: document.getElementById("boostUpdateOpenUpdatesBtn"),
+  boostUpdateTitle: document.getElementById("boostUpdateTitle"),
   bridgeSummary: document.getElementById("bridgeSummary"),
   currencyAmount: document.getElementById("currencyAmount"),
   currencyKind: document.getElementById("currencyKind"),
@@ -189,6 +196,14 @@ const els = {
   serialDeliveryMessage: document.getElementById("serialDeliveryMessage"),
   serialDeliveryMeta: document.getElementById("serialDeliveryMeta"),
   serialDeliveryPanel: document.getElementById("serialDeliveryPanel"),
+  startupUpdateDismissBtn: document.getElementById("startupUpdateDismissBtn"),
+  startupUpdateDownloadBtn: document.getElementById("startupUpdateDownloadBtn"),
+  startupUpdateInstallBtn: document.getElementById("startupUpdateInstallBtn"),
+  startupUpdateInstallerBtn: document.getElementById("startupUpdateInstallerBtn"),
+  startupUpdateMessage: document.getElementById("startupUpdateMessage"),
+  startupUpdateModal: document.getElementById("startupUpdateModal"),
+  startupUpdateTitle: document.getElementById("startupUpdateTitle"),
+  startupUpdateUpdatesTabBtn: document.getElementById("startupUpdateUpdatesTabBtn"),
   statusOutput: document.getElementById("statusOutput"),
   targetSelect: document.getElementById("targetSelect"),
   targetSummary: document.getElementById("targetSummary"),
@@ -274,6 +289,7 @@ const state = {
   selectedMap: "",
   selectedStation: "",
   selectedTarget: "",
+  startupUpdateNoticeShown: false,
   travelMaps: [],
   travelStations: []
 };
@@ -2016,6 +2032,137 @@ function renderUpdateCards(info) {
   );
 }
 
+function sdkModNeedsAttention(data) {
+  const installed = data && data.installedSdkmod ? data.installedSdkmod : {};
+  const status = String(installed.status || "");
+  return status === "different" || status === "missing" || status === "not_detected";
+}
+
+function updateNoticeInfo(info) {
+  const data = info || {};
+  const updater = data.updateState || data.updater || state.latestUpdateState || {};
+  const updaterStatus = String(updater && updater.status ? updater.status : "idle");
+  const remote = data.remote || data.remoteManifest || {};
+  const localAppVersion = data.appVersion || "current";
+  const remoteAppVersion = remote.electron_version || remote.app_version || remote.package_version || "latest";
+  const localPackageVersion = data.packageVersion || data.localManifest && data.localManifest.package_version || "current";
+  const remotePackageVersion = remote.package_version || "latest";
+  const restartGameNote = "If the SDK mod is updated, close and restart Borderlands 4 before testing live actions.";
+
+  if (updaterStatus === "downloaded") {
+    return {
+      kind: "downloaded",
+      title: "Electron Update Ready",
+      message: `The Electron app update has downloaded. Restart MSBT to install it. ${restartGameNote}`,
+      showDownload: false,
+      showInstall: true,
+      showInstaller: false,
+      showUpdates: true
+    };
+  }
+  if (updaterStatus === "progress") {
+    const progress = updater.progress && Number.isFinite(Number(updater.progress.percent))
+      ? ` ${Number(updater.progress.percent).toFixed(1)}%`
+      : "";
+    return {
+      kind: "progress",
+      title: "Downloading Electron Update",
+      message: `The Electron app update is downloading.${progress}`,
+      showDownload: false,
+      showInstall: false,
+      showInstaller: false,
+      showUpdates: true
+    };
+  }
+  if (updaterStatus === "available") {
+    return {
+      kind: "app",
+      title: "Electron App Update Available",
+      message: `A newer Electron app is available: ${localAppVersion} -> ${remoteAppVersion}. Download it here, then restart/install when it is ready. ${restartGameNote}`,
+      showDownload: true,
+      showInstall: false,
+      showInstaller: true,
+      showUpdates: true
+    };
+  }
+  if (data.electronUpdateAvailable) {
+    return {
+      kind: "app",
+      title: "Electron App Update Available",
+      message: `A newer Electron app is available: ${localAppVersion} -> ${remoteAppVersion}. Open the installer download to update.`,
+      showDownload: false,
+      showInstall: false,
+      showInstaller: true,
+      showUpdates: true
+    };
+  }
+  if (data.packageUpdateAvailable || data.updateAvailable) {
+    return {
+      kind: "package",
+      title: "MSBT Package Update Available",
+      message: `A newer MSBT package is available: ${localPackageVersion} -> ${remotePackageVersion}. Update the Electron app and bundled SDK mod together. ${restartGameNote}`,
+      showDownload: updaterStatus === "available",
+      showInstall: updaterStatus === "downloaded",
+      showInstaller: true,
+      showUpdates: true
+    };
+  }
+  if (sdkModNeedsAttention(data)) {
+    const installed = data.installedSdkmod || {};
+    return {
+      kind: "sdk",
+      title: "SDK Mod Needs Attention",
+      message: `${installed.message || "Installed SDK mod does not match this app build."} Open Updates, install the bundled SDK mod, then restart Borderlands 4.`,
+      showDownload: false,
+      showInstall: false,
+      showInstaller: false,
+      showUpdates: true
+    };
+  }
+  return null;
+}
+
+function renderBoostUpdateNotice(info) {
+  if (!els.boostUpdateNotice) return;
+  const notice = updateNoticeInfo(info);
+  if (!notice) {
+    els.boostUpdateNotice.classList.add("hidden");
+    return;
+  }
+  els.boostUpdateNotice.classList.remove("hidden");
+  els.boostUpdateNotice.dataset.kind = notice.kind || "";
+  setLine(els.boostUpdateTitle, notice.title || "Update Available");
+  setLine(els.boostUpdateMessage, notice.message || "A newer MSBT update is available.");
+  if (els.boostUpdateDownloadBtn) els.boostUpdateDownloadBtn.classList.toggle("hidden", !notice.showDownload);
+  if (els.boostUpdateInstallBtn) els.boostUpdateInstallBtn.classList.toggle("hidden", !notice.showInstall);
+  if (els.boostUpdateOpenInstallerBtn) els.boostUpdateOpenInstallerBtn.classList.toggle("hidden", !notice.showInstaller);
+  if (els.boostUpdateOpenUpdatesBtn) els.boostUpdateOpenUpdatesBtn.classList.toggle("hidden", !notice.showUpdates);
+}
+
+function hideStartupUpdateModal() {
+  if (els.startupUpdateModal) els.startupUpdateModal.classList.add("hidden");
+}
+
+function renderStartupUpdateModal(notice) {
+  if (!els.startupUpdateModal || !notice) return;
+  els.startupUpdateModal.classList.remove("hidden");
+  els.startupUpdateModal.dataset.kind = notice.kind || "";
+  setLine(els.startupUpdateTitle, notice.title || "Update Available");
+  setLine(els.startupUpdateMessage, notice.message || "A newer MSBT update is available.");
+  if (els.startupUpdateDownloadBtn) els.startupUpdateDownloadBtn.classList.toggle("hidden", !notice.showDownload);
+  if (els.startupUpdateInstallBtn) els.startupUpdateInstallBtn.classList.toggle("hidden", !notice.showInstall);
+  if (els.startupUpdateInstallerBtn) els.startupUpdateInstallerBtn.classList.toggle("hidden", !notice.showInstaller);
+  if (els.startupUpdateUpdatesTabBtn) els.startupUpdateUpdatesTabBtn.classList.toggle("hidden", !notice.showUpdates);
+}
+
+function maybeShowStartupUpdateModal(info) {
+  if (state.startupUpdateNoticeShown) return;
+  const notice = updateNoticeInfo(info);
+  if (!notice) return;
+  state.startupUpdateNoticeShown = true;
+  renderStartupUpdateModal(notice);
+}
+
 function renderVersionInfo(info) {
   state.versionInfo = info || null;
   const data = info || {};
@@ -2030,6 +2177,7 @@ function renderVersionInfo(info) {
   setLine(els.appVersionLine, text);
   setLine(els.versionSummary, text, data.bundledSdkmod && data.bundledSdkmod.available ? "ok" : "warning");
   renderUpdateCards(data);
+  renderBoostUpdateNotice(data);
 }
 
 async function refreshVersionInfo() {
@@ -2067,10 +2215,12 @@ function renderUpdateState(updateState) {
   }
   if (state.versionInfo) {
     renderUpdateCards({ ...state.versionInfo, updateState });
+    renderBoostUpdateNotice({ ...state.versionInfo, updateState });
   }
 }
 
-async function checkUpdates() {
+async function checkUpdates(options = {}) {
+  const startup = Boolean(options && options.startup);
   setLine(els.updateSummary, "Checking GitHub Releases...", "warning");
   await refreshVersionInfo();
   const result = await window.msbt.checkUpdates();
@@ -2080,6 +2230,9 @@ async function checkUpdates() {
   state.manualZipDownloadUrl = result.manualZipUrl || result.remote && result.remote.manual_zip_download_url || state.manualZipDownloadUrl;
   renderVersionInfo(result);
   if (result.updater) renderUpdateState(result.updater);
+  if (startup) {
+    maybeShowStartupUpdateModal({ ...result, updateState: result.updater });
+  }
   if (!result.ok) {
     setLine(els.updateSummary, result.message || "Update check failed.", "bad");
     return;
@@ -3704,6 +3857,43 @@ function wireEvents() {
   document.getElementById("updateBtn").addEventListener("click", checkUpdates);
   if (els.updateDownloadBtn) els.updateDownloadBtn.addEventListener("click", downloadElectronUpdate);
   if (els.updateInstallBtn) els.updateInstallBtn.addEventListener("click", installDownloadedElectronUpdate);
+  if (els.boostUpdateDownloadBtn) els.boostUpdateDownloadBtn.addEventListener("click", downloadElectronUpdate);
+  if (els.boostUpdateInstallBtn) els.boostUpdateInstallBtn.addEventListener("click", installDownloadedElectronUpdate);
+  if (els.boostUpdateOpenInstallerBtn) {
+    els.boostUpdateOpenInstallerBtn.addEventListener("click", () => {
+      window.msbt.openExternal(state.latestInstallerUrl || state.latestDownloadUrl || "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest");
+    });
+  }
+  if (els.boostUpdateOpenUpdatesBtn) {
+    els.boostUpdateOpenUpdatesBtn.addEventListener("click", () => switchTab("updates"));
+  }
+  if (els.startupUpdateDownloadBtn) {
+    els.startupUpdateDownloadBtn.addEventListener("click", () => {
+      hideStartupUpdateModal();
+      downloadElectronUpdate();
+    });
+  }
+  if (els.startupUpdateInstallBtn) {
+    els.startupUpdateInstallBtn.addEventListener("click", () => {
+      hideStartupUpdateModal();
+      installDownloadedElectronUpdate();
+    });
+  }
+  if (els.startupUpdateInstallerBtn) {
+    els.startupUpdateInstallerBtn.addEventListener("click", () => {
+      hideStartupUpdateModal();
+      window.msbt.openExternal(state.latestInstallerUrl || state.latestDownloadUrl || "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest");
+    });
+  }
+  if (els.startupUpdateUpdatesTabBtn) {
+    els.startupUpdateUpdatesTabBtn.addEventListener("click", () => {
+      hideStartupUpdateModal();
+      switchTab("updates");
+    });
+  }
+  if (els.startupUpdateDismissBtn) {
+    els.startupUpdateDismissBtn.addEventListener("click", hideStartupUpdateModal);
+  }
   if (els.reportPreviewBtn) els.reportPreviewBtn.addEventListener("click", buildReportPreview);
   if (els.reportCopyBtn) els.reportCopyBtn.addEventListener("click", copyReportPreview);
   if (els.reportSaveBtn) els.reportSaveBtn.addEventListener("click", saveReportPreview);
@@ -3734,6 +3924,15 @@ function wireEvents() {
   if (installSdkModBtn) installSdkModBtn.addEventListener("click", installBundledSdkMod);
   document.getElementById("repoBtn").addEventListener("click", () => {
     window.msbt.openExternal("https://github.com/funkyoushift/MattsSDKBoostingTools");
+  });
+  [
+    ["streamlabsBtn", "https://streamlabs.com/funkyoushift/tip"],
+    ["mattmabKofiBtn", "https://ko-fi.com/mattmab"],
+    ["twitchBtn", "https://www.twitch.tv/funkyoushift/"],
+    ["youtubeBtn", "https://www.youtube.com/@Funkyoushift"]
+  ].forEach(([buttonId, url]) => {
+    const button = document.getElementById(buttonId);
+    if (button) button.addEventListener("click", () => window.msbt.openExternal(url));
   });
 
   document.getElementById("loadEditorBtn").addEventListener("click", loadEditor);
@@ -3826,7 +4025,7 @@ async function init() {
   syncDevSpawnerAdvancedControls();
   await Promise.all([loadItemPools(), loadTravelResources(), loadDevSpawnerCatalog(), loadDevSpawnerFavorites(), loadSerialBookmarks(), loadBl4Catalog()]);
   await bridgeStatus();
-  await checkUpdates();
+  await checkUpdates({ startup: true });
 }
 
 init();
