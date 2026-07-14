@@ -82,6 +82,7 @@ _movement_no_target_enabled = False
 _movement_noclip_enabled = False
 _rarity_weights: dict[str, float] = {key: 1.0 for key, _label, _fields in RARITY_ROWS}
 _DEV_SPAWNER_SAFE_TOKEN = re.compile(r"^[A-Za-z0-9_./:-]+$")
+_DEV_SPAWNER_SAFE_STATE_LIST = re.compile(r"^[A-Za-z0-9_,./:-]+$")
 _ASD_COMMAND_ATTRS = {
     "ASD_status": "_cmd_status",
     "ASD_clear": "_cmd_clear",
@@ -124,6 +125,15 @@ def _dev_spawner_token(value: object, field_name: str, *, required: bool = False
         return ""
     if not _DEV_SPAWNER_SAFE_TOKEN.match(text):
         raise ValueError(f"{field_name} contains unsupported characters for a dev-spawner console argument.")
+    return text
+
+
+def _dev_spawner_state_list(value: object, field_name: str) -> str:
+    text = str(value or "").strip().replace(" ", "")
+    if not text:
+        return ""
+    if not _DEV_SPAWNER_SAFE_STATE_LIST.match(text):
+        raise ValueError(f"{field_name} contains unsupported characters for a dev-spawner state list.")
     return text
 
 
@@ -1046,6 +1056,9 @@ def run_dev_spawner_action(action: str, payload: dict[str, Any] | None = None) -
             spacing = _clamp_float(payload.get("dev_actor_spacing"), 0.0, 5000.0, 125.0)
             scale = _clamp_float(payload.get("dev_actor_scale"), 0.01, 20.0, 1.0)
             z_offset = _clamp_float(payload.get("dev_actor_z_offset"), -10000.0, 10000.0, -100.0)
+            delay = _clamp_float(payload.get("dev_actor_delay"), 0.0, 30.0, 1.0)
+            enable_states = _dev_spawner_state_list(payload.get("dev_actor_enable_states"), "Enable states")
+            disable_states = _dev_spawner_state_list(payload.get("dev_actor_disable_states"), "Disable states")
             parts = [
                 "ASD_lostloot",
                 "--count",
@@ -1058,9 +1071,17 @@ def run_dev_spawner_action(action: str, payload: dict[str, Any] | None = None) -
                 f"{scale:g}",
                 "--z-offset",
                 f"{z_offset:g}",
+                "--delay",
+                f"{delay:g}",
             ]
             if class_name:
                 parts.extend(("--class", class_name))
+            if enable_states:
+                parts.extend(("--enable", enable_states))
+            if disable_states:
+                parts.extend(("--disable", disable_states))
+            if _dev_spawner_bool(payload.get("dev_actor_no_activate")):
+                parts.append("--no-activate")
             if _dev_spawner_bool(payload.get("dev_actor_include_non_generated")):
                 parts.append("--include-non-generated")
             cmd = " ".join(parts)
@@ -1072,6 +1093,9 @@ def run_dev_spawner_action(action: str, payload: dict[str, Any] | None = None) -
             spacing = _clamp_float(payload.get("dev_actor_spacing"), 0.0, 5000.0, 125.0)
             scale = _clamp_float(payload.get("dev_actor_scale"), 0.01, 20.0, 1.0)
             z_offset = _clamp_float(payload.get("dev_actor_z_offset"), -10000.0, 10000.0, -100.0)
+            delay = _clamp_float(payload.get("dev_actor_delay"), 0.0, 30.0, 1.0)
+            enable_states = _dev_spawner_state_list(payload.get("dev_actor_enable_states"), "Enable states")
+            disable_states = _dev_spawner_state_list(payload.get("dev_actor_disable_states"), "Disable states")
             parts = [
                 "ASD_spawn",
                 name,
@@ -1085,9 +1109,17 @@ def run_dev_spawner_action(action: str, payload: dict[str, Any] | None = None) -
                 f"{scale:g}",
                 "--z-offset",
                 f"{z_offset:g}",
+                "--delay",
+                f"{delay:g}",
             ]
             if class_name:
                 parts.extend(("--class", class_name))
+            if enable_states:
+                parts.extend(("--enable", enable_states))
+            if disable_states:
+                parts.extend(("--disable", disable_states))
+            if _dev_spawner_bool(payload.get("dev_actor_no_activate")):
+                parts.append("--no-activate")
             if _dev_spawner_bool(payload.get("dev_actor_include_non_generated")):
                 parts.append("--include-non-generated")
             cmd = " ".join(parts)

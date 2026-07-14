@@ -308,6 +308,18 @@ iframe {
   align-items: end;
 }
 
+.inline-check {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  min-height: 36px;
+}
+
+.inline-check input {
+  min-height: auto;
+  width: auto;
+}
+
 .inline-fields {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

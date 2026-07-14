@@ -644,6 +644,38 @@
           <button data-dev-spawner-action="dev_spawner_cache">Cache Live Actor</button>
         </div>
         <details class="dev-fold">
+          <summary>Template Spawn Options</summary>
+          <p class="dev-hint">Used by Spawn Template, Spawn Lost Loot, and List Targets. Standard row spawning still uses ASD_spawnai.</p>
+          <div class="grid three compact">
+            <label>
+              Class Override
+              <input id="devActorClass" type="text" placeholder="OakLostLootMachine, OakWeapon...">
+            </label>
+            <label>
+              Activation Delay
+              <input id="devActorDelay" type="number" min="0" max="30" step="0.1" value="1">
+            </label>
+            <label class="inline-check">
+              <input id="devActorIncludeNonGenerated" type="checkbox">
+              Include Non-Generated
+            </label>
+          </div>
+          <div class="grid two compact">
+            <label>
+              Enable States
+              <input id="devActorEnableStates" type="text" placeholder="default: Active,ActiveIdle_Anim">
+            </label>
+            <label>
+              Disable States
+              <input id="devActorDisableStates" type="text" placeholder="default: IsInUse,InUse_Anim,Dispensing_Anim">
+            </label>
+          </div>
+          <label class="inline-check">
+            <input id="devActorNoActivate" type="checkbox">
+            Spawn only, do not activate script states
+          </label>
+        </details>
+        <details class="dev-fold">
           <summary>Advanced Actions</summary>
           <p class="dev-hint">These can change or inspect spawned actors. Use them only after a simple spawn or target check succeeds.</p>
           <div class="button-row wrap">
@@ -669,14 +701,12 @@
             <input id="devActorName" type="text" placeholder="Selected actor is copied here">
           </label>
         </div>
-        <input id="devActorClass" type="hidden">
         <input id="devAiClass" type="hidden">
         <input id="devAiLoad" type="hidden">
         <input id="devAiIndex" type="hidden" value="0">
         <input id="devAiLimit" type="hidden" value="10">
         <input id="devAiCount" type="hidden" value="1">
         <input id="devAiDirectOnly" type="checkbox" class="hidden-check">
-        <input id="devActorIncludeNonGenerated" type="checkbox" class="hidden-check">
         <div id="devActorSummary" class="status-line">Loading actor catalog...</div>
         <details class="dev-fold" open>
           <summary>Categories</summary>
