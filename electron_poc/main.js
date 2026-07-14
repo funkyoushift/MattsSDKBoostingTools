@@ -43,6 +43,7 @@ const DEFAULT_BRIDGE = "http://127.0.0.1:49774";
 const LATEST_MANIFEST_URL = "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/latest.json";
 const FALLBACK_LATEST_MANIFEST_URL = "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/releases/latest.json";
 const SMOKE_MODE = process.argv.includes("--smoke");
+const INSTALL_SDKMODS_AND_EXIT = process.argv.includes("--install-sdkmods-and-exit");
 const MATT_EDITOR_INDEX = path.join(
   RESOURCE_ROOT,
   "external_app",
@@ -583,7 +584,7 @@ function normalizeSdkModsPath(rawPath) {
   return path.resolve(value);
 }
 
-async function sdkModsPathInfo(rawPath, bundledHash = "") {
+async function sdkModsPathInfo(rawPath, bundledHash = "", options = {}) {
   const sdkModsPath = normalizeSdkModsPath(rawPath);
   if (!sdkModsPath) return { ok: false, message: "No sdk_mods path was provided." };
   const baseName = path.basename(sdkModsPath).toLowerCase();
@@ -591,24 +592,31 @@ async function sdkModsPathInfo(rawPath, bundledHash = "") {
     return { ok: false, path: sdkModsPath, message: "Choose the Borderlands 4 sdk_mods folder." };
   }
   const exists = await fileExists(sdkModsPath);
+  const allowMissing = Boolean(options && options.allowMissing);
+  const parentExists = exists ? true : await fileExists(path.dirname(sdkModsPath));
+  const canCreate = allowMissing && parentExists;
   const destination = path.join(sdkModsPath, "MattsSDKBoostingTools.sdkmod");
   const actorScriptDeployerDestination = path.join(sdkModsPath, "ActorScriptDeployer");
   const bundledSha = bundledHash || (await bundledSdkmodInfo()).sha256;
   return {
-    ok: exists,
+    ok: exists || canCreate,
     path: sdkModsPath,
     destination,
     actorScriptDeployerDestination,
     installedSdkmod: await installedSdkmodInfo(destination, bundledSha),
     installedActorScriptDeployer: await installedActorScriptDeployerInfo(actorScriptDeployerDestination),
-    message: exists ? "sdk_mods folder found." : "sdk_mods folder does not exist."
+    message: exists
+      ? "sdk_mods folder found."
+      : canCreate
+        ? "Borderlands 4 folder found; sdk_mods will be created."
+        : "sdk_mods folder does not exist."
   };
 }
 
-ipcMain.handle("app:detectSdkMods", async () => {
+async function autoDetectSdkModsPathInfo(options = {}) {
   const candidates = bl4SdkModsCandidates();
   for (const candidate of candidates) {
-    const info = await sdkModsPathInfo(candidate);
+    const info = await sdkModsPathInfo(candidate, "", options);
     if (info.ok) return info;
   }
   return {
@@ -617,6 +625,10 @@ ipcMain.handle("app:detectSdkMods", async () => {
     candidates,
     message: "Could not auto-detect Borderlands 4 sdk_mods from the known Steam library folders. Paste or browse to the sdk_mods folder."
   };
+}
+
+ipcMain.handle("app:detectSdkMods", async () => {
+  return autoDetectSdkModsPathInfo();
 });
 
 ipcMain.handle("app:browseSdkMods", async () => {
@@ -630,7 +642,7 @@ ipcMain.handle("app:browseSdkMods", async () => {
   return sdkModsPathInfo(result.filePaths[0]);
 });
 
-ipcMain.handle("app:installSdkMod", async (_event, rawPath) => {
+async function installBundledSdkMods(rawPath = "", options = {}) {
   const sourceExists = await fileExists(BUNDLED_SDKMOD_PATH);
   if (!sourceExists) {
     return { ok: false, message: "Bundled MattsSDKBoostingTools.sdkmod was not found in this app build." };
@@ -639,10 +651,15 @@ ipcMain.handle("app:installSdkMod", async (_event, rawPath) => {
   if (!bundledActorScriptDeployer.available) {
     return { ok: false, message: "Bundled ActorScriptDeployer folder was not found in this app build." };
   }
-  if (await isBorderlandsRunning()) {
+  const allowGameRunning = Boolean(options && options.allowGameRunning);
+  const gameWasRunning = await isBorderlandsRunning();
+  if (gameWasRunning && !allowGameRunning) {
     return { ok: false, message: "Borderlands4.exe is running. Close the game before installing or updating the SDK mod." };
   }
-  const info = await sdkModsPathInfo(rawPath);
+  const hasPath = Boolean(String(rawPath || "").trim());
+  const info = hasPath
+    ? await sdkModsPathInfo(rawPath, "", { allowMissing: Boolean(options && options.allowMissing) })
+    : await autoDetectSdkModsPathInfo({ allowMissing: Boolean(options && options.allowMissing) });
   if (!info.ok) return info;
   await fs.mkdir(info.path, { recursive: true });
   await fs.copyFile(BUNDLED_SDKMOD_PATH, info.destination);
@@ -661,8 +678,15 @@ ipcMain.handle("app:installSdkMod", async (_event, rawPath) => {
     sha256: await safeFileHash(info.destination),
     installedSdkmod: await installedSdkmodInfo(info.destination, bundled.sha256),
     installedActorScriptDeployer: await installedActorScriptDeployerInfo(info.actorScriptDeployerDestination),
-    message: "MattsSDKBoostingTools.sdkmod and ActorScriptDeployer installed/updated. Restart Borderlands 4 if it was open."
+    gameWasRunning,
+    message: gameWasRunning
+      ? "MattsSDKBoostingTools.sdkmod and ActorScriptDeployer installed/updated. Borderlands 4 was open; fully restart the game before testing live actions."
+      : "MattsSDKBoostingTools.sdkmod and ActorScriptDeployer installed/updated."
   };
+}
+
+ipcMain.handle("app:installSdkMod", async (_event, rawPath) => {
+  return installBundledSdkMods(rawPath, { allowMissing: true });
 });
 
 ipcMain.handle("app:readResourceJson", async (_event, resourceName) => {
@@ -1164,6 +1188,18 @@ app.whenReady().then(() => {
       bridge: DEFAULT_BRIDGE
     }));
     app.exit(0);
+    return;
+  }
+  if (INSTALL_SDKMODS_AND_EXIT) {
+    installBundledSdkMods("", { allowMissing: true, allowGameRunning: true })
+      .then((result) => {
+        console.log(JSON.stringify(result, null, 2));
+        app.exit(result.ok ? 0 : 2);
+      })
+      .catch((error) => {
+        console.error(error && error.stack ? error.stack : String(error));
+        app.exit(2);
+      });
     return;
   }
 

@@ -74,11 +74,12 @@
     },
     "nsis": {
       "oneClick": false,
-      "perMachine": false,
+      "perMachine": true,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "Matt's SDK Boosting Tools"
+      "shortcutName": "Matt's SDK Boosting Tools",
+      "include": "build/install-sdkmods.nsh"
     },
     "publish": [
       {

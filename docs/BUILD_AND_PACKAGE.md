@@ -98,6 +98,14 @@ Source mode requires Python and Tkinter.
 
 Do not commit generated EXE/ZIP files to normal source history. Put them on GitHub Releases, then keep source and build scripts in the repository.
 
+The Electron NSIS installer bundles the app, `MattsSDKBoostingTools.sdkmod`,
+and the folder-form `ActorScriptDeployer/` dependency. During install and
+updater restarts, the installer runs the app's silent SDK install helper so the
+game-side `sdk_mods` folder receives both required SDK files automatically when
+the Borderlands 4 Steam folder can be detected. Non-standard game installs can
+still be repaired from the app's Updates tab by browsing to `sdk_mods` and
+running Install / Update SDK Mod.
+
 After building the installer and portable package, upload them to GitHub Releases:
 
 ```powershell

@@ -2506,9 +2506,9 @@ async function browseSdkModsFolder() {
 }
 
 async function installBundledSdkMod() {
-  const confirmed = window.confirm("Install or replace only MattsSDKBoostingTools.sdkmod in the selected sdk_mods folder? Borderlands 4 must be closed.");
+  const confirmed = window.confirm("Install or replace MattsSDKBoostingTools.sdkmod and ActorScriptDeployer in the selected sdk_mods folder? Borderlands 4 must be closed.");
   if (!confirmed) return;
-  setLine(els.sdkInstallSummary, "Installing bundled MattsSDKBoostingTools.sdkmod...", "warning");
+  setLine(els.sdkInstallSummary, "Installing bundled SDK mod files...", "warning");
   const result = await window.msbt.installSdkMod(getValue(els.sdkModsPath));
   setOutput(els.updateOutput, result);
   if (result && result.installedSdkmod) {

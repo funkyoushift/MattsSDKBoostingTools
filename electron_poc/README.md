@@ -59,7 +59,9 @@ Production update testing requires a GitHub Release containing the Electron buil
 
 ## SDK Mod Install
 
-Installer builds bundle the current `MattsSDKBoostingTools.sdkmod`. The Updates tab provides an explicit Install / Update SDK Mod action that:
+Installer builds bundle the current `MattsSDKBoostingTools.sdkmod` and `ActorScriptDeployer/`. The NSIS installer runs a silent install helper after app install/update so the normal installer and Electron updater both copy the required SDK-side files into the auto-detected Borderlands 4 `sdk_mods` folder.
+
+Because the normal Steam game folder lives under `Program Files (x86)`, installer builds run per-machine and request elevation. If auto-detection fails, the Updates tab still provides an explicit Install / Update SDK Mod action that:
 
 - copies `MattsSDKBoostingTools.sdkmod`;
 - copies the bundled `ActorScriptDeployer` folder required by the Dev Spawner tab;
@@ -67,7 +69,7 @@ Installer builds bundle the current `MattsSDKBoostingTools.sdkmod`. The Updates 
 - refuses to run while `Borderlands4.exe` is open;
 - supports auto-detecting the common Steam `sdk_mods` folder or pasting another `sdk_mods` path.
 
-BLImGui remains optional. ActorScriptDeployer is bundled as a folder-form SDK mod dependency so Dev Spawner can import it after the SDK install/update action runs.
+BLImGui remains optional. ActorScriptDeployer is bundled as a folder-form SDK mod dependency so Dev Spawner can import it after install/update.
 
 ## Current Local Features
 

@@ -20,7 +20,7 @@ Go to the [GitHub Releases page](https://github.com/funkyoushift/MattsSDKBoostin
 
 | What you want | Download this | Notes |
 | --- | --- | --- |
-| Recommended normal install | `MattsSDKBoostingTools-Setup-v...exe` | Windows installer. Adds app shortcuts and includes the bundled SDK mod/update resources. |
+| Recommended normal install | `MattsSDKBoostingTools-Setup-v...exe` | Windows installer. Adds app shortcuts and installs the bundled SDK mod plus ActorScriptDeployer into the detected Borderlands 4 `sdk_mods` folder. |
 | Manual install / no installer | `MattsSDKBoostingTools-Electron-Portable-v...-win-x64.zip` | Extract it yourself. Electron app files plus bundled SDK mod/update resources. |
 | Legacy rollback | `MattsSDKBoostingTools-Legacy-Tkinter-Portable-v...zip` | Older Tkinter/manual package kept available while Electron beta testing continues. |
 | Source code only | GitHub `Source code (zip)` / `Source code (tar.gz)` | For developers. This is not the ready-to-run app. |
@@ -33,12 +33,12 @@ Older beta packages remain available on the Releases page as rollback builds.
 
 1. Install or update to [oak2-mod-manager v0.3](https://github.com/bl-sdk/oak2-mod-manager/releases/tag/v0.3).
 2. Download the current `MattsSDKBoostingTools-Setup-v...exe` installer from [GitHub Releases](https://github.com/funkyoushift/MattsSDKBoostingTools/releases).
-3. Run the installer and launch Matt's SDK Boosting Tools.
-4. Use the Updates tab to install/update `MattsSDKBoostingTools.sdkmod` into your Borderlands 4 `sdk_mods` folder.
+3. Run the installer. It installs the Electron app, `MattsSDKBoostingTools.sdkmod`, and the bundled `ActorScriptDeployer/` dependency.
+4. Launch Matt's SDK Boosting Tools. If your Borderlands 4 folder is not in a standard Steam library path, use the Updates tab to browse to `sdk_mods` and run Install / Update SDK Mod.
 5. Start Borderlands 4 with the SDK loaded.
 6. Use the app's Refresh Status / target controls before sending live actions.
 
-Expected layout:
+Expected game-side layout after installer or updater:
 
 ```text
 Borderlands 4/
@@ -47,10 +47,6 @@ Borderlands 4/
       __init__.py
       pyproject.toml
     MattsSDKBoostingTools.sdkmod
-    MattsSDKBoostingTools_external/
-      MattsBoostingToolsExternal.exe
-      matt_editor/
-      resources/
 ```
 
 Manual ZIP users can still extract the portable package and copy `MattsSDKBoostingTools.sdkmod` plus the bundled `ActorScriptDeployer/` folder into `sdk_mods` manually. The Dev Spawner tab needs ActorScriptDeployer.
