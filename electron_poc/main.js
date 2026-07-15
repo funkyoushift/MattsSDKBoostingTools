@@ -127,7 +127,7 @@ const USER_DATA_FILE_DEFINITIONS = [
   { key: "devSpawnerFavorites", label: "Dev Spawner Favorites", fileName: "dev_spawner_favorites.json" },
   { key: "movementSettings", label: "Movement Presets", fileName: "movement_settings.json" },
   { key: "raritySettings", label: "Rarity Presets", fileName: "rarity_settings.json" },
-  { key: "windowState", label: "Window Size / Position", fileName: "window-state.json" }
+  { key: "windowState", label: "Window Size / Position / Opacity", fileName: "window-state.json" }
 ];
 
 function uniquePaths(paths) {
@@ -205,6 +205,14 @@ const DEFAULT_WINDOW_BOUNDS = {
   minWidth: 980,
   minHeight: 660
 };
+const DEFAULT_WINDOW_OPACITY = 1;
+const MIN_WINDOW_OPACITY = 0.35;
+
+function clampWindowOpacity(value) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return DEFAULT_WINDOW_OPACITY;
+  return Math.max(MIN_WINDOW_OPACITY, Math.min(1, number));
+}
 
 function windowStatePath() {
   return path.join(app.getPath("userData"), "window-state.json");
@@ -216,14 +224,24 @@ function readWindowState() {
     const bounds = parsed && typeof parsed === "object" ? parsed.bounds || {} : {};
     const width = Number.isFinite(bounds.width) ? Math.max(DEFAULT_WINDOW_BOUNDS.minWidth, bounds.width) : DEFAULT_WINDOW_BOUNDS.width;
     const height = Number.isFinite(bounds.height) ? Math.max(DEFAULT_WINDOW_BOUNDS.minHeight, bounds.height) : DEFAULT_WINDOW_BOUNDS.height;
-    const state = { width, height, maximized: Boolean(parsed.maximized) };
+    const state = {
+      width,
+      height,
+      maximized: Boolean(parsed.maximized),
+      opacity: clampWindowOpacity(parsed.opacity)
+    };
     if (Number.isFinite(bounds.x) && Number.isFinite(bounds.y)) {
       state.x = bounds.x;
       state.y = bounds.y;
     }
     return state;
   } catch {
-    return { width: DEFAULT_WINDOW_BOUNDS.width, height: DEFAULT_WINDOW_BOUNDS.height, maximized: false };
+    return {
+      width: DEFAULT_WINDOW_BOUNDS.width,
+      height: DEFAULT_WINDOW_BOUNDS.height,
+      maximized: false,
+      opacity: DEFAULT_WINDOW_OPACITY
+    };
   }
 }
 
@@ -250,7 +268,11 @@ function saveWindowState(win) {
     fsSync.mkdirSync(app.getPath("userData"), { recursive: true });
     fsSync.writeFileSync(
       windowStatePath(),
-      JSON.stringify({ bounds: win.getBounds(), maximized: win.isMaximized() }, null, 2),
+      JSON.stringify({
+        bounds: win.getBounds(),
+        maximized: win.isMaximized(),
+        opacity: clampWindowOpacity(win.getOpacity())
+      }, null, 2),
       "utf8"
     );
   } catch (error) {
@@ -402,6 +424,7 @@ function createWindow() {
   if (savedBounds.maximized) {
     win.maximize();
   }
+  win.setOpacity(clampWindowOpacity(savedBounds.opacity));
   bindWindowState(win);
   win.loadFile(path.join(__dirname, "renderer.html"));
 }
@@ -834,6 +857,25 @@ ipcMain.handle("app:openUserDataFolder", async () => {
 });
 
 ipcMain.handle("app:exportUserDataBackup", async () => exportUserDataBackup());
+
+ipcMain.handle("app:getWindowSettings", async () => {
+  const win = BrowserWindow.getFocusedWindow() || BrowserWindow.getAllWindows()[0];
+  return {
+    ok: true,
+    opacity: win && !win.isDestroyed() ? clampWindowOpacity(win.getOpacity()) : DEFAULT_WINDOW_OPACITY
+  };
+});
+
+ipcMain.handle("app:setWindowOpacity", async (_event, rawOpacity) => {
+  const opacity = clampWindowOpacity(rawOpacity);
+  for (const win of BrowserWindow.getAllWindows()) {
+    if (win && !win.isDestroyed()) {
+      win.setOpacity(opacity);
+      saveWindowState(win);
+    }
+  }
+  return { ok: true, opacity, message: `App opacity saved at ${Math.round(opacity * 100)}%.` };
+});
 
 ipcMain.handle("app:loadDevSpawnerFavorites", async () => {
   const filePath = favoritesFilePath(app.getPath("userData"));

@@ -190,6 +190,33 @@ iframe {
   justify-content: flex-end;
 }
 
+.opacity-control {
+  display: grid;
+  grid-template-columns: auto 120px 44px;
+  gap: 8px;
+  align-items: center;
+  min-height: 34px;
+}
+
+.opacity-control label {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.opacity-control input[type="range"] {
+  min-height: 24px;
+  padding: 0;
+}
+
+.opacity-control output {
+  color: var(--text);
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 12px;
+  text-align: right;
+}
+
 .support-panel {
   border: 1px solid rgba(255, 212, 71, .55);
   background: linear-gradient(135deg, rgba(255, 212, 71, .12), rgba(179, 107, 255, .12));
@@ -989,6 +1016,11 @@ button.secondary {
 
   .header-main-actions {
     justify-content: flex-start;
+  }
+
+  .opacity-control {
+    grid-template-columns: auto minmax(120px, 1fr) 44px;
+    width: min(100%, 360px);
   }
 
   .support-copy {

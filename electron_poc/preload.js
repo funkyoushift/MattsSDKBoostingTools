@@ -6,6 +6,7 @@ contextBridge.exposeInMainWorld("msbt", {
   detectSdkMods: () => ipcRenderer.invoke("app:detectSdkMods"),
   downloadUpdate: () => ipcRenderer.invoke("app:downloadUpdate"),
   getVersionInfo: () => ipcRenderer.invoke("app:getVersionInfo"),
+  getWindowSettings: () => ipcRenderer.invoke("app:getWindowSettings"),
   installSdkMod: (sdkModsPath) => ipcRenderer.invoke("app:installSdkMod", sdkModsPath),
   installDownloadedUpdate: () => ipcRenderer.invoke("app:quitAndInstallUpdate"),
   checkUpdates: () => ipcRenderer.invoke("app:checkUpdates"),
@@ -37,5 +38,6 @@ contextBridge.exposeInMainWorld("msbt", {
   readSdkLogTail: (options) => ipcRenderer.invoke("app:readSdkLogTail", options),
   readResourceJson: (resourceName) => ipcRenderer.invoke("app:readResourceJson", resourceName),
   saveReportFile: (text) => ipcRenderer.invoke("app:saveReportFile", text),
-  openExternal: (url) => ipcRenderer.invoke("app:openExternal", url)
+  openExternal: (url) => ipcRenderer.invoke("app:openExternal", url),
+  setWindowOpacity: (opacity) => ipcRenderer.invoke("app:setWindowOpacity", opacity)
 });

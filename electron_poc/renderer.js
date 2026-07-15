@@ -2,6 +2,8 @@ const BASE85_RE = /@U[0-9A-Za-z!#$%&()*+\-;<=>?@^_`{\/}~]+/g;
 
 const els = {
   activityOutput: document.getElementById("activityOutput"),
+  appOpacity: document.getElementById("appOpacity"),
+  appOpacityValue: document.getElementById("appOpacityValue"),
   appVersionLine: document.getElementById("appVersionLine"),
   autoInventorySizes: document.getElementById("autoInventorySizes"),
   bankSize: document.getElementById("bankSize"),
@@ -300,6 +302,7 @@ const state = {
   movementAutoAppliedThisSession: false,
   movementAutoApplyOnStart: false,
   movementSavedPreset: null,
+  opacitySaveTimer: null,
   players: [],
   rarityRememberOnStart: false,
   raritySavedPreset: null,
@@ -363,6 +366,46 @@ function resultMessage(result) {
   if (data && typeof data.message === "string" && data.message.trim()) return data.message;
   if (result && typeof result.message === "string" && result.message.trim()) return result.message;
   return pretty(result);
+}
+
+function clampOpacityPercent(value) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return 100;
+  return Math.max(35, Math.min(100, Math.round(number)));
+}
+
+function setOpacityControl(percent) {
+  const clamped = clampOpacityPercent(percent);
+  if (els.appOpacity) els.appOpacity.value = String(clamped);
+  if (els.appOpacityValue) els.appOpacityValue.textContent = `${clamped}%`;
+}
+
+async function loadWindowSettings() {
+  if (!window.msbt || typeof window.msbt.getWindowSettings !== "function") return;
+  const result = await window.msbt.getWindowSettings();
+  if (result && result.ok) {
+    setOpacityControl(Number(result.opacity || 1) * 100);
+  }
+}
+
+async function saveWindowOpacity() {
+  if (!window.msbt || typeof window.msbt.setWindowOpacity !== "function" || !els.appOpacity) return;
+  if (state.opacitySaveTimer) {
+    clearTimeout(state.opacitySaveTimer);
+    state.opacitySaveTimer = null;
+  }
+  const percent = clampOpacityPercent(els.appOpacity.value);
+  setOpacityControl(percent);
+  await window.msbt.setWindowOpacity(percent / 100);
+}
+
+function queueWindowOpacitySave() {
+  if (state.opacitySaveTimer) clearTimeout(state.opacitySaveTimer);
+  setOpacityControl(els.appOpacity ? els.appOpacity.value : 100);
+  state.opacitySaveTimer = setTimeout(() => {
+    state.opacitySaveTimer = null;
+    saveWindowOpacity();
+  }, 250);
 }
 
 function actionSucceeded(result) {
@@ -4640,6 +4683,10 @@ function wireEvents() {
   if (els.savedDataRefreshBtn) els.savedDataRefreshBtn.addEventListener("click", refreshSavedDataInfo);
   if (els.savedDataOpenBtn) els.savedDataOpenBtn.addEventListener("click", openSavedDataFolder);
   if (els.savedDataBackupBtn) els.savedDataBackupBtn.addEventListener("click", exportSavedDataBackup);
+  if (els.appOpacity) {
+    els.appOpacity.addEventListener("input", queueWindowOpacitySave);
+    els.appOpacity.addEventListener("change", saveWindowOpacity);
+  }
   const detectSdkModsBtn = document.getElementById("detectSdkModsBtn");
   if (detectSdkModsBtn) detectSdkModsBtn.addEventListener("click", detectSdkModsFolder);
   const browseSdkModsBtn = document.getElementById("browseSdkModsBtn");
@@ -4745,6 +4792,7 @@ async function init() {
   if (window.msbt && typeof window.msbt.onUpdateState === "function") {
     window.msbt.onUpdateState(renderUpdateState);
   }
+  await loadWindowSettings();
   await refreshVersionInfo();
   await refreshSavedDataInfo();
   syncDevSpawnerAdvancedControls();
