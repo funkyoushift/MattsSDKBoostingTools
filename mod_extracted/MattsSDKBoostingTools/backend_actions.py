@@ -1751,20 +1751,14 @@ def rarity_reset() -> dict[str, Any]:
             _rarity_weights[key] = 1.0
         _rarity_sync_optional_blimgui_reset()
         return {"ok": False, "message": "No GameState.RarityState found yet. Rarity override state was cleared; load into a world and try again."}
-    _rarity_capture_baseline(state)
     writes = 0
     parts: list[str] = []
     for key, label, fields in RARITY_ROWS:
-        baseline_value = _rarity_baseline_value(key)
-        _rarity_weights[key] = baseline_value
-        snapshot = dict(_rarity_baseline.get(key, {}))
-        if snapshot:
-            writes += _rarity_restore_snapshot(_rarity_get_modifier(state, fields), snapshot)
-        else:
-            writes += _rarity_set_float(_rarity_get_modifier(state, fields), 1.0)
-        parts.append(f"{label}=vanilla")
+        _rarity_weights[key] = 1.0
+        writes += _rarity_set_float(_rarity_get_modifier(state, fields), 1.0)
+        parts.append(f"{label}=100%")
     _rarity_sync_optional_blimgui_reset()
-    return {"ok": True, "message": "Rarity drop weights reset to captured vanilla values and live override is off: " + ", ".join(parts) + f". Writes: {writes}."}
+    return {"ok": True, "message": "Rarity drop weights reset to 100% and live override is off: " + ", ".join(parts) + f". Writes: {writes}."}
 
 
 def rarity_only(allowed_key: object) -> dict[str, Any]:
