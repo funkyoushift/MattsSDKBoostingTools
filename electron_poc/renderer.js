@@ -2841,10 +2841,13 @@ function updateNoticeInfo(info) {
     };
   }
   if (data.packageUpdateAvailable || data.updateAvailable) {
+    const sameVersionRebuild = Boolean(data.packageBuildChanged && localPackageVersion === remotePackageVersion);
     return {
       kind: "package",
       title: "MSBT Package Update Available",
-      message: `A newer MSBT package is available: ${localPackageVersion} -> ${remotePackageVersion}. Update the Electron app and bundled SDK mod together. ${restartGameNote}`,
+      message: sameVersionRebuild
+        ? `A newer rebuild of MSBT ${localPackageVersion} is available. Update the Electron app and bundled SDK mod together. ${restartGameNote}`
+        : `A newer MSBT package is available: ${localPackageVersion} -> ${remotePackageVersion}. Update the Electron app and bundled SDK mod together. ${restartGameNote}`,
       showDownload: updaterStatus === "available",
       showInstall: updaterStatus === "downloaded",
       showInstaller: true,
@@ -2992,7 +2995,12 @@ async function checkUpdates(options = {}) {
   if (result.electronUpdateAvailable) {
     setLine(els.updateSummary, `Electron update available: ${localAppVersion} -> ${remoteAppVersion}`, "warning");
   } else if (result.packageUpdateAvailable) {
-    setLine(els.updateSummary, `SDK/resources update available: ${localVersion} -> ${remoteVersion}`, "warning");
+    const sameVersionRebuild = Boolean(result.packageBuildChanged && localVersion === remoteVersion);
+    setLine(
+      els.updateSummary,
+      sameVersionRebuild ? `MSBT package rebuild available for ${localVersion}` : `SDK/resources update available: ${localVersion} -> ${remoteVersion}`,
+      "warning"
+    );
   } else {
     setLine(els.updateSummary, `Current Electron app looks up to date: ${localAppVersion}`, "ok");
   }

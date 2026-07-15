@@ -385,6 +385,25 @@ function isNewerPublicVersion(remote, local) {
   return comparePublicVersions(remote, local) > 0;
 }
 
+function normalizeManifestValue(value) {
+  return value == null ? "" : String(value).trim();
+}
+
+function manifestMetadataChanged(local, remote) {
+  const fields = [
+    "git_commit",
+    "external_exe_sha256",
+    "sdkmod_sha256",
+    "ui_layout_sha256",
+    "beta_zip_sha256"
+  ];
+  return fields.some((field) => {
+    const localValue = normalizeManifestValue(local && local[field]);
+    const remoteValue = normalizeManifestValue(remote && remote[field]);
+    return Boolean(localValue && remoteValue && localValue !== remoteValue);
+  });
+}
+
 async function fetchLatestManifest() {
   const urls = [LATEST_MANIFEST_URL, FALLBACK_LATEST_MANIFEST_URL];
   let lastError = null;
@@ -1254,7 +1273,9 @@ ipcMain.handle("app:checkUpdates", async () => {
     const remoteVersion = String(remote.package_version || "");
     const localAppVersion = String(versionInfo.appVersion || "");
     const remoteElectronVersion = String(remote.electron_version || remote.app_version || remote.package_version || "");
-    const packageUpdateAvailable = Boolean(remoteVersion && localVersion && remoteVersion !== localVersion);
+    const packageVersionChanged = Boolean(remoteVersion && localVersion && remoteVersion !== localVersion);
+    const packageBuildChanged = Boolean(remoteVersion && localVersion && remoteVersion === localVersion && manifestMetadataChanged(local, remote));
+    const packageUpdateAvailable = packageVersionChanged || packageBuildChanged;
     const electronUpdateAvailable = Boolean(remoteElectronVersion && localAppVersion && isNewerPublicVersion(remoteElectronVersion, localAppVersion));
     let updater = latestUpdateState;
     if (app.isPackaged) {
@@ -1290,6 +1311,8 @@ ipcMain.handle("app:checkUpdates", async () => {
       updater,
       manifestUrl,
       packageUpdateAvailable,
+      packageVersionChanged,
+      packageBuildChanged,
       electronUpdateAvailable,
       updateAvailable: packageUpdateAvailable || electronUpdateAvailable,
       latestUrl: remote.electron_installer_download_url || remote.download_url || "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest",
