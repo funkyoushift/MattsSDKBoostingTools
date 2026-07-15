@@ -449,6 +449,7 @@
           </div>
           <div class="button-row wrap">
             <button id="bl4ReloadBtn">Load Catalog</button>
+            <button id="bl4RefreshGzoBtn">Refresh GZO</button>
             <button id="bl4ValidateBtn">Validate / Confirm Active</button>
             <button id="bl4ImportSelectedBtn">Import Selected To Bookmarks</button>
           </div>
@@ -506,6 +507,16 @@
           <button id="bl4CopySelectedBtn">Copy Selected Serials</button>
         </div>
 
+        <section class="bl4-card-pane">
+          <div class="mini-heading">
+            <h3>Image Browser</h3>
+            <span id="bl4CardSummary">GZO images load directly from save-editor.be when available.</span>
+          </div>
+          <div id="bl4Cards" class="bl4-card-grid">
+            <div class="dev-empty-row">No BL4 code cards loaded.</div>
+          </div>
+        </section>
+
         <div class="grid bl4-grid">
           <section class="bl4-list-pane">
             <h3>Codes</h3>
@@ -526,6 +537,7 @@
               <button id="bl4CopySerialBtn">Copy Serial</button>
               <button id="bl4BookmarkBtn">Bookmark This</button>
               <button id="bl4OpenLootlemonBtn">Open Lootlemon</button>
+              <button id="bl4SubmitGzoBtn">Submit To GZO</button>
             </div>
           </section>
         </div>
@@ -1176,6 +1188,67 @@
       </section>
     </section>
   </main>
+
+  <div id="gzoSubmitModal" class="modal-shell hidden" role="dialog" aria-modal="true" aria-labelledby="gzoSubmitTitle">
+    <div class="modal-card gzo-submit-modal">
+      <div class="section-heading">
+        <div>
+          <h2 id="gzoSubmitTitle">Submit Code To GZO</h2>
+          <p>Preview-only while we wait for Ynot's API URL. Item image or screenshot is required for submission.</p>
+        </div>
+        <button id="gzoSubmitCloseBtn" type="button" class="secondary">Close</button>
+      </div>
+      <form id="gzoSubmitForm">
+        <div class="grid two compact">
+          <label>
+            Listing
+            <select id="gzoSubmitListing">
+              <option value="Legit">Legit</option>
+              <option value="Modded">Modded</option>
+            </select>
+          </label>
+          <label>
+            Creator
+            <input id="gzoSubmitCreator" type="text" autocomplete="off" placeholder="Creator handle">
+          </label>
+          <label>
+            Name
+            <input id="gzoSubmitName" type="text" autocomplete="off" placeholder="Item name">
+          </label>
+          <label>
+            Rarity
+            <input id="gzoSubmitRarity" type="text" autocomplete="off" placeholder="Legendary, Pearlescent...">
+          </label>
+          <label>
+            Type
+            <input id="gzoSubmitType" type="text" autocomplete="off" placeholder="Shield, Class Mods, SMG...">
+          </label>
+          <label>
+            Category
+            <input id="gzoSubmitCategory" type="text" autocomplete="off" placeholder="Guns, Class Mods, Shields...">
+          </label>
+        </div>
+        <label for="gzoSubmitBase85">Base85 @U Code</label>
+        <textarea id="gzoSubmitBase85" class="output-box small" spellcheck="false" placeholder="@U..."></textarea>
+        <label for="gzoSubmitDeserialized">Deserialized / Decoded Serial</label>
+        <textarea id="gzoSubmitDeserialized" class="output-box small" spellcheck="false" placeholder="Optional decoded serial"></textarea>
+        <label for="gzoSubmitNotes">Notes</label>
+        <textarea id="gzoSubmitNotes" class="output-box small" spellcheck="true" placeholder="Optional notes, part breakdown, or creator notes"></textarea>
+        <div class="gzo-image-picker">
+          <label>
+            Required Image / Screenshot
+            <input id="gzoSubmitImage" type="file" accept="image/png,image/jpeg,image/webp">
+          </label>
+          <div id="gzoSubmitImagePreview" class="gzo-image-preview">No image selected.</div>
+        </div>
+        <div id="gzoSubmitStatus" class="status-line warning">API URL is not configured yet. This form is ready for visual review.</div>
+        <div class="button-row wrap">
+          <button id="gzoSubmitResetBtn" type="button">Reset From Active Code</button>
+          <button id="gzoSubmitSendBtn" type="submit">Submit To GZO (API Pending)</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <script src="renderer.js"></script>
 </body>

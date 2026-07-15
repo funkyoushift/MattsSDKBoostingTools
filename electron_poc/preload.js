@@ -34,6 +34,7 @@ contextBridge.exposeInMainWorld("msbt", {
   loadRaritySettings: () => ipcRenderer.invoke("app:loadRaritySettings"),
   saveRaritySettings: (payload) => ipcRenderer.invoke("app:saveRaritySettings", payload),
   loadBl4Catalog: () => ipcRenderer.invoke("app:loadBl4Catalog"),
+  refreshGzoCatalog: () => ipcRenderer.invoke("app:refreshGzoCatalog"),
   bl4PartsBreakdown: (serial) => ipcRenderer.invoke("app:bl4PartsBreakdown", serial),
   readSdkLogTail: (options) => ipcRenderer.invoke("app:readSdkLogTail", options),
   readResourceJson: (resourceName) => ipcRenderer.invoke("app:readResourceJson", resourceName),

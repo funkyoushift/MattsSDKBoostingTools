@@ -10,6 +10,8 @@ const els = {
   backpackSize: document.getElementById("backpackSize"),
   bl4BookmarkBtn: document.getElementById("bl4BookmarkBtn"),
   bl4Breakdown: document.getElementById("bl4Breakdown"),
+  bl4Cards: document.getElementById("bl4Cards"),
+  bl4CardSummary: document.getElementById("bl4CardSummary"),
   bl4ClearSelectionBtn: document.getElementById("bl4ClearSelectionBtn"),
   bl4CopyBreakdownBtn: document.getElementById("bl4CopyBreakdownBtn"),
   bl4CopySelectedBtn: document.getElementById("bl4CopySelectedBtn"),
@@ -27,6 +29,7 @@ const els = {
   bl4Output: document.getElementById("bl4Output"),
   bl4OverrideLevel: document.getElementById("bl4OverrideLevel"),
   bl4RarityFilter: document.getElementById("bl4RarityFilter"),
+  bl4RefreshGzoBtn: document.getElementById("bl4RefreshGzoBtn"),
   bl4ReloadBtn: document.getElementById("bl4ReloadBtn"),
   bl4Rows: document.getElementById("bl4Rows"),
   bl4SearchBtn: document.getElementById("bl4SearchBtn"),
@@ -36,6 +39,7 @@ const els = {
   bl4SetTargetBtn: document.getElementById("bl4SetTargetBtn"),
   bl4RefreshPlayersBtn: document.getElementById("bl4RefreshPlayersBtn"),
   bl4Status: document.getElementById("bl4Status"),
+  bl4SubmitGzoBtn: document.getElementById("bl4SubmitGzoBtn"),
   bl4TargetSelect: document.getElementById("bl4TargetSelect"),
   bl4TargetSummary: document.getElementById("bl4TargetSummary"),
   bl4TypeFilter: document.getElementById("bl4TypeFilter"),
@@ -105,6 +109,23 @@ const els = {
   electronAppInstaller: document.getElementById("electronAppInstaller"),
   electronAppLatest: document.getElementById("electronAppLatest"),
   editorFrame: document.getElementById("editorFrame"),
+  gzoSubmitBase85: document.getElementById("gzoSubmitBase85"),
+  gzoSubmitCategory: document.getElementById("gzoSubmitCategory"),
+  gzoSubmitCloseBtn: document.getElementById("gzoSubmitCloseBtn"),
+  gzoSubmitCreator: document.getElementById("gzoSubmitCreator"),
+  gzoSubmitDeserialized: document.getElementById("gzoSubmitDeserialized"),
+  gzoSubmitForm: document.getElementById("gzoSubmitForm"),
+  gzoSubmitImage: document.getElementById("gzoSubmitImage"),
+  gzoSubmitImagePreview: document.getElementById("gzoSubmitImagePreview"),
+  gzoSubmitListing: document.getElementById("gzoSubmitListing"),
+  gzoSubmitModal: document.getElementById("gzoSubmitModal"),
+  gzoSubmitName: document.getElementById("gzoSubmitName"),
+  gzoSubmitNotes: document.getElementById("gzoSubmitNotes"),
+  gzoSubmitRarity: document.getElementById("gzoSubmitRarity"),
+  gzoSubmitResetBtn: document.getElementById("gzoSubmitResetBtn"),
+  gzoSubmitSendBtn: document.getElementById("gzoSubmitSendBtn"),
+  gzoSubmitStatus: document.getElementById("gzoSubmitStatus"),
+  gzoSubmitType: document.getElementById("gzoSubmitType"),
   itempoolCategory: document.getElementById("itempoolCategory"),
   itempoolCount: document.getElementById("itempoolCount"),
   itempoolLevel: document.getElementById("itempoolLevel"),
@@ -294,6 +315,7 @@ const state = {
   filteredItemPools: [],
   filteredMaps: [],
   filteredStations: [],
+  gzoSubmitImageObjectUrl: "",
   itemPools: [],
   latestInstallerUrl: "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest",
   latestDownloadUrl: "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest",
@@ -1874,8 +1896,10 @@ function bl4SearchBlob(row) {
     row.creator,
     row.classification,
     row.mattmab_validator,
+    row.deserialized,
     row.notes,
     row.url,
+    row.image_url,
     bl4TagText(row),
     bl4DecodedText(row)
   ].filter(Boolean).join(" ").toLowerCase();
@@ -2046,10 +2070,224 @@ function formatBl4Detail(row) {
     `Creator: ${row.creator || ""}`,
     `Tags: ${bl4TagText(row) || ""}`,
     row.url ? `Lootlemon URL: ${row.url}` : "",
+    row.image_url ? `Image URL: ${row.image_url}` : "",
     row.notes ? `Notes: ${row.notes}` : "",
     "Decoded identity:",
     ...identityLines
   ].filter((line) => line !== "").join("\n");
+}
+
+function bl4ImageUrl(row) {
+  return String(row && (row.image_url || row.imageUrl || row.image || row.thumbnail || row.screenshot) ? row.image_url || row.imageUrl || row.image || row.thumbnail || row.screenshot : "").trim();
+}
+
+function bl4IsGzoRow(row) {
+  return String(row && row.source ? row.source : "").toLowerCase() === "gzo";
+}
+
+function bl4ImageStats(rows = state.bl4Entries) {
+  const list = Array.isArray(rows) ? rows : [];
+  const gzoRows = list.filter((row) => bl4IsGzoRow(row));
+  return {
+    total: list.length,
+    withImages: list.filter((row) => bl4ImageUrl(row)).length,
+    gzo: gzoRows.length,
+    gzoWithImages: gzoRows.filter((row) => bl4ImageUrl(row)).length
+  };
+}
+
+function bl4ImageHint(rows = state.bl4Entries) {
+  const stats = bl4ImageStats(rows);
+  if (stats.gzo > 0 && stats.gzoWithImages === 0) {
+    return "GZO image metadata is not in this local cache yet. Click Refresh GZO once to load website images.";
+  }
+  if (stats.gzo > 0 && stats.gzoWithImages < stats.gzo) {
+    return `${stats.gzoWithImages}/${stats.gzo} GZO rows include images; local, Lootlemon, and custom rows may not.`;
+  }
+  if (stats.withImages === 0 && stats.total > 0) {
+    return "No image URLs are available for these local rows.";
+  }
+  return `${stats.withImages}/${stats.total} visible rows include image URLs.`;
+}
+
+function renderBl4Cards() {
+  if (!els.bl4Cards) return;
+  els.bl4Cards.innerHTML = "";
+  if (!state.bl4Entries.length) {
+    const empty = document.createElement("div");
+    empty.className = "dev-empty-row";
+    empty.textContent = "No BL4 catalog is loaded.";
+    els.bl4Cards.appendChild(empty);
+    if (els.bl4CardSummary) els.bl4CardSummary.textContent = "GZO images load directly from save-editor.be when available.";
+    return;
+  }
+  if (!state.bl4FilteredEntries.length) {
+    const empty = document.createElement("div");
+    empty.className = "dev-empty-row";
+    empty.textContent = "No image cards match the current filters.";
+    els.bl4Cards.appendChild(empty);
+    if (els.bl4CardSummary) els.bl4CardSummary.textContent = "No visible cards.";
+    return;
+  }
+
+  const maxCards = 48;
+  const shown = state.bl4FilteredEntries.slice(0, maxCards);
+  if (els.bl4CardSummary) {
+    els.bl4CardSummary.textContent = `${shown.length} card(s) shown; ${bl4ImageHint(shown)} Use filters to narrow more.`;
+  }
+
+  shown.forEach((row) => {
+    const id = bl4EntryId(row);
+    const card = document.createElement("button");
+    card.type = "button";
+    card.className = `bl4-code-card${id === state.bl4ActiveId ? " active" : ""}`;
+    card.addEventListener("click", () => selectBl4Entry(id));
+
+    const imageWrap = document.createElement("div");
+    imageWrap.className = "bl4-card-image";
+    const imageUrl = bl4ImageUrl(row);
+    if (imageUrl) {
+      const img = document.createElement("img");
+      img.loading = "lazy";
+      img.decoding = "async";
+      img.alt = row.name || "BL4 item image";
+      img.src = imageUrl;
+      img.addEventListener("error", () => {
+        imageWrap.textContent = "Image unavailable";
+        imageWrap.classList.add("missing");
+      });
+      imageWrap.appendChild(img);
+    } else {
+      imageWrap.textContent = bl4IsGzoRow(row) ? "No GZO image" : "No image";
+      imageWrap.classList.add("missing");
+    }
+
+    const title = document.createElement("div");
+    title.className = "bl4-card-title";
+    title.textContent = row.name || "Unnamed Code";
+    const meta = document.createElement("div");
+    meta.className = "bl4-card-meta";
+    meta.textContent = [
+      row.listing,
+      row.type,
+      row.rarity,
+      row.creator
+    ].filter(Boolean).join(" | ");
+    const result = document.createElement("div");
+    result.className = `bl4-card-result ${bl4MattmabKind(row.mattmab_validator)}`;
+    result.textContent = bl4MattmabLabel(row.mattmab_validator);
+    card.append(imageWrap, title, meta, result);
+    els.bl4Cards.appendChild(card);
+  });
+
+  if (state.bl4FilteredEntries.length > maxCards) {
+    const note = document.createElement("div");
+    note.className = "dev-empty-row";
+    note.textContent = `Showing first ${maxCards} card(s). Narrow Search or filters for more images.`;
+    els.bl4Cards.appendChild(note);
+  }
+}
+
+function bl4SubmitListing(row) {
+  const classification = String(row && row.classification ? row.classification : "").toLowerCase();
+  const listing = String(row && row.listing ? row.listing : "").toLowerCase();
+  if (classification === "modded" || listing === "modded") return "Modded";
+  return "Legit";
+}
+
+function clearGzoSubmitImagePreview() {
+  if (state.gzoSubmitImageObjectUrl) {
+    URL.revokeObjectURL(state.gzoSubmitImageObjectUrl);
+    state.gzoSubmitImageObjectUrl = "";
+  }
+  if (els.gzoSubmitImage) els.gzoSubmitImage.value = "";
+  if (els.gzoSubmitImagePreview) {
+    els.gzoSubmitImagePreview.innerHTML = "";
+    els.gzoSubmitImagePreview.textContent = "No image selected.";
+  }
+}
+
+function updateGzoSubmitImagePreview() {
+  if (!els.gzoSubmitImage || !els.gzoSubmitImagePreview) return;
+  if (state.gzoSubmitImageObjectUrl) {
+    URL.revokeObjectURL(state.gzoSubmitImageObjectUrl);
+    state.gzoSubmitImageObjectUrl = "";
+  }
+  const file = els.gzoSubmitImage.files && els.gzoSubmitImage.files.length ? els.gzoSubmitImage.files[0] : null;
+  els.gzoSubmitImagePreview.innerHTML = "";
+  if (!file) {
+    els.gzoSubmitImagePreview.textContent = "No image selected.";
+    return;
+  }
+  state.gzoSubmitImageObjectUrl = URL.createObjectURL(file);
+  const img = document.createElement("img");
+  img.alt = file.name;
+  img.src = state.gzoSubmitImageObjectUrl;
+  const label = document.createElement("div");
+  label.textContent = `${file.name} (${Math.ceil(file.size / 1024)} KB)`;
+  els.gzoSubmitImagePreview.append(img, label);
+  setLine(els.gzoSubmitStatus, "Image attached. The form is ready for API wiring once Ynot sends the endpoint.", "ok");
+}
+
+function fillGzoSubmitForm(row) {
+  if (!row) return;
+  if (els.gzoSubmitListing) els.gzoSubmitListing.value = bl4SubmitListing(row);
+  setTextValue(els.gzoSubmitName, row.name || "");
+  setTextValue(els.gzoSubmitCreator, row.creator || "");
+  setTextValue(els.gzoSubmitType, row.type || "");
+  setTextValue(els.gzoSubmitCategory, row.category || row.type || "");
+  setTextValue(els.gzoSubmitRarity, row.rarity || "");
+  setTextValue(els.gzoSubmitBase85, row.serial || "");
+  setTextValue(els.gzoSubmitDeserialized, row.deserialized || "");
+  setTextValue(els.gzoSubmitNotes, row.notes || "");
+  clearGzoSubmitImagePreview();
+  const imageHint = bl4ImageUrl(row)
+    ? "This catalog row already has a web image. Upload a screenshot/image file when submitting a new item."
+    : "Upload a screenshot or generated item image before submitting.";
+  setLine(els.gzoSubmitStatus, `API URL is not configured yet. ${imageHint}`, "warning");
+}
+
+function openGzoSubmitModal() {
+  const row = activeBl4Entry();
+  if (!row) {
+    setBl4Status("Select a BL4 code before opening the GZO submission form.", "warning");
+    return;
+  }
+  fillGzoSubmitForm(row);
+  if (els.gzoSubmitModal) els.gzoSubmitModal.classList.remove("hidden");
+}
+
+function closeGzoSubmitModal() {
+  if (els.gzoSubmitModal) els.gzoSubmitModal.classList.add("hidden");
+}
+
+function validateGzoSubmitForm() {
+  const required = [
+    ["listing", getValue(els.gzoSubmitListing)],
+    ["name", getValue(els.gzoSubmitName)],
+    ["creator", getValue(els.gzoSubmitCreator)],
+    ["type", getValue(els.gzoSubmitType)],
+    ["rarity", getValue(els.gzoSubmitRarity)]
+  ];
+  const missing = required.filter(([, value]) => !String(value || "").trim()).map(([label]) => label);
+  if (!getValue(els.gzoSubmitBase85).trim()) missing.push("base85");
+  const image = els.gzoSubmitImage && els.gzoSubmitImage.files && els.gzoSubmitImage.files.length ? els.gzoSubmitImage.files[0] : null;
+  if (!image) missing.push("image");
+  return { ok: !missing.length, missing };
+}
+
+function handleGzoSubmit(event) {
+  if (event) event.preventDefault();
+  const check = validateGzoSubmitForm();
+  if (!check.ok) {
+    setLine(els.gzoSubmitStatus, `Required before submission: ${check.missing.join(", ")}.`, "bad");
+    return;
+  }
+  setLine(
+    els.gzoSubmitStatus,
+    "Form data and image are ready. Waiting for Ynot's API URL before enabling the actual upload.",
+    "warning"
+  );
 }
 
 function clearBl4Detail(message = "Select a BL4 code.") {
@@ -2107,6 +2345,7 @@ function renderBl4Codes() {
     `${state.bl4FilteredEntries.length} shown / ${state.bl4Entries.length} merged | ${selectedCount} selected`,
     state.bl4FilteredEntries.length ? "ok" : "warning"
   );
+  renderBl4Cards();
 
   if (!els.bl4Rows) return;
   els.bl4Rows.innerHTML = "";
@@ -2245,10 +2484,12 @@ function bl4BookmarkPayload(row) {
     creator: row.creator,
     classification: row.classification,
     url: row.url,
+    image_url: row.image_url,
     tags: row.tags,
     notes: row.notes,
     mattmab_validator: row.mattmab_validator,
     mattmab_validator_detail: row.mattmab_validator_detail,
+    deserialized: row.deserialized,
     decoded_identity: row.decoded_identity
   });
 }
@@ -2411,12 +2652,28 @@ async function sendBl4Serial(mode) {
   setBl4DeliveryStatus(actionSucceeded(result) ? `Delivery accepted: ${message}` : `Delivery failed: ${message}`, actionSucceeded(result) ? "ok" : "bad");
 }
 
+function acceptBl4CatalogResult(result) {
+  state.bl4Entries = Array.isArray(result.entries) ? result.entries : [];
+  state.bl4CatalogWarnings = Array.isArray(result.warnings) ? result.warnings : [];
+  state.bl4SelectedIds.clear();
+  state.bl4ConfirmedId = "";
+  state.bl4ConfirmedSerial = "";
+  const activeStillExists = state.bl4Entries.some((entry) => bl4EntryId(entry) === state.bl4ActiveId);
+  if (!activeStillExists) state.bl4ActiveId = "";
+  populateBl4Filters(result.filters || {});
+  renderBl4Codes();
+  if (state.bl4Entries.length && !state.bl4ActiveId) {
+    selectBl4Entry(bl4EntryId(state.bl4Entries[0]));
+  }
+  return result.counts || {};
+}
+
 async function loadBl4Catalog() {
   if (!window.msbt || typeof window.msbt.loadBl4Catalog !== "function") {
     setBl4Status("BL4 catalog loader is not available in this Electron build.", "bad");
     return;
   }
-  setBl4Status("Loading BL4 Codes catalog from local resources...", "warning");
+  setBl4Status("Loading BL4 Codes catalog from local resources and cached GZO data...", "warning");
   const result = await window.msbt.loadBl4Catalog();
   if (!result || !result.ok) {
     state.bl4Entries = [];
@@ -2424,22 +2681,38 @@ async function loadBl4Catalog() {
     setBl4Status(result && result.message ? result.message : "BL4 Codes catalog could not be loaded.", "bad");
     return;
   }
-  state.bl4Entries = Array.isArray(result.entries) ? result.entries : [];
-  state.bl4CatalogWarnings = Array.isArray(result.warnings) ? result.warnings : [];
-  state.bl4SelectedIds.clear();
-  state.bl4ConfirmedId = "";
-  state.bl4ConfirmedSerial = "";
-  populateBl4Filters(result.filters || {});
-  renderBl4Codes();
-  if (state.bl4Entries.length && !state.bl4ActiveId) {
-    selectBl4Entry(bl4EntryId(state.bl4Entries[0]));
-  }
-  const counts = result.counts || {};
+  const counts = acceptBl4CatalogResult(result);
   const warnings = state.bl4CatalogWarnings.length ? ` ${state.bl4CatalogWarnings.join(" ")}` : "";
   setBl4Status(
     `Loaded ${counts.merged || state.bl4Entries.length} local BL4 code(s): ${counts.lootlemon || 0} Lootlemon, ${counts.custom || 0} Custom Static, ${counts.gzo || 0} GZO.${warnings}`,
     state.bl4CatalogWarnings.length ? "warning" : "ok"
   );
+}
+
+async function refreshBl4GzoCatalog() {
+  if (!window.msbt || typeof window.msbt.refreshGzoCatalog !== "function") {
+    setBl4Status("GZO refresh is not available in this Electron build.", "bad");
+    return;
+  }
+  if (els.bl4RefreshGzoBtn) els.bl4RefreshGzoBtn.disabled = true;
+  setBl4Status("Refreshing GZO from save-editor.be and updating the local cache...", "warning");
+  try {
+    const result = await window.msbt.refreshGzoCatalog();
+    if (!result || !result.ok) {
+      setBl4Status(result && result.message ? result.message : "GZO refresh failed.", "bad");
+      return;
+    }
+    const counts = acceptBl4CatalogResult(result);
+    const warnings = state.bl4CatalogWarnings.length ? ` ${state.bl4CatalogWarnings.join(" ")}` : "";
+    setBl4Status(
+      `Refreshed ${result.refreshed || counts.gzo || 0} GZO code(s). Loaded ${counts.merged || state.bl4Entries.length} merged BL4 code(s): ${counts.lootlemon || 0} Lootlemon, ${counts.custom || 0} Custom Static, ${counts.gzo || 0} GZO.${warnings}`,
+      state.bl4CatalogWarnings.length ? "warning" : "ok"
+    );
+  } catch (error) {
+    setBl4Status(`GZO refresh failed: ${error && error.message ? error.message : error}`, "bad");
+  } finally {
+    if (els.bl4RefreshGzoBtn) els.bl4RefreshGzoBtn.disabled = false;
+  }
 }
 
 function versionValue(value) {
@@ -4578,6 +4851,7 @@ function wireEvents() {
   });
 
   els.bl4ReloadBtn.addEventListener("click", loadBl4Catalog);
+  els.bl4RefreshGzoBtn.addEventListener("click", refreshBl4GzoCatalog);
   els.bl4SearchBtn.addEventListener("click", applyBl4Search);
   els.bl4SearchInput.addEventListener("keydown", (event) => {
     if (event.key === "Enter") {
@@ -4606,6 +4880,19 @@ function wireEvents() {
   els.bl4BookmarkBtn.addEventListener("click", bookmarkActiveBl4Code);
   els.bl4ImportSelectedBtn.addEventListener("click", importSelectedBl4Bookmarks);
   els.bl4OpenLootlemonBtn.addEventListener("click", openBl4Lootlemon);
+  if (els.bl4SubmitGzoBtn) els.bl4SubmitGzoBtn.addEventListener("click", openGzoSubmitModal);
+  if (els.gzoSubmitCloseBtn) els.gzoSubmitCloseBtn.addEventListener("click", closeGzoSubmitModal);
+  if (els.gzoSubmitResetBtn) els.gzoSubmitResetBtn.addEventListener("click", () => {
+    const row = activeBl4Entry();
+    if (row) fillGzoSubmitForm(row);
+  });
+  if (els.gzoSubmitImage) els.gzoSubmitImage.addEventListener("change", updateGzoSubmitImagePreview);
+  if (els.gzoSubmitForm) els.gzoSubmitForm.addEventListener("submit", handleGzoSubmit);
+  if (els.gzoSubmitModal) {
+    els.gzoSubmitModal.addEventListener("click", (event) => {
+      if (event.target === els.gzoSubmitModal) closeGzoSubmitModal();
+    });
+  }
   els.bl4ValidateBtn.addEventListener("click", validateBl4ActiveSerial);
   els.bl4TargetSelect.addEventListener("change", () => setTarget(els.bl4TargetSelect.value));
   els.bl4SetTargetBtn.addEventListener("click", () => setTarget(els.bl4TargetSelect.value));

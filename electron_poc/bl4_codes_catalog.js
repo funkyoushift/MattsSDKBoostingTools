@@ -11,6 +11,10 @@ const RESOURCE_FILES = {
 };
 
 const DEFAULT_RESOURCE_DIR = path.resolve(__dirname, "..", "external_app", "v22_parts_codes_fixed", "resources");
+const GZO_CODES_URL = "https://save-editor.be/GZO/Borderlands4/Codes.html";
+const GZO_CATALOG_URL = "https://save-editor.be/GZO/Borderlands4/codes/api.php?action=catalog";
+const GZO_CACHE_VERSION = 6;
+const GZO_SERIAL_RE = /@U[0-9A-Za-z!#$%&()*+\-;<=>?@^_`{\/}~]{12,}/g;
 
 function text(value) {
   return String(value ?? "").trim();
@@ -43,8 +47,35 @@ function toArray(value) {
   return raw.split(/[;,|]/g).map(text).filter(Boolean);
 }
 
+function hasValue(value) {
+  if (value === null || value === undefined) return false;
+  if (typeof value === "string") return value.trim() !== "";
+  return true;
+}
+
+function field(raw, ...keys) {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return "";
+  const lowered = new Map(Object.entries(raw).map(([key, value]) => [String(key).toLowerCase(), value]));
+  for (const key of keys) {
+    if (Object.prototype.hasOwnProperty.call(raw, key) && hasValue(raw[key])) return raw[key];
+    const lowerValue = lowered.get(String(key).toLowerCase());
+    if (hasValue(lowerValue)) return lowerValue;
+  }
+  return "";
+}
+
 function validSerial(value) {
   return /^@U[!-~]+$/.test(text(value));
+}
+
+function normalizeWebUrl(value, baseUrl = GZO_CODES_URL) {
+  const raw = text(value);
+  if (!raw) return "";
+  try {
+    return new URL(raw, baseUrl).toString();
+  } catch {
+    return raw;
+  }
 }
 
 function stableId(prefix, raw, serial) {
@@ -145,6 +176,129 @@ function decodedIdentity(raw) {
   return {};
 }
 
+function collectGzoTags(raw) {
+  const tags = [];
+  for (const key of ["tags", "tag", "labels", "categories", "meta", "notes"]) {
+    const value = field(raw, key);
+    if (Array.isArray(value)) tags.push(...value.map(text).filter(Boolean));
+    else if (value && typeof value === "object") tags.push(...Object.values(value).map(text).filter(Boolean));
+    else if (hasValue(value)) tags.push(text(value));
+  }
+  return tags;
+}
+
+function classifyGzoTags(tags) {
+  const all = tags.join(" ").toLowerCase();
+  const typeMap = [
+    ["class mod", "Class Mods"],
+    ["classmod", "Class Mods"],
+    ["weapon", "Weapons"],
+    ["shield", "Shield"],
+    ["grenade", "Ordnance"],
+    ["repkit", "Repkit"],
+    ["enhancement", "Enhancement"],
+    ["firmware", "Firmware"]
+  ];
+  const out = { type: "", rarity: "", manufacturer: "" };
+  const typeMatch = typeMap.find(([needle]) => all.includes(needle));
+  if (typeMatch) out.type = typeMatch[1];
+  for (const rarity of ["Pearlescent", "Legendary", "Epic", "Rare", "Uncommon", "Common"]) {
+    if (all.includes(rarity.toLowerCase())) {
+      out.rarity = rarity;
+      break;
+    }
+  }
+  for (const manufacturer of ["C4SH", "Atlas", "COV", "Daedalus", "Hyperion", "Jakobs", "Maliwan", "Order", "Ripper", "Tediore", "Torgue", "Vladof"]) {
+    if (all.includes(manufacturer.toLowerCase())) {
+      out.manufacturer = manufacturer;
+      break;
+    }
+  }
+  return out;
+}
+
+function normalizeGzoRow(raw, inheritedListing = "") {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
+  const serial = text(field(raw, "base85", "Base85", "serial", "code", "value"));
+  if (!validSerial(serial)) return null;
+  const tags = collectGzoTags(raw);
+  const classified = classifyGzoTags(tags);
+  const listing = normalizeListing(
+    field(raw, "targetListing", "listing", "destination", "bucket", "folder", "legitOrModded", "list", "category") || inheritedListing,
+    "GZO"
+  );
+  const type = normalizeType(field(raw, "type", "itemType") || classified.type);
+  return {
+    id: "",
+    name: normalizeTitle(field(raw, "name", "displayName", "title", "itemName"), "GZO Serial"),
+    serial,
+    listing,
+    category: normalizeType(field(raw, "category", "type", "itemType") || classified.type || "BL4 Codes"),
+    type,
+    rarity: normalizeRarity(field(raw, "rarity") || classified.rarity),
+    manufacturer: normalizeTitle(field(raw, "manufacturer", "maker") || classified.manufacturer),
+    creator: normalizeTitle(field(raw, "creator", "author", "creatorName", "owner")),
+    source: "GZO",
+    url: normalizeWebUrl(field(raw, "websiteUrl", "url", "link", "pageUrl") || GZO_CODES_URL),
+    image_url: normalizeWebUrl(field(raw, "image", "image_url", "imageUrl", "thumbnail", "screenshot", "screenshot_url", "photo", "picture")),
+    deserialized: text(field(raw, "deserialized", "human", "decoded", "decodedSerial", "human_serial")),
+    mattmab_validator: normalizeTitle(field(raw, "mattmab_validator", "validator", "validation", "mattmabResult", "result")),
+    mattmab_validator_detail: normalizeTitle(field(raw, "mattmab_validator_detail", "validatorDetail", "detail")),
+    tags: unique([...tags, "gzo"])
+  };
+}
+
+function walkGzoJson(value, out, seen, inheritedListing = "") {
+  if (Array.isArray(value)) {
+    for (const child of value) walkGzoJson(child, out, seen, inheritedListing);
+    return;
+  }
+  if (!value || typeof value !== "object") return;
+  const listing = normalizeListing(
+    field(value, "targetListing", "listing", "destination", "bucket", "folder", "legitOrModded", "list") || inheritedListing,
+    "GZO"
+  );
+  const row = normalizeGzoRow(value, listing);
+  if (row && !seen.has(row.serial.toLowerCase())) {
+    seen.add(row.serial.toLowerCase());
+    out.push(row);
+  }
+  for (const child of Object.values(value)) walkGzoJson(child, out, seen, listing);
+}
+
+function parseGzoCatalogText(body) {
+  const out = [];
+  const seen = new Set();
+  try {
+    walkGzoJson(JSON.parse(body), out, seen, "");
+  } catch {
+    for (const match of body.matchAll(GZO_SERIAL_RE)) {
+      const serial = text(match[0]);
+      if (!validSerial(serial) || seen.has(serial.toLowerCase())) continue;
+      seen.add(serial.toLowerCase());
+      out.push({
+        id: "",
+        name: "GZO Serial",
+        serial,
+        listing: "GZO",
+        category: "BL4 Codes",
+        type: "",
+        rarity: "",
+        manufacturer: "",
+        creator: "",
+        source: "GZO",
+        url: GZO_CODES_URL,
+        image_url: "",
+        deserialized: "",
+        mattmab_validator: "",
+        mattmab_validator_detail: "",
+        tags: ["gzo"]
+      });
+    }
+  }
+  return out;
+}
+
 function normalizeCodeEntry(raw, defaults) {
   if (!raw || typeof raw !== "object") return null;
   const serial = text(raw.serial || raw.code || raw.base85);
@@ -172,6 +326,7 @@ function normalizeCodeEntry(raw, defaults) {
     serial,
     source,
     listing,
+    category: normalizeType(raw.category || raw.item_category || raw.group || type),
     type,
     manufacturer,
     rarity,
@@ -180,6 +335,8 @@ function normalizeCodeEntry(raw, defaults) {
     mattmab_validator: mattmab,
     mattmab_validator_detail: text(raw.mattmab_validator_detail || raw.mattmab_detail || raw.validation_detail),
     url: text(raw.url || raw.lootlemon_url || raw.link),
+    image_url: normalizeWebUrl(raw.image_url || raw.imageUrl || raw.image || raw.thumbnail || raw.screenshot || raw.screenshot_url || raw.photo || raw.picture || raw.img),
+    deserialized: text(raw.deserialized || raw.human || raw.decoded || raw.decoded_serial || raw.human_serial),
     tags,
     notes: text(raw.notes || raw.description || raw.comment),
     decoded_identity: identity,
@@ -188,19 +345,22 @@ function normalizeCodeEntry(raw, defaults) {
   };
 }
 
-async function readJsonOptional(resourceDir, file, warnings, options = {}) {
-  const fullPath = path.join(resourceDir, file);
+async function readJsonFileOptional(fullPath, warnings, label, options = {}) {
   try {
     const raw = await fs.readFile(fullPath, "utf8");
     return JSON.parse(raw);
   } catch (error) {
     if (error && error.code === "ENOENT") {
-      if (!options.optional) warnings.push(`${file} is not bundled.`);
+      if (!options.optional) warnings.push(`${label} is not bundled.`);
       return null;
     }
-    warnings.push(`${file} could not be read: ${error.message}`);
+    warnings.push(`${label} could not be read: ${error.message}`);
     return null;
   }
+}
+
+async function readJsonOptional(resourceDir, file, warnings, options = {}) {
+  return readJsonFileOptional(path.join(resourceDir, file), warnings, file, options);
 }
 
 function entriesFromJson(json) {
@@ -246,7 +406,7 @@ function filterValues(entries) {
   };
 }
 
-async function loadBl4Catalog(resourceDir = DEFAULT_RESOURCE_DIR) {
+async function loadBl4Catalog(resourceDir = DEFAULT_RESOURCE_DIR, options = {}) {
   const warnings = [];
   const sources = [
     {
@@ -285,7 +445,13 @@ async function loadBl4Catalog(resourceDir = DEFAULT_RESOURCE_DIR) {
   const counts = {};
   const normalized = [];
   for (const source of sources) {
-    const json = await readJsonOptional(resourceDir, source.defaults.file, warnings, { optional: Boolean(source.defaults.optional) });
+    let json = null;
+    if (source.key === "gzo" && options.gzoCachePath) {
+      json = await readJsonFileOptional(options.gzoCachePath, warnings, "cached GZO catalog", { optional: true });
+    }
+    if (!json) {
+      json = await readJsonOptional(resourceDir, source.defaults.file, warnings, { optional: Boolean(source.defaults.optional) });
+    }
     const entries = entriesFromJson(json);
     counts[source.key] = entries.length;
     for (const entry of entries) {
@@ -307,8 +473,41 @@ async function loadBl4Catalog(resourceDir = DEFAULT_RESOURCE_DIR) {
   };
 }
 
+async function refreshGzoCatalog(resourceDir = DEFAULT_RESOURCE_DIR, gzoCachePath, options = {}) {
+  if (!gzoCachePath) throw new Error("No writable GZO cache path was provided.");
+  const fetchImpl = options.fetch || globalThis.fetch;
+  if (typeof fetchImpl !== "function") throw new Error("This Electron runtime does not provide fetch.");
+  const response = await fetchImpl(GZO_CATALOG_URL, {
+    headers: {
+      "User-Agent": "MattsBoostingToolsElectron/1.0",
+      Accept: "application/json,text/plain,*/*"
+    },
+    cache: "no-store"
+  });
+  const body = await response.text();
+  if (!response.ok) throw new Error(`GZO refresh failed: HTTP ${response.status}`);
+  const entries = parseGzoCatalogText(body);
+  if (!entries.length) throw new Error("GZO refresh returned no valid BL4 serials.");
+  const payload = {
+    version: GZO_CACHE_VERSION,
+    updated: Math.floor(Date.now() / 1000),
+    source: GZO_CATALOG_URL,
+    entries
+  };
+  await fs.mkdir(path.dirname(gzoCachePath), { recursive: true });
+  await fs.writeFile(gzoCachePath, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
+  const catalog = await loadBl4Catalog(resourceDir, { gzoCachePath });
+  return {
+    ...catalog,
+    refreshed: entries.length,
+    cachePath: gzoCachePath,
+    source: GZO_CATALOG_URL
+  };
+}
+
 module.exports = {
   loadBl4Catalog,
   normalizeCodeEntry,
+  refreshGzoCatalog,
   validSerial
 };

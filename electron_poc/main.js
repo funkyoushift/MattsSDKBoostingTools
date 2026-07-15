@@ -27,7 +27,8 @@ const {
   writeRaritySettings
 } = require("./rarity_settings_store");
 const {
-  loadBl4Catalog
+  loadBl4Catalog,
+  refreshGzoCatalog
 } = require("./bl4_codes_catalog");
 
 function reportFatalStartupError(kind, error) {
@@ -129,6 +130,10 @@ const USER_DATA_FILE_DEFINITIONS = [
   { key: "raritySettings", label: "Rarity Presets", fileName: "rarity_settings.json" },
   { key: "windowState", label: "Window Size / Position / Opacity", fileName: "window-state.json" }
 ];
+
+function bl4GzoCacheFilePath() {
+  return path.join(app.getPath("userData"), "bl4_gzo_codes.json");
+}
 
 function uniquePaths(paths) {
   const seen = new Set();
@@ -935,7 +940,15 @@ ipcMain.handle("app:saveRaritySettings", async (_event, payload) => {
 
 ipcMain.handle("app:loadBl4Catalog", async () => {
   try {
-    return await loadBl4Catalog(RESOURCE_DIR);
+    return await loadBl4Catalog(RESOURCE_DIR, { gzoCachePath: bl4GzoCacheFilePath() });
+  } catch (error) {
+    return { ok: false, message: String(error && error.message ? error.message : error) };
+  }
+});
+
+ipcMain.handle("app:refreshGzoCatalog", async () => {
+  try {
+    return await refreshGzoCatalog(RESOURCE_DIR, bl4GzoCacheFilePath());
   } catch (error) {
     return { ok: false, message: String(error && error.message ? error.message : error) };
   }
