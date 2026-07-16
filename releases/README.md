@@ -6,7 +6,7 @@ This folder stores small release metadata tracked in source control.
 - Release ZIP/EXE assets should be uploaded to GitHub Releases, not committed to the repository.
 - Source code is available from GitHub's built-in source ZIP on the main repository page.
 - Current MSBT builds require SDK 03 / oak2-mod-manager v0.3: <https://github.com/bl-sdk/oak2-mod-manager/releases/tag/v0.3>
-- Latest beta downloads: <https://github.com/funkyoushift/MattsSDKBoostingTools/releases>
+- Latest downloads: <https://github.com/funkyoushift/MattsSDKBoostingTools/releases>
 
 Electron release assets should use clear names:
 

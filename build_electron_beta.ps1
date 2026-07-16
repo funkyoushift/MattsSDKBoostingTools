@@ -131,7 +131,7 @@ Copy-Item -Recurse -Force (Join-Path $UnpackedRoot "*") $PortableStageDir
 Invoke-Checked "tar.exe" @("-a", "-c", "-f", $PortableZipPath, "-C", $PortableStageRoot, $PortableRootName)
 Remove-Item -LiteralPath $PortableStageRoot -Recurse -Force -ErrorAction SilentlyContinue
 
-Write-Host "Electron beta build complete."
+Write-Host "Electron build complete."
 Write-Host "Electron version: $ElectronVersion"
 Write-Host "Output folder: $OutputRoot"
 Write-Host "Portable zip: $PortableZipPath"

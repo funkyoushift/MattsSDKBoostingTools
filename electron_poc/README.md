@@ -1,8 +1,8 @@
-# MSBT Electron Beta
+# MSBT Electron App
 
-This folder contains the Electron beta shell for Matt's SDK Boosting Tools. The goal is to replace the older Tkinter beta app while keeping the same SDK bridge boundary: Electron talks to the game only through the local MSBT HTTP bridge.
+This folder contains the Electron desktop app for Matt's SDK Boosting Tools. It replaces the older Tkinter app while keeping the same SDK bridge boundary: Electron talks to the game only through the local MSBT HTTP bridge.
 
-Current beta replacement priorities are tracked in [../docs/ELECTRON_BETA_ROADMAP.md](../docs/ELECTRON_BETA_ROADMAP.md).
+Current Electron priorities are tracked in [../docs/ELECTRON_ROADMAP.md](../docs/ELECTRON_ROADMAP.md).
 
 ## Run From Source
 
@@ -42,12 +42,12 @@ Installer builds use `electron-builder` with NSIS. They do not publish to GitHub
 Installer filenames are derived from `electron_poc/package.json`, for example:
 
 ```text
-MSBT-Installer-v0.2.3-beta.1.exe
+MSBT-Installer-v1.0.0.exe
 ```
 
 ## Updates
 
-The Electron beta includes a GitHub Releases update foundation:
+The Electron app includes a GitHub Releases update foundation:
 
 - current app/package/SDK/resource versions are visible in the app;
 - Check Updates reads the public release manifest and, in packaged builds, asks `electron-updater` to check the GitHub release feed;
@@ -82,8 +82,8 @@ BLImGui remains optional. ActorScriptDeployer is bundled as a folder-form SDK mo
 - Dev Spawner character workflow through the verified SDK 03 bridge path.
 - Matt editor hosted inside Electron through the existing Python helper.
 
-## Known Beta Limits
+## Current Limits
 
 - The Electron build bundles a portable Python runtime for local serial, validator, and Matt editor helper code.
-- The Electron installer/update path is a foundation, not a published release flow. Do not claim update delivery is production-proven until it is tested against a controlled GitHub Release.
-- Electron is still catching up to every Tkinter tab and workflow.
+- Installer/update behavior is release-backed, but every new update should still be tested from GitHub Releases before announcing it broadly.
+- Some deep editor and Dev Spawner workflows are still being polished in Electron.

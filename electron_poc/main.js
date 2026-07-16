@@ -4,6 +4,7 @@ const fs = require("fs/promises");
 const os = require("os");
 const path = require("path");
 const { execFile, spawn } = require("child_process");
+const { Blob } = require("buffer");
 const { pathToFileURL } = require("url");
 const { promisify } = require("util");
 const {
@@ -48,6 +49,7 @@ const RESOURCE_ROOT = app.isPackaged ? process.resourcesPath : SOURCE_ROOT;
 const DEFAULT_BRIDGE = "http://127.0.0.1:49774";
 const LATEST_MANIFEST_URL = "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/latest.json";
 const FALLBACK_LATEST_MANIFEST_URL = "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/releases/latest.json";
+const CODES_API = "https://save-editor.be/GZO/Borderlands4/codes/api.php";
 const SMOKE_MODE = process.argv.includes("--smoke");
 const INSTALL_SDKMODS_AND_EXIT = process.argv.includes("--install-sdkmods-and-exit");
 const MATT_EDITOR_INDEX = path.join(
@@ -395,6 +397,8 @@ function manifestMetadataChanged(local, remote) {
     "external_exe_sha256",
     "sdkmod_sha256",
     "ui_layout_sha256",
+    "portable_zip_sha256",
+    "legacy_tkinter_zip_sha256",
     "beta_zip_sha256"
   ];
   return fields.some((field) => {
@@ -668,9 +672,9 @@ async function installedSdkmodInfo(destination, bundledHash = "") {
     status,
     matchesBundled,
     message: matchesBundled
-      ? "Installed SDK mod matches the bundled Electron beta SDK mod."
+      ? "Installed SDK mod matches the bundled SDK mod."
       : bundledHash
-        ? "Installed SDK mod differs from the bundled Electron beta SDK mod."
+        ? "Installed SDK mod differs from the bundled SDK mod."
         : "Installed SDK mod was detected; bundled comparison is unavailable."
   };
 }
@@ -987,6 +991,114 @@ ipcMain.handle("app:bl4PartsBreakdown", async (_event, serial) => {
   return runExternalPythonJson(code, serial, 20000);
 });
 
+function normalizeGzoField(value) {
+  return String(value || "").trim();
+}
+
+function gzoImageMime(payload, imagePath) {
+  const explicitType = normalizeGzoField(payload.imageType).toLowerCase();
+  if (["image/png", "image/jpeg", "image/webp"].includes(explicitType)) return explicitType;
+  const extension = path.extname(imagePath).toLowerCase();
+  if (extension === ".png") return "image/png";
+  if (extension === ".jpg" || extension === ".jpeg") return "image/jpeg";
+  if (extension === ".webp") return "image/webp";
+  return "";
+}
+
+async function submitGzoCode(payload = {}) {
+  const listing = normalizeGzoField(payload.listing).toLowerCase() === "modded" ? "Modded" : "Legit";
+  const fields = {
+    action: "submit",
+    listing,
+    name: normalizeGzoField(payload.name),
+    creator: normalizeGzoField(payload.creator),
+    type: normalizeGzoField(payload.type),
+    category: normalizeGzoField(payload.category),
+    rarity: normalizeGzoField(payload.rarity),
+    base85: normalizeGzoField(payload.base85),
+    deserialized: normalizeGzoField(payload.deserialized),
+    notes: normalizeGzoField(payload.notes)
+  };
+  const missing = ["name", "creator", "type", "rarity"].filter((key) => !fields[key]);
+  if (!fields.base85 && !fields.deserialized) {
+    missing.push("base85 or deserialized");
+  }
+  const imagePath = normalizeGzoField(payload.imagePath);
+  if (!imagePath) missing.push("image");
+  if (missing.length) {
+    return { ok: false, message: `Required before submission: ${missing.join(", ")}.` };
+  }
+
+  let stat;
+  try {
+    stat = await fs.stat(imagePath);
+  } catch {
+    return { ok: false, message: "Selected image file could not be read." };
+  }
+  if (!stat.isFile()) {
+    return { ok: false, message: "Selected image path is not a file." };
+  }
+
+  const imageType = gzoImageMime(payload, imagePath);
+  if (!imageType) {
+    return { ok: false, message: "Image must be PNG, JPEG, or WebP." };
+  }
+
+  const form = new FormData();
+  for (const [key, value] of Object.entries(fields)) {
+    if (value || key === "action" || key === "listing") form.append(key, value);
+  }
+  const imageData = await fs.readFile(imagePath);
+  const imageName = normalizeGzoField(payload.imageName) || path.basename(imagePath);
+  form.append("image", new Blob([imageData], { type: imageType }), imageName);
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 30000);
+  try {
+    const response = await fetch(CODES_API, {
+      method: "POST",
+      body: form,
+      signal: controller.signal
+    });
+    const text = await response.text();
+    let data;
+    try {
+      data = text ? JSON.parse(text) : {};
+    } catch {
+      data = { message: text };
+    }
+    const apiSuccess = Boolean(data && (data.success === true || data.ok === true));
+    const apiFailure = Boolean(data && (data.success === false || data.ok === false));
+    const ok = response.ok && !apiFailure;
+    const message = data && data.message
+      ? String(data.message)
+      : ok
+        ? (apiSuccess ? "Submitted to GZO pending review." : `GZO returned HTTP ${response.status}. Check the response body for review status.`)
+        : `GZO submission failed with HTTP ${response.status}.`;
+    return {
+      ok,
+      status: response.status,
+      endpoint: CODES_API,
+      data,
+      rawText: text,
+      editUrl: data && data.editUrl ? String(data.editUrl) : "",
+      published: Boolean(data && data.published),
+      message
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      status: 0,
+      endpoint: CODES_API,
+      message: `GZO submission failed: ${String(error && error.message ? error.message : error)}`
+    };
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+ipcMain.handle("app:submitGzoCode", async (_event, payload) => submitGzoCode(payload || {}));
+
 async function findSdkLogPath() {
   for (const candidate of SDK_LOG_CANDIDATES) {
     try {
@@ -1252,7 +1364,7 @@ async function startMattEditorHost() {
 ipcMain.handle("app:mattEditorUrl", async () => {
   try {
     const url = await startMattEditorHost();
-    return { ok: true, url, hosted: true, message: "Loaded hosted Matt editor with MSBT delivery adapter." };
+    return { ok: true, url, hosted: true, message: "Loaded bundled Matt editor with save/profile API routing and MSBT delivery adapter." };
   } catch (error) {
     return {
       ok: false,
@@ -1393,7 +1505,7 @@ ipcMain.handle("app:openExternal", async (_event, url) => {
 });
 
 app.whenReady().then(() => {
-  app.setAppUserModelId("com.funkyoushift.msbt.electronbeta");
+  app.setAppUserModelId("com.funkyoushift.msbt");
   if (SMOKE_MODE) {
     console.log(JSON.stringify({
       ok: true,

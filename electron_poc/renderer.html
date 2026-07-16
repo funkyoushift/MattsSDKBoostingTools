@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>MSBT Electron Beta</title>
+  <title>Matt's SDK Boosting Tools</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <header class="app-header">
     <div>
       <h1>Matt's SDK Boosting Tools</h1>
-      <p>MSBT Electron Beta. Feature parity is still in progress; live actions use the SDK bridge.</p>
+      <p>MSBT desktop app. Local tools run in the app; live actions use the SDK bridge.</p>
       <p id="appVersionLine" class="muted-line">Loading version info...</p>
     </div>
     <div class="header-actions">
@@ -448,6 +448,7 @@
             <p>Merged local BL4 catalog. Search, details, parts breakdown, validation, and bookmarks run locally; only live delivery uses the SDK bridge.</p>
           </div>
           <div class="button-row wrap">
+            <button id="bl4SubmitGzoBtn" class="gzo-submit-cta">Submit Your Code to GZO</button>
             <button id="bl4ReloadBtn">Load Catalog</button>
             <button id="bl4RefreshGzoBtn">Refresh GZO</button>
             <button id="bl4ValidateBtn">Validate / Confirm Active</button>
@@ -537,7 +538,6 @@
               <button id="bl4CopySerialBtn">Copy Serial</button>
               <button id="bl4BookmarkBtn">Bookmark This</button>
               <button id="bl4OpenLootlemonBtn">Open Lootlemon</button>
-              <button id="bl4SubmitGzoBtn">Submit To GZO</button>
             </div>
           </section>
         </div>
@@ -630,7 +630,7 @@
             <div>
               <h2>Embedded Matt Editor</h2>
               <p>Build inside the editor, choose a target, then send from the MSBT panel or the shell controls.</p>
-              <p class="muted-line">Beta note: Matt Editor currently requires a working Python installation. Bundled Python support is planned.</p>
+              <p class="muted-line">Matt Editor runs inside the app through the bundled local helper. Save/profile tools, item editing, and MSBT delivery share the same embedded workflow.</p>
             </div>
             <div class="button-row">
               <button id="loadEditorBtn">Load Editor</button>
@@ -1086,7 +1086,7 @@
     <section id="tab-report" class="tab-panel">
       <div class="grid two">
         <section class="panel purple">
-          <h2>Beta Bug / Feature Report</h2>
+          <h2>Bug / Feature Report</h2>
           <p>Send reports to the MSBT GitHub Issues page. The app builds a clean report, opens GitHub with the report filled in, then you can attach screenshots or logs before submitting.</p>
           <label for="reportKind">Report Type</label>
           <select id="reportKind">
@@ -1132,7 +1132,7 @@
 
     <section id="tab-updates" class="tab-panel">
       <section class="panel purple">
-        <h2>Electron Beta Updates</h2>
+        <h2>MSBT Updates</h2>
         <div id="versionSummary" class="status-line">Loading local version info...</div>
         <div id="updateSummary" class="status-line">No update check yet.</div>
         <div class="update-card-grid">
@@ -1194,7 +1194,7 @@
       <div class="section-heading">
         <div>
           <h2 id="gzoSubmitTitle">Submit Code To GZO</h2>
-          <p>Preview-only while we wait for Ynot's API URL. Item image or screenshot is required for submission.</p>
+          <p>Submit a new code to GZO Pending from the Matt Editor or a pasted serial. Paste either @U Base85 or decoded text, then normalize before sending. A screenshot/image is required.</p>
         </div>
         <button id="gzoSubmitCloseBtn" type="button" class="secondary">Close</button>
       </div>
@@ -1217,21 +1217,26 @@
           </label>
           <label>
             Rarity
-            <input id="gzoSubmitRarity" type="text" autocomplete="off" placeholder="Legendary, Pearlescent...">
+            <select id="gzoSubmitRarity"></select>
           </label>
           <label>
             Type
-            <input id="gzoSubmitType" type="text" autocomplete="off" placeholder="Shield, Class Mods, SMG...">
+            <select id="gzoSubmitType"></select>
           </label>
           <label>
             Category
-            <input id="gzoSubmitCategory" type="text" autocomplete="off" placeholder="Guns, Class Mods, Shields...">
+            <select id="gzoSubmitCategory"></select>
           </label>
         </div>
         <label for="gzoSubmitBase85">Base85 @U Code</label>
         <textarea id="gzoSubmitBase85" class="output-box small" spellcheck="false" placeholder="@U..."></textarea>
         <label for="gzoSubmitDeserialized">Deserialized / Decoded Serial</label>
         <textarea id="gzoSubmitDeserialized" class="output-box small" spellcheck="false" placeholder="Optional decoded serial"></textarea>
+        <div class="button-row wrap">
+          <button id="gzoSubmitDecodeBtn" type="button">Decode / Normalize Serial</button>
+          <button id="gzoSubmitUseEditorBtn" type="button">Use Matt Editor Serial</button>
+          <button id="gzoSubmitClearBtn" type="button">Clear Form</button>
+        </div>
         <label for="gzoSubmitNotes">Notes</label>
         <textarea id="gzoSubmitNotes" class="output-box small" spellcheck="true" placeholder="Optional notes, part breakdown, or creator notes"></textarea>
         <div class="gzo-image-picker">
@@ -1241,10 +1246,14 @@
           </label>
           <div id="gzoSubmitImagePreview" class="gzo-image-preview">No image selected.</div>
         </div>
-        <div id="gzoSubmitStatus" class="status-line warning">API URL is not configured yet. This form is ready for visual review.</div>
+        <label for="gzoSubmitPayloadPreview">Submission Preview</label>
+        <textarea id="gzoSubmitPayloadPreview" class="output-box small" spellcheck="false" readonly></textarea>
+        <label for="gzoSubmitResult">Submission Result</label>
+        <textarea id="gzoSubmitResult" class="output-box small gzo-submit-result" spellcheck="false" readonly>No submission sent yet.</textarea>
+        <div id="gzoSubmitStatus" class="status-line warning">Submissions go to GZO Pending for developer review. Attach an image before submitting.</div>
         <div class="button-row wrap">
-          <button id="gzoSubmitResetBtn" type="button">Reset From Active Code</button>
-          <button id="gzoSubmitSendBtn" type="submit">Submit To GZO (API Pending)</button>
+          <button id="gzoSubmitCopyPayloadBtn" type="button">Copy Submission Preview</button>
+          <button id="gzoSubmitSendBtn" type="submit">Submit To GZO Pending</button>
         </div>
       </form>
     </div>

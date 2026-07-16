@@ -46,8 +46,8 @@ function Get-ReleaseTitle {
 
 function Test-PrereleaseVersion {
     param([Parameter(Mandatory=$true)][string]$Version)
-    # Public beta builds should be treated as the latest release so the app can
-    # read /releases/latest/download/latest.json. Alpha builds stay prerelease.
+    # Public beta builds still count as latest so old app versions can read
+    # /releases/latest/download/latest.json. Alpha builds stay prerelease.
     return [bool]($Version -match '-alpha\.\d+$')
 }
 
@@ -137,7 +137,7 @@ $LegacyNotes = if ($LegacyZipExists) {
 
 - $ZipName
 
-This is the older Tkinter/manual package. Use it only as a rollback if the Electron beta has a blocker.
+This is the older Tkinter/manual package. Use it only as a rollback if the current Electron app has a blocker.
 "@
 } else {
 @"
@@ -151,7 +151,7 @@ No legacy rollback ZIP was included in this release.
 $notes = @"
 ### What's new
 
-Electron beta build for Matt's SDK Boosting Tools.
+Matt's SDK Boosting Tools desktop app release.
 
 ### Fixed
 
@@ -159,7 +159,7 @@ See the repository commit history for fixes included in this build.
 
 ### Known issues
 
-Electron is still a beta replacement path. Keep the legacy/Tkinter package available as a rollback while beta testing continues.
+The Electron app is now the main path. Keep the legacy/Tkinter package available only as a rollback.
 
 ### Download: pick ONE
 
@@ -258,5 +258,5 @@ if ($releaseExists) {
     }
 }
 
-Write-Host "Published beta assets to GitHub Release:"
+Write-Host "Published release assets to GitHub Release:"
 Write-Host "https://github.com/$Repository/releases/tag/$TagName"

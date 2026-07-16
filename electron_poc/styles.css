@@ -381,6 +381,10 @@ iframe {
   margin-top: 12px;
 }
 
+.gzo-submit-result {
+  min-height: 128px;
+}
+
 .gzo-image-picker {
   display: grid;
   gap: 10px;
@@ -411,6 +415,22 @@ iframe {
 
 button.secondary {
   color: var(--muted);
+}
+
+button.gzo-submit-cta {
+  background: linear-gradient(180deg, #ff9b1a, #d86f00);
+  border: 1px solid #ffd15a;
+  box-shadow: 0 0 0 1px rgba(255, 209, 90, 0.18), 0 0 18px rgba(255, 139, 0, 0.22);
+  color: #120900;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  min-width: 210px;
+  text-transform: uppercase;
+}
+
+button.gzo-submit-cta:hover {
+  background: linear-gradient(180deg, #ffb13d, #f08400);
+  color: #120900;
 }
 
 .serial-delivery-heading {
@@ -1208,6 +1228,7 @@ button.secondary {
   .target-row,
   .search-row,
   .gzo-image-picker {
+    display: grid;
     grid-template-columns: 1fr;
   }
 

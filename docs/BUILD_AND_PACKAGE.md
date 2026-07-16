@@ -2,7 +2,7 @@
 
 This guide is for developers and users who want to build the standalone EXE themselves.
 
-## Build The External EXE
+## Build The Legacy External EXE
 
 From the repository root:
 
@@ -50,7 +50,7 @@ Output:
 MattsSDKBoostingTools.sdkmod
 ```
 
-## Build The Portable Package
+## Build The Legacy Portable Package
 
 Build the EXE first, then run:
 
@@ -62,7 +62,7 @@ Output:
 
 ```text
 MSBT_External_Beta/
-MattsSDKBoostingTools-Portable-v<version>.zip
+MattsSDKBoostingTools-Legacy-Tkinter-Portable-v<version>.zip
 releases/latest.json
 ```
 
@@ -115,9 +115,10 @@ After building the installer and portable package, upload them to GitHub Release
 Public releases should use semantic tags and asset names, for example:
 
 ```text
-https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v0.2.3-beta.1
-MattsSDKBoostingTools-Setup-v0.2.3-beta.1.exe
-MattsSDKBoostingTools-Portable-v0.2.3-beta.1.zip
+https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v1.0.0
+MSBT-Installer-v1.0.0.exe
+MSBT-Portable-v1.0.0-win-x64.zip
+MattsSDKBoostingTools-Legacy-Tkinter-Portable-v1.0.0.zip
 ```
 
 See `VERSIONING.md` for the release naming rules.

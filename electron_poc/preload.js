@@ -1,4 +1,4 @@
-const { contextBridge, ipcRenderer } = require("electron");
+const { contextBridge, ipcRenderer, webUtils } = require("electron");
 
 contextBridge.exposeInMainWorld("msbt", {
   bridgeRequest: (args) => ipcRenderer.invoke("bridge:request", args),
@@ -36,6 +36,14 @@ contextBridge.exposeInMainWorld("msbt", {
   loadBl4Catalog: () => ipcRenderer.invoke("app:loadBl4Catalog"),
   refreshGzoCatalog: () => ipcRenderer.invoke("app:refreshGzoCatalog"),
   bl4PartsBreakdown: (serial) => ipcRenderer.invoke("app:bl4PartsBreakdown", serial),
+  getPathForFile: (file) => {
+    try {
+      return webUtils && typeof webUtils.getPathForFile === "function" ? webUtils.getPathForFile(file) : "";
+    } catch {
+      return "";
+    }
+  },
+  submitGzoCode: (payload) => ipcRenderer.invoke("app:submitGzoCode", payload),
   readSdkLogTail: (options) => ipcRenderer.invoke("app:readSdkLogTail", options),
   readResourceJson: (resourceName) => ipcRenderer.invoke("app:readResourceJson", resourceName),
   saveReportFile: (text) => ipcRenderer.invoke("app:saveReportFile", text),

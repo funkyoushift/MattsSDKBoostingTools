@@ -59,7 +59,7 @@ jobs:
         shell: pwsh
         run: |
           $version = (Get-Content -Raw .\electron_poc\package.json | ConvertFrom-Json).version
-          $zip = ".\dist_electron\MattsSDKBoostingTools-Electron-Portable-v$version-win-x64.zip"
+          $zip = ".\dist_electron\MSBT-Portable-v$version-win-x64.zip"
           if (Test-Path $zip) { Remove-Item -Force $zip }
           Compress-Archive -Path ".\dist_electron\win-unpacked\*" -DestinationPath $zip
 
@@ -68,12 +68,12 @@ jobs:
         run: |
           $version = (Get-Content -Raw .\electron_poc\package.json | ConvertFrom-Json).version
           $required = @(
-            ".\dist_electron\MattsSDKBoostingTools-Setup-v$version.exe",
-            ".\dist_electron\MattsSDKBoostingTools-Setup-v$version.exe.blockmap",
+            ".\dist_electron\MSBT-Installer-v$version.exe",
+            ".\dist_electron\MSBT-Installer-v$version.exe.blockmap",
             ".\dist_electron\latest.yml",
             ".\releases\latest.json",
             ".\MattsSDKBoostingTools-Legacy-Tkinter-Portable-v$version.zip",
-            ".\dist_electron\MattsSDKBoostingTools-Electron-Portable-v$version-win-x64.zip"
+            ".\dist_electron\MSBT-Portable-v$version-win-x64.zip"
           )
           foreach ($path in $required) {
             if (-not (Test-Path $path)) {
@@ -92,8 +92,8 @@ jobs:
         run: |
           $version = (Get-Content -Raw .\electron_poc\package.json | ConvertFrom-Json).version
           $tag = "v$version"
-          # Beta builds are public tester builds and must remain the latest release
-          # so the app can read /releases/latest/download/latest.json.
+          # Public beta builds still count as latest so old app versions can read
+          # /releases/latest/download/latest.json.
           $isPrerelease = $version -match '-alpha\.\d+$'
           if ($version -match '^(\d+\.\d+\.\d+)-beta\.(\d+)$') {
             $title = "Matt's SDK Boosting Tools v$($Matches[1]) Beta $($Matches[2])"
@@ -114,27 +114,27 @@ jobs:
             "",
             "### Known issues",
             "",
-            "Electron remains beta until it fully replaces the legacy external app workflow.",
+            "The Electron app is now the main path. Keep the legacy/Tkinter package available only as a rollback.",
             "",
             "### Download: pick ONE",
             "",
             "**Recommended for almost everyone**",
             "",
             "Download and run:",
-            "``MattsSDKBoostingTools-Setup-v$version.exe``",
+            "``MSBT-Installer-v$version.exe``",
             "",
             "This is the Windows installer. It installs the Electron app, adds shortcuts, and includes the bundled SDK mod/update resources.",
             "",
             "**Manual install / portable Electron app**",
             "",
             "Download and extract:",
-            "``MattsSDKBoostingTools-Electron-Portable-v$version-win-x64.zip``",
+            "``MSBT-Portable-v$version-win-x64.zip``",
             "",
             "Use this if you want the Electron app without running the installer. It contains the Electron app files plus bundled SDK mod/update resources.",
             "",
             "**Legacy rollback ZIP**",
             "",
-            "``MattsSDKBoostingTools-Legacy-Tkinter-Portable-v$version.zip`` is the older Tkinter/manual package kept as a rollback while Electron beta testing continues.",
+            "``MattsSDKBoostingTools-Legacy-Tkinter-Portable-v$version.zip`` is the older Tkinter/manual package kept only as a rollback.",
             "",
             "**Do not manually download these unless you know why**",
             "",
@@ -158,12 +158,12 @@ jobs:
           $notesPath = Join-Path $env:RUNNER_TEMP "msbt_release_notes.md"
           Set-Content -Path $notesPath -Value $notes -Encoding UTF8
           $assets = @(
-            ".\dist_electron\MattsSDKBoostingTools-Setup-v$version.exe",
-            ".\dist_electron\MattsSDKBoostingTools-Setup-v$version.exe.blockmap",
+            ".\dist_electron\MSBT-Installer-v$version.exe",
+            ".\dist_electron\MSBT-Installer-v$version.exe.blockmap",
             ".\dist_electron\latest.yml",
             ".\releases\latest.json",
             ".\MattsSDKBoostingTools-Legacy-Tkinter-Portable-v$version.zip",
-            ".\dist_electron\MattsSDKBoostingTools-Electron-Portable-v$version-win-x64.zip"
+            ".\dist_electron\MSBT-Portable-v$version-win-x64.zip"
           )
           $args = @("release", "create", $tag) + $assets + @("--title", $title, "--notes-file", $notesPath, "--verify-tag")
           if ($isPrerelease) {

@@ -19,11 +19,12 @@ Use this before pushing the repository public or posting it in Discord.
 
 Upload these to a GitHub Release instead of committing them to source:
 
-- `MattsSDKBoostingTools-Setup-v<version>.exe`
-- `MattsSDKBoostingTools-Portable-v<version>.zip`
+- `MSBT-Installer-v<version>.exe`
+- `MSBT-Portable-v<version>-win-x64.zip`
+- `MattsSDKBoostingTools-Legacy-Tkinter-Portable-v<version>.zip`, if a rollback build is included
 - checksums for release files
 
-The normal public beta download link should point users to the release page:
+The normal public download link should point users to the release page:
 
 ```text
 https://github.com/funkyoushift/MattsSDKBoostingTools/releases
@@ -63,14 +64,14 @@ Multiplayer:
 ## Discord Post Template
 
 ```text
-Matt's SDK Boosting Tools public beta is available.
+Matt's SDK Boosting Tools is available.
 
 Download:
 https://github.com/funkyoushift/MattsSDKBoostingTools/releases
 
 Install:
 1. Install or update to oak2-mod-manager v0.3.
-2. Download the current MattsSDKBoostingTools-Setup installer from GitHub Releases.
+2. Download the current MSBT-Installer from GitHub Releases.
 3. Run the installer.
 4. Use the app Updates tab to install/update the SDK mod.
 

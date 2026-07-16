@@ -22,12 +22,12 @@ Go to the [GitHub Releases page](https://github.com/funkyoushift/MattsSDKBoostin
 | --- | --- | --- |
 | Recommended normal install | `MSBT-Installer-v...exe` | Windows installer. Adds app shortcuts and installs the bundled SDK mod plus ActorScriptDeployer into the detected Borderlands 4 `sdk_mods` folder. |
 | Manual install / no installer | `MSBT-Portable-v...-win-x64.zip` | Extract it yourself. Electron app files plus bundled SDK mod/update resources. |
-| Legacy rollback | `MattsSDKBoostingTools-Legacy-Tkinter-Portable-v...zip` | Older Tkinter/manual package kept available while Electron beta testing continues. |
+| Legacy rollback | `MattsSDKBoostingTools-Legacy-Tkinter-Portable-v...zip` | Older Tkinter/manual package kept available only as a rollback. |
 | Source code only | GitHub `Source code (zip)` / `Source code (tar.gz)` | For developers. This is not the ready-to-run app. |
 
 Do **not** manually download `latest.json`, `latest.yml`, or `.blockmap` files. Those are update-system files used by the app/installer.
 
-Older beta packages remain available on the Releases page as rollback builds.
+Older beta/pre-1.0 packages remain available on the Releases page as historical rollback builds.
 
 ## Quick Install
 
@@ -87,7 +87,7 @@ Requirements:
 - Python with Tkinter available
 - pip
 
-The build script installs the external-app build requirements from `requirements-external-build.txt`, including PyInstaller and pywebview. `pywebview` is bundled into the packaged EXE so beta users do not need to install it.
+The build script installs the external-app build requirements from `requirements-external-build.txt`, including PyInstaller and pywebview. `pywebview` is bundled into the packaged EXE so users do not need to install it.
 
 Build the Electron app:
 
@@ -114,6 +114,8 @@ MSBT_External_Beta/
 MattsSDKBoostingTools-Legacy-Tkinter-Portable-v<version>.zip
 releases/latest.json
 ```
+
+The legacy Tkinter packaging script and folder still use the historical `MSBT_External_Beta` name for compatibility with existing automation. Current public releases use stable SemVer tags and the Electron installer/portable ZIP names above.
 
 Publish release assets to GitHub Releases instead of committing ZIP/EXE files to source:
 
@@ -144,9 +146,9 @@ docs/
 
 ## What Replaced BLImGui
 
-The standalone app is not a web app. It is a Python/Tkinter renderer of the working BLImGui workflows.
+The main user-facing app is now the Electron desktop app. The older Python/Tkinter app remains in the repository as legacy/reference material and as a rollback package when needed.
 
-BLImGui-specific code is still kept in the SDK mod as an optional in-game UI. The external app does not import BLImGui, `unrealsdk`, `mods_base`, or live SDK modules. It talks to the SDK mod over HTTP for live game actions only.
+BLImGui-specific code is still kept in the SDK mod as an optional in-game UI. The Electron app does not import BLImGui, `unrealsdk`, `mods_base`, or live SDK modules. It talks to the SDK mod over HTTP for live game actions only.
 
 More detail: [BLImGui Replacement Architecture](docs/BLIMGUI_REPLACEMENT_ARCHITECTURE.md).
 

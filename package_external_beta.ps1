@@ -148,7 +148,7 @@ $VersionInfo = [ordered]@{
 Write-Utf8NoBom (Join-Path $ExternalFolder "resources\version_info.json") ($VersionInfo | ConvertTo-Json -Depth 4)
 
 $ReadmeText = @"
-Matt's SDK Boosting Tools external beta
+Matt's SDK Boosting Tools legacy external package
 
 Package version:
 $PackageVersion
@@ -173,7 +173,7 @@ Get-ChildItem -Recurse -Directory $PackageRoot -Filter "__pycache__" | Remove-It
 
 tar.exe -a -c -f $ZipPath -C $RepoRoot "MSBT_External_Beta"
 if ($LASTEXITCODE -ne 0) {
-    throw "Failed to create beta zip: $ZipPath"
+    throw "Failed to create legacy external zip: $ZipPath"
 }
 
 New-Item -ItemType Directory -Force $ReleasesFolder | Out-Null
@@ -199,13 +199,14 @@ $LatestManifest = [ordered]@{
     external_exe_sha256 = $ExeHash
     sdkmod_sha256 = $SdkHash
     ui_layout_sha256 = $ResourcesHash
+    legacy_tkinter_zip_sha256 = $ZipHash
     beta_zip_sha256 = $ZipHash
 }
 Write-Utf8NoBom $LatestManifestPath ($LatestManifest | ConvertTo-Json -Depth 4)
 
-Write-Host "Packaged beta folder:"
+Write-Host "Packaged legacy external folder:"
 Write-Host $PackageRoot
-Write-Host "Packaged beta zip:"
+Write-Host "Packaged legacy external zip:"
 Write-Host $ZipPath
 Write-Host "Latest update manifest:"
 Write-Host $LatestManifestPath

@@ -1,8 +1,8 @@
 {
-  "name": "matts-sdk-boosting-tools-electron-beta",
-  "version": "0.2.3-beta.7",
+  "name": "matts-sdk-boosting-tools",
+  "version": "1.0.0",
   "private": true,
-  "description": "Electron beta shell for Matt's SDK Boosting Tools.",
+  "description": "Desktop app for Matt's SDK Boosting Tools.",
   "author": "FunkYouSHiFT",
   "main": "main.js",
   "scripts": {
@@ -13,7 +13,7 @@
     "dist:win": "electron-builder --win nsis --publish never"
   },
   "build": {
-    "appId": "com.funkyoushift.msbt.electronbeta",
+    "appId": "com.funkyoushift.msbt",
     "productName": "Matt's SDK Boosting Tools",
     "executableName": "MattsSDKBoostingTools",
     "artifactName": "MSBT-Installer-v${version}.${ext}",

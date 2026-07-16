@@ -10,9 +10,9 @@ Matt's SDK Boosting Tools uses Semantic Versioning for public Electron releases.
 
 Examples:
 
-- `v0.2.3-beta.1`
-- `v0.3.0-beta.1`
 - `v1.0.0`
+- `v1.1.0`
+- `v1.1.1-beta.1`
 
 Do not use dates, commit hashes, workflow run IDs, or build timestamps as the primary public release version.
 
@@ -35,17 +35,17 @@ Build timestamps and commit SHAs may appear only as secondary build information.
 
 Use these title patterns:
 
-- Stable: `Matt's SDK Boosting Tools v0.3.0`
-- Beta: `Matt's SDK Boosting Tools v0.3.0 Beta 1`
-- Alpha: `Matt's SDK Boosting Tools v0.3.0 Alpha 1`
+- Stable: `Matt's SDK Boosting Tools v1.0.0`
+- Beta: `Matt's SDK Boosting Tools v1.1.1 Beta 1`
+- Alpha: `Matt's SDK Boosting Tools v1.1.1 Alpha 1`
 
 ## Asset Names
 
 Use these Windows asset names:
 
-- Installer: `MSBT-Installer-v0.3.0-beta.1.exe`
-- Portable ZIP: `MSBT-Portable-v0.3.0-beta.1-win-x64.zip`
-- Legacy Tkinter rollback ZIP, if included: `MattsSDKBoostingTools-Legacy-Tkinter-Portable-v0.3.0-beta.1.zip`
+- Installer: `MSBT-Installer-v1.0.0.exe`
+- Portable ZIP: `MSBT-Portable-v1.0.0-win-x64.zip`
+- Legacy Tkinter rollback ZIP, if included: `MattsSDKBoostingTools-Legacy-Tkinter-Portable-v1.0.0.zip`
 
 Electron updater metadata may remain named `latest.yml`, because that filename is expected by Electron tooling, but its contained `version` must match `electron_poc/package.json`.
 
@@ -55,7 +55,7 @@ Electron updater metadata may remain named `latest.yml`, because that filename i
 2. Commit the version change and related release notes.
 3. Build the SDK mod, Electron installer, and Electron portable ZIP with `.\build_electron_beta.ps1 -Installer`.
 4. Optionally build the legacy Tkinter rollback ZIP with `.\package_external_beta.ps1`.
-5. Create the semantic tag, for example `v0.2.3-beta.1`.
+5. Create the semantic tag, for example `v1.0.0`.
 6. Push the tag.
 7. Publish assets with `.\publish_github_release.ps1`.
 

@@ -7,6 +7,7 @@ import subprocess
 import sys
 import threading
 import urllib.parse
+from urllib import error as urlerror
 from urllib import request as urlrequest
 import webbrowser
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -18,6 +19,7 @@ from external_serial_tools import human_to_serial, serial_to_human
 
 EDITOR_DIR = BASE_DIR / "matt_editor"
 BRIDGE_URL = "http://127.0.0.1:49774"
+BLCRYPT_API_URL = "https://save-editor.be/blcrypt/api.php"
 
 NEXUS_FILE_MAP = {
     "inv0": "Nexus-Data-inv0.json",
@@ -203,7 +205,7 @@ class _MattEditorHandler(BaseHTTPRequestHandler):
             self._handle_msbt_target()
             return
         if path == "/blcrypt/api.php" or path.endswith("/blcrypt/api.php"):
-            self._send_json(501, {"error": "Save encryption is not enabled in the MSBT local editor host yet."})
+            self._handle_blcrypt_api(parsed)
             return
         self._send_json(404, {"error": "Not found"})
 
@@ -312,6 +314,36 @@ class _MattEditorHandler(BaseHTTPRequestHandler):
             return
 
         self._send_json(400, {"error": "Invalid request format"})
+
+    def _handle_blcrypt_api(self, parsed: urllib.parse.ParseResult) -> None:
+        length = int(self.headers.get("Content-Length") or "0")
+        body = self.rfile.read(length) if length else b""
+        remote_url = BLCRYPT_API_URL
+        if parsed.query:
+            remote_url += "?" + parsed.query
+        headers = {
+            "Content-Type": self.headers.get("Content-Type", "application/json"),
+            "Accept": self.headers.get("Accept", "application/json"),
+            "User-Agent": "MSBT-MattEditorHost/1.0",
+        }
+        req = urlrequest.Request(remote_url, data=body, headers=headers, method="POST")
+        try:
+            with urlrequest.urlopen(req, timeout=60.0) as resp:
+                response_body = resp.read()
+                content_type = resp.headers.get("Content-Type", "application/json; charset=UTF-8")
+                self._send(resp.status, response_body, content_type)
+        except urlerror.HTTPError as exc:
+            response_body = exc.read()
+            content_type = exc.headers.get("Content-Type", "application/json; charset=UTF-8")
+            self._send(exc.code, response_body, content_type)
+        except Exception as exc:
+            self._send_json(
+                502,
+                {
+                    "success": False,
+                    "error": f"Save/profile conversion service unavailable: {exc}",
+                },
+            )
 
     def _read_json_body(self) -> dict:
         length = int(self.headers.get("Content-Length") or "0")

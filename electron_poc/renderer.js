@@ -111,8 +111,11 @@ const els = {
   editorFrame: document.getElementById("editorFrame"),
   gzoSubmitBase85: document.getElementById("gzoSubmitBase85"),
   gzoSubmitCategory: document.getElementById("gzoSubmitCategory"),
+  gzoSubmitClearBtn: document.getElementById("gzoSubmitClearBtn"),
   gzoSubmitCloseBtn: document.getElementById("gzoSubmitCloseBtn"),
+  gzoSubmitCopyPayloadBtn: document.getElementById("gzoSubmitCopyPayloadBtn"),
   gzoSubmitCreator: document.getElementById("gzoSubmitCreator"),
+  gzoSubmitDecodeBtn: document.getElementById("gzoSubmitDecodeBtn"),
   gzoSubmitDeserialized: document.getElementById("gzoSubmitDeserialized"),
   gzoSubmitForm: document.getElementById("gzoSubmitForm"),
   gzoSubmitImage: document.getElementById("gzoSubmitImage"),
@@ -121,11 +124,13 @@ const els = {
   gzoSubmitModal: document.getElementById("gzoSubmitModal"),
   gzoSubmitName: document.getElementById("gzoSubmitName"),
   gzoSubmitNotes: document.getElementById("gzoSubmitNotes"),
+  gzoSubmitPayloadPreview: document.getElementById("gzoSubmitPayloadPreview"),
   gzoSubmitRarity: document.getElementById("gzoSubmitRarity"),
-  gzoSubmitResetBtn: document.getElementById("gzoSubmitResetBtn"),
+  gzoSubmitResult: document.getElementById("gzoSubmitResult"),
   gzoSubmitSendBtn: document.getElementById("gzoSubmitSendBtn"),
   gzoSubmitStatus: document.getElementById("gzoSubmitStatus"),
   gzoSubmitType: document.getElementById("gzoSubmitType"),
+  gzoSubmitUseEditorBtn: document.getElementById("gzoSubmitUseEditorBtn"),
   itempoolCategory: document.getElementById("itempoolCategory"),
   itempoolCount: document.getElementById("itempoolCount"),
   itempoolLevel: document.getElementById("itempoolLevel"),
@@ -312,6 +317,8 @@ const state = {
   devSpawnerSelectedActor: "",
   devSpawnerWarningAccepted: false,
   devperkToggles: { "5": false, "6": false },
+  editorLoadInFlight: false,
+  editorLoaded: false,
   filteredItemPools: [],
   filteredMaps: [],
   filteredStations: [],
@@ -1302,21 +1309,36 @@ async function copyConfirmedSerial() {
   setLine(els.serialSummary, "Confirmed serial copied.", "ok");
 }
 
-async function loadEditor() {
-  setOutput(els.deliveryOutput, "Starting hosted Matt editor...");
-  const result = await window.msbt.mattEditorUrl();
-  const url = typeof result === "string" ? result : result.url;
-  const hosted = typeof result === "string" ? false : Boolean(result.hosted);
-  const message = typeof result === "string" ? "Loaded raw editor file." : result.message;
-  els.editorFrame.src = url;
-  setOutput(els.deliveryOutput, message || (hosted ? "Hosted Matt editor loaded." : "Editor loaded."));
-  setLine(
-    els.serialSummary,
-    hosted
-      ? "Hosted editor loaded. Use the MSBT Delivery panel inside the editor, or detect one serial here."
-      : "Raw editor fallback loaded. Delivery adapter may be unavailable.",
-    hosted ? "ok" : "warning"
-  );
+async function loadEditor(options = {}) {
+  if (!els.editorFrame) return;
+  if (state.editorLoadInFlight) return;
+  if (state.editorLoaded && !options.force) return;
+
+  state.editorLoadInFlight = true;
+  setOutput(els.deliveryOutput, "Starting bundled Matt editor...");
+  try {
+    const result = await window.msbt.mattEditorUrl();
+    const url = typeof result === "string" ? result : result.url;
+    const hosted = typeof result === "string" ? false : Boolean(result.hosted);
+    const message = typeof result === "string" ? "Loaded raw editor file." : result.message;
+    els.editorFrame.src = url;
+    state.editorLoaded = true;
+    setOutput(els.deliveryOutput, message || (hosted ? "Bundled Matt editor loaded." : "Editor loaded."));
+    setLine(
+      els.serialSummary,
+      hosted
+        ? "Bundled editor loaded. Save/profile conversion, item editing, and MSBT delivery are available from this tab."
+        : "Raw editor fallback loaded. Save/profile conversion and delivery adapter may be unavailable.",
+      hosted ? "ok" : "warning"
+    );
+  } catch (error) {
+    state.editorLoaded = false;
+    const message = error && error.message ? error.message : String(error);
+    setOutput(els.deliveryOutput, `Matt editor failed to load: ${message}`);
+    setLine(els.serialSummary, "Matt editor failed to load.", "bad");
+  } finally {
+    state.editorLoadInFlight = false;
+  }
 }
 
 async function sendEditorSerial(mode) {
@@ -2188,11 +2210,70 @@ function renderBl4Cards() {
   }
 }
 
-function bl4SubmitListing(row) {
-  const classification = String(row && row.classification ? row.classification : "").toLowerCase();
-  const listing = String(row && row.listing ? row.listing : "").toLowerCase();
-  if (classification === "modded" || listing === "modded") return "Modded";
-  return "Legit";
+function sortedUniqueText(values = []) {
+  return Array.from(new Set(
+    (Array.isArray(values) ? values : [])
+      .map((value) => String(value || "").trim())
+      .filter(Boolean)
+  )).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
+}
+
+function gzoSubmitCatalogValues(field) {
+  const values = [];
+  state.bl4Entries.forEach((row) => {
+    if (!row) return;
+    if (field === "category") {
+      values.push(row.category || "");
+      values.push(row.type || "");
+    } else {
+      values.push(row[field] || "");
+    }
+  });
+  return sortedUniqueText(values);
+}
+
+function fillGzoSubmitSelect(selectNode, values, selectedValue = "", blankLabel = "Choose...") {
+  if (!selectNode) return;
+  const selected = String(selectedValue || getValue(selectNode) || "").trim();
+  const options = sortedUniqueText([...(values || []), selected]);
+  selectNode.innerHTML = "";
+  const blank = document.createElement("option");
+  blank.value = "";
+  blank.textContent = blankLabel;
+  selectNode.appendChild(blank);
+  options.forEach((value) => {
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = value;
+    selectNode.appendChild(option);
+  });
+  selectNode.value = selected;
+}
+
+function refreshGzoSubmitDropdownOptions(row = null) {
+  fillGzoSubmitSelect(els.gzoSubmitRarity, gzoSubmitCatalogValues("rarity"), row && row.rarity ? row.rarity : getValue(els.gzoSubmitRarity), "Choose rarity");
+  fillGzoSubmitSelect(els.gzoSubmitType, gzoSubmitCatalogValues("type"), row && row.type ? row.type : getValue(els.gzoSubmitType), "Choose type");
+  const categoryValue = row && (row.category || row.type) ? row.category || row.type : getValue(els.gzoSubmitCategory);
+  fillGzoSubmitSelect(els.gzoSubmitCategory, gzoSubmitCatalogValues("category"), categoryValue, "Choose category");
+}
+
+function setGzoSubmitResult(text = "No submission sent yet.") {
+  setTextValue(els.gzoSubmitResult, text);
+}
+
+function formatGzoSubmitResult(result = {}, payload = {}) {
+  const lines = [
+    `Submitted: ${new Date().toLocaleString()}`,
+    `Endpoint: ${result.endpoint || "unknown"}`,
+    `HTTP status: ${typeof result.status === "number" ? result.status : "unknown"}`,
+    `Result: ${result.ok ? "success / accepted by endpoint" : "failed or rejected"}`,
+    `Message: ${result.message || "No message returned."}`
+  ];
+  if (payload.imageName) lines.push(`Image sent: ${payload.imageName}`);
+  if (result.editUrl) lines.push(`Edit URL: ${result.editUrl}`);
+  if (Object.prototype.hasOwnProperty.call(result, "published")) lines.push(`Published immediately: ${result.published ? "yes" : "no"}`);
+  lines.push("", "Raw API response:", pretty(result.data || result.rawText || result));
+  return lines.join("\n");
 }
 
 function clearGzoSubmitImagePreview() {
@@ -2205,6 +2286,42 @@ function clearGzoSubmitImagePreview() {
     els.gzoSubmitImagePreview.innerHTML = "";
     els.gzoSubmitImagePreview.textContent = "No image selected.";
   }
+  updateGzoSubmitPayloadPreview();
+}
+
+function gzoSubmitImageFile() {
+  return els.gzoSubmitImage && els.gzoSubmitImage.files && els.gzoSubmitImage.files.length ? els.gzoSubmitImage.files[0] : null;
+}
+
+function gzoSubmitPayload() {
+  const image = gzoSubmitImageFile();
+  return {
+    action: "submit",
+    listing: getValue(els.gzoSubmitListing),
+    name: getValue(els.gzoSubmitName),
+    creator: getValue(els.gzoSubmitCreator),
+    type: getValue(els.gzoSubmitType),
+    category: getValue(els.gzoSubmitCategory),
+    rarity: getValue(els.gzoSubmitRarity),
+    base85: getValue(els.gzoSubmitBase85),
+    deserialized: getValue(els.gzoSubmitDeserialized),
+    notes: getValue(els.gzoSubmitNotes),
+    image: image ? `${image.name} (${image.type || "unknown type"}, ${Math.ceil(image.size / 1024)} KB)` : ""
+  };
+}
+
+function formatGzoSubmitPayloadPreview(payload) {
+  const lines = [];
+  for (const [key, value] of Object.entries(payload || {})) {
+    const text = String(value || "").trim();
+    if (!text) continue;
+    lines.push(`${key}: ${text}`);
+  }
+  return lines.join("\n");
+}
+
+function updateGzoSubmitPayloadPreview() {
+  setTextValue(els.gzoSubmitPayloadPreview, formatGzoSubmitPayloadPreview(gzoSubmitPayload()));
 }
 
 function updateGzoSubmitImagePreview() {
@@ -2217,6 +2334,7 @@ function updateGzoSubmitImagePreview() {
   els.gzoSubmitImagePreview.innerHTML = "";
   if (!file) {
     els.gzoSubmitImagePreview.textContent = "No image selected.";
+    updateGzoSubmitPayloadPreview();
     return;
   }
   state.gzoSubmitImageObjectUrl = URL.createObjectURL(file);
@@ -2226,39 +2344,80 @@ function updateGzoSubmitImagePreview() {
   const label = document.createElement("div");
   label.textContent = `${file.name} (${Math.ceil(file.size / 1024)} KB)`;
   els.gzoSubmitImagePreview.append(img, label);
-  setLine(els.gzoSubmitStatus, "Image attached. The form is ready for API wiring once Ynot sends the endpoint.", "ok");
+  updateGzoSubmitPayloadPreview();
+  setLine(els.gzoSubmitStatus, "Image attached. Submission will go to GZO Pending for developer review.", "ok");
 }
 
-function fillGzoSubmitForm(row) {
-  if (!row) return;
-  if (els.gzoSubmitListing) els.gzoSubmitListing.value = bl4SubmitListing(row);
-  setTextValue(els.gzoSubmitName, row.name || "");
-  setTextValue(els.gzoSubmitCreator, row.creator || "");
-  setTextValue(els.gzoSubmitType, row.type || "");
-  setTextValue(els.gzoSubmitCategory, row.category || row.type || "");
-  setTextValue(els.gzoSubmitRarity, row.rarity || "");
-  setTextValue(els.gzoSubmitBase85, row.serial || "");
-  setTextValue(els.gzoSubmitDeserialized, row.deserialized || "");
-  setTextValue(els.gzoSubmitNotes, row.notes || "");
+function clearGzoSubmitForm() {
+  refreshGzoSubmitDropdownOptions(null);
+  if (els.gzoSubmitListing) els.gzoSubmitListing.value = "Modded";
+  setTextValue(els.gzoSubmitName, "");
+  setTextValue(els.gzoSubmitCreator, "");
+  setTextValue(els.gzoSubmitType, "");
+  setTextValue(els.gzoSubmitCategory, "");
+  setTextValue(els.gzoSubmitRarity, "");
+  setTextValue(els.gzoSubmitBase85, "");
+  setTextValue(els.gzoSubmitDeserialized, "");
+  setTextValue(els.gzoSubmitNotes, "");
   clearGzoSubmitImagePreview();
-  const imageHint = bl4ImageUrl(row)
-    ? "This catalog row already has a web image. Upload a screenshot/image file when submitting a new item."
-    : "Upload a screenshot or generated item image before submitting.";
-  setLine(els.gzoSubmitStatus, `API URL is not configured yet. ${imageHint}`, "warning");
+  updateGzoSubmitPayloadPreview();
+  setGzoSubmitResult();
+  setLine(els.gzoSubmitStatus, "Paste a @U Base85 code or decoded serial, then click Decode / Normalize Serial. Attach an image before submitting.", "warning");
 }
 
 function openGzoSubmitModal() {
-  const row = activeBl4Entry();
-  if (!row) {
-    setBl4Status("Select a BL4 code before opening the GZO submission form.", "warning");
-    return;
-  }
-  fillGzoSubmitForm(row);
+  clearGzoSubmitForm();
   if (els.gzoSubmitModal) els.gzoSubmitModal.classList.remove("hidden");
 }
 
 function closeGzoSubmitModal() {
   if (els.gzoSubmitModal) els.gzoSubmitModal.classList.add("hidden");
+}
+
+async function normalizeGzoSubmitSerial() {
+  const serialText = getValue(els.gzoSubmitBase85) || getValue(els.gzoSubmitDeserialized);
+  if (!serialText) {
+    setLine(els.gzoSubmitStatus, "Paste a @U Base85 code or decoded serial first.", "warning");
+    return null;
+  }
+  if (!window.msbt || typeof window.msbt.serialToolsConvert !== "function") {
+    setLine(els.gzoSubmitStatus, "Local serial converter is not available in this build.", "bad");
+    return null;
+  }
+  setLine(els.gzoSubmitStatus, "Decoding / normalizing serial locally...", "warning");
+  const result = await window.msbt.serialToolsConvert(serialText);
+  const ok = String(result && result.ok).toLowerCase() === "true" || result.ok === true;
+  if (!ok) {
+    setGzoSubmitResult(`Serial normalize failed:\n${pretty(result || {})}`);
+    setLine(els.gzoSubmitStatus, result && result.message ? result.message : "Serial normalize failed.", "bad");
+    updateGzoSubmitPayloadPreview();
+    return result;
+  }
+  const serialized = String(result.serialized || "").trim();
+  const deserialized = String(result.deserialized || "").trim();
+  if (serialized) setTextValue(els.gzoSubmitBase85, serialized);
+  if (deserialized) setTextValue(els.gzoSubmitDeserialized, deserialized);
+  setGzoSubmitResult(`Serial normalized locally:\n${pretty({
+    base85: serialized,
+    deserialized,
+    message: result.message || "Converted successfully."
+  })}`);
+  updateGzoSubmitPayloadPreview();
+  setLine(els.gzoSubmitStatus, "Serial normalized. Review metadata and attach an image before submitting.", "ok");
+  return result;
+}
+
+async function useMattEditorSerialForGzoSubmit() {
+  const found = collectEditorSerials();
+  if (!found.length) {
+    setLine(els.gzoSubmitStatus, "No @U serial found in the Matt Editor. Build or serialize an item first.", "warning");
+    return;
+  }
+  setTextValue(els.gzoSubmitBase85, found[0]);
+  if (found.length > 1) {
+    setLine(els.gzoSubmitStatus, `Found ${found.length} editor serials; using the first one.`, "warning");
+  }
+  await normalizeGzoSubmitSerial();
 }
 
 function validateGzoSubmitForm() {
@@ -2270,24 +2429,86 @@ function validateGzoSubmitForm() {
     ["rarity", getValue(els.gzoSubmitRarity)]
   ];
   const missing = required.filter(([, value]) => !String(value || "").trim()).map(([label]) => label);
-  if (!getValue(els.gzoSubmitBase85).trim()) missing.push("base85");
-  const image = els.gzoSubmitImage && els.gzoSubmitImage.files && els.gzoSubmitImage.files.length ? els.gzoSubmitImage.files[0] : null;
+  if (!getValue(els.gzoSubmitBase85).trim() && !getValue(els.gzoSubmitDeserialized).trim()) {
+    missing.push("base85 or deserialized");
+  }
+  const image = gzoSubmitImageFile();
   if (!image) missing.push("image");
-  return { ok: !missing.length, missing };
+  const allowedImages = new Set(["image/png", "image/jpeg", "image/webp"]);
+  const unsupportedImage = image && !allowedImages.has(String(image.type || "").toLowerCase());
+  return { ok: !missing.length && !unsupportedImage, missing, unsupportedImage };
 }
 
-function handleGzoSubmit(event) {
+function gzoSubmitRequestPayload() {
+  const image = gzoSubmitImageFile();
+  const imagePath = image && window.msbt && typeof window.msbt.getPathForFile === "function"
+    ? window.msbt.getPathForFile(image)
+    : "";
+  return {
+    listing: getValue(els.gzoSubmitListing),
+    name: getValue(els.gzoSubmitName),
+    creator: getValue(els.gzoSubmitCreator),
+    type: getValue(els.gzoSubmitType),
+    category: getValue(els.gzoSubmitCategory),
+    rarity: getValue(els.gzoSubmitRarity),
+    base85: getValue(els.gzoSubmitBase85),
+    deserialized: getValue(els.gzoSubmitDeserialized),
+    notes: getValue(els.gzoSubmitNotes),
+    imagePath,
+    imageName: image ? image.name : "",
+    imageType: image ? image.type : "",
+    imageSize: image ? image.size : 0
+  };
+}
+
+async function handleGzoSubmit(event) {
   if (event) event.preventDefault();
+  if (getValue(els.gzoSubmitBase85) || getValue(els.gzoSubmitDeserialized)) {
+    const normalized = await normalizeGzoSubmitSerial();
+    const ok = String(normalized && normalized.ok).toLowerCase() === "true" || (normalized && normalized.ok === true);
+    if (!ok) return;
+  }
+  updateGzoSubmitPayloadPreview();
   const check = validateGzoSubmitForm();
   if (!check.ok) {
-    setLine(els.gzoSubmitStatus, `Required before submission: ${check.missing.join(", ")}.`, "bad");
+    const missingText = check.missing.length ? `Required before submission: ${check.missing.join(", ")}.` : "";
+    const typeText = check.unsupportedImage ? " Image must be PNG, JPEG, or WebP." : "";
+    setLine(els.gzoSubmitStatus, `${missingText}${typeText}`, "bad");
     return;
   }
-  setLine(
-    els.gzoSubmitStatus,
-    "Form data and image are ready. Waiting for Ynot's API URL before enabling the actual upload.",
-    "warning"
-  );
+  if (!window.msbt || typeof window.msbt.submitGzoCode !== "function") {
+    setLine(els.gzoSubmitStatus, "GZO submit helper is not available in this build.", "bad");
+    return;
+  }
+  const payload = gzoSubmitRequestPayload();
+  if (!payload.imagePath) {
+    setLine(els.gzoSubmitStatus, "Electron could not access the selected image path. Choose the image again and retry.", "bad");
+    return;
+  }
+  if (els.gzoSubmitSendBtn) els.gzoSubmitSendBtn.disabled = true;
+  setLine(els.gzoSubmitStatus, "Submitting to GZO Pending...", "warning");
+  setGzoSubmitResult("Submitting to GZO Pending...");
+  try {
+    const result = await window.msbt.submitGzoCode(payload);
+    setGzoSubmitResult(formatGzoSubmitResult(result || {}, payload));
+    if (result && result.ok) {
+      const suffix = result.editUrl ? ` Edit URL: ${result.editUrl}` : "";
+      setLine(els.gzoSubmitStatus, `Submitted to GZO Pending for developer review.${suffix}`, "ok");
+      setBl4Status("Submitted code to GZO Pending for developer review.", "ok");
+    } else {
+      setLine(els.gzoSubmitStatus, result && result.message ? result.message : "GZO submission failed.", "bad");
+    }
+  } catch (error) {
+    setGzoSubmitResult(`GZO submission failed:\n${error && error.stack ? error.stack : error}`);
+    setLine(els.gzoSubmitStatus, `GZO submission failed: ${error && error.message ? error.message : error}`, "bad");
+  } finally {
+    if (els.gzoSubmitSendBtn) els.gzoSubmitSendBtn.disabled = false;
+  }
+}
+
+async function copyGzoSubmitPayloadPreview() {
+  updateGzoSubmitPayloadPreview();
+  await copyText(getValue(els.gzoSubmitPayloadPreview), els.gzoSubmitStatus, "Submission preview");
 }
 
 function clearBl4Detail(message = "Select a BL4 code.") {
@@ -3015,7 +3236,7 @@ async function downloadElectronUpdate() {
 }
 
 async function installDownloadedElectronUpdate() {
-  const confirmed = window.confirm("Restart MSBT Electron Beta now and install the downloaded update?");
+  const confirmed = window.confirm("Restart Matt's SDK Boosting Tools now and install the downloaded update?");
   if (!confirmed) return;
   const result = await window.msbt.installDownloadedUpdate();
   setOutput(els.updateOutput, result);
@@ -4745,6 +4966,9 @@ function switchTab(tabId) {
   document.querySelectorAll(".tab-panel").forEach((panel) => {
     panel.classList.toggle("active", panel.id === `tab-${tabId}`);
   });
+  if (tabId === "matt-editor") {
+    void loadEditor();
+  }
 }
 
 function wireEvents() {
@@ -4890,10 +5114,25 @@ function wireEvents() {
   els.bl4OpenLootlemonBtn.addEventListener("click", openBl4Lootlemon);
   if (els.bl4SubmitGzoBtn) els.bl4SubmitGzoBtn.addEventListener("click", openGzoSubmitModal);
   if (els.gzoSubmitCloseBtn) els.gzoSubmitCloseBtn.addEventListener("click", closeGzoSubmitModal);
-  if (els.gzoSubmitResetBtn) els.gzoSubmitResetBtn.addEventListener("click", () => {
-    const row = activeBl4Entry();
-    if (row) fillGzoSubmitForm(row);
+  if (els.gzoSubmitClearBtn) els.gzoSubmitClearBtn.addEventListener("click", clearGzoSubmitForm);
+  if (els.gzoSubmitDecodeBtn) els.gzoSubmitDecodeBtn.addEventListener("click", normalizeGzoSubmitSerial);
+  if (els.gzoSubmitUseEditorBtn) els.gzoSubmitUseEditorBtn.addEventListener("click", useMattEditorSerialForGzoSubmit);
+  [
+    els.gzoSubmitListing,
+    els.gzoSubmitCreator,
+    els.gzoSubmitName,
+    els.gzoSubmitRarity,
+    els.gzoSubmitType,
+    els.gzoSubmitCategory,
+    els.gzoSubmitBase85,
+    els.gzoSubmitDeserialized,
+    els.gzoSubmitNotes
+  ].forEach((node) => {
+    if (!node) return;
+    node.addEventListener("input", updateGzoSubmitPayloadPreview);
+    node.addEventListener("change", updateGzoSubmitPayloadPreview);
   });
+  if (els.gzoSubmitCopyPayloadBtn) els.gzoSubmitCopyPayloadBtn.addEventListener("click", copyGzoSubmitPayloadPreview);
   if (els.gzoSubmitImage) els.gzoSubmitImage.addEventListener("change", updateGzoSubmitImagePreview);
   if (els.gzoSubmitForm) els.gzoSubmitForm.addEventListener("submit", handleGzoSubmit);
   if (els.gzoSubmitModal) {
@@ -5001,9 +5240,13 @@ function wireEvents() {
     if (button) button.addEventListener("click", () => window.msbt.openExternal(url));
   });
 
-  document.getElementById("loadEditorBtn").addEventListener("click", loadEditor);
+  document.getElementById("loadEditorBtn").addEventListener("click", () => loadEditor({ force: true }));
   document.getElementById("reloadEditorBtn").addEventListener("click", () => {
-    if (els.editorFrame.src) els.editorFrame.src = els.editorFrame.src;
+    if (els.editorFrame.src) {
+      els.editorFrame.src = els.editorFrame.src;
+      return;
+    }
+    void loadEditor({ force: true });
   });
   document.getElementById("detectSerialBtn").addEventListener("click", detectSerialFromEditor);
   document.getElementById("confirmSerialBtn").addEventListener("click", confirmSerial);
