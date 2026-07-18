@@ -1303,6 +1303,11 @@ function startHostWithPython(pythonExe) {
   const args = pythonExe === "py" ? ["-3", "-c", code] : ["-c", code];
   const child = spawn(pythonExe, args, {
     cwd: EXTERNAL_APP_DIR,
+    env: {
+      ...process.env,
+      MSBT_ELECTRON_EXE: process.execPath,
+      MSBT_ELECTRON_RESOURCES: RESOURCE_ROOT
+    },
     stdio: ["ignore", "pipe", "pipe"],
     windowsHide: true
   });

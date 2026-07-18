@@ -19694,6 +19694,45 @@
         }
 
         function copySaveYamlToClipboard() {
+            const yamlContent = typeof getYamlTextareaValue === 'function'
+                ? getYamlTextareaValue()
+                : '';
+
+            if (!yamlContent || !yamlContent.trim()) {
+                showSaveStatus('save-encrypt-status', 'No YAML content to copy.', false);
+                return;
+            }
+
+            const markCopied = function() {
+                showSaveStatus('save-encrypt-status', 'YAML copied to clipboard!', true);
+                if (typeof window.trackEvent === 'function') {
+                    window.trackEvent('copy_clipboard', { source: 'button' });
+                }
+            };
+
+            const fallbackCopy = function() {
+                const fallbackTextarea = document.createElement('textarea');
+                fallbackTextarea.value = yamlContent;
+                fallbackTextarea.setAttribute('readonly', 'readonly');
+                fallbackTextarea.style.position = 'fixed';
+                fallbackTextarea.style.left = '-9999px';
+                fallbackTextarea.style.top = '0';
+                document.body.appendChild(fallbackTextarea);
+                fallbackTextarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(fallbackTextarea);
+                markCopied();
+            };
+
+            if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+                navigator.clipboard.writeText(yamlContent)
+                    .then(markCopied)
+                    .catch(fallbackCopy);
+            } else {
+                fallbackCopy();
+            }
+            return;
+
             const textarea = document.getElementById('save-yaml-textarea');
             if (textarea) {
                 textarea.select();

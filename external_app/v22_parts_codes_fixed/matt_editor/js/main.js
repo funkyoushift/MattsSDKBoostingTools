@@ -255,6 +255,56 @@
             });
         }
 
+        function getPendingYamlEditorValue(yamlContainer) {
+            if (
+                yamlContainer &&
+                yamlContainer.dataset &&
+                typeof yamlContainer.dataset.value === 'string'
+            ) {
+                return yamlContainer.dataset.value;
+            }
+            if (window.saveEditorState && typeof window.saveEditorState.yamlContent === 'string') {
+                return window.saveEditorState.yamlContent;
+            }
+            return '';
+        }
+
+        function enableYamlEditorTextFallback(yamlContainer, value) {
+            if (!yamlContainer || window.yamlMonacoEditor) return;
+
+            const normalizedValue = value || '';
+            if (yamlContainer.dataset) {
+                yamlContainer.dataset.value = normalizedValue;
+                yamlContainer.dataset.msbtYamlFallback = '1';
+            }
+            if (window.saveEditorState) {
+                window.saveEditorState.yamlContent = normalizedValue;
+            }
+
+            yamlContainer.textContent = normalizedValue;
+            yamlContainer.style.whiteSpace = 'pre';
+            yamlContainer.style.overflow = 'auto';
+            yamlContainer.style.fontFamily = 'Consolas, "Courier New", monospace';
+            yamlContainer.style.fontSize = '12px';
+            yamlContainer.style.lineHeight = '1.35';
+            yamlContainer.style.padding = '12px';
+            yamlContainer.contentEditable = 'true';
+
+            if (!yamlContainer.dataset || yamlContainer.dataset.msbtYamlInputBound === '1') {
+                return;
+            }
+
+            yamlContainer.addEventListener('input', function() {
+                if (window.yamlMonacoEditor) return;
+                const currentValue = yamlContainer.textContent || '';
+                yamlContainer.dataset.value = currentValue;
+                if (window.saveEditorState) {
+                    window.saveEditorState.yamlContent = currentValue;
+                }
+            });
+            yamlContainer.dataset.msbtYamlInputBound = '1';
+        }
+
         // Initialize Monaco Editor for YAML textarea
         function initMonacoYamlEditor() {
             const yamlContainer = document.getElementById('save-yaml-textarea');
@@ -263,6 +313,7 @@
             // Check if Monaco is loaded
             if (typeof require === 'undefined') {
                 console.warn('Monaco Editor not loaded, using textarea fallback');
+                enableYamlEditorTextFallback(yamlContainer, getPendingYamlEditorValue(yamlContainer));
                 // Add change listener for textarea fallback
                 if (yamlContainer.tagName === 'TEXTAREA') {
                     let debounceTimer = null;
@@ -308,9 +359,17 @@
                 try {
                     // Setup YAML language features (same as save editor)
                     setupYamlLanguageFeaturesForItemEditor();
+
+                    const initialYamlValue = getPendingYamlEditorValue(yamlContainer);
+                    if (yamlContainer.dataset && yamlContainer.dataset.msbtYamlFallback === '1') {
+                        yamlContainer.textContent = '';
+                        yamlContainer.contentEditable = 'false';
+                        yamlContainer.style.padding = '';
+                        delete yamlContainer.dataset.msbtYamlFallback;
+                    }
                     
                     window.window.yamlMonacoEditor = monaco.editor.create(yamlContainer, {
-                        value: '',
+                        value: initialYamlValue,
                         language: 'yaml',
                         theme: 'vs-dark',
                         automaticLayout: true,
@@ -340,18 +399,17 @@
                     });
                     resizeObserver.observe(yamlContainer);
                     
-                    // Sync Monaco editor with textarea value if it exists (migration)
-                    if (yamlContainer.dataset && yamlContainer.dataset.value) {
-                        window.yamlMonacoEditor.setValue(yamlContainer.dataset.value);
-                    }
-                    
                     // Note: Change listener is set up by setupYamlAutoDecode() to ensure
                     // it includes reindexBackpackSlots and other necessary logic
                     
                     console.log('✅ Monaco Editor initialized for YAML editing');
                 } catch (error) {
                     console.error('Error initializing Monaco Editor:', error);
+                    enableYamlEditorTextFallback(yamlContainer, getPendingYamlEditorValue(yamlContainer));
                 }
+            }, function(error) {
+                console.error('Error loading Monaco Editor:', error);
+                enableYamlEditorTextFallback(yamlContainer, getPendingYamlEditorValue(yamlContainer));
             });
         }
         

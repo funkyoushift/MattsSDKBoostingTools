@@ -19,6 +19,52 @@
     bridgeOnline: false
   };
 
+  function isEmbeddedShellMode() {
+    try {
+      return new URLSearchParams(window.location.search || "").get("msbtShell") === "1";
+    } catch (err) {
+      return String(window.location.search || "").indexOf("msbtShell=1") >= 0;
+    }
+  }
+
+  function installEmbeddedShellChrome() {
+    if (!isEmbeddedShellMode()) return;
+    document.body.classList.add("msbt-shell-embedded");
+    if (document.getElementById("msbt-shell-embedded-style")) return;
+    var style = document.createElement("style");
+    style.id = "msbt-shell-embedded-style";
+    style.textContent = [
+      "body.msbt-shell-embedded { background: transparent !important; }",
+      "body.msbt-shell-embedded .theme-selector,",
+      "body.msbt-shell-embedded .floating-tab-handle-shell,",
+      "body.msbt-shell-embedded .container > header,",
+      "body.msbt-shell-embedded .container > .tabs { display: none !important; }",
+      "body.msbt-shell-embedded .container { max-width: none !important; width: 100% !important; margin: 0 !important; padding: 0 !important; }",
+      "body.msbt-shell-embedded .tab-content { margin-top: 0 !important; }"
+    ].join("\n");
+    document.head.appendChild(style);
+  }
+
+  function switchToHashTab() {
+    var hash = String(window.location.hash || "").replace(/^#/, "");
+    if (!hash) return false;
+    var tabId = "";
+    try {
+      tabId = decodeURIComponent(hash);
+    } catch (err) {
+      tabId = hash;
+    }
+    if (!tabId || typeof window.switchTab !== "function") return false;
+    window.switchTab(tabId);
+    return true;
+  }
+
+  function queueHashTabSwitch() {
+    if (!isEmbeddedShellMode()) return;
+    setTimeout(switchToHashTab, 0);
+    setTimeout(switchToHashTab, 250);
+  }
+
   function byId(id) {
     return document.getElementById(id);
   }
@@ -101,6 +147,20 @@
     if (!el) return;
     el.textContent = message || "";
     el.style.color = ok ? "#43d17a" : "#ffcc33";
+  }
+
+  function responseMessage(data, fallback) {
+    if (!data || typeof data !== "object") return fallback;
+    if (data.message) return String(data.message);
+    if (data.data && typeof data.data === "object" && data.data.message) return String(data.data.message);
+    var progress = data.serial_delivery || (data.status && data.status.serial_delivery);
+    if (progress && typeof progress === "object") {
+      if (progress.last_error) return String(progress.last_error);
+      if (progress.last_message) return String(progress.last_message);
+      if (progress.message) return String(progress.message);
+    }
+    if (data.queued) return "Delivery was queued but has not finished yet. Watch the in-game log/status.";
+    return fallback;
   }
 
   function playerValue(player) {
@@ -417,7 +477,7 @@
         body: JSON.stringify({ mode: mode, serial: serial, level: currentLevel(), target_player: state.selectedTarget })
       });
       var data = await response.json();
-      var message = data.message || (data.ok ? "Delivery requested." : "Delivery failed.");
+      var message = responseMessage(data, data.ok ? "Delivery requested." : "Delivery failed.");
       setStatus(message, data.ok !== false && response.ok);
     } catch (err) {
       setStatus("Delivery failed: " + err, false);
@@ -605,8 +665,19 @@
   }
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", installPanel);
+    document.addEventListener("DOMContentLoaded", function () {
+      installEmbeddedShellChrome();
+      queueHashTabSwitch();
+      if (!isEmbeddedShellMode()) {
+        installPanel();
+      }
+    });
   } else {
-    installPanel();
+    installEmbeddedShellChrome();
+    queueHashTabSwitch();
+    if (!isEmbeddedShellMode()) {
+      installPanel();
+    }
   }
+  window.addEventListener("hashchange", queueHashTabSwitch);
 })();

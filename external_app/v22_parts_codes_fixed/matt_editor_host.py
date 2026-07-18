@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import mimetypes
+import os
 import posixpath
 import subprocess
 import sys
@@ -20,6 +21,7 @@ from external_serial_tools import human_to_serial, serial_to_human
 EDITOR_DIR = BASE_DIR / "matt_editor"
 BRIDGE_URL = "http://127.0.0.1:49774"
 BLCRYPT_API_URL = "https://save-editor.be/blcrypt/api.php"
+BLCRYPT_HELPER = BASE_DIR / "matt_editor_blcrypt.js"
 
 NEXUS_FILE_MAP = {
     "inv0": "Nexus-Data-inv0.json",
@@ -97,6 +99,208 @@ def _json_bytes(value: object) -> bytes:
     return json.dumps(value, ensure_ascii=False).encode("utf-8")
 
 
+def _response_keys(value: object) -> list[str]:
+    if not isinstance(value, dict):
+        return []
+    keys: list[str] = []
+    for key, item in value.items():
+        keys.append(str(key))
+        if isinstance(item, dict):
+            keys.extend(f"{key}.{nested}" for nested in _response_keys(item))
+    return keys
+
+
+def _nested_response_dicts(value: object) -> list[dict]:
+    if not isinstance(value, dict):
+        return []
+    nested = [value]
+    for key in ("data", "result", "payload", "response"):
+        item = value.get(key)
+        if isinstance(item, dict):
+            nested.append(item)
+    return nested
+
+
+def _first_response_value(
+    value: object,
+    keys: tuple[str, ...],
+    object_keys: tuple[str, ...] = (),
+) -> object | None:
+    for source in _nested_response_dicts(value):
+        for key in keys:
+            item = source.get(key)
+            if item not in (None, ""):
+                if isinstance(item, (dict, list)) and key not in object_keys:
+                    continue
+                return item
+    if isinstance(value, dict):
+        item = value.get("data")
+        if isinstance(item, str) and item.strip():
+            return item
+    return None
+
+
+def _normalize_blcrypt_payload(value: object, command: str = "") -> object:
+    if not isinstance(value, dict):
+        return value
+
+    normalized = dict(value)
+    command = (command or str(normalized.get("command") or "")).strip().lower()
+
+    if "success" not in normalized and "ok" in normalized:
+        normalized["success"] = bool(normalized.get("ok"))
+
+    if command == "decrypt":
+        yaml_value = _first_response_value(
+            normalized,
+            (
+                "yaml_content",
+                "yaml",
+                "yaml_text",
+                "yamlData",
+                "yaml_data",
+                "decrypted_yaml",
+                "decrypted",
+                "decrypted_data",
+                "save_yaml",
+                "profile_yaml",
+                "content",
+                "output",
+                "result",
+            ),
+            object_keys=("yamlData", "yaml_data"),
+        )
+        if yaml_value not in (None, ""):
+            if isinstance(yaml_value, str):
+                normalized["yaml_content"] = yaml_value
+            else:
+                normalized["yaml_data"] = yaml_value
+                normalized["yaml_content"] = json.dumps(yaml_value, ensure_ascii=False, indent=2)
+            normalized.setdefault("success", True)
+        elif normalized.get("success") is True:
+            keys = ", ".join(_response_keys(normalized)) or "none"
+            normalized["success"] = False
+            normalized.setdefault(
+                "error",
+                f"Save/profile conversion returned success without YAML content. Response fields: {keys}",
+            )
+
+    if command == "encrypt":
+        encrypted_value = _first_response_value(
+            normalized,
+            (
+                "encrypted",
+                "encrypted_data",
+                "sav_data",
+                "save_data",
+                "profile_data",
+                "content",
+                "output",
+                "result",
+            ),
+        )
+        if encrypted_value not in (None, ""):
+            normalized["encrypted"] = encrypted_value
+            normalized.setdefault("sav_data", encrypted_value)
+            normalized.setdefault("success", True)
+
+    return normalized
+
+
+def _normalize_blcrypt_response(body: bytes, content_type: str, command: str) -> tuple[bytes, str]:
+    text = body.decode("utf-8", errors="replace").strip()
+    if not text:
+        return body, content_type
+
+    looks_json = "json" in content_type.lower() or text[:1] in ("{", "[")
+    if not looks_json:
+        return body, content_type
+
+    try:
+        payload = json.loads(text)
+    except Exception:
+        return body, content_type
+
+    normalized = _normalize_blcrypt_payload(payload, command)
+    return _json_bytes(normalized), "application/json; charset=UTF-8"
+
+
+def _node_runner_candidates() -> list[tuple[str, dict[str, str]]]:
+    candidates: list[tuple[str, dict[str, str]]] = []
+    env_node = os.environ.get("MSBT_NODE_EXE")
+    if env_node:
+        candidates.append((env_node, {}))
+
+    electron_exe = os.environ.get("MSBT_ELECTRON_EXE")
+    if electron_exe:
+        candidates.append((electron_exe, {"ELECTRON_RUN_AS_NODE": "1"}))
+
+    candidates.extend([("node", {}), ("node.exe", {})])
+
+    seen: set[tuple[str, tuple[tuple[str, str], ...]]] = set()
+    unique: list[tuple[str, dict[str, str]]] = []
+    for exe, extra_env in candidates:
+        key = (exe.lower(), tuple(sorted(extra_env.items())))
+        if key in seen:
+            continue
+        seen.add(key)
+        unique.append((exe, extra_env))
+    return unique
+
+
+def _run_local_blcrypt(request_data: dict, command: str) -> tuple[object | None, list[str]]:
+    command = (command or "").strip().lower()
+    if command not in {"decrypt", "encrypt"}:
+        return None, []
+    if not BLCRYPT_HELPER.exists():
+        return None, [f"Local blcrypt helper not found: {BLCRYPT_HELPER}"]
+
+    errors: list[str] = []
+    stdin_body = _json_bytes(request_data)
+    for runner, extra_env in _node_runner_candidates():
+        env = os.environ.copy()
+        env.update(extra_env)
+        try:
+            completed = subprocess.run(
+                [runner, str(BLCRYPT_HELPER)],
+                input=stdin_body,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                cwd=str(BASE_DIR),
+                env=env,
+                timeout=90.0,
+                check=False,
+            )
+        except FileNotFoundError:
+            errors.append(f"{runner}: not found")
+            continue
+        except Exception as exc:
+            errors.append(f"{runner}: {exc}")
+            continue
+
+        stdout = completed.stdout.decode("utf-8", errors="replace").strip()
+        stderr = completed.stderr.decode("utf-8", errors="replace").strip()
+        if completed.returncode != 0:
+            errors.append(f"{runner}: exited {completed.returncode}. {stderr}".strip())
+            continue
+        if not stdout:
+            errors.append(f"{runner}: no response. {stderr}".strip())
+            continue
+
+        try:
+            payload = json.loads(stdout)
+        except Exception as exc:
+            errors.append(f"{runner}: invalid JSON response: {exc}. {stdout[:200]}")
+            continue
+
+        normalized = _normalize_blcrypt_payload(payload, command)
+        if isinstance(normalized, dict):
+            normalized.setdefault("converter", "local-msbt-blcrypt")
+        return normalized, errors
+
+    return None, errors
+
+
 def _bridge_json(method: str, path: str, data: object | None = None, timeout: float = 18.0) -> object:
     body = None
     headers = {"Content-Type": "application/json"}
@@ -147,6 +351,31 @@ def _editor_bootstrap(origin: str) -> str:
         }}
         return originalFetch(new Request(url, input), init);
     }};
+    window.MSBT_SELECT_EDITOR_TAB = function(tabId) {{
+        if (!tabId) return false;
+        var selected = document.getElementById(tabId);
+        if (!selected) return false;
+        if (typeof window.switchTab === "function") {{
+            window.switchTab(tabId);
+            return true;
+        }}
+        document.querySelectorAll(".tab-content").forEach(function(tab) {{
+            tab.classList.remove("active");
+        }});
+        selected.classList.add("active");
+        document.querySelectorAll(".tab-button").forEach(function(button) {{
+            var onclick = button.getAttribute("onclick") || "";
+            button.classList.toggle("active", onclick.indexOf(tabId) !== -1);
+        }});
+        return true;
+    }};
+    window.addEventListener("load", function() {{
+        var tabId = (window.location.hash || "").replace(/^#/, "") || "save-editor-tab";
+        if (!document.getElementById(tabId)) return;
+        setTimeout(function() {{
+            window.MSBT_SELECT_EDITOR_TAB(tabId);
+        }}, 0);
+    }});
 }})();
 </script>
 """
@@ -318,6 +547,22 @@ class _MattEditorHandler(BaseHTTPRequestHandler):
     def _handle_blcrypt_api(self, parsed: urllib.parse.ParseResult) -> None:
         length = int(self.headers.get("Content-Length") or "0")
         body = self.rfile.read(length) if length else b""
+        command = ""
+        request_data: dict = {}
+        try:
+            request_data = json.loads(body.decode("utf-8", errors="replace") or "{}")
+            if isinstance(request_data, dict):
+                command = str(request_data.get("command") or "")
+            else:
+                request_data = {}
+        except Exception:
+            command = ""
+
+        local_payload, local_errors = _run_local_blcrypt(request_data, command)
+        if local_payload is not None:
+            self._send_json(200, local_payload)
+            return
+
         remote_url = BLCRYPT_API_URL
         if parsed.query:
             remote_url += "?" + parsed.query
@@ -331,17 +576,22 @@ class _MattEditorHandler(BaseHTTPRequestHandler):
             with urlrequest.urlopen(req, timeout=60.0) as resp:
                 response_body = resp.read()
                 content_type = resp.headers.get("Content-Type", "application/json; charset=UTF-8")
+                response_body, content_type = _normalize_blcrypt_response(response_body, content_type, command)
                 self._send(resp.status, response_body, content_type)
         except urlerror.HTTPError as exc:
             response_body = exc.read()
             content_type = exc.headers.get("Content-Type", "application/json; charset=UTF-8")
+            response_body, content_type = _normalize_blcrypt_response(response_body, content_type, command)
             self._send(exc.code, response_body, content_type)
         except Exception as exc:
+            message = f"Save/profile conversion service unavailable: {exc}"
+            if local_errors:
+                message += " Local helper attempts: " + " | ".join(local_errors[:4])
             self._send_json(
                 502,
                 {
                     "success": False,
-                    "error": f"Save/profile conversion service unavailable: {exc}",
+                    "error": message,
                 },
             )
 
@@ -436,13 +686,25 @@ class _MattEditorHandler(BaseHTTPRequestHandler):
         except Exception:
             level = 60
         level = max(1, min(60, level))
-        payload = {"serial_text": serial, "serial_override_level": False, "serial_level": level}
+        payload = {
+            "serial_text": serial,
+            "serial_override_level": False,
+            "serial_level": level,
+            "code_delivery_level": level,
+        }
         try:
-            result = _bridge_json("POST", "/action", {"action": action, "payload": payload, "timeout": 10.0}, timeout=30.0)
+            result = _bridge_json("POST", "/action", {"action": action, "payload": payload, "timeout": 60.0}, timeout=75.0)
         except Exception as exc:
             self._send_json(503, {"ok": False, "message": f"Delivery failed: {exc}"})
             return
         if isinstance(result, dict):
+            try:
+                status = _bridge_json("GET", "/status", timeout=5.0)
+                if isinstance(status, dict):
+                    result["status"] = status
+                    result["serial_delivery"] = status.get("serial_delivery")
+            except Exception:
+                pass
             self._send_json(200, result)
         else:
             self._send_json(200, {"ok": True, "message": str(result)})

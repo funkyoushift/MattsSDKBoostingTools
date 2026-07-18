@@ -1003,7 +1003,11 @@
         }
 
         // ===== SAVE EDITOR FUNCTIONS =====
-        const SAVE_API_BASE_URL = "https://save-editor.be/blcrypt/api.php";
+        const DEFAULT_SAVE_API_BASE_URL = "https://save-editor.be/blcrypt/api.php";
+
+        function getSaveApiBaseUrl() {
+            return window.SAVE_API_BASE_URL || DEFAULT_SAVE_API_BASE_URL;
+        }
         
         // Handle file input change - auto-decrypt when file is selected
         function setupSaveFileInput() {
@@ -1186,7 +1190,7 @@
                         sav_data: base64Data
                     };
                 
-                    const response = await fetch(SAVE_API_BASE_URL, {
+                    const response = await fetch(getSaveApiBaseUrl(), {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -1208,6 +1212,10 @@
                     }
                 }
                 
+                if (!yamlText || !String(yamlText).trim()) {
+                    throw new Error('Decrypt succeeded, but no YAML content was returned.');
+                }
+
                 // Process YAML content (from either .sav decryption or direct .yaml file)
                 window.saveEditorState.isLoaded = true;
                 window.saveEditorState.yamlContent = yamlText;
@@ -1417,7 +1425,7 @@
                     yaml_data: yamlContent  // Fallback field name
                 };
                 
-                const response = await fetch(SAVE_API_BASE_URL, {
+                const response = await fetch(getSaveApiBaseUrl(), {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -1510,6 +1518,114 @@
         }
 
         // Profile Editor Functions
+        function getProfileYamlTextElement() {
+            return document.getElementById('profile-yaml-textarea');
+        }
+
+        function readProfileYamlDomValue() {
+            const textarea = getProfileYamlTextElement();
+            if (!textarea) {
+                return window.profileYAMLContent || '';
+            }
+            if (typeof textarea.value === 'string') {
+                return textarea.value || '';
+            }
+            if (typeof textarea.__msbtProfileYamlValue === 'string') {
+                return textarea.__msbtProfileYamlValue;
+            }
+            return textarea.textContent || window.profileYAMLContent || '';
+        }
+
+        function writeProfileYamlDomValue(value) {
+            const normalizedValue = value || '';
+            window.profileYAMLContent = normalizedValue;
+            const textarea = getProfileYamlTextElement();
+            if (!textarea) {
+                return;
+            }
+            textarea.__msbtProfileYamlValue = normalizedValue;
+            if (typeof textarea.value === 'string') {
+                textarea.value = normalizedValue;
+            } else {
+                textarea.textContent = normalizedValue;
+                textarea.contentEditable = 'true';
+                textarea.tabIndex = 0;
+                textarea.style.whiteSpace = 'pre';
+                textarea.style.overflow = 'auto';
+                textarea.style.fontFamily = 'Consolas, "Courier New", monospace';
+                textarea.style.fontSize = '12px';
+                textarea.style.lineHeight = '1.35';
+                textarea.style.padding = '12px';
+                textarea.style.boxSizing = 'border-box';
+            }
+            if (!textarea.__msbtProfileYamlInputBound) {
+                textarea.addEventListener('input', function () {
+                    const nextValue = typeof textarea.value === 'string'
+                        ? (textarea.value || '')
+                        : (textarea.textContent || '');
+                    textarea.__msbtProfileYamlValue = nextValue;
+                    window.profileYAMLContent = nextValue;
+                });
+                textarea.__msbtProfileYamlInputBound = true;
+            }
+        }
+
+        function ensureProfileYamlEditorFallback(value) {
+            if (
+                window.profileMonacoEditor &&
+                typeof window.profileMonacoEditor.getValue === 'function' &&
+                typeof window.profileMonacoEditor.setValue === 'function'
+            ) {
+                if (typeof value === 'string') {
+                    window.profileMonacoEditor.setValue(value);
+                }
+                return window.profileMonacoEditor;
+            }
+
+            writeProfileYamlDomValue(typeof value === 'string' ? value : readProfileYamlDomValue());
+            window.profileMonacoEditor = {
+                __msbtFallback: true,
+                getValue: function () {
+                    return readProfileYamlDomValue();
+                },
+                setValue: function (nextValue) {
+                    writeProfileYamlDomValue(nextValue || '');
+                },
+                layout: function () {},
+                dispose: function () {},
+                onDidChangeModelContent: function (handler) {
+                    const textarea = getProfileYamlTextElement();
+                    if (!textarea || typeof handler !== 'function') {
+                        return { dispose: function () {} };
+                    }
+                    const listener = function () {
+                        handler();
+                    };
+                    textarea.addEventListener('input', listener);
+                    return {
+                        dispose: function () {
+                            textarea.removeEventListener('input', listener);
+                        }
+                    };
+                }
+            };
+            return window.profileMonacoEditor;
+        }
+
+        function getProfileYamlEditorValue() {
+            if (window.profileMonacoEditor && typeof window.profileMonacoEditor.getValue === 'function') {
+                return window.profileMonacoEditor.getValue() || '';
+            }
+            return readProfileYamlDomValue();
+        }
+
+        function setProfileYamlEditorValue(value) {
+            const editor = ensureProfileYamlEditorFallback(value || '');
+            if (editor && typeof editor.setValue === 'function') {
+                editor.setValue(value || '');
+            }
+        }
+
         async function decryptProfileFile() {
             const fileInput = document.getElementById('profile-file-input');
             const steamIdInput = document.getElementById('profile-steamid');
@@ -1610,7 +1726,7 @@
                         sav_data: base64Data
                     };
                 
-                    const response = await fetch(SAVE_API_BASE_URL, {
+                    const response = await fetch(getSaveApiBaseUrl(), {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -1632,6 +1748,10 @@
                     }
                 }
                 
+                if (!yamlText || !String(yamlText).trim()) {
+                    throw new Error('Decrypt succeeded, but no YAML content was returned.');
+                }
+
                 // Normalize YAML - remove !tags which jsyaml can't handle
                 if (yamlText) {
                     yamlText = yamlText.replace(/:\s*!tags/g, ':');
@@ -1646,59 +1766,27 @@
                     }
                 }
                 
-                // Initialize Monaco Editor for profile YAML
-                if (!window.profileMonacoEditor) {
-                    const textarea = document.getElementById('profile-yaml-textarea');
-                    if (textarea) {
-                        require(['vs/editor/editor.main'], function() {
-                            window.profileMonacoEditor = monaco.editor.create(textarea, {
-                                value: yamlText,
-                                language: 'yaml',
-                                theme: 'vs-dark',
-                                automaticLayout: true,
-                                minimap: { enabled: false },
-                                scrollBeyondLastLine: false,
-                                wordWrap: 'on'
-                            });
-                            if (typeof ensureProfileProgressionMonacoContentListener === 'function') {
-                                ensureProfileProgressionMonacoContentListener();
-                            }
-                            if (typeof ensureProfileBlackMarketMonacoListener === 'function') {
-                                ensureProfileBlackMarketMonacoListener();
-                            }
-                            if (typeof ensureProfilePcSharedMonacoContentListener === 'function') {
-                                ensureProfilePcSharedMonacoContentListener();
-                            }
-                            setTimeout(function () {
-                                if (typeof refreshProgressionSharedPanel === 'function') {
-                                    refreshProgressionSharedPanel();
-                                }
-                                if (typeof refreshBlackMarketItemsPanel === 'function') {
-                                    refreshBlackMarketItemsPanel();
-                                }
-                                if (typeof refreshProfilePcSharedFoddatasPanel === 'function') {
-                                    refreshProfilePcSharedFoddatasPanel();
-                                }
-                            }, 0);
-                        });
-                    }
-                } else {
-                    window.profileMonacoEditor.setValue(yamlText);
-                    if (typeof ensureProfileProgressionMonacoContentListener === 'function') {
-                        ensureProfileProgressionMonacoContentListener();
-                    }
-                    if (typeof ensureProfileBlackMarketMonacoListener === 'function') {
-                        ensureProfileBlackMarketMonacoListener();
-                    }
-                    if (typeof ensureProfilePcSharedMonacoContentListener === 'function') {
-                        ensureProfilePcSharedMonacoContentListener();
-                    }
-                    setTimeout(function () {
-                        if (typeof refreshProfilePcSharedFoddatasPanel === 'function') {
-                            refreshProfilePcSharedFoddatasPanel();
-                        }
-                    }, 0);
+                setProfileYamlEditorValue(yamlText);
+                if (typeof ensureProfileProgressionMonacoContentListener === 'function') {
+                    ensureProfileProgressionMonacoContentListener();
                 }
+                if (typeof ensureProfileBlackMarketMonacoListener === 'function') {
+                    ensureProfileBlackMarketMonacoListener();
+                }
+                if (typeof ensureProfilePcSharedMonacoContentListener === 'function') {
+                    ensureProfilePcSharedMonacoContentListener();
+                }
+                setTimeout(function () {
+                    if (typeof refreshProgressionSharedPanel === 'function') {
+                        refreshProgressionSharedPanel();
+                    }
+                    if (typeof refreshBlackMarketItemsPanel === 'function') {
+                        refreshBlackMarketItemsPanel();
+                    }
+                    if (typeof refreshProfilePcSharedFoddatasPanel === 'function') {
+                        refreshProfilePcSharedFoddatasPanel();
+                    }
+                }, 0);
                 
                 yamlContent.style.display = 'block';
                 window.profileYAMLContent = yamlText;
@@ -1739,15 +1827,7 @@
                 return;
             }
             
-            let yamlContent = '';
-            if (window.profileMonacoEditor) {
-                yamlContent = window.profileMonacoEditor.getValue().trim();
-            } else {
-                const textarea = document.getElementById('profile-yaml-textarea');
-                if (textarea) {
-                    yamlContent = textarea.value.trim();
-                }
-            }
+            let yamlContent = getProfileYamlEditorValue().trim();
             
             if (!yamlContent) {
                 showSaveStatus('profile-encrypt-status', '❌ No YAML content to encrypt.', false);
@@ -1764,7 +1844,7 @@
                     yaml_data: yamlContent
                 };
                 
-                const response = await fetch(SAVE_API_BASE_URL, {
+                const response = await fetch(getSaveApiBaseUrl(), {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -1821,15 +1901,7 @@
         }
 
         function copyProfileYamlToClipboard() {
-            let yamlContent = '';
-            if (window.profileMonacoEditor) {
-                yamlContent = window.profileMonacoEditor.getValue();
-            } else {
-                const textarea = document.getElementById('profile-yaml-textarea');
-                if (textarea) {
-                    yamlContent = textarea.value;
-                }
-            }
+            let yamlContent = getProfileYamlEditorValue();
             
             if (!yamlContent) {
                 alert('No YAML content to copy.');
@@ -1849,15 +1921,7 @@
         }
 
         function downloadProfileYamlFile() {
-            let yamlContent = '';
-            if (window.profileMonacoEditor) {
-                yamlContent = window.profileMonacoEditor.getValue();
-            } else {
-                const textarea = document.getElementById('profile-yaml-textarea');
-                if (textarea) {
-                    yamlContent = textarea.value;
-                }
-            }
+            let yamlContent = getProfileYamlEditorValue();
             
             if (!yamlContent) {
                 alert('No YAML content to download.');
@@ -1882,7 +1946,7 @@
             }
             
             try {
-                const yamlContent = window.profileMonacoEditor.getValue();
+                const yamlContent = getProfileYamlEditorValue();
                 // Clean YAML before parsing
                 let cleanedYaml = yamlContent.replace(/:\s*!tags/g, ':');
                 cleanedYaml = cleanedYaml.replace(/:\s*!<[^>]+>/g, ':');
@@ -2068,12 +2132,7 @@
         }
 
         window.clearProfileEditorWorkspace = function clearProfileEditorWorkspace() {
-            if (window.profileMonacoEditor) {
-                window.profileMonacoEditor.setValue('');
-            } else {
-                const ta = document.getElementById('profile-yaml-textarea');
-                if (ta && ta.tagName === 'TEXTAREA') ta.value = '';
-            }
+            setProfileYamlEditorValue('');
             const yamlContent = document.getElementById('profile-yaml-content');
             if (yamlContent) yamlContent.style.display = 'none';
             const profileFileInput = document.getElementById('profile-file-input');
@@ -2094,11 +2153,8 @@
 
         async function decodeProfileBankAndCosmetics(yamlText) {
             if (!yamlText) {
-                if (window.profileMonacoEditor) {
-                    yamlText = window.profileMonacoEditor.getValue();
-                } else {
-                    return;
-                }
+                yamlText = getProfileYamlEditorValue();
+                if (!yamlText) return;
             }
 
             clearProfileBankCosmeticsUi();
@@ -3178,7 +3234,7 @@
         }
 
         function parseProfileYamlFromMonaco() {
-            let yamlContent = window.profileMonacoEditor.getValue();
+            let yamlContent = getProfileYamlEditorValue();
             let cleanedYaml = yamlContent.replace(/:\s*!tags/g, ':');
             cleanedYaml = cleanedYaml.replace(/:\s*!<[^>]+>/g, ':');
             let data;
@@ -5461,7 +5517,7 @@
                     yaml_data: yamlContent
                 };
                 
-                const response = await fetch(SAVE_API_BASE_URL, {
+                const response = await fetch(getSaveApiBaseUrl(), {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -5893,12 +5949,26 @@
         // Helper function to get YAML text (works with Monaco or textarea)
         function getYamlTextareaValue() {
             const yamlTextarea = document.getElementById('save-yaml-textarea');
-            if (!yamlTextarea) return '';
+            if (!yamlTextarea) {
+                return window.saveEditorState && typeof window.saveEditorState.yamlContent === 'string'
+                    ? window.saveEditorState.yamlContent
+                    : '';
+            }
             
             if (window.yamlMonacoEditor) {
                 return window.yamlMonacoEditor.getValue();
             } else if (yamlTextarea.tagName === 'TEXTAREA') {
                 return yamlTextarea.value;
+            } else if (
+                yamlTextarea.dataset &&
+                yamlTextarea.dataset.msbtYamlFallback === '1' &&
+                typeof yamlTextarea.textContent === 'string'
+            ) {
+                return yamlTextarea.textContent;
+            } else if (yamlTextarea.dataset && typeof yamlTextarea.dataset.value === 'string') {
+                return yamlTextarea.dataset.value;
+            } else if (window.saveEditorState && typeof window.saveEditorState.yamlContent === 'string') {
+                return window.saveEditorState.yamlContent;
             }
             return '';
         }
@@ -5906,16 +5976,44 @@
         // Helper function to set YAML text (works with Monaco or textarea)
         function setYamlTextareaValue(value) {
             const yamlTextarea = document.getElementById('save-yaml-textarea');
+            const normalizedValue = value || '';
+
+            if (window.saveEditorState) {
+                window.saveEditorState.yamlContent = normalizedValue;
+            }
+
             if (!yamlTextarea) return;
             
             if (window.yamlMonacoEditor) {
-                window.yamlMonacoEditor.setValue(value || '');
+                window.yamlMonacoEditor.setValue(normalizedValue);
             } else if (yamlTextarea.tagName === 'TEXTAREA') {
-                yamlTextarea.value = value || '';
+                yamlTextarea.value = normalizedValue;
                 yamlTextarea.dispatchEvent(new Event('input', { bubbles: true }));
-            }
-            if (window.saveEditorState) {
-                window.saveEditorState.yamlContent = value || '';
+            } else if (yamlTextarea.dataset) {
+                yamlTextarea.dataset.value = normalizedValue;
+                if (!window.yamlMonacoEditor) {
+                    yamlTextarea.dataset.msbtYamlFallback = '1';
+                    yamlTextarea.textContent = normalizedValue;
+                    yamlTextarea.style.whiteSpace = 'pre';
+                    yamlTextarea.style.overflow = 'auto';
+                    yamlTextarea.style.fontFamily = 'Consolas, "Courier New", monospace';
+                    yamlTextarea.style.fontSize = '12px';
+                    yamlTextarea.style.lineHeight = '1.35';
+                    yamlTextarea.style.padding = '12px';
+                    yamlTextarea.contentEditable = 'true';
+
+                    if (yamlTextarea.dataset.msbtYamlInputBound !== '1') {
+                        yamlTextarea.addEventListener('input', function() {
+                            if (window.yamlMonacoEditor) return;
+                            const currentValue = yamlTextarea.textContent || '';
+                            yamlTextarea.dataset.value = currentValue;
+                            if (window.saveEditorState) {
+                                window.saveEditorState.yamlContent = currentValue;
+                            }
+                        });
+                        yamlTextarea.dataset.msbtYamlInputBound = '1';
+                    }
+                }
             }
         }
 
@@ -6013,13 +6111,10 @@
                 return null;
             }
             
-            // Get YAML text from Monaco editor or textarea fallback
-            let yamlText = '';
-            if (window.yamlMonacoEditor) {
-                yamlText = window.yamlMonacoEditor.getValue();
-            } else if (yamlTextarea.tagName === 'TEXTAREA') {
-                yamlText = yamlTextarea.value;
-            }
+            // Get YAML text from Monaco, textarea, or MSBT's visible div fallback.
+            let yamlText = typeof getYamlTextareaValue === 'function'
+                ? getYamlTextareaValue()
+                : '';
             
             if (!yamlText) {
                 if (DEBUG) console.debug('[Preset] No YAML content found. Please decrypt a save file first.');
