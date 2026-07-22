@@ -28,6 +28,13 @@ function normalizeFavoriteLabel(value, fallback = "") {
   return label.slice(0, 160);
 }
 
+function normalizeFavoriteNote(value) {
+  const note = String(value || "")
+    .replace(/\s+/g, " ")
+    .trim();
+  return note.slice(0, 320);
+}
+
 function normalizeIsoDate(value, fallback) {
   const text = String(value || "").trim();
   if (text && !Number.isNaN(Date.parse(text))) {
@@ -53,6 +60,7 @@ function normalizeFavoritesPayload(payload, now = new Date().toISOString()) {
     const label = normalizeFavoriteLabel(value.label, actorKey);
     normalized.favorites[actorKey] = {
       label,
+      note: normalizeFavoriteNote(value.note),
       created_at: normalizeIsoDate(value.created_at, now),
       updated_at: normalizeIsoDate(value.updated_at, now)
     };
@@ -102,6 +110,7 @@ module.exports = {
   favoritesFilePath,
   normalizeActorKey,
   normalizeFavoriteLabel,
+  normalizeFavoriteNote,
   normalizeFavoritesPayload,
   readFavorites,
   writeFavorites

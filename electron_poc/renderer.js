@@ -79,6 +79,8 @@ const els = {
   devActorSummary: document.getElementById("devActorSummary"),
   devActorTargetLimit: document.getElementById("devActorTargetLimit"),
   devActorZOffset: document.getElementById("devActorZOffset"),
+  devBossPickRows: document.getElementById("devBossPickRows"),
+  devBossPickSummary: document.getElementById("devBossPickSummary"),
   devAiClass: document.getElementById("devAiClass"),
   devAiCount: document.getElementById("devAiCount"),
   devAiDirectOnly: document.getElementById("devAiDirectOnly"),
@@ -90,6 +92,9 @@ const els = {
   devLogoDistance: document.getElementById("devLogoDistance"),
   devLogoHeight: document.getElementById("devLogoHeight"),
   devLogoIncludeNonGenerated: document.getElementById("devLogoIncludeNonGenerated"),
+  devLogoAddLineBtn: document.getElementById("devLogoAddLineBtn"),
+  devLogoLines: document.getElementById("devLogoLines"),
+  devLogoRemoveLineBtn: document.getElementById("devLogoRemoveLineBtn"),
   devLogoScale: document.getElementById("devLogoScale"),
   devLogoSpacing: document.getElementById("devLogoSpacing"),
   devLogoText: document.getElementById("devLogoText"),
@@ -311,6 +316,7 @@ const state = {
   devActiveCategory: "",
   devSpawnerCatalog: null,
   devSpawnerFilteredActors: [],
+  devSpawnerFilteredBossPicks: [],
   devSpawnerFilteredMyFavorites: [],
   devSpawnerFilteredQuickPicks: [],
   devSpawnerMyFavorites: { version: 1, favorites: {} },
@@ -3767,6 +3773,11 @@ function devActorMyFavoriteLabel(actorName) {
   return String((entry && entry.label) || "").trim();
 }
 
+function devActorMyFavoriteNote(actorName) {
+  const entry = devMyFavoriteEntry(actorName);
+  return String((entry && entry.note) || "").trim();
+}
+
 function devIsMyFavorite(actorName) {
   return Object.prototype.hasOwnProperty.call(devMyFavoritesMap(), actorName);
 }
@@ -3858,6 +3869,7 @@ function devQuickPickLabelInfo(actorName) {
 
 function devMyFavoriteLabelInfo(actorName) {
   const saved = devActorMyFavoriteLabel(actorName);
+  const note = devActorMyFavoriteNote(actorName);
   const mapped = devActorDisplayName(actorName);
   const reference = devActorFavoriteLabel(actorName);
   const derived = devActorDerivedLabel(actorName);
@@ -3867,7 +3879,7 @@ function devMyFavoriteLabelInfo(actorName) {
     : reference && devNormalizeSearch(reference) !== devNormalizeSearch(primary)
       ? `Reference: ${reference}`
       : actorName;
-  return { primary, secondary };
+  return { primary, secondary, note };
 }
 
 function devActorCategories(actorName) {
@@ -3966,6 +3978,13 @@ function devReferenceQuickPickActors() {
   return Object.keys(favorites).filter((actorName) => devActorExistsInCatalog(actorName));
 }
 
+function devReferenceBossPickActors() {
+  return devReferenceQuickPickActors().filter((actorName) => {
+    const meta = devActorMetadata(actorName);
+    return Boolean(meta.is_boss || meta.is_true_boss);
+  });
+}
+
 function devReferenceQuickPickGroupName(actorName) {
   if (actorName.startsWith("IO_")) return "Interactive Objects";
   if (actorName.startsWith("Char_") || actorName.startsWith("TESTChar_")) return "Characters";
@@ -4004,6 +4023,12 @@ function devGroupedMyFavoriteRows(actorNames) {
 
 function devFilteredReferenceQuickPicks(query) {
   return devReferenceQuickPickActors().filter((actorName) => {
+    return !query || devActorSearchText(actorName).includes(query);
+  });
+}
+
+function devFilteredReferenceBossPicks(query) {
+  return devReferenceBossPickActors().filter((actorName) => {
     return !query || devActorSearchText(actorName).includes(query);
   });
 }
@@ -4144,6 +4169,9 @@ function renderDevActorDetails() {
     els.devActorDetails.appendChild(makeDevDetailRow("Reference favorite label", favoriteLabel));
   }
   els.devActorDetails.appendChild(makeDevDetailRow("My Favorites", myFavoriteLabel ? `Saved as ${myFavoriteLabel}` : "Not saved in My Favorites."));
+  if (devActorMyFavoriteNote(actorName)) {
+    els.devActorDetails.appendChild(makeDevDetailRow("My note", devActorMyFavoriteNote(actorName)));
+  }
 
   const note = document.createElement("div");
   note.className = "dev-detail-note";
@@ -4238,9 +4266,86 @@ function makeDevActorRow(actorName, options = {}) {
   label.appendChild(key);
   label.appendChild(meta);
 
+  const actions = document.createElement("div");
+  actions.className = "dev-row-actions";
+  const favoriteButton = document.createElement("button");
+  favoriteButton.type = "button";
+  favoriteButton.className = "dev-favorite-button";
+  const isFavorite = devIsMyFavorite(actorName);
+  favoriteButton.textContent = isFavorite ? "Remove" : "Favorite";
+  favoriteButton.addEventListener("click", () => {
+    useDevActor(actorName);
+    if (devIsMyFavorite(actorName)) {
+      removeSelectedDevMyFavorite();
+    } else {
+      addSelectedDevMyFavorite();
+    }
+  });
+  actions.appendChild(favoriteButton);
+
+  if (isFavorite || options.rowClass === "my-favorite-row") {
+    const editButton = document.createElement("button");
+    editButton.type = "button";
+    editButton.className = "dev-edit-button";
+    editButton.textContent = "Edit";
+    editButton.addEventListener("click", () => {
+      useDevActor(actorName);
+      editSelectedDevMyFavorite();
+    });
+    actions.appendChild(editButton);
+  }
+
   row.appendChild(spawn);
   row.appendChild(label);
+  row.appendChild(actions);
   return row;
+}
+
+function renderDevBossPicks(query, rawQuery) {
+  if (!els.devBossPickRows) return;
+
+  const bossActors = devReferenceBossPickActors();
+  state.devSpawnerFilteredBossPicks = devFilteredReferenceBossPicks(query);
+
+  els.devBossPickRows.innerHTML = "";
+  if (!bossActors.length) {
+    const empty = document.createElement("div");
+    empty.className = "dev-empty-row";
+    empty.textContent = "No active boss character picks are packaged in the local catalog.";
+    els.devBossPickRows.appendChild(empty);
+  } else if (!state.devSpawnerFilteredBossPicks.length) {
+    const empty = document.createElement("div");
+    empty.className = "dev-empty-row";
+    empty.textContent = query
+      ? `No active boss character picks match "${rawQuery}". Clear Search actors to see all active boss picks.`
+      : "No active boss character picks are visible.";
+    els.devBossPickRows.appendChild(empty);
+  } else {
+    state.devSpawnerFilteredBossPicks.forEach((actorName) => {
+      const labelInfo = devQuickPickLabelInfo(actorName);
+      const meta = devActorMetadata(actorName);
+      const metaParts = [];
+      if (labelInfo.secondary) metaParts.push(labelInfo.secondary);
+      if (meta.is_true_boss) metaParts.push("True boss");
+      else if (meta.is_boss) metaParts.push("Boss");
+      if (meta.true_boss_actor) metaParts.push(`True-boss actor: ${meta.true_boss_actor}`);
+      metaParts.push(`Category: ${devActorPrimaryCategory(actorName)}`);
+      const note = devActorMyFavoriteNote(actorName);
+      if (note) metaParts.push(`Note: ${note}`);
+      els.devBossPickRows.appendChild(makeDevActorRow(actorName, {
+        metaText: metaParts.join(" | "),
+        rowClass: "boss-pick-row",
+        titleText: labelInfo.primary
+      }));
+    });
+  }
+
+  const searchNote = query ? ` | search: "${rawQuery}"` : "";
+  setLine(
+    els.devBossPickSummary,
+    `${state.devSpawnerFilteredBossPicks.length} shown / ${bossActors.length} active boss character picks${searchNote}`,
+    state.devSpawnerFilteredBossPicks.length ? "ok" : "warning"
+  );
 }
 
 function renderDevQuickPicks(query, rawQuery) {
@@ -4338,6 +4443,7 @@ function renderDevMyFavorites(query, rawQuery) {
         const existsText = devActorExistsInCatalog(actorName) ? "Catalog actor" : "Not present in local All catalog";
         const metaParts = [];
         if (labelInfo.secondary) metaParts.push(labelInfo.secondary);
+        if (labelInfo.note) metaParts.push(`Note: ${labelInfo.note}`);
         metaParts.push(`Category: ${primaryCategory}${categories.length > 1 ? ` | Also in: ${categories.filter((name) => name !== primaryCategory).join(", ")}` : ""}`);
         metaParts.push(existsText);
         groupNode.appendChild(makeDevActorRow(actorName, {
@@ -4372,18 +4478,21 @@ function renderDevActors() {
   state.devSpawnerFilteredActors = allNames.filter((actorName) => {
     return !query || devActorSearchText(actorName).includes(query);
   });
+  state.devSpawnerFilteredBossPicks = devFilteredReferenceBossPicks(query);
   state.devSpawnerFilteredQuickPicks = devFilteredReferenceQuickPicks(query);
   state.devSpawnerFilteredMyFavorites = devFilteredMyFavorites(query);
 
   if (
     state.devSpawnerSelectedActor
     && !state.devSpawnerFilteredActors.includes(state.devSpawnerSelectedActor)
+    && !state.devSpawnerFilteredBossPicks.includes(state.devSpawnerSelectedActor)
     && !state.devSpawnerFilteredQuickPicks.includes(state.devSpawnerSelectedActor)
     && !state.devSpawnerFilteredMyFavorites.includes(state.devSpawnerSelectedActor)
   ) {
     clearDevActorSelection();
   }
 
+  renderDevBossPicks(query, rawQuery);
   renderDevQuickPicks(query, rawQuery);
   renderDevMyFavorites(query, rawQuery);
 
@@ -4517,12 +4626,43 @@ async function addSelectedDevMyFavorite() {
       ...devMyFavoritesMap(),
       [actorName]: {
         label: devFavoriteLabelForActor(actorName),
+        note: "",
         created_at: now,
         updated_at: now
       }
     }
   };
   await saveDevSpawnerFavorites(`Added ${devFavoriteLabelForActor(actorName)} to My Favorites.`);
+}
+
+async function editSelectedDevMyFavorite() {
+  const actorName = String(state.devSpawnerSelectedActor || getValue(els.devActorName) || "").trim();
+  if (!actorName || !devIsMyFavorite(actorName)) {
+    setLine(els.devMyFavoriteSummary, "Select a saved favorite before editing it.", "warning");
+    renderDevMyFavoriteControls();
+    return;
+  }
+  const current = devMyFavoriteEntry(actorName) || {};
+  const fallbackLabel = devFavoriteLabelForActor(actorName);
+  const label = window.prompt("Favorite label:", String(current.label || fallbackLabel || actorName));
+  if (label === null) return;
+  const note = window.prompt("Personal note:", String(current.note || ""));
+  if (note === null) return;
+  const now = new Date().toISOString();
+  state.devSpawnerMyFavorites = {
+    version: 1,
+    favorites: {
+      ...devMyFavoritesMap(),
+      [actorName]: {
+        ...current,
+        label: String(label || fallbackLabel || actorName).replace(/\s+/g, " ").trim(),
+        note: String(note || "").replace(/\s+/g, " ").trim(),
+        created_at: current.created_at || now,
+        updated_at: now
+      }
+    }
+  };
+  await saveDevSpawnerFavorites(`Updated ${devFavoriteLabelForActor(actorName)} in My Favorites.`);
 }
 
 async function removeSelectedDevMyFavorite() {
@@ -4564,8 +4704,42 @@ function spawnDevActor(actorName) {
   runDevSpawnerAction("dev_spawner_spawnai");
 }
 
+function devLogoLineInputs() {
+  return els.devLogoLines ? Array.from(els.devLogoLines.querySelectorAll("input")) : [];
+}
+
+function addDevLogoLine(value = "") {
+  if (!els.devLogoLines) return;
+  const lineNumber = devLogoLineInputs().length + 1;
+  const label = document.createElement("label");
+  label.textContent = `Line ${lineNumber} `;
+  const input = document.createElement("input");
+  input.type = "text";
+  input.value = value;
+  label.appendChild(input);
+  els.devLogoLines.appendChild(label);
+  input.focus();
+}
+
+function removeDevLogoLine() {
+  const inputs = devLogoLineInputs();
+  if (!els.devLogoLines || inputs.length <= 1) {
+    setLine(els.devSpawnerWarning, "Barrel Logo needs at least one text line.", "warning");
+    return;
+  }
+  const lastLabel = inputs[inputs.length - 1].closest("label");
+  if (lastLabel) lastLabel.remove();
+}
+
 function normalizedDevLogoText() {
-  return getValue(els.devLogoText)
+  const lineInputs = devLogoLineInputs();
+  const text = lineInputs.length
+    ? lineInputs.map((input) => input.value).join("\n")
+    : getValue(els.devLogoText);
+  if (els.devLogoText) {
+    els.devLogoText.value = text;
+  }
+  return text
     .split(/\r?\n/)
     .map((line) => line.trim())
     .filter(Boolean)
@@ -5296,6 +5470,12 @@ function wireEvents() {
   }
   if (els.devLogoUseSelectedBtn) {
     els.devLogoUseSelectedBtn.addEventListener("click", useSelectedDevActorForLogo);
+  }
+  if (els.devLogoAddLineBtn) {
+    els.devLogoAddLineBtn.addEventListener("click", () => addDevLogoLine());
+  }
+  if (els.devLogoRemoveLineBtn) {
+    els.devLogoRemoveLineBtn.addEventListener("click", removeDevLogoLine);
   }
   document.querySelectorAll("[data-dev-spawner-action]").forEach((button) => {
     button.addEventListener("click", () => runDevSpawnerAction(button.dataset.devSpawnerAction));

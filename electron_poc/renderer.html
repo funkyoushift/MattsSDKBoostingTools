@@ -685,7 +685,7 @@
       <section class="panel cyan">
         <h2>Standard Spawning</h2>
         <p>Count and spacing are passed directly to ASD_spawnai; ActorScriptDeployer centers the row laterally in front of the player.</p>
-        <div class="grid five compact">
+        <div class="dev-spawn-strip">
           <label>
             Distance
             <input id="devActorDistance" type="number" min="0" max="20000" value="350">
@@ -706,8 +706,6 @@
             Scale
             <input id="devActorScale" type="number" min="0.05" max="20" step="0.05" value="1.0">
           </label>
-        </div>
-        <div class="grid two compact">
           <label>
             Selected Actor
             <input id="devAiName" type="text" placeholder="Select from actor results">
@@ -716,8 +714,6 @@
             Target/List Limit
             <input id="devActorTargetLimit" type="number" min="1" max="200" value="20">
           </label>
-        </div>
-        <div class="button-row wrap">
           <button data-dev-spawner-action="dev_spawner_spawnai">Spawn Selected Actor</button>
           <button id="devRefreshLogBtn">Refresh SDK Log</button>
         </div>
@@ -800,6 +796,12 @@
         <input id="devAiDirectOnly" type="checkbox" class="hidden-check">
         <div id="devActorSummary" class="status-line">Loading actor catalog...</div>
         <details class="dev-fold" open>
+          <summary>Active Boss Chars</summary>
+          <p class="dev-hint">Curated boss picks from the local reference catalog. Spawn uses the standard row path. Add, Remove, and Edit manage your Electron favorites and notes.</p>
+          <div id="devBossPickSummary" class="status-line">Loading active boss characters...</div>
+          <div id="devBossPickRows" class="dev-row-list compact"></div>
+        </details>
+        <details class="dev-fold" open>
           <summary>Categories</summary>
           <div id="devActorCategoryButtons" class="category-buttons"></div>
         </details>
@@ -811,7 +813,7 @@
         </details>
         <details class="dev-fold" open>
           <summary>My Favorites</summary>
-          <p class="dev-hint">Saved by this Electron app profile. Search narrows this list; category filters do not.</p>
+          <p class="dev-hint">Saved by this Electron app profile. Search narrows this list; category filters do not. Row Edit lets you rename a favorite and add personal notes.</p>
           <div class="button-row wrap">
             <button id="devMyFavoriteAddBtn">Add Selected Actor</button>
             <button id="devMyFavoriteRemoveBtn">Remove Selected Actor</button>
@@ -838,11 +840,7 @@
       <section class="panel gold">
         <h2>Barrel Logo Generator</h2>
         <p>Source-menu workflow for ASD_barrellogo. Each line becomes one row; live spawning still goes through ActorScriptDeployer.</p>
-        <label>
-          Logo Text
-          <textarea id="devLogoText" class="output-box small" placeholder="MSBT&#10;BOOSTING&#10;TOOLS"></textarea>
-        </label>
-        <div class="grid five compact">
+        <div class="dev-logo-shell">
           <label>
             Actor
             <input id="devLogoActor" type="text" value="barrel" autocomplete="off" spellcheck="false">
@@ -851,6 +849,20 @@
             Distance
             <input id="devLogoDistance" type="number" min="0" max="30000" value="2500">
           </label>
+        </div>
+        <div id="devLogoLines" class="dev-logo-lines" aria-label="Barrel Logo text lines">
+          <label>Line 1 <input type="text" value="MSBT"></label>
+          <label>Line 2 <input type="text" value="BOOSTING"></label>
+          <label>Line 3 <input type="text" value="TOOLS"></label>
+          <label>Line 4 <input type="text"></label>
+          <label>Line 5 <input type="text"></label>
+        </div>
+        <textarea id="devLogoText" class="hidden" aria-hidden="true"></textarea>
+        <div class="button-row wrap">
+          <button id="devLogoAddLineBtn">+ New Line</button>
+          <button id="devLogoRemoveLineBtn">- Remove Line</button>
+        </div>
+        <div class="grid three compact">
           <label>
             Height
             <input id="devLogoHeight" type="number" min="0" max="10000" value="750">
