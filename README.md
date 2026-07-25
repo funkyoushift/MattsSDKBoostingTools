@@ -106,7 +106,14 @@ Publish release assets to GitHub Releases instead of committing ZIP/EXE files to
 .\publish_github_release.ps1
 ```
 
+Check the synchronized Nexus Mods file list:
+
+```powershell
+.\tools\check_nexus_release.ps1
+```
+
 Versioning and asset naming are documented in [VERSIONING.md](VERSIONING.md).
+Nexus release sync is documented in [docs/NEXUS_RELEASE_SYNC.md](docs/NEXUS_RELEASE_SYNC.md).
 
 ## Repository Layout
 

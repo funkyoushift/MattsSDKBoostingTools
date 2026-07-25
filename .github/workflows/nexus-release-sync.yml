@@ -1,0 +1,64 @@
+name: Sync Nexus from GitHub Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Release version without the leading v, for example 1.0.3
+        required: true
+      archive_existing_version:
+        description: Archive the previous Nexus file versions
+        required: false
+        default: "true"
+
+permissions:
+  contents: read
+
+jobs:
+  sync-nexus:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download GitHub release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ inputs.version }}
+        run: |
+          mkdir -p nexus-assets
+          gh release download "v${VERSION}" \
+            --repo "${GITHUB_REPOSITORY}" \
+            --pattern "MSBT-Installer-v${VERSION}.exe" \
+            --pattern "MSBT-Portable-v${VERSION}-win-x64.zip" \
+            --dir nexus-assets
+          ls -lah nexus-assets
+
+      - name: Upload installer to Nexus
+        uses: Nexus-Mods/upload-action@v1.0.0-beta.9
+        with:
+          api_key: ${{ secrets.NEXUSMODS_API_KEY }}
+          file_id: ${{ vars.NEXUSMODS_INSTALLER_FILE_ID }}
+          filename: nexus-assets/MSBT-Installer-v${{ inputs.version }}.exe
+          version: ${{ inputs.version }}
+          display_name: MSBT Installer v${{ inputs.version }}
+          description: Recommended installer. Installs the MSBT Electron app, bundled SDK mod, ActorScriptDeployer support files, and required runtime files.
+          category: main
+          archive_existing_version: ${{ inputs.archive_existing_version }}
+          primary_mod_manager_download: "true"
+          allow_mod_manager_download: "true"
+          show_requirements_pop_up: "false"
+          update_mod_version: "true"
+
+      - name: Upload portable ZIP to Nexus
+        uses: Nexus-Mods/upload-action@v1.0.0-beta.9
+        with:
+          api_key: ${{ secrets.NEXUSMODS_API_KEY }}
+          file_id: ${{ vars.NEXUSMODS_PORTABLE_FILE_ID }}
+          filename: nexus-assets/MSBT-Portable-v${{ inputs.version }}-win-x64.zip
+          version: ${{ inputs.version }}
+          display_name: Portable ZIP - MSBT v${{ inputs.version }}
+          description: Manual portable package. Use this if you do not want to run the installer. Extract the ZIP, then run the MSBT Electron app manually.
+          category: main
+          archive_existing_version: ${{ inputs.archive_existing_version }}
+          primary_mod_manager_download: "false"
+          allow_mod_manager_download: "true"
+          show_requirements_pop_up: "false"
+          update_mod_version: "false"

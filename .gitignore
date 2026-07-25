@@ -27,6 +27,9 @@ MSBT_External_Beta.zip
 # Local logs and scratch reports
 _inspect/
 _install_backups/
+_nexus_upload/
+.env
+.env.local
 *.log
 unrealsdk.log
 *_AUDIT.md
