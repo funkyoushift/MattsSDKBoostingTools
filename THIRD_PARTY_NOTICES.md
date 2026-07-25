@@ -29,6 +29,19 @@ MSBT bundles ActorScriptDeployer as a folder-form SDK mod dependency for the
 Dev Spawner tab. Live game actions still go through the MSBT bridge/backend,
 and ActorScriptDeployer remains game-side only.
 
+## Azzy UVH Booster
+
+MSBT's Boosting tab includes UVH rank-up buttons adapted from Azzy UVH Booster.
+
+Author and license:
+
+- Author: Azalea Asvail
+- License: MIT, per the reviewed `AzzyUVHbooster.sdkmod` `pyproject.toml`
+
+The adapted MSBT implementation uses the UVH tier challenge workflow and keeps
+the live-game execution inside MSBT's SDK bridge/backend. The reviewed source
+credits Pyrex for the UVH6/UVH7 challenge paths.
+
 ## Reference Mods Reviewed
 
 MSBT also reviews community BL4 SDK mods as behavior references. Reviewing a mod

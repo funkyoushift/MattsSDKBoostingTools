@@ -12,6 +12,7 @@ import json
 import pkgutil
 import re
 import sys
+import time
 from typing import Any
 
 from mods_base import ENGINE, get_pc
@@ -82,6 +83,66 @@ _movement_no_target_enabled = False
 _movement_noclip_enabled = False
 _rarity_weights: dict[str, float] = {key: 1.0 for key, _label, _fields in RARITY_ROWS}
 _rarity_baseline: dict[str, dict[str, float]] = {}
+UVH_RANKS: tuple[tuple[str, tuple[str, ...]], ...] = (
+    (
+        "UVH 1",
+        (
+            "Challenge_UVH_Rankup_1_Firmware",
+            "Challenge_UVH_Rankup_1_BMVM",
+            "Challenge_UVH_Rankup_1_TrueBoss",
+            "UVH_Rankup_1_FinalChallenge",
+        ),
+    ),
+    (
+        "UVH 2",
+        (
+            "Challenge_UVH_Rankup_2_Kratch",
+            "Challenge_UVH_Rankup_2_Creep",
+            "Challenge_UVH_Rankup_2_Order",
+            "Challenge_UVH_Rankup_2_Ripper",
+            "UVH_Rankup_2_FinalChallenge",
+        ),
+    ),
+    (
+        "UVH 3",
+        (
+            "Challenge_UVH_Rankup_3_Cat",
+            "Challenge_UVH_Rankup_3_Pangolin",
+            "Challenge_UVH_Rankup_3_Order",
+            "Challenge_UVH_Rankup_3_Ripper",
+            "UVH_Rankup_3_FinalChallenge",
+        ),
+    ),
+    (
+        "UVH 4",
+        (
+            "Challenge_UVH_Rankup_4_Beast",
+            "Challenge_UVH_Rankup_4_Order",
+            "Challenge_UVH_Rankup_4_Ripper",
+            "Challenge_UVH_Rankup_4_Thresher",
+            "UVH_Rankup_4_FinalChallenge",
+        ),
+    ),
+    (
+        "UVH 5",
+        (
+            "Challenge_UVH_Rankup_5_GL",
+            "Challenge_UVH_Rankup_5_MOU",
+            "Challenge_UVH_Rankup_5_SL",
+            "UVH_Rankup_5_FinalChallenge",
+        ),
+    ),
+    ("UVH 6", ("Challenge_UVH_Rankup_6_Bloomreaper",)),
+    ("UVH 7", ("Challenge_UVH_Rankup_7_Parent",)),
+)
+_UVH_NORMAL_STEP_DELAY_SECONDS = 0.30
+_UVH_PRE_FINAL_DELAY_SECONDS = 0.30
+_UVH_TIER_ACTIVATION_DELAY_SECONDS = 0.30
+_uvh_queue: list[tuple[str, str, float]] = []
+_uvh_targets: list[Any] = []
+_uvh_next_at = 0.0
+_uvh_running = False
+_uvh_last_status = "Ready. UVH tier boosts are based on Azzy UVH Booster by Azalea Asvail."
 _DEV_SPAWNER_SAFE_TOKEN = re.compile(r"^[A-Za-z0-9_./:-]+$")
 _DEV_SPAWNER_SAFE_STATE_LIST = re.compile(r"^[A-Za-z0-9_,./:-]+$")
 _ASD_COMMAND_ATTRS = {
@@ -1019,6 +1080,194 @@ def max_all() -> dict[str, Any]:
         }
     except Exception as exc:
         return {"ok": False, "message": f"Max All failed: {exc!r}"}
+
+
+def _uvh_live(obj: Any) -> bool:
+    if obj is None:
+        return False
+    try:
+        _ = obj.Name
+        _ = obj.Class
+        return True
+    except Exception:
+        return False
+
+
+def _uvh_obj_addr(obj: Any) -> int:
+    try:
+        return int(obj._get_address())
+    except Exception:
+        return 0
+
+
+def _uvh_obj_path(obj: Any) -> str:
+    try:
+        return str(obj._path_name())
+    except Exception:
+        return ""
+
+
+def _uvh_is_runtime_controller(obj: Any) -> bool:
+    if not _uvh_live(obj):
+        return False
+    path = _uvh_obj_path(obj)
+    if not path or path.startswith("/Script/"):
+        return False
+    try:
+        cls = str(obj.Class.Name)
+    except Exception:
+        cls = ""
+    return "PlayerController" in cls or cls.endswith("Controller")
+
+
+def _uvh_discover_controllers() -> list[Any]:
+    try:
+        import unrealsdk as _unrealsdk
+    except Exception:
+        _unrealsdk = None
+
+    local = get_pc()
+    found: list[Any] = []
+    if _uvh_live(local):
+        found.append(local)
+    if _unrealsdk is not None:
+        for cls in ("OakPlayerController", "PlayerController"):
+            try:
+                objects = _unrealsdk.find_all(cls, False)
+            except TypeError:
+                try:
+                    objects = _unrealsdk.find_all(cls)
+                except Exception:
+                    objects = []
+            except Exception:
+                objects = []
+            for obj in objects:
+                if _uvh_is_runtime_controller(obj):
+                    found.append(obj)
+
+    local_addr = _uvh_obj_addr(local)
+    unique: list[Any] = []
+    seen: set[str] = set()
+    for obj in found:
+        addr = _uvh_obj_addr(obj)
+        key = f"a:{addr}" if addr else f"p:{_uvh_obj_path(obj)}"
+        if key in seen:
+            continue
+        seen.add(key)
+        try:
+            player_state = obj.PlayerState
+        except Exception:
+            player_state = None
+        if _uvh_live(player_state) or (local_addr and addr == local_addr):
+            unique.append(obj)
+    return unique
+
+
+def _uvh_delay_after(challenges: tuple[str, ...], index: int) -> float:
+    if index == len(challenges) - 1:
+        return _UVH_TIER_ACTIVATION_DELAY_SECONDS
+    next_challenge = challenges[index + 1]
+    if next_challenge.startswith("UVH_Rankup_") and next_challenge.endswith("_FinalChallenge"):
+        return _UVH_PRE_FINAL_DELAY_SECONDS
+    return _UVH_NORMAL_STEP_DELAY_SECONDS
+
+
+def _uvh_build_plan(indices: list[int]) -> list[tuple[str, str, float]]:
+    plan: list[tuple[str, str, float]] = []
+    for rank_index in indices:
+        label, challenges = UVH_RANKS[rank_index]
+        plan.extend((label, challenge, _uvh_delay_after(challenges, step)) for step, challenge in enumerate(challenges))
+    return plan
+
+
+def _uvh_set_status(message: str) -> None:
+    global _uvh_last_status
+    _uvh_last_status = message
+    try:
+        from unrealsdk import logging as _sdk_logging
+
+        _sdk_logging.info(f"[Matts SDK Boosting Tools | UVH] {message}")
+    except Exception:
+        pass
+
+
+def _uvh_start(indices: list[int]) -> dict[str, Any]:
+    global _uvh_queue, _uvh_targets, _uvh_next_at, _uvh_running
+    if get_pc() is None:
+        _uvh_set_status("Cannot start UVH boost: load into a character first.")
+        return {"ok": False, "message": _uvh_last_status}
+    targets = _uvh_discover_controllers()
+    if not targets:
+        _uvh_set_status("Cannot start UVH boost: no live players found.")
+        return {"ok": False, "message": _uvh_last_status}
+    plan = _uvh_build_plan(indices)
+    if not plan:
+        _uvh_set_status("Cannot start UVH boost: no UVH tier steps were selected.")
+        return {"ok": False, "message": _uvh_last_status}
+    _uvh_queue = plan
+    _uvh_targets = targets
+    _uvh_next_at = time.monotonic()
+    _uvh_running = True
+    names = ", ".join(UVH_RANKS[i][0] for i in indices)
+    _uvh_set_status(f"UVH boost queued for {len(targets)} player(s): {names}; {len(plan)} challenge step(s).")
+    return {"ok": True, "message": _uvh_last_status, "steps": len(plan), "players": len(targets)}
+
+
+def uvh_boost_tier(tier: object) -> dict[str, Any]:
+    try:
+        index = int(tier) - 1
+    except Exception:
+        return {"ok": False, "message": f"Invalid UVH tier: {tier!r}."}
+    if index < 0 or index >= len(UVH_RANKS):
+        return {"ok": False, "message": f"Invalid UVH tier: {tier!r}. Choose 1-7."}
+    return _uvh_start(list(range(index + 1)))
+
+
+def uvh_boost_all() -> dict[str, Any]:
+    return _uvh_start(list(range(len(UVH_RANKS))))
+
+
+def uvh_boost_cancel() -> dict[str, Any]:
+    global _uvh_queue, _uvh_targets, _uvh_running
+    active = _uvh_running or bool(_uvh_queue)
+    _uvh_queue = []
+    _uvh_targets = []
+    _uvh_running = False
+    _uvh_set_status("UVH boost cancelled." if active else "No UVH boost is active.")
+    return {"ok": True, "message": _uvh_last_status}
+
+
+def uvh_boost_status() -> dict[str, Any]:
+    return {
+        "ok": True,
+        "message": _uvh_last_status,
+        "active": _uvh_running,
+        "steps_remaining": len(_uvh_queue),
+        "players": len(_uvh_targets),
+    }
+
+
+def uvh_boost_tick() -> None:
+    global _uvh_next_at, _uvh_running
+    if not _uvh_queue or time.monotonic() < _uvh_next_at:
+        return
+    if get_pc() is None:
+        return
+    label, challenge, delay = _uvh_queue.pop(0)
+    live_targets = [controller for controller in _uvh_targets if _uvh_live(controller)]
+    sent = 0
+    for controller in live_targets:
+        try:
+            controller.ServerIncrementChallengeForPlayer(challenge, 1)
+            sent += 1
+        except Exception as exc:
+            _uvh_set_status(f"{challenge} failed for one player: {exc!r}")
+    _uvh_next_at = time.monotonic() + delay
+    if _uvh_queue:
+        _uvh_set_status(f"{label}: sent {challenge} to {sent}/{len(live_targets)} player(s); {len(_uvh_queue)} step(s) left.")
+    else:
+        _uvh_running = False
+        _uvh_set_status(f"UVH boost complete. Final step sent to {sent}/{len(live_targets)} player(s).")
 
 
 def toggle_debug_cam() -> dict[str, Any]:

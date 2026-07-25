@@ -434,6 +434,14 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
         return backend_actions.max_sdu()
     if action == "max_all":
         return backend_actions.max_all()
+    if action.startswith("uvh_boost_tier_"):
+        return backend_actions.uvh_boost_tier(action.rsplit("_", 1)[-1])
+    if action == "uvh_boost_all":
+        return backend_actions.uvh_boost_all()
+    if action == "uvh_boost_cancel":
+        return backend_actions.uvh_boost_cancel()
+    if action == "uvh_boost_status":
+        return backend_actions.uvh_boost_status()
     if action == "give_currency":
         return backend_actions.give_currency(
             payload.get("currency_kind") if "currency_kind" in payload else payload.get("currency_index", "cash"),
@@ -600,6 +608,11 @@ def _status() -> dict[str, Any]:
 
 
 def _process_pending_actions(*_args: Any, **_kwargs: Any) -> None:
+    global _last_error
+    try:
+        backend_actions.uvh_boost_tick()
+    except Exception as exc:
+        _last_error = repr(exc)
     for _ in range(8):
         with _lock:
             if not _queue:
@@ -611,7 +624,6 @@ def _process_pending_actions(*_args: Any, **_kwargs: Any) -> None:
         try:
             result = _handle_action(str(action), dict(payload))
         except Exception as exc:
-            global _last_error
             message = _format_action_exception(exc)
             _last_error = "" if _is_optional_ui_dependency_error(repr(exc)) else repr(exc)
             result = {"ok": False, "message": message}
