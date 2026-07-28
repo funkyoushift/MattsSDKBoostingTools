@@ -159,6 +159,14 @@ def load_editor_known_parts() -> tuple[set[str], dict[str, str], dict[int, str]]
     return known, paths, type_names
 
 
+def load_editor_selectable_parts() -> set[str]:
+    game_data = load_json(MATT_EDITOR / "game_data_export.json")
+    parts_by_id = game_data.get("parts_by_id") or {}
+    if not isinstance(parts_by_id, dict):
+        return set()
+    return {str(key) for key in parts_by_id if re.fullmatch(r"\d+:\d+", str(key))}
+
+
 def walk_for_type_names(node: Any, type_names: dict[int, str], trail: tuple[str, ...] = ()) -> None:
     if isinstance(node, dict):
         type_id = node.get("type_id")
@@ -298,11 +306,14 @@ def parse_gzo_family_data() -> dict[str, dict[str, Any]]:
                 item_type = columns[3] if len(columns) > 3 else ""
                 part_type = columns[4] if len(columns) > 4 else ""
                 description = columns[5] if len(columns) > 5 else ""
+                source_name = name or full_id
                 parts[full_id] = {
                     "fullId": full_id,
                     "typeId": type_id,
                     "partId": part_id,
-                    "name": name or full_id,
+                    "name": source_name,
+                    "sourceName": source_name,
+                    "spawnCode": source_name,
                     "typeLabel": family_name or f"Type {type_id}",
                     "manufacturer": manufacturer or None,
                     "itemType": item_type or None,
@@ -314,8 +325,90 @@ def parse_gzo_family_data() -> dict[str, dict[str, Any]]:
     return parts
 
 
+def class_mod_slot_key_for_gzo_part(part: dict[str, Any]) -> str | None:
+    if int(part.get("typeId") or 0) != 234:
+        return None
+    text = " ".join(
+        str(part.get(key) or "")
+        for key in ("sourceName", "spawnCode", "name", "partType", "description")
+    ).lower()
+    if "classmod.stat3_" in text or "stat3_" in text:
+        return "stat_group3"
+    if "classmod.stat2_" in text or "stat2_" in text:
+        return "stat_group2"
+    if "classmod.firmware" in text or "firmware" in text:
+        return "firmware"
+    if "statspecial_" in text or "classmod.statspecial" in text:
+        return "statspecial"
+    if "classmod.stat_" in text or "stat_" in text:
+        return "stat_group1"
+    return None
+
+
+def search_aliases_for_gzo_part(part: dict[str, Any]) -> list[str]:
+    aliases = {
+        str(part.get("fullId") or ""),
+        str(part.get("sourceName") or ""),
+        str(part.get("spawnCode") or ""),
+        str(part.get("name") or ""),
+        str(part.get("description") or ""),
+        str(part.get("partType") or ""),
+    }
+    slot_key = class_mod_slot_key_for_gzo_part(part)
+    if slot_key:
+        aliases.add(slot_key)
+        aliases.add(slot_key.replace("_", " "))
+    text = " ".join(aliases).lower()
+    if "movement" in text or "movespeed" in text or "speed" in text:
+        aliases.update(["move", "movement", "movement speed", "speed"])
+    if "reload" in text:
+        aliases.update(["reload", "reload speed"])
+    return sorted(alias for alias in aliases if alias)
+
+
 def write_gzo_family_supplement(known_parts: set[str]) -> int:
     gzo_family_parts = parse_gzo_family_data()
+    for full_id, meta in load_gzo_part_metadata().items():
+        if full_id in gzo_family_parts:
+            existing = gzo_family_parts[full_id]
+            mapped_name = meta.get("name")
+            if mapped_name and (
+                not existing.get("name")
+                or re.fullmatch(r"stat_group\d+", str(existing.get("name") or ""))
+            ):
+                existing.setdefault("sourceName", existing.get("name") or full_id)
+                existing.setdefault("spawnCode", existing.get("sourceName") or full_id)
+                existing["name"] = mapped_name
+                existing["description"] = (
+                    str(existing.get("description") or "").strip()
+                    or f"Mapped label: {mapped_name}"
+                )
+            continue
+        type_id_text, part_id_text = full_id.split(":", 1)
+        type_label = meta.get("type_label") or f"Type {type_id_text}"
+        part_name = meta.get("name") or full_id
+        gzo_family_parts[full_id] = {
+            "fullId": full_id,
+            "typeId": int(type_id_text),
+            "partId": int(part_id_text),
+            "name": part_name,
+            "sourceName": part_name,
+            "spawnCode": part_name,
+            "typeLabel": type_label,
+            "manufacturer": None,
+            "itemType": None,
+            "partType": "Class Mod Stat" if "classmod" in type_label.lower() else None,
+            "category": source_label_for_type(type_label),
+            "description": "",
+            "source": "GZO Parts map",
+        }
+    for part in gzo_family_parts.values():
+        slot_key = class_mod_slot_key_for_gzo_part(part)
+        if slot_key:
+            part["slotKey"] = slot_key
+        aliases = search_aliases_for_gzo_part(part)
+        if aliases:
+            part["searchAliases"] = aliases
     entries = [
         part
         for full_id, part in sorted(
@@ -376,6 +469,7 @@ def write_supplement(
 
 def main() -> int:
     known_parts, editor_paths, type_names = load_editor_known_parts()
+    selectable_parts = load_editor_selectable_parts()
     gzo_metadata = load_gzo_part_metadata()
     gzo_labels = {key: value["name"] for key, value in gzo_metadata.items()}
 
@@ -526,7 +620,7 @@ def main() -> int:
 
     REPORT_PATH.write_text("\n".join(lines) + "\n", encoding="utf-8")
     supplement_count = write_supplement(missing_keys, gzo_metadata, examples)
-    gzo_family_supplement_count = write_gzo_family_supplement(known_parts)
+    gzo_family_supplement_count = write_gzo_family_supplement(selectable_parts)
     print(f"Wrote {REPORT_PATH}")
     print(f"Wrote {SUPPLEMENT_PATH}")
     print(f"Wrote {GZO_FAMILY_SUPPLEMENT_PATH}")

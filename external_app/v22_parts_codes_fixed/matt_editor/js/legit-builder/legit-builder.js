@@ -9985,6 +9985,150 @@
             window.__miGlobalPartCatalogDataRef = null;
         }
 
+        function miGetSupplementalPartsByTypeId(typeId) {
+            try {
+                if (typeof partsByTypeId !== 'undefined' && partsByTypeId && partsByTypeId.get) {
+                    return partsByTypeId.get(typeId) || [];
+                }
+            } catch (e) {}
+            return [];
+        }
+
+        function miResolveSupplementalPartInfo(partKey) {
+            const key = String(partKey || '').trim();
+            if (!key) return null;
+            try {
+                if (typeof partsMap !== 'undefined' && partsMap && partsMap.get) {
+                    return partsMap.get(key) || null;
+                }
+            } catch (e) {}
+            const m = key.match(/^(\d+):(\d+)$/);
+            if (!m) return null;
+            const typeId = parseInt(m[1], 10);
+            const partId = parseInt(m[2], 10);
+            if (!Number.isFinite(typeId) || !Number.isFinite(partId)) return null;
+            return {
+                key,
+                id: String(partId),
+                fullId: key,
+                name: key,
+                serialIndex: partId,
+                rootSerialIndex: typeId
+            };
+        }
+
+        function miSupplementalSlotKeyForPartInfo(partInfo) {
+            if (!partInfo || Number(partInfo.typeId) !== 234) return '';
+            const explicit = normalizeDepTableName(partInfo.slotKey || '');
+            if (explicit && explicit !== 'unknown') return explicit;
+            const aliasText = Array.isArray(partInfo.searchAliases)
+                ? partInfo.searchAliases.join(' ')
+                : '';
+            const text = [
+                partInfo.sourceName,
+                partInfo.spawnCode,
+                partInfo.name,
+                partInfo.displayName,
+                partInfo.string,
+                partInfo.partType,
+                partInfo.originalPartType,
+                partInfo.stats,
+                partInfo.description,
+                aliasText
+            ]
+                .map(v => String(v || '').toLowerCase())
+                .join(' ');
+            if (text.indexOf('classmod.stat3_') !== -1 || text.indexOf('stat3_') !== -1) {
+                return 'stat_group3';
+            }
+            if (text.indexOf('classmod.stat2_') !== -1 || text.indexOf('stat2_') !== -1) {
+                return 'stat_group2';
+            }
+            if (text.indexOf('firmware') !== -1) return 'firmware';
+            if (text.indexOf('statspecial_') !== -1 || text.indexOf('classmod.statspecial') !== -1) {
+                return 'statspecial';
+            }
+            if (text.indexOf('classmod.stat_') !== -1 || text.indexOf('stat_') !== -1) {
+                return 'stat_group1';
+            }
+            return '';
+        }
+
+        function miSupplementalPartLabel(partInfo) {
+            if (!partInfo) return '';
+            const name = String(partInfo.name || partInfo.displayName || partInfo.fullId || '').trim();
+            const sourceName = String(partInfo.sourceName || partInfo.spawnCode || '').trim();
+            const desc = String(partInfo.description || partInfo.stats || '').trim();
+            const fullId = String(partInfo.fullId || '').trim();
+            const pieces = [];
+            if (desc && desc.indexOf('Source: ') !== 0) pieces.push(desc);
+            if (sourceName && sourceName !== name) pieces.push(sourceName);
+            if (fullId) pieces.push(fullId);
+            return pieces.length ? pieces.join(' — ') : (name || fullId);
+        }
+
+        function miSupplementalAliasText(partInfo) {
+            if (!partInfo) return '';
+            const aliases = Array.isArray(partInfo.searchAliases) ? partInfo.searchAliases : [];
+            return [
+                partInfo.fullId,
+                partInfo.sourceName,
+                partInfo.spawnCode,
+                partInfo.name,
+                partInfo.displayName,
+                partInfo.description,
+                partInfo.stats,
+                partInfo.slotKey,
+                aliases.join(' ')
+            ]
+                .map(v => String(v || '').toLowerCase())
+                .join(' ');
+        }
+
+        function miAppendClassModSupplementalPartsToGlobalCatalog(byType, typesSet) {
+            const parts = miGetSupplementalPartsByTypeId(234);
+            if (!parts || !parts.length) return;
+            const seen = new Set();
+            byType.forEach(items => {
+                (items || []).forEach(it => {
+                    if (it && it.key) seen.add(String(it.key));
+                    if (it && it.dep && it.dep.fullId) seen.add(String(it.dep.fullId));
+                });
+            });
+            parts.forEach(partInfo => {
+                const fullId = String(partInfo.fullId || '').trim();
+                if (!fullId || seen.has(fullId)) return;
+                const slotKey = miSupplementalSlotKeyForPartInfo(partInfo);
+                if (!slotKey || slotKey === 'statspecial') return;
+                const m = fullId.match(/^(\d+):(\d+)$/);
+                if (!m) return;
+                const rootSerialIndex = parseInt(m[1], 10);
+                const serialIndex = parseInt(m[2], 10);
+                if (!Number.isFinite(rootSerialIndex) || !Number.isFinite(serialIndex)) return;
+                const dep = {
+                    key: fullId,
+                    fullId: fullId,
+                    depTableName: slotKey,
+                    serialIndex: serialIndex,
+                    rootSerialIndex: rootSerialIndex,
+                    debugdisplaydescription: partInfo.description || partInfo.stats || partInfo.name || '',
+                    __msbtSupplementalPart: true
+                };
+                const item = {
+                    sourceRootKey: '__msbt_type_234',
+                    key: fullId,
+                    depTableName: slotKey,
+                    dep: dep,
+                    label: miSupplementalPartLabel(partInfo),
+                    aliasText: miSupplementalAliasText(partInfo)
+                };
+                if (!byType.has(slotKey)) byType.set(slotKey, []);
+                byType.get(slotKey).push(item);
+                typesSet.add(slotKey);
+                seen.add(fullId);
+            });
+        }
+
         function getMiGlobalPartCatalog(dataRef) {
             if (!dataRef || !dataRef.rootDefinitions) return { byType: new Map(), types: [] };
             if (window.__miGlobalPartCatalog && window.__miGlobalPartCatalogDataRef === dataRef) {
@@ -10034,6 +10178,7 @@
                     typesSet.add(tn);
                 });
             });
+            miAppendClassModSupplementalPartsToGlobalCatalog(byType, typesSet);
             const types = Array.from(typesSet).sort();
             const catalog = { byType, types };
             window.__miGlobalPartCatalog = catalog;
@@ -28728,6 +28873,8 @@
                         const dep = r.depEntries.find(d => d.key === inner);
                         if (dep) return dep;
                     }
+                    const supplementalDep = miResolveSupplementalPartInfo(inner);
+                    if (supplementalDep) return supplementalDep;
                 }
             }
             if (root && root.depEntries) {

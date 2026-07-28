@@ -200,20 +200,28 @@
                         name: entry.name || fullId,
                         displayName: entry.name || fullId,
                         string: entry.name || fullId,
-                        spawnCode: fullId,
+                        spawnCode: entry.spawnCode || entry.sourceName || fullId,
+                        sourceName: entry.sourceName || entry.spawnCode || entry.name || fullId,
                         stats: statsParts.join(' | '),
+                        description: entry.description || '',
                         partType: partType,
                         originalPartType: partType,
                         category: entry.category || 'Part',
                         manufacturer: entry.manufacturer || null,
                         itemType: entry.itemType || null,
                         rarity: null,
-                        path: entry.source || 'GZO/custom modded catalog'
+                        path: entry.source || 'GZO/custom modded catalog',
+                        slotKey: entry.slotKey || null,
+                        searchAliases: Array.isArray(entry.searchAliases) ? entry.searchAliases.slice() : [],
+                        serialIndex: partId,
+                        rootSerialIndex: typeId
                     };
 
                     partsMap.set(fullId, partInfo);
                     if (!partsMap.has(partInfo.id)) partsMap.set(partInfo.id, partInfo);
                     if (!partsMap.has(partId)) partsMap.set(partId, partInfo);
+                    if (partInfo.spawnCode && !partsMap.has(partInfo.spawnCode)) partsMap.set(partInfo.spawnCode, partInfo);
+                    if (partInfo.sourceName && !partsMap.has(partInfo.sourceName)) partsMap.set(partInfo.sourceName, partInfo);
                     partsByTypeId.get(typeId).push(partInfo);
                     added++;
                     supplementAdded++;

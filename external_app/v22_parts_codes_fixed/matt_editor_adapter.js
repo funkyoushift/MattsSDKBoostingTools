@@ -1,5 +1,5 @@
 (function () {
-  window.MSBT_MATT_EDITOR_ADAPTER_VERSION = "deliver-5-simplified-send";
+  window.MSBT_MATT_EDITOR_ADAPTER_VERSION = "deliver-6-draggable-panel";
 
   var BASE85_RE = /@U[0-9A-Za-z!#$%&()*+\-;<=>?@^_`{\/}~]+/g;
   var SOURCE_DEFS = [
@@ -498,6 +498,92 @@
     }
   }
 
+  function makeDeliveryPanelDraggable(panel, handle) {
+    var storageKey = "msbt-delivery-panel-pos";
+    var dragState = null;
+
+    function clampPosition(left, top) {
+      var width = panel.offsetWidth || 360;
+      var height = panel.offsetHeight || 240;
+      var maxLeft = Math.max(0, window.innerWidth - width);
+      var maxTop = Math.max(0, window.innerHeight - height);
+      return {
+        left: Math.min(Math.max(0, left), maxLeft),
+        top: Math.min(Math.max(0, top), maxTop)
+      };
+    }
+
+    function applyPosition(left, top) {
+      var next = clampPosition(left, top);
+      panel.style.left = next.left + "px";
+      panel.style.top = next.top + "px";
+      panel.style.right = "auto";
+      panel.style.bottom = "auto";
+    }
+
+    function savePosition() {
+      try {
+        var rect = panel.getBoundingClientRect();
+        window.localStorage.setItem(storageKey, JSON.stringify({
+          left: Math.round(rect.left),
+          top: Math.round(rect.top)
+        }));
+      } catch (err) {}
+    }
+
+    function loadPosition() {
+      try {
+        var raw = window.localStorage.getItem(storageKey);
+        if (!raw) return;
+        var pos = JSON.parse(raw);
+        if (typeof pos.left !== "number" || typeof pos.top !== "number") return;
+        applyPosition(pos.left, pos.top);
+      } catch (err) {}
+    }
+
+    function stopDrag(event) {
+      if (!dragState) return;
+      dragState = null;
+      handle.style.cursor = "grab";
+      if (handle.releasePointerCapture && event && event.pointerId != null) {
+        try { handle.releasePointerCapture(event.pointerId); } catch (err) {}
+      }
+      savePosition();
+      document.removeEventListener("pointermove", onPointerMove);
+      document.removeEventListener("pointerup", stopDrag);
+      document.removeEventListener("pointercancel", stopDrag);
+    }
+
+    function onPointerMove(event) {
+      if (!dragState) return;
+      applyPosition(event.clientX - dragState.offsetX, event.clientY - dragState.offsetY);
+    }
+
+    handle.addEventListener("pointerdown", function (event) {
+      if (event.button !== 0) return;
+      event.preventDefault();
+      var rect = panel.getBoundingClientRect();
+      dragState = {
+        offsetX: event.clientX - rect.left,
+        offsetY: event.clientY - rect.top
+      };
+      handle.style.cursor = "grabbing";
+      if (handle.setPointerCapture) {
+        try { handle.setPointerCapture(event.pointerId); } catch (err) {}
+      }
+      document.addEventListener("pointermove", onPointerMove);
+      document.addEventListener("pointerup", stopDrag);
+      document.addEventListener("pointercancel", stopDrag);
+    });
+
+    window.addEventListener("resize", function () {
+      if (!panel.style.left || !panel.style.top) return;
+      applyPosition(parseFloat(panel.style.left) || 0, parseFloat(panel.style.top) || 0);
+    });
+
+    loadPosition();
+  }
+
   function installPanel() {
     if (byId("msbt-delivery-panel")) return;
     var panel = document.createElement("div");
@@ -517,10 +603,33 @@
       "color:#d7def5"
     ].join(";");
 
+    var dragHandle = document.createElement("div");
+    dragHandle.id = "msbt-delivery-drag-handle";
+    dragHandle.title = "Drag to move this panel";
+    dragHandle.style.cssText = [
+      "display:flex",
+      "align-items:center",
+      "justify-content:space-between",
+      "gap:8px",
+      "margin:-10px -10px 8px",
+      "padding:8px 10px",
+      "background:#0f1728",
+      "border-bottom:1px solid #334155",
+      "cursor:grab",
+      "touch-action:none",
+      "user-select:none"
+    ].join(";");
+
     var title = document.createElement("div");
     title.textContent = "MSBT Delivery";
-    title.style.cssText = "color:#00d4ff;font-weight:800;font-size:12px;margin-bottom:6px;";
-    panel.appendChild(title);
+    title.style.cssText = "color:#00d4ff;font-weight:800;font-size:12px;";
+    dragHandle.appendChild(title);
+
+    var dragHint = document.createElement("div");
+    dragHint.textContent = "Drag";
+    dragHint.style.cssText = "color:#9fb3d9;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;";
+    dragHandle.appendChild(dragHint);
+    panel.appendChild(dragHandle);
 
     var hint = document.createElement("div");
     hint.textContent = "MSBT sends only the final @U item serial. Build an item, choose a target, then Send. If more than one serial is detected, choose which one to send.";
@@ -656,6 +765,7 @@
     panel.appendChild(statusRow);
 
     document.body.appendChild(panel);
+    makeDeliveryPanelDraggable(panel, dragHandle);
     renderTargetSection();
     refreshPreview("", false);
     window.setTimeout(bridgeStatus, 200);

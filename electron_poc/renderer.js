@@ -1292,7 +1292,7 @@ function updateSerialState(message = "", options = {}) {
 function detectSerialFromEditor() {
   const found = collectEditorSerials();
   if (!found.length && !els.editorFrame.contentWindow) {
-    setLine(els.serialSummary, "Load the Matt editor before detecting a serial.", "warning");
+    setLine(els.serialSummary, "Load the Mattmab editor before detecting a serial.", "warning");
     return;
   }
   if (!found.length) {
@@ -1333,7 +1333,7 @@ async function loadEditor(options = {}) {
     setLine(
       els.serialSummary,
       hosted
-        ? "Bundled editor loaded. Save/profile conversion, item editing, and MSBT delivery are available from this tab."
+        ? "Matt editor loaded. Detect the generated @U serial, then send from Item Delivery."
         : "Raw editor fallback loaded. Save/profile conversion and delivery adapter may be unavailable.",
       hosted ? "ok" : "warning"
     );
@@ -2524,7 +2524,7 @@ function clearBl4Detail(message = "Select a BL4 code.") {
   setOutput(els.bl4Detail, message);
   setTextValue(els.bl4Serial, "");
   setTextValue(els.bl4Breakdown, "");
-  setBl4DeliveryStatus("Delivery sends checked rows, or the active code if none are checked.", "warning");
+  setBl4DeliveryStatus("Delivery sends checked image cards, or the active code if none are checked.", "warning");
 }
 
 async function loadBl4Breakdown(row) {
@@ -2556,7 +2556,7 @@ function selectBl4Entry(id) {
   state.bl4ConfirmedSerial = "";
   setOutput(els.bl4Detail, formatBl4Detail(row));
   setTextValue(els.bl4Serial, row.serial || "");
-  setBl4DeliveryStatus("Active code ready. Delivery sends checked rows, or this active code if none are checked.", "warning");
+  setBl4DeliveryStatus("Active code ready. Delivery sends checked image cards, or this active code if none are checked.", "warning");
   loadBl4Breakdown(row);
   renderBl4Codes();
 }
@@ -5275,10 +5275,10 @@ function wireEvents() {
   ].forEach((selectNode) => {
     if (selectNode) selectNode.addEventListener("change", renderBl4Codes);
   });
+  els.bl4SelectAllBtn.addEventListener("click", selectAllBl4Visible);
   document.querySelectorAll("[data-bl4-result-filter]").forEach((button) => {
     button.addEventListener("click", () => setBl4ResultFilter(button.dataset.bl4ResultFilter));
   });
-  els.bl4SelectAllBtn.addEventListener("click", selectAllBl4Visible);
   els.bl4ClearSelectionBtn.addEventListener("click", clearBl4Selection);
   els.bl4CopySelectedBtn.addEventListener("click", copySelectedBl4Serials);
   els.bl4CopySerialBtn.addEventListener("click", copyBl4Serial);
@@ -5407,6 +5407,9 @@ function wireEvents() {
   [
     ["streamlabsBtn", "https://streamlabs.com/funkyoushift/tip"],
     ["mattmabKofiBtn", "https://ko-fi.com/mattmab"],
+    ["funkyoushiftSiteBtn", "https://www.funkyoushift.com"],
+    ["gzoDiscordBtn", "https://discord.gg/4hGKAHdvp6"],
+    ["gzoToolsBtn", "https://save-editor.be/GZO/"],
     ["twitchBtn", "https://www.twitch.tv/funkyoushift/"],
     ["youtubeBtn", "https://www.youtube.com/@Funkyoushift"]
   ].forEach(([buttonId, url]) => {
@@ -5414,24 +5417,18 @@ function wireEvents() {
     if (button) button.addEventListener("click", () => window.msbt.openExternal(url));
   });
 
-  document.getElementById("loadEditorBtn").addEventListener("click", () => loadEditor({ force: true }));
-  document.getElementById("reloadEditorBtn").addEventListener("click", () => {
-    if (els.editorFrame.src) {
-      els.editorFrame.src = els.editorFrame.src;
-      return;
-    }
-    void loadEditor({ force: true });
-  });
-  document.getElementById("detectSerialBtn").addEventListener("click", detectSerialFromEditor);
-  document.getElementById("confirmSerialBtn").addEventListener("click", confirmSerial);
-  document.getElementById("copySerialBtn").addEventListener("click", copyConfirmedSerial);
-  els.serialInput.addEventListener("input", () => {
-    state.confirmedSerial = "";
-    updateSerialState("Serial edited. Click Confirm Serial before sending.");
-  });
-  document.querySelectorAll("[data-editor-serial-mode]").forEach((button) => {
-    button.addEventListener("click", () => sendEditorSerial(button.dataset.editorSerialMode));
-  });
+  const loadEditorBtn = document.getElementById("loadEditorBtn");
+  if (loadEditorBtn) loadEditorBtn.addEventListener("click", () => loadEditor({ force: true }));
+  const reloadEditorBtn = document.getElementById("reloadEditorBtn");
+  if (reloadEditorBtn) {
+    reloadEditorBtn.addEventListener("click", () => {
+      if (els.editorFrame && els.editorFrame.src) {
+        els.editorFrame.src = els.editorFrame.src;
+        return;
+      }
+      void loadEditor({ force: true });
+    });
+  }
 
   els.itempoolSearch.addEventListener("input", renderItemPools);
   els.itempoolCategory.addEventListener("change", renderItemPools);

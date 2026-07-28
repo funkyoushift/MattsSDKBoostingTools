@@ -1,0 +1,173 @@
+/*
+  MSBT visual tuning file
+
+  Edit this file first when you want to adjust the Electron app's look.
+  It is loaded after styles.css, so these values override the defaults without
+  requiring a full redesign.
+*/
+
+:root {
+  /* Main colors */
+  --ui-bg: #090d17;
+  --ui-header-bg: #080c15;
+  --ui-panel-bg: #0f1522;
+  --ui-panel-soft-bg: #151f33;
+  --ui-field-bg: #1b1518;
+  --ui-text: #edf4ff;
+  --ui-muted: #9fb3d9;
+
+  /* Accent colors */
+  --ui-cyan: #00d4ff;
+  --ui-gold: #ffd447;
+  --ui-green: #42df87;
+  --ui-pink: #ff4f91;
+  --ui-purple: #b36bff;
+  --ui-red: #ff6174;
+  --ui-line: #344052;
+
+  /* App density */
+  --ui-page-padding: 8px;
+  --ui-header-padding-y: 10px;
+  --ui-header-padding-x: 14px;
+  --ui-panel-padding: 10px;
+  --ui-grid-gap: 8px;
+  --ui-section-gap: 8px;
+
+  /* Text sizing */
+  --ui-title-size: 20px;
+  --ui-section-title-size: 13px;
+  --ui-body-size: 12px;
+  --ui-small-size: 10px;
+
+  /* Buttons */
+  --ui-button-height: 30px;
+  --ui-button-padding-y: 6px;
+  --ui-button-padding-x: 10px;
+  --ui-button-bg: #172033;
+  --ui-button-hover-bg: #20304d;
+  --ui-tab-button-width: 112px;
+  --ui-tab-button-padding-y: 6px;
+  --ui-tab-button-padding-x: 8px;
+
+  /* Form fields */
+  --ui-field-height: 30px;
+  --ui-field-padding-y: 5px;
+  --ui-field-padding-x: 7px;
+  --ui-textarea-height: 90px;
+  --ui-output-small-height: 68px;
+  --ui-output-medium-height: 128px;
+  --ui-output-large-height: 240px;
+
+  /* BL4 Codes image cards */
+  --ui-bl4-card-min-width: 300px;
+  --ui-bl4-card-min-height: 440px;
+  --ui-bl4-card-gap: 10px;
+  --ui-bl4-card-padding: 8px;
+  --ui-bl4-card-browser-height: 720px;
+
+  /* Dev Spawner rows */
+  --ui-dev-row-button-width: 72px;
+  --ui-dev-row-gap: 8px;
+
+  /* Optional: make controls roomier on very large monitors. */
+  --ui-large-screen-max-content-width: none;
+}
+
+/* Boosting tab: UVH + Rarity side by side */
+#tab-boosting .boost-dual-row {
+  align-items: stretch;
+}
+
+#tab-boosting .boost-dual-row .panel {
+  padding: 8px;
+}
+
+#tab-boosting .boost-dual-row .uvh-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+#tab-boosting .boost-dual-row .uvh-panel p {
+  font-size: var(--ui-body-size, 12px);
+  line-height: 1.35;
+  margin-top: 4px;
+}
+
+#tab-boosting .boost-dual-row .uvh-panel .compact-buttons {
+  flex: 1;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 8px;
+  align-content: start;
+}
+
+#tab-boosting .boost-dual-row .uvh-panel .compact-buttons button {
+  min-height: var(--ui-button-height, 30px);
+  padding: var(--ui-button-padding-y, 6px) var(--ui-button-padding-x, 10px);
+  font-size: var(--ui-body-size, 12px);
+}
+
+#tab-boosting .boost-dual-row .uvh-panel .compact-note {
+  font-size: var(--ui-small-size, 10px);
+  line-height: 1.35;
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+#tab-boosting .boost-dual-row p,
+#tab-boosting .boost-dual-row .compact-note {
+  font-size: var(--ui-small-size, 10px);
+  line-height: 1.3;
+  margin-top: 2px;
+}
+
+#tab-boosting .boost-dual-row .compact-buttons {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+  margin-top: 6px;
+}
+
+#tab-boosting .boost-dual-row .compact-buttons button {
+  min-height: 26px;
+  padding: 4px 6px;
+  font-size: var(--ui-small-size, 10px);
+}
+
+#tab-boosting .boost-dual-row .compact-rarity {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px 8px;
+  margin: 6px 0;
+}
+
+#tab-boosting .boost-dual-row .compact-rarity label {
+  margin: 2px 0;
+  font-size: var(--ui-small-size, 10px);
+}
+
+#tab-boosting .boost-dual-row .compact-actions {
+  gap: 4px;
+}
+
+#tab-boosting .boost-dual-row .compact-actions button {
+  min-height: 26px;
+  padding: 4px 8px;
+  font-size: var(--ui-small-size, 10px);
+}
+
+#tab-boosting .boost-dual-row .compact-check {
+  font-size: var(--ui-small-size, 10px);
+  margin-top: 4px;
+}
+
+/*
+  Common manual layout helpers:
+
+  - To make the whole app tighter, lower --ui-panel-padding and --ui-grid-gap.
+  - To make buttons easier to click, raise --ui-button-height.
+  - To make BL4 image cards bigger, raise --ui-bl4-card-min-width and
+    --ui-bl4-card-min-height.
+  - To move fixed buttons/text, edit electron_poc/renderer.html.
+  - To move generated lists/cards, edit the matching render function in
+    electron_poc/renderer.js.
+*/
