@@ -68,6 +68,17 @@ p {
   font-size: var(--ui-body-size, 12px);
 }
 
+.inline-link {
+  color: var(--cyan);
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.inline-link:hover {
+  color: var(--text);
+}
+
 button {
   border: 0;
   background: var(--ui-button-bg, #172033);

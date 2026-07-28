@@ -3137,6 +3137,36 @@ function maybeShowStartupUpdateModal(info) {
   renderStartupUpdateModal(notice);
 }
 
+const DEFAULT_SDK_REQUIRED = "oak2-mod-manager v0.3";
+const DEFAULT_SDK_REQUIRED_URL = "https://bl-sdk.github.io/oak2-mod-db/";
+
+function openSdkRequiredUrl(url) {
+  const target = String(url || DEFAULT_SDK_REQUIRED_URL).trim() || DEFAULT_SDK_REQUIRED_URL;
+  if (window.msbt && typeof window.msbt.openExternal === "function") {
+    window.msbt.openExternal(target);
+  }
+}
+
+function renderVersionLineWithSdkLink(node, prefixText, sdkRequired, sdkRequiredUrl, kind = "") {
+  if (!node) return;
+  const requiredLabel = sdkRequired || DEFAULT_SDK_REQUIRED;
+  const requiredUrl = sdkRequiredUrl || DEFAULT_SDK_REQUIRED_URL;
+  node.textContent = "";
+  node.classList.remove("ok", "warning", "bad");
+  if (kind) node.classList.add(kind);
+  node.appendChild(document.createTextNode(`${prefixText} | Requires ${requiredLabel} · `));
+  const link = document.createElement("a");
+  link.href = requiredUrl;
+  link.className = "inline-link";
+  link.textContent = "Get required SDK";
+  link.title = `Open ${requiredLabel}`;
+  link.addEventListener("click", (event) => {
+    event.preventDefault();
+    openSdkRequiredUrl(requiredUrl);
+  });
+  node.appendChild(link);
+}
+
 function renderVersionInfo(info) {
   state.versionInfo = info || null;
   const data = info || {};
@@ -3146,10 +3176,12 @@ function renderVersionInfo(info) {
     `SDK mod ${versionValue(data.sdkmodVersion)}`,
     `resources ${versionValue(data.resourcesVersion)}`
   ];
-  const required = data.sdkRequired ? `Requires ${data.sdkRequired}` : "Requires oak2-mod-manager v0.3";
-  const text = `${parts.join(" | ")} | ${required}`;
-  setLine(els.appVersionLine, text);
-  setLine(els.versionSummary, text, data.bundledSdkmod && data.bundledSdkmod.available ? "ok" : "warning");
+  const prefixText = parts.join(" | ");
+  const required = data.sdkRequired || DEFAULT_SDK_REQUIRED;
+  const requiredUrl = data.sdkRequiredUrl || DEFAULT_SDK_REQUIRED_URL;
+  const kind = data.bundledSdkmod && data.bundledSdkmod.available ? "ok" : "warning";
+  renderVersionLineWithSdkLink(els.appVersionLine, prefixText, required, requiredUrl);
+  renderVersionLineWithSdkLink(els.versionSummary, prefixText, required, requiredUrl, kind);
   renderUpdateCards(data);
   renderBoostUpdateNotice(data);
 }
