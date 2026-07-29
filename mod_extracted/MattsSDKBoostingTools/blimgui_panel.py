@@ -42,6 +42,7 @@ from .serial_rewards import (
     _resolve_give_serial_strings,
     _serial_delivery_chunks,
     _serial_delivery_chunk_stats,
+    _strip_wrapping_markdown_backticks,
     serial_delivery_status,
     serial_delivery_progress,
     serial_delivery_timing,
@@ -2354,14 +2355,14 @@ def _parse_serial_text(raw: str) -> list[str]:
     """Parse menu input into serial/deserialized tokens without corrupting Base85.
 
     Important: BL4 Base85 serials may contain punctuation such as semicolons,
-    commas, braces, equals signs, plus signs, etc. Older UI code split on
-    semicolons/commas/spaces, which could truncate valid serials. Treat each
-    non-empty line as one full serial/deserialized line. If a user pastes
-    multiple Base85 serials on one line, split only at a new @U serial prefix.
+    commas, braces, backticks, `@`, etc. Older UI code split on punctuation or
+    every `@U`, which truncated valid serials that contain `@U` mid-payload.
+    Treat each non-empty line as one full serial unless multiple whitespace-
+    separated `@U...` tokens were pasted on the same line.
     """
     tokens: list[str] = []
     for line in (raw or "").splitlines():
-        text = line.strip()
+        text = _strip_wrapping_markdown_backticks(line.strip())
         if not text:
             continue
 
@@ -2371,16 +2372,10 @@ def _parse_serial_text(raw: str) -> list[str]:
             tokens.append(text)
             continue
 
-        # Base85 serials should be one-per-line. If several were pasted onto
-        # one line, split at the next @U prefix, not on punctuation contained
-        # inside the Base85 alphabet.
-        starts = [m.start() for m in re.finditer(r"(?=@U)", text)]
-        if len(starts) > 1:
-            starts.append(len(text))
-            for i in range(len(starts) - 1):
-                part = text[starts[i]:starts[i + 1]].strip()
-                if part:
-                    tokens.append(part)
+        parts = [_strip_wrapping_markdown_backticks(part) for part in text.split()]
+        parts = [part for part in parts if part]
+        if len(parts) > 1 and all(part.startswith("@U") for part in parts):
+            tokens.extend(parts)
             continue
 
         tokens.append(text)

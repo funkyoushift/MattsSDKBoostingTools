@@ -22,6 +22,7 @@ from .party_helpers import (
     _gbc_run_session_timer_from_give_serial,
     _gbc_session_world_and_gamestate,
 )
+from .serial_converter import serial_to_human as _serial_to_human
 from unrealsdk.unreal import FGbxDefPtr, UObject
 from unrealsdk import logging
 
@@ -160,22 +161,39 @@ def _normalize_serial_b85(b85: str) -> str:
     return b if b.startswith("@") else f"@{b}"
 
 
+def _strip_wrapping_markdown_backticks(text: str) -> str:
+    """Remove one outer markdown/code-fence backtick pair only.
+
+    Legitimate BL4 Base85 payloads may contain `` ` `` mid-string. Never strip
+    those. This only unwraps a single surrounding pair used by Discord/notes
+    paste wrappers (`` ` @U... ` ``), preserving any interior backticks.
+    """
+    t = str(text or "").strip()
+    if len(t) < 3 or t[0] != "`" or t[-1] != "`":
+        return t
+    inner = t[1:-1]
+    if inner.startswith("@U") or _looks_like_deserialized_human(inner):
+        return inner
+    return t
+
+
 def _expand_serial_token(p: str) -> List[str]:
     """One token -> one or more serial strings without corrupting Base85.
 
-    BL4 Base85 serials can contain punctuation, so do not split a token on
-    commas/semicolons. If multiple serials were accidentally pasted into one
-    token, split only at the next @U prefix.
+    BL4 Base85 serials can contain punctuation, including `@`, `` ` ``, and `U`.
+    Never split a contiguous token on mid-payload `@U` — that truncates valid
+    codes (e.g. Lockjaw serials containing `@U` after `/MjE`). Multiple Base85
+    serials must arrive as separate args or whitespace-separated pieces.
     """
-    t = p.strip()
+    t = _strip_wrapping_markdown_backticks(p.strip())
     if not t:
         return []
     if _looks_like_deserialized_human(t):
         return [t]
-    starts = [m.start() for m in re.finditer(r"(?=@U)", t)]
-    if len(starts) > 1:
-        starts.append(len(t))
-        return [t[starts[i]:starts[i + 1]].strip() for i in range(len(starts) - 1) if t[starts[i]:starts[i + 1]].strip()]
+    parts = [_strip_wrapping_markdown_backticks(part) for part in t.split()]
+    parts = [part for part in parts if part]
+    if len(parts) > 1 and all(part.startswith("@U") for part in parts):
+        return list(parts)
     return [t]
 
 
@@ -217,14 +235,36 @@ def _serialize_deserialized_to_b85(deserialized: str) -> str:
     return _normalize_serial_b85(b85)
 
 
+def _validate_base85_decodable(b85: str) -> None:
+    """Raise if a Base85 serial cannot be locally decoded to a human serial.
+
+    Delivery passes Base85 strings straight to the game. Corrupt encodings (for
+    example trailing letter-O where digit-0 is required) still spawn items, but
+    as broken "Bricked-Up" gear. Reject them before delivery.
+    """
+    _serial_to_human(b85)
+
+
 def _resolve_give_serial_strings(raw_serials: List[str]) -> Optional[List[str]]:
     """Convert deserialized human lines to Base85 via HTTP; abort whole command on first failure."""
     out: List[str] = []
     for idx, s in enumerate(raw_serials):
-        t = s.strip()
+        t = _strip_wrapping_markdown_backticks(s.strip())
         if not t:
             continue
         if _looks_like_base85(t):
+            try:
+                _validate_base85_decodable(t)
+            except Exception as e:
+                preview = t if len(t) <= 64 else f"{t[:61]}..."
+                _log_error(
+                    f"Give_Serial: Base85 serial #{idx + 1} failed local decode ({e}). "
+                    "Nothing will be delivered. Common causes: digit 0 mistyped as letter O, "
+                    "Discord/markdown wrapping that truncates at an interior backtick (`), "
+                    "or a truncated paste missing mid-payload characters. "
+                    f"Preview: {preview}"
+                )
+                return None
             out.append(t)
             continue
         if _looks_like_deserialized_human(t):
@@ -1442,6 +1482,27 @@ def _queue_serial_delivery_sequence(serials: List[str], player_indices: List[int
 
     _ensure_backpack_capacity_for_indices(targets, len(serials))
     _gbc_run_session_timer_from_give_serial()
+    # A new Give_Serial must replace unfinished tick-driven work.  Appending let
+    # the previous serial list (or its patch jobs) continue and look like the
+    # "next send delivered the previous list" / interleaved delivery bug.
+    replaced_sequences = len(_pending_serial_delivery_sequences)
+    replaced_patches = len(_pending_serial_patch_jobs)
+    if replaced_sequences or replaced_patches:
+        _log_info(
+            f"Replacing unfinished serial delivery state before new queue: "
+            f"{replaced_sequences} sequence(s), {replaced_patches} patch job(s)."
+        )
+        _pending_serial_delivery_sequences.clear()
+        _pending_serial_patch_jobs.clear()
+        _set_active_serial_delivery_progress(
+            active=False,
+            stage="replaced",
+            message="Previous serial delivery replaced by a newer request.",
+            last_message="Previous serial delivery replaced by a newer request.",
+            last_error="",
+            fraction=0.0,
+            percent=0,
+        )
     if len(chunks) > 1:
         _log_info(
             f"Auto-sequencing {len(serials)} serial(s) for {scope_label}: "
@@ -1453,9 +1514,9 @@ def _queue_serial_delivery_sequence(serials: List[str], player_indices: List[int
     _set_serial_delivery_status(f"Serial delivery queued: {len(chunks)} part(s), {len(serials)} serial(s) to {scope_label}", log=True)
     _pending_serial_delivery_sequences.append({
         "serials": list(serials),
-        "chunks": chunks,
-        "targets": targets,
-        "target_names": target_names,
+        "chunks": [list(chunk) for chunk in chunks],
+        "targets": list(targets),
+        "target_names": list(target_names),
         "scope_label": scope_label,
         "index": 0,
         "stage": "deliver",
@@ -2051,10 +2112,11 @@ def _do_give_serial_chunk(
     description=(
         "Grant the next generic loyalty reward package (rotates Daedalus→Jakobs→…→Vladof; Ripper uses Borg id), "
         "then set serial(s) on the newest reward package (each GbxRewardsManager, or one player with index/name). "
-        "Base85 @U… tokens may be comma-separated or separate args. Deserialized human lines (digits, 0,1,60|…) "
+        "Base85 @U… tokens may be separate args or whitespace-separated. Deserialized human lines (digits, 0,1,60|…) "
         "must be one double-quoted token each; they are converted to Base85 via HTTP (GENIE_SERIALIZE_API_URL). "
         "Usage: Give_Serial serial … [all] | Give_Serial … index N all | Give_Serial … name <substring> all "
-        "(unique match on gbc_players display name)"
+        "(unique match on gbc_players display name). Contiguous Base85 payloads are preserved literally "
+        "(including mid-payload `@U` and backtick characters)."
     ),
 )
 def _cmd_give_serial(args: argparse.Namespace) -> None:

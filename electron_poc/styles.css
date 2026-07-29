@@ -1095,6 +1095,20 @@ button.gzo-submit-cta:hover {
   background: rgba(36, 68, 102, .45);
 }
 
+.bl4-code-card.checked {
+  border-color: var(--gold);
+}
+
+.bl4-card-checkbox {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+  margin: 0;
+  min-height: auto;
+  width: auto;
+}
+
 .bl4-card-image {
   align-items: center;
   aspect-ratio: 3 / 4;

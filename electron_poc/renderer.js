@@ -31,7 +31,6 @@ const els = {
   bl4RarityFilter: document.getElementById("bl4RarityFilter"),
   bl4RefreshGzoBtn: document.getElementById("bl4RefreshGzoBtn"),
   bl4ReloadBtn: document.getElementById("bl4ReloadBtn"),
-  bl4Rows: document.getElementById("bl4Rows"),
   bl4SearchBtn: document.getElementById("bl4SearchBtn"),
   bl4SearchInput: document.getElementById("bl4SearchInput"),
   bl4SelectAllBtn: document.getElementById("bl4SelectAllBtn"),
@@ -296,7 +295,6 @@ const state = {
   bl4ConfirmedSerial: "",
   bl4Entries: [],
   bl4FilteredEntries: [],
-  bl4ResultFilter: "All",
   bl4SearchQuery: "",
   bl4SelectedIds: new Set(),
   bridgeOnline: false,
@@ -445,6 +443,10 @@ function queueWindowOpacitySave() {
 
 function actionSucceeded(result) {
   const data = result && result.data ? result.data : result;
+  // Bridge may return HTTP 202 with queued:true when the game tick has not
+  // drained the action yet. That is still an accepted in-game command — treat
+  // it as success so the UI does not immediately retry and stack stale work.
+  if (data && data.queued) return true;
   if (data && data.ok === false) return false;
   if (data && data.ok === true) return true;
   return Boolean(result && result.ok);
@@ -2065,7 +2067,6 @@ function filteredBl4Entries() {
   const rarity = bl4FilterValue(els.bl4RarityFilter);
   const creator = bl4FilterValue(els.bl4CreatorFilter);
   const mattmab = bl4FilterValue(els.bl4MattmabFilter);
-  const resultFilter = state.bl4ResultFilter || "All";
 
   return state.bl4Entries.filter((row) => {
     const termOk = terms.every((term) => bl4SearchBlob(row).includes(term));
@@ -2075,8 +2076,7 @@ function filteredBl4Entries() {
     const rarityOk = rarity === "All" || String(row.rarity || "") === rarity;
     const creatorOk = creator === "All" || String(row.creator || "") === creator;
     const mattmabOk = bl4MattmabMatches(row, mattmab);
-    const resultOk = bl4MattmabMatches(row, resultFilter);
-    return termOk && listingOk && typeOk && manufacturerOk && rarityOk && creatorOk && mattmabOk && resultOk;
+    return termOk && listingOk && typeOk && manufacturerOk && rarityOk && creatorOk && mattmabOk;
   });
 }
 
@@ -2152,24 +2152,39 @@ function renderBl4Cards() {
   if (!state.bl4FilteredEntries.length) {
     const empty = document.createElement("div");
     empty.className = "dev-empty-row";
-    empty.textContent = "No image cards match the current filters.";
+    empty.textContent = "No BL4 codes match the current filters. Use Search or loosen a dropdown filter.";
     els.bl4Cards.appendChild(empty);
     if (els.bl4CardSummary) els.bl4CardSummary.textContent = "No visible cards.";
     return;
   }
 
-  const maxCards = 48;
+  const maxCards = 320;
   const shown = state.bl4FilteredEntries.slice(0, maxCards);
   if (els.bl4CardSummary) {
-    els.bl4CardSummary.textContent = `${shown.length} card(s) shown; ${bl4ImageHint(shown)} Use filters to narrow more.`;
+    els.bl4CardSummary.textContent = `${shown.length} of ${state.bl4FilteredEntries.length} card(s) shown; ${bl4ImageHint(shown)} Use Listing/Search to find Lootlemon or Legit codes.`;
   }
 
   shown.forEach((row) => {
     const id = bl4EntryId(row);
     const card = document.createElement("button");
     card.type = "button";
-    card.className = `bl4-code-card${id === state.bl4ActiveId ? " active" : ""}`;
+    card.className = `bl4-code-card${id === state.bl4ActiveId ? " active" : ""}${state.bl4SelectedIds.has(id) ? " checked" : ""}`;
     card.addEventListener("click", () => selectBl4Entry(id));
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.className = "bl4-card-checkbox";
+    checkbox.checked = state.bl4SelectedIds.has(id);
+    checkbox.title = "Select for bulk actions";
+    checkbox.addEventListener("click", (event) => {
+      event.stopPropagation();
+      if (checkbox.checked) {
+        state.bl4SelectedIds.add(id);
+      } else {
+        state.bl4SelectedIds.delete(id);
+      }
+      renderBl4Codes();
+    });
 
     const imageWrap = document.createElement("div");
     imageWrap.className = "bl4-card-image";
@@ -2204,14 +2219,14 @@ function renderBl4Cards() {
     const result = document.createElement("div");
     result.className = `bl4-card-result ${bl4MattmabKind(row.mattmab_validator)}`;
     result.textContent = bl4MattmabLabel(row.mattmab_validator);
-    card.append(imageWrap, title, meta, result);
+    card.append(checkbox, imageWrap, title, meta, result);
     els.bl4Cards.appendChild(card);
   });
 
   if (state.bl4FilteredEntries.length > maxCards) {
     const note = document.createElement("div");
     note.className = "dev-empty-row";
-    note.textContent = `Showing first ${maxCards} card(s). Narrow Search or filters for more images.`;
+    note.textContent = `Showing first ${maxCards} card(s). Narrow Search or filters for more.`;
     els.bl4Cards.appendChild(note);
   }
 }
@@ -2572,24 +2587,15 @@ function renderBl4Codes() {
     `${state.bl4FilteredEntries.length} shown / ${state.bl4Entries.length} merged | ${selectedCount} selected`,
     state.bl4FilteredEntries.length ? "ok" : "warning"
   );
-  renderBl4Cards();
 
-  if (!els.bl4Rows) return;
-  els.bl4Rows.innerHTML = "";
   if (!state.bl4Entries.length) {
-    const empty = document.createElement("div");
-    empty.className = "dev-empty-row";
-    empty.textContent = "No BL4 catalog is loaded.";
-    els.bl4Rows.appendChild(empty);
     clearBl4Detail("No BL4 catalog is loaded.");
+    renderBl4Cards();
     return;
   }
   if (!state.bl4FilteredEntries.length) {
-    const empty = document.createElement("div");
-    empty.className = "dev-empty-row";
-    empty.textContent = "No BL4 codes match the current filters. Use Search, All Results, or loosen a dropdown filter.";
-    els.bl4Rows.appendChild(empty);
     clearBl4Detail("No BL4 code is visible with the current filters.");
+    renderBl4Cards();
     return;
   }
 
@@ -2597,54 +2603,7 @@ function renderBl4Codes() {
     clearBl4Detail("The active code is hidden by the current filters.");
   }
 
-  const maxRows = 320;
-  state.bl4FilteredEntries.slice(0, maxRows).forEach((row) => {
-    const id = bl4EntryId(row);
-    const item = document.createElement("div");
-    item.className = `bl4-code-row${id === state.bl4ActiveId ? " active" : ""}`;
-    item.addEventListener("click", () => selectBl4Entry(id));
-
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.checked = state.bl4SelectedIds.has(id);
-    checkbox.addEventListener("click", (event) => {
-      event.stopPropagation();
-      if (checkbox.checked) {
-        state.bl4SelectedIds.add(id);
-      } else {
-        state.bl4SelectedIds.delete(id);
-      }
-      renderBl4Codes();
-    });
-
-    const body = document.createElement("div");
-    body.className = "bl4-row-body";
-    const title = document.createElement("div");
-    title.className = "bl4-row-title";
-    title.textContent = row.name || "Unnamed Code";
-    const meta = document.createElement("div");
-    meta.className = "bl4-row-meta";
-    meta.textContent = [
-      bl4MattmabLabel(row.mattmab_validator),
-      row.listing,
-      row.type,
-      row.rarity,
-      row.creator
-    ].filter(Boolean).join(" | ");
-    const serial = document.createElement("div");
-    serial.className = "bl4-row-serial";
-    serial.textContent = row.serial;
-    body.append(title, meta, serial);
-    item.append(checkbox, body);
-    els.bl4Rows.appendChild(item);
-  });
-
-  if (state.bl4FilteredEntries.length > maxRows) {
-    const note = document.createElement("div");
-    note.className = "dev-empty-row";
-    note.textContent = `Showing first ${maxRows} row(s). Narrow Search or filters for more.`;
-    els.bl4Rows.appendChild(note);
-  }
+  renderBl4Cards();
 
   if (!state.bl4ActiveId && state.bl4FilteredEntries.length) {
     selectBl4Entry(bl4EntryId(state.bl4FilteredEntries[0]));
@@ -2653,11 +2612,6 @@ function renderBl4Codes() {
 
 function applyBl4Search() {
   state.bl4SearchQuery = getValue(els.bl4SearchInput);
-  renderBl4Codes();
-}
-
-function setBl4ResultFilter(value) {
-  state.bl4ResultFilter = value || "All";
   renderBl4Codes();
 }
 
@@ -5308,9 +5262,6 @@ function wireEvents() {
     if (selectNode) selectNode.addEventListener("change", renderBl4Codes);
   });
   els.bl4SelectAllBtn.addEventListener("click", selectAllBl4Visible);
-  document.querySelectorAll("[data-bl4-result-filter]").forEach((button) => {
-    button.addEventListener("click", () => setBl4ResultFilter(button.dataset.bl4ResultFilter));
-  });
   els.bl4ClearSelectionBtn.addEventListener("click", clearBl4Selection);
   els.bl4CopySelectedBtn.addEventListener("click", copySelectedBl4Serials);
   els.bl4CopySerialBtn.addEventListener("click", copyBl4Serial);

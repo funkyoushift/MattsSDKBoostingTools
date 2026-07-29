@@ -37,9 +37,19 @@ def base85_decode(serial):
         while i < len(s) and count < 5:
             ch = s[i]
             i += 1
-            if ch in REV:
-                v = v * 85 + REV[ch]
-                count += 1
+            # Whitespace is ignorable padding; any other non-alphabet char must
+            # fail loudly. Silently skipping (old behavior) shifted the bitstream
+            # when accents/smart-quotes replaced legitimate alphabet chars such
+            # as backtick (`).
+            if ch.isspace():
+                continue
+            if ch not in REV:
+                raise ValueError(
+                    f"invalid Base85 character {ch!r} at index {i + 1} "
+                    "(not in BL4 alphabet; check for accents/smart quotes replacing ` or 0/O typos)"
+                )
+            v = v * 85 + REV[ch]
+            count += 1
         if count == 0:
             break
         for _ in range(5 - count):

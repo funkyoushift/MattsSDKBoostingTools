@@ -2037,21 +2037,24 @@ def clear_serial_tools() -> dict[str, Any]:
 
 
 def _parse_serial_text(raw: object) -> list[str]:
+    """Parse pasted serial input without corrupting BL4 Base85 payloads.
+
+    `@` and `U` are both valid Base85 alphabet characters, so a contiguous
+    `@U...` token may contain `@U` mid-payload. Never split on those. Multiple
+    Base85 serials on one line must be whitespace-separated.
+    """
     tokens: list[str] = []
     for line in str(raw or "").strip().splitlines():
-        text = line.strip()
+        text = serial_rewards._strip_wrapping_markdown_backticks(line.strip())
         if not text:
             continue
         if "|" in text:
             tokens.append(text)
             continue
-        starts = [m.start() for m in re.finditer(r"(?=@U)", text)]
-        if len(starts) > 1:
-            starts.append(len(text))
-            for i in range(len(starts) - 1):
-                part = text[starts[i]:starts[i + 1]].strip()
-                if part:
-                    tokens.append(part)
+        parts = [serial_rewards._strip_wrapping_markdown_backticks(part) for part in text.split()]
+        parts = [part for part in parts if part]
+        if len(parts) > 1 and all(part.startswith("@U") for part in parts):
+            tokens.extend(parts)
             continue
         tokens.append(text)
     return tokens
@@ -2206,6 +2209,15 @@ def give_serials(text: object, mode: str = "selected", override_level: object = 
         serials = serial_rewards._resolve_give_serial_strings(expanded)
     except Exception as exc:
         return {"ok": False, "message": f"Serial resolve failed: {exc!r}"}
+    if serials is None:
+        return {
+            "ok": False,
+            "message": (
+                "Serial resolve failed (see SDK log). Base85 may be corrupt — "
+                "check digit 0 vs letter O, paste the full contiguous @U code "
+                "(do not wrap it in Discord inline backticks), and avoid truncated copies."
+            ),
+        }
     if not serials:
         return {"ok": False, "message": "No valid serials after parsing/resolving."}
     try:

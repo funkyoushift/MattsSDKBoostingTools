@@ -522,13 +522,6 @@
               <select id="bl4MattmabFilter"></select>
             </label>
           </div>
-          <div class="button-row wrap">
-            <button data-bl4-result-filter="All">All Results</button>
-            <button data-bl4-result-filter="Legit">Legit</button>
-            <button data-bl4-result-filter="Modded">Modded</button>
-            <button data-bl4-result-filter="Error">Error</button>
-            <button data-bl4-result-filter="Unchecked">?</button>
-          </div>
         </div>
 
         <div id="bl4Count" class="status-line">0 shown / 0 merged | 0 selected</div>
@@ -548,29 +541,20 @@
           </div>
         </section>
 
-        <div class="grid bl4-grid">
-          <section class="bl4-list-pane">
-            <h3>Codes</h3>
-            <div id="bl4Rows" class="bl4-code-list">
-              <div class="dev-empty-row">No BL4 codes loaded.</div>
-            </div>
-          </section>
-
-          <section class="bl4-detail-pane">
-            <h3>Details</h3>
-            <pre id="bl4Detail" class="detail-pre">Select a BL4 code.</pre>
-            <label for="bl4Serial">Serial</label>
-            <textarea id="bl4Serial" class="output-box small" spellcheck="false" readonly></textarea>
-            <label for="bl4Breakdown">Parts Breakdown</label>
-            <textarea id="bl4Breakdown" class="output-box medium" spellcheck="false" readonly></textarea>
-            <div class="button-row wrap">
-              <button id="bl4CopyBreakdownBtn">Copy Parts Breakdown</button>
-              <button id="bl4CopySerialBtn">Copy Serial</button>
-              <button id="bl4BookmarkBtn">Bookmark This</button>
-              <button id="bl4OpenLootlemonBtn">Open Lootlemon</button>
-            </div>
-          </section>
-        </div>
+        <section class="bl4-detail-pane">
+          <h3>Details</h3>
+          <pre id="bl4Detail" class="detail-pre">Select a BL4 code.</pre>
+          <label for="bl4Serial">Serial</label>
+          <textarea id="bl4Serial" class="output-box small" spellcheck="false" readonly></textarea>
+          <label for="bl4Breakdown">Parts Breakdown</label>
+          <textarea id="bl4Breakdown" class="output-box medium" spellcheck="false" readonly></textarea>
+          <div class="button-row wrap">
+            <button id="bl4CopyBreakdownBtn">Copy Parts Breakdown</button>
+            <button id="bl4CopySerialBtn">Copy Serial</button>
+            <button id="bl4BookmarkBtn">Bookmark This</button>
+            <button id="bl4OpenLootlemonBtn">Open Lootlemon</button>
+          </div>
+        </section>
 
         <section class="delivery-panel">
           <h3>Delivery</h3>
@@ -596,7 +580,7 @@
               <input id="bl4DeliveryLevel" type="number" min="1" max="60" value="60">
             </label>
           </div>
-          <div id="bl4DeliveryStatus" class="status-line warning">Delivery sends checked rows, or the active code if none are checked.</div>
+          <div id="bl4DeliveryStatus" class="status-line warning">Delivery sends checked image cards, or the active code if none are checked.</div>
           <div class="button-row wrap">
             <button data-bl4-send-mode="selected">Deliver Selected</button>
             <button data-bl4-send-mode="all">Deliver All</button>

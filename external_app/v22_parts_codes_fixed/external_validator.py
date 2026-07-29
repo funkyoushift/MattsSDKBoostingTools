@@ -34,15 +34,12 @@ def parse_serial_text(raw: str) -> list[str]:
             tokens.append(text)
             continue
 
-        # If multiple Base85 values were pasted onto one line, split only at a
-        # new @U prefix. Base85 itself may contain commas, braces, and symbols.
-        starts = [m.start() for m in re.finditer(r"(?=@U)", text)]
-        if len(starts) > 1:
-            starts.append(len(text))
-            for i in range(len(starts) - 1):
-                part = text[starts[i]:starts[i + 1]].strip()
-                if part:
-                    tokens.append(part)
+        # `@`/`U` are valid Base85 alphabet chars, so never split a contiguous
+        # token on mid-payload `@U`. Multiple Base85 values on one line must be
+        # whitespace-separated.
+        parts = text.split()
+        if len(parts) > 1 and all(part.startswith("@U") for part in parts):
+            tokens.extend(parts)
             continue
 
         tokens.append(text)

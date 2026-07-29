@@ -6,6 +6,7 @@ SDK/game calls still happen from the loaded mod runtime instead of the external 
 """
 from __future__ import annotations
 
+import copy
 import json
 import threading
 import time
@@ -30,6 +31,10 @@ _started = False
 _lock = threading.RLock()
 _queue: deque[dict[str, Any]] = deque()
 _results: dict[str, dict[str, Any]] = {}
+# Request IDs whose HTTP waiters already timed out / disconnected.  Those actions
+# may still run if the game later ticks with an empty new-command stream, but a
+# *new* /action must drop them so stale serials/spawns cannot re-fire mid-flight.
+_abandoned_rids: set[str] = set()
 _last_action: str = ""
 _last_error: str = ""
 _tick_registered = False
@@ -57,6 +62,68 @@ def _now() -> float:
         return time.monotonic()
     except Exception:
         return time.time()
+
+
+def _copy_payload(payload: Any) -> dict[str, Any]:
+    """Snapshot request payloads so later requests cannot mutate queued work."""
+    if not isinstance(payload, dict):
+        return {}
+    try:
+        return copy.deepcopy(payload)
+    except Exception:
+        try:
+            return dict(payload)
+        except Exception:
+            return {}
+
+
+# Background / read-mostly actions must not wipe a waiting spawn or serial send.
+_QUEUE_PRESERVING_ACTIONS = frozenset({
+    "auto_inventory_sizes",
+    "status",
+    "clear_external_log",
+    "dev_spawner_status",
+    "dev_spawner_cache_status",
+    "dev_spawner_logo_options",
+})
+
+
+def _clear_pending_queue_locked() -> int:
+    """Drop every not-yet-executed bridge action (used by user-facing commands).
+
+    HTTP handlers park work on a game-tick queue.  If the game is paused/slow, a
+    later user command must not leave prior serials/spawns sitting there — they
+    would fire on the same tick as the newer command ("previous list" /
+    "boss spawned again on unrelated command").
+    """
+    dropped = 0
+    while _queue:
+        item = _queue.popleft()
+        rid = str(item.get("id") or "")
+        if rid:
+            _abandoned_rids.add(rid)
+        dropped += 1
+    if len(_abandoned_rids) > 256:
+        _abandoned_rids.clear()
+    return dropped
+
+
+def _prepare_queue_for_enqueue_locked(action: str) -> int:
+    if action in _QUEUE_PRESERVING_ACTIONS:
+        return 0
+    return _clear_pending_queue_locked()
+
+
+def _request_was_superseded_locked(rid: str) -> bool:
+    """True when a newer /action cleared this id before the game tick ran it."""
+    if not rid or rid not in _abandoned_rids:
+        return False
+    if rid in _results:
+        return False
+    for item in _queue:
+        if str(item.get("id") or "") == rid:
+            return False
+    return True
 
 
 # This is the shared UI description consumed by the external control panel.
@@ -618,17 +685,22 @@ def _process_pending_actions(*_args: Any, **_kwargs: Any) -> None:
             if not _queue:
                 return None
             item = _queue.popleft()
-        rid = item.get("id")
+            rid = str(item.get("id") or "")
+            # Do not skip abandoned ids here: a timed-out waiter still wants the
+            # action to run on the next idle game tick.  Abandoned ids are only
+            # cancelled when a newer /action prunes the queue.
+            if rid:
+                _abandoned_rids.discard(rid)
         action = item.get("action")
         payload = item.get("payload") or {}
         try:
-            result = _handle_action(str(action), dict(payload))
+            result = _handle_action(str(action), _copy_payload(payload))
         except Exception as exc:
             message = _format_action_exception(exc)
             _last_error = "" if _is_optional_ui_dependency_error(repr(exc)) else repr(exc)
             result = {"ok": False, "message": message}
         with _lock:
-            _results[str(rid)] = result
+            _results[rid or uuid.uuid4().hex] = result
     return None
 
 
@@ -718,16 +790,37 @@ class _Handler(BaseHTTPRequestHandler):
             raw = self.rfile.read(length).decode("utf-8") if length else "{}"
             data = json.loads(raw or "{}")
             action = str(data.get("action") or "")
-            payload = data.get("payload") or {}
+            payload = _copy_payload(data.get("payload"))
             if not action:
                 self._send(400, {"ok": False, "message": "Missing action"})
                 return
             rid = uuid.uuid4().hex
+            wait_timeout = float(data.get("timeout", 5.0) or 5.0)
+            if wait_timeout < 1.0:
+                wait_timeout = 1.0
+            enqueued_at = _now()
             with _lock:
-                _queue.append({"id": rid, "action": action, "payload": payload})
-            deadline = _now() + float(data.get("timeout", 5.0) or 5.0)
+                dropped = _prepare_queue_for_enqueue_locked(action)
+                _queue.append({
+                    "id": rid,
+                    "action": action,
+                    "payload": payload,
+                    "enqueued_at": enqueued_at,
+                    "waiter_deadline": enqueued_at + wait_timeout,
+                })
+            if dropped:
+                _log(f"Cleared {dropped} pending bridge action(s) before enqueueing {action}.")
+            deadline = enqueued_at + wait_timeout
             while _now() < deadline:
                 with _lock:
+                    if _request_was_superseded_locked(rid):
+                        _abandoned_rids.discard(rid)
+                        self._send(409, {
+                            "ok": False,
+                            "cancelled": True,
+                            "message": "Action was cancelled because a newer bridge command replaced the pending queue.",
+                        })
+                        return
                     result = _results.pop(rid, None)
                 if result is not None:
                     # Handled action failures are still useful JSON responses for
@@ -735,7 +828,34 @@ class _Handler(BaseHTTPRequestHandler):
                     self._send(200, result)
                     return
                 time.sleep(0.05)
-            self._send(202, {"ok": False, "queued": True, "message": "Action queued but not processed yet. Make sure the game is loaded and the SDK mod is active."})
+            # Waiter gave up. Keep the item queued for an idle in-game tick, but
+            # mark it abandoned so a *later* user command can cancel this backlog.
+            with _lock:
+                still_queued = any(str(item.get("id") or "") == rid for item in _queue)
+                already_done = rid in _results
+                if not still_queued and not already_done:
+                    _abandoned_rids.discard(rid)
+                    self._send(409, {
+                        "ok": False,
+                        "cancelled": True,
+                        "message": "Action was cancelled because a newer bridge command replaced the pending queue.",
+                    })
+                    return
+                if already_done:
+                    result = _results.pop(rid, None)
+                    if result is not None:
+                        self._send(200, result)
+                        return
+                _abandoned_rids.add(rid)
+            self._send(202, {
+                "ok": True,
+                "queued": True,
+                "message": (
+                    "Action queued but not processed yet. Make sure the game is loaded "
+                    "and unpaused so the SDK tick can run it. Sending another command "
+                    "will cancel this waiting action to avoid stale serials/spawns."
+                ),
+            })
         except Exception as exc:
             self._send(500, {"ok": False, "message": repr(exc)})
 
