@@ -4,7 +4,7 @@
   "sdkmod_version": "1.1.2",
   "resources_version": "1.1.2",
   "electron_version": "1.1.2",
-  "git_commit": "pending",
+  "git_commit": "40d36ed",
   "built_at_utc": "2026-07-29T03:37:27Z",
   "sdk_required": "oak2-mod-manager v0.3",
   "sdk_required_url": "https://bl-sdk.github.io/oak2-mod-db/",
