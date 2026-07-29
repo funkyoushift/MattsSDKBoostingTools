@@ -98,13 +98,20 @@ if ([string]$PackagedManifest.package_version -ne $PackageVersion) {
     throw "Packaged Electron release manifest package_version '$($PackagedManifest.package_version)' does not match package version '$PackageVersion'. Run .\build_electron_beta.ps1 -Installer."
 }
 
+# Always publish the packaged latest.json so remote update checks match the
+# installer-bundled manifest. Post-release git_commit refreshes caused false
+# same-version rebuild prompts when they diverged from the baked file.
+$PackagedManifestText = Get-Content -Raw $PackagedManifestPath
+Write-Utf8NoBom -Path $ManifestPath -Text $PackagedManifestText
+$Manifest = Get-Content -Raw $ManifestPath | ConvertFrom-Json
+
 $ElectronAssets = @($ElectronInstaller)
 $blockMap = "$ElectronInstaller.blockmap"
 if (Test-Path $blockMap) {
     $ElectronAssets += $blockMap
 }
 $ElectronAssets += $latestYml
-$ElectronAssets += $ManifestPath
+$ElectronAssets += $PackagedManifestPath
 $ElectronUnpackedZipName = "MSBT-Portable-v$PackageVersion-win-x64.zip"
 $ElectronUnpackedZip = Join-Path $ElectronDist $ElectronUnpackedZipName
 if (Test-Path $ElectronUnpackedZip) {
@@ -119,12 +126,8 @@ try {
 }
 $BuiltAtUtc = [DateTime]::UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ")
 
-$Manifest = $null
-if (Test-Path $ManifestPath) {
-    $Manifest = Get-Content -Raw $ManifestPath | ConvertFrom-Json
-    if ($Manifest.package_version -and [string]$Manifest.package_version -ne $PackageVersion) {
-        throw "releases\latest.json package_version '$($Manifest.package_version)' does not match package version '$PackageVersion'."
-    }
+if ($Manifest.package_version -and [string]$Manifest.package_version -ne $PackageVersion) {
+    throw "releases\latest.json package_version '$($Manifest.package_version)' does not match package version '$PackageVersion'."
 }
 
 $notes = @"

@@ -389,12 +389,19 @@ function isNewerPublicVersion(remote, local) {
 }
 
 function normalizeManifestValue(value) {
-  return value == null ? "" : String(value).trim();
+  const text = value == null ? "" : String(value).trim();
+  // Treat build placeholders as empty so post-release manifest stamps
+  // (pending -> real commit) do not look like same-version rebuilds.
+  if (!text || text === "unknown" || text === "unavailable" || text === "pending" || text === "dev") {
+    return "";
+  }
+  return text;
 }
 
 function manifestMetadataChanged(local, remote) {
+  // Compare content hashes only. Do not use git_commit: release builds bake
+  // "pending", then a later refresh often stamps the real SHA without rebuilding.
   const fields = [
-    "git_commit",
     "external_exe_sha256",
     "sdkmod_sha256",
     "ui_layout_sha256",

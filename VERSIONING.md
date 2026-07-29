@@ -57,6 +57,8 @@ Electron updater metadata may remain named `latest.yml`, because that filename i
 5. Push the tag.
 6. Publish assets with `.\publish_github_release.ps1`.
 
+Do **not** rewrite `releases/latest.json` `git_commit` / compared metadata after the installer is built unless you also rebuild and re-upload the installer. Installed apps compare their bundled manifest to the remote `latest.json`; a post-release stamp (`pending` → real SHA) looks like a same-version rebuild and triggers a false update prompt. The publisher uploads the packaged `latest.json` so the release asset matches what users install.
+
 The publisher refuses to publish when:
 
 - The tag does not match `electron_poc/package.json`.
