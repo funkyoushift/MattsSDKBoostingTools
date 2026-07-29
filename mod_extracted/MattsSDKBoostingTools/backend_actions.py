@@ -528,8 +528,13 @@ def _sdk_diagnostics() -> dict[str, Any]:
         py_version = sys.version.split()[0]
     except Exception:
         py_version = ""
+    try:
+        from . import __version__ as msbt_mod_version
+    except Exception:
+        msbt_mod_version = ""
     return {
         "msbt_loaded": True,
+        "msbt_mod_version": str(msbt_mod_version or ""),
         "python_version": py_version,
         "mods_base_version": _module_version("mods_base"),
         "unrealsdk_version": _module_version("unrealsdk"),

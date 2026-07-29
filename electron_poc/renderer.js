@@ -297,6 +297,7 @@ const state = {
   bl4FilteredEntries: [],
   bl4SearchQuery: "",
   bl4SelectedIds: new Set(),
+  bridgeDiagnostics: {},
   bridgeOnline: false,
   bridgeStatusPollInFlight: false,
   bridgeStatusPollTimer: null,
@@ -399,6 +400,75 @@ function resultMessage(result) {
   if (data && typeof data.message === "string" && data.message.trim()) return data.message;
   if (result && typeof result.message === "string" && result.message.trim()) return result.message;
   return pretty(result);
+}
+
+const SDK_INSTALL_RESTART_HINT =
+  "Open Updates → Install/Update SDK Mod, then fully restart Borderlands 4 so the bridge loads the new .sdkmod.";
+
+function annotateDeliveryFailureMessage(message) {
+  const text = String(message || "").trim();
+  if (!text) return text;
+  if (/Install\/Update SDK Mod|bundled SDK mod/i.test(text)) return text;
+  if (/Base85 may be corrupt|digit 0 vs letter O|Serial resolve failed/i.test(text)) {
+    return `${text} ${SDK_INSTALL_RESTART_HINT}`;
+  }
+  return text;
+}
+
+function compareSemver(a, b) {
+  const parse = (value) => String(value || "")
+    .trim()
+    .split("-")[0]
+    .split(".")
+    .map((part) => Number(part))
+    .map((part) => (Number.isFinite(part) ? part : 0));
+  const left = parse(a);
+  const right = parse(b);
+  const len = Math.max(left.length, right.length, 3);
+  for (let i = 0; i < len; i += 1) {
+    const l = left[i] || 0;
+    const r = right[i] || 0;
+    if (l > r) return 1;
+    if (l < r) return -1;
+  }
+  return 0;
+}
+
+async function ensureLiveSdkReady(outNode) {
+  const versionInfo = state.versionInfo || (typeof refreshVersionInfo === "function" ? await refreshVersionInfo() : null) || {};
+  if (sdkModNeedsAttention(versionInfo)) {
+    const installed = versionInfo.installedSdkmod || {};
+    const message =
+      `${installed.message || "Installed SDK mod does not match this app build."} ${SDK_INSTALL_RESTART_HINT}`;
+    if (outNode) setOutput(outNode, message);
+    appendActivity(message);
+    return { ok: false, message };
+  }
+
+  if (!state.bridgeOnline) {
+    const statusResult = await bridgeStatus({ quiet: true });
+    const statusData = statusResult && statusResult.data ? statusResult.data : statusResult;
+    if (!statusResult || !statusResult.ok || !(statusData && statusData.ok)) {
+      const message = "Bridge offline. Launch Borderlands 4 with MattsSDKBoostingTools loaded, then retry delivery.";
+      if (outNode) setOutput(outNode, message);
+      appendActivity(message);
+      return { ok: false, message };
+    }
+  }
+
+  const diagnostics = state.bridgeDiagnostics || {};
+  const runningVersion = String(diagnostics.msbt_mod_version || "").trim();
+  const expectedVersion = String(versionInfo.sdkmodVersion || versionInfo.packageVersion || "").trim();
+  // 1.1.5+ reports msbt_mod_version. Missing/older values mean the game process
+  // is still running a pre-fix SDK (common after Electron-only updates).
+  if (!runningVersion || compareSemver(runningVersion, "1.1.5") < 0) {
+    const message =
+      `In-game SDK mod is outdated or not restarted (bridge reports ${runningVersion || "no msbt_mod_version"}; app expects ${expectedVersion || "1.1.5+"}). ${SDK_INSTALL_RESTART_HINT}`;
+    if (outNode) setOutput(outNode, message);
+    appendActivity(message);
+    return { ok: false, message };
+  }
+  return { ok: true, message: "" };
 }
 
 function clampOpacityPercent(value) {
@@ -1102,6 +1172,7 @@ function applyBridgeStatusResult(result, options = {}) {
   const data = result && result.data ? result.data : {};
   if (!result.ok || !data.ok) {
     state.bridgeOnline = false;
+    state.bridgeDiagnostics = {};
     state.players = [];
     state.selectedTarget = "";
     state.selectedTargetName = "";
@@ -1113,6 +1184,7 @@ function applyBridgeStatusResult(result, options = {}) {
   }
 
   state.bridgeOnline = true;
+  state.bridgeDiagnostics = data.diagnostics && typeof data.diagnostics === "object" ? data.diagnostics : {};
   renderPlayers(data);
   const playerCount = Array.isArray(data.players) ? data.players.length : 0;
   const selected = data.selected_player || "none";
@@ -1398,6 +1470,10 @@ async function sendBoostSerial(mode) {
 }
 
 async function sendSerialPayload(mode, serialText, overrideLevel, level, outNode) {
+  const sdkReady = await ensureLiveSdkReady(outNode);
+  if (!sdkReady.ok) {
+    return { ok: false, message: sdkReady.message };
+  }
   if (mode === "selected") {
     const ok = await ensureSelectedTarget(outNode);
     if (!ok) return;
@@ -1883,7 +1959,9 @@ async function sendBookmarkSerial(mode) {
   );
   const result = await sendSerialPayload(mode, serialText, false, 60, els.bookmarkOutput);
   if (!result) return;
-  const message = resultMessage(result);
+  const message = actionSucceeded(result)
+    ? resultMessage(result)
+    : annotateDeliveryFailureMessage(resultMessage(result));
   if (actionSucceeded(result)) {
     setBookmarkStatus(`Delivery accepted: ${message}`, "ok");
   } else {
@@ -2831,7 +2909,9 @@ async function sendBl4Serial(mode) {
     els.bl4Output
   );
   if (!result) return;
-  const message = resultMessage(result);
+  const message = actionSucceeded(result)
+    ? resultMessage(result)
+    : annotateDeliveryFailureMessage(resultMessage(result));
   setBl4DeliveryStatus(actionSucceeded(result) ? `Delivery accepted: ${message}` : `Delivery failed: ${message}`, actionSucceeded(result) ? "ok" : "bad");
 }
 
@@ -5047,6 +5127,7 @@ async function collectReportDiagnostics() {
     lines.push(`Bridge online: ${status && status.ok ? "yes" : "no"}`);
     lines.push(`Players loaded: ${Array.isArray(status && status.players) ? status.players.length : 0}`);
     lines.push(`Bridge queue: ${status && Number.isFinite(Number(status.queue)) ? status.queue : "unknown"}`);
+    lines.push(`MSBT mod version (running): ${diagnostics.msbt_mod_version || "unknown"}`);
     lines.push(`ActorScriptDeployer available: ${diagnostics.actor_script_deployer_available === true ? "yes" : "no"}`);
     lines.push(`BLImGui available: ${diagnostics.blimgui_available === true ? "yes" : "no"}`);
     lines.push(`unrealsdk: ${diagnostics.unrealsdk_version || "unknown"}`);

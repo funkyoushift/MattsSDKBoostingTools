@@ -11,8 +11,8 @@ from .inventory_capacity import start_auto_inventory_worker
 from .external_bridge import start_bridge
 from .external_app_launcher import _cmd_msbt_external_app
 
-__version__: str = "1.0"
-__version_info__: tuple[int, int] = (1, 0)
+__version__: str = "1.1.5"
+__version_info__: tuple[int, int, int] = (1, 1, 5)
 
 _panel_keybinds = []
 _panel_commands = []

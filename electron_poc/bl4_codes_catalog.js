@@ -299,9 +299,22 @@ function parseGzoCatalogText(body) {
   return out;
 }
 
+function preferLongerBase85Serial(serialCandidate, alternateCandidate) {
+  const serial = text(serialCandidate);
+  const alternate = text(alternateCandidate);
+  // Lootlemon scrape sometimes stores a truncated @U prefix in `serial` and the
+  // full contiguous code in `manufacturer`. Prefer the longer matching @U value.
+  if (validSerial(alternate) && (!validSerial(serial) || (alternate.length > serial.length && alternate.startsWith(serial)))) {
+    return { serial: alternate, swappedFromManufacturer: validSerial(serial) || Boolean(serial) };
+  }
+  return { serial, swappedFromManufacturer: false };
+}
+
 function normalizeCodeEntry(raw, defaults) {
   if (!raw || typeof raw !== "object") return null;
-  const serial = text(raw.serial || raw.code || raw.base85);
+  const manufacturerRaw = text(raw.manufacturer || raw.mfr || raw.manu);
+  const recovered = preferLongerBase85Serial(raw.serial || raw.code || raw.base85, manufacturerRaw);
+  const serial = recovered.serial;
   if (!validSerial(serial)) return null;
   const tags = unique([
     ...toArray(raw.tags),
@@ -314,7 +327,9 @@ function normalizeCodeEntry(raw, defaults) {
   const source = normalizeTitle(raw.source, defaults.source);
   const listing = normalizeListing(raw.listing || raw.listing_name || raw.source, defaults.listing || source);
   const type = normalizeType(raw.type || raw.category || raw.item_type || raw.gear_type || raw.decoded_type);
-  const manufacturer = normalizeTitle(raw.manufacturer || raw.mfr || raw.manu);
+  const manufacturer = recovered.swappedFromManufacturer
+    ? ""
+    : normalizeTitle(manufacturerRaw);
   const rarity = normalizeRarity(raw.rarity || raw.quality);
   const classification = normalizeClassification(raw.classification || raw.validation || raw.mattmab_classification, tags);
   const mattmab = normalizeMattmab(raw.mattmab_validator || raw.mattmab_result || raw.mattmab || raw.validation_result);
@@ -508,6 +523,7 @@ async function refreshGzoCatalog(resourceDir = DEFAULT_RESOURCE_DIR, gzoCachePat
 module.exports = {
   loadBl4Catalog,
   normalizeCodeEntry,
+  preferLongerBase85Serial,
   refreshGzoCatalog,
   validSerial
 };
