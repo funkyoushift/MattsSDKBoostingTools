@@ -495,7 +495,16 @@ async function fileExists(filePath) {
 }
 
 async function readJsonFile(filePath) {
-  return JSON.parse(await fs.readFile(filePath, "utf8"));
+  const raw = await fs.readFile(filePath, "utf8");
+  return JSON.parse(raw.replace(/^\uFEFF/, ""));
+}
+
+function normalizeManifestVersion(value, fallback = "") {
+  const text = String(value || "").trim();
+  if (!text || text === "unknown" || text === "unavailable" || text === "pending" || text === "dev") {
+    return String(fallback || "").trim();
+  }
+  return text;
 }
 
 async function safeFileHash(filePath) {
@@ -702,24 +711,33 @@ async function localVersionInfo() {
   try {
     manifest = await readJsonFile(LOCAL_MANIFEST_PATH);
   } catch (error) {
-    manifest = { package_version: "unknown", error: String(error && error.message ? error.message : error) };
+    manifest = { error: String(error && error.message ? error.message : error) };
   }
   const bundledSdkmod = await bundledSdkmodInfo();
   const bundledActorScriptDeployer = await bundledActorScriptDeployerInfo();
   const installedSdkmod = await detectInstalledSdkmodInfo(bundledSdkmod.sha256);
+  const appVersion = app.getVersion();
+  const packageVersion = normalizeManifestVersion(manifest.package_version || manifest.app_version, appVersion) || appVersion;
   return {
     ok: true,
-    appVersion: app.getVersion(),
+    appVersion,
     electronVersion: process.versions.electron,
     platform: process.platform,
     osRelease: os.release(),
-    packageVersion: manifest.package_version || manifest.app_version || app.getVersion(),
-    sdkmodVersion: manifest.sdkmod_version || "unavailable",
-    resourcesVersion: manifest.resources_version || "unavailable",
+    packageVersion,
+    sdkmodVersion: normalizeManifestVersion(manifest.sdkmod_version, packageVersion) || "unavailable",
+    resourcesVersion: normalizeManifestVersion(manifest.resources_version, packageVersion) || "unavailable",
     sdkRequired: manifest.sdk_required || "oak2-mod-manager v0.3",
     sdkRequiredUrl: manifest.sdk_required_url || "https://bl-sdk.github.io/oak2-mod-db/",
     packaged: app.isPackaged,
-    localManifest: manifest,
+    localManifest: {
+      ...manifest,
+      package_version: packageVersion,
+      app_version: normalizeManifestVersion(manifest.app_version, appVersion) || appVersion,
+      sdkmod_version: normalizeManifestVersion(manifest.sdkmod_version, packageVersion) || packageVersion,
+      resources_version: normalizeManifestVersion(manifest.resources_version, packageVersion) || packageVersion,
+      electron_version: normalizeManifestVersion(manifest.electron_version, appVersion) || appVersion
+    },
     bundledSdkmod,
     bundledActorScriptDeployer,
     installedSdkmod,
@@ -1386,10 +1404,10 @@ ipcMain.handle("app:checkUpdates", async () => {
 
   try {
     const { response, manifest: remote, url: manifestUrl } = await fetchLatestManifest();
-    const localVersion = String(local.package_version || versionInfo.packageVersion || "");
-    const remoteVersion = String(remote.package_version || "");
-    const localAppVersion = String(versionInfo.appVersion || "");
-    const remoteElectronVersion = String(remote.electron_version || remote.app_version || remote.package_version || "");
+    const localVersion = normalizeManifestVersion(local.package_version || versionInfo.packageVersion, versionInfo.appVersion);
+    const remoteVersion = normalizeManifestVersion(remote.package_version);
+    const localAppVersion = normalizeManifestVersion(versionInfo.appVersion);
+    const remoteElectronVersion = normalizeManifestVersion(remote.electron_version || remote.app_version || remote.package_version);
     const packageVersionChanged = Boolean(remoteVersion && localVersion && remoteVersion !== localVersion);
     const packageBuildChanged = Boolean(remoteVersion && localVersion && remoteVersion === localVersion && manifestMetadataChanged(local, remote));
     const packageUpdateAvailable = packageVersionChanged || packageBuildChanged;
