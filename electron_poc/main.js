@@ -209,7 +209,8 @@ let latestUpdateState = {
 const DEFAULT_WINDOW_BOUNDS = {
   width: 1280,
   height: 820,
-  minWidth: 980,
+  // Allow 1080p half-screen (~960 CSS px) and high-DPI half snaps (~850–900).
+  minWidth: 880,
   minHeight: 660
 };
 const DEFAULT_WINDOW_OPACITY = 1;

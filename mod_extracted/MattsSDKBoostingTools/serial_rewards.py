@@ -22,7 +22,7 @@ from .party_helpers import (
     _gbc_run_session_timer_from_give_serial,
     _gbc_session_world_and_gamestate,
 )
-from .serial_converter import serial_to_human as _serial_to_human
+from .serial_converter import base85_decode as _base85_decode
 from unrealsdk.unreal import FGbxDefPtr, UObject
 from unrealsdk import logging
 
@@ -123,7 +123,6 @@ def _serial_delivery_post_open_delay(mode: str | None = None) -> float:
 
 # Same contract as Legit Builder SERIAL_API_URL (POST JSON {"deserialized": "…"} → {"serial_b85": "…"}).
 _DEFAULT_GENIE_SERIALIZE_API_URL = "https://save-editor.be/nicnl/api.php"
-_BASE85_TOKEN_RE = re.compile(r"^@[!-~]+$")
 # BL4-style deserialized human line: leading root tuple then first pipe (e.g. "7, 0, 1, 60| …").
 _DESERIALIZED_HUMAN_HEAD_RE = re.compile(r"^\s*\d+\s*,\s*\d+\s*,\s*\d+\s*,\s*\d+\s*\|")
 
@@ -142,7 +141,9 @@ def _genie_serialize_enabled() -> bool:
 
 def _looks_like_base85(s: str) -> bool:
     t = (s or "").strip()
-    return len(t) >= 10 and bool(_BASE85_TOKEN_RE.match(t))
+    # Any @U-prefixed token is treated as Base85 so non-alphabet characters
+    # (accents, smart quotes, etc.) are validated instead of silently forwarded.
+    return len(t) >= 10 and t.startswith("@U")
 
 
 def _looks_like_deserialized_human(s: str) -> bool:
@@ -236,18 +237,24 @@ def _serialize_deserialized_to_b85(deserialized: str) -> str:
 
 
 def _validate_base85_decodable(b85: str) -> None:
-    """Raise if a Base85 serial cannot be locally decoded to a human serial.
+    """Raise if Base85 framing/alphabet cannot be decoded.
 
-    Delivery passes Base85 strings straight to the game. Corrupt encodings (for
-    example trailing letter-O where digit-0 is required) still spawn items, but
-    as broken "Bricked-Up" gear. Reject them before delivery.
+    Delivery passes Base85 strings straight to the game. Reject characters
+    outside the BL4 alphabet (smart quotes, accents replacing `` ` ``, etc.)
+    before spawn so those cannot silently shift the bitstream.
+
+    Do **not** require a full offline ``serial_to_human`` bitstream parse:
+    some alphabet-valid catalog / in-game codes are incomplete for that
+    parser but are still the payload the game expects. Letter-O vs digit-0
+    typos remain alphabet-legal and are not auto-repaired.
     """
-    _serial_to_human(b85)
+    _base85_decode(b85)
 
 
 def _resolve_give_serial_strings(raw_serials: List[str]) -> Optional[List[str]]:
-    """Convert deserialized human lines to Base85 via HTTP; abort whole command on first failure."""
+    """Convert deserialized human lines to Base85 via HTTP; skip undecodable Base85 rows."""
     out: List[str] = []
+    rejected = 0
     for idx, s in enumerate(raw_serials):
         t = _strip_wrapping_markdown_backticks(s.strip())
         if not t:
@@ -256,15 +263,15 @@ def _resolve_give_serial_strings(raw_serials: List[str]) -> Optional[List[str]]:
             try:
                 _validate_base85_decodable(t)
             except Exception as e:
+                rejected += 1
                 preview = t if len(t) <= 64 else f"{t[:61]}..."
                 _log_error(
-                    f"Give_Serial: Base85 serial #{idx + 1} failed local decode ({e}). "
-                    "Nothing will be delivered. Common causes: digit 0 mistyped as letter O, "
-                    "Discord/markdown wrapping that truncates at an interior backtick (`), "
-                    "or a truncated paste missing mid-payload characters. "
+                    f"Give_Serial: Base85 serial #{idx + 1} failed alphabet decode ({e}). "
+                    "Skipping this serial. Common causes: accents/smart quotes replacing "
+                    "a backtick, Discord/markdown damage, or non-Base85 characters in the payload. "
                     f"Preview: {preview}"
                 )
-                return None
+                continue
             out.append(t)
             continue
         if _looks_like_deserialized_human(t):
@@ -282,6 +289,8 @@ def _resolve_give_serial_strings(raw_serials: List[str]) -> Optional[List[str]]:
             out.append(b85)
             continue
         out.append(t)
+    if rejected and not out:
+        return None
     return out
 
 

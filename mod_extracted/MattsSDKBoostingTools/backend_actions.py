@@ -2213,9 +2213,10 @@ def give_serials(text: object, mode: str = "selected", override_level: object = 
         return {
             "ok": False,
             "message": (
-                "Serial resolve failed (see SDK log). Base85 may be corrupt — "
-                "check digit 0 vs letter O, paste the full contiguous @U code "
-                "(do not wrap it in Discord inline backticks), and avoid truncated copies."
+                "Serial resolve failed (see SDK log). Base85 may contain non-alphabet "
+                "characters (accents/smart quotes replacing a backtick), Discord/markdown "
+                "damage, or no deliverable serials after filtering. Paste the full "
+                "contiguous @U code without wrapping it in Discord inline backticks."
             ),
         }
     if not serials:

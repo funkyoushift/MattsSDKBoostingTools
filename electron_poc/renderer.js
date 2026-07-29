@@ -465,7 +465,9 @@ async function runAction(action, payload = {}, outNode = els.boostOutput, timeou
   appendActivity(`Sending ${action}...`);
   setOutput(outNode, `Sending ${action}...`);
   const result = await bridgeAction(action, payload, timeoutMs);
-  setOutput(outNode, result);
+  // Prefer the bridge action payload. The IPC wrapper is often `{ ok: true, data: { ok: false, ... } }`
+  // when HTTP succeeded but the in-game handler rejected the command.
+  setOutput(outNode, result && result.data !== undefined ? result.data : result);
   appendActivity(`${action}: ${resultMessage(result)}`);
   return result;
 }
@@ -5377,6 +5379,19 @@ function wireEvents() {
   if (els.appOpacity) {
     els.appOpacity.addEventListener("input", queueWindowOpacitySave);
     els.appOpacity.addEventListener("change", saveWindowOpacity);
+  }
+  const supportPanel = document.querySelector("details.support-panel");
+  if (supportPanel) {
+    const supportCollapseMq = window.matchMedia("(max-width: 1180px)");
+    const syncSupportPanelOpen = () => {
+      supportPanel.open = !supportCollapseMq.matches;
+    };
+    syncSupportPanelOpen();
+    if (typeof supportCollapseMq.addEventListener === "function") {
+      supportCollapseMq.addEventListener("change", syncSupportPanelOpen);
+    } else if (typeof supportCollapseMq.addListener === "function") {
+      supportCollapseMq.addListener(syncSupportPanelOpen);
+    }
   }
   const detectSdkModsBtn = document.getElementById("detectSdkModsBtn");
   if (detectSdkModsBtn) detectSdkModsBtn.addEventListener("click", detectSdkModsFolder);

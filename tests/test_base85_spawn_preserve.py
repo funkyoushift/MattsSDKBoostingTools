@@ -103,8 +103,24 @@ def test_spawn_input_preserves_backtick_and_mid_at_u():
 
 
 def test_no_o_to_0_substitution():
+    # Letter O is alphabet-legal; we must not auto-repair it to digit 0.
     bad = SAMPLE[:-2] + "OO"
+    resolved = sr._resolve_give_serial_strings([bad])
+    assert resolved == [bad]
+    assert resolved[0].endswith("OO")
+    assert not resolved[0].endswith("00")
+
+
+def test_rejects_non_alphabet_base85():
+    bad = SAMPLE[:-1] + "\u00b4"  # acute accent, not in BL4 alphabet
     assert sr._resolve_give_serial_strings([bad]) is None
+    bad_ascii = SAMPLE[:-1] + "|"  # printable ASCII but not in alphabet
+    assert sr._resolve_give_serial_strings([bad_ascii]) is None
+
+
+def test_skips_bad_keeps_good_in_batch():
+    bad = SAMPLE[:-1] + "\u00b4"
+    assert sr._resolve_give_serial_strings([bad, SAMPLE]) == [SAMPLE]
 
 
 def test_whitespace_separated_serials_still_split():
@@ -128,6 +144,8 @@ def test_expand_token_preserves_mid_at_u():
 if __name__ == "__main__":
     test_spawn_input_preserves_backtick_and_mid_at_u()
     test_no_o_to_0_substitution()
+    test_rejects_non_alphabet_base85()
+    test_skips_bad_keeps_good_in_batch()
     test_whitespace_separated_serials_still_split()
     test_outer_markdown_backticks_only()
     test_expand_token_preserves_mid_at_u()
