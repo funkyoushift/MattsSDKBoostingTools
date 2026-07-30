@@ -1,197 +1,212 @@
-# Matt's SDK Boosting Tools
+# Matt's SDK Boosting Tools (MSBT)
 
-Matt's SDK Boosting Tools is a Borderlands 4 SDK mod plus a standalone Electron control panel for boosting, serial delivery, item tools, movement tools, travel helpers, and catalog workflows.
+MSBT is a Borderlands 4 boosting and item toolkit: a standalone Windows app outside the game, plus a small SDK mod that talks to Borderlands 4 while you play. Use it for currency/XP/SDU helpers, serial delivery, BL4 code browsing, Mattmab’s save/profile/item editor, Dev Spawner, map travel, movement tools, and more.
 
 **Current release: [v1.2.0](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v1.2.0)**
 
-Website:
-[FunkYouSHiFT.com](https://www.funkyoushift.com/) |
-[Tools page](https://www.funkyoushift.com/tools)
+This project is **unofficial**. It is not affiliated with, endorsed by, or connected to Gearbox, 2K, or the Borderlands franchise owners.
 
-## What's New in v1.2.0
+---
 
-Highlights since the v1.0.0 public launch:
+## Download & install (start here)
 
-- **Serial delivery reliability** — Base85/`@U`/backtick serials stay intact, bad rows are skipped instead of spawning junk, and the bridge queue no longer lets stale commands overwrite an in-progress serial delivery.
-- **Copies multiplier (1–50)** — Repeat each selected or pasted serial on Boosting, BL4 Codes, Serial Bookmarks, and the Matt Editor delivery panel.
-- **Boost targeting** — Target All Players / Target Non-Host for Quick Max, XP, currency, and inventory actions, plus dedicated UVH Booster controls (Azzy-adapted).
-- **BL4 Codes UX** — Sticky delivery side panel while you browse the catalog; larger image-card browsing.
-- **Dev Spawner** — Condensed actor rows, collapsible Active Boss list, My Favorites with inline label/note save, and Example List naming.
-- **Matt Editor** — Embedded editor polish, part supplements, save/profile YAML fixes, and Copies on the in-editor MSBT delivery panel.
-- **Updates / install** — Clearer oak2-mod-manager v0.3 requirement links and fewer false same-version update prompts.
+**Recommended:** grab the latest Windows installer from GitHub Releases:
 
-After installing **v1.2.0**, use **Install / Update SDK Mod** (or re-run the installer) and **fully restart Borderlands 4** so the bundled SDK bridge fixes load.
+- [GitHub Releases — download page](https://github.com/funkyoushift/MattsSDKBoostingTools/releases)
+- Latest installer example: `MSBT-Installer-v1.2.0.exe`
 
-## Required SDK Install
+**Portable option:** if you do not want an installer, download the portable ZIP instead (`MSBT-Portable-v…-win-x64.zip`), extract it, and run the app from that folder.
 
-MSBT targets **SDK 03 / oak2-mod-manager v0.3**. Before installing MSBT, update Borderlands 4 to the current SDK/mod manager stack:
+**Requirements**
 
-[Download oak2-mod-manager v0.3](https://github.com/bl-sdk/oak2-mod-manager/releases/tag/v0.3)
+- Borderlands 4 on PC (Windows)
+- [oak2-mod-manager **v0.3**](https://github.com/bl-sdk/oak2-mod-manager/releases/tag/v0.3) (SDK 03)
 
-Older SDK 02 installs are not the target for current MSBT builds.
+Install / update the mod manager **before** you rely on MSBT live actions. Older SDK 02 setups are not the target for current builds.
 
-## Download Latest
+Ignore `latest.json`, `latest.yml`, and `.blockmap` files unless you know why you need them — those are for the update system.
 
-Go to the [GitHub Releases page](https://github.com/funkyoushift/MattsSDKBoostingTools/releases) and pick one file:
+Site / tools: [FunkYouSHiFT.com](https://www.funkyoushift.com/) · [Tools page](https://www.funkyoushift.com/tools)
 
-| What you want | Download this | Notes |
-| --- | --- | --- |
-| Recommended normal install | `MSBT-Installer-v1.2.0.exe` | Windows installer. Adds app shortcuts and installs the bundled SDK mod plus ActorScriptDeployer into the detected Borderlands 4 `sdk_mods` folder. |
-| Manual install / no installer | `MSBT-Portable-v1.2.0-win-x64.zip` | Extract it yourself. Electron app files plus bundled SDK mod/update resources. |
-| Source code only | GitHub `Source code (zip)` / `Source code (tar.gz)` | For developers. This is not the ready-to-run app. |
+---
 
-Do **not** manually download `latest.json`, `latest.yml`, or `.blockmap` files. Those are update-system files used by the app/installer.
+## What MSBT does
 
-Older 1.x and beta packages remain available on the Releases page as historical rollback builds.
+In plain terms, the Electron app is the control panel. The SDK mod does the live work in-game.
 
-## Quick Install
+<p align="center">
+  <img src="docs/media/msbt-boosting.jpg" alt="MSBT Boosting tab — targeting, UVH booster, serial copies" width="900">
+</p>
 
-1. Install or update to [oak2-mod-manager v0.3](https://github.com/bl-sdk/oak2-mod-manager/releases/tag/v0.3).
-2. Download the current `MSBT-Installer-v1.2.0.exe` installer from [GitHub Releases](https://github.com/funkyoushift/MattsSDKBoostingTools/releases).
-3. Run the installer. It installs the Electron app, `MattsSDKBoostingTools.sdkmod`, and the bundled `ActorScriptDeployer/` dependency.
-4. Launch Matt's SDK Boosting Tools. If your Borderlands 4 folder is not in a standard Steam library path, use the Updates tab to browse to `sdk_mods` and run Install / Update SDK Mod.
-5. Start Borderlands 4 with the SDK loaded.
-6. Use the app's Refresh Status / target controls before sending live actions.
+- **Boosting** — cash, Eridium, XP/spec, SDU, inventory size helpers, rarity drop weights, lobby targeting (selected / all / non-host), and UVH booster controls
+- **Serial tools** — paste, validate, bookmark, and deliver `@U` item serials
+- **BL4 Codes** — search/browse a merged local catalog (GZO image cards, Lootlemon references, custom/static codes), then deliver from a sticky delivery panel
+- **Matt Editor** — hosted Mattmab save/profile/item editor workflow with MSBT delivery buttons
+- **Item Pool Spawning** — browse and spawn from item pools through the bridge
+- **Dev Spawner** — actor/AI spawn helpers (needs the bundled ActorScriptDeployer support mod)
+- **Map Travel / Player Movement** — station/map helpers and movement tools
+- **Activity Log / Report / Updates** — see what ran, file issues, check for new builds, install/update the bundled SDK mod
 
-Expected game-side layout after installer or updater:
+<p align="center">
+  <img src="docs/media/msbt-bl4-codes.jpg" alt="MSBT BL4 Codes catalog with sticky delivery panel and Copies" width="900">
+</p>
+
+<p align="center">
+  <img src="docs/media/msbt-dev-spawner.jpg" alt="MSBT Dev Spawner with favorites and condensed actor rows" width="900">
+</p>
+
+A lot of community testing, late nights, and real money went into keeping this usable after the SDK v0.3 break. Tips help, but the tool stays free for normal community use under the license below.
+
+---
+
+## Why this project exists
+
+Mattmab put the original toolset together: homemade SDK pieces plus community mods that fit Borderlands 4 boosting and item work. That first version lived **inside** the game through **BLImGui** (Borderlands ImGui) — a separate in-game UI framework, not Mattmab’s project. It worked, but running a full panel inside the engine was heavy; it competed with the game for the same resources.
+
+That stack targeted **oak2-mod-manager v0.2**. When **v0.3** landed, a lot of old hooks and assumptions stopped lining up. Matt also had personal stuff going on and stepped back.
+
+**FunkYouSHiFT** picked the project up to:
+
+- move the main UI **out** of the game engine
+- rebuild it as a standalone **Electron** app
+- update the SDK-side mod for **oak2-mod-manager v0.3**
+- keep an **HTTP bridge** between the app and the in-game mod
+- preserve the useful workflows from the old BLImGui toolset
+- fold in other community tools that fit (UVH booster workflow, GZO/Lootlemon catalog paths, and so on)
+
+The older Tkinter app is still in the repo as legacy/reference. New work targets Electron.
+
+---
+
+## How it works (simple version)
+
+```text
+[ Electron app ]  --HTTP bridge-->  [ MSBT SDK mod in Borderlands 4 ]
+   UI, catalogs,                    live give/spawn/travel/boost
+   editor host,                     actions for the loaded session
+   local tools
+```
+
+- **Electron** owns the UI, local resources, catalogs, bookmarks, validator, and Matt editor hosting. It does **not** import UnrealSDK / game modules.
+- **The SDK mod** owns live game interaction.
+- **The bridge** is how they talk.
+- **BLImGui** is optional. You do not need it for the Electron app. If BLImGui is installed, the old-style in-game panel may still be available — that is optional, not required.
+
+More architecture detail for developers: [docs/BLIMGUI_REPLACEMENT_ARCHITECTURE.md](docs/BLIMGUI_REPLACEMENT_ARCHITECTURE.md).
+
+---
+
+## Install steps
+
+1. Install or update **[oak2-mod-manager v0.3](https://github.com/bl-sdk/oak2-mod-manager/releases/tag/v0.3)**.
+2. Download **`MSBT-Installer-v….exe`** from [Releases](https://github.com/funkyoushift/MattsSDKBoostingTools/releases) (or extract the portable ZIP).
+3. Run the installer. It installs the Electron app and copies into your Borderlands 4 `sdk_mods` folder (when it can find the game):
+   - `MattsSDKBoostingTools.sdkmod`
+   - `ActorScriptDeployer/` (needed for Dev Spawner)
+4. Launch **Borderlands 4** with the SDK loaded.
+5. Launch **Matt's SDK Boosting Tools**.
+6. Hit **Refresh Status**, pick a target player if you need one, then use the tools.
+
+If Steam/BL4 is in a non-standard place, open the **Updates** tab, browse to your `sdk_mods` folder, and run **Install / Update SDK Mod**.
+
+Expected game-side layout:
 
 ```text
 Borderlands 4/
   sdk_mods/
     ActorScriptDeployer/
-      __init__.py
-      pyproject.toml
     MattsSDKBoostingTools.sdkmod
 ```
 
-Manual ZIP users can still extract the portable package and copy `MattsSDKBoostingTools.sdkmod` plus the bundled `ActorScriptDeployer/` folder into `sdk_mods` manually. The Dev Spawner tab needs ActorScriptDeployer.
+---
 
-The current public direction is:
+## Updates
 
-- Keep the original BLImGui panel available when BLImGui is installed.
-- Make BLImGui optional.
-- Run live game actions through a small SDK bridge.
-- Move non-game UI/catalog/serial/build logic into the Electron app.
-- Keep the older Tkinter app as legacy/reference code only.
-- Package Electron with the bundled SDK mod, ActorScriptDeployer, resources, and a portable Python runtime.
+- The app checks **GitHub Releases** for newer builds (Updates tab / Check Updates).
+- After an **SDK mod** update, **fully restart Borderlands 4** before testing live actions. An Electron-only update is not enough if the in-game `.sdkmod` changed.
+- Bookmarks, favorites, opacity, and other user settings live in the Electron user-data folder — not inside the install directory — so they should survive app updates.
 
-## Package Contents
+Versioning rules: [VERSIONING.md](VERSIONING.md).
 
-Current Electron installer/portable packages contain:
+---
 
-```text
-Matt's SDK Boosting Tools/
-  MattsSDKBoostingTools.exe
-  resources/
-    sdkmod/
-      MattsSDKBoostingTools.sdkmod
-    sdkmods/
-      ActorScriptDeployer/
-    external_app/
-    python/
-    releases/
-```
+## Safety notes
 
-## Build From Source
+- This is a **modding / boosting** tool. Treat it like one.
+- **Back up saves** before save editing or anything you are unsure about.
+- **Dev Spawner** and other debug-style tools can stress or destabilize a session. Use them carefully, especially in multiplayer.
+- Selected-player serial delivery still uses a game reward-package workaround: it can produce extra base reward behavior for non-target players. Do not delete other players’ mail unless you are sure which package is which.
+- If something looks wrong after an update, confirm the SDK mod version in the app header matches the release, then restart the game.
 
-Users who do not want to run a prebuilt EXE can build it locally.
-
-Requirements:
-
-- Windows
-- Node.js / npm
-- Python 3.13
-
-The Electron build bundles a portable Python runtime so normal users do not need Python installed.
-
-Build the Electron app:
-
-```powershell
-.\build_electron_beta.ps1
-```
-
-Build the Electron Windows installer:
-
-```powershell
-.\build_electron_beta.ps1 -Installer
-```
-
-Publish release assets to GitHub Releases instead of committing ZIP/EXE files to source:
-
-```powershell
-.\publish_github_release.ps1
-```
-
-Check the synchronized Nexus Mods file list:
-
-```powershell
-.\tools\check_nexus_release.ps1
-```
-
-Versioning and asset naming are documented in [VERSIONING.md](VERSIONING.md).
-Nexus release sync is documented in [docs/NEXUS_RELEASE_SYNC.md](docs/NEXUS_RELEASE_SYNC.md).
-
-## Repository Layout
-
-```text
-mod_extracted/MattsSDKBoostingTools/
-  SDK mod source, bridge, backend actions, live game helpers, optional BLImGui UI.
-
-external_app/v22_parts_codes_fixed/
-  Standalone Tkinter app, local serial tools, validator, Legit Builder helpers, and resources.
-
-external_app/v22_parts_codes_fixed/matt_editor/
-  Vendored Mattmab web editor assets served locally by the standalone app.
-
-external_app/v22_parts_codes_fixed/resources/
-  Bundled local resources for BL4 Codes, item pools, travel, legit rules, UI layout, and observed working part options.
-
-docs/
-  Developer notes for the BLImGui replacement, packaging, and release checklist.
-```
-
-## What Replaced BLImGui
-
-The main user-facing app is now the Electron desktop app. The older Python/Tkinter app remains in the repository as legacy/reference material.
-
-BLImGui-specific code is still kept in the SDK mod as an optional in-game UI. The Electron app does not import BLImGui, `unrealsdk`, `mods_base`, or live SDK modules. It talks to the SDK mod over HTTP for live game actions only.
-
-More detail: [BLImGui Replacement Architecture](docs/BLIMGUI_REPLACEMENT_ARCHITECTURE.md).
-
-## Live Game Boundary
-
-The external app owns local tooling such as:
-
-- serial conversion
-- serial parts breakdown
-- BL4 Codes catalog search/details/bookmarks
-- Validator
-- Legit Builder UI state, filtering, validation, and serial generation
-- item pool and travel browsing
-
-The SDK bridge owns live game actions such as:
-
-- giving serials to selected/all/non-host players
-- currency, XP, SDU, inventory size changes
-- item pool spawning
-- map/station travel
-- movement/debug/dev commands
-- chest, bank, shiny, and live player actions
-
-## Known Multiplayer Note
-
-Selected-player serial delivery currently uses the game's all-player reward package path, then patches the intended target package. This is a game/API workaround and can create extra base reward behavior for non-target players. Do not delete non-target reward mail unless the package can be identified with high confidence.
+---
 
 ## Credits
 
-Created by Matt and contributors.
+Huge thanks to the people who built pieces of this, shared data, and helped prove it in real lobbies.
 
-Special thanks to testers and SDK modders who helped verify multiplayer behavior, item data, serial tools, and BLImGui parity.
+| Who | What |
+| --- | --- |
+| **Mattmab** | Original toolset, save/editor work, and the foundation this project grew from. [Ko-fi](https://ko-fi.com/mattmab) · [legit-builder](https://github.com/mattmab/legit-builder) |
+| **FunkYouSHiFT** | Current maintainer: Electron app, bridge, SDK v0.3 migration, packaging/releases. [Site](https://www.funkyoushift.com/) · [Twitch](https://www.twitch.tv/funkyoushift/) · [YouTube](https://www.youtube.com/@Funkyoushift) · [Tip](https://streamlabs.com/funkyoushift/tip) |
+| **BLImGui / Borderlands ImGui** | Original in-game UI framework used by the early MSBT panel. Credited separately — not a Mattmab project. |
+| **apple1417 / BL SDK community** | oak2 / UnrealSDK ecosystem and tooling that make mods like this possible. [oak2-mod-manager](https://github.com/bl-sdk/oak2-mod-manager) · [Mod DB](https://bl-sdk.github.io/oak2-mod-db/) |
+| **Ynot / GZO** | BL4 Codes site, catalog/API, and community code pipeline. [GZO Codes](https://save-editor.be/GZO/Borderlands4/Codes.html) · [GZO hub](https://save-editor.be/GZO/) · [Discord](https://discord.gg/4hGKAHdvp6) |
+| **Levin / Lootlemon** | Lootlemon item/code references used in the catalog. [Lootlemon](https://www.lootlemon.com/) |
+| **Azalea Asvail** | Azzy UVH Booster workflow adapted into the Boosting tab (MIT). Source credits **Pyrex** for UVH6/UVH7 challenge paths. |
+| **Azzarock, Frag Em All, Tobgun, Crayons82.0** | Testing, feedback, item data, and community reports that caught real breakage. |
+| **Everyone else** | Item-code authors and players who published lists, filed bugs, and shared serials — a lot of this only works because of public community work. |
 
-This project is not affiliated with Gearbox, 2K, or the Borderlands franchise owners.
+Third-party notices and license details for bundled/adapted pieces: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+
+---
+
+## Links
+
+- [GitHub Releases](https://github.com/funkyoushift/MattsSDKBoostingTools/releases)
+- [oak2-mod-manager v0.3](https://github.com/bl-sdk/oak2-mod-manager/releases/tag/v0.3)
+- [GZO Borderlands 4 Codes](https://save-editor.be/GZO/Borderlands4/Codes.html)
+- [Lootlemon](https://www.lootlemon.com/)
+- [FunkYouSHiFT site](https://www.funkyoushift.com/) · [Tools](https://www.funkyoushift.com/tools)
+- [Tip FunkYouSHiFT](https://streamlabs.com/funkyoushift/tip) · [Donate to Mattmab](https://ko-fi.com/mattmab)
+- [Report issues](https://github.com/funkyoushift/MattsSDKBoostingTools/issues)
+
+---
+
+## For developers
+
+If you are building from source or digging into packaging, start here:
+
+| Doc | Topic |
+| --- | --- |
+| [electron_poc/README.md](electron_poc/README.md) | Run/build the Electron app |
+| [VERSIONING.md](VERSIONING.md) | SemVer, tags, installer names |
+| [docs/BUILD_AND_PACKAGE.md](docs/BUILD_AND_PACKAGE.md) | Packaging notes |
+| [docs/BLIMGUI_REPLACEMENT_ARCHITECTURE.md](docs/BLIMGUI_REPLACEMENT_ARCHITECTURE.md) | App vs SDK boundary |
+| [docs/ELECTRON_ROADMAP.md](docs/ELECTRON_ROADMAP.md) | Current Electron priorities |
+| [docs/NEXUS_RELEASE_SYNC.md](docs/NEXUS_RELEASE_SYNC.md) | Nexus file-list sync |
+| [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) | Bundled third-party notices |
+
+Quick build from repo root (Windows, Node/npm, Python 3.13 for tooling; the packaged app bundles a portable Python runtime for users):
+
+```powershell
+.\build_electron_beta.ps1            # unpacked build
+.\build_electron_beta.ps1 -Installer # Windows installer + portable ZIP
+.\publish_github_release.ps1         # upload assets to GitHub Releases
+```
+
+Repo layout in short:
+
+- `mod_extracted/MattsSDKBoostingTools/` — SDK mod, bridge, live actions, optional BLImGui panel
+- `electron_poc/` — Electron desktop app
+- `external_app/v22_parts_codes_fixed/` — legacy Tkinter app, resources, Matt editor assets
+- `docs/` — deeper developer notes
+
+---
 
 ## License
 
 Released under the [PolyForm Noncommercial License 1.0.0](LICENSE).
 
-Commercial use, resale, paid redistribution, or selling packaged builds is not permitted without separate written permission from Matt / FunkYouSHiFT.
+Personal / community modding use is fine under that license. Commercial use, resale, paid redistribution, or selling packaged builds needs separate written permission from Matt / FunkYouSHiFT.
+
+Again: **not** official Gearbox / 2K / Borderlands software.
