@@ -1494,6 +1494,10 @@ def _queue_serial_delivery_sequence(serials: List[str], player_indices: List[int
     # A new Give_Serial must replace unfinished tick-driven work.  Appending let
     # the previous serial list (or its patch jobs) continue and look like the
     # "next send delivered the previous list" / interleaved delivery bug.
+    #
+    # Non-serial bridge commands (max cash, travel, spawn, etc.) must NOT clear
+    # these sequences — large deliveries run across delayed chunks on this tick
+    # and other live actions should complete in parallel via the HTTP bridge queue.
     replaced_sequences = len(_pending_serial_delivery_sequences)
     replaced_patches = len(_pending_serial_patch_jobs)
     if replaced_sequences or replaced_patches:

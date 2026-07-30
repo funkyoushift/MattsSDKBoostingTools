@@ -1,14 +1,30 @@
 # Matt's SDK Boosting Tools
 
-Matt's SDK Boosting Tools is a Borderlands 4 SDK mod plus a standalone external control panel for boosting, serial delivery, item tools, movement tools, travel helpers, and catalog workflows.
+Matt's SDK Boosting Tools is a Borderlands 4 SDK mod plus a standalone Electron control panel for boosting, serial delivery, item tools, movement tools, travel helpers, and catalog workflows.
+
+**Current release: [v1.2.0](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v1.2.0)**
 
 Website:
 [FunkYouSHiFT.com](https://www.funkyoushift.com/) |
 [Tools page](https://www.funkyoushift.com/tools)
 
+## What's New in v1.2.0
+
+Highlights since the v1.0.0 public launch:
+
+- **Serial delivery reliability** — Base85/`@U`/backtick serials stay intact, bad rows are skipped instead of spawning junk, and the bridge queue no longer lets stale commands overwrite an in-progress serial delivery.
+- **Copies multiplier (1–50)** — Repeat each selected or pasted serial on Boosting, BL4 Codes, Serial Bookmarks, and the Matt Editor delivery panel.
+- **Boost targeting** — Target All Players / Target Non-Host for Quick Max, XP, currency, and inventory actions, plus dedicated UVH Booster controls (Azzy-adapted).
+- **BL4 Codes UX** — Sticky delivery side panel while you browse the catalog; larger image-card browsing.
+- **Dev Spawner** — Condensed actor rows, collapsible Active Boss list, My Favorites with inline label/note save, and Example List naming.
+- **Matt Editor** — Embedded editor polish, part supplements, save/profile YAML fixes, and Copies on the in-editor MSBT delivery panel.
+- **Updates / install** — Clearer oak2-mod-manager v0.3 requirement links and fewer false same-version update prompts.
+
+After installing **v1.2.0**, use **Install / Update SDK Mod** (or re-run the installer) and **fully restart Borderlands 4** so the bundled SDK bridge fixes load.
+
 ## Required SDK Install
 
-MSBT now targets **SDK 03 / oak2-mod-manager v0.3**. Before installing MSBT, update Borderlands 4 to the current SDK/mod manager stack:
+MSBT targets **SDK 03 / oak2-mod-manager v0.3**. Before installing MSBT, update Borderlands 4 to the current SDK/mod manager stack:
 
 [Download oak2-mod-manager v0.3](https://github.com/bl-sdk/oak2-mod-manager/releases/tag/v0.3)
 
@@ -20,18 +36,18 @@ Go to the [GitHub Releases page](https://github.com/funkyoushift/MattsSDKBoostin
 
 | What you want | Download this | Notes |
 | --- | --- | --- |
-| Recommended normal install | `MSBT-Installer-v...exe` | Windows installer. Adds app shortcuts and installs the bundled SDK mod plus ActorScriptDeployer into the detected Borderlands 4 `sdk_mods` folder. |
-| Manual install / no installer | `MSBT-Portable-v...-win-x64.zip` | Extract it yourself. Electron app files plus bundled SDK mod/update resources. |
+| Recommended normal install | `MSBT-Installer-v1.2.0.exe` | Windows installer. Adds app shortcuts and installs the bundled SDK mod plus ActorScriptDeployer into the detected Borderlands 4 `sdk_mods` folder. |
+| Manual install / no installer | `MSBT-Portable-v1.2.0-win-x64.zip` | Extract it yourself. Electron app files plus bundled SDK mod/update resources. |
 | Source code only | GitHub `Source code (zip)` / `Source code (tar.gz)` | For developers. This is not the ready-to-run app. |
 
 Do **not** manually download `latest.json`, `latest.yml`, or `.blockmap` files. Those are update-system files used by the app/installer.
 
-Older beta/pre-1.0 packages remain available on the Releases page as historical rollback builds.
+Older 1.x and beta packages remain available on the Releases page as historical rollback builds.
 
 ## Quick Install
 
 1. Install or update to [oak2-mod-manager v0.3](https://github.com/bl-sdk/oak2-mod-manager/releases/tag/v0.3).
-2. Download the current `MSBT-Installer-v...exe` installer from [GitHub Releases](https://github.com/funkyoushift/MattsSDKBoostingTools/releases).
+2. Download the current `MSBT-Installer-v1.2.0.exe` installer from [GitHub Releases](https://github.com/funkyoushift/MattsSDKBoostingTools/releases).
 3. Run the installer. It installs the Electron app, `MattsSDKBoostingTools.sdkmod`, and the bundled `ActorScriptDeployer/` dependency.
 4. Launch Matt's SDK Boosting Tools. If your Borderlands 4 folder is not in a standard Steam library path, use the Updates tab to browse to `sdk_mods` and run Install / Update SDK Mod.
 5. Start Borderlands 4 with the SDK loaded.

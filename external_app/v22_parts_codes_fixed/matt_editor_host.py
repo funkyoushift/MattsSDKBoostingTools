@@ -686,8 +686,14 @@ class _MattEditorHandler(BaseHTTPRequestHandler):
         except Exception:
             level = 60
         level = max(1, min(60, level))
+        try:
+            copies = int(str(data.get("copies") or "1").replace(",", "").strip())
+        except Exception:
+            copies = 1
+        copies = max(1, min(50, copies))
+        serial_text = "\n".join([serial] * copies) if copies > 1 else serial
         payload = {
-            "serial_text": serial,
+            "serial_text": serial_text,
             "serial_override_level": False,
             "serial_level": level,
             "code_delivery_level": level,

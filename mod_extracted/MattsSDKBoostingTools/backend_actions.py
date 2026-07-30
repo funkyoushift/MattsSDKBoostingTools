@@ -739,6 +739,7 @@ def get_status() -> dict[str, Any]:
         "players": players,
         "selected_player": _selected_player_name,
         "selected_player_index": _selected_player_index,
+        "host_player_index": _host_player_index_value(),
         "last_refresh_error": _last_refresh_error,
         "serial_delivery": delivery_progress,
         "diagnostics": _sdk_diagnostics(),

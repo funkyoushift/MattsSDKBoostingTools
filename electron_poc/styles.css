@@ -557,6 +557,48 @@ button.gzo-submit-cta:hover {
   align-items: start;
 }
 
+.bl4-layout {
+  align-items: start;
+  display: grid;
+  gap: var(--ui-grid-gap, 10px);
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 320px);
+}
+
+.bl4-main-pane {
+  min-width: 0;
+}
+
+.bl4-delivery-side {
+  align-self: start;
+  max-height: calc(100vh - 24px);
+  overflow: auto;
+  position: sticky;
+  top: 8px;
+  z-index: 4;
+}
+
+.bl4-delivery-side h2 {
+  color: var(--purple);
+  font-size: 1.05rem;
+  margin-bottom: 4px;
+}
+
+.bl4-delivery-side .muted-line {
+  color: var(--muted);
+  font-size: 12px;
+  margin: 0 0 8px;
+}
+
+.bl4-delivery-fields {
+  grid-template-columns: minmax(0, 1.2fr) minmax(72px, 88px);
+}
+
+.bl4-delivery-output {
+  font-size: 11px;
+  max-height: 180px;
+  overflow: auto;
+}
+
 .grid.sidecar {
   grid-template-columns: minmax(320px, 430px) minmax(620px, 1fr);
   min-height: calc(100vh - 136px);
@@ -904,39 +946,52 @@ button.gzo-submit-cta:hover {
 }
 
 .dev-actor-row {
-  display: grid;
-  grid-template-columns: 72px minmax(0, 1fr) auto;
-  gap: 6px;
   align-items: center;
-  min-height: 28px;
-  border-bottom: 1px solid rgba(52, 64, 82, .55);
-  padding: 3px 0;
+  border-bottom: 1px solid rgba(52, 64, 82, .45);
+  display: grid;
+  gap: 4px;
+  grid-template-columns: auto auto minmax(0, 1fr);
+  min-height: 0;
+  padding: 1px 0;
 }
 
 .dev-spawn-button,
 .dev-actor-label,
 .dev-row-actions button {
-  min-height: 24px;
-  padding: 4px 6px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.15;
+  min-height: 20px;
+  padding: 2px 6px;
+}
+
+.dev-spawn-button,
+.dev-row-actions button {
+  white-space: nowrap;
 }
 
 .dev-row-actions {
   display: flex;
-  gap: 4px;
-  justify-content: flex-end;
+  flex-shrink: 0;
+  gap: 3px;
+  justify-content: flex-start;
 }
 
 .dev-row-actions button {
-  min-width: 64px;
+  min-width: 0;
 }
 
 .dev-actor-label {
-  width: 100%;
+  align-items: baseline;
   background: transparent;
   color: var(--text);
+  display: flex;
   font-weight: 500;
-  line-height: 1.25;
+  gap: 0;
+  min-width: 0;
+  overflow: hidden;
   text-align: left;
+  white-space: nowrap;
 }
 
 .dev-actor-label:hover {
@@ -949,39 +1004,53 @@ button.gzo-submit-cta:hover {
 
 .dev-actor-row.quick-pick-row {
   border-left: 3px solid rgba(255, 211, 77, .55);
-  padding-left: 6px;
+  padding-left: 5px;
 }
 
 .dev-actor-row.boss-pick-row {
   border-left: 3px solid rgba(255, 83, 186, .7);
-  padding-left: 6px;
+  padding-left: 5px;
 }
 
 .dev-actor-row.my-favorite-row {
   border-left: 3px solid rgba(73, 224, 121, .65);
-  padding-left: 6px;
+  padding-left: 5px;
 }
 
 .dev-actor-title,
+.dev-actor-sep,
 .dev-actor-key,
 .dev-actor-meta {
-  display: block;
-  overflow-wrap: anywhere;
+  display: inline;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .dev-actor-title {
   color: var(--text);
+  flex: 0 1 auto;
+  font-weight: 600;
+  max-width: 42%;
+}
+
+.dev-actor-sep {
+  color: var(--muted);
+  flex: 0 0 auto;
 }
 
 .dev-actor-key {
   color: var(--cyan);
+  flex: 0 1 auto;
   font-family: "Cascadia Mono", Consolas, monospace;
-  font-size: .82em;
+  font-size: .86em;
+  max-width: 46%;
 }
 
 .dev-actor-meta {
   color: var(--muted);
-  font-size: .84em;
+  flex: 1 1 auto;
+  font-size: .82em;
+  min-width: 0;
 }
 
 .dev-empty-row {
@@ -1247,10 +1316,9 @@ button.gzo-submit-cta:hover {
   min-height: 128px;
 }
 
-.delivery-panel {
-  border-top: 1px solid var(--line);
-  margin-top: 10px;
-  padding-top: 8px;
+button.active-scope {
+  border-color: var(--cyan);
+  box-shadow: inset 0 0 0 1px rgba(0, 212, 255, .35);
 }
 
 .target-row {
@@ -1314,25 +1382,9 @@ button.gzo-submit-cta:hover {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .dev-actor-row {
-    grid-template-columns: 1fr;
-  }
-
-  .dev-row-actions {
-    justify-content: stretch;
-  }
-
-  .dev-row-actions button {
-    flex: 1;
-  }
-
   .bookmark-row,
   .dev-detail-row {
     grid-template-columns: 1fr;
-  }
-
-  .dev-spawn-button {
-    width: 100%;
   }
 
   .dev-row-list {
@@ -1451,6 +1503,10 @@ button.gzo-submit-cta:hover {
     grid-template-columns: minmax(260px, 42%) minmax(0, 1fr);
   }
 
+  .bl4-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(220px, 280px);
+  }
+
   .grid.sidecar {
     grid-template-columns: minmax(240px, 36%) minmax(0, 1fr);
   }
@@ -1475,6 +1531,7 @@ button.gzo-submit-cta:hover {
   .grid.five,
   .grid.bookmark-grid,
   .grid.bl4-grid,
+  .bl4-layout,
   .grid.sidecar,
   .dev-spawner-row,
   .update-card-grid,
@@ -1482,6 +1539,19 @@ button.gzo-submit-cta:hover {
   .inline-fields,
   .button-grid {
     grid-template-columns: 1fr;
+  }
+
+  .bl4-layout {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .bl4-delivery-side {
+    max-height: none;
+    order: -1;
+    position: sticky;
+    top: 0;
+    z-index: 5;
   }
 
   .target-row,

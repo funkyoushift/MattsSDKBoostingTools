@@ -34,6 +34,7 @@ const els = {
   bl4SearchBtn: document.getElementById("bl4SearchBtn"),
   bl4SearchInput: document.getElementById("bl4SearchInput"),
   bl4SelectAllBtn: document.getElementById("bl4SelectAllBtn"),
+  bl4SerialCopies: document.getElementById("bl4SerialCopies"),
   bl4Serial: document.getElementById("bl4Serial"),
   bl4SetTargetBtn: document.getElementById("bl4SetTargetBtn"),
   bl4RefreshPlayersBtn: document.getElementById("bl4RefreshPlayersBtn"),
@@ -44,6 +45,7 @@ const els = {
   bl4TypeFilter: document.getElementById("bl4TypeFilter"),
   bl4ValidateBtn: document.getElementById("bl4ValidateBtn"),
   boostOutput: document.getElementById("boostOutput"),
+  boostSerialCopies: document.getElementById("boostSerialCopies"),
   boostSerialLevel: document.getElementById("boostSerialLevel"),
   boostSerialOverride: document.getElementById("boostSerialOverride"),
   boostSerialText: document.getElementById("boostSerialText"),
@@ -99,8 +101,11 @@ const els = {
   devLogoText: document.getElementById("devLogoText"),
   devLogoUseSelectedBtn: document.getElementById("devLogoUseSelectedBtn"),
   devMyFavoriteAddBtn: document.getElementById("devMyFavoriteAddBtn"),
+  devMyFavoriteLabel: document.getElementById("devMyFavoriteLabel"),
+  devMyFavoriteNote: document.getElementById("devMyFavoriteNote"),
   devMyFavoriteRemoveBtn: document.getElementById("devMyFavoriteRemoveBtn"),
   devMyFavoriteRows: document.getElementById("devMyFavoriteRows"),
+  devMyFavoriteSaveBtn: document.getElementById("devMyFavoriteSaveBtn"),
   devMyFavoriteSummary: document.getElementById("devMyFavoriteSummary"),
   devNextActorPageBtn: document.getElementById("devNextActorPageBtn"),
   devPrevActorPageBtn: document.getElementById("devPrevActorPageBtn"),
@@ -216,6 +221,7 @@ const els = {
   bookmarkSaveBtn: document.getElementById("bookmarkSaveBtn"),
   bookmarkSearch: document.getElementById("bookmarkSearch"),
   bookmarkSelectAllBtn: document.getElementById("bookmarkSelectAllBtn"),
+  bookmarkSerialCopies: document.getElementById("bookmarkSerialCopies"),
   bookmarkSerial: document.getElementById("bookmarkSerial"),
   bookmarkSetTargetBtn: document.getElementById("bookmarkSetTargetBtn"),
   bookmarkStatus: document.getElementById("bookmarkStatus"),
@@ -301,6 +307,8 @@ const state = {
   bridgeOnline: false,
   bridgeStatusPollInFlight: false,
   bridgeStatusPollTimer: null,
+  boostTargetScope: "selected",
+  hostPlayerIndex: null,
   bookmarkActiveId: "",
   bookmarkCheckedIds: new Set(),
   bookmarkConfirmedId: "",
@@ -435,16 +443,9 @@ function compareSemver(a, b) {
 }
 
 async function ensureLiveSdkReady(outNode) {
-  const versionInfo = state.versionInfo || (typeof refreshVersionInfo === "function" ? await refreshVersionInfo() : null) || {};
-  if (sdkModNeedsAttention(versionInfo)) {
-    const installed = versionInfo.installedSdkmod || {};
-    const message =
-      `${installed.message || "Installed SDK mod does not match this app build."} ${SDK_INSTALL_RESTART_HINT}`;
-    if (outNode) setOutput(outNode, message);
-    appendActivity(message);
-    return { ok: false, message };
-  }
-
+  // Delivery must always proceed when the bridge is reachable. SDK version /
+  // install mismatch only warns — hard-blocking left users unable to send
+  // serials after an Electron-only update or before a game restart.
   if (!state.bridgeOnline) {
     const statusResult = await bridgeStatus({ quiet: true });
     const statusData = statusResult && statusResult.data ? statusResult.data : statusResult;
@@ -456,17 +457,27 @@ async function ensureLiveSdkReady(outNode) {
     }
   }
 
+  const versionInfo = state.versionInfo || (typeof refreshVersionInfo === "function" ? await refreshVersionInfo() : null) || {};
+  if (sdkModNeedsAttention(versionInfo)) {
+    const installed = versionInfo.installedSdkmod || {};
+    const message =
+      `${installed.message || "Installed SDK mod does not match this app build."} ${SDK_INSTALL_RESTART_HINT}`;
+    appendActivity(message);
+  }
+
   const diagnostics = state.bridgeDiagnostics || {};
   const runningVersion = String(diagnostics.msbt_mod_version || "").trim();
   const expectedVersion = String(versionInfo.sdkmodVersion || versionInfo.packageVersion || "").trim();
-  // 1.1.5+ reports msbt_mod_version. Missing/older values mean the game process
-  // is still running a pre-fix SDK (common after Electron-only updates).
-  if (!runningVersion || compareSemver(runningVersion, "1.1.5") < 0) {
-    const message =
-      `In-game SDK mod is outdated or not restarted (bridge reports ${runningVersion || "no msbt_mod_version"}; app expects ${expectedVersion || "1.1.5+"}). ${SDK_INSTALL_RESTART_HINT}`;
-    if (outNode) setOutput(outNode, message);
-    appendActivity(message);
-    return { ok: false, message };
+  // 1.1.5+ reports msbt_mod_version. Missing/older values usually mean the game
+  // process still has a pre-fix SDK loaded — warn, but do not block delivery.
+  if (expectedVersion && runningVersion && compareSemver(runningVersion, expectedVersion) < 0) {
+    appendActivity(
+      `In-game SDK mod may be outdated (bridge reports ${runningVersion}; app expects ${expectedVersion}). ${SDK_INSTALL_RESTART_HINT}`
+    );
+  } else if (expectedVersion && !runningVersion) {
+    appendActivity(
+      `Bridge did not report msbt_mod_version (app expects ${expectedVersion}). Delivery will still proceed. ${SDK_INSTALL_RESTART_HINT}`
+    );
   }
   return { ok: true, message: "" };
 }
@@ -561,7 +572,9 @@ function updateDevperkToggleButtons() {
 
 async function runBoostActionButton(button) {
   const action = button.dataset.action;
-  const result = await runAction(action, {}, els.boostOutput, 30000);
+  const result = PLAYER_SCOPED_BOOST_ACTIONS.has(action)
+    ? await runScopedPlayerAction(action, {}, els.boostOutput, 30000)
+    : await runAction(action, {}, els.boostOutput, 30000);
   const toggleKey = button.dataset.devperkToggle;
   if (toggleKey && actionSucceeded(result)) {
     state.devperkToggles[toggleKey] = inferToggleStateFromMessage(resultMessage(result), state.devperkToggles[toggleKey]);
@@ -1064,6 +1077,13 @@ function selectedTargetFromStatus(status) {
 
 function renderPlayers(status = {}) {
   state.players = Array.isArray(status.players) ? status.players : [];
+  if (Object.prototype.hasOwnProperty.call(status, "host_player_index")) {
+    const hostRaw = status.host_player_index;
+    state.hostPlayerIndex = hostRaw === null || hostRaw === undefined || hostRaw === ""
+      ? null
+      : Number(hostRaw);
+    if (!Number.isFinite(state.hostPlayerIndex)) state.hostPlayerIndex = null;
+  }
   const selected = selectedTargetFromStatus(status);
   if (selected) {
     state.selectedTarget = selected;
@@ -1104,13 +1124,121 @@ function renderPlayers(status = {}) {
   fillSelect(els.bl4TargetSelect);
   fillSelect(els.movementTargetSelect);
 
+  updateBoostTargetSummary();
   const selectedPlayer = state.players.find((player) => String(playerValue(player)) === String(state.selectedTarget));
   const text = `Selected target: ${selectedPlayer ? playerLabel(selectedPlayer) : state.selectedTarget || "none"}`;
   const kind = state.selectedTarget ? "ok" : "warning";
-  setLine(els.targetSummary, text, kind);
   setLine(els.bookmarkTargetSummary, text, kind);
   setLine(els.bl4TargetSummary, text, kind);
   setLine(els.movementStatus, text, kind);
+}
+
+const PLAYER_SCOPED_BOOST_ACTIONS = new Set([
+  "max_all",
+  "max_currency",
+  "max_eridium",
+  "max_player_level",
+  "max_spec_level",
+  "max_sdu"
+]);
+
+function boostScopeLabel(scope = state.boostTargetScope) {
+  if (scope === "all") return "All players";
+  if (scope === "nonhost") return "Non-host players";
+  return "Selected player";
+}
+
+function playersForBoostScope(scope = state.boostTargetScope) {
+  const list = Array.isArray(state.players) ? state.players : [];
+  if (scope === "all") return list.slice();
+  if (scope === "nonhost") {
+    if (state.hostPlayerIndex === null || state.hostPlayerIndex === undefined) {
+      return list.length > 1 ? list.slice(1) : [];
+    }
+    return list.filter((player) => Number(player && player.index) !== Number(state.hostPlayerIndex));
+  }
+  const selected = list.find((player) => String(playerValue(player)) === String(state.selectedTarget));
+  return selected ? [selected] : [];
+}
+
+function updateBoostTargetSummary() {
+  const selectedPlayer = state.players.find((player) => String(playerValue(player)) === String(state.selectedTarget));
+  const scope = state.boostTargetScope || "selected";
+  const scoped = playersForBoostScope(scope);
+  let text = `Boost scope: ${boostScopeLabel(scope)}`;
+  if (scope === "selected") {
+    text += ` | ${selectedPlayer ? playerLabel(selectedPlayer) : state.selectedTarget || "none"}`;
+  } else {
+    text += ` (${scoped.length} player${scoped.length === 1 ? "" : "s"})`;
+    if (selectedPlayer) text += ` | dropdown: ${playerLabel(selectedPlayer)}`;
+    if (scope === "nonhost" && (state.hostPlayerIndex === null || state.hostPlayerIndex === undefined)) {
+      text += " | host index unknown — using players after first as non-host fallback";
+    }
+  }
+  const kind = scope === "selected"
+    ? (state.selectedTarget ? "ok" : "warning")
+    : (scoped.length ? "ok" : "warning");
+  setLine(els.targetSummary, text, kind);
+  document.querySelectorAll("[data-boost-scope]").forEach((button) => {
+    button.classList.toggle("active-scope", button.dataset.boostScope === scope);
+  });
+}
+
+function setBoostTargetScope(scope) {
+  const next = String(scope || "selected").toLowerCase();
+  state.boostTargetScope = next === "all" || next === "nonhost" ? next : "selected";
+  updateBoostTargetSummary();
+  appendActivity(`Boost target scope set to ${boostScopeLabel(state.boostTargetScope)}.`);
+}
+
+async function runScopedPlayerAction(action, payload = {}, outNode = els.boostOutput, timeoutMs = 30000) {
+  const scope = state.boostTargetScope || "selected";
+  if (scope === "selected") {
+    const ok = await ensureSelectedTarget(outNode);
+    if (!ok) return { ok: false, message: "No party player selected." };
+    return runAction(action, payload, outNode, timeoutMs);
+  }
+
+  const targets = playersForBoostScope(scope);
+  if (!targets.length) {
+    const message = scope === "nonhost"
+      ? "No non-host party players found. Refresh Status while others are loaded in."
+      : "No party players found. Refresh Status first.";
+    if (outNode) setOutput(outNode, message);
+    appendActivity(message);
+    return { ok: false, message };
+  }
+
+  const lines = [`Running ${action} for ${boostScopeLabel(scope)} (${targets.length})...`];
+  if (outNode) setOutput(outNode, lines.join("\n"));
+  appendActivity(lines[0]);
+
+  let okCount = 0;
+  let failCount = 0;
+  for (const player of targets) {
+    const label = playerLabel(player);
+    const targetValue = playerValue(player);
+    const setResult = await setTarget(targetValue, { keepBoostScope: true });
+    if (!actionSucceeded(setResult)) {
+      failCount += 1;
+      lines.push(`${label}: could not set target — ${resultMessage(setResult)}`);
+      continue;
+    }
+    const result = await runAction(action, payload, outNode, timeoutMs);
+    if (actionSucceeded(result)) {
+      okCount += 1;
+      lines.push(`${label}: ${resultMessage(result)}`);
+    } else {
+      failCount += 1;
+      lines.push(`${label}: FAILED — ${resultMessage(result)}`);
+    }
+  }
+
+  const summary = `${action} finished for ${boostScopeLabel(scope)}: ${okCount} ok, ${failCount} failed.`;
+  lines.push(summary);
+  if (outNode) setOutput(outNode, lines.join("\n"));
+  appendActivity(summary);
+  return { ok: failCount === 0 && okCount > 0, message: summary, okCount, failCount };
 }
 
 function serialDeliveryMessage(progress = {}) {
@@ -1253,12 +1381,16 @@ function startSerialDeliveryProgressWatch() {
   scheduleSerialDeliveryPoll();
 }
 
-async function setTarget(value) {
+async function setTarget(value, options = {}) {
   const target = String(value || "").trim();
+  const keepBoostScope = Boolean(options && options.keepBoostScope);
+  if (!keepBoostScope) {
+    state.boostTargetScope = "selected";
+  }
   if (!target) {
     state.selectedTarget = "";
     state.selectedTargetName = "";
-    setLine(els.targetSummary, "Selected target: none", "warning");
+    updateBoostTargetSummary();
     setLine(els.bookmarkTargetSummary, "Selected target: none", "warning");
     setLine(els.bl4TargetSummary, "Selected target: none", "warning");
     setLine(els.movementStatus, "Selected target: none", "warning");
@@ -1294,6 +1426,7 @@ function firstPlayerTarget() {
     setLine(els.targetSummary, "Refresh status first; no players are loaded.", "warning");
     return;
   }
+  setBoostTargetScope("selected");
   const first = playerValue(state.players[0]);
   els.targetSelect.value = first;
   setTarget(first);
@@ -1423,6 +1556,22 @@ async function loadEditor(options = {}) {
   }
 }
 
+function expandSerialTextCopies(serialText, copies, label = "Serial delivery") {
+  const n = Math.max(1, Math.min(50, Number(copies) || 1));
+  const source = String(serialText || "");
+  if (n <= 1) {
+    const unique = serialsFromText(source);
+    return { text: source, copies: 1, uniqueCount: unique.length, totalCount: unique.length };
+  }
+  const serials = serialsFromText(source);
+  if (!serials.length) {
+    return { text: source, copies: n, uniqueCount: 0, totalCount: 0 };
+  }
+  const text = serials.flatMap((serial) => Array.from({ length: n }, () => serial)).join("\n");
+  appendActivity(`${label}: ${serials.length} serial(s) × ${n} = ${serials.length * n} total.`);
+  return { text, copies: n, uniqueCount: serials.length, totalCount: serials.length * n };
+}
+
 async function sendEditorSerial(mode) {
   updateSerialState();
   let serial = state.confirmedSerial;
@@ -1451,7 +1600,7 @@ async function sendEditorSerial(mode) {
     setOutput(els.deliveryOutput, "No single @U serial is ready to send. Build an item or paste one serial first.");
     return;
   }
-  await sendSerialPayload(mode, serial, false, 60, els.deliveryOutput);
+  await sendSerialPayload(mode, serial, false, 60, els.deliveryOutput, getInt(els.editorSerialCopies, 1, 50, 1), "Matt Editor");
 }
 
 async function sendBoostSerial(mode) {
@@ -1465,11 +1614,14 @@ async function sendBoostSerial(mode) {
     serialText,
     boolFromSelect(els.boostSerialOverride),
     getInt(els.boostSerialLevel, 1, 60, 60),
-    els.boostOutput
+    els.boostOutput,
+    getInt(els.boostSerialCopies, 1, 50, 1),
+    "Serial Rewards"
   );
 }
 
-async function sendSerialPayload(mode, serialText, overrideLevel, level, outNode) {
+async function sendSerialPayload(mode, serialText, overrideLevel, level, outNode, copies = 1, label = "Serial delivery") {
+  const expanded = expandSerialTextCopies(serialText, copies, label);
   const sdkReady = await ensureLiveSdkReady(outNode);
   if (!sdkReady.ok) {
     return { ok: false, message: sdkReady.message };
@@ -1486,7 +1638,7 @@ async function sendSerialPayload(mode, serialText, overrideLevel, level, outNode
   };
   const action = actionByMode[mode];
   const result = await runAction(action, {
-    serial_text: serialText,
+    serial_text: expanded.text,
     serial_override_level: Boolean(overrideLevel),
     serial_level: level,
     code_delivery_level: level
@@ -1944,20 +2096,22 @@ async function sendBookmarkSerial(mode) {
     return;
   }
 
+  const copies = getInt(els.bookmarkSerialCopies, 1, 50, 1);
+  const expanded = expandSerialTextCopies(serials.join("\n"), copies, "Serial Bookmarks");
   const destination = mode === "selected" ? (state.selectedTarget || "selected target") : mode === "all" ? "all players" : "non-host players";
   const label = entries.length === 1 ? `"${entries[0].name || "selected bookmark"}"` : `${entries.length} bookmark row(s)`;
-  if (!window.confirm(`Deliver ${serials.length} serial(s) from ${label} to ${destination}?`)) {
+  const copiesNote = copies > 1 ? ` (${copies} copies each → ${expanded.totalCount} total)` : "";
+  if (!window.confirm(`Deliver ${serials.length} serial(s)${copiesNote} from ${label} to ${destination}?`)) {
     setBookmarkStatus("Serial bookmark delivery cancelled.", "warning");
     return;
   }
 
-  const serialText = serials.join("\n");
-  setBookmarkStatus(`Sending ${serials.length} bookmarked serial(s) to ${destination}...`, "warning");
+  setBookmarkStatus(`Sending ${expanded.totalCount || serials.length} bookmarked serial(s) to ${destination}...`, "warning");
   setOutput(
     els.bookmarkOutput,
-    `Sending Serial Bookmarks delivery:\nDestination: ${destination}\nBookmark rows: ${entries.length}\nSerial count: ${serials.length}\n${entries.map((row) => `${row.name || "Untitled Serial"} | ${row.group || "Default"}`).join("\n")}`
+    `Sending Serial Bookmarks delivery:\nDestination: ${destination}\nBookmark rows: ${entries.length}\nUnique serials: ${serials.length}\nCopies: ${copies}\nTotal delivered: ${expanded.totalCount || serials.length}\n${entries.map((row) => `${row.name || "Untitled Serial"} | ${row.group || "Default"}`).join("\n")}`
   );
-  const result = await sendSerialPayload(mode, serialText, false, 60, els.bookmarkOutput);
+  const result = await sendSerialPayload(mode, expanded.text, false, 60, els.bookmarkOutput, 1, "Serial Bookmarks");
   if (!result) return;
   const message = actionSucceeded(result)
     ? resultMessage(result)
@@ -2880,10 +3034,13 @@ async function sendBl4Serial(mode) {
     }
   }
 
+  const copies = getInt(els.bl4SerialCopies, 1, 50, 1);
+  const expanded = expandSerialTextCopies(serialText, copies, "BL4 Codes");
   const destination = mode === "selected" ? (state.selectedTarget || "selected target") : mode === "all" ? "all players" : "non-host players";
   const label = deliveryRows.length === 1 ? `"${deliveryRows[0].name || "selected BL4 code"}"` : `${deliveryRows.length} selected BL4 codes`;
   const skipNote = skippedByOverride.length ? `\n\n${skippedByOverride.length} selected code(s) will be skipped because their level could not be changed.` : "";
-  const confirmed = window.confirm(`Deliver ${label} to ${destination}?${skipNote}`);
+  const copiesNote = copies > 1 ? `\nCopies: ${copies} each → ${expanded.totalCount} total serials.` : "";
+  const confirmed = window.confirm(`Deliver ${label} to ${destination}?${copiesNote}${skipNote}`);
   if (!confirmed) {
     setBl4DeliveryStatus("BL4 delivery cancelled.", "warning");
     return;
@@ -2894,19 +3051,21 @@ async function sendBl4Serial(mode) {
     all: "give_serial_all",
     nonhost: "give_serial_nonhost"
   };
-  setBl4DeliveryStatus(`Sending ${deliveryRows.length} BL4 serial(s) to ${destination}...`, "warning");
+  setBl4DeliveryStatus(`Sending ${expanded.totalCount || deliveryRows.length} BL4 serial(s) to ${destination}...`, "warning");
   setOutput(
     els.bl4Output,
-    `Sending BL4 code delivery:\nAction: ${actionByMode[mode] || mode}\nDestination: ${destination}\nSerial count: ${deliveryRows.length}\n${deliveryRows.map((row) => row.name || "Selected BL4 code").join("\n")}${skippedByOverride.length ? `\n\nSkipped by level override: ${skippedByOverride.length}` : ""}`
+    `Sending BL4 code delivery:\nAction: ${actionByMode[mode] || mode}\nDestination: ${destination}\nSelected codes: ${deliveryRows.length}\nCopies: ${copies}\nTotal delivered: ${expanded.totalCount || deliveryRows.length}\n${deliveryRows.map((row) => row.name || "Selected BL4 code").join("\n")}${skippedByOverride.length ? `\n\nSkipped by level override: ${skippedByOverride.length}` : ""}`
   );
-  appendActivity(`BL4 delivery: sending ${deliveryRows.length} serial(s) via ${mode}${skippedByOverride.length ? `; skipped ${skippedByOverride.length}` : ""}.`);
+  appendActivity(`BL4 delivery: sending ${deliveryRows.length} code(s) × ${copies} via ${mode}${skippedByOverride.length ? `; skipped ${skippedByOverride.length}` : ""}.`);
 
   const result = await sendSerialPayload(
     mode,
-    serialText,
+    expanded.text,
     overrideLevel,
     deliveryLevel,
-    els.bl4Output
+    els.bl4Output,
+    1,
+    "BL4 Codes"
   );
   if (!result) return;
   const message = actionSucceeded(result)
@@ -3909,7 +4068,7 @@ function devQuickPickLabelInfo(actorName) {
   if (!invalidReference && !sourceSpecific) {
     primary = reference;
     secondary = mapped && devNormalizeSearch(mapped) !== devNormalizeSearch(reference) ? `Mapped: ${mapped}` : "";
-    source = "Reference Quick Pick label";
+    source = "Example List label";
   } else if (mapped) {
     primary = mapped;
     secondary = reference ? `Reference: ${reference}` : "";
@@ -3917,7 +4076,7 @@ function devQuickPickLabelInfo(actorName) {
   } else if (!invalidReference && reference) {
     primary = reference;
     secondary = derived && devNormalizeSearch(derived) !== devNormalizeSearch(reference) ? `Derived: ${derived}` : "";
-    source = "Reference Quick Pick label";
+    source = "Example List label";
   } else {
     primary = derived || actorName;
     secondary = actorName;
@@ -4158,6 +4317,24 @@ function renderDevMyFavoriteControls() {
   if (els.devMyFavoriteRemoveBtn) {
     els.devMyFavoriteRemoveBtn.disabled = !isFavorite;
   }
+  if (els.devMyFavoriteSaveBtn) {
+    els.devMyFavoriteSaveBtn.disabled = !isFavorite;
+  }
+  if (els.devMyFavoriteLabel || els.devMyFavoriteNote) {
+    const entry = isFavorite ? (devMyFavoriteEntry(actorName) || {}) : null;
+    if (els.devMyFavoriteLabel) {
+      els.devMyFavoriteLabel.disabled = !isFavorite;
+      els.devMyFavoriteLabel.value = entry
+        ? String(entry.label || actorName || "")
+        : "";
+      els.devMyFavoriteLabel.placeholder = isFavorite ? "Favorite display name" : "Select a favorite first";
+    }
+    if (els.devMyFavoriteNote) {
+      els.devMyFavoriteNote.disabled = !isFavorite;
+      els.devMyFavoriteNote.value = entry ? String(entry.note || "") : "";
+      els.devMyFavoriteNote.placeholder = isFavorite ? "Optional personal note" : "Select a favorite first";
+    }
+  }
 }
 
 function renderDevActorDetails() {
@@ -4301,38 +4478,16 @@ function makeDevActorRow(actorName, options = {}) {
   if (actorName === state.devSpawnerSelectedActor) {
     row.classList.add("selected");
   }
+
   const spawn = document.createElement("button");
   spawn.type = "button";
   spawn.className = "dev-spawn-button";
   spawn.textContent = "Spawn";
-  spawn.addEventListener("click", () => spawnDevActor(actorName));
-
-  const label = document.createElement("button");
-  label.type = "button";
-  label.className = "dev-actor-label";
-  label.addEventListener("click", () => {
-    useDevActor(actorName);
-    renderDevActors();
+  spawn.title = `Spawn ${actorName}`;
+  spawn.addEventListener("click", (event) => {
+    event.stopPropagation();
+    spawnDevActor(actorName);
   });
-
-  const displayName = devActorDisplayName(actorName);
-  const title = document.createElement("span");
-  title.className = "dev-actor-title";
-  title.textContent = options.titleText || displayName || actorName;
-
-  const key = document.createElement("span");
-  key.className = "dev-actor-key";
-  key.textContent = actorName;
-
-  const meta = document.createElement("span");
-  meta.className = "dev-actor-meta";
-  const categories = devActorCategories(actorName);
-  const groupName = options.groupName || devActorPrimaryCategory(actorName);
-  meta.textContent = options.metaText || `Category: ${groupName}${categories.length > 1 ? ` | Also in: ${categories.filter((name) => name !== groupName).join(", ")}` : ""}`;
-
-  label.appendChild(title);
-  label.appendChild(key);
-  label.appendChild(meta);
 
   const actions = document.createElement("div");
   actions.className = "dev-row-actions";
@@ -4340,8 +4495,10 @@ function makeDevActorRow(actorName, options = {}) {
   favoriteButton.type = "button";
   favoriteButton.className = "dev-favorite-button";
   const isFavorite = devIsMyFavorite(actorName);
-  favoriteButton.textContent = isFavorite ? "Remove" : "Favorite";
-  favoriteButton.addEventListener("click", () => {
+  favoriteButton.textContent = isFavorite ? "Rem" : "Fav";
+  favoriteButton.title = isFavorite ? "Remove from My Favorites" : "Add to My Favorites";
+  favoriteButton.addEventListener("click", (event) => {
+    event.stopPropagation();
     useDevActor(actorName);
     if (devIsMyFavorite(actorName)) {
       removeSelectedDevMyFavorite();
@@ -4356,17 +4513,60 @@ function makeDevActorRow(actorName, options = {}) {
     editButton.type = "button";
     editButton.className = "dev-edit-button";
     editButton.textContent = "Edit";
-    editButton.addEventListener("click", () => {
+    editButton.title = "Edit favorite label/note";
+    editButton.addEventListener("click", (event) => {
+      event.stopPropagation();
       useDevActor(actorName);
-      editSelectedDevMyFavorite();
+      renderDevActors();
+      if (els.devMyFavoriteLabel) els.devMyFavoriteLabel.focus();
     });
     actions.appendChild(editButton);
   }
 
-  row.appendChild(spawn);
-  row.appendChild(label);
-  row.appendChild(actions);
+  const label = document.createElement("button");
+  label.type = "button";
+  label.className = "dev-actor-label";
+  label.title = actorName;
+  label.addEventListener("click", () => {
+    useDevActor(actorName);
+    renderDevActors();
+  });
+
+  const displayName = options.titleText || devActorDisplayName(actorName) || actorName;
+  const title = document.createElement("span");
+  title.className = "dev-actor-title";
+  title.textContent = displayName;
+
+  const sep = document.createElement("span");
+  sep.className = "dev-actor-sep";
+  sep.textContent = " | ";
+
+  const key = document.createElement("span");
+  key.className = "dev-actor-key";
+  key.textContent = actorName;
+
+  label.append(title, sep, key);
+
+  const metaText = String(options.metaText || "").trim();
+  if (metaText) {
+    const meta = document.createElement("span");
+    meta.className = "dev-actor-meta";
+    meta.textContent = ` ${metaText}`;
+    label.appendChild(meta);
+  }
+
+  row.append(spawn, actions, label);
   return row;
+}
+
+function devActorShortMeta(actorName, options = {}) {
+  const parts = [];
+  if (options.secondary) parts.push(options.secondary);
+  if (options.bossTag) parts.push(options.bossTag);
+  if (options.note) parts.push(options.note);
+  const groupName = options.groupName || devActorPrimaryCategory(actorName);
+  if (groupName && groupName !== "Characters") parts.push(groupName);
+  return parts.filter(Boolean).join(" · ");
 }
 
 function renderDevBossPicks(query, rawQuery) {
@@ -4389,23 +4589,27 @@ function renderDevBossPicks(query, rawQuery) {
       : "No active boss character picks are visible.";
     els.devBossPickRows.appendChild(empty);
   } else {
+    const groupNode = document.createElement("details");
+    groupNode.className = "dev-actor-group";
+    groupNode.open = true;
+    const summary = document.createElement("summary");
+    summary.textContent = `Boss Characters (${state.devSpawnerFilteredBossPicks.length})`;
+    groupNode.appendChild(summary);
     state.devSpawnerFilteredBossPicks.forEach((actorName) => {
       const labelInfo = devQuickPickLabelInfo(actorName);
       const meta = devActorMetadata(actorName);
-      const metaParts = [];
-      if (labelInfo.secondary) metaParts.push(labelInfo.secondary);
-      if (meta.is_true_boss) metaParts.push("True boss");
-      else if (meta.is_boss) metaParts.push("Boss");
-      if (meta.true_boss_actor) metaParts.push(`True-boss actor: ${meta.true_boss_actor}`);
-      metaParts.push(`Category: ${devActorPrimaryCategory(actorName)}`);
       const note = devActorMyFavoriteNote(actorName);
-      if (note) metaParts.push(`Note: ${note}`);
-      els.devBossPickRows.appendChild(makeDevActorRow(actorName, {
-        metaText: metaParts.join(" | "),
+      groupNode.appendChild(makeDevActorRow(actorName, {
+        metaText: devActorShortMeta(actorName, {
+          secondary: labelInfo.secondary,
+          bossTag: meta.is_true_boss ? "True boss" : (meta.is_boss ? "Boss" : ""),
+          note
+        }),
         rowClass: "boss-pick-row",
         titleText: labelInfo.primary
       }));
     });
+    els.devBossPickRows.appendChild(groupNode);
   }
 
   const searchNote = query ? ` | search: "${rawQuery}"` : "";
@@ -4430,14 +4634,14 @@ function renderDevQuickPicks(query, rawQuery) {
   if (!favoriteCount) {
     const empty = document.createElement("div");
     empty.className = "dev-empty-row";
-    empty.textContent = "No reference Quick Picks are packaged in the local catalog.";
+    empty.textContent = "No Example List entries are packaged in the local catalog.";
     els.devQuickPickRows.appendChild(empty);
   } else if (!state.devSpawnerFilteredQuickPicks.length) {
     const empty = document.createElement("div");
     empty.className = "dev-empty-row";
     empty.textContent = query
-      ? `No reference Quick Picks match "${rawQuery}". Clear Search actors to see all packaged Quick Picks.`
-      : "No reference Quick Picks are available in the active local actor catalog.";
+      ? `No Example List entries match "${rawQuery}". Clear Search actors to see all packaged examples.`
+      : "No Example List entries are available in the active local actor catalog.";
     els.devQuickPickRows.appendChild(empty);
   } else {
     devGroupedQuickPickRows(state.devSpawnerFilteredQuickPicks).forEach((group) => {
@@ -4449,16 +4653,12 @@ function renderDevQuickPicks(query, rawQuery) {
       groupNode.appendChild(summary);
       group.actors.forEach((actorName) => {
         const labelInfo = devQuickPickLabelInfo(actorName);
-        const categories = devActorCategories(actorName);
-        const primaryCategory = devActorPrimaryCategory(actorName);
-        const categoryText = `Category: ${primaryCategory}${categories.length > 1 ? ` | Also in: ${categories.filter((name) => name !== primaryCategory).join(", ")}` : ""}`;
-        const metaParts = [];
-        if (labelInfo.secondary) metaParts.push(labelInfo.secondary);
-        metaParts.push(categoryText);
-        metaParts.push(labelInfo.source);
         groupNode.appendChild(makeDevActorRow(actorName, {
           groupName: group.name,
-          metaText: metaParts.join(" | "),
+          metaText: devActorShortMeta(actorName, {
+            secondary: labelInfo.secondary,
+            groupName: group.name
+          }),
           rowClass: "quick-pick-row",
           titleText: labelInfo.primary
         }));
@@ -4471,7 +4671,7 @@ function renderDevQuickPicks(query, rawQuery) {
   const omittedNote = omittedCount ? ` | ${omittedCount} omitted pending catalog review` : "";
   setLine(
     els.devQuickPickSummary,
-    `${state.devSpawnerFilteredQuickPicks.length} shown / ${availableActors.length} available / ${favoriteCount} reference Quick Picks${searchNote}${omittedNote}`,
+    `${state.devSpawnerFilteredQuickPicks.length} shown / ${availableActors.length} available / ${favoriteCount} Example List entries${searchNote}${omittedNote}`,
     state.devSpawnerFilteredQuickPicks.length ? "ok" : "warning"
   );
 }
@@ -4506,17 +4706,13 @@ function renderDevMyFavorites(query, rawQuery) {
       groupNode.appendChild(summary);
       group.actors.forEach((actorName) => {
         const labelInfo = devMyFavoriteLabelInfo(actorName);
-        const categories = devActorCategories(actorName);
-        const primaryCategory = devActorPrimaryCategory(actorName);
-        const existsText = devActorExistsInCatalog(actorName) ? "Catalog actor" : "Not present in local All catalog";
-        const metaParts = [];
-        if (labelInfo.secondary) metaParts.push(labelInfo.secondary);
-        if (labelInfo.note) metaParts.push(`Note: ${labelInfo.note}`);
-        metaParts.push(`Category: ${primaryCategory}${categories.length > 1 ? ` | Also in: ${categories.filter((name) => name !== primaryCategory).join(", ")}` : ""}`);
-        metaParts.push(existsText);
         groupNode.appendChild(makeDevActorRow(actorName, {
           groupName: group.name,
-          metaText: metaParts.join(" | "),
+          metaText: devActorShortMeta(actorName, {
+            secondary: labelInfo.secondary,
+            note: labelInfo.note,
+            groupName: group.name
+          }),
           rowClass: "my-favorite-row",
           titleText: labelInfo.primary
         }));
@@ -4712,10 +4908,12 @@ async function editSelectedDevMyFavorite() {
   }
   const current = devMyFavoriteEntry(actorName) || {};
   const fallbackLabel = devFavoriteLabelForActor(actorName);
-  const label = window.prompt("Favorite label:", String(current.label || fallbackLabel || actorName));
-  if (label === null) return;
-  const note = window.prompt("Personal note:", String(current.note || ""));
-  if (note === null) return;
+  const label = els.devMyFavoriteLabel
+    ? getValue(els.devMyFavoriteLabel)
+    : String(current.label || fallbackLabel || actorName);
+  const note = els.devMyFavoriteNote
+    ? getValue(els.devMyFavoriteNote)
+    : String(current.note || "");
   const now = new Date().toISOString();
   state.devSpawnerMyFavorites = {
     version: 1,
@@ -5222,6 +5420,8 @@ function wireEvents() {
   document.getElementById("statusBtn").addEventListener("click", bridgeStatus);
   document.getElementById("setTargetBtn").addEventListener("click", () => setTarget(els.targetSelect.value));
   document.getElementById("firstTargetBtn").addEventListener("click", firstPlayerTarget);
+  document.getElementById("targetAllPlayersBtn").addEventListener("click", () => setBoostTargetScope("all"));
+  document.getElementById("targetNonHostBtn").addEventListener("click", () => setBoostTargetScope("nonhost"));
   document.getElementById("kickTargetBtn").addEventListener("click", () => runAction("kick_player", {}, els.boostOutput, 15000));
   els.targetSelect.addEventListener("change", () => setTarget(els.targetSelect.value));
 
@@ -5236,16 +5436,16 @@ function wireEvents() {
     setOutput(els.boostOutput, "Cleared local serial input.");
     appendActivity("Cleared Boosting serial input.");
   });
-  document.getElementById("setLevelBtn").addEventListener("click", () => runAction("set_level", {
+  document.getElementById("setLevelBtn").addEventListener("click", () => runScopedPlayerAction("set_level", {
     xp_track: getValue(els.xpTrack),
     level: getInt(els.xpLevel, 1, 9999999, 60)
   }, els.boostOutput, 30000));
-  document.getElementById("giveCurrencyBtn").addEventListener("click", () => runAction("give_currency", {
+  document.getElementById("giveCurrencyBtn").addEventListener("click", () => runScopedPlayerAction("give_currency", {
     currency_kind: getValue(els.currencyKind),
     amount: getInt(els.currencyAmount, 0, 2147483647, 1000000)
   }, els.boostOutput, 30000));
   document.getElementById("setInventorySelectedBtn").addEventListener("click", async () => {
-    const result = await runAction("set_backpack_bank_selected", inventoryPayload(true), els.boostOutput, 30000);
+    const result = await runScopedPlayerAction("set_backpack_bank_selected", inventoryPayload(true), els.boostOutput, 30000);
     setInventoryStatus(resultMessage(result), actionSucceeded(result) ? "ok" : "warning");
   });
   document.getElementById("setInventoryAllBtn").addEventListener("click", async () => {
@@ -5543,6 +5743,9 @@ function wireEvents() {
   }
   if (els.devMyFavoriteRemoveBtn) {
     els.devMyFavoriteRemoveBtn.addEventListener("click", removeSelectedDevMyFavorite);
+  }
+  if (els.devMyFavoriteSaveBtn) {
+    els.devMyFavoriteSaveBtn.addEventListener("click", editSelectedDevMyFavorite);
   }
   if (els.devLogoUseSelectedBtn) {
     els.devLogoUseSelectedBtn.addEventListener("click", useSelectedDevActorForLogo);

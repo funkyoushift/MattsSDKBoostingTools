@@ -87,31 +87,61 @@ _QUEUE_PRESERVING_ACTIONS = frozenset({
     "dev_spawner_logo_options",
 })
 
+# Initial Give_Serial bridge actions. After they run, multi-chunk delivery continues
+# on the serial-rewards tick (outside this HTTP queue). Only a newer Give_Serial
+# should replace that in-flight chunk work — see serial_rewards.py.
+_SERIAL_DELIVERY_ACTIONS = frozenset({
+    "give_serial_selected",
+    "give_serial_all",
+    "give_serial_nonhost",
+})
 
-def _clear_pending_queue_locked() -> int:
-    """Drop every not-yet-executed bridge action (used by user-facing commands).
 
-    HTTP handlers park work on a game-tick queue.  If the game is paused/slow, a
-    later user command must not leave prior serials/spawns sitting there — they
-    would fire on the same tick as the newer command ("previous list" /
-    "boss spawned again on unrelated command").
-    """
+def _clear_pending_matching_locked(should_drop: Callable[[dict[str, Any]], bool]) -> int:
+    """Drop queued actions matching should_drop; keep the rest in order."""
     dropped = 0
+    kept: deque[dict[str, Any]] = deque()
     while _queue:
         item = _queue.popleft()
-        rid = str(item.get("id") or "")
-        if rid:
-            _abandoned_rids.add(rid)
-        dropped += 1
+        if should_drop(item):
+            rid = str(item.get("id") or "")
+            if rid:
+                _abandoned_rids.add(rid)
+            dropped += 1
+            continue
+        kept.append(item)
+    _queue.extend(kept)
     if len(_abandoned_rids) > 256:
         _abandoned_rids.clear()
     return dropped
 
 
+def _clear_pending_queue_locked() -> int:
+    """Drop every not-yet-executed bridge action."""
+    return _clear_pending_matching_locked(lambda _item: True)
+
+
 def _prepare_queue_for_enqueue_locked(action: str) -> int:
+    """Prune stale waiting work before enqueueing a user-facing command.
+
+    Policy:
+    - Read-only / background actions: leave the queue alone.
+    - New Give_Serial: clear the whole pending queue so an older waiting serial
+      list or spawn cannot fire on the same tick. In-progress chunked delivery
+      (already started) is replaced inside serial_rewards when this action runs.
+    - Any other command (max cash, travel, spawn, etc.): drop stale waiting
+      spawns/other actions so bosses do not re-fire, but **keep** pending
+      Give_Serial entries so a large delivery that has not started yet is not
+      cancelled. Chunk sequences already running are outside this queue and are
+      never cleared here.
+    """
     if action in _QUEUE_PRESERVING_ACTIONS:
         return 0
-    return _clear_pending_queue_locked()
+    if action in _SERIAL_DELIVERY_ACTIONS:
+        return _clear_pending_queue_locked()
+    return _clear_pending_matching_locked(
+        lambda item: str(item.get("action") or "") not in _SERIAL_DELIVERY_ACTIONS
+    )
 
 
 def _request_was_superseded_locked(rid: str) -> bool:
@@ -852,8 +882,10 @@ class _Handler(BaseHTTPRequestHandler):
                 "queued": True,
                 "message": (
                     "Action queued but not processed yet. Make sure the game is loaded "
-                    "and unpaused so the SDK tick can run it. Sending another command "
-                    "will cancel this waiting action to avoid stale serials/spawns."
+                    "and unpaused so the SDK tick can run it. A newer Give_Serial or spawn "
+                    "command can cancel a waiting same-kind action to avoid stale serials/"
+                    "spawns; other live commands do not cancel an in-progress chunked "
+                    "serial delivery."
                 ),
             })
         except Exception as exc:

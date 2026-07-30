@@ -1,5 +1,5 @@
 (function () {
-  window.MSBT_MATT_EDITOR_ADAPTER_VERSION = "deliver-6-draggable-panel";
+  window.MSBT_MATT_EDITOR_ADAPTER_VERSION = "deliver-7-copies";
 
   var BASE85_RE = /@U[0-9A-Za-z!#$%&()*+\-;<=>?@^_`{\/}~]+/g;
   var SOURCE_DEFS = [
@@ -455,6 +455,14 @@
     return "";
   }
 
+  function currentCopies() {
+    var el = byId("msbt-serial-copies");
+    var n = el ? parseInt(String(el.value || "1").replace(/,/g, "").trim(), 10) : 1;
+    if (!Number.isFinite(n) || n < 1) n = 1;
+    if (n > 50) n = 50;
+    return n;
+  }
+
   async function deliver(mode) {
     var serial = prepareSerialForDelivery();
     if (!serial) {
@@ -465,16 +473,25 @@
       setStatus("Select a target player first.", false);
       return;
     }
-    if (mode !== "selected") {
-      var ok = window.confirm("Send this generated item to " + mode + "?");
+    var copies = currentCopies();
+    var destination = mode === "selected" ? "selected player" : mode === "all" ? "all players" : "non-host players";
+    var copiesNote = copies > 1 ? " (" + copies + " copies)" : "";
+    if (mode !== "selected" || copies > 1) {
+      var ok = window.confirm("Send this generated item" + copiesNote + " to " + destination + "?");
       if (!ok) return;
     }
-    setStatus("Sending item through MSBT bridge...", true);
+    setStatus("Sending item through MSBT bridge" + (copies > 1 ? " (" + copies + " copies)" : "") + "...", true);
     try {
       var response = await fetch("/msbt/deliver", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mode: mode, serial: serial, level: currentLevel(), target_player: state.selectedTarget })
+        body: JSON.stringify({
+          mode: mode,
+          serial: serial,
+          copies: copies,
+          level: currentLevel(),
+          target_player: state.selectedTarget
+        })
       });
       var data = await response.json();
       var message = responseMessage(data, data.ok ? "Delivery requested." : "Delivery failed.");
@@ -741,6 +758,24 @@
       "color:#ffcc33"
     ].join(";");
     panel.appendChild(preview);
+
+    var copiesRow = document.createElement("div");
+    copiesRow.style.cssText = "display:grid;grid-template-columns:auto 1fr;gap:8px;align-items:center;margin-bottom:8px;";
+    var copiesLabel = document.createElement("label");
+    copiesLabel.htmlFor = "msbt-serial-copies";
+    copiesLabel.textContent = "Copies";
+    copiesLabel.style.cssText = "color:#9fb3d9;font-size:11px;font-weight:700;";
+    copiesRow.appendChild(copiesLabel);
+    var copiesInput = document.createElement("input");
+    copiesInput.id = "msbt-serial-copies";
+    copiesInput.type = "number";
+    copiesInput.min = "1";
+    copiesInput.max = "50";
+    copiesInput.value = "1";
+    copiesInput.title = "How many copies of the confirmed serial to deliver";
+    copiesInput.style.cssText = "width:100%;background:#211b1f;color:#f1f5ff;border:1px solid #334155;padding:5px;font-size:11px;";
+    copiesRow.appendChild(copiesInput);
+    panel.appendChild(copiesRow);
 
     var row = document.createElement("div");
     row.style.cssText = "display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:6px;";

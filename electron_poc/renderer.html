@@ -104,7 +104,7 @@
       <div class="grid two">
         <section class="panel cyan">
           <h2>Target Player</h2>
-          <p>Choose a player from any target dropdown. The app sets that player as the target automatically.</p>
+          <p>Choose one player, or set Boost scope to All / Non-Host for Quick Max, XP, Currency, and Set Selected inventory. Serial Rewards still use their own Give Selected / All / Non-Host buttons.</p>
           <div id="bridgeSummary" class="status-line warning">Checking bridge...</div>
           <label for="targetSelect">Target Player</label>
           <select id="targetSelect">
@@ -112,7 +112,9 @@
           </select>
           <div class="button-row wrap">
             <button id="setTargetBtn" class="hidden">Set Target</button>
-            <button id="firstTargetBtn">Use First Player</button>
+            <button id="firstTargetBtn" data-boost-scope="selected">Use First Player</button>
+            <button id="targetAllPlayersBtn" data-boost-scope="all">Target All Players</button>
+            <button id="targetNonHostBtn" data-boost-scope="nonhost">Target Non-Host</button>
             <button id="kickTargetBtn" class="danger">Kick Player</button>
           </div>
           <div id="targetSummary" class="status-line">Selected target: none</div>
@@ -230,6 +232,10 @@
             <label>
               Level
               <input id="boostSerialLevel" type="number" min="1" max="60" value="60">
+            </label>
+            <label>
+              Copies
+              <input id="boostSerialCopies" type="number" min="1" max="50" value="1" title="How many copies of each pasted serial to deliver">
             </label>
           </div>
           <div class="button-row wrap">
@@ -434,6 +440,8 @@
               <button id="bookmarkSetTargetBtn" class="hidden">Set Target</button>
             </div>
             <div id="bookmarkTargetSummary" class="status-line warning">Selected target: none</div>
+            <label for="bookmarkSerialCopies">Copies</label>
+            <input id="bookmarkSerialCopies" type="number" min="1" max="50" value="1" title="How many copies of each selected bookmark serial to deliver">
             <div class="status-line warning">Delivery sends checked bookmark rows. If nothing is checked, the active row is used.</div>
             <div class="button-row wrap">
               <button data-bookmark-send-mode="selected">Deliver Selected</button>
@@ -472,94 +480,97 @@
     </section>
 
     <section id="tab-bl4-codes" class="tab-panel">
-      <section class="panel gold">
-        <div class="section-heading">
-          <div>
-            <h2>BL4 Codes</h2>
-            <p>Merged local BL4 catalog. Search, details, parts breakdown, validation, and bookmarks run locally; only live delivery uses the SDK bridge.</p>
+      <div class="bl4-layout">
+        <section class="panel gold bl4-main-pane">
+          <div class="section-heading">
+            <div>
+              <h2>BL4 Codes</h2>
+              <p>Merged local BL4 catalog. Search, details, parts breakdown, validation, and bookmarks run locally; only live delivery uses the SDK bridge.</p>
+            </div>
+            <div class="button-row wrap">
+              <button id="bl4SubmitGzoBtn" class="gzo-submit-cta">Submit Your Code to GZO</button>
+              <button id="bl4ReloadBtn">Load Catalog</button>
+              <button id="bl4RefreshGzoBtn">Refresh GZO</button>
+              <button id="bl4ValidateBtn">Validate / Confirm Active</button>
+              <button id="bl4ImportSelectedBtn">Import Selected To Bookmarks</button>
+            </div>
           </div>
+          <div id="bl4Status" class="status-line warning">Loading BL4 Codes catalog...</div>
+
+          <div class="filter-panel">
+            <h3>Filters</h3>
+            <div class="grid two compact">
+              <label>
+                Search
+                <div class="search-row">
+                  <input id="bl4SearchInput" type="search" autocomplete="off" spellcheck="false" placeholder="name, type, creator, modded...">
+                  <button id="bl4SearchBtn">Search</button>
+                </div>
+              </label>
+              <label>
+                Manufacturer
+                <select id="bl4ManufacturerFilter"></select>
+              </label>
+              <label>
+                Listing
+                <select id="bl4ListingFilter"></select>
+              </label>
+              <label>
+                Rarity
+                <select id="bl4RarityFilter"></select>
+              </label>
+              <label>
+                Type
+                <select id="bl4TypeFilter"></select>
+              </label>
+              <label>
+                Creator
+                <select id="bl4CreatorFilter"></select>
+              </label>
+              <label>
+                Mattmab Result
+                <select id="bl4MattmabFilter"></select>
+              </label>
+            </div>
+          </div>
+
+          <div id="bl4Count" class="status-line">0 shown / 0 merged | 0 selected</div>
           <div class="button-row wrap">
-            <button id="bl4SubmitGzoBtn" class="gzo-submit-cta">Submit Your Code to GZO</button>
-            <button id="bl4ReloadBtn">Load Catalog</button>
-            <button id="bl4RefreshGzoBtn">Refresh GZO</button>
-            <button id="bl4ValidateBtn">Validate / Confirm Active</button>
-            <button id="bl4ImportSelectedBtn">Import Selected To Bookmarks</button>
+            <button id="bl4SelectAllBtn">Select All</button>
+            <button id="bl4ClearSelectionBtn" class="danger">Clear</button>
+            <button id="bl4CopySelectedBtn">Copy Selected Serials</button>
           </div>
-        </div>
-        <div id="bl4Status" class="status-line warning">Loading BL4 Codes catalog...</div>
 
-        <div class="filter-panel">
-          <h3>Filters</h3>
-          <div class="grid two compact">
-            <label>
-              Search
-              <div class="search-row">
-                <input id="bl4SearchInput" type="search" autocomplete="off" spellcheck="false" placeholder="name, type, creator, modded...">
-                <button id="bl4SearchBtn">Search</button>
-              </div>
-            </label>
-            <label>
-              Manufacturer
-              <select id="bl4ManufacturerFilter"></select>
-            </label>
-            <label>
-              Listing
-              <select id="bl4ListingFilter"></select>
-            </label>
-            <label>
-              Rarity
-              <select id="bl4RarityFilter"></select>
-            </label>
-            <label>
-              Type
-              <select id="bl4TypeFilter"></select>
-            </label>
-            <label>
-              Creator
-              <select id="bl4CreatorFilter"></select>
-            </label>
-            <label>
-              Mattmab Result
-              <select id="bl4MattmabFilter"></select>
-            </label>
-          </div>
-        </div>
+          <section class="bl4-card-pane">
+            <div class="mini-heading">
+              <h3>Image Browser</h3>
+              <span id="bl4CardSummary">GZO images load directly from save-editor.be when available.</span>
+            </div>
+            <div id="bl4Cards" class="bl4-card-grid">
+              <div class="dev-empty-row">No BL4 code cards loaded.</div>
+            </div>
+          </section>
 
-        <div id="bl4Count" class="status-line">0 shown / 0 merged | 0 selected</div>
-        <div class="button-row wrap">
-          <button id="bl4SelectAllBtn">Select All</button>
-          <button id="bl4ClearSelectionBtn" class="danger">Clear</button>
-          <button id="bl4CopySelectedBtn">Copy Selected Serials</button>
-        </div>
-
-        <section class="bl4-card-pane">
-          <div class="mini-heading">
-            <h3>Image Browser</h3>
-            <span id="bl4CardSummary">GZO images load directly from save-editor.be when available.</span>
-          </div>
-          <div id="bl4Cards" class="bl4-card-grid">
-            <div class="dev-empty-row">No BL4 code cards loaded.</div>
-          </div>
+          <section class="bl4-detail-pane">
+            <h3>Details</h3>
+            <pre id="bl4Detail" class="detail-pre">Select a BL4 code.</pre>
+            <label for="bl4Serial">Serial</label>
+            <textarea id="bl4Serial" class="output-box small" spellcheck="false" readonly></textarea>
+            <label for="bl4Breakdown">Parts Breakdown</label>
+            <textarea id="bl4Breakdown" class="output-box medium" spellcheck="false" readonly></textarea>
+            <div class="button-row wrap">
+              <button id="bl4CopyBreakdownBtn">Copy Parts Breakdown</button>
+              <button id="bl4CopySerialBtn">Copy Serial</button>
+              <button id="bl4BookmarkBtn">Bookmark This</button>
+              <button id="bl4OpenLootlemonBtn">Open Lootlemon</button>
+            </div>
+          </section>
         </section>
 
-        <section class="bl4-detail-pane">
-          <h3>Details</h3>
-          <pre id="bl4Detail" class="detail-pre">Select a BL4 code.</pre>
-          <label for="bl4Serial">Serial</label>
-          <textarea id="bl4Serial" class="output-box small" spellcheck="false" readonly></textarea>
-          <label for="bl4Breakdown">Parts Breakdown</label>
-          <textarea id="bl4Breakdown" class="output-box medium" spellcheck="false" readonly></textarea>
-          <div class="button-row wrap">
-            <button id="bl4CopyBreakdownBtn">Copy Parts Breakdown</button>
-            <button id="bl4CopySerialBtn">Copy Serial</button>
-            <button id="bl4BookmarkBtn">Bookmark This</button>
-            <button id="bl4OpenLootlemonBtn">Open Lootlemon</button>
-          </div>
-        </section>
-
-        <section class="delivery-panel">
-          <h3>Delivery</h3>
-          <label for="bl4TargetSelect">BL4 Codes Target</label>
+        <aside class="panel purple bl4-delivery-side" aria-label="BL4 Codes delivery">
+          <h2>Delivery</h2>
+          <p class="muted-line">Stays visible while you scroll the catalog. Sends checked cards, or the active code if none are checked.</p>
+          <label for="bl4TargetSelect">Target</label>
           <div class="target-row">
             <select id="bl4TargetSelect">
               <option value="">No players loaded</option>
@@ -568,28 +579,32 @@
             <button id="bl4RefreshPlayersBtn" class="hidden">Refresh Players</button>
           </div>
           <div id="bl4TargetSummary" class="status-line warning">Selected target: none</div>
-          <div class="inline-fields">
+          <div class="inline-fields bl4-delivery-fields">
             <label>
-              Override delivery level
+              Override level
               <select id="bl4OverrideLevel">
                 <option value="false">false</option>
                 <option value="true">true</option>
               </select>
             </label>
             <label>
-              Delivery Level
+              Level
               <input id="bl4DeliveryLevel" type="number" min="1" max="60" value="60">
             </label>
+            <label>
+              Copies
+              <input id="bl4SerialCopies" type="number" min="1" max="50" value="1" title="How many copies of each selected BL4 serial to deliver">
+            </label>
           </div>
-          <div id="bl4DeliveryStatus" class="status-line warning">Delivery sends checked image cards, or the active code if none are checked.</div>
+          <div id="bl4DeliveryStatus" class="status-line warning">Ready.</div>
           <div class="button-row wrap">
             <button data-bl4-send-mode="selected">Deliver Selected</button>
             <button data-bl4-send-mode="all">Deliver All</button>
             <button data-bl4-send-mode="nonhost">Deliver Non-Host</button>
           </div>
-          <pre id="bl4Output">No BL4 Codes delivery sent yet.</pre>
-        </section>
-      </section>
+          <pre id="bl4Output" class="bl4-delivery-output">No BL4 Codes delivery sent yet.</pre>
+        </aside>
+      </div>
     </section>
 
     <section id="tab-matt-editor" class="tab-panel">
@@ -806,8 +821,8 @@
             <div id="devBossPickRows" class="dev-row-list compact"></div>
           </div>
           <div class="dev-browser-section">
-            <h3>Reference Quick Picks</h3>
-            <div id="devQuickPickSummary" class="status-line">Loading reference quick picks...</div>
+            <h3>Example List</h3>
+            <div id="devQuickPickSummary" class="status-line">Loading example list...</div>
             <div id="devQuickPickRows" class="dev-row-list compact"></div>
           </div>
           <div class="dev-browser-section">
@@ -815,6 +830,17 @@
             <div class="button-row wrap compact-actions">
               <button id="devMyFavoriteAddBtn">Add Selected</button>
               <button id="devMyFavoriteRemoveBtn">Remove Selected</button>
+              <button id="devMyFavoriteSaveBtn">Save Label/Note</button>
+            </div>
+            <div class="inline-fields compact">
+              <label>
+                Label
+                <input id="devMyFavoriteLabel" type="text" maxlength="160" autocomplete="off" spellcheck="false" placeholder="Favorite display name">
+              </label>
+              <label>
+                Note
+                <input id="devMyFavoriteNote" type="text" maxlength="320" autocomplete="off" spellcheck="false" placeholder="Optional personal note">
+              </label>
             </div>
             <div id="devMyFavoriteSummary" class="status-line">Loading My Favorites...</div>
             <div id="devMyFavoriteRows" class="dev-row-list compact"></div>
