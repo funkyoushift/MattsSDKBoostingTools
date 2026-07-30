@@ -26,7 +26,7 @@ Install / update the mod manager **before** you rely on MSBT live actions. Older
 
 Ignore `latest.json`, `latest.yml`, and `.blockmap` files unless you know why you need them — those are for the update system.
 
-Site / tools: [FunkYouSHiFT.com](https://www.funkyoushift.com/) · [Tools page](https://www.funkyoushift.com/tools)
+Site / tools: [FunkYouSHiFT.com](https://www.funkyoushift.com/) · [Tools page](https://www.funkyoushift.com/borderlands-resources.html)
 
 ---
 
@@ -166,7 +166,7 @@ Third-party notices and license details for bundled/adapted pieces: [THIRD_PARTY
 - [oak2-mod-manager v0.3](https://github.com/bl-sdk/oak2-mod-manager/releases/tag/v0.3)
 - [GZO Borderlands 4 Codes](https://save-editor.be/GZO/Borderlands4/Codes.html)
 - [Lootlemon](https://www.lootlemon.com/)
-- [FunkYouSHiFT site](https://www.funkyoushift.com/) · [Tools](https://www.funkyoushift.com/tools)
+- [FunkYouSHiFT site](https://www.funkyoushift.com/) · [Tools](https://www.funkyoushift.com/borderlands-resources.html)
 - [Tip FunkYouSHiFT](https://streamlabs.com/funkyoushift/tip) · [Donate to Mattmab](https://ko-fi.com/mattmab)
 - [Report issues](https://github.com/funkyoushift/MattsSDKBoostingTools/issues)
 
