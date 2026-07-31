@@ -627,8 +627,15 @@ _favorite_itempool_descriptions: dict[str, str] = {str(k): str(v) for k, v in di
 _favorite_travel_map_descriptions: dict[str, str] = _canonicalize_travel_map_descriptions(_inventory_settings.get("favorite_travel_map_descriptions", {}) or {})
 _favorite_travel_station_descriptions: dict[str, str] = {str(k): str(v) for k, v in dict(_inventory_settings.get("favorite_travel_station_descriptions", {}) or {}).items() if str(k).strip() and str(v).strip()}
 
-_CURRENCY_KINDS = ["cash", "eridium", "vaultcard1", "vaultcard2", "vaultcard3"]
-_EXP_TRACKS = ["player", "specialization", "vaultcard_xp_1", "vaultcard_xp_2", "vaultcard_xp_3"]
+_CURRENCY_KINDS = ["cash", "eridium", "vaultcard1", "vaultcard2", "vaultcard3", "vaultcard4"]
+_EXP_TRACKS = [
+    "player",
+    "specialization",
+    "vaultcard_xp_1",
+    "vaultcard_xp_2",
+    "vaultcard_xp_3",
+    "vaultcard_xp_4",
+]
 _MAX_WALLET_AMOUNT = 2_147_483_647
 _MAX_PLAYER_LEVEL = 60
 _MAX_SPEC_LEVEL = 701
@@ -3216,12 +3223,12 @@ def _max_all_selected() -> None:
         vc_ok, vc_msg = max_all_vault_cards_for_pc(pc, log=_log)
         _log(
             f"Max All for {name}: player 60, spec 701, cash/eridium {_MAX_WALLET_AMOUNT:,}, "
-            f"max SDU, vault cards 1–3 ({'OK' if vc_ok else 'partial'}: {vc_msg[:120]}).",
+            f"max SDU, vault cards 1–4 ({'OK' if vc_ok else 'partial'}: {vc_msg[:120]}).",
         )
     else:
-        for vc_kind in ("vaultcard1", "vaultcard2", "vaultcard3"):
+        for vc_kind in ("vaultcard1", "vaultcard2", "vaultcard3", "vaultcard4"):
             _do_give_currency(vc_kind, _MAX_WALLET_AMOUNT, name)
-        for vc_xp in ("vaultcard_xp_1", "vaultcard_xp_2", "vaultcard_xp_3"):
+        for vc_xp in ("vaultcard_xp_1", "vaultcard_xp_2", "vaultcard_xp_3", "vaultcard_xp_4"):
             _do_give_experience(vc_xp, _MAX_VAULT_CARD_LEVEL, name)
         _log(
             f"Max All for {name}: player 60, spec 701, cash/eridium {_MAX_WALLET_AMOUNT:,}, "

@@ -55,8 +55,15 @@ from .serial_converter import human_to_serial as _human_to_serial, serial_to_hum
 from .shinies import DEFAULT_ITEM_LEVEL as _SHINY_DEFAULT_LEVEL, drop_all_shinies
 from .travel import _exec_console, travel_to_map as _travel_to_map, travel_to_station as _travel_to_station
 
-CURRENCY_KINDS = ["cash", "eridium", "vaultcard1", "vaultcard2", "vaultcard3"]
-EXP_TRACKS = ["player", "specialization", "vaultcard_xp_1", "vaultcard_xp_2", "vaultcard_xp_3"]
+CURRENCY_KINDS = ["cash", "eridium", "vaultcard1", "vaultcard2", "vaultcard3", "vaultcard4"]
+EXP_TRACKS = [
+    "player",
+    "specialization",
+    "vaultcard_xp_1",
+    "vaultcard_xp_2",
+    "vaultcard_xp_3",
+    "vaultcard_xp_4",
+]
 MAX_WALLET_AMOUNT = 2147483647
 MAX_PLAYER_LEVEL = 60
 MAX_SPEC_LEVEL = 701

@@ -1,4 +1,4 @@
-"""Vault card 1/2/3 max for boosting mods — ULM struct writes + economy fallback."""
+"""Vault card 1/2/3/4 max for boosting mods — ULM struct writes + economy fallback."""
 
 from __future__ import annotations
 
@@ -27,14 +27,19 @@ def _economy_max_vault_cards(
     ok_bits: list[str] = []
     fail = False
 
-    for kind in ("vaultcard1", "vaultcard2", "vaultcard3"):
+    for kind in ("vaultcard1", "vaultcard2", "vaultcard3", "vaultcard4"):
         token = _CURRENCY_KIND_ALIASES.get(kind)
         if token and _give_currency_on_pc(target_pc, token, _MAX_WALLET_AMOUNT):
             ok_bits.append(f"{kind}=direct GiveCurrency")
         else:
             fail = True
 
-    for slot, label in ((2, "vaultcard_xp_1"), (3, "vaultcard_xp_2"), (4, "vaultcard_xp_3")):
+    for slot, label in (
+        (2, "vaultcard_xp_1"),
+        (3, "vaultcard_xp_2"),
+        (4, "vaultcard_xp_3"),
+        (5, "vaultcard_xp_4"),
+    ):
         if _set_experience_level_via_bp(ps, slot, _MAX_VAULT_XP_LEVEL):
             ok_bits.append(f"{label}=BP_SetLevel")
         else:
@@ -55,21 +60,23 @@ def max_all_vault_cards_for_pc(
     if ps is None:
         return False, "no PlayerState on target PlayerController"
 
+    ulm_summary = ""
     try:
         from ultra_local_menu.vault_cards import apply_max_to_all_vault_cards
 
         ok, bits = apply_max_to_all_vault_cards(target_pc, ps, selector="all")
-        summary = "; ".join(bits[:14])
+        ulm_summary = "; ".join(bits[:14])
         if ok:
-            log_fn(f"Vault cards max (ULM): {summary}")
-            return True, summary
-        log_fn(f"Vault cards max partial (ULM): {summary}")
+            log_fn(f"Vault cards max (ULM): {ulm_summary}")
+        else:
+            log_fn(f"Vault cards max partial (ULM): {ulm_summary}")
     except Exception as exc:  # noqa: BLE001
         log_fn(f"ULM vault_cards unavailable ({exc!r}) — using economy fallback")
 
     ok, summary = _economy_max_vault_cards(target_pc, log=log_fn)
     log_fn(f"Vault cards max (economy): {summary}")
-    return ok, summary
+    combined = "; ".join(part for part in (ulm_summary, summary) if part)
+    return ok, combined
 
 
 def max_vault_card_three_for_pc(
