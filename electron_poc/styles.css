@@ -22,7 +22,10 @@
 
 html,
 body {
+  width: 100%;
+  min-width: 100%;
   min-height: 100%;
+  height: 100%;
 }
 
 body {
@@ -30,6 +33,7 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: "Segoe UI", Arial, sans-serif;
+  overflow-x: auto;
 }
 
 h1,
@@ -1432,7 +1436,7 @@ button.active-scope {
 }
 
 /* Header / Support chrome: allow stacking without nuking content columns.
-   1080p half (~960) and high-DPI half snaps (~850–900) stay dense below. */
+   1080p half (~960) stays dense; high-DPI half snaps clamp to minWidth 960. */
 @media (max-width: 1180px) {
   .app-header {
     align-items: stretch;
@@ -1512,7 +1516,7 @@ button.active-scope {
   }
 }
 
-/* Mid width: 3-col content → 2-col; keep 2-col grids. Covers ~850–980 half snaps. */
+/* Mid width: 3-col content → 2-col; keep 2-col grids. Covers ~960–980 half snaps. */
 @media (max-width: 980px) {
   .grid.three,
   .grid.five,

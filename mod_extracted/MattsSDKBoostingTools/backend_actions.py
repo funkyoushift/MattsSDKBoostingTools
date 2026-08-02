@@ -216,12 +216,15 @@ def _run_actor_script_deployer_command(command_line: str) -> tuple[bool, str]:
         asd = importlib.import_module("ActorScriptDeployer")
     except Exception as exc:
         return False, f"ActorScriptDeployer import failed: {exc!r}"
+    patch_ok, patch_message = _install_asd_spawn_runtime_patches(asd)
+    if not patch_ok:
+        return False, patch_message
     command_obj = getattr(asd, attr_name, None)
     handle = getattr(command_obj, "_handle_cmd", None)
     if not callable(handle):
         return False, f"ActorScriptDeployer command object {attr_name!r} is unavailable."
     handle(command_line, len(command_name))
-    return True, "ActorScriptDeployer command object"
+    return True, f"ActorScriptDeployer command object; {patch_message}"
 
 
 def _actor_script_deployer_command(attr_name: str) -> tuple[Any | None, str]:
@@ -281,6 +284,107 @@ def _install_asd_sdk03_actor_def_patch(asd: Any) -> tuple[bool, str]:
         return False, f"ActorScriptDeployer SDK 03 actor-def pointer patch failed: {exc!r}"
 
     return True, "ActorScriptDeployer SDK 03 actor-def pointer patch installed: FGbxDefPtr(name, GbxActorDef)"
+
+
+def _install_asd_nonblocking_spawn_poll_patch(asd: Any) -> tuple[bool, str]:
+    """Safety net: force ASD spawn verification onto the non-blocking protocol.
+
+    Newer ActorScriptDeployer builds default ``_poll_spawner_for_alive_actors`` to
+    a one-shot check and disable world-wide ``find_all("Actor")`` scans. Older
+    ASD installs still sleep (~0.75–3s) and snapshot the whole actor list on the
+    Unreal tick queue, which freezes BL4.
+
+    Always install this patch so MSBT spawn paths (ASD_spawnai / ASD_spawn /
+    ASD_lostloot / ASD_barrellogo / cache) stay hitch-free even on older ASD.
+    Spawns may return queued_unverified when actors are not immediately alive.
+    """
+    if getattr(asd, "_msbt_nonblocking_spawn_poll_patch", False):
+        return True, "ActorScriptDeployer non-blocking spawn poll patch already installed"
+
+    notes: list[str] = []
+
+    original_poll = getattr(asd, "_poll_spawner_for_alive_actors", None)
+    if callable(original_poll):
+        alive_fn = getattr(asd, "_alive_actors_for_spawner_component", None)
+
+        def _poll_spawner_for_alive_actors_nonblocking(
+            comp: Any,
+            *,
+            timeout: float = 0.0,
+            interval: float = 0.15,
+        ) -> list[Any]:
+            del timeout, interval  # MSBT never blocks the tick thread waiting.
+            if not callable(alive_fn):
+                return []
+            try:
+                actors = alive_fn(comp)
+            except Exception:
+                return []
+            return list(actors or [])
+
+        try:
+            setattr(asd, "_msbt_original_poll_spawner_for_alive_actors", original_poll)
+            setattr(asd, "_poll_spawner_for_alive_actors", _poll_spawner_for_alive_actors_nonblocking)
+            notes.append("poll=once-no-sleep")
+        except Exception as exc:
+            return False, f"ActorScriptDeployer non-blocking spawn poll patch failed: {exc!r}"
+    else:
+        notes.append("poll=missing")
+
+    original_snapshot = getattr(asd, "_world_actor_snapshot", None)
+    if callable(original_snapshot):
+        def _world_actor_snapshot_skip() -> set[str]:
+            return set()
+
+        try:
+            setattr(asd, "_msbt_original_world_actor_snapshot", original_snapshot)
+            setattr(asd, "_world_actor_snapshot", _world_actor_snapshot_skip)
+            notes.append("world-snapshot=skipped")
+        except Exception as exc:
+            return False, f"ActorScriptDeployer world-snapshot skip patch failed: {exc!r}"
+    else:
+        notes.append("world-snapshot=missing")
+
+    original_delta = getattr(asd, "_find_new_world_actors_near", None)
+    if callable(original_delta):
+        def _find_new_world_actors_near_skip(*_args: Any, **_kwargs: Any) -> list[Any]:
+            return []
+
+        try:
+            setattr(asd, "_msbt_original_find_new_world_actors_near", original_delta)
+            setattr(asd, "_find_new_world_actors_near", _find_new_world_actors_near_skip)
+            notes.append("world-delta=skipped")
+        except Exception as exc:
+            return False, f"ActorScriptDeployer world-delta skip patch failed: {exc!r}"
+    else:
+        notes.append("world-delta=missing")
+
+    # Also force the ASD module flag off when present (native protocol gate).
+    if hasattr(asd, "_SPAWN_ALLOW_WORLD_ACTOR_SCAN"):
+        try:
+            setattr(asd, "_msbt_original_spawn_allow_world_actor_scan", getattr(asd, "_SPAWN_ALLOW_WORLD_ACTOR_SCAN"))
+            setattr(asd, "_SPAWN_ALLOW_WORLD_ACTOR_SCAN", False)
+            notes.append("world-scan-flag=off")
+        except Exception:
+            notes.append("world-scan-flag=unpatched")
+
+    try:
+        setattr(asd, "_msbt_nonblocking_spawn_poll_patch", True)
+    except Exception as exc:
+        return False, f"ActorScriptDeployer non-blocking spawn poll patch flag failed: {exc!r}"
+
+    return True, "ActorScriptDeployer non-blocking spawn poll patch installed: " + ", ".join(notes)
+
+
+def _install_asd_spawn_runtime_patches(asd: Any) -> tuple[bool, str]:
+    """Install all MSBT-side ActorScriptDeployer runtime patches used for spawns."""
+    messages: list[str] = []
+    for installer in (_install_asd_sdk03_actor_def_patch, _install_asd_nonblocking_spawn_poll_patch):
+        ok, message = installer(asd)
+        messages.append(message)
+        if not ok:
+            return False, message
+    return True, "; ".join(messages)
 
 
 def _capture_asd_logs(asd: Any, callback: Any) -> tuple[list[tuple[str, str]], Exception | None]:
@@ -454,7 +558,7 @@ def _run_actor_script_deployer_spawnai_like_debug_menu(
     except Exception as exc:
         return {"ok": False, "message": f"ActorScriptDeployer import failed: {exc!r}", "requested_count": count}
 
-    patch_ok, patch_message = _install_asd_sdk03_actor_def_patch(asd)
+    patch_ok, patch_message = _install_asd_spawn_runtime_patches(asd)
     if not patch_ok:
         return {"ok": False, "message": patch_message, "requested_count": count}
 
