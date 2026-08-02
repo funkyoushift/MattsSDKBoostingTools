@@ -12,7 +12,9 @@ from .external_bridge import start_bridge
 from .external_app_launcher import _cmd_msbt_external_app
 from .quick_menu import (
     _cmd_msbt_quick_menu,
+    _cmd_msbt_quick_menu_lock,
     _cmd_msbt_quick_menu_pin,
+    _cmd_msbt_quick_menu_repeat,
     _cmd_msbt_quick_menu_unstuck,
     quick_menu_toggle,
     quick_menu_unstuck_key,
@@ -72,6 +74,8 @@ build_mod(
         _cmd_msbt_external_app,
         _cmd_msbt_quick_menu,
         _cmd_msbt_quick_menu_pin,
+        _cmd_msbt_quick_menu_repeat,
+        _cmd_msbt_quick_menu_lock,
         _cmd_msbt_quick_menu_unstuck,
         _cmd_give_serial,
         _cmd_givecurrency,

@@ -47,6 +47,9 @@ ACTION_CATALOG: dict[str, dict[str, Any]] = {
     "repeat_last_drop": {"basic": "Repeat Last Drop", "aliases": ["Redo Drop", "RLD"]},
     "uvh_boost_all": {"basic": "UVH Boost All", "aliases": ["UVH"]},
     "movement_delete_ground_items": {"basic": "Clear Ground Loot", "aliases": ["Clear Loot"]},
+    "movement_zero_vault": {"basic": "Zero Vault Costs", "aliases": ["Vault0"]},
+    "set_backpack_bank_selected": {"basic": "Inv Selected 1k", "aliases": ["Inv Sel"]},
+    "set_backpack_bank_all": {"basic": "Inv All Party 1k", "aliases": ["Inv All"]},
     "kick_player": {"basic": "Kick Selected", "aliases": ["Kick"]},
     "refresh_players": {"basic": "Refresh Players", "aliases": ["Refresh"]},
 }
@@ -67,6 +70,9 @@ PICKER_ACTIONS: tuple[str, ...] = (
     "repeat_last_drop",
     "uvh_boost_all",
     "movement_delete_ground_items",
+    "movement_zero_vault",
+    "set_backpack_bank_selected",
+    "set_backpack_bank_all",
     "refresh_players",
 )
 
@@ -114,6 +120,8 @@ class QuickMenuState:
     pages: list[list[dict[str, Any] | None]] = field(default_factory=list)
     selected_slot: int | None = None
     pending_repeat: bool = False
+    player_pick_purpose: str = ""  # "repeat" | "lock" | "target"
+    swap_armed_slot: int | None = None
     toast: str = ""
     toast_until: float = 0.0
     toast_ok: bool = True
@@ -629,6 +637,8 @@ def unstuck() -> None:
     _force_game_only_input()
     STATE.modal = ""
     STATE.pending_repeat = False
+    STATE.player_pick_purpose = ""
+    STATE.swap_armed_slot = None
     STATE.input_owner = None
     STATE.input_snapshot = InputSnapshot()
     _log("Quick Menu unstuck complete (GameOnly restored).")
@@ -741,17 +751,77 @@ def pin_last_command(slot_index: int | None = None) -> None:
     rebuild_ui()
 
 
-def _begin_player_pick_for_repeat() -> None:
+def _begin_player_pick(purpose: str) -> None:
     STATE.modal = "player_pick"
-    STATE.pending_repeat = True
+    STATE.player_pick_purpose = str(purpose or "target")
+    STATE.pending_repeat = STATE.player_pick_purpose == "repeat"
     rebuild_ui()
 
 
 def _finish_repeat_for_player(index: int, name: str) -> None:
     STATE.modal = ""
     STATE.pending_repeat = False
+    STATE.player_pick_purpose = ""
     result = backend_actions.repeat_last_drop(f"{index}|{name}" if name else index)
     _set_status_from_result(result)
+    rebuild_ui()
+
+
+def _set_target_from_pick(index: int, name: str) -> None:
+    result = backend_actions.set_target_player(f"{index}|{name}" if name else index)
+    STATE.modal = ""
+    STATE.player_pick_purpose = ""
+    _set_status_from_result(result)
+    rebuild_ui()
+
+
+def _swap_slots(a: int, b: int) -> None:
+    page = STATE.pages[STATE.page]
+    if a < 0 or b < 0 or a >= len(page) or b >= len(page) or a == b:
+        return
+    page[a], page[b] = page[b], page[a]
+    STATE.selected_slot = b
+    STATE.swap_armed_slot = None
+    STATE.modal = ""
+    save_layout()
+    _log(f"Swapped slots {a + 1} and {b + 1}.")
+    rebuild_ui()
+
+
+def arm_swap_selected() -> None:
+    if STATE.selected_slot is None:
+        _log("Select a slot before starting a swap.")
+        return
+    STATE.swap_armed_slot = int(STATE.selected_slot)
+    STATE.modal = ""
+    _log(f"Swap armed on slot {STATE.swap_armed_slot + 1}. Tap another slot.")
+    rebuild_ui()
+
+
+def reset_current_page() -> None:
+    if STATE.page == 0:
+        row = [_normalize_slot(slot) for slot in DEFAULT_PAGE_0]
+        while len(row) < SLOTS_PER_PAGE:
+            row.append(None)
+        STATE.pages[0] = row[:SLOTS_PER_PAGE]
+    else:
+        STATE.pages[STATE.page] = _empty_page()
+    STATE.selected_slot = None
+    STATE.swap_armed_slot = None
+    STATE.modal = ""
+    save_layout()
+    _log(f"Reset page {STATE.page + 1}.")
+    rebuild_ui()
+
+
+def reset_all_pages() -> None:
+    STATE.pages = _default_pages()
+    STATE.page = 0
+    STATE.selected_slot = None
+    STATE.swap_armed_slot = None
+    STATE.modal = ""
+    save_layout()
+    _log("Reset all Quick Menu pages to defaults.")
     rebuild_ui()
 
 
@@ -761,6 +831,9 @@ def activate_slot(slot_index: int) -> None:
         return
     slot = slots[slot_index]
     if STATE.edit_mode:
+        if STATE.swap_armed_slot is not None:
+            _swap_slots(int(STATE.swap_armed_slot), int(slot_index))
+            return
         STATE.selected_slot = slot_index
         if slot is None:
             STATE.modal = "action_pick"
@@ -781,11 +854,11 @@ def activate_slot(slot_index: int) -> None:
             _log("No last drop to repeat.")
             return
         if bool(drop.get("needs_player")) and not backend_actions.get_drop_player_lock().get("enabled"):
-            _begin_player_pick_for_repeat()
+            _begin_player_pick("repeat")
             return
         result = backend_actions.repeat_last_drop()
         if result.get("needs_player"):
-            _begin_player_pick_for_repeat()
+            _begin_player_pick("repeat")
             return
         _set_status_from_result(result)
         rebuild_ui()
@@ -793,7 +866,7 @@ def activate_slot(slot_index: int) -> None:
 
     result = _run_action(action, payload)
     if result.get("needs_player"):
-        _begin_player_pick_for_repeat()
+        _begin_player_pick("repeat")
         return
     rebuild_ui()
 
@@ -838,9 +911,7 @@ def toggle_drop_lock() -> None:
             return
         # Prefer currently selected; otherwise open picker to choose lock target.
         if backend_actions.get_selected_player_index() is None:
-            STATE.modal = "player_pick"
-            STATE.pending_repeat = False
-            rebuild_ui()
+            _begin_player_pick("lock")
             _log("Pick a player to lock for repeat-last-drop.")
             return
         result = backend_actions.set_drop_player_lock(True)
@@ -852,6 +923,8 @@ def toggle_drop_lock() -> None:
 def _lock_player_from_pick(index: int, name: str) -> None:
     result = backend_actions.set_drop_player_lock(True, f"{index}|{name}" if name else index)
     STATE.modal = ""
+    STATE.player_pick_purpose = ""
+    STATE.pending_repeat = False
     _set_status_from_result(result)
     save_layout()
     rebuild_ui()
@@ -896,13 +969,35 @@ def rebuild_ui() -> None:
         factory.button(root, f"P{page_i + 1}", tab_x, 170, 70, 40, _make_page(), fill=fill, scale=0.32)
         tab_x += 80
 
-    factory.button(root, "Pin Last Command", 700, 170, 240, 40, lambda: pin_last_command(), fill=(0.55, 0.38, 0.12, 0.96), scale=0.32)
-    factory.button(root, "Lock Player", 960, 170, 170, 40, toggle_drop_lock, fill=(0.28, 0.24, 0.45, 0.96), scale=0.32)
+    factory.button(root, "Pin Last Command", 700, 170, 220, 40, lambda: pin_last_command(), fill=(0.55, 0.38, 0.12, 0.96), scale=0.30)
+    factory.button(root, "Lock Player", 940, 170, 150, 40, toggle_drop_lock, fill=(0.28, 0.24, 0.45, 0.96), scale=0.30)
+    factory.button(root, "Target", 1110, 170, 120, 40, lambda: _begin_player_pick("target"), fill=(0.18, 0.40, 0.34, 0.96), scale=0.30)
+
+    def _refresh_ui() -> None:
+        _run_action("refresh_players")
+        rebuild_ui()
+
+    factory.button(root, "Refresh", 1250, 170, 120, 40, _refresh_ui, fill=(0.22, 0.28, 0.36, 0.96), scale=0.30)
+
+    selected_name = backend_actions.get_selected_player_name() or "(none)"
+    selected_idx = backend_actions.get_selected_player_index()
+    target_txt = f"Target: {selected_idx}: {selected_name}" if selected_idx is not None else f"Target: {selected_name}"
     last = backend_actions.get_last_command()
     last_txt = f"Last: {last.get('label')}" if last else "Last: (none)"
     drop = backend_actions.get_last_drop()
     drop_txt = f"Drop: {drop.get('label')}" if drop else "Drop: (none)"
-    factory.text(root, f"{last_txt}   |   {drop_txt}", 250, 225, 1400, 30, scale=0.30, z=5, tint=(0.75, 0.82, 0.90, 1.0))
+    swap_txt = f"   |   Swap from slot {STATE.swap_armed_slot + 1}" if STATE.swap_armed_slot is not None else ""
+    factory.text(
+        root,
+        f"{target_txt}   |   {last_txt}   |   {drop_txt}{swap_txt}",
+        250,
+        225,
+        1400,
+        30,
+        scale=0.28,
+        z=5,
+        tint=(0.75, 0.82, 0.90, 1.0),
+    )
 
     # Grid 4x3
     grid_x0, grid_y0 = 280, 280
@@ -927,7 +1022,10 @@ def rebuild_ui() -> None:
 
         factory.button(root, label, x, y, cell_w, cell_h, _make_slot(), fill=fill, scale=0.34)
 
-    factory.text(root, STATE.status, 250, 900, 1400, 40, scale=0.32, z=6, tint=(0.85, 0.90, 0.95, 1.0))
+    factory.text(root, STATE.status, 250, 900, 1100, 40, scale=0.32, z=6, tint=(0.85, 0.90, 0.95, 1.0))
+    if STATE.edit_mode:
+        factory.button(root, "Reset Page", 1360, 896, 140, 40, reset_current_page, fill=(0.42, 0.28, 0.16, 0.96), scale=0.28)
+        factory.button(root, "Reset All", 1520, 896, 130, 40, reset_all_pages, fill=(0.45, 0.18, 0.16, 0.96), scale=0.28)
 
     if STATE.toast and time.monotonic() < STATE.toast_until:
         fill = (0.10, 0.42, 0.24, 0.94) if STATE.toast_ok else (0.48, 0.16, 0.14, 0.94)
@@ -946,6 +1044,7 @@ def _toggle_edit() -> None:
     STATE.edit_mode = not STATE.edit_mode
     STATE.modal = ""
     STATE.selected_slot = None
+    STATE.swap_armed_slot = None
     save_layout()
     rebuild_ui()
 
@@ -953,6 +1052,7 @@ def _toggle_edit() -> None:
 def _set_page(page: int) -> None:
     STATE.page = max(0, min(MAX_PAGES - 1, int(page)))
     STATE.selected_slot = None
+    STATE.swap_armed_slot = None
     STATE.modal = ""
     save_layout()
     rebuild_ui()
@@ -960,7 +1060,12 @@ def _set_page(page: int) -> None:
 
 def _render_player_pick(factory: NativeUMG, root: Any) -> None:
     factory.border(root, 420, 200, 1080, 680, (0.05, 0.07, 0.10, 0.97), 80)
-    title = "Lock repeat-last-drop to player" if not STATE.pending_repeat else "Select player for repeat last drop"
+    purpose = STATE.player_pick_purpose or ("repeat" if STATE.pending_repeat else "lock")
+    title = {
+        "repeat": "Select player for repeat last drop",
+        "lock": "Lock repeat-last-drop to player",
+        "target": "Select target player",
+    }.get(purpose, "Select player")
     factory.text(root, title, 450, 220, 1000, 40, scale=0.48, z=81, center=True)
     players = backend_actions.refresh_players()
     y = 280
@@ -970,9 +1075,11 @@ def _render_player_pick(factory: NativeUMG, root: Any) -> None:
         idx = int(player.get("index", -1))
         name = str(player.get("name") or f"Player {idx}")
 
-        def _make_pick(i: int = idx, n: str = name) -> Callable[[], None]:
-            if STATE.pending_repeat:
+        def _make_pick(i: int = idx, n: str = name, p: str = purpose) -> Callable[[], None]:
+            if p == "repeat":
                 return lambda: _finish_repeat_for_player(i, n)
+            if p == "target":
+                return lambda: _set_target_from_pick(i, n)
             return lambda: _lock_player_from_pick(i, n)
 
         factory.button(root, f"{idx}: {name}", 520, y, 880, 56, _make_pick(), fill=(0.20, 0.40, 0.55, 0.96), scale=0.36)
@@ -983,6 +1090,7 @@ def _render_player_pick(factory: NativeUMG, root: Any) -> None:
     def _cancel() -> None:
         STATE.modal = ""
         STATE.pending_repeat = False
+        STATE.player_pick_purpose = ""
         rebuild_ui()
 
     factory.button(root, "Cancel", 860, 800, 200, 48, _cancel, fill=(0.40, 0.20, 0.20, 0.95), scale=0.34)
@@ -1040,25 +1148,27 @@ def _render_label_edit(factory: NativeUMG, root: Any) -> None:
         save_layout()
         rebuild_ui()
 
-    factory.button(root, "Cycle Label (basic/alias/custom)", 620, 430, 680, 56, _cycle, fill=(0.28, 0.40, 0.52, 0.96), scale=0.32)
-    factory.button(root, "Clear Slot", 620, 510, 320, 52, clear_selected_slot, fill=(0.50, 0.22, 0.18, 0.96), scale=0.32)
+    factory.button(root, "Cycle Label (basic/alias/custom)", 620, 420, 680, 52, _cycle, fill=(0.28, 0.40, 0.52, 0.96), scale=0.32)
+    factory.button(root, "Clear Slot", 620, 490, 210, 48, clear_selected_slot, fill=(0.50, 0.22, 0.18, 0.96), scale=0.30)
+    factory.button(root, "Swap With…", 850, 490, 210, 48, arm_swap_selected, fill=(0.30, 0.34, 0.48, 0.96), scale=0.30)
     factory.button(
         root,
         "Pin Last Over This",
-        980,
-        510,
-        320,
-        52,
+        1080,
+        490,
+        220,
+        48,
         lambda: pin_last_command(STATE.selected_slot),
         fill=(0.55, 0.38, 0.12, 0.96),
-        scale=0.32,
+        scale=0.28,
     )
 
     def _done() -> None:
         STATE.modal = ""
+        STATE.swap_armed_slot = None
         rebuild_ui()
 
-    factory.button(root, "Done", 860, 600, 200, 48, _done, fill=(0.20, 0.45, 0.30, 0.96), scale=0.34)
+    factory.button(root, "Done", 860, 580, 200, 48, _done, fill=(0.20, 0.45, 0.30, 0.96), scale=0.34)
 
 
 def open_panel() -> None:
@@ -1086,6 +1196,8 @@ def close_panel() -> None:
     STATE.is_open = False
     STATE.modal = ""
     STATE.pending_repeat = False
+    STATE.player_pick_purpose = ""
+    STATE.swap_armed_slot = None
     STATE.buttons.clear()
     remove_widget(STATE.menu_canvas)
     remove_widget(STATE.overlay)
@@ -1143,6 +1255,8 @@ def process_escape() -> None:
         if STATE.modal:
             STATE.modal = ""
             STATE.pending_repeat = False
+            STATE.player_pick_purpose = ""
+            STATE.swap_armed_slot = None
             rebuild_ui()
         else:
             close_panel()
@@ -1233,3 +1347,56 @@ def _cmd_msbt_quick_menu_pin(_args: Any = None) -> None:
 @command("msbt_quick_menu_unstuck", description="Emergency close Quick Menu and restore GameOnly input.")
 def _cmd_msbt_quick_menu_unstuck(_args: Any = None) -> None:
     unstuck()
+
+
+@command("msbt_quick_menu_repeat", description="Repeat the last MSBT drop/delivery (needs player unless lock-to-player is on).")
+def _cmd_msbt_quick_menu_repeat(_args: Any = None) -> None:
+    target = None
+    try:
+        raw = str(getattr(_args, "player", "") or "").strip()
+        if raw:
+            target = raw
+    except Exception:
+        target = None
+    result = backend_actions.repeat_last_drop(target)
+    if result.get("needs_player") and STATE.is_open:
+        _begin_player_pick("repeat")
+        return
+    _set_status_from_result(result)
+    if STATE.is_open:
+        rebuild_ui()
+
+
+try:
+    _cmd_msbt_quick_menu_repeat.add_argument("player", nargs="?", help="Optional player index, name, or index|name")
+except Exception:
+    pass
+
+
+@command("msbt_quick_menu_lock", description="Enable/disable Quick Menu lock-to-player for repeat last drop.")
+def _cmd_msbt_quick_menu_lock(_args: Any = None) -> None:
+    mode = ""
+    target = None
+    try:
+        mode = str(getattr(_args, "mode", "") or "").strip().lower()
+        target = str(getattr(_args, "player", "") or "").strip() or None
+    except Exception:
+        mode = ""
+    if mode in ("off", "0", "false", "clear", "disable"):
+        result = backend_actions.set_drop_player_lock(False)
+    elif mode in ("on", "1", "true", "enable") or target:
+        result = backend_actions.set_drop_player_lock(True, target)
+    else:
+        lock = backend_actions.get_drop_player_lock()
+        result = backend_actions.set_drop_player_lock(not bool(lock.get("enabled")), target)
+    _set_status_from_result(result)
+    save_layout()
+    if STATE.is_open:
+        rebuild_ui()
+
+
+try:
+    _cmd_msbt_quick_menu_lock.add_argument("mode", nargs="?", help="on/off/toggle")
+    _cmd_msbt_quick_menu_lock.add_argument("player", nargs="?", help="Optional player index/name when enabling")
+except Exception:
+    pass

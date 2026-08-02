@@ -10,7 +10,12 @@ Install
 Quick Menu controls
 - F7 : open / close Quick Menu
 - F6 : unstuck (force-close menu + restore GameOnly input if cursor sticks)
-- Console: msbt_quick_menu , msbt_quick_menu_pin , msbt_quick_menu_unstuck
+- Console:
+  - msbt_quick_menu
+  - msbt_quick_menu_pin
+  - msbt_quick_menu_repeat [player]
+  - msbt_quick_menu_lock [on|off] [player]
+  - msbt_quick_menu_unstuck
 
 Locked behavior in this build
 - Editable grid: up to 5 pages x 12 buttons
@@ -18,6 +23,10 @@ Locked behavior in this build
 - Repeat Last Drop: pick player at run time; optional Lock Player (option C)
 - No extra danger confirms
 - Action / serial-delivery toasts (banner in menu; non-blocking toast if menu closed)
+- Target / Refresh party from menu chrome
+- Edit: Swap With…, Reset Page, Reset All
+- Bridge actions (no external UI change): repeat_last_drop, set_drop_player_lock, quick_menu_action
+- Bridge /status includes last_command, last_drop, drop_player_lock
 
 Not in this preview
 - Loot pool work (on hold)
@@ -25,7 +34,9 @@ Not in this preview
 
 Smoke checklist
 1) F7 opens menu, Escape/Close returns mouse to game
-2) Edit -> assign/clear slots, Done saves layout
-3) Run a drop/delivery, Pin Last Command into a slot
-4) Repeat Last Drop prompts for player unless Lock Player is on
-5) If input sticks: F6 or msbt_quick_menu_unstuck
+2) Target + Refresh update the selected player line
+3) Edit -> assign/clear/swap slots; Reset Page / Reset All
+4) Run a drop/delivery, Pin Last Command into a slot
+5) Repeat Last Drop prompts for player unless Lock Player is on
+6) If input sticks: F6 or msbt_quick_menu_unstuck
+7) Optional: hit bridge /status and confirm last_command / drop_player_lock fields

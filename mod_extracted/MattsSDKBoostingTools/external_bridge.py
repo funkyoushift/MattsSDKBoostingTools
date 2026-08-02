@@ -677,6 +677,19 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
             override_level,
             payload.get("serial_level") or payload.get("code_delivery_level") or 60,
         )
+    if action == "repeat_last_drop":
+        return backend_actions.repeat_last_drop(payload.get("target_player"))
+    if action == "set_drop_player_lock":
+        return backend_actions.set_drop_player_lock(
+            payload.get("enabled", True),
+            payload.get("target_player"),
+        )
+    if action == "quick_menu_action":
+        return backend_actions.run_quick_menu_action(
+            str(payload.get("action") or payload.get("quick_action") or ""),
+            payload,
+            record=True,
+        )
     return {"ok": False, "message": f"Unknown action: {action}"}
 
 
@@ -697,6 +710,10 @@ def _status() -> dict[str, Any]:
         "players": backend_status.get("players", []),
         "selected_player": backend_status.get("selected_player") or "",
         "selected_player_index": backend_status.get("selected_player_index"),
+        "host_player_index": backend_status.get("host_player_index"),
+        "last_command": backend_status.get("last_command"),
+        "last_drop": backend_status.get("last_drop"),
+        "drop_player_lock": backend_status.get("drop_player_lock") or {"enabled": False},
         "serial_delivery": backend_status.get("serial_delivery", {}),
         "diagnostics": diagnostics,
         "last_action": _last_action,

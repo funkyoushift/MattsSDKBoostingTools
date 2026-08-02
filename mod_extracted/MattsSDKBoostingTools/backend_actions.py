@@ -1082,6 +1082,18 @@ def run_quick_menu_action(
         result = uvh_boost_all()
     elif key == "movement_delete_ground_items":
         result = movement_delete_ground_items()
+    elif key == "movement_zero_vault":
+        result = movement_zero_vault()
+    elif key == "set_backpack_bank_selected":
+        result = set_inventory_sizes_selected(
+            payload.get("backpack_size") or 1000,
+            payload.get("bank_size") or 1000,
+        )
+    elif key == "set_backpack_bank_all":
+        result = set_inventory_sizes_all_party(
+            payload.get("backpack_size") or 1000,
+            payload.get("bank_size") or 1000,
+        )
     elif key == "refresh_players":
         players = refresh_players()
         result = {"ok": True, "message": f"Refreshed {len(players)} player(s).", "players": players}
