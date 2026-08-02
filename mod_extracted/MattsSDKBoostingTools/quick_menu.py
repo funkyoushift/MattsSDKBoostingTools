@@ -99,6 +99,8 @@ class ButtonRef:
     label: str
     enabled: bool = True
     was_pressed: bool = False
+    modal_only: bool = False
+    allow_when_modal: bool = False
 
 
 @dataclass
@@ -120,7 +122,8 @@ class QuickMenuState:
     pages: list[list[dict[str, Any] | None]] = field(default_factory=list)
     selected_slot: int | None = None
     pending_repeat: bool = False
-    player_pick_purpose: str = ""  # "repeat" | "lock" | "target"
+    player_pick_purpose: str = ""  # "repeat" | "lock" | "target" | "action"
+    pending_action: dict[str, Any] | None = None
     swap_armed_slot: int | None = None
     toast: str = ""
     toast_until: float = 0.0
@@ -128,6 +131,11 @@ class QuickMenuState:
     toast_overlay: Any = None
     toast_root: Any = None
     delivery_was_active: bool = False
+    viewport_w: float = DESIGN_W
+    viewport_h: float = DESIGN_H
+    dpi_scale: float = 1.0
+    scale_x: float = 1.0
+    scale_y: float = 1.0
     layout_w: float = DESIGN_W
     layout_h: float = DESIGN_H
     ui_scale: float = 1.0
@@ -144,6 +152,19 @@ class QuickMenuState:
 
 
 STATE = QuickMenuState()
+
+_NEEDS_PLAYER_ACTIONS = frozenset({
+    "max_all",
+    "max_currency",
+    "max_eridium",
+    "max_sdu",
+    "max_player_level",
+    "max_spec_level",
+    "shiny_selected",
+    "kick_player",
+    "set_backpack_bank_selected",
+    "give_serial_selected",
+})
 
 
 def _log(message: str) -> None:
@@ -208,31 +229,58 @@ def remove_widget(widget: Any) -> None:
         try_call(widget, "RemoveFromParent")
 
 
+def _vec2_xy(value: Any) -> tuple[float, float] | None:
+    try:
+        x = float(getattr(value, "X", None))
+        y = float(getattr(value, "Y", None))
+        return x, y
+    except Exception:
+        pass
+    try:
+        seq = list(value)
+        if len(seq) >= 2:
+            return float(seq[0]), float(seq[1])
+    except Exception:
+        pass
+    return None
+
+
 def sx(value: float) -> float:
-    return float(value) * (STATE.layout_w / DESIGN_W)
+    return float(value) * STATE.scale_x
 
 
 def sy(value: float) -> float:
-    return float(value) * (STATE.layout_h / DESIGN_H)
+    return float(value) * STATE.scale_y
 
 
 def update_layout_metrics() -> None:
-    STATE.layout_w = DESIGN_W
-    STATE.layout_h = DESIGN_H
-    STATE.ui_scale = 1.0
-    try:
-        pc = get_pc()
-        viewport = getattr(pc, "GetViewportSize", None)
-        if callable(viewport):
-            size = viewport()
-            w = float(getattr(size, "X", 0.0) or 0.0)
-            h = float(getattr(size, "Y", 0.0) or 0.0)
-            if w > 100 and h > 100:
-                STATE.layout_w = w
-                STATE.layout_h = h
-                STATE.ui_scale = min(w / DESIGN_W, h / DESIGN_H)
-    except Exception:
-        pass
+    """Match UIDevelopmentShowcase DPI math: layout = viewport / dpi, then scale design space."""
+    raw_w, raw_h, dpi = DESIGN_W, DESIGN_H, 1.0
+    pc = get_pc()
+    if pc is not None:
+        try:
+            lib = class_obj("/Script/UMG.WidgetLayoutLibrary").ClassDefaultObject
+            xy = _vec2_xy(lib.GetViewportSize(pc))
+            if xy and xy[0] >= 800 and xy[1] >= 450:
+                raw_w, raw_h = xy
+            candidate = float(lib.GetViewportScale(pc) or 1.0)
+            if 0.05 <= candidate <= 8.0:
+                dpi = candidate
+        except Exception:
+            try:
+                viewport = getattr(pc, "GetViewportSize", None)
+                if callable(viewport):
+                    xy = _vec2_xy(viewport())
+                    if xy and xy[0] >= 800 and xy[1] >= 450:
+                        raw_w, raw_h = xy
+            except Exception:
+                pass
+    STATE.viewport_w, STATE.viewport_h, STATE.dpi_scale = raw_w, raw_h, dpi
+    STATE.layout_w = max(1.0, raw_w / dpi)
+    STATE.layout_h = max(1.0, raw_h / dpi)
+    STATE.scale_x = max(0.1, min(8.0, STATE.layout_w / DESIGN_W))
+    STATE.scale_y = max(0.1, min(8.0, STATE.layout_h / DESIGN_H))
+    STATE.ui_scale = max(0.5, min(3.0, min(STATE.scale_x, STATE.scale_y)))
 
 
 def _empty_page() -> list[dict[str, Any] | None]:
@@ -427,6 +475,8 @@ class NativeUMG:
         enabled: bool = True,
         z: int = 50,
         scale: float = 0.36,
+        modal_only: bool = False,
+        allow_when_modal: bool = False,
     ) -> Any:
         base = fill if enabled else (0.35, 0.37, 0.40, 0.90)
         self.border(parent, x, y, w, h, base, z)
@@ -437,7 +487,9 @@ class NativeUMG:
         try_call(widget, "SetIsEnabled", bool(enabled))
         try_call(widget, "SetRenderOpacity", 0.03 if enabled else 0.01)
         self.text(parent, label, x + 4, y + 2, w - 8, h - 4, scale=scale, z=z + 2, center=True)
-        STATE.buttons.append(ButtonRef(widget, action, label, enabled, False))
+        STATE.buttons.append(
+            ButtonRef(widget, action, label, enabled, False, modal_only, allow_when_modal)
+        )
         return widget
 
 
@@ -697,11 +749,36 @@ def _poll_delivery_toasts() -> None:
             show_toast(message or "Serial delivery finished.", ok=True, seconds=2.8)
 
 
+def _page_filled_count(page: int | None = None) -> int:
+    page_i = STATE.page if page is None else int(page)
+    return sum(1 for slot in STATE.pages[page_i] if slot is not None)
+
+
+def _ensure_target_for_action(action: str, payload: dict[str, Any] | None = None) -> bool:
+    """Return True if action can run. Opens player picker when a target is required but missing."""
+    if action not in _NEEDS_PLAYER_ACTIONS:
+        return True
+    ensured = backend_actions.ensure_selected_player(prefer_host=True)
+    if ensured.get("ok"):
+        if ensured.get("auto_selected"):
+            show_toast(str(ensured.get("message") or "Target auto-selected."), ok=True, seconds=2.0)
+        return True
+    STATE.pending_action = {"action": action, "payload": dict(payload or {})}
+    show_toast("Select a target player first.", ok=False, seconds=2.4)
+    _begin_player_pick("action")
+    return False
+
+
 def _run_action(action: str, payload: dict[str, Any] | None = None) -> dict[str, Any]:
     catalog = ACTION_CATALOG.get(action, {})
     body = dict(payload or {})
     body.setdefault("_label", str(catalog.get("basic") or action))
+    if not _ensure_target_for_action(action, body):
+        return {"ok": False, "message": "Select a target player first.", "needs_player": True}
     result = backend_actions.run_quick_menu_action(action, body, record=True)
+    if (not result.get("ok")) and "No party player selected" in str(result.get("message") or ""):
+        STATE.pending_action = {"action": action, "payload": body}
+        _begin_player_pick("action")
     _set_status_from_result(result)
     return result
 
@@ -769,9 +846,17 @@ def _finish_repeat_for_player(index: int, name: str) -> None:
 
 def _set_target_from_pick(index: int, name: str) -> None:
     result = backend_actions.set_target_player(f"{index}|{name}" if name else index)
+    purpose = STATE.player_pick_purpose
+    pending = dict(STATE.pending_action) if isinstance(STATE.pending_action, dict) else None
     STATE.modal = ""
     STATE.player_pick_purpose = ""
+    STATE.pending_action = None
     _set_status_from_result(result)
+    if purpose == "action" and result.get("ok") and pending:
+        action = str(pending.get("action") or "")
+        payload = pending.get("payload") if isinstance(pending.get("payload"), dict) else {}
+        if action:
+            _run_action(action, payload)
     rebuild_ui()
 
 
@@ -843,7 +928,12 @@ def activate_slot(slot_index: int) -> None:
         return
 
     if slot is None:
-        _log("Empty slot. Enable Edit to assign an action, or use Pin Last Command.")
+        # Don't trap users on an emptied page — jump straight into assign flow.
+        STATE.edit_mode = True
+        STATE.selected_slot = slot_index
+        STATE.modal = "action_pick"
+        show_toast("Empty slot — pick an action to assign.", ok=True, seconds=2.0)
+        rebuild_ui()
         return
 
     action = str(slot.get("action") or "")
@@ -865,9 +955,6 @@ def activate_slot(slot_index: int) -> None:
         return
 
     result = _run_action(action, payload)
-    if result.get("needs_player"):
-        _begin_player_pick("repeat")
-        return
     rebuild_ui()
 
 
@@ -945,7 +1032,18 @@ def rebuild_ui() -> None:
     lock_txt = f"Lock: {lock.get('name') or 'ON'}" if lock.get("enabled") else "Lock: OFF"
     factory.text(root, f"{mode}  |  Page {STATE.page + 1}/{MAX_PAGES}  |  {lock_txt}", 960, 110, 520, 36, scale=0.34, z=4, center=True)
 
-    factory.button(root, "Close", 1560, 102, 110, 42, close_panel, fill=(0.45, 0.18, 0.18, 0.95), scale=0.34)
+    factory.button(
+        root,
+        "Close",
+        1560,
+        102,
+        110,
+        42,
+        close_panel,
+        fill=(0.45, 0.18, 0.18, 0.95),
+        scale=0.34,
+        allow_when_modal=True,
+    )
     factory.button(
         root,
         "Edit" if not STATE.edit_mode else "Done",
@@ -956,6 +1054,7 @@ def rebuild_ui() -> None:
         lambda: _toggle_edit(),
         fill=(0.30, 0.34, 0.20, 0.95),
         scale=0.34,
+        allow_when_modal=True,
     )
 
     # Page tabs
@@ -981,15 +1080,16 @@ def rebuild_ui() -> None:
 
     selected_name = backend_actions.get_selected_player_name() or "(none)"
     selected_idx = backend_actions.get_selected_player_index()
-    target_txt = f"Target: {selected_idx}: {selected_name}" if selected_idx is not None else f"Target: {selected_name}"
+    target_txt = f"Target: {selected_idx}: {selected_name}" if selected_idx is not None else "Target: (none) — tap Target"
     last = backend_actions.get_last_command()
     last_txt = f"Last: {last.get('label')}" if last else "Last: (none)"
     drop = backend_actions.get_last_drop()
     drop_txt = f"Drop: {drop.get('label')}" if drop else "Drop: (none)"
     swap_txt = f"   |   Swap from slot {STATE.swap_armed_slot + 1}" if STATE.swap_armed_slot is not None else ""
+    dpi_txt = f"DPI {STATE.dpi_scale:.2f}"
     factory.text(
         root,
-        f"{target_txt}   |   {last_txt}   |   {drop_txt}{swap_txt}",
+        f"{target_txt}   |   {last_txt}   |   {drop_txt}{swap_txt}   |   {dpi_txt}",
         250,
         225,
         1400,
@@ -998,6 +1098,21 @@ def rebuild_ui() -> None:
         z=5,
         tint=(0.75, 0.82, 0.90, 1.0),
     )
+
+    filled = _page_filled_count()
+    if filled == 0:
+        factory.border(root, 280, 250, 1360, 48, (0.45, 0.28, 0.10, 0.94), 8)
+        factory.text(
+            root,
+            "This page is empty. Tap a slot to assign, or use Reset Page / Reset All.",
+            300,
+            258,
+            1320,
+            34,
+            scale=0.30,
+            z=9,
+            center=True,
+        )
 
     # Grid 4x3
     grid_x0, grid_y0 = 280, 280
@@ -1011,8 +1126,8 @@ def rebuild_ui() -> None:
         slot = slots[idx]
         selected = STATE.edit_mode and STATE.selected_slot == idx
         if slot is None:
-            label = "+ Empty" if STATE.edit_mode else "—"
-            fill = (0.22, 0.24, 0.28, 0.90) if STATE.edit_mode else (0.14, 0.16, 0.19, 0.85)
+            label = "+ Assign" if STATE.edit_mode else "+ Assign"
+            fill = (0.22, 0.24, 0.28, 0.90) if STATE.edit_mode else (0.18, 0.20, 0.24, 0.88)
         else:
             label = slot_label(slot)
             fill = (0.18, 0.48, 0.42, 0.95) if not selected else (0.55, 0.42, 0.14, 0.96)
@@ -1023,9 +1138,32 @@ def rebuild_ui() -> None:
         factory.button(root, label, x, y, cell_w, cell_h, _make_slot(), fill=fill, scale=0.34)
 
     factory.text(root, STATE.status, 250, 900, 1100, 40, scale=0.32, z=6, tint=(0.85, 0.90, 0.95, 1.0))
-    if STATE.edit_mode:
-        factory.button(root, "Reset Page", 1360, 896, 140, 40, reset_current_page, fill=(0.42, 0.28, 0.16, 0.96), scale=0.28)
-        factory.button(root, "Reset All", 1520, 896, 130, 40, reset_all_pages, fill=(0.45, 0.18, 0.16, 0.96), scale=0.28)
+    # Keep recovery actions available even outside edit when the page was emptied.
+    if STATE.edit_mode or filled == 0:
+        factory.button(
+            root,
+            "Reset Page",
+            1360,
+            896,
+            140,
+            40,
+            reset_current_page,
+            fill=(0.42, 0.28, 0.16, 0.96),
+            scale=0.28,
+            allow_when_modal=True,
+        )
+        factory.button(
+            root,
+            "Reset All",
+            1520,
+            896,
+            130,
+            40,
+            reset_all_pages,
+            fill=(0.45, 0.18, 0.16, 0.96),
+            scale=0.28,
+            allow_when_modal=True,
+        )
 
     if STATE.toast and time.monotonic() < STATE.toast_until:
         fill = (0.10, 0.42, 0.24, 0.94) if STATE.toast_ok else (0.48, 0.16, 0.14, 0.94)
@@ -1041,11 +1179,14 @@ def rebuild_ui() -> None:
 
 
 def _toggle_edit() -> None:
+    leaving_edit = bool(STATE.edit_mode)
     STATE.edit_mode = not STATE.edit_mode
     STATE.modal = ""
     STATE.selected_slot = None
     STATE.swap_armed_slot = None
     save_layout()
+    if leaving_edit and _page_filled_count() == 0:
+        show_toast("This page is empty. Tap a slot to assign, or Reset Page.", ok=False, seconds=3.0)
     rebuild_ui()
 
 
@@ -1065,6 +1206,7 @@ def _render_player_pick(factory: NativeUMG, root: Any) -> None:
         "repeat": "Select player for repeat last drop",
         "lock": "Lock repeat-last-drop to player",
         "target": "Select target player",
+        "action": "Select target player for this action",
     }.get(purpose, "Select player")
     factory.text(root, title, 450, 220, 1000, 40, scale=0.48, z=81, center=True)
     players = backend_actions.refresh_players()
@@ -1078,11 +1220,22 @@ def _render_player_pick(factory: NativeUMG, root: Any) -> None:
         def _make_pick(i: int = idx, n: str = name, p: str = purpose) -> Callable[[], None]:
             if p == "repeat":
                 return lambda: _finish_repeat_for_player(i, n)
-            if p == "target":
+            if p in ("target", "action"):
                 return lambda: _set_target_from_pick(i, n)
             return lambda: _lock_player_from_pick(i, n)
 
-        factory.button(root, f"{idx}: {name}", 520, y, 880, 56, _make_pick(), fill=(0.20, 0.40, 0.55, 0.96), scale=0.36)
+        factory.button(
+            root,
+            f"{idx}: {name}",
+            520,
+            y,
+            880,
+            56,
+            _make_pick(),
+            fill=(0.20, 0.40, 0.55, 0.96),
+            scale=0.36,
+            modal_only=True,
+        )
         y += 70
         if y > 780:
             break
@@ -1091,9 +1244,10 @@ def _render_player_pick(factory: NativeUMG, root: Any) -> None:
         STATE.modal = ""
         STATE.pending_repeat = False
         STATE.player_pick_purpose = ""
+        STATE.pending_action = None
         rebuild_ui()
 
-    factory.button(root, "Cancel", 860, 800, 200, 48, _cancel, fill=(0.40, 0.20, 0.20, 0.95), scale=0.34)
+    factory.button(root, "Cancel", 860, 800, 200, 48, _cancel, fill=(0.40, 0.20, 0.20, 0.95), scale=0.34, modal_only=True)
 
 
 def _render_action_pick(factory: NativeUMG, root: Any) -> None:
@@ -1107,7 +1261,18 @@ def _render_action_pick(factory: NativeUMG, root: Any) -> None:
         def _make_assign(a: str = action) -> Callable[[], None]:
             return lambda: assign_action_to_selected(a)
 
-        factory.button(root, label, x, y, 340, 50, _make_assign(), fill=(0.22, 0.36, 0.48, 0.96), scale=0.30)
+        factory.button(
+            root,
+            label,
+            x,
+            y,
+            340,
+            50,
+            _make_assign(),
+            fill=(0.22, 0.36, 0.48, 0.96),
+            scale=0.30,
+            modal_only=True,
+        )
         if i % 3 == 2:
             x = 400
             y += 62
@@ -1124,13 +1289,14 @@ def _render_action_pick(factory: NativeUMG, root: Any) -> None:
             lambda: pin_last_command(STATE.selected_slot),
             fill=(0.55, 0.38, 0.12, 0.96),
             scale=0.32,
+            modal_only=True,
         )
 
     def _cancel() -> None:
         STATE.modal = ""
         rebuild_ui()
 
-    factory.button(root, "Cancel", 1100, 820, 160, 48, _cancel, fill=(0.40, 0.20, 0.20, 0.95), scale=0.34)
+    factory.button(root, "Cancel", 1100, 820, 160, 48, _cancel, fill=(0.40, 0.20, 0.20, 0.95), scale=0.34, modal_only=True)
 
 
 def _render_label_edit(factory: NativeUMG, root: Any) -> None:
@@ -1148,9 +1314,42 @@ def _render_label_edit(factory: NativeUMG, root: Any) -> None:
         save_layout()
         rebuild_ui()
 
-    factory.button(root, "Cycle Label (basic/alias/custom)", 620, 420, 680, 52, _cycle, fill=(0.28, 0.40, 0.52, 0.96), scale=0.32)
-    factory.button(root, "Clear Slot", 620, 490, 210, 48, clear_selected_slot, fill=(0.50, 0.22, 0.18, 0.96), scale=0.30)
-    factory.button(root, "Swap With…", 850, 490, 210, 48, arm_swap_selected, fill=(0.30, 0.34, 0.48, 0.96), scale=0.30)
+    factory.button(
+        root,
+        "Cycle Label (basic/alias/custom)",
+        620,
+        420,
+        680,
+        52,
+        _cycle,
+        fill=(0.28, 0.40, 0.52, 0.96),
+        scale=0.32,
+        modal_only=True,
+    )
+    factory.button(
+        root,
+        "Clear Slot",
+        620,
+        490,
+        210,
+        48,
+        clear_selected_slot,
+        fill=(0.50, 0.22, 0.18, 0.96),
+        scale=0.30,
+        modal_only=True,
+    )
+    factory.button(
+        root,
+        "Swap With…",
+        850,
+        490,
+        210,
+        48,
+        arm_swap_selected,
+        fill=(0.30, 0.34, 0.48, 0.96),
+        scale=0.30,
+        modal_only=True,
+    )
     factory.button(
         root,
         "Pin Last Over This",
@@ -1161,6 +1360,7 @@ def _render_label_edit(factory: NativeUMG, root: Any) -> None:
         lambda: pin_last_command(STATE.selected_slot),
         fill=(0.55, 0.38, 0.12, 0.96),
         scale=0.28,
+        modal_only=True,
     )
 
     def _done() -> None:
@@ -1168,7 +1368,7 @@ def _render_label_edit(factory: NativeUMG, root: Any) -> None:
         STATE.swap_armed_slot = None
         rebuild_ui()
 
-    factory.button(root, "Done", 860, 580, 200, 48, _done, fill=(0.20, 0.45, 0.30, 0.96), scale=0.34)
+    factory.button(root, "Done", 860, 580, 200, 48, _done, fill=(0.20, 0.45, 0.30, 0.96), scale=0.34, modal_only=True)
 
 
 def open_panel() -> None:
@@ -1185,9 +1385,21 @@ def open_panel() -> None:
     STATE.is_open = True
     STATE.modal = ""
     STATE.pending_repeat = False
+    STATE.player_pick_purpose = ""
+    STATE.pending_action = None
+    STATE.swap_armed_slot = None
+    try:
+        ensured = backend_actions.ensure_selected_player(prefer_host=True)
+        if ensured.get("auto_selected"):
+            STATE.status = str(ensured.get("message") or STATE.status)
+    except Exception:
+        pass
     rebuild_ui()
     capture_input()
-    _log("Quick Menu opened")
+    _log(
+        f"Quick Menu opened (viewport={int(STATE.viewport_w)}x{int(STATE.viewport_h)} "
+        f"dpi={STATE.dpi_scale:.3f} layout={int(STATE.layout_w)}x{int(STATE.layout_h)})"
+    )
 
 
 def close_panel() -> None:
@@ -1211,7 +1423,11 @@ def toggle_panel() -> None:
 
 
 def poll_buttons() -> None:
+    modal_active = bool(STATE.modal)
     for ref in list(STATE.buttons):
+        if modal_active and not ref.modal_only and not ref.allow_when_modal:
+            ref.was_pressed = False
+            continue
         if not ref.enabled or not live(ref.widget):
             ref.was_pressed = False
             continue

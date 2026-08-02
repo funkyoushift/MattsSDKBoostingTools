@@ -753,10 +753,46 @@ def get_selected_player_name() -> str:
     return _selected_player_name
 
 
+def ensure_selected_player(*, prefer_host: bool = True) -> dict[str, Any]:
+    """Keep a valid party target. If none selected, pick host (preferred) or first player."""
+    players = refresh_players()
+    if get_selected_player_index() is not None:
+        return {
+            "ok": True,
+            "message": f"Target player already set to {get_selected_player_index()}: {get_selected_player_name()}",
+            "selected_player": get_selected_player_name(),
+            "selected_player_index": get_selected_player_index(),
+            "auto_selected": False,
+        }
+    if not players:
+        return {"ok": False, "message": "No party players found.", "needs_player": True}
+    target_index: int | None = None
+    if prefer_host:
+        host_idx = _host_player_index_value()
+        if host_idx is not None and any(int(p.get("index", -1)) == int(host_idx) for p in players):
+            target_index = int(host_idx)
+    if target_index is None:
+        try:
+            target_index = int(players[0].get("index"))
+        except Exception:
+            target_index = None
+    if target_index is None:
+        return {"ok": False, "message": "No party players found.", "needs_player": True}
+    result = set_target_player(target_index)
+    if result.get("ok"):
+        result["auto_selected"] = True
+        result["message"] = f"Auto-selected target {get_selected_player_index()}: {get_selected_player_name()}"
+    return result
+
+
 def set_target_player(index_or_name: object) -> dict[str, Any]:
     """Set selected target by party index, "index|name" payload, or name text."""
     global _selected_player_index, _selected_player_name
-    raw = str(index_or_name or "").strip()
+    # Important: party index 0 is valid; do not use `value or ""` (0 is falsy).
+    if index_or_name is None:
+        raw = ""
+    else:
+        raw = str(index_or_name).strip()
     raw_name = ""
     if "|" in raw:
         raw, raw_name = (part.strip() for part in raw.split("|", 1))

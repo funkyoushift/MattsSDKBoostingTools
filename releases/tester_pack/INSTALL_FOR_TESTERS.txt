@@ -1,0 +1,76 @@
+MSBT Quick Menu — Tester Pack
+=============================
+Build: native UMG Quick Menu preview (no BLImGui required)
+Branch: cursor/quick-menu-native-umg-0b18
+Repo: funkyoushift/MattsSDKBoostingTools
+
+WHAT IS IN THIS ZIP
+-------------------
+1) MattsSDKBoostingTools.sdkmod
+   - Drop-in SDK mod package with the Quick Menu build
+2) INSTALL_FOR_TESTERS.txt
+   - This file
+3) QUICK_MENU_PREVIEW_NOTES.txt
+   - Feature list + smoke checklist
+
+IMPORTANT
+---------
+- Quick Menu + external bridge do NOT use BLImGui.
+- You do NOT need blimgui.zip for this test.
+- UIDevelopmentShowcase is NOT required.
+- If blimgui is already installed, you can leave it; Quick Menu still does not use it.
+  For a clean independence check, temporarily move/rename blimgui.zip out of sdk_mods.
+
+INSTALL
+-------
+1. Close Borderlands 4 if it is running.
+2. Go to your BL4 sdk_mods folder, usually:
+   Steam\steamapps\common\Borderlands 4\sdk_mods
+3. BACK UP your current MattsSDKBoostingTools.sdkmod
+   (rename to MattsSDKBoostingTools.sdkmod.bak or copy elsewhere).
+4. Copy MattsSDKBoostingTools.sdkmod from this zip into sdk_mods
+   (replace the old one).
+5. Launch Borderlands 4 with the SDK loader as you normally do.
+6. Load into gameplay (menu-only is not enough).
+
+CONTROLS
+--------
+- F7  = open / close Quick Menu
+- F6  = unstuck (restore mouse / GameOnly input if stuck)
+- Escape = close modal, then close menu
+
+Console commands (optional):
+- msbt_quick_menu
+- msbt_quick_menu_pin
+- msbt_quick_menu_repeat [player]
+- msbt_quick_menu_lock [on|off] [player]
+- msbt_quick_menu_unstuck
+
+WHAT TO TEST (SMOKE)
+--------------------
+1) With game in-world: press F7 — Quick Menu opens at a sane size (DPI scaling)
+2) Confirm Target line is auto-filled (host/local) or tap Target to choose
+3) Close with Escape or Close — mouse returns to game
+4) Edit mode: assign a slot, clear a slot, Swap With…, Reset Page
+5) If a page looks empty: tap + Assign, or Reset Page / Reset All (always recoverable)
+6) Run Max All / Shinies Selected — should NOT hard-fail with "No party player selected"
+7) Run a drop/delivery, then Pin Last Command
+8) Repeat Last Drop — asks for a player unless Lock Player is on
+9) Lock Player, then Repeat Last Drop again (should skip picker)
+10) If input sticks: F6 or msbt_quick_menu_unstuck
+11) Optional: GET http://127.0.0.1:49774/status
+12) Optional hard check: disable/rename blimgui.zip, reload, confirm F7 still works
+
+PLEASE REPORT BACK
+------------------
+- Did F7 open without blimgui?
+- Any stuck mouse / need for F6?
+- Pin + Repeat Last Drop behavior
+- Lock Player behavior
+- Any crash, blank menu, or buttons that do nothing
+- Game build / SDK notes if something fails
+
+NOT IN THIS BUILD
+-----------------
+- Loot pool work (on hold)
+- External app UI redesign (not required for this Quick Menu test)

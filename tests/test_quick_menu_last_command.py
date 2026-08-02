@@ -128,6 +128,17 @@ def test_repeat_last_drop_requires_player_without_lock():
     assert result.get("needs_player") is True
 
 
+def test_ensure_selected_player_auto_picks_host():
+    ba = _load_backend_actions()
+    ba._selected_player_index = None
+    ba._selected_player_name = ""
+    ba._host_player_index_value = lambda: 0
+    result = ba.ensure_selected_player(prefer_host=True)
+    assert result["ok"] is True
+    assert result.get("auto_selected") is True
+    assert ba.get_selected_player_index() == 0
+
+
 def test_repeat_last_drop_uses_lock_option_c():
     ba = _load_backend_actions()
     ba._last_drop = {
