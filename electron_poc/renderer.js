@@ -266,6 +266,15 @@ const els = {
   travelMapList: document.getElementById("travelMapList"),
   travelMapSearch: document.getElementById("travelMapSearch"),
   travelMapSummary: document.getElementById("travelMapSummary"),
+  travelFavoriteAddMapBtn: document.getElementById("travelFavoriteAddMapBtn"),
+  travelFavoriteAddStationBtn: document.getElementById("travelFavoriteAddStationBtn"),
+  travelFavoriteLabel: document.getElementById("travelFavoriteLabel"),
+  travelFavoriteNote: document.getElementById("travelFavoriteNote"),
+  travelFavoriteRemoveBtn: document.getElementById("travelFavoriteRemoveBtn"),
+  travelFavoriteRows: document.getElementById("travelFavoriteRows"),
+  travelFavoriteSaveBtn: document.getElementById("travelFavoriteSaveBtn"),
+  travelFavoriteSummary: document.getElementById("travelFavoriteSummary"),
+  travelFavoriteTravelBtn: document.getElementById("travelFavoriteTravelBtn"),
   travelOutput: document.getElementById("travelOutput"),
   travelShowAllStations: document.getElementById("travelShowAllStations"),
   travelStationBtn: document.getElementById("travelStationBtn"),
@@ -365,6 +374,8 @@ const state = {
   selectedTarget: "",
   selectedTargetName: "",
   startupUpdateNoticeShown: false,
+  travelFavorites: { version: 1, favorites: {} },
+  travelFavoriteSelectedKey: "",
   travelMaps: [],
   travelStations: []
 };
@@ -4696,6 +4707,262 @@ async function travelToSelectedStation() {
   await runAction("travel_to_station", { travel_station: stationName }, els.travelOutput, 30000);
 }
 
+function travelFavoritesMap() {
+  const data = state.travelFavorites || {};
+  return data.favorites && typeof data.favorites === "object" ? data.favorites : {};
+}
+
+function travelFavoriteKey(kind, id) {
+  const safeKind = String(kind || "").trim().toLowerCase();
+  const safeId = String(id || "").trim();
+  if ((safeKind !== "map" && safeKind !== "station") || !safeId) return "";
+  return `${safeKind}:${safeId}`;
+}
+
+function travelFavoriteEntry(key) {
+  const favorites = travelFavoritesMap();
+  const entry = favorites[key];
+  return entry && typeof entry === "object" ? entry : null;
+}
+
+function travelFavoriteDefaultLabel(kind, id, world) {
+  if (kind === "station") {
+    const station = (state.travelStations || []).find((row) => String(row.station || "") === id);
+    if (station) return stationLabel(station);
+    return world ? `[Station] ${id} (${world})` : `[Station] ${id}`;
+  }
+  const map = (state.travelMaps || []).find((row) => String(row.map || "") === id);
+  if (map) return mapLabel(map);
+  return `[Map] ${id}`;
+}
+
+function renderTravelFavoriteControls() {
+  const key = String(state.travelFavoriteSelectedKey || "").trim();
+  const entry = key ? travelFavoriteEntry(key) : null;
+  const hasSelection = Boolean(entry);
+  if (els.travelFavoriteTravelBtn) els.travelFavoriteTravelBtn.disabled = !hasSelection;
+  if (els.travelFavoriteRemoveBtn) els.travelFavoriteRemoveBtn.disabled = !hasSelection;
+  if (els.travelFavoriteSaveBtn) els.travelFavoriteSaveBtn.disabled = !hasSelection;
+  if (els.travelFavoriteLabel) {
+    els.travelFavoriteLabel.disabled = !hasSelection;
+    if (!hasSelection) els.travelFavoriteLabel.value = "";
+    else if (document.activeElement !== els.travelFavoriteLabel) {
+      els.travelFavoriteLabel.value = entry.label || entry.id || "";
+    }
+  }
+  if (els.travelFavoriteNote) {
+    els.travelFavoriteNote.disabled = !hasSelection;
+    if (!hasSelection) els.travelFavoriteNote.value = "";
+    else if (document.activeElement !== els.travelFavoriteNote) {
+      els.travelFavoriteNote.value = entry.note || "";
+    }
+  }
+}
+
+function renderTravelFavorites() {
+  if (!els.travelFavoriteRows) return;
+  const favorites = travelFavoritesMap();
+  const keys = Object.keys(favorites).sort((a, b) => {
+    const left = favorites[a] || {};
+    const right = favorites[b] || {};
+    const leftLabel = String(left.label || left.id || a).toLowerCase();
+    const rightLabel = String(right.label || right.id || b).toLowerCase();
+    return leftLabel.localeCompare(rightLabel);
+  });
+
+  els.travelFavoriteRows.innerHTML = "";
+  if (!keys.length) {
+    const empty = document.createElement("div");
+    empty.className = "dev-empty-row";
+    empty.textContent = "No travel favorites yet. Add a map or station above.";
+    els.travelFavoriteRows.appendChild(empty);
+    setLine(els.travelFavoriteSummary, "0 travel favorites", "warning");
+    renderTravelFavoriteControls();
+    return;
+  }
+
+  if (state.travelFavoriteSelectedKey && !favorites[state.travelFavoriteSelectedKey]) {
+    state.travelFavoriteSelectedKey = "";
+  }
+  if (!state.travelFavoriteSelectedKey) {
+    state.travelFavoriteSelectedKey = keys[0];
+  }
+
+  keys.forEach((key) => {
+    const entry = favorites[key] || {};
+    const kind = String(entry.kind || "").toLowerCase() === "station" ? "station" : "map";
+    const row = document.createElement("div");
+    row.className = `dev-actor-row${key === state.travelFavoriteSelectedKey ? " selected" : ""}`;
+
+    const title = document.createElement("strong");
+    title.textContent = entry.label || entry.id || key;
+    const meta = document.createElement("span");
+    const worldBit = kind === "station" && entry.world ? ` · ${entry.world}` : "";
+    meta.textContent = `${kind}${worldBit} · ${entry.id || ""}`;
+    if (entry.note) meta.textContent += ` · ${entry.note}`;
+
+    const textWrap = document.createElement("div");
+    textWrap.appendChild(title);
+    textWrap.appendChild(meta);
+    row.appendChild(textWrap);
+
+    row.addEventListener("click", () => {
+      state.travelFavoriteSelectedKey = key;
+      renderTravelFavorites();
+    });
+    row.addEventListener("dblclick", () => {
+      state.travelFavoriteSelectedKey = key;
+      travelSelectedFavorite();
+    });
+    els.travelFavoriteRows.appendChild(row);
+  });
+
+  setLine(els.travelFavoriteSummary, `${keys.length} travel favorite(s)`, "ok");
+  renderTravelFavoriteControls();
+}
+
+async function loadTravelFavorites() {
+  if (!window.msbt || typeof window.msbt.loadTravelFavorites !== "function") {
+    state.travelFavorites = { version: 1, favorites: {} };
+    setLine(els.travelFavoriteSummary, "Travel favorites storage is not available in this build.", "warning");
+    return;
+  }
+  try {
+    const result = await window.msbt.loadTravelFavorites();
+    if (!result || !result.ok) {
+      throw new Error(result && result.message ? result.message : "Travel favorites failed to load.");
+    }
+    state.travelFavorites = result.data || { version: 1, favorites: {} };
+    renderTravelFavorites();
+    const warnings = Array.isArray(result.warnings) ? result.warnings.filter(Boolean) : [];
+    if (warnings.length) setLine(els.travelFavoriteSummary, warnings[0], "warning");
+  } catch (error) {
+    state.travelFavorites = { version: 1, favorites: {} };
+    setLine(els.travelFavoriteSummary, `Travel favorites failed to load: ${error.message || error}`, "bad");
+  }
+}
+
+async function saveTravelFavorites(statusMessage) {
+  if (!window.msbt || typeof window.msbt.saveTravelFavorites !== "function") {
+    setLine(els.travelFavoriteSummary, "Travel favorites storage is not available in this build.", "warning");
+    return false;
+  }
+  const result = await window.msbt.saveTravelFavorites(state.travelFavorites);
+  if (!result || !result.ok) {
+    setLine(
+      els.travelFavoriteSummary,
+      `Travel favorites failed to save: ${result && result.message ? result.message : "Unknown save error"}`,
+      "bad"
+    );
+    return false;
+  }
+  state.travelFavorites = result.data || state.travelFavorites;
+  const warning = Array.isArray(result.warnings) && result.warnings.length ? ` ${result.warnings[0]}` : "";
+  renderTravelFavorites();
+  setLine(els.travelFavoriteSummary, `${statusMessage}${warning}`, warning ? "warning" : "ok");
+  return true;
+}
+
+async function addTravelFavorite(kind) {
+  const safeKind = String(kind || "").trim().toLowerCase();
+  let id = "";
+  let world = "";
+  if (safeKind === "map") {
+    id = state.selectedMap || getValue(els.travelMapList);
+  } else if (safeKind === "station") {
+    id = state.selectedStation || getValue(els.travelStationList);
+    const station = (state.travelStations || []).find((row) => String(row.station || "") === id);
+    world = station ? String(station.world || "") : "";
+  } else {
+    setLine(els.travelFavoriteSummary, "Unknown favorite type.", "warning");
+    return;
+  }
+  if (!id) {
+    setLine(els.travelFavoriteSummary, `Select a ${safeKind} before adding it to favorites.`, "warning");
+    return;
+  }
+  const key = travelFavoriteKey(safeKind, id);
+  if (!key) {
+    setLine(els.travelFavoriteSummary, `Cannot favorite invalid ${safeKind} id.`, "warning");
+    return;
+  }
+  if (travelFavoriteEntry(key)) {
+    state.travelFavoriteSelectedKey = key;
+    renderTravelFavorites();
+    setLine(els.travelFavoriteSummary, "Already in travel favorites.", "warning");
+    return;
+  }
+  const now = new Date().toISOString();
+  state.travelFavorites = {
+    version: 1,
+    favorites: {
+      ...travelFavoritesMap(),
+      [key]: {
+        kind: safeKind,
+        id,
+        world,
+        label: travelFavoriteDefaultLabel(safeKind, id, world),
+        note: "",
+        created_at: now,
+        updated_at: now
+      }
+    }
+  };
+  state.travelFavoriteSelectedKey = key;
+  await saveTravelFavorites(`Added ${safeKind} favorite.`);
+}
+
+async function removeSelectedTravelFavorite() {
+  const key = String(state.travelFavoriteSelectedKey || "").trim();
+  if (!key || !travelFavoriteEntry(key)) {
+    setLine(els.travelFavoriteSummary, "Select a travel favorite first.", "warning");
+    return;
+  }
+  const favorites = { ...travelFavoritesMap() };
+  delete favorites[key];
+  state.travelFavorites = { version: 1, favorites };
+  state.travelFavoriteSelectedKey = "";
+  await saveTravelFavorites("Removed travel favorite.");
+}
+
+async function saveSelectedTravelFavoriteMeta() {
+  const key = String(state.travelFavoriteSelectedKey || "").trim();
+  const entry = travelFavoriteEntry(key);
+  if (!entry) {
+    setLine(els.travelFavoriteSummary, "Select a travel favorite before editing it.", "warning");
+    return;
+  }
+  const label = String(getValue(els.travelFavoriteLabel) || entry.id || "").replace(/\s+/g, " ").trim().slice(0, 160);
+  const note = String(getValue(els.travelFavoriteNote) || "").replace(/\s+/g, " ").trim().slice(0, 320);
+  state.travelFavorites = {
+    version: 1,
+    favorites: {
+      ...travelFavoritesMap(),
+      [key]: {
+        ...entry,
+        label: label || entry.id,
+        note,
+        updated_at: new Date().toISOString()
+      }
+    }
+  };
+  await saveTravelFavorites("Saved travel favorite label/note.");
+}
+
+async function travelSelectedFavorite() {
+  const key = String(state.travelFavoriteSelectedKey || "").trim();
+  const entry = travelFavoriteEntry(key);
+  if (!entry) {
+    setLine(els.travelFavoriteSummary, "Select a travel favorite first.", "warning");
+    return;
+  }
+  if (entry.kind === "station") {
+    await runAction("travel_to_station", { travel_station: entry.id }, els.travelOutput, 30000);
+    return;
+  }
+  await runAction("travel_to_map", { travel_map: entry.id }, els.travelOutput, 30000);
+}
+
 function devActorDisplayName(actorName) {
   const catalog = state.devSpawnerCatalog || {};
   const displayNames = catalog.display_names || {};
@@ -6640,6 +6907,21 @@ function wireEvents() {
   });
   els.travelMapBtn.addEventListener("click", travelToSelectedMap);
   els.travelStationBtn.addEventListener("click", travelToSelectedStation);
+  if (els.travelFavoriteAddMapBtn) {
+    els.travelFavoriteAddMapBtn.addEventListener("click", () => addTravelFavorite("map"));
+  }
+  if (els.travelFavoriteAddStationBtn) {
+    els.travelFavoriteAddStationBtn.addEventListener("click", () => addTravelFavorite("station"));
+  }
+  if (els.travelFavoriteTravelBtn) {
+    els.travelFavoriteTravelBtn.addEventListener("click", travelSelectedFavorite);
+  }
+  if (els.travelFavoriteRemoveBtn) {
+    els.travelFavoriteRemoveBtn.addEventListener("click", removeSelectedTravelFavorite);
+  }
+  if (els.travelFavoriteSaveBtn) {
+    els.travelFavoriteSaveBtn.addEventListener("click", saveSelectedTravelFavoriteMeta);
+  }
 
   document.getElementById("refreshActivityBtn").addEventListener("click", bridgeStatus);
   document.getElementById("clearActivityBtn").addEventListener("click", () => {
@@ -6659,7 +6941,7 @@ async function init() {
   await refreshVersionInfo();
   await refreshSavedDataInfo();
   syncDevSpawnerAdvancedControls();
-  await Promise.all([loadItemPools(), loadTravelResources(), loadDevSpawnerCatalog(), loadDevSpawnerFavorites(), loadSerialBookmarks(), loadBl4Catalog(), loadMovementSettings(), loadRaritySettings()]);
+  await Promise.all([loadItemPools(), loadTravelResources(), loadTravelFavorites(), loadDevSpawnerCatalog(), loadDevSpawnerFavorites(), loadSerialBookmarks(), loadBl4Catalog(), loadMovementSettings(), loadRaritySettings()]);
   await bridgeStatus();
   await loadQuickMenuLayout({ quiet: true });
   startBridgeStatusPolling();

@@ -943,7 +943,7 @@
     <section id="tab-map-travel" class="tab-panel">
       <section class="panel pink">
         <h2>Map Travel</h2>
-        <p>Select a map first, then choose a travel station on that map.</p>
+        <p>Select a map first, then choose a travel station on that map. Favorites can hold maps or stations in one list.</p>
         <div class="grid two">
           <div>
             <label for="travelMapSearch">Search Maps</label>
@@ -952,6 +952,7 @@
             <select id="travelMapList" class="list-select" size="16"></select>
             <div class="button-row wrap">
               <button id="travelMapBtn">Travel to Selected Map</button>
+              <button id="travelFavoriteAddMapBtn" type="button">Add Map to Favorites</button>
             </div>
           </div>
           <div>
@@ -962,9 +963,32 @@
             <select id="travelStationList" class="list-select" size="16"></select>
             <div class="button-row wrap">
               <button id="travelStationBtn">Travel to Selected Station</button>
+              <button id="travelFavoriteAddStationBtn" type="button">Add Station to Favorites</button>
             </div>
           </div>
         </div>
+      </section>
+
+      <section class="panel cyan">
+        <h2>Travel Favorites</h2>
+        <p>One favorites list for maps and stations. Rename labels anytime; Travel uses the saved location type.</p>
+        <div class="button-row wrap compact-actions">
+          <button id="travelFavoriteTravelBtn" type="button">Travel Favorite</button>
+          <button id="travelFavoriteRemoveBtn" type="button">Remove Favorite</button>
+          <button id="travelFavoriteSaveBtn" type="button">Save Label/Note</button>
+        </div>
+        <div class="inline-fields compact">
+          <label>
+            Label
+            <input id="travelFavoriteLabel" type="text" maxlength="160" autocomplete="off" spellcheck="false" placeholder="Favorite display name">
+          </label>
+          <label>
+            Note
+            <input id="travelFavoriteNote" type="text" maxlength="320" autocomplete="off" spellcheck="false" placeholder="Optional personal note">
+          </label>
+        </div>
+        <div id="travelFavoriteSummary" class="status-line">Loading travel favorites...</div>
+        <div id="travelFavoriteRows" class="dev-row-list compact"></div>
         <pre id="travelOutput">No travel action sent yet.</pre>
       </section>
     </section>
@@ -1224,7 +1248,7 @@
 
       <section class="panel green">
         <h2>Saved Data / Backups</h2>
-        <p>Bookmarks, Dev Spawner favorites, movement presets, rarity presets, and window size are stored outside the install folder so updates should not erase them.</p>
+        <p>Bookmarks, Dev Spawner favorites, Travel favorites, movement presets, rarity presets, and window size are stored outside the install folder so updates should not erase them.</p>
         <div id="savedDataSummary" class="status-line">Saved data folder not checked yet.</div>
         <div class="button-row wrap">
           <button id="savedDataRefreshBtn">Refresh Saved Data</button>

@@ -13,6 +13,7 @@ from .external_app_launcher import _cmd_msbt_external_app
 from .backend_actions import (
     _cmd_msbt_complete_challenges,
     _cmd_msbt_complete_challenges_cancel,
+    _cmd_msbt_probe_challenge_apis,
 )
 from .quick_menu import (
     _cmd_msbt_quick_menu,
@@ -88,6 +89,7 @@ build_mod(
         _cmd_msbt_quick_menu_unstuck,
         _cmd_msbt_complete_challenges,
         _cmd_msbt_complete_challenges_cancel,
+        _cmd_msbt_probe_challenge_apis,
         _cmd_give_serial,
         _cmd_givecurrency,
         _cmd_giveexperience,
