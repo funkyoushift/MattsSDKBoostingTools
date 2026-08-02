@@ -45,10 +45,14 @@ except Exception as exc:
     try:
         from unrealsdk import logging
         logging.warning(
-            f"[Matts SDK Boosting Tools] BLImGui panel unavailable; external bridge will still start: {exc!r}"
+            f"[Matts SDK Boosting Tools] Legacy BLImGui panel unavailable; "
+            f"native Quick Menu + external bridge continue without it: {exc!r}"
         )
     except Exception:
-        print(f"[Matts SDK Boosting Tools] BLImGui panel unavailable; external bridge will still start: {exc!r}")
+        print(
+            "[Matts SDK Boosting Tools] Legacy BLImGui panel unavailable; "
+            f"native Quick Menu + external bridge continue without it: {exc!r}"
+        )
 
 start_auto_inventory_worker()
 start_bridge()
@@ -58,7 +62,8 @@ build_mod(
     name="MattsSDKBoostingTools",
     author="Matt",
     description=(
-        "Boosting-focused SDK mod with a custom BLImGui panel and optional native UMG Quick Menu. "
+        "Boosting-focused SDK mod with a native UMG Quick Menu and external bridge "
+        "(no BLImGui required). Legacy BLImGui panel remains an optional fallback if installed. "
         "Select current party players and run serial rewards, currency, experience, Max SDU, "
         "golden chest helpers, shiny drops, shiny serial reward packages, and inventory capacity tools."
     ),

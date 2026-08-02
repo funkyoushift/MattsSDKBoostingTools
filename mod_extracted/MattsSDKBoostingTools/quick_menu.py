@@ -1,7 +1,7 @@
 """Thin native-UMG Quick Menu for Matt's SDK Boosting Tools.
 
-UIDevelopmentShowcase is optional reference only — this module does not import it.
-Actions go through backend_actions so the external bridge stays BLImGui-independent.
+Does not import or use BLImGui. UIDevelopmentShowcase is reference-only and is not imported.
+Actions go through backend_actions (same path as the external bridge).
 """
 
 from __future__ import annotations

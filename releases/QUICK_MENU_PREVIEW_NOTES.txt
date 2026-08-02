@@ -2,9 +2,14 @@ MSBT Quick Menu preview (for azzarock / testers)
 Branch tip: cursor/quick-menu-native-umg-0b18
 Package: MattsSDKBoostingTools-quick-menu-preview.sdkmod (also MattsSDKBoostingTools.sdkmod at repo root)
 
+Important
+- Quick Menu + external bridge do NOT use BLImGui.
+- You do NOT need blimgui.zip for this preview.
+- UIDevelopmentShowcase is NOT required.
+- A legacy BLImGui panel may still load if the user already has blimgui installed; that path is optional fallback only and is not part of Quick Menu.
+
 Install
 - Drop the .sdkmod into Borderlands 4 sdk_mods (same as other SDK mods).
-- BLImGui is still optional. UIDevelopmentShowcase is NOT required.
 - Restart / reload mods, load into gameplay.
 
 Quick Menu controls
@@ -25,18 +30,17 @@ Locked behavior in this build
 - Action / serial-delivery toasts (banner in menu; non-blocking toast if menu closed)
 - Target / Refresh party from menu chrome
 - Edit: Swap With…, Reset Page, Reset All
-- Bridge actions (no external UI change): repeat_last_drop, set_drop_player_lock, quick_menu_action
+- Bridge actions: repeat_last_drop, set_drop_player_lock, quick_menu_action
 - Bridge /status includes last_command, last_drop, drop_player_lock
 
 Not in this preview
 - Loot pool work (on hold)
-- Claiming full BLImGui independence (still needs /status check with blimgui.zip disabled)
 
 Smoke checklist
-1) F7 opens menu, Escape/Close returns mouse to game
-2) Target + Refresh update the selected player line
-3) Edit -> assign/clear/swap slots; Reset Page / Reset All
-4) Run a drop/delivery, Pin Last Command into a slot
-5) Repeat Last Drop prompts for player unless Lock Player is on
-6) If input sticks: F6 or msbt_quick_menu_unstuck
-7) Optional: hit bridge /status and confirm last_command / drop_player_lock fields
+1) With blimgui.zip disabled/absent: F7 still opens Quick Menu
+2) Escape/Close / F6 restore mouse to game
+3) Target + Refresh update the selected player line
+4) Edit -> assign/clear/swap slots; Reset Page / Reset All
+5) Run a drop/delivery, Pin Last Command into a slot
+6) Repeat Last Drop prompts for player unless Lock Player is on
+7) Optional: bridge GET /status returns ok with last_command / drop_player_lock fields
