@@ -2,7 +2,7 @@
 
 MSBT is a Borderlands 4 boosting and item toolkit: a standalone Windows app outside the game, plus a small SDK mod that talks to Borderlands 4 while you play. Use it for currency/XP/SDU helpers, serial delivery, BL4 code browsing, Mattmab’s save/profile/item editor, Dev Spawner, map travel, movement tools, and more.
 
-**Current release: [v2.0.1](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.0.1)**
+**Current release: [v2.0.2](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.0.2)**
 
 This project is **unofficial**. It is not affiliated with, endorsed by, or connected to Gearbox, 2K, or the Borderlands franchise owners.
 
@@ -12,11 +12,11 @@ This project is **unofficial**. It is not affiliated with, endorsed by, or conne
 
 **Recommended:** grab the latest Windows installer from GitHub Releases:
 
-[![Installer downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Installer-v2.0.1.exe?label=Installer%20downloads&color=2ea44f)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest)
-[![Portable downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Portable-v2.0.1-win-x64.zip?label=Portable%20downloads&color=0969da)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest)
+[![Installer downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Installer-v2.0.2.exe?label=Installer%20downloads&color=2ea44f)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest)
+[![Portable downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Portable-v2.0.2-win-x64.zip?label=Portable%20downloads&color=0969da)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest)
 
 - [GitHub Releases — download page](https://github.com/funkyoushift/MattsSDKBoostingTools/releases)
-- Latest installer example: `MSBT-Installer-v2.0.1.exe`
+- Latest installer example: `MSBT-Installer-v2.0.2.exe`
 
 **Portable option:** if you do not want an installer, download the portable ZIP instead (`MSBT-Portable-v…-win-x64.zip`), extract it, and run the app from that folder.
 
@@ -50,7 +50,7 @@ In plain terms, the Electron app is the control panel. The SDK mod does the live
 - **Matt Editor** — hosted Mattmab save/profile/item editor workflow with MSBT delivery buttons
 - **Item Pool Spawning** — browse and spawn from item pools through the bridge
 - **Dev Spawner** — actor/AI spawn helpers (needs the bundled ActorScriptDeployer support mod)
-- **Map Travel / Player Movement** — station/map helpers and movement tools
+- **Map Travel / Player Movement** — expanded station/map catalog, renamable travel favorites, and movement tools
 - **Activity Log / Report / Updates** — see what ran, file issues, check for new builds, install/update the bundled SDK mod
 
 <p align="center">
