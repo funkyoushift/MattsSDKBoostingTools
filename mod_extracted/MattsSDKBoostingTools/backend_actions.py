@@ -17,7 +17,7 @@ from typing import Any
 
 from mods_base import ENGINE, get_pc
 
-from . import player_economy, serial_rewards
+from . import player_economy, quick_menu_registry, serial_rewards
 from .golden_chest_keybinds import _close_golden_chest, _open_golden_chest
 from .inventory_capacity import (
     auto_apply_inventory_sizes_if_needed,
@@ -973,6 +973,48 @@ def get_drop_player_lock() -> dict[str, Any]:
     }
 
 
+def _sync_drop_lock_from_layout(drop_lock: object) -> None:
+    data = quick_menu_registry.sanitize_drop_lock(drop_lock)
+    if not data.get("enabled"):
+        set_drop_player_lock(False)
+        return
+    index = data.get("index")
+    name = str(data.get("name") or "").strip()
+    if index is not None and name:
+        target: object = f"{index}|{name}"
+    elif index is not None:
+        target = index
+    else:
+        target = name
+    set_drop_player_lock(True, target)
+
+
+def get_quick_menu_layout() -> dict[str, Any]:
+    return quick_menu_registry.get_quick_menu_snapshot()
+
+
+def set_quick_menu_layout(payload: dict[str, Any] | None = None) -> dict[str, Any]:
+    result = quick_menu_registry.set_quick_menu_layout(dict(payload or {}))
+    if result.get("ok"):
+        _sync_drop_lock_from_layout(result.get("layout", {}).get("drop_lock"))
+        result["revision"] = quick_menu_registry.get_layout_revision()
+    return result
+
+
+def assign_quick_menu_slot(payload: dict[str, Any] | None = None) -> dict[str, Any]:
+    result = quick_menu_registry.assign_quick_menu_slot(dict(payload or {}))
+    if result.get("ok"):
+        result["revision"] = quick_menu_registry.get_layout_revision()
+    return result
+
+
+def clear_quick_menu_page(payload: dict[str, Any] | None = None) -> dict[str, Any]:
+    result = quick_menu_registry.clear_quick_menu_page(dict(payload or {}))
+    if result.get("ok"):
+        result["revision"] = quick_menu_registry.get_layout_revision()
+    return result
+
+
 def _apply_drop_player_lock_if_needed() -> dict[str, Any] | None:
     """If lock is enabled, re-select the locked player. Returns an error dict on failure."""
     if not _drop_lock_enabled:
@@ -1063,6 +1105,12 @@ def run_quick_menu_action(
         result = max_player_level()
     elif key == "max_spec_level":
         result = max_spec_level()
+    elif key == "give_currency":
+        result = give_currency(payload.get("currency_kind", "cash"), payload.get("amount", 0))
+        needs_player = True
+    elif key == "set_level":
+        result = give_experience(payload.get("xp_track", "player"), payload.get("level", 60))
+        needs_player = True
     elif key == "open_golden_chest":
         result = open_golden_chest()
     elif key == "close_golden_chest":
@@ -1120,10 +1168,34 @@ def run_quick_menu_action(
         needs_player = True
     elif key == "uvh_boost_all":
         result = uvh_boost_all()
+    elif key.startswith("uvh_boost_tier_"):
+        result = uvh_boost_tier(key.rsplit("_", 1)[-1])
+    elif key == "uvh_boost_cancel":
+        result = uvh_boost_cancel()
+    elif key == "toggle_debug_cam":
+        result = toggle_debug_cam()
+    elif key == "teleport_debug_cam":
+        result = teleport_debug_cam()
+    elif key == "movement_reset_all":
+        result = movement_reset_all()
+    elif key.startswith("movement_preset_"):
+        result = movement_apply_preset(key.removeprefix("movement_preset_"))
+    elif key == "movement_toggle_no_target":
+        result = movement_toggle_no_target()
+    elif key == "movement_toggle_noclip":
+        result = movement_toggle_noclip()
+    elif key == "movement_players_only":
+        result = movement_toggle_players_only()
     elif key == "movement_delete_ground_items":
         result = movement_delete_ground_items()
     elif key == "movement_zero_vault":
         result = movement_zero_vault()
+    elif key == "rarity_reset":
+        result = rarity_reset()
+    elif key == "rarity_only_legendary":
+        result = rarity_only("legendary")
+    elif key == "rarity_only_pearlescent":
+        result = rarity_only("pearlescent")
     elif key == "set_backpack_bank_selected":
         result = set_inventory_sizes_selected(
             payload.get("backpack_size") or 1000,

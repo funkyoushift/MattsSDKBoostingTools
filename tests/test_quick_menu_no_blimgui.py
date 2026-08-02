@@ -105,6 +105,7 @@ def test_quick_menu_source_and_load_without_blimgui():
             "get_status": lambda: {},
         },
         "MattsSDKBoostingTools.inventory_capacity": {
+            "clamp_container_size": lambda value, default: int(value or default),
             "load_inventory_settings": lambda: {},
             "save_extra_settings": lambda **k: {},
         },
@@ -134,6 +135,7 @@ def test_quick_menu_modal_layers_and_blockers_are_consistent():
             "get_status": lambda: {},
         },
         "MattsSDKBoostingTools.inventory_capacity": {
+            "clamp_container_size": lambda value, default: int(value or default),
             "load_inventory_settings": lambda: {},
             "save_extra_settings": lambda **k: {},
         },

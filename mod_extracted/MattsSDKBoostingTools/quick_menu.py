@@ -15,8 +15,7 @@ from mods_base import command, get_pc, keybind
 from unrealsdk import logging
 from unrealsdk.hooks import Type
 
-from . import backend_actions
-from .inventory_capacity import load_inventory_settings, save_extra_settings
+from . import backend_actions, quick_menu_registry
 
 PREFIX = "[Matts SDK Boosting Tools | QuickMenu]"
 TICK_PATH = "/Script/Engine.CameraModifier:BlueprintModifyCamera"
@@ -24,76 +23,17 @@ HOOK_ID = "matts_sdk_boosting_tools_quick_menu_tick_v1"
 DESIGN_W = 1920.0
 DESIGN_H = 1080.0
 VIEWPORT_Z = 999996
-MAX_PAGES = 5
-SLOTS_PER_PAGE = 12
+MAX_PAGES = quick_menu_registry.MAX_PAGES
+SLOTS_PER_PAGE = quick_menu_registry.SLOTS_PER_PAGE
 GRID_COLS = 4
 GRID_ROWS = 3
 MODAL_BLOCKER_Z = 80
 MODAL_PANEL_Z = 81
 MODAL_CONTENT_Z = 82
 MODAL_BUTTON_Z = 83
-
-# Catalog: action id -> basic label + short aliases for customizable labels.
-ACTION_CATALOG: dict[str, dict[str, Any]] = {
-    "max_all": {"basic": "Max All", "aliases": ["MAX", "MaxAll"]},
-    "max_currency": {"basic": "Max Currency", "aliases": ["Cash", "MaxCash"]},
-    "max_eridium": {"basic": "Max Eridium", "aliases": ["Eridium", "MaxE"]},
-    "max_sdu": {"basic": "Max SDU", "aliases": ["SDU"]},
-    "max_player_level": {"basic": "Max Level", "aliases": ["Lvl60", "Level"]},
-    "max_spec_level": {"basic": "Max Spec", "aliases": ["Spec"]},
-    "open_golden_chest": {"basic": "Open Chest", "aliases": ["OpenGC", "Chest"]},
-    "close_golden_chest": {"basic": "Close Chest", "aliases": ["CloseGC"]},
-    "open_bank": {"basic": "Open Bank", "aliases": ["Bank"]},
-    "drop_all_shinies": {"basic": "Drop Shinies", "aliases": ["Shinies", "DropAll"]},
-    "shiny_selected": {"basic": "Shinies Selected", "aliases": ["Shiny Sel"]},
-    "shiny_all": {"basic": "Shinies All", "aliases": ["Shiny All"]},
-    "shiny_nonhost": {"basic": "Shinies Non-Host", "aliases": ["Shiny NH"]},
-    "repeat_last_drop": {"basic": "Repeat Last Drop", "aliases": ["Redo Drop", "RLD"]},
-    "uvh_boost_all": {"basic": "UVH Boost All", "aliases": ["UVH"]},
-    "movement_delete_ground_items": {"basic": "Clear Ground Loot", "aliases": ["Clear Loot"]},
-    "movement_zero_vault": {"basic": "Zero Vault Costs", "aliases": ["Vault0"]},
-    "set_backpack_bank_selected": {"basic": "Inv Selected 1k", "aliases": ["Inv Sel"]},
-    "set_backpack_bank_all": {"basic": "Inv All Party 1k", "aliases": ["Inv All"]},
-    "kick_player": {"basic": "Kick Selected", "aliases": ["Kick"]},
-    "refresh_players": {"basic": "Refresh Players", "aliases": ["Refresh"]},
-}
-
-PICKER_ACTIONS: tuple[str, ...] = (
-    "max_all",
-    "max_currency",
-    "max_eridium",
-    "max_sdu",
-    "max_player_level",
-    "open_golden_chest",
-    "close_golden_chest",
-    "open_bank",
-    "drop_all_shinies",
-    "shiny_selected",
-    "shiny_all",
-    "shiny_nonhost",
-    "repeat_last_drop",
-    "uvh_boost_all",
-    "movement_delete_ground_items",
-    "movement_zero_vault",
-    "set_backpack_bank_selected",
-    "set_backpack_bank_all",
-    "refresh_players",
-)
-
-DEFAULT_PAGE_0: list[dict[str, Any] | None] = [
-    {"action": "max_all", "label_mode": "basic", "custom_label": "", "payload": {}},
-    {"action": "max_currency", "label_mode": "basic", "custom_label": "", "payload": {}},
-    {"action": "max_eridium", "label_mode": "basic", "custom_label": "", "payload": {}},
-    {"action": "max_sdu", "label_mode": "basic", "custom_label": "", "payload": {}},
-    {"action": "drop_all_shinies", "label_mode": "basic", "custom_label": "", "payload": {}},
-    {"action": "shiny_selected", "label_mode": "basic", "custom_label": "", "payload": {}},
-    {"action": "open_golden_chest", "label_mode": "basic", "custom_label": "", "payload": {}},
-    {"action": "close_golden_chest", "label_mode": "basic", "custom_label": "", "payload": {}},
-    {"action": "open_bank", "label_mode": "basic", "custom_label": "", "payload": {}},
-    {"action": "repeat_last_drop", "label_mode": "basic", "custom_label": "", "payload": {}},
-    None,
-    None,
-]
+ACTION_CATALOG = quick_menu_registry.ACTION_CATALOG
+PICKER_ACTIONS = quick_menu_registry.NATIVE_PICKER_ACTIONS
+DEFAULT_PAGE_0 = quick_menu_registry.DEFAULT_PAGE_0
 
 
 @dataclass
@@ -152,6 +92,7 @@ class QuickMenuState:
     input_snapshot: InputSnapshot = field(default_factory=InputSnapshot)
     last_input_refresh: float = 0.0
     last_layout_check: float = 0.0
+    layout_revision: int = 0
     ui_dirty: bool = False
     key_escape: bool = False
     started: bool = False
@@ -159,18 +100,7 @@ class QuickMenuState:
 
 STATE = QuickMenuState()
 
-_NEEDS_PLAYER_ACTIONS = frozenset({
-    "max_all",
-    "max_currency",
-    "max_eridium",
-    "max_sdu",
-    "max_player_level",
-    "max_spec_level",
-    "shiny_selected",
-    "kick_player",
-    "set_backpack_bank_selected",
-    "give_serial_selected",
-})
+_NEEDS_PLAYER_ACTIONS = quick_menu_registry.NEEDS_PLAYER_ACTIONS
 
 
 def _log(message: str) -> None:
@@ -296,82 +226,51 @@ def update_layout_metrics() -> None:
 
 
 def _empty_page() -> list[dict[str, Any] | None]:
-    return [None for _ in range(SLOTS_PER_PAGE)]
+    return quick_menu_registry.empty_page()
 
 
 def _normalize_slot(raw: object) -> dict[str, Any] | None:
-    if not isinstance(raw, dict):
-        return None
-    action = str(raw.get("action") or "").strip()
-    if not action:
-        return None
-    label_mode = str(raw.get("label_mode") or "basic").strip() or "basic"
-    custom_label = str(raw.get("custom_label") or "").strip()
-    payload = raw.get("payload") if isinstance(raw.get("payload"), dict) else {}
-    return {
-        "action": action,
-        "label_mode": label_mode,
-        "custom_label": custom_label,
-        "payload": dict(payload),
-    }
+    return quick_menu_registry.normalize_slot(raw)
 
 
 def _default_pages() -> list[list[dict[str, Any] | None]]:
-    pages: list[list[dict[str, Any] | None]] = []
-    first = [_normalize_slot(slot) for slot in DEFAULT_PAGE_0]
-    while len(first) < SLOTS_PER_PAGE:
-        first.append(None)
-    pages.append(first[:SLOTS_PER_PAGE])
-    for _ in range(MAX_PAGES - 1):
-        pages.append(_empty_page())
-    return pages
+    return quick_menu_registry.default_pages()
 
 
 def load_layout() -> None:
-    settings = load_inventory_settings()
-    raw = settings.get("quick_menu")
-    pages = _default_pages()
-    page = 0
-    edit_mode = False
-    if isinstance(raw, dict):
-        page = max(0, min(MAX_PAGES - 1, int(raw.get("page", 0) or 0)))
-        edit_mode = bool(raw.get("edit_mode", False))
-        raw_pages = raw.get("pages")
-        if isinstance(raw_pages, list) and raw_pages:
-            pages = []
-            for idx in range(MAX_PAGES):
-                src = raw_pages[idx] if idx < len(raw_pages) else []
-                row = _empty_page()
-                if isinstance(src, list):
-                    for slot_i in range(min(SLOTS_PER_PAGE, len(src))):
-                        row[slot_i] = _normalize_slot(src[slot_i])
-                pages.append(row)
-    STATE.pages = pages
-    STATE.page = page
-    STATE.edit_mode = edit_mode
+    layout = quick_menu_registry.load_persisted_layout()
+    STATE.pages = layout["pages"]
+    STATE.page = int(layout["page"])
+    STATE.edit_mode = bool(layout["edit_mode"])
+    STATE.layout_revision = quick_menu_registry.get_layout_revision()
     lock = backend_actions.get_drop_player_lock()
-    if isinstance(raw, dict) and "drop_lock" in raw and isinstance(raw.get("drop_lock"), dict):
-        drop_lock = raw["drop_lock"]
-        if drop_lock.get("enabled"):
-            lock_index = drop_lock.get("index")
-            lock_name = str(drop_lock.get("name") or "").strip()
-            if lock_index is not None and lock_name:
-                lock_target: object = f"{lock_index}|{lock_name}"
-            elif lock_index is not None:
-                lock_target = lock_index
-            else:
-                lock_target = lock_name
-            backend_actions.set_drop_player_lock(True, lock_target)
-        elif lock.get("enabled") and not drop_lock.get("enabled"):
-            backend_actions.set_drop_player_lock(False)
+    drop_lock = layout["drop_lock"]
+    if drop_lock.get("enabled"):
+        lock_index = drop_lock.get("index")
+        lock_name = str(drop_lock.get("name") or "").strip()
+        if lock_index is not None and lock_name:
+            lock_target: object = f"{lock_index}|{lock_name}"
+        elif lock_index is not None:
+            lock_target = lock_index
+        else:
+            lock_target = lock_name
+        backend_actions.set_drop_player_lock(True, lock_target)
+    elif lock.get("enabled"):
+        backend_actions.set_drop_player_lock(False)
 
 
 def save_layout() -> None:
     lock = backend_actions.get_drop_player_lock()
+    if len(STATE.pages) == MAX_PAGES:
+        pages = STATE.pages
+    else:
+        # Commands such as msbt_quick_menu_lock may save before F7 has ever
+        # initialized STATE. Preserve the persisted/default grid in that case.
+        pages = quick_menu_registry.load_persisted_layout()["pages"]
     payload = {
         "page": int(STATE.page),
         "edit_mode": bool(STATE.edit_mode),
-        "pages": STATE.pages,
+        "pages": pages,
         "drop_lock": {
             "enabled": bool(lock.get("enabled")),
             "index": lock.get("index"),
@@ -379,47 +278,21 @@ def save_layout() -> None:
         },
     }
     try:
-        save_extra_settings(quick_menu=payload)
+        result = quick_menu_registry.set_quick_menu_layout(payload)
+        if not result.get("ok"):
+            raise RuntimeError(result.get("message") or "Quick Menu layout validation failed.")
+        STATE.pages = result["layout"]["pages"]
+        STATE.layout_revision = quick_menu_registry.get_layout_revision()
     except Exception as exc:
         _log(f"Could not save Quick Menu layout: {exc!r}")
 
 
 def slot_label(slot: dict[str, Any] | None) -> str:
-    if not slot:
-        return ""
-    action = str(slot.get("action") or "")
-    catalog = ACTION_CATALOG.get(action, {})
-    basic = str(catalog.get("basic") or action)
-    mode = str(slot.get("label_mode") or "basic")
-    custom = str(slot.get("custom_label") or "").strip()
-    if mode == "custom" and custom:
-        return custom
-    if mode.startswith("alias"):
-        try:
-            idx = int(mode.replace("alias", "") or "0")
-        except Exception:
-            idx = 0
-        aliases = list(catalog.get("aliases") or [])
-        if aliases:
-            return str(aliases[idx % len(aliases)])
-    return basic
+    return quick_menu_registry.slot_label(slot)
 
 
 def cycle_slot_label(slot: dict[str, Any]) -> None:
-    action = str(slot.get("action") or "")
-    catalog = ACTION_CATALOG.get(action, {})
-    aliases = list(catalog.get("aliases") or [])
-    mode = str(slot.get("label_mode") or "basic")
-    custom = str(slot.get("custom_label") or "").strip()
-    options = ["basic"]
-    options.extend(f"alias{i}" for i in range(len(aliases)))
-    if custom:
-        options.append("custom")
-    try:
-        current = options.index(mode if mode in options else "basic")
-    except ValueError:
-        current = 0
-    slot["label_mode"] = options[(current + 1) % len(options)]
+    quick_menu_registry.cycle_slot_label(slot)
 
 
 class NativeUMG:
@@ -846,6 +719,13 @@ def pin_last_command(slot_index: int | None = None) -> None:
     action = str(command.get("action") or "").strip()
     if not action:
         _log("Last command has no action id.")
+        return
+    if action not in quick_menu_registry.ASSIGNABLE_ACTIONS:
+        show_toast(
+            f"{action} is not available as a Quick Menu slot.",
+            ok=False,
+            seconds=3.0,
+        )
         return
     target_page = STATE.page
     target_slot = slot_index
@@ -1582,6 +1462,15 @@ def tick(_obj: Any, _args: Any, _ret: Any, _func: Any) -> None:
             STATE.buttons.clear()
             restore_input()
             return None
+        if quick_menu_registry.get_layout_revision() != STATE.layout_revision:
+            STATE.modal = ""
+            STATE.pending_repeat = False
+            STATE.player_pick_purpose = ""
+            STATE.pending_action = None
+            STATE.selected_slot = None
+            STATE.swap_armed_slot = None
+            load_layout()
+            STATE.ui_dirty = True
         now = time.monotonic()
         if now - STATE.last_input_refresh >= 0.5:
             _refresh_layout_if_changed()

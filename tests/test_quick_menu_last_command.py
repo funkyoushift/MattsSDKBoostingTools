@@ -21,6 +21,15 @@ def _load_backend_actions():
     pkg.__path__ = [str(PKG)]
     sys.modules["MattsSDKBoostingTools"] = pkg
 
+    settings: dict = {}
+
+    def _load_settings():
+        return dict(settings)
+
+    def _save_settings(**extra):
+        settings.update(extra)
+        return dict(settings)
+
     stubs = {
         "MattsSDKBoostingTools.player_economy": {},
         "MattsSDKBoostingTools.serial_rewards": {
@@ -39,6 +48,8 @@ def _load_backend_actions():
         "MattsSDKBoostingTools.inventory_capacity": {
             "auto_apply_inventory_sizes_if_needed": lambda *a, **k: None,
             "clamp_container_size": lambda value, default: int(value or default),
+            "load_inventory_settings": _load_settings,
+            "save_extra_settings": _save_settings,
             "set_inventory_sizes_for_all_party": lambda *a, **k: None,
             "set_inventory_sizes_for_party_index": lambda *a, **k: None,
         },

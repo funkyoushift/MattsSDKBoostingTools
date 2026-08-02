@@ -85,6 +85,16 @@ _QUEUE_PRESERVING_ACTIONS = frozenset({
     "dev_spawner_status",
     "dev_spawner_cache_status",
     "dev_spawner_logo_options",
+    "quick_menu_get_layout",
+    "quick_menu_set_layout",
+    "quick_menu_assign_slot",
+    "quick_menu_clear_page",
+})
+
+_QUICK_MENU_LAYOUT_MUTATIONS = frozenset({
+    "quick_menu_set_layout",
+    "quick_menu_assign_slot",
+    "quick_menu_clear_page",
 })
 
 # Initial Give_Serial bridge actions. After they run, multi-chunk delivery continues
@@ -138,9 +148,13 @@ def _prepare_queue_for_enqueue_locked(action: str) -> int:
     if action in _QUEUE_PRESERVING_ACTIONS:
         return 0
     if action in _SERIAL_DELIVERY_ACTIONS:
-        return _clear_pending_queue_locked()
+        return _clear_pending_matching_locked(
+            lambda item: str(item.get("action") or "") not in _QUICK_MENU_LAYOUT_MUTATIONS
+        )
     return _clear_pending_matching_locked(
-        lambda item: str(item.get("action") or "") not in _SERIAL_DELIVERY_ACTIONS
+        lambda item: str(item.get("action") or "") not in (
+            _SERIAL_DELIVERY_ACTIONS | _QUICK_MENU_LAYOUT_MUTATIONS
+        )
     )
 
 
@@ -690,6 +704,14 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
             payload,
             record=True,
         )
+    if action == "quick_menu_get_layout":
+        return backend_actions.get_quick_menu_layout()
+    if action == "quick_menu_set_layout":
+        return backend_actions.set_quick_menu_layout(_copy_payload(payload))
+    if action == "quick_menu_assign_slot":
+        return backend_actions.assign_quick_menu_slot(_copy_payload(payload))
+    if action == "quick_menu_clear_page":
+        return backend_actions.clear_quick_menu_page(_copy_payload(payload))
     return {"ok": False, "message": f"Unknown action: {action}"}
 
 
@@ -819,6 +841,9 @@ class _Handler(BaseHTTPRequestHandler):
     def do_GET(self) -> None:
         if self.path.startswith("/status"):
             self._send(200, _status())
+        elif self.path.startswith("/quick_menu"):
+            data = backend_actions.get_quick_menu_layout()
+            self._send(200 if data.get("ok") else 500, data)
         elif self.path.startswith("/layout"):
             self._send(200, UI_LAYOUT)
         elif self.path.startswith("/resource/"):
