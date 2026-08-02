@@ -694,8 +694,108 @@ async function loadQuickMenuLayout({ quiet = false } = {}) {
   state.quickMenuSelectedSlot = Math.max(0, Math.min(11, state.quickMenuSelectedSlot || 0));
   selectQuickMenuSlot(state.quickMenuSelectedSlot);
   installQuickMenuAddButtons();
+  void refreshQuickMenuPinPanel({ quiet: true });
   if (!quiet) setQuickMenuStatus(`Loaded Quick Menu revision ${data.revision || 0}.`, "ok");
   return data;
+}
+
+function formatQuickMenuCommandLine(command, emptyText) {
+  if (!command || !command.action) return emptyText;
+  const label = command.label || command.action;
+  const payload = command.payload && typeof command.payload === "object" ? command.payload : {};
+  const keys = Object.keys(payload);
+  const payloadText = keys.length
+    ? ` | ${keys.slice(0, 4).map((key) => `${key}=${String(payload[key]).slice(0, 28)}`).join(", ")}${keys.length > 4 ? ", …" : ""}`
+    : "";
+  return `${label} (${command.action})${payloadText}`;
+}
+
+async function refreshQuickMenuPinPanel({ quiet = false } = {}) {
+  const lastCommandNode = quickMenuNode("quickMenuLastCommand");
+  const lastDropNode = quickMenuNode("quickMenuLastDrop");
+  const lockNode = quickMenuNode("quickMenuLockStatus");
+  if (!lastCommandNode || !lastDropNode || !lockNode) return null;
+  try {
+    const result = await window.msbt.bridgeRequest({ method: "GET", path: "/status", timeoutMs: 8000 });
+    const data = result && result.data && typeof result.data === "object" ? result.data : result;
+    if (!data || data.ok === false) {
+      if (!quiet) setQuickMenuStatus(resultMessage(result) || "Could not refresh last command.", "warning");
+      return null;
+    }
+    state.quickMenuLastCommand = data.last_command || null;
+    state.quickMenuLastDrop = data.last_drop || null;
+    state.quickMenuDropLock = data.drop_player_lock || null;
+    lastCommandNode.textContent = `Last command: ${formatQuickMenuCommandLine(state.quickMenuLastCommand, "none yet — run an MSBT action first.")}`;
+    lastCommandNode.className = state.quickMenuLastCommand ? "status-line ok" : "status-line warning";
+    lastDropNode.textContent = `Last drop: ${formatQuickMenuCommandLine(state.quickMenuLastDrop, "none yet.")}`;
+    const lock = state.quickMenuDropLock || {};
+    const lockOn = Boolean(lock.enabled);
+    const lockWho = lock.name || (lock.index != null ? `P${Number(lock.index) + 1}` : "");
+    lockNode.textContent = lockOn
+      ? `Lock Player: ON${lockWho ? ` → ${lockWho}` : ""}`
+      : "Lock Player: off";
+    return data;
+  } catch (error) {
+    if (!quiet) setQuickMenuStatus(`Last-command refresh failed: ${error.message || error}`, "warning");
+    return null;
+  }
+}
+
+async function pinLastCommandToSelectedSlot() {
+  await refreshQuickMenuPinPanel({ quiet: true });
+  const command = state.quickMenuLastCommand;
+  if (!command || !command.action) {
+    setQuickMenuStatus("No last command to pin. Run an MSBT action first.", "warning");
+    return;
+  }
+  const catalog = state.quickMenuSnapshot && state.quickMenuSnapshot.catalog;
+  if (catalog && (!catalog[command.action] || !catalog[command.action].assignable)) {
+    setQuickMenuStatus(`${command.action} is not assignable to Quick Menu.`, "warning");
+    return;
+  }
+  const basic = catalog && catalog[command.action] ? catalog[command.action].basic : command.action;
+  const label = String(command.label || basic || command.action);
+  const useCustom = Boolean(label) && label !== basic && label !== command.action;
+  setQuickMenuStatus(`Pinning ${label} to page ${state.quickMenuPage + 1}, slot ${state.quickMenuSelectedSlot + 1}...`);
+  const result = await assignQuickMenuSlot({
+    page: state.quickMenuPage,
+    slot: state.quickMenuSelectedSlot,
+    action: command.action,
+    customLabel: useCustom ? label.slice(0, 48) : "",
+    commandPayload: command.payload || {}
+  });
+  setOutput(quickMenuNode("quickMenuEditorOutput"), quickMenuData(result) || result);
+  setQuickMenuStatus(
+    actionSucceeded(result)
+      ? `Pinned ${label} to page ${state.quickMenuPage + 1}, slot ${state.quickMenuSelectedSlot + 1}.`
+      : (resultMessage(result) || "Pin failed."),
+    actionSucceeded(result) ? "ok" : "warning"
+  );
+  if (actionSucceeded(result)) appendActivity(`Quick Menu: pinned last command ${command.action}.`);
+}
+
+async function repeatLastDropFromQuickMenu() {
+  setQuickMenuStatus("Repeating last drop...");
+  const payload = {};
+  if (state.selectedTarget) payload.target_player = state.selectedTarget;
+  const result = await bridgeAction("repeat_last_drop", payload, 30000);
+  setOutput(quickMenuNode("quickMenuEditorOutput"), result);
+  setQuickMenuStatus(resultMessage(result), actionSucceeded(result) ? "ok" : "warning");
+  await refreshQuickMenuPinPanel({ quiet: true });
+}
+
+async function toggleQuickMenuDropLock() {
+  await refreshQuickMenuPinPanel({ quiet: true });
+  const lock = state.quickMenuDropLock || {};
+  const enabling = !Boolean(lock.enabled);
+  const payload = {
+    enabled: enabling,
+    target_player: state.selectedTarget || undefined
+  };
+  const result = await bridgeAction("set_drop_player_lock", payload, 15000);
+  setOutput(quickMenuNode("quickMenuEditorOutput"), result);
+  setQuickMenuStatus(resultMessage(result), actionSucceeded(result) ? "ok" : "warning");
+  await refreshQuickMenuPinPanel({ quiet: true });
 }
 
 async function assignQuickMenuSlot({ page, slot, action, customLabel = "", commandPayload = {} }) {
@@ -1859,6 +1959,7 @@ async function bridgeStatus(options = {}) {
   const quickPanel = quickMenuNode("tab-quick-menu");
   if (quickPanel && quickPanel.classList.contains("active")) {
     await loadQuickMenuLayout({ quiet: true });
+    await refreshQuickMenuPinPanel({ quiet: true });
   }
   return result;
 }
@@ -5941,6 +6042,7 @@ function switchTab(tabId) {
     void loadEditor();
   } else if (tabId === "quick-menu") {
     void loadQuickMenuLayout({ quiet: Boolean(state.quickMenuSnapshot) });
+    void refreshQuickMenuPinPanel({ quiet: true });
   }
 }
 
@@ -5953,6 +6055,10 @@ function wireEvents() {
   quickMenuNode("quickMenuSaveSlotBtn").addEventListener("click", saveSelectedQuickMenuSlot);
   quickMenuNode("quickMenuClearSlotBtn").addEventListener("click", clearSelectedQuickMenuSlot);
   quickMenuNode("quickMenuClearPageBtn").addEventListener("click", clearCurrentQuickMenuPage);
+  quickMenuNode("quickMenuPinLastBtn").addEventListener("click", () => pinLastCommandToSelectedSlot());
+  quickMenuNode("quickMenuRepeatDropBtn").addEventListener("click", () => repeatLastDropFromQuickMenu());
+  quickMenuNode("quickMenuLockToggleBtn").addEventListener("click", () => toggleQuickMenuDropLock());
+  quickMenuNode("quickMenuRefreshPinBtn").addEventListener("click", () => refreshQuickMenuPinPanel());
   quickMenuNode("quickMenuAddPage").addEventListener("change", updateQuickMenuAddSlotsForPage);
   quickMenuNode("quickMenuAddCloseBtn").addEventListener("click", closeQuickMenuAddModal);
   quickMenuNode("quickMenuAddConfirmBtn").addEventListener("click", confirmQuickMenuAdd);

@@ -53,3 +53,20 @@ def test_spawnables_and_travel_are_assignable_and_wired():
     assert '"travel_to_station"' in js
     assert "quickMenuItemPoolPayload" in js
     assert "quickMenuSerialPayload" in js
+
+
+def test_electron_pin_last_controls_are_wired():
+    html = (ELECTRON / "renderer.html").read_text(encoding="utf-8")
+    js = (ELECTRON / "renderer.js").read_text(encoding="utf-8")
+    for element_id in (
+        "quickMenuPinLastBtn",
+        "quickMenuRepeatDropBtn",
+        "quickMenuLockToggleBtn",
+        "quickMenuLastCommand",
+    ):
+        assert f'id="{element_id}"' in html
+        assert element_id in js
+    assert "pinLastCommandToSelectedSlot" in js
+    assert "repeatLastDropFromQuickMenu" in js
+    assert '"repeat_last_drop"' in js
+    assert '"set_drop_player_lock"' in js

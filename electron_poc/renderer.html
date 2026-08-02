@@ -45,7 +45,7 @@
 
   <nav class="tab-bar" aria-label="Electron test tabs">
     <button class="active" data-tab="boosting">Boosting</button>
-    <button data-tab="quick-menu">Quick Menu</button>
+    <button data-tab="quick-menu">★ Quick Menu</button>
     <button data-tab="serial-tools">Serial Tools</button>
     <button data-tab="bl4-codes">BL4 Codes</button>
     <button data-tab="matt-editor">Matt Editor</button>
@@ -352,6 +352,19 @@
         </div>
       </div>
       <div id="quickMenuStatus" class="status-line warning">Connect to the in-game bridge to load the Quick Menu layout.</div>
+      <section class="panel gold quick-menu-pin-panel">
+        <h2>Pin / Repeat From MSBT</h2>
+        <p class="muted-line">Run any supported MSBT action first. It becomes the last command below, then pin it into the selected Quick Menu slot or repeat the last drop.</p>
+        <div id="quickMenuLastCommand" class="status-line">No last command recorded yet.</div>
+        <div id="quickMenuLastDrop" class="muted-line">No last drop recorded yet.</div>
+        <div id="quickMenuLockStatus" class="muted-line">Lock Player: off</div>
+        <div class="button-row wrap">
+          <button id="quickMenuPinLastBtn">Pin Last Command To Selected Slot</button>
+          <button id="quickMenuRepeatDropBtn">Repeat Last Drop</button>
+          <button id="quickMenuLockToggleBtn" class="secondary">Toggle Lock Player</button>
+          <button id="quickMenuRefreshPinBtn" class="secondary">Refresh Last Command</button>
+        </div>
+      </section>
       <div id="quickMenuPageTabs" class="quick-menu-page-tabs" aria-label="Quick Menu pages"></div>
       <div class="quick-menu-editor-shell">
         <section class="panel cyan quick-menu-slots-panel">
