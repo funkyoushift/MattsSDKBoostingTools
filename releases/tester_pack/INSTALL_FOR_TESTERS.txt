@@ -1,0 +1,107 @@
+MSBT Quick Menu — Tester Pack
+=============================
+Build: native UMG Quick Menu preview (no BLImGui required)
+Branch: cursor/quick-menu-native-umg-0b18
+Repo: funkyoushift/MattsSDKBoostingTools
+
+WHAT IS IN THIS ZIP
+-------------------
+1) MattsSDKBoostingTools.sdkmod
+   - Drop-in SDK mod package with the Quick Menu build
+2) Electron-Patch\resources\app.asar
+   - Quick Menu Editor tab and + QM buttons for the MSBT 1.2.0 Electron app
+3) INSTALL_FOR_TESTERS.txt
+   - This file
+4) QUICK_MENU_PREVIEW_NOTES.txt
+   - Feature list + smoke checklist
+
+IMPORTANT
+---------
+- Quick Menu + external bridge do NOT use BLImGui.
+- You do NOT need blimgui.zip for this test.
+- UIDevelopmentShowcase is NOT required.
+- If blimgui is already installed, you can leave it; Quick Menu still does not use it.
+  For a clean independence check, temporarily move/rename blimgui.zip out of sdk_mods.
+
+INSTALL
+-------
+1. Close Borderlands 4 if it is running.
+2. Go to your BL4 sdk_mods folder, usually:
+   Steam\steamapps\common\Borderlands 4\sdk_mods
+3. BACK UP your current MattsSDKBoostingTools.sdkmod
+   (rename to MattsSDKBoostingTools.sdkmod.bak or copy elsewhere).
+4. Copy MattsSDKBoostingTools.sdkmod from this zip into sdk_mods
+   (replace the old one).
+5. Launch Borderlands 4 with the SDK loader as you normally do.
+6. Load into gameplay (menu-only is not enough).
+
+EXTERNAL MSBT APP PATCH (QUICK MENU EDITOR)
+-------------------------------------------
+1. Close the MSBT Electron app.
+2. Use an existing MSBT 1.2.0 portable/install.
+3. Find its resources folder beside/under MattsSDKBoostingTools.exe.
+4. BACK UP resources\app.asar.
+5. Copy Electron-Patch\resources\app.asar from this tester zip over it.
+6. Start MSBT, then open the new Quick Menu tab.
+7. The game must be in-world with the new SDK mod loaded for layout edits.
+
+The external editor provides:
+- Page 1–5 and all 12 slots per page
+- Command picker, typed custom label, save/clear/page clear
+- Small + QM buttons beside supported MSBT action buttons
+- Live layout refresh through GET /quick_menu
+
+CONTROLS
+--------
+- F7  = open / close Quick Menu
+- F6  = unstuck (restore mouse / GameOnly input if stuck)
+- Escape = close modal, then close menu
+
+Console commands (optional):
+- msbt_quick_menu
+- msbt_quick_menu_pin
+- msbt_quick_menu_repeat [player]
+- msbt_quick_menu_lock [on|off] [player]
+- msbt_quick_menu_unstuck
+
+WHAT TO TEST (SMOKE)
+--------------------
+1) With game in-world: press F7 — Quick Menu opens at a sane size (DPI scaling)
+2) Confirm Target line is auto-filled (host/local) or tap Target to choose.
+   The target modal must show clickable player-name rows (not a blank panel).
+   Clicks inside a modal must not trigger hidden page/edit/reset controls behind it.
+3) Close with Escape or Close — mouse returns to game
+4) Edit mode: assign a slot, clear a slot, Swap With…, Reset Page
+5) If a page looks empty: tap + Assign, or Reset Page / Reset All (always recoverable)
+   On an empty page 2–5, use Go Page 1 or Reset All.
+6) Run Max All / Shinies Selected — should NOT hard-fail with "No party player selected"
+7) Run a drop/delivery, then Pin Last Command
+8) Repeat Last Drop — asks for a player unless Lock Player is on
+9) Lock Player, then Repeat Last Drop again (should skip picker)
+10) If input sticks: F6 or msbt_quick_menu_unstuck
+11) Optional: GET http://127.0.0.1:49774/status
+12) Optional hard check: disable/rename blimgui.zip, reload, confirm F7 still works
+13) External app: open Quick Menu tab, select a slot, save/clear it
+14) External app: click + QM beside Quick Max, Currency, Inventory, UVH,
+    Movement, Rarity, Chest, Shiny, Debug, Travel, Spawnables, or Dev Spawner
+    actions; choose page/slot and save
+15) Serial Bookmarks / BL4 Codes: use gold + QM Selected/All/Non-Host under the
+    Deliver buttons to pin checked serials into Quick Menu
+16) Deliver a multi-serial batch and confirm Electron shows the delivery
+    progress bar; in-game F7 shows start/finish delivery toasts
+17) Open F7 in-game and confirm external edits appear without restarting
+
+PLEASE REPORT BACK
+------------------
+- Did F7 open without blimgui?
+- Any stuck mouse / need for F6?
+- Pin + Repeat Last Drop behavior
+- Lock Player behavior
+- Serial + QM pin buttons and delivery progress feedback
+- Any crash, blank menu, or buttons that do nothing
+- Game build / SDK notes if something fails
+
+NOT IN THIS BUILD
+-----------------
+- Full GitHub Release installer bump (this is the Quick Menu preview pack)
+- External app UI redesign (not required for this Quick Menu test)

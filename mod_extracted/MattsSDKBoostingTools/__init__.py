@@ -10,6 +10,16 @@ from .serial_rewards import _cmd_give_serial
 from .inventory_capacity import start_auto_inventory_worker
 from .external_bridge import start_bridge
 from .external_app_launcher import _cmd_msbt_external_app
+from .quick_menu import (
+    _cmd_msbt_quick_menu,
+    _cmd_msbt_quick_menu_lock,
+    _cmd_msbt_quick_menu_pin,
+    _cmd_msbt_quick_menu_repeat,
+    _cmd_msbt_quick_menu_unstuck,
+    quick_menu_toggle,
+    quick_menu_unstuck_key,
+    start_quick_menu,
+)
 
 __version__: str = "1.2.0"
 __version_info__: tuple[int, int, int] = (1, 1, 5)
@@ -35,30 +45,43 @@ except Exception as exc:
     try:
         from unrealsdk import logging
         logging.warning(
-            f"[Matts SDK Boosting Tools] BLImGui panel unavailable; external bridge will still start: {exc!r}"
+            f"[Matts SDK Boosting Tools] Legacy BLImGui panel unavailable; "
+            f"native Quick Menu + external bridge continue without it: {exc!r}"
         )
     except Exception:
-        print(f"[Matts SDK Boosting Tools] BLImGui panel unavailable; external bridge will still start: {exc!r}")
+        print(
+            "[Matts SDK Boosting Tools] Legacy BLImGui panel unavailable; "
+            f"native Quick Menu + external bridge continue without it: {exc!r}"
+        )
 
 start_auto_inventory_worker()
 start_bridge()
+start_quick_menu()
 
 build_mod(
     name="MattsSDKBoostingTools",
     author="Matt",
     description=(
-        "Boosting-focused SDK mod with a custom BLImGui panel. "
+        "Boosting-focused SDK mod with a native UMG Quick Menu and external bridge "
+        "(no BLImGui required). Legacy BLImGui panel remains an optional fallback if installed. "
         "Select current party players and run serial rewards, currency, experience, Max SDU, "
         "golden chest helpers, shiny drops, shiny serial reward packages, and inventory capacity tools."
     ),
     supported_games=Game.BL4,
     coop_support=CoopSupport.Unknown,
     keybinds=_panel_keybinds + [
+        quick_menu_toggle,
+        quick_menu_unstuck_key,
         OPEN_GOLDEN_CHEST_KEY,
         CLOSE_GOLDEN_CHEST_KEY,
     ],
     commands=_panel_commands + [
         _cmd_msbt_external_app,
+        _cmd_msbt_quick_menu,
+        _cmd_msbt_quick_menu_pin,
+        _cmd_msbt_quick_menu_repeat,
+        _cmd_msbt_quick_menu_lock,
+        _cmd_msbt_quick_menu_unstuck,
         _cmd_give_serial,
         _cmd_givecurrency,
         _cmd_giveexperience,
