@@ -25,8 +25,11 @@ DESIGN_H = 1080.0
 VIEWPORT_Z = 999996
 MAX_PAGES = quick_menu_registry.MAX_PAGES
 SLOTS_PER_PAGE = quick_menu_registry.SLOTS_PER_PAGE
-GRID_COLS = 4
-GRID_ROWS = 3
+# Right-side dock layout (leaves most of the world view clear).
+DOCK_W = 640.0
+DOCK_X = DESIGN_W - DOCK_W
+GRID_COLS = 2
+GRID_ROWS = 6
 MODAL_BLOCKER_Z = 80
 MODAL_PANEL_Z = 81
 MODAL_CONTENT_Z = 82
@@ -34,6 +37,22 @@ MODAL_BUTTON_Z = 83
 ACTION_CATALOG = quick_menu_registry.ACTION_CATALOG
 PICKER_ACTIONS = quick_menu_registry.NATIVE_PICKER_ACTIONS
 DEFAULT_PAGE_0 = quick_menu_registry.DEFAULT_PAGE_0
+
+# Borderlands / MSBT reds, oranges, golds (fully opaque by default).
+C_DOCK = (0.08, 0.05, 0.03, 1.0)
+C_HEADER = (0.62, 0.12, 0.05, 1.0)
+C_EDGE = (1.0, 0.55, 0.08, 1.0)
+C_BTN = (0.78, 0.30, 0.05, 1.0)
+C_BTN_GOLD = (0.92, 0.62, 0.08, 1.0)
+C_BTN_DANGER = (0.72, 0.14, 0.10, 1.0)
+C_BTN_MUTED = (0.28, 0.16, 0.10, 1.0)
+C_SLOT = (0.52, 0.20, 0.06, 1.0)
+C_SLOT_SEL = (0.98, 0.72, 0.12, 1.0)
+C_SLOT_EMPTY = (0.20, 0.12, 0.08, 1.0)
+C_TEXT = (1.0, 0.93, 0.78, 1.0)
+C_TEXT_DIM = (0.92, 0.78, 0.55, 1.0)
+C_TOAST_OK = (0.55, 0.28, 0.05, 1.0)
+C_TOAST_BAD = (0.70, 0.12, 0.10, 1.0)
 
 
 @dataclass
@@ -45,6 +64,14 @@ class ButtonRef:
     was_pressed: bool = False
     modal_only: bool = False
     allow_when_modal: bool = False
+
+
+@dataclass
+class SliderRef:
+    widget: Any
+    key: str
+    value: float
+    label_widget: Any = None
 
 
 @dataclass
@@ -88,6 +115,8 @@ class QuickMenuState:
     root: Any = None
     menu_canvas: Any = None
     buttons: list[ButtonRef] = field(default_factory=list)
+    sliders: list[SliderRef] = field(default_factory=list)
+    panel_opacity: float = 1.0
     input_owner: Any = None
     input_snapshot: InputSnapshot = field(default_factory=InputSnapshot)
     last_input_refresh: float = 0.0
@@ -96,6 +125,11 @@ class QuickMenuState:
     ui_dirty: bool = False
     key_escape: bool = False
     started: bool = False
+
+
+def _with_alpha(fill: tuple[float, float, float, float], alpha: float) -> tuple[float, float, float, float]:
+    r, g, b, _a = fill
+    return (float(r), float(g), float(b), max(0.55, min(1.0, float(alpha))))
 
 
 STATE = QuickMenuState()
@@ -329,14 +363,66 @@ class NativeUMG:
         return widget
 
     def modal_blocker(self, parent: Any) -> Any:
-        """Full-screen hit-test-visible layer which prevents click-through."""
+        """Dock-local hit-test layer so the open world view stays clear."""
         widget = self.widget("/Script/UMG.Border")
-        try_call(widget, "SetBrushColor", color((0.0, 0.0, 0.0, 0.38)))
+        try_call(widget, "SetBrushColor", color((0.0, 0.0, 0.0, 0.55)))
         try_call(widget, "SetVisibility", 0)
         try_call(widget, "SetIsEnabled", True)
         self.add(parent, widget)
-        self.slot(widget, 0, 0, DESIGN_W, DESIGN_H, MODAL_BLOCKER_Z)
+        self.slot(widget, DOCK_X, 0, DOCK_W, DESIGN_H, MODAL_BLOCKER_Z)
         return widget
+
+    def slider(
+        self,
+        parent: Any,
+        key: str,
+        value: float,
+        x: float,
+        y: float,
+        w: float,
+        h: float,
+        *,
+        z: int = 40,
+    ) -> Any:
+        widget = self.widget("/Script/UMG.Slider")
+        try_call(widget, "SetMinValue", 0.55)
+        try_call(widget, "SetMaxValue", 1.0)
+        try_call(widget, "SetStepSize", 0.01)
+        try_call(widget, "SetValue", float(value))
+        try_call(widget, "SetVisibility", 0)
+        try_call(widget, "SetIsEnabled", True)
+        self.add(parent, widget)
+        self.slot(widget, x, y, w, h, z)
+        STATE.sliders.append(SliderRef(widget, key, float(value)))
+        return widget
+
+    def scroll_box(self, parent: Any, x: float, y: float, w: float, h: float, *, z: int = 20) -> Any:
+        widget = self.widget("/Script/UMG.ScrollBox")
+        try_call(widget, "SetVisibility", 0)
+        try_call(widget, "SetIsEnabled", True)
+        try_call(widget, "SetAlwaysShowScrollbar", True)
+        try_call(widget, "SetAlwaysShowScrollbarTrack", True)
+        try_call(widget, "SetAnimateWheelScrolling", False)
+        try_call(widget, "SetWheelScrollMultiplier", 1.0)
+        try_call(widget, "SetConsumeMouseWheel", 1)
+        try_call(widget, "SetAllowRightClickDragScrolling", False)
+        try_call(widget, "SetScrollBarThickness", vec2(sx(14.0), sy(14.0)))
+        self.add(parent, widget)
+        self.slot(widget, x, y, w, h, z)
+        return widget
+
+    def scroll_row(self, scroll: Any, w: float, h: float) -> Any:
+        size = self.widget("/Script/UMG.SizeBox")
+        try_call(size, "SetWidthOverride", sx(w))
+        try_call(size, "SetHeightOverride", sy(h))
+        try_call(size, "SetMinDesiredWidth", sx(w))
+        try_call(size, "SetMinDesiredHeight", sy(h))
+        self.add(scroll, size)
+        row = self.widget("/Script/UMG.CanvasPanel")
+        try_call(row, "SetVisibility", 0)
+        try_call(row, "SetIsEnabled", True)
+        self.add(size, row)
+        return row
 
     def text(
         self,
@@ -350,7 +436,7 @@ class NativeUMG:
         scale: float = 0.42,
         z: int = 10,
         center: bool = False,
-        tint: tuple[float, float, float, float] = (0.94, 0.97, 1.0, 1.0),
+        tint: tuple[float, float, float, float] = C_TEXT,
     ) -> Any:
         widget = self.widget("/Script/UMG.TextBlock")
         try_call(widget, "SetText", str(value))
@@ -374,7 +460,7 @@ class NativeUMG:
         h: float,
         action: Callable[[], None],
         *,
-        fill: tuple[float, float, float, float] = (0.16, 0.42, 0.58, 0.94),
+        fill: tuple[float, float, float, float] = C_BTN,
         enabled: bool = True,
         z: int = 50,
         scale: float = 0.36,
@@ -386,7 +472,7 @@ class NativeUMG:
         # its hit target and label) above that layer; otherwise the modal title
         # is visible while player/action rows appear as a blank screen.
         layer = _button_layer(z, modal_only, allow_when_modal)
-        base = fill if enabled else (0.35, 0.37, 0.40, 0.90)
+        base = fill if enabled else C_BTN_MUTED
         self.border(parent, x, y, w, h, base, layer)
         widget = self.widget("/Script/UMG.Button")
         self.add(parent, widget)
@@ -441,6 +527,7 @@ def reset_canvas() -> tuple[NativeUMG, Any]:
     factory = NativeUMG(overlay)
     remove_widget(STATE.menu_canvas)
     STATE.buttons.clear()
+    STATE.sliders.clear()
     canvas = factory.widget("/Script/UMG.CanvasPanel")
     try_call(canvas, "SetVisibility", 0)
     try_call(canvas, "SetIsEnabled", True)
@@ -588,6 +675,7 @@ def unstuck() -> None:
     except Exception:
         STATE.is_open = False
         STATE.buttons.clear()
+        STATE.sliders.clear()
         try:
             remove_widget(STATE.menu_canvas)
         except Exception:
@@ -950,103 +1038,152 @@ def rebuild_ui() -> None:
         return
     STATE.ui_dirty = False
     factory, root = reset_canvas()
+    STATE.sliders.clear()
+    opacity = max(0.55, min(1.0, float(STATE.panel_opacity or 1.0)))
 
-    # Dim backdrop + panel
-    factory.border(root, 0, 0, DESIGN_W, DESIGN_H, (0.02, 0.03, 0.05, 0.55), 1)
-    factory.border(root, 220, 90, 1480, 900, (0.07, 0.10, 0.14, 0.96), 2)
-    factory.border(root, 220, 90, 1480, 64, (0.12, 0.28, 0.38, 0.98), 3)
-    factory.text(root, "MSBT Quick Menu", 240, 102, 700, 40, scale=0.58, z=4)
+    # Right-side opaque dock only — no centered fullscreen pastel panel.
+    factory.border(root, DOCK_X - 6, 0, 6, DESIGN_H, _with_alpha(C_EDGE, 1.0), 1)
+    factory.border(root, DOCK_X, 0, DOCK_W, DESIGN_H, _with_alpha(C_DOCK, opacity), 2)
+    factory.border(root, DOCK_X, 0, DOCK_W, 70, _with_alpha(C_HEADER, opacity), 3)
+    factory.text(root, "MSBT Quick Menu", DOCK_X + 16, 16, 380, 40, scale=0.50, z=4)
     mode = "EDIT" if STATE.edit_mode else "RUN"
     lock = backend_actions.get_drop_player_lock()
-    lock_txt = f"Lock: {lock.get('name') or 'ON'}" if lock.get("enabled") else "Lock: OFF"
-    factory.text(root, f"{mode}  |  Page {STATE.page + 1}/{MAX_PAGES}  |  {lock_txt}", 960, 110, 520, 36, scale=0.34, z=4, center=True)
+    lock_txt = f"Lock {lock.get('name') or 'ON'}" if lock.get("enabled") else "Lock OFF"
+    factory.text(
+        root,
+        f"{mode} | P{STATE.page + 1}/{MAX_PAGES} | {lock_txt}",
+        DOCK_X + 16,
+        48,
+        420,
+        22,
+        scale=0.26,
+        z=4,
+        tint=C_TEXT_DIM,
+    )
 
     factory.button(
         root,
         "Close",
-        1560,
-        102,
-        110,
+        DOCK_X + DOCK_W - 118,
+        14,
+        100,
         42,
         close_panel,
-        fill=(0.45, 0.18, 0.18, 0.95),
-        scale=0.34,
+        fill=_with_alpha(C_BTN_DANGER, opacity),
+        scale=0.32,
         allow_when_modal=True,
     )
     factory.button(
         root,
         "Edit" if not STATE.edit_mode else "Done",
-        1420,
-        102,
-        120,
+        DOCK_X + DOCK_W - 238,
+        14,
+        110,
         42,
         lambda: _toggle_edit(),
-        fill=(0.30, 0.34, 0.20, 0.95),
-        scale=0.34,
+        fill=_with_alpha(C_BTN_GOLD, opacity),
+        scale=0.32,
     )
 
-    # Page tabs
-    tab_x = 250
+    tab_x = DOCK_X + 16
     for page_i in range(MAX_PAGES):
-        fill = (0.20, 0.55, 0.72, 0.98) if page_i == STATE.page else (0.18, 0.22, 0.28, 0.94)
+        fill = C_BTN_GOLD if page_i == STATE.page else C_BTN_MUTED
 
         def _make_page(i: int = page_i) -> Callable[[], None]:
             return lambda: _set_page(i)
 
-        factory.button(root, f"P{page_i + 1}", tab_x, 170, 70, 40, _make_page(), fill=fill, scale=0.32)
-        tab_x += 80
+        factory.button(
+            root,
+            f"P{page_i + 1}",
+            tab_x,
+            84,
+            56,
+            36,
+            _make_page(),
+            fill=_with_alpha(fill, opacity),
+            scale=0.28,
+        )
+        tab_x += 62
 
-    factory.button(root, "Pin Last Command", 700, 170, 220, 40, lambda: pin_last_command(), fill=(0.55, 0.38, 0.12, 0.96), scale=0.30)
-    factory.button(root, "Lock Player", 940, 170, 150, 40, toggle_drop_lock, fill=(0.28, 0.24, 0.45, 0.96), scale=0.30)
-    factory.button(root, "Target", 1110, 170, 120, 40, lambda: _begin_player_pick("target"), fill=(0.18, 0.40, 0.34, 0.96), scale=0.30)
+    factory.button(
+        root,
+        "Pin Last",
+        DOCK_X + 16,
+        128,
+        140,
+        36,
+        lambda: pin_last_command(),
+        fill=_with_alpha(C_BTN_GOLD, opacity),
+        scale=0.26,
+    )
+    factory.button(
+        root,
+        "Lock",
+        DOCK_X + 164,
+        128,
+        90,
+        36,
+        toggle_drop_lock,
+        fill=_with_alpha(C_BTN, opacity),
+        scale=0.26,
+    )
+    factory.button(
+        root,
+        "Target",
+        DOCK_X + 262,
+        128,
+        100,
+        36,
+        lambda: _begin_player_pick("target"),
+        fill=_with_alpha(C_BTN, opacity),
+        scale=0.26,
+    )
 
     def _refresh_ui() -> None:
         _run_action("refresh_players")
         rebuild_ui()
 
-    factory.button(root, "Refresh", 1250, 170, 120, 40, _refresh_ui, fill=(0.22, 0.28, 0.36, 0.96), scale=0.30)
+    factory.button(
+        root,
+        "Refresh",
+        DOCK_X + 370,
+        128,
+        110,
+        36,
+        _refresh_ui,
+        fill=_with_alpha(C_BTN_MUTED, opacity),
+        scale=0.26,
+    )
 
     selected_name = backend_actions.get_selected_player_name() or "(none)"
     selected_idx = backend_actions.get_selected_player_index()
-    target_txt = f"Target: {selected_idx}: {selected_name}" if selected_idx is not None else "Target: (none) — tap Target"
+    target_txt = f"Target: {selected_idx}: {selected_name}" if selected_idx is not None else "Target: (none)"
     last = backend_actions.get_last_command()
     last_txt = f"Last: {last.get('label')}" if last else "Last: (none)"
     drop = backend_actions.get_last_drop()
     drop_txt = f"Drop: {drop.get('label')}" if drop else "Drop: (none)"
-    swap_txt = f"   |   Swap from slot {STATE.swap_armed_slot + 1}" if STATE.swap_armed_slot is not None else ""
-    dpi_txt = f"DPI {STATE.dpi_scale:.2f}"
-    factory.text(
-        root,
-        f"{target_txt}   |   {last_txt}   |   {drop_txt}{swap_txt}   |   {dpi_txt}",
-        250,
-        225,
-        1400,
-        30,
-        scale=0.28,
-        z=5,
-        tint=(0.75, 0.82, 0.90, 1.0),
-    )
+    factory.text(root, target_txt, DOCK_X + 16, 172, DOCK_W - 32, 22, scale=0.24, z=5, tint=C_TEXT_DIM)
+    factory.text(root, f"{last_txt} | {drop_txt}", DOCK_X + 16, 194, DOCK_W - 32, 22, scale=0.24, z=5, tint=C_TEXT_DIM)
 
     filled = _page_filled_count()
     if filled == 0:
-        recovery = "Reset Page / Reset All" if STATE.page == 0 else "Go Page 1 / Reset All"
-        factory.border(root, 280, 710, 1360, 48, (0.45, 0.28, 0.10, 0.94), 8)
+        factory.border(root, DOCK_X + 16, 220, DOCK_W - 32, 36, _with_alpha(C_BTN_GOLD, opacity), 8)
         factory.text(
             root,
-            f"This page is empty. Tap + Assign, or use {recovery}.",
-            300,
-            718,
-            1320,
-            34,
-            scale=0.30,
+            "Empty page — tap + Assign or Reset.",
+            DOCK_X + 24,
+            226,
+            DOCK_W - 48,
+            26,
+            scale=0.24,
             z=9,
             center=True,
         )
 
-    # Grid 4x3
-    grid_x0, grid_y0 = 280, 280
-    cell_w, cell_h = 320, 120
-    gap_x, gap_y = 24, 20
+    grid_x0 = DOCK_X + 16
+    grid_y0 = 266.0
+    cell_w, cell_h = 292.0, 78.0
+    gap_x, gap_y = 12.0, 10.0
     slots = STATE.pages[STATE.page]
     for idx in range(SLOTS_PER_PAGE):
         row, col = divmod(idx, GRID_COLS)
@@ -1055,19 +1192,44 @@ def rebuild_ui() -> None:
         slot = slots[idx]
         selected = STATE.edit_mode and STATE.selected_slot == idx
         if slot is None:
-            label = "+ Assign" if STATE.edit_mode else "+ Assign"
-            fill = (0.22, 0.24, 0.28, 0.90) if STATE.edit_mode else (0.18, 0.20, 0.24, 0.88)
+            label = "+ Assign"
+            fill = C_SLOT_EMPTY
         else:
             label = slot_label(slot)
-            fill = (0.18, 0.48, 0.42, 0.95) if not selected else (0.55, 0.42, 0.14, 0.96)
+            fill = C_SLOT_SEL if selected else C_SLOT
 
         def _make_slot(i: int = idx) -> Callable[[], None]:
             return lambda: activate_slot(i)
 
-        factory.button(root, label, x, y, cell_w, cell_h, _make_slot(), fill=fill, scale=0.34)
+        factory.button(
+            root,
+            label,
+            x,
+            y,
+            cell_w,
+            cell_h,
+            _make_slot(),
+            fill=_with_alpha(fill, opacity),
+            scale=0.28,
+        )
 
-    factory.text(root, STATE.status, 250, 900, 1100, 40, scale=0.32, z=6, tint=(0.85, 0.90, 0.95, 1.0))
-    # Keep recovery actions available even outside edit when the page was emptied.
+    factory.text(root, STATE.status, DOCK_X + 16, 820, DOCK_W - 32, 36, scale=0.26, z=6, tint=C_TEXT_DIM)
+
+    # Opaque opacity slider (keeps dock readable; default fully opaque).
+    factory.text(
+        root,
+        f"Opacity {int(opacity * 100)}%",
+        DOCK_X + 16,
+        858,
+        200,
+        24,
+        scale=0.24,
+        z=6,
+        tint=C_TEXT_DIM,
+    )
+    factory.border(root, DOCK_X + 16, 886, DOCK_W - 32, 28, _with_alpha(C_BTN_MUTED, 1.0), 6)
+    factory.slider(root, "panel_opacity", opacity, DOCK_X + 20, 888, DOCK_W - 40, 24, z=7)
+
     if STATE.edit_mode or filled == 0:
         if filled == 0 and STATE.page > 0:
             recovery_label = "Go Page 1"
@@ -1078,30 +1240,30 @@ def rebuild_ui() -> None:
         factory.button(
             root,
             recovery_label,
-            1360,
-            896,
-            140,
+            DOCK_X + 16,
+            930,
+            180,
             40,
             recovery_action,
-            fill=(0.42, 0.28, 0.16, 0.96),
-            scale=0.28,
+            fill=_with_alpha(C_BTN, opacity),
+            scale=0.26,
         )
         factory.button(
             root,
             "Reset All",
-            1520,
-            896,
-            130,
+            DOCK_X + 208,
+            930,
+            160,
             40,
             reset_all_pages,
-            fill=(0.45, 0.18, 0.16, 0.96),
-            scale=0.28,
+            fill=_with_alpha(C_BTN_DANGER, opacity),
+            scale=0.26,
         )
 
     if STATE.toast and time.monotonic() < STATE.toast_until:
-        fill = (0.10, 0.42, 0.24, 0.94) if STATE.toast_ok else (0.48, 0.16, 0.14, 0.94)
-        factory.border(root, 420, 40, 1080, 56, fill, 90)
-        factory.text(root, STATE.toast, 440, 50, 1040, 36, scale=0.34, z=91, center=True)
+        fill = C_TOAST_OK if STATE.toast_ok else C_TOAST_BAD
+        factory.border(root, DOCK_X + 20, 980, DOCK_W - 40, 48, _with_alpha(fill, 1.0), 90)
+        factory.text(root, STATE.toast, DOCK_X + 28, 990, DOCK_W - 56, 30, scale=0.28, z=91, center=True)
 
     if STATE.modal == "player_pick":
         _render_player_pick(factory, root)
@@ -1109,6 +1271,7 @@ def rebuild_ui() -> None:
         _render_action_pick(factory, root)
     elif STATE.modal == "label_edit":
         _render_label_edit(factory, root)
+
 
 
 def _toggle_edit() -> None:
@@ -1134,7 +1297,8 @@ def _set_page(page: int) -> None:
 
 def _render_player_pick(factory: NativeUMG, root: Any) -> None:
     factory.modal_blocker(root)
-    factory.border(root, 420, 200, 1080, 680, (0.05, 0.07, 0.10, 0.97), MODAL_PANEL_Z)
+    factory.border(root, DOCK_X + 12, 120, DOCK_W - 24, 780, _with_alpha(C_DOCK, 1.0), MODAL_PANEL_Z)
+    factory.border(root, DOCK_X + 12, 120, DOCK_W - 24, 56, _with_alpha(C_HEADER, 1.0), MODAL_CONTENT_Z)
     purpose = STATE.player_pick_purpose or ("repeat" if STATE.pending_repeat else "lock")
     title = {
         "repeat": "Select player for repeat last drop",
@@ -1142,11 +1306,12 @@ def _render_player_pick(factory: NativeUMG, root: Any) -> None:
         "target": "Select target player",
         "action": "Select target player for this action",
     }.get(purpose, "Select player")
-    factory.text(root, title, 450, 220, 1000, 40, scale=0.48, z=MODAL_CONTENT_Z, center=True)
+    factory.text(root, title, DOCK_X + 24, 132, DOCK_W - 48, 36, scale=0.34, z=MODAL_CONTENT_Z + 1, center=True)
     players = backend_actions.refresh_players()
-    y = 280
+    scroll = factory.scroll_box(root, DOCK_X + 24, 190, DOCK_W - 48, 620, z=MODAL_CONTENT_Z)
     if not players:
-        factory.text(root, "No party players found.", 450, 320, 1000, 40, scale=0.40, z=MODAL_CONTENT_Z, center=True)
+        row = factory.scroll_row(scroll, DOCK_W - 64, 48)
+        factory.text(row, "No party players found.", 8, 8, DOCK_W - 80, 32, scale=0.30, z=1, center=True)
     for player in players:
         idx = int(player.get("index", -1))
         name = str(player.get("name") or f"Player {idx}")
@@ -1158,21 +1323,20 @@ def _render_player_pick(factory: NativeUMG, root: Any) -> None:
                 return lambda: _set_target_from_pick(i, n)
             return lambda: _lock_player_from_pick(i, n)
 
+        row = factory.scroll_row(scroll, DOCK_W - 64, 58)
         factory.button(
-            root,
+            row,
             f"{idx}: {name}",
-            520,
-            y,
-            880,
-            56,
+            0,
+            4,
+            DOCK_W - 72,
+            50,
             _make_pick(),
-            fill=(0.20, 0.40, 0.55, 0.96),
-            scale=0.36,
+            fill=C_BTN,
+            scale=0.30,
             modal_only=True,
+            z=1,
         )
-        y += 70
-        if y > 780:
-            break
 
     def _cancel() -> None:
         STATE.modal = ""
@@ -1181,49 +1345,57 @@ def _render_player_pick(factory: NativeUMG, root: Any) -> None:
         STATE.pending_action = None
         rebuild_ui()
 
-    factory.button(root, "Cancel", 860, 800, 200, 48, _cancel, fill=(0.40, 0.20, 0.20, 0.95), scale=0.34, modal_only=True)
+    factory.button(
+        root,
+        "Cancel",
+        DOCK_X + (DOCK_W - 180) / 2,
+        830,
+        180,
+        44,
+        _cancel,
+        fill=C_BTN_DANGER,
+        scale=0.30,
+        modal_only=True,
+    )
 
 
 def _render_action_pick(factory: NativeUMG, root: Any) -> None:
     factory.modal_blocker(root)
-    factory.border(root, 360, 160, 1200, 760, (0.05, 0.07, 0.10, 0.97), MODAL_PANEL_Z)
-    factory.text(root, "Assign action to slot", 390, 180, 1140, 40, scale=0.48, z=MODAL_CONTENT_Z, center=True)
-    y = 240
-    x = 400
-    for i, action in enumerate(PICKER_ACTIONS):
+    factory.border(root, DOCK_X + 12, 100, DOCK_W - 24, 820, _with_alpha(C_DOCK, 1.0), MODAL_PANEL_Z)
+    factory.border(root, DOCK_X + 12, 100, DOCK_W - 24, 52, _with_alpha(C_HEADER, 1.0), MODAL_CONTENT_Z)
+    factory.text(root, "Assign action to slot", DOCK_X + 24, 112, DOCK_W - 48, 32, scale=0.34, z=MODAL_CONTENT_Z + 1, center=True)
+    scroll = factory.scroll_box(root, DOCK_X + 24, 164, DOCK_W - 48, 640, z=MODAL_CONTENT_Z)
+    for action in PICKER_ACTIONS:
         label = str(ACTION_CATALOG.get(action, {}).get("basic") or action)
 
         def _make_assign(a: str = action) -> Callable[[], None]:
             return lambda: assign_action_to_selected(a)
 
+        row = factory.scroll_row(scroll, DOCK_W - 64, 52)
         factory.button(
-            root,
+            row,
             label,
-            x,
-            y,
-            340,
-            50,
+            0,
+            2,
+            DOCK_W - 72,
+            46,
             _make_assign(),
-            fill=(0.22, 0.36, 0.48, 0.96),
-            scale=0.30,
+            fill=C_BTN,
+            scale=0.28,
             modal_only=True,
+            z=1,
         )
-        if i % 3 == 2:
-            x = 400
-            y += 62
-        else:
-            x += 360
     if backend_actions.get_last_command() is not None:
         factory.button(
             root,
-            "Pin Last Command Here",
-            700,
+            "Pin Last Here",
+            DOCK_X + 24,
             820,
-            320,
-            48,
+            220,
+            44,
             lambda: pin_last_command(STATE.selected_slot),
-            fill=(0.55, 0.38, 0.12, 0.96),
-            scale=0.32,
+            fill=C_BTN_GOLD,
+            scale=0.28,
             modal_only=True,
         )
 
@@ -1231,7 +1403,18 @@ def _render_action_pick(factory: NativeUMG, root: Any) -> None:
         STATE.modal = ""
         rebuild_ui()
 
-    factory.button(root, "Cancel", 1100, 820, 160, 48, _cancel, fill=(0.40, 0.20, 0.20, 0.95), scale=0.34, modal_only=True)
+    factory.button(
+        root,
+        "Cancel",
+        DOCK_X + DOCK_W - 196,
+        820,
+        160,
+        44,
+        _cancel,
+        fill=C_BTN_DANGER,
+        scale=0.28,
+        modal_only=True,
+    )
 
 
 def _render_label_edit(factory: NativeUMG, root: Any) -> None:
@@ -1241,9 +1424,10 @@ def _render_label_edit(factory: NativeUMG, root: Any) -> None:
     if slot is None:
         return
     factory.modal_blocker(root)
-    factory.border(root, 560, 280, 800, 420, (0.05, 0.07, 0.10, 0.97), MODAL_PANEL_Z)
-    factory.text(root, f"Edit slot {STATE.selected_slot + 1}", 590, 300, 740, 40, scale=0.46, z=MODAL_CONTENT_Z, center=True)
-    factory.text(root, f"Label: {slot_label(slot)}", 590, 360, 740, 36, scale=0.36, z=MODAL_CONTENT_Z, center=True)
+    factory.border(root, DOCK_X + 20, 220, DOCK_W - 40, 520, _with_alpha(C_DOCK, 1.0), MODAL_PANEL_Z)
+    factory.border(root, DOCK_X + 20, 220, DOCK_W - 40, 52, _with_alpha(C_HEADER, 1.0), MODAL_CONTENT_Z)
+    factory.text(root, f"Edit slot {STATE.selected_slot + 1}", DOCK_X + 32, 232, DOCK_W - 64, 32, scale=0.34, z=MODAL_CONTENT_Z + 1, center=True)
+    factory.text(root, f"Label: {slot_label(slot)}", DOCK_X + 32, 290, DOCK_W - 64, 30, scale=0.28, z=MODAL_CONTENT_Z, center=True)
 
     def _cycle() -> None:
         cycle_slot_label(slot)
@@ -1252,50 +1436,50 @@ def _render_label_edit(factory: NativeUMG, root: Any) -> None:
 
     factory.button(
         root,
-        "Cycle Label (basic/alias/custom)",
-        620,
-        420,
-        680,
-        52,
+        "Cycle Label",
+        DOCK_X + 40,
+        340,
+        DOCK_W - 80,
+        48,
         _cycle,
-        fill=(0.28, 0.40, 0.52, 0.96),
-        scale=0.32,
+        fill=C_BTN,
+        scale=0.28,
         modal_only=True,
     )
     factory.button(
         root,
         "Clear Slot",
-        620,
-        490,
-        210,
-        48,
+        DOCK_X + 40,
+        404,
+        (DOCK_W - 96) / 2,
+        44,
         clear_selected_slot,
-        fill=(0.50, 0.22, 0.18, 0.96),
-        scale=0.30,
+        fill=C_BTN_DANGER,
+        scale=0.28,
         modal_only=True,
     )
     factory.button(
         root,
         "Swap With…",
-        850,
-        490,
-        210,
-        48,
+        DOCK_X + 40 + (DOCK_W - 96) / 2 + 16,
+        404,
+        (DOCK_W - 96) / 2,
+        44,
         arm_swap_selected,
-        fill=(0.30, 0.34, 0.48, 0.96),
-        scale=0.30,
+        fill=C_BTN_GOLD,
+        scale=0.28,
         modal_only=True,
     )
     if backend_actions.get_last_command() is not None:
         factory.button(
             root,
             "Pin Last Over This",
-            1080,
-            490,
-            220,
-            48,
+            DOCK_X + 40,
+            464,
+            DOCK_W - 80,
+            44,
             lambda: pin_last_command(STATE.selected_slot),
-            fill=(0.55, 0.38, 0.12, 0.96),
+            fill=C_BTN_GOLD,
             scale=0.28,
             modal_only=True,
         )
@@ -1305,7 +1489,18 @@ def _render_label_edit(factory: NativeUMG, root: Any) -> None:
         STATE.swap_armed_slot = None
         rebuild_ui()
 
-    factory.button(root, "Done", 860, 580, 200, 48, _done, fill=(0.20, 0.45, 0.30, 0.96), scale=0.34, modal_only=True)
+    factory.button(
+        root,
+        "Done",
+        DOCK_X + (DOCK_W - 180) / 2,
+        540,
+        180,
+        44,
+        _done,
+        fill=C_BTN,
+        scale=0.30,
+        modal_only=True,
+    )
 
 
 def open_panel() -> None:
@@ -1350,6 +1545,7 @@ def close_panel() -> None:
     STATE.pending_action = None
     STATE.swap_armed_slot = None
     STATE.buttons.clear()
+    STATE.sliders.clear()
     remove_widget(STATE.menu_canvas)
     remove_widget(STATE.overlay)
     STATE.menu_canvas = STATE.overlay = STATE.tree = STATE.root = None
@@ -1359,6 +1555,28 @@ def close_panel() -> None:
 
 def toggle_panel() -> None:
     close_panel() if STATE.is_open else open_panel()
+
+
+
+def poll_sliders() -> None:
+    changed = False
+    for ref in list(STATE.sliders):
+        widget = ref.widget
+        if not live(widget):
+            continue
+        try:
+            value = float(widget.GetValue())
+        except Exception:
+            continue
+        value = max(0.55, min(1.0, value))
+        if abs(value - float(ref.value)) < 0.005:
+            continue
+        ref.value = value
+        if ref.key == "panel_opacity":
+            STATE.panel_opacity = value
+            changed = True
+    if changed:
+        STATE.ui_dirty = True
 
 
 def poll_buttons() -> None:
@@ -1460,6 +1678,7 @@ def tick(_obj: Any, _args: Any, _ret: Any, _func: Any) -> None:
             STATE.is_open = False
             STATE.menu_canvas = STATE.overlay = STATE.tree = STATE.root = None
             STATE.buttons.clear()
+            STATE.sliders.clear()
             restore_input()
             return None
         if quick_menu_registry.get_layout_revision() != STATE.layout_revision:
@@ -1476,6 +1695,7 @@ def tick(_obj: Any, _args: Any, _ret: Any, _func: Any) -> None:
             _refresh_layout_if_changed()
             capture_input()
         process_escape()
+        poll_sliders()
         poll_buttons()
         if STATE.is_open and STATE.ui_dirty:
             rebuild_ui()

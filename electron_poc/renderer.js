@@ -877,6 +877,50 @@ function quickMenuSerialPayload() {
   };
 }
 
+function quickMenuBookmarkSerialPayload() {
+  const entries = typeof bookmarkSelectedEntries === "function" ? bookmarkSelectedEntries() : [];
+  const serials = typeof bookmarkSerialLinesForEntries === "function"
+    ? bookmarkSerialLinesForEntries(entries)
+    : [];
+  const copies = getInt(els.bookmarkSerialCopies, 1, 50, 1);
+  const expanded = expandSerialTextCopies(serials.join("\n"), copies, "Serial Bookmarks");
+  return {
+    serial_text: expanded.text || "",
+    serial_override_level: false,
+    serial_level: 60
+  };
+}
+
+function quickMenuBookmarkSerialLabel() {
+  const entries = typeof bookmarkSelectedEntries === "function" ? bookmarkSelectedEntries() : [];
+  if (!entries.length) return "Bookmark Serial";
+  if (entries.length === 1) return String(entries[0].name || "Bookmark Serial").slice(0, 48);
+  return `${entries.length} Bookmarks`.slice(0, 48);
+}
+
+function quickMenuBl4SerialPayload() {
+  const rows = typeof bl4ValidSerialEntries === "function" && typeof bl4SelectedEntries === "function"
+    ? bl4ValidSerialEntries(bl4SelectedEntries())
+    : [];
+  const serialText = rows.map((row) => String(row.serial || "").trim()).filter(Boolean).join("\n");
+  const copies = getInt(els.bl4SerialCopies, 1, 50, 1);
+  const expanded = expandSerialTextCopies(serialText, copies, "BL4 Codes");
+  return {
+    serial_text: expanded.text || "",
+    serial_override_level: boolFromSelect(els.bl4OverrideLevel),
+    serial_level: getInt(els.bl4DeliveryLevel, 1, 60, 60)
+  };
+}
+
+function quickMenuBl4SerialLabel() {
+  const rows = typeof bl4ValidSerialEntries === "function" && typeof bl4SelectedEntries === "function"
+    ? bl4ValidSerialEntries(bl4SelectedEntries())
+    : [];
+  if (!rows.length) return "BL4 Code";
+  if (rows.length === 1) return String(rows[0].name || "BL4 Code").slice(0, 48);
+  return `${rows.length} BL4 Codes`.slice(0, 48);
+}
+
 function quickMenuItemPoolPayload() {
   const names = selectedItemPoolNames();
   return {
@@ -1186,6 +1230,36 @@ function installQuickMenuAddButtons() {
     }[mode];
     if (!action) return;
     decorateQuickMenuActionButton(button, action, () => quickMenuSerialPayload());
+  });
+  document.querySelectorAll("[data-bookmark-send-mode]").forEach((button) => {
+    const mode = String(button.dataset.bookmarkSendMode || "selected");
+    const action = {
+      selected: "give_serial_selected",
+      all: "give_serial_all",
+      nonhost: "give_serial_nonhost"
+    }[mode];
+    if (!action) return;
+    decorateQuickMenuActionButton(
+      button,
+      action,
+      () => quickMenuBookmarkSerialPayload(),
+      () => quickMenuBookmarkSerialLabel()
+    );
+  });
+  document.querySelectorAll("[data-bl4-send-mode]").forEach((button) => {
+    const mode = String(button.dataset.bl4SendMode || "selected");
+    const action = {
+      selected: "give_serial_selected",
+      all: "give_serial_all",
+      nonhost: "give_serial_nonhost"
+    }[mode];
+    if (!action) return;
+    decorateQuickMenuActionButton(
+      button,
+      action,
+      () => quickMenuBl4SerialPayload(),
+      () => quickMenuBl4SerialLabel()
+    );
   });
   decorateQuickMenuActionButton(
     quickMenuNode("giveCurrencyBtn"),

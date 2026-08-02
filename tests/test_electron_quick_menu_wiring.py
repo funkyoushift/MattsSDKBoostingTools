@@ -85,3 +85,21 @@ def test_dev_spawner_targets_are_quick_menu_assignable():
     assert "quickMenuDevSpawnerPayload" in js
     assert 'data-dev-spawner-action' in js or "[data-dev-spawner-action]" in js
     assert '"dev_spawner_spawnai"' in js
+
+
+def test_bl4_and_bookmark_serials_have_quick_menu_wiring():
+    js = (ELECTRON / "renderer.js").read_text(encoding="utf-8")
+    assert "quickMenuBookmarkSerialPayload" in js
+    assert "quickMenuBl4SerialPayload" in js
+    assert "[data-bookmark-send-mode]" in js
+    assert "[data-bl4-send-mode]" in js
+    qm = (
+        ROOT
+        / "mod_extracted"
+        / "MattsSDKBoostingTools"
+        / "quick_menu.py"
+    ).read_text(encoding="utf-8")
+    assert "DOCK_X" in qm
+    assert "C_BTN_GOLD" in qm
+    assert "panel_opacity" in qm
+    assert "poll_sliders" in qm
