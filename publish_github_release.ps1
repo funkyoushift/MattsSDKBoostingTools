@@ -130,6 +130,11 @@ if ($Manifest.package_version -and [string]$Manifest.package_version -ne $Packag
     throw "releases\latest.json package_version '$($Manifest.package_version)' does not match package version '$PackageVersion'."
 }
 
+$InstallerDownloadsBadge = "https://img.shields.io/github/downloads/$Repository/$TagName/$ElectronInstallerName`?label=Installer%20downloads&color=2ea44f"
+$PortableDownloadsBadge = "https://img.shields.io/github/downloads/$Repository/$TagName/$ElectronUnpackedZipName`?label=Portable%20downloads&color=0969da"
+$InstallerDownloadUrl = "https://github.com/$Repository/releases/download/$TagName/$ElectronInstallerName"
+$PortableDownloadUrl = "https://github.com/$Repository/releases/download/$TagName/$ElectronUnpackedZipName"
+
 $notes = @"
 ### What's new
 
@@ -140,6 +145,11 @@ $notes = @"
 See the repository commit history for fixes included in this build.
 
 ### Download: pick ONE
+
+[![Installer downloads]($InstallerDownloadsBadge)]($InstallerDownloadUrl)
+[![Portable downloads]($PortableDownloadsBadge)]($PortableDownloadUrl)
+
+Counts track the installer and portable ZIP only (not update-check files).
 
 **Recommended for almost everyone**
 
