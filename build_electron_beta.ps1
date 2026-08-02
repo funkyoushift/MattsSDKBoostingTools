@@ -26,6 +26,20 @@ function Invoke-Checked {
     }
 }
 
+function Remove-RepoTreeLongPath {
+    param([Parameter(Mandatory = $true)][string]$Path)
+
+    if (-not (Test-Path -LiteralPath $Path)) {
+        return
+    }
+    $resolved = [System.IO.Path]::GetFullPath($Path)
+    $root = [System.IO.Path]::GetFullPath($RepoRoot)
+    if (-not $resolved.StartsWith($root, [System.StringComparison]::OrdinalIgnoreCase)) {
+        throw "Refusing to remove build tree outside repository: $resolved"
+    }
+    [System.IO.Directory]::Delete("\\?\$resolved", $true)
+}
+
 function Get-ElectronPackageVersion {
     $pkg = Get-Content -Raw $ElectronPackageJson | ConvertFrom-Json
     $version = [string]$pkg.version
@@ -119,7 +133,7 @@ if (-not (Test-Path $SdkMod)) {
 Invoke-Checked "powershell.exe" @("-NoProfile", "-ExecutionPolicy", "Bypass", "-File", $PrepareElectronPython)
 
 if (Test-Path $OutputRoot) {
-    Remove-Item -LiteralPath $OutputRoot -Recurse -Force
+    Remove-RepoTreeLongPath $OutputRoot
 }
 
 Push-Location $ElectronRoot
@@ -175,10 +189,21 @@ $PackagedGzoCatalog = Join-Path $UnpackedRoot "resources\external_app\v22_parts_
 Assert-GzoCatalogImages -CatalogPath $PackagedGzoCatalog -Label "Packaged GZO catalog"
 Remove-Item -LiteralPath $PortableStageRoot -Recurse -Force -ErrorAction SilentlyContinue
 Remove-Item -LiteralPath $PortableZipPath -Force -ErrorAction SilentlyContinue
-New-Item -ItemType Directory -Force -Path $PortableStageDir | Out-Null
-Copy-Item -Recurse -Force (Join-Path $UnpackedRoot "*") $PortableStageDir
-Invoke-Checked "tar.exe" @("-a", "-c", "-f", $PortableZipPath, "-C", $PortableStageRoot, $PortableRootName)
-Remove-Item -LiteralPath $PortableStageRoot -Recurse -Force -ErrorAction SilentlyContinue
+New-Item -ItemType Directory -Force -Path $PortableStageRoot | Out-Null
+try {
+    # Avoid duplicating the deeply nested editor resources into another long
+    # staging path. Windows Copy-Item can exceed MAX_PATH here; tar can safely
+    # follow a short junction while preserving the desired portable root name.
+    New-Item -ItemType Junction -Path $PortableStageDir -Target $UnpackedRoot | Out-Null
+    Invoke-Checked "tar.exe" @("-h", "-a", "-c", "-f", $PortableZipPath, "-C", $PortableStageRoot, $PortableRootName)
+} finally {
+    if ([System.IO.Directory]::Exists($PortableStageDir)) {
+        [System.IO.Directory]::Delete($PortableStageDir, $false)
+    }
+    if ([System.IO.Directory]::Exists($PortableStageRoot)) {
+        [System.IO.Directory]::Delete($PortableStageRoot, $false)
+    }
+}
 
 Write-Host "Electron build complete."
 Write-Host "Electron version: $ElectronVersion"

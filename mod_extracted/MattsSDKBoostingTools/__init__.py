@@ -21,8 +21,8 @@ from .quick_menu import (
     start_quick_menu,
 )
 
-__version__: str = "1.2.0"
-__version_info__: tuple[int, int, int] = (1, 1, 5)
+__version__: str = "1.2.1"
+__version_info__: tuple[int, int, int] = (1, 2, 1)
 
 _panel_keybinds = []
 _panel_commands = []

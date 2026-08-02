@@ -8645,7 +8645,7 @@
                         💰 Shared Currencies and Experience (Vault Card)
                     </h3>
                     <div class="help-text" style="margin-bottom: 15px">
-                        <span style="color: #FF8C42; font-weight: 700;">NEW!</span> Vault Card 3 (Bounty Pack 3)!
+                        <span style="color: #FF8C42; font-weight: 700;">NEW!</span> Vault Card 4 support!
                     </div>
                     <div class="help-text" style="margin-bottom: 15px; font-size: 0.85em; opacity: 0.8;">
                         Edit shared currencies including Vault Card tokens and experience. Changes are saved directly to the YAML.
@@ -8861,6 +8861,83 @@
                                         type="number"
                                         id="vaultcard03-points-input"
                                         name="vaultcard03-points-input"
+                                        min="0"
+                                        step="1"
+                                        placeholder="0"
+                                        style="
+                                            width: 100%;
+                                            padding: 8px;
+                                            background: rgba(0,0,0,0.5);
+                                            border: 1px solid rgba(79, 195, 247, 0.3);
+                                            border-radius: 4px;
+                                            color: #81d4fa;
+                                            font-family: monospace;
+                                            font-size: 0.9em;
+                                        "
+                                        onchange="updateCurrencies()"
+                                    />
+                                    <div style="margin-top: 5px; font-size: 0.85em; opacity: 0.6;">
+                                        This value is automatically calculated when you change the level, but you can manually override it if needed.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 20px; padding: 15px; background: rgba(79, 195, 247, 0.1); border: 2px solid rgba(79, 195, 247, 0.3); border-radius: 8px;">
+                            <h6 style="margin: 0 0 15px 0; color: #81d4fa; font-size: 1em; font-weight: 600;">Vault Card 4</h6>
+                            <div style="display: flex; flex-direction: column; gap: 15px;">
+                                <div>
+                                    <label for="vaultcard04-tokens-input" style="display: block; margin-bottom: 8px; font-weight: 500; color: #81d4fa;">Vault Card 4 Tokens:</label>
+                                    <input
+                                        type="number"
+                                        id="vaultcard04-tokens-input"
+                                        name="vaultcard04-tokens-input"
+                                        min="0"
+                                        step="1"
+                                        placeholder="0"
+                                        style="
+                                            width: 100%;
+                                            padding: 8px;
+                                            background: rgba(0,0,0,0.5);
+                                            border: 1px solid rgba(79, 195, 247, 0.3);
+                                            border-radius: 4px;
+                                            color: #81d4fa;
+                                            font-family: monospace;
+                                            font-size: 0.9em;
+                                        "
+                                        onchange="updateCurrencies()"
+                                    />
+                                </div>
+                                <div>
+                                    <label for="vaultcard04-level-input" style="display: block; margin-bottom: 8px; font-weight: 500; color: #81d4fa;">Vault Card 4 Level:</label>
+                                    <input
+                                        type="number"
+                                        id="vaultcard04-level-input"
+                                        name="vaultcard04-level-input"
+                                        min="1"
+                                        step="1"
+                                        placeholder="1"
+                                        style="
+                                            width: 100%;
+                                            padding: 8px;
+                                            background: rgba(0,0,0,0.5);
+                                            border: 1px solid rgba(79, 195, 247, 0.3);
+                                            border-radius: 4px;
+                                            color: #81d4fa;
+                                            font-family: monospace;
+                                            font-size: 0.9em;
+                                        "
+                                        onchange="updateVaultCard04Level()"
+                                    />
+                                    <div style="margin-top: 5px; font-size: 0.85em; opacity: 0.6;">
+                                        Experience points will be automatically calculated based on the level using the specialization XP curve.
+                                    </div>
+                                </div>
+                                <div>
+                                    <label for="vaultcard04-points-input" style="display: block; margin-bottom: 8px; font-weight: 500; color: #81d4fa;">Vault Card 4 Experience Points:</label>
+                                    <input
+                                        type="number"
+                                        id="vaultcard04-points-input"
+                                        name="vaultcard04-points-input"
                                         min="0"
                                         step="1"
                                         placeholder="0"

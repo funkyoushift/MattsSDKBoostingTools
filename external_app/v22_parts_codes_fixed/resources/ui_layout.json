@@ -154,7 +154,8 @@
                 "specialization",
                 "vaultcard_xp_1",
                 "vaultcard_xp_2",
-                "vaultcard_xp_3"
+                "vaultcard_xp_3",
+                "vaultcard_xp_4"
               ],
               "default": "player"
             },
@@ -201,7 +202,8 @@
                 "eridium",
                 "vaultcard1",
                 "vaultcard2",
-                "vaultcard3"
+                "vaultcard3",
+                "vaultcard4"
               ],
               "default": "cash"
             },

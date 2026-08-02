@@ -133,7 +133,7 @@ if ($Manifest.package_version -and [string]$Manifest.package_version -ne $Packag
 $notes = @"
 ### What's new
 
-Matt's SDK Boosting Tools desktop app release.
+- Added Vault Card 4 tokens and XP support to live boosting controls, Max All, BLImGui, and the embedded profile editor.
 
 ### Fixed
 

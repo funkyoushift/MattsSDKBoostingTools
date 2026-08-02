@@ -42,6 +42,9 @@ _CURRENCY_KIND_ALIASES: Dict[str, str] = {
     "vaultcard3": "VaultCard03_Tokens",
     "vaultcard_3": "VaultCard03_Tokens",
     "vc3": "VaultCard03_Tokens",
+    "vaultcard4": "VaultCard04_Tokens",
+    "vaultcard_4": "VaultCard04_Tokens",
+    "vc4": "VaultCard04_Tokens",
 }
 
 # OakPlayerState.ExperienceState fixed slots (aliases → index).
@@ -90,6 +93,9 @@ _EXPERIENCE_TRACK_ALIASES: Dict[str, int] = {
     "vaultcard_xp_3": 4,
     "vaultcard3_xp": 4,
     "vc3_xp": 4,
+    "vaultcard_xp_4": 5,
+    "vaultcard4_xp": 5,
+    "vc4_xp": 5,
 }
 
 
@@ -242,7 +248,7 @@ def _specialization_cumulative_total_xp(level: int) -> int | None:
 
 def _vault_track_cumulative_total_xp(level: int, prior_level: int, prior_points: int) -> int:
     """
-    Lifetime ExperiencePoints for vault-card tracks (2–3) at ExperienceLevel ``level``.
+    Lifetime ExperiencePoints for vault-card tracks (2–5) at ExperienceLevel ``level``.
 
     Prefer scaling from the row's previous level/points so we keep a consistent ratio when
     the host edits level in place. If prior level is unknown (0), use a linear floor from
@@ -308,6 +314,7 @@ _EXPERIENCE_TRACK_TOKEN_FALLBACKS: Dict[int, Tuple[str, ...]] = {
     2: ("VaultCard01", "VaultCard1", "VaultCard01_XP", "VaultCard01_Experience"),
     3: ("VaultCard02", "VaultCard2", "VaultCard02_XP", "VaultCard02_Experience"),
     4: ("VaultCard03", "VaultCard3", "VaultCard03_XP", "VaultCard03_Experience"),
+    5: ("VaultCard04", "VaultCard4", "VaultCard04_XP", "VaultCard04_Experience"),
 }
 
 
@@ -705,12 +712,12 @@ def _set_experience_level_via_bp(ps: Any, track_index: int, level: int) -> bool:
 
 def _do_give_currency(kind_raw: str, amount: int, name_sub: str) -> None:
     if not name_sub:
-        _log_err("Usage: givecurrency <kind> <amount> name <substring>  — kinds: cash, eridium, vaultcard1, vaultcard2, vaultcard3")
+        _log_err("Usage: givecurrency <kind> <amount> name <substring>  — kinds: cash, eridium, vaultcard1, vaultcard2, vaultcard3, vaultcard4")
         return
     key = (kind_raw or "").strip().lower()
     token = _CURRENCY_KIND_ALIASES.get(key)
     if not token:
-        _log_err("Unknown currency kind %r — use cash, eridium, vaultcard1, vaultcard2, vaultcard3.", kind_raw)
+        _log_err("Unknown currency kind %r — use cash, eridium, vaultcard1, vaultcard2, vaultcard3, vaultcard4.", kind_raw)
         return
     if amount == 0:
         _log_err("Amount must be non-zero.")
@@ -750,14 +757,15 @@ def _do_give_experience(track_raw: str, level: int, name_sub: str) -> None:
     if not name_sub:
         _log_err(
             "Usage: giveexperience <track> <level> name <substring>  — slots: 0 player level, 1 specialization, "
-            "2 vault card 01, 3 vault card 02 (or aliases character/player, specialization, vaultcard_xp_1/2), "
-            "or digit 0..3."
+            "2 vault card 01, 3 vault card 02, 4 vault card 03, 5 vault card 04 "
+            "(or aliases character/player, specialization, vaultcard_xp_1/2/3/4), or digit 0..5."
         )
         return
     tkey = _normalize_track_key(track_raw)
     if tkey not in _EXPERIENCE_TRACK_ALIASES:
         _log_err(
-            "Unknown track %r — use slots 0..3 or character/player, specialization, vaultcard_xp_1, vaultcard_xp_2.",
+            "Unknown track %r — use slots 0..5 or character/player, specialization, "
+            "vaultcard_xp_1, vaultcard_xp_2, vaultcard_xp_3, vaultcard_xp_4.",
             track_raw,
         )
         return
@@ -818,7 +826,8 @@ def _do_msbt_maxsdu(parts: List[str]) -> None:
     "givecurrency",
     description=(
         "Listen host: GbxCurrencyFunctionLibrary.GiveCurrency for one player. "
-        "Usage: givecurrency <kind> <amount> name <substring>  — kinds: cash, eridium, vaultcard1, vaultcard2, vaultcard3. "
+        "Usage: givecurrency <kind> <amount> name <substring>  — kinds: cash, eridium, "
+        "vaultcard1, vaultcard2, vaultcard3, vaultcard4. "
         "Verify in-game: client wallet updates; ambiguous name → gbc_players."
     ),
 )

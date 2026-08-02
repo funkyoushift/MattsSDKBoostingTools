@@ -2066,6 +2066,12 @@
             if (tokens03Input) tokens03Input.value = '';
             if (level03Input) level03Input.value = '';
             if (points03Input) points03Input.value = '';
+            const tokens04Input = document.getElementById('vaultcard04-tokens-input');
+            const level04Input = document.getElementById('vaultcard04-level-input');
+            const points04Input = document.getElementById('vaultcard04-points-input');
+            if (tokens04Input) tokens04Input.value = '';
+            if (level04Input) level04Input.value = '';
+            if (points04Input) points04Input.value = '';
 
             const bmHost = document.getElementById('profile-blackmarket-slots-host');
             if (bmHost) bmHost.innerHTML = '';
@@ -5274,6 +5280,16 @@
             }
             const level03 = vaultCard03Exp.level || 1;
             const points03 = vaultCard03Exp.points || 0;
+
+            // Get Vault Card 4 tokens and experience
+            const tokens04 = shared.currencies.vaultcard04_tokens || 0;
+            let vaultCard04Exp = shared.experience.find(exp => exp.type === 'VaultCard04_Experience');
+            if (!vaultCard04Exp) {
+                vaultCard04Exp = { type: 'VaultCard04_Experience', level: 1, points: 0 };
+                shared.experience.push(vaultCard04Exp);
+            }
+            const level04 = vaultCard04Exp.level || 1;
+            const points04 = vaultCard04Exp.points || 0;
             
             // Update input fields
             const tokensInput = document.getElementById('vaultcard-tokens-input');
@@ -5296,6 +5312,13 @@
             if (tokens03Input) tokens03Input.value = tokens03;
             if (level03Input) level03Input.value = level03;
             if (points03Input) points03Input.value = points03;
+
+            const tokens04Input = document.getElementById('vaultcard04-tokens-input');
+            const level04Input = document.getElementById('vaultcard04-level-input');
+            const points04Input = document.getElementById('vaultcard04-points-input');
+            if (tokens04Input) tokens04Input.value = tokens04;
+            if (level04Input) level04Input.value = level04;
+            if (points04Input) points04Input.value = points04;
         }
 
         function updateVaultCardLevel() {
@@ -5357,6 +5380,24 @@
             updateCurrencies();
         }
 
+        function updateVaultCard04Level() {
+            const levelInput = document.getElementById('vaultcard04-level-input');
+            if (!levelInput) return;
+
+            const level = parseInt(levelInput.value, 10);
+            if (isNaN(level) || level < 1) {
+                showSaveStatus('currencies-items-status', '❌ Level must be at least 1.', false);
+                return;
+            }
+
+            const points = calculateSpecializationXp(level);
+            const pointsInput = document.getElementById('vaultcard04-points-input');
+            if (pointsInput) {
+                pointsInput.value = points;
+            }
+            updateCurrencies();
+        }
+
         function updateCurrencies() {
             if (!window.profileMonacoEditor) {
                 showSaveStatus('currencies-items-status', '❌ Please decrypt a profile file first.', false);
@@ -5373,6 +5414,9 @@
                 const tokens03Input = document.getElementById('vaultcard03-tokens-input');
                 const level03Input = document.getElementById('vaultcard03-level-input');
                 const points03Input = document.getElementById('vaultcard03-points-input');
+                const tokens04Input = document.getElementById('vaultcard04-tokens-input');
+                const level04Input = document.getElementById('vaultcard04-level-input');
+                const points04Input = document.getElementById('vaultcard04-points-input');
                 
                 if (!tokensInput || !levelInput || !pointsInput) return;
                 
@@ -5385,6 +5429,9 @@
                 const tokens03 = tokens03Input ? (parseInt(tokens03Input.value, 10) || 0) : 0;
                 const level03 = level03Input ? (parseInt(level03Input.value, 10) || 1) : 1;
                 const points03 = points03Input ? (parseInt(points03Input.value, 10) || 0) : 0;
+                const tokens04 = tokens04Input ? (parseInt(tokens04Input.value, 10) || 0) : 0;
+                const level04 = level04Input ? (parseInt(level04Input.value, 10) || 1) : 1;
+                const points04 = points04Input ? (parseInt(points04Input.value, 10) || 0) : 0;
                 
                 const yamlContent = window.profileMonacoEditor.getValue();
                 // Clean YAML before parsing
@@ -5418,6 +5465,7 @@
                 shared.currencies.vaultcard01_tokens = tokens;
                 shared.currencies.vaultcard02_tokens = tokens02;
                 shared.currencies.vaultcard03_tokens = tokens03;
+                shared.currencies.vaultcard04_tokens = tokens04;
                 
                 // Update or create Vault Card 1 experience entry
                 let vaultCardExp = shared.experience.find(exp => exp.type === 'VaultCard01_Experience');
@@ -5447,6 +5495,16 @@
                 } else {
                     vaultCard03Exp.level = level03;
                     vaultCard03Exp.points = points03;
+                }
+
+                // Update or create Vault Card 4 experience entry
+                let vaultCard04Exp = shared.experience.find(exp => exp.type === 'VaultCard04_Experience');
+                if (!vaultCard04Exp) {
+                    vaultCard04Exp = { type: 'VaultCard04_Experience', level: level04, points: points04 };
+                    shared.experience.push(vaultCard04Exp);
+                } else {
+                    vaultCard04Exp.level = level04;
+                    vaultCard04Exp.points = points04;
                 }
                 
                 const newYaml = jsyaml.dump(data, { lineWidth: -1, noRefs: true });
