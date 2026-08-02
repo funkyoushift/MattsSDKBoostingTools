@@ -877,6 +877,28 @@ def get_last_drop() -> dict[str, Any] | None:
     return dict(_last_drop) if isinstance(_last_drop, dict) else None
 
 
+def get_serial_delivery_progress() -> dict[str, Any]:
+    """Lightweight delivery progress for Quick Menu toasts (no party refresh)."""
+    try:
+        delivery_progress = serial_rewards.serial_delivery_progress()
+    except Exception as exc:
+        return {
+            "active": False,
+            "message": "",
+            "last_error": f"serial delivery progress unavailable: {exc!r}",
+        }
+    try:
+        delivery_status = serial_rewards.serial_delivery_status()
+    except Exception:
+        delivery_status = ""
+    if isinstance(delivery_progress, dict):
+        progress = dict(delivery_progress)
+        progress.setdefault("last_message", delivery_status or progress.get("message", ""))
+        progress.setdefault("last_error", "")
+        return progress
+    return {"active": False, "message": str(delivery_progress or ""), "last_error": ""}
+
+
 def set_drop_player_lock(enabled: object, index_or_name: object | None = None) -> dict[str, Any]:
     """Option C: lock repeat-last-drop to a party player (or clear the lock)."""
     global _drop_lock_enabled, _drop_lock_index, _drop_lock_name

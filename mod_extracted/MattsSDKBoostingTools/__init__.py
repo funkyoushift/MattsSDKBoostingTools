@@ -13,7 +13,9 @@ from .external_app_launcher import _cmd_msbt_external_app
 from .quick_menu import (
     _cmd_msbt_quick_menu,
     _cmd_msbt_quick_menu_pin,
+    _cmd_msbt_quick_menu_unstuck,
     quick_menu_toggle,
+    quick_menu_unstuck_key,
     start_quick_menu,
 )
 
@@ -62,6 +64,7 @@ build_mod(
     coop_support=CoopSupport.Unknown,
     keybinds=_panel_keybinds + [
         quick_menu_toggle,
+        quick_menu_unstuck_key,
         OPEN_GOLDEN_CHEST_KEY,
         CLOSE_GOLDEN_CHEST_KEY,
     ],
@@ -69,6 +72,7 @@ build_mod(
         _cmd_msbt_external_app,
         _cmd_msbt_quick_menu,
         _cmd_msbt_quick_menu_pin,
+        _cmd_msbt_quick_menu_unstuck,
         _cmd_give_serial,
         _cmd_givecurrency,
         _cmd_giveexperience,

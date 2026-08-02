@@ -114,6 +114,12 @@ class QuickMenuState:
     pages: list[list[dict[str, Any] | None]] = field(default_factory=list)
     selected_slot: int | None = None
     pending_repeat: bool = False
+    toast: str = ""
+    toast_until: float = 0.0
+    toast_ok: bool = True
+    toast_overlay: Any = None
+    toast_root: Any = None
+    delivery_was_active: bool = False
     layout_w: float = DESIGN_W
     layout_h: float = DESIGN_H
     ui_scale: float = 1.0
@@ -541,12 +547,144 @@ def restore_input() -> None:
     STATE.input_snapshot = InputSnapshot()
 
 
+def show_toast(message: str, *, ok: bool = True, seconds: float = 2.6) -> None:
+    """Show a short delivery/action toast (menu banner and/or non-blocking overlay)."""
+    text = str(message or "").strip()
+    if not text:
+        return
+    STATE.toast = text[:160]
+    STATE.toast_ok = bool(ok)
+    STATE.toast_until = time.monotonic() + max(0.8, float(seconds))
+    STATE.status = STATE.toast
+    _log(STATE.toast)
+    if STATE.is_open:
+        return
+    try:
+        _ensure_toast_overlay(STATE.toast, STATE.toast_ok)
+    except Exception as exc:
+        _log(f"Toast overlay failed: {exc!r}")
+
+
 def _set_status_from_result(result: dict[str, Any] | None) -> None:
     if not isinstance(result, dict):
         return
     message = str(result.get("message") or "")
     if message:
-        _log(message)
+        show_toast(message, ok=bool(result.get("ok", True)))
+
+
+def _force_game_only_input() -> None:
+    """Hard restore GameOnly input even if Quick Menu state is corrupted."""
+    pc = get_pc()
+    if pc is None:
+        return
+    try:
+        lib = class_obj("/Script/UMG.WidgetBlueprintLibrary").ClassDefaultObject
+        try_call(lib, "ClearAllUserFocus", pc)
+        if not try_call(lib, "SetInputMode_GameOnly", pc, True):
+            try_call(lib, "SetInputMode_GameOnly", pc)
+        try_call(lib, "SetFocusToGameViewport")
+    except Exception:
+        pass
+    for attr, value in (
+        ("bShowMouseCursor", False),
+        ("bEnableMouseOverEvents", False),
+        ("bEnableClickEvents", False),
+        ("bEnableTouchEvents", False),
+        ("bBlockInput", False),
+    ):
+        try:
+            setattr(pc, attr, value)
+        except Exception:
+            pass
+    try_call(pc, "ResetIgnoreLookInput")
+    try_call(pc, "ResetIgnoreMoveInput")
+    try_call(pc, "ResetIgnoreInputFlags")
+
+
+def unstuck() -> None:
+    """Emergency close Quick Menu overlays and restore gameplay input."""
+    try:
+        close_panel()
+    except Exception:
+        STATE.is_open = False
+        STATE.buttons.clear()
+        try:
+            remove_widget(STATE.menu_canvas)
+        except Exception:
+            pass
+        try:
+            remove_widget(STATE.overlay)
+        except Exception:
+            pass
+        STATE.menu_canvas = STATE.overlay = STATE.tree = STATE.root = None
+    try:
+        _clear_toast_overlay()
+    except Exception:
+        pass
+    try:
+        restore_input()
+    except Exception:
+        pass
+    _force_game_only_input()
+    STATE.modal = ""
+    STATE.pending_repeat = False
+    STATE.input_owner = None
+    STATE.input_snapshot = InputSnapshot()
+    _log("Quick Menu unstuck complete (GameOnly restored).")
+
+
+def _ensure_toast_overlay(message: str, ok: bool) -> None:
+    """Non-interactive toast when the menu is closed (no input capture)."""
+    pc = get_pc()
+    if pc is None:
+        return
+    update_layout_metrics()
+    _clear_toast_overlay()
+    widget = construct("/Script/UMG.UserWidget", pc)
+    widget.WidgetTree = construct("/Script/UMG.WidgetTree", widget)
+    root = construct("/Script/UMG.CanvasPanel", widget.WidgetTree)
+    widget.WidgetTree.RootWidget = root
+    try_call(root, "SetVisibility", 0)
+    try_call(widget, "SetAlignmentInViewport", vec2(0.0, 0.0))
+    try_call(widget, "SetPositionInViewport", vec2(0.0, 0.0), False)
+    try_call(widget, "SetDesiredSizeInViewport", vec2(STATE.layout_w, STATE.layout_h))
+    try_call(widget, "AddToViewport", VIEWPORT_Z + 2)
+    # HitTestInvisible so gameplay input is not stolen.
+    try_call(widget, "SetVisibility", 3)
+    STATE.toast_overlay, STATE.toast_root = widget, root
+    factory = NativeUMG(widget)
+    fill = (0.10, 0.42, 0.24, 0.94) if ok else (0.48, 0.16, 0.14, 0.94)
+    factory.border(root, 460, 40, 1000, 64, fill, 10)
+    factory.text(root, message, 480, 52, 960, 40, scale=0.36, z=11, center=True)
+
+
+def _clear_toast_overlay() -> None:
+    remove_widget(STATE.toast_overlay)
+    STATE.toast_overlay = None
+    STATE.toast_root = None
+
+
+def _poll_delivery_toasts() -> None:
+    """Surface serial-delivery start/finish as toasts for Quick Menu / bridge drops."""
+    try:
+        progress = backend_actions.get_serial_delivery_progress()
+    except Exception:
+        return
+    if not isinstance(progress, dict):
+        return
+    active = bool(progress.get("active"))
+    message = str(progress.get("last_message") or progress.get("message") or "").strip()
+    error = str(progress.get("last_error") or "").strip()
+    if active and not STATE.delivery_was_active:
+        STATE.delivery_was_active = True
+        show_toast(message or "Serial delivery started…", ok=True, seconds=2.0)
+    elif (not active) and STATE.delivery_was_active:
+        STATE.delivery_was_active = False
+        if error:
+            show_toast(error, ok=False, seconds=3.2)
+        else:
+            show_toast(message or "Serial delivery finished.", ok=True, seconds=2.8)
 
 
 def _run_action(action: str, payload: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -791,6 +929,11 @@ def rebuild_ui() -> None:
 
     factory.text(root, STATE.status, 250, 900, 1400, 40, scale=0.32, z=6, tint=(0.85, 0.90, 0.95, 1.0))
 
+    if STATE.toast and time.monotonic() < STATE.toast_until:
+        fill = (0.10, 0.42, 0.24, 0.94) if STATE.toast_ok else (0.48, 0.16, 0.14, 0.94)
+        factory.border(root, 420, 40, 1080, 56, fill, 90)
+        factory.text(root, STATE.toast, 440, 50, 1040, 36, scale=0.34, z=91, center=True)
+
     if STATE.modal == "player_pick":
         _render_player_pick(factory, root)
     elif STATE.modal == "action_pick":
@@ -1005,8 +1148,21 @@ def process_escape() -> None:
             close_panel()
 
 
+def _expire_toast() -> None:
+    if not STATE.toast:
+        return
+    if time.monotonic() < STATE.toast_until:
+        return
+    STATE.toast = ""
+    _clear_toast_overlay()
+    if STATE.is_open:
+        rebuild_ui()
+
+
 def tick(_obj: Any, _args: Any, _ret: Any, _func: Any) -> None:
     try:
+        _poll_delivery_toasts()
+        _expire_toast()
         if not STATE.is_open:
             process_escape()
             return None
@@ -1053,6 +1209,14 @@ quick_menu_toggle = keybind(
     description="Open or close the native UMG Quick Menu (grid pages, pin last command, repeat last drop).",
 )
 
+quick_menu_unstuck_key = keybind(
+    "MSBT Quick Menu Unstuck",
+    "F6",
+    callback=unstuck,
+    display_name="MSBT Quick Menu Unstuck",
+    description="Emergency close Quick Menu and restore GameOnly input if the cursor/input gets stuck.",
+)
+
 
 @command("msbt_quick_menu", description="Open or close the MSBT native UMG Quick Menu.")
 def _cmd_msbt_quick_menu(_args: Any = None) -> None:
@@ -1064,3 +1228,8 @@ def _cmd_msbt_quick_menu_pin(_args: Any = None) -> None:
     if not STATE.is_open:
         open_panel()
     pin_last_command()
+
+
+@command("msbt_quick_menu_unstuck", description="Emergency close Quick Menu and restore GameOnly input.")
+def _cmd_msbt_quick_menu_unstuck(_args: Any = None) -> None:
+    unstuck()

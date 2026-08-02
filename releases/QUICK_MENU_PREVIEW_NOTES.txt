@@ -1,0 +1,31 @@
+MSBT Quick Menu preview (for azzarock / testers)
+Branch tip: cursor/quick-menu-native-umg-0b18
+Package: MattsSDKBoostingTools-quick-menu-preview.sdkmod (also MattsSDKBoostingTools.sdkmod at repo root)
+
+Install
+- Drop the .sdkmod into Borderlands 4 sdk_mods (same as other SDK mods).
+- BLImGui is still optional. UIDevelopmentShowcase is NOT required.
+- Restart / reload mods, load into gameplay.
+
+Quick Menu controls
+- F7 : open / close Quick Menu
+- F6 : unstuck (force-close menu + restore GameOnly input if cursor sticks)
+- Console: msbt_quick_menu , msbt_quick_menu_pin , msbt_quick_menu_unstuck
+
+Locked behavior in this build
+- Editable grid: up to 5 pages x 12 buttons
+- Pin Last Command (basic + alias/custom label cycle in Edit)
+- Repeat Last Drop: pick player at run time; optional Lock Player (option C)
+- No extra danger confirms
+- Action / serial-delivery toasts (banner in menu; non-blocking toast if menu closed)
+
+Not in this preview
+- Loot pool work (on hold)
+- Claiming full BLImGui independence (still needs /status check with blimgui.zip disabled)
+
+Smoke checklist
+1) F7 opens menu, Escape/Close returns mouse to game
+2) Edit -> assign/clear slots, Done saves layout
+3) Run a drop/delivery, Pin Last Command into a slot
+4) Repeat Last Drop prompts for player unless Lock Player is on
+5) If input sticks: F6 or msbt_quick_menu_unstuck
