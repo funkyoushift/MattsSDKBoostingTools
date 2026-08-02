@@ -10,6 +10,10 @@ from .serial_rewards import _cmd_give_serial
 from .inventory_capacity import start_auto_inventory_worker
 from .external_bridge import start_bridge
 from .external_app_launcher import _cmd_msbt_external_app
+from .backend_actions import (
+    _cmd_msbt_complete_challenges,
+    _cmd_msbt_complete_challenges_cancel,
+)
 from .quick_menu import (
     _cmd_msbt_quick_menu,
     _cmd_msbt_quick_menu_lock,
@@ -82,6 +86,8 @@ build_mod(
         _cmd_msbt_quick_menu_repeat,
         _cmd_msbt_quick_menu_lock,
         _cmd_msbt_quick_menu_unstuck,
+        _cmd_msbt_complete_challenges,
+        _cmd_msbt_complete_challenges_cancel,
         _cmd_give_serial,
         _cmd_givecurrency,
         _cmd_giveexperience,

@@ -6281,6 +6281,17 @@ function wireEvents() {
   document.querySelectorAll("[data-boost-serial-mode]").forEach((button) => {
     button.addEventListener("click", () => sendBoostSerial(button.dataset.boostSerialMode));
   });
+  const doNotClickBtn = document.getElementById("doNotClickChallengesBtn");
+  if (doNotClickBtn) {
+    doNotClickBtn.addEventListener("click", async (event) => {
+      if (!(event.shiftKey || event.ctrlKey || event.metaKey)) {
+        setOutput(els.boostOutput, "do not click");
+        return;
+      }
+      const result = await runAction("complete_challenges_all", {}, els.boostOutput, 30000);
+      appendActivity(`do not click: ${resultMessage(result)}`);
+    });
+  }
   document.getElementById("boostClearSerialsBtn").addEventListener("click", () => {
     els.boostSerialText.value = "";
     setOutput(els.boostOutput, "Cleared local serial input.");

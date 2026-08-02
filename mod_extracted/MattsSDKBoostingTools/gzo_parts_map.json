@@ -1313,7 +1313,9 @@
     "97": "comp_03_rare",
     "98": "comp_04_epic",
     "99": "comp_05_legendary",
-    "100": "comp_05_legendary_OM"
+    "100": "comp_05_legendary_OM",
+    "86": "part_barrel_02_hard_dark",
+    "87": "comp_05_legendary_hard_dark"
   },
   "14 | TED_AR": {
     "1": "part_mag_01_chuck",
@@ -1958,7 +1960,8 @@
     "95": "comp_01_common",
     "96": "comp_02_uncommon",
     "97": "comp_03_rare",
-    "98": "comp_04_epic"
+    "98": "comp_04_epic",
+    "70": "comp_06_pearl_raiden"
   },
   "21 | MAL_SM": {
     "1": "comp_05_legendary",

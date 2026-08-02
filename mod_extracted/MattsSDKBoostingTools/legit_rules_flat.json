@@ -31022,6 +31022,42 @@
           "rarity": "legendary"
         },
         {
+          "key": "comp_05_legendary_hard_dark",
+          "serial": 87,
+          "table": "inv_comp",
+          "table_id": 2,
+          "dep_index": 0,
+          "add": [],
+          "dep": [],
+          "exclude": [],
+          "base": "inv'Weapon.base_comp_05_legendary'",
+          "base_tags": [
+            "legendary",
+            "uni_hard_dark",
+            "unique"
+          ],
+          "rules": [
+            {
+              "slot": "barrel",
+              "parts": [
+                "part_barrel_02_hard_dark"
+              ]
+            }
+          ],
+          "display": "05 Legendary Hard Dark (Hard Dark)",
+          "debug": "Hard Dark legendary component",
+          "internal": "comp_05_legendary_HardDark",
+          "row": "",
+          "gestalt": [],
+          "np_keys": [
+            "hard_dark"
+          ],
+          "np_names": [
+            "Hard Dark"
+          ],
+          "rarity": "legendary"
+        },
+        {
           "key": "comp_01_common",
           "serial": 95,
           "table": "inv_comp",
@@ -31183,126 +31219,6 @@
           "np_keys": [],
           "np_names": [],
           "rarity": "legendary"
-        },
-        {
-          "key": "part_body",
-          "serial": 1,
-          "table": "body",
-          "table_id": 8,
-          "dep_index": 6,
-          "add": [
-            "daedalus",
-            "weapon_ar"
-          ],
-          "dep": [],
-          "exclude": [],
-          "base": null,
-          "base_tags": [],
-          "rules": null,
-          "display": "Body",
-          "debug": "",
-          "internal": "part_body",
-          "row": "",
-          "gestalt": [
-            "DAD_AR_Body"
-          ],
-          "np_keys": [],
-          "np_names": [],
-          "rarity": ""
-        },
-        {
-          "key": "part_body_a",
-          "serial": 2,
-          "table": "body_acc",
-          "table_id": 9,
-          "dep_index": 7,
-          "add": [],
-          "dep": [],
-          "exclude": [],
-          "base": null,
-          "base_tags": [],
-          "rules": null,
-          "display": "Reload speed mod",
-          "debug": "Reload speed mod",
-          "internal": "part_body_a",
-          "row": "",
-          "gestalt": [
-            "DAD_AR_Body_A"
-          ],
-          "np_keys": [],
-          "np_names": [],
-          "rarity": ""
-        },
-        {
-          "key": "part_body_b",
-          "serial": 3,
-          "table": "body_acc",
-          "table_id": 9,
-          "dep_index": 7,
-          "add": [
-            "body_mod_b"
-          ],
-          "dep": [],
-          "exclude": [],
-          "base": null,
-          "base_tags": [],
-          "rules": null,
-          "display": "Reload speed mod, excludes mag 04, 05 from rolling",
-          "debug": "Reload speed mod, excludes mag 04, 05 from rolling",
-          "internal": "part_body_b",
-          "row": "",
-          "gestalt": [],
-          "np_keys": [],
-          "np_names": [],
-          "rarity": ""
-        },
-        {
-          "key": "part_body_c",
-          "serial": 4,
-          "table": "body_acc",
-          "table_id": 9,
-          "dep_index": 7,
-          "add": [],
-          "dep": [],
-          "exclude": [],
-          "base": null,
-          "base_tags": [],
-          "rules": null,
-          "display": "Accuracy mod",
-          "debug": "Accuracy mod",
-          "internal": "part_body_c",
-          "row": "",
-          "gestalt": [
-            "DAD_AR_Body_C"
-          ],
-          "np_keys": [],
-          "np_names": [],
-          "rarity": ""
-        },
-        {
-          "key": "part_body_d",
-          "serial": 5,
-          "table": "body_acc",
-          "table_id": 9,
-          "dep_index": 7,
-          "add": [
-            "body_acc_ele"
-          ],
-          "dep": [],
-          "exclude": [],
-          "base": null,
-          "base_tags": [],
-          "rules": null,
-          "display": "Body D",
-          "debug": "",
-          "internal": "part_body_d",
-          "row": "",
-          "gestalt": [
-            "DAD_AR_Body_D"
-          ],
-          "np_keys": [],
-          "np_names": [],
-          "rarity": ""
         },
         {
           "key": "part_barrel_01",
@@ -31526,6 +31442,35 @@
             "First Impression",
             "Barrel",
             "Stim"
+          ],
+          "rarity": ""
+        },
+        {
+          "key": "part_barrel_02_hard_dark",
+          "serial": 86,
+          "table": "barrel",
+          "table_id": 6,
+          "dep_index": 4,
+          "add": [],
+          "dep": [],
+          "exclude": [],
+          "base": null,
+          "base_tags": [],
+          "rules": null,
+          "display": "Barrel 02 Hard Dark (Hard Dark)",
+          "debug": "Hard Dark barrel",
+          "internal": "part_barrel_02_HardDark",
+          "row": "",
+          "gestalt": [
+            "Hard Dark",
+            "Barrel"
+          ],
+          "np_keys": [
+            "hard_dark"
+          ],
+          "np_names": [
+            "Hard Dark",
+            "Barrel"
           ],
           "rarity": ""
         },
@@ -31952,6 +31897,126 @@
           "np_names": [
             "Barrel"
           ],
+          "rarity": ""
+        },
+        {
+          "key": "part_body",
+          "serial": 1,
+          "table": "body",
+          "table_id": 8,
+          "dep_index": 6,
+          "add": [
+            "daedalus",
+            "weapon_ar"
+          ],
+          "dep": [],
+          "exclude": [],
+          "base": null,
+          "base_tags": [],
+          "rules": null,
+          "display": "Body",
+          "debug": "",
+          "internal": "part_body",
+          "row": "",
+          "gestalt": [
+            "DAD_AR_Body"
+          ],
+          "np_keys": [],
+          "np_names": [],
+          "rarity": ""
+        },
+        {
+          "key": "part_body_a",
+          "serial": 2,
+          "table": "body_acc",
+          "table_id": 9,
+          "dep_index": 7,
+          "add": [],
+          "dep": [],
+          "exclude": [],
+          "base": null,
+          "base_tags": [],
+          "rules": null,
+          "display": "Reload speed mod",
+          "debug": "Reload speed mod",
+          "internal": "part_body_a",
+          "row": "",
+          "gestalt": [
+            "DAD_AR_Body_A"
+          ],
+          "np_keys": [],
+          "np_names": [],
+          "rarity": ""
+        },
+        {
+          "key": "part_body_b",
+          "serial": 3,
+          "table": "body_acc",
+          "table_id": 9,
+          "dep_index": 7,
+          "add": [
+            "body_mod_b"
+          ],
+          "dep": [],
+          "exclude": [],
+          "base": null,
+          "base_tags": [],
+          "rules": null,
+          "display": "Reload speed mod, excludes mag 04, 05 from rolling",
+          "debug": "Reload speed mod, excludes mag 04, 05 from rolling",
+          "internal": "part_body_b",
+          "row": "",
+          "gestalt": [],
+          "np_keys": [],
+          "np_names": [],
+          "rarity": ""
+        },
+        {
+          "key": "part_body_c",
+          "serial": 4,
+          "table": "body_acc",
+          "table_id": 9,
+          "dep_index": 7,
+          "add": [],
+          "dep": [],
+          "exclude": [],
+          "base": null,
+          "base_tags": [],
+          "rules": null,
+          "display": "Accuracy mod",
+          "debug": "Accuracy mod",
+          "internal": "part_body_c",
+          "row": "",
+          "gestalt": [
+            "DAD_AR_Body_C"
+          ],
+          "np_keys": [],
+          "np_names": [],
+          "rarity": ""
+        },
+        {
+          "key": "part_body_d",
+          "serial": 5,
+          "table": "body_acc",
+          "table_id": 9,
+          "dep_index": 7,
+          "add": [
+            "body_acc_ele"
+          ],
+          "dep": [],
+          "exclude": [],
+          "base": null,
+          "base_tags": [],
+          "rules": null,
+          "display": "Body D",
+          "debug": "",
+          "internal": "part_body_d",
+          "row": "",
+          "gestalt": [
+            "DAD_AR_Body_D"
+          ],
+          "np_keys": [],
+          "np_names": [],
           "rarity": ""
         },
         {
@@ -49988,6 +50053,42 @@
           ]
         },
         {
+          "key": "comp_06_pearl_raiden",
+          "serial": 70,
+          "table": "inv_comp",
+          "table_id": 2,
+          "dep_index": 0,
+          "add": [],
+          "dep": [],
+          "exclude": [],
+          "base": "inv'Weapon.base_comp_06_pearl'",
+          "base_tags": [
+            "pearlescent",
+            "uni_raiden",
+            "unique"
+          ],
+          "rules": [
+            {
+              "slot": "magazine",
+              "parts": [
+                "part_mag_02"
+              ]
+            }
+          ],
+          "display": "06 Pearl Raiden (Raiden)",
+          "debug": "Raiden pearlescent component",
+          "internal": "comp_06_pearl_Raiden",
+          "row": "",
+          "gestalt": [],
+          "np_keys": [
+            "raiden"
+          ],
+          "np_names": [
+            "Raiden"
+          ],
+          "rarity": "pearlescent"
+        },
+        {
           "key": "comp_06_pearl_screwed",
           "serial": 72,
           "table": "inv_comp",
@@ -50151,126 +50252,6 @@
           "np_keys": [],
           "np_names": [],
           "rarity": "epic"
-        },
-        {
-          "key": "part_body",
-          "serial": 62,
-          "table": "body",
-          "table_id": 8,
-          "dep_index": 6,
-          "add": [
-            "daedalus",
-            "weapon_sm"
-          ],
-          "dep": [],
-          "exclude": [],
-          "base": null,
-          "base_tags": [],
-          "rules": null,
-          "display": "Body",
-          "debug": "",
-          "internal": "part_body",
-          "row": "",
-          "gestalt": [
-            "DAD_SM_Body"
-          ],
-          "np_keys": [],
-          "np_names": [],
-          "rarity": ""
-        },
-        {
-          "key": "part_body_a",
-          "serial": 3,
-          "table": "body_acc",
-          "table_id": 9,
-          "dep_index": 7,
-          "add": [],
-          "dep": [],
-          "exclude": [],
-          "base": null,
-          "base_tags": [],
-          "rules": null,
-          "display": "Reload speed mod",
-          "debug": "Reload speed mod",
-          "internal": "part_body_a",
-          "row": "",
-          "gestalt": [
-            "DAD_SM_Body_A"
-          ],
-          "np_keys": [],
-          "np_names": [],
-          "rarity": ""
-        },
-        {
-          "key": "part_body_b",
-          "serial": 4,
-          "table": "body_acc",
-          "table_id": 9,
-          "dep_index": 7,
-          "add": [],
-          "dep": [],
-          "exclude": [],
-          "base": null,
-          "base_tags": [],
-          "rules": null,
-          "display": "Reload speed mod",
-          "debug": "Reload speed mod",
-          "internal": "part_body_b",
-          "row": "",
-          "gestalt": [
-            "DAD_SM_Body_B"
-          ],
-          "np_keys": [],
-          "np_names": [],
-          "rarity": ""
-        },
-        {
-          "key": "part_body_c",
-          "serial": 5,
-          "table": "body_acc",
-          "table_id": 9,
-          "dep_index": 7,
-          "add": [],
-          "dep": [],
-          "exclude": [],
-          "base": null,
-          "base_tags": [],
-          "rules": null,
-          "display": "Accuracy mod",
-          "debug": "Accuracy mod",
-          "internal": "part_body_c",
-          "row": "",
-          "gestalt": [
-            "DAD_SM_Body_C"
-          ],
-          "np_keys": [],
-          "np_names": [],
-          "rarity": ""
-        },
-        {
-          "key": "part_body_d",
-          "serial": 6,
-          "table": "body_acc",
-          "table_id": 9,
-          "dep_index": 7,
-          "add": [
-            "body_acc_ele"
-          ],
-          "dep": [],
-          "exclude": [],
-          "base": null,
-          "base_tags": [],
-          "rules": null,
-          "display": "Body D",
-          "debug": "",
-          "internal": "part_body_d",
-          "row": "",
-          "gestalt": [
-            "DAD_SM_Body_D"
-          ],
-          "np_keys": [],
-          "np_names": [],
-          "rarity": ""
         },
         {
           "key": "part_barrel_02_follower",
@@ -50919,6 +50900,126 @@
           "np_names": [
             "Barrel"
           ],
+          "rarity": ""
+        },
+        {
+          "key": "part_body",
+          "serial": 62,
+          "table": "body",
+          "table_id": 8,
+          "dep_index": 6,
+          "add": [
+            "daedalus",
+            "weapon_sm"
+          ],
+          "dep": [],
+          "exclude": [],
+          "base": null,
+          "base_tags": [],
+          "rules": null,
+          "display": "Body",
+          "debug": "",
+          "internal": "part_body",
+          "row": "",
+          "gestalt": [
+            "DAD_SM_Body"
+          ],
+          "np_keys": [],
+          "np_names": [],
+          "rarity": ""
+        },
+        {
+          "key": "part_body_a",
+          "serial": 3,
+          "table": "body_acc",
+          "table_id": 9,
+          "dep_index": 7,
+          "add": [],
+          "dep": [],
+          "exclude": [],
+          "base": null,
+          "base_tags": [],
+          "rules": null,
+          "display": "Reload speed mod",
+          "debug": "Reload speed mod",
+          "internal": "part_body_a",
+          "row": "",
+          "gestalt": [
+            "DAD_SM_Body_A"
+          ],
+          "np_keys": [],
+          "np_names": [],
+          "rarity": ""
+        },
+        {
+          "key": "part_body_b",
+          "serial": 4,
+          "table": "body_acc",
+          "table_id": 9,
+          "dep_index": 7,
+          "add": [],
+          "dep": [],
+          "exclude": [],
+          "base": null,
+          "base_tags": [],
+          "rules": null,
+          "display": "Reload speed mod",
+          "debug": "Reload speed mod",
+          "internal": "part_body_b",
+          "row": "",
+          "gestalt": [
+            "DAD_SM_Body_B"
+          ],
+          "np_keys": [],
+          "np_names": [],
+          "rarity": ""
+        },
+        {
+          "key": "part_body_c",
+          "serial": 5,
+          "table": "body_acc",
+          "table_id": 9,
+          "dep_index": 7,
+          "add": [],
+          "dep": [],
+          "exclude": [],
+          "base": null,
+          "base_tags": [],
+          "rules": null,
+          "display": "Accuracy mod",
+          "debug": "Accuracy mod",
+          "internal": "part_body_c",
+          "row": "",
+          "gestalt": [
+            "DAD_SM_Body_C"
+          ],
+          "np_keys": [],
+          "np_names": [],
+          "rarity": ""
+        },
+        {
+          "key": "part_body_d",
+          "serial": 6,
+          "table": "body_acc",
+          "table_id": 9,
+          "dep_index": 7,
+          "add": [
+            "body_acc_ele"
+          ],
+          "dep": [],
+          "exclude": [],
+          "base": null,
+          "base_tags": [],
+          "rules": null,
+          "display": "Body D",
+          "debug": "",
+          "internal": "part_body_d",
+          "row": "",
+          "gestalt": [
+            "DAD_SM_Body_D"
+          ],
+          "np_keys": [],
+          "np_names": [],
           "rarity": ""
         },
         {

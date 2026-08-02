@@ -2873,5 +2873,60 @@
     "display_name": "Vla SR 05 Legendary Stopgap Shiny",
     "itempool": "itempool_vla_sr_05_legendary_StopGap_shiny",
     "category": "Sniper"
+  },
+  {
+    "display_name": "Ultimate (Any Weapon Shiny)",
+    "itempool": "itempool_Weapon_shiny",
+    "category": "Other"
+  },
+  {
+    "display_name": "Cannon Brawl",
+    "itempool": "itempool_dad_sg_05_legendary_cannonbrawl_shiny",
+    "category": "Shotgun"
+  },
+  {
+    "display_name": "Loarmaster",
+    "itempool": "itempool_dad_sm_05_legendary_loarmaster_shiny",
+    "category": "SMG"
+  },
+  {
+    "display_name": "Fishward",
+    "itempool": "itempool_jak_ar_05_legendary_fishward_shiny",
+    "category": "Assault Rifle"
+  },
+  {
+    "display_name": "Shoals",
+    "itempool": "itempool_jak_ps_05_legendary_Shoals_shiny",
+    "category": "Pistol"
+  },
+  {
+    "display_name": "Discy Business",
+    "itempool": "itempool_mal_sg_05_legendary_DiscyBusiness_shiny",
+    "category": "Shotgun"
+  },
+  {
+    "display_name": "Manifest",
+    "itempool": "itempool_mal_sr_05_legendary_manifest_shiny",
+    "category": "Sniper"
+  },
+  {
+    "display_name": "Rhythm",
+    "itempool": "itempool_ord_ps_05_legendary_Rhythm_shiny",
+    "category": "Pistol"
+  },
+  {
+    "display_name": "Ishmael",
+    "itempool": "itempool_ord_sr_05_legendary_ishmael_shiny",
+    "category": "Sniper"
+  },
+  {
+    "display_name": "Cormano",
+    "itempool": "itempool_tor_sg_05_legendary_Cormano_shiny",
+    "category": "Shotgun"
+  },
+  {
+    "display_name": "Brickhouse",
+    "itempool": "itempool_vla_sm_05_legendary_brickhouse_shiny",
+    "category": "SMG"
   }
 ]
