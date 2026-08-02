@@ -44,11 +44,10 @@ def test_clear_page_preserves_other_pages():
     assert cleared["layout"]["pages"][2][0]["action"] == "max_currency"
 
 
-def test_registry_rejects_loot_pool_and_unknown_actions():
+def test_registry_rejects_unknown_actions():
     registry = _registry()
-    for action in ("spawn_itempool", "totally_unknown"):
-        result = registry.assign_quick_menu_slot({"page": 0, "slot": 0, "action": action})
-        assert result["ok"] is False
+    result = registry.assign_quick_menu_slot({"page": 0, "slot": 0, "action": "totally_unknown"})
+    assert result["ok"] is False
 
 
 def test_registry_sanitizes_payload_and_label():
@@ -95,6 +94,33 @@ def test_registry_sanitizes_parameterized_msbt_commands():
     })
     assert level["ok"] is True
     assert level["slot"]["payload"] == {"xp_track": "specialization", "level": 701}
+    spawn = registry.assign_quick_menu_slot({
+        "page": 1,
+        "slot": 2,
+        "action": "spawn_itempool",
+        "custom_label": "Lumberjack",
+        "label_mode": "custom",
+        "command_payload": {
+            "itempool_name": "itempool_dad_ar_05_legendary_Lumberjack_shiny",
+            "itempool_count": 3,
+            "itempool_level": 60,
+            "danger": "drop",
+        },
+    })
+    assert spawn["ok"] is True
+    assert spawn["slot"]["payload"] == {
+        "itempool_name": "itempool_dad_ar_05_legendary_Lumberjack_shiny",
+        "itempool_count": 3,
+        "itempool_level": 60,
+    }
+    travel = registry.assign_quick_menu_slot({
+        "page": 1,
+        "slot": 3,
+        "action": "travel_to_station",
+        "command_payload": {"travel_station": "Banjo_P.FT_BanjoStart", "noise": 1},
+    })
+    assert travel["ok"] is True
+    assert travel["slot"]["payload"] == {"travel_station": "Banjo_P.FT_BanjoStart"}
 
 
 def test_snapshot_exposes_catalog_limits_and_layout():
@@ -105,4 +131,7 @@ def test_snapshot_exposes_catalog_limits_and_layout():
     assert snapshot["catalog"]["max_all"]["assignable"] is True
     assert snapshot["catalog"]["max_all"]["needs_player"] is True
     assert snapshot["catalog"]["uvh_boost_tier_7"]["assignable"] is True
-    assert snapshot["catalog"].get("spawn_itempool") is None
+    assert snapshot["catalog"]["spawn_itempool"]["assignable"] is True
+    assert snapshot["catalog"]["travel_to_map"]["assignable"] is True
+    assert snapshot["catalog"]["devperk_7"]["assignable"] is True
+    assert "itempool_name" in snapshot["catalog"]["spawn_itempool"]["payload_keys"]

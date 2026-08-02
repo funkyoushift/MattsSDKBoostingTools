@@ -152,7 +152,7 @@ def test_quick_menu_bridge_actions_dispatch():
     status = bridge._status()
     assert status["last_command"]["action"] == "max_all"
     assert status["drop_player_lock"]["enabled"] is True
-    assert ("repeat", "1|Buddy") in calls
+    assert ("qm", "repeat_last_drop", {"target_player": "1|Buddy"}) in calls
     assert ("lock", True, "Buddy") in calls
     assert ("qm", "max_all", {"action": "max_all"}) in calls
     assert ("set-layout", {"pages": []}) in calls

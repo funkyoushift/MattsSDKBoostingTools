@@ -35,14 +35,21 @@ def test_editor_uses_bridge_registry_and_validated_mutations():
     assert 'document.querySelectorAll("[data-movement-action]")' in js
 
 
-def test_loot_pool_is_not_decorated_for_quick_menu():
+def test_spawnables_and_travel_are_assignable_and_wired():
     registry = (
         ROOT
         / "mod_extracted"
         / "MattsSDKBoostingTools"
         / "quick_menu_registry.py"
     ).read_text(encoding="utf-8")
-    assignable_block = registry.split("ASSIGNABLE_ACTIONS:", 1)[1].split(
-        "NEEDS_PLAYER_ACTIONS", 1
-    )[0]
-    assert "spawn_itempool" not in assignable_block
+    assert '"spawn_itempool"' in registry
+    assert '"travel_to_map"' in registry
+    assert '"give_serial_selected"' in registry
+    js = (ELECTRON / "renderer.js").read_text(encoding="utf-8")
+    assert 'decorateQuickMenuActionButton(\n    document.getElementById("spawnItempoolBtn")' in js or (
+        'getElementById("spawnItempoolBtn")' in js and '"spawn_itempool"' in js
+    )
+    assert '"travel_to_map"' in js
+    assert '"travel_to_station"' in js
+    assert "quickMenuItemPoolPayload" in js
+    assert "quickMenuSerialPayload" in js

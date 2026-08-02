@@ -32,11 +32,26 @@ ACTION_CATALOG: dict[str, dict[str, Any]] = {
     "shiny_selected": {"basic": "Shinies Selected", "aliases": ["Shiny Sel"]},
     "shiny_all": {"basic": "Shinies All", "aliases": ["Shiny All"]},
     "shiny_nonhost": {"basic": "Shinies Non-Host", "aliases": ["Shiny NH"]},
+    "spawn_itempool": {"basic": "Spawn Item Pool", "aliases": ["Spawn Pool", "ItemPool"]},
+    "give_serial_selected": {"basic": "Give Serial Selected", "aliases": ["Serial Sel"]},
+    "give_serial_all": {"basic": "Give Serial All", "aliases": ["Serial All"]},
+    "give_serial_nonhost": {"basic": "Give Serial Non-Host", "aliases": ["Serial NH"]},
     "repeat_last_drop": {"basic": "Repeat Last Drop", "aliases": ["Redo Drop", "RLD"]},
+    "travel_to_map": {"basic": "Travel Map", "aliases": ["Map Travel"]},
+    "travel_to_station": {"basic": "Travel Station", "aliases": ["Station"]},
     "uvh_boost_all": {"basic": "UVH Boost All", "aliases": ["UVH"]},
     "uvh_boost_cancel": {"basic": "Cancel UVH", "aliases": ["UVH Cancel"]},
     "toggle_debug_cam": {"basic": "Toggle Debug Cam", "aliases": ["Debug Cam"]},
     "teleport_debug_cam": {"basic": "Teleport Debug Cam", "aliases": ["Cam Teleport"]},
+    "devperk_0": {"basic": "Give Experience", "aliases": ["XP"]},
+    "devperk_1": {"basic": "Give 1M Cash", "aliases": ["1M Cash"]},
+    "devperk_2": {"basic": "Give 100k Eridium", "aliases": ["100k E"]},
+    "devperk_3": {"basic": "Kill All Enemies", "aliases": ["Kill All"]},
+    "devperk_4": {"basic": "All Customs + Hovers", "aliases": ["Customs"]},
+    "devperk_5": {"basic": "Infinite Ammo", "aliases": ["Inf Ammo"]},
+    "devperk_6": {"basic": "Demigod", "aliases": ["God"]},
+    "devperk_7": {"basic": "Spawn Leg/Epic Loot", "aliases": ["Leg Loot"]},
+    "movement_apply_all": {"basic": "Apply Movement", "aliases": ["Move Apply"]},
     "movement_reset_all": {"basic": "Reset Movement", "aliases": ["Move Reset"]},
     "movement_preset_fast": {"basic": "Fast Movement", "aliases": ["Fast"]},
     "movement_preset_veryfast": {"basic": "Very Fast Movement", "aliases": ["Very Fast"]},
@@ -48,6 +63,15 @@ ACTION_CATALOG: dict[str, dict[str, Any]] = {
     "movement_players_only": {"basic": "Players Only", "aliases": ["Players"]},
     "movement_delete_ground_items": {"basic": "Clear Ground Loot", "aliases": ["Clear Loot"]},
     "movement_zero_vault": {"basic": "Zero Vault Costs", "aliases": ["Vault0"]},
+    "movement_set_time": {"basic": "Set Time", "aliases": ["Time"]},
+    "movement_reset_time": {"basic": "Reset Time", "aliases": ["Time 1x"]},
+    "movement_infinite_jump_all_on": {"basic": "Inf Jump All ON", "aliases": ["IJ All On"]},
+    "movement_infinite_jump_all_off": {"basic": "Inf Jump All OFF", "aliases": ["IJ All Off"]},
+    "movement_infinite_jump_selected_on": {"basic": "Inf Jump Sel ON", "aliases": ["IJ Sel On"]},
+    "movement_infinite_jump_selected_off": {"basic": "Inf Jump Sel OFF", "aliases": ["IJ Sel Off"]},
+    "movement_infinite_jump_toggle_selected": {"basic": "Inf Jump Toggle", "aliases": ["IJ Toggle"]},
+    "movement_teleport_to_slot": {"basic": "Teleport To Slot", "aliases": ["TP Slot"]},
+    "rarity_apply": {"basic": "Apply Rarity", "aliases": ["Rarity"]},
     "rarity_reset": {"basic": "Reset Rarity", "aliases": ["Rarity Reset"]},
     "rarity_only_legendary": {"basic": "Only Legendary", "aliases": ["Legendary"]},
     "rarity_only_pearlescent": {"basic": "Only Pearlescent", "aliases": ["Pearlescent"]},
@@ -63,55 +87,10 @@ for _tier in range(1, 8):
         "aliases": [f"UVH {_tier}"],
     }
 
-ASSIGNABLE_ACTIONS: tuple[str, ...] = (
-    "max_all",
-    "max_currency",
-    "max_eridium",
-    "max_sdu",
-    "max_player_level",
-    "max_spec_level",
-    "give_currency",
-    "set_level",
-    "open_golden_chest",
-    "close_golden_chest",
-    "open_bank",
-    "drop_all_shinies",
-    "shiny_selected",
-    "shiny_all",
-    "shiny_nonhost",
-    "repeat_last_drop",
-    "uvh_boost_all",
-    "uvh_boost_tier_1",
-    "uvh_boost_tier_2",
-    "uvh_boost_tier_3",
-    "uvh_boost_tier_4",
-    "uvh_boost_tier_5",
-    "uvh_boost_tier_6",
-    "uvh_boost_tier_7",
-    "uvh_boost_cancel",
-    "toggle_debug_cam",
-    "teleport_debug_cam",
-    "movement_reset_all",
-    "movement_preset_fast",
-    "movement_preset_veryfast",
-    "movement_preset_moon",
-    "movement_preset_wallwalk",
-    "movement_preset_fastglide",
-    "movement_toggle_no_target",
-    "movement_toggle_noclip",
-    "movement_players_only",
-    "movement_delete_ground_items",
-    "movement_zero_vault",
-    "rarity_reset",
-    "rarity_only_legendary",
-    "rarity_only_pearlescent",
-    "set_backpack_bank_selected",
-    "set_backpack_bank_all",
-    "kick_player",
-    "refresh_players",
-)
+ASSIGNABLE_ACTIONS: tuple[str, ...] = tuple(sorted(ACTION_CATALOG.keys()))
 
 # Keep the native modal compact; the external editor exposes the full registry.
+# Parameterized actions (spawn/travel/serial/rarity/movement apply) stay Electron-first.
 NATIVE_PICKER_ACTIONS: tuple[str, ...] = (
     "max_all",
     "max_currency",
@@ -128,8 +107,16 @@ NATIVE_PICKER_ACTIONS: tuple[str, ...] = (
     "shiny_nonhost",
     "repeat_last_drop",
     "uvh_boost_all",
+    "movement_preset_fast",
+    "movement_preset_veryfast",
     "movement_delete_ground_items",
     "movement_zero_vault",
+    "movement_infinite_jump_all_on",
+    "movement_infinite_jump_all_off",
+    "rarity_only_legendary",
+    "rarity_only_pearlescent",
+    "devperk_3",
+    "devperk_7",
     "set_backpack_bank_selected",
     "set_backpack_bank_all",
     "kick_player",
@@ -146,17 +133,83 @@ NEEDS_PLAYER_ACTIONS = frozenset({
     "give_currency",
     "set_level",
     "shiny_selected",
+    "give_serial_selected",
     "kick_player",
     "set_backpack_bank_selected",
+    "devperk_0",
+    "devperk_1",
+    "devperk_2",
+    "devperk_3",
+    "devperk_4",
+    "devperk_5",
+    "devperk_6",
+    "devperk_7",
+    "movement_infinite_jump_selected_on",
+    "movement_infinite_jump_selected_off",
+    "movement_infinite_jump_toggle_selected",
+    "movement_teleport_to_slot",
 })
 
-# Loot-pool and serial payload pinning intentionally remain out of this registry.
+_MOVEMENT_APPLY_KEYS = frozenset({
+    "movement_speed_scale",
+    "movement_walk_speed",
+    "movement_jump_height",
+    "movement_jump_velocity",
+    "movement_gravity_scale",
+    "movement_step_height",
+    "movement_jump_count",
+    "movement_jump_off_z_factor",
+    "movement_floor_angle",
+    "movement_floor_z",
+    "movement_individual_jump_goals",
+    "movement_sprint_jump_goal",
+    "movement_double_jump_goal",
+    "movement_slide_jump_goal",
+    "movement_glide_speed",
+    "movement_glide_boost",
+    "movement_glide_air_control",
+    "movement_dash_speed",
+    "movement_zero_vault_on_apply",
+    "movement_time_dilation",
+    "target_player",
+    "infinite_jump_target",
+})
+
+_RARITY_PERCENT_KEYS = frozenset({
+    "rarity_common_percent",
+    "rarity_uncommon_percent",
+    "rarity_rare_percent",
+    "rarity_epic_percent",
+    "rarity_legendary_percent",
+    "rarity_pearlescent_percent",
+})
+
+_SERIAL_PAYLOAD_KEYS = frozenset({"serial_text", "serial_override_level", "serial_level"})
+
+# Parameterized pins use one action id + payload (not hundreds of baked slot ids).
 ALLOWED_PAYLOAD_KEYS: dict[str, frozenset[str]] = {
     "give_currency": frozenset({"currency_kind", "amount"}),
     "set_level": frozenset({"xp_track", "level"}),
     "set_backpack_bank_selected": frozenset({"backpack_size", "bank_size"}),
     "set_backpack_bank_all": frozenset({"backpack_size", "bank_size"}),
+    "spawn_itempool": frozenset({"itempool_name", "itempool_count", "itempool_level"}),
+    "give_serial_selected": _SERIAL_PAYLOAD_KEYS,
+    "give_serial_all": _SERIAL_PAYLOAD_KEYS,
+    "give_serial_nonhost": _SERIAL_PAYLOAD_KEYS,
+    "travel_to_map": frozenset({"travel_map"}),
+    "travel_to_station": frozenset({"travel_station"}),
+    "movement_apply_all": _MOVEMENT_APPLY_KEYS,
+    "movement_set_time": frozenset({"movement_time_dilation"}),
+    "movement_infinite_jump_selected_on": frozenset({"target_player", "infinite_jump_target"}),
+    "movement_infinite_jump_selected_off": frozenset({"target_player", "infinite_jump_target"}),
+    "movement_infinite_jump_toggle_selected": frozenset({"target_player", "infinite_jump_target"}),
+    "movement_teleport_to_slot": frozenset({"slot"}),
+    "rarity_apply": _RARITY_PERCENT_KEYS,
 }
+
+MAX_SERIAL_TEXT_LEN = 250_000
+MAX_DESTINATION_LEN = 220
+MAX_ITEMPOOL_NAME_LEN = 220
 
 DEFAULT_PAGE_0: list[dict[str, Any] | None] = [
     {"action": "max_all", "label_mode": "basic", "custom_label": "", "payload": {}},
@@ -198,6 +251,19 @@ def _safe_int(value: object, fallback: int) -> int:
         return int(fallback)
 
 
+def _safe_float(value: object, fallback: float) -> float:
+    try:
+        return float(value)
+    except Exception:
+        return float(fallback)
+
+
+def _truthy_payload(value: object) -> bool:
+    if isinstance(value, bool):
+        return value
+    return str(value or "").strip().lower() in {"1", "true", "yes", "on", "checked"}
+
+
 def sanitize_payload(action: str, raw: object) -> dict[str, Any]:
     source = copy.deepcopy(raw) if isinstance(raw, dict) else {}
     allowed = ALLOWED_PAYLOAD_KEYS.get(action, frozenset())
@@ -218,6 +284,32 @@ def sanitize_payload(action: str, raw: object) -> dict[str, Any]:
             result[key] = value if value in allowed_tracks else "player"
         elif key == "level":
             result[key] = max(1, min(9999999, _safe_int(source[key], 60)))
+        elif key == "itempool_name":
+            result[key] = str(source[key] or "").strip()[:MAX_ITEMPOOL_NAME_LEN]
+        elif key == "itempool_count":
+            result[key] = max(1, min(100, _safe_int(source[key], 1)))
+        elif key == "itempool_level":
+            result[key] = max(1, min(60, _safe_int(source[key], 60)))
+        elif key in ("travel_map", "travel_station"):
+            result[key] = str(source[key] or "").strip()[:MAX_DESTINATION_LEN]
+        elif key == "serial_text":
+            result[key] = str(source[key] or "")[:MAX_SERIAL_TEXT_LEN]
+        elif key == "serial_override_level":
+            result[key] = _truthy_payload(source[key])
+        elif key == "serial_level":
+            result[key] = max(1, min(60, _safe_int(source[key], 60)))
+        elif key in ("movement_individual_jump_goals", "movement_zero_vault_on_apply"):
+            result[key] = _truthy_payload(source[key])
+        elif key == "movement_jump_count":
+            result[key] = max(1, min(50, _safe_int(source[key], 2)))
+        elif key.startswith("movement_") and key.endswith(("_scale", "_speed", "_height", "_velocity", "_factor", "_angle", "_z", "_goal", "_boost", "_control", "_dilation")):
+            result[key] = _safe_float(source[key], 0.0)
+        elif key in ("target_player", "infinite_jump_target"):
+            result[key] = str(source[key] or "").strip()[:80]
+        elif key == "slot":
+            result[key] = max(0, min(3, _safe_int(source[key], 0)))
+        elif key in _RARITY_PERCENT_KEYS:
+            result[key] = max(0, min(100, _safe_int(source[key], 100)))
         else:
             result[key] = source[key]
     return result

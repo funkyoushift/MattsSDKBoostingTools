@@ -769,6 +769,44 @@ async function clearCurrentQuickMenuPage() {
   setQuickMenuStatus(resultMessage(result), actionSucceeded(result) ? "ok" : "warning");
 }
 
+function quickMenuSerialPayload() {
+  return {
+    serial_text: getValue(els.boostSerialText),
+    serial_override_level: boolFromSelect(els.boostSerialOverride),
+    serial_level: getInt(els.boostSerialLevel, 1, 60, 60)
+  };
+}
+
+function quickMenuItemPoolPayload() {
+  const names = selectedItemPoolNames();
+  return {
+    itempool_name: names[0] || getValue(els.itempoolList) || "",
+    itempool_count: getInt(els.itempoolCount, 1, 100, 1),
+    itempool_level: getInt(els.itempoolLevel, 1, 60, 60)
+  };
+}
+
+function quickMenuTravelMapPayload() {
+  return { travel_map: state.selectedMap || getValue(els.travelMapList) || "" };
+}
+
+function quickMenuTravelStationPayload() {
+  return {
+    travel_station: state.selectedStation || getValue(els.travelStationList) || ""
+  };
+}
+
+function itemPoolDisplayName(poolName) {
+  const name = String(poolName || "").trim();
+  if (!name) return "Spawn Item Pool";
+  const item = (state.itemPools || []).find((entry) => {
+    const id = String(entry.itempool || entry.name || "").trim();
+    return id === name;
+  });
+  const display = item && (item.display_name || item.name);
+  return String(display || name).slice(0, 48);
+}
+
 function quickMenuPayloadFromCurrentControls(action) {
   if (action === "give_currency") {
     return {
@@ -784,6 +822,41 @@ function quickMenuPayloadFromCurrentControls(action) {
   }
   if (action === "set_backpack_bank_selected" || action === "set_backpack_bank_all") {
     return inventoryPayload(true);
+  }
+  if (action === "spawn_itempool") {
+    return quickMenuItemPoolPayload();
+  }
+  if (
+    action === "give_serial_selected"
+    || action === "give_serial_all"
+    || action === "give_serial_nonhost"
+  ) {
+    return quickMenuSerialPayload();
+  }
+  if (action === "travel_to_map") {
+    return quickMenuTravelMapPayload();
+  }
+  if (action === "travel_to_station") {
+    return quickMenuTravelStationPayload();
+  }
+  if (action === "movement_apply_all") {
+    return movementPayload();
+  }
+  if (action === "movement_set_time") {
+    return {
+      movement_time_dilation: getFloat(els.movementTimeDilation, 0.01, 64, 1)
+    };
+  }
+  if (
+    action === "movement_infinite_jump_selected_on"
+    || action === "movement_infinite_jump_selected_off"
+    || action === "movement_infinite_jump_toggle_selected"
+  ) {
+    const selectedTarget = getValue(els.movementTargetSelect) || state.selectedTarget;
+    return { target_player: selectedTarget, infinite_jump_target: selectedTarget };
+  }
+  if (action === "rarity_apply") {
+    return rarityPayload();
   }
   return {};
 }
@@ -843,9 +916,9 @@ function openQuickMenuAddModal(action, commandPayload = {}, label = "") {
   const description = quickMenuNode("quickMenuAddDescription");
   const custom = quickMenuNode("quickMenuAddLabel");
   const metadata = state.quickMenuSnapshot.catalog[action] || {};
-  if (title) title.textContent = `Add ${metadata.basic || label || action}`;
+  if (title) title.textContent = `Add ${label || metadata.basic || action}`;
   if (description) description.textContent = `Store ${action} with the current supported values.`;
-  if (custom) custom.value = "";
+  if (custom) custom.value = String(label || "").trim().slice(0, 48);
   setLine(quickMenuNode("quickMenuAddStatus"), "Choose a page and slot.", "");
   quickMenuNode("quickMenuAddModal").classList.remove("hidden");
 }
@@ -874,7 +947,7 @@ async function confirmQuickMenuAdd() {
   }
 }
 
-function decorateQuickMenuActionButton(button, action, payloadFactory = () => ({})) {
+function decorateQuickMenuActionButton(button, action, payloadFactory = () => ({}), labelFactory = null) {
   if (!button || button.dataset.qmDecorated === "true") return;
   const catalog = state.quickMenuSnapshot && state.quickMenuSnapshot.catalog;
   if (!catalog || !catalog[action] || !catalog[action].assignable) return;
@@ -893,7 +966,11 @@ function decorateQuickMenuActionButton(button, action, payloadFactory = () => ({
   add.addEventListener("click", (event) => {
     event.preventDefault();
     event.stopPropagation();
-    openQuickMenuAddModal(action, payloadFactory(), catalog[action].basic || action);
+    const payload = payloadFactory() || {};
+    const suggested = typeof labelFactory === "function"
+      ? labelFactory(payload)
+      : (catalog[action].basic || action);
+    openQuickMenuAddModal(action, payload, suggested || catalog[action].basic || action);
   });
   wrapper.appendChild(add);
 }
@@ -904,10 +981,47 @@ function installQuickMenuAddButtons() {
     decorateQuickMenuActionButton(button, String(button.dataset.action || ""));
   });
   document.querySelectorAll("[data-movement-action]").forEach((button) => {
-    decorateQuickMenuActionButton(button, String(button.dataset.movementAction || ""));
+    const action = String(button.dataset.movementAction || "");
+    if (action === "movement_apply_all") {
+      decorateQuickMenuActionButton(button, action, () => movementPayload());
+      return;
+    }
+    if (action === "movement_set_time") {
+      decorateQuickMenuActionButton(button, action, () => ({
+        movement_time_dilation: getFloat(els.movementTimeDilation, 0.01, 64, 1)
+      }));
+      return;
+    }
+    if (
+      action === "movement_infinite_jump_selected_on"
+      || action === "movement_infinite_jump_selected_off"
+      || action === "movement_infinite_jump_toggle_selected"
+    ) {
+      decorateQuickMenuActionButton(button, action, () => {
+        const selectedTarget = getValue(els.movementTargetSelect) || state.selectedTarget;
+        return { target_player: selectedTarget, infinite_jump_target: selectedTarget };
+      });
+      return;
+    }
+    decorateQuickMenuActionButton(button, action);
   });
   document.querySelectorAll("[data-rarity-action]").forEach((button) => {
-    decorateQuickMenuActionButton(button, String(button.dataset.rarityAction || ""));
+    const action = String(button.dataset.rarityAction || "");
+    if (action === "rarity_apply") {
+      decorateQuickMenuActionButton(button, action, () => rarityPayload());
+      return;
+    }
+    decorateQuickMenuActionButton(button, action);
+  });
+  document.querySelectorAll("[data-boost-serial-mode]").forEach((button) => {
+    const mode = String(button.dataset.boostSerialMode || "selected");
+    const action = {
+      selected: "give_serial_selected",
+      all: "give_serial_all",
+      nonhost: "give_serial_nonhost"
+    }[mode];
+    if (!action) return;
+    decorateQuickMenuActionButton(button, action, () => quickMenuSerialPayload());
   });
   decorateQuickMenuActionButton(
     quickMenuNode("giveCurrencyBtn"),
@@ -936,6 +1050,33 @@ function installQuickMenuAddButtons() {
     () => inventoryPayload(true)
   );
   decorateQuickMenuActionButton(quickMenuNode("kickTargetBtn"), "kick_player");
+  decorateQuickMenuActionButton(
+    document.getElementById("spawnItempoolBtn"),
+    "spawn_itempool",
+    () => quickMenuItemPoolPayload(),
+    (payload) => itemPoolDisplayName(payload.itempool_name)
+  );
+  decorateQuickMenuActionButton(
+    document.getElementById("travelMapBtn"),
+    "travel_to_map",
+    () => quickMenuTravelMapPayload(),
+    (payload) => {
+      const map = (state.maps || []).find((entry) => (entry.map || entry.map_key) === payload.travel_map);
+      return map ? mapLabel(map) : (payload.travel_map || "Travel Map");
+    }
+  );
+  decorateQuickMenuActionButton(
+    document.getElementById("travelStationBtn"),
+    "travel_to_station",
+    () => quickMenuTravelStationPayload(),
+    (payload) => {
+      const station = (state.stations || []).find((entry) => {
+        const id = entry.station || entry.station_name || "";
+        return id === payload.travel_station;
+      });
+      return station ? stationLabel(station) : (payload.travel_station || "Travel Station");
+    }
+  );
 }
 
 function inferToggleStateFromMessage(message, previousValue) {

@@ -738,17 +738,17 @@ def pin_last_command(slot_index: int | None = None) -> None:
                 _log("No empty slot on this page. Select a slot in Edit mode.")
                 return
             target_page, target_slot = found
-    label = str(command.get("label") or ACTION_CATALOG.get(action, {}).get("basic") or action)
+    basic = str(ACTION_CATALOG.get(action, {}).get("basic") or action)
+    label = str(command.get("label") or basic)
+    payload = quick_menu_registry.sanitize_payload(action, command.get("payload") or {})
+    # Keep payload-specific labels (spawn pool name, travel dest, etc.).
+    use_custom = bool(label) and label not in {basic, action}
     STATE.pages[target_page][int(target_slot)] = {
         "action": action,
-        "label_mode": "custom" if label else "basic",
-        "custom_label": label if label else "",
-        "payload": dict(command.get("payload") or {}),
+        "label_mode": "custom" if use_custom else "basic",
+        "custom_label": (label[:48] if use_custom else ""),
+        "payload": payload,
     }
-    # Prefer basic catalog label when action is known.
-    if action in ACTION_CATALOG:
-        STATE.pages[target_page][int(target_slot)]["label_mode"] = "basic"
-        STATE.pages[target_page][int(target_slot)]["custom_label"] = ""
     save_layout()
     _log(f"Pinned '{slot_label(STATE.pages[target_page][int(target_slot)])}' to page {target_page + 1} slot {int(target_slot) + 1}.")
     rebuild_ui()

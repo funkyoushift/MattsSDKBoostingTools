@@ -97,5 +97,5 @@ PLEASE REPORT BACK
 
 NOT IN THIS BUILD
 -----------------
-- Loot pool work (on hold)
+- Dev-spawner actor tools (not Quick Menu assignable yet)
 - External app UI redesign (not required for this Quick Menu test)

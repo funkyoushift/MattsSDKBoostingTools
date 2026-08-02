@@ -1140,7 +1140,7 @@ def run_quick_menu_action(
         is_drop = True
     elif key == "give_serial_selected":
         result = give_serials(
-            payload.get("serial_text") or serial_text,
+            payload.get("serial_text") or "",
             "selected",
             payload.get("serial_override_level") or payload.get("override_level") or False,
             payload.get("serial_level") or payload.get("level") or 60,
@@ -1149,7 +1149,7 @@ def run_quick_menu_action(
         needs_player = True
     elif key == "give_serial_all":
         result = give_serials(
-            payload.get("serial_text") or serial_text,
+            payload.get("serial_text") or "",
             "all",
             payload.get("serial_override_level") or payload.get("override_level") or False,
             payload.get("serial_level") or payload.get("level") or 60,
@@ -1157,12 +1157,16 @@ def run_quick_menu_action(
         is_drop = True
     elif key == "give_serial_nonhost":
         result = give_serials(
-            payload.get("serial_text") or serial_text,
+            payload.get("serial_text") or "",
             "nonhost",
             payload.get("serial_override_level") or payload.get("override_level") or False,
             payload.get("serial_level") or payload.get("level") or 60,
         )
         is_drop = True
+    elif key == "travel_to_map":
+        result = travel_to_map(payload.get("travel_map") or payload.get("map"))
+    elif key == "travel_to_station":
+        result = travel_to_station(payload.get("travel_station") or payload.get("station"))
     elif key == "kick_player":
         result = kick_selected_player()
         needs_player = True
@@ -1176,6 +1180,11 @@ def run_quick_menu_action(
         result = toggle_debug_cam()
     elif key == "teleport_debug_cam":
         result = teleport_debug_cam()
+    elif key.startswith("devperk_"):
+        result = activate_devperk(key.rsplit("_", 1)[-1])
+        needs_player = True
+    elif key == "movement_apply_all":
+        result = movement_apply_all(payload)
     elif key == "movement_reset_all":
         result = movement_reset_all()
     elif key.startswith("movement_preset_"):
@@ -1190,6 +1199,41 @@ def run_quick_menu_action(
         result = movement_delete_ground_items()
     elif key == "movement_zero_vault":
         result = movement_zero_vault()
+    elif key == "movement_set_time":
+        result = movement_set_time(
+            payload.get("movement_time_dilation")
+            or payload.get("time_dilation")
+            or payload.get("time")
+            or 1.0
+        )
+    elif key == "movement_reset_time":
+        result = movement_reset_time()
+    elif key == "movement_infinite_jump_all_on":
+        result = movement_infinite_jump_all(True)
+    elif key == "movement_infinite_jump_all_off":
+        result = movement_infinite_jump_all(False)
+    elif key == "movement_infinite_jump_selected_on":
+        result = movement_infinite_jump_set_selected(
+            payload.get("infinite_jump_target") or payload.get("target_player"),
+            True,
+        )
+        needs_player = True
+    elif key == "movement_infinite_jump_selected_off":
+        result = movement_infinite_jump_set_selected(
+            payload.get("infinite_jump_target") or payload.get("target_player"),
+            False,
+        )
+        needs_player = True
+    elif key == "movement_infinite_jump_toggle_selected":
+        result = movement_infinite_jump_selected(
+            payload.get("infinite_jump_target") or payload.get("target_player")
+        )
+        needs_player = True
+    elif key == "movement_teleport_to_slot":
+        result = movement_teleport_selected_to_slot(payload.get("slot", 0))
+        needs_player = True
+    elif key == "rarity_apply":
+        result = rarity_apply(payload)
     elif key == "rarity_reset":
         result = rarity_reset()
     elif key == "rarity_only_legendary":

@@ -39,8 +39,12 @@ Locked behavior in this build
 - + QM buttons beside supported MSBT actions
 - GET /quick_menu plus validated set-layout / assign-slot bridge actions
 
-Not in this preview
-- Loot pool work (on hold)
+Spawnables / full command wrap-in
+- Item pool spawn pins via + QM (pool name + count + level payload)
+- Travel map/station pins via + QM
+- Serial give pins via + QM / Pin Last Command
+- Movement apply/time/infinite-jump, rarity apply, and dev perks are assignable
+- Not pre-baking hundreds of fixed pool/station action ids — one action + payload
 
 Smoke checklist
 1) With blimgui.zip disabled/absent: F7 still opens Quick Menu

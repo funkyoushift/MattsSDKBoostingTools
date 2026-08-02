@@ -16,7 +16,7 @@ from collections import deque
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any, Callable
 
-from . import backend_actions
+from . import backend_actions, quick_menu_registry
 
 try:
     from mods_base import hook
@@ -492,10 +492,45 @@ def _payload_serial_text(payload: dict[str, Any]) -> str:
     return ""
 
 
+def _normalize_quick_menu_bridge_payload(action: str, payload: dict[str, Any]) -> dict[str, Any]:
+    """Map Electron/bridge field aliases into Quick Menu runner payloads."""
+    out = dict(payload or {})
+    if action == "give_currency" and "currency_kind" not in out and "currency_index" in out:
+        out["currency_kind"] = out.get("currency_index")
+    if action == "set_level" and "xp_track" not in out and "xp_track_index" in out:
+        out["xp_track"] = out.get("xp_track_index")
+    if action.startswith("give_serial_"):
+        text = _payload_serial_text(out)
+        if text:
+            out["serial_text"] = text
+        raw_override = out.get("serial_override_level")
+        if isinstance(raw_override, str):
+            out["serial_override_level"] = raw_override.strip().lower() in ("1", "true", "yes", "on")
+        if "serial_level" not in out and "code_delivery_level" in out:
+            out["serial_level"] = out.get("code_delivery_level")
+    if action == "movement_set_time" and "movement_time_dilation" not in out:
+        out["movement_time_dilation"] = (
+            out.get("time_dilation") or out.get("time") or 1.0
+        )
+    return out
+
+
 def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[str, Any]:
     payload = payload or {}
     if action == "status":
         return _status()
+    # Assignable Quick Menu actions go through the shared runner so MSBT buttons
+    # also populate last_command / last_drop for Pin Last Command.
+    # refresh_players stays below because Electron expects an enriched status blob.
+    if (
+        action in quick_menu_registry.ASSIGNABLE_ACTIONS
+        and action != "refresh_players"
+    ):
+        return backend_actions.run_quick_menu_action(
+            action,
+            _normalize_quick_menu_bridge_payload(action, payload),
+            record=True,
+        )
     if action == "refresh_players":
         backend_actions.refresh_players()
         return {"ok": True, "message": "Refreshed party/player list.", "status": _status()}
