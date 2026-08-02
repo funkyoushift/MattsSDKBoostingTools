@@ -135,52 +135,41 @@ $PortableDownloadsBadge = "https://img.shields.io/github/downloads/$Repository/$
 $InstallerDownloadUrl = "https://github.com/$Repository/releases/download/$TagName/$ElectronInstallerName"
 $PortableDownloadUrl = "https://github.com/$Repository/releases/download/$TagName/$ElectronUnpackedZipName"
 
-$notes = @"
+$ReleaseNotesFile = Join-Path $RepoRoot "releases\RELEASE_NOTES_v$PackageVersion.md"
+if (Test-Path $ReleaseNotesFile) {
+    $notesBody = (Get-Content -Raw $ReleaseNotesFile).TrimEnd()
+} else {
+    $notesBody = @"
 ### What's new
 
-- Added Vault Card 4 tokens and XP support to live boosting controls, Max All, BLImGui, and the embedded profile editor.
-
-### Fixed
-
-See the repository commit history for fixes included in this build.
+See the repository commit history for changes included in this build.
 
 ### Download: pick ONE
-
-[![Installer downloads]($InstallerDownloadsBadge)]($InstallerDownloadUrl)
-[![Portable downloads]($PortableDownloadsBadge)]($PortableDownloadUrl)
-
-Counts track the installer and portable ZIP only (not update-check files).
-
-**Recommended for almost everyone**
 
 Download and run:
 - $ElectronInstallerName
 
-This is the Windows installer. It installs the Electron app, adds shortcuts, and includes the bundled SDK mod/update resources.
-
-**Manual install / portable Electron app**
-
-Download and extract:
+Or extract the portable ZIP:
 - $ElectronUnpackedZipName
-
-Use this if you want the Electron app without running the installer. It contains the Electron app files plus bundled SDK mod/update resources.
 
 **Do not manually download these unless you know why**
 
-- latest.json
-- latest.yml
-- *.blockmap
-
-These are update-system files used by the app/installer.
-
-**Source code**
-
-GitHub's automatic Source code ZIP/TAR files are for developers. They are not the ready-to-run app.
+- latest.json, latest.yml, *.blockmap
 
 ### Upgrade notes
 
 Requires SDK 03 / oak2-mod-manager v0.3:
 https://github.com/bl-sdk/oak2-mod-manager/releases/tag/v0.3
+"@.TrimEnd()
+}
+
+$notes = @"
+$notesBody
+
+[![Installer downloads]($InstallerDownloadsBadge)]($InstallerDownloadUrl)
+[![Portable downloads]($PortableDownloadsBadge)]($PortableDownloadUrl)
+
+Counts track the installer and portable ZIP only (not update-check files).
 
 ### Build information
 
