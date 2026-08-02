@@ -73,6 +73,13 @@ RARITY_ROWS: tuple[tuple[str, str, tuple[str, ...]], ...] = (
 _selected_player_index: int | None = None
 _selected_player_name: str = ""
 _last_refresh_error: str = ""
+# Last runnable command for Quick Menu pin / repeat (bridge-safe, no UI).
+_last_command: dict[str, Any] | None = None
+_last_drop: dict[str, Any] | None = None
+# Option C: optional lock-to-player for repeat-last-drop (skip picker when valid).
+_drop_lock_enabled: bool = False
+_drop_lock_index: int | None = None
+_drop_lock_name: str = ""
 serial_text: str = ""
 serial_tools_input: str = ""
 serial_tools_serialized: str = ""
@@ -819,6 +826,260 @@ def set_target_player(index_or_name: object) -> dict[str, Any]:
     }
 
 
+def _command_snapshot(
+    action: str,
+    *,
+    label: str = "",
+    payload: dict[str, Any] | None = None,
+    is_drop: bool = False,
+    needs_player: bool = False,
+) -> dict[str, Any]:
+    return {
+        "action": str(action or "").strip(),
+        "label": str(label or action or "").strip(),
+        "payload": dict(payload or {}),
+        "is_drop": bool(is_drop),
+        "needs_player": bool(needs_player),
+        "recorded_at": float(time.time()),
+    }
+
+
+def note_last_command(
+    action: str,
+    *,
+    label: str = "",
+    payload: dict[str, Any] | None = None,
+    is_drop: bool = False,
+    needs_player: bool = False,
+) -> dict[str, Any]:
+    """Record the last runnable command for Quick Menu pin / repeat."""
+    global _last_command, _last_drop
+    snap = _command_snapshot(
+        action,
+        label=label,
+        payload=payload,
+        is_drop=is_drop,
+        needs_player=needs_player,
+    )
+    if not snap["action"]:
+        return {"ok": False, "message": "No action to record."}
+    _last_command = snap
+    if snap["is_drop"]:
+        _last_drop = dict(snap)
+    return {"ok": True, "message": f"Recorded last command: {snap['label']}", "command": dict(snap)}
+
+
+def get_last_command() -> dict[str, Any] | None:
+    return dict(_last_command) if isinstance(_last_command, dict) else None
+
+
+def get_last_drop() -> dict[str, Any] | None:
+    return dict(_last_drop) if isinstance(_last_drop, dict) else None
+
+
+def set_drop_player_lock(enabled: object, index_or_name: object | None = None) -> dict[str, Any]:
+    """Option C: lock repeat-last-drop to a party player (or clear the lock)."""
+    global _drop_lock_enabled, _drop_lock_index, _drop_lock_name
+    want = _truthy(enabled)
+    if not want:
+        _drop_lock_enabled = False
+        _drop_lock_index = None
+        _drop_lock_name = ""
+        return {"ok": True, "message": "Drop player lock cleared.", "lock_enabled": False}
+
+    target = index_or_name
+    if target is None or str(target).strip() == "":
+        target = get_selected_player_index()
+        if target is None:
+            target = get_selected_player_name()
+    result = set_target_player(target)
+    if not result.get("ok"):
+        return result
+    _drop_lock_enabled = True
+    _drop_lock_index = get_selected_player_index()
+    _drop_lock_name = get_selected_player_name()
+    return {
+        "ok": True,
+        "message": f"Drop player lock set to {_drop_lock_name or _drop_lock_index}.",
+        "lock_enabled": True,
+        "lock_index": _drop_lock_index,
+        "lock_name": _drop_lock_name,
+    }
+
+
+def get_drop_player_lock() -> dict[str, Any]:
+    return {
+        "enabled": bool(_drop_lock_enabled),
+        "index": _drop_lock_index,
+        "name": str(_drop_lock_name or ""),
+    }
+
+
+def _apply_drop_player_lock_if_needed() -> dict[str, Any] | None:
+    """If lock is enabled, re-select the locked player. Returns an error dict on failure."""
+    if not _drop_lock_enabled:
+        return None
+    target: object
+    if _drop_lock_index is not None:
+        target = _drop_lock_index
+    elif _drop_lock_name:
+        target = _drop_lock_name
+    else:
+        return {"ok": False, "message": "Drop player lock is enabled but empty."}
+    result = set_target_player(target)
+    if not result.get("ok"):
+        return {
+            "ok": False,
+            "message": f"Locked drop player unavailable: {result.get('message', 'unknown error')}",
+        }
+    return None
+
+
+def replay_recorded_command(command: dict[str, Any] | None, *, apply_lock: bool = False) -> dict[str, Any]:
+    """Re-run a previously recorded command dict."""
+    if not isinstance(command, dict):
+        return {"ok": False, "message": "No recorded command."}
+    action = str(command.get("action") or "").strip()
+    if not action:
+        return {"ok": False, "message": "Recorded command has no action."}
+    payload = command.get("payload") if isinstance(command.get("payload"), dict) else {}
+    if apply_lock and bool(command.get("needs_player")):
+        lock_err = _apply_drop_player_lock_if_needed()
+        if lock_err is not None:
+            return lock_err
+    return run_quick_menu_action(action, payload, record=False)
+
+
+def repeat_last_drop(player_index_or_name: object | None = None) -> dict[str, Any]:
+    """Repeat the last drop/delivery. Player is chosen at run time unless lock-to-player (option C)."""
+    drop = get_last_drop()
+    if drop is None:
+        return {"ok": False, "message": "No last drop to repeat."}
+    if player_index_or_name is not None and str(player_index_or_name).strip() != "":
+        selected = set_target_player(player_index_or_name)
+        if not selected.get("ok"):
+            return selected
+    elif bool(drop.get("needs_player")):
+        if _drop_lock_enabled:
+            lock_err = _apply_drop_player_lock_if_needed()
+            if lock_err is not None:
+                return lock_err
+        else:
+            return {
+                "ok": False,
+                "message": "Select a player at run time (or enable lock-to-player) before repeating the last drop.",
+                "needs_player": True,
+            }
+    return replay_recorded_command(drop, apply_lock=False)
+
+
+def run_quick_menu_action(
+    action: str,
+    payload: dict[str, Any] | None = None,
+    *,
+    record: bool = True,
+) -> dict[str, Any]:
+    """Dispatch a Quick Menu / pin-friendly named action through backend handlers."""
+    payload = dict(payload or {})
+    key = str(action or "").strip()
+    label = str(payload.pop("_label", "") or key)
+    is_drop = False
+    needs_player = False
+
+    if key == "repeat_last_drop":
+        result = repeat_last_drop(payload.get("target_player"))
+        return result
+    if key == "max_all":
+        result = max_all()
+    elif key == "max_currency":
+        result = max_currency()
+    elif key == "max_eridium":
+        result = max_eridium()
+    elif key == "max_sdu":
+        result = max_sdu()
+    elif key == "max_player_level":
+        result = max_player_level()
+    elif key == "max_spec_level":
+        result = max_spec_level()
+    elif key == "open_golden_chest":
+        result = open_golden_chest()
+    elif key == "close_golden_chest":
+        result = close_golden_chest()
+    elif key == "open_bank":
+        result = open_bank_anywhere()
+    elif key == "drop_all_shinies":
+        result = drop_all_shinies_selected()
+        is_drop = True
+        needs_player = False
+    elif key in ("shiny_selected", "deliver_shinies_selected"):
+        result = deliver_shinies("selected")
+        is_drop = True
+        needs_player = True
+    elif key in ("shiny_all", "deliver_shinies_all"):
+        result = deliver_shinies("all")
+        is_drop = True
+    elif key in ("shiny_nonhost", "deliver_shinies_nonhost"):
+        result = deliver_shinies("nonhost")
+        is_drop = True
+    elif key == "spawn_itempool":
+        result = spawn_itempool(
+            payload.get("itempool_name") or payload.get("pool_name"),
+            payload.get("itempool_count") or payload.get("count") or 1,
+            payload.get("itempool_level") or payload.get("level") or 60,
+        )
+        is_drop = True
+    elif key == "give_serial_selected":
+        result = give_serials(
+            payload.get("serial_text") or serial_text,
+            "selected",
+            payload.get("serial_override_level") or payload.get("override_level") or False,
+            payload.get("serial_level") or payload.get("level") or 60,
+        )
+        is_drop = True
+        needs_player = True
+    elif key == "give_serial_all":
+        result = give_serials(
+            payload.get("serial_text") or serial_text,
+            "all",
+            payload.get("serial_override_level") or payload.get("override_level") or False,
+            payload.get("serial_level") or payload.get("level") or 60,
+        )
+        is_drop = True
+    elif key == "give_serial_nonhost":
+        result = give_serials(
+            payload.get("serial_text") or serial_text,
+            "nonhost",
+            payload.get("serial_override_level") or payload.get("override_level") or False,
+            payload.get("serial_level") or payload.get("level") or 60,
+        )
+        is_drop = True
+    elif key == "kick_player":
+        result = kick_selected_player()
+        needs_player = True
+    elif key == "uvh_boost_all":
+        result = uvh_boost_all()
+    elif key == "movement_delete_ground_items":
+        result = movement_delete_ground_items()
+    elif key == "refresh_players":
+        players = refresh_players()
+        result = {"ok": True, "message": f"Refreshed {len(players)} player(s).", "players": players}
+    elif key == "set_target_player":
+        result = set_target_player(payload.get("target_player"))
+    else:
+        return {"ok": False, "message": f"Unknown quick menu action: {key}"}
+
+    # Drop helpers above already call note_last_command; only record non-drop pins here.
+    if record and result.get("ok") and not is_drop:
+        note_last_command(
+            key,
+            label=label or key,
+            payload=payload,
+            is_drop=False,
+            needs_player=needs_player,
+        )
+    return result
+
+
 def get_status() -> dict[str, Any]:
     players = refresh_players()
     try:
@@ -845,6 +1106,9 @@ def get_status() -> dict[str, Any]:
         "selected_player_index": _selected_player_index,
         "host_player_index": _host_player_index_value(),
         "last_refresh_error": _last_refresh_error,
+        "last_command": get_last_command(),
+        "last_drop": get_last_drop(),
+        "drop_player_lock": get_drop_player_lock(),
         "serial_delivery": delivery_progress,
         "diagnostics": _sdk_diagnostics(),
     }
@@ -880,7 +1144,9 @@ def close_golden_chest() -> dict[str, Any]:
 def drop_all_shinies_selected() -> dict[str, Any]:
     try:
         count = drop_all_shinies(_SHINY_DEFAULT_LEVEL)
-        return {"ok": True, "message": f"Drop All Shinies requested for {count} shiny itempool(s)."}
+        result = {"ok": True, "message": f"Drop All Shinies requested for {count} shiny itempool(s)."}
+        note_last_command("drop_all_shinies", label="Drop All Shinies", is_drop=True, needs_player=False)
+        return result
     except Exception as exc:
         return {"ok": False, "message": f"Drop All Shinies failed: {exc!r}"}
 
@@ -910,7 +1176,27 @@ def deliver_shinies(mode: str = "selected") -> dict[str, Any]:
     try:
         raw_serials = _load_shiny_serials()
         serials = serial_rewards._resolve_give_serial_strings(raw_serials)
-        return _deliver_serials_with_target(serials, mode, parsed_count=len(raw_serials))
+        result = _deliver_serials_with_target(serials, mode, parsed_count=len(raw_serials))
+        if result.get("ok"):
+            mode_key = str(mode or "selected").lower().strip()
+            action = {
+                "selected": "shiny_selected",
+                "all": "shiny_all",
+                "nonhost": "shiny_nonhost",
+                "non_host": "shiny_nonhost",
+                "all_non_host": "shiny_nonhost",
+            }.get(mode_key, "shiny_selected")
+            note_last_command(
+                action,
+                label={
+                    "shiny_selected": "Shinies Selected",
+                    "shiny_all": "Shinies All",
+                    "shiny_nonhost": "Shinies Non-Host",
+                }.get(action, "Deliver Shinies"),
+                is_drop=True,
+                needs_player=(action == "shiny_selected"),
+            )
+        return result
     except Exception as exc:
         return {"ok": False, "message": f"Shiny reward delivery failed: {exc!r}"}
 
@@ -1413,7 +1699,15 @@ def spawn_itempool(pool_name: object, count: object, level: object) -> dict[str,
         return {"ok": False, "message": "No item pool selected."}
     try:
         spawned = spawn_item_pool(name, int(level), int(count))
-        return {"ok": True, "message": f"Spawned item pool {name} x{spawned} at level {int(level)}."}
+        result = {"ok": True, "message": f"Spawned item pool {name} x{spawned} at level {int(level)}."}
+        note_last_command(
+            "spawn_itempool",
+            label=f"Spawn {name}",
+            payload={"itempool_name": name, "itempool_count": int(count), "itempool_level": int(level)},
+            is_drop=True,
+            needs_player=False,
+        )
+        return result
     except Exception as exc:
         return {"ok": False, "message": f"Spawn item pool failed: {exc!r}"}
 
@@ -2356,6 +2650,30 @@ def give_serials(text: object, mode: str = "selected", override_level: object = 
             parts.append(f"Skipped {skipped} serial(s) that could not be level-overridden ({sample}).")
         if parts:
             result["message"] = f"{result.get('message', '')} {' '.join(parts)}"
+    if result.get("ok"):
+        mode_key = str(mode or "selected").lower().strip()
+        if mode_key in ("non_host", "all_non_host"):
+            mode_key = "nonhost"
+        action = {
+            "selected": "give_serial_selected",
+            "all": "give_serial_all",
+            "nonhost": "give_serial_nonhost",
+        }.get(mode_key, "give_serial_selected")
+        note_last_command(
+            action,
+            label={
+                "give_serial_selected": "Give Serial Selected",
+                "give_serial_all": "Give Serial All",
+                "give_serial_nonhost": "Give Serial Non-Host",
+            }.get(action, "Give Serial"),
+            payload={
+                "serial_text": serial_text,
+                "serial_override_level": bool(override_enabled),
+                "serial_level": int(level_i),
+            },
+            is_drop=True,
+            needs_player=(action == "give_serial_selected"),
+        )
     return result
 
 

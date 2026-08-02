@@ -10,6 +10,12 @@ from .serial_rewards import _cmd_give_serial
 from .inventory_capacity import start_auto_inventory_worker
 from .external_bridge import start_bridge
 from .external_app_launcher import _cmd_msbt_external_app
+from .quick_menu import (
+    _cmd_msbt_quick_menu,
+    _cmd_msbt_quick_menu_pin,
+    quick_menu_toggle,
+    start_quick_menu,
+)
 
 __version__: str = "1.2.0"
 __version_info__: tuple[int, int, int] = (1, 1, 5)
@@ -42,23 +48,27 @@ except Exception as exc:
 
 start_auto_inventory_worker()
 start_bridge()
+start_quick_menu()
 
 build_mod(
     name="MattsSDKBoostingTools",
     author="Matt",
     description=(
-        "Boosting-focused SDK mod with a custom BLImGui panel. "
+        "Boosting-focused SDK mod with a custom BLImGui panel and optional native UMG Quick Menu. "
         "Select current party players and run serial rewards, currency, experience, Max SDU, "
         "golden chest helpers, shiny drops, shiny serial reward packages, and inventory capacity tools."
     ),
     supported_games=Game.BL4,
     coop_support=CoopSupport.Unknown,
     keybinds=_panel_keybinds + [
+        quick_menu_toggle,
         OPEN_GOLDEN_CHEST_KEY,
         CLOSE_GOLDEN_CHEST_KEY,
     ],
     commands=_panel_commands + [
         _cmd_msbt_external_app,
+        _cmd_msbt_quick_menu,
+        _cmd_msbt_quick_menu_pin,
         _cmd_give_serial,
         _cmd_givecurrency,
         _cmd_giveexperience,
