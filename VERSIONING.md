@@ -48,6 +48,12 @@ Use these Windows asset names:
 
 Electron updater metadata may remain named `latest.yml`, because that filename is expected by Electron tooling, but its contained `version` must match `electron_poc/package.json`.
 
+## Download count badges
+
+README and generated release notes show shields.io download badges for the **installer** and **portable ZIP** only (not `latest.json` / `latest.yml` / `.blockmap`).
+
+When bumping the public version, update the versioned installer/portable filenames in the README badge URLs. Generated release notes (manual publisher + CI) include matching badges for that tag automatically.
+
 ## Safe Release Flow
 
 1. Update `electron_poc/package.json` and `electron_poc/package-lock.json`.

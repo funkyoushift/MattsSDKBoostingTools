@@ -12,10 +12,15 @@ This project is **unofficial**. It is not affiliated with, endorsed by, or conne
 
 **Recommended:** grab the latest Windows installer from GitHub Releases:
 
+[![Installer downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Installer-v2.0.1.exe?label=Installer%20downloads&color=2ea44f)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest)
+[![Portable downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Portable-v2.0.1-win-x64.zip?label=Portable%20downloads&color=0969da)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest)
+
 - [GitHub Releases — download page](https://github.com/funkyoushift/MattsSDKBoostingTools/releases)
 - Latest installer example: `MSBT-Installer-v2.0.1.exe`
 
 **Portable option:** if you do not want an installer, download the portable ZIP instead (`MSBT-Portable-v…-win-x64.zip`), extract it, and run the app from that folder.
+
+Counts above track **installer** and **portable ZIP** downloads only (not update-check files).
 
 **Requirements**
 
