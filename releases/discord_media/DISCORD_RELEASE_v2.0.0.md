@@ -70,7 +70,9 @@ Please report bugs with:
 • who received the effect
 • screenshot / log if possible
 
-Support / tip: https://streamlabs.com/funkyoushift/tip
+Support MSBT:
+• Tip FunkYouSHiFT: https://streamlabs.com/funkyoushift/tip
+• Donate to Mattmab: https://ko-fi.com/mattmab
 Site: https://www.funkyoushift.com/
 ```
 
