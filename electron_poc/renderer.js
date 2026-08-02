@@ -346,6 +346,10 @@ const state = {
   movementSavedPreset: null,
   opacitySaveTimer: null,
   players: [],
+  quickMenuPage: 0,
+  quickMenuPendingAdd: null,
+  quickMenuSelectedSlot: 0,
+  quickMenuSnapshot: null,
   rarityRememberOnStart: false,
   raritySavedPreset: null,
   reportPreviewText: "",
@@ -551,6 +555,823 @@ async function runAction(action, payload = {}, outNode = els.boostOutput, timeou
   setOutput(outNode, result && result.data !== undefined ? result.data : result);
   appendActivity(`${action}: ${resultMessage(result)}`);
   return result;
+}
+
+function quickMenuData(result) {
+  return result && result.data !== undefined ? result.data : result;
+}
+
+function quickMenuNode(id) {
+  return document.getElementById(id);
+}
+
+function setQuickMenuStatus(message, kind = "") {
+  setLine(quickMenuNode("quickMenuStatus"), message, kind);
+}
+
+function quickMenuSlotLabel(slot) {
+  if (!slot) return "+ Assign";
+  const action = String(slot.action || "");
+  const catalog = (state.quickMenuSnapshot && state.quickMenuSnapshot.catalog) || {};
+  const metadata = catalog[action] || {};
+  const mode = String(slot.label_mode || "basic");
+  const custom = String(slot.custom_label || "").trim();
+  if (mode === "custom" && custom) return custom;
+  if (mode.startsWith("alias")) {
+    const index = parseInt(mode.slice(5), 10) || 0;
+    const aliases = Array.isArray(metadata.aliases) ? metadata.aliases : [];
+    if (aliases[index]) return String(aliases[index]);
+  }
+  return String(metadata.basic || action || "Assigned");
+}
+
+function quickMenuLayout() {
+  return state.quickMenuSnapshot && state.quickMenuSnapshot.layout
+    ? state.quickMenuSnapshot.layout
+    : null;
+}
+
+function populateQuickMenuActionSelect() {
+  const select = quickMenuNode("quickMenuActionSelect");
+  if (!select || !state.quickMenuSnapshot) return;
+  const current = select.value;
+  select.innerHTML = "";
+  const actions = Array.isArray(state.quickMenuSnapshot.assignable_actions)
+    ? state.quickMenuSnapshot.assignable_actions
+    : [];
+  actions.forEach((action) => {
+    const metadata = state.quickMenuSnapshot.catalog[action] || {};
+    const option = document.createElement("option");
+    option.value = action;
+    option.textContent = String(metadata.basic || action);
+    select.appendChild(option);
+  });
+  if (actions.includes(current)) select.value = current;
+}
+
+function selectQuickMenuSlot(slotIndex) {
+  state.quickMenuSelectedSlot = Math.max(0, Math.min(11, Number(slotIndex) || 0));
+  const layout = quickMenuLayout();
+  const slot = layout && layout.pages[state.quickMenuPage]
+    ? layout.pages[state.quickMenuPage][state.quickMenuSelectedSlot]
+    : null;
+  const select = quickMenuNode("quickMenuActionSelect");
+  const label = quickMenuNode("quickMenuCustomLabel");
+  if (select && slot && slot.action) select.value = slot.action;
+  if (label) label.value = slot ? String(slot.custom_label || "") : "";
+  const summary = quickMenuNode("quickMenuSelectedSummary");
+  if (summary) {
+    summary.textContent = `Page ${state.quickMenuPage + 1}, slot ${state.quickMenuSelectedSlot + 1}: ${slot ? quickMenuSlotLabel(slot) : "empty"}`;
+  }
+  renderQuickMenuEditor();
+}
+
+function renderQuickMenuEditor() {
+  const snapshot = state.quickMenuSnapshot;
+  const layout = quickMenuLayout();
+  const tabs = quickMenuNode("quickMenuPageTabs");
+  const grid = quickMenuNode("quickMenuSlotGrid");
+  if (!snapshot || !layout || !tabs || !grid) return;
+
+  populateQuickMenuActionSelect();
+  tabs.innerHTML = "";
+  for (let pageIndex = 0; pageIndex < 5; pageIndex += 1) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = `Page ${pageIndex + 1}`;
+    button.classList.toggle("active", pageIndex === state.quickMenuPage);
+    button.addEventListener("click", () => {
+      state.quickMenuPage = pageIndex;
+      state.quickMenuSelectedSlot = 0;
+      selectQuickMenuSlot(0);
+    });
+    tabs.appendChild(button);
+  }
+
+  const page = Array.isArray(layout.pages[state.quickMenuPage])
+    ? layout.pages[state.quickMenuPage]
+    : [];
+  const filled = page.filter(Boolean).length;
+  const title = quickMenuNode("quickMenuPageTitle");
+  const pageSummary = quickMenuNode("quickMenuPageSummary");
+  if (title) title.textContent = `Page ${state.quickMenuPage + 1}`;
+  if (pageSummary) pageSummary.textContent = `${filled} / 12 assigned`;
+
+  grid.innerHTML = "";
+  for (let slotIndex = 0; slotIndex < 12; slotIndex += 1) {
+    const slot = page[slotIndex] || null;
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = `quick-menu-slot${slot ? "" : " empty"}${slotIndex === state.quickMenuSelectedSlot ? " selected" : ""}`;
+    const strong = document.createElement("strong");
+    strong.textContent = `${slotIndex + 1}. ${quickMenuSlotLabel(slot)}`;
+    const detail = document.createElement("span");
+    detail.textContent = slot ? String(slot.action || "") : "Empty slot";
+    button.append(strong, detail);
+    button.addEventListener("click", () => selectQuickMenuSlot(slotIndex));
+    grid.appendChild(button);
+  }
+}
+
+async function loadQuickMenuLayout({ quiet = false } = {}) {
+  if (!window.msbt || typeof window.msbt.bridgeRequest !== "function") return null;
+  if (!quiet) setQuickMenuStatus("Loading Quick Menu from the game bridge...");
+  const result = await window.msbt.bridgeRequest({
+    method: "GET",
+    path: "/quick_menu",
+    timeoutMs: 10000
+  });
+  const data = quickMenuData(result);
+  if (!data || data.ok !== true || !data.layout) {
+    setQuickMenuStatus(resultMessage(result) || "Quick Menu bridge endpoint unavailable.", "warning");
+    return null;
+  }
+  state.quickMenuSnapshot = data;
+  const loadedPage = Number(data.layout.page);
+  state.quickMenuPage = Number.isFinite(loadedPage)
+    ? Math.max(0, Math.min(4, loadedPage))
+    : Math.max(0, Math.min(4, state.quickMenuPage || 0));
+  state.quickMenuSelectedSlot = Math.max(0, Math.min(11, state.quickMenuSelectedSlot || 0));
+  selectQuickMenuSlot(state.quickMenuSelectedSlot);
+  installQuickMenuAddButtons();
+  void refreshQuickMenuPinPanel({ quiet: true });
+  if (!quiet) setQuickMenuStatus(`Loaded Quick Menu revision ${data.revision || 0}.`, "ok");
+  return data;
+}
+
+function formatQuickMenuCommandLine(command, emptyText) {
+  if (!command || !command.action) return emptyText;
+  const label = command.label || command.action;
+  const payload = command.payload && typeof command.payload === "object" ? command.payload : {};
+  const keys = Object.keys(payload);
+  const payloadText = keys.length
+    ? ` | ${keys.slice(0, 4).map((key) => `${key}=${String(payload[key]).slice(0, 28)}`).join(", ")}${keys.length > 4 ? ", …" : ""}`
+    : "";
+  return `${label} (${command.action})${payloadText}`;
+}
+
+async function refreshQuickMenuPinPanel({ quiet = false } = {}) {
+  const lastCommandNode = quickMenuNode("quickMenuLastCommand");
+  const lastDropNode = quickMenuNode("quickMenuLastDrop");
+  const lockNode = quickMenuNode("quickMenuLockStatus");
+  if (!lastCommandNode || !lastDropNode || !lockNode) return null;
+  try {
+    const result = await window.msbt.bridgeRequest({ method: "GET", path: "/status", timeoutMs: 8000 });
+    const data = result && result.data && typeof result.data === "object" ? result.data : result;
+    if (!data || data.ok === false) {
+      if (!quiet) setQuickMenuStatus(resultMessage(result) || "Could not refresh last command.", "warning");
+      return null;
+    }
+    state.quickMenuLastCommand = data.last_command || null;
+    state.quickMenuLastDrop = data.last_drop || null;
+    state.quickMenuDropLock = data.drop_player_lock || null;
+    lastCommandNode.textContent = `Last command: ${formatQuickMenuCommandLine(state.quickMenuLastCommand, "none yet — run an MSBT action first.")}`;
+    lastCommandNode.className = state.quickMenuLastCommand ? "status-line ok" : "status-line warning";
+    lastDropNode.textContent = `Last drop: ${formatQuickMenuCommandLine(state.quickMenuLastDrop, "none yet.")}`;
+    const lock = state.quickMenuDropLock || {};
+    const lockOn = Boolean(lock.enabled);
+    const lockWho = lock.name || (lock.index != null ? `P${Number(lock.index) + 1}` : "");
+    lockNode.textContent = lockOn
+      ? `Lock Player: ON${lockWho ? ` → ${lockWho}` : ""}`
+      : "Lock Player: off";
+    return data;
+  } catch (error) {
+    if (!quiet) setQuickMenuStatus(`Last-command refresh failed: ${error.message || error}`, "warning");
+    return null;
+  }
+}
+
+async function pinLastCommandToSelectedSlot() {
+  await refreshQuickMenuPinPanel({ quiet: true });
+  const command = state.quickMenuLastCommand;
+  if (!command || !command.action) {
+    setQuickMenuStatus("No last command to pin. Run an MSBT action first.", "warning");
+    return;
+  }
+  const catalog = state.quickMenuSnapshot && state.quickMenuSnapshot.catalog;
+  if (catalog && (!catalog[command.action] || !catalog[command.action].assignable)) {
+    setQuickMenuStatus(`${command.action} is not assignable to Quick Menu.`, "warning");
+    return;
+  }
+  const basic = catalog && catalog[command.action] ? catalog[command.action].basic : command.action;
+  const label = String(command.label || basic || command.action);
+  const useCustom = Boolean(label) && label !== basic && label !== command.action;
+  setQuickMenuStatus(`Pinning ${label} to page ${state.quickMenuPage + 1}, slot ${state.quickMenuSelectedSlot + 1}...`);
+  const result = await assignQuickMenuSlot({
+    page: state.quickMenuPage,
+    slot: state.quickMenuSelectedSlot,
+    action: command.action,
+    customLabel: useCustom ? label.slice(0, 48) : "",
+    commandPayload: command.payload || {}
+  });
+  setOutput(quickMenuNode("quickMenuEditorOutput"), quickMenuData(result) || result);
+  setQuickMenuStatus(
+    actionSucceeded(result)
+      ? `Pinned ${label} to page ${state.quickMenuPage + 1}, slot ${state.quickMenuSelectedSlot + 1}.`
+      : (resultMessage(result) || "Pin failed."),
+    actionSucceeded(result) ? "ok" : "warning"
+  );
+  if (actionSucceeded(result)) appendActivity(`Quick Menu: pinned last command ${command.action}.`);
+}
+
+async function repeatLastDropFromQuickMenu() {
+  setQuickMenuStatus("Repeating last drop...");
+  const payload = {};
+  if (state.selectedTarget) payload.target_player = state.selectedTarget;
+  const result = await bridgeAction("repeat_last_drop", payload, 30000);
+  setOutput(quickMenuNode("quickMenuEditorOutput"), result);
+  setQuickMenuStatus(resultMessage(result), actionSucceeded(result) ? "ok" : "warning");
+  await refreshQuickMenuPinPanel({ quiet: true });
+}
+
+async function toggleQuickMenuDropLock() {
+  await refreshQuickMenuPinPanel({ quiet: true });
+  const lock = state.quickMenuDropLock || {};
+  const enabling = !Boolean(lock.enabled);
+  const payload = {
+    enabled: enabling,
+    target_player: state.selectedTarget || undefined
+  };
+  const result = await bridgeAction("set_drop_player_lock", payload, 15000);
+  setOutput(quickMenuNode("quickMenuEditorOutput"), result);
+  setQuickMenuStatus(resultMessage(result), actionSucceeded(result) ? "ok" : "warning");
+  await refreshQuickMenuPinPanel({ quiet: true });
+}
+
+async function assignQuickMenuSlot({ page, slot, action, customLabel = "", commandPayload = {} }) {
+  const result = await bridgeAction("quick_menu_assign_slot", {
+    page,
+    slot,
+    action,
+    label_mode: customLabel.trim() ? "custom" : "basic",
+    custom_label: customLabel.trim(),
+    command_payload: commandPayload
+  }, 20000);
+  const data = quickMenuData(result);
+  if (data && data.ok && data.layout) {
+    state.quickMenuSnapshot.layout = data.layout;
+    state.quickMenuSnapshot.revision = data.revision || state.quickMenuSnapshot.revision;
+    state.quickMenuPage = page;
+    state.quickMenuSelectedSlot = slot;
+    renderQuickMenuEditor();
+  } else if (actionSucceeded(result)) {
+    setTimeout(() => loadQuickMenuLayout({ quiet: true }), 750);
+  }
+  return result;
+}
+
+async function saveSelectedQuickMenuSlot() {
+  const action = getValue("quickMenuActionSelect");
+  if (!action) {
+    setQuickMenuStatus("Choose a command first.", "warning");
+    return;
+  }
+  const layout = quickMenuLayout();
+  const existing = layout && layout.pages[state.quickMenuPage]
+    ? layout.pages[state.quickMenuPage][state.quickMenuSelectedSlot]
+    : null;
+  const currentPayload = quickMenuPayloadFromCurrentControls(action);
+  const result = await assignQuickMenuSlot({
+    page: state.quickMenuPage,
+    slot: state.quickMenuSelectedSlot,
+    action,
+    customLabel: getValue("quickMenuCustomLabel"),
+    commandPayload: existing && existing.action === action
+      ? (existing.payload || currentPayload)
+      : currentPayload
+  });
+  setOutput(quickMenuNode("quickMenuEditorOutput"), quickMenuData(result));
+  setQuickMenuStatus(resultMessage(result), actionSucceeded(result) ? "ok" : "warning");
+}
+
+async function clearSelectedQuickMenuSlot() {
+  const result = await assignQuickMenuSlot({
+    page: state.quickMenuPage,
+    slot: state.quickMenuSelectedSlot,
+    action: ""
+  });
+  setOutput(quickMenuNode("quickMenuEditorOutput"), quickMenuData(result));
+  setQuickMenuStatus(resultMessage(result), actionSucceeded(result) ? "ok" : "warning");
+}
+
+async function clearCurrentQuickMenuPage() {
+  if (!quickMenuLayout()) return;
+  const result = await bridgeAction("quick_menu_clear_page", {
+    page: state.quickMenuPage
+  }, 20000);
+  const data = quickMenuData(result);
+  if (data && data.ok && data.layout) {
+    state.quickMenuSnapshot.layout = data.layout;
+    state.quickMenuSnapshot.revision = data.revision || state.quickMenuSnapshot.revision;
+    renderQuickMenuEditor();
+  }
+  setOutput(quickMenuNode("quickMenuEditorOutput"), data || result);
+  setQuickMenuStatus(resultMessage(result), actionSucceeded(result) ? "ok" : "warning");
+}
+
+function quickMenuSerialPayload() {
+  return {
+    serial_text: getValue(els.boostSerialText),
+    serial_override_level: boolFromSelect(els.boostSerialOverride),
+    serial_level: getInt(els.boostSerialLevel, 1, 60, 60)
+  };
+}
+
+function quickMenuBookmarkSerialPayload() {
+  const entries = typeof bookmarkSelectedEntries === "function" ? bookmarkSelectedEntries() : [];
+  const serials = typeof bookmarkSerialLinesForEntries === "function"
+    ? bookmarkSerialLinesForEntries(entries)
+    : [];
+  const copies = getInt(els.bookmarkSerialCopies, 1, 50, 1);
+  const expanded = expandSerialTextCopies(serials.join("\n"), copies, "Serial Bookmarks");
+  return {
+    serial_text: expanded.text || "",
+    serial_override_level: false,
+    serial_level: 60
+  };
+}
+
+function quickMenuBookmarkSerialLabel() {
+  const entries = typeof bookmarkSelectedEntries === "function" ? bookmarkSelectedEntries() : [];
+  if (!entries.length) return "Bookmark Serial";
+  if (entries.length === 1) return String(entries[0].name || "Bookmark Serial").slice(0, 48);
+  return `${entries.length} Bookmarks`.slice(0, 48);
+}
+
+function quickMenuBl4SerialPayload() {
+  const rows = typeof bl4ValidSerialEntries === "function" && typeof bl4SelectedEntries === "function"
+    ? bl4ValidSerialEntries(bl4SelectedEntries())
+    : [];
+  const serialText = rows.map((row) => String(row.serial || "").trim()).filter(Boolean).join("\n");
+  const copies = getInt(els.bl4SerialCopies, 1, 50, 1);
+  const expanded = expandSerialTextCopies(serialText, copies, "BL4 Codes");
+  return {
+    serial_text: expanded.text || "",
+    serial_override_level: boolFromSelect(els.bl4OverrideLevel),
+    serial_level: getInt(els.bl4DeliveryLevel, 1, 60, 60)
+  };
+}
+
+function quickMenuBl4SerialLabel() {
+  const rows = typeof bl4ValidSerialEntries === "function" && typeof bl4SelectedEntries === "function"
+    ? bl4ValidSerialEntries(bl4SelectedEntries())
+    : [];
+  if (!rows.length) return "BL4 Code";
+  if (rows.length === 1) return String(rows[0].name || "BL4 Code").slice(0, 48);
+  return `${rows.length} BL4 Codes`.slice(0, 48);
+}
+
+function quickMenuItemPoolPayload() {
+  const names = selectedItemPoolNames();
+  return {
+    itempool_name: names[0] || getValue(els.itempoolList) || "",
+    itempool_count: getInt(els.itempoolCount, 1, 100, 1),
+    itempool_level: getInt(els.itempoolLevel, 1, 60, 60)
+  };
+}
+
+function quickMenuTravelMapPayload() {
+  return { travel_map: state.selectedMap || getValue(els.travelMapList) || "" };
+}
+
+function quickMenuTravelStationPayload() {
+  return {
+    travel_station: state.selectedStation || getValue(els.travelStationList) || ""
+  };
+}
+
+function itemPoolDisplayName(poolName) {
+  const name = String(poolName || "").trim();
+  if (!name) return "Spawn Item Pool";
+  const item = (state.itemPools || []).find((entry) => {
+    const id = String(entry.itempool || entry.name || "").trim();
+    return id === name;
+  });
+  const display = item && (item.display_name || item.name);
+  return String(display || name).slice(0, 48);
+}
+
+function quickMenuDevSpawnerActorName() {
+  return String(
+    state.devSpawnerSelectedActor
+    || getValue(els.devAiName)
+    || getValue(els.devActorName)
+    || ""
+  ).trim();
+}
+
+function quickMenuDevSpawnerLabel(action, payload = {}) {
+  if (action === "dev_spawner_lostloot") return "Spawn Lost Loot";
+  if (action === "dev_spawner_activate_last") return "Activate Last Spawn";
+  if (action === "dev_spawner_clear") return "Clear ASD Spawns";
+  const name = String(
+    (payload && (payload.dev_ai_name || payload.dev_actor_name))
+    || quickMenuDevSpawnerActorName()
+    || ""
+  ).trim();
+  if (!name) return action === "dev_spawner_spawn" ? "Spawn Template" : "Spawn Actor";
+  const display = devActorDisplayName(name);
+  return String(display || name).slice(0, 48);
+}
+
+function quickMenuDevSpawnerPayload(action) {
+  const full = typeof devSpawnerPayload === "function" ? devSpawnerPayload() : {};
+  const actorName = quickMenuDevSpawnerActorName();
+  if (action === "dev_spawner_spawnai") {
+    return {
+      dev_ai_name: actorName || full.dev_ai_name || "",
+      dev_ai_count: full.dev_ai_count,
+      dev_ai_distance: full.dev_ai_distance,
+      dev_ai_spacing: full.dev_ai_spacing,
+      dev_ai_scale: full.dev_ai_scale,
+      dev_ai_z_offset: full.dev_ai_z_offset,
+      dev_ai_load: full.dev_ai_load,
+      dev_ai_direct_only: full.dev_ai_direct_only
+    };
+  }
+  if (action === "dev_spawner_spawn" || action === "dev_spawner_lostloot") {
+    return {
+      dev_actor_name: actorName || full.dev_actor_name || "",
+      dev_actor_class: full.dev_actor_class,
+      dev_actor_count: full.dev_actor_count,
+      dev_actor_distance: full.dev_actor_distance,
+      dev_actor_spacing: full.dev_actor_spacing,
+      dev_actor_scale: full.dev_actor_scale,
+      dev_actor_z_offset: full.dev_actor_z_offset,
+      dev_actor_delay: full.dev_actor_delay,
+      dev_actor_enable_states: full.dev_actor_enable_states,
+      dev_actor_disable_states: full.dev_actor_disable_states,
+      dev_actor_no_activate: full.dev_actor_no_activate,
+      dev_actor_include_non_generated: full.dev_actor_include_non_generated
+    };
+  }
+  return {};
+}
+
+function quickMenuPayloadFromCurrentControls(action) {
+  if (action === "give_currency") {
+    return {
+      currency_kind: getValue(els.currencyKind),
+      amount: getInt(els.currencyAmount, 0, 2147483647, 1000000)
+    };
+  }
+  if (action === "set_level") {
+    return {
+      xp_track: getValue(els.xpTrack),
+      level: getInt(els.xpLevel, 1, 9999999, 60)
+    };
+  }
+  if (action === "set_backpack_bank_selected" || action === "set_backpack_bank_all") {
+    return inventoryPayload(true);
+  }
+  if (action === "spawn_itempool") {
+    return quickMenuItemPoolPayload();
+  }
+  if (
+    action === "give_serial_selected"
+    || action === "give_serial_all"
+    || action === "give_serial_nonhost"
+  ) {
+    return quickMenuSerialPayload();
+  }
+  if (action === "travel_to_map") {
+    return quickMenuTravelMapPayload();
+  }
+  if (action === "travel_to_station") {
+    return quickMenuTravelStationPayload();
+  }
+  if (action === "movement_apply_all") {
+    return movementPayload();
+  }
+  if (action === "movement_set_time") {
+    return {
+      movement_time_dilation: getFloat(els.movementTimeDilation, 0.01, 64, 1)
+    };
+  }
+  if (
+    action === "movement_infinite_jump_selected_on"
+    || action === "movement_infinite_jump_selected_off"
+    || action === "movement_infinite_jump_toggle_selected"
+  ) {
+    const selectedTarget = getValue(els.movementTargetSelect) || state.selectedTarget;
+    return { target_player: selectedTarget, infinite_jump_target: selectedTarget };
+  }
+  if (action === "rarity_apply") {
+    return rarityPayload();
+  }
+  if (
+    action === "dev_spawner_spawnai"
+    || action === "dev_spawner_spawn"
+    || action === "dev_spawner_lostloot"
+  ) {
+    return quickMenuDevSpawnerPayload(action);
+  }
+  return {};
+}
+
+function fillQuickMenuAddSelectors() {
+  const pageSelect = quickMenuNode("quickMenuAddPage");
+  const slotSelect = quickMenuNode("quickMenuAddSlot");
+  if (!pageSelect || !slotSelect) return;
+  pageSelect.innerHTML = "";
+  slotSelect.innerHTML = "";
+  for (let index = 0; index < 5; index += 1) {
+    const option = document.createElement("option");
+    option.value = String(index);
+    option.textContent = `Page ${index + 1}`;
+    pageSelect.appendChild(option);
+  }
+  for (let index = 0; index < 12; index += 1) {
+    const option = document.createElement("option");
+    option.value = String(index);
+    option.textContent = `Slot ${index + 1}`;
+    slotSelect.appendChild(option);
+  }
+}
+
+function updateQuickMenuAddSlotsForPage() {
+  const layout = quickMenuLayout();
+  const pageSelect = quickMenuNode("quickMenuAddPage");
+  const slotSelect = quickMenuNode("quickMenuAddSlot");
+  if (!layout || !pageSelect || !slotSelect) return;
+  const page = Math.max(0, Math.min(4, parseInt(pageSelect.value, 10) || 0));
+  const slots = layout.pages[page] || [];
+  Array.from(slotSelect.options).forEach((option, index) => {
+    option.textContent = `Slot ${index + 1}${slots[index] ? ` — replace ${quickMenuSlotLabel(slots[index])}` : " — empty"}`;
+  });
+  const empty = slots.findIndex((slot) => !slot);
+  if (empty >= 0) slotSelect.value = String(empty);
+}
+
+function closeQuickMenuAddModal() {
+  const modal = quickMenuNode("quickMenuAddModal");
+  if (modal) modal.classList.add("hidden");
+  state.quickMenuPendingAdd = null;
+}
+
+async function ensureQuickMenuSnapshotForPin() {
+  if (state.quickMenuSnapshot && state.quickMenuSnapshot.catalog) return state.quickMenuSnapshot;
+  await loadQuickMenuLayout({ quiet: true });
+  return state.quickMenuSnapshot;
+}
+
+function openQuickMenuAddModal(action, commandPayload = {}, label = "") {
+  void (async () => {
+    const snapshot = await ensureQuickMenuSnapshotForPin();
+    if (!snapshot || !snapshot.catalog || !snapshot.catalog[action]) {
+      setQuickMenuStatus(
+        `Quick Menu bridge is offline or ${action} is not assignable. Open ★ Quick Menu after the game is in-world.`,
+        "warning"
+      );
+      switchTab("quick-menu");
+      return;
+    }
+    state.quickMenuPendingAdd = { action, commandPayload: { ...commandPayload } };
+    fillQuickMenuAddSelectors();
+    const pageSelect = quickMenuNode("quickMenuAddPage");
+    if (pageSelect) pageSelect.value = String(state.quickMenuPage);
+    updateQuickMenuAddSlotsForPage();
+    const title = quickMenuNode("quickMenuAddTitle");
+    const description = quickMenuNode("quickMenuAddDescription");
+    const custom = quickMenuNode("quickMenuAddLabel");
+    const metadata = snapshot.catalog[action] || {};
+    if (title) title.textContent = `Add ${label || metadata.basic || action}`;
+    if (description) description.textContent = `Store ${action} with the current supported values.`;
+    if (custom) custom.value = String(label || "").trim().slice(0, 48);
+    setLine(quickMenuNode("quickMenuAddStatus"), "Choose a page and slot.", "");
+    quickMenuNode("quickMenuAddModal").classList.remove("hidden");
+  })();
+}
+
+function openSerialQuickMenuPin(source, mode) {
+  const actionByMode = {
+    selected: "give_serial_selected",
+    all: "give_serial_all",
+    nonhost: "give_serial_nonhost"
+  };
+  const action = actionByMode[String(mode || "selected")];
+  if (!action) return;
+  if (source === "bookmark") {
+    const payload = quickMenuBookmarkSerialPayload();
+    if (!String(payload.serial_text || "").trim()) {
+      setBookmarkStatus("Select one or more bookmarks before + QM.", "warning");
+      return;
+    }
+    openQuickMenuAddModal(action, payload, quickMenuBookmarkSerialLabel());
+    return;
+  }
+  if (source === "bl4") {
+    const payload = quickMenuBl4SerialPayload();
+    if (!String(payload.serial_text || "").trim()) {
+      setBl4DeliveryStatus("Select one or more BL4 codes before + QM.", "warning");
+      return;
+    }
+    openQuickMenuAddModal(action, payload, quickMenuBl4SerialLabel());
+  }
+}
+
+async function confirmQuickMenuAdd() {
+  const pending = state.quickMenuPendingAdd;
+  if (!pending) return;
+  const page = getInt("quickMenuAddPage", 0, 4, 0);
+  const slot = getInt("quickMenuAddSlot", 0, 11, 0);
+  setLine(quickMenuNode("quickMenuAddStatus"), "Saving to the game bridge...");
+  const result = await assignQuickMenuSlot({
+    page,
+    slot,
+    action: pending.action,
+    customLabel: getValue("quickMenuAddLabel"),
+    commandPayload: pending.commandPayload
+  });
+  setLine(
+    quickMenuNode("quickMenuAddStatus"),
+    resultMessage(result),
+    actionSucceeded(result) ? "ok" : "warning"
+  );
+  if (actionSucceeded(result)) {
+    appendActivity(`Quick Menu: added ${pending.action} to page ${page + 1}, slot ${slot + 1}.`);
+    setTimeout(closeQuickMenuAddModal, 450);
+  }
+}
+
+function decorateQuickMenuActionButton(button, action, payloadFactory = () => ({}), labelFactory = null) {
+  if (!button || button.dataset.qmDecorated === "true") return;
+  const catalog = state.quickMenuSnapshot && state.quickMenuSnapshot.catalog;
+  if (!catalog || !catalog[action] || !catalog[action].assignable) return;
+  button.dataset.qmDecorated = "true";
+  const parent = button.parentNode;
+  if (!parent) return;
+  const wrapper = document.createElement("span");
+  wrapper.className = "qm-action-wrap";
+  parent.insertBefore(wrapper, button);
+  wrapper.appendChild(button);
+  const add = document.createElement("button");
+  add.type = "button";
+  add.className = "qm-add-button secondary";
+  add.textContent = "+ QM";
+  add.title = `Add ${catalog[action].basic || action} to Quick Menu`;
+  add.addEventListener("click", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    const payload = payloadFactory() || {};
+    const suggested = typeof labelFactory === "function"
+      ? labelFactory(payload)
+      : (catalog[action].basic || action);
+    openQuickMenuAddModal(action, payload, suggested || catalog[action].basic || action);
+  });
+  wrapper.appendChild(add);
+}
+
+function installQuickMenuAddButtons() {
+  if (!state.quickMenuSnapshot) return;
+  document.querySelectorAll("[data-action]").forEach((button) => {
+    decorateQuickMenuActionButton(button, String(button.dataset.action || ""));
+  });
+  document.querySelectorAll("[data-movement-action]").forEach((button) => {
+    const action = String(button.dataset.movementAction || "");
+    if (action === "movement_apply_all") {
+      decorateQuickMenuActionButton(button, action, () => movementPayload());
+      return;
+    }
+    if (action === "movement_set_time") {
+      decorateQuickMenuActionButton(button, action, () => ({
+        movement_time_dilation: getFloat(els.movementTimeDilation, 0.01, 64, 1)
+      }));
+      return;
+    }
+    if (
+      action === "movement_infinite_jump_selected_on"
+      || action === "movement_infinite_jump_selected_off"
+      || action === "movement_infinite_jump_toggle_selected"
+    ) {
+      decorateQuickMenuActionButton(button, action, () => {
+        const selectedTarget = getValue(els.movementTargetSelect) || state.selectedTarget;
+        return { target_player: selectedTarget, infinite_jump_target: selectedTarget };
+      });
+      return;
+    }
+    decorateQuickMenuActionButton(button, action);
+  });
+  document.querySelectorAll("[data-rarity-action]").forEach((button) => {
+    const action = String(button.dataset.rarityAction || "");
+    if (action === "rarity_apply") {
+      decorateQuickMenuActionButton(button, action, () => rarityPayload());
+      return;
+    }
+    decorateQuickMenuActionButton(button, action);
+  });
+  document.querySelectorAll("[data-boost-serial-mode]").forEach((button) => {
+    const mode = String(button.dataset.boostSerialMode || "selected");
+    const action = {
+      selected: "give_serial_selected",
+      all: "give_serial_all",
+      nonhost: "give_serial_nonhost"
+    }[mode];
+    if (!action) return;
+    decorateQuickMenuActionButton(button, action, () => quickMenuSerialPayload());
+  });
+  document.querySelectorAll("[data-bookmark-send-mode]").forEach((button) => {
+    const mode = String(button.dataset.bookmarkSendMode || "selected");
+    const action = {
+      selected: "give_serial_selected",
+      all: "give_serial_all",
+      nonhost: "give_serial_nonhost"
+    }[mode];
+    if (!action) return;
+    decorateQuickMenuActionButton(
+      button,
+      action,
+      () => quickMenuBookmarkSerialPayload(),
+      () => quickMenuBookmarkSerialLabel()
+    );
+  });
+  document.querySelectorAll("[data-bl4-send-mode]").forEach((button) => {
+    const mode = String(button.dataset.bl4SendMode || "selected");
+    const action = {
+      selected: "give_serial_selected",
+      all: "give_serial_all",
+      nonhost: "give_serial_nonhost"
+    }[mode];
+    if (!action) return;
+    decorateQuickMenuActionButton(
+      button,
+      action,
+      () => quickMenuBl4SerialPayload(),
+      () => quickMenuBl4SerialLabel()
+    );
+  });
+  decorateQuickMenuActionButton(
+    quickMenuNode("giveCurrencyBtn"),
+    "give_currency",
+    () => ({
+      currency_kind: getValue(els.currencyKind),
+      amount: getInt(els.currencyAmount, 0, 2147483647, 1000000)
+    })
+  );
+  decorateQuickMenuActionButton(
+    quickMenuNode("setLevelBtn"),
+    "set_level",
+    () => ({
+      xp_track: getValue(els.xpTrack),
+      level: getInt(els.xpLevel, 1, 9999999, 60)
+    })
+  );
+  decorateQuickMenuActionButton(
+    quickMenuNode("setInventorySelectedBtn"),
+    "set_backpack_bank_selected",
+    () => inventoryPayload(true)
+  );
+  decorateQuickMenuActionButton(
+    quickMenuNode("setInventoryAllBtn"),
+    "set_backpack_bank_all",
+    () => inventoryPayload(true)
+  );
+  decorateQuickMenuActionButton(quickMenuNode("kickTargetBtn"), "kick_player");
+  decorateQuickMenuActionButton(
+    document.getElementById("spawnItempoolBtn"),
+    "spawn_itempool",
+    () => quickMenuItemPoolPayload(),
+    (payload) => itemPoolDisplayName(payload.itempool_name)
+  );
+  decorateQuickMenuActionButton(
+    document.getElementById("travelMapBtn"),
+    "travel_to_map",
+    () => quickMenuTravelMapPayload(),
+    (payload) => {
+      const map = (state.maps || []).find((entry) => (entry.map || entry.map_key) === payload.travel_map);
+      return map ? mapLabel(map) : (payload.travel_map || "Travel Map");
+    }
+  );
+  decorateQuickMenuActionButton(
+    document.getElementById("travelStationBtn"),
+    "travel_to_station",
+    () => quickMenuTravelStationPayload(),
+    (payload) => {
+      const station = (state.stations || []).find((entry) => {
+        const id = entry.station || entry.station_name || "";
+        return id === payload.travel_station;
+      });
+      return station ? stationLabel(station) : (payload.travel_station || "Travel Station");
+    }
+  );
+  document.querySelectorAll("[data-dev-spawner-action]").forEach((button) => {
+    const action = String(button.dataset.devSpawnerAction || "");
+    if (
+      action !== "dev_spawner_spawnai"
+      && action !== "dev_spawner_spawn"
+      && action !== "dev_spawner_lostloot"
+      && action !== "dev_spawner_activate_last"
+      && action !== "dev_spawner_clear"
+    ) {
+      return;
+    }
+    decorateQuickMenuActionButton(
+      button,
+      action,
+      () => quickMenuDevSpawnerPayload(action),
+      (payload) => quickMenuDevSpawnerLabel(action, payload)
+    );
+  });
 }
 
 function inferToggleStateFromMessage(message, previousValue) {
@@ -1330,6 +2151,11 @@ async function bridgeStatus(options = {}) {
   if (!options.quiet) setOutput(els.statusOutput, result);
   applyBridgeStatusResult(result, options);
   await autoApplySavedMovementPresetIfNeeded();
+  const quickPanel = quickMenuNode("tab-quick-menu");
+  if (quickPanel && quickPanel.classList.contains("active")) {
+    await loadQuickMenuLayout({ quiet: true });
+    await refreshQuickMenuPinPanel({ quiet: true });
+  }
   return result;
 }
 
@@ -5409,12 +6235,36 @@ function switchTab(tabId) {
   });
   if (tabId === "matt-editor") {
     void loadEditor();
+  } else if (tabId === "quick-menu") {
+    void loadQuickMenuLayout({ quiet: Boolean(state.quickMenuSnapshot) });
+    void refreshQuickMenuPinPanel({ quiet: true });
+  } else if (tabId === "serial-tools" || tabId === "bl4-codes") {
+    void loadQuickMenuLayout({ quiet: true }).then(() => installQuickMenuAddButtons());
   }
 }
 
 function wireEvents() {
   document.querySelectorAll(".tab-bar [data-tab]").forEach((button) => {
     button.addEventListener("click", () => switchTab(button.dataset.tab));
+  });
+
+  quickMenuNode("quickMenuRefreshBtn").addEventListener("click", () => loadQuickMenuLayout());
+  quickMenuNode("quickMenuSaveSlotBtn").addEventListener("click", saveSelectedQuickMenuSlot);
+  quickMenuNode("quickMenuClearSlotBtn").addEventListener("click", clearSelectedQuickMenuSlot);
+  quickMenuNode("quickMenuClearPageBtn").addEventListener("click", clearCurrentQuickMenuPage);
+  quickMenuNode("quickMenuPinLastBtn").addEventListener("click", () => pinLastCommandToSelectedSlot());
+  quickMenuNode("quickMenuRepeatDropBtn").addEventListener("click", () => repeatLastDropFromQuickMenu());
+  quickMenuNode("quickMenuLockToggleBtn").addEventListener("click", () => toggleQuickMenuDropLock());
+  quickMenuNode("quickMenuRefreshPinBtn").addEventListener("click", () => refreshQuickMenuPinPanel());
+  quickMenuNode("quickMenuAddPage").addEventListener("change", updateQuickMenuAddSlotsForPage);
+  quickMenuNode("quickMenuAddCloseBtn").addEventListener("click", closeQuickMenuAddModal);
+  quickMenuNode("quickMenuAddConfirmBtn").addEventListener("click", confirmQuickMenuAdd);
+  quickMenuNode("quickMenuAddOpenEditorBtn").addEventListener("click", () => {
+    closeQuickMenuAddModal();
+    switchTab("quick-menu");
+  });
+  quickMenuNode("quickMenuAddModal").addEventListener("click", (event) => {
+    if (event.target === quickMenuNode("quickMenuAddModal")) closeQuickMenuAddModal();
   });
 
   document.getElementById("statusBtn").addEventListener("click", bridgeStatus);
@@ -5523,6 +6373,11 @@ function wireEvents() {
   els.bookmarkRefreshPlayersBtn.addEventListener("click", bridgeStatus);
   document.querySelectorAll("[data-bookmark-send-mode]").forEach((button) => {
     button.addEventListener("click", () => sendBookmarkSerial(button.dataset.bookmarkSendMode));
+  });
+  document.querySelectorAll("[data-qm-serial-source]").forEach((button) => {
+    button.addEventListener("click", () => {
+      openSerialQuickMenuPin(button.dataset.qmSerialSource, button.dataset.qmSerialMode);
+    });
   });
 
   els.bl4ReloadBtn.addEventListener("click", loadBl4Catalog);
@@ -5795,6 +6650,7 @@ async function init() {
   syncDevSpawnerAdvancedControls();
   await Promise.all([loadItemPools(), loadTravelResources(), loadDevSpawnerCatalog(), loadDevSpawnerFavorites(), loadSerialBookmarks(), loadBl4Catalog(), loadMovementSettings(), loadRaritySettings()]);
   await bridgeStatus();
+  await loadQuickMenuLayout({ quiet: true });
   startBridgeStatusPolling();
   await checkUpdates({ startup: true });
 }

@@ -209,9 +209,10 @@ let latestUpdateState = {
 const DEFAULT_WINDOW_BOUNDS = {
   width: 1280,
   height: 820,
-  // Allow 1080p half-screen (~960 CSS px) and high-DPI half snaps (~850–900).
-  minWidth: 880,
-  minHeight: 660
+  // Floor high enough to stay usable; still allows 1080p half-screen (~960 CSS px).
+  // Tobgun-style 2560×1440 @ 150% half-snap (~853) clamps slightly wider than true half.
+  minWidth: 960,
+  minHeight: 700
 };
 const DEFAULT_WINDOW_OPACITY = 1;
 const MIN_WINDOW_OPACITY = 0.35;
@@ -226,16 +227,70 @@ function windowStatePath() {
   return path.join(app.getPath("userData"), "window-state.json");
 }
 
+function primaryWorkAreaSize() {
+  try {
+    const area = screen.getPrimaryDisplay().workAreaSize;
+    return {
+      width: Number(area && area.width) || DEFAULT_WINDOW_BOUNDS.width,
+      height: Number(area && area.height) || DEFAULT_WINDOW_BOUNDS.height
+    };
+  } catch {
+    return { width: DEFAULT_WINDOW_BOUNDS.width, height: DEFAULT_WINDOW_BOUNDS.height };
+  }
+}
+
+function defaultWindowSizeForDisplay() {
+  const work = primaryWorkAreaSize();
+  return {
+    width: Math.min(
+      DEFAULT_WINDOW_BOUNDS.width,
+      Math.max(DEFAULT_WINDOW_BOUNDS.minWidth, Math.floor(work.width * 0.72))
+    ),
+    height: Math.min(
+      DEFAULT_WINDOW_BOUNDS.height,
+      Math.max(DEFAULT_WINDOW_BOUNDS.minHeight, Math.floor(work.height * 0.85))
+    )
+  };
+}
+
+function sanitizeWindowSize(width, height, { maximized = false } = {}) {
+  const work = primaryWorkAreaSize();
+  const defaults = defaultWindowSizeForDisplay();
+  const rawWidth = Number.isFinite(width) ? width : defaults.width;
+  const rawHeight = Number.isFinite(height) ? height : defaults.height;
+
+  let nextWidth = Math.max(DEFAULT_WINDOW_BOUNDS.minWidth, Math.min(rawWidth, work.width));
+  let nextHeight = Math.max(DEFAULT_WINDOW_BOUNDS.minHeight, Math.min(rawHeight, work.height));
+
+  // Reject postage-stamp restores from older lower floors (e.g. minWidth 880) or bad snaps.
+  // Maximized windows keep restored size; maximize() fills the display.
+  if (!maximized) {
+    const wasBelowFloor =
+      (Number.isFinite(width) && width < DEFAULT_WINDOW_BOUNDS.minWidth) ||
+      (Number.isFinite(height) && height < DEFAULT_WINDOW_BOUNDS.minHeight);
+    const stuckAtFloor =
+      nextWidth <= DEFAULT_WINDOW_BOUNDS.minWidth + 4 &&
+      nextHeight <= DEFAULT_WINDOW_BOUNDS.minHeight + 4;
+    if (wasBelowFloor || stuckAtFloor) {
+      nextWidth = defaults.width;
+      nextHeight = defaults.height;
+    }
+  }
+
+  return { width: nextWidth, height: nextHeight };
+}
+
 function readWindowState() {
+  const defaults = defaultWindowSizeForDisplay();
   try {
     const parsed = JSON.parse(fsSync.readFileSync(windowStatePath(), "utf8"));
     const bounds = parsed && typeof parsed === "object" ? parsed.bounds || {} : {};
-    const width = Number.isFinite(bounds.width) ? Math.max(DEFAULT_WINDOW_BOUNDS.minWidth, bounds.width) : DEFAULT_WINDOW_BOUNDS.width;
-    const height = Number.isFinite(bounds.height) ? Math.max(DEFAULT_WINDOW_BOUNDS.minHeight, bounds.height) : DEFAULT_WINDOW_BOUNDS.height;
+    const maximized = Boolean(parsed.maximized);
+    const sized = sanitizeWindowSize(bounds.width, bounds.height, { maximized });
     const state = {
-      width,
-      height,
-      maximized: Boolean(parsed.maximized),
+      width: sized.width,
+      height: sized.height,
+      maximized,
       opacity: clampWindowOpacity(parsed.opacity)
     };
     if (Number.isFinite(bounds.x) && Number.isFinite(bounds.y)) {
@@ -245,8 +300,8 @@ function readWindowState() {
     return state;
   } catch {
     return {
-      width: DEFAULT_WINDOW_BOUNDS.width,
-      height: DEFAULT_WINDOW_BOUNDS.height,
+      width: defaults.width,
+      height: defaults.height,
       maximized: false,
       opacity: DEFAULT_WINDOW_OPACITY
     };
@@ -267,7 +322,12 @@ function ensureWindowOnScreen(bounds) {
     );
   });
   if (isVisible) return bounds;
-  return { width: bounds.width, height: bounds.height, maximized: bounds.maximized };
+  return {
+    width: bounds.width,
+    height: bounds.height,
+    maximized: bounds.maximized,
+    opacity: bounds.opacity
+  };
 }
 
 function saveWindowState(win) {
@@ -443,12 +503,14 @@ function createWindow() {
     height: savedBounds.height,
     minWidth: DEFAULT_WINDOW_BOUNDS.minWidth,
     minHeight: DEFAULT_WINDOW_BOUNDS.minHeight,
+    resizable: true,
     backgroundColor: "#090d17",
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
       nodeIntegration: false,
-      sandbox: false
+      sandbox: false,
+      zoomFactor: 1
     }
   };
   if (Number.isFinite(savedBounds.x) && Number.isFinite(savedBounds.y)) {
@@ -461,6 +523,14 @@ function createWindow() {
     win.maximize();
   }
   win.setOpacity(clampWindowOpacity(savedBounds.opacity));
+  win.webContents.setVisualZoomLevelLimits(1, 1).catch(() => {});
+  win.webContents.on("did-finish-load", () => {
+    try {
+      win.webContents.setZoomFactor(1);
+    } catch {
+      // Ignore zoom APIs missing on older Electron builds.
+    }
+  });
   bindWindowState(win);
   win.loadFile(path.join(__dirname, "renderer.html"));
 }

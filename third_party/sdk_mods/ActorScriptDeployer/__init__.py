@@ -1129,16 +1129,37 @@ def _alive_actors_for_spawner_component(comp: Any) -> List[Any]:
 def _poll_spawner_for_alive_actors(
     comp: Any,
     *,
-    timeout: float = 3.0,
-    interval: float = 0.15,
+    timeout: float = 0.0,
+    interval: float = 0.0,
 ) -> List[Any]:
-    """Poll a spawner after ResetSpawner because BL4/Oak spawning can be async.
+    """Verify a spawner after ResetSpawner using the non-blocking spawn protocol.
 
-    Some valid actor defs report resolved=True immediately, but GetAliveActors()
-    is still empty for a few frames. The old ASD_spawnai path checked once and
-    falsely reported failure. This waits briefly for the spawner to finish.
+    Default protocol for ALL spawning (ASD_spawnai / cached / console / MSBT):
+    one immediate GetAliveActors check, no ``time.sleep``, no world-wide Actor
+    scans. Oak spawning is async, so an empty result means queued_unverified —
+    that is expected and hitch-free.
+
+    Pass a positive ``timeout`` *and* ``interval`` only from an explicit off-tick
+    caller that wants a blocking wait. Never do that from a game tick / bridge
+    queue thread (e.g. MSBT external_bridge); sleeping freezes BL4.
     """
-    deadline = time.monotonic() + max(0.0, float(timeout))
+    timeout_s = max(0.0, float(timeout))
+    interval_s = max(0.0, float(interval))
+    # Zero timeout or interval => single non-blocking check (default / tick-safe).
+    if timeout_s <= 0.0 or interval_s <= 0.0:
+        actors = _alive_actors_for_spawner_component(comp)
+        if actors:
+            return actors
+        try:
+            if int(comp.GetNumAliveActors(0)) > 0:
+                actors = _alive_actors_for_spawner_component(comp)
+                if actors:
+                    return actors
+        except Exception:
+            pass
+        return actors or []
+
+    deadline = time.monotonic() + timeout_s
     last_actors: List[Any] = []
 
     while True:
@@ -1158,7 +1179,7 @@ def _poll_spawner_for_alive_actors(
         if time.monotonic() >= deadline:
             return last_actors
 
-        time.sleep(max(0.01, float(interval)))
+        time.sleep(max(0.01, interval_s))
 
 
 def _spawner_counts(comp: Any) -> Tuple[int, int, int, int]:
@@ -1391,8 +1412,21 @@ def _distance_sq(a: Any, b: Any) -> float:
         return 999999999999.0
 
 
+# World-wide find_all("Actor") / class scans freeze the BL4 tick thread.
+# Spawn verification must never use them on the hot path. Keep the helpers as
+# explicit no-ops so any leftover or third-party call site stays hitch-free.
+# Opt in only for offline diagnostics by setting this True (never from tick).
+_SPAWN_ALLOW_WORLD_ACTOR_SCAN = False
+
+
 def _world_actor_snapshot() -> set[str]:
-    """Snapshot currently loaded non-default actors for world-delta spawn detection."""
+    """World-delta spawn snapshot — disabled by default (non-blocking spawn protocol).
+
+    Historical helper scanned every loaded Actor. That freezes BL4 when run from
+    a tick/bridge spawn path. Spawn verification uses spawner alive lists only.
+    """
+    if not _SPAWN_ALLOW_WORLD_ACTOR_SCAN:
+        return set()
     seen: set[str] = set()
     for cls_name in ("OakCharacter", "OakPawn", "OakActor", "Actor"):
         try:
@@ -1421,11 +1455,13 @@ def _find_new_world_actors_near(
     radius: float = 4000.0,
     expected_name: str = "",
 ) -> List[Any]:
-    """Find actors that appeared after spawn but were not reported by GetAliveActors.
+    """World-delta spawn lookup — disabled by default (non-blocking spawn protocol).
 
-    Some OakSpawner paths spawn valid actors but do not attach them to the spawner's
-    alive list. This catches those actors by scanning the world after spawning.
+    Historical helper scanned the world after PushActorDef when GetAliveActors
+    was empty. That freezes BL4 on tick; empty/queued_unverified is preferred.
     """
+    if not _SPAWN_ALLOW_WORLD_ACTOR_SCAN:
+        return []
     radius_sq = float(radius) * float(radius)
     needles = [n.lower() for n in _default_class_and_needles(expected_name)[1] if n]
     out: List[Any] = []
@@ -1504,7 +1540,7 @@ def _spawn_cached_actor_def(
         before = set()
         for actor in _alive_actors_for_spawner_component(comp):
             before.add(str(actor))
-        world_before = _world_actor_snapshot()
+        # Non-blocking spawn protocol: no _world_actor_snapshot()/find_all("Actor").
         try:
             comp.DestroyAllActors()
         except Exception:
@@ -1531,7 +1567,14 @@ def _spawn_cached_actor_def(
             _log_warn(f"ResetSpawner failed on {comp}: {exc}")
             continue
 
-        actors = [a for a in _alive_actors_for_spawner_component(comp) if str(a) not in before] or _alive_actors_for_spawner_component(comp)
+        # Same non-blocking poll as thin-air ASD_spawnai (default timeout/interval=0).
+        polled = _poll_spawner_for_alive_actors(comp)
+        actors = [a for a in polled if str(a) not in before] or list(polled)
+        if not actors:
+            _log_info(
+                f"cached spawn {idx + 1}/{max(1, int(count))}: poll=nonblocking "
+                f"spawner={sp} (no immediate alive actors; queued_unverified)"
+            )
         target_transform = _spawn_transform_for_index(pawn, index=idx, count=max(1, int(count)), distance=distance, spacing=spacing, z_offset=z_offset, scale=scale)
         loc = target_transform.Translation
         try:
@@ -1562,7 +1605,10 @@ def _spawn_cached_actor_def(
                 first_actor = actor
             total_spawned += 1
     if total_spawned <= 0:
-        _log_error(f"Cached actor def {cache_key!r} was found, but no alive actors were returned by spawners.")
+        _log_warn(
+            f"Cached actor def {cache_key!r} was pushed, but no alive actors were returned immediately "
+            "(poll=nonblocking / queued_unverified)."
+        )
         return None
     return first_actor
 
@@ -2777,8 +2823,7 @@ def _spawnai_fresh_spawner_direct(
             z_offset=z_offset,
             scale=scale,
         )
-        scan_loc = transform.Translation
-        world_before = _world_actor_snapshot()
+        # Non-blocking spawn protocol: no _world_actor_snapshot()/find_all("Actor").
 
         try:
             cls = base.Class
@@ -2826,22 +2871,20 @@ def _spawnai_fresh_spawner_direct(
             _log_warn(f"ResetSpawner failed on {comp}: {exc}")
 
         resolved = bool(getattr(d, "_experimental_instance", None))
-        poll_timeout = 3.0 if resolved else 0.75
-        actors = _poll_spawner_for_alive_actors(comp, timeout=poll_timeout, interval=0.15)
+        # Default poll is non-blocking (timeout=0/interval=0). Empty => queued_unverified.
+        actors = _poll_spawner_for_alive_actors(comp)
         if not actors:
-            actors = _find_new_world_actors_near(
-                world_before,
-                scan_loc,
-                radius=max(2000.0, float(spacing) * 3.0),
-                expected_name=actor_def,
+            # World-delta / find_all("Actor") intentionally disabled on spawn hot path.
+            actors = []
+            _log_info(
+                f"ASD_spawnai thin-air actor_def={actor_def} resolved={resolved} "
+                f"poll=nonblocking spawner={spawner} (skipping world-delta scan)"
             )
-            if actors:
-                _log_info(f"world-delta detected {len(actors)} spawned actor(s) for {actor_def}: {actors}")
 
         alive_count, spawned_count, dead_count, total_count = _spawner_counts(comp)
         _log_info(
             f"ASD_spawnai thin-air actor_def={actor_def} resolved={resolved} "
-            f"poll={poll_timeout:g}s spawner={spawner} loc={spawner.K2_GetActorLocation()} "
+            f"poll=nonblocking spawner={spawner} loc={spawner.K2_GetActorLocation()} "
             f"counts=(alive={alive_count}, spawned={spawned_count}, dead={dead_count}, total={total_count}) "
             f"actors={actors}"
         )

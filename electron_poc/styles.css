@@ -22,7 +22,10 @@
 
 html,
 body {
+  width: 100%;
+  min-width: 100%;
   min-height: 100%;
+  height: 100%;
 }
 
 body {
@@ -30,6 +33,7 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: "Segoe UI", Arial, sans-serif;
+  overflow-x: auto;
 }
 
 h1,
@@ -382,6 +386,104 @@ iframe {
 
 .modal-card p {
   margin: 10px 0 0;
+}
+
+.quick-menu-editor-shell {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+  margin-top: 10px;
+}
+
+.quick-menu-page-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.quick-menu-page-tabs button.active {
+  background: var(--gold);
+  color: #10131a;
+}
+
+.quick-menu-slot-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(4, minmax(110px, 1fr));
+}
+
+.quick-menu-slot {
+  min-height: 76px;
+  padding: 8px;
+  text-align: left;
+}
+
+.quick-menu-slot strong,
+.quick-menu-slot span {
+  display: block;
+}
+
+.quick-menu-slot span {
+  color: var(--muted);
+  font-size: 11px;
+  margin-top: 5px;
+}
+
+.quick-menu-slot.empty {
+  background: #202632;
+  border-color: #516074;
+}
+
+.quick-menu-slot.selected {
+  border-color: var(--gold);
+  box-shadow: inset 0 0 0 1px var(--gold);
+}
+
+.qm-action-wrap {
+  align-items: stretch;
+  display: inline-grid;
+  gap: 2px;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.qm-add-button {
+  min-width: 42px;
+  padding: 3px 6px;
+  white-space: nowrap;
+}
+
+.qm-serial-pin-row {
+  margin-top: 0.35rem;
+}
+
+.qm-pin-button,
+button.qm-pin-button {
+  border: 1px solid var(--gold);
+  background: linear-gradient(180deg, #ffb13d, #d86f00);
+  color: #120900;
+  font-weight: 700;
+  min-width: 7.5rem;
+}
+
+.qm-pin-button:hover,
+button.qm-pin-button:hover {
+  background: linear-gradient(180deg, #ffd15a, #f08400);
+  color: #120900;
+}
+
+.quick-menu-add-modal {
+  width: min(620px, 100%);
+}
+
+@media (max-width: 900px) {
+  .quick-menu-editor-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .quick-menu-slot-grid {
+    grid-template-columns: repeat(3, minmax(100px, 1fr));
+  }
 }
 
 .modal-shell[data-kind="downloaded"] .modal-card {
@@ -1432,7 +1534,7 @@ button.active-scope {
 }
 
 /* Header / Support chrome: allow stacking without nuking content columns.
-   1080p half (~960) and high-DPI half snaps (~850–900) stay dense below. */
+   1080p half (~960) stays dense; high-DPI half snaps clamp to minWidth 960. */
 @media (max-width: 1180px) {
   .app-header {
     align-items: stretch;
@@ -1512,7 +1614,7 @@ button.active-scope {
   }
 }
 
-/* Mid width: 3-col content → 2-col; keep 2-col grids. Covers ~850–980 half snaps. */
+/* Mid width: 3-col content → 2-col; keep 2-col grids. Covers ~960–980 half snaps. */
 @media (max-width: 980px) {
   .grid.three,
   .grid.five,

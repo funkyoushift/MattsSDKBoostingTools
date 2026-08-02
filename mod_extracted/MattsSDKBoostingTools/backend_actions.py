@@ -17,7 +17,7 @@ from typing import Any
 
 from mods_base import ENGINE, get_pc
 
-from . import player_economy, serial_rewards
+from . import player_economy, quick_menu_registry, serial_rewards
 from .golden_chest_keybinds import _close_golden_chest, _open_golden_chest
 from .inventory_capacity import (
     auto_apply_inventory_sizes_if_needed,
@@ -80,6 +80,13 @@ RARITY_ROWS: tuple[tuple[str, str, tuple[str, ...]], ...] = (
 _selected_player_index: int | None = None
 _selected_player_name: str = ""
 _last_refresh_error: str = ""
+# Last runnable command for Quick Menu pin / repeat (bridge-safe, no UI).
+_last_command: dict[str, Any] | None = None
+_last_drop: dict[str, Any] | None = None
+# Option C: optional lock-to-player for repeat-last-drop (skip picker when valid).
+_drop_lock_enabled: bool = False
+_drop_lock_index: int | None = None
+_drop_lock_name: str = ""
 serial_text: str = ""
 serial_tools_input: str = ""
 serial_tools_serialized: str = ""
@@ -223,12 +230,15 @@ def _run_actor_script_deployer_command(command_line: str) -> tuple[bool, str]:
         asd = importlib.import_module("ActorScriptDeployer")
     except Exception as exc:
         return False, f"ActorScriptDeployer import failed: {exc!r}"
+    patch_ok, patch_message = _install_asd_spawn_runtime_patches(asd)
+    if not patch_ok:
+        return False, patch_message
     command_obj = getattr(asd, attr_name, None)
     handle = getattr(command_obj, "_handle_cmd", None)
     if not callable(handle):
         return False, f"ActorScriptDeployer command object {attr_name!r} is unavailable."
     handle(command_line, len(command_name))
-    return True, "ActorScriptDeployer command object"
+    return True, f"ActorScriptDeployer command object; {patch_message}"
 
 
 def _actor_script_deployer_command(attr_name: str) -> tuple[Any | None, str]:
@@ -288,6 +298,107 @@ def _install_asd_sdk03_actor_def_patch(asd: Any) -> tuple[bool, str]:
         return False, f"ActorScriptDeployer SDK 03 actor-def pointer patch failed: {exc!r}"
 
     return True, "ActorScriptDeployer SDK 03 actor-def pointer patch installed: FGbxDefPtr(name, GbxActorDef)"
+
+
+def _install_asd_nonblocking_spawn_poll_patch(asd: Any) -> tuple[bool, str]:
+    """Safety net: force ASD spawn verification onto the non-blocking protocol.
+
+    Newer ActorScriptDeployer builds default ``_poll_spawner_for_alive_actors`` to
+    a one-shot check and disable world-wide ``find_all("Actor")`` scans. Older
+    ASD installs still sleep (~0.75–3s) and snapshot the whole actor list on the
+    Unreal tick queue, which freezes BL4.
+
+    Always install this patch so MSBT spawn paths (ASD_spawnai / ASD_spawn /
+    ASD_lostloot / ASD_barrellogo / cache) stay hitch-free even on older ASD.
+    Spawns may return queued_unverified when actors are not immediately alive.
+    """
+    if getattr(asd, "_msbt_nonblocking_spawn_poll_patch", False):
+        return True, "ActorScriptDeployer non-blocking spawn poll patch already installed"
+
+    notes: list[str] = []
+
+    original_poll = getattr(asd, "_poll_spawner_for_alive_actors", None)
+    if callable(original_poll):
+        alive_fn = getattr(asd, "_alive_actors_for_spawner_component", None)
+
+        def _poll_spawner_for_alive_actors_nonblocking(
+            comp: Any,
+            *,
+            timeout: float = 0.0,
+            interval: float = 0.15,
+        ) -> list[Any]:
+            del timeout, interval  # MSBT never blocks the tick thread waiting.
+            if not callable(alive_fn):
+                return []
+            try:
+                actors = alive_fn(comp)
+            except Exception:
+                return []
+            return list(actors or [])
+
+        try:
+            setattr(asd, "_msbt_original_poll_spawner_for_alive_actors", original_poll)
+            setattr(asd, "_poll_spawner_for_alive_actors", _poll_spawner_for_alive_actors_nonblocking)
+            notes.append("poll=once-no-sleep")
+        except Exception as exc:
+            return False, f"ActorScriptDeployer non-blocking spawn poll patch failed: {exc!r}"
+    else:
+        notes.append("poll=missing")
+
+    original_snapshot = getattr(asd, "_world_actor_snapshot", None)
+    if callable(original_snapshot):
+        def _world_actor_snapshot_skip() -> set[str]:
+            return set()
+
+        try:
+            setattr(asd, "_msbt_original_world_actor_snapshot", original_snapshot)
+            setattr(asd, "_world_actor_snapshot", _world_actor_snapshot_skip)
+            notes.append("world-snapshot=skipped")
+        except Exception as exc:
+            return False, f"ActorScriptDeployer world-snapshot skip patch failed: {exc!r}"
+    else:
+        notes.append("world-snapshot=missing")
+
+    original_delta = getattr(asd, "_find_new_world_actors_near", None)
+    if callable(original_delta):
+        def _find_new_world_actors_near_skip(*_args: Any, **_kwargs: Any) -> list[Any]:
+            return []
+
+        try:
+            setattr(asd, "_msbt_original_find_new_world_actors_near", original_delta)
+            setattr(asd, "_find_new_world_actors_near", _find_new_world_actors_near_skip)
+            notes.append("world-delta=skipped")
+        except Exception as exc:
+            return False, f"ActorScriptDeployer world-delta skip patch failed: {exc!r}"
+    else:
+        notes.append("world-delta=missing")
+
+    # Also force the ASD module flag off when present (native protocol gate).
+    if hasattr(asd, "_SPAWN_ALLOW_WORLD_ACTOR_SCAN"):
+        try:
+            setattr(asd, "_msbt_original_spawn_allow_world_actor_scan", getattr(asd, "_SPAWN_ALLOW_WORLD_ACTOR_SCAN"))
+            setattr(asd, "_SPAWN_ALLOW_WORLD_ACTOR_SCAN", False)
+            notes.append("world-scan-flag=off")
+        except Exception:
+            notes.append("world-scan-flag=unpatched")
+
+    try:
+        setattr(asd, "_msbt_nonblocking_spawn_poll_patch", True)
+    except Exception as exc:
+        return False, f"ActorScriptDeployer non-blocking spawn poll patch flag failed: {exc!r}"
+
+    return True, "ActorScriptDeployer non-blocking spawn poll patch installed: " + ", ".join(notes)
+
+
+def _install_asd_spawn_runtime_patches(asd: Any) -> tuple[bool, str]:
+    """Install all MSBT-side ActorScriptDeployer runtime patches used for spawns."""
+    messages: list[str] = []
+    for installer in (_install_asd_sdk03_actor_def_patch, _install_asd_nonblocking_spawn_poll_patch):
+        ok, message = installer(asd)
+        messages.append(message)
+        if not ok:
+            return False, message
+    return True, "; ".join(messages)
 
 
 def _capture_asd_logs(asd: Any, callback: Any) -> tuple[list[tuple[str, str]], Exception | None]:
@@ -461,7 +572,7 @@ def _run_actor_script_deployer_spawnai_like_debug_menu(
     except Exception as exc:
         return {"ok": False, "message": f"ActorScriptDeployer import failed: {exc!r}", "requested_count": count}
 
-    patch_ok, patch_message = _install_asd_sdk03_actor_def_patch(asd)
+    patch_ok, patch_message = _install_asd_spawn_runtime_patches(asd)
     if not patch_ok:
         return {"ok": False, "message": patch_message, "requested_count": count}
 
@@ -649,10 +760,46 @@ def get_selected_player_name() -> str:
     return _selected_player_name
 
 
+def ensure_selected_player(*, prefer_host: bool = True) -> dict[str, Any]:
+    """Keep a valid party target. If none selected, pick host (preferred) or first player."""
+    players = refresh_players()
+    if get_selected_player_index() is not None:
+        return {
+            "ok": True,
+            "message": f"Target player already set to {get_selected_player_index()}: {get_selected_player_name()}",
+            "selected_player": get_selected_player_name(),
+            "selected_player_index": get_selected_player_index(),
+            "auto_selected": False,
+        }
+    if not players:
+        return {"ok": False, "message": "No party players found.", "needs_player": True}
+    target_index: int | None = None
+    if prefer_host:
+        host_idx = _host_player_index_value()
+        if host_idx is not None and any(int(p.get("index", -1)) == int(host_idx) for p in players):
+            target_index = int(host_idx)
+    if target_index is None:
+        try:
+            target_index = int(players[0].get("index"))
+        except Exception:
+            target_index = None
+    if target_index is None:
+        return {"ok": False, "message": "No party players found.", "needs_player": True}
+    result = set_target_player(target_index)
+    if result.get("ok"):
+        result["auto_selected"] = True
+        result["message"] = f"Auto-selected target {get_selected_player_index()}: {get_selected_player_name()}"
+    return result
+
+
 def set_target_player(index_or_name: object) -> dict[str, Any]:
     """Set selected target by party index, "index|name" payload, or name text."""
     global _selected_player_index, _selected_player_name
-    raw = str(index_or_name or "").strip()
+    # Important: party index 0 is valid; do not use `value or ""` (0 is falsy).
+    if index_or_name is None:
+        raw = ""
+    else:
+        raw = str(index_or_name).strip()
     raw_name = ""
     if "|" in raw:
         raw, raw_name = (part.strip() for part in raw.split("|", 1))
@@ -722,6 +869,418 @@ def set_target_player(index_or_name: object) -> dict[str, Any]:
     }
 
 
+def _command_snapshot(
+    action: str,
+    *,
+    label: str = "",
+    payload: dict[str, Any] | None = None,
+    is_drop: bool = False,
+    needs_player: bool = False,
+) -> dict[str, Any]:
+    return {
+        "action": str(action or "").strip(),
+        "label": str(label or action or "").strip(),
+        "payload": dict(payload or {}),
+        "is_drop": bool(is_drop),
+        "needs_player": bool(needs_player),
+        "recorded_at": float(time.time()),
+    }
+
+
+def note_last_command(
+    action: str,
+    *,
+    label: str = "",
+    payload: dict[str, Any] | None = None,
+    is_drop: bool = False,
+    needs_player: bool = False,
+) -> dict[str, Any]:
+    """Record the last runnable command for Quick Menu pin / repeat."""
+    global _last_command, _last_drop
+    snap = _command_snapshot(
+        action,
+        label=label,
+        payload=payload,
+        is_drop=is_drop,
+        needs_player=needs_player,
+    )
+    if not snap["action"]:
+        return {"ok": False, "message": "No action to record."}
+    _last_command = snap
+    if snap["is_drop"]:
+        _last_drop = dict(snap)
+    return {"ok": True, "message": f"Recorded last command: {snap['label']}", "command": dict(snap)}
+
+
+def get_last_command() -> dict[str, Any] | None:
+    return dict(_last_command) if isinstance(_last_command, dict) else None
+
+
+def get_last_drop() -> dict[str, Any] | None:
+    return dict(_last_drop) if isinstance(_last_drop, dict) else None
+
+
+def get_serial_delivery_progress() -> dict[str, Any]:
+    """Lightweight delivery progress for Quick Menu toasts (no party refresh)."""
+    try:
+        delivery_progress = serial_rewards.serial_delivery_progress()
+    except Exception as exc:
+        return {
+            "active": False,
+            "message": "",
+            "last_error": f"serial delivery progress unavailable: {exc!r}",
+        }
+    try:
+        delivery_status = serial_rewards.serial_delivery_status()
+    except Exception:
+        delivery_status = ""
+    if isinstance(delivery_progress, dict):
+        progress = dict(delivery_progress)
+        progress.setdefault("last_message", delivery_status or progress.get("message", ""))
+        progress.setdefault("last_error", "")
+        return progress
+    return {"active": False, "message": str(delivery_progress or ""), "last_error": ""}
+
+
+def set_drop_player_lock(enabled: object, index_or_name: object | None = None) -> dict[str, Any]:
+    """Option C: lock repeat-last-drop to a party player (or clear the lock)."""
+    global _drop_lock_enabled, _drop_lock_index, _drop_lock_name
+    want = _truthy(enabled)
+    if not want:
+        _drop_lock_enabled = False
+        _drop_lock_index = None
+        _drop_lock_name = ""
+        return {"ok": True, "message": "Drop player lock cleared.", "lock_enabled": False}
+
+    target = index_or_name
+    if target is None or str(target).strip() == "":
+        target = get_selected_player_index()
+        if target is None:
+            target = get_selected_player_name()
+    result = set_target_player(target)
+    if not result.get("ok"):
+        return result
+    _drop_lock_enabled = True
+    _drop_lock_index = get_selected_player_index()
+    _drop_lock_name = get_selected_player_name()
+    return {
+        "ok": True,
+        "message": f"Drop player lock set to {_drop_lock_name or _drop_lock_index}.",
+        "lock_enabled": True,
+        "lock_index": _drop_lock_index,
+        "lock_name": _drop_lock_name,
+    }
+
+
+def get_drop_player_lock() -> dict[str, Any]:
+    return {
+        "enabled": bool(_drop_lock_enabled),
+        "index": _drop_lock_index,
+        "name": str(_drop_lock_name or ""),
+    }
+
+
+def _sync_drop_lock_from_layout(drop_lock: object) -> None:
+    data = quick_menu_registry.sanitize_drop_lock(drop_lock)
+    if not data.get("enabled"):
+        set_drop_player_lock(False)
+        return
+    index = data.get("index")
+    name = str(data.get("name") or "").strip()
+    if index is not None and name:
+        target: object = f"{index}|{name}"
+    elif index is not None:
+        target = index
+    else:
+        target = name
+    set_drop_player_lock(True, target)
+
+
+def get_quick_menu_layout() -> dict[str, Any]:
+    return quick_menu_registry.get_quick_menu_snapshot()
+
+
+def set_quick_menu_layout(payload: dict[str, Any] | None = None) -> dict[str, Any]:
+    result = quick_menu_registry.set_quick_menu_layout(dict(payload or {}))
+    if result.get("ok"):
+        _sync_drop_lock_from_layout(result.get("layout", {}).get("drop_lock"))
+        result["revision"] = quick_menu_registry.get_layout_revision()
+    return result
+
+
+def assign_quick_menu_slot(payload: dict[str, Any] | None = None) -> dict[str, Any]:
+    result = quick_menu_registry.assign_quick_menu_slot(dict(payload or {}))
+    if result.get("ok"):
+        result["revision"] = quick_menu_registry.get_layout_revision()
+    return result
+
+
+def clear_quick_menu_page(payload: dict[str, Any] | None = None) -> dict[str, Any]:
+    result = quick_menu_registry.clear_quick_menu_page(dict(payload or {}))
+    if result.get("ok"):
+        result["revision"] = quick_menu_registry.get_layout_revision()
+    return result
+
+
+def _apply_drop_player_lock_if_needed() -> dict[str, Any] | None:
+    """If lock is enabled, re-select the locked player. Returns an error dict on failure."""
+    if not _drop_lock_enabled:
+        return None
+    target: object
+    if _drop_lock_index is not None and _drop_lock_name:
+        # Validate both values. set_target_player() will recover by exact name
+        # if party indices changed after reconnect/reorder.
+        target = f"{_drop_lock_index}|{_drop_lock_name}"
+    elif _drop_lock_index is not None:
+        target = _drop_lock_index
+    elif _drop_lock_name:
+        target = _drop_lock_name
+    else:
+        return {"ok": False, "message": "Drop player lock is enabled but empty."}
+    result = set_target_player(target)
+    if not result.get("ok"):
+        return {
+            "ok": False,
+            "message": f"Locked drop player unavailable: {result.get('message', 'unknown error')}",
+        }
+    return None
+
+
+def replay_recorded_command(command: dict[str, Any] | None, *, apply_lock: bool = False) -> dict[str, Any]:
+    """Re-run a previously recorded command dict."""
+    if not isinstance(command, dict):
+        return {"ok": False, "message": "No recorded command."}
+    action = str(command.get("action") or "").strip()
+    if not action:
+        return {"ok": False, "message": "Recorded command has no action."}
+    payload = command.get("payload") if isinstance(command.get("payload"), dict) else {}
+    if apply_lock and bool(command.get("needs_player")):
+        lock_err = _apply_drop_player_lock_if_needed()
+        if lock_err is not None:
+            return lock_err
+    return run_quick_menu_action(action, payload, record=False)
+
+
+def repeat_last_drop(player_index_or_name: object | None = None) -> dict[str, Any]:
+    """Repeat the last drop/delivery. Player is chosen at run time unless lock-to-player (option C)."""
+    drop = get_last_drop()
+    if drop is None:
+        return {"ok": False, "message": "No last drop to repeat."}
+    if player_index_or_name is not None and str(player_index_or_name).strip() != "":
+        selected = set_target_player(player_index_or_name)
+        if not selected.get("ok"):
+            return selected
+    elif bool(drop.get("needs_player")):
+        if _drop_lock_enabled:
+            lock_err = _apply_drop_player_lock_if_needed()
+            if lock_err is not None:
+                return lock_err
+        else:
+            return {
+                "ok": False,
+                "message": "Select a player at run time (or enable lock-to-player) before repeating the last drop.",
+                "needs_player": True,
+            }
+    return replay_recorded_command(drop, apply_lock=False)
+
+
+def run_quick_menu_action(
+    action: str,
+    payload: dict[str, Any] | None = None,
+    *,
+    record: bool = True,
+) -> dict[str, Any]:
+    """Dispatch a Quick Menu / pin-friendly named action through backend handlers."""
+    payload = dict(payload or {})
+    key = str(action or "").strip()
+    label = str(payload.pop("_label", "") or key)
+    is_drop = False
+    needs_player = False
+
+    if key == "repeat_last_drop":
+        result = repeat_last_drop(payload.get("target_player"))
+        return result
+    if key == "max_all":
+        result = max_all()
+    elif key == "max_currency":
+        result = max_currency()
+    elif key == "max_eridium":
+        result = max_eridium()
+    elif key == "max_sdu":
+        result = max_sdu()
+    elif key == "max_player_level":
+        result = max_player_level()
+    elif key == "max_spec_level":
+        result = max_spec_level()
+    elif key == "give_currency":
+        result = give_currency(payload.get("currency_kind", "cash"), payload.get("amount", 0))
+        needs_player = True
+    elif key == "set_level":
+        result = give_experience(payload.get("xp_track", "player"), payload.get("level", 60))
+        needs_player = True
+    elif key == "open_golden_chest":
+        result = open_golden_chest()
+    elif key == "close_golden_chest":
+        result = close_golden_chest()
+    elif key == "open_bank":
+        result = open_bank_anywhere()
+    elif key == "drop_all_shinies":
+        result = drop_all_shinies_selected()
+        is_drop = True
+        needs_player = False
+    elif key in ("shiny_selected", "deliver_shinies_selected"):
+        result = deliver_shinies("selected")
+        is_drop = True
+        needs_player = True
+    elif key in ("shiny_all", "deliver_shinies_all"):
+        result = deliver_shinies("all")
+        is_drop = True
+    elif key in ("shiny_nonhost", "deliver_shinies_nonhost"):
+        result = deliver_shinies("nonhost")
+        is_drop = True
+    elif key == "spawn_itempool":
+        result = spawn_itempool(
+            payload.get("itempool_name") or payload.get("pool_name"),
+            payload.get("itempool_count") or payload.get("count") or 1,
+            payload.get("itempool_level") or payload.get("level") or 60,
+        )
+        is_drop = True
+    elif key == "give_serial_selected":
+        result = give_serials(
+            payload.get("serial_text") or "",
+            "selected",
+            payload.get("serial_override_level") or payload.get("override_level") or False,
+            payload.get("serial_level") or payload.get("level") or 60,
+        )
+        is_drop = True
+        needs_player = True
+    elif key == "give_serial_all":
+        result = give_serials(
+            payload.get("serial_text") or "",
+            "all",
+            payload.get("serial_override_level") or payload.get("override_level") or False,
+            payload.get("serial_level") or payload.get("level") or 60,
+        )
+        is_drop = True
+    elif key == "give_serial_nonhost":
+        result = give_serials(
+            payload.get("serial_text") or "",
+            "nonhost",
+            payload.get("serial_override_level") or payload.get("override_level") or False,
+            payload.get("serial_level") or payload.get("level") or 60,
+        )
+        is_drop = True
+    elif key == "travel_to_map":
+        result = travel_to_map(payload.get("travel_map") or payload.get("map"))
+    elif key == "travel_to_station":
+        result = travel_to_station(payload.get("travel_station") or payload.get("station"))
+    elif key == "kick_player":
+        result = kick_selected_player()
+        needs_player = True
+    elif key == "uvh_boost_all":
+        result = uvh_boost_all()
+    elif key.startswith("uvh_boost_tier_"):
+        result = uvh_boost_tier(key.rsplit("_", 1)[-1])
+    elif key == "uvh_boost_cancel":
+        result = uvh_boost_cancel()
+    elif key == "toggle_debug_cam":
+        result = toggle_debug_cam()
+    elif key == "teleport_debug_cam":
+        result = teleport_debug_cam()
+    elif key.startswith("devperk_"):
+        result = activate_devperk(key.rsplit("_", 1)[-1])
+        needs_player = True
+    elif key == "movement_apply_all":
+        result = movement_apply_all(payload)
+    elif key == "movement_reset_all":
+        result = movement_reset_all()
+    elif key.startswith("movement_preset_"):
+        result = movement_apply_preset(key.removeprefix("movement_preset_"))
+    elif key == "movement_toggle_no_target":
+        result = movement_toggle_no_target()
+    elif key == "movement_toggle_noclip":
+        result = movement_toggle_noclip()
+    elif key == "movement_players_only":
+        result = movement_toggle_players_only()
+    elif key == "movement_delete_ground_items":
+        result = movement_delete_ground_items()
+    elif key == "movement_zero_vault":
+        result = movement_zero_vault()
+    elif key == "movement_set_time":
+        result = movement_set_time(
+            payload.get("movement_time_dilation")
+            or payload.get("time_dilation")
+            or payload.get("time")
+            or 1.0
+        )
+    elif key == "movement_reset_time":
+        result = movement_reset_time()
+    elif key == "movement_infinite_jump_all_on":
+        result = movement_infinite_jump_all(True)
+    elif key == "movement_infinite_jump_all_off":
+        result = movement_infinite_jump_all(False)
+    elif key == "movement_infinite_jump_selected_on":
+        result = movement_infinite_jump_set_selected(
+            payload.get("infinite_jump_target") or payload.get("target_player"),
+            True,
+        )
+        needs_player = True
+    elif key == "movement_infinite_jump_selected_off":
+        result = movement_infinite_jump_set_selected(
+            payload.get("infinite_jump_target") or payload.get("target_player"),
+            False,
+        )
+        needs_player = True
+    elif key == "movement_infinite_jump_toggle_selected":
+        result = movement_infinite_jump_selected(
+            payload.get("infinite_jump_target") or payload.get("target_player")
+        )
+        needs_player = True
+    elif key == "movement_teleport_to_slot":
+        result = movement_teleport_selected_to_slot(payload.get("slot", 0))
+        needs_player = True
+    elif key == "rarity_apply":
+        result = rarity_apply(payload)
+    elif key == "rarity_reset":
+        result = rarity_reset()
+    elif key == "rarity_only_legendary":
+        result = rarity_only("legendary")
+    elif key == "rarity_only_pearlescent":
+        result = rarity_only("pearlescent")
+    elif key.startswith("dev_spawner_"):
+        result = run_dev_spawner_action(key, payload)
+        if key in ("dev_spawner_spawnai", "dev_spawner_spawn", "dev_spawner_lostloot"):
+            is_drop = True
+    elif key == "set_backpack_bank_selected":
+        result = set_inventory_sizes_selected(
+            payload.get("backpack_size") or 1000,
+            payload.get("bank_size") or 1000,
+        )
+    elif key == "set_backpack_bank_all":
+        result = set_inventory_sizes_all_party(
+            payload.get("backpack_size") or 1000,
+            payload.get("bank_size") or 1000,
+        )
+    elif key == "refresh_players":
+        players = refresh_players()
+        result = {"ok": True, "message": f"Refreshed {len(players)} player(s).", "players": players}
+    elif key == "set_target_player":
+        result = set_target_player(payload.get("target_player"))
+    else:
+        return {"ok": False, "message": f"Unknown quick menu action: {key}"}
+
+    # Drop helpers above already call note_last_command; only record non-drop pins here.
+    if record and result.get("ok") and not is_drop:
+        note_last_command(
+            key,
+            label=label or key,
+            payload=payload,
+            is_drop=False,
+            needs_player=needs_player,
+        )
+    return result
+
+
 def get_status() -> dict[str, Any]:
     players = refresh_players()
     try:
@@ -748,6 +1307,9 @@ def get_status() -> dict[str, Any]:
         "selected_player_index": _selected_player_index,
         "host_player_index": _host_player_index_value(),
         "last_refresh_error": _last_refresh_error,
+        "last_command": get_last_command(),
+        "last_drop": get_last_drop(),
+        "drop_player_lock": get_drop_player_lock(),
         "serial_delivery": delivery_progress,
         "diagnostics": _sdk_diagnostics(),
     }
@@ -783,7 +1345,9 @@ def close_golden_chest() -> dict[str, Any]:
 def drop_all_shinies_selected() -> dict[str, Any]:
     try:
         count = drop_all_shinies(_SHINY_DEFAULT_LEVEL)
-        return {"ok": True, "message": f"Drop All Shinies requested for {count} shiny itempool(s)."}
+        result = {"ok": True, "message": f"Drop All Shinies requested for {count} shiny itempool(s)."}
+        note_last_command("drop_all_shinies", label="Drop All Shinies", is_drop=True, needs_player=False)
+        return result
     except Exception as exc:
         return {"ok": False, "message": f"Drop All Shinies failed: {exc!r}"}
 
@@ -813,7 +1377,27 @@ def deliver_shinies(mode: str = "selected") -> dict[str, Any]:
     try:
         raw_serials = _load_shiny_serials()
         serials = serial_rewards._resolve_give_serial_strings(raw_serials)
-        return _deliver_serials_with_target(serials, mode, parsed_count=len(raw_serials))
+        result = _deliver_serials_with_target(serials, mode, parsed_count=len(raw_serials))
+        if result.get("ok"):
+            mode_key = str(mode or "selected").lower().strip()
+            action = {
+                "selected": "shiny_selected",
+                "all": "shiny_all",
+                "nonhost": "shiny_nonhost",
+                "non_host": "shiny_nonhost",
+                "all_non_host": "shiny_nonhost",
+            }.get(mode_key, "shiny_selected")
+            note_last_command(
+                action,
+                label={
+                    "shiny_selected": "Shinies Selected",
+                    "shiny_all": "Shinies All",
+                    "shiny_nonhost": "Shinies Non-Host",
+                }.get(action, "Deliver Shinies"),
+                is_drop=True,
+                needs_player=(action == "shiny_selected"),
+            )
+        return result
     except Exception as exc:
         return {"ok": False, "message": f"Shiny reward delivery failed: {exc!r}"}
 
@@ -1316,7 +1900,15 @@ def spawn_itempool(pool_name: object, count: object, level: object) -> dict[str,
         return {"ok": False, "message": "No item pool selected."}
     try:
         spawned = spawn_item_pool(name, int(level), int(count))
-        return {"ok": True, "message": f"Spawned item pool {name} x{spawned} at level {int(level)}."}
+        result = {"ok": True, "message": f"Spawned item pool {name} x{spawned} at level {int(level)}."}
+        note_last_command(
+            "spawn_itempool",
+            label=f"Spawn {name}",
+            payload={"itempool_name": name, "itempool_count": int(count), "itempool_level": int(level)},
+            is_drop=True,
+            needs_player=False,
+        )
+        return result
     except Exception as exc:
         return {"ok": False, "message": f"Spawn item pool failed: {exc!r}"}
 
@@ -1513,11 +2105,16 @@ def run_dev_spawner_action(action: str, payload: dict[str, Any] | None = None) -
             result.setdefault("command", cmd)
             result.setdefault("accepted", bool(result.get("asd_log_lines")))
             result.setdefault("message", "ActorScriptDeployer spawn request processed.")
-            return result
         else:
             direct_ok, direct_message = _run_actor_script_deployer_command(cmd)
-        if direct_ok:
-            return {
+            if not direct_ok:
+                return {
+                    "ok": False,
+                    "message": f"ActorScriptDeployer command was unavailable: {direct_message}",
+                    "command": cmd,
+                    "mode": "ActorScriptDeployer direct command unavailable",
+                }
+            result = {
                 "ok": True,
                 "message": (
                     f"Sent {cmd.split()[0]} to ActorScriptDeployer. "
@@ -1527,12 +2124,57 @@ def run_dev_spawner_action(action: str, payload: dict[str, Any] | None = None) -
                 "mode": direct_message,
             }
 
-        return {
-            "ok": False,
-            "message": f"ActorScriptDeployer command was unavailable: {direct_message}",
-            "command": cmd,
-            "mode": "ActorScriptDeployer direct command unavailable",
-        }
+        if result.get("ok") and action in (
+            "dev_spawner_spawnai",
+            "dev_spawner_spawn",
+            "dev_spawner_lostloot",
+        ):
+            if action == "dev_spawner_spawnai":
+                target_name = str(payload.get("dev_ai_name") or "").strip()
+                pin_payload = {
+                    "dev_ai_name": target_name,
+                    "dev_ai_count": payload.get("dev_ai_count", 1),
+                    "dev_ai_distance": payload.get("dev_ai_distance", 350),
+                    "dev_ai_spacing": payload.get("dev_ai_spacing", 125),
+                    "dev_ai_scale": payload.get("dev_ai_scale", 1),
+                    "dev_ai_z_offset": payload.get("dev_ai_z_offset", 0),
+                    "dev_ai_load": payload.get("dev_ai_load", ""),
+                    "dev_ai_direct_only": payload.get("dev_ai_direct_only", False),
+                }
+                pin_label = f"Spawn {target_name}" if target_name else "Spawn Actor"
+            else:
+                target_name = str(payload.get("dev_actor_name") or "").strip()
+                pin_payload = {
+                    key: payload.get(key)
+                    for key in (
+                        "dev_actor_name",
+                        "dev_actor_class",
+                        "dev_actor_count",
+                        "dev_actor_distance",
+                        "dev_actor_spacing",
+                        "dev_actor_scale",
+                        "dev_actor_z_offset",
+                        "dev_actor_delay",
+                        "dev_actor_enable_states",
+                        "dev_actor_disable_states",
+                        "dev_actor_no_activate",
+                        "dev_actor_include_non_generated",
+                    )
+                    if key in payload
+                }
+                pin_label = (
+                    "Spawn Lost Loot"
+                    if action == "dev_spawner_lostloot"
+                    else (f"Spawn {target_name}" if target_name else "Spawn Template")
+                )
+            note_last_command(
+                action,
+                label=pin_label,
+                payload=pin_payload,
+                is_drop=True,
+                needs_player=False,
+            )
+        return result
     except Exception as exc:
         return {"ok": False, "message": f"Dev spawner action failed: {exc!r}"}
 
@@ -2259,6 +2901,30 @@ def give_serials(text: object, mode: str = "selected", override_level: object = 
             parts.append(f"Skipped {skipped} serial(s) that could not be level-overridden ({sample}).")
         if parts:
             result["message"] = f"{result.get('message', '')} {' '.join(parts)}"
+    if result.get("ok"):
+        mode_key = str(mode or "selected").lower().strip()
+        if mode_key in ("non_host", "all_non_host"):
+            mode_key = "nonhost"
+        action = {
+            "selected": "give_serial_selected",
+            "all": "give_serial_all",
+            "nonhost": "give_serial_nonhost",
+        }.get(mode_key, "give_serial_selected")
+        note_last_command(
+            action,
+            label={
+                "give_serial_selected": "Give Serial Selected",
+                "give_serial_all": "Give Serial All",
+                "give_serial_nonhost": "Give Serial Non-Host",
+            }.get(action, "Give Serial"),
+            payload={
+                "serial_text": serial_text,
+                "serial_override_level": bool(override_enabled),
+                "serial_level": int(level_i),
+            },
+            is_drop=True,
+            needs_player=(action == "give_serial_selected"),
+        )
     return result
 
 

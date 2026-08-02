@@ -23,6 +23,10 @@ MSBT_External_Beta.zip
 !releases/
 !releases/README.md
 !releases/latest.json
+!releases/QUICK_MENU_PREVIEW_NOTES.txt
+!releases/MSBT-QuickMenu-TesterPack.zip
+!releases/MSBT-QuickMenu-TesterPack-AzzaRock.zip
+releases/tester_pack/Electron-Patch/
 
 # Local logs and scratch reports
 _inspect/
