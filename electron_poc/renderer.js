@@ -1109,26 +1109,65 @@ function closeQuickMenuAddModal() {
   state.quickMenuPendingAdd = null;
 }
 
+async function ensureQuickMenuSnapshotForPin() {
+  if (state.quickMenuSnapshot && state.quickMenuSnapshot.catalog) return state.quickMenuSnapshot;
+  await loadQuickMenuLayout({ quiet: true });
+  return state.quickMenuSnapshot;
+}
+
 function openQuickMenuAddModal(action, commandPayload = {}, label = "") {
-  if (!state.quickMenuSnapshot || !state.quickMenuSnapshot.catalog[action]) {
-    setQuickMenuStatus(`Command is not available for Quick Menu: ${action}`, "warning");
-    switchTab("quick-menu");
+  void (async () => {
+    const snapshot = await ensureQuickMenuSnapshotForPin();
+    if (!snapshot || !snapshot.catalog || !snapshot.catalog[action]) {
+      setQuickMenuStatus(
+        `Quick Menu bridge is offline or ${action} is not assignable. Open ★ Quick Menu after the game is in-world.`,
+        "warning"
+      );
+      switchTab("quick-menu");
+      return;
+    }
+    state.quickMenuPendingAdd = { action, commandPayload: { ...commandPayload } };
+    fillQuickMenuAddSelectors();
+    const pageSelect = quickMenuNode("quickMenuAddPage");
+    if (pageSelect) pageSelect.value = String(state.quickMenuPage);
+    updateQuickMenuAddSlotsForPage();
+    const title = quickMenuNode("quickMenuAddTitle");
+    const description = quickMenuNode("quickMenuAddDescription");
+    const custom = quickMenuNode("quickMenuAddLabel");
+    const metadata = snapshot.catalog[action] || {};
+    if (title) title.textContent = `Add ${label || metadata.basic || action}`;
+    if (description) description.textContent = `Store ${action} with the current supported values.`;
+    if (custom) custom.value = String(label || "").trim().slice(0, 48);
+    setLine(quickMenuNode("quickMenuAddStatus"), "Choose a page and slot.", "");
+    quickMenuNode("quickMenuAddModal").classList.remove("hidden");
+  })();
+}
+
+function openSerialQuickMenuPin(source, mode) {
+  const actionByMode = {
+    selected: "give_serial_selected",
+    all: "give_serial_all",
+    nonhost: "give_serial_nonhost"
+  };
+  const action = actionByMode[String(mode || "selected")];
+  if (!action) return;
+  if (source === "bookmark") {
+    const payload = quickMenuBookmarkSerialPayload();
+    if (!String(payload.serial_text || "").trim()) {
+      setBookmarkStatus("Select one or more bookmarks before + QM.", "warning");
+      return;
+    }
+    openQuickMenuAddModal(action, payload, quickMenuBookmarkSerialLabel());
     return;
   }
-  state.quickMenuPendingAdd = { action, commandPayload: { ...commandPayload } };
-  fillQuickMenuAddSelectors();
-  const pageSelect = quickMenuNode("quickMenuAddPage");
-  if (pageSelect) pageSelect.value = String(state.quickMenuPage);
-  updateQuickMenuAddSlotsForPage();
-  const title = quickMenuNode("quickMenuAddTitle");
-  const description = quickMenuNode("quickMenuAddDescription");
-  const custom = quickMenuNode("quickMenuAddLabel");
-  const metadata = state.quickMenuSnapshot.catalog[action] || {};
-  if (title) title.textContent = `Add ${label || metadata.basic || action}`;
-  if (description) description.textContent = `Store ${action} with the current supported values.`;
-  if (custom) custom.value = String(label || "").trim().slice(0, 48);
-  setLine(quickMenuNode("quickMenuAddStatus"), "Choose a page and slot.", "");
-  quickMenuNode("quickMenuAddModal").classList.remove("hidden");
+  if (source === "bl4") {
+    const payload = quickMenuBl4SerialPayload();
+    if (!String(payload.serial_text || "").trim()) {
+      setBl4DeliveryStatus("Select one or more BL4 codes before + QM.", "warning");
+      return;
+    }
+    openQuickMenuAddModal(action, payload, quickMenuBl4SerialLabel());
+  }
 }
 
 async function confirmQuickMenuAdd() {
@@ -6199,6 +6238,8 @@ function switchTab(tabId) {
   } else if (tabId === "quick-menu") {
     void loadQuickMenuLayout({ quiet: Boolean(state.quickMenuSnapshot) });
     void refreshQuickMenuPinPanel({ quiet: true });
+  } else if (tabId === "serial-tools" || tabId === "bl4-codes") {
+    void loadQuickMenuLayout({ quiet: true }).then(() => installQuickMenuAddButtons());
   }
 }
 
@@ -6332,6 +6373,11 @@ function wireEvents() {
   els.bookmarkRefreshPlayersBtn.addEventListener("click", bridgeStatus);
   document.querySelectorAll("[data-bookmark-send-mode]").forEach((button) => {
     button.addEventListener("click", () => sendBookmarkSerial(button.dataset.bookmarkSendMode));
+  });
+  document.querySelectorAll("[data-qm-serial-source]").forEach((button) => {
+    button.addEventListener("click", () => {
+      openSerialQuickMenuPin(button.dataset.qmSerialSource, button.dataset.qmSerialMode);
+    });
   });
 
   els.bl4ReloadBtn.addEventListener("click", loadBl4Catalog);

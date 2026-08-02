@@ -453,6 +453,25 @@ iframe {
   white-space: nowrap;
 }
 
+.qm-serial-pin-row {
+  margin-top: 0.35rem;
+}
+
+.qm-pin-button,
+button.qm-pin-button {
+  border: 1px solid var(--gold);
+  background: linear-gradient(180deg, #ffb13d, #d86f00);
+  color: #120900;
+  font-weight: 700;
+  min-width: 7.5rem;
+}
+
+.qm-pin-button:hover,
+button.qm-pin-button:hover {
+  background: linear-gradient(180deg, #ffd15a, #f08400);
+  color: #120900;
+}
+
 .quick-menu-add-modal {
   width: min(620px, 100%);
 }

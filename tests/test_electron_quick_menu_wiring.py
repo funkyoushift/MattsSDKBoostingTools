@@ -88,11 +88,16 @@ def test_dev_spawner_targets_are_quick_menu_assignable():
 
 
 def test_bl4_and_bookmark_serials_have_quick_menu_wiring():
+    html = (ELECTRON / "renderer.html").read_text(encoding="utf-8")
     js = (ELECTRON / "renderer.js").read_text(encoding="utf-8")
+    assert 'id="bookmarkQmSelectedBtn"' in html
+    assert 'id="bl4QmSelectedBtn"' in html
+    assert 'data-qm-serial-source="bookmark"' in html
+    assert 'data-qm-serial-source="bl4"' in html
     assert "quickMenuBookmarkSerialPayload" in js
     assert "quickMenuBl4SerialPayload" in js
-    assert "[data-bookmark-send-mode]" in js
-    assert "[data-bl4-send-mode]" in js
+    assert "openSerialQuickMenuPin" in js
+    assert "[data-qm-serial-source]" in js
     qm = (
         ROOT
         / "mod_extracted"

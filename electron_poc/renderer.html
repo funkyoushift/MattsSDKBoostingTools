@@ -500,6 +500,12 @@
               <button data-bookmark-send-mode="all">Deliver All</button>
               <button data-bookmark-send-mode="nonhost">Deliver Non-Host</button>
             </div>
+            <div class="button-row wrap qm-serial-pin-row">
+              <button id="bookmarkQmSelectedBtn" type="button" class="qm-pin-button" data-qm-serial-source="bookmark" data-qm-serial-mode="selected">+ QM Selected</button>
+              <button id="bookmarkQmAllBtn" type="button" class="qm-pin-button" data-qm-serial-source="bookmark" data-qm-serial-mode="all">+ QM All</button>
+              <button id="bookmarkQmNonhostBtn" type="button" class="qm-pin-button" data-qm-serial-source="bookmark" data-qm-serial-mode="nonhost">+ QM Non-Host</button>
+            </div>
+            <p class="muted-line">Use the gold <strong>+ QM</strong> buttons to pin the currently checked bookmark serial(s) into the Quick Menu.</p>
             <pre id="bookmarkOutput">No bookmark delivery sent yet.</pre>
           </section>
         </div>
@@ -654,6 +660,12 @@
             <button data-bl4-send-mode="all">Deliver All</button>
             <button data-bl4-send-mode="nonhost">Deliver Non-Host</button>
           </div>
+          <div class="button-row wrap qm-serial-pin-row">
+            <button id="bl4QmSelectedBtn" type="button" class="qm-pin-button" data-qm-serial-source="bl4" data-qm-serial-mode="selected">+ QM Selected</button>
+            <button id="bl4QmAllBtn" type="button" class="qm-pin-button" data-qm-serial-source="bl4" data-qm-serial-mode="all">+ QM All</button>
+            <button id="bl4QmNonhostBtn" type="button" class="qm-pin-button" data-qm-serial-source="bl4" data-qm-serial-mode="nonhost">+ QM Non-Host</button>
+          </div>
+          <p class="muted-line">Use the gold <strong>+ QM</strong> buttons to pin the currently selected BL4 code serial(s) into the Quick Menu.</p>
           <pre id="bl4Output" class="bl4-delivery-output">No BL4 Codes delivery sent yet.</pre>
         </aside>
       </div>
