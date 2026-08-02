@@ -8,14 +8,6 @@ This folder stores small release metadata tracked in source control.
 - Current MSBT builds require SDK 03 / oak2-mod-manager v0.3: <https://github.com/bl-sdk/oak2-mod-manager/releases/tag/v0.3>
 - Latest downloads: <https://github.com/funkyoushift/MattsSDKBoostingTools/releases>
 
-## Quick Menu tester pack (branch artifact)
-
-Phone-friendly zip for Quick Menu preview testers (includes `.sdkmod` + install/smoke instructions). No BLImGui required.
-
-- File: [`MSBT-QuickMenu-TesterPack.zip`](./MSBT-QuickMenu-TesterPack.zip)
-- Branch download link:
-  <https://github.com/funkyoushift/MattsSDKBoostingTools/raw/cursor/quick-menu-native-umg-0b18/releases/MSBT-QuickMenu-TesterPack.zip>
-
 Electron release assets should use clear names:
 
 - `MSBT-Installer-v...exe`

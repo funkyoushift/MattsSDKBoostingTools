@@ -2,7 +2,7 @@
 
 MSBT is a Borderlands 4 boosting and item toolkit: a standalone Windows app outside the game, plus a small SDK mod that talks to Borderlands 4 while you play. Use it for currency/XP/SDU helpers, serial delivery, BL4 code browsing, Mattmab’s save/profile/item editor, Dev Spawner, map travel, movement tools, and more.
 
-**Current release: [v1.2.1](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v1.2.1)**
+**Current release: [v2.0.0](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.0.0)**
 
 This project is **unofficial**. It is not affiliated with, endorsed by, or connected to Gearbox, 2K, or the Borderlands franchise owners.
 
@@ -13,7 +13,7 @@ This project is **unofficial**. It is not affiliated with, endorsed by, or conne
 **Recommended:** grab the latest Windows installer from GitHub Releases:
 
 - [GitHub Releases — download page](https://github.com/funkyoushift/MattsSDKBoostingTools/releases)
-- Latest installer example: `MSBT-Installer-v1.2.0.exe`
+- Latest installer example: `MSBT-Installer-v2.0.0.exe`
 
 **Portable option:** if you do not want an installer, download the portable ZIP instead (`MSBT-Portable-v…-win-x64.zip`), extract it, and run the app from that folder.
 
@@ -38,6 +38,7 @@ In plain terms, the Electron app is the control panel. The SDK mod does the live
   <img src="docs/media/msbt-boosting.jpg" alt="MSBT Boosting tab — targeting, UVH booster, serial copies" width="900">
 </p>
 
+- **Quick Menu** — native in-game F7 menu (no BLImGui required) with pin/repeat/lock, plus an external Quick Menu editor tab and `+ QM` pin buttons
 - **Boosting** — cash, Eridium, XP/spec, SDU, inventory size helpers, rarity drop weights, lobby targeting (selected / all / non-host), and UVH booster controls
 - **Serial tools** — paste, validate, bookmark, and deliver `@U` item serials
 - **BL4 Codes** — search/browse a merged local catalog (GZO image cards, Lootlemon references, custom/static codes), then deliver from a sticky delivery panel
