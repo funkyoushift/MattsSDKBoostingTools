@@ -1867,7 +1867,13 @@ def uvh_boost_tick() -> None:
         _uvh_set_status(f"UVH boost complete. Final step sent to {sent}/{len(live_targets)} player(s).")
 
 
-_CHALLENGE_STEP_DELAY_SECONDS = 0.05
+# Crash experiment pacing: drain ~2539 grants in roughly 30-60s depending on
+# UMG tick rate. Double-start is still blocked; million-scale amounts stay capped.
+_CHALLENGE_STEP_DELAY_SECONDS = 0.0
+_CHALLENGE_BATCH_SIZE = 64
+_CHALLENGE_LARGE_AMOUNT_THRESHOLD = 100
+_CHALLENGE_MAX_AMOUNT_PER_GRANT = 250
+_CHALLENGE_STATUS_EVERY = 100
 _challenge_catalog_cache: list[tuple[str, int]] | None = None
 _challenge_queue: list[tuple[str, int]] = []
 _challenge_targets: list[Any] = []
@@ -1875,6 +1881,7 @@ _challenge_next_at = 0.0
 _challenge_running = False
 _challenge_last_status = "Ready."
 _challenge_total_steps = 0
+_challenge_capped_grants = 0
 
 
 def _challenge_set_status(message: str) -> None:
@@ -1886,6 +1893,26 @@ def _challenge_set_status(message: str) -> None:
         _sdk_logging.info(f"[Matts SDK Boosting Tools | Challenges] {message}")
     except Exception:
         pass
+
+
+def _challenge_should_skip(challenge_id: str) -> bool:
+    """Skip aggregate parents that cascade into many child rewards."""
+    return challenge_id.startswith("ChallengeParent_")
+
+
+def _challenge_grant_amount(amount: int) -> int:
+    """Clamp huge catalog totals (cash/heal can be millions) to a safer grant size."""
+    try:
+        value = int(amount)
+    except Exception:
+        value = 1
+    return max(1, min(value, _CHALLENGE_MAX_AMOUNT_PER_GRANT))
+
+
+def _challenge_delay_for_amount(amount: int) -> float:
+    if amount > _CHALLENGE_LARGE_AMOUNT_THRESHOLD:
+        return 0.02
+    return _CHALLENGE_STEP_DELAY_SECONDS
 
 
 def _load_challenge_catalog() -> list[tuple[str, int]]:
@@ -1904,7 +1931,7 @@ def _load_challenge_catalog() -> list[tuple[str, int]]:
                     if not isinstance(entry, dict):
                         continue
                     challenge_id = str(entry.get("id") or "").strip()
-                    if not challenge_id:
+                    if not challenge_id or _challenge_should_skip(challenge_id):
                         continue
                     try:
                         amount = max(1, int(entry.get("amount") or 1))
@@ -1921,6 +1948,14 @@ def _load_challenge_catalog() -> list[tuple[str, int]]:
 def complete_challenges_all() -> dict[str, Any]:
     """Queue every catalog challenge grant for live players (hidden / console tool)."""
     global _challenge_queue, _challenge_targets, _challenge_next_at, _challenge_running, _challenge_total_steps
+    global _challenge_capped_grants
+    if _challenge_running or _challenge_queue:
+        remaining = len(_challenge_queue)
+        _challenge_set_status(
+            f"Complete-all-challenges already running ({remaining} step(s) left). "
+            "Use msbt_complete_challenges_cancel first."
+        )
+        return {"ok": False, "message": _challenge_last_status, "active": True, "steps_remaining": remaining}
     if get_pc() is None:
         _challenge_set_status("Cannot start: load into a character first.")
         return {"ok": False, "message": _challenge_last_status}
@@ -1935,10 +1970,12 @@ def complete_challenges_all() -> dict[str, Any]:
     _challenge_queue = list(catalog)
     _challenge_targets = targets
     _challenge_total_steps = len(catalog)
+    _challenge_capped_grants = 0
     _challenge_next_at = time.monotonic()
     _challenge_running = True
     _challenge_set_status(
-        f"Complete-all-challenges queued for {len(targets)} player(s); {_challenge_total_steps} step(s)."
+        f"Complete-all-challenges queued for {len(targets)} player(s); {_challenge_total_steps} step(s) "
+        f"(batch {_CHALLENGE_BATCH_SIZE}/tick, crash-speed test)."
     )
     return {
         "ok": True,
@@ -1971,37 +2008,72 @@ def complete_challenges_status() -> dict[str, Any]:
         "steps_remaining": len(_challenge_queue),
         "steps_total": _challenge_total_steps,
         "players": len(_challenge_targets),
+        "capped_grants": _challenge_capped_grants,
     }
 
 
 def complete_challenges_tick() -> None:
-    global _challenge_next_at, _challenge_running
+    global _challenge_next_at, _challenge_running, _challenge_capped_grants
     if not _challenge_queue or time.monotonic() < _challenge_next_at:
         return
     if get_pc() is None:
+        _challenge_queue.clear()
+        _challenge_targets.clear()
+        _challenge_running = False
+        _challenge_set_status("Complete-all-challenges stopped: no local player controller.")
         return
-    challenge, amount = _challenge_queue.pop(0)
     live_targets = [controller for controller in _challenge_targets if _uvh_live(controller)]
-    sent = 0
-    for controller in live_targets:
-        try:
-            controller.ServerIncrementChallengeForPlayer(challenge, int(amount))
-            sent += 1
-        except Exception as exc:
-            _challenge_set_status(f"{challenge} failed for one player: {exc!r}")
-    _challenge_next_at = time.monotonic() + _CHALLENGE_STEP_DELAY_SECONDS
+    if not live_targets:
+        _challenge_queue.clear()
+        _challenge_targets.clear()
+        _challenge_running = False
+        _challenge_set_status("Complete-all-challenges stopped: no live players left.")
+        return
+
+    last_challenge = ""
+    last_grant_amount = 1
+    last_raw_amount = 1
+    last_sent = 0
+    batch_delay = _CHALLENGE_STEP_DELAY_SECONDS
+    for _ in range(max(1, int(_CHALLENGE_BATCH_SIZE))):
+        if not _challenge_queue:
+            break
+        challenge, amount = _challenge_queue.pop(0)
+        grant_amount = _challenge_grant_amount(amount)
+        if grant_amount < int(amount):
+            _challenge_capped_grants += 1
+        sent = 0
+        for controller in live_targets:
+            try:
+                controller.ServerIncrementChallengeForPlayer(challenge, int(grant_amount))
+                sent += 1
+            except Exception as exc:
+                _challenge_set_status(f"{challenge} failed for one player: {exc!r}")
+        last_challenge = challenge
+        last_grant_amount = grant_amount
+        last_raw_amount = int(amount)
+        last_sent = sent
+        batch_delay = max(batch_delay, _challenge_delay_for_amount(grant_amount))
+
+    _challenge_next_at = time.monotonic() + batch_delay
     done = _challenge_total_steps - len(_challenge_queue)
     if _challenge_queue:
-        if done == 1 or done % 50 == 0:
+        if done == 1 or done % _CHALLENGE_STATUS_EVERY == 0:
+            cap_note = (
+                f" x{last_grant_amount} (capped from {last_raw_amount})"
+                if last_grant_amount < last_raw_amount
+                else f" x{last_grant_amount}"
+            )
             _challenge_set_status(
                 f"Challenges: {done}/{_challenge_total_steps} sent "
-                f"({challenge} x{amount} -> {sent}/{len(live_targets)} player(s))."
+                f"({last_challenge}{cap_note} -> {last_sent}/{len(live_targets)} player(s))."
             )
     else:
         _challenge_running = False
+        capped = f" Capped {_challenge_capped_grants} oversized grant(s)." if _challenge_capped_grants else ""
         _challenge_set_status(
-            f"Complete-all-challenges finished. Final step {challenge} sent to "
-            f"{sent}/{len(live_targets)} player(s)."
+            f"Complete-all-challenges finished. Final step {last_challenge} sent to "
+            f"{last_sent}/{len(live_targets)} player(s).{capped}"
         )
 
 
@@ -3132,3 +3204,263 @@ def _cmd_msbt_complete_challenges(_args: Any = None) -> None:
 def _cmd_msbt_complete_challenges_cancel(_args: Any = None) -> None:
     result = complete_challenges_cancel()
     _challenge_set_status(str(result.get("message") or _challenge_last_status))
+
+
+def _probe_name_interesting(name: str) -> bool:
+    lowered = str(name or "").lower()
+    keys = (
+        "challenge",
+        "mission",
+        "progress",
+        "complete",
+        "increment",
+        "grant",
+        "reward",
+        "achievement",
+        "stat",
+        "counter",
+    )
+    return any(key in lowered for key in keys)
+
+
+def _safe_dir_names(obj: Any, *, limit: int = 400) -> list[str]:
+    names: list[str] = []
+    try:
+        for name in dir(obj):
+            if str(name).startswith("_"):
+                continue
+            names.append(str(name))
+            if len(names) >= limit:
+                break
+    except Exception as exc:
+        return [f"<dir failed: {exc!r}>"]
+    return names
+
+
+def _safe_class_function_names(obj: Any, *, limit: int = 400) -> list[str]:
+    names: list[str] = []
+    try:
+        cls = getattr(obj, "Class", None)
+        funcs = getattr(cls, "Functions", None) if cls is not None else None
+        if funcs is None:
+            return []
+        for fn in list(funcs):
+            try:
+                raw = getattr(fn, "Name", None) or getattr(fn, "get_path_name", lambda: None)() or str(fn)
+            except Exception:
+                raw = str(fn)
+            text = str(raw)
+            if text.startswith("_"):
+                continue
+            names.append(text)
+            if len(names) >= limit:
+                break
+    except Exception as exc:
+        return [f"<Functions failed: {exc!r}>"]
+    return names
+
+
+def probe_challenge_apis() -> dict[str, Any]:
+    """Live introspection for challenge completion APIs (research / option B)."""
+    pc = get_pc()
+    if pc is None:
+        return {"ok": False, "message": "No local player controller."}
+
+    payload: dict[str, Any] = {
+        "ok": True,
+        "message": "Challenge API probe complete.",
+        "pc_type": type(pc).__name__,
+        "pc_interesting_attrs": [],
+        "pc_interesting_funcs": [],
+        "pc_method_hits": {},
+        "manager_method_hits": {},
+        "oak_challenge_manager": None,
+        "rewards_manager": None,
+        "find_all_challenge_classes": {},
+    }
+
+    candidate_methods = (
+        "ServerIncrementChallengeForPlayer",
+        "ClientIncrementChallengeForPlayer",
+        "IncrementChallengeForPlayer",
+        "IncrementChallenge",
+        "ServerCompleteChallenge",
+        "ClientCompleteChallenge",
+        "CompleteChallenge",
+        "CompleteChallengeForPlayer",
+        "ServerSetChallengeProgress",
+        "SetChallengeProgress",
+        "SetChallengeCompleted",
+        "ActivateChallenge",
+        "ServerActivateChallenge",
+        "DeactivateChallenge",
+        "GetChallengeProgress",
+        "GetChallengeManager",
+        "UpdateChallenge",
+        "ServerUpdateChallenge",
+        "GrantChallenge",
+        "ServerGrantChallenge",
+        "ForceCompleteChallenge",
+        "DebugCompleteChallenge",
+        "CheatCompleteChallenge",
+        "Server_OpenAllPackages",
+        "Server_OpenPackage",
+    )
+
+    def _method_hit(obj: Any, name: str) -> dict[str, Any]:
+        info: dict[str, Any] = {"name": name, "hasattr": False, "callable": False}
+        try:
+            info["hasattr"] = hasattr(obj, name)
+        except Exception as exc:
+            info["hasattr_error"] = repr(exc)
+            return info
+        if not info["hasattr"]:
+            return info
+        try:
+            value = getattr(obj, name)
+            info["callable"] = callable(value)
+            info["value_type"] = type(value).__name__
+            info["value_str"] = str(value)[:180]
+        except Exception as exc:
+            info["getattr_error"] = repr(exc)
+        return info
+
+    pc_attrs = _safe_dir_names(pc)
+    payload["pc_interesting_attrs"] = [n for n in pc_attrs if _probe_name_interesting(n)]
+    payload["pc_interesting_funcs"] = [
+        n for n in _safe_class_function_names(pc) if _probe_name_interesting(n)
+    ]
+    payload["pc_method_hits"] = {
+        name: _method_hit(pc, name) for name in candidate_methods if _method_hit(pc, name).get("hasattr")
+    }
+    # Always include the known UVH method even when absent, for clarity.
+    if "ServerIncrementChallengeForPlayer" not in payload["pc_method_hits"]:
+        payload["pc_method_hits"]["ServerIncrementChallengeForPlayer"] = _method_hit(
+            pc, "ServerIncrementChallengeForPlayer"
+        )
+
+    for attr_name, key in (
+        ("OakChallengeManager", "oak_challenge_manager"),
+        ("ChallengeManager", "oak_challenge_manager"),
+        ("RewardsManager", "rewards_manager"),
+    ):
+        if payload.get(key):
+            continue
+        try:
+            obj = getattr(pc, attr_name, None)
+        except Exception as exc:
+            payload[key] = {"attr": attr_name, "error": repr(exc)}
+            continue
+        if obj is None:
+            continue
+        payload[key] = {
+            "attr": attr_name,
+            "type": type(obj).__name__,
+            "path": str(getattr(obj, "get_path_name", lambda: "")() or obj),
+            "interesting_attrs": [n for n in _safe_dir_names(obj) if _probe_name_interesting(n)],
+            "all_attrs_sample": _safe_dir_names(obj, limit=120),
+            "interesting_funcs": [n for n in _safe_class_function_names(obj) if _probe_name_interesting(n)],
+            "all_funcs_sample": _safe_class_function_names(obj, limit=120),
+            "method_hits": {
+                name: hit
+                for name in candidate_methods
+                for hit in [_method_hit(obj, name)]
+                if hit.get("hasattr")
+            },
+        }
+        if key == "oak_challenge_manager":
+            payload["manager_method_hits"] = payload[key]["method_hits"]
+
+    try:
+        from unrealsdk import find_all, find_class
+    except Exception as exc:
+        payload["find_error"] = repr(exc)
+        _challenge_set_status(f"Challenge API probe finished (find_* unavailable: {exc!r}).")
+        return payload
+
+    for class_name in (
+        "OakChallengeManager",
+        "ChallengeManager",
+        "GbxChallengeManager",
+        "OakChallenge",
+        "Challenge",
+        "OakPlayerChallengeComponent",
+        "PlayerChallengeComponent",
+        "ChallengeComponent",
+        "GbxRewardsManager",
+    ):
+        entry: dict[str, Any] = {"class": class_name}
+        try:
+            cls = find_class(class_name)
+            entry["find_class"] = bool(cls is not None)
+            if cls is not None:
+                entry["class_funcs"] = [
+                    n for n in _safe_class_function_names(cls) if _probe_name_interesting(n)
+                ][:80]
+                entry["class_funcs_all_sample"] = _safe_class_function_names(cls, limit=80)
+                entry["class_method_hits"] = {
+                    name: hit
+                    for name in candidate_methods
+                    for hit in [_method_hit(cls, name)]
+                    if hit.get("hasattr")
+                }
+        except Exception as exc:
+            entry["find_class_error"] = repr(exc)
+        try:
+            objects = list(find_all(class_name, False) or [])
+            if not objects:
+                objects = list(find_all(class_name) or [])
+            entry["find_all_count"] = len(objects)
+            if objects:
+                sample = objects[0]
+                entry["sample_type"] = type(sample).__name__
+                entry["sample_interesting_attrs"] = [
+                    n for n in _safe_dir_names(sample) if _probe_name_interesting(n)
+                ][:80]
+                entry["sample_interesting_funcs"] = [
+                    n for n in _safe_class_function_names(sample) if _probe_name_interesting(n)
+                ][:80]
+                entry["sample_method_hits"] = {
+                    name: hit
+                    for name in candidate_methods
+                    for hit in [_method_hit(sample, name)]
+                    if hit.get("hasattr")
+                }
+                entry["sample_all_attrs"] = _safe_dir_names(sample, limit=200)
+        except Exception as exc:
+            entry["find_all_error"] = repr(exc)
+        payload["find_all_challenge_classes"][class_name] = entry
+
+    _challenge_set_status(
+        "Challenge API probe complete; see bridge action probe_challenge_apis result."
+    )
+    return payload
+
+
+@command(
+    "msbt_probe_challenge_apis",
+    description="Hidden: dump live OakChallengeManager / challenge-related API names to the log.",
+)
+def _cmd_msbt_probe_challenge_apis(_args: Any = None) -> None:
+    result = probe_challenge_apis()
+    try:
+        from unrealsdk import logging as _sdk_logging
+
+        _sdk_logging.info(
+            f"[Matts SDK Boosting Tools | Challenges] probe ok={result.get('ok')} "
+            f"manager={bool(result.get('oak_challenge_manager'))} "
+            f"pc_funcs={len(result.get('pc_interesting_funcs') or [])}"
+        )
+        mgr = result.get("oak_challenge_manager") or {}
+        if isinstance(mgr, dict):
+            _sdk_logging.info(
+                f"[Matts SDK Boosting Tools | Challenges] manager funcs: "
+                f"{', '.join((mgr.get('interesting_funcs') or [])[:40])}"
+            )
+            _sdk_logging.info(
+                f"[Matts SDK Boosting Tools | Challenges] manager attrs: "
+                f"{', '.join((mgr.get('interesting_attrs') or [])[:40])}"
+            )
+    except Exception:
+        pass
+    _challenge_set_status(str(result.get("message") or "Challenge API probe finished."))

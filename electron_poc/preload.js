@@ -27,6 +27,8 @@ contextBridge.exposeInMainWorld("msbt", {
   readDevSpawnerCatalog: () => ipcRenderer.invoke("app:readDevSpawnerCatalog"),
   loadDevSpawnerFavorites: () => ipcRenderer.invoke("app:loadDevSpawnerFavorites"),
   saveDevSpawnerFavorites: (payload) => ipcRenderer.invoke("app:saveDevSpawnerFavorites", payload),
+  loadTravelFavorites: () => ipcRenderer.invoke("app:loadTravelFavorites"),
+  saveTravelFavorites: (payload) => ipcRenderer.invoke("app:saveTravelFavorites", payload),
   loadSerialBookmarks: () => ipcRenderer.invoke("app:loadSerialBookmarks"),
   saveSerialBookmarks: (payload) => ipcRenderer.invoke("app:saveSerialBookmarks", payload),
   loadMovementSettings: () => ipcRenderer.invoke("app:loadMovementSettings"),

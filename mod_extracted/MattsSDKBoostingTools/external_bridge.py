@@ -594,6 +594,8 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
         return backend_actions.complete_challenges_cancel()
     if action == "complete_challenges_status":
         return backend_actions.complete_challenges_status()
+    if action == "probe_challenge_apis":
+        return backend_actions.probe_challenge_apis()
     if action == "give_currency":
         return backend_actions.give_currency(
             payload.get("currency_kind") if "currency_kind" in payload else payload.get("currency_index", "cash"),

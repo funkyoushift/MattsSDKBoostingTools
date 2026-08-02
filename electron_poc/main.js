@@ -13,6 +13,11 @@ const {
   writeFavorites
 } = require("./dev_spawner_favorites_store");
 const {
+  favoritesFilePath: travelFavoritesFilePath,
+  readFavorites: readTravelFavorites,
+  writeFavorites: writeTravelFavorites
+} = require("./travel_favorites_store");
+const {
   bookmarksFilePath,
   readBookmarks,
   writeBookmarks
@@ -128,6 +133,7 @@ const BL4_DEFAULT_SDK_MODS_CANDIDATES = [
 const USER_DATA_FILE_DEFINITIONS = [
   { key: "serialBookmarks", label: "Serial Bookmarks", fileName: "serial_bookmarks.json" },
   { key: "devSpawnerFavorites", label: "Dev Spawner Favorites", fileName: "dev_spawner_favorites.json" },
+  { key: "travelFavorites", label: "Travel Favorites", fileName: "travel_favorites.json" },
   { key: "movementSettings", label: "Movement Presets", fileName: "movement_settings.json" },
   { key: "raritySettings", label: "Rarity Presets", fileName: "rarity_settings.json" },
   { key: "windowState", label: "Window Size / Position / Opacity", fileName: "window-state.json" }
@@ -1010,6 +1016,20 @@ ipcMain.handle("app:saveDevSpawnerFavorites", async (_event, payload) => {
   const filePath = favoritesFilePath(app.getPath("userData"));
   try {
     return await writeFavorites(filePath, payload || {});
+  } catch (error) {
+    return { ok: false, message: String(error && error.message ? error.message : error) };
+  }
+});
+
+ipcMain.handle("app:loadTravelFavorites", async () => {
+  const filePath = travelFavoritesFilePath(app.getPath("userData"));
+  return readTravelFavorites(filePath);
+});
+
+ipcMain.handle("app:saveTravelFavorites", async (_event, payload) => {
+  const filePath = travelFavoritesFilePath(app.getPath("userData"));
+  try {
+    return await writeTravelFavorites(filePath, payload || {});
   } catch (error) {
     return { ok: false, message: String(error && error.message ? error.message : error) };
   }
