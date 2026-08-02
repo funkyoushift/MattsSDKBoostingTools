@@ -113,6 +113,11 @@ def test_quick_menu_source_and_load_without_blimgui():
     module = _load_module("MattsSDKBoostingTools.quick_menu", "quick_menu.py", extra_stubs=stubs)
     assert hasattr(module, "toggle_panel")
     assert hasattr(module, "unstuck")
+    assert hasattr(module, "process_hotkeys")
+    qm_src = (PKG / "quick_menu.py").read_text(encoding="utf-8")
+    assert "Close F7" in qm_src
+    assert "F6 unstuck" in qm_src
+    assert "process_hotkeys" in qm_src
     assert "blimgui" not in sys.modules["MattsSDKBoostingTools.quick_menu"].__dict__
 
 

@@ -2,7 +2,7 @@
 
 MSBT is a Borderlands 4 boosting and item toolkit: a standalone Windows app outside the game, plus a small SDK mod that talks to Borderlands 4 while you play. Use it for currency/XP/SDU helpers, serial delivery, BL4 code browsing, Mattmab’s save/profile/item editor, Dev Spawner, map travel, movement tools, and more.
 
-**Current release: [v2.0.0](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.0.0)**
+**Current release: [v2.0.1](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.0.1)**
 
 This project is **unofficial**. It is not affiliated with, endorsed by, or connected to Gearbox, 2K, or the Borderlands franchise owners.
 
@@ -13,7 +13,7 @@ This project is **unofficial**. It is not affiliated with, endorsed by, or conne
 **Recommended:** grab the latest Windows installer from GitHub Releases:
 
 - [GitHub Releases — download page](https://github.com/funkyoushift/MattsSDKBoostingTools/releases)
-- Latest installer example: `MSBT-Installer-v2.0.0.exe`
+- Latest installer example: `MSBT-Installer-v2.0.1.exe`
 
 **Portable option:** if you do not want an installer, download the portable ZIP instead (`MSBT-Portable-v…-win-x64.zip`), extract it, and run the app from that folder.
 
@@ -60,6 +60,62 @@ A lot of community testing, late nights, and real money went into keeping this u
 
 ---
 
+## Quick Menu (v2.0)
+
+Native in-game menu plus an external editor. **BLImGui is not required.**
+
+<p align="center">
+  <img src="docs/media/msbt-quick-menu-controls.jpg" alt="MSBT Quick Menu controls — F7 open/close, Esc close modal, F6 unstuck" width="900">
+</p>
+
+**In-game controls**
+
+| Key | What it does |
+| --- | --- |
+| **F7** | Open **and** close the Quick Menu |
+| **Esc** | Close a popup/modal first; if none, close the menu |
+| **F6** | **Unstuck** — force-close the menu and restore normal mouse / look / move if input feels stuck |
+
+Also use the on-screen **Close F7** button. Prefer F7 for normal open/close; use F6 only when the cursor or camera feels stuck after the menu.
+
+**What you get**
+
+- Up to **5 pages × 12 slots**
+- **Pin Last Command**, **Repeat Last Drop**, optional **Lock Player**
+- Edit mode: assign, clear, swap, reset page / reset all
+- Live sync with the Electron **★ Quick Menu** tab over the bridge
+
+<p align="center">
+  <img src="docs/media/msbt-quick-menu-editor.png" alt="Electron Quick Menu editor — pages, slots, pin/repeat controls" width="900">
+</p>
+
+**How to pin commands from the app**
+
+1. Run or configure an action in MSBT (Boosting, Serial Bookmarks, BL4 Codes, Travel, etc.).
+2. Click a **`+ QM`** button next to that action (gold buttons on serial/BL4 delivery; smaller `+ QM` beside many Boosting actions).
+3. Choose a page and slot → **Save**.
+4. Press **F7** in-game — the slot is live (no game restart needed for layout edits).
+
+<p align="center">
+  <img src="docs/media/msbt-qm-serial-bookmarks.png" alt="Gold + QM Selected / All / Non-Host buttons under Serial Bookmarks delivery" width="720">
+</p>
+
+<p align="center"><em>Serial Tools → Bookmarks delivery: gold <strong>+ QM Selected / All / Non-Host</strong></em></p>
+
+<p align="center">
+  <img src="docs/media/msbt-qm-bl4-codes.png" alt="Gold + QM buttons on the BL4 Codes delivery panel" width="720">
+</p>
+
+<p align="center"><em>BL4 Codes → Delivery panel: same gold <strong>+ QM</strong> buttons</em></p>
+
+<p align="center">
+  <img src="docs/media/msbt-qm-boosting-pins.png" alt="Small + QM pins next to Give Currency and Max Eridium" width="480">
+</p>
+
+<p align="center"><em>Boosting: small <strong>+ QM</strong> pins next to supported actions</em></p>
+
+---
+
 ## Why this project exists
 
 Mattmab put the original toolset together: homemade SDK pieces plus community mods that fit Borderlands 4 boosting and item work. That first version lived **inside** the game through **BLImGui** (Borderlands ImGui) — a separate in-game UI framework, not Mattmab’s project. It worked, but running a full panel inside the engine was heavy; it competed with the game for the same resources.
@@ -91,7 +147,7 @@ The older Tkinter app is still in the repo as legacy/reference. New work targets
 - **Electron** owns the UI, local resources, catalogs, bookmarks, validator, and Matt editor hosting. It does **not** import UnrealSDK / game modules.
 - **The SDK mod** owns live game interaction.
 - **The bridge** is how they talk.
-- **BLImGui** is optional. You do not need it for the Electron app. If BLImGui is installed, the old-style in-game panel may still be available — that is optional, not required.
+- **BLImGui** is optional. You do not need it for the Electron app or the native F7 Quick Menu. If BLImGui is installed, the old-style in-game panel may still be available — that is optional, not required.
 
 More architecture detail for developers: [docs/BLIMGUI_REPLACEMENT_ARCHITECTURE.md](docs/BLIMGUI_REPLACEMENT_ARCHITECTURE.md).
 
