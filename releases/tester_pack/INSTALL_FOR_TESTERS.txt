@@ -51,9 +51,11 @@ WHAT TO TEST (SMOKE)
 1) With game in-world: press F7 — Quick Menu opens at a sane size (DPI scaling)
 2) Confirm Target line is auto-filled (host/local) or tap Target to choose.
    The target modal must show clickable player-name rows (not a blank panel).
+   Clicks inside a modal must not trigger hidden page/edit/reset controls behind it.
 3) Close with Escape or Close — mouse returns to game
 4) Edit mode: assign a slot, clear a slot, Swap With…, Reset Page
 5) If a page looks empty: tap + Assign, or Reset Page / Reset All (always recoverable)
+   On an empty page 2–5, use Go Page 1 or Reset All.
 6) Run Max All / Shinies Selected — should NOT hard-fail with "No party player selected"
 7) Run a drop/delivery, then Pin Last Command
 8) Repeat Last Drop — asks for a player unless Lock Player is on

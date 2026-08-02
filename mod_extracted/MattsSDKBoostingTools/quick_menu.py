@@ -28,6 +28,10 @@ MAX_PAGES = 5
 SLOTS_PER_PAGE = 12
 GRID_COLS = 4
 GRID_ROWS = 3
+MODAL_BLOCKER_Z = 80
+MODAL_PANEL_Z = 81
+MODAL_CONTENT_Z = 82
+MODAL_BUTTON_Z = 83
 
 # Catalog: action id -> basic label + short aliases for customizable labels.
 ACTION_CATALOG: dict[str, dict[str, Any]] = {
@@ -147,6 +151,8 @@ class QuickMenuState:
     input_owner: Any = None
     input_snapshot: InputSnapshot = field(default_factory=InputSnapshot)
     last_input_refresh: float = 0.0
+    last_layout_check: float = 0.0
+    ui_dirty: bool = False
     key_escape: bool = False
     started: bool = False
 
@@ -222,6 +228,12 @@ def slate_color(value: tuple[float, float, float, float]) -> Any:
         return unrealsdk.make_struct("SlateColor", SpecifiedColor=specified, ColorUseRule=0)
     except Exception:
         return specified
+
+
+def _button_layer(z: int, modal_only: bool, allow_when_modal: bool) -> int:
+    if modal_only or allow_when_modal:
+        return max(int(z), MODAL_BUTTON_Z)
+    return int(z)
 
 
 def remove_widget(widget: Any) -> None:
@@ -341,7 +353,15 @@ def load_layout() -> None:
     if isinstance(raw, dict) and "drop_lock" in raw and isinstance(raw.get("drop_lock"), dict):
         drop_lock = raw["drop_lock"]
         if drop_lock.get("enabled"):
-            backend_actions.set_drop_player_lock(True, drop_lock.get("index", drop_lock.get("name")))
+            lock_index = drop_lock.get("index")
+            lock_name = str(drop_lock.get("name") or "").strip()
+            if lock_index is not None and lock_name:
+                lock_target: object = f"{lock_index}|{lock_name}"
+            elif lock_index is not None:
+                lock_target = lock_index
+            else:
+                lock_target = lock_name
+            backend_actions.set_drop_player_lock(True, lock_target)
         elif lock.get("enabled") and not drop_lock.get("enabled"):
             backend_actions.set_drop_player_lock(False)
 
@@ -435,6 +455,16 @@ class NativeUMG:
         self.slot(widget, x, y, w, h, z)
         return widget
 
+    def modal_blocker(self, parent: Any) -> Any:
+        """Full-screen hit-test-visible layer which prevents click-through."""
+        widget = self.widget("/Script/UMG.Border")
+        try_call(widget, "SetBrushColor", color((0.0, 0.0, 0.0, 0.38)))
+        try_call(widget, "SetVisibility", 0)
+        try_call(widget, "SetIsEnabled", True)
+        self.add(parent, widget)
+        self.slot(widget, 0, 0, DESIGN_W, DESIGN_H, MODAL_BLOCKER_Z)
+        return widget
+
     def text(
         self,
         parent: Any,
@@ -478,10 +508,11 @@ class NativeUMG:
         modal_only: bool = False,
         allow_when_modal: bool = False,
     ) -> Any:
-        # Modal backdrops render at z=80. Keep every modal button (including
+        # Modal backdrops render below MODAL_BUTTON_Z. Keep every modal button
+        # (including global Close when a modal is active)
         # its hit target and label) above that layer; otherwise the modal title
         # is visible while player/action rows appear as a blank screen.
-        layer = max(int(z), 82) if modal_only else int(z)
+        layer = _button_layer(z, modal_only, allow_when_modal)
         base = fill if enabled else (0.35, 0.37, 0.40, 0.90)
         self.border(parent, x, y, w, h, base, layer)
         widget = self.widget("/Script/UMG.Button")
@@ -632,6 +663,7 @@ def show_toast(message: str, *, ok: bool = True, seconds: float = 2.6) -> None:
     STATE.status = STATE.toast
     _log(STATE.toast)
     if STATE.is_open:
+        STATE.ui_dirty = True
         return
     try:
         _ensure_toast_overlay(STATE.toast, STATE.toast_ok)
@@ -1008,7 +1040,9 @@ def toggle_drop_lock() -> None:
     else:
         players = backend_actions.refresh_players()
         if not players:
-            _log("No party players to lock.")
+            show_toast("No party players found. Load into a session, then Refresh.", ok=False, seconds=3.0)
+            if STATE.is_open:
+                rebuild_ui()
             return
         # Prefer currently selected; otherwise open picker to choose lock target.
         if backend_actions.get_selected_player_index() is None:
@@ -1034,6 +1068,7 @@ def _lock_player_from_pick(index: int, name: str) -> None:
 def rebuild_ui() -> None:
     if not STATE.is_open:
         return
+    STATE.ui_dirty = False
     factory, root = reset_canvas()
 
     # Dim backdrop + panel
@@ -1068,7 +1103,6 @@ def rebuild_ui() -> None:
         lambda: _toggle_edit(),
         fill=(0.30, 0.34, 0.20, 0.95),
         scale=0.34,
-        allow_when_modal=True,
     )
 
     # Page tabs
@@ -1115,12 +1149,13 @@ def rebuild_ui() -> None:
 
     filled = _page_filled_count()
     if filled == 0:
-        factory.border(root, 280, 250, 1360, 48, (0.45, 0.28, 0.10, 0.94), 8)
+        recovery = "Reset Page / Reset All" if STATE.page == 0 else "Go Page 1 / Reset All"
+        factory.border(root, 280, 710, 1360, 48, (0.45, 0.28, 0.10, 0.94), 8)
         factory.text(
             root,
-            "This page is empty. Tap a slot to assign, or use Reset Page / Reset All.",
+            f"This page is empty. Tap + Assign, or use {recovery}.",
             300,
-            258,
+            718,
             1320,
             34,
             scale=0.30,
@@ -1154,17 +1189,22 @@ def rebuild_ui() -> None:
     factory.text(root, STATE.status, 250, 900, 1100, 40, scale=0.32, z=6, tint=(0.85, 0.90, 0.95, 1.0))
     # Keep recovery actions available even outside edit when the page was emptied.
     if STATE.edit_mode or filled == 0:
+        if filled == 0 and STATE.page > 0:
+            recovery_label = "Go Page 1"
+            recovery_action = lambda: _set_page(0)
+        else:
+            recovery_label = "Reset Page"
+            recovery_action = reset_current_page
         factory.button(
             root,
-            "Reset Page",
+            recovery_label,
             1360,
             896,
             140,
             40,
-            reset_current_page,
+            recovery_action,
             fill=(0.42, 0.28, 0.16, 0.96),
             scale=0.28,
-            allow_when_modal=True,
         )
         factory.button(
             root,
@@ -1176,7 +1216,6 @@ def rebuild_ui() -> None:
             reset_all_pages,
             fill=(0.45, 0.18, 0.16, 0.96),
             scale=0.28,
-            allow_when_modal=True,
         )
 
     if STATE.toast and time.monotonic() < STATE.toast_until:
@@ -1214,7 +1253,8 @@ def _set_page(page: int) -> None:
 
 
 def _render_player_pick(factory: NativeUMG, root: Any) -> None:
-    factory.border(root, 420, 200, 1080, 680, (0.05, 0.07, 0.10, 0.97), 80)
+    factory.modal_blocker(root)
+    factory.border(root, 420, 200, 1080, 680, (0.05, 0.07, 0.10, 0.97), MODAL_PANEL_Z)
     purpose = STATE.player_pick_purpose or ("repeat" if STATE.pending_repeat else "lock")
     title = {
         "repeat": "Select player for repeat last drop",
@@ -1222,11 +1262,11 @@ def _render_player_pick(factory: NativeUMG, root: Any) -> None:
         "target": "Select target player",
         "action": "Select target player for this action",
     }.get(purpose, "Select player")
-    factory.text(root, title, 450, 220, 1000, 40, scale=0.48, z=81, center=True)
+    factory.text(root, title, 450, 220, 1000, 40, scale=0.48, z=MODAL_CONTENT_Z, center=True)
     players = backend_actions.refresh_players()
     y = 280
     if not players:
-        factory.text(root, "No party players found.", 450, 320, 1000, 40, scale=0.40, z=81, center=True)
+        factory.text(root, "No party players found.", 450, 320, 1000, 40, scale=0.40, z=MODAL_CONTENT_Z, center=True)
     for player in players:
         idx = int(player.get("index", -1))
         name = str(player.get("name") or f"Player {idx}")
@@ -1265,8 +1305,9 @@ def _render_player_pick(factory: NativeUMG, root: Any) -> None:
 
 
 def _render_action_pick(factory: NativeUMG, root: Any) -> None:
-    factory.border(root, 360, 160, 1200, 760, (0.05, 0.07, 0.10, 0.97), 80)
-    factory.text(root, "Assign action to slot", 390, 180, 1140, 40, scale=0.48, z=81, center=True)
+    factory.modal_blocker(root)
+    factory.border(root, 360, 160, 1200, 760, (0.05, 0.07, 0.10, 0.97), MODAL_PANEL_Z)
+    factory.text(root, "Assign action to slot", 390, 180, 1140, 40, scale=0.48, z=MODAL_CONTENT_Z, center=True)
     y = 240
     x = 400
     for i, action in enumerate(PICKER_ACTIONS):
@@ -1319,9 +1360,10 @@ def _render_label_edit(factory: NativeUMG, root: Any) -> None:
     slot = STATE.pages[STATE.page][STATE.selected_slot]
     if slot is None:
         return
-    factory.border(root, 560, 280, 800, 420, (0.05, 0.07, 0.10, 0.97), 80)
-    factory.text(root, f"Edit slot {STATE.selected_slot + 1}", 590, 300, 740, 40, scale=0.46, z=81, center=True)
-    factory.text(root, f"Label: {slot_label(slot)}", 590, 360, 740, 36, scale=0.36, z=81, center=True)
+    factory.modal_blocker(root)
+    factory.border(root, 560, 280, 800, 420, (0.05, 0.07, 0.10, 0.97), MODAL_PANEL_Z)
+    factory.text(root, f"Edit slot {STATE.selected_slot + 1}", 590, 300, 740, 40, scale=0.46, z=MODAL_CONTENT_Z, center=True)
+    factory.text(root, f"Label: {slot_label(slot)}", 590, 360, 740, 36, scale=0.36, z=MODAL_CONTENT_Z, center=True)
 
     def _cycle() -> None:
         cycle_slot_label(slot)
@@ -1364,18 +1406,19 @@ def _render_label_edit(factory: NativeUMG, root: Any) -> None:
         scale=0.30,
         modal_only=True,
     )
-    factory.button(
-        root,
-        "Pin Last Over This",
-        1080,
-        490,
-        220,
-        48,
-        lambda: pin_last_command(STATE.selected_slot),
-        fill=(0.55, 0.38, 0.12, 0.96),
-        scale=0.28,
-        modal_only=True,
-    )
+    if backend_actions.get_last_command() is not None:
+        factory.button(
+            root,
+            "Pin Last Over This",
+            1080,
+            490,
+            220,
+            48,
+            lambda: pin_last_command(STATE.selected_slot),
+            fill=(0.55, 0.38, 0.12, 0.96),
+            scale=0.28,
+            modal_only=True,
+        )
 
     def _done() -> None:
         STATE.modal = ""
@@ -1402,6 +1445,7 @@ def open_panel() -> None:
     STATE.player_pick_purpose = ""
     STATE.pending_action = None
     STATE.swap_armed_slot = None
+    _clear_toast_overlay()
     try:
         ensured = backend_actions.ensure_selected_player(prefer_host=True)
         if ensured.get("auto_selected"):
@@ -1423,6 +1467,7 @@ def close_panel() -> None:
     STATE.modal = ""
     STATE.pending_repeat = False
     STATE.player_pick_purpose = ""
+    STATE.pending_action = None
     STATE.swap_armed_slot = None
     STATE.buttons.clear()
     remove_widget(STATE.menu_canvas)
@@ -1486,6 +1531,7 @@ def process_escape() -> None:
             STATE.modal = ""
             STATE.pending_repeat = False
             STATE.player_pick_purpose = ""
+            STATE.pending_action = None
             STATE.swap_armed_slot = None
             rebuild_ui()
         else:
@@ -1500,7 +1546,27 @@ def _expire_toast() -> None:
     STATE.toast = ""
     _clear_toast_overlay()
     if STATE.is_open:
-        rebuild_ui()
+        STATE.ui_dirty = True
+
+
+def _refresh_layout_if_changed() -> None:
+    before = (
+        STATE.viewport_w,
+        STATE.viewport_h,
+        STATE.dpi_scale,
+        STATE.layout_w,
+        STATE.layout_h,
+    )
+    update_layout_metrics()
+    after = (
+        STATE.viewport_w,
+        STATE.viewport_h,
+        STATE.dpi_scale,
+        STATE.layout_w,
+        STATE.layout_h,
+    )
+    if any(abs(float(a) - float(b)) > 0.01 for a, b in zip(before, after)):
+        STATE.ui_dirty = True
 
 
 def tick(_obj: Any, _args: Any, _ret: Any, _func: Any) -> None:
@@ -1518,9 +1584,12 @@ def tick(_obj: Any, _args: Any, _ret: Any, _func: Any) -> None:
             return None
         now = time.monotonic()
         if now - STATE.last_input_refresh >= 0.5:
+            _refresh_layout_if_changed()
             capture_input()
         process_escape()
         poll_buttons()
+        if STATE.is_open and STATE.ui_dirty:
+            rebuild_ui()
     except Exception as exc:
         _log(f"Tick failed: {exc}")
     return None

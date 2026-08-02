@@ -165,3 +165,19 @@ def test_repeat_last_drop_uses_lock_option_c():
     assert result["ok"] is True
     assert ba.get_selected_player_index() == 1
     assert calls and calls[0][0] == "shiny_selected"
+
+
+def test_drop_lock_validates_saved_index_and_name_together():
+    ba = _load_backend_actions()
+    ba._drop_lock_enabled = True
+    ba._drop_lock_index = 1
+    ba._drop_lock_name = "Buddy"
+    targets = []
+
+    def _capture_target(target):
+        targets.append(target)
+        return {"ok": True, "message": "selected"}
+
+    ba.set_target_player = _capture_target
+    assert ba._apply_drop_player_lock_if_needed() is None
+    assert targets == ["1|Buddy"]

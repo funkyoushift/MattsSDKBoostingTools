@@ -978,7 +978,11 @@ def _apply_drop_player_lock_if_needed() -> dict[str, Any] | None:
     if not _drop_lock_enabled:
         return None
     target: object
-    if _drop_lock_index is not None:
+    if _drop_lock_index is not None and _drop_lock_name:
+        # Validate both values. set_target_player() will recover by exact name
+        # if party indices changed after reconnect/reorder.
+        target = f"{_drop_lock_index}|{_drop_lock_name}"
+    elif _drop_lock_index is not None:
         target = _drop_lock_index
     elif _drop_lock_name:
         target = _drop_lock_name
