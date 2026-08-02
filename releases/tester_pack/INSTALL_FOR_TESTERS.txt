@@ -8,9 +8,11 @@ WHAT IS IN THIS ZIP
 -------------------
 1) MattsSDKBoostingTools.sdkmod
    - Drop-in SDK mod package with the Quick Menu build
-2) INSTALL_FOR_TESTERS.txt
+2) Electron-Patch\resources\app.asar
+   - Quick Menu Editor tab and + QM buttons for the MSBT 1.2.0 Electron app
+3) INSTALL_FOR_TESTERS.txt
    - This file
-3) QUICK_MENU_PREVIEW_NOTES.txt
+4) QUICK_MENU_PREVIEW_NOTES.txt
    - Feature list + smoke checklist
 
 IMPORTANT
@@ -32,6 +34,22 @@ INSTALL
    (replace the old one).
 5. Launch Borderlands 4 with the SDK loader as you normally do.
 6. Load into gameplay (menu-only is not enough).
+
+EXTERNAL MSBT APP PATCH (QUICK MENU EDITOR)
+-------------------------------------------
+1. Close the MSBT Electron app.
+2. Use an existing MSBT 1.2.0 portable/install.
+3. Find its resources folder beside/under MattsSDKBoostingTools.exe.
+4. BACK UP resources\app.asar.
+5. Copy Electron-Patch\resources\app.asar from this tester zip over it.
+6. Start MSBT, then open the new Quick Menu tab.
+7. The game must be in-world with the new SDK mod loaded for layout edits.
+
+The external editor provides:
+- Page 1–5 and all 12 slots per page
+- Command picker, typed custom label, save/clear/page clear
+- Small + QM buttons beside supported MSBT action buttons
+- Live layout refresh through GET /quick_menu
 
 CONTROLS
 --------
@@ -63,6 +81,10 @@ WHAT TO TEST (SMOKE)
 10) If input sticks: F6 or msbt_quick_menu_unstuck
 11) Optional: GET http://127.0.0.1:49774/status
 12) Optional hard check: disable/rename blimgui.zip, reload, confirm F7 still works
+13) External app: open Quick Menu tab, select a slot, save/clear it
+14) External app: click + QM beside Quick Max, Currency, Inventory, UVH,
+    Movement, Rarity, Chest, Shiny, or Debug actions; choose page/slot and save
+15) Open F7 in-game and confirm external edits appear without restarting
 
 PLEASE REPORT BACK
 ------------------

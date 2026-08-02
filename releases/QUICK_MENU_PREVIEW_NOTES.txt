@@ -34,6 +34,10 @@ Locked behavior in this build
 - Bridge /status includes last_command, last_drop, drop_player_lock
 - All three modal types have full-screen click blockers and shared layer ordering
 - Live viewport/DPI changes trigger a menu rebuild
+- Shared bridge-safe command registry (no BLImGui)
+- External Electron Quick Menu Editor tab with typed custom labels
+- + QM buttons beside supported MSBT actions
+- GET /quick_menu plus validated set-layout / assign-slot bridge actions
 
 Not in this preview
 - Loot pool work (on hold)
@@ -46,3 +50,7 @@ Smoke checklist
 5) Run a drop/delivery, Pin Last Command into a slot
 6) Repeat Last Drop prompts for player unless Lock Player is on
 7) Optional: bridge GET /status returns ok with last_command / drop_player_lock fields
+8) Patch an MSBT 1.2.0 Electron app with Electron-Patch/resources/app.asar
+9) Edit slots from the external Quick Menu tab and confirm F7 updates live
+10) Use + QM on supported MSBT buttons and confirm captured values (currency,
+    level, inventory sizes) persist in the assigned slot

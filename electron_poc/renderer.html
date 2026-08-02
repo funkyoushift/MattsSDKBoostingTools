@@ -45,6 +45,7 @@
 
   <nav class="tab-bar" aria-label="Electron test tabs">
     <button class="active" data-tab="boosting">Boosting</button>
+    <button data-tab="quick-menu">Quick Menu</button>
     <button data-tab="serial-tools">Serial Tools</button>
     <button data-tab="bl4-codes">BL4 Codes</button>
     <button data-tab="matt-editor">Matt Editor</button>
@@ -337,6 +338,44 @@
         <h2>Boosting Result</h2>
         <pre id="boostOutput">No boosting action sent yet.</pre>
       </section>
+    </section>
+
+    <section id="tab-quick-menu" class="tab-panel">
+      <div class="section-heading">
+        <div>
+          <h2>Quick Menu Editor</h2>
+          <p>Edit the native in-game 5 × 12 Quick Menu. Changes save through the live MSBT bridge and appear immediately when the in-game menu is open.</p>
+        </div>
+        <div class="button-row wrap">
+          <button id="quickMenuRefreshBtn">Refresh From Game</button>
+          <button id="quickMenuClearPageBtn" class="danger">Clear Current Page</button>
+        </div>
+      </div>
+      <div id="quickMenuStatus" class="status-line warning">Connect to the in-game bridge to load the Quick Menu layout.</div>
+      <div id="quickMenuPageTabs" class="quick-menu-page-tabs" aria-label="Quick Menu pages"></div>
+      <div class="quick-menu-editor-shell">
+        <section class="panel cyan quick-menu-slots-panel">
+          <div class="section-heading">
+            <h2 id="quickMenuPageTitle">Page 1</h2>
+            <span id="quickMenuPageSummary" class="muted-line">0 / 12 assigned</span>
+          </div>
+          <div id="quickMenuSlotGrid" class="quick-menu-slot-grid"></div>
+        </section>
+        <section class="panel purple quick-menu-slot-editor">
+          <h2>Selected Slot</h2>
+          <div id="quickMenuSelectedSummary" class="status-line">Select a slot.</div>
+          <label for="quickMenuActionSelect">Command</label>
+          <select id="quickMenuActionSelect"></select>
+          <label for="quickMenuCustomLabel">Custom label (optional)</label>
+          <input id="quickMenuCustomLabel" type="text" maxlength="48" placeholder="Uses the basic label when blank">
+          <div class="button-row wrap">
+            <button id="quickMenuSaveSlotBtn">Save Slot</button>
+            <button id="quickMenuClearSlotBtn" class="danger">Clear Slot</button>
+          </div>
+          <p class="muted-line">Use the small <strong>+ QM</strong> buttons throughout MSBT to send a supported command here with its current values.</p>
+          <pre id="quickMenuEditorOutput">No Quick Menu edit sent yet.</pre>
+        </section>
+      </div>
     </section>
 
     <section id="tab-serial-tools" class="tab-panel">
@@ -1247,6 +1286,35 @@
           <button id="gzoSubmitSendBtn" type="submit">Submit To GZO Pending</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <div id="quickMenuAddModal" class="modal-shell hidden" role="dialog" aria-modal="true" aria-labelledby="quickMenuAddTitle">
+    <div class="modal-card quick-menu-add-modal">
+      <div class="section-heading">
+        <div>
+          <h2 id="quickMenuAddTitle">Add Command to Quick Menu</h2>
+          <p id="quickMenuAddDescription">Choose a page and slot.</p>
+        </div>
+        <button id="quickMenuAddCloseBtn" type="button" class="secondary">Close</button>
+      </div>
+      <div class="grid two compact">
+        <label>
+          Page
+          <select id="quickMenuAddPage"></select>
+        </label>
+        <label>
+          Slot
+          <select id="quickMenuAddSlot"></select>
+        </label>
+      </div>
+      <label for="quickMenuAddLabel">Custom label (optional)</label>
+      <input id="quickMenuAddLabel" type="text" maxlength="48">
+      <div id="quickMenuAddStatus" class="status-line">Ready.</div>
+      <div class="button-row wrap">
+        <button id="quickMenuAddConfirmBtn" type="button">Add to Quick Menu</button>
+        <button id="quickMenuAddOpenEditorBtn" type="button" class="secondary">Open Editor</button>
+      </div>
     </div>
   </div>
 

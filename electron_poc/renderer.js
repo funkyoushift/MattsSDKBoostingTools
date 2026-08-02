@@ -346,6 +346,10 @@ const state = {
   movementSavedPreset: null,
   opacitySaveTimer: null,
   players: [],
+  quickMenuPage: 0,
+  quickMenuPendingAdd: null,
+  quickMenuSelectedSlot: 0,
+  quickMenuSnapshot: null,
   rarityRememberOnStart: false,
   raritySavedPreset: null,
   reportPreviewText: "",
@@ -551,6 +555,387 @@ async function runAction(action, payload = {}, outNode = els.boostOutput, timeou
   setOutput(outNode, result && result.data !== undefined ? result.data : result);
   appendActivity(`${action}: ${resultMessage(result)}`);
   return result;
+}
+
+function quickMenuData(result) {
+  return result && result.data !== undefined ? result.data : result;
+}
+
+function quickMenuNode(id) {
+  return document.getElementById(id);
+}
+
+function setQuickMenuStatus(message, kind = "") {
+  setLine(quickMenuNode("quickMenuStatus"), message, kind);
+}
+
+function quickMenuSlotLabel(slot) {
+  if (!slot) return "+ Assign";
+  const action = String(slot.action || "");
+  const catalog = (state.quickMenuSnapshot && state.quickMenuSnapshot.catalog) || {};
+  const metadata = catalog[action] || {};
+  const mode = String(slot.label_mode || "basic");
+  const custom = String(slot.custom_label || "").trim();
+  if (mode === "custom" && custom) return custom;
+  if (mode.startsWith("alias")) {
+    const index = parseInt(mode.slice(5), 10) || 0;
+    const aliases = Array.isArray(metadata.aliases) ? metadata.aliases : [];
+    if (aliases[index]) return String(aliases[index]);
+  }
+  return String(metadata.basic || action || "Assigned");
+}
+
+function quickMenuLayout() {
+  return state.quickMenuSnapshot && state.quickMenuSnapshot.layout
+    ? state.quickMenuSnapshot.layout
+    : null;
+}
+
+function populateQuickMenuActionSelect() {
+  const select = quickMenuNode("quickMenuActionSelect");
+  if (!select || !state.quickMenuSnapshot) return;
+  const current = select.value;
+  select.innerHTML = "";
+  const actions = Array.isArray(state.quickMenuSnapshot.assignable_actions)
+    ? state.quickMenuSnapshot.assignable_actions
+    : [];
+  actions.forEach((action) => {
+    const metadata = state.quickMenuSnapshot.catalog[action] || {};
+    const option = document.createElement("option");
+    option.value = action;
+    option.textContent = String(metadata.basic || action);
+    select.appendChild(option);
+  });
+  if (actions.includes(current)) select.value = current;
+}
+
+function selectQuickMenuSlot(slotIndex) {
+  state.quickMenuSelectedSlot = Math.max(0, Math.min(11, Number(slotIndex) || 0));
+  const layout = quickMenuLayout();
+  const slot = layout && layout.pages[state.quickMenuPage]
+    ? layout.pages[state.quickMenuPage][state.quickMenuSelectedSlot]
+    : null;
+  const select = quickMenuNode("quickMenuActionSelect");
+  const label = quickMenuNode("quickMenuCustomLabel");
+  if (select && slot && slot.action) select.value = slot.action;
+  if (label) label.value = slot ? String(slot.custom_label || "") : "";
+  const summary = quickMenuNode("quickMenuSelectedSummary");
+  if (summary) {
+    summary.textContent = `Page ${state.quickMenuPage + 1}, slot ${state.quickMenuSelectedSlot + 1}: ${slot ? quickMenuSlotLabel(slot) : "empty"}`;
+  }
+  renderQuickMenuEditor();
+}
+
+function renderQuickMenuEditor() {
+  const snapshot = state.quickMenuSnapshot;
+  const layout = quickMenuLayout();
+  const tabs = quickMenuNode("quickMenuPageTabs");
+  const grid = quickMenuNode("quickMenuSlotGrid");
+  if (!snapshot || !layout || !tabs || !grid) return;
+
+  populateQuickMenuActionSelect();
+  tabs.innerHTML = "";
+  for (let pageIndex = 0; pageIndex < 5; pageIndex += 1) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = `Page ${pageIndex + 1}`;
+    button.classList.toggle("active", pageIndex === state.quickMenuPage);
+    button.addEventListener("click", () => {
+      state.quickMenuPage = pageIndex;
+      state.quickMenuSelectedSlot = 0;
+      selectQuickMenuSlot(0);
+    });
+    tabs.appendChild(button);
+  }
+
+  const page = Array.isArray(layout.pages[state.quickMenuPage])
+    ? layout.pages[state.quickMenuPage]
+    : [];
+  const filled = page.filter(Boolean).length;
+  const title = quickMenuNode("quickMenuPageTitle");
+  const pageSummary = quickMenuNode("quickMenuPageSummary");
+  if (title) title.textContent = `Page ${state.quickMenuPage + 1}`;
+  if (pageSummary) pageSummary.textContent = `${filled} / 12 assigned`;
+
+  grid.innerHTML = "";
+  for (let slotIndex = 0; slotIndex < 12; slotIndex += 1) {
+    const slot = page[slotIndex] || null;
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = `quick-menu-slot${slot ? "" : " empty"}${slotIndex === state.quickMenuSelectedSlot ? " selected" : ""}`;
+    const strong = document.createElement("strong");
+    strong.textContent = `${slotIndex + 1}. ${quickMenuSlotLabel(slot)}`;
+    const detail = document.createElement("span");
+    detail.textContent = slot ? String(slot.action || "") : "Empty slot";
+    button.append(strong, detail);
+    button.addEventListener("click", () => selectQuickMenuSlot(slotIndex));
+    grid.appendChild(button);
+  }
+}
+
+async function loadQuickMenuLayout({ quiet = false } = {}) {
+  if (!window.msbt || typeof window.msbt.bridgeRequest !== "function") return null;
+  if (!quiet) setQuickMenuStatus("Loading Quick Menu from the game bridge...");
+  const result = await window.msbt.bridgeRequest({
+    method: "GET",
+    path: "/quick_menu",
+    timeoutMs: 10000
+  });
+  const data = quickMenuData(result);
+  if (!data || data.ok !== true || !data.layout) {
+    setQuickMenuStatus(resultMessage(result) || "Quick Menu bridge endpoint unavailable.", "warning");
+    return null;
+  }
+  state.quickMenuSnapshot = data;
+  const loadedPage = Number(data.layout.page);
+  state.quickMenuPage = Number.isFinite(loadedPage)
+    ? Math.max(0, Math.min(4, loadedPage))
+    : Math.max(0, Math.min(4, state.quickMenuPage || 0));
+  state.quickMenuSelectedSlot = Math.max(0, Math.min(11, state.quickMenuSelectedSlot || 0));
+  selectQuickMenuSlot(state.quickMenuSelectedSlot);
+  installQuickMenuAddButtons();
+  if (!quiet) setQuickMenuStatus(`Loaded Quick Menu revision ${data.revision || 0}.`, "ok");
+  return data;
+}
+
+async function assignQuickMenuSlot({ page, slot, action, customLabel = "", commandPayload = {} }) {
+  const result = await bridgeAction("quick_menu_assign_slot", {
+    page,
+    slot,
+    action,
+    label_mode: customLabel.trim() ? "custom" : "basic",
+    custom_label: customLabel.trim(),
+    command_payload: commandPayload
+  }, 20000);
+  const data = quickMenuData(result);
+  if (data && data.ok && data.layout) {
+    state.quickMenuSnapshot.layout = data.layout;
+    state.quickMenuSnapshot.revision = data.revision || state.quickMenuSnapshot.revision;
+    state.quickMenuPage = page;
+    state.quickMenuSelectedSlot = slot;
+    renderQuickMenuEditor();
+  } else if (actionSucceeded(result)) {
+    setTimeout(() => loadQuickMenuLayout({ quiet: true }), 750);
+  }
+  return result;
+}
+
+async function saveSelectedQuickMenuSlot() {
+  const action = getValue("quickMenuActionSelect");
+  if (!action) {
+    setQuickMenuStatus("Choose a command first.", "warning");
+    return;
+  }
+  const layout = quickMenuLayout();
+  const existing = layout && layout.pages[state.quickMenuPage]
+    ? layout.pages[state.quickMenuPage][state.quickMenuSelectedSlot]
+    : null;
+  const currentPayload = quickMenuPayloadFromCurrentControls(action);
+  const result = await assignQuickMenuSlot({
+    page: state.quickMenuPage,
+    slot: state.quickMenuSelectedSlot,
+    action,
+    customLabel: getValue("quickMenuCustomLabel"),
+    commandPayload: existing && existing.action === action
+      ? (existing.payload || currentPayload)
+      : currentPayload
+  });
+  setOutput(quickMenuNode("quickMenuEditorOutput"), quickMenuData(result));
+  setQuickMenuStatus(resultMessage(result), actionSucceeded(result) ? "ok" : "warning");
+}
+
+async function clearSelectedQuickMenuSlot() {
+  const result = await assignQuickMenuSlot({
+    page: state.quickMenuPage,
+    slot: state.quickMenuSelectedSlot,
+    action: ""
+  });
+  setOutput(quickMenuNode("quickMenuEditorOutput"), quickMenuData(result));
+  setQuickMenuStatus(resultMessage(result), actionSucceeded(result) ? "ok" : "warning");
+}
+
+async function clearCurrentQuickMenuPage() {
+  if (!quickMenuLayout()) return;
+  const result = await bridgeAction("quick_menu_clear_page", {
+    page: state.quickMenuPage
+  }, 20000);
+  const data = quickMenuData(result);
+  if (data && data.ok && data.layout) {
+    state.quickMenuSnapshot.layout = data.layout;
+    state.quickMenuSnapshot.revision = data.revision || state.quickMenuSnapshot.revision;
+    renderQuickMenuEditor();
+  }
+  setOutput(quickMenuNode("quickMenuEditorOutput"), data || result);
+  setQuickMenuStatus(resultMessage(result), actionSucceeded(result) ? "ok" : "warning");
+}
+
+function quickMenuPayloadFromCurrentControls(action) {
+  if (action === "give_currency") {
+    return {
+      currency_kind: getValue(els.currencyKind),
+      amount: getInt(els.currencyAmount, 0, 2147483647, 1000000)
+    };
+  }
+  if (action === "set_level") {
+    return {
+      xp_track: getValue(els.xpTrack),
+      level: getInt(els.xpLevel, 1, 9999999, 60)
+    };
+  }
+  if (action === "set_backpack_bank_selected" || action === "set_backpack_bank_all") {
+    return inventoryPayload(true);
+  }
+  return {};
+}
+
+function fillQuickMenuAddSelectors() {
+  const pageSelect = quickMenuNode("quickMenuAddPage");
+  const slotSelect = quickMenuNode("quickMenuAddSlot");
+  if (!pageSelect || !slotSelect) return;
+  pageSelect.innerHTML = "";
+  slotSelect.innerHTML = "";
+  for (let index = 0; index < 5; index += 1) {
+    const option = document.createElement("option");
+    option.value = String(index);
+    option.textContent = `Page ${index + 1}`;
+    pageSelect.appendChild(option);
+  }
+  for (let index = 0; index < 12; index += 1) {
+    const option = document.createElement("option");
+    option.value = String(index);
+    option.textContent = `Slot ${index + 1}`;
+    slotSelect.appendChild(option);
+  }
+}
+
+function updateQuickMenuAddSlotsForPage() {
+  const layout = quickMenuLayout();
+  const pageSelect = quickMenuNode("quickMenuAddPage");
+  const slotSelect = quickMenuNode("quickMenuAddSlot");
+  if (!layout || !pageSelect || !slotSelect) return;
+  const page = Math.max(0, Math.min(4, parseInt(pageSelect.value, 10) || 0));
+  const slots = layout.pages[page] || [];
+  Array.from(slotSelect.options).forEach((option, index) => {
+    option.textContent = `Slot ${index + 1}${slots[index] ? ` — replace ${quickMenuSlotLabel(slots[index])}` : " — empty"}`;
+  });
+  const empty = slots.findIndex((slot) => !slot);
+  if (empty >= 0) slotSelect.value = String(empty);
+}
+
+function closeQuickMenuAddModal() {
+  const modal = quickMenuNode("quickMenuAddModal");
+  if (modal) modal.classList.add("hidden");
+  state.quickMenuPendingAdd = null;
+}
+
+function openQuickMenuAddModal(action, commandPayload = {}, label = "") {
+  if (!state.quickMenuSnapshot || !state.quickMenuSnapshot.catalog[action]) {
+    setQuickMenuStatus(`Command is not available for Quick Menu: ${action}`, "warning");
+    switchTab("quick-menu");
+    return;
+  }
+  state.quickMenuPendingAdd = { action, commandPayload: { ...commandPayload } };
+  fillQuickMenuAddSelectors();
+  const pageSelect = quickMenuNode("quickMenuAddPage");
+  if (pageSelect) pageSelect.value = String(state.quickMenuPage);
+  updateQuickMenuAddSlotsForPage();
+  const title = quickMenuNode("quickMenuAddTitle");
+  const description = quickMenuNode("quickMenuAddDescription");
+  const custom = quickMenuNode("quickMenuAddLabel");
+  const metadata = state.quickMenuSnapshot.catalog[action] || {};
+  if (title) title.textContent = `Add ${metadata.basic || label || action}`;
+  if (description) description.textContent = `Store ${action} with the current supported values.`;
+  if (custom) custom.value = "";
+  setLine(quickMenuNode("quickMenuAddStatus"), "Choose a page and slot.", "");
+  quickMenuNode("quickMenuAddModal").classList.remove("hidden");
+}
+
+async function confirmQuickMenuAdd() {
+  const pending = state.quickMenuPendingAdd;
+  if (!pending) return;
+  const page = getInt("quickMenuAddPage", 0, 4, 0);
+  const slot = getInt("quickMenuAddSlot", 0, 11, 0);
+  setLine(quickMenuNode("quickMenuAddStatus"), "Saving to the game bridge...");
+  const result = await assignQuickMenuSlot({
+    page,
+    slot,
+    action: pending.action,
+    customLabel: getValue("quickMenuAddLabel"),
+    commandPayload: pending.commandPayload
+  });
+  setLine(
+    quickMenuNode("quickMenuAddStatus"),
+    resultMessage(result),
+    actionSucceeded(result) ? "ok" : "warning"
+  );
+  if (actionSucceeded(result)) {
+    appendActivity(`Quick Menu: added ${pending.action} to page ${page + 1}, slot ${slot + 1}.`);
+    setTimeout(closeQuickMenuAddModal, 450);
+  }
+}
+
+function decorateQuickMenuActionButton(button, action, payloadFactory = () => ({})) {
+  if (!button || button.dataset.qmDecorated === "true") return;
+  const catalog = state.quickMenuSnapshot && state.quickMenuSnapshot.catalog;
+  if (!catalog || !catalog[action] || !catalog[action].assignable) return;
+  button.dataset.qmDecorated = "true";
+  const parent = button.parentNode;
+  if (!parent) return;
+  const wrapper = document.createElement("span");
+  wrapper.className = "qm-action-wrap";
+  parent.insertBefore(wrapper, button);
+  wrapper.appendChild(button);
+  const add = document.createElement("button");
+  add.type = "button";
+  add.className = "qm-add-button secondary";
+  add.textContent = "+ QM";
+  add.title = `Add ${catalog[action].basic || action} to Quick Menu`;
+  add.addEventListener("click", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    openQuickMenuAddModal(action, payloadFactory(), catalog[action].basic || action);
+  });
+  wrapper.appendChild(add);
+}
+
+function installQuickMenuAddButtons() {
+  if (!state.quickMenuSnapshot) return;
+  document.querySelectorAll("[data-action]").forEach((button) => {
+    decorateQuickMenuActionButton(button, String(button.dataset.action || ""));
+  });
+  document.querySelectorAll("[data-movement-action]").forEach((button) => {
+    decorateQuickMenuActionButton(button, String(button.dataset.movementAction || ""));
+  });
+  document.querySelectorAll("[data-rarity-action]").forEach((button) => {
+    decorateQuickMenuActionButton(button, String(button.dataset.rarityAction || ""));
+  });
+  decorateQuickMenuActionButton(
+    quickMenuNode("giveCurrencyBtn"),
+    "give_currency",
+    () => ({
+      currency_kind: getValue(els.currencyKind),
+      amount: getInt(els.currencyAmount, 0, 2147483647, 1000000)
+    })
+  );
+  decorateQuickMenuActionButton(
+    quickMenuNode("setLevelBtn"),
+    "set_level",
+    () => ({
+      xp_track: getValue(els.xpTrack),
+      level: getInt(els.xpLevel, 1, 9999999, 60)
+    })
+  );
+  decorateQuickMenuActionButton(
+    quickMenuNode("setInventorySelectedBtn"),
+    "set_backpack_bank_selected",
+    () => inventoryPayload(true)
+  );
+  decorateQuickMenuActionButton(
+    quickMenuNode("setInventoryAllBtn"),
+    "set_backpack_bank_all",
+    () => inventoryPayload(true)
+  );
+  decorateQuickMenuActionButton(quickMenuNode("kickTargetBtn"), "kick_player");
 }
 
 function inferToggleStateFromMessage(message, previousValue) {
@@ -1330,6 +1715,10 @@ async function bridgeStatus(options = {}) {
   if (!options.quiet) setOutput(els.statusOutput, result);
   applyBridgeStatusResult(result, options);
   await autoApplySavedMovementPresetIfNeeded();
+  const quickPanel = quickMenuNode("tab-quick-menu");
+  if (quickPanel && quickPanel.classList.contains("active")) {
+    await loadQuickMenuLayout({ quiet: true });
+  }
   return result;
 }
 
@@ -5409,12 +5798,29 @@ function switchTab(tabId) {
   });
   if (tabId === "matt-editor") {
     void loadEditor();
+  } else if (tabId === "quick-menu") {
+    void loadQuickMenuLayout({ quiet: Boolean(state.quickMenuSnapshot) });
   }
 }
 
 function wireEvents() {
   document.querySelectorAll(".tab-bar [data-tab]").forEach((button) => {
     button.addEventListener("click", () => switchTab(button.dataset.tab));
+  });
+
+  quickMenuNode("quickMenuRefreshBtn").addEventListener("click", () => loadQuickMenuLayout());
+  quickMenuNode("quickMenuSaveSlotBtn").addEventListener("click", saveSelectedQuickMenuSlot);
+  quickMenuNode("quickMenuClearSlotBtn").addEventListener("click", clearSelectedQuickMenuSlot);
+  quickMenuNode("quickMenuClearPageBtn").addEventListener("click", clearCurrentQuickMenuPage);
+  quickMenuNode("quickMenuAddPage").addEventListener("change", updateQuickMenuAddSlotsForPage);
+  quickMenuNode("quickMenuAddCloseBtn").addEventListener("click", closeQuickMenuAddModal);
+  quickMenuNode("quickMenuAddConfirmBtn").addEventListener("click", confirmQuickMenuAdd);
+  quickMenuNode("quickMenuAddOpenEditorBtn").addEventListener("click", () => {
+    closeQuickMenuAddModal();
+    switchTab("quick-menu");
+  });
+  quickMenuNode("quickMenuAddModal").addEventListener("click", (event) => {
+    if (event.target === quickMenuNode("quickMenuAddModal")) closeQuickMenuAddModal();
   });
 
   document.getElementById("statusBtn").addEventListener("click", bridgeStatus);
@@ -5795,6 +6201,7 @@ async function init() {
   syncDevSpawnerAdvancedControls();
   await Promise.all([loadItemPools(), loadTravelResources(), loadDevSpawnerCatalog(), loadDevSpawnerFavorites(), loadSerialBookmarks(), loadBl4Catalog(), loadMovementSettings(), loadRaritySettings()]);
   await bridgeStatus();
+  await loadQuickMenuLayout({ quiet: true });
   startBridgeStatusPolling();
   await checkUpdates({ startup: true });
 }
