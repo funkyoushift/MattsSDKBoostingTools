@@ -70,3 +70,18 @@ def test_electron_pin_last_controls_are_wired():
     assert "repeatLastDropFromQuickMenu" in js
     assert '"repeat_last_drop"' in js
     assert '"set_drop_player_lock"' in js
+
+
+def test_dev_spawner_targets_are_quick_menu_assignable():
+    registry = (
+        ROOT
+        / "mod_extracted"
+        / "MattsSDKBoostingTools"
+        / "quick_menu_registry.py"
+    ).read_text(encoding="utf-8")
+    assert '"dev_spawner_spawnai"' in registry
+    assert '"dev_ai_name"' in registry
+    js = (ELECTRON / "renderer.js").read_text(encoding="utf-8")
+    assert "quickMenuDevSpawnerPayload" in js
+    assert 'data-dev-spawner-action' in js or "[data-dev-spawner-action]" in js
+    assert '"dev_spawner_spawnai"' in js

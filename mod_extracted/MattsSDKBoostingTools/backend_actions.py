@@ -1240,6 +1240,10 @@ def run_quick_menu_action(
         result = rarity_only("legendary")
     elif key == "rarity_only_pearlescent":
         result = rarity_only("pearlescent")
+    elif key.startswith("dev_spawner_"):
+        result = run_dev_spawner_action(key, payload)
+        if key in ("dev_spawner_spawnai", "dev_spawner_spawn", "dev_spawner_lostloot"):
+            is_drop = True
     elif key == "set_backpack_bank_selected":
         result = set_inventory_sizes_selected(
             payload.get("backpack_size") or 1000,
@@ -2094,11 +2098,16 @@ def run_dev_spawner_action(action: str, payload: dict[str, Any] | None = None) -
             result.setdefault("command", cmd)
             result.setdefault("accepted", bool(result.get("asd_log_lines")))
             result.setdefault("message", "ActorScriptDeployer spawn request processed.")
-            return result
         else:
             direct_ok, direct_message = _run_actor_script_deployer_command(cmd)
-        if direct_ok:
-            return {
+            if not direct_ok:
+                return {
+                    "ok": False,
+                    "message": f"ActorScriptDeployer command was unavailable: {direct_message}",
+                    "command": cmd,
+                    "mode": "ActorScriptDeployer direct command unavailable",
+                }
+            result = {
                 "ok": True,
                 "message": (
                     f"Sent {cmd.split()[0]} to ActorScriptDeployer. "
@@ -2108,12 +2117,57 @@ def run_dev_spawner_action(action: str, payload: dict[str, Any] | None = None) -
                 "mode": direct_message,
             }
 
-        return {
-            "ok": False,
-            "message": f"ActorScriptDeployer command was unavailable: {direct_message}",
-            "command": cmd,
-            "mode": "ActorScriptDeployer direct command unavailable",
-        }
+        if result.get("ok") and action in (
+            "dev_spawner_spawnai",
+            "dev_spawner_spawn",
+            "dev_spawner_lostloot",
+        ):
+            if action == "dev_spawner_spawnai":
+                target_name = str(payload.get("dev_ai_name") or "").strip()
+                pin_payload = {
+                    "dev_ai_name": target_name,
+                    "dev_ai_count": payload.get("dev_ai_count", 1),
+                    "dev_ai_distance": payload.get("dev_ai_distance", 350),
+                    "dev_ai_spacing": payload.get("dev_ai_spacing", 125),
+                    "dev_ai_scale": payload.get("dev_ai_scale", 1),
+                    "dev_ai_z_offset": payload.get("dev_ai_z_offset", 0),
+                    "dev_ai_load": payload.get("dev_ai_load", ""),
+                    "dev_ai_direct_only": payload.get("dev_ai_direct_only", False),
+                }
+                pin_label = f"Spawn {target_name}" if target_name else "Spawn Actor"
+            else:
+                target_name = str(payload.get("dev_actor_name") or "").strip()
+                pin_payload = {
+                    key: payload.get(key)
+                    for key in (
+                        "dev_actor_name",
+                        "dev_actor_class",
+                        "dev_actor_count",
+                        "dev_actor_distance",
+                        "dev_actor_spacing",
+                        "dev_actor_scale",
+                        "dev_actor_z_offset",
+                        "dev_actor_delay",
+                        "dev_actor_enable_states",
+                        "dev_actor_disable_states",
+                        "dev_actor_no_activate",
+                        "dev_actor_include_non_generated",
+                    )
+                    if key in payload
+                }
+                pin_label = (
+                    "Spawn Lost Loot"
+                    if action == "dev_spawner_lostloot"
+                    else (f"Spawn {target_name}" if target_name else "Spawn Template")
+                )
+            note_last_command(
+                action,
+                label=pin_label,
+                payload=pin_payload,
+                is_drop=True,
+                needs_player=False,
+            )
+        return result
     except Exception as exc:
         return {"ok": False, "message": f"Dev spawner action failed: {exc!r}"}
 

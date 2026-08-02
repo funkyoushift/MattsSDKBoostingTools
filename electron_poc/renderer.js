@@ -907,6 +907,63 @@ function itemPoolDisplayName(poolName) {
   return String(display || name).slice(0, 48);
 }
 
+function quickMenuDevSpawnerActorName() {
+  return String(
+    state.devSpawnerSelectedActor
+    || getValue(els.devAiName)
+    || getValue(els.devActorName)
+    || ""
+  ).trim();
+}
+
+function quickMenuDevSpawnerLabel(action, payload = {}) {
+  if (action === "dev_spawner_lostloot") return "Spawn Lost Loot";
+  if (action === "dev_spawner_activate_last") return "Activate Last Spawn";
+  if (action === "dev_spawner_clear") return "Clear ASD Spawns";
+  const name = String(
+    (payload && (payload.dev_ai_name || payload.dev_actor_name))
+    || quickMenuDevSpawnerActorName()
+    || ""
+  ).trim();
+  if (!name) return action === "dev_spawner_spawn" ? "Spawn Template" : "Spawn Actor";
+  const display = devActorDisplayName(name);
+  return String(display || name).slice(0, 48);
+}
+
+function quickMenuDevSpawnerPayload(action) {
+  const full = typeof devSpawnerPayload === "function" ? devSpawnerPayload() : {};
+  const actorName = quickMenuDevSpawnerActorName();
+  if (action === "dev_spawner_spawnai") {
+    return {
+      dev_ai_name: actorName || full.dev_ai_name || "",
+      dev_ai_count: full.dev_ai_count,
+      dev_ai_distance: full.dev_ai_distance,
+      dev_ai_spacing: full.dev_ai_spacing,
+      dev_ai_scale: full.dev_ai_scale,
+      dev_ai_z_offset: full.dev_ai_z_offset,
+      dev_ai_load: full.dev_ai_load,
+      dev_ai_direct_only: full.dev_ai_direct_only
+    };
+  }
+  if (action === "dev_spawner_spawn" || action === "dev_spawner_lostloot") {
+    return {
+      dev_actor_name: actorName || full.dev_actor_name || "",
+      dev_actor_class: full.dev_actor_class,
+      dev_actor_count: full.dev_actor_count,
+      dev_actor_distance: full.dev_actor_distance,
+      dev_actor_spacing: full.dev_actor_spacing,
+      dev_actor_scale: full.dev_actor_scale,
+      dev_actor_z_offset: full.dev_actor_z_offset,
+      dev_actor_delay: full.dev_actor_delay,
+      dev_actor_enable_states: full.dev_actor_enable_states,
+      dev_actor_disable_states: full.dev_actor_disable_states,
+      dev_actor_no_activate: full.dev_actor_no_activate,
+      dev_actor_include_non_generated: full.dev_actor_include_non_generated
+    };
+  }
+  return {};
+}
+
 function quickMenuPayloadFromCurrentControls(action) {
   if (action === "give_currency") {
     return {
@@ -957,6 +1014,13 @@ function quickMenuPayloadFromCurrentControls(action) {
   }
   if (action === "rarity_apply") {
     return rarityPayload();
+  }
+  if (
+    action === "dev_spawner_spawnai"
+    || action === "dev_spawner_spawn"
+    || action === "dev_spawner_lostloot"
+  ) {
+    return quickMenuDevSpawnerPayload(action);
   }
   return {};
 }
@@ -1177,6 +1241,24 @@ function installQuickMenuAddButtons() {
       return station ? stationLabel(station) : (payload.travel_station || "Travel Station");
     }
   );
+  document.querySelectorAll("[data-dev-spawner-action]").forEach((button) => {
+    const action = String(button.dataset.devSpawnerAction || "");
+    if (
+      action !== "dev_spawner_spawnai"
+      && action !== "dev_spawner_spawn"
+      && action !== "dev_spawner_lostloot"
+      && action !== "dev_spawner_activate_last"
+      && action !== "dev_spawner_clear"
+    ) {
+      return;
+    }
+    decorateQuickMenuActionButton(
+      button,
+      action,
+      () => quickMenuDevSpawnerPayload(action),
+      (payload) => quickMenuDevSpawnerLabel(action, payload)
+    );
+  });
 }
 
 function inferToggleStateFromMessage(message, previousValue) {

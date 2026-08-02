@@ -121,6 +121,23 @@ def test_registry_sanitizes_parameterized_msbt_commands():
     })
     assert travel["ok"] is True
     assert travel["slot"]["payload"] == {"travel_station": "Banjo_P.FT_BanjoStart"}
+    spawn_ai = registry.assign_quick_menu_slot({
+        "page": 1,
+        "slot": 4,
+        "action": "dev_spawner_spawnai",
+        "custom_label": "Boss Pin",
+        "label_mode": "custom",
+        "command_payload": {
+            "dev_ai_name": "Char_BogTitan",
+            "dev_ai_count": 2,
+            "dev_ai_distance": 400,
+            "danger": "nope",
+        },
+    })
+    assert spawn_ai["ok"] is True
+    assert spawn_ai["slot"]["payload"]["dev_ai_name"] == "Char_BogTitan"
+    assert spawn_ai["slot"]["payload"]["dev_ai_count"] == 2
+    assert "danger" not in spawn_ai["slot"]["payload"]
 
 
 def test_snapshot_exposes_catalog_limits_and_layout():

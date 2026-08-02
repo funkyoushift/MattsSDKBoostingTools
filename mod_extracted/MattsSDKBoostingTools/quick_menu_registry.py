@@ -7,6 +7,7 @@ native UMG menu and the external bridge use it as the single layout source.
 from __future__ import annotations
 
 import copy
+import re
 from typing import Any
 
 from .inventory_capacity import clamp_container_size, load_inventory_settings, save_extra_settings
@@ -51,6 +52,11 @@ ACTION_CATALOG: dict[str, dict[str, Any]] = {
     "devperk_5": {"basic": "Infinite Ammo", "aliases": ["Inf Ammo"]},
     "devperk_6": {"basic": "Demigod", "aliases": ["God"]},
     "devperk_7": {"basic": "Spawn Leg/Epic Loot", "aliases": ["Leg Loot"]},
+    "dev_spawner_spawnai": {"basic": "Spawn Actor", "aliases": ["Spawn AI", "ASD AI"]},
+    "dev_spawner_spawn": {"basic": "Spawn Template", "aliases": ["ASD Spawn"]},
+    "dev_spawner_lostloot": {"basic": "Spawn Lost Loot", "aliases": ["Lost Loot"]},
+    "dev_spawner_activate_last": {"basic": "Activate Last Spawn", "aliases": ["ASD Activate"]},
+    "dev_spawner_clear": {"basic": "Clear ASD Spawns", "aliases": ["ASD Clear"]},
     "movement_apply_all": {"basic": "Apply Movement", "aliases": ["Move Apply"]},
     "movement_reset_all": {"basic": "Reset Movement", "aliases": ["Move Reset"]},
     "movement_preset_fast": {"basic": "Fast Movement", "aliases": ["Fast"]},
@@ -186,6 +192,32 @@ _RARITY_PERCENT_KEYS = frozenset({
 
 _SERIAL_PAYLOAD_KEYS = frozenset({"serial_text", "serial_override_level", "serial_level"})
 
+_DEV_SPAWNER_AI_KEYS = frozenset({
+    "dev_ai_name",
+    "dev_ai_count",
+    "dev_ai_distance",
+    "dev_ai_spacing",
+    "dev_ai_scale",
+    "dev_ai_z_offset",
+    "dev_ai_load",
+    "dev_ai_direct_only",
+})
+
+_DEV_SPAWNER_TEMPLATE_KEYS = frozenset({
+    "dev_actor_name",
+    "dev_actor_class",
+    "dev_actor_count",
+    "dev_actor_distance",
+    "dev_actor_spacing",
+    "dev_actor_scale",
+    "dev_actor_z_offset",
+    "dev_actor_delay",
+    "dev_actor_enable_states",
+    "dev_actor_disable_states",
+    "dev_actor_no_activate",
+    "dev_actor_include_non_generated",
+})
+
 # Parameterized pins use one action id + payload (not hundreds of baked slot ids).
 ALLOWED_PAYLOAD_KEYS: dict[str, frozenset[str]] = {
     "give_currency": frozenset({"currency_kind", "amount"}),
@@ -205,11 +237,17 @@ ALLOWED_PAYLOAD_KEYS: dict[str, frozenset[str]] = {
     "movement_infinite_jump_toggle_selected": frozenset({"target_player", "infinite_jump_target"}),
     "movement_teleport_to_slot": frozenset({"slot"}),
     "rarity_apply": _RARITY_PERCENT_KEYS,
+    "dev_spawner_spawnai": _DEV_SPAWNER_AI_KEYS,
+    "dev_spawner_spawn": _DEV_SPAWNER_TEMPLATE_KEYS,
+    "dev_spawner_lostloot": _DEV_SPAWNER_TEMPLATE_KEYS,
 }
 
 MAX_SERIAL_TEXT_LEN = 250_000
 MAX_DESTINATION_LEN = 220
 MAX_ITEMPOOL_NAME_LEN = 220
+MAX_DEV_SPAWNER_TOKEN_LEN = 180
+_DEV_SPAWNER_TOKEN_RE = re.compile(r"^[A-Za-z0-9_./:-]+$")
+_DEV_SPAWNER_STATE_RE = re.compile(r"^[A-Za-z0-9_,./:-]+$")
 
 DEFAULT_PAGE_0: list[dict[str, Any] | None] = [
     {"action": "max_all", "label_mode": "basic", "custom_label": "", "payload": {}},
@@ -310,6 +348,28 @@ def sanitize_payload(action: str, raw: object) -> dict[str, Any]:
             result[key] = max(0, min(3, _safe_int(source[key], 0)))
         elif key in _RARITY_PERCENT_KEYS:
             result[key] = max(0, min(100, _safe_int(source[key], 100)))
+        elif key in ("dev_ai_name", "dev_actor_name", "dev_actor_class", "dev_ai_load"):
+            text = str(source[key] or "").strip()[:MAX_DEV_SPAWNER_TOKEN_LEN]
+            if text and _DEV_SPAWNER_TOKEN_RE.match(text):
+                result[key] = text
+        elif key in ("dev_actor_enable_states", "dev_actor_disable_states"):
+            text = str(source[key] or "").strip().replace(" ", "")[:MAX_DEV_SPAWNER_TOKEN_LEN]
+            if text and _DEV_SPAWNER_STATE_RE.match(text):
+                result[key] = text
+        elif key in ("dev_ai_count", "dev_actor_count"):
+            result[key] = max(1, min(12, _safe_int(source[key], 1)))
+        elif key in ("dev_ai_distance", "dev_actor_distance"):
+            result[key] = max(0.0, min(20000.0, _safe_float(source[key], 350.0)))
+        elif key in ("dev_ai_spacing", "dev_actor_spacing"):
+            result[key] = max(1.0, min(5000.0, _safe_float(source[key], 125.0)))
+        elif key in ("dev_ai_scale", "dev_actor_scale"):
+            result[key] = max(0.05, min(20.0, _safe_float(source[key], 1.0)))
+        elif key in ("dev_ai_z_offset", "dev_actor_z_offset"):
+            result[key] = max(-5000.0, min(5000.0, _safe_float(source[key], 0.0)))
+        elif key == "dev_actor_delay":
+            result[key] = max(0.0, min(30.0, _safe_float(source[key], 1.0)))
+        elif key in ("dev_ai_direct_only", "dev_actor_no_activate", "dev_actor_include_non_generated"):
+            result[key] = _truthy_payload(source[key])
         else:
             result[key] = source[key]
     return result
