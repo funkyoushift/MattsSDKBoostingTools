@@ -124,6 +124,9 @@ class QuickMenuState:
     layout_revision: int = 0
     ui_dirty: bool = False
     key_escape: bool = False
+    key_f7: bool = False
+    key_f6: bool = False
+    hotkey_ignore_until: float = 0.0
     started: bool = False
 
 
@@ -669,7 +672,12 @@ def _force_game_only_input() -> None:
 
 
 def unstuck() -> None:
-    """Emergency close Quick Menu overlays and restore gameplay input."""
+    """Force-close the Quick Menu and restore normal game mouse/look/move input.
+
+    Use this when the cursor stays stuck on screen after the menu, or camera/
+    movement input feels locked. Safer than only pressing Close if UI input
+    capture failed partway through.
+    """
     try:
         close_panel()
     except Exception:
@@ -700,7 +708,11 @@ def unstuck() -> None:
     STATE.swap_armed_slot = None
     STATE.input_owner = None
     STATE.input_snapshot = InputSnapshot()
+    STATE.key_escape = False
+    STATE.key_f7 = False
+    STATE.key_f6 = False
     _log("Quick Menu unstuck complete (GameOnly restored).")
+    show_toast("Unstuck: menu closed, game input restored.", ok=True, seconds=2.4)
 
 
 def _ensure_toast_overlay(message: str, ok: bool) -> None:
@@ -1063,14 +1075,14 @@ def rebuild_ui() -> None:
 
     factory.button(
         root,
-        "Close",
+        "Close F7",
         DOCK_X + DOCK_W - 118,
         14,
         100,
         42,
         close_panel,
         fill=_with_alpha(C_BTN_DANGER, opacity),
-        scale=0.32,
+        scale=0.28,
         allow_when_modal=True,
     )
     factory.button(
@@ -1213,6 +1225,17 @@ def rebuild_ui() -> None:
             scale=0.28,
         )
 
+    factory.text(
+        root,
+        "F7 close menu · Esc close modal · F6 unstuck (restore mouse/look)",
+        DOCK_X + 16,
+        792,
+        DOCK_W - 32,
+        24,
+        scale=0.24,
+        z=6,
+        tint=C_BTN_GOLD,
+    )
     factory.text(root, STATE.status, DOCK_X + 16, 820, DOCK_W - 32, 36, scale=0.26, z=6, tint=C_TEXT_DIM)
 
     # Opaque opacity slider (keeps dock readable; default fully opaque).
@@ -1520,6 +1543,9 @@ def open_panel() -> None:
     STATE.player_pick_purpose = ""
     STATE.pending_action = None
     STATE.swap_armed_slot = None
+    # Ignore the still-held open key so the poller does not close instantly.
+    STATE.key_f7 = True
+    STATE.key_escape = False
     _clear_toast_overlay()
     try:
         ensured = backend_actions.ensure_selected_player(prefer_host=True)
@@ -1549,11 +1575,15 @@ def close_panel() -> None:
     remove_widget(STATE.menu_canvas)
     remove_widget(STATE.overlay)
     STATE.menu_canvas = STATE.overlay = STATE.tree = STATE.root = None
+    # Prevent same-frame keybind + poller from reopening immediately.
+    STATE.hotkey_ignore_until = time.monotonic() + 0.35
     restore_input()
     _log("Quick Menu closed")
 
 
 def toggle_panel() -> None:
+    if time.monotonic() < float(STATE.hotkey_ignore_until or 0.0):
+        return
     close_panel() if STATE.is_open else open_panel()
 
 
@@ -1636,6 +1666,39 @@ def process_escape() -> None:
             close_panel()
 
 
+def _edge_key(pc: Any, name: str, state_attr: str) -> bool:
+    """Return True on key-down edge. Keeps working while UMG owns UI focus."""
+    down = _key_down(pc, name)
+    was = bool(getattr(STATE, state_attr, False))
+    setattr(STATE, state_attr, down)
+    return bool(down and not was)
+
+
+def process_hotkeys() -> None:
+    """Poll F7/F6 while open so toggles still work under GameAndUI capture.
+
+    mods_base keybinds often do not fire while the Quick Menu owns UI input,
+    which made F7 open-only from the player's point of view.
+    """
+    pc = get_pc()
+    if pc is None:
+        STATE.key_f7 = False
+        STATE.key_f6 = False
+        return
+
+    # F6 always available as emergency restore, even if STATE.is_open is wrong.
+    if _edge_key(pc, "F6", "key_f6"):
+        unstuck()
+        return
+
+    if not STATE.is_open:
+        STATE.key_f7 = False
+        return
+
+    if _edge_key(pc, "F7", "key_f7"):
+        close_panel()
+
+
 def _expire_toast() -> None:
     if not STATE.toast:
         return
@@ -1671,6 +1734,8 @@ def tick(_obj: Any, _args: Any, _ret: Any, _func: Any) -> None:
     try:
         _poll_delivery_toasts()
         _expire_toast()
+        # Hotkeys first so F6 can recover even if overlay state is inconsistent.
+        process_hotkeys()
         if not STATE.is_open:
             process_escape()
             return None
@@ -1728,7 +1793,7 @@ quick_menu_toggle = keybind(
     "F7",
     callback=toggle_panel,
     display_name="MSBT Quick Menu",
-    description="Open or close the native UMG Quick Menu (grid pages, pin last command, repeat last drop).",
+    description="Open or close the native UMG Quick Menu. Also polled while open so F7 can close under UI focus.",
 )
 
 quick_menu_unstuck_key = keybind(
@@ -1736,7 +1801,10 @@ quick_menu_unstuck_key = keybind(
     "F6",
     callback=unstuck,
     display_name="MSBT Quick Menu Unstuck",
-    description="Emergency close Quick Menu and restore GameOnly input if the cursor/input gets stuck.",
+    description=(
+        "Force-close Quick Menu and restore normal mouse/look/move input if the cursor "
+        "gets stuck on screen after the menu."
+    ),
 )
 
 
