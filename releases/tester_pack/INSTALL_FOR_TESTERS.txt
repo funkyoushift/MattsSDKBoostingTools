@@ -83,8 +83,13 @@ WHAT TO TEST (SMOKE)
 12) Optional hard check: disable/rename blimgui.zip, reload, confirm F7 still works
 13) External app: open Quick Menu tab, select a slot, save/clear it
 14) External app: click + QM beside Quick Max, Currency, Inventory, UVH,
-    Movement, Rarity, Chest, Shiny, or Debug actions; choose page/slot and save
-15) Open F7 in-game and confirm external edits appear without restarting
+    Movement, Rarity, Chest, Shiny, Debug, Travel, Spawnables, or Dev Spawner
+    actions; choose page/slot and save
+15) Serial Bookmarks / BL4 Codes: use gold + QM Selected/All/Non-Host under the
+    Deliver buttons to pin checked serials into Quick Menu
+16) Deliver a multi-serial batch and confirm Electron shows the delivery
+    progress bar; in-game F7 shows start/finish delivery toasts
+17) Open F7 in-game and confirm external edits appear without restarting
 
 PLEASE REPORT BACK
 ------------------
@@ -92,10 +97,11 @@ PLEASE REPORT BACK
 - Any stuck mouse / need for F6?
 - Pin + Repeat Last Drop behavior
 - Lock Player behavior
+- Serial + QM pin buttons and delivery progress feedback
 - Any crash, blank menu, or buttons that do nothing
 - Game build / SDK notes if something fails
 
 NOT IN THIS BUILD
 -----------------
-- Dev-spawner actor tools (not Quick Menu assignable yet)
+- Full GitHub Release installer bump (this is the Quick Menu preview pack)
 - External app UI redesign (not required for this Quick Menu test)
