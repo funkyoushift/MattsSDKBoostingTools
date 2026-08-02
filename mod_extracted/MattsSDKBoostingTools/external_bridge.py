@@ -588,6 +588,12 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
         return backend_actions.uvh_boost_cancel()
     if action == "uvh_boost_status":
         return backend_actions.uvh_boost_status()
+    if action == "complete_challenges_all":
+        return backend_actions.complete_challenges_all()
+    if action == "complete_challenges_cancel":
+        return backend_actions.complete_challenges_cancel()
+    if action == "complete_challenges_status":
+        return backend_actions.complete_challenges_status()
     if action == "give_currency":
         return backend_actions.give_currency(
             payload.get("currency_kind") if "currency_kind" in payload else payload.get("currency_index", "cash"),
@@ -782,6 +788,10 @@ def _process_pending_actions(*_args: Any, **_kwargs: Any) -> None:
     global _last_error
     try:
         backend_actions.uvh_boost_tick()
+    except Exception as exc:
+        _last_error = repr(exc)
+    try:
+        backend_actions.complete_challenges_tick()
     except Exception as exc:
         _last_error = repr(exc)
     for _ in range(8):

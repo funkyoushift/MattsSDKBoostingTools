@@ -15,7 +15,7 @@ import sys
 import time
 from typing import Any
 
-from mods_base import ENGINE, get_pc
+from mods_base import ENGINE, command, get_pc
 
 from . import player_economy, quick_menu_registry, serial_rewards
 from .golden_chest_keybinds import _close_golden_chest, _open_golden_chest
@@ -1867,6 +1867,144 @@ def uvh_boost_tick() -> None:
         _uvh_set_status(f"UVH boost complete. Final step sent to {sent}/{len(live_targets)} player(s).")
 
 
+_CHALLENGE_STEP_DELAY_SECONDS = 0.05
+_challenge_catalog_cache: list[tuple[str, int]] | None = None
+_challenge_queue: list[tuple[str, int]] = []
+_challenge_targets: list[Any] = []
+_challenge_next_at = 0.0
+_challenge_running = False
+_challenge_last_status = "Ready."
+_challenge_total_steps = 0
+
+
+def _challenge_set_status(message: str) -> None:
+    global _challenge_last_status
+    _challenge_last_status = message
+    try:
+        from unrealsdk import logging as _sdk_logging
+
+        _sdk_logging.info(f"[Matts SDK Boosting Tools | Challenges] {message}")
+    except Exception:
+        pass
+
+
+def _load_challenge_catalog() -> list[tuple[str, int]]:
+    global _challenge_catalog_cache
+    if _challenge_catalog_cache is not None:
+        return list(_challenge_catalog_cache)
+    rows: list[tuple[str, int]] = []
+    try:
+        package = __package__ or "MattsSDKBoostingTools"
+        raw = pkgutil.get_data(package, "challenge_catalog.json")
+        if raw:
+            data = json.loads(raw.decode("utf-8"))
+            entries = data.get("entries") if isinstance(data, dict) else None
+            if isinstance(entries, list):
+                for entry in entries:
+                    if not isinstance(entry, dict):
+                        continue
+                    challenge_id = str(entry.get("id") or "").strip()
+                    if not challenge_id:
+                        continue
+                    try:
+                        amount = max(1, int(entry.get("amount") or 1))
+                    except Exception:
+                        amount = 1
+                    rows.append((challenge_id, amount))
+    except Exception as exc:
+        _challenge_set_status(f"Challenge catalog load failed: {exc!r}")
+        rows = []
+    _challenge_catalog_cache = rows
+    return list(rows)
+
+
+def complete_challenges_all() -> dict[str, Any]:
+    """Queue every catalog challenge grant for live players (hidden / console tool)."""
+    global _challenge_queue, _challenge_targets, _challenge_next_at, _challenge_running, _challenge_total_steps
+    if get_pc() is None:
+        _challenge_set_status("Cannot start: load into a character first.")
+        return {"ok": False, "message": _challenge_last_status}
+    targets = _uvh_discover_controllers()
+    if not targets:
+        _challenge_set_status("Cannot start: no live players found.")
+        return {"ok": False, "message": _challenge_last_status}
+    catalog = _load_challenge_catalog()
+    if not catalog:
+        _challenge_set_status("Cannot start: challenge catalog is empty or missing.")
+        return {"ok": False, "message": _challenge_last_status}
+    _challenge_queue = list(catalog)
+    _challenge_targets = targets
+    _challenge_total_steps = len(catalog)
+    _challenge_next_at = time.monotonic()
+    _challenge_running = True
+    _challenge_set_status(
+        f"Complete-all-challenges queued for {len(targets)} player(s); {_challenge_total_steps} step(s)."
+    )
+    return {
+        "ok": True,
+        "message": _challenge_last_status,
+        "steps": _challenge_total_steps,
+        "players": len(targets),
+    }
+
+
+def complete_challenges_cancel() -> dict[str, Any]:
+    global _challenge_queue, _challenge_targets, _challenge_running
+    active = _challenge_running or bool(_challenge_queue)
+    remaining = len(_challenge_queue)
+    _challenge_queue = []
+    _challenge_targets = []
+    _challenge_running = False
+    _challenge_set_status(
+        f"Complete-all-challenges cancelled ({remaining} step(s) left)."
+        if active
+        else "No complete-all-challenges run is active."
+    )
+    return {"ok": True, "message": _challenge_last_status}
+
+
+def complete_challenges_status() -> dict[str, Any]:
+    return {
+        "ok": True,
+        "message": _challenge_last_status,
+        "active": _challenge_running,
+        "steps_remaining": len(_challenge_queue),
+        "steps_total": _challenge_total_steps,
+        "players": len(_challenge_targets),
+    }
+
+
+def complete_challenges_tick() -> None:
+    global _challenge_next_at, _challenge_running
+    if not _challenge_queue or time.monotonic() < _challenge_next_at:
+        return
+    if get_pc() is None:
+        return
+    challenge, amount = _challenge_queue.pop(0)
+    live_targets = [controller for controller in _challenge_targets if _uvh_live(controller)]
+    sent = 0
+    for controller in live_targets:
+        try:
+            controller.ServerIncrementChallengeForPlayer(challenge, int(amount))
+            sent += 1
+        except Exception as exc:
+            _challenge_set_status(f"{challenge} failed for one player: {exc!r}")
+    _challenge_next_at = time.monotonic() + _CHALLENGE_STEP_DELAY_SECONDS
+    done = _challenge_total_steps - len(_challenge_queue)
+    if _challenge_queue:
+        if done == 1 or done % 50 == 0:
+            _challenge_set_status(
+                f"Challenges: {done}/{_challenge_total_steps} sent "
+                f"({challenge} x{amount} -> {sent}/{len(live_targets)} player(s))."
+            )
+    else:
+        _challenge_running = False
+        _challenge_set_status(
+            f"Complete-all-challenges finished. Final step {challenge} sent to "
+            f"{sent}/{len(live_targets)} player(s)."
+        )
+
+
 def toggle_debug_cam() -> dict[str, Any]:
     idx = get_selected_player_index()
     try:
@@ -2973,3 +3111,24 @@ def serial_convert(text: object) -> dict[str, Any]:
             "deserialized": "",
             "breakdown": "",
         }
+
+
+@command(
+    "msbt_complete_challenges",
+    description=(
+        "Hidden: queue complete-all-challenges for live players using the packaged "
+        "challenge catalog. Prefer msbt_complete_challenges_cancel to stop."
+    ),
+)
+def _cmd_msbt_complete_challenges(_args: Any = None) -> None:
+    result = complete_challenges_all()
+    _challenge_set_status(str(result.get("message") or _challenge_last_status))
+
+
+@command(
+    "msbt_complete_challenges_cancel",
+    description="Hidden: cancel a running msbt_complete_challenges queue.",
+)
+def _cmd_msbt_complete_challenges_cancel(_args: Any = None) -> None:
+    result = complete_challenges_cancel()
+    _challenge_set_status(str(result.get("message") or _challenge_last_status))

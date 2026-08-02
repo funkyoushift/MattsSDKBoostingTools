@@ -13,6 +13,7 @@ from mods_base import ENGINE, get_pc
 from unrealsdk import find_class, logging
 
 _PREFIX = "[Matts SDK Boosting Tools | Travel]"
+# Fallback only when packaged travelmaps_flat.json is unavailable.
 _DEFAULT_MAP_ROWS: list[dict[str, str]] = [
     {"map": "World_P", "display_name": "World_P - Main World"},
     {"map": "Fortress_Grasslands_P", "display_name": "Fortress_Grasslands_P - Fadefields Fortress"},
@@ -31,6 +32,11 @@ _DEFAULT_MAP_ROWS: list[dict[str, str]] = [
     {"map": "Elpis_P", "display_name": "Elpis_P - Elpis"},
     {"map": "ElpisElevator_P", "display_name": "ElpisElevator_P - Elpis Elevator"},
     {"map": "Bespoke_VisionQuest", "display_name": "Bespoke_VisionQuest - Vision Quest"},
+    {"map": "Mandolin1_P", "display_name": "Mandolin1_P - Mandolin"},
+    {"map": "Mandolin_CoS_P", "display_name": "Mandolin_CoS_P - Mandolin Circle of Slaughter"},
+    {"map": "Mandolin_MissionCoS_P", "display_name": "Mandolin_MissionCoS_P - Mandolin Circle of Slaughter Mission"},
+    {"map": "Tuba_P", "display_name": "Tuba_P - Tuba"},
+    {"map": "Harmonica_P", "display_name": "Harmonica_P - Harmonica"},
 ]
 
 _STATION_CACHE: list[dict[str, str]] | None = None
@@ -225,20 +231,46 @@ def load_travel_stations() -> list[dict[str, str]]:
     return list(out)
 
 
+def _load_travel_map_rows_from_json() -> list[dict[str, str]]:
+    """Load curated map rows from packaged travelmaps_flat.json when present."""
+    blob = pkgutil.get_data(__package__ or __name__.rpartition('.')[0], 'travelmaps_flat.json')
+    if blob is None:
+        return []
+    try:
+        data = json.loads(blob.decode('utf-8'))
+    except Exception as exc:
+        _log(f"travelmaps_flat.json parse failed: {exc!r}")
+        return []
+    rows = data.get('maps') if isinstance(data, dict) else None
+    if not isinstance(rows, list):
+        return []
+    out: list[dict[str, str]] = []
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        name = str(row.get('map', '')).strip()
+        if not name:
+            continue
+        display = str(row.get('display_name') or name).strip()
+        out.append({'map': name, 'display_name': display})
+    return out
+
+
 def load_travel_maps() -> list[dict[str, str]]:
     global _MAP_CACHE
     if _MAP_CACHE is not None:
         return list(_MAP_CACHE)
 
+    # Prefer packaged travelmaps_flat.json; fall back to the baked default list.
     # Dedupe maps case-insensitively. Some station data uses different
-    # capitalization than the manually curated default list, e.g.
-    # Elpiselevator_P vs ElpisElevator_P. Prefer the capitalization from
-    # travelstations.json when present so station filtering and travel commands
-    # use the map id the game data actually exposes, while keeping the friendly
-    # default description.
+    # capitalization than the curated list, e.g. Elpiselevator_P vs
+    # ElpisElevator_P. Prefer capitalization from travelstations.json when
+    # present so station filtering and travel commands use the map id the game
+    # data actually exposes, while keeping the friendly description.
+    default_rows = _load_travel_map_rows_from_json() or list(_DEFAULT_MAP_ROWS)
     default_by_norm: dict[str, dict[str, str]] = {}
     preferred_norms: list[str] = []
-    for row in _DEFAULT_MAP_ROWS:
+    for row in default_rows:
         name = str(row.get('map', '')).strip()
         if not name:
             continue
