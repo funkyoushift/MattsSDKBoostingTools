@@ -39,7 +39,7 @@ Not in this preview
 Smoke checklist
 1) With blimgui.zip disabled/absent: F7 still opens Quick Menu
 2) Escape/Close / F6 restore mouse to game
-3) Target + Refresh update the selected player line
+3) Target shows clickable player names (not a blank modal); Refresh updates the target line
 4) Edit -> assign/clear/swap slots; Reset Page / Reset All
 5) Run a drop/delivery, Pin Last Command into a slot
 6) Repeat Last Drop prompts for player unless Lock Player is on

@@ -478,15 +478,29 @@ class NativeUMG:
         modal_only: bool = False,
         allow_when_modal: bool = False,
     ) -> Any:
+        # Modal backdrops render at z=80. Keep every modal button (including
+        # its hit target and label) above that layer; otherwise the modal title
+        # is visible while player/action rows appear as a blank screen.
+        layer = max(int(z), 82) if modal_only else int(z)
         base = fill if enabled else (0.35, 0.37, 0.40, 0.90)
-        self.border(parent, x, y, w, h, base, z)
+        self.border(parent, x, y, w, h, base, layer)
         widget = self.widget("/Script/UMG.Button")
         self.add(parent, widget)
-        self.slot(widget, x, y, w, h, z + 1)
+        self.slot(widget, x, y, w, h, layer + 1)
         try_call(widget, "SetVisibility", 0)
         try_call(widget, "SetIsEnabled", bool(enabled))
         try_call(widget, "SetRenderOpacity", 0.03 if enabled else 0.01)
-        self.text(parent, label, x + 4, y + 2, w - 8, h - 4, scale=scale, z=z + 2, center=True)
+        self.text(
+            parent,
+            label,
+            x + 4,
+            y + 2,
+            w - 8,
+            h - 4,
+            scale=scale,
+            z=layer + 2,
+            center=True,
+        )
         STATE.buttons.append(
             ButtonRef(widget, action, label, enabled, False, modal_only, allow_when_modal)
         )
