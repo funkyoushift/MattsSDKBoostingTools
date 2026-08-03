@@ -43,7 +43,7 @@ In plain terms, the Electron app is the control panel. The SDK mod does the live
   <img src="docs/media/msbt-boosting.jpg" alt="MSBT Boosting tab — targeting, UVH booster, serial copies" width="900">
 </p>
 
-- **Quick Menu** — native in-game F7 menu (no BLImGui required) with pin/repeat/lock, plus an external Quick Menu editor tab and `+ QM` pin buttons
+- **Quick Menu** — native in-game F7 panel (no BLImGui required): pin/repeat/lock, optional rarity-weight strip, MOVE/THEME/resize, plus the Electron **★ Quick Menu** editor and gold `+ QM` pin buttons
 - **Boosting** — cash, Eridium, XP/spec, SDU, inventory size helpers, rarity drop weights, lobby targeting (selected / all / non-host), and UVH booster controls
 - **Serial tools** — paste, validate, bookmark, and deliver `@U` item serials
 - **BL4 Codes** — search/browse a merged local catalog (GZO image cards, Lootlemon references, custom/static codes), then deliver from a sticky delivery panel
@@ -65,9 +65,9 @@ A lot of community testing, late nights, and real money went into keeping this u
 
 ---
 
-## Quick Menu (v2.0)
+## Quick Menu (v2.1)
 
-Native in-game menu plus an external editor. **BLImGui is not required.**
+Native in-game F7 panel plus an external editor. **BLImGui is not required.**
 
 <p align="center">
   <img src="docs/media/msbt-quick-menu-controls.jpg" alt="MSBT Quick Menu controls — F7 open/close, Esc close modal, F6 unstuck" width="900">
@@ -81,23 +81,31 @@ Native in-game menu plus an external editor. **BLImGui is not required.**
 | **Esc** | Close a popup/modal first; if none, close the menu |
 | **F6** | **Unstuck** — force-close the menu and restore normal mouse / look / move if input feels stuck |
 
-Also use the on-screen **Close F7** button. Prefer F7 for normal open/close; use F6 only when the cursor or camera feels stuck after the menu.
+Also use the on-screen **Close F7** button. Prefer F7 for normal open/close; use F6 only when the cursor or camera feels stuck after the menu. On the panel itself: **MOVE** to reposition, **− / +** to resize, **THEME** to switch looks.
+
+<p align="center">
+  <img src="docs/media/msbt-quick-menu-ingame.jpg" alt="In-game MSBT Quick Menu (F7) — slot grid, Pin Last / Lock / Target, optional rarity drop weights strip" width="900">
+</p>
+
+<p align="center"><em>In-game Quick Menu (press <strong>F7</strong>) — right-docked native panel over Borderlands 4</em></p>
 
 **What you get**
 
-- Up to **5 pages × 12 slots**
-- **Pin Last Command**, **Repeat Last Drop**, optional **Lock Player**
-- Edit mode: assign, clear, swap, reset page / reset all
-- Live sync with the Electron **★ Quick Menu** tab over the bridge
+- Up to **5 pages** of **3×7** slots (21 buttons per page)
+- **Pin Last**, **Repeat Last Drop**, optional **Lock Player**, player target tabs
+- Optional **rarity drop weights** strip on F7 (Apply / Reset / Leg Only / Pearl Only) — equip or hide it from the Electron editor; live apply stays in sync with Boosting
+- Edit / assign / clear slots in-game or from the app; layout edits apply live over the bridge (no game restart)
 
 <p align="center">
-  <img src="docs/media/msbt-quick-menu-editor.png" alt="Electron Quick Menu editor — pages, slots, pin/repeat controls" width="900">
+  <img src="docs/media/msbt-quick-menu-editor.jpg" alt="Electron ★ Quick Menu editor — F7 panel modules, pages, 3×7 slot grid, pin/repeat controls" width="900">
 </p>
+
+<p align="center"><em>Electron <strong>★ Quick Menu</strong> editor — equip the rarity strip, manage pages/slots, pin from other tabs</em></p>
 
 **How to pin commands from the app**
 
-1. Run or configure an action in MSBT (Boosting, Serial Bookmarks, BL4 Codes, Travel, etc.).
-2. Click a **`+ QM`** button next to that action (gold buttons on serial/BL4 delivery; smaller `+ QM` beside many Boosting actions).
+1. Run or configure an action in MSBT (Boosting, Serial Bookmarks, BL4 Codes, Travel, Item Pool, Dev Spawner, etc.).
+2. Click a **`+ QM`** button next to that action (gold buttons on serial/BL4 delivery; smaller `+ QM` beside many Boosting / Movement actions).
 3. Choose a page and slot → **Save**.
 4. Press **F7** in-game — the slot is live (no game restart needed for layout edits).
 
