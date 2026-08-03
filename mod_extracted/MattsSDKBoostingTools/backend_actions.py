@@ -22,6 +22,8 @@ from .golden_chest_keybinds import _close_golden_chest, _open_golden_chest
 from .inventory_capacity import (
     auto_apply_inventory_sizes_if_needed,
     clamp_container_size,
+    load_inventory_settings,
+    save_extra_settings,
     set_inventory_sizes_for_all_party,
     set_inventory_sizes_for_party_index,
 )
@@ -32,17 +34,22 @@ from .item_pool_spawning import spawn_item_pool
 from .movement_adjustments import (
     apply_movement_advanced_to_all_players,
     delete_ground_items,
+    fire_super_dash,
+    get_super_dash_state,
     pawn_for_controller,
+    pull_ground_loot_here,
     refresh_jump_counts_all_players,
     reset_movement_advanced_all_players,
     set_infinite_jump_all,
     set_infinite_jump_for_index,
     set_no_target,
     set_noclip,
+    set_super_dash_strength,
     set_time_dilation,
     teleport_pawn_to_pawn,
     toggle_infinite_jump_for_index,
     toggle_players_only,
+    toggle_super_dash,
     zero_vault_power_costs_all_players,
 )
 from .party_helpers import (
@@ -95,8 +102,29 @@ serial_tools_parts_breakdown: str = ""
 serial_tools_status: str = "Paste a @U serial or deserialized serial text above."
 _movement_no_target_enabled = False
 _movement_noclip_enabled = False
-_rarity_weights: dict[str, float] = {key: 1.0 for key, _label, _fields in RARITY_ROWS}
 _rarity_baseline: dict[str, dict[str, float]] = {}
+
+
+def _load_rarity_weights_from_settings() -> dict[str, float]:
+    """Match BLImGui: restore saved multipliers (and migrate old rarity_disabled flags)."""
+    settings = load_inventory_settings()
+    saved = dict(settings.get("rarity_weights", {}) or {})
+    old_disabled = dict(settings.get("rarity_disabled", {}) or {})
+    weights: dict[str, float] = {}
+    for key, _label, _fields in RARITY_ROWS:
+        if key in saved:
+            try:
+                val = float(saved.get(key, 1.0))
+            except Exception:
+                val = 1.0
+        else:
+            val = 0.0 if bool(old_disabled.get(key, False)) else 1.0
+        weights[key] = max(0.0, min(1.0, float(val)))
+    return weights
+
+
+_rarity_weights: dict[str, float] = _load_rarity_weights_from_settings()
+_rarity_revision: int = 0
 UVH_RANKS: tuple[tuple[str, tuple[str, ...]], ...] = (
     (
         "UVH 1",
@@ -1204,6 +1232,12 @@ def run_quick_menu_action(
         result = movement_toggle_players_only()
     elif key == "movement_delete_ground_items":
         result = movement_delete_ground_items()
+    elif key == "movement_pull_ground_loot":
+        result = movement_pull_ground_loot()
+    elif key == "movement_super_dash":
+        result = movement_super_dash(payload.get("dash_strength"))
+    elif key == "movement_super_dash_toggle":
+        result = movement_super_dash_toggle()
     elif key == "movement_zero_vault":
         result = movement_zero_vault()
     elif key == "movement_set_time":
@@ -1312,6 +1346,8 @@ def get_status() -> dict[str, Any]:
         "drop_player_lock": get_drop_player_lock(),
         "serial_delivery": delivery_progress,
         "diagnostics": _sdk_diagnostics(),
+        "rarity_weights": get_rarity_weights(),
+        "rarity_revision": get_rarity_revision(),
     }
 
 
@@ -2413,6 +2449,35 @@ def movement_delete_ground_items() -> dict[str, Any]:
         return {"ok": False, "message": f"Delete ground items failed: {exc!r}"}
 
 
+def movement_pull_ground_loot() -> dict[str, Any]:
+    try:
+        msg = pull_ground_loot_here()
+        ok = not str(msg).lower().startswith("pull loot failed") and "load into" not in str(msg).lower()
+        # treat "no ground loot" as ok success with informative message
+        if "failed" in str(msg).lower() and "no ground" not in str(msg).lower():
+            ok = False
+        return {"ok": ok or "no ground loot" in str(msg).lower() or "moved" in str(msg).lower(), "message": msg}
+    except Exception as exc:
+        return {"ok": False, "message": f"Pull loot failed: {exc!r}"}
+
+
+def movement_super_dash(strength: object = None) -> dict[str, Any]:
+    try:
+        value = None if strength is None or str(strength).strip() == "" else int(strength)
+        msg = fire_super_dash(value)
+        return {"ok": "failed" not in str(msg).lower(), "message": msg, "super_dash": get_super_dash_state()}
+    except Exception as exc:
+        return {"ok": False, "message": f"Super Dash failed: {exc!r}"}
+
+
+def movement_super_dash_toggle() -> dict[str, Any]:
+    try:
+        msg = toggle_super_dash()
+        return {"ok": True, "message": msg, "super_dash": get_super_dash_state()}
+    except Exception as exc:
+        return {"ok": False, "message": f"Super Dash toggle failed: {exc!r}"}
+
+
 def movement_zero_vault() -> dict[str, Any]:
     try:
         msg = zero_vault_power_costs_all_players()
@@ -2801,28 +2866,56 @@ def _rarity_restore_snapshot(mod: object | None, snapshot: dict[str, float]) -> 
     return writes
 
 
-def _rarity_sync_optional_blimgui_reset() -> None:
-    panel = None
+def _rarity_save_settings() -> None:
+    global _rarity_revision
+    try:
+        _rarity_revision = int(_rarity_revision) + 1
+    except Exception:
+        _rarity_revision = 1
+    try:
+        save_extra_settings(
+            rarity_weights={
+                key: float(max(0.0, min(1.0, float(_rarity_weights.get(key, 1.0)))))
+                for key, _label, _fields in RARITY_ROWS
+            }
+        )
+    except Exception:
+        pass
+
+
+def get_rarity_revision() -> int:
+    return int(_rarity_revision or 0)
+
+
+def _rarity_find_blimgui_panel() -> object | None:
     for name in (f"{__package__}.blimgui_panel", "MattsSDKBoostingTools.blimgui_panel"):
         panel = sys.modules.get(name)
         if panel is not None:
-            break
+            return panel
+    return None
+
+
+def _rarity_sync_optional_blimgui(*, reset_auto_reapply: bool = False) -> None:
+    """Push backend weights into the optional BLImGui panel so both UIs stay aligned."""
+    panel = _rarity_find_blimgui_panel()
     if panel is None:
         return
-    try:
-        setattr(panel, "_rarity_auto_reapply", False)
-        setattr(panel, "_rarity_reapply_until", 0.0)
-        setattr(panel, "_rarity_reapply_next_try", 0.0)
-    except Exception:
-        pass
+    if reset_auto_reapply:
+        try:
+            setattr(panel, "_rarity_auto_reapply", False)
+            setattr(panel, "_rarity_reapply_until", 0.0)
+            setattr(panel, "_rarity_reapply_next_try", 0.0)
+        except Exception:
+            pass
     try:
         panel_weights = getattr(panel, "_rarity_weights", None)
         if isinstance(panel_weights, dict):
             for key, _label, _fields in RARITY_ROWS:
-                panel_weights[key] = 1.0
+                panel_weights[key] = float(max(0.0, min(1.0, float(_rarity_weights.get(key, 1.0)))))
     except Exception:
         pass
     try:
+        # Prefer backend save; still call panel saver when present so its status stays coherent.
         save_settings = getattr(panel, "_rarity_save_settings", None)
         if callable(save_settings):
             save_settings()
@@ -2830,9 +2923,18 @@ def _rarity_sync_optional_blimgui_reset() -> None:
         pass
 
 
+def _rarity_sync_optional_blimgui_reset() -> None:
+    for key, _label, _fields in RARITY_ROWS:
+        _rarity_weights[key] = 1.0
+    _rarity_save_settings()
+    _rarity_sync_optional_blimgui(reset_auto_reapply=True)
+
+
 def _rarity_apply_current() -> dict[str, Any]:
     state = _rarity_state_for_gamestate(_rarity_current_gamestate())
     if state is None:
+        _rarity_save_settings()
+        _rarity_sync_optional_blimgui()
         return {"ok": False, "message": "No GameState.RarityState found yet. Load into a world and try again."}
     _rarity_capture_baseline(state)
     writes = 0
@@ -2841,7 +2943,14 @@ def _rarity_apply_current() -> dict[str, Any]:
         target = max(0.0, min(1.0, float(_rarity_weights.get(key, 1.0))))
         writes += _rarity_set_float(_rarity_get_modifier(state, fields), target)
         parts.append(f"{label}={int(round(target * 100.0))}%")
+    _rarity_save_settings()
+    _rarity_sync_optional_blimgui()
     return {"ok": True, "message": "Rarity drop weights applied: " + ", ".join(parts) + f". Writes: {writes}."}
+
+
+def get_rarity_weights() -> dict[str, float]:
+    """Current rarity weight multipliers (1.0 = 100% vanilla)."""
+    return {key: float(_rarity_weights.get(key, 1.0)) for key, _label, _fields in RARITY_ROWS}
 
 
 def rarity_apply(payload: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -2860,18 +2969,19 @@ def rarity_apply(payload: dict[str, Any] | None = None) -> dict[str, Any]:
 
 def rarity_reset() -> dict[str, Any]:
     state = _rarity_state_for_gamestate(_rarity_current_gamestate())
+    for key, _label, _fields in RARITY_ROWS:
+        _rarity_weights[key] = 1.0
     if state is None:
-        for key, _label, _fields in RARITY_ROWS:
-            _rarity_weights[key] = 1.0
-        _rarity_sync_optional_blimgui_reset()
+        _rarity_save_settings()
+        _rarity_sync_optional_blimgui(reset_auto_reapply=True)
         return {"ok": False, "message": "No GameState.RarityState found yet. Rarity override state was cleared; load into a world and try again."}
     writes = 0
     parts: list[str] = []
     for key, label, fields in RARITY_ROWS:
-        _rarity_weights[key] = 1.0
         writes += _rarity_set_float(_rarity_get_modifier(state, fields), 1.0)
         parts.append(f"{label}=100%")
-    _rarity_sync_optional_blimgui_reset()
+    _rarity_save_settings()
+    _rarity_sync_optional_blimgui(reset_auto_reapply=True)
     return {"ok": True, "message": "Rarity drop weights reset to 100% and live override is off: " + ", ".join(parts) + f". Writes: {writes}."}
 
 

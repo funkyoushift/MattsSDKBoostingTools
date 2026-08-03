@@ -33,6 +33,11 @@ const {
   writeRaritySettings
 } = require("./rarity_settings_store");
 const {
+  walkthroughSettingsFilePath,
+  readWalkthroughSettings,
+  writeWalkthroughSettings
+} = require("./walkthrough_store");
+const {
   loadBl4Catalog,
   refreshGzoCatalog
 } = require("./bl4_codes_catalog");
@@ -136,6 +141,7 @@ const USER_DATA_FILE_DEFINITIONS = [
   { key: "travelFavorites", label: "Travel Favorites", fileName: "travel_favorites.json" },
   { key: "movementSettings", label: "Movement Presets", fileName: "movement_settings.json" },
   { key: "raritySettings", label: "Rarity Presets", fileName: "rarity_settings.json" },
+  { key: "walkthroughSettings", label: "Walkthrough Prefs", fileName: "walkthrough_settings.json" },
   { key: "windowState", label: "Window Size / Position / Opacity", fileName: "window-state.json" }
 ];
 
@@ -1072,6 +1078,20 @@ ipcMain.handle("app:saveRaritySettings", async (_event, payload) => {
   const filePath = raritySettingsFilePath(app.getPath("userData"));
   try {
     return await writeRaritySettings(filePath, payload || {});
+  } catch (error) {
+    return { ok: false, message: String(error && error.message ? error.message : error) };
+  }
+});
+
+ipcMain.handle("app:loadWalkthroughSettings", async () => {
+  const filePath = walkthroughSettingsFilePath(app.getPath("userData"));
+  return readWalkthroughSettings(filePath);
+});
+
+ipcMain.handle("app:saveWalkthroughSettings", async (_event, payload) => {
+  const filePath = walkthroughSettingsFilePath(app.getPath("userData"));
+  try {
+    return await writeWalkthroughSettings(filePath, payload || {});
   } catch (error) {
     return { ok: false, message: String(error && error.message ? error.message : error) };
   }

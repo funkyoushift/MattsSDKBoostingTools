@@ -370,6 +370,9 @@ UI_LAYOUT: dict[str, Any] = {
                 {"id":"movement_set_time","label":"Set Time","accent":"gold"},
                 {"id":"movement_reset_time","label":"Reset Time","accent":"purple"},
                 {"id":"movement_delete_ground_items","label":"Delete Ground Items","accent":"red"},
+                {"id":"movement_pull_ground_loot","label":"Pull Loot Here","accent":"gold"},
+                {"id":"movement_super_dash","label":"Super Dash","accent":"cyan"},
+                {"id":"movement_super_dash_toggle","label":"Super Dash Toggle","accent":"cyan"},
                 {"id":"movement_zero_vault","label":"Zero Vault Cooldown","accent":"cyan"}
             ]}
         ]},
@@ -626,6 +629,12 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
         return backend_actions.travel_to_station(payload.get("travel_station"))
     if action == "movement_delete_ground_items":
         return backend_actions.movement_delete_ground_items()
+    if action == "movement_pull_ground_loot":
+        return backend_actions.movement_pull_ground_loot()
+    if action == "movement_super_dash":
+        return backend_actions.movement_super_dash(body.get("dash_strength"))
+    if action == "movement_super_dash_toggle":
+        return backend_actions.movement_super_dash_toggle()
     if action == "movement_zero_vault":
         return backend_actions.movement_zero_vault()
     if action == "movement_apply_all":
@@ -780,6 +789,8 @@ def _status() -> dict[str, Any]:
         "last_drop": backend_status.get("last_drop"),
         "drop_player_lock": backend_status.get("drop_player_lock") or {"enabled": False},
         "serial_delivery": backend_status.get("serial_delivery", {}),
+        "rarity_weights": backend_status.get("rarity_weights") or {},
+        "rarity_revision": int(backend_status.get("rarity_revision") or 0),
         "diagnostics": diagnostics,
         "last_action": _last_action,
         "last_error": last_error,

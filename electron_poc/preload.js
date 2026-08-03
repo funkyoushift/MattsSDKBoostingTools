@@ -35,6 +35,8 @@ contextBridge.exposeInMainWorld("msbt", {
   saveMovementSettings: (payload) => ipcRenderer.invoke("app:saveMovementSettings", payload),
   loadRaritySettings: () => ipcRenderer.invoke("app:loadRaritySettings"),
   saveRaritySettings: (payload) => ipcRenderer.invoke("app:saveRaritySettings", payload),
+  loadWalkthroughSettings: () => ipcRenderer.invoke("app:loadWalkthroughSettings"),
+  saveWalkthroughSettings: (payload) => ipcRenderer.invoke("app:saveWalkthroughSettings", payload),
   loadBl4Catalog: () => ipcRenderer.invoke("app:loadBl4Catalog"),
   refreshGzoCatalog: () => ipcRenderer.invoke("app:refreshGzoCatalog"),
   bl4PartsBreakdown: (serial) => ipcRenderer.invoke("app:bl4PartsBreakdown", serial),

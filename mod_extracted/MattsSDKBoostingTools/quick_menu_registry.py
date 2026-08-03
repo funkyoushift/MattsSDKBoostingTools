@@ -13,9 +13,37 @@ from typing import Any
 from .inventory_capacity import clamp_container_size, load_inventory_settings, save_extra_settings
 
 MAX_PAGES = 5
-SLOTS_PER_PAGE = 12
+SLOTS_PER_PAGE = 21  # 3 cols x 7 rows — leaves bottom dock space for rarity controls
+GRID_COLS = 3
+GRID_ROWS = 7
 MAX_CUSTOM_LABEL_LEN = 48
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 3
+LEGACY_SLOTS_PER_PAGE = 12
+
+WINDOW_SCALE_MIN = 0.6
+WINDOW_SCALE_MAX = 1.8
+WINDOW_SCALE_STEP = 0.1
+WINDOW_SCALE_DEFAULT = 1.0
+
+THEME_IDS: tuple[str, ...] = (
+    "msbt",
+    "blackberry",
+    "azzy_purple",
+    "arctic",
+    "inferno",
+    "void",
+    "legendary",
+)
+
+DEFAULT_CHROME: dict[str, Any] = {
+    "theme_id": "msbt",
+    "window_scale": WINDOW_SCALE_DEFAULT,
+    "offset_x": 0.0,
+    "offset_y": 0.0,
+    "panel_opacity": 1.0,
+    # F7 rarity slider strip — off until equipped from the ★ QM editor.
+    "rarity_panel_equipped": False,
+}
 
 ACTION_CATALOG: dict[str, dict[str, Any]] = {
     "max_all": {"basic": "Max All", "aliases": ["MAX", "MaxAll"]},
@@ -68,6 +96,9 @@ ACTION_CATALOG: dict[str, dict[str, Any]] = {
     "movement_toggle_noclip": {"basic": "Toggle Noclip", "aliases": ["Noclip"]},
     "movement_players_only": {"basic": "Players Only", "aliases": ["Players"]},
     "movement_delete_ground_items": {"basic": "Clear Ground Loot", "aliases": ["Clear Loot"]},
+    "movement_pull_ground_loot": {"basic": "Pull Loot Here", "aliases": ["Pull Loot", "TP Loot"]},
+    "movement_super_dash": {"basic": "Super Dash", "aliases": ["Dash"]},
+    "movement_super_dash_toggle": {"basic": "Super Dash Toggle", "aliases": ["Dash Toggle"]},
     "movement_zero_vault": {"basic": "Zero Vault Costs", "aliases": ["Vault0"]},
     "movement_set_time": {"basic": "Set Time", "aliases": ["Time"]},
     "movement_reset_time": {"basic": "Reset Time", "aliases": ["Time 1x"]},
@@ -116,6 +147,9 @@ NATIVE_PICKER_ACTIONS: tuple[str, ...] = (
     "movement_preset_fast",
     "movement_preset_veryfast",
     "movement_delete_ground_items",
+    "movement_pull_ground_loot",
+    "movement_super_dash",
+    "movement_super_dash_toggle",
     "movement_zero_vault",
     "movement_infinite_jump_all_on",
     "movement_infinite_jump_all_off",
@@ -236,6 +270,7 @@ ALLOWED_PAYLOAD_KEYS: dict[str, frozenset[str]] = {
     "movement_infinite_jump_selected_off": frozenset({"target_player", "infinite_jump_target"}),
     "movement_infinite_jump_toggle_selected": frozenset({"target_player", "infinite_jump_target"}),
     "movement_teleport_to_slot": frozenset({"slot"}),
+    "movement_super_dash": frozenset({"dash_strength"}),
     "rarity_apply": _RARITY_PERCENT_KEYS,
     "dev_spawner_spawnai": _DEV_SPAWNER_AI_KEYS,
     "dev_spawner_spawn": _DEV_SPAWNER_TEMPLATE_KEYS,
@@ -346,6 +381,8 @@ def sanitize_payload(action: str, raw: object) -> dict[str, Any]:
             result[key] = str(source[key] or "").strip()[:80]
         elif key == "slot":
             result[key] = max(0, min(3, _safe_int(source[key], 0)))
+        elif key == "dash_strength":
+            result[key] = max(100, min(20000, _safe_int(source[key], 1000)))
         elif key in _RARITY_PERCENT_KEYS:
             result[key] = max(0, min(100, _safe_int(source[key], 100)))
         elif key in ("dev_ai_name", "dev_actor_name", "dev_actor_class", "dev_ai_load"):
@@ -454,15 +491,46 @@ def sanitize_drop_lock(raw: object) -> dict[str, Any]:
     }
 
 
+def sanitize_chrome(raw: object) -> dict[str, Any]:
+    source = raw if isinstance(raw, dict) else {}
+    theme = str(source.get("theme_id") or DEFAULT_CHROME["theme_id"]).strip().lower()
+    if theme not in THEME_IDS:
+        theme = str(DEFAULT_CHROME["theme_id"])
+    scale = _safe_float(source.get("window_scale"), float(DEFAULT_CHROME["window_scale"]))
+    scale = max(WINDOW_SCALE_MIN, min(WINDOW_SCALE_MAX, round(scale, 2)))
+    opacity = _safe_float(source.get("panel_opacity"), float(DEFAULT_CHROME["panel_opacity"]))
+    opacity = max(0.55, min(1.0, opacity))
+    if "rarity_panel_equipped" in source:
+        rarity_equipped = _truthy_payload(source.get("rarity_panel_equipped"))
+    else:
+        rarity_equipped = bool(DEFAULT_CHROME["rarity_panel_equipped"])
+    return {
+        "theme_id": theme,
+        "window_scale": scale,
+        "offset_x": max(-800.0, min(800.0, _safe_float(source.get("offset_x"), 0.0))),
+        "offset_y": max(-400.0, min(400.0, _safe_float(source.get("offset_y"), 0.0))),
+        "panel_opacity": opacity,
+        "rarity_panel_equipped": rarity_equipped,
+    }
+
+
 def _layout_from_raw(raw: object) -> dict[str, Any]:
     source = raw if isinstance(raw, dict) else {}
     pages, _errors = validate_pages(source.get("pages", default_pages()))
     page = max(0, min(MAX_PAGES - 1, _safe_int(source.get("page"), 0)))
+    chrome_source = source.get("chrome")
+    if not isinstance(chrome_source, dict):
+        # Migrate pre-v2 opacity if present on the root layout.
+        chrome_source = {
+            "panel_opacity": source.get("panel_opacity", DEFAULT_CHROME["panel_opacity"]),
+        }
     return {
+        "version": SCHEMA_VERSION,
         "page": page,
         "edit_mode": bool(source.get("edit_mode", False)),
         "pages": pages,
         "drop_lock": sanitize_drop_lock(source.get("drop_lock")),
+        "chrome": sanitize_chrome(chrome_source),
     }
 
 
@@ -473,9 +541,10 @@ def load_persisted_layout() -> dict[str, Any]:
 
 def _save_layout(layout: dict[str, Any]) -> dict[str, Any]:
     global _layout_revision
-    save_extra_settings(quick_menu=copy.deepcopy(layout))
+    normalized = _layout_from_raw(layout)
+    save_extra_settings(quick_menu=copy.deepcopy(normalized))
     _layout_revision += 1
-    return copy.deepcopy(layout)
+    return copy.deepcopy(normalized)
 
 
 def set_quick_menu_layout(payload: object) -> dict[str, Any]:
@@ -487,14 +556,25 @@ def set_quick_menu_layout(payload: object) -> dict[str, Any]:
     pages, errors = validate_pages(pages_source)
     if errors:
         return {"ok": False, "message": errors[0], "errors": errors}
+    chrome_source = source.get("chrome", current.get("chrome"))
+    if "panel_opacity" in source and not isinstance(source.get("chrome"), dict):
+        chrome_source = dict(current.get("chrome") or {})
+        chrome_source["panel_opacity"] = source.get("panel_opacity")
+    elif isinstance(chrome_source, dict) and isinstance(current.get("chrome"), dict):
+        # Partial chrome updates from the editor (e.g. equip toggles) keep other prefs.
+        merged = dict(current.get("chrome") or {})
+        merged.update(chrome_source)
+        chrome_source = merged
     layout = {
+        "version": SCHEMA_VERSION,
         "page": max(0, min(MAX_PAGES - 1, _safe_int(source.get("page"), current["page"]))),
         "edit_mode": bool(source.get("edit_mode", current["edit_mode"])),
         "pages": pages,
         "drop_lock": sanitize_drop_lock(source.get("drop_lock", current["drop_lock"])),
+        "chrome": sanitize_chrome(chrome_source),
     }
-    _save_layout(layout)
-    return {"ok": True, "message": "Quick Menu layout saved.", "layout": layout}
+    saved = _save_layout(layout)
+    return {"ok": True, "message": "Quick Menu layout saved.", "layout": saved}
 
 
 def assign_quick_menu_slot(payload: object) -> dict[str, Any]:
@@ -595,7 +675,16 @@ def get_quick_menu_snapshot() -> dict[str, Any]:
         "ok": True,
         "version": SCHEMA_VERSION,
         "revision": get_layout_revision(),
-        "limits": {"max_pages": MAX_PAGES, "slots_per_page": SLOTS_PER_PAGE},
+        "limits": {
+            "max_pages": MAX_PAGES,
+            "slots_per_page": SLOTS_PER_PAGE,
+            "grid_cols": GRID_COLS,
+            "grid_rows": GRID_ROWS,
+            "themes": list(THEME_IDS),
+            "window_scale_min": WINDOW_SCALE_MIN,
+            "window_scale_max": WINDOW_SCALE_MAX,
+            "window_scale_step": WINDOW_SCALE_STEP,
+        },
         "catalog": catalog,
         "assignable_actions": list(ASSIGNABLE_ACTIONS),
         "layout": load_persisted_layout(),

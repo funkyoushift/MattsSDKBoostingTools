@@ -361,6 +361,7 @@ const state = {
   quickMenuSnapshot: null,
   rarityRememberOnStart: false,
   raritySavedPreset: null,
+  rarityBridgeRevision: null,
   reportPreviewText: "",
   serialDeliveryIdlePolls: 0,
   serialDeliveryLastMessage: "",
@@ -620,16 +621,27 @@ function populateQuickMenuActionSelect() {
   if (actions.includes(current)) select.value = current;
 }
 
+function quickMenuLimits() {
+  const limits = (state.quickMenuSnapshot && state.quickMenuSnapshot.limits) || {};
+  const maxPages = Math.max(1, Number(limits.max_pages) || 5);
+  const slotsPerPage = Math.max(1, Number(limits.slots_per_page) || 21);
+  const gridCols = Math.max(1, Number(limits.grid_cols) || 3);
+  return { maxPages, slotsPerPage, gridCols };
+}
+
 function selectQuickMenuSlot(slotIndex) {
-  state.quickMenuSelectedSlot = Math.max(0, Math.min(11, Number(slotIndex) || 0));
+  const { slotsPerPage } = quickMenuLimits();
+  state.quickMenuSelectedSlot = Math.max(0, Math.min(slotsPerPage - 1, Number(slotIndex) || 0));
   const layout = quickMenuLayout();
   const slot = layout && layout.pages[state.quickMenuPage]
     ? layout.pages[state.quickMenuPage][state.quickMenuSelectedSlot]
     : null;
   const select = quickMenuNode("quickMenuActionSelect");
   const label = quickMenuNode("quickMenuCustomLabel");
-  if (select && slot && slot.action) select.value = slot.action;
-  if (label) label.value = slot ? String(slot.custom_label || "") : "";
+  const labelFocused = Boolean(label && document.activeElement === label);
+  const selectFocused = Boolean(select && document.activeElement === select);
+  if (select && slot && slot.action && !selectFocused) select.value = slot.action;
+  if (label && !labelFocused) label.value = slot ? String(slot.custom_label || "") : "";
   const summary = quickMenuNode("quickMenuSelectedSummary");
   if (summary) {
     summary.textContent = `Page ${state.quickMenuPage + 1}, slot ${state.quickMenuSelectedSlot + 1}: ${slot ? quickMenuSlotLabel(slot) : "empty"}`;
@@ -643,10 +655,11 @@ function renderQuickMenuEditor() {
   const tabs = quickMenuNode("quickMenuPageTabs");
   const grid = quickMenuNode("quickMenuSlotGrid");
   if (!snapshot || !layout || !tabs || !grid) return;
+  const { maxPages, slotsPerPage, gridCols } = quickMenuLimits();
 
   populateQuickMenuActionSelect();
   tabs.innerHTML = "";
-  for (let pageIndex = 0; pageIndex < 5; pageIndex += 1) {
+  for (let pageIndex = 0; pageIndex < maxPages; pageIndex += 1) {
     const button = document.createElement("button");
     button.type = "button";
     button.textContent = `Page ${pageIndex + 1}`;
@@ -666,10 +679,11 @@ function renderQuickMenuEditor() {
   const title = quickMenuNode("quickMenuPageTitle");
   const pageSummary = quickMenuNode("quickMenuPageSummary");
   if (title) title.textContent = `Page ${state.quickMenuPage + 1}`;
-  if (pageSummary) pageSummary.textContent = `${filled} / 12 assigned`;
+  if (pageSummary) pageSummary.textContent = `${filled} / ${slotsPerPage} assigned`;
 
+  grid.style.gridTemplateColumns = `repeat(${gridCols}, minmax(110px, 1fr))`;
   grid.innerHTML = "";
-  for (let slotIndex = 0; slotIndex < 12; slotIndex += 1) {
+  for (let slotIndex = 0; slotIndex < slotsPerPage; slotIndex += 1) {
     const slot = page[slotIndex] || null;
     const button = document.createElement("button");
     button.type = "button";
@@ -677,14 +691,14 @@ function renderQuickMenuEditor() {
     const strong = document.createElement("strong");
     strong.textContent = `${slotIndex + 1}. ${quickMenuSlotLabel(slot)}`;
     const detail = document.createElement("span");
-    detail.textContent = slot ? String(slot.action || "") : "Empty slot";
+    detail.textContent = slot ? String(slot.action || "") : "Empty — use + QM on other tabs";
     button.append(strong, detail);
     button.addEventListener("click", () => selectQuickMenuSlot(slotIndex));
     grid.appendChild(button);
   }
 }
 
-async function loadQuickMenuLayout({ quiet = false } = {}) {
+async function loadQuickMenuLayout({ quiet = false, preserveSelection = quiet } = {}) {
   if (!window.msbt || typeof window.msbt.bridgeRequest !== "function") return null;
   if (!quiet) setQuickMenuStatus("Loading Quick Menu from the game bridge...");
   const result = await window.msbt.bridgeRequest({
@@ -697,17 +711,105 @@ async function loadQuickMenuLayout({ quiet = false } = {}) {
     setQuickMenuStatus(resultMessage(result) || "Quick Menu bridge endpoint unavailable.", "warning");
     return null;
   }
+
+  const labelInput = quickMenuNode("quickMenuCustomLabel");
+  const actionSelect = quickMenuNode("quickMenuActionSelect");
+  const editingLabel = Boolean(labelInput && document.activeElement === labelInput);
+  const editingAction = Boolean(actionSelect && document.activeElement === actionSelect);
+  const draftLabel = editingLabel ? String(labelInput.value || "") : null;
+  const draftAction = editingAction ? String(actionSelect.value || "") : null;
+  const prevPage = state.quickMenuPage;
+  const prevSlot = state.quickMenuSelectedSlot;
+
   state.quickMenuSnapshot = data;
-  const loadedPage = Number(data.layout.page);
-  state.quickMenuPage = Number.isFinite(loadedPage)
-    ? Math.max(0, Math.min(4, loadedPage))
-    : Math.max(0, Math.min(4, state.quickMenuPage || 0));
-  state.quickMenuSelectedSlot = Math.max(0, Math.min(11, state.quickMenuSelectedSlot || 0));
-  selectQuickMenuSlot(state.quickMenuSelectedSlot);
+  const { maxPages, slotsPerPage } = quickMenuLimits();
+
+  if (preserveSelection) {
+    state.quickMenuPage = Math.max(0, Math.min(maxPages - 1, Number(prevPage) || 0));
+    state.quickMenuSelectedSlot = Math.max(0, Math.min(slotsPerPage - 1, Number(prevSlot) || 0));
+  } else {
+    const loadedPage = Number(data.layout.page);
+    state.quickMenuPage = Number.isFinite(loadedPage)
+      ? Math.max(0, Math.min(maxPages - 1, loadedPage))
+      : Math.max(0, Math.min(maxPages - 1, state.quickMenuPage || 0));
+    state.quickMenuSelectedSlot = Math.max(0, Math.min(slotsPerPage - 1, state.quickMenuSelectedSlot || 0));
+  }
+
+  // Rebuild the grid without clobbering an in-progress label/action edit.
+  if (editingLabel || editingAction) {
+    renderQuickMenuEditor();
+    if (editingLabel && labelInput) {
+      labelInput.value = draftLabel;
+      try { labelInput.focus(); } catch (_) { /* ignore */ }
+    }
+    if (editingAction && actionSelect && draftAction) {
+      actionSelect.value = draftAction;
+      try { actionSelect.focus(); } catch (_) { /* ignore */ }
+    }
+    const summary = quickMenuNode("quickMenuSelectedSummary");
+    if (summary) {
+      summary.textContent = `Page ${state.quickMenuPage + 1}, slot ${state.quickMenuSelectedSlot + 1}: editing…`;
+    }
+  } else {
+    selectQuickMenuSlot(state.quickMenuSelectedSlot);
+  }
+
   installQuickMenuAddButtons();
   void refreshQuickMenuPinPanel({ quiet: true });
+  syncQuickMenuModulesPanel();
   if (!quiet) setQuickMenuStatus(`Loaded Quick Menu revision ${data.revision || 0}.`, "ok");
   return data;
+}
+
+function quickMenuChrome() {
+  const layout = quickMenuLayout();
+  return layout && layout.chrome && typeof layout.chrome === "object" ? layout.chrome : {};
+}
+
+function syncQuickMenuModulesPanel() {
+  const equipped = Boolean(quickMenuChrome().rarity_panel_equipped);
+  const checkbox = quickMenuNode("quickMenuRarityPanelEquip");
+  const status = quickMenuNode("quickMenuModulesStatus");
+  if (checkbox && document.activeElement !== checkbox) {
+    checkbox.checked = equipped;
+  }
+  if (status) {
+    status.textContent = equipped
+      ? "Rarity panel: equipped on F7"
+      : "Rarity panel: unequipped (hidden on F7)";
+    status.className = equipped ? "status-line ok compact-note" : "status-line compact-note";
+  }
+}
+
+async function setQuickMenuRarityPanelEquipped(equipped) {
+  const layout = quickMenuLayout();
+  if (!layout) {
+    setQuickMenuStatus("Load the Quick Menu from the bridge first.", "warning");
+    syncQuickMenuModulesPanel();
+    return null;
+  }
+  const chrome = { ...quickMenuChrome(), rarity_panel_equipped: Boolean(equipped) };
+  setQuickMenuStatus(equipped ? "Equipping rarity sliders on F7..." : "Unequipping rarity sliders from F7...");
+  const result = await bridgeAction("quick_menu_set_layout", {
+    pages: layout.pages,
+    page: state.quickMenuPage,
+    edit_mode: layout.edit_mode,
+    drop_lock: layout.drop_lock,
+    chrome
+  }, 20000);
+  const data = quickMenuData(result);
+  if (data && data.ok && data.layout) {
+    if (!state.quickMenuSnapshot) state.quickMenuSnapshot = { ok: true };
+    state.quickMenuSnapshot.layout = data.layout;
+    state.quickMenuSnapshot.revision = data.revision || state.quickMenuSnapshot.revision;
+  }
+  syncQuickMenuModulesPanel();
+  setOutput(quickMenuNode("quickMenuEditorOutput"), data || result);
+  setQuickMenuStatus(
+    resultMessage(result) || (equipped ? "Rarity panel equipped." : "Rarity panel unequipped."),
+    actionSucceeded(result) ? "ok" : "warning"
+  );
+  return result;
 }
 
 function formatQuickMenuCommandLine(command, emptyText) {
@@ -1084,15 +1186,16 @@ function fillQuickMenuAddSelectors() {
   const pageSelect = quickMenuNode("quickMenuAddPage");
   const slotSelect = quickMenuNode("quickMenuAddSlot");
   if (!pageSelect || !slotSelect) return;
+  const { maxPages, slotsPerPage } = quickMenuLimits();
   pageSelect.innerHTML = "";
   slotSelect.innerHTML = "";
-  for (let index = 0; index < 5; index += 1) {
+  for (let index = 0; index < maxPages; index += 1) {
     const option = document.createElement("option");
     option.value = String(index);
     option.textContent = `Page ${index + 1}`;
     pageSelect.appendChild(option);
   }
-  for (let index = 0; index < 12; index += 1) {
+  for (let index = 0; index < slotsPerPage; index += 1) {
     const option = document.createElement("option");
     option.value = String(index);
     option.textContent = `Slot ${index + 1}`;
@@ -1105,7 +1208,8 @@ function updateQuickMenuAddSlotsForPage() {
   const pageSelect = quickMenuNode("quickMenuAddPage");
   const slotSelect = quickMenuNode("quickMenuAddSlot");
   if (!layout || !pageSelect || !slotSelect) return;
-  const page = Math.max(0, Math.min(4, parseInt(pageSelect.value, 10) || 0));
+  const { maxPages } = quickMenuLimits();
+  const page = Math.max(0, Math.min(maxPages - 1, parseInt(pageSelect.value, 10) || 0));
   const slots = layout.pages[page] || [];
   Array.from(slotSelect.options).forEach((option, index) => {
     option.textContent = `Slot ${index + 1}${slots[index] ? ` — replace ${quickMenuSlotLabel(slots[index])}` : " — empty"}`;
@@ -1184,8 +1288,9 @@ function openSerialQuickMenuPin(source, mode) {
 async function confirmQuickMenuAdd() {
   const pending = state.quickMenuPendingAdd;
   if (!pending) return;
-  const page = getInt("quickMenuAddPage", 0, 4, 0);
-  const slot = getInt("quickMenuAddSlot", 0, 11, 0);
+  const { maxPages, slotsPerPage } = quickMenuLimits();
+  const page = getInt("quickMenuAddPage", 0, maxPages - 1, 0);
+  const slot = getInt("quickMenuAddSlot", 0, slotsPerPage - 1, 0);
   setLine(quickMenuNode("quickMenuAddStatus"), "Saving to the game bridge...");
   const result = await assignQuickMenuSlot({
     page,
@@ -1201,7 +1306,14 @@ async function confirmQuickMenuAdd() {
   );
   if (actionSucceeded(result)) {
     appendActivity(`Quick Menu: added ${pending.action} to page ${page + 1}, slot ${slot + 1}.`);
-    setTimeout(closeQuickMenuAddModal, 450);
+    state.quickMenuPage = page;
+    state.quickMenuSelectedSlot = slot;
+    setTimeout(() => {
+      closeQuickMenuAddModal();
+      switchTab("quick-menu");
+      selectQuickMenuSlot(slot);
+      setQuickMenuStatus(`Pinned ${pending.action} to page ${page + 1}, slot ${slot + 1}.`, "ok");
+    }, 350);
   }
 }
 
@@ -1677,6 +1789,58 @@ function setRarityPreset(values) {
   updateRarityValueLabels();
 }
 
+function rarityWeightsToPercentPreset(weights) {
+  const preset = {};
+  if (!weights || typeof weights !== "object") return preset;
+  ["common", "uncommon", "rare", "epic", "legendary", "pearlescent"].forEach((key) => {
+    if (!Object.prototype.hasOwnProperty.call(weights, key)) return;
+    const raw = Number(weights[key]);
+    if (!Number.isFinite(raw)) return;
+    // Backend stores 0-1 multipliers; accept accidental 0-100 payloads too.
+    const pct = raw > 1.0001 ? raw : raw * 100;
+    preset[key] = Math.max(0, Math.min(100, Math.round(pct)));
+  });
+  return preset;
+}
+
+function syncBoostingRaritySlidersFromBridge(data, { force = false } = {}) {
+  const weights = data && data.rarity_weights && typeof data.rarity_weights === "object"
+    ? data.rarity_weights
+    : null;
+  if (!weights || !Object.keys(weights).length) return false;
+
+  const revRaw = Number(data.rarity_revision);
+  const hasRev = Number.isFinite(revRaw);
+  if (!force && hasRev && state.rarityBridgeRevision != null && Number(state.rarityBridgeRevision) === revRaw) {
+    return false;
+  }
+
+  const editingRarity = rarityControls().some(({ input }) => input && document.activeElement === input);
+  if (editingRarity && !force) return false;
+
+  const preset = rarityWeightsToPercentPreset(weights);
+  if (!Object.keys(preset).length) return false;
+
+  let changed = false;
+  rarityControls().forEach(({ key, input, value }) => {
+    if (!input || !Object.prototype.hasOwnProperty.call(preset, key)) return;
+    const pct = Math.max(0, Math.min(100, Number(preset[key]) || 0));
+    if (String(input.value) !== String(pct)) {
+      input.value = String(pct);
+      changed = true;
+    }
+    if (value) value.textContent = `${pct}%`;
+  });
+  if (hasRev) state.rarityBridgeRevision = revRaw;
+  if (changed && els.rarityStatus) {
+    const note = "Synced from in-game Quick Menu / bridge.";
+    if (!String(els.rarityStatus.textContent || "").includes("Sending")) {
+      setLine(els.rarityStatus, note, "ok");
+    }
+  }
+  return true;
+}
+
 function rarityPayload() {
   const payload = {};
   rarityControls().forEach(({ key, input }) => {
@@ -1774,6 +1938,16 @@ async function runRarityAction(action) {
   setLine(els.rarityStatus, `Sending ${action}...`, "warning");
   const result = await runAction(action, payload, els.boostOutput, 30000);
   setLine(els.rarityStatus, resultMessage(result), actionSucceeded(result) ? "ok" : "warning");
+  // Pull canonical backend weights so Boosting matches F7 / persisted state.
+  try {
+    const statusResult = await window.msbt.bridgeRequest({ method: "GET", path: "/status", timeoutMs: 8000 });
+    const data = statusResult && statusResult.data && typeof statusResult.data === "object"
+      ? statusResult.data
+      : statusResult;
+    if (data && data.ok !== false) {
+      syncBoostingRaritySlidersFromBridge(data, { force: true });
+    }
+  } catch (_) { /* ignore refresh failures */ }
   return result;
 }
 
@@ -2152,6 +2326,8 @@ function applyBridgeStatusResult(result, options = {}) {
   setLine(els.bridgeSummary, `Bridge online | players: ${playerCount} | selected: ${selected} | queue: ${queue}`, "ok");
   updateSerialDeliveryProgress(data.serial_delivery || {});
   updateSerialState();
+  // Always pull rarity from the bridge so F7 live-apply moves Boosting sliders.
+  syncBoostingRaritySlidersFromBridge(data);
   if (!options.quiet) appendActivity(`Bridge online | players: ${playerCount} | selected: ${selected} | queue: ${queue}`);
   return data;
 }
@@ -2164,8 +2340,44 @@ async function bridgeStatus(options = {}) {
   await autoApplySavedMovementPresetIfNeeded();
   const quickPanel = quickMenuNode("tab-quick-menu");
   if (quickPanel && quickPanel.classList.contains("active")) {
-    await loadQuickMenuLayout({ quiet: true });
+    // Pin/lock status only on quiet polls. Full layout refresh preserves the
+    // editor page + in-progress custom label (bridge layout.page is often 0).
     await refreshQuickMenuPinPanel({ quiet: true });
+    if (!options.quiet) {
+      await loadQuickMenuLayout({ quiet: false, preserveSelection: true });
+    } else {
+      const prevRev = state.quickMenuSnapshot ? Number(state.quickMenuSnapshot.revision || 0) : null;
+      const layoutResult = await window.msbt.bridgeRequest({
+        method: "GET",
+        path: "/quick_menu",
+        timeoutMs: 8000
+      });
+      const data = quickMenuData(layoutResult);
+      const nextRev = data && data.ok ? Number(data.revision || 0) : null;
+      if (data && data.ok && data.layout && (prevRev === null || nextRev !== prevRev)) {
+        const labelInput = quickMenuNode("quickMenuCustomLabel");
+        const actionSelect = quickMenuNode("quickMenuActionSelect");
+        const editingLabel = Boolean(labelInput && document.activeElement === labelInput);
+        const editingAction = Boolean(actionSelect && document.activeElement === actionSelect);
+        const draftLabel = editingLabel ? String(labelInput.value || "") : null;
+        const draftAction = editingAction ? String(actionSelect.value || "") : null;
+        const keepPage = state.quickMenuPage;
+        const keepSlot = state.quickMenuSelectedSlot;
+        state.quickMenuSnapshot = data;
+        state.quickMenuPage = keepPage;
+        state.quickMenuSelectedSlot = keepSlot;
+        renderQuickMenuEditor();
+        syncQuickMenuModulesPanel();
+        if (editingLabel && labelInput && draftLabel !== null) {
+          labelInput.value = draftLabel;
+          try { labelInput.focus(); } catch (_) { /* ignore */ }
+        }
+        if (editingAction && actionSelect && draftAction) {
+          actionSelect.value = draftAction;
+          try { actionSelect.focus(); } catch (_) { /* ignore */ }
+        }
+      }
+    }
   }
   return result;
 }
@@ -2180,7 +2392,7 @@ function startBridgeStatusPolling() {
     } finally {
       state.bridgeStatusPollInFlight = false;
     }
-  }, 3000);
+  }, 1500);
 }
 
 function scheduleSerialDeliveryPoll() {
@@ -6505,8 +6717,15 @@ function switchTab(tabId) {
   } else if (tabId === "quick-menu") {
     void loadQuickMenuLayout({ quiet: Boolean(state.quickMenuSnapshot) });
     void refreshQuickMenuPinPanel({ quiet: true });
-  } else if (tabId === "serial-tools" || tabId === "bl4-codes") {
-    void loadQuickMenuLayout({ quiet: true }).then(() => installQuickMenuAddButtons());
+  } else if (tabId === "serial-tools" || tabId === "bl4-codes" || tabId === "boosting" || tabId === "movement" || tabId === "item-pool" || tabId === "dev-spawner") {
+    if (state.quickMenuSnapshot) {
+      installQuickMenuAddButtons();
+    } else {
+      void loadQuickMenuLayout({ quiet: true }).then(() => installQuickMenuAddButtons());
+    }
+    if (tabId === "boosting") {
+      void bridgeStatus({ quiet: true });
+    }
   }
 }
 
@@ -6515,7 +6734,13 @@ function wireEvents() {
     button.addEventListener("click", () => switchTab(button.dataset.tab));
   });
 
-  quickMenuNode("quickMenuRefreshBtn").addEventListener("click", () => loadQuickMenuLayout());
+  quickMenuNode("quickMenuRefreshBtn").addEventListener("click", () => loadQuickMenuLayout({ preserveSelection: true }));
+  const rarityEquip = quickMenuNode("quickMenuRarityPanelEquip");
+  if (rarityEquip) {
+    rarityEquip.addEventListener("change", () => {
+      void setQuickMenuRarityPanelEquipped(Boolean(rarityEquip.checked));
+    });
+  }
   quickMenuNode("quickMenuSaveSlotBtn").addEventListener("click", saveSelectedQuickMenuSlot);
   quickMenuNode("quickMenuClearSlotBtn").addEventListener("click", clearSelectedQuickMenuSlot);
   quickMenuNode("quickMenuClearPageBtn").addEventListener("click", clearCurrentQuickMenuPage);
@@ -6929,6 +7154,246 @@ function wireEvents() {
     setOutput(els.activityOutput, "Activity starts here.");
   });
   document.getElementById("clearBridgeLogBtn").addEventListener("click", () => runAction("clear_external_log", {}, els.activityOutput, 10000));
+
+  const walkthroughNextBtn = document.getElementById("walkthroughNextBtn");
+  const walkthroughBackBtn = document.getElementById("walkthroughBackBtn");
+  const walkthroughSkipBtn = document.getElementById("walkthroughSkipBtn");
+  const walkthroughReplayBtn = document.getElementById("walkthroughReplayBtn");
+  if (walkthroughNextBtn) walkthroughNextBtn.addEventListener("click", () => walkthroughNext());
+  if (walkthroughBackBtn) walkthroughBackBtn.addEventListener("click", () => walkthroughBack());
+  if (walkthroughSkipBtn) walkthroughSkipBtn.addEventListener("click", () => void endWalkthrough({ skipped: true }));
+  if (walkthroughReplayBtn) walkthroughReplayBtn.addEventListener("click", () => void startWalkthrough({ force: true }));
+}
+
+const WALKTHROUGH_STEPS = [
+  {
+    title: "Welcome to MSBT",
+    body: "This tour shows how the external app and the in-game Quick Menu work together — including how to pin basic actions and harder ones like item pools and Dev Spawner. Skip anytime.",
+    tab: "boosting",
+    target: null
+  },
+  {
+    title: "Install the SDK tools",
+    body: "Live actions need oak2-mod-manager v0.3 and the MSBT SDK mod. Use Updates to install/update the bundled .sdkmod, then fully restart Borderlands 4.",
+    tab: "updates",
+    target: "tab-updates",
+    sdk: true
+  },
+  {
+    title: "Bridge must be green",
+    body: "With the game running and MSBT loaded, this summary turns green. + QM pins and Quick Menu actions need that live bridge.",
+    tab: "boosting",
+    target: "bridgeSummary"
+  },
+  {
+    title: "Basic pin: look for + QM",
+    body: "Gold + QM buttons appear beside supported actions (Max All, rarity Apply, Pull Loot, etc.). They capture the command and its current values into a Quick Menu slot.",
+    tab: "boosting",
+    target: "tab-boosting"
+  },
+  {
+    title: "Pick the slot first (optional)",
+    body: "Open ★ Quick Menu, choose a page and click an empty slot. The next + QM pin can target that slot — or the pin dialog lets you pick page/slot when you add.",
+    tab: "quick-menu",
+    target: "quickMenuSlotGrid"
+  },
+  {
+    title: "Equip rarity on the Quick Menu",
+    body: "Optional in-game modules live here. Check Equip rarity weight sliders so the Quick Menu shows the same rarity controls as Boosting. Dragging those sliders live-applies and syncs back to this app.",
+    tab: "quick-menu",
+    target: "quickMenuRarityPanelEquip"
+  },
+  {
+    title: "Harder pin: Item Pool",
+    body: "On Item Pool Spawning, search/select a pool, set level/count, then use + QM next to Spawn Selected Item Pool(s). That locks the chosen pool(s) into a Quick Menu button.",
+    tab: "item-pool",
+    target: "spawnItempoolBtn"
+  },
+  {
+    title: "Harder pin: Dev Spawner",
+    body: "On Dev Spawner, browse/select an actor so Selected Actor is filled, then use + QM beside Spawn Selected Actor. The pin stores that actor name and spawn options.",
+    tab: "dev-spawner",
+    target: "devSpawnerSpawnAiBtn"
+  },
+  {
+    title: "Confirm in the editor",
+    body: "Return to ★ Quick Menu to rename labels, clear slots, or rearrange pages. Pin Last Command also works after you run something once from the app.",
+    tab: "quick-menu",
+    target: "quickMenuPinLastBtn"
+  },
+  {
+    title: "Open it in-game",
+    body: "In Borderlands 4, press F7 to open the Quick Menu. Esc closes modals, F6 unstuck restores mouse/look, and MOVE / −/+ / THEME adjust the panel. Your pinned item pools and spawns fire with the values you saved.",
+    tab: "quick-menu",
+    target: "quickMenuSlotGrid"
+  }
+];
+
+const walkthroughState = {
+  active: false,
+  step: 0,
+  dontShowAgain: false
+};
+
+function walkthroughNodes() {
+  return {
+    modal: document.getElementById("walkthroughModal"),
+    title: document.getElementById("walkthroughTitle"),
+    body: document.getElementById("walkthroughBody"),
+    sdkNote: document.getElementById("walkthroughSdkNote"),
+    dontShow: document.getElementById("walkthroughDontShow"),
+    spotlight: document.getElementById("walkthroughSpotlight"),
+    back: document.getElementById("walkthroughBackBtn"),
+    next: document.getElementById("walkthroughNextBtn")
+  };
+}
+
+function clearWalkthroughSpotlight() {
+  const { spotlight } = walkthroughNodes();
+  if (!spotlight) return;
+  spotlight.hidden = true;
+  spotlight.style.top = "0px";
+  spotlight.style.left = "0px";
+  spotlight.style.width = "0px";
+  spotlight.style.height = "0px";
+}
+
+function placeWalkthroughSpotlight(targetId) {
+  const { spotlight } = walkthroughNodes();
+  if (!spotlight) return;
+  if (!targetId) {
+    clearWalkthroughSpotlight();
+    return;
+  }
+  const target = document.getElementById(targetId);
+  if (!target) {
+    clearWalkthroughSpotlight();
+    return;
+  }
+  const rect = target.getBoundingClientRect();
+  const pad = 8;
+  spotlight.hidden = false;
+  spotlight.style.top = `${Math.max(0, rect.top - pad)}px`;
+  spotlight.style.left = `${Math.max(0, rect.left - pad)}px`;
+  spotlight.style.width = `${Math.max(40, rect.width + pad * 2)}px`;
+  spotlight.style.height = `${Math.max(40, rect.height + pad * 2)}px`;
+}
+
+async function refreshWalkthroughSdkNote() {
+  const { sdkNote } = walkthroughNodes();
+  if (!sdkNote) return;
+  sdkNote.classList.add("hidden");
+  sdkNote.textContent = "";
+  try {
+    const detection = window.msbt && typeof window.msbt.detectSdkMods === "function"
+      ? await window.msbt.detectSdkMods()
+      : null;
+    const required = DEFAULT_SDK_REQUIRED;
+    const url = DEFAULT_SDK_REQUIRED_URL;
+    let message = `Required: ${required}.`;
+    if (!detection || detection.ok === false) {
+      message += " Could not verify your SDK install yet — open Updates and install oak2-mod-manager v0.3 if needed.";
+      sdkNote.textContent = message;
+      sdkNote.classList.remove("hidden");
+      return;
+    }
+    const hasOak = Boolean(detection.oak2Present || detection.hasOak2 || detection.sdkPresent);
+    const msbtInstalled = Boolean(detection.msbtInstalled || detection.hasMsbt);
+    if (!hasOak) {
+      message += ` oak2-mod-manager was not detected. Install from ${url}`;
+      sdkNote.textContent = message;
+      sdkNote.classList.remove("hidden");
+      return;
+    }
+    if (!msbtInstalled) {
+      message += " MSBT .sdkmod is not installed yet — use Updates → Install / Update SDK Mod.";
+      sdkNote.textContent = message;
+      sdkNote.classList.remove("hidden");
+      return;
+    }
+    sdkNote.textContent = `${message} SDK tools look present.`;
+    sdkNote.classList.remove("hidden");
+  } catch {
+    sdkNote.textContent = `Required: ${DEFAULT_SDK_REQUIRED}. Open Updates if you still need to install SDK tools.`;
+    sdkNote.classList.remove("hidden");
+  }
+}
+
+function renderWalkthroughStep() {
+  const nodes = walkthroughNodes();
+  if (!nodes.modal) return;
+  const step = WALKTHROUGH_STEPS[walkthroughState.step] || WALKTHROUGH_STEPS[0];
+  if (step.tab) switchTab(step.tab);
+  if (nodes.title) nodes.title.textContent = step.title;
+  if (nodes.body) nodes.body.textContent = step.body;
+  if (nodes.back) nodes.back.disabled = walkthroughState.step <= 0;
+  if (nodes.next) {
+    nodes.next.textContent = walkthroughState.step >= WALKTHROUGH_STEPS.length - 1 ? "Finish" : "Next";
+  }
+  window.setTimeout(() => placeWalkthroughSpotlight(step.target), 80);
+  if (step.sdk) void refreshWalkthroughSdkNote();
+  else if (nodes.sdkNote) nodes.sdkNote.classList.add("hidden");
+}
+
+async function persistWalkthroughSettings(extra = {}) {
+  if (!window.msbt || typeof window.msbt.saveWalkthroughSettings !== "function") return;
+  const nodes = walkthroughNodes();
+  const dontShowAgain = Boolean(extra.dontShowAgain ?? (nodes.dontShow && nodes.dontShow.checked) ?? walkthroughState.dontShowAgain);
+  walkthroughState.dontShowAgain = dontShowAgain;
+  await window.msbt.saveWalkthroughSettings({
+    dismissed: Boolean(extra.dismissed),
+    dontShowAgain
+  });
+}
+
+async function endWalkthrough({ skipped = false } = {}) {
+  walkthroughState.active = false;
+  const nodes = walkthroughNodes();
+  if (nodes.modal) nodes.modal.classList.add("hidden");
+  clearWalkthroughSpotlight();
+  await persistWalkthroughSettings({
+    dismissed: true,
+    dontShowAgain: Boolean(nodes.dontShow && nodes.dontShow.checked)
+  });
+  if (skipped) appendActivity("Walkthrough skipped.");
+}
+
+function walkthroughNext() {
+  if (walkthroughState.step >= WALKTHROUGH_STEPS.length - 1) {
+    void endWalkthrough({ skipped: false });
+    return;
+  }
+  walkthroughState.step += 1;
+  renderWalkthroughStep();
+}
+
+function walkthroughBack() {
+  if (walkthroughState.step <= 0) return;
+  walkthroughState.step -= 1;
+  renderWalkthroughStep();
+}
+
+async function startWalkthrough({ force = false } = {}) {
+  const nodes = walkthroughNodes();
+  if (!nodes.modal) return;
+  walkthroughState.active = true;
+  walkthroughState.step = 0;
+  if (nodes.dontShow) nodes.dontShow.checked = false;
+  nodes.modal.classList.remove("hidden");
+  renderWalkthroughStep();
+  if (force) appendActivity("Walkthrough replay started.");
+}
+
+async function maybeStartWalkthrough() {
+  if (!window.msbt || typeof window.msbt.loadWalkthroughSettings !== "function") return;
+  try {
+    const result = await window.msbt.loadWalkthroughSettings();
+    const data = result && result.data ? result.data : result;
+    if (data && (data.dontShowAgain || data.dismissed)) return;
+  } catch {
+    // First-run preference missing is fine — show the tour.
+  }
+  await startWalkthrough({ force: false });
 }
 
 async function init() {
@@ -6946,6 +7411,7 @@ async function init() {
   await loadQuickMenuLayout({ quiet: true });
   startBridgeStatusPolling();
   await checkUpdates({ startup: true });
+  await maybeStartWalkthrough();
 }
 
 init();

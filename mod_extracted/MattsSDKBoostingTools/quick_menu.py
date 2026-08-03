@@ -25,11 +25,49 @@ DESIGN_H = 1080.0
 VIEWPORT_Z = 999996
 MAX_PAGES = quick_menu_registry.MAX_PAGES
 SLOTS_PER_PAGE = quick_menu_registry.SLOTS_PER_PAGE
-# Right-side dock layout (leaves most of the world view clear).
-DOCK_W = 640.0
+GRID_COLS = quick_menu_registry.GRID_COLS
+GRID_ROWS = quick_menu_registry.GRID_ROWS
+# Right-pinned dock by default; MOVE / +/- / themes inspired by Azzy UVH booster.
+DOCK_W = 700.0
 DOCK_X = DESIGN_W - DOCK_W
-GRID_COLS = 2
-GRID_ROWS = 6
+HEADER_H = 128.0
+CELL_W = 210.0
+CELL_H = 56.0
+CELL_GAP_X = 8.0
+CELL_GAP_Y = 6.0
+# Strip under the slot grid for live rarity weight sliders + apply controls.
+RARITY_RESERVE_H = 230.0
+RARITY_SLIDER_KEYS: tuple[tuple[str, str], ...] = (
+    ("common", "Com"),
+    ("uncommon", "Unc"),
+    ("rare", "Rare"),
+    ("epic", "Epic"),
+    ("legendary", "Leg"),
+    ("pearlescent", "Pearl"),
+)
+BTN_H_HEADER = 44.0
+BTN_H_TOOL = 42.0
+BTN_H_TAB = 40.0
+TEXT_BOOST = 1.15
+SCALE_TITLE = 0.68
+SCALE_SUBTITLE = 0.36
+SCALE_BTN = 0.46
+SCALE_BTN_HEADER = 0.42
+SCALE_SLOT = 0.38
+SCALE_BODY = 0.34
+SCALE_HINT = 0.30
+SCALE_MODAL_TITLE = 0.48
+SCALE_MODAL_BTN = 0.42
+C_OUTLINE = (0.02, 0.02, 0.02, 1.0)
+# Near-black text halo so gold/white labels stay legible on light theme fills.
+C_TEXT_OUTLINE = (0.02, 0.02, 0.02, 0.95)
+TEXT_OUTLINE_SIZE = 2
+TEXT_OUTLINE_OFFSETS: tuple[tuple[float, float], ...] = (
+    (-1.0, 0.0),
+    (1.0, 0.0),
+    (0.0, -1.0),
+    (0.0, 1.0),
+)
 MODAL_BLOCKER_Z = 80
 MODAL_PANEL_Z = 81
 MODAL_CONTENT_Z = 82
@@ -37,22 +75,142 @@ MODAL_BUTTON_Z = 83
 ACTION_CATALOG = quick_menu_registry.ACTION_CATALOG
 PICKER_ACTIONS = quick_menu_registry.NATIVE_PICKER_ACTIONS
 DEFAULT_PAGE_0 = quick_menu_registry.DEFAULT_PAGE_0
+WINDOW_SCALE_MIN = quick_menu_registry.WINDOW_SCALE_MIN
+WINDOW_SCALE_MAX = quick_menu_registry.WINDOW_SCALE_MAX
+WINDOW_SCALE_STEP = quick_menu_registry.WINDOW_SCALE_STEP
+THEME_IDS = quick_menu_registry.THEME_IDS
 
-# Borderlands / MSBT reds, oranges, golds (fully opaque by default).
-C_DOCK = (0.08, 0.05, 0.03, 1.0)
-C_HEADER = (0.62, 0.12, 0.05, 1.0)
-C_EDGE = (1.0, 0.55, 0.08, 1.0)
-C_BTN = (0.78, 0.30, 0.05, 1.0)
-C_BTN_GOLD = (0.92, 0.62, 0.08, 1.0)
-C_BTN_DANGER = (0.72, 0.14, 0.10, 1.0)
-C_BTN_MUTED = (0.28, 0.16, 0.10, 1.0)
-C_SLOT = (0.52, 0.20, 0.06, 1.0)
-C_SLOT_SEL = (0.98, 0.72, 0.12, 1.0)
-C_SLOT_EMPTY = (0.20, 0.12, 0.08, 1.0)
-C_TEXT = (1.0, 0.93, 0.78, 1.0)
-C_TEXT_DIM = (0.92, 0.78, 0.55, 1.0)
-C_TOAST_OK = (0.55, 0.28, 0.05, 1.0)
-C_TOAST_BAD = (0.70, 0.12, 0.10, 1.0)
+# Theme packs: (dock, header, edge, btn, gold, danger, muted, slot, slot_sel, slot_empty, text, text_dim)
+THEMES: dict[str, dict[str, tuple[float, float, float, float]]] = {
+    "msbt": {
+        "dock": (0.05, 0.03, 0.02, 1.0),
+        "header": (0.72, 0.14, 0.05, 1.0),
+        "edge": (1.0, 0.72, 0.12, 1.0),
+        "btn": (0.88, 0.38, 0.06, 1.0),
+        "gold": (1.0, 0.78, 0.12, 1.0),
+        "danger": (0.82, 0.12, 0.08, 1.0),
+        "muted": (0.22, 0.12, 0.08, 1.0),
+        "slot": (0.62, 0.24, 0.06, 1.0),
+        "slot_sel": (1.0, 0.82, 0.18, 1.0),
+        "slot_empty": (0.14, 0.08, 0.05, 1.0),
+        "text": (1.0, 0.96, 0.88, 1.0),
+        "text_dim": (0.96, 0.84, 0.62, 1.0),
+        "toast_ok": (0.55, 0.28, 0.05, 1.0),
+        "toast_bad": (0.70, 0.12, 0.10, 1.0),
+    },
+    "blackberry": {
+        "dock": (0.04, 0.01, 0.10, 0.98),
+        "header": (0.22, 0.05, 0.38, 0.99),
+        "edge": (0.55, 0.98, 0.55, 1.0),
+        "btn": (0.38, 0.08, 0.52, 0.99),
+        "gold": (0.12, 0.72, 0.28, 0.99),
+        "danger": (0.82, 0.06, 0.18, 0.99),
+        "muted": (0.12, 0.04, 0.18, 0.96),
+        "slot": (0.28, 0.10, 0.42, 0.99),
+        "slot_sel": (0.55, 0.98, 0.55, 0.99),
+        "slot_empty": (0.07, 0.03, 0.10, 0.96),
+        "text": (0.92, 1.0, 0.92, 1.0),
+        "text_dim": (0.72, 0.90, 0.72, 1.0),
+        "toast_ok": (0.10, 0.40, 0.22, 1.0),
+        "toast_bad": (0.70, 0.12, 0.16, 1.0),
+    },
+    "azzy_purple": {
+        "dock": (0.03, 0.01, 0.18, 0.98),
+        "header": (1.0, 0.22, 0.48, 0.99),
+        "edge": (0.55, 0.98, 1.0, 1.0),
+        "btn": (0.52, 0.12, 0.62, 0.99),
+        "gold": (0.95, 0.48, 0.05, 0.99),
+        "danger": (0.82, 0.06, 0.18, 0.99),
+        "muted": (0.10, 0.03, 0.16, 0.96),
+        "slot": (0.34, 0.08, 0.44, 0.99),
+        "slot_sel": (0.55, 0.98, 1.0, 0.99),
+        "slot_empty": (0.06, 0.02, 0.10, 0.96),
+        "text": (1.0, 0.97, 1.0, 1.0),
+        "text_dim": (0.82, 0.86, 0.98, 1.0),
+        "toast_ok": (0.14, 0.46, 0.20, 1.0),
+        "toast_bad": (0.70, 0.12, 0.16, 1.0),
+    },
+    "arctic": {
+        "dock": (0.04, 0.09, 0.16, 0.97),
+        "header": (0.31, 0.76, 0.97, 0.99),
+        "edge": (0.91, 0.98, 1.0, 1.0),
+        "btn": (0.12, 0.40, 0.62, 0.98),
+        "gold": (0.31, 0.76, 0.97, 0.99),
+        "danger": (0.72, 0.20, 0.22, 0.98),
+        "muted": (0.10, 0.16, 0.24, 0.95),
+        "slot": (0.14, 0.28, 0.40, 0.98),
+        "slot_sel": (0.91, 0.98, 1.0, 0.99),
+        "slot_empty": (0.06, 0.10, 0.16, 0.95),
+        "text": (0.91, 0.98, 1.0, 1.0),
+        "text_dim": (0.70, 0.86, 0.94, 1.0),
+        "toast_ok": (0.10, 0.44, 0.52, 1.0),
+        "toast_bad": (0.70, 0.20, 0.22, 1.0),
+    },
+    "inferno": {
+        "dock": (0.10, 0.04, 0.04, 0.97),
+        "header": (1.0, 0.42, 0.42, 0.99),
+        "edge": (1.0, 0.82, 0.82, 1.0),
+        "btn": (0.80, 0.28, 0.12, 0.98),
+        "gold": (1.0, 0.64, 0.20, 0.99),
+        "danger": (0.72, 0.10, 0.10, 0.98),
+        "muted": (0.22, 0.10, 0.08, 0.95),
+        "slot": (0.48, 0.16, 0.10, 0.98),
+        "slot_sel": (1.0, 0.82, 0.50, 0.99),
+        "slot_empty": (0.14, 0.06, 0.04, 0.95),
+        "text": (1.0, 0.88, 0.82, 1.0),
+        "text_dim": (0.92, 0.70, 0.60, 1.0),
+        "toast_ok": (0.55, 0.28, 0.05, 1.0),
+        "toast_bad": (0.70, 0.12, 0.10, 1.0),
+    },
+    "void": {
+        "dock": (0.02, 0.04, 0.08, 0.97),
+        "header": (0.65, 0.55, 0.98, 0.99),
+        "edge": (0.87, 0.82, 1.0, 1.0),
+        "btn": (0.30, 0.22, 0.55, 0.98),
+        "gold": (0.65, 0.55, 0.98, 0.99),
+        "danger": (0.72, 0.20, 0.40, 0.98),
+        "muted": (0.08, 0.08, 0.16, 0.95),
+        "slot": (0.18, 0.14, 0.32, 0.98),
+        "slot_sel": (0.87, 0.82, 1.0, 0.99),
+        "slot_empty": (0.05, 0.05, 0.10, 0.95),
+        "text": (0.87, 0.82, 1.0, 1.0),
+        "text_dim": (0.70, 0.66, 0.86, 1.0),
+        "toast_ok": (0.30, 0.44, 0.10, 1.0),
+        "toast_bad": (0.70, 0.20, 0.40, 1.0),
+    },
+    "legendary": {
+        "dock": (0.04, 0.09, 0.16, 0.97),
+        "header": (1.0, 0.84, 0.0, 0.99),
+        "edge": (1.0, 0.95, 0.69, 1.0),
+        "btn": (0.72, 0.52, 0.05, 0.98),
+        "gold": (1.0, 0.84, 0.0, 0.99),
+        "danger": (0.72, 0.14, 0.10, 0.98),
+        "muted": (0.14, 0.14, 0.10, 0.95),
+        "slot": (0.42, 0.32, 0.06, 0.98),
+        "slot_sel": (1.0, 0.95, 0.69, 0.99),
+        "slot_empty": (0.10, 0.10, 0.06, 0.95),
+        "text": (1.0, 0.95, 0.69, 1.0),
+        "text_dim": (0.90, 0.82, 0.50, 1.0),
+        "toast_ok": (0.55, 0.40, 0.05, 1.0),
+        "toast_bad": (0.70, 0.12, 0.10, 1.0),
+    },
+}
+
+# Active palette (mutated by apply_theme).
+C_DOCK = THEMES["msbt"]["dock"]
+C_HEADER = THEMES["msbt"]["header"]
+C_EDGE = THEMES["msbt"]["edge"]
+C_BTN = THEMES["msbt"]["btn"]
+C_BTN_GOLD = THEMES["msbt"]["gold"]
+C_BTN_DANGER = THEMES["msbt"]["danger"]
+C_BTN_MUTED = THEMES["msbt"]["muted"]
+C_SLOT = THEMES["msbt"]["slot"]
+C_SLOT_SEL = THEMES["msbt"]["slot_sel"]
+C_SLOT_EMPTY = THEMES["msbt"]["slot_empty"]
+C_TEXT = THEMES["msbt"]["text"]
+C_TEXT_DIM = THEMES["msbt"]["text_dim"]
+C_TOAST_OK = THEMES["msbt"]["toast_ok"]
+C_TOAST_BAD = THEMES["msbt"]["toast_bad"]
 
 
 @dataclass
@@ -110,6 +268,17 @@ class QuickMenuState:
     layout_w: float = DESIGN_W
     layout_h: float = DESIGN_H
     ui_scale: float = 1.0
+    window_scale: float = 1.0
+    theme_id: str = "msbt"
+    offset_x: float = 0.0
+    offset_y: float = 0.0
+    placing: bool = False
+    place_click_was_down: bool = False
+    place_started_at: float = 0.0
+    place_mouse0: tuple[float, float] | None = None
+    place_offset0: tuple[float, float] = (0.0, 0.0)
+    place_last_rebuild: float = 0.0
+    place_catcher: Any = None
     overlay: Any = None
     tree: Any = None
     root: Any = None
@@ -117,6 +286,13 @@ class QuickMenuState:
     buttons: list[ButtonRef] = field(default_factory=list)
     sliders: list[SliderRef] = field(default_factory=list)
     panel_opacity: float = 1.0
+    rarity_panel_equipped: bool = False
+    rarity_weights: dict[str, float] = field(
+        default_factory=lambda: {key: 1.0 for key, _label in RARITY_SLIDER_KEYS}
+    )
+    rarity_live_apply_due: float = 0.0
+    rarity_local_edit_until: float = 0.0
+    rarity_backend_sync_at: float = 0.0
     input_owner: Any = None
     input_snapshot: InputSnapshot = field(default_factory=InputSnapshot)
     last_input_refresh: float = 0.0
@@ -128,6 +304,43 @@ class QuickMenuState:
     key_f6: bool = False
     hotkey_ignore_until: float = 0.0
     started: bool = False
+
+
+def apply_theme(theme_id: str | None = None) -> str:
+    global C_DOCK, C_HEADER, C_EDGE, C_BTN, C_BTN_GOLD, C_BTN_DANGER, C_BTN_MUTED
+    global C_SLOT, C_SLOT_SEL, C_SLOT_EMPTY, C_TEXT, C_TEXT_DIM, C_TOAST_OK, C_TOAST_BAD
+    tid = str(theme_id or STATE.theme_id or "msbt").strip().lower()
+    if tid not in THEMES:
+        tid = "msbt"
+    STATE.theme_id = tid
+    pack = THEMES[tid]
+    C_DOCK = pack["dock"]
+    C_HEADER = pack["header"]
+    C_EDGE = pack["edge"]
+    C_BTN = pack["btn"]
+    C_BTN_GOLD = pack["gold"]
+    C_BTN_DANGER = pack["danger"]
+    C_BTN_MUTED = pack["muted"]
+    C_SLOT = pack["slot"]
+    C_SLOT_SEL = pack["slot_sel"]
+    C_SLOT_EMPTY = pack["slot_empty"]
+    C_TEXT = pack["text"]
+    C_TEXT_DIM = pack["text_dim"]
+    C_TOAST_OK = pack["toast_ok"]
+    C_TOAST_BAD = pack["toast_bad"]
+    return tid
+
+
+def panel_x() -> float:
+    return float(DOCK_X + STATE.offset_x)
+
+
+def panel_y() -> float:
+    return float(STATE.offset_y)
+
+
+def panel_w() -> float:
+    return float(DOCK_W)
 
 
 def _with_alpha(fill: tuple[float, float, float, float], alpha: float) -> tuple[float, float, float, float]:
@@ -197,6 +410,39 @@ def slate_color(value: tuple[float, float, float, float]) -> Any:
         return specified
 
 
+def _apply_text_outline(widget: Any) -> None:
+    """Best-effort UMG TextBlock outline + drop shadow (FontOutlineSettings)."""
+    outline_c = color(C_TEXT_OUTLINE)
+    try:
+        font = widget.Font
+        try:
+            settings = unrealsdk.make_struct(
+                "FontOutlineSettings",
+                OutlineSize=int(TEXT_OUTLINE_SIZE),
+                bSeparateFillAlpha=False,
+                bApplyOutlineToDropShadows=False,
+                OutlineColor=outline_c,
+            )
+            font.OutlineSettings = settings
+        except Exception:
+            try:
+                outline_settings = font.OutlineSettings
+                outline_settings.OutlineSize = int(TEXT_OUTLINE_SIZE)
+                outline_settings.OutlineColor = outline_c
+            except Exception:
+                pass
+        if not try_call(widget, "SetFont", font):
+            try:
+                widget.Font = font
+            except Exception:
+                pass
+    except Exception:
+        pass
+    # Single-direction shadow still helps when OutlineSettings is ignored.
+    try_call(widget, "SetShadowOffset", vec2(1.0, 1.0))
+    try_call(widget, "SetShadowColorAndOpacity", outline_c)
+
+
 def _button_layer(z: int, modal_only: bool, allow_when_modal: bool) -> int:
     if modal_only or allow_when_modal:
         return max(int(z), MODAL_BUTTON_Z)
@@ -225,11 +471,11 @@ def _vec2_xy(value: Any) -> tuple[float, float] | None:
 
 
 def sx(value: float) -> float:
-    return float(value) * STATE.scale_x
+    return float(value) * STATE.scale_x * float(STATE.window_scale or 1.0)
 
 
 def sy(value: float) -> float:
-    return float(value) * STATE.scale_y
+    return float(value) * STATE.scale_y * float(STATE.window_scale or 1.0)
 
 
 def update_layout_metrics() -> None:
@@ -259,7 +505,8 @@ def update_layout_metrics() -> None:
     STATE.layout_h = max(1.0, raw_h / dpi)
     STATE.scale_x = max(0.1, min(8.0, STATE.layout_w / DESIGN_W))
     STATE.scale_y = max(0.1, min(8.0, STATE.layout_h / DESIGN_H))
-    STATE.ui_scale = max(0.5, min(3.0, min(STATE.scale_x, STATE.scale_y)))
+    base = max(0.5, min(3.0, min(STATE.scale_x, STATE.scale_y)))
+    STATE.ui_scale = max(0.4, min(3.5, base * float(STATE.window_scale or 1.0)))
 
 
 def _empty_page() -> list[dict[str, Any] | None]:
@@ -274,12 +521,36 @@ def _default_pages() -> list[list[dict[str, Any] | None]]:
     return quick_menu_registry.default_pages()
 
 
+def _apply_chrome(chrome: dict[str, Any] | None) -> None:
+    data = quick_menu_registry.sanitize_chrome(chrome or {})
+    STATE.theme_id = str(data.get("theme_id") or "msbt")
+    STATE.window_scale = float(data.get("window_scale") or 1.0)
+    STATE.offset_x = float(data.get("offset_x") or 0.0)
+    STATE.offset_y = float(data.get("offset_y") or 0.0)
+    STATE.panel_opacity = float(data.get("panel_opacity") or 1.0)
+    STATE.rarity_panel_equipped = bool(data.get("rarity_panel_equipped", False))
+    apply_theme(STATE.theme_id)
+    update_layout_metrics()
+
+
+def _chrome_payload() -> dict[str, Any]:
+    return {
+        "theme_id": STATE.theme_id,
+        "window_scale": float(STATE.window_scale),
+        "offset_x": float(STATE.offset_x),
+        "offset_y": float(STATE.offset_y),
+        "panel_opacity": float(STATE.panel_opacity),
+        "rarity_panel_equipped": bool(STATE.rarity_panel_equipped),
+    }
+
+
 def load_layout() -> None:
     layout = quick_menu_registry.load_persisted_layout()
     STATE.pages = layout["pages"]
     STATE.page = int(layout["page"])
     STATE.edit_mode = bool(layout["edit_mode"])
     STATE.layout_revision = quick_menu_registry.get_layout_revision()
+    _apply_chrome(layout.get("chrome"))
     lock = backend_actions.get_drop_player_lock()
     drop_lock = layout["drop_lock"]
     if drop_lock.get("enabled"):
@@ -313,12 +584,14 @@ def save_layout() -> None:
             "index": lock.get("index"),
             "name": lock.get("name") or "",
         },
+        "chrome": _chrome_payload(),
     }
     try:
         result = quick_menu_registry.set_quick_menu_layout(payload)
         if not result.get("ok"):
             raise RuntimeError(result.get("message") or "Quick Menu layout validation failed.")
         STATE.pages = result["layout"]["pages"]
+        _apply_chrome(result["layout"].get("chrome"))
         STATE.layout_revision = quick_menu_registry.get_layout_revision()
     except Exception as exc:
         _log(f"Could not save Quick Menu layout: {exc!r}")
@@ -372,7 +645,7 @@ class NativeUMG:
         try_call(widget, "SetVisibility", 0)
         try_call(widget, "SetIsEnabled", True)
         self.add(parent, widget)
-        self.slot(widget, DOCK_X, 0, DOCK_W, DESIGN_H, MODAL_BLOCKER_Z)
+        self.slot(widget, panel_x(), panel_y(), panel_w(), DESIGN_H, MODAL_BLOCKER_Z)
         return widget
 
     def slider(
@@ -386,17 +659,26 @@ class NativeUMG:
         h: float,
         *,
         z: int = 40,
+        min_value: float = 0.55,
+        max_value: float = 1.0,
+        step: float = 0.01,
+        label_widget: Any = None,
     ) -> Any:
         widget = self.widget("/Script/UMG.Slider")
-        try_call(widget, "SetMinValue", 0.55)
-        try_call(widget, "SetMaxValue", 1.0)
-        try_call(widget, "SetStepSize", 0.01)
-        try_call(widget, "SetValue", float(value))
+        lo = float(min_value)
+        hi = float(max_value)
+        if hi <= lo:
+            hi = lo + 0.01
+        clamped = max(lo, min(hi, float(value)))
+        try_call(widget, "SetMinValue", lo)
+        try_call(widget, "SetMaxValue", hi)
+        try_call(widget, "SetStepSize", float(step))
+        try_call(widget, "SetValue", clamped)
         try_call(widget, "SetVisibility", 0)
         try_call(widget, "SetIsEnabled", True)
         self.add(parent, widget)
         self.slot(widget, x, y, w, h, z)
-        STATE.sliders.append(SliderRef(widget, key, float(value)))
+        STATE.sliders.append(SliderRef(widget, key, clamped, label_widget))
         return widget
 
     def scroll_box(self, parent: Any, x: float, y: float, w: float, h: float, *, z: int = 20) -> Any:
@@ -427,6 +709,35 @@ class NativeUMG:
         self.add(size, row)
         return row
 
+    def _text_block(
+        self,
+        parent: Any,
+        value: str,
+        x: float,
+        y: float,
+        w: float,
+        h: float,
+        *,
+        scale: float,
+        z: int,
+        center: bool,
+        tint: tuple[float, float, float, float],
+        outline: bool,
+    ) -> Any:
+        widget = self.widget("/Script/UMG.TextBlock")
+        try_call(widget, "SetText", str(value))
+        render_scale = max(0.2, float(scale) * STATE.ui_scale * TEXT_BOOST)
+        try_call(widget, "SetRenderScale", vec2(render_scale, render_scale))
+        try_call(widget, "SetRenderTransformPivot", vec2(0.0, 0.5))
+        try_call(widget, "SetJustification", 1 if center else 0)
+        try_call(widget, "SetColorAndOpacity", slate_color(tint))
+        try_call(widget, "SetVisibility", 4)
+        if outline:
+            _apply_text_outline(widget)
+        self.add(parent, widget)
+        self.slot(widget, x, y, w, h, z)
+        return widget
+
     def text(
         self,
         parent: Any,
@@ -436,22 +747,40 @@ class NativeUMG:
         w: float,
         h: float,
         *,
-        scale: float = 0.42,
+        scale: float = 0.60,
         z: int = 10,
         center: bool = False,
         tint: tuple[float, float, float, float] = C_TEXT,
     ) -> Any:
-        widget = self.widget("/Script/UMG.TextBlock")
-        try_call(widget, "SetText", str(value))
-        render_scale = max(0.2, float(scale) * STATE.ui_scale)
-        try_call(widget, "SetRenderScale", vec2(render_scale, render_scale))
-        try_call(widget, "SetRenderTransformPivot", vec2(0.0, 0.5))
-        try_call(widget, "SetJustification", 1 if center else 0)
-        try_call(widget, "SetColorAndOpacity", slate_color(tint))
-        try_call(widget, "SetVisibility", 4)
-        self.add(parent, widget)
-        self.slot(widget, x, y, w, h, z)
-        return widget
+        # Dual-pass cardinal halo so labels stay readable even when native
+        # FontOutlineSettings is ignored; fill pass also gets SetFont outline.
+        for ox, oy in TEXT_OUTLINE_OFFSETS:
+            self._text_block(
+                parent,
+                value,
+                x + ox,
+                y + oy,
+                w,
+                h,
+                scale=scale,
+                z=z,
+                center=center,
+                tint=C_TEXT_OUTLINE,
+                outline=False,
+            )
+        return self._text_block(
+            parent,
+            value,
+            x,
+            y,
+            w,
+            h,
+            scale=scale,
+            z=z + 1,
+            center=center,
+            tint=tint,
+            outline=True,
+        )
 
     def button(
         self,
@@ -466,7 +795,7 @@ class NativeUMG:
         fill: tuple[float, float, float, float] = C_BTN,
         enabled: bool = True,
         z: int = 50,
-        scale: float = 0.36,
+        scale: float = SCALE_BTN,
         modal_only: bool = False,
         allow_when_modal: bool = False,
     ) -> Any:
@@ -476,20 +805,23 @@ class NativeUMG:
         # is visible while player/action rows appear as a blank screen.
         layer = _button_layer(z, modal_only, allow_when_modal)
         base = fill if enabled else C_BTN_MUTED
-        self.border(parent, x, y, w, h, base, layer)
+        # Near-black outline behind the fill so buttons read clearly on dark docks.
+        self.border(parent, x - 2, y - 2, w + 4, h + 4, C_OUTLINE, layer)
+        self.border(parent, x, y, w, h, base, layer + 0)
         widget = self.widget("/Script/UMG.Button")
         self.add(parent, widget)
         self.slot(widget, x, y, w, h, layer + 1)
         try_call(widget, "SetVisibility", 0)
         try_call(widget, "SetIsEnabled", bool(enabled))
         try_call(widget, "SetRenderOpacity", 0.03 if enabled else 0.01)
+        # Azzy pads labels ~8/10 inside the hit rect so larger type stays readable.
         self.text(
             parent,
             label,
-            x + 4,
-            y + 2,
-            w - 8,
-            h - 4,
+            x + 8,
+            y + 8,
+            w - 16,
+            h - 14,
             scale=scale,
             z=layer + 2,
             center=True,
@@ -737,7 +1069,7 @@ def _ensure_toast_overlay(message: str, ok: bool) -> None:
     factory = NativeUMG(widget)
     fill = (0.10, 0.42, 0.24, 0.94) if ok else (0.48, 0.16, 0.14, 0.94)
     factory.border(root, 460, 40, 1000, 64, fill, 10)
-    factory.text(root, message, 480, 52, 960, 40, scale=0.36, z=11, center=True)
+    factory.text(root, message, 480, 52, 960, 40, scale=SCALE_BTN, z=11, center=True)
 
 
 def _clear_toast_overlay() -> None:
@@ -800,6 +1132,120 @@ def _run_action(action: str, payload: dict[str, Any] | None = None) -> dict[str,
         _begin_player_pick("action")
     _set_status_from_result(result)
     return result
+
+
+def _sync_rarity_weights_from_backend() -> None:
+    weights = backend_actions.get_rarity_weights()
+    for key, _label in RARITY_SLIDER_KEYS:
+        try:
+            STATE.rarity_weights[key] = max(0.0, min(1.0, float(weights.get(key, 1.0))))
+        except Exception:
+            STATE.rarity_weights[key] = 1.0
+
+
+def _rarity_payload_from_state() -> dict[str, float]:
+    return {
+        f"rarity_{key}_percent": float(round(max(0.0, min(1.0, float(STATE.rarity_weights.get(key, 1.0)))) * 100.0, 1))
+        for key, _label in RARITY_SLIDER_KEYS
+    }
+
+
+def _qm_rarity_apply() -> None:
+    STATE.rarity_live_apply_due = 0.0
+    STATE.rarity_local_edit_until = time.monotonic() + 0.45
+    result = backend_actions.rarity_apply(_rarity_payload_from_state())
+    _sync_rarity_weights_from_backend()
+    _set_status_from_result(result)
+    STATE.ui_dirty = True
+
+
+def _qm_rarity_reset() -> None:
+    STATE.rarity_live_apply_due = 0.0
+    STATE.rarity_local_edit_until = time.monotonic() + 0.45
+    result = backend_actions.rarity_reset()
+    _sync_rarity_weights_from_backend()
+    _set_status_from_result(result)
+    STATE.ui_dirty = True
+
+
+def _qm_rarity_only(key: str) -> None:
+    STATE.rarity_live_apply_due = 0.0
+    STATE.rarity_local_edit_until = time.monotonic() + 0.45
+    result = backend_actions.rarity_only(key)
+    _sync_rarity_weights_from_backend()
+    _set_status_from_result(result)
+    STATE.ui_dirty = True
+
+
+def _render_rarity_controls(factory: NativeUMG, root: Any, px: float, rarity_y: float, pw: float, opacity: float) -> None:
+    factory.border(root, px + 12, rarity_y, pw - 24, RARITY_RESERVE_H, C_OUTLINE, 4)
+    factory.border(root, px + 15, rarity_y + 3, pw - 30, RARITY_RESERVE_H - 6, _with_alpha(C_BTN_MUTED, opacity), 4)
+    factory.text(
+        root,
+        "Rarity Drop Weights — live apply (100% = vanilla, 0% = off)",
+        px + 20,
+        rarity_y + 8,
+        pw - 40,
+        24,
+        scale=SCALE_BODY,
+        z=6,
+        tint=C_BTN_GOLD,
+    )
+    btn_y = rarity_y + 36
+    btn_h = 34.0
+    factory.button(
+        root, "Apply", px + 18, btn_y, 100, btn_h,
+        _qm_rarity_apply, fill=_with_alpha(C_BTN_GOLD, opacity), scale=SCALE_HINT,
+    )
+    factory.button(
+        root, "Reset", px + 126, btn_y, 90, btn_h,
+        _qm_rarity_reset, fill=_with_alpha(C_BTN, opacity), scale=SCALE_HINT,
+    )
+    factory.button(
+        root, "Leg Only", px + 224, btn_y, 110, btn_h,
+        lambda: _qm_rarity_only("legendary"), fill=_with_alpha(C_BTN, opacity), scale=SCALE_HINT,
+    )
+    factory.button(
+        root, "Pearl Only", px + 342, btn_y, 120, btn_h,
+        lambda: _qm_rarity_only("pearlescent"), fill=_with_alpha(C_BTN, opacity), scale=SCALE_HINT,
+    )
+
+    cols = 3
+    col_w = (pw - 48) / cols
+    row0 = rarity_y + 80
+    for idx, (key, short) in enumerate(RARITY_SLIDER_KEYS):
+        row, col = divmod(idx, cols)
+        x0 = px + 20 + col * col_w
+        y0 = row0 + row * 68
+        weight = max(0.0, min(1.0, float(STATE.rarity_weights.get(key, 1.0))))
+        pct = int(round(weight * 100.0))
+        label = factory.text(
+            root,
+            f"{short} {pct}%",
+            x0,
+            y0,
+            col_w - 16,
+            22,
+            scale=SCALE_HINT,
+            z=6,
+            tint=C_TEXT,
+        )
+        factory.border(root, x0, y0 + 24, col_w - 20, 24, C_OUTLINE, 5)
+        factory.border(root, x0 + 2, y0 + 26, col_w - 24, 20, _with_alpha(C_SLOT_EMPTY, opacity), 5)
+        factory.slider(
+            root,
+            f"rarity_{key}",
+            weight,
+            x0 + 4,
+            y0 + 26,
+            col_w - 28,
+            20,
+            z=7,
+            min_value=0.0,
+            max_value=1.0,
+            step=0.01,
+            label_widget=label,
+        )
 
 
 def _first_empty_slot(page: int | None = None) -> tuple[int, int] | None:
@@ -1052,120 +1498,60 @@ def rebuild_ui() -> None:
     factory, root = reset_canvas()
     STATE.sliders.clear()
     opacity = max(0.55, min(1.0, float(STATE.panel_opacity or 1.0)))
+    px = panel_x()
+    py = panel_y()
+    pw = panel_w()
 
-    # Right-side opaque dock only — no centered fullscreen pastel panel.
-    factory.border(root, DOCK_X - 6, 0, 6, DESIGN_H, _with_alpha(C_EDGE, 1.0), 1)
-    factory.border(root, DOCK_X, 0, DOCK_W, DESIGN_H, _with_alpha(C_DOCK, opacity), 2)
-    factory.border(root, DOCK_X, 0, DOCK_W, 70, _with_alpha(C_HEADER, opacity), 3)
-    factory.text(root, "MSBT Quick Menu", DOCK_X + 16, 16, 380, 40, scale=0.50, z=4)
+    factory.border(root, px - 6, py, 6, DESIGN_H, _with_alpha(C_EDGE, 1.0), 1)
+    factory.border(root, px, py, pw, DESIGN_H, _with_alpha(C_DOCK, opacity), 2)
+    factory.border(root, px, py, pw, HEADER_H, _with_alpha(C_HEADER, opacity), 3)
+    factory.text(root, "MSBT Quick Menu", px + 12, py + 8, 280, 36, scale=SCALE_TITLE, z=4)
     mode = "EDIT" if STATE.edit_mode else "RUN"
     lock = backend_actions.get_drop_player_lock()
     lock_txt = f"Lock {lock.get('name') or 'ON'}" if lock.get("enabled") else "Lock OFF"
     factory.text(
         root,
-        f"{mode} | P{STATE.page + 1}/{MAX_PAGES} | {lock_txt}",
-        DOCK_X + 16,
-        48,
-        420,
-        22,
-        scale=0.26,
+        f"{mode} | P{STATE.page + 1}/{MAX_PAGES} | {lock_txt} | {STATE.window_scale:.2f}x | {STATE.theme_id}",
+        px + 12,
+        py + 42,
+        pw - 24,
+        24,
+        scale=SCALE_SUBTITLE,
         z=4,
         tint=C_TEXT_DIM,
     )
 
-    factory.button(
-        root,
-        "Close F7",
-        DOCK_X + DOCK_W - 118,
-        14,
-        100,
-        42,
-        close_panel,
-        fill=_with_alpha(C_BTN_DANGER, opacity),
-        scale=0.28,
-        allow_when_modal=True,
-    )
-    factory.button(
-        root,
-        "Edit" if not STATE.edit_mode else "Done",
-        DOCK_X + DOCK_W - 238,
-        14,
-        110,
-        42,
-        lambda: _toggle_edit(),
-        fill=_with_alpha(C_BTN_GOLD, opacity),
-        scale=0.32,
-    )
+    chrome_y = py + 70
+    factory.button(root, "MOVE", px + 12, chrome_y, 72, BTN_H_HEADER, begin_move_placement, fill=_with_alpha(C_BTN, opacity), scale=SCALE_BTN_HEADER, allow_when_modal=True)
+    factory.button(root, "THEME", px + 90, chrome_y, 84, BTN_H_HEADER, cycle_theme, fill=_with_alpha(C_BTN_GOLD, opacity), scale=SCALE_BTN_HEADER)
+    factory.button(root, "-", px + 180, chrome_y, 40, BTN_H_HEADER, lambda: adjust_window_scale(-WINDOW_SCALE_STEP), fill=_with_alpha(C_BTN_MUTED, opacity), scale=0.70)
+    factory.button(root, f"{STATE.window_scale:.2f}x", px + 226, chrome_y, 72, BTN_H_HEADER, reset_window_scale, fill=_with_alpha(C_BTN_MUTED, opacity), scale=0.34)
+    factory.button(root, "+", px + 304, chrome_y, 40, BTN_H_HEADER, lambda: adjust_window_scale(WINDOW_SCALE_STEP), fill=_with_alpha(C_BTN_MUTED, opacity), scale=0.70)
+    factory.button(root, "RESET POS", px + 350, chrome_y, 110, BTN_H_HEADER, reset_panel_position, fill=_with_alpha(C_BTN, opacity), scale=0.34)
+    factory.button(root, "Edit" if not STATE.edit_mode else "Done", px + pw - 236, chrome_y, 100, BTN_H_HEADER, lambda: _toggle_edit(), fill=_with_alpha(C_BTN_GOLD, opacity), scale=SCALE_BTN_HEADER)
+    factory.button(root, "Close F7", px + pw - 128, chrome_y, 116, BTN_H_HEADER, close_panel, fill=_with_alpha(C_BTN_DANGER, opacity), scale=SCALE_BTN_HEADER, allow_when_modal=True)
 
-    tab_x = DOCK_X + 16
+    tab_y = py + 126
+    tab_x = px + 12
     for page_i in range(MAX_PAGES):
         fill = C_BTN_GOLD if page_i == STATE.page else C_BTN_MUTED
 
         def _make_page(i: int = page_i) -> Callable[[], None]:
             return lambda: _set_page(i)
 
-        factory.button(
-            root,
-            f"P{page_i + 1}",
-            tab_x,
-            84,
-            56,
-            36,
-            _make_page(),
-            fill=_with_alpha(fill, opacity),
-            scale=0.28,
-        )
-        tab_x += 62
+        factory.button(root, f"P{page_i + 1}", tab_x, tab_y, 64, BTN_H_TAB, _make_page(), fill=_with_alpha(fill, opacity), scale=SCALE_BTN_HEADER)
+        tab_x += 70
 
-    factory.button(
-        root,
-        "Pin Last",
-        DOCK_X + 16,
-        128,
-        140,
-        36,
-        lambda: pin_last_command(),
-        fill=_with_alpha(C_BTN_GOLD, opacity),
-        scale=0.26,
-    )
-    factory.button(
-        root,
-        "Lock",
-        DOCK_X + 164,
-        128,
-        90,
-        36,
-        toggle_drop_lock,
-        fill=_with_alpha(C_BTN, opacity),
-        scale=0.26,
-    )
-    factory.button(
-        root,
-        "Target",
-        DOCK_X + 262,
-        128,
-        100,
-        36,
-        lambda: _begin_player_pick("target"),
-        fill=_with_alpha(C_BTN, opacity),
-        scale=0.26,
-    )
+    tool_y = tab_y + 48
+    factory.button(root, "Pin Last", px + 12, tool_y, 130, BTN_H_TOOL, lambda: pin_last_command(), fill=_with_alpha(C_BTN_GOLD, opacity), scale=SCALE_BTN)
+    factory.button(root, "Lock", px + 150, tool_y, 90, BTN_H_TOOL, toggle_drop_lock, fill=_with_alpha(C_BTN, opacity), scale=SCALE_BTN)
+    factory.button(root, "Target", px + 248, tool_y, 100, BTN_H_TOOL, lambda: _begin_player_pick("target"), fill=_with_alpha(C_BTN, opacity), scale=SCALE_BTN)
 
     def _refresh_ui() -> None:
         _run_action("refresh_players")
         rebuild_ui()
 
-    factory.button(
-        root,
-        "Refresh",
-        DOCK_X + 370,
-        128,
-        110,
-        36,
-        _refresh_ui,
-        fill=_with_alpha(C_BTN_MUTED, opacity),
-        scale=0.26,
-    )
+    factory.button(root, "Refresh", px + 356, tool_y, 110, BTN_H_TOOL, _refresh_ui, fill=_with_alpha(C_BTN_MUTED, opacity), scale=SCALE_BTN)
 
     selected_name = backend_actions.get_selected_player_name() or "(none)"
     selected_idx = backend_actions.get_selected_player_index()
@@ -1174,34 +1560,36 @@ def rebuild_ui() -> None:
     last_txt = f"Last: {last.get('label')}" if last else "Last: (none)"
     drop = backend_actions.get_last_drop()
     drop_txt = f"Drop: {drop.get('label')}" if drop else "Drop: (none)"
-    factory.text(root, target_txt, DOCK_X + 16, 172, DOCK_W - 32, 22, scale=0.24, z=5, tint=C_TEXT_DIM)
-    factory.text(root, f"{last_txt} | {drop_txt}", DOCK_X + 16, 194, DOCK_W - 32, 22, scale=0.24, z=5, tint=C_TEXT_DIM)
+    info_y = tool_y + 48
+    factory.text(root, target_txt, px + 12, info_y, pw - 24, 22, scale=SCALE_BODY, z=5, tint=C_TEXT_DIM)
+    factory.text(root, f"{last_txt} | {drop_txt}", px + 12, info_y + 22, pw - 24, 22, scale=SCALE_BODY, z=5, tint=C_TEXT_DIM)
 
     filled = _page_filled_count()
+    banner_h = 0.0
+    grid_y0 = info_y + 50
     if filled == 0:
-        factory.border(root, DOCK_X + 16, 220, DOCK_W - 32, 36, _with_alpha(C_BTN_GOLD, opacity), 8)
+        factory.border(root, px + 12, grid_y0, pw - 24, 34, _with_alpha(C_BTN_GOLD, opacity), 8)
         factory.text(
             root,
-            "Empty page — tap + Assign or Reset.",
-            DOCK_X + 24,
-            226,
-            DOCK_W - 48,
+            "Empty page — tap + Assign or Reset. Use + QM in the app to pin tools.",
+            px + 18,
+            grid_y0 + 4,
+            pw - 36,
             26,
-            scale=0.24,
+            scale=SCALE_BODY,
             z=9,
             center=True,
         )
-
-    grid_x0 = DOCK_X + 16
-    grid_y0 = 266.0
-    cell_w, cell_h = 292.0, 78.0
-    gap_x, gap_y = 12.0, 10.0
+        banner_h = 40.0
+    grid_y0 = grid_y0 + banner_h
+    cell_w, cell_h = CELL_W, CELL_H
+    gap_x, gap_y = CELL_GAP_X, CELL_GAP_Y
     slots = STATE.pages[STATE.page]
     for idx in range(SLOTS_PER_PAGE):
         row, col = divmod(idx, GRID_COLS)
-        x = grid_x0 + col * (cell_w + gap_x)
+        x = px + 12 + col * (cell_w + gap_x)
         y = grid_y0 + row * (cell_h + gap_y)
-        slot = slots[idx]
+        slot = slots[idx] if idx < len(slots) else None
         selected = STATE.edit_mode and STATE.selected_slot == idx
         if slot is None:
             label = "+ Assign"
@@ -1213,45 +1601,30 @@ def rebuild_ui() -> None:
         def _make_slot(i: int = idx) -> Callable[[], None]:
             return lambda: activate_slot(i)
 
-        factory.button(
-            root,
-            label,
-            x,
-            y,
-            cell_w,
-            cell_h,
-            _make_slot(),
-            fill=_with_alpha(fill, opacity),
-            scale=0.28,
-        )
+        factory.button(root, label, x, y, cell_w, cell_h, _make_slot(), fill=_with_alpha(fill, opacity), scale=SCALE_SLOT)
 
+    grid_bottom = grid_y0 + GRID_ROWS * cell_h + (GRID_ROWS - 1) * gap_y
+    if STATE.rarity_panel_equipped:
+        rarity_y = grid_bottom + 10
+        _render_rarity_controls(factory, root, px, rarity_y, pw, opacity)
+        footer_y = rarity_y + RARITY_RESERVE_H + 12
+    else:
+        footer_y = grid_bottom + 16
     factory.text(
         root,
-        "F7 close menu · Esc close modal · F6 unstuck (restore mouse/look)",
-        DOCK_X + 16,
-        792,
-        DOCK_W - 32,
+        "F7 close · Esc modal · F6 unstuck · MOVE then click to place · -/+ resize",
+        px + 12,
+        footer_y,
+        pw - 24,
         24,
-        scale=0.24,
+        scale=SCALE_HINT,
         z=6,
         tint=C_BTN_GOLD,
     )
-    factory.text(root, STATE.status, DOCK_X + 16, 820, DOCK_W - 32, 36, scale=0.26, z=6, tint=C_TEXT_DIM)
-
-    # Opaque opacity slider (keeps dock readable; default fully opaque).
-    factory.text(
-        root,
-        f"Opacity {int(opacity * 100)}%",
-        DOCK_X + 16,
-        858,
-        200,
-        24,
-        scale=0.24,
-        z=6,
-        tint=C_TEXT_DIM,
-    )
-    factory.border(root, DOCK_X + 16, 886, DOCK_W - 32, 28, _with_alpha(C_BTN_MUTED, 1.0), 6)
-    factory.slider(root, "panel_opacity", opacity, DOCK_X + 20, 888, DOCK_W - 40, 24, z=7)
+    factory.text(root, STATE.status, px + 12, footer_y + 26, pw - 24, 32, scale=SCALE_BODY, z=6, tint=C_TEXT_DIM)
+    factory.text(root, f"Opacity {int(opacity * 100)}%", px + 12, footer_y + 58, 220, 22, scale=SCALE_HINT, z=6, tint=C_TEXT_DIM)
+    factory.border(root, px + 12, footer_y + 82, pw - 24, 28, _with_alpha(C_BTN_MUTED, 1.0), 6)
+    factory.slider(root, "panel_opacity", opacity, px + 16, footer_y + 84, pw - 32, 24, z=7)
 
     if STATE.edit_mode or filled == 0:
         if filled == 0 and STATE.page > 0:
@@ -1260,33 +1633,25 @@ def rebuild_ui() -> None:
         else:
             recovery_label = "Reset Page"
             recovery_action = reset_current_page
-        factory.button(
-            root,
-            recovery_label,
-            DOCK_X + 16,
-            930,
-            180,
-            40,
-            recovery_action,
-            fill=_with_alpha(C_BTN, opacity),
-            scale=0.26,
-        )
-        factory.button(
-            root,
-            "Reset All",
-            DOCK_X + 208,
-            930,
-            160,
-            40,
-            reset_all_pages,
-            fill=_with_alpha(C_BTN_DANGER, opacity),
-            scale=0.26,
-        )
+        factory.button(root, recovery_label, px + 12, footer_y + 120, 180, BTN_H_TOOL, recovery_action, fill=_with_alpha(C_BTN, opacity), scale=SCALE_BTN)
+        factory.button(root, "Reset All", px + 204, footer_y + 120, 150, BTN_H_TOOL, reset_all_pages, fill=_with_alpha(C_BTN_DANGER, opacity), scale=SCALE_BTN)
 
     if STATE.toast and time.monotonic() < STATE.toast_until:
         fill = C_TOAST_OK if STATE.toast_ok else C_TOAST_BAD
-        factory.border(root, DOCK_X + 20, 980, DOCK_W - 40, 48, _with_alpha(fill, 1.0), 90)
-        factory.text(root, STATE.toast, DOCK_X + 28, 990, DOCK_W - 56, 30, scale=0.28, z=91, center=True)
+        factory.border(root, px + 16, footer_y + 170, pw - 32, 40, _with_alpha(fill, 1.0), 90)
+        factory.text(root, STATE.toast, px + 24, footer_y + 176, pw - 48, 28, scale=SCALE_BTN, z=91, center=True)
+
+    if STATE.placing:
+        catcher = factory.widget("/Script/UMG.Button")
+        factory.add(root, catcher)
+        factory.slot(catcher, 0, 0, DESIGN_W, DESIGN_H, 200)
+        try_call(catcher, "SetVisibility", 0)
+        try_call(catcher, "SetIsEnabled", True)
+        try_call(catcher, "SetRenderOpacity", 0.02)
+        STATE.place_catcher = catcher
+        factory.text(root, "MOVE: slide mouse, click to place (Esc cancels)", px + 12, py + HEADER_H + 4, pw - 24, 28, scale=SCALE_BODY, z=201, center=True, tint=C_BTN_GOLD)
+    else:
+        STATE.place_catcher = None
 
     if STATE.modal == "player_pick":
         _render_player_pick(factory, root)
@@ -1309,6 +1674,164 @@ def _toggle_edit() -> None:
     rebuild_ui()
 
 
+def cycle_theme() -> None:
+    ids = list(THEME_IDS)
+    try:
+        idx = ids.index(STATE.theme_id)
+    except ValueError:
+        idx = 0
+    apply_theme(ids[(idx + 1) % len(ids)])
+    save_layout()
+    show_toast(f"Theme: {STATE.theme_id}", ok=True, seconds=1.5)
+    rebuild_ui()
+
+
+def adjust_window_scale(delta: float) -> None:
+    value = round(float(STATE.window_scale) + float(delta), 2)
+    STATE.window_scale = max(WINDOW_SCALE_MIN, min(WINDOW_SCALE_MAX, value))
+    update_layout_metrics()
+    save_layout()
+    show_toast(f"Window size {STATE.window_scale:.2f}x", ok=True, seconds=1.2)
+    rebuild_ui()
+
+
+def reset_window_scale() -> None:
+    STATE.window_scale = float(quick_menu_registry.WINDOW_SCALE_DEFAULT)
+    update_layout_metrics()
+    save_layout()
+    show_toast("Window size reset to 1.00x", ok=True, seconds=1.2)
+    rebuild_ui()
+
+
+def reset_panel_position() -> None:
+    STATE.offset_x = 0.0
+    STATE.offset_y = 0.0
+    STATE.placing = False
+    STATE.place_mouse0 = None
+    STATE.place_catcher = None
+    save_layout()
+    show_toast("Panel re-pinned to the right", ok=True, seconds=1.5)
+    rebuild_ui()
+
+
+def begin_move_placement() -> None:
+    # Azzy-style click-to-place: pick up on MOVE, follow mouse by delta, click to drop.
+    STATE.placing = True
+    STATE.place_click_was_down = True
+    STATE.place_started_at = time.monotonic()
+    STATE.place_mouse0 = None
+    STATE.place_offset0 = (float(STATE.offset_x), float(STATE.offset_y))
+    STATE.place_last_rebuild = 0.0
+    STATE.modal = ""
+    _log("MOVE: slide mouse, click to place (Esc cancels).")
+    rebuild_ui()
+
+
+def cancel_move_placement(*, toast: bool = True) -> None:
+    if not STATE.placing:
+        return
+    STATE.placing = False
+    STATE.place_mouse0 = None
+    STATE.place_catcher = None
+    if toast:
+        show_toast("MOVE cancelled", ok=False, seconds=1.2)
+    rebuild_ui()
+
+
+def _mouse_viewport_pos() -> tuple[float, float] | None:
+    pc = get_pc()
+    if pc is None:
+        return None
+    # Prefer PC.GetMousePosition — same path Azzy uses (more reliable under GameAndUI).
+    try:
+        for args in ((0.0, 0.0), (0, 0), ()):
+            try:
+                res = pc.GetMousePosition(*args) if args else pc.GetMousePosition()
+            except TypeError:
+                continue
+            except Exception:
+                continue
+            if isinstance(res, tuple):
+                vals = list(res)
+                if len(vals) >= 3 and bool(vals[0]):
+                    return float(vals[1]), float(vals[2])
+                if len(vals) >= 2:
+                    return float(vals[0]), float(vals[1])
+            xy = _vec2_xy(res)
+            if xy:
+                return xy
+    except Exception:
+        pass
+    try:
+        lib = class_obj("/Script/UMG.WidgetLayoutLibrary").ClassDefaultObject
+        xy = _vec2_xy(lib.GetMousePositionOnViewport())
+        if xy:
+            return xy
+    except Exception:
+        pass
+    return None
+
+
+def _left_mouse_down() -> bool:
+    return _key_down(get_pc(), "LeftMouseButton")
+
+
+def poll_move_placement() -> bool:
+    """Click-to-place: MOVE arms placement; panel follows cursor until click.
+
+    Returns True while placing so the caller skips normal button polling.
+    Does not rebuild every tick (that destroyed the catcher and froze MOVE).
+    """
+    if not STATE.placing or not STATE.is_open:
+        return False
+
+    mouse = _mouse_viewport_pos()
+    if mouse is not None:
+        mx, my = mouse
+        if STATE.place_mouse0 is None:
+            STATE.place_mouse0 = (mx, my)
+            STATE.place_offset0 = (float(STATE.offset_x), float(STATE.offset_y))
+        else:
+            sx_div = max(0.001, float(STATE.scale_x) * float(STATE.window_scale or 1.0))
+            sy_div = max(0.001, float(STATE.scale_y) * float(STATE.window_scale or 1.0))
+            dx = (mx - STATE.place_mouse0[0]) / sx_div
+            dy = (my - STATE.place_mouse0[1]) / sy_div
+            new_x = max(-800.0, min(800.0, STATE.place_offset0[0] + dx))
+            new_y = max(-400.0, min(400.0, STATE.place_offset0[1] + dy))
+            moved = abs(new_x - STATE.offset_x) > 0.5 or abs(new_y - STATE.offset_y) > 0.5
+            STATE.offset_x = new_x
+            STATE.offset_y = new_y
+            now = time.monotonic()
+            # Throttled rebuild so the panel visibly follows without thrashing widgets.
+            if moved and (now - float(STATE.place_last_rebuild or 0.0)) >= 0.05:
+                STATE.place_last_rebuild = now
+                rebuild_ui()
+
+    pressed = False
+    catcher = STATE.place_catcher
+    if live(catcher):
+        try:
+            pressed = bool(catcher.IsPressed())
+        except Exception:
+            pressed = False
+    if not pressed:
+        pressed = _left_mouse_down()
+
+    just_clicked = bool(pressed) and not bool(STATE.place_click_was_down)
+    STATE.place_click_was_down = bool(pressed)
+
+    # Drop on a fresh click, debounced so the MOVE button press can't place instantly.
+    if just_clicked and (time.monotonic() - float(STATE.place_started_at)) > 0.25:
+        STATE.placing = False
+        STATE.place_mouse0 = None
+        STATE.place_catcher = None
+        save_layout()
+        show_toast("Panel placed", ok=True, seconds=1.2)
+        rebuild_ui()
+        return True
+    return True
+
+
 def _set_page(page: int) -> None:
     STATE.page = max(0, min(MAX_PAGES - 1, int(page)))
     STATE.selected_slot = None
@@ -1320,8 +1843,8 @@ def _set_page(page: int) -> None:
 
 def _render_player_pick(factory: NativeUMG, root: Any) -> None:
     factory.modal_blocker(root)
-    factory.border(root, DOCK_X + 12, 120, DOCK_W - 24, 780, _with_alpha(C_DOCK, 1.0), MODAL_PANEL_Z)
-    factory.border(root, DOCK_X + 12, 120, DOCK_W - 24, 56, _with_alpha(C_HEADER, 1.0), MODAL_CONTENT_Z)
+    factory.border(root, panel_x() + 12, 120, panel_w() - 24, 780, _with_alpha(C_DOCK, 1.0), MODAL_PANEL_Z)
+    factory.border(root, panel_x() + 12, 120, panel_w() - 24, 64, _with_alpha(C_HEADER, 1.0), MODAL_CONTENT_Z)
     purpose = STATE.player_pick_purpose or ("repeat" if STATE.pending_repeat else "lock")
     title = {
         "repeat": "Select player for repeat last drop",
@@ -1329,12 +1852,22 @@ def _render_player_pick(factory: NativeUMG, root: Any) -> None:
         "target": "Select target player",
         "action": "Select target player for this action",
     }.get(purpose, "Select player")
-    factory.text(root, title, DOCK_X + 24, 132, DOCK_W - 48, 36, scale=0.34, z=MODAL_CONTENT_Z + 1, center=True)
+    factory.text(
+        root,
+        title,
+        panel_x() + 24,
+        130,
+        panel_w() - 48,
+        44,
+        scale=SCALE_MODAL_TITLE,
+        z=MODAL_CONTENT_Z + 1,
+        center=True,
+    )
     players = backend_actions.refresh_players()
-    scroll = factory.scroll_box(root, DOCK_X + 24, 190, DOCK_W - 48, 620, z=MODAL_CONTENT_Z)
+    scroll = factory.scroll_box(root, panel_x() + 24, 200, panel_w() - 48, 600, z=MODAL_CONTENT_Z)
     if not players:
-        row = factory.scroll_row(scroll, DOCK_W - 64, 48)
-        factory.text(row, "No party players found.", 8, 8, DOCK_W - 80, 32, scale=0.30, z=1, center=True)
+        row = factory.scroll_row(scroll, panel_w() - 64, 56)
+        factory.text(row, "No party players found.", 8, 10, panel_w() - 80, 36, scale=SCALE_BTN, z=1, center=True)
     for player in players:
         idx = int(player.get("index", -1))
         name = str(player.get("name") or f"Player {idx}")
@@ -1346,17 +1879,17 @@ def _render_player_pick(factory: NativeUMG, root: Any) -> None:
                 return lambda: _set_target_from_pick(i, n)
             return lambda: _lock_player_from_pick(i, n)
 
-        row = factory.scroll_row(scroll, DOCK_W - 64, 58)
+        row = factory.scroll_row(scroll, panel_w() - 64, 68)
         factory.button(
             row,
             f"{idx}: {name}",
             0,
             4,
-            DOCK_W - 72,
-            50,
+            panel_w() - 72,
+            58,
             _make_pick(),
             fill=C_BTN,
-            scale=0.30,
+            scale=SCALE_MODAL_BTN,
             modal_only=True,
             z=1,
         )
@@ -1371,40 +1904,50 @@ def _render_player_pick(factory: NativeUMG, root: Any) -> None:
     factory.button(
         root,
         "Cancel",
-        DOCK_X + (DOCK_W - 180) / 2,
-        830,
-        180,
-        44,
+        panel_x() + (panel_w() - 200) / 2,
+        820,
+        200,
+        52,
         _cancel,
         fill=C_BTN_DANGER,
-        scale=0.30,
+        scale=SCALE_MODAL_BTN,
         modal_only=True,
     )
 
 
 def _render_action_pick(factory: NativeUMG, root: Any) -> None:
     factory.modal_blocker(root)
-    factory.border(root, DOCK_X + 12, 100, DOCK_W - 24, 820, _with_alpha(C_DOCK, 1.0), MODAL_PANEL_Z)
-    factory.border(root, DOCK_X + 12, 100, DOCK_W - 24, 52, _with_alpha(C_HEADER, 1.0), MODAL_CONTENT_Z)
-    factory.text(root, "Assign action to slot", DOCK_X + 24, 112, DOCK_W - 48, 32, scale=0.34, z=MODAL_CONTENT_Z + 1, center=True)
-    scroll = factory.scroll_box(root, DOCK_X + 24, 164, DOCK_W - 48, 640, z=MODAL_CONTENT_Z)
+    factory.border(root, panel_x() + 12, 100, panel_w() - 24, 820, _with_alpha(C_DOCK, 1.0), MODAL_PANEL_Z)
+    factory.border(root, panel_x() + 12, 100, panel_w() - 24, 60, _with_alpha(C_HEADER, 1.0), MODAL_CONTENT_Z)
+    factory.text(
+        root,
+        "Assign action to slot",
+        panel_x() + 24,
+        110,
+        panel_w() - 48,
+        40,
+        scale=SCALE_MODAL_TITLE,
+        z=MODAL_CONTENT_Z + 1,
+        center=True,
+    )
+    scroll = factory.scroll_box(root, panel_x() + 24, 174, panel_w() - 48, 620, z=MODAL_CONTENT_Z)
     for action in PICKER_ACTIONS:
         label = str(ACTION_CATALOG.get(action, {}).get("basic") or action)
 
         def _make_assign(a: str = action) -> Callable[[], None]:
             return lambda: assign_action_to_selected(a)
 
-        row = factory.scroll_row(scroll, DOCK_W - 64, 52)
+        row = factory.scroll_row(scroll, panel_w() - 64, 62)
         factory.button(
             row,
             label,
             0,
             2,
-            DOCK_W - 72,
-            46,
+            panel_w() - 72,
+            56,
             _make_assign(),
             fill=C_BTN,
-            scale=0.28,
+            scale=SCALE_MODAL_BTN,
             modal_only=True,
             z=1,
         )
@@ -1412,13 +1955,13 @@ def _render_action_pick(factory: NativeUMG, root: Any) -> None:
         factory.button(
             root,
             "Pin Last Here",
-            DOCK_X + 24,
-            820,
-            220,
-            44,
+            panel_x() + 24,
+            812,
+            240,
+            52,
             lambda: pin_last_command(STATE.selected_slot),
             fill=C_BTN_GOLD,
-            scale=0.28,
+            scale=SCALE_MODAL_BTN,
             modal_only=True,
         )
 
@@ -1429,13 +1972,13 @@ def _render_action_pick(factory: NativeUMG, root: Any) -> None:
     factory.button(
         root,
         "Cancel",
-        DOCK_X + DOCK_W - 196,
-        820,
-        160,
-        44,
+        panel_x() + panel_w() - 210,
+        812,
+        180,
+        52,
         _cancel,
         fill=C_BTN_DANGER,
-        scale=0.28,
+        scale=SCALE_MODAL_BTN,
         modal_only=True,
     )
 
@@ -1447,10 +1990,30 @@ def _render_label_edit(factory: NativeUMG, root: Any) -> None:
     if slot is None:
         return
     factory.modal_blocker(root)
-    factory.border(root, DOCK_X + 20, 220, DOCK_W - 40, 520, _with_alpha(C_DOCK, 1.0), MODAL_PANEL_Z)
-    factory.border(root, DOCK_X + 20, 220, DOCK_W - 40, 52, _with_alpha(C_HEADER, 1.0), MODAL_CONTENT_Z)
-    factory.text(root, f"Edit slot {STATE.selected_slot + 1}", DOCK_X + 32, 232, DOCK_W - 64, 32, scale=0.34, z=MODAL_CONTENT_Z + 1, center=True)
-    factory.text(root, f"Label: {slot_label(slot)}", DOCK_X + 32, 290, DOCK_W - 64, 30, scale=0.28, z=MODAL_CONTENT_Z, center=True)
+    factory.border(root, panel_x() + 20, 200, panel_w() - 40, 560, _with_alpha(C_DOCK, 1.0), MODAL_PANEL_Z)
+    factory.border(root, panel_x() + 20, 200, panel_w() - 40, 60, _with_alpha(C_HEADER, 1.0), MODAL_CONTENT_Z)
+    factory.text(
+        root,
+        f"Edit slot {STATE.selected_slot + 1}",
+        panel_x() + 32,
+        212,
+        panel_w() - 64,
+        40,
+        scale=SCALE_MODAL_TITLE,
+        z=MODAL_CONTENT_Z + 1,
+        center=True,
+    )
+    factory.text(
+        root,
+        f"Label: {slot_label(slot)}",
+        panel_x() + 32,
+        280,
+        panel_w() - 64,
+        36,
+        scale=SCALE_BTN,
+        z=MODAL_CONTENT_Z,
+        center=True,
+    )
 
     def _cycle() -> None:
         cycle_slot_label(slot)
@@ -1460,50 +2023,50 @@ def _render_label_edit(factory: NativeUMG, root: Any) -> None:
     factory.button(
         root,
         "Cycle Label",
-        DOCK_X + 40,
+        panel_x() + 40,
         340,
-        DOCK_W - 80,
-        48,
+        panel_w() - 80,
+        56,
         _cycle,
         fill=C_BTN,
-        scale=0.28,
+        scale=SCALE_MODAL_BTN,
         modal_only=True,
     )
     factory.button(
         root,
         "Clear Slot",
-        DOCK_X + 40,
-        404,
-        (DOCK_W - 96) / 2,
-        44,
+        panel_x() + 40,
+        412,
+        (panel_w() - 96) / 2,
+        52,
         clear_selected_slot,
         fill=C_BTN_DANGER,
-        scale=0.28,
+        scale=SCALE_MODAL_BTN,
         modal_only=True,
     )
     factory.button(
         root,
         "Swap With…",
-        DOCK_X + 40 + (DOCK_W - 96) / 2 + 16,
-        404,
-        (DOCK_W - 96) / 2,
-        44,
+        panel_x() + 40 + (panel_w() - 96) / 2 + 16,
+        412,
+        (panel_w() - 96) / 2,
+        52,
         arm_swap_selected,
         fill=C_BTN_GOLD,
-        scale=0.28,
+        scale=SCALE_MODAL_BTN,
         modal_only=True,
     )
     if backend_actions.get_last_command() is not None:
         factory.button(
             root,
             "Pin Last Over This",
-            DOCK_X + 40,
-            464,
-            DOCK_W - 80,
-            44,
+            panel_x() + 40,
+            480,
+            panel_w() - 80,
+            52,
             lambda: pin_last_command(STATE.selected_slot),
             fill=C_BTN_GOLD,
-            scale=0.28,
+            scale=SCALE_MODAL_BTN,
             modal_only=True,
         )
 
@@ -1515,13 +2078,13 @@ def _render_label_edit(factory: NativeUMG, root: Any) -> None:
     factory.button(
         root,
         "Done",
-        DOCK_X + (DOCK_W - 180) / 2,
-        540,
-        180,
-        44,
+        panel_x() + (panel_w() - 200) / 2,
+        560,
+        200,
+        52,
         _done,
         fill=C_BTN,
-        scale=0.30,
+        scale=SCALE_MODAL_BTN,
         modal_only=True,
     )
 
@@ -1553,6 +2116,7 @@ def open_panel() -> None:
             STATE.status = str(ensured.get("message") or STATE.status)
     except Exception:
         pass
+    _sync_rarity_weights_from_backend()
     rebuild_ui()
     capture_input()
     _log(
@@ -1589,7 +2153,9 @@ def toggle_panel() -> None:
 
 
 def poll_sliders() -> None:
-    changed = False
+    changed_opacity = False
+    rarity_changed = False
+    label_map = {key: short for key, short in RARITY_SLIDER_KEYS}
     for ref in list(STATE.sliders):
         widget = ref.widget
         if not live(widget):
@@ -1598,15 +2164,59 @@ def poll_sliders() -> None:
             value = float(widget.GetValue())
         except Exception:
             continue
-        value = max(0.55, min(1.0, value))
-        if abs(value - float(ref.value)) < 0.005:
+        key = str(ref.key or "")
+        if key.startswith("rarity_"):
+            value = max(0.0, min(1.0, value))
+            if abs(value - float(ref.value)) < 0.005:
+                continue
+            ref.value = value
+            rarity_key = key[len("rarity_") :]
+            STATE.rarity_weights[rarity_key] = value
+            short = label_map.get(rarity_key, rarity_key[:3].title())
+            if live(ref.label_widget):
+                try_call(ref.label_widget, "SetText", f"{short} {int(round(value * 100.0))}%")
+            rarity_changed = True
             continue
-        ref.value = value
-        if ref.key == "panel_opacity":
+        if key == "panel_opacity":
+            value = max(0.55, min(1.0, value))
+            if abs(value - float(ref.value)) < 0.005:
+                continue
+            ref.value = value
             STATE.panel_opacity = value
-            changed = True
-    if changed:
+            changed_opacity = True
+    if rarity_changed:
+        # Match BLImGui: slider drags write GameState (throttled while dragging).
+        now = time.monotonic()
+        STATE.rarity_local_edit_until = now + 0.45
+        STATE.rarity_live_apply_due = now + 0.18
+    if STATE.rarity_live_apply_due and time.monotonic() >= float(STATE.rarity_live_apply_due):
+        STATE.rarity_live_apply_due = 0.0
+        try:
+            result = backend_actions.rarity_apply(_rarity_payload_from_state())
+            _set_status_from_result(result)
+        except Exception as exc:
+            show_toast(f"Rarity apply failed: {exc}", ok=False, seconds=2.4)
+    if changed_opacity:
+        save_layout()
         STATE.ui_dirty = True
+
+
+def _sync_rarity_from_backend_if_idle() -> None:
+    """Pull Boosting/Electron weight changes into F7 when the user is not dragging."""
+    if not STATE.rarity_panel_equipped:
+        return
+    now = time.monotonic()
+    if now < float(STATE.rarity_local_edit_until or 0.0):
+        return
+    if now < float(STATE.rarity_backend_sync_at or 0.0) + 0.5:
+        return
+    STATE.rarity_backend_sync_at = now
+    before = {key: float(STATE.rarity_weights.get(key, 1.0)) for key, _label in RARITY_SLIDER_KEYS}
+    _sync_rarity_weights_from_backend()
+    for key, _label in RARITY_SLIDER_KEYS:
+        if abs(float(STATE.rarity_weights.get(key, 1.0)) - float(before.get(key, 1.0))) > 0.004:
+            STATE.ui_dirty = True
+            break
 
 
 def poll_buttons() -> None:
@@ -1655,7 +2265,9 @@ def process_escape() -> None:
     was = STATE.key_escape
     STATE.key_escape = down
     if down and not was:
-        if STATE.modal:
+        if STATE.placing:
+            cancel_move_placement()
+        elif STATE.modal:
             STATE.modal = ""
             STATE.pending_repeat = False
             STATE.player_pick_purpose = ""
@@ -1760,7 +2372,11 @@ def tick(_obj: Any, _args: Any, _ret: Any, _func: Any) -> None:
             _refresh_layout_if_changed()
             capture_input()
         process_escape()
+        if poll_move_placement():
+            # Follow/rebuild is handled inside poll_move_placement (throttled).
+            return None
         poll_sliders()
+        _sync_rarity_from_backend_if_idle()
         poll_buttons()
         if STATE.is_open and STATE.ui_dirty:
             rebuild_ui()

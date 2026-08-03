@@ -87,6 +87,24 @@
     </div>
   </section>
 
+  <section id="walkthroughModal" class="modal-shell hidden" role="dialog" aria-modal="true" aria-labelledby="walkthroughTitle">
+    <div class="walkthrough-spotlight" id="walkthroughSpotlight" hidden></div>
+    <div class="modal-card walkthrough-modal">
+      <h2 id="walkthroughTitle">Welcome to MSBT</h2>
+      <p id="walkthroughBody">A short tour of the app and Quick Menu pins.</p>
+      <p id="walkthroughSdkNote" class="status-line warning hidden"></p>
+      <label class="walkthrough-dont-show">
+        <input id="walkthroughDontShow" type="checkbox">
+        Don't show this walkthrough again
+      </label>
+      <div class="button-row wrap">
+        <button id="walkthroughBackBtn" class="secondary">Back</button>
+        <button id="walkthroughNextBtn">Next</button>
+        <button id="walkthroughSkipBtn" class="secondary">Skip</button>
+      </div>
+    </div>
+  </section>
+
   <main class="tab-shell">
     <section id="tab-boosting" class="tab-panel active">
       <section id="boostUpdateNotice" class="update-notice hidden" aria-live="polite">
@@ -215,6 +233,16 @@
           <div id="rarityStatus" class="status-line warning compact-note">Adjust weights, then Apply. Saved presets only change the visible sliders until you apply them.</div>
         </section>
       </div>
+
+      <section class="panel gold">
+        <h2>Quick Helpers</h2>
+        <p>Pull ground loot to you and Super Dash helpers (Azzy-style). Use the gold <strong>+ QM</strong> buttons to pin them onto the in-game Quick Menu.</p>
+        <div class="button-grid">
+          <button data-movement-action="movement_pull_ground_loot">Pull Loot Here</button>
+          <button data-movement-action="movement_super_dash">Super Dash</button>
+          <button data-movement-action="movement_super_dash_toggle">Super Dash Toggle</button>
+        </div>
+      </section>
 
       <div class="grid two">
         <section class="panel purple">
@@ -349,17 +377,27 @@
       <div class="section-heading">
         <div>
           <h2>Quick Menu Editor</h2>
-          <p>Edit the native in-game 5 × 12 Quick Menu. Changes save through the live MSBT bridge and appear immediately when the in-game menu is open.</p>
+          <p>Edit the native in-game Quick Menu (<strong>5 pages × 3×7</strong> slots). Equip optional modules below. The F7 panel is right-pinned, movable (MOVE), resizable (−/+), and themeable.</p>
         </div>
         <div class="button-row wrap">
           <button id="quickMenuRefreshBtn">Refresh From Game</button>
           <button id="quickMenuClearPageBtn" class="danger">Clear Current Page</button>
+          <button id="walkthroughReplayBtn" class="secondary">Replay Walkthrough</button>
         </div>
       </div>
       <div id="quickMenuStatus" class="status-line warning">Connect to the in-game bridge to load the Quick Menu layout.</div>
+      <section class="panel purple">
+        <h2>F7 Panel Modules</h2>
+        <p class="muted-line">Equip optional strips on the in-game Quick Menu. Unequipped modules stay hidden so the 3×7 button grid stays compact.</p>
+        <label class="checkbox-row">
+          <input id="quickMenuRarityPanelEquip" type="checkbox">
+          Equip rarity weight sliders on F7 (Apply / Reset / Leg Only / Pearl Only)
+        </label>
+        <div id="quickMenuModulesStatus" class="status-line compact-note">Rarity panel: unequipped</div>
+      </section>
       <section class="panel gold quick-menu-pin-panel">
         <h2>Pin / Repeat From MSBT</h2>
-        <p class="muted-line">Run any supported MSBT action first. It becomes the last command below, then pin it into the selected Quick Menu slot or repeat the last drop.</p>
+        <p class="muted-line">Use the gold or small <strong>+ QM</strong> buttons on other tabs (Boosting, Player Movement, Serial Tools, …) to pin actions here with their current values.</p>
         <div id="quickMenuLastCommand" class="status-line">No last command recorded yet.</div>
         <div id="quickMenuLastDrop" class="muted-line">No last drop recorded yet.</div>
         <div id="quickMenuLockStatus" class="muted-line">Lock Player: off</div>
@@ -762,7 +800,7 @@
             </label>
           </div>
           <div class="button-row wrap compact-actions">
-            <button data-dev-spawner-action="dev_spawner_spawnai">Spawn Selected Actor</button>
+            <button id="devSpawnerSpawnAiBtn" data-dev-spawner-action="dev_spawner_spawnai">Spawn Selected Actor</button>
             <button id="devRefreshLogBtn">Refresh SDK Log</button>
           </div>
         </section>
@@ -1128,7 +1166,11 @@
             <button data-movement-action="movement_toggle_no_target">Toggle No Target</button>
             <button data-movement-action="movement_toggle_noclip">Toggle Noclip</button>
             <button data-movement-action="movement_delete_ground_items" class="danger">Delete Ground Items</button>
+            <button data-movement-action="movement_pull_ground_loot">Pull Loot Here</button>
+            <button data-movement-action="movement_super_dash">Super Dash</button>
+            <button data-movement-action="movement_super_dash_toggle">Super Dash Toggle</button>
           </div>
+          <p class="muted-line">Use <strong>+ QM</strong> next to these to pin Pull Loot / Super Dash onto a Quick Menu slot.</p>
         </section>
       </div>
 

@@ -6,6 +6,7 @@ are best-effort and skip class defaults.
 """
 from __future__ import annotations
 
+import math
 import time
 from typing import Any
 
@@ -1687,6 +1688,230 @@ def delete_ground_items() -> str:
         return "Ground items deleted."
     except Exception as exc:
         return f"Delete ground items failed: {exc!r}"
+
+
+_LOOT_PER_RING = 8
+_LOOT_BASE_RADIUS = 120.0
+_LOOT_RING_SPACING = 90.0
+_LOOT_PICKUP_MATERIALS = ("Ammo", "Cash", "Eridium", "Health", "Shield", "Grenade")
+_SUPER_DASH_MIN = 100
+_SUPER_DASH_MAX = 20000
+_super_dash_enabled = False
+_super_dash_strength = 1000
+_super_dash_key_was_down = False
+
+
+def _live_actor(obj: Any) -> bool:
+    if obj is None:
+        return False
+    try:
+        obj._get_address()
+        return True
+    except Exception:
+        return False
+
+
+def _sorted_ground_loot() -> dict[str, list[Any]]:
+    loot: dict[str, list[Any]] = {"Pickups": [], "Gear": []}
+    try:
+        pickups = unrealsdk.find_all("InventoryPickup", False) or []
+    except Exception:
+        return loot
+    for inv in pickups:
+        try:
+            if not inv or inv == inv.Class.ClassDefaultObject:
+                continue
+            root = getattr(inv, "RootPrimitiveComponent", None)
+            if not root:
+                continue
+            try:
+                root.SetSimulatePhysics(True)
+            except Exception:
+                pass
+            body = str(getattr(inv, "BodyData", "") or "")
+            if "Pickups" in body:
+                loot["Pickups"].append(inv)
+                continue
+            if not getattr(inv, "BodyData", None):
+                usable = False
+                try:
+                    count = int(root.GetNumMaterials())
+                except Exception:
+                    count = 0
+                for index in range(count):
+                    try:
+                        material = root.GetMaterial(index)
+                    except Exception:
+                        material = None
+                    if not material:
+                        continue
+                    name = str(getattr(material, "Name", "") or "")
+                    if any(tag in name for tag in _LOOT_PICKUP_MATERIALS):
+                        usable = True
+                        break
+                if usable:
+                    loot["Pickups"].append(inv)
+                else:
+                    loot["Gear"].append(inv)
+                continue
+            loot["Gear"].append(inv)
+        except Exception:
+            continue
+    return loot
+
+
+def pull_ground_loot_here() -> str:
+    """Teleport nearby ground loot to the local player (Azzy-style Pull Loot)."""
+    pc = get_pc()
+    pawn = pawn_for_controller(pc) or getattr(pc, "OakCharacter", None) or getattr(pc, "Pawn", None) if pc else None
+    if not _live_actor(pawn):
+        return "Pull Loot: load into a character first."
+    try:
+        where = pawn.K2_GetActorLocation()
+        where.Z -= 40
+    except Exception as exc:
+        return f"Pull Loot failed: {exc!r}"
+    try:
+        ignore = unrealsdk.make_struct("Rotator")
+    except Exception:
+        ignore = None
+    loot = _sorted_ground_loot()
+    moved = 0
+    for inv in loot["Pickups"]:
+        try:
+            inv.K2_TeleportTo(where, ignore)
+            moved += 1
+        except Exception:
+            continue
+    try:
+        yaw = math.radians(float(pawn.K2_GetActorRotation().Yaw))
+    except Exception:
+        yaw = 0.0
+    forward_x, forward_y = math.cos(yaw), math.sin(yaw)
+    right_x, right_y = -math.sin(yaw), math.cos(yaw)
+    for index, inv in enumerate(loot["Gear"]):
+        try:
+            ring, slot = index // _LOOT_PER_RING, index % _LOOT_PER_RING
+            angle = (2.0 * math.pi / _LOOT_PER_RING) * slot if slot else 0.0
+            radius = _LOOT_BASE_RADIUS + ring * _LOOT_RING_SPACING
+            cos_a, sin_a = math.cos(angle), math.sin(angle)
+            spot = unrealsdk.make_struct(
+                "Vector",
+                X=float(where.X) + (forward_x * cos_a + right_x * sin_a) * radius,
+                Y=float(where.Y) + (forward_y * cos_a + right_y * sin_a) * radius,
+                Z=float(where.Z),
+            )
+            inv.K2_TeleportTo(spot, ignore)
+            moved += 1
+        except Exception:
+            continue
+    if moved:
+        return f"Pull Loot: moved {moved} item(s) to you."
+    return "Pull Loot: no ground loot found."
+
+
+def set_super_dash_strength(value: int) -> int:
+    global _super_dash_strength
+    _super_dash_strength = max(_SUPER_DASH_MIN, min(_SUPER_DASH_MAX, int(value)))
+    return _super_dash_strength
+
+
+def get_super_dash_state() -> dict[str, Any]:
+    return {
+        "enabled": bool(_super_dash_enabled),
+        "strength": int(_super_dash_strength),
+        "min": _SUPER_DASH_MIN,
+        "max": _SUPER_DASH_MAX,
+    }
+
+
+def toggle_super_dash(enabled: bool | None = None) -> str:
+    global _super_dash_enabled
+    if enabled is None:
+        _super_dash_enabled = not _super_dash_enabled
+    else:
+        _super_dash_enabled = bool(enabled)
+    state = "ON" if _super_dash_enabled else "OFF"
+    return f"Super Dash {state} (strength {_super_dash_strength}). Hold Left Shift while enabled."
+
+
+def fire_super_dash(strength: int | None = None) -> str:
+    if strength is not None:
+        set_super_dash_strength(int(strength))
+    pc = get_pc()
+    character = getattr(pc, "OakCharacter", None) if pc is not None else None
+    if character is None:
+        character = getattr(pc, "Pawn", None) if pc is not None else None
+    if not _live_actor(character):
+        return "Super Dash: load into a character first."
+    try:
+        try:
+            character.Jump()
+        except Exception:
+            pass
+        forward = None
+        try:
+            forward = pc.GetActorForwardVector()
+        except Exception:
+            try:
+                rot = character.K2_GetActorRotation()
+                yaw = math.radians(float(getattr(rot, "Yaw", 0.0)))
+                forward = unrealsdk.make_struct("Vector", X=math.cos(yaw), Y=math.sin(yaw), Z=0.0)
+            except Exception:
+                forward = unrealsdk.make_struct("Vector", X=1.0, Y=0.0, Z=0.0)
+        impulse = unrealsdk.make_struct(
+            "Vector",
+            X=float(forward.X) * float(_super_dash_strength),
+            Y=float(forward.Y) * float(_super_dash_strength),
+            Z=10.0,
+        )
+        move = getattr(character, "OakCharacterMovement", None) or getattr(character, "CharacterMovement", None)
+        if move is None:
+            return "Super Dash failed: no movement component."
+        move.AddImpulse(impulse, True)
+        try:
+            character.StopJumping()
+        except Exception:
+            pass
+        return f"Super Dash fired ({_super_dash_strength})."
+    except Exception as exc:
+        return f"Super Dash failed: {exc!r}"
+
+
+def _super_dash_camera_hook(*_args: Any, **_kwargs: Any) -> None:
+    global _super_dash_key_was_down
+    if not _super_dash_enabled:
+        _super_dash_key_was_down = False
+        return
+    pc = get_pc()
+    if pc is None:
+        return
+    down = False
+    try:
+        key = unrealsdk.make_struct("Key", KeyName="LeftShift")
+        down = bool(pc.IsInputKeyDown(key))
+    except Exception:
+        try:
+            down = bool(pc.IsInputKeyDown("LeftShift"))
+        except Exception:
+            down = False
+    if down and not _super_dash_key_was_down:
+        fire_super_dash()
+    _super_dash_key_was_down = down
+
+
+def _register_super_dash_hook() -> None:
+    try:
+        hook(
+            "/Script/Engine.CameraModifier:BlueprintModifyCamera",
+            immediately_enable=True,
+            hook_identifier="matts_sdk_boosting_tools_super_dash_camera_v1",
+        )(_super_dash_camera_hook)
+    except Exception as exc:
+        _log(f"Super Dash camera hook skipped: {exc!r}")
+
+
+_register_super_dash_hook()
 
 
 def set_noclip(enabled: bool) -> str:

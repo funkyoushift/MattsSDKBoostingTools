@@ -410,7 +410,7 @@ iframe {
 .quick-menu-slot-grid {
   display: grid;
   gap: 8px;
-  grid-template-columns: repeat(4, minmax(110px, 1fr));
+  grid-template-columns: repeat(3, minmax(110px, 1fr));
 }
 
 .quick-menu-slot {
@@ -474,6 +474,30 @@ button.qm-pin-button:hover {
 
 .quick-menu-add-modal {
   width: min(620px, 100%);
+}
+
+.walkthrough-modal {
+  width: min(560px, 100%);
+  position: relative;
+  z-index: 40;
+}
+
+.walkthrough-dont-show {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin: 12px 0 4px;
+  color: var(--muted);
+}
+
+.walkthrough-spotlight {
+  position: fixed;
+  z-index: 35;
+  border: 2px solid var(--gold);
+  border-radius: 10px;
+  box-shadow: 0 0 0 9999px rgba(6, 8, 12, 0.62);
+  pointer-events: none;
+  transition: top 0.2s ease, left 0.2s ease, width 0.2s ease, height 0.2s ease;
 }
 
 @media (max-width: 900px) {
