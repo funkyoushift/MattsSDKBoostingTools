@@ -223,7 +223,8 @@ Huge thanks to the people who built pieces of this, shared data, and helped prov
 | **Ynot / GZO** | BL4 Codes site, catalog/API, and community code pipeline. [GZO Codes](https://save-editor.be/GZO/Borderlands4/Codes.html) · [GZO hub](https://save-editor.be/GZO/) · [Discord](https://discord.gg/4hGKAHdvp6) |
 | **Levin / Lootlemon** | Lootlemon item/code references used in the catalog. [Lootlemon](https://www.lootlemon.com/) |
 | **Azalea Asvail** | Azzy UVH Booster workflow adapted into the Boosting tab (MIT). Source credits **Pyrex** for UVH6/UVH7 challenge paths. |
-| **Azzarock, Frag Em All, Tobgun, Crayons82.0** | Testing, feedback, item data, and community reports that caught real breakage. |
+| **RDP / Squ1ggs** (Ryan David Picton) | Author of the initial BL4 Player Movement SDK mod on the oak2 mod database; helped with vault card support. |
+| **Azzarock, Frag Em All, Tobgun1, Crayons82.0** | Testing, feedback, item data, and community reports that caught real breakage. |
 | **Everyone else** | Item-code authors and players who published lists, filed bugs, and shared serials — a lot of this only works because of public community work. |
 
 Third-party notices and license details for bundled/adapted pieces: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
