@@ -598,6 +598,14 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
     if action == "complete_challenges_status":
         return backend_actions.complete_challenges_status()
     if action == "probe_challenge_apis":
+        if not backend_actions.challenge_api_probe_enabled():
+            return {
+                "ok": False,
+                "message": (
+                    "Challenge API probe is disabled in shipping builds. "
+                    "Set MSBT_DEBUG_PROBES=1 to enable."
+                ),
+            }
         return backend_actions.probe_challenge_apis()
     if action == "give_currency":
         return backend_actions.give_currency(

@@ -20,6 +20,14 @@ Do not use dates, commit hashes, workflow run IDs, or build timestamps as the pr
 
 The Electron app version in `electron_poc/package.json` is the authoritative version for public Electron builds.
 
+**Lockstep:** keep these aligned to the same SemVer when cutting a public release:
+
+- `electron_poc/package.json` (+ lockfile)
+- `mod_extracted/MattsSDKBoostingTools/__init__.py` (`__version__`)
+- `mod_extracted/MattsSDKBoostingTools/pyproject.toml` (`version` / `[tool.sdkmod].version`)
+- `releases/latest.json`
+- `external_app/v22_parts_codes_fixed/resources/version_info.json` (packaged helper metadata)
+
 Release scripts derive these values from that package version:
 
 - Git tag: `v<package version>`
@@ -53,6 +61,8 @@ Electron updater metadata may remain named `latest.yml`, because that filename i
 README and generated release notes show shields.io download badges for the **installer** and **portable ZIP** only (not `latest.json` / `latest.yml` / `.blockmap`).
 
 When bumping the public version, update the versioned installer/portable filenames in the README badge URLs. Generated release notes (manual publisher + CI) include matching badges for that tag automatically.
+
+**Do not** replace a published release body with a notes-only file (`gh release edit --notes-file` without the badge footer). That wipe already happened once on v2.1.0 — always keep the publisher/CI badge block.
 
 ## Safe Release Flow
 

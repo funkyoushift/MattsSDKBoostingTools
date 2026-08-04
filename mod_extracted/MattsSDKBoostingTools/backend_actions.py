@@ -9,6 +9,7 @@ import argparse
 import importlib
 import importlib.util
 import json
+import os
 import pkgutil
 import re
 import sys
@@ -103,6 +104,19 @@ serial_tools_status: str = "Paste a @U serial or deserialized serial text above.
 _movement_no_target_enabled = False
 _movement_noclip_enabled = False
 _rarity_baseline: dict[str, dict[str, float]] = {}
+
+# Research-only challenge introspection. Off by default in shipping builds.
+# Set environment MSBT_DEBUG_PROBES=1 to enable bridge/console probe.
+ENABLE_CHALLENGE_API_PROBE = os.environ.get("MSBT_DEBUG_PROBES", "").strip().lower() in (
+    "1",
+    "true",
+    "yes",
+    "on",
+)
+
+
+def challenge_api_probe_enabled() -> bool:
+    return bool(ENABLE_CHALLENGE_API_PROBE)
 
 
 def _load_rarity_weights_from_settings() -> dict[str, float]:
@@ -3371,7 +3385,15 @@ def _safe_class_function_names(obj: Any, *, limit: int = 400) -> list[str]:
 
 
 def probe_challenge_apis() -> dict[str, Any]:
-    """Live introspection for challenge completion APIs (research / option B)."""
+    """Live introspection for challenge completion APIs (research only)."""
+    if not challenge_api_probe_enabled():
+        return {
+            "ok": False,
+            "message": (
+                "Challenge API probe is disabled in shipping builds. "
+                "Set MSBT_DEBUG_PROBES=1 to enable."
+            ),
+        }
     pc = get_pc()
     if pc is None:
         return {"ok": False, "message": "No local player controller."}

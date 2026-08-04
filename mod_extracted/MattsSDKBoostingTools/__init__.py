@@ -14,6 +14,7 @@ from .backend_actions import (
     _cmd_msbt_complete_challenges,
     _cmd_msbt_complete_challenges_cancel,
     _cmd_msbt_probe_challenge_apis,
+    challenge_api_probe_enabled,
 )
 from .quick_menu import (
     _cmd_msbt_quick_menu,
@@ -26,8 +27,8 @@ from .quick_menu import (
     start_quick_menu,
 )
 
-__version__: str = "1.2.1"
-__version_info__: tuple[int, int, int] = (1, 2, 1)
+__version__: str = "2.1.0"
+__version_info__: tuple[int, int, int] = (2, 1, 0)
 
 _panel_keybinds = []
 _panel_commands = []
@@ -63,6 +64,22 @@ start_auto_inventory_worker()
 start_bridge()
 start_quick_menu()
 
+_extra_commands = [
+    _cmd_msbt_external_app,
+    _cmd_msbt_quick_menu,
+    _cmd_msbt_quick_menu_pin,
+    _cmd_msbt_quick_menu_repeat,
+    _cmd_msbt_quick_menu_lock,
+    _cmd_msbt_quick_menu_unstuck,
+    _cmd_msbt_complete_challenges,
+    _cmd_msbt_complete_challenges_cancel,
+    _cmd_give_serial,
+    _cmd_givecurrency,
+    _cmd_giveexperience,
+]
+if challenge_api_probe_enabled():
+    _extra_commands.append(_cmd_msbt_probe_challenge_apis)
+
 build_mod(
     name="MattsSDKBoostingTools",
     author="Matt",
@@ -80,18 +97,5 @@ build_mod(
         OPEN_GOLDEN_CHEST_KEY,
         CLOSE_GOLDEN_CHEST_KEY,
     ],
-    commands=_panel_commands + [
-        _cmd_msbt_external_app,
-        _cmd_msbt_quick_menu,
-        _cmd_msbt_quick_menu_pin,
-        _cmd_msbt_quick_menu_repeat,
-        _cmd_msbt_quick_menu_lock,
-        _cmd_msbt_quick_menu_unstuck,
-        _cmd_msbt_complete_challenges,
-        _cmd_msbt_complete_challenges_cancel,
-        _cmd_msbt_probe_challenge_apis,
-        _cmd_give_serial,
-        _cmd_givecurrency,
-        _cmd_giveexperience,
-    ],
+    commands=_panel_commands + _extra_commands,
 )

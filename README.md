@@ -6,6 +6,8 @@ MSBT is a Borderlands 4 boosting and item toolkit: a standalone Windows app outs
 
 This project is **unofficial**. It is not affiliated with, endorsed by, or connected to Gearbox, 2K, or the Borderlands franchise owners.
 
+**Repo layout (developers):** see [`docs/PROJECT_MAP.md`](docs/PROJECT_MAP.md) for what each folder is for.
+
 ---
 
 ## Download & install (start here)

@@ -24,14 +24,22 @@ MSBT_External_Beta.zip
 !releases/README.md
 !releases/latest.json
 !releases/QUICK_MENU_PREVIEW_NOTES.txt
-!releases/MSBT-QuickMenu-TesterPack.zip
-!releases/MSBT-QuickMenu-TesterPack-AzzaRock.zip
-releases/tester_pack/Electron-Patch/
+!releases/RELEASE_NOTES_*.md
+!releases/discord_media/**
 
-# Local logs and scratch reports
+# Local scratch / probe / staging (Phase 1+)
 _inspect/
 _install_backups/
+_install_stage/
+_pack_stage_qm/
 _nexus_upload/
+_release_check/
+_loot_probe_dumps/
+_loot_probe_*/
+_explore_*/
+_lov_peek/
+_sdkmod_compare*/
+_msbt_archive/
 .env
 .env.local
 *.log
@@ -43,6 +51,9 @@ BUG_FIX_PLAN.md
 DISCORD_BUG_REPORTS.md
 PARITY_AUDIT_REPORT.md
 QA_TEST_PLAN.md
+MATT_*.md
+DEV_SPAWNER_*.md
+SDK03_*.md
 
 # External app runtime/user data
 external_app/v22_parts_codes_fixed/resources/user_serial_bookmarks.json

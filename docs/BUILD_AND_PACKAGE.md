@@ -1,40 +1,20 @@
 # Build and Package Guide
 
-This guide is for developers and users who want to build the standalone EXE themselves.
+Prefer the **Electron** app for shipping. Tkinter packaging is legacy and lives under [`_reference/legacy_tkinter/`](../_reference/legacy_tkinter/).
 
-## Build The Legacy External EXE
+Repo layout: [`PROJECT_MAP.md`](PROJECT_MAP.md). Versioning: [`VERSIONING.md`](../VERSIONING.md).
+
+## Build The Electron App (recommended)
 
 From the repository root:
 
 ```powershell
-.\build_external_exe.ps1
+.\build_electron_beta.ps1 -Installer
 ```
 
-The script:
+This builds the installer, portable ZIP, and packages the bundled SDK mod / ActorScriptDeployer resources used by the Updates tab and NSIS install helper.
 
-- finds Python
-- checks that PyInstaller is installed
-- builds a one-folder Tkinter app
-- copies `resources/` beside the EXE
-- verifies Tkinter runtime files are present
-
-Output:
-
-```text
-dist/MattsBoostingToolsExternal/MattsBoostingToolsExternal.exe
-```
-
-If Python is not found, set:
-
-```powershell
-$env:MSBT_PYTHON = "C:\Path\To\python.exe"
-```
-
-Install PyInstaller if needed:
-
-```powershell
-python -m pip install pyinstaller
-```
+Output typically lands under `dist_electron/` (gitignored).
 
 ## Build The SDK Mod Package
 
@@ -50,82 +30,56 @@ Output:
 MattsSDKBoostingTools.sdkmod
 ```
 
-## Build The Legacy Portable Package
+Keep the SDK `__version__` / `pyproject.toml` SemVer aligned with `electron_poc/package.json` when cutting a public release.
 
-Build the EXE first, then run:
+## Publish A GitHub Release
 
-```powershell
-.\package_external_beta.ps1
-```
-
-Output:
-
-```text
-MSBT_External_Beta/
-MattsSDKBoostingTools-Legacy-Tkinter-Portable-v<version>.zip
-releases/latest.json
-```
-
-The package contains:
-
-```text
-MSBT_External_Beta/
-  Launch_MSBT_External_App.bat
-  ActorScriptDeployer/
-    __init__.py
-    pyproject.toml
-  MattsSDKBoostingTools.sdkmod
-  MattsSDKBoostingTools_external/
-    MattsBoostingToolsExternal.exe
-    resources/
-```
-
-`ActorScriptDeployer/` is bundled as a folder-form SDK mod dependency for the
-Dev Spawner tab. Manual ZIP users should copy it into the same `sdk_mods`
-folder as `MattsSDKBoostingTools.sdkmod`.
-
-## Source Mode
-
-For development, the external app can also run from source:
-
-```powershell
-python .\external_app\v22_parts_codes_fixed\matts_external_app_v22.py
-```
-
-Source mode requires Python and Tkinter.
-
-## Public Release Recommendation
-
-Do not commit generated EXE/ZIP files to normal source history. Put them on GitHub Releases, then keep source and build scripts in the repository.
-
-The Electron NSIS installer bundles the app, `MattsSDKBoostingTools.sdkmod`,
-and the folder-form `ActorScriptDeployer/` dependency. During install and
-updater restarts, the installer runs the app's silent SDK install helper so the
-game-side `sdk_mods` folder receives both required SDK files automatically when
-the Borderlands 4 Steam folder can be detected. Non-standard game installs can
-still be repaired from the app's Updates tab by browsing to `sdk_mods` and
-running Install / Update SDK Mod.
-
-After building the installer and portable package, upload them to GitHub Releases:
+After building installer + portable assets:
 
 ```powershell
 .\publish_github_release.ps1
 ```
 
-Public releases should use semantic tags and asset names, for example:
+Or push a matching `v*` tag and let `.github/workflows/electron-release.yml` publish.
 
-```text
-https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v1.0.0
-MSBT-Installer-v1.0.0.exe
-MSBT-Portable-v1.0.0-win-x64.zip
-MattsSDKBoostingTools-Legacy-Tkinter-Portable-v1.0.0.zip
-```
+**Important:** `publish_github_release.ps1` and CI append download-count badges to the release body. If you later run `gh release edit --notes-file` with notes-only content, you will wipe those badges — re-run the publisher notes assembly or append the badge block again.
 
-See `VERSIONING.md` for the release naming rules.
-
-Before publishing a release, run:
+## Build The Legacy Tkinter EXE (reference only)
 
 ```powershell
-python -m py_compile .\external_app\v22_parts_codes_fixed\matts_external_app_v22.py
-python -m py_compile .\mod_extracted\MattsSDKBoostingTools\backend_actions.py .\mod_extracted\MattsSDKBoostingTools\external_bridge.py .\mod_extracted\MattsSDKBoostingTools\__init__.py
+.\_reference\legacy_tkinter\build_external_exe.ps1
+.\_reference\legacy_tkinter\package_external_beta.ps1
+```
+
+Output (gitignored):
+
+```text
+dist/MattsBoostingToolsExternal/...
+MSBT_External_Beta/
+MattsSDKBoostingTools-Legacy-Tkinter-Portable-v<version>.zip
+```
+
+If Python is not found:
+
+```powershell
+$env:MSBT_PYTHON = "C:\Path\To\python.exe"
+```
+
+## Public Release Recommendation
+
+Do not commit generated EXE/ZIP files to normal source history. Put them on GitHub Releases.
+
+The Electron NSIS installer bundles the app, `MattsSDKBoostingTools.sdkmod`, and folder-form `ActorScriptDeployer/`. Non-standard game installs can still be repaired from the app's Updates tab.
+
+Example assets:
+
+```text
+MSBT-Installer-v2.1.0.exe
+MSBT-Portable-v2.1.0-win-x64.zip
+```
+
+## Preflight Syntax Checks
+
+```powershell
+python -m py_compile .\mod_extracted\MattsSDKBoostingTools\backend_actions.py .\mod_extracted\MattsSDKBoostingTools\external_bridge.py .\mod_extracted\MattsSDKBoostingTools\__init__.py .\mod_extracted\MattsSDKBoostingTools\quick_menu.py
 ```

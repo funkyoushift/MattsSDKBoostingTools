@@ -88,55 +88,68 @@ jobs:
             $title = "Matt's SDK Boosting Tools v$version"
           }
           $buildDate = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
-          $notes = @(
-            "### What's new",
-            "",
-            "Electron release built from semantic tag `$tag`.",
-            "",
-            "### Fixed",
-            "",
-            "See commit history for fixes included in this build.",
-            "",
-            "### Download: pick ONE",
-            "",
-            "[![Installer downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/$tag/MSBT-Installer-v$version.exe?label=Installer%20downloads&color=2ea44f)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/$tag/MSBT-Installer-v$version.exe)",
-            "[![Portable downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/$tag/MSBT-Portable-v$version-win-x64.zip?label=Portable%20downloads&color=0969da)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/$tag/MSBT-Portable-v$version-win-x64.zip)",
-            "",
-            "Counts track the installer and portable ZIP only (not update-check files).",
-            "",
-            "**Recommended for almost everyone**",
-            "",
-            "Download and run:",
-            "``MSBT-Installer-v$version.exe``",
-            "",
-            "This is the Windows installer. It installs the Electron app, adds shortcuts, and includes the bundled SDK mod/update resources.",
-            "",
-            "**Manual install / portable Electron app**",
-            "",
-            "Download and extract:",
-            "``MSBT-Portable-v$version-win-x64.zip``",
-            "",
-            "Use this if you want the Electron app without running the installer. It contains the Electron app files plus bundled SDK mod/update resources.",
-            "",
-            "**Do not manually download these unless you know why**",
-            "",
-            "``latest.json``, ``latest.yml``, ``*.blockmap`` are update-system files used by the app/installer.",
-            "",
-            "**Source code**",
-            "",
-            "GitHub's automatic ``Source code`` ZIP/TAR files are for developers. They are not the ready-to-run app.",
-            "",
-            "### Upgrade notes",
-            "",
-            "Requires SDK 03 / oak2-mod-manager v0.3:",
-            "https://github.com/bl-sdk/oak2-mod-manager/releases/tag/v0.3",
-            "",
-            "### Build information",
-            "",
-            "- Version: $version",
-            "- Commit: ${env:GITHUB_SHA}",
-            "- Build date: $buildDate"
-          ) -join [Environment]::NewLine
+          $notesFile = ".\releases\RELEASE_NOTES_v$version.md"
+          if (Test-Path $notesFile) {
+            $notesBody = (Get-Content -Raw $notesFile).TrimEnd()
+          } else {
+            $notesBody = @"
+### What's new
+
+Electron release built from semantic tag ``$tag``.
+
+### Fixed
+
+See commit history for fixes included in this build.
+"@
+          }
+          $badgeBlock = @"
+
+### Download: pick ONE
+
+[![Installer downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/$tag/MSBT-Installer-v$version.exe?label=Installer%20downloads&color=2ea44f)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/$tag/MSBT-Installer-v$version.exe)
+[![Portable downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/$tag/MSBT-Portable-v$version-win-x64.zip?label=Portable%20downloads&color=0969da)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/$tag/MSBT-Portable-v$version-win-x64.zip)
+
+Counts track the installer and portable ZIP only (not update-check files).
+
+**Recommended for almost everyone**
+
+Download and run:
+``MSBT-Installer-v$version.exe``
+
+This is the Windows installer. It installs the Electron app, adds shortcuts, and includes the bundled SDK mod/update resources.
+
+**Manual install / portable Electron app**
+
+Download and extract:
+``MSBT-Portable-v$version-win-x64.zip``
+
+Use this if you want the Electron app without running the installer. It contains the Electron app files plus bundled SDK mod/update resources.
+
+**Do not manually download these unless you know why**
+
+``latest.json``, ``latest.yml``, ``*.blockmap`` are update-system files used by the app/installer.
+
+**Source code**
+
+GitHub's automatic ``Source code`` ZIP/TAR files are for developers. They are not the ready-to-run app.
+
+### Upgrade notes
+
+Requires SDK 03 / oak2-mod-manager v0.3:
+https://github.com/bl-sdk/oak2-mod-manager/releases/tag/v0.3
+
+### Build information
+
+- Version: $version
+- Commit: ${env:GITHUB_SHA}
+- Build date: $buildDate
+"@
+          # Prefer committed notes; always ensure badge footer exists (never notes-only).
+          if ($notesBody -match 'Installer%20downloads') {
+            $notes = $notesBody
+          } else {
+            $notes = ($notesBody.TrimEnd() + [Environment]::NewLine + $badgeBlock).TrimEnd() + [Environment]::NewLine
+          }
           $notesPath = Join-Path $env:RUNNER_TEMP "msbt_release_notes.md"
           Set-Content -Path $notesPath -Value $notes -Encoding UTF8
           $assets = @(

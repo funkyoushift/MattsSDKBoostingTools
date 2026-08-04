@@ -91,12 +91,14 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\check_nexus_release.
 
 ## Release Checklist
 
-1. Build and publish the GitHub release first.
-2. Sync Nexus from the GitHub release:
+1. Build and publish the **GitHub** release first (installer + portable + `latest.json`; confirm download badges on the release page).
+2. Sync Nexus from that same GitHub release:
    ```powershell
    # Preferred: GitHub Actions -> Sync Nexus from GitHub Release
    ```
 3. Run `.\tools\check_nexus_release.ps1` after upload to confirm the Nexus file list matches the GitHub release version.
+4. Spot-check Nexus file names/descriptions still match the manual fallback section below.
+5. Do **not** point GitHub release notes at Nexus as a mirror; GitHub stays the updater source of truth.
 
 ## Current Release Links
 
