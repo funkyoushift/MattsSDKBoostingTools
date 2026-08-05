@@ -24,6 +24,27 @@
             }
           },
           {
+            "challengelist_achievements_harp": {
+              "challenge_list": "ChallengeList_Achievements_Harp",
+              "displayname": "ChallengeList_Achievements, DFD9158E4BB91B4E39B486896B573CCC, {0}|platform(default=Achievements,xbox=Achievements,playstation=Trophies,sage=Achievements)",
+              "challenges": [
+                "challenge'Challenges_Achievements_49_Harp_responses_all'",
+                "challenge'Challenges_Achievements_49_Harp_response_skankeyes1'",
+                "challenge'Challenges_Achievements_49_Harp_response_skankeyes2'",
+                "challenge'Challenges_Achievements_49_Harp_response_dave1'",
+                "challenge'Challenges_Achievements_49_Harp_response_dave2'",
+                "challenge'Challenges_Achievements_49_Harp_response_william1'",
+                "challenge'Challenges_Achievements_49_Harp_response_william2'",
+                "challenge'Challenges_Achievements_50_Harp_boss_defeat'",
+                "challenge'Challenges_Achievements_50_Harp_boss_skankeyes'",
+                "challenge'Challenges_Achievements_50_Harp_boss_infamousdave'",
+                "challenge'Challenges_Achievements_50_Harp_boss_maxxxsupreme'",
+                "challenge'Challenges_Achievements_50_Harp_boss_betamaxxx'",
+                "challenge'Challenges_Achievements_51_Harp_missions_main'"
+              ]
+            }
+          },
+          {
             "challengelist_achievements_mandolin": {
               "challenge_list": "ChallengeList_Achievements_Mandolin",
               "displayname": "ChallengeList_Achievements, DFD9158E4BB91B4E39B486896B573CCC, {0}|platform(default=Achievements,xbox=Achievements,playstation=Trophies,sage=Achievements)",
@@ -51,6 +72,19 @@
                 "challenge'Challenge_Collect_EchoLog_Pietro_Log2'",
                 "challenge'Challenge_Collect_EchoLog_Pietro_Log3'",
                 "challenge'Challenge_Collect_EchoLog_Pietro_Log4'"
+              ]
+            }
+          },
+          {
+            "challengelist_echologs_harp": {
+              "challenge_list": "ChallengeList_EchoLogs_Harp",
+              "displayname": "ChallengeLists_Collectibles_Harp, 5C26144042334F3525621FBEA64C2C5A, Harp Echo Logs",
+              "challenges": [
+                "challenge'Challenge_Collect_BP4_EchoLog_1'",
+                "challenge'Challenge_Collect_BP4_EchoLog_2'",
+                "challenge'Challenge_Collect_BP4_EchoLog_3'",
+                "challenge'Challenge_Collect_BP4_EchoLog_4'",
+                "challenge'Challenge_Collect_BP4_EchoLog_5'"
               ]
             }
           },

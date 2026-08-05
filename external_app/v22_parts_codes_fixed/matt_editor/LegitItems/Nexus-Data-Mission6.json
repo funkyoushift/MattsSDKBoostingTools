@@ -14590,6 +14590,9 @@
                 {
                   "objectives": [
                     {
+                      "objective": "LightBeamFadeIn"
+                    },
+                    {
                       "objective": "Loot"
                     },
                     {
@@ -14678,6 +14681,7 @@
                       "type": "InteractiveObject",
                       "ownertype": "Area",
                       "waypointnames": [
+                        "WP_LightBeamFadeIn_Mission_Event_AirCargo",
                         "WP_LightBeamFadeOut_Mission_Event_AirCargo"
                       ],
                       "activityareaactortags": [
@@ -14715,6 +14719,41 @@
               ]
             },
             "__dep_entries": [
+              {
+                "depTableName": "objective",
+                "depTableId": 2,
+                "depIndex": 0,
+                "lightbeamfadein": {
+                  "objective": "LightBeamFadeIn",
+                  "ux_display": {
+                    "text": "NexusSerialized, D19EC6104CB695167DADC3B09AD23307, LightBeamFadeIn"
+                  },
+                  "graph_data": {
+                    "gameplay": {
+                      "detectionmethod": "Dynamic",
+                      "targetactor": "IO_AirCargo",
+                      "dynamicradius": "8000.000000",
+                      "structtype": "Asset'/Script/OakGame.ObjectiveTypeSettings_OakTravel'"
+                    },
+                    "success": {
+                      "actions": [
+                        {
+                          "data": {
+                            "structtype": "Asset'/Script/GbxGame.MissionActionType_FactChange'",
+                            "alias": "IO_AirCargo",
+                            "factchange": {
+                              "fact": "PlayerInRadius",
+                              "value": {
+                                "namevalue": "True"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
               {
                 "depTableName": "objective",
                 "depTableId": 2,
@@ -54014,9 +54053,27 @@
                       }
                     }
                   ]
+                },
+                "completed": {
+                  "actions": [
+                    {
+                      "data": {
+                        "structtype": "Asset'/Script/GbxGame.MissionActionType_FactChange'",
+                        "alias": "IO_DifficultySetting",
+                        "factchange": {
+                          "fact": "MissionActive",
+                          "value": {
+                            "namevalue": "False"
+                          }
+                        }
+                      }
+                    }
+                  ]
                 }
               },
               "bcancelreplaywhenleavingmapduringmissionreplay": "true",
+              "ballowrereplay": "true",
+              "bforceexitonreplaycompletionwhenrereplayavailable": "false",
               "bneversavedtosavegame": "true",
               "objective_sets": [
                 {
@@ -58922,7 +58979,6 @@
                   "rememberendstatealiasname": "TravelComputer",
                   "graph_data": {
                     "gameplay": {
-                      "subtype": "AllPlayersArrive",
                       "triggervolume": "Trigger_BigRevealRoomEntry",
                       "bresetonloadifobjectivesetstillactive": "true",
                       "structtype": "Asset'/Script/OakGame.ObjectiveTypeSettings_OakTravel'"
@@ -60440,6 +60496,18 @@
                               }
                             }
                           }
+                        },
+                        {
+                          "data": {
+                            "structtype": "Asset'/Script/GbxGame.MissionActionType_FactChange'",
+                            "alias": "IO_DifficultySetting",
+                            "factchange": {
+                              "fact": "hasGlow",
+                              "value": {
+                                "namevalue": "False"
+                              }
+                            }
+                          }
                         }
                       ]
                     },
@@ -61422,8 +61490,8 @@
                   "waypoint": "WP_Kill_Order_synths_0_Mission_DLC_Tuba_Hardcore",
                   "staticaddress": "registry.tuba_p.top.base.overbossencounter.__nochannel",
                   "loc": {
-                    "x": "125075.378305",
-                    "y": "-97445.260572",
+                    "x": "119464.688646",
+                    "y": "-97367.182874",
                     "z": "-16105.107990"
                   }
                 }
@@ -61560,9 +61628,27 @@
                       }
                     }
                   ]
+                },
+                "completed": {
+                  "actions": [
+                    {
+                      "data": {
+                        "structtype": "Asset'/Script/GbxGame.MissionActionType_FactChange'",
+                        "alias": "IO_DifficultySetting",
+                        "factchange": {
+                          "fact": "MissionActive",
+                          "value": {
+                            "namevalue": "False"
+                          }
+                        }
+                      }
+                    }
+                  ]
                 }
               },
               "bcancelreplaywhenleavingmapduringmissionreplay": "true",
+              "ballowrereplay": "true",
+              "bforceexitonreplaycompletionwhenrereplayavailable": "false",
               "bneversavedtosavegame": "true",
               "objective_sets": [
                 {
@@ -65517,6 +65603,18 @@
                               }
                             }
                           }
+                        },
+                        {
+                          "data": {
+                            "structtype": "Asset'/Script/GbxGame.MissionActionType_FactChange'",
+                            "alias": "IO_DifficultySetting",
+                            "factchange": {
+                              "fact": "hasGlow",
+                              "value": {
+                                "namevalue": "False"
+                              }
+                            }
+                          }
                         }
                       ]
                     },
@@ -66530,7 +66628,6 @@
                   "rememberendstatealiasname": "TravelComputer",
                   "graph_data": {
                     "gameplay": {
-                      "subtype": "AllPlayersArrive",
                       "triggervolume": "Trigger_BigRevealRoomEntry",
                       "bresetonloadifobjectivesetstillactive": "true",
                       "structtype": "Asset'/Script/OakGame.ObjectiveTypeSettings_OakTravel'"
@@ -68146,18 +68243,6 @@
                                         "actions": [
                                           {
                                             "data": {
-                                              "structtype": "Asset'/Script/GbxGame.MissionActionType_DebugPrint'",
-                                              "debugprintstring": "Bronze",
-                                              "messagecolor": {
-                                                "b": "0",
-                                                "g": "249",
-                                                "r": "255",
-                                                "a": "255"
-                                              }
-                                            }
-                                          },
-                                          {
-                                            "data": {
                                               "structtype": "Asset'/Script/GbxGame.MissionActionType_FactChange'",
                                               "alias": "Timer_BronzeThreshold",
                                               "factchange": {
@@ -68181,18 +68266,6 @@
                                       },
                                       "actions": {
                                         "actions": [
-                                          {
-                                            "data": {
-                                              "structtype": "Asset'/Script/GbxGame.MissionActionType_DebugPrint'",
-                                              "debugprintstring": "Silver",
-                                              "messagecolor": {
-                                                "b": "0",
-                                                "g": "249",
-                                                "r": "255",
-                                                "a": "255"
-                                              }
-                                            }
-                                          },
                                           {
                                             "data": {
                                               "structtype": "Asset'/Script/GbxGame.MissionActionType_FactChange'",
@@ -68220,18 +68293,6 @@
                                         "actions": [
                                           {
                                             "data": {
-                                              "structtype": "Asset'/Script/GbxGame.MissionActionType_DebugPrint'",
-                                              "debugprintstring": "Gold",
-                                              "messagecolor": {
-                                                "b": "0",
-                                                "g": "249",
-                                                "r": "255",
-                                                "a": "255"
-                                              }
-                                            }
-                                          },
-                                          {
-                                            "data": {
                                               "structtype": "Asset'/Script/GbxGame.MissionActionType_FactChange'",
                                               "alias": "Timer_GoldThreshold",
                                               "factchange": {
@@ -68255,18 +68316,6 @@
                                       },
                                       "actions": {
                                         "actions": [
-                                          {
-                                            "data": {
-                                              "structtype": "Asset'/Script/GbxGame.MissionActionType_DebugPrint'",
-                                              "debugprintstring": "Platinum",
-                                              "messagecolor": {
-                                                "b": "0",
-                                                "g": "249",
-                                                "r": "255",
-                                                "a": "255"
-                                              }
-                                            }
-                                          },
                                           {
                                             "data": {
                                               "structtype": "Asset'/Script/GbxGame.MissionActionType_FactChange'",
@@ -68294,11 +68343,15 @@
                                       }
                                     }
                                   ],
-                                  "bpausetimeratend": "true"
+                                  "bpausetimeratend": "true",
+                                  "pausecondition": {
+                                    "structtype": "Asset'/Script/GbxGame.ObjectiveValueEvaluator_ObjectiveStatus'",
+                                    "objective": "Kill_son_of_Terramorphous"
+                                  }
                                 },
                                 {
                                   "structtype": "Asset'/Script/GbxGame.ObjectiveValueEvaluator_ObjectiveStatus'",
-                                  "objective": "Kill_son_of_Terramorphous"
+                                  "objective": "Everyone_travel_back_to_facility_entry_"
                                 }
                               ]
                             }
@@ -69110,8 +69163,8 @@
                   "waypoint": "WP_Kill_Order_synths_0_Mission_DLC_Tuba_TimerBase",
                   "staticaddress": "registry.tuba_p.top.base.overbossencounter.__nochannel",
                   "loc": {
-                    "x": "125075.378305",
-                    "y": "-97445.260572",
+                    "x": "119464.688646",
+                    "y": "-97367.182874",
                     "z": "-16105.107990"
                   }
                 }

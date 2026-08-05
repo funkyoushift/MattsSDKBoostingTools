@@ -12,872 +12,6 @@
       {
         "entries": [
           {
-            "currency_eridium_multistack": {
-              "inv": "Currency_Eridium_MultiStack",
-              "basetype": "inv'currency_eridium'",
-              "body": "Asset'/Game/World/Interactives/Lootables/Pile/Eridium/SM_Eridium_Bar_Quad.SM_Eridium_Bar_Quad'",
-              "criteriontagdisplayname": "Eridium Multi Stack",
-              "rotationincontainer": {
-                "pitch": "0.000000",
-                "yaw": "0.000000",
-                "roll": "-90.000000"
-              },
-              "brotationincontaineroverride": "true",
-              "aspects": [
-                {
-                  "parent": "inv_aspect'pickup_eridium_aspect'",
-                  "attributeeffects": [
-                    {
-                      "attributetomodify": "attribute'eridium_held'",
-                      "modifiertype": "PostAdd",
-                      "modifiervalue": {
-                        "constant": "5.000000",
-                        "datatablevalue": {
-                          "datatable": "gbx_ue_data_table'none'",
-                          "rowname": "None",
-                          "columnname": "None"
-                        },
-                        "attribute": "attribute'none'",
-                        "postscale": "1.000000"
-                      }
-                    }
-                  ]
-                }
-              ],
-              "serialindex": {
-                "status": "Active",
-                "index": "80",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "currency_money_smallamount": {
-              "inv": "currency_money_smallamount",
-              "basetype": "inv'currency_money'",
-              "body": "Asset'/Game/World/Interactives/Pickups/Money/SM_Money_Stack_Single.SM_Money_Stack_Single'",
-              "criteriontagdisplayname": "Cash Single Stack",
-              "rotationincontainer": {
-                "pitch": "0.000000",
-                "yaw": "0.000000",
-                "roll": "-90.000000"
-              },
-              "brotationincontaineroverride": "true",
-              "aspects": [
-                {
-                  "parent": "inv_aspect'pickup_cash_aspect'",
-                  "attributeeffects": [
-                    {
-                      "attributetomodify": "attribute'cash_held'",
-                      "modifiertype": "PostAdd",
-                      "modifiervalue": {
-                        "constant": "2.000000",
-                        "datatablevalue": {
-                          "datatable": "gbx_ue_data_table'none'",
-                          "rowname": "None",
-                          "columnname": "None"
-                        },
-                        "attribute": "attribute'none'",
-                        "postscale": "1.000000"
-                      }
-                    }
-                  ]
-                }
-              ],
-              "serialindex": {
-                "status": "Active",
-                "index": "397",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "currency_money_triplestack": {
-              "inv": "currency_money_triplestack",
-              "basetype": "inv'currency_money'",
-              "body": "Asset'/Game/World/Interactives/Pickups/Money/SM_Money_Stack_Single.SM_Money_Stack_Single'",
-              "criteriontagdisplayname": "Cash Triple Stack",
-              "rotationincontainer": {
-                "pitch": "0.000000",
-                "yaw": "0.000000",
-                "roll": "-90.000000"
-              },
-              "brotationincontaineroverride": "true",
-              "aspects": [
-                {
-                  "parent": "inv_aspect'pickup_cash_aspect'"
-                }
-              ],
-              "serialindex": {
-                "status": "Active",
-                "index": "85",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_crawler_vehiclepart_demo": {
-              "inv": "InvDef_Crawler_VehiclePart_Demo",
-              "itembasename": "Smiley",
-              "basetype": "inv'InvDef_Crawler_VehiclePart_Parent'",
-              "body": "Asset'/Game/World/Interactives/Collectibles/Crawler_Part_Pickup/SM_Crawler_Part_Pickup.SM_Crawler_Part_Pickup'",
-              "pickupsound": {
-                "wwiseevent": "audio_event'IO_Pickups_Shared.IO_Pickup_OnPickup_GenericMaterials'"
-              },
-              "pickupequipsound": {
-                "wwiseevent": "audio_event'IO_Pickups_Shared.IO_Pickup_OnPickup_GenericMaterials'"
-              },
-              "serialindex": {
-                "status": "Active",
-                "index": "77",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_crawler_vehiclepart_gra_1": {
-              "inv": "InvDef_Crawler_VehiclePart_GRA_1",
-              "itembasename": "Smiley",
-              "class": "Asset'/Script/GbxGame.InventoryPickup'",
-              "rarity": "rarity'00_mission'",
-              "uistats": [
-                "ui_stat'uistat_typeline_crawlervehiclepart'"
-              ],
-              "binventorynameisfullname": "true",
-              "inventoryname": "NexusSerialized, C12F16DBBF7A4817B7BF04DDAD3F1D94, Smiley",
-              "body": "Asset'/Game/World/Interactives/Collectibles/Crawler_Part_Pickup/SM_Crawler_Part_Pickup.SM_Crawler_Part_Pickup'",
-              "pickupinteractiontype": "UseOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "75",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_crawler_vehiclepart_gra_2": {
-              "inv": "InvDef_Crawler_VehiclePart_GRA_2",
-              "itembasename": "Awoooooo!",
-              "class": "Asset'/Script/GbxGame.InventoryPickup'",
-              "rarity": "rarity'00_mission'",
-              "uistats": [
-                "ui_stat'uistat_typeline_crawlervehiclepart'"
-              ],
-              "binventorynameisfullname": "true",
-              "inventoryname": "NexusSerialized, 5182DD6D957C46BBA22034EF81F2C9C7, Awoooooo!",
-              "body": "Asset'/Game/World/Interactives/Collectibles/Crawler_Part_Pickup/SM_Crawler_Part_Pickup.SM_Crawler_Part_Pickup'",
-              "pickupinteractiontype": "UseOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "74",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_crawler_vehiclepart_gra_3": {
-              "inv": "InvDef_Crawler_VehiclePart_GRA_3",
-              "itembasename": "Itty Bitty Kitty Committee",
-              "class": "Asset'/Script/GbxGame.InventoryPickup'",
-              "rarity": "rarity'00_mission'",
-              "uistats": [
-                "ui_stat'uistat_typeline_crawlervehiclepart'"
-              ],
-              "binventorynameisfullname": "true",
-              "inventoryname": "NexusSerialized, C3F7BB46B5B3485B8D47FA330B724DCA, Itty Bitty Kitty Committee",
-              "body": "Asset'/Game/World/Interactives/Collectibles/Crawler_Part_Pickup/SM_Crawler_Part_Pickup.SM_Crawler_Part_Pickup'",
-              "pickupinteractiontype": "UseOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "69",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_crawler_vehiclepart_gra_4": {
-              "inv": "InvDef_Crawler_VehiclePart_GRA_4",
-              "itembasename": "Afterparty",
-              "class": "Asset'/Script/GbxGame.InventoryPickup'",
-              "rarity": "rarity'00_mission'",
-              "uistats": [
-                "ui_stat'uistat_typeline_crawlervehiclepart'"
-              ],
-              "binventorynameisfullname": "true",
-              "inventoryname": "NexusSerialized, 2BEFFEE75D374933A6C21C27D6EBE5F6, Afterparty",
-              "body": "Asset'/Game/World/Interactives/Collectibles/Crawler_Part_Pickup/SM_Crawler_Part_Pickup.SM_Crawler_Part_Pickup'",
-              "pickupinteractiontype": "UseOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "68",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_crawler_vehiclepart_mt_1": {
-              "inv": "InvDef_Crawler_VehiclePart_MT_1",
-              "itembasename": "Future Proof",
-              "class": "Asset'/Script/GbxGame.InventoryPickup'",
-              "rarity": "rarity'00_mission'",
-              "uistats": [
-                "ui_stat'uistat_typeline_crawlervehiclepart'"
-              ],
-              "binventorynameisfullname": "true",
-              "inventoryname": "NexusSerialized, 3970D4160A5147B394EC3E68063E2796, Future Proof",
-              "body": "Asset'/Game/World/Interactives/Collectibles/Crawler_Part_Pickup/SM_Crawler_Part_Pickup.SM_Crawler_Part_Pickup'",
-              "pickupinteractiontype": "UseOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "73",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_crawler_vehiclepart_mt_2": {
-              "inv": "InvDef_Crawler_VehiclePart_MT_2",
-              "itembasename": "Bestia Rossa",
-              "class": "Asset'/Script/GbxGame.InventoryPickup'",
-              "rarity": "rarity'00_mission'",
-              "uistats": [
-                "ui_stat'uistat_typeline_crawlervehiclepart'"
-              ],
-              "binventorynameisfullname": "true",
-              "inventoryname": "NexusSerialized, 23673C2CA7F748C2841BE094DA459FB8, Bestia Rossa",
-              "body": "Asset'/Game/World/Interactives/Collectibles/Crawler_Part_Pickup/SM_Crawler_Part_Pickup.SM_Crawler_Part_Pickup'",
-              "pickupinteractiontype": "UseOnly",
-              "pickupsound": {
-                "wwiseevent": "audio_event'IO_Pickups_Shared.IO_Pickup_OnPickup_GenericMaterials'"
-              },
-              "pickupequipsound": {
-                "wwiseevent": "audio_event'IO_Pickups_Shared.IO_Pickup_OnPickup_GenericMaterials'"
-              },
-              "serialindex": {
-                "status": "Active",
-                "index": "71",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_crawler_vehiclepart_mt_3": {
-              "inv": "InvDef_Crawler_VehiclePart_MT_3",
-              "itembasename": "Wellspring-Loaded",
-              "class": "Asset'/Script/GbxGame.InventoryPickup'",
-              "rarity": "rarity'00_mission'",
-              "uistats": [
-                "ui_stat'uistat_typeline_crawlervehiclepart'"
-              ],
-              "binventorynameisfullname": "true",
-              "inventoryname": "NexusSerialized, 2FAEAAF12DE74470AF2EDEB450411BDC, Wellspring-Loaded",
-              "body": "Asset'/Game/World/Interactives/Collectibles/Crawler_Part_Pickup/SM_Crawler_Part_Pickup.SM_Crawler_Part_Pickup'",
-              "pickupinteractiontype": "UseOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "72",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_crawler_vehiclepart_mt_4": {
-              "inv": "InvDef_Crawler_VehiclePart_MT_4",
-              "itembasename": "La Verdita",
-              "class": "Asset'/Script/GbxGame.InventoryPickup'",
-              "rarity": "rarity'00_mission'",
-              "uistats": [
-                "ui_stat'uistat_typeline_crawlervehiclepart'"
-              ],
-              "binventorynameisfullname": "true",
-              "inventoryname": "NexusSerialized, 9F98730A45334435B1311E5F807CD898, La Verdita",
-              "body": "Asset'/Game/World/Interactives/Collectibles/Crawler_Part_Pickup/SM_Crawler_Part_Pickup.SM_Crawler_Part_Pickup'",
-              "pickupinteractiontype": "UseOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "70",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_crawler_vehiclepart_parent": {
-              "inv": "InvDef_Crawler_VehiclePart_Parent",
-              "itembasename": "Crawler Vehicle Part - Parent",
-              "class": "Asset'/Script/GbxGame.InventoryPickup'",
-              "rarity": "rarity'00_mission'",
-              "uistats": [
-                "ui_stat'uistat_typeline_crawlervehiclepart'"
-              ],
-              "body": "Asset'/Game/World/Interactives/Collectibles/Crawler_Part_Pickup/SM_Crawler_Part_Pickup.SM_Crawler_Part_Pickup'",
-              "pickupinteractiontype": "UseOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "76",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_crawler_vehiclepart_sha_1": {
-              "inv": "InvDef_Crawler_VehiclePart_SHA_1",
-              "itembasename": "Never Say DIY",
-              "class": "Asset'/Script/GbxGame.InventoryPickup'",
-              "rarity": "rarity'00_mission'",
-              "uistats": [
-                "ui_stat'uistat_typeline_crawlervehiclepart'"
-              ],
-              "binventorynameisfullname": "true",
-              "inventoryname": "NexusSerialized, 78686372E9AB4A40B51AEC958B1D2EB7, Never Say DIY",
-              "body": "Asset'/Game/World/Interactives/Collectibles/Crawler_Part_Pickup/SM_Crawler_Part_Pickup.SM_Crawler_Part_Pickup'",
-              "pickupinteractiontype": "UseOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "67",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_crawler_vehiclepart_sha_2": {
-              "inv": "InvDef_Crawler_VehiclePart_SHA_2",
-              "itembasename": "Prison Buddy",
-              "class": "Asset'/Script/GbxGame.InventoryPickup'",
-              "rarity": "rarity'00_mission'",
-              "uistats": [
-                "ui_stat'uistat_typeline_crawlervehiclepart'"
-              ],
-              "binventorynameisfullname": "true",
-              "inventoryname": "NexusSerialized, 092E14B9AECD41A8B3504361066AD240, Prison Buddy",
-              "body": "Asset'/Game/World/Interactives/Collectibles/Crawler_Part_Pickup/SM_Crawler_Part_Pickup.SM_Crawler_Part_Pickup'",
-              "pickupinteractiontype": "UseOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "66",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_crawler_vehiclepart_sha_3": {
-              "inv": "InvDef_Crawler_VehiclePart_SHA_3",
-              "itembasename": "Frenzy Forever",
-              "class": "Asset'/Script/GbxGame.InventoryPickup'",
-              "rarity": "rarity'00_mission'",
-              "uistats": [
-                "ui_stat'uistat_typeline_crawlervehiclepart'"
-              ],
-              "binventorynameisfullname": "true",
-              "inventoryname": "NexusSerialized, C5B88EE9504A4A61A3DCC58B302A377B, Frenzy Forever",
-              "body": "Asset'/Game/World/Interactives/Collectibles/Crawler_Part_Pickup/SM_Crawler_Part_Pickup.SM_Crawler_Part_Pickup'",
-              "pickupinteractiontype": "UseOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "65",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_crawler_vehiclepart_sha_4": {
-              "inv": "InvDef_Crawler_VehiclePart_SHA_4",
-              "itembasename": "Ripperlands",
-              "class": "Asset'/Script/GbxGame.InventoryPickup'",
-              "rarity": "rarity'00_mission'",
-              "uistats": [
-                "ui_stat'uistat_typeline_crawlervehiclepart'"
-              ],
-              "binventorynameisfullname": "true",
-              "inventoryname": "NexusSerialized, 0369EFF267204C03A9C581FB955EEAAE, Ripperlands",
-              "body": "Asset'/Game/World/Interactives/Collectibles/Crawler_Part_Pickup/SM_Crawler_Part_Pickup.SM_Crawler_Part_Pickup'",
-              "pickupinteractiontype": "UseOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "64",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_dronebrain": {
-              "inv": "InvDef_DroneBrain",
-              "itembasename": "Drone Brain",
-              "class": "Asset'/Script/GbxGame.InventoryPickup'",
-              "rarity": "rarity'00_mission'",
-              "body": "Asset'/Game/InteractiveObjects/PoA/DroneFactory/Body_DroneBrain.Body_DroneBrain'",
-              "pickupinteractiontype": "UseOnly",
-              "pickupprompt": "usability_prompt'UsePrompt_PickUp'",
-              "serialindex": {
-                "status": "Active",
-                "index": "63",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_gardenseeds": {
-              "inv": "InvDef_GardenSeeds",
-              "itembasename": "PLACEHOLDER TEXT",
-              "basetype": "inv'mission_pickup'",
-              "uistats": [
-                "ui_stat'uistat_mission_item_header'",
-                "ui_stat'uistat_pickup_gardenseeds_description'"
-              ],
-              "body": "Asset'/Game/World/Grasslands/Props/FarmBags/SM_Farm_Bag_Bend.SM_Farm_Bag_Bend'",
-              "serialindex": {
-                "status": "Active",
-                "index": "56",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_io_pickup_convoybomb": {
-              "inv": "InvDef_IO_Pickup_ConvoyBomb",
-              "class": "Asset'/Script/GbxGame.InventoryPickup'",
-              "rarity": "rarity'00_mission'",
-              "body": "Asset'/Game/Missions/Main/Grasslands/Grasslands2/Assets/Grassland_Main2_Pickup_Bomb/Body_IO_Pickup_ConvoyBomb.Body_IO_Pickup_ConvoyBomb'",
-              "pickupinteractiontype": "UseOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "134",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_io_pickup_detonator": {
-              "inv": "InvDef_IO_Pickup_Detonator",
-              "itembasename": "Outbounder Detonator",
-              "basetype": "inv'mission_pickup'",
-              "class": "Asset'/Script/GbxGame.InventoryPickup'",
-              "binventorynameisfullname": "true",
-              "inventoryname": "NexusSerialized, 2485598A4FBF21E9B27E17A40A565024, Outbounder Detonator",
-              "body": "Asset'/Game/Missions/Main/Grasslands/Grasslands3/Mission_IO/Grasslands_Main3_Pickup_Detonator/Body_IO_Pickup_Detonator.Body_IO_Pickup_Detonator'",
-              "serialindex": {
-                "status": "Active",
-                "index": "156",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_io_pickup_giftbag": {
-              "inv": "InvDef_IO_Pickup_GiftBag",
-              "itembasename": "Gift Bag",
-              "class": "Asset'/Script/GbxGame.InventoryPickup'",
-              "rarity": "rarity'00_mission'",
-              "uistats": [
-                "ui_stat'UIStat_Pickup_GiftBag'"
-              ],
-              "binventorynameisfullname": "true",
-              "inventoryname": "NexusSerialized, BCBFF13E45B795443C4E12AB7C967EC0, Gift Bag",
-              "body": "Asset'/Game/Missions/Main/Grasslands/Grasslands1/Assets/Grassland_Main1_Pickup_GiftBag/Body_IO_Pickup_GiftBag.Body_IO_Pickup_GiftBag'",
-              "pickupinteractiontype": "UseOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "219",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_io_pickup_glidepack": {
-              "inv": "InvDef_IO_Pickup_GlidePack",
-              "itembasename": "Glide Pack",
-              "basetype": "inv'mission_pickup'",
-              "class": "Asset'/Script/GbxGame.InventoryPickup'",
-              "uistats": [
-                "ui_stat'UIStat_Pickup_GlidePack_0'"
-              ],
-              "binventorynameisfullname": "true",
-              "inventoryname": "NexusSerialized, 6983A8BA43AB0F98F507599E83DE4B8D, Glide Pack",
-              "body": "Asset'/Game/Missions/Main/Grasslands/Grasslands1/Assets/Grasslands_Main1_Pickup_GlidePack/Body_IO_Pickup_GlidePack.Body_IO_Pickup_GlidePack'",
-              "pickupsound": {
-                "wwiseevent": "audio_event'IO_Pickups_Shared.IO_Pickup_OnPickup_GenericMaterials'"
-              },
-              "pickupequipsound": {
-                "wwiseevent": "audio_event'IO_Pickups_Shared.IO_Pickup_OnPickup_GenericMaterials'"
-              },
-              "serialindex": {
-                "status": "Active",
-                "index": "193",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_io_pickup_guidescore": {
-              "inv": "InvDef_IO_Pickup_GuidesCore",
-              "class": "Asset'/Script/GbxGame.InventoryPickup'",
-              "rarity": "rarity'00_mission'",
-              "body": "Asset'/Game/Missions/Side/Grasslands/Side_Grasslands_LifesPurpose/Assets/LifesPurpose_Pickup_GuidesCore/Body_IO_Pickup_GuidesCore.Body_IO_Pickup_GuidesCore'",
-              "pickupinteractiontype": "UseOnly",
-              "pickupsound": {
-                "wwiseevent": "audio_event'IO_Carry_Battery_Ordonite.IO_Carryable_Battery_Ordonite_Grab'"
-              },
-              "pickupequipsound": {
-                "wwiseevent": "audio_event'IO_Carry_Battery_Ordonite.IO_Carryable_Battery_Ordonite_Grab'"
-              },
-              "serialindex": {
-                "status": "Active",
-                "index": "171",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_io_pickup_intel": {
-              "inv": "InvDef_IO_Pickup_Intel",
-              "itembasename": "Battery",
-              "class": "Asset'/Script/GbxGame.InventoryPickup'",
-              "rarity": "rarity'00_mission'",
-              "uistats": [
-                "ui_stat'UIStat_Pickup_VehiclePowercore'"
-              ],
-              "binventorynameisfullname": "true",
-              "inventoryname": "NexusSerialized, 6A4B94DD449145FDE7B6C08DD5316D74, Battery",
-              "body": "Asset'/Game/Missions/Main/Grasslands/Grasslands1/Assets/Grasslands_Main1_Pickup_Intel/Body_IO_Pickup_Intel.Body_IO_Pickup_Intel'",
-              "pickupinteractiontype": "UseOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "191",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_io_pickup_missilebody": {
-              "inv": "InvDef_IO_Pickup_MissileBody",
-              "class": "Asset'/Script/GbxGame.InventoryPickup'",
-              "rarity": "rarity'00_mission'",
-              "body": "Asset'/Game/Missions/Side/Grasslands/Side_Grasslands_LifesPurpose/Assets/LifesPurpose_Pickup_MissileBody/Body_IO_Pickup_MissileBody.Body_IO_Pickup_MissileBody'",
-              "pickupinteractiontype": "UseOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "163",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_io_pickup_missilecone": {
-              "inv": "InvDef_IO_Pickup_MissileCone",
-              "itembasename": "Missile Cone",
-              "basetype": "inv'mission_pickup'",
-              "class": "Asset'/Script/GbxGame.InventoryPickup'",
-              "uistats": [
-                "ui_stat'UIStat_MissileCone'"
-              ],
-              "binventorynameisfullname": "true",
-              "inventoryname": "NexusSerialized, 5BD31D02456719857E17778FFBD6127F, Missile Cone",
-              "body": "Asset'/Game/Missions/Side/Grasslands/Side_Grasslands_LifesPurpose/Assets/LifesPurpose_Pickup_MissileParts/Body_IO_Pickup_MissileCone.Body_IO_Pickup_MissileCone'",
-              "serialindex": {
-                "status": "Active",
-                "index": "175",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_io_pickup_missilelaunchsystem": {
-              "inv": "InvDef_IO_Pickup_MissileLaunchSystem",
-              "itembasename": "Missile Launch System",
-              "basetype": "inv'mission_pickup'",
-              "class": "Asset'/Script/GbxGame.InventoryPickup'",
-              "uistats": [
-                "ui_stat'UIStat_MissileLaunchSystem'"
-              ],
-              "binventorynameisfullname": "true",
-              "inventoryname": "NexusSerialized, D860F2EC4304569B3C5F04AABD8FB662, Missile Launch System",
-              "body": "Asset'/Game/Missions/Side/Grasslands/Side_Grasslands_LifesPurpose/Assets/LifesPurpose_Pickup_MissileLaunchSystem/Body_IO_Pickup_MissileLaunchSystem.Body_IO_Pickup_MissileLaunchSystem'",
-              "serialindex": {
-                "status": "Active",
-                "index": "180",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_io_pickup_missilemiddle": {
-              "inv": "InvDef_IO_Pickup_MissileMiddle",
-              "itembasename": "Missile Casing",
-              "basetype": "inv'mission_pickup'",
-              "class": "Asset'/Script/GbxGame.InventoryPickup'",
-              "uistats": [
-                "ui_stat'UIStat_MissileMiddle'"
-              ],
-              "binventorynameisfullname": "true",
-              "inventoryname": "NexusSerialized, 036D45774ACD7D07D57497BE0B12FC60, Missile Casing",
-              "body": "Asset'/Game/Missions/Side/Grasslands/Side_Grasslands_LifesPurpose/Assets/LifesPurpose_Pickup_MissileParts/Body_IO_Pickup_MissileMiddle.Body_IO_Pickup_MissileMiddle'",
-              "serialindex": {
-                "status": "Active",
-                "index": "176",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_missiontemp_pickup": {
-              "inv": "InvDef_MissionTemp_Pickup",
-              "itembasename": "Mission Temp Pickup",
-              "class": "Asset'/Script/GbxGame.InventoryPickup'",
-              "rarity": "rarity'00_mission'",
-              "uistats": [
-                "ui_stat'UIStat_Pickup_MissionTemp'"
-              ],
-              "body": "Asset'/Game/InteractiveObjects/Pickups/MissionTemp/Body_MissionTemp_Pickup.Body_MissionTemp_Pickup'",
-              "pickupinteractiontype": "UseOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "61",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_oxygencanister": {
-              "inv": "InvDef_OxygenCanister",
-              "itembasename": "PLACEHOLDER TEXT",
-              "basetype": "inv'Health'",
-              "body": "Asset'/Game/Missions/Main/Elpis/Assets/OxygenCanister/SM_Oxygen_Canister.SM_Oxygen_Canister'",
-              "aspects": [
-                {
-                  "parent": "inv_aspect'pickup_attr_effects'",
-                  "attributeeffects": [
-                    {
-                      "attributetomodify": "attribute'Oxygen_Pool_CurrentValue'",
-                      "modifiertype": "PostAdd",
-                      "modifiervalue": {
-                        "constant": "30.000000"
-                      }
-                    }
-                  ]
-                }
-              ],
-              "serialindex": {
-                "status": "Active",
-                "index": "57",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_pickup_bolt": {
-              "inv": "InvDef_Pickup_Bolt",
-              "class": "Asset'/Script/GbxGame.InventoryPickup'",
-              "rarity": "rarity'00_mission'",
-              "body": "Asset'/Game/Missions/Micro/Mountains/Micro_Mountains_BoltFuneralRites/Assets/Pickups/Body_Pickup_BFR_Bolt.Body_Pickup_BFR_Bolt'",
-              "pickupinteractiontype": "UseOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "179",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_pickup_thebossdrive": {
-              "inv": "InvDef_Pickup_TheBossDrive",
-              "itembasename": "The Boss (Kinda)",
-              "basetype": "inv'mission_pickup'",
-              "class": "Asset'/Script/GbxGame.InventoryPickup'",
-              "uistats": [
-                "ui_stat'UIStat_Pickup_Mountains3_BruceCore'"
-              ],
-              "binventorynameisfullname": "true",
-              "inventoryname": "NexusSerialized, C9891FD34CE1122ADC9612B9D4E0667B, The Boss (Kinda)",
-              "body": "Asset'/Game/Missions/Side/Mountains/Side_Mountains_Faction3/InteractiveObjects/Body_Pickup_TheBossDrive.Body_Pickup_TheBossDrive'",
-              "serialindex": {
-                "status": "Active",
-                "index": "108",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_rocketmonters_catchtainerpickup": {
-              "inv": "InvDef_RocketMonters_CatchtainerPickup",
-              "itembasename": "Non-Trademarked Catch-tainer",
-              "basetype": "inv'mission_pickup'",
-              "class": "Asset'/Script/GbxGame.InventoryPickup'",
-              "binventorynameisfullname": "true",
-              "inventoryname": "NexusSerialized, 900D144848AEE098E4332BA99B939543, Non-Trademarked Catch-tainer",
-              "body": "Asset'/Game/Missions/Side/Grasslands/Side_Grasslands_RocketMonsters/Assets/Body_RocketMonsters_CatchtainerPickup.Body_RocketMonsters_CatchtainerPickup'",
-              "serialindex": {
-                "status": "Active",
-                "index": "113",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_twwh_cavebombpickup": {
-              "inv": "InvDef_TWWH_CaveBombPickUp",
-              "class": "Asset'/Script/GbxGame.InventoryPickup'",
-              "rarity": "rarity'00_mission'",
-              "body": "Asset'/Game/Missions/Side/Mountains/Side_Mountains_TheWeirdWayHome/Assets/Body_TWWH_CaveBombPickUp.Body_TWWH_CaveBombPickUp'",
-              "pickupinteractiontype": "TouchOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "120",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_yatlc_trachbagpickup": {
-              "inv": "InvDef_YATLC_TrachbagPickup",
-              "itembasename": "Trash Bag",
-              "basetype": "inv'mission_pickup'",
-              "class": "Asset'/Script/GbxGame.InventoryPickup'",
-              "uistats": [
-                "ui_stat'UIStat_Pickup_YARTLC_Trashbag'"
-              ],
-              "binventorynameisfullname": "true",
-              "inventoryname": "NexusSerialized, 95A158994F34F36EFA65A4AC4B05BD84, Trash Bag",
-              "body": "Asset'/Game/Missions/Micro/Mountains/Micro_Mountains_YouAreTheLifeCoach/Assets/Body_YATLC_TrashbagPickup.Body_YATLC_TrashbagPickup'",
-              "serialindex": {
-                "status": "Active",
-                "index": "158",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_yatlc_trashcanlidpickup": {
-              "inv": "InvDef_YATLC_TrashcanLidPickup",
-              "itembasename": "Trash Lid",
-              "basetype": "inv'mission_pickup'",
-              "class": "Asset'/Script/GbxGame.InventoryPickup'",
-              "uistats": [
-                "ui_stat'UIStat_Pickup_YATLC_TrashcanLid'"
-              ],
-              "binventorynameisfullname": "true",
-              "inventoryname": "NexusSerialized, DC10FB78470BE0D3CD6260B3907C0082, Trash Lid",
-              "body": "Asset'/Game/Missions/Micro/Mountains/Micro_Mountains_YouAreTheLifeCoach/Assets/Body_YATLC_TrashcanLidPickup.Body_YATLC_TrashcanLidPickup'",
-              "serialindex": {
-                "status": "Active",
-                "index": "164",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_yatlc_trashcanpickup": {
-              "inv": "InvDef_YATLC_TrashcanPickup",
-              "itembasename": "Trash Can",
-              "basetype": "inv'mission_pickup'",
-              "class": "Asset'/Script/GbxGame.InventoryPickup'",
-              "uistats": [
-                "ui_stat'UIStat_Pickup_YATLC_Trashcan'"
-              ],
-              "binventorynameisfullname": "true",
-              "inventoryname": "NexusSerialized, 6ED8F79B458860E8163968A72025D223, Trash Can",
-              "body": "Asset'/Game/Missions/Micro/Mountains/Micro_Mountains_YouAreTheLifeCoach/Assets/Body_YATLC_TrashcanPickup.Body_YATLC_TrashcanPickup'",
-              "serialindex": {
-                "status": "Active",
-                "index": "167",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "inventorydef_elpis_ozkit": {
-              "inv": "InventoryDef_Elpis_OzKit",
-              "itembasename": "Oxygen Rebreather",
-              "basetype": "inv'mission_pickup'",
-              "class": "Asset'/Script/GbxGame.InventoryPickup'",
-              "uistats": [
-                "ui_stat'UIStat_Elpis_OzKit'"
-              ],
-              "binventorynameisfullname": "true",
-              "inventoryname": "NexusSerialized, BD52742741861C736CB5E5883ED9CA3E, Oxygen Rebreather",
-              "body": "Asset'/Game/Missions/Main/Elpis/Assets/Pickups/Body_Elpis_Pickup_OzKit.Body_Elpis_Pickup_OzKit'",
-              "debugdisplayname": "Breath damn you!",
-              "serialindex": {
-                "status": "Active",
-                "index": "187",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "inventorydef_fishing_legendaryfish": {
-              "inv": "InventoryDef_Fishing_LegendaryFish",
-              "binventorynameisfullname": "true",
-              "inventoryname": "NexusSerialized, 6C6DEAD947CFAB7CC1CF409451F167A5, Rare FIsh",
-              "body": "Asset'/Game/AI/Critters/RiverFish/Animation/Fishing_A/SM_RiverFish_Fishing_A.SM_RiverFish_Fishing_A'",
-              "baddtoinventoryoverride": "true",
-              "baddtoinventory": "true",
-              "serialindex": {
-                "status": "Active",
-                "index": "78",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "inventorydef_fishing_rarefish": {
-              "inv": "InventoryDef_Fishing_RareFish",
-              "binventorynameisfullname": "true",
-              "inventoryname": "NexusSerialized, 93CBEF004EF2730E9E615F8D9FE50FA5, Rare FIsh",
-              "body": "Asset'/Game/AI/Critters/RiverFish/Animation/Fishing_A/SM_RiverFish_Fishing_A.SM_RiverFish_Fishing_A'",
-              "baddtoinventoryoverride": "true",
-              "baddtoinventory": "true",
-              "serialindex": {
-                "status": "Active",
-                "index": "79",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          }
-        ]
-      },
-      {
-        "entries": [
-          {
             "inv_contractitem_base": {
               "inv": "Inv_ContractItem_base",
               "serialindex": {
@@ -7342,6 +6476,765 @@
                 }
               }
             ]
+          }
+        ]
+      },
+      {
+        "entries": [
+          {
+            "invdef_crawler_vehiclepart_demo": {
+              "inv": "InvDef_Crawler_VehiclePart_Demo",
+              "itembasename": "Smiley",
+              "basetype": "inv'InvDef_Crawler_VehiclePart_Parent'",
+              "body": "Asset'/Game/World/Interactives/Collectibles/Crawler_Part_Pickup/SM_Crawler_Part_Pickup.SM_Crawler_Part_Pickup'",
+              "pickupsound": {
+                "wwiseevent": "audio_event'IO_Pickups_Shared.IO_Pickup_OnPickup_GenericMaterials'"
+              },
+              "pickupequipsound": {
+                "wwiseevent": "audio_event'IO_Pickups_Shared.IO_Pickup_OnPickup_GenericMaterials'"
+              },
+              "serialindex": {
+                "status": "Active",
+                "index": "77",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_crawler_vehiclepart_gra_1": {
+              "inv": "InvDef_Crawler_VehiclePart_GRA_1",
+              "itembasename": "Smiley",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "rarity": "rarity'00_mission'",
+              "uistats": [
+                "ui_stat'uistat_typeline_crawlervehiclepart'"
+              ],
+              "binventorynameisfullname": "true",
+              "inventoryname": "NexusSerialized, C12F16DBBF7A4817B7BF04DDAD3F1D94, Smiley",
+              "body": "Asset'/Game/World/Interactives/Collectibles/Crawler_Part_Pickup/SM_Crawler_Part_Pickup.SM_Crawler_Part_Pickup'",
+              "pickupinteractiontype": "UseOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "75",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_crawler_vehiclepart_gra_2": {
+              "inv": "InvDef_Crawler_VehiclePart_GRA_2",
+              "itembasename": "Awoooooo!",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "rarity": "rarity'00_mission'",
+              "uistats": [
+                "ui_stat'uistat_typeline_crawlervehiclepart'"
+              ],
+              "binventorynameisfullname": "true",
+              "inventoryname": "NexusSerialized, 5182DD6D957C46BBA22034EF81F2C9C7, Awoooooo!",
+              "body": "Asset'/Game/World/Interactives/Collectibles/Crawler_Part_Pickup/SM_Crawler_Part_Pickup.SM_Crawler_Part_Pickup'",
+              "pickupinteractiontype": "UseOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "74",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_crawler_vehiclepart_gra_3": {
+              "inv": "InvDef_Crawler_VehiclePart_GRA_3",
+              "itembasename": "Itty Bitty Kitty Committee",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "rarity": "rarity'00_mission'",
+              "uistats": [
+                "ui_stat'uistat_typeline_crawlervehiclepart'"
+              ],
+              "binventorynameisfullname": "true",
+              "inventoryname": "NexusSerialized, C3F7BB46B5B3485B8D47FA330B724DCA, Itty Bitty Kitty Committee",
+              "body": "Asset'/Game/World/Interactives/Collectibles/Crawler_Part_Pickup/SM_Crawler_Part_Pickup.SM_Crawler_Part_Pickup'",
+              "pickupinteractiontype": "UseOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "69",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_crawler_vehiclepart_gra_4": {
+              "inv": "InvDef_Crawler_VehiclePart_GRA_4",
+              "itembasename": "Afterparty",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "rarity": "rarity'00_mission'",
+              "uistats": [
+                "ui_stat'uistat_typeline_crawlervehiclepart'"
+              ],
+              "binventorynameisfullname": "true",
+              "inventoryname": "NexusSerialized, 2BEFFEE75D374933A6C21C27D6EBE5F6, Afterparty",
+              "body": "Asset'/Game/World/Interactives/Collectibles/Crawler_Part_Pickup/SM_Crawler_Part_Pickup.SM_Crawler_Part_Pickup'",
+              "pickupinteractiontype": "UseOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "68",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_crawler_vehiclepart_mt_1": {
+              "inv": "InvDef_Crawler_VehiclePart_MT_1",
+              "itembasename": "Future Proof",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "rarity": "rarity'00_mission'",
+              "uistats": [
+                "ui_stat'uistat_typeline_crawlervehiclepart'"
+              ],
+              "binventorynameisfullname": "true",
+              "inventoryname": "NexusSerialized, 3970D4160A5147B394EC3E68063E2796, Future Proof",
+              "body": "Asset'/Game/World/Interactives/Collectibles/Crawler_Part_Pickup/SM_Crawler_Part_Pickup.SM_Crawler_Part_Pickup'",
+              "pickupinteractiontype": "UseOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "73",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_crawler_vehiclepart_mt_2": {
+              "inv": "InvDef_Crawler_VehiclePart_MT_2",
+              "itembasename": "Bestia Rossa",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "rarity": "rarity'00_mission'",
+              "uistats": [
+                "ui_stat'uistat_typeline_crawlervehiclepart'"
+              ],
+              "binventorynameisfullname": "true",
+              "inventoryname": "NexusSerialized, 23673C2CA7F748C2841BE094DA459FB8, Bestia Rossa",
+              "body": "Asset'/Game/World/Interactives/Collectibles/Crawler_Part_Pickup/SM_Crawler_Part_Pickup.SM_Crawler_Part_Pickup'",
+              "pickupinteractiontype": "UseOnly",
+              "pickupsound": {
+                "wwiseevent": "audio_event'IO_Pickups_Shared.IO_Pickup_OnPickup_GenericMaterials'"
+              },
+              "pickupequipsound": {
+                "wwiseevent": "audio_event'IO_Pickups_Shared.IO_Pickup_OnPickup_GenericMaterials'"
+              },
+              "serialindex": {
+                "status": "Active",
+                "index": "71",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_crawler_vehiclepart_mt_3": {
+              "inv": "InvDef_Crawler_VehiclePart_MT_3",
+              "itembasename": "Wellspring-Loaded",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "rarity": "rarity'00_mission'",
+              "uistats": [
+                "ui_stat'uistat_typeline_crawlervehiclepart'"
+              ],
+              "binventorynameisfullname": "true",
+              "inventoryname": "NexusSerialized, 2FAEAAF12DE74470AF2EDEB450411BDC, Wellspring-Loaded",
+              "body": "Asset'/Game/World/Interactives/Collectibles/Crawler_Part_Pickup/SM_Crawler_Part_Pickup.SM_Crawler_Part_Pickup'",
+              "pickupinteractiontype": "UseOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "72",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_crawler_vehiclepart_mt_4": {
+              "inv": "InvDef_Crawler_VehiclePart_MT_4",
+              "itembasename": "La Verdita",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "rarity": "rarity'00_mission'",
+              "uistats": [
+                "ui_stat'uistat_typeline_crawlervehiclepart'"
+              ],
+              "binventorynameisfullname": "true",
+              "inventoryname": "NexusSerialized, 9F98730A45334435B1311E5F807CD898, La Verdita",
+              "body": "Asset'/Game/World/Interactives/Collectibles/Crawler_Part_Pickup/SM_Crawler_Part_Pickup.SM_Crawler_Part_Pickup'",
+              "pickupinteractiontype": "UseOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "70",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_crawler_vehiclepart_parent": {
+              "inv": "InvDef_Crawler_VehiclePart_Parent",
+              "itembasename": "Crawler Vehicle Part - Parent",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "rarity": "rarity'00_mission'",
+              "uistats": [
+                "ui_stat'uistat_typeline_crawlervehiclepart'"
+              ],
+              "body": "Asset'/Game/World/Interactives/Collectibles/Crawler_Part_Pickup/SM_Crawler_Part_Pickup.SM_Crawler_Part_Pickup'",
+              "pickupinteractiontype": "UseOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "76",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_crawler_vehiclepart_sha_1": {
+              "inv": "InvDef_Crawler_VehiclePart_SHA_1",
+              "itembasename": "Never Say DIY",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "rarity": "rarity'00_mission'",
+              "uistats": [
+                "ui_stat'uistat_typeline_crawlervehiclepart'"
+              ],
+              "binventorynameisfullname": "true",
+              "inventoryname": "NexusSerialized, 78686372E9AB4A40B51AEC958B1D2EB7, Never Say DIY",
+              "body": "Asset'/Game/World/Interactives/Collectibles/Crawler_Part_Pickup/SM_Crawler_Part_Pickup.SM_Crawler_Part_Pickup'",
+              "pickupinteractiontype": "UseOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "67",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_crawler_vehiclepart_sha_2": {
+              "inv": "InvDef_Crawler_VehiclePart_SHA_2",
+              "itembasename": "Prison Buddy",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "rarity": "rarity'00_mission'",
+              "uistats": [
+                "ui_stat'uistat_typeline_crawlervehiclepart'"
+              ],
+              "binventorynameisfullname": "true",
+              "inventoryname": "NexusSerialized, 092E14B9AECD41A8B3504361066AD240, Prison Buddy",
+              "body": "Asset'/Game/World/Interactives/Collectibles/Crawler_Part_Pickup/SM_Crawler_Part_Pickup.SM_Crawler_Part_Pickup'",
+              "pickupinteractiontype": "UseOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "66",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_crawler_vehiclepart_sha_3": {
+              "inv": "InvDef_Crawler_VehiclePart_SHA_3",
+              "itembasename": "Frenzy Forever",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "rarity": "rarity'00_mission'",
+              "uistats": [
+                "ui_stat'uistat_typeline_crawlervehiclepart'"
+              ],
+              "binventorynameisfullname": "true",
+              "inventoryname": "NexusSerialized, C5B88EE9504A4A61A3DCC58B302A377B, Frenzy Forever",
+              "body": "Asset'/Game/World/Interactives/Collectibles/Crawler_Part_Pickup/SM_Crawler_Part_Pickup.SM_Crawler_Part_Pickup'",
+              "pickupinteractiontype": "UseOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "65",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_crawler_vehiclepart_sha_4": {
+              "inv": "InvDef_Crawler_VehiclePart_SHA_4",
+              "itembasename": "Ripperlands",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "rarity": "rarity'00_mission'",
+              "uistats": [
+                "ui_stat'uistat_typeline_crawlervehiclepart'"
+              ],
+              "binventorynameisfullname": "true",
+              "inventoryname": "NexusSerialized, 0369EFF267204C03A9C581FB955EEAAE, Ripperlands",
+              "body": "Asset'/Game/World/Interactives/Collectibles/Crawler_Part_Pickup/SM_Crawler_Part_Pickup.SM_Crawler_Part_Pickup'",
+              "pickupinteractiontype": "UseOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "64",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_dronebrain": {
+              "inv": "InvDef_DroneBrain",
+              "itembasename": "Drone Brain",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "rarity": "rarity'00_mission'",
+              "body": "Asset'/Game/InteractiveObjects/PoA/DroneFactory/Body_DroneBrain.Body_DroneBrain'",
+              "pickupinteractiontype": "UseOnly",
+              "pickupprompt": "usability_prompt'UsePrompt_PickUp'",
+              "serialindex": {
+                "status": "Active",
+                "index": "63",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_gardenseeds": {
+              "inv": "InvDef_GardenSeeds",
+              "itembasename": "PLACEHOLDER TEXT",
+              "basetype": "inv'mission_pickup'",
+              "uistats": [
+                "ui_stat'uistat_mission_item_header'",
+                "ui_stat'uistat_pickup_gardenseeds_description'"
+              ],
+              "body": "Asset'/Game/World/Grasslands/Props/FarmBags/SM_Farm_Bag_Bend.SM_Farm_Bag_Bend'",
+              "serialindex": {
+                "status": "Active",
+                "index": "56",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_io_pickup_convoybomb": {
+              "inv": "InvDef_IO_Pickup_ConvoyBomb",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "rarity": "rarity'00_mission'",
+              "body": "Asset'/Game/Missions/Main/Grasslands/Grasslands2/Assets/Grassland_Main2_Pickup_Bomb/Body_IO_Pickup_ConvoyBomb.Body_IO_Pickup_ConvoyBomb'",
+              "pickupinteractiontype": "UseOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "134",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_io_pickup_detonator": {
+              "inv": "InvDef_IO_Pickup_Detonator",
+              "itembasename": "Outbounder Detonator",
+              "basetype": "inv'mission_pickup'",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "binventorynameisfullname": "true",
+              "inventoryname": "NexusSerialized, 2485598A4FBF21E9B27E17A40A565024, Outbounder Detonator",
+              "body": "Asset'/Game/Missions/Main/Grasslands/Grasslands3/Mission_IO/Grasslands_Main3_Pickup_Detonator/Body_IO_Pickup_Detonator.Body_IO_Pickup_Detonator'",
+              "serialindex": {
+                "status": "Active",
+                "index": "156",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_io_pickup_giftbag": {
+              "inv": "InvDef_IO_Pickup_GiftBag",
+              "itembasename": "Gift Bag",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "rarity": "rarity'00_mission'",
+              "uistats": [
+                "ui_stat'UIStat_Pickup_GiftBag'"
+              ],
+              "binventorynameisfullname": "true",
+              "inventoryname": "NexusSerialized, BCBFF13E45B795443C4E12AB7C967EC0, Gift Bag",
+              "body": "Asset'/Game/Missions/Main/Grasslands/Grasslands1/Assets/Grassland_Main1_Pickup_GiftBag/Body_IO_Pickup_GiftBag.Body_IO_Pickup_GiftBag'",
+              "pickupinteractiontype": "UseOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "219",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_io_pickup_glidepack": {
+              "inv": "InvDef_IO_Pickup_GlidePack",
+              "itembasename": "Glide Pack",
+              "basetype": "inv'mission_pickup'",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "uistats": [
+                "ui_stat'UIStat_Pickup_GlidePack_0'"
+              ],
+              "binventorynameisfullname": "true",
+              "inventoryname": "NexusSerialized, 6983A8BA43AB0F98F507599E83DE4B8D, Glide Pack",
+              "body": "Asset'/Game/Missions/Main/Grasslands/Grasslands1/Assets/Grasslands_Main1_Pickup_GlidePack/Body_IO_Pickup_GlidePack.Body_IO_Pickup_GlidePack'",
+              "pickupsound": {
+                "wwiseevent": "audio_event'IO_Pickups_Shared.IO_Pickup_OnPickup_GenericMaterials'"
+              },
+              "pickupequipsound": {
+                "wwiseevent": "audio_event'IO_Pickups_Shared.IO_Pickup_OnPickup_GenericMaterials'"
+              },
+              "serialindex": {
+                "status": "Active",
+                "index": "193",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_io_pickup_guidescore": {
+              "inv": "InvDef_IO_Pickup_GuidesCore",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "rarity": "rarity'00_mission'",
+              "body": "Asset'/Game/Missions/Side/Grasslands/Side_Grasslands_LifesPurpose/Assets/LifesPurpose_Pickup_GuidesCore/Body_IO_Pickup_GuidesCore.Body_IO_Pickup_GuidesCore'",
+              "pickupinteractiontype": "UseOnly",
+              "pickupsound": {
+                "wwiseevent": "audio_event'IO_Carry_Battery_Ordonite.IO_Carryable_Battery_Ordonite_Grab'"
+              },
+              "pickupequipsound": {
+                "wwiseevent": "audio_event'IO_Carry_Battery_Ordonite.IO_Carryable_Battery_Ordonite_Grab'"
+              },
+              "serialindex": {
+                "status": "Active",
+                "index": "171",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_io_pickup_intel": {
+              "inv": "InvDef_IO_Pickup_Intel",
+              "itembasename": "Battery",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "rarity": "rarity'00_mission'",
+              "uistats": [
+                "ui_stat'UIStat_Pickup_VehiclePowercore'"
+              ],
+              "binventorynameisfullname": "true",
+              "inventoryname": "NexusSerialized, 6A4B94DD449145FDE7B6C08DD5316D74, Battery",
+              "body": "Asset'/Game/Missions/Main/Grasslands/Grasslands1/Assets/Grasslands_Main1_Pickup_Intel/Body_IO_Pickup_Intel.Body_IO_Pickup_Intel'",
+              "pickupinteractiontype": "UseOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "191",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_io_pickup_missilebody": {
+              "inv": "InvDef_IO_Pickup_MissileBody",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "rarity": "rarity'00_mission'",
+              "body": "Asset'/Game/Missions/Side/Grasslands/Side_Grasslands_LifesPurpose/Assets/LifesPurpose_Pickup_MissileBody/Body_IO_Pickup_MissileBody.Body_IO_Pickup_MissileBody'",
+              "pickupinteractiontype": "UseOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "163",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_io_pickup_missilecone": {
+              "inv": "InvDef_IO_Pickup_MissileCone",
+              "itembasename": "Missile Cone",
+              "basetype": "inv'mission_pickup'",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "uistats": [
+                "ui_stat'UIStat_MissileCone'"
+              ],
+              "binventorynameisfullname": "true",
+              "inventoryname": "NexusSerialized, 5BD31D02456719857E17778FFBD6127F, Missile Cone",
+              "body": "Asset'/Game/Missions/Side/Grasslands/Side_Grasslands_LifesPurpose/Assets/LifesPurpose_Pickup_MissileParts/Body_IO_Pickup_MissileCone.Body_IO_Pickup_MissileCone'",
+              "serialindex": {
+                "status": "Active",
+                "index": "175",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_io_pickup_missilelaunchsystem": {
+              "inv": "InvDef_IO_Pickup_MissileLaunchSystem",
+              "itembasename": "Missile Launch System",
+              "basetype": "inv'mission_pickup'",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "uistats": [
+                "ui_stat'UIStat_MissileLaunchSystem'"
+              ],
+              "binventorynameisfullname": "true",
+              "inventoryname": "NexusSerialized, D860F2EC4304569B3C5F04AABD8FB662, Missile Launch System",
+              "body": "Asset'/Game/Missions/Side/Grasslands/Side_Grasslands_LifesPurpose/Assets/LifesPurpose_Pickup_MissileLaunchSystem/Body_IO_Pickup_MissileLaunchSystem.Body_IO_Pickup_MissileLaunchSystem'",
+              "serialindex": {
+                "status": "Active",
+                "index": "180",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_io_pickup_missilemiddle": {
+              "inv": "InvDef_IO_Pickup_MissileMiddle",
+              "itembasename": "Missile Casing",
+              "basetype": "inv'mission_pickup'",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "uistats": [
+                "ui_stat'UIStat_MissileMiddle'"
+              ],
+              "binventorynameisfullname": "true",
+              "inventoryname": "NexusSerialized, 036D45774ACD7D07D57497BE0B12FC60, Missile Casing",
+              "body": "Asset'/Game/Missions/Side/Grasslands/Side_Grasslands_LifesPurpose/Assets/LifesPurpose_Pickup_MissileParts/Body_IO_Pickup_MissileMiddle.Body_IO_Pickup_MissileMiddle'",
+              "serialindex": {
+                "status": "Active",
+                "index": "176",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_missiontemp_pickup": {
+              "inv": "InvDef_MissionTemp_Pickup",
+              "itembasename": "Mission Temp Pickup",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "rarity": "rarity'00_mission'",
+              "uistats": [
+                "ui_stat'UIStat_Pickup_MissionTemp'"
+              ],
+              "body": "Asset'/Game/InteractiveObjects/Pickups/MissionTemp/Body_MissionTemp_Pickup.Body_MissionTemp_Pickup'",
+              "pickupinteractiontype": "UseOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "61",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_oxygencanister": {
+              "inv": "InvDef_OxygenCanister",
+              "itembasename": "PLACEHOLDER TEXT",
+              "basetype": "inv'Health'",
+              "body": "Asset'/Game/Missions/Main/Elpis/Assets/OxygenCanister/SM_Oxygen_Canister.SM_Oxygen_Canister'",
+              "aspects": [
+                {
+                  "parent": "inv_aspect'pickup_attr_effects'",
+                  "attributeeffects": [
+                    {
+                      "attributetomodify": "attribute'Oxygen_Pool_CurrentValue'",
+                      "modifiertype": "PostAdd",
+                      "modifiervalue": {
+                        "constant": "30.000000"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "serialindex": {
+                "status": "Active",
+                "index": "57",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_pickup_bolt": {
+              "inv": "InvDef_Pickup_Bolt",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "rarity": "rarity'00_mission'",
+              "body": "Asset'/Game/Missions/Micro/Mountains/Micro_Mountains_BoltFuneralRites/Assets/Pickups/Body_Pickup_BFR_Bolt.Body_Pickup_BFR_Bolt'",
+              "pickupinteractiontype": "UseOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "179",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_pickup_thebossdrive": {
+              "inv": "InvDef_Pickup_TheBossDrive",
+              "itembasename": "The Boss (Kinda)",
+              "basetype": "inv'mission_pickup'",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "uistats": [
+                "ui_stat'UIStat_Pickup_Mountains3_BruceCore'"
+              ],
+              "binventorynameisfullname": "true",
+              "inventoryname": "NexusSerialized, C9891FD34CE1122ADC9612B9D4E0667B, The Boss (Kinda)",
+              "body": "Asset'/Game/Missions/Side/Mountains/Side_Mountains_Faction3/InteractiveObjects/Body_Pickup_TheBossDrive.Body_Pickup_TheBossDrive'",
+              "serialindex": {
+                "status": "Active",
+                "index": "108",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_rocketmonters_catchtainerpickup": {
+              "inv": "InvDef_RocketMonters_CatchtainerPickup",
+              "itembasename": "Non-Trademarked Catch-tainer",
+              "basetype": "inv'mission_pickup'",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "binventorynameisfullname": "true",
+              "inventoryname": "NexusSerialized, 900D144848AEE098E4332BA99B939543, Non-Trademarked Catch-tainer",
+              "body": "Asset'/Game/Missions/Side/Grasslands/Side_Grasslands_RocketMonsters/Assets/Body_RocketMonsters_CatchtainerPickup.Body_RocketMonsters_CatchtainerPickup'",
+              "serialindex": {
+                "status": "Active",
+                "index": "113",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_twwh_cavebombpickup": {
+              "inv": "InvDef_TWWH_CaveBombPickUp",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "rarity": "rarity'00_mission'",
+              "body": "Asset'/Game/Missions/Side/Mountains/Side_Mountains_TheWeirdWayHome/Assets/Body_TWWH_CaveBombPickUp.Body_TWWH_CaveBombPickUp'",
+              "pickupinteractiontype": "TouchOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "120",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_yatlc_trachbagpickup": {
+              "inv": "InvDef_YATLC_TrachbagPickup",
+              "itembasename": "Trash Bag",
+              "basetype": "inv'mission_pickup'",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "uistats": [
+                "ui_stat'UIStat_Pickup_YARTLC_Trashbag'"
+              ],
+              "binventorynameisfullname": "true",
+              "inventoryname": "NexusSerialized, 95A158994F34F36EFA65A4AC4B05BD84, Trash Bag",
+              "body": "Asset'/Game/Missions/Micro/Mountains/Micro_Mountains_YouAreTheLifeCoach/Assets/Body_YATLC_TrashbagPickup.Body_YATLC_TrashbagPickup'",
+              "serialindex": {
+                "status": "Active",
+                "index": "158",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_yatlc_trashcanlidpickup": {
+              "inv": "InvDef_YATLC_TrashcanLidPickup",
+              "itembasename": "Trash Lid",
+              "basetype": "inv'mission_pickup'",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "uistats": [
+                "ui_stat'UIStat_Pickup_YATLC_TrashcanLid'"
+              ],
+              "binventorynameisfullname": "true",
+              "inventoryname": "NexusSerialized, DC10FB78470BE0D3CD6260B3907C0082, Trash Lid",
+              "body": "Asset'/Game/Missions/Micro/Mountains/Micro_Mountains_YouAreTheLifeCoach/Assets/Body_YATLC_TrashcanLidPickup.Body_YATLC_TrashcanLidPickup'",
+              "serialindex": {
+                "status": "Active",
+                "index": "164",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_yatlc_trashcanpickup": {
+              "inv": "InvDef_YATLC_TrashcanPickup",
+              "itembasename": "Trash Can",
+              "basetype": "inv'mission_pickup'",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "uistats": [
+                "ui_stat'UIStat_Pickup_YATLC_Trashcan'"
+              ],
+              "binventorynameisfullname": "true",
+              "inventoryname": "NexusSerialized, 6ED8F79B458860E8163968A72025D223, Trash Can",
+              "body": "Asset'/Game/Missions/Micro/Mountains/Micro_Mountains_YouAreTheLifeCoach/Assets/Body_YATLC_TrashcanPickup.Body_YATLC_TrashcanPickup'",
+              "serialindex": {
+                "status": "Active",
+                "index": "167",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "inventorydef_elpis_ozkit": {
+              "inv": "InventoryDef_Elpis_OzKit",
+              "itembasename": "Oxygen Rebreather",
+              "basetype": "inv'mission_pickup'",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "uistats": [
+                "ui_stat'UIStat_Elpis_OzKit'"
+              ],
+              "binventorynameisfullname": "true",
+              "inventoryname": "NexusSerialized, BD52742741861C736CB5E5883ED9CA3E, Oxygen Rebreather",
+              "body": "Asset'/Game/Missions/Main/Elpis/Assets/Pickups/Body_Elpis_Pickup_OzKit.Body_Elpis_Pickup_OzKit'",
+              "debugdisplayname": "Breath damn you!",
+              "serialindex": {
+                "status": "Active",
+                "index": "187",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "inventorydef_fishing_legendaryfish": {
+              "inv": "InventoryDef_Fishing_LegendaryFish",
+              "binventorynameisfullname": "true",
+              "inventoryname": "NexusSerialized, 6C6DEAD947CFAB7CC1CF409451F167A5, Rare FIsh",
+              "body": "Asset'/Game/AI/Critters/RiverFish/Animation/Fishing_A/SM_RiverFish_Fishing_A.SM_RiverFish_Fishing_A'",
+              "baddtoinventoryoverride": "true",
+              "baddtoinventory": "true",
+              "serialindex": {
+                "status": "Active",
+                "index": "78",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "inventorydef_fishing_rarefish": {
+              "inv": "InventoryDef_Fishing_RareFish",
+              "binventorynameisfullname": "true",
+              "inventoryname": "NexusSerialized, 93CBEF004EF2730E9E615F8D9FE50FA5, Rare FIsh",
+              "body": "Asset'/Game/AI/Critters/RiverFish/Animation/Fishing_A/SM_RiverFish_Fishing_A.SM_RiverFish_Fishing_A'",
+              "baddtoinventoryoverride": "true",
+              "baddtoinventory": "true",
+              "serialindex": {
+                "status": "Active",
+                "index": "79",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
           }
         ]
       },

@@ -26,23 +26,165 @@ WINDOW_SCALE_STEP = 0.1
 WINDOW_SCALE_DEFAULT = 1.0
 
 THEME_IDS: tuple[str, ...] = (
+    "msbt_bright",
     "msbt",
     "blackberry",
     "azzy_purple",
+    "basic_default",
     "arctic",
     "inferno",
     "void",
+    "explosive",
+    "healing",
+    "fortress",
     "legendary",
+    "mystic",
+    "scooters",
+    "cosmic",
+    "midnight",
+    "venom",
+    "skullmasher",
+    "lootlobby",
+    "rat_bastard",
+    "playas_darkness",
+    "halloween",
+    "merry_mephisto",
 )
 
+THEME_LABELS: dict[str, str] = {
+    "msbt_bright": "MSBT Neon (Azzy)",
+    "msbt": "MSBT Orange",
+    "blackberry": "Blackberry",
+    "azzy_purple": "Azzy Purple",
+    "basic_default": "Basic Default",
+    "arctic": "Arctic Blast",
+    "inferno": "Inferno Flame",
+    "void": "Void Shadow",
+    "explosive": "Explosive Burst",
+    "healing": "Healing Spring",
+    "fortress": "Fortress Shield",
+    "legendary": "Legendary Gold",
+    "mystic": "Mystic Vault",
+    "scooters": "Scooters Toolbox",
+    "cosmic": "Cosmic Plasma",
+    "midnight": "Midnight Blue",
+    "venom": "Venom",
+    "skullmasher": "Skullmasher",
+    "lootlobby": "Lootlobby Queen",
+    "rat_bastard": "Rat Bastard",
+    "playas_darkness": "Playa's Darkness",
+    "halloween": "Halloween",
+    "merry_mephisto": "Merry Mephisto",
+}
+
 DEFAULT_CHROME: dict[str, Any] = {
-    "theme_id": "msbt",
+    # New installs / unset chrome only — existing saved theme_id is preserved.
+    "theme_id": "msbt_bright",
     "window_scale": WINDOW_SCALE_DEFAULT,
     "offset_x": 0.0,
     "offset_y": 0.0,
     "panel_opacity": 1.0,
     # F7 rarity slider strip — off until equipped from the ★ QM editor.
     "rarity_panel_equipped": False,
+}
+
+# UE KeyName allow-list for per-slot Quick Menu hotkeys (camera-tick polled).
+HOTKEY_KEY_NAMES: tuple[str, ...] = (
+    *tuple("ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
+    "Zero",
+    "One",
+    "Two",
+    "Three",
+    "Four",
+    "Five",
+    "Six",
+    "Seven",
+    "Eight",
+    "Nine",
+    "NumPadZero",
+    "NumPadOne",
+    "NumPadTwo",
+    "NumPadThree",
+    "NumPadFour",
+    "NumPadFive",
+    "NumPadSix",
+    "NumPadSeven",
+    "NumPadEight",
+    "NumPadNine",
+    "F1",
+    "F2",
+    "F3",
+    "F4",
+    "F5",
+    "F8",
+    "F9",
+    "F10",
+    "F11",
+    "F12",
+    "Tab",
+    "Enter",
+    "SpaceBar",
+    "BackSpace",
+    "Delete",
+    "Insert",
+    "Home",
+    "End",
+    "PageUp",
+    "PageDown",
+    "Left",
+    "Right",
+    "Up",
+    "Down",
+    "LeftShift",
+    "RightShift",
+    "LeftControl",
+    "RightControl",
+    "LeftAlt",
+    "RightAlt",
+    "CapsLock",
+    "Semicolon",
+    "Equals",
+    "Comma",
+    "Hyphen",
+    "Period",
+    "Slash",
+    "Tilde",
+    "LeftBracket",
+    "Backslash",
+    "RightBracket",
+    "Apostrophe",
+)
+
+HOTKEY_RESERVED: frozenset[str] = frozenset({"F6", "F7", "Escape"})
+
+HOTKEY_DISPLAY_ALIASES: dict[str, str] = {
+    "Zero": "0",
+    "One": "1",
+    "Two": "2",
+    "Three": "3",
+    "Four": "4",
+    "Five": "5",
+    "Six": "6",
+    "Seven": "7",
+    "Eight": "8",
+    "Nine": "9",
+    "SpaceBar": "Space",
+    "LeftControl": "LCtrl",
+    "RightControl": "RCtrl",
+    "LeftShift": "LShift",
+    "RightShift": "RShift",
+    "LeftAlt": "LAlt",
+    "RightAlt": "RAlt",
+    "NumPadZero": "Num0",
+    "NumPadOne": "Num1",
+    "NumPadTwo": "Num2",
+    "NumPadThree": "Num3",
+    "NumPadFour": "Num4",
+    "NumPadFive": "Num5",
+    "NumPadSix": "Num6",
+    "NumPadSeven": "Num7",
+    "NumPadEight": "Num8",
+    "NumPadNine": "Num9",
 }
 
 ACTION_CATALOG: dict[str, dict[str, Any]] = {
@@ -65,6 +207,9 @@ ACTION_CATALOG: dict[str, dict[str, Any]] = {
     "give_serial_selected": {"basic": "Give Serial Selected", "aliases": ["Serial Sel"]},
     "give_serial_all": {"basic": "Give Serial All", "aliases": ["Serial All"]},
     "give_serial_nonhost": {"basic": "Give Serial Non-Host", "aliases": ["Serial NH"]},
+    "read_equipped_serials": {"basic": "Read Equipped Serials", "aliases": ["Read Equip", "Equip Serials"]},
+    "read_backpack_serials": {"basic": "Read Backpack Serials", "aliases": ["Read Inv", "Backpack Serials"]},
+    "read_inventory": {"basic": "Read Inventory", "aliases": ["Inventory", "Inv Browser"]},
     "repeat_last_drop": {"basic": "Repeat Last Drop", "aliases": ["Redo Drop", "RLD"]},
     "travel_to_map": {"basic": "Travel Map", "aliases": ["Map Travel"]},
     "travel_to_station": {"basic": "Travel Station", "aliases": ["Station"]},
@@ -95,10 +240,13 @@ ACTION_CATALOG: dict[str, dict[str, Any]] = {
     "movement_toggle_no_target": {"basic": "Toggle No Target", "aliases": ["No Target"]},
     "movement_toggle_noclip": {"basic": "Toggle Noclip", "aliases": ["Noclip"]},
     "movement_players_only": {"basic": "Players Only", "aliases": ["Players"]},
-    "movement_delete_ground_items": {"basic": "Clear Ground Loot", "aliases": ["Clear Loot"]},
+    "movement_delete_ground_items": {"basic": "Clear Ground Loot", "aliases": ["Destroy Junk", "Hard Clear"]},
+    "movement_hide_ground_loot": {"basic": "Clear Loot (Hide)", "aliases": ["Soft Clear", "Hide Loot"]},
     "movement_pull_ground_loot": {"basic": "Pull Loot Here", "aliases": ["Pull Loot", "TP Loot"]},
-    "movement_super_dash": {"basic": "Super Dash", "aliases": ["Dash"]},
-    "movement_super_dash_toggle": {"basic": "Super Dash Toggle", "aliases": ["Dash Toggle"]},
+    "movement_super_dash": {"basic": "Super Dash (MSBT)", "aliases": ["Dash MSBT", "Dash"]},
+    "movement_super_dash_toggle": {"basic": "Super Dash Toggle (MSBT)", "aliases": ["Dash Toggle MSBT"]},
+    "movement_azzy_super_dash": {"basic": "Super Dash Fire (Azzy)", "aliases": ["Dash Azzy", "Azzy Dash"]},
+    "movement_azzy_super_dash_toggle": {"basic": "Super Dash Toggle (Azzy)", "aliases": ["Dash Toggle Azzy"]},
     "movement_zero_vault": {"basic": "Zero Vault Costs", "aliases": ["Vault0"]},
     "movement_set_time": {"basic": "Set Time", "aliases": ["Time"]},
     "movement_reset_time": {"basic": "Reset Time", "aliases": ["Time 1x"]},
@@ -143,13 +291,19 @@ NATIVE_PICKER_ACTIONS: tuple[str, ...] = (
     "shiny_all",
     "shiny_nonhost",
     "repeat_last_drop",
+    "read_equipped_serials",
+    "read_backpack_serials",
+    "read_inventory",
     "uvh_boost_all",
     "movement_preset_fast",
     "movement_preset_veryfast",
     "movement_delete_ground_items",
+    "movement_hide_ground_loot",
     "movement_pull_ground_loot",
     "movement_super_dash",
     "movement_super_dash_toggle",
+    "movement_azzy_super_dash",
+    "movement_azzy_super_dash_toggle",
     "movement_zero_vault",
     "movement_infinite_jump_all_on",
     "movement_infinite_jump_all_off",
@@ -174,6 +328,9 @@ NEEDS_PLAYER_ACTIONS = frozenset({
     "set_level",
     "shiny_selected",
     "give_serial_selected",
+    "read_equipped_serials",
+    "read_backpack_serials",
+    "read_inventory",
     "kick_player",
     "set_backpack_bank_selected",
     "devperk_0",
@@ -427,6 +584,22 @@ def _label_mode(action: str, raw_mode: object, custom_label: str) -> str:
     return "basic"
 
 
+def normalize_hotkey(raw: object) -> str:
+    key = str(raw or "").strip()
+    if not key or key in HOTKEY_RESERVED:
+        return ""
+    if key not in HOTKEY_KEY_NAMES:
+        return ""
+    return key
+
+
+def hotkey_display(key_name: str | None) -> str:
+    key = str(key_name or "").strip()
+    if not key:
+        return ""
+    return str(HOTKEY_DISPLAY_ALIASES.get(key) or key)
+
+
 def normalize_slot(raw: object) -> dict[str, Any] | None:
     if not isinstance(raw, dict):
         return None
@@ -439,6 +612,7 @@ def normalize_slot(raw: object) -> dict[str, Any] | None:
         "label_mode": _label_mode(action, raw.get("label_mode"), custom_label),
         "custom_label": custom_label,
         "payload": sanitize_payload(action, raw.get("payload")),
+        "hotkey": normalize_hotkey(raw.get("hotkey")),
     }
 
 
@@ -681,6 +855,7 @@ def get_quick_menu_snapshot() -> dict[str, Any]:
             "grid_cols": GRID_COLS,
             "grid_rows": GRID_ROWS,
             "themes": list(THEME_IDS),
+            "theme_labels": dict(THEME_LABELS),
             "window_scale_min": WINDOW_SCALE_MIN,
             "window_scale_max": WINDOW_SCALE_MAX,
             "window_scale_step": WINDOW_SCALE_STEP,

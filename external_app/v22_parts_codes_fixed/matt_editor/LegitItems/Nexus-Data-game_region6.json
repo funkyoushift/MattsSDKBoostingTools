@@ -36,6 +36,15 @@
             }
           },
           {
+            "harp": {
+              "game_region": "Harp",
+              "regioninfo": "display_data'UIRegionDisplayData_Harp'",
+              "loadingscreendef": "loadingscreen_data'ls_thetoxicscowl'",
+              "displayname": "bp1_world_regions, A7AEDD6A48B3C4C167B714A6AC27E754, Do not localize, this is never used",
+              "type": "/Script/OakGame.WorldRegionDef"
+            }
+          },
+          {
             "mandolin": {
               "game_region": "Mandolin",
               "regioninfo": "display_data'UIRegionDisplayData_Mandolin'",

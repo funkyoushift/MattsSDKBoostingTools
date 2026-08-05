@@ -8,6 +8,190 @@
       {
         "entries": [
           {
+            "itempoollist_betamaxxx": {
+              "itempoollist": "ItemPoolList_BetaMaxxx",
+              "itempools": [
+                {
+                  "itempool": {
+                    "item": {
+                      "binstance": "true",
+                      "instance": {
+                        "structtype": "Asset'/Script/GbxGame.ItemPoolDef'",
+                        "items": [
+                          {
+                            "item": {
+                              "item": {
+                                "handle": "inv'JAK_SR.comp_05_legendary_Burrow'"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "probability": {
+                    "attribute": "attribute'Att_Loot_UVH_TertiaryScalar'",
+                    "postscale": "0.200000"
+                  }
+                },
+                {
+                  "itempool": {
+                    "item": {
+                      "binstance": "true",
+                      "instance": {
+                        "structtype": "Asset'/Script/GbxGame.ItemPoolDef'",
+                        "items": [
+                          {
+                            "item": {
+                              "item": {
+                                "handle": "inv'vla_repair_kit.comp_05_legendary_BloodIron'"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "probability": {
+                    "attribute": "attribute'Att_Loot_UVH_PrimaryScalar'"
+                  }
+                },
+                {
+                  "itempool": {
+                    "item": {
+                      "binstance": "true",
+                      "instance": {
+                        "structtype": "Asset'/Script/GbxGame.ItemPoolDef'",
+                        "items": [
+                          {
+                            "item": {
+                              "item": {
+                                "handle": "inv'DAD_PS.comp_05_legendary_silversliver'"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "probability": {
+                    "attribute": "attribute'Att_Loot_UVH_PrimaryScalar'"
+                  }
+                },
+                {
+                  "itempool": {
+                    "item": {
+                      "handle": "itempool'itempool_dad_ps_05_legendary_silversliver_shiny'"
+                    }
+                  },
+                  "probability": {
+                    "attribute": "attribute'Att_Loot_UVH_ShinyScalar'"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "itempoollist_betamaxxx_true": {
+              "itempoollist": "ItemPoolList_BetaMaxxx_TRUE",
+              "itempools": [
+                {
+                  "itempool": {
+                    "item": {
+                      "binstance": "true",
+                      "instance": {
+                        "structtype": "Asset'/Script/GbxGame.ItemPoolDef'",
+                        "items": [
+                          {
+                            "item": {
+                              "item": {
+                                "handle": "inv'JAK_SR.comp_05_legendary_Burrow'"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "probability": {
+                    "datatablevalue": {
+                      "datatable": "gbx_ue_data_table'Table_DedicatedDropProbability'",
+                      "rowname": "Launch_Dedicated_Drops",
+                      "columnname": "TrueBoss_12_47D1E0FA435EA53697F51F829004964B"
+                    },
+                    "postscale": "0.300000"
+                  }
+                },
+                {
+                  "itempool": {
+                    "item": {
+                      "binstance": "true",
+                      "instance": {
+                        "structtype": "Asset'/Script/GbxGame.ItemPoolDef'",
+                        "items": [
+                          {
+                            "item": {
+                              "item": {
+                                "handle": "inv'vla_repair_kit.comp_05_legendary_BloodIron'"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "probability": {
+                    "datatablevalue": {
+                      "datatable": "gbx_ue_data_table'Table_DedicatedDropProbability'",
+                      "rowname": "Launch_Dedicated_Drops",
+                      "columnname": "TrueBoss_12_47D1E0FA435EA53697F51F829004964B"
+                    }
+                  }
+                },
+                {
+                  "itempool": {
+                    "item": {
+                      "binstance": "true",
+                      "instance": {
+                        "structtype": "Asset'/Script/GbxGame.ItemPoolDef'",
+                        "items": [
+                          {
+                            "item": {
+                              "item": {
+                                "handle": "inv'DAD_PS.comp_05_legendary_silversliver'"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "probability": {
+                    "datatablevalue": {
+                      "datatable": "gbx_ue_data_table'Table_DedicatedDropProbability'",
+                      "rowname": "Launch_Dedicated_Drops",
+                      "columnname": "TrueBoss_12_47D1E0FA435EA53697F51F829004964B"
+                    }
+                  }
+                },
+                {
+                  "itempool": {
+                    "item": {
+                      "handle": "itempool'itempool_dad_ps_05_legendary_silversliver_shiny'"
+                    }
+                  },
+                  "probability": {
+                    "datatablevalue": {
+                      "datatable": "gbx_ue_data_table'Table_DedicatedDropProbability'",
+                      "rowname": "Launch_Dedicated_Drops",
+                      "columnname": "TrueBossShiny_14_EA1D0D2F4F68BA38D6105D9025645769"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
             "itempoollist_bloomreaper": {
               "itempoollist": "ItemPoolList_Bloomreaper",
               "itempools": [
@@ -97,6 +281,29 @@
                   },
                   "probability": {
                     "attribute": "attribute'Att_Loot_UVH_PrimaryScalar_Raid1'"
+                  }
+                },
+                {
+                  "itempool": {
+                    "item": {
+                      "binstance": "true",
+                      "instance": {
+                        "structtype": "Asset'/Script/GbxGame.ItemPoolDef'",
+                        "items": [
+                          {
+                            "item": {
+                              "item": {
+                                "handle": "inv'JAK_SG.comp_06_pearl_Constable'"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "probability": {
+                    "attribute": "attribute'Att_Loot_UVH_TertiaryScalar_Raid2'",
+                    "postscale": "0.250000"
                   }
                 },
                 {
@@ -228,6 +435,29 @@
                       "rowname": "Raid1_Dedicated_Drops",
                       "columnname": "TrueBoss_12_47D1E0FA435EA53697F51F829004964B"
                     }
+                  }
+                },
+                {
+                  "itempool": {
+                    "item": {
+                      "binstance": "true",
+                      "instance": {
+                        "structtype": "Asset'/Script/GbxGame.ItemPoolDef'",
+                        "items": [
+                          {
+                            "item": {
+                              "item": {
+                                "handle": "inv'JAK_SG.comp_06_pearl_Constable'"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "probability": {
+                    "attribute": "attribute'Att_Loot_UVH_TertiaryScalar_Raid2'",
+                    "postscale": "1.500000"
                   }
                 },
                 {
@@ -523,6 +753,202 @@
                       "datatable": "gbx_ue_data_table'Table_DedicatedDropProbability'",
                       "rowname": "Launch_Dedicated_Drops",
                       "columnname": "TrueBossShiny_14_EA1D0D2F4F68BA38D6105D9025645769"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "itempoollist_infamousdave": {
+              "itempoollist": "ItemPoolList_InfamousDave",
+              "itempools": [
+                {
+                  "itempool": {
+                    "item": {
+                      "binstance": "true",
+                      "instance": {
+                        "structtype": "Asset'/Script/GbxGame.ItemPoolDef'",
+                        "items": [
+                          {
+                            "item": {
+                              "item": {
+                                "handle": "inv'TOR_HW.comp_05_legendary_Loiter'"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "probability": {
+                    "attribute": "attribute'Att_Loot_UVH_PrimaryScalar'"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "itempoollist_infamousdave_true": {
+              "itempoollist": "ItemPoolList_InfamousDave_TRUE",
+              "itempools": [
+                {
+                  "itempool": {
+                    "item": {
+                      "binstance": "true",
+                      "instance": {
+                        "structtype": "Asset'/Script/GbxGame.ItemPoolDef'",
+                        "items": [
+                          {
+                            "item": {
+                              "item": {
+                                "handle": "inv'TOR_HW.comp_05_legendary_Loiter'"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "probability": {
+                    "datatablevalue": {
+                      "datatable": "gbx_ue_data_table'Table_DedicatedDropProbability'",
+                      "rowname": "Launch_Dedicated_Drops",
+                      "columnname": "TrueBoss_12_47D1E0FA435EA53697F51F829004964B"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "itempoollist_maxxxsupreme": {
+              "itempoollist": "ItemPoolList_MaxxxSupreme",
+              "itempools": [
+                {
+                  "itempool": {
+                    "item": {
+                      "binstance": "true",
+                      "instance": {
+                        "structtype": "Asset'/Script/GbxGame.ItemPoolDef'",
+                        "items": [
+                          {
+                            "item": {
+                              "item": {
+                                "handle": "inv'TED_PS.comp_05_legendary_EarlyExcess'"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "probability": {
+                    "attribute": "attribute'Att_Loot_UVH_PrimaryScalar'"
+                  }
+                },
+                {
+                  "itempool": {
+                    "item": {
+                      "handle": "itempool'itempool_ted_ps_05_legendary_EarlyExcess_shiny'"
+                    }
+                  },
+                  "probability": {
+                    "attribute": "attribute'Att_Loot_UVH_ShinyScalar'"
+                  }
+                },
+                {
+                  "itempool": {
+                    "item": {
+                      "binstance": "true",
+                      "instance": {
+                        "structtype": "Asset'/Script/GbxGame.ItemPoolDef'",
+                        "items": [
+                          {
+                            "item": {
+                              "item": {
+                                "handle": "inv'tor_shield.comp_05_legendary_hydrowerks'"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "probability": {
+                    "attribute": "attribute'Att_Loot_UVH_PrimaryScalar'"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "itempoollist_maxxxsupreme_true": {
+              "itempoollist": "ItemPoolList_MaxxxSupreme_TRUE",
+              "itempools": [
+                {
+                  "itempool": {
+                    "item": {
+                      "binstance": "true",
+                      "instance": {
+                        "structtype": "Asset'/Script/GbxGame.ItemPoolDef'",
+                        "items": [
+                          {
+                            "item": {
+                              "item": {
+                                "handle": "inv'TED_PS.comp_05_legendary_EarlyExcess'"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "probability": {
+                    "datatablevalue": {
+                      "datatable": "gbx_ue_data_table'Table_DedicatedDropProbability'",
+                      "rowname": "Launch_Dedicated_Drops",
+                      "columnname": "TrueBoss_12_47D1E0FA435EA53697F51F829004964B"
+                    }
+                  }
+                },
+                {
+                  "itempool": {
+                    "item": {
+                      "handle": "itempool'itempool_ted_ps_05_legendary_EarlyExcess_shiny'"
+                    }
+                  },
+                  "probability": {
+                    "datatablevalue": {
+                      "datatable": "gbx_ue_data_table'Table_DedicatedDropProbability'",
+                      "rowname": "Launch_Dedicated_Drops",
+                      "columnname": "TrueBossShiny_14_EA1D0D2F4F68BA38D6105D9025645769"
+                    }
+                  }
+                },
+                {
+                  "itempool": {
+                    "item": {
+                      "binstance": "true",
+                      "instance": {
+                        "structtype": "Asset'/Script/GbxGame.ItemPoolDef'",
+                        "items": [
+                          {
+                            "item": {
+                              "item": {
+                                "handle": "inv'tor_shield.comp_05_legendary_hydrowerks'"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "probability": {
+                    "datatablevalue": {
+                      "datatable": "gbx_ue_data_table'Table_DedicatedDropProbability'",
+                      "rowname": "Launch_Dedicated_Drops",
+                      "columnname": "TrueBoss_12_47D1E0FA435EA53697F51F829004964B"
                     }
                   }
                 }
@@ -1080,6 +1506,92 @@
                   },
                   "probability": {
                     "attribute": "attribute'Att_Loot_UVH_PrimaryScalar_Raid2'"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "itempoollist_skankeyes": {
+              "itempoollist": "ItemPoolList_SkankEyes",
+              "itempools": [
+                {
+                  "itempool": {
+                    "item": {
+                      "binstance": "true",
+                      "instance": {
+                        "structtype": "Asset'/Script/GbxGame.ItemPoolDef'",
+                        "items": [
+                          {
+                            "item": {
+                              "item": {
+                                "handle": "inv'BOR_SG.comp_05_legendary_plumbbob'"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "probability": {
+                    "attribute": "attribute'Att_Loot_UVH_PrimaryScalar'"
+                  }
+                },
+                {
+                  "itempool": {
+                    "item": {
+                      "handle": "itempool'itempool_bor_sg_05_legendary_PlumbBob_shiny'"
+                    }
+                  },
+                  "probability": {
+                    "attribute": "attribute'Att_Loot_UVH_ShinyScalar'"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "itempoollist_skankeyes_true": {
+              "itempoollist": "ItemPoolList_SkankEyes_TRUE",
+              "itempools": [
+                {
+                  "itempool": {
+                    "item": {
+                      "binstance": "true",
+                      "instance": {
+                        "structtype": "Asset'/Script/GbxGame.ItemPoolDef'",
+                        "items": [
+                          {
+                            "item": {
+                              "item": {
+                                "handle": "inv'BOR_SG.comp_05_legendary_plumbbob'"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "probability": {
+                    "datatablevalue": {
+                      "datatable": "gbx_ue_data_table'Table_DedicatedDropProbability'",
+                      "rowname": "Launch_Dedicated_Drops",
+                      "columnname": "TrueBoss_12_47D1E0FA435EA53697F51F829004964B"
+                    }
+                  }
+                },
+                {
+                  "itempool": {
+                    "item": {
+                      "handle": "itempool'itempool_bor_sg_05_legendary_PlumbBob_shiny'"
+                    }
+                  },
+                  "probability": {
+                    "datatablevalue": {
+                      "datatable": "gbx_ue_data_table'Table_DedicatedDropProbability'",
+                      "rowname": "Launch_Dedicated_Drops",
+                      "columnname": "TrueBossShiny_14_EA1D0D2F4F68BA38D6105D9025645769"
+                    }
                   }
                 }
               ]

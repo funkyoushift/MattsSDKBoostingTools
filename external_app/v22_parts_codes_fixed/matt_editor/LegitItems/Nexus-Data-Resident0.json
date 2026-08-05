@@ -1000,6 +1000,7 @@
           {
             "def_globals_ai": {
               "globals": "def_globals_ai",
+              "migrationspawnminfacingpercentage": "1.000000",
               "migrationdespawnminfacingawaypercentage": "0.750000",
               "npcengageplayersettings": {
                 "minorengagedistance": {
@@ -6502,7 +6503,7 @@
           {
             "def_globals_ui": {
               "globals": "def_globals_ui",
-              "gameversion": "1.8.1",
+              "gameversion": "1.9.1",
               "statusmenusettings": {
                 "defaultsubmenu": "Inventory",
                 "submenulookup": [
@@ -6548,7 +6549,7 @@
                   },
                   {
                     "ident": "item_inspect",
-                    "state": "ITEM_INSPECT"
+                    "state": "item_inspect"
                   },
                   {
                     "ident": "vaultcards",
@@ -6907,7 +6908,7 @@
                         "text": "ui_globals, 77262E2C4A90085C5CD8A6BDE0A57962, Use [glyph]Action_Move[/glyph] while jumping against a ledge to climb!"
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
                         "inputaction": "action_ui_close_tutorial",
@@ -6929,7 +6930,7 @@
                         "text": "ui_globals, 289C0C6740B5C7F29BBFCAA65CE735FC, Use [glyph]Action_Crouch[/glyph][glyph]Action_CrouchOrDash[/glyph] to crouch!"
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
                         "inputaction": "action_ui_close_tutorial",
@@ -6950,7 +6951,7 @@
                         "text": "ui_globals, 73F09D284A8792FD5717D19CA167D680, Use [glyph]action_jump_holdtoglide[/glyph] twice to double jump!"
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
                         "inputaction": "action_ui_close_tutorial",
@@ -6971,7 +6972,7 @@
                         "text": "ui_globals, 246FA4D94A575A3FBD08B9B739AAEC87, Use [glyph]Action_Melee[/glyph] towards a grapple point to grapple!"
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "bannerimage": "Asset'/Game/uiresources/_shared/assets/ui_art_tutorial_images/Tutorial_Grapple.Tutorial_Grapple'",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
@@ -6994,7 +6995,7 @@
                         "text": "ui_globals, 30C807574731364A6014A59706B6E143, Use [glyph]action_jump_holdtoglide[/glyph] to jump!"
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
                         "inputaction": "action_ui_close_tutorial",
@@ -7015,7 +7016,7 @@
                         "text": "ui_globals, 2F20173845D9CFCDC8151BBD60970C0F, Use [glyph]action_look[/glyph] to look around!"
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
                         "inputaction": "action_ui_close_tutorial",
@@ -7036,7 +7037,7 @@
                         "text": "ui_globals, A1883FA0432073909C2634B4C5ADE9C5, Press and hold [glyph]Action_Use[/glyph] to Revive your allies!"
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
                         "inputaction": "action_ui_close_tutorial",
@@ -7057,7 +7058,7 @@
                         "text": "ui_globals, 3186FCD342507C0B1F53F984F38AF00D, Shields protect you from dying!"
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
                         "inputaction": "action_ui_close_tutorial",
@@ -7078,7 +7079,7 @@
                         "text": "ui_globals, 9AF40C344855CA2DF79EC890E1EAB90F, Use [glyph_special]Action_Move[/glyph_special] to walk!"
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
                         "inputaction": "action_ui_close_tutorial",
@@ -7099,7 +7100,7 @@
                         "text": "ui_globals, 8CAB572A43A0C169ACD19AA8F1AEAE96, Use [glyph]Action_Fire[/glyph] to fire your Weapon!"
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
                         "inputaction": "action_ui_close_tutorial",
@@ -7120,7 +7121,7 @@
                         "text": "ui_globals, 7951F0EE4609AA8AF593B58617DFEEDD, Use [glyph]Action_Reload[/glyph] to reload your gun!"
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
                         "inputaction": "action_ui_close_tutorial",
@@ -7141,7 +7142,7 @@
                         "text": "ui_globals, 7933FA214BFF752FCAF28090074435F9, Use [glyph]Action_PingLocations[/glyph] to activate ECHO-4's ECHO Location and ping interesting locations around you!"
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "bannerimage": "Asset'/Game/uiresources/_shared/assets/ui_art_tutorial_images/Tutorial_Echo_Location.Tutorial_Echo_Location'",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
@@ -7164,7 +7165,7 @@
                         "text": "ui_globals, 48D971DF40E99C3DC64C95AED950E50F, Safehouses are yours to capture! Find the Keycode, open the Safehouse, and reach the Command Console!"
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
                         "inputaction": "action_ui_close_tutorial",
@@ -7185,7 +7186,7 @@
                         "text": "ui_globals, B3D17C78495E7049CAC6339B29014FD9, You've captured your first Safehouse for the Crimson Resistance! Enjoy access to a new Fast Travel Station and Vending Machines!"
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "bannerimage": "Asset'/Game/uiresources/_shared/assets/ui_art_tutorial_images/Tutorial_Activity_Safehouse_Capture.Tutorial_Activity_Safehouse_Capture'",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
@@ -7207,7 +7208,7 @@
                         "text": "ui_globals, 58331CB946BDFDC3076374AF9FCEBB1F, You've found a Crimson Resistance Supply Cache! Too bad it's encrypted. You'll have to carry it to a Safehouse to decrypt and open it!"
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
                         "inputaction": "action_ui_close_tutorial",
@@ -7228,7 +7229,7 @@
                         "text": "ui_globals, 9D4551E3471127BF10EFE29041150A71, Unburden yourself of that carryable. Place the capsule into this decrypt station and earn your just rewards!"
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "bannerimage": "Asset'/Game/uiresources/_shared/assets/ui_art_tutorial_images/Tutorial_Collectible_LostCapsule_Discovery.Tutorial_Collectible_LostCapsule_Discovery'",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
@@ -7250,7 +7251,7 @@
                         "text": "ui_globals, 0316BB304C3920C6FB6576A0E6EA1418, A symbol of resistance in a place where Vault Hunting is outlawed. Take heart. You are not alone."
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
                         "inputaction": "action_ui_close_tutorial",
@@ -7271,7 +7272,7 @@
                         "text": "ui_globals, 085714FF4D9D7BB2C89AA883E2425849, Someone placed, dropped, stashed, or unceremoniously tossed this audio recording here. Use ECHO-4 to take a listen!"
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
                         "inputaction": "action_ui_close_tutorial",
@@ -7292,7 +7293,7 @@
                         "text": "ui_globals, F8ABC881479A3B459341079096292751, You found one of Arjay's Vault Hunter logs. Use ECHO-4 to scan and play it."
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
                         "inputaction": "action_ui_close_tutorial",
@@ -7313,7 +7314,7 @@
                         "text": "ui_globals, 3265650348F7BECE338AD0A0E5266D0C, You found a... bolt! Use ECHO-4 to scan the bolts of departed souls and discover their parting thoughts."
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
                         "inputaction": "action_ui_close_tutorial",
@@ -7334,7 +7335,7 @@
                         "text": "ui_globals, 8BA85C2D4E425CD520B7CE999664D087, A message has been left here. To unlock it, find the three Memordium Orbs and activate the Evocarium. You'll be awarded SDU tokens as well."
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
                         "inputaction": "action_ui_close_tutorial",
@@ -7355,7 +7356,7 @@
                         "text": "ui_globals, A940260945CDFA9F4346768C8F1F257B, Pray at this shrine to disperse the spirits of the past contained within and earn it's SDU tokens."
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
                         "inputaction": "action_ui_close_tutorial",
@@ -7376,7 +7377,7 @@
                         "text": "ui_globals, 49D15EDF4E87E56AEF44B8A2E0FD0917, Looks like you've found yourself a nice little cache of goodies. Open it up to reveal its rewards and SDU tokens."
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
                         "inputaction": "action_ui_close_tutorial",
@@ -7397,7 +7398,7 @@
                         "text": "ui_globals, 9C68CB3A4E3CF7C1D5841E8CF8228CF1, It's an Electi safe, so you know it's got the goods. Crack the code and kick 'er open to earn its rewards and SDU tokens!"
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
                         "inputaction": "action_ui_close_tutorial",
@@ -7418,7 +7419,7 @@
                         "text": "ui_globals, 6FB80C444A9C88A23F0238B8D3B3B80C, Take back the airwaves! Defend ECHO-4 from attack as it hacks the Order's Propaganda system."
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
                         "inputaction": "action_ui_close_tutorial",
@@ -7439,7 +7440,7 @@
                         "text": "ui_globals, 2F581DFE42DD3EB0648310A85D857670, Expand your reach with Silos! Re-activating decommissioned Order Silos will expand your hunt for Vault Key Fragments, and reward you with SDU Tokens."
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "bannerimage": "Asset'/Game/uiresources/_shared/assets/ui_art_tutorial_images/Tutorial_Activity_Silo_Discovery.Tutorial_Activity_Silo_Discovery'",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
@@ -7461,7 +7462,7 @@
                         "text": "ui_globals, 4E5C7A1B4EA2B6B473B4ACA7135CA841, With the Silo's balloon deployed, the location of nearby Vault Key Fragments is now revealed. The balloon's tether also acts as a zipline! Get hunting, Vault Hunter!"
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
                         "inputaction": "action_ui_close_tutorial",
@@ -7482,7 +7483,7 @@
                         "text": "ui_globals, ACC1A9A6493C5143AF24788F3A776E8E, These ancient mecha beasts have just been left lying around! Bring a battery to the top of this abandoned Crawler to gain access to unique vehicle paintjobs."
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "bannerimage": "Asset'/Game/uiresources/_shared/assets/ui_art_tutorial_images/Tutorial_Activity_Crawler_Discovery.Tutorial_Activity_Crawler_Discovery'",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
@@ -7504,7 +7505,7 @@
                         "text": "ui_globals, DC09FAA5482B60137C11FF9F2B3F4317, The Augers have long since abandoned this mine, but that doesn't mean it's empty. Prepare to fight for any bounty it still holds for SDU tokens."
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
                         "inputaction": "action_ui_close_tutorial",
@@ -7525,7 +7526,7 @@
                         "text": "ui_globals, 400F000F4AB55D7486D72EBF032C499B, The Order sealed this bunker up tight. Find a way to remove the Bio Armor on the door to enter, defeat what lies within and score SDU tokens."
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
                         "inputaction": "action_ui_close_tutorial",
@@ -7546,7 +7547,7 @@
                         "text": "ui_globals, 7AFE0B1C4F9D835A8000D58F3F23BDE2, The Ripper Queen has sent her vanguard out to find worthy recruits. Take down the rippers at this drill site to impede her efforts and earn SDU tokens!"
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
                         "inputaction": "action_ui_close_tutorial",
@@ -7567,7 +7568,7 @@
                         "text": "ui_globals, E774B03949ADDC780A27A5B3C933FC01, Take on Contracts to help out the locals of Kairos and earn some gear! Contract Boards can be found at every safehouse."
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
                         "inputaction": "action_ui_close_tutorial",
@@ -7588,7 +7589,7 @@
                         "text": "ui_globals, 29DDAF1E4295597219839A8C4E93D3DB, Big Encore Bosses are a special version of a Moxxi's Big Encore boss where you can pay Eridium to fight a stronger version of the boss for better rewards."
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
                         "inputaction": "action_ui_close_tutorial",
@@ -7609,7 +7610,7 @@
                         "text": "ui_globals, 7B7F7B9C49AF59D13A9532B39904397E, Spend Specilization Points to enhance your playstyle. You'll earn Specialization Points whenever any of your characters gain EXP and level up your Specialization Level."
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
                         "inputaction": "action_ui_close_tutorial",
@@ -7630,7 +7631,7 @@
                         "text": "ui_globals, 42565AF5428A1674DE55A2BCA0496667, Firmware allows you to build a Set bonus with several pieces of gear. Use Firmware Transfer to build your perfect loadout!"
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
                         "inputaction": "action_ui_close_tutorial",
@@ -7651,7 +7652,7 @@
                         "text": "ui_globals, 06931B294790BC5996BA248B6A19C0E9, Ultimate Vault Hunter Levels will level up the world for a greater challenge. Earn higher UVH Levels by completing UVH Challenges."
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
                         "inputaction": "action_ui_close_tutorial",
@@ -7672,7 +7673,7 @@
                         "text": "ui_globals, 7F66215445024CD2F79170AC520F8A85, After defeating a boss, you can use the Moxxi's Big Encore Machine to respawn the boss to fight them again!"
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
                         "inputaction": "action_ui_close_tutorial",
@@ -7693,7 +7694,7 @@
                         "text": "ui_globals, 04C672E44E45D32280283EA457FD00BA, You've received a Vault Signal. Check your map to see the area where the signal is coming from!"
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "bannerimage": "Asset'/Game/uiresources/_shared/assets/ui_art_tutorial_images/Tutorial_Vault_Tracking.Tutorial_Vault_Tracking'",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
@@ -7715,7 +7716,7 @@
                         "text": "ui_globals, A35BFE2A4661A017F16FBA8261F78D6E, Maurice's Black Market Vending Machine features an exclusive selection of high-value gear, and its location changes weekly!"
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
                         "inputaction": "action_ui_close_tutorial",
@@ -7736,7 +7737,7 @@
                         "text": "ui_globals, 9E16B4084A56954478843FB45767A5FE, Wild Card Missions send the player on an augmented replay of a mission where enemies all spawn in with certain pool of traits. Complete these for special rewards!"
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
                         "inputaction": "action_ui_close_tutorial",
@@ -7757,7 +7758,7 @@
                         "text": "ui_globals, B48766F34BA8ACE40FA6688C54DAE731, While in the air, use [glyph]action_crouch[/glyph][glyph]Action_CrouchOrDash[/glyph] to do a ground slam."
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
                         "inputaction": "action_ui_close_tutorial",
@@ -7778,7 +7779,7 @@
                         "text": "ui_globals, D5E54D1E4A93CCFF2761C2AC250ADC8A, Ordonite Battery dispensers are now unlocked throughout Dominion City and can be used to uncover secrets and rewards."
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
                         "inputaction": "action_ui_close_tutorial",
@@ -7799,7 +7800,7 @@
                         "text": "ui_globals, E7CF39E3411958A1B3FE4685E51FFC60, Locust Gas dispensers are now unlocked throughout Dominion City. Use them to destroy any Bio Armor covering secrets and rewards."
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
                         "inputaction": "action_ui_close_tutorial",
@@ -7820,7 +7821,7 @@
                         "text": "ui_globals, 32D50093404D304CC63CD1834E8CD583, Sewer doors are now unlocked throughout Dominion City. Explore the sewers to uncover secrets and rewards."
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
                         "inputaction": "action_ui_close_tutorial",
@@ -7841,7 +7842,7 @@
                         "text": "ui_globals, EA84912C491D6DECA7D7D6B8DC706C24, When (not if) you die, you'll be reconstructed at a station just like this one."
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "bannerimage": "Asset'/Game/uiresources/_shared/assets/ui_art_tutorial_images/Tutorial_Checkpoints.Tutorial_Checkpoints'",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
@@ -7863,7 +7864,7 @@
                         "text": "ui_globals, 06E14E0240B6851335E6D6B4166C4B93, Congratulations, badass! You've unlocked [primary]Ultimate Vault Hunter mode[/primary]! Your session's difficulty has been upgraded to [primary]UVH Rank 1[/primary] automatically. [newline][newline]Each [primary]UVH Rank[/primary] grants you access to [boldtext]additional Firmware[/boldtext], [boldtext]better loot[/boldtext], and [boldtext]tougher enemies[/boldtext]. You can unlock 6 additional ranks by completing the new [primary]Ultimate Vault Hunter Challenges[/primary] found in your [boldtext]Challenge Log[/boldtext]. You can raise or lower your difficulty mode at any time via the [boldtext]Session Settings[/boldtext] menu."
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
                         "inputaction": "action_ui_close_tutorial",
@@ -7885,7 +7886,7 @@
                         "text": "ui_globals, 8150AB864FD39304FE1FA39368AD72BA, Completing Activities, like capturing Safehouses, will reward you with Storage Deck Upgrade (or SDU) Tokens. Use them to expand your Inventory!"
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "bannerimage": "Asset'/Game/uiresources/_shared/assets/ui_art_tutorial_images/Tutorial_SDU_Tokens.Tutorial_SDU_Tokens'",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
@@ -7907,7 +7908,7 @@
                         "text": "ui_globals, 932467334D3762B1C934F3914EF37A1B, You can use the tether on Silo's ballon to zipline, glide, and explore Kairos. Use the Grapple Grabber to latch on to ZipJet at the base of the tether!"
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
                         "inputaction": "action_ui_close_tutorial",
@@ -7928,7 +7929,7 @@
                         "text": "ui_globals, EB00411E418C7711061A11B3C72613AD, Congratulations on unlocking your first Action Skill. These are powerful abilities unique to your character. Use [glyph]action_statusmenu[/glyph] to open the ECHO Menu, then navigate to your Skills menu and select an Action Skill."
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "bannerimage": "Asset'/Game/uiresources/_shared/assets/ui_art_tutorial_images/Tutorial_Action_Skill_Unlock.Tutorial_Action_Skill_Unlock'",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
@@ -7951,7 +7952,7 @@
                         "text": "ui_globals, 7B9C20AE4A1D62AE8DD931B05C74B409, Repkits can heal you when your Health is low, among other effects. Use [glyph]action_repairkit[/glyph] to use your repkit!"
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "bannerimage": "Asset'/Game/uiresources/_shared/assets/ui_art_tutorial_images/Tutorial_Repkit.Tutorial_Repkit'",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
@@ -7974,7 +7975,7 @@
                         "text": "ui_globals, A591FFAE45CC8DAA993988881E47F048, Your ECHO-4 can now create a Digirunner for you to cross Kairos in. Use [glyph]action_summonpersonalvehicle[/glyph] to digistruct your own personal vehicle! "
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
                         "inputaction": "action_ui_close_tutorial",
@@ -7996,7 +7997,7 @@
                         "text": "ui_globals, A8709D3D42D5832755D4ECB8346D1326, Refund your build progression at any Respecialization Machine to respec Skill and/or Specialization trees! "
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
                         "inputaction": "action_ui_close_tutorial",
@@ -8017,7 +8018,7 @@
                         "text": "ui_globals, 9CDD2DA74BECD9DA3DD6A4A0D49D0791, Press and hold [glyph]Action_Jump_HoldToGlide[/glyph] while jumping to begin a Glide."
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "bannerimage": "Asset'/Game/uiresources/_shared/assets/ui_art_tutorial_images/Tutorial_Glide.Tutorial_Glide'",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
@@ -8039,7 +8040,7 @@
                         "text": "ui_globals, 0CBB524542A082E264F01B9A49089DD3, You have gained access to the ancient Auger Mines. Search Kairos for their hidden entrances to defeat their threats, and earn SDU Tokens. "
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
                         "inputaction": "action_ui_close_tutorial",
@@ -8060,7 +8061,7 @@
                         "text": "ui_globals, CEFBD46548FDD27C85EA9390A3E172E2, You have gained access to the decommisioned Order Bunkers. Use Locust Canisters to bypass their Bio-Armored doors, defeat their threats, and earn SDU Tokens."
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
                         "inputaction": "action_ui_close_tutorial",
@@ -8081,7 +8082,7 @@
                         "text": "ui_globals, 138F31A84699CED302151FA6382990E6, By Order of Idolator Sol, this area is off-limits. \t"
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "bannerimage": "Asset'/Game/uiresources/_shared/assets/ui_art_tutorial_images/Tutorial_Activity_OrderBunker_Locked.Tutorial_Activity_OrderBunker_Locked'",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
@@ -8103,7 +8104,7 @@
                         "text": "ui_globals, 74A076D14948621F073C87977492F652, Find your clave and earn your name before returning here. "
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "bannerimage": "Asset'/Game/uiresources/_shared/assets/ui_art_tutorial_images/Tutorial_Activity_AugerMine_Locked.Tutorial_Activity_AugerMine_Locked'",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
@@ -8125,7 +8126,7 @@
                         "text": "ui_globals, 231114E741FB5A3FF2728BA196342684, If you want these goods, you're going to have to fight for them. \t"
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
                         "inputaction": "action_ui_close_tutorial",
@@ -8146,7 +8147,7 @@
                         "text": "ui_globals, B4E1992B4653969B5DAD0F8EEB119C62, You've unlocked Ultimate Vault Hunter Level 1. Additional difficulty levels can be unlocked by completing the UVHM challenges in your Challenge Log."
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
                         "inputaction": "action_ui_close_tutorial",
@@ -8167,7 +8168,7 @@
                         "text": "ui_globals, 21C3A0394C75D7E51D63969B3F217C83, Free movement across Kairos has been locked down by edict of the Timekeeper. Ascension-level security access required."
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
                         "inputaction": "action_ui_close_tutorial",
@@ -8183,7 +8184,7 @@
                         "header": "ui_globals, 60D54B864306700F6132B5AE3823B82C, Ultimate Vault Hunter Mode Unlocked!"
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
                         "inputaction": "action_ui_close_tutorial",
@@ -8205,7 +8206,7 @@
                         "text": "ui_globals, B771215D4173B4988F9513BCF29A3B98, Use [glyph]Action_Melee[/glyph] to punch!"
                       },
                       "expandedtutorialdef": {
-                        "message_type": "tutorial",
+                        "message_type": "Tutorial",
                         "inputmappingcontext": "context_ui_expanded_tutorial",
                         "buttonprompt": "display_data'CloseText'",
                         "inputaction": "action_ui_close_tutorial",
@@ -8814,7 +8815,7 @@
                 "mission",
                 "photo_mode",
                 "respawn",
-                "tutorial",
+                "Tutorial",
                 "special_notification",
                 "generic_notification",
                 "toast_message",
@@ -8823,134 +8824,169 @@
               ],
               "missionmessagedefmapping": {
                 "pairs": {
-                  "pair2042551608": {
+                  "pair683940230": {
                     "key": "MainStory",
                     "value": {
                       "startmessagedef": "display_data'main_mission_accept_notification'",
                       "completemessagedef": "display_data'main_mission_complete_notification'"
                     }
                   },
-                  "pair2198923279": {
+                  "pair1857789891": {
                     "key": "SideMission",
                     "value": {
                       "startmessagedef": "display_data'side_mission_accept_notification'",
                       "completemessagedef": "display_data'side_mission_complete_notification'"
                     }
                   },
-                  "pair2894945199": {
+                  "pair1733551293": {
                     "key": "MicroMission",
                     "value": {
                       "startmessagedef": "display_data'side_mission_accept_notification'",
                       "completemessagedef": "display_data'side_mission_complete_notification'"
                     }
                   },
-                  "pair3153891141": {
+                  "pair2724871572": {
                     "key": "Contract",
                     "value": {
                       "startmessagedef": "display_data'contract_accept_notification'",
                       "completemessagedef": "display_data'contract_complete_notification'"
                     }
                   },
-                  "pair2271411568": {
+                  "pair3310629772": {
                     "key": "FactionMission",
                     "value": {
                       "startmessagedef": "display_data'faction_mission_accept_notification'",
                       "completemessagedef": "display_data'faction_mission_complete_notification'"
                     }
                   },
-                  "pair272572311": {
+                  "pair1366166151": {
                     "key": "DLC_MainStory",
                     "value": {
                       "startmessagedef": "display_data'dlc_main_mission_accept_notification'",
                       "completemessagedef": "display_data'dlc_main_mission_complete_notification'"
                     }
                   },
-                  "pair2401401282": {
+                  "pair3517033738": {
                     "key": "DLC_SideMission",
                     "value": {
                       "startmessagedef": "display_data'dlc_side_mission_accept_notification'",
                       "completemessagedef": "display_data'dlc_side_mission_complete_notification'"
                     }
                   },
-                  "pair2519830531": {
+                  "pair2231842837": {
                     "key": "DLC_MicroMission",
                     "value": {
                       "startmessagedef": "display_data'dlc_side_mission_accept_notification'",
                       "completemessagedef": "display_data'dlc_side_mission_complete_notification'"
                     }
                   },
-                  "pair3764236724": {
+                  "pair1478432702": {
                     "key": "DLC_Contract",
                     "value": {
                       "startmessagedef": "display_data'contract_accept_notification'",
                       "completemessagedef": "display_data'contract_complete_notification'"
                     }
                   },
-                  "pair1794027801": {
+                  "pair3502458844": {
                     "key": "DLC_FactionMission",
                     "value": {
                       "startmessagedef": "display_data'faction_mission_accept_notification'",
                       "completemessagedef": "display_data'faction_mission_complete_notification'"
+                    }
+                  },
+                  "pair2473777205": {
+                    "key": "Takedown",
+                    "value": {
+                      "startmessagedef": "display_data'takedown_accept_notification'",
+                      "completemessagedef": "display_data'takedown_complete_notification'"
                     }
                   }
                 }
               },
               "activitymessagedefmapping": {
                 "pairs": {
-                  "pair220401444": {
+                  "pair382762048": {
                     "key": "Silo",
                     "value": {
                       "startmessagedef": "display_data'silo_discovered_notification'",
                       "completemessagedef": "display_data'silo_completed_notification'"
                     }
                   },
-                  "pair348090307": {
+                  "pair3197594055": {
                     "key": "Safehouse",
                     "value": {
                       "startmessagedef": "display_data'safehouse_discovered_notification'",
                       "completemessagedef": "display_data'safehouse_completed_notification'"
                     }
                   },
-                  "pair3263627129": {
+                  "pair2172739801": {
                     "key": "Mine",
                     "value": {
                       "startmessagedef": "display_data'mine_discovered_notification'",
                       "completemessagedef": "display_data'mine_completed_notification'"
                     }
                   },
-                  "pair973738210": {
+                  "pair3219041659": {
                     "key": "OrderBunker",
                     "value": {
                       "startmessagedef": "display_data'order_bunker_discovered_notification'",
                       "completemessagedef": "display_data'order_bunker_completed_notification'"
                     }
                   },
-                  "pair1652043159": {
+                  "pair1262183146": {
                     "key": "DrillSite",
                     "value": {
                       "startmessagedef": "display_data'drill_discovered_notification'",
                       "completemessagedef": "display_data'drill_completed_notification'"
                     }
                   },
-                  "pair1347858028": {
+                  "pair2303054872": {
                     "key": "Crawler",
                     "value": {
                       "startmessagedef": "display_data'crawler_discovered_notification'",
                       "completemessagedef": "display_data'crawler_completed_notification'"
                     }
                   },
-                  "pair2122849366": {
+                  "pair3793342091": {
                     "key": "DahlBunker",
                     "value": {
                       "startmessagedef": "display_data'dahl_bunker_discovered_notification'",
                       "completemessagedef": "display_data'dahl_bunker_completed_notification'"
                     }
                   },
-                  "pair1708008524": {
+                  "pair4009348679": {
                     "key": "FuelSiphon",
                     "value": {
                       "startmessagedef": "display_data'fuel_siphon_discovered_notification'",
                       "completemessagedef": "display_data'fuel_siphon_completed_notification'"
+                    }
+                  },
+                  "pair3699551011": {
+                    "key": "TedioreGrotto",
+                    "value": {
+                      "startmessagedef": "display_data'tediore_grotto_discovered_notification'",
+                      "completemessagedef": "display_data'tediore_grotto_completed_notification'"
+                    }
+                  },
+                  "pair1369079496": {
+                    "key": "TedioreLockdown",
+                    "value": {
+                      "startmessagedef": "display_data'tediore_lockdown_discovered_notification'",
+                      "completemessagedef": "display_data'tediore_lockdown_completed_notification'"
+                    }
+                  },
+                  "pair3309292657": {
+                    "key": "TikiBar",
+                    "value": {
+                      "startmessagedef": "display_data'tiki_bar_discovered_notification'",
+                      "completemessagedef": "display_data'tiki_bar_completed_notification'"
+                    }
+                  },
+                  "pair1952130587": {
+                    "key": "Volcano",
+                    "value": {
+                      "startmessagedef": "display_data'volcano_discovered_notification'",
+                      "completemessagedef": "display_data'volcano_completed_notification'"
                     }
                   }
                 }
@@ -9131,7 +9167,7 @@
                   "states": {
                     "gameplaytags": [
                       {
-                        "tagname": "UI.State.base_hud"
+                        "tagname": "UI.State.BASE_HUD"
                       },
                       {
                         "tagname": "UI.State.ONLINE_MESSAGE"
@@ -14195,6 +14231,55 @@
                 }
               ],
               "defaultdistanceworldeventtrackingdistance": "10000.000000",
+              "missionlogtypes": [
+                {
+                  "contract": "Contract"
+                },
+                {
+                  "dlc_factionmission": "DLC_FactionMission"
+                },
+                {
+                  "dlc_mainstory": "DLC_MainStory"
+                },
+                {
+                  "dlc_micromission": "DLC_MicroMission"
+                },
+                {
+                  "dlc_sidemission": "DLC_SideMission"
+                },
+                {
+                  "factionmission": "FactionMission"
+                },
+                {
+                  "mainstory": "MainStory"
+                },
+                {
+                  "micromission": "MicroMission"
+                },
+                {
+                  "sidemission": "SideMission"
+                },
+                {
+                  "takedown": "Takedown"
+                },
+                {
+                  "takedown_hardcore": "Takedown_Hardcore"
+                },
+                {
+                  "takedown_timer": "Takedown_Timer"
+                }
+              ],
+              "disablemissionreplaytypes": [
+                {
+                  "takedown": "Takedown"
+                },
+                {
+                  "takedown_hardcore": "Takedown_Hardcore"
+                },
+                {
+                  "takedown_timer": "Takedown_Timer"
+                }
+              ],
               "echologinventorydef": "inv'Inv_EchoLogDefault'",
               "echologpickupdef": "gbxactor'Pickup_EchoLogDefault'",
               "enemytypedisplaydata": {
@@ -14633,7 +14718,6 @@
                   "truebossreplayios": [
                     {
                       "map": "World_P",
-                      "groupname": "IO_BossReplay_ThresherTrash",
                       "registryname": "IO_BossReplay_ThresherTrash"
                     }
                   ]
@@ -16824,7 +16908,8 @@
                         "capital'Specialization'",
                         "capital'VaultCard01_Experience'",
                         "capital'VaultCard02_Experience'",
-                        "capital'VaultCard03_Experience'"
+                        "capital'VaultCard03_Experience'",
+                        "capital'VaultCard04_Experience'"
                       ]
                     }
                   }
@@ -16935,15 +17020,15 @@
                   },
                   "pair3316767299": {
                     "key": "Takedown",
-                    "value": "gbx_discovery_location_type_def'DiscoveryLocation_Primary_SideMissionWaypoint_DLC'"
+                    "value": "gbx_discovery_location_type_def'DiscoveryLocation_Primary_TakedownMissionWaypoint'"
                   },
                   "pair1935587348": {
                     "key": "Takedown_Timer",
-                    "value": "gbx_discovery_location_type_def'DiscoveryLocation_Primary_SideMissionWaypoint_DLC'"
+                    "value": "gbx_discovery_location_type_def'DiscoveryLocation_Primary_TakedownMissionWaypoint'"
                   },
                   "pair1651734405": {
                     "key": "Takedown_Hardcore",
-                    "value": "gbx_discovery_location_type_def'DiscoveryLocation_Primary_SideMissionWaypoint_DLC'"
+                    "value": "gbx_discovery_location_type_def'DiscoveryLocation_Primary_TakedownMissionWaypoint'"
                   },
                   "pair2059649800": {
                     "key": "DigispaceBoss",
@@ -17048,15 +17133,15 @@
                   },
                   "pair3316767299": {
                     "key": "Takedown",
-                    "value": "gbx_discovery_location_type_def'DiscoveryLocation_Primary_SideMissionBreadcrumb_DLC'"
+                    "value": "gbx_discovery_location_type_def'DiscoveryLocation_Primary_TakedownMissionBreadcrumb'"
                   },
                   "pair1935587348": {
                     "key": "Takedown_Timer",
-                    "value": "gbx_discovery_location_type_def'DiscoveryLocation_Primary_SideMissionBreadcrumb_DLC'"
+                    "value": "gbx_discovery_location_type_def'DiscoveryLocation_Primary_TakedownMissionBreadcrumb'"
                   },
                   "pair1651734405": {
                     "key": "Takedown_Hardcore",
-                    "value": "gbx_discovery_location_type_def'DiscoveryLocation_Primary_SideMissionBreadcrumb_DLC'"
+                    "value": "gbx_discovery_location_type_def'DiscoveryLocation_Primary_TakedownMissionBreadcrumb'"
                   },
                   "pair3932504343": {
                     "key": "DigiBoss",
@@ -17161,19 +17246,19 @@
                   },
                   "pair3316767299": {
                     "key": "Takedown",
-                    "value": "gbx_discovery_location_type_def'DiscoveryLocation_Primary_SideMissionOptional_DLC'"
+                    "value": "gbx_discovery_location_type_def'DiscoveryLocation_Primary_TakedownMissionOptional'"
                   },
                   "pair1935587348": {
                     "key": "Takedown_Timer",
-                    "value": "gbx_discovery_location_type_def'DiscoveryLocation_Primary_SideMissionOptional_DLC'"
+                    "value": "gbx_discovery_location_type_def'DiscoveryLocation_Primary_TakedownMissionOptional'"
                   },
                   "pair1651734405": {
                     "key": "Takedown_Hardcore",
-                    "value": "gbx_discovery_location_type_def'DiscoveryLocation_Primary_SideMissionOptional_DLC'"
+                    "value": "gbx_discovery_location_type_def'DiscoveryLocation_Primary_TakedownMissionOptional'"
                   },
                   "pair2059649800": {
                     "key": "DigispaceBoss",
-                    "value": "gbx_discovery_location_type_def'none'"
+                    "value": "gbx_discovery_location_type_def'DiscoveryLocation_Primary_DigiBossWaypoint'"
                   }
                 }
               },
@@ -17302,6 +17387,7 @@
               ],
               "missionwaypointlocationtype_dlcmissiongiver_available": "gbx_discovery_location_type_def'DiscoveryLocation_Secondary_MainMissionGiver_DLC'",
               "missionwaypointlocationtype_dlcmissiongiver_locked": "gbx_discovery_location_type_def'DiscoveryLocation_Secondary_MainMissionGiver_DLC_Locked'",
+              "lastdeathiconlocationtype": "gbx_discovery_location_type_def'DiscoveryLocation_Primary_LastDeathIcon'",
               "lostcapsuletrackerdropofflocationtype": "gbx_discovery_location_type_def'DiscoveryLocation_Collectible_DecryptStationTracker'",
               "echolocationdefinition": "echo_location_data'OakEchoLocationData'",
               "distancefrommissionareatoshowmissionareaparticlesystem": "5000.000000",
@@ -17610,7 +17696,6 @@
                   "markedfact": "global.vault_hunter_level"
                 }
               ],
-              "lastdeathiconlocationtype": "gbx_discovery_location_type_def'DiscoveryLocation_Primary_LastDeathIcon'",
               "metadatanexussource": "/Game/GameData/Discovery/discovery_meta_data",
               "regionmapnexussource": "/Game/GameData/Map/map_data_generated_region_maps",
               "worldstogeneratemetadatafor": [],
@@ -22553,6 +22638,43 @@
                     "exo_levelup": "13",
                     "gravitar_levelup": "13",
                     "paladin_levelup": "13"
+                  },
+                  "openworld": {
+                    "activities": {
+                      "safehouses": {
+                        "safehouse_grasslands_1": "1"
+                      },
+                      "silos": {
+                        "silo_grasslands_1": "1"
+                      }
+                    }
+                  },
+                  "tutorial": {
+                    "climb": "1",
+                    "crouch": "1",
+                    "double_jump": "1",
+                    "grapple": "1",
+                    "ground_pound": "1",
+                    "jump": "1",
+                    "look": "1",
+                    "revive": "1",
+                    "shield": "1",
+                    "walk": "1",
+                    "weapon_fire": "1",
+                    "weapon_reload": "1",
+                    "checkpoints": "1",
+                    "echo_location": "1",
+                    "sdu_tokens": "1",
+                    "vehicle": "1",
+                    "repkit": "1",
+                    "dash": "1",
+                    "glide": "1",
+                    "zonetransition_locked": "1",
+                    "melee": "1",
+                    "activity_safehouse_discovery": "1",
+                    "activity_safehouse_capture": "1",
+                    "activity_silo_discovery": "1",
+                    "activity_silo_capture": "1"
                   }
                 },
                 "missions": {
@@ -22568,19 +22690,6 @@
                           "status": "completed",
                           "final": {
                             "obj_firstswim_endstate": "completed"
-                          }
-                        }
-                      }
-                    },
-                    "missionset_zoneactivity_safehouse": {
-                      "missions": {
-                        "zoneactivity_grasslands_safehousemain": {
-                          "ui_flags": "1",
-                          "status": "completed",
-                          "final": {
-                            "fact_lightson": "TRUE",
-                            "find_the_datapad_endstate": "completed",
-                            "claim_the_command_console_endstate": "completed"
                           }
                         }
                       }
@@ -22603,44 +22712,15 @@
                         }
                       }
                     },
-                    "missionset_main_grasslands2a": {
-                      "status": "completed",
+                    "missionset_zoneactivity_safehouse": {
                       "missions": {
-                        "mission_main_grasslands2": {
+                        "zoneactivity_grasslands_safehousemain": {
                           "ui_flags": "1",
                           "status": "completed",
                           "final": {
-                            "find_zadra_0_endstate": "completed",
-                            "find_zadra_1_endstate": "completed",
-                            "invis_fast_complete_generator_endstate": "completed",
-                            "enter_slide_quick_complete_endstate": "deactivated",
-                            "find_zadra_endstate": "completed",
-                            "holder_for_timekeeper_vo_finish_endstate": "completed",
-                            "wait_for_zadra_endstate": "completed",
-                            "kill_roof_intro_guys_endstate": "completed",
-                            "kill_synth_reinforcements_invis_tracker_endstate": "deactivated",
-                            "combat_composit_obj_endstate": "deactivated",
-                            "kill_the_gunship_endstate": "completed"
-                          }
-                        }
-                      }
-                    },
-                    "missionset_main_cowbell_unlock": {
-                      "missions": {
-                        "mission_main_cowbell0": {
-                          "status": "completed"
-                        }
-                      }
-                    },
-                    "missionset_main_cowbell": {
-                      "missions": {
-                        "mission_main_cowbell1": {
-                          "ui_flags": "1",
-                          "status": "Active",
-                          "objectives": {
-                            "searchscavcamp": {
-                              "status": "Kickoffing"
-                            }
+                            "fact_lightson": "TRUE",
+                            "find_the_datapad_endstate": "completed",
+                            "claim_the_command_console_endstate": "completed"
                           }
                         }
                       }
@@ -22679,6 +22759,28 @@
                         }
                       }
                     },
+                    "missionset_main_grasslands2a": {
+                      "status": "completed",
+                      "missions": {
+                        "mission_main_grasslands2": {
+                          "ui_flags": "1",
+                          "status": "completed",
+                          "final": {
+                            "find_zadra_0_endstate": "completed",
+                            "find_zadra_1_endstate": "completed",
+                            "invis_fast_complete_generator_endstate": "completed",
+                            "enter_slide_quick_complete_endstate": "deactivated",
+                            "find_zadra_endstate": "completed",
+                            "holder_for_timekeeper_vo_finish_endstate": "completed",
+                            "wait_for_zadra_endstate": "completed",
+                            "kill_roof_intro_guys_endstate": "completed",
+                            "kill_synth_reinforcements_invis_tracker_endstate": "deactivated",
+                            "combat_composit_obj_endstate": "deactivated",
+                            "kill_the_gunship_endstate": "completed"
+                          }
+                        }
+                      }
+                    },
                     "missionset_main_grasslands2b": {
                       "missions": {
                         "mission_main_grasslands2b": {
@@ -22696,6 +22798,24 @@
                             },
                             "invisbeckonline": {
                               "status": "Active"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "missionset_side_grasslandsa": {
+                      "missions": {
+                        "grasslands_side_murdermystery_beckon": {
+                          "status": "Active",
+                          "objectives": {
+                            "encounter_outside_": {
+                              "status": "WaitingOnDependencies"
+                            },
+                            "survivor_calls_for_help": {
+                              "status": "Active"
+                            },
+                            "encounter_not_complete_dialogue_": {
+                              "status": "WaitingOnDependencies"
                             }
                           }
                         }
@@ -22736,19 +22856,21 @@
                         }
                       }
                     },
-                    "missionset_side_grasslandsa": {
+                    "missionset_main_cowbell_unlock": {
                       "missions": {
-                        "grasslands_side_murdermystery_beckon": {
+                        "mission_main_cowbell0": {
+                          "status": "completed"
+                        }
+                      }
+                    },
+                    "missionset_main_cowbell": {
+                      "missions": {
+                        "mission_main_cowbell1": {
+                          "ui_flags": "1",
                           "status": "Active",
                           "objectives": {
-                            "encounter_outside_": {
-                              "status": "WaitingOnDependencies"
-                            },
-                            "survivor_calls_for_help": {
-                              "status": "Active"
-                            },
-                            "encounter_not_complete_dialogue_": {
-                              "status": "WaitingOnDependencies"
+                            "searchscavcamp": {
+                              "status": "Kickoffing"
                             }
                           }
                         }
@@ -22769,6 +22891,9 @@
                     "specializationtokenpool": "0",
                     "echotokenprogresspoints": "40"
                   }
+                },
+                "gbx_discovery_pg": {
+                  "dlblob": "DLMD_World_P_PoAActor_UAID_02504100000187D401_1882517809:2:DLMD_World_P_PoAActor_UAID_047C1619B44AA00302_1687647825:2:DLMD_World_P_PoAActor_UAID_04922658D4A791C201_1271147543:2:DLMD_World_P_FastTravelStation_UAID_04922658D4A761E201_1194967919:2:DLMD_World_P_FastTravelStationObject_UAID_64D69A64CE76FE7901_1755073639:2:DLMD_World_P_FastTravelStationObject_UAID_907841CAD8650E4A02_1592825107:2:DLMD_World_P_FastTravelStation_UAID_7C10C93FFF14701F02_1862572944:2:DLMD_World_P_FastTravelStationObject_UAID_64D69A64CE76FF7901_2107426819:2:"
                 }
               }
             }
@@ -22964,6 +23089,9 @@
                       "safehouses": {
                         "safehouse_grasslands_1": "1",
                         "safehouse_city_1": "1"
+                      },
+                      "silos": {
+                        "silo_grasslands_1": "1"
                       }
                     },
                     "collectibles": {
@@ -22976,11 +23104,40 @@
                   },
                   "tutorial": {
                     "climb": "1",
+                    "crouch": "1",
+                    "double_jump": "1",
+                    "grapple": "1",
+                    "ground_pound": "1",
+                    "jump": "1",
+                    "look": "1",
                     "revive": "1",
                     "shield": "1",
+                    "walk": "1",
+                    "weapon_fire": "1",
+                    "weapon_reload": "1",
+                    "checkpoints": "1",
                     "echo_location": "1",
+                    "sdu_tokens": "1",
+                    "vehicle": "1",
+                    "repkit": "1",
+                    "dash": "1",
+                    "glide": "1",
+                    "zonetransition_locked": "1",
+                    "melee": "1",
                     "activity_safehouse_discovery": "1",
-                    "activity_safehouse_capture": "1"
+                    "activity_safehouse_capture": "1",
+                    "activity_silo_discovery": "1",
+                    "activity_silo_capture": "1",
+                    "activity_bossreplay": "1",
+                    "activity_trueboss": "1",
+                    "firmware": "1",
+                    "blackmarket": "1",
+                    "uvh_levels": "1",
+                    "trait_missions": "1",
+                    "gamesystem_respecmachine": "1",
+                    "city_ordonite_battery_dispenser_unlocked": "1",
+                    "city_locust_gas_dispenser_unlocked": "1",
+                    "city_sewer_doors_unlocked": "1"
                   }
                 },
                 "missions": {
@@ -22992,6 +23149,23 @@
                           "status": "completed",
                           "final": {
                             "obj_firstswim_endstate": "completed"
+                          }
+                        }
+                      }
+                    },
+                    "missionset_main_beach": {
+                      "status": "completed",
+                      "missions": {
+                        "mission_main_beach": {
+                          "status": "completed",
+                          "final": {
+                            "melee_the_door_0_endstate": "completed",
+                            "reach_village_endstate": "completed",
+                            "use_glide_to_reach_exit_endstate": "completed",
+                            "destroy_bolt_1_endstate": "completed",
+                            "destroy_bolt_3_endstate": "deactivated",
+                            "destroy_bolt_2_endstate": "deactivated",
+                            "activate__cl4ptps_safehouse_endstate": "completed"
                           }
                         }
                       }
@@ -23014,163 +23188,14 @@
                         }
                       }
                     },
-                    "missionset_main_shatteredlands3": {
-                      "status": "completed",
+                    "missionset_zoneactivity_silo": {
                       "missions": {
-                        "mission_main_shatteredlands3": {
-                          "status": "completed",
-                          "final": {
-                            "killrip_fortfrontbadass_endstate": "completed",
-                            "gotoramp_endstate": "completed",
-                            "shootbomb_endstate": "completed",
-                            "rampillar_endstate": "completed",
-                            "turnonramp_endstate": "completed",
-                            "enterfortress_endstate": "completed",
-                            "killboss_endstate": "completed"
-                          }
-                        }
-                      }
-                    },
-                    "missionset_main_city3": {
-                      "status": "completed",
-                      "missions": {
-                        "mission_main_city3": {
-                          "status": "completed",
-                          "final": {
-                            "killtimekeeper_endstate": "completed",
-                            "killtimekeeper_guardian_endstate": "completed"
-                          }
-                        }
-                      }
-                    },
-                    "missionset_main_grasslands3": {
-                      "status": "completed",
-                      "missions": {
-                        "mission_main_grasslands3": {
-                          "status": "completed",
-                          "final": {
-                            "gettosaftey_endstate": "completed",
-                            "salvagelocusts_endstate": "completed",
-                            "advancetofortress_endstate": "completed",
-                            "opengate_endstate": "completed",
-                            "kill_commander_endstate": "completed",
-                            "enterfortress_endstate": "completed",
-                            "findairshiphangar_endstate": "completed",
-                            "bosswaypoint03_endstate": "completed",
-                            "enter_commander_arena_endstate": "completed"
-                          }
-                        }
-                      }
-                    },
-                    "missionset_main_mountains3": {
-                      "status": "completed",
-                      "missions": {
-                        "mission_main_mountains3": {
-                          "status": "completed",
-                          "final": {
-                            "obj_destroydoorlocks_endstate": "completed",
-                            "invis_obj_waypointforwayback_endstate": "completed",
-                            "obj_killcommander_endstate": "completed",
-                            "obj_lootcommandersbolt_endstate": "completed"
-                          }
-                        }
-                      }
-                    },
-                    "missionset_main_mountains2b": {
-                      "status": "completed",
-                      "missions": {
-                        "mission_main_mountains2b": {
-                          "status": "completed",
-                          "final": {
-                            "obj_overarching_findphase_endstate": "completed"
-                          }
-                        }
-                      }
-                    },
-                    "missionset_main_beach": {
-                      "status": "completed",
-                      "missions": {
-                        "mission_main_beach": {
-                          "status": "completed",
-                          "final": {
-                            "melee_the_door_0_endstate": "completed",
-                            "reach_village_endstate": "completed",
-                            "use_glide_to_reach_exit_endstate": "completed",
-                            "destroy_bolt_1_endstate": "completed",
-                            "destroy_bolt_3_endstate": "deactivated",
-                            "destroy_bolt_2_endstate": "deactivated",
-                            "activate__cl4ptps_safehouse_endstate": "completed"
-                          }
-                        }
-                      }
-                    },
-                    "missionset_main_city1": {
-                      "status": "completed",
-                      "missions": {
-                        "mission_main_city1": {
-                          "status": "completed",
-                          "final": {
-                            "talktolilith_endstate": "completed",
-                            "entercity_visible_endstate": "completed",
-                            "inv_enter_the_city_bc5_endstate": "completed"
-                          }
-                        }
-                      }
-                    },
-                    "missionset_main_city1_b": {
-                      "status": "completed",
-                      "missions": {
-                        "mission_main_city1_b": {
-                          "status": "completed"
-                        }
-                      }
-                    },
-                    "missionset_main_city2": {
-                      "status": "completed",
-                      "missions": {
-                        "mission_main_city2": {
-                          "status": "completed",
-                          "final": {
-                            "hack_progress_pt1_endstate": "completed",
-                            "openascensionchamber_endstate": "completed"
-                          }
-                        }
-                      }
-                    },
-                    "missionset_main_cityepilogue": {
-                      "status": "completed",
-                      "missions": {
-                        "mission_main_cityepilogue": {
-                          "status": "completed",
-                          "final": {
-                            "phasedimensionentered_1st": "TRUE",
-                            "defeat_arjay_endstate": "completed",
-                            "take_object_endstate": "completed",
-                            "inv_openportal_endstate": "completed",
-                            "returntomoxxisbar_endstate": "completed"
-                          }
-                        }
-                      }
-                    },
-                    "missionset_main_elpis": {
-                      "status": "completed",
-                      "missions": {
-                        "mission_main_elpis": {
-                          "status": "completed",
-                          "final": {
-                            "clearenemies_pregenerator_endstate": "completed",
-                            "inv_interactwithelevator_endstate": "completed",
-                            "generatorlight_1": "TRUE",
-                            "generatorlight_2": "TRUE",
-                            "generatorlight_3": "TRUE",
-                            "generatorlight_4": "TRUE",
-                            "generatorlight_5": "TRUE",
-                            "generatorlight_6": "TRUE",
-                            "generatorlight_7": "TRUE",
-                            "generatorlight_8": "TRUE",
-                            "takeelevator_fixed_endstate": "completed",
-                            "escortavatoarch_endstate": "completed",
-                            "findlilith_endstate": "completed"
+                        "zoneactivity_grasslands_silo1": {
+                          "status": "Active",
+                          "objectives": {
+                            "claim_the_command_console": {
+                              "status": "Active"
+                            }
                           }
                         }
                       }
@@ -23231,6 +23256,25 @@
                         }
                       }
                     },
+                    "missionset_main_grasslands3": {
+                      "status": "completed",
+                      "missions": {
+                        "mission_main_grasslands3": {
+                          "status": "completed",
+                          "final": {
+                            "gettosaftey_endstate": "completed",
+                            "salvagelocusts_endstate": "completed",
+                            "advancetofortress_endstate": "completed",
+                            "opengate_endstate": "completed",
+                            "kill_commander_endstate": "completed",
+                            "enterfortress_endstate": "completed",
+                            "findairshiphangar_endstate": "completed",
+                            "bosswaypoint03_endstate": "completed",
+                            "enter_commander_arena_endstate": "completed"
+                          }
+                        }
+                      }
+                    },
                     "missionset_main_mountains1": {
                       "status": "completed",
                       "missions": {
@@ -23247,34 +23291,27 @@
                         }
                       }
                     },
-                    "missionset_main_postgame": {
+                    "missionset_main_mountains2b": {
                       "status": "completed",
-                      "cursorposition": "3",
                       "missions": {
-                        "micro_uvh_firmwaretransfertutorial": {
+                        "mission_main_mountains2b": {
                           "status": "completed",
-                          "exit": "Micro_UVH_FirmwareTransferTutorial_GRA_Exit"
-                        },
-                        "micro_uvh_blackmarkettutorial": {
-                          "status": "completed"
-                        },
-                        "micro_uvh_trueboss": {
-                          "status": "completed",
-                          "exit": "Exit"
-                        },
-                        "micro_uvh_trait": {
-                          "status": "completed"
+                          "final": {
+                            "obj_overarching_findphase_endstate": "completed"
+                          }
                         }
                       }
                     },
-                    "missionset_main_searchforlilith": {
+                    "missionset_main_mountains3": {
                       "status": "completed",
                       "missions": {
-                        "mission_main_searchforlilith": {
+                        "mission_main_mountains3": {
                           "status": "completed",
                           "final": {
-                            "sfl_activate_space_elevator_endstate": "completed",
-                            "sfl_talk_to_amara_endstate": "completed"
+                            "obj_destroydoorlocks_endstate": "completed",
+                            "invis_obj_waypointforwayback_endstate": "completed",
+                            "obj_killcommander_endstate": "completed",
+                            "obj_lootcommandersbolt_endstate": "completed"
                           }
                         }
                       }
@@ -23316,6 +23353,138 @@
                         }
                       }
                     },
+                    "missionset_main_shatteredlands3": {
+                      "status": "completed",
+                      "missions": {
+                        "mission_main_shatteredlands3": {
+                          "status": "completed",
+                          "final": {
+                            "killrip_fortfrontbadass_endstate": "completed",
+                            "gotoramp_endstate": "completed",
+                            "shootbomb_endstate": "completed",
+                            "rampillar_endstate": "completed",
+                            "turnonramp_endstate": "completed",
+                            "enterfortress_endstate": "completed",
+                            "killboss_endstate": "completed"
+                          }
+                        }
+                      }
+                    },
+                    "missionset_main_searchforlilith": {
+                      "status": "completed",
+                      "missions": {
+                        "mission_main_searchforlilith": {
+                          "status": "completed",
+                          "final": {
+                            "sfl_activate_space_elevator_endstate": "completed",
+                            "sfl_talk_to_amara_endstate": "completed"
+                          }
+                        }
+                      }
+                    },
+                    "missionset_main_elpis": {
+                      "status": "completed",
+                      "missions": {
+                        "mission_main_elpis": {
+                          "status": "completed",
+                          "final": {
+                            "clearenemies_pregenerator_endstate": "completed",
+                            "inv_interactwithelevator_endstate": "completed",
+                            "generatorlight_1": "TRUE",
+                            "generatorlight_2": "TRUE",
+                            "generatorlight_3": "TRUE",
+                            "generatorlight_4": "TRUE",
+                            "generatorlight_5": "TRUE",
+                            "generatorlight_6": "TRUE",
+                            "generatorlight_7": "TRUE",
+                            "generatorlight_8": "TRUE",
+                            "takeelevator_fixed_endstate": "completed",
+                            "escortavatoarch_endstate": "completed",
+                            "findlilith_endstate": "completed"
+                          }
+                        }
+                      }
+                    },
+                    "missionset_main_city1": {
+                      "status": "completed",
+                      "missions": {
+                        "mission_main_city1": {
+                          "status": "completed",
+                          "final": {
+                            "talktolilith_endstate": "completed",
+                            "entercity_visible_endstate": "completed",
+                            "inv_enter_the_city_bc5_endstate": "completed"
+                          }
+                        }
+                      }
+                    },
+                    "missionset_main_city1_b": {
+                      "status": "completed",
+                      "missions": {
+                        "mission_main_city1_b": {
+                          "status": "completed"
+                        }
+                      }
+                    },
+                    "missionset_main_city2": {
+                      "status": "completed",
+                      "missions": {
+                        "mission_main_city2": {
+                          "status": "completed",
+                          "final": {
+                            "hack_progress_pt1_endstate": "completed",
+                            "openascensionchamber_endstate": "completed"
+                          }
+                        }
+                      }
+                    },
+                    "missionset_main_city3": {
+                      "status": "completed",
+                      "missions": {
+                        "mission_main_city3": {
+                          "status": "completed",
+                          "final": {
+                            "killtimekeeper_endstate": "completed",
+                            "killtimekeeper_guardian_endstate": "completed"
+                          }
+                        }
+                      }
+                    },
+                    "missionset_main_cityepilogue": {
+                      "status": "completed",
+                      "missions": {
+                        "mission_main_cityepilogue": {
+                          "status": "completed",
+                          "final": {
+                            "phasedimensionentered_1st": "TRUE",
+                            "defeat_arjay_endstate": "completed",
+                            "take_object_endstate": "completed",
+                            "inv_openportal_endstate": "completed",
+                            "returntomoxxisbar_endstate": "completed"
+                          }
+                        }
+                      }
+                    },
+                    "missionset_main_postgame": {
+                      "status": "completed",
+                      "cursorposition": "3",
+                      "missions": {
+                        "micro_uvh_firmwaretransfertutorial": {
+                          "status": "completed",
+                          "exit": "Micro_UVH_FirmwareTransferTutorial_GRA_Exit"
+                        },
+                        "micro_uvh_blackmarkettutorial": {
+                          "status": "completed"
+                        },
+                        "micro_uvh_trueboss": {
+                          "status": "completed",
+                          "exit": "Exit"
+                        },
+                        "micro_uvh_trait": {
+                          "status": "completed"
+                        }
+                      }
+                    },
                     "missionset_side_grasslandsa": {
                       "missions": {
                         "grasslands_side_murdermystery_beckon": {
@@ -23352,6 +23521,9 @@
                     "specializationtokenpool": "0",
                     "echotokenprogresspoints": "80"
                   }
+                },
+                "gbx_discovery_pg": {
+                  "dlblob": "DLMD_World_P_PoAActor_UAID_02504100000187D401_1882517809:2:DLMD_World_P_PoAActor_UAID_02504100000113ED01_1588318775:2:DLMD_World_P_PoAActor_UAID_0250410000015FED01_1875042151:2:DLMD_World_P_PoAActor_UAID_047C1619B44AA00302_1687647825:2:DLMD_World_P_PoAActor_UAID_04922658D4A791C201_1271147543:2:DLMD_World_P_IO_PointOfInterest_UAID_025041000001256002_1337117384:2:DLMD_World_P_CarryableObjectContainer_UAID_08BFB89AE7C85D2802_1684482113:2:DLMD_World_P_IO_LostCapsule_DecryptStation_UAID_047C1619B44AA00302_1861225831:2:DLMD_World_P_IO_LostCapsule_DecryptStation_UAID_089204DCF7EF290002_1402034712:2:DLMD_World_P_IO_LostCapsule_DecryptStation_UAID_089204DCF7EF2B0002_1667303070:2:DLMD_World_P_IO_LostCapsule_DecryptStation_UAID_089204DCF7EF2D0002_1947412430:2:DLMD_World_P_IO_LostCapsule_DecryptStation_UAID_089204DCF7EF54FE01_1960602211:2:DLMD_World_P_IO_LostCapsule_DecryptStation_UAID_089204DCF7EFAD0F02_1616494078:2:DLMD_World_P_IO_LostCapsule_DecryptStation_UAID_089204DCF7EFC61D02_2081124994:2:DLMD_World_P_IO_LostCapsule_DecryptStation_UAID_08BFB89AE7C8082402_2027277924:2:DLMD_World_P_IO_LostCapsule_DecryptStation_UAID_08BFB89AE7C87C2302_1968194374:2:DLMD_World_P_IO_LostCapsule_DecryptStation_UAID_244BFE96422DF40F02_1726095288:2:DLMD_World_P_IO_LostCapsule_DecryptStation_UAID_5811224CB628B30F02_1893911891:2:DLMD_World_P_IO_LostCapsule_DecryptStation_UAID_5811224CB628B30F02_1955619892:2:DLMD_World_P_IO_LostCapsule_DecryptStation_UAID_D843AE5FAC6A091E02_1526421768:2:DLMD_World_P_IO_LostCapsule_DecryptStation_UAID_D843AE5FAC6ABC2302_1462881555:2:DLMD_World_P_IO_LostCapsule_DecryptStation_UAID_E04F43E63017481F02_1231511914:2:DLMD_World_P_IO_LostCapsule_DecryptStation_UAID_E04F43E6DF41E21A02_1097913731:2:DLMD_World_P_LevelTravelStationObject_UAID_64D69A64CE76297D01_1630823376:2:DLMD_World_P_LevelTravelStationObject_UAID_64D69A64CE76297D01_1924121378:2:DLMD_World_P_LevelTravelStationObject_UAID_64D69A64CE76297D01_2045164380:2:DLMD_World_P_LevelTravelStationObject_UAID_025041000001617C02_1144379513:2:DLMD_World_P_LevelTravelStationObject_UAID_2CF05D100364712D02_1502694903:2:DLMD_World_P_LevelTravelStation_UAID_E04F43E6DB331B8E01_1561982867:2:DLMD_Fortress_Grasslands_P_LevelTravelStationObject_UAID_04D9F52032D5F18001_1882045875:2:DLMD_Fortress_Mountains_P_LevelTravelStationObject_UAID_B04F1307B522318101_1552810512:2:DLMD_Fortress_Shatteredlands_P_LevelTravelStationObject_UAID_025041000001609501_1620023403:2:DLMD_Elpis_P_LevelTravelStationObject_UAID_08BFB89AE7C8F26602_1817662799:2:DLMD_UpperCity_P_LevelTravelStationObject_UAID_64D69A64CE768B8C01_2092729463:2:DLMD_World_P_FastTravelStation_UAID_04922658D4A761E201_1194967919:2:DLMD_World_P_FastTravelStationObject_UAID_64D69A64CE76FE7901_1755073639:2:DLMD_World_P_FastTravelStationObject_UAID_907841CAD8650E4A02_1592825107:2:DLMD_World_P_FastTravelStation_UAID_7C10C93FFF14701F02_1862572944:2:DLMD_World_P_FastTravelStationObject_UAID_64D69A64CE76FF7901_2107426819:2:DLMD_World_P_FastTravelStationObject_UAID_64D69A64CE76017A01_1720532183:2:DLMD_World_P_FastTravelStationObject_UAID_64D69A64CE76087A01_1645300414:2:DLMD_World_P_FastTravelStationObject_UAID_2CF05D1003644A6102_1381889951:2:DLMD_World_P_FastTravelStationObject_UAID_089204DCF69B9F1B02_1667512991:2:DLMD_World_P_FastTravelStationObject_UAID_64D69A64CE76087A01_1202798410:2:DLMD_World_P_FastTravelStationObject_UAID_64D69A64CE76077A01_1929442228:2:DLMD_World_P_FastTravelStationObject_UAID_E04F43E6DB3946D201_1271129239:2:DLMD_World_P_FastTravelStation_UAID_E04F43E6DF415C4502_1132289554:2:DLMD_World_P_FastTravelStationObject_UAID_244BFE96417DD12702_1521581463:2:DLMD_World_P_FastTravelStationObject_UAID_047C164D0C215D4502_1408312727:2:DLMD_Fortress_Grasslands_P_FastTravelStationObject_UAID_2CF05D10036413E601_1711602384:2:DLMD_Fortress_Mountains_P_FastTravelStationObject_UAID_0250410000015B9501_1846435520:2:DLMD_Fortress_Shatteredlands_P_FastTravelStationObject_UAID_025041000001609501_1315293402:2:DLMD_Elpis_P_FastTravelStationObject_UAID_E04F43E6DB33FBFD01_1267828511:2:DLMD_UpperCity_P_FastTravelStationObject_UAID_047BCBA534EAC07002_2081382559:2:DLMD_UpperCity_P_FastTravelStationObject_UAID_E04F43E63017674902_2010716712:2:"
                 }
               }
             }

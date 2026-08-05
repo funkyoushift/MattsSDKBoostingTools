@@ -1,6 +1,6 @@
 {
   "source": "SDK_Debug_Menu_v35_menu_only",
-  "actor_count": 5253,
+  "actor_count": 5263,
   "categories": {
     "All": [
       "AAAForEffort_OpeningRoof",
@@ -1758,6 +1758,12 @@
       "IO_BP1_Gift_Interactable",
       "IO_BP1_Gift_Spawner",
       "IO_BP2_Discovery",
+      "IO_BP3_CoinToken_Interactable",
+      "IO_BP3_Discovery_City",
+      "IO_BP3_Discovery_Grasslands",
+      "IO_BP3_Discovery_Mountains",
+      "IO_BP3_Discovery_Shatteredlands",
+      "IO_BP3_Mandolin_Token_Brain",
       "IO_BreakableLock_Manager",
       "io_breakawayfloor",
       "IO_BrokenPipes",
@@ -2333,6 +2339,7 @@
       "io_door_forcefield_Moveable",
       "IO_Door_ForceField_Wide",
       "IO_Door_Generic_130x250",
+      "IO_Door_Forcefield_Mandolin",
       "IO_Door_Generic_400x400",
       "IO_Door_Generic_800x400",
       "io_door_generic_lg",
@@ -2915,6 +2922,7 @@
       "IO_Pickup_BFR_Bolt",
       "IO_Pickup_BMB_Bolts_Dropped",
       "IO_Pickup_Bomb",
+      "IO_Pickup_Bottle",
       "IO_Pickup_Books",
       "IO_Pickup_CatGlands",
       "IO_Pickup_ComputerCore",
@@ -2930,6 +2938,7 @@
       "IO_Pickup_DahlOGLegs",
       "IO_Pickup_DahlTorso",
       "IO_Pickup_Detonator",
+      "IO_Pickup_DigiZaneHead",
       "IO_Pickup_DrinkCan01",
       "IO_Pickup_DrinkCan02",
       "IO_Pickup_DrinkCan03",
@@ -2960,6 +2969,7 @@
       "IO_Pickup_MissileTail",
       "IO_Pickup_OrderPowercore",
       "IO_Pickup_OzKit",
+      "IO_Pickup_PaperScrap",
       "IO_Pickup_PasswordLog",
       "IO_Pickup_Picture",
       "IO_Pickup_Rations",
@@ -7470,6 +7480,12 @@
       "IO_BP1_Gift_Interactable",
       "IO_BP1_Gift_Spawner",
       "IO_BP2_Discovery",
+      "IO_BP3_CoinToken_Interactable",
+      "IO_BP3_Discovery_City",
+      "IO_BP3_Discovery_Grasslands",
+      "IO_BP3_Discovery_Mountains",
+      "IO_BP3_Discovery_Shatteredlands",
+      "IO_BP3_Mandolin_Token_Brain",
       "IO_BreakableLock_Manager",
       "io_breakawayfloor",
       "IO_BrokenPipes",
@@ -8045,6 +8061,7 @@
       "io_door_forcefield_Moveable",
       "IO_Door_ForceField_Wide",
       "IO_Door_Generic_130x250",
+      "IO_Door_Forcefield_Mandolin",
       "IO_Door_Generic_400x400",
       "IO_Door_Generic_800x400",
       "io_door_generic_lg",
@@ -8627,6 +8644,7 @@
       "IO_Pickup_BFR_Bolt",
       "IO_Pickup_BMB_Bolts_Dropped",
       "IO_Pickup_Bomb",
+      "IO_Pickup_Bottle",
       "IO_Pickup_Books",
       "IO_Pickup_CatGlands",
       "IO_Pickup_ComputerCore",
@@ -8642,6 +8660,7 @@
       "IO_Pickup_DahlOGLegs",
       "IO_Pickup_DahlTorso",
       "IO_Pickup_Detonator",
+      "IO_Pickup_DigiZaneHead",
       "IO_Pickup_DrinkCan01",
       "IO_Pickup_DrinkCan02",
       "IO_Pickup_DrinkCan03",
@@ -8672,6 +8691,7 @@
       "IO_Pickup_MissileTail",
       "IO_Pickup_OrderPowercore",
       "IO_Pickup_OzKit",
+      "IO_Pickup_PaperScrap",
       "IO_Pickup_PasswordLog",
       "IO_Pickup_Picture",
       "IO_Pickup_Rations",
@@ -9180,6 +9200,18 @@
       "IO_commandconsole",
       "io_TranshumanistShrine"
     ],
+    "Mandolin DLC": [
+      "IO_BP3_CoinToken_Interactable",
+      "IO_BP3_Discovery_City",
+      "IO_BP3_Discovery_Grasslands",
+      "IO_BP3_Discovery_Mountains",
+      "IO_BP3_Discovery_Shatteredlands",
+      "IO_BP3_Mandolin_Token_Brain",
+      "IO_Door_Forcefield_Mandolin",
+      "IO_Pickup_Bottle",
+      "IO_Pickup_DigiZaneHead",
+      "IO_Pickup_PaperScrap"
+    ],
     "Damageables": [
       "Bolt_Suppressor_Tutorial",
       "DamageableDen",
@@ -9403,6 +9435,8 @@
       "io_damageable_globe"
     ],
     "Pickups": [
+      "IO_BP3_CoinToken_Interactable",
+      "IO_BP3_Mandolin_Token_Brain",
       "AcctorDef_YATLC_TrashcanLidPickup",
       "ActorDef_BrokenShips2_ZaneGiftPickup",
       "ActorDef_BrokenShips2_ZaneGiftPickup2",
@@ -9462,6 +9496,7 @@
       "IO_Pickup_BFR_Bolt",
       "IO_Pickup_BMB_Bolts_Dropped",
       "IO_Pickup_Bomb",
+      "IO_Pickup_Bottle",
       "IO_Pickup_Books",
       "IO_Pickup_CatGlands",
       "IO_Pickup_ComputerCore",
@@ -9477,6 +9512,7 @@
       "IO_Pickup_DahlOGLegs",
       "IO_Pickup_DahlTorso",
       "IO_Pickup_Detonator",
+      "IO_Pickup_DigiZaneHead",
       "IO_Pickup_DrinkCan01",
       "IO_Pickup_DrinkCan02",
       "IO_Pickup_DrinkCan03",
@@ -9507,6 +9543,7 @@
       "IO_Pickup_MissileTail",
       "IO_Pickup_OrderPowercore",
       "IO_Pickup_OzKit",
+      "IO_Pickup_PaperScrap",
       "IO_Pickup_PasswordLog",
       "IO_Pickup_Picture",
       "IO_Pickup_Rations",
@@ -11102,6 +11139,7 @@
       "io_door_forcefield_Moveable",
       "IO_Door_ForceField_Wide",
       "IO_Door_Generic_130x250",
+      "IO_Door_Forcefield_Mandolin",
       "IO_Door_Generic_400x400",
       "IO_Door_Generic_800x400",
       "io_door_generic_lg",
@@ -14170,7 +14208,17 @@
     "io_cinDECO_Grazer_Barbie": "Cinema deco Grazer Barbie",
     "io_damageable_globe": "Kairos World Model",
     "io_movingplatform_extendingbridge": "Large bridge segment",
-    "io_silograppleableslider": "Another grapple hook facing downwards"
+    "io_silograppleableslider": "Another grapple hook facing downwards",
+    "IO_BP3_CoinToken_Interactable": "Mandolin Coin Token",
+    "IO_BP3_Discovery_City": "Mandolin Discovery (City)",
+    "IO_BP3_Discovery_Grasslands": "Mandolin Discovery (Grasslands)",
+    "IO_BP3_Discovery_Mountains": "Mandolin Discovery (Mountains)",
+    "IO_BP3_Discovery_Shatteredlands": "Mandolin Discovery (Shatteredlands)",
+    "IO_BP3_Mandolin_Token_Brain": "Mandolin Token Brain",
+    "IO_Door_Forcefield_Mandolin": "Mandolin Forcefield Door",
+    "IO_Pickup_Bottle": "Mandolin Pickup Bottle",
+    "IO_Pickup_DigiZaneHead": "Mandolin Digi-Zane Head",
+    "IO_Pickup_PaperScrap": "Mandolin Paper Scrap"
   },
   "favorites": {
     "IO_AscensionCapsule": "Große Runde Wand",
@@ -28935,6 +28983,54 @@
       "source": "gbxactor",
       "catalog_schema": "bl4.io_spawn_catalog.v1"
     },
+    "IO_BP3_CoinToken_Interactable": {
+      "label": "BP3 Coin Token Interactable",
+      "source_category": "GbxActor",
+      "browser_category": "Interactive Objects",
+      "command": "ssp_spawnai IO_BP3_CoinToken_Interactable",
+      "source": "gbxactor",
+      "catalog_schema": "bl4.io_spawn_catalog.v1"
+    },
+    "IO_BP3_Discovery_City": {
+      "label": "BP3 Discovery City",
+      "source_category": "GbxActor",
+      "browser_category": "Interactive Objects",
+      "command": "ssp_spawnai IO_BP3_Discovery_City",
+      "source": "gbxactor",
+      "catalog_schema": "bl4.io_spawn_catalog.v1"
+    },
+    "IO_BP3_Discovery_Grasslands": {
+      "label": "BP3 Discovery Grasslands",
+      "source_category": "GbxActor",
+      "browser_category": "Interactive Objects",
+      "command": "ssp_spawnai IO_BP3_Discovery_Grasslands",
+      "source": "gbxactor",
+      "catalog_schema": "bl4.io_spawn_catalog.v1"
+    },
+    "IO_BP3_Discovery_Mountains": {
+      "label": "BP3 Discovery Mountains",
+      "source_category": "GbxActor",
+      "browser_category": "Interactive Objects",
+      "command": "ssp_spawnai IO_BP3_Discovery_Mountains",
+      "source": "gbxactor",
+      "catalog_schema": "bl4.io_spawn_catalog.v1"
+    },
+    "IO_BP3_Discovery_Shatteredlands": {
+      "label": "BP3 Discovery Shatteredlands",
+      "source_category": "GbxActor",
+      "browser_category": "Interactive Objects",
+      "command": "ssp_spawnai IO_BP3_Discovery_Shatteredlands",
+      "source": "gbxactor",
+      "catalog_schema": "bl4.io_spawn_catalog.v1"
+    },
+    "IO_BP3_Mandolin_Token_Brain": {
+      "label": "BP3 Mandolin Token Brain",
+      "source_category": "GbxActor",
+      "browser_category": "Interactive Objects",
+      "command": "ssp_spawnai IO_BP3_Mandolin_Token_Brain",
+      "source": "gbxactor",
+      "catalog_schema": "bl4.io_spawn_catalog.v1"
+    },
     "IO_BreakableLock_Manager": {
       "label": "BreakableLock Manager",
       "source_category": "GbxActor",
@@ -33196,6 +33292,14 @@
       "source_category": "GbxActor",
       "browser_category": "Interactive Objects",
       "command": "ssp_spawnai IO_Door_Generic_130x250",
+      "source": "gbxactor",
+      "catalog_schema": "bl4.io_spawn_catalog.v1"
+    },
+    "IO_Door_Forcefield_Mandolin": {
+      "label": "Door Forcefield Mandolin",
+      "source_category": "GbxActor",
+      "browser_category": "Interactive Objects",
+      "command": "ssp_spawnai IO_Door_Forcefield_Mandolin",
       "source": "gbxactor",
       "catalog_schema": "bl4.io_spawn_catalog.v1"
     },
@@ -37479,6 +37583,14 @@
       "source": "gbxactor",
       "catalog_schema": "bl4.io_spawn_catalog.v1"
     },
+    "IO_Pickup_Bottle": {
+      "label": "Pickup Bottle",
+      "source_category": "GbxActor",
+      "browser_category": "Interactive Objects",
+      "command": "ssp_spawnai IO_Pickup_Bottle",
+      "source": "gbxactor",
+      "catalog_schema": "bl4.io_spawn_catalog.v1"
+    },
     "IO_Pickup_Books": {
       "label": "Pickup Books",
       "source_category": "GbxActor",
@@ -37596,6 +37708,14 @@
       "source_category": "GbxActor",
       "browser_category": "Interactive Objects",
       "command": "ssp_spawnai IO_Pickup_Detonator",
+      "source": "gbxactor",
+      "catalog_schema": "bl4.io_spawn_catalog.v1"
+    },
+    "IO_Pickup_DigiZaneHead": {
+      "label": "Pickup DigiZaneHead",
+      "source_category": "GbxActor",
+      "browser_category": "Interactive Objects",
+      "command": "ssp_spawnai IO_Pickup_DigiZaneHead",
       "source": "gbxactor",
       "catalog_schema": "bl4.io_spawn_catalog.v1"
     },
@@ -37836,6 +37956,14 @@
       "source_category": "GbxActor",
       "browser_category": "Interactive Objects",
       "command": "ssp_spawnai IO_Pickup_OzKit",
+      "source": "gbxactor",
+      "catalog_schema": "bl4.io_spawn_catalog.v1"
+    },
+    "IO_Pickup_PaperScrap": {
+      "label": "Pickup PaperScrap",
+      "source_category": "GbxActor",
+      "browser_category": "Interactive Objects",
+      "command": "ssp_spawnai IO_Pickup_PaperScrap",
       "source": "gbxactor",
       "catalog_schema": "bl4.io_spawn_catalog.v1"
     },

@@ -1,5 +1,7 @@
 # Nexus Mods Release Sync From GitHub Releases
 
+> **Paused (Aug 2026):** Do **not** upload new MSBT builds to Nexus until Nexus responds about a static/GitHub-forward listing that avoids repeated quarantines. GitHub Releases remain the only distribution channel for now. Skip `nexus-release-sync` workflow and manual Nexus uploads until this note is removed.
+
 MSBT publishes installer and portable ZIP assets to GitHub Releases first. Nexus Mods should be updated from that already-built release so Nexus and GitHub ship the same tested files.
 
 Do not make GitHub release notes advertise Nexus as a mirror. GitHub Releases stay the app updater source of truth; Nexus is a second public distribution page that should be synchronized after the GitHub release is published.

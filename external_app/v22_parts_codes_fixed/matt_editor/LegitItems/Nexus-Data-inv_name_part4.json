@@ -781,6 +781,13 @@
             }
           },
           {
+            "np_burrow": {
+              "inv_name_part": "np_Burrow",
+              "partname": "Uni_MAL_SG_Kickballer, 38A35B4046F0E9A1F395D0B32A783763, PRISM",
+              "priority": "3.000000"
+            }
+          },
+          {
             "np_cm_ds_leg_dlc1": {
               "inv_name_part": "np_cm_ds_leg_dlc1",
               "partname": "ClassModNameParts, 18EE838543259CA45C4049B430EEFC13, Configuration",
@@ -1047,6 +1054,13 @@
             }
           },
           {
+            "np_earlyexcess": {
+              "inv_name_part": "np_EarlyExcess",
+              "partname": "Uni_MAL_SG_Kickballer, 20BE89E1478C1C8BFECCB9B4A0B9A901, Overconsumption",
+              "priority": "3.000000"
+            }
+          },
+          {
             "np_eigenburst": {
               "inv_name_part": "np_Eigenburst",
               "partname": "Uni_Inv_TED_SG_Anarchy, 2EFD447D46F8C35C85C83EBE1F9C6257, Eigenburst",
@@ -1058,6 +1072,13 @@
               "inv_name_part": "np_elpisstar",
               "partname": "Uni_Supernova, AFB23CD641F9D3729C08D4AF5D1E6CC8, Elpis Star",
               "priority": "3.000000"
+            }
+          },
+          {
+            "np_extinction": {
+              "inv_name_part": "np_Extinction",
+              "partname": "WeaponNamingStrategies, F6DE4403412987726BA339A5E99B3066, Eradication",
+              "priority": "1.000000"
             }
           },
           {
@@ -1152,6 +1173,13 @@
             }
           },
           {
+            "np_hydrowerks": {
+              "inv_name_part": "np_hydrowerks",
+              "partname": "Uni_CinderShelly, 5AF6A48F4BA3DEF0A45AECBCD3B5BD05, Hydrowerks",
+              "priority": "3.000000"
+            }
+          },
+          {
             "np_ichor": {
               "inv_name_part": "np_Ichor",
               "partname": "Uni_Spinning_Blade, 7C5BD5DD446B6E80BD9158A09CC7C1F8, Ichor",
@@ -1187,6 +1215,13 @@
             }
           },
           {
+            "np_kaos": {
+              "inv_name_part": "np_Kaos",
+              "partname": "Uni_MAL_SG_Kickballer, 753E780B4958B19C555624AFB99465EA, Kaos",
+              "priority": "3.000000"
+            }
+          },
+          {
             "np_lasercutter": {
               "inv_name_part": "np_lasercutter",
               "partname": "Uni_MAL_SG_Kickballer, 84B140B745F13174004735869138DA19, Laser-Cutter",
@@ -1218,6 +1253,13 @@
             "np_locust": {
               "inv_name_part": "np_Locust",
               "partname": "Uni_VLA_SM_Locust, 287050D14CF1BA360EC00C89AA97FF2E, Parasite",
+              "priority": "3.000000"
+            }
+          },
+          {
+            "np_loiter": {
+              "inv_name_part": "np_Loiter",
+              "partname": "Uni_TOR_HW_Javelin, E60E0D6F4B72731C995F14A493F0442E, Loiter Sploiter",
               "priority": "3.000000"
             }
           },
@@ -1264,9 +1306,30 @@
             }
           },
           {
+            "np_pchonk": {
+              "inv_name_part": "np_PChonk",
+              "partname": "Uni_MAL_SG_Kickballer, FDD4EBED44646FD7993019B98D16D477, Pachonk",
+              "priority": "3.000000"
+            }
+          },
+          {
             "np_pellet": {
               "inv_name_part": "np_pellet",
               "partname": "Uni_BOR_Rubber, 73D3EB544C47D623776E1CA4836C3A17, Artillery Sphere",
+              "priority": "3.000000"
+            }
+          },
+          {
+            "np_plumbbob": {
+              "inv_name_part": "np_plumbbob",
+              "partname": "Uni_BOR_SG_Convergence, DC33E8814CB03583463A4CB2053B348F, Plumb Bob",
+              "priority": "3.000000"
+            }
+          },
+          {
+            "np_pressurecooker": {
+              "inv_name_part": "np_pressurecooker",
+              "partname": "Uni_Spinning_Blade, 768D97E8489292670A092CBFE769BA20, Pressure Kettle",
               "priority": "3.000000"
             }
           },
@@ -1294,7 +1357,7 @@
           {
             "np_repkit_uni_bor_hugger": {
               "inv_name_part": "np_repkit_uni_BOR_Hugger",
-              "partname": "Uni_BOR_RepKit_Hugger, , Hugger",
+              "partname": "Uni_BOR_RepKit_Hugger, AA2D6012976D456585032E11C68FB47D, Hugger",
               "priority": "2.000000"
             }
           },
@@ -1316,6 +1379,13 @@
             "np_repkit_uni_ord_paleblood": {
               "inv_name_part": "np_repkit_uni_ORD_PaleBlood",
               "partname": "RepKitNameParts, 566B8233435DFB867CDFEC8813321644, Blood Moon",
+              "priority": "2.000000"
+            }
+          },
+          {
+            "np_repkit_uni_vla_bloodiron": {
+              "inv_name_part": "np_repkit_uni_VLA_BloodIron",
+              "partname": "RepKitNameParts, 52B5E9754AF47285BBA6CE9C11978A42, Oxidation",
               "priority": "2.000000"
             }
           },
@@ -1383,6 +1453,13 @@
             }
           },
           {
+            "np_silversliver": {
+              "inv_name_part": "np_silversliver",
+              "partname": "Uni_MAL_SG_Kickballer, 7385224748552C245697ADBF72B6CBE1, Silver Sliver",
+              "priority": "3.000000"
+            }
+          },
+          {
             "np_skully": {
               "inv_name_part": "np_skully",
               "partname": "Uni_ORD_Aggrovator, A701912942195EDBDB9110B1692F4FC2, Skully",
@@ -1400,6 +1477,13 @@
             "np_soulsurvivor": {
               "inv_name_part": "np_soulsurvivor",
               "partname": "Uni_MAL_SG_Kickballer, B3AA4ED44967EC54ED38039C7F1A7437, Soul Survivor",
+              "priority": "3.000000"
+            }
+          },
+          {
+            "np_stealth": {
+              "inv_name_part": "np_stealth",
+              "partname": "Uni_MAL_SR_ComplexRoot, D7149D5E410D5F09C07601B989057C4A, Stealth & Seek",
               "priority": "3.000000"
             }
           },
@@ -1425,6 +1509,13 @@
             }
           },
           {
+            "np_testament": {
+              "inv_name_part": "np_Testament",
+              "partname": "Uni_MAL_SG_Kickballer, BA8E4EEE492F11178CF577B47562FF6B, Divided Glow",
+              "priority": "3.000000"
+            }
+          },
+          {
             "np_undershield": {
               "inv_name_part": "np_undershield",
               "partname": "Uni_Supernova, 089005234C563EE6FB22A297D1675AE5, Undershield",
@@ -1442,6 +1533,13 @@
             "np_urchin": {
               "inv_name_part": "np_urchin",
               "partname": "Uni_BOR_Rubber, 7AD8228A447EFE29A98ACCBAAA2DFB3C, Urchin",
+              "priority": "3.000000"
+            }
+          },
+          {
+            "np_verce": {
+              "inv_name_part": "np_Verce",
+              "partname": "Uni_MAL_SG_Kickballer, CFF5869645D392757D61F6827D4E8C31, Verce",
               "priority": "3.000000"
             }
           }

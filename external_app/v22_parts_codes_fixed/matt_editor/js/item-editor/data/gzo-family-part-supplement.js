@@ -4398,6 +4398,27 @@ window.MSBT_GZO_FAMILY_PART_SUPPLEMENT = [
     ]
   },
   {
+    "fullId": "1:62",
+    "typeId": 1,
+    "partId": 62,
+    "name": "Weapon.part_pearl_elem_62",
+    "sourceName": "Weapon.part_pearl_elem_62",
+    "spawnCode": "Weapon.part_pearl_elem_62",
+    "typeLabel": "Weapon",
+    "manufacturer": "Weapon",
+    "itemType": "Element",
+    "partType": "Rarity",
+    "category": "Part",
+    "description": "Pearlescent element (v1.9)",
+    "source": "GZO Parts family-data.js",
+    "searchAliases": [
+      "1:62",
+      "Pearlescent element (v1.9)",
+      "Rarity",
+      "Weapon.part_pearl_elem_62"
+    ]
+  },
+  {
     "fullId": "2:1",
     "typeId": 2,
     "partId": 1,
@@ -6037,6 +6058,48 @@ window.MSBT_GZO_FAMILY_PART_SUPPLEMENT = [
       "2:82",
       "DAD_PS.part_mag_torgue_normal_soulsurvivor",
       "Manufacturer Part"
+    ]
+  },
+  {
+    "fullId": "2:83",
+    "typeId": 2,
+    "partId": 83,
+    "name": "DAD_PS.part_barrel_01_silversliver",
+    "sourceName": "DAD_PS.part_barrel_01_silversliver",
+    "spawnCode": "DAD_PS.part_barrel_01_silversliver",
+    "typeLabel": "Daedalus Pistol",
+    "manufacturer": "Daedalus",
+    "itemType": "Pistol",
+    "partType": "Barrel",
+    "category": "Weapon",
+    "description": "Silver Sliver barrel",
+    "source": "GZO Parts family-data.js",
+    "searchAliases": [
+      "2:83",
+      "Barrel",
+      "DAD_PS.part_barrel_01_silversliver",
+      "Silver Sliver barrel"
+    ]
+  },
+  {
+    "fullId": "2:84",
+    "typeId": 2,
+    "partId": 84,
+    "name": "DAD_PS.comp_05_legendary_SilverSliver",
+    "sourceName": "DAD_PS.comp_05_legendary_SilverSliver",
+    "spawnCode": "DAD_PS.comp_05_legendary_SilverSliver",
+    "typeLabel": "Daedalus Pistol",
+    "manufacturer": "Daedalus",
+    "itemType": "Pistol",
+    "partType": "Rarity",
+    "category": "Weapon",
+    "description": "Silver Sliver",
+    "source": "GZO Parts family-data.js",
+    "searchAliases": [
+      "2:84",
+      "DAD_PS.comp_05_legendary_SilverSliver",
+      "Rarity",
+      "Silver Sliver"
     ]
   },
   {
@@ -11542,6 +11605,69 @@ window.MSBT_GZO_FAMILY_PART_SUPPLEMENT = [
     ]
   },
   {
+    "fullId": "5:92",
+    "typeId": 5,
+    "partId": 92,
+    "name": "TED_PS.part_overconsumption_02",
+    "sourceName": "TED_PS.part_overconsumption_02",
+    "spawnCode": "TED_PS.part_overconsumption_02",
+    "typeLabel": "Tediore Pistol",
+    "manufacturer": "Tediore",
+    "itemType": "Pistol",
+    "partType": "Manufacturer Part",
+    "category": "Weapon",
+    "description": "Overconsumption unique part",
+    "source": "GZO Parts family-data.js",
+    "searchAliases": [
+      "5:92",
+      "Manufacturer Part",
+      "Overconsumption unique part",
+      "TED_PS.part_overconsumption_02"
+    ]
+  },
+  {
+    "fullId": "5:93",
+    "typeId": 5,
+    "partId": 93,
+    "name": "TED_PS.part_overconsumption_03",
+    "sourceName": "TED_PS.part_overconsumption_03",
+    "spawnCode": "TED_PS.part_overconsumption_03",
+    "typeLabel": "Tediore Pistol",
+    "manufacturer": "Tediore",
+    "itemType": "Pistol",
+    "partType": "Manufacturer Part",
+    "category": "Weapon",
+    "description": "Overconsumption unique part",
+    "source": "GZO Parts family-data.js",
+    "searchAliases": [
+      "5:93",
+      "Manufacturer Part",
+      "Overconsumption unique part",
+      "TED_PS.part_overconsumption_03"
+    ]
+  },
+  {
+    "fullId": "5:94",
+    "typeId": 5,
+    "partId": 94,
+    "name": "TED_PS.part_barrel_01_overconsumption",
+    "sourceName": "TED_PS.part_barrel_01_overconsumption",
+    "spawnCode": "TED_PS.part_barrel_01_overconsumption",
+    "typeLabel": "Tediore Pistol",
+    "manufacturer": "Tediore",
+    "itemType": "Pistol",
+    "partType": "Barrel",
+    "category": "Weapon",
+    "description": "Overconsumption barrel",
+    "source": "GZO Parts family-data.js",
+    "searchAliases": [
+      "5:94",
+      "Barrel",
+      "Overconsumption barrel",
+      "TED_PS.part_barrel_01_overconsumption"
+    ]
+  },
+  {
     "fullId": "5:95",
     "typeId": 5,
     "partId": 95,
@@ -11619,6 +11745,27 @@ window.MSBT_GZO_FAMILY_PART_SUPPLEMENT = [
       "5:98",
       "Rarity",
       "TED_PS.comp_04_epic"
+    ]
+  },
+  {
+    "fullId": "5:99",
+    "typeId": 5,
+    "partId": 99,
+    "name": "TED_PS.comp_05_legendary_Overconsumption",
+    "sourceName": "TED_PS.comp_05_legendary_Overconsumption",
+    "spawnCode": "TED_PS.comp_05_legendary_Overconsumption",
+    "typeLabel": "Tediore Pistol",
+    "manufacturer": "Tediore",
+    "itemType": "Pistol",
+    "partType": "Rarity",
+    "category": "Weapon",
+    "description": "Overconsumption",
+    "source": "GZO Parts family-data.js",
+    "searchAliases": [
+      "5:99",
+      "Overconsumption",
+      "Rarity",
+      "TED_PS.comp_05_legendary_Overconsumption"
     ]
   },
   {
@@ -14589,6 +14736,27 @@ window.MSBT_GZO_FAMILY_PART_SUPPLEMENT = [
     ]
   },
   {
+    "fullId": "7:59",
+    "typeId": 7,
+    "partId": 59,
+    "name": "BOR_SG.part_barrel_01_plumpbob",
+    "sourceName": "BOR_SG.part_barrel_01_plumpbob",
+    "spawnCode": "BOR_SG.part_barrel_01_plumpbob",
+    "typeLabel": "Ripper Shotgun",
+    "manufacturer": "Ripper",
+    "itemType": "Shotgun",
+    "partType": "Barrel",
+    "category": "Weapon",
+    "description": "Plump Bob barrel",
+    "source": "GZO Parts family-data.js",
+    "searchAliases": [
+      "7:59",
+      "BOR_SG.part_barrel_01_plumpbob",
+      "Barrel",
+      "Plump Bob barrel"
+    ]
+  },
+  {
     "fullId": "7:60",
     "typeId": 7,
     "partId": 60,
@@ -14686,6 +14854,27 @@ window.MSBT_GZO_FAMILY_PART_SUPPLEMENT = [
       "7:64",
       "BOR_SG.part_unique_barrel_02_convergence",
       "Barrel"
+    ]
+  },
+  {
+    "fullId": "7:65",
+    "typeId": 7,
+    "partId": 65,
+    "name": "BOR_SG.comp_05_legendary_PlumpBob",
+    "sourceName": "BOR_SG.comp_05_legendary_PlumpBob",
+    "spawnCode": "BOR_SG.comp_05_legendary_PlumpBob",
+    "typeLabel": "Ripper Shotgun",
+    "manufacturer": "Ripper",
+    "itemType": "Shotgun",
+    "partType": "Rarity",
+    "category": "Weapon",
+    "description": "Plump Bob",
+    "source": "GZO Parts family-data.js",
+    "searchAliases": [
+      "7:65",
+      "BOR_SG.comp_05_legendary_PlumpBob",
+      "Plump Bob",
+      "Rarity"
     ]
   },
   {
@@ -18935,6 +19124,48 @@ window.MSBT_GZO_FAMILY_PART_SUPPLEMENT = [
       "9:102",
       "Barrel",
       "part_barrel_01_constable"
+    ]
+  },
+  {
+    "fullId": "9:103",
+    "typeId": 9,
+    "partId": 103,
+    "name": "JAK_SG.part_barrel_01_tkswave",
+    "sourceName": "JAK_SG.part_barrel_01_tkswave",
+    "spawnCode": "JAK_SG.part_barrel_01_tkswave",
+    "typeLabel": "Jakobs Shotgun",
+    "manufacturer": "Jakobs",
+    "itemType": "Shotgun",
+    "partType": "Barrel",
+    "category": "Weapon",
+    "description": "T.K's Wave barrel",
+    "source": "GZO Parts family-data.js",
+    "searchAliases": [
+      "9:103",
+      "Barrel",
+      "JAK_SG.part_barrel_01_tkswave",
+      "T.K's Wave barrel"
+    ]
+  },
+  {
+    "fullId": "9:104",
+    "typeId": 9,
+    "partId": 104,
+    "name": "JAK_SG.comp_05_legendary_TKsWave",
+    "sourceName": "JAK_SG.comp_05_legendary_TKsWave",
+    "spawnCode": "JAK_SG.comp_05_legendary_TKsWave",
+    "typeLabel": "Jakobs Shotgun",
+    "manufacturer": "Jakobs",
+    "itemType": "Shotgun",
+    "partType": "Rarity",
+    "category": "Weapon",
+    "description": "T.K's Wave",
+    "source": "GZO Parts family-data.js",
+    "searchAliases": [
+      "9:104",
+      "JAK_SG.comp_05_legendary_TKsWave",
+      "Rarity",
+      "T.K's Wave"
     ]
   },
   {
@@ -26155,6 +26386,27 @@ window.MSBT_GZO_FAMILY_PART_SUPPLEMENT = [
     ]
   },
   {
+    "fullId": "13:88",
+    "typeId": 13,
+    "partId": 88,
+    "name": "DAD_AR.part_barrel_01_ordonitegenerator",
+    "sourceName": "DAD_AR.part_barrel_01_ordonitegenerator",
+    "spawnCode": "DAD_AR.part_barrel_01_ordonitegenerator",
+    "typeLabel": "Daedalus Assault Rifle",
+    "manufacturer": "Daedalus",
+    "itemType": "Assault Rifle",
+    "partType": "Barrel",
+    "category": "Weapon",
+    "description": "Ordonite Generator barrel",
+    "source": "GZO Parts family-data.js",
+    "searchAliases": [
+      "13:88",
+      "Barrel",
+      "DAD_AR.part_barrel_01_ordonitegenerator",
+      "Ordonite Generator barrel"
+    ]
+  },
+  {
     "fullId": "13:89",
     "typeId": 13,
     "partId": 89,
@@ -26194,6 +26446,27 @@ window.MSBT_GZO_FAMILY_PART_SUPPLEMENT = [
       "DAD_AR.part_underbarrel_04_atlas_Mercredi",
       "DAD_AR_UnderBarrel_04",
       "Underbarrel"
+    ]
+  },
+  {
+    "fullId": "13:91",
+    "typeId": 13,
+    "partId": 91,
+    "name": "DAD_AR.comp_05_legendary_OrdoniteGenerator",
+    "sourceName": "DAD_AR.comp_05_legendary_OrdoniteGenerator",
+    "spawnCode": "DAD_AR.comp_05_legendary_OrdoniteGenerator",
+    "typeLabel": "Daedalus Assault Rifle",
+    "manufacturer": "Daedalus",
+    "itemType": "Assault Rifle",
+    "partType": "Rarity",
+    "category": "Weapon",
+    "description": "Ordonite Generator",
+    "source": "GZO Parts family-data.js",
+    "searchAliases": [
+      "13:91",
+      "DAD_AR.comp_05_legendary_OrdoniteGenerator",
+      "Ordonite Generator",
+      "Rarity"
     ]
   },
   {
@@ -29695,6 +29968,90 @@ window.MSBT_GZO_FAMILY_PART_SUPPLEMENT = [
       "15:78",
       "Barrel",
       "ORD_AR.part_barrel_02_crowsourced"
+    ]
+  },
+  {
+    "fullId": "15:79",
+    "typeId": 15,
+    "partId": 79,
+    "name": "ORD_AR.comp_05_legendary_DividedGlow",
+    "sourceName": "ORD_AR.comp_05_legendary_DividedGlow",
+    "spawnCode": "ORD_AR.comp_05_legendary_DividedGlow",
+    "typeLabel": "Order Assault Rifle",
+    "manufacturer": "Order",
+    "itemType": "Assault Rifle",
+    "partType": "Rarity",
+    "category": "Weapon",
+    "description": "Divided Glow",
+    "source": "GZO Parts family-data.js",
+    "searchAliases": [
+      "15:79",
+      "Divided Glow",
+      "ORD_AR.comp_05_legendary_DividedGlow",
+      "Rarity"
+    ]
+  },
+  {
+    "fullId": "15:80",
+    "typeId": 15,
+    "partId": 80,
+    "name": "ORD_AR.part_barrel_01_dividedglow",
+    "sourceName": "ORD_AR.part_barrel_01_dividedglow",
+    "spawnCode": "ORD_AR.part_barrel_01_dividedglow",
+    "typeLabel": "Order Assault Rifle",
+    "manufacturer": "Order",
+    "itemType": "Assault Rifle",
+    "partType": "Barrel",
+    "category": "Weapon",
+    "description": "Divided Glow barrel",
+    "source": "GZO Parts family-data.js",
+    "searchAliases": [
+      "15:80",
+      "Barrel",
+      "Divided Glow barrel",
+      "ORD_AR.part_barrel_01_dividedglow"
+    ]
+  },
+  {
+    "fullId": "15:81",
+    "typeId": 15,
+    "partId": 81,
+    "name": "ORD_AR.comp_05_legendary_Testament",
+    "sourceName": "ORD_AR.comp_05_legendary_Testament",
+    "spawnCode": "ORD_AR.comp_05_legendary_Testament",
+    "typeLabel": "Order Assault Rifle",
+    "manufacturer": "Order",
+    "itemType": "Assault Rifle",
+    "partType": "Rarity",
+    "category": "Weapon",
+    "description": "Testament",
+    "source": "GZO Parts family-data.js",
+    "searchAliases": [
+      "15:81",
+      "ORD_AR.comp_05_legendary_Testament",
+      "Rarity",
+      "Testament"
+    ]
+  },
+  {
+    "fullId": "15:82",
+    "typeId": 15,
+    "partId": 82,
+    "name": "ORD_AR.part_shield_ricochet_testament",
+    "sourceName": "ORD_AR.part_shield_ricochet_testament",
+    "spawnCode": "ORD_AR.part_shield_ricochet_testament",
+    "typeLabel": "Order Assault Rifle",
+    "manufacturer": "Order",
+    "itemType": "Assault Rifle",
+    "partType": "Manufacturer Part",
+    "category": "Weapon",
+    "description": "Testament unique part",
+    "source": "GZO Parts family-data.js",
+    "searchAliases": [
+      "15:82",
+      "Manufacturer Part",
+      "ORD_AR.part_shield_ricochet_testament",
+      "Testament unique part"
     ]
   },
   {
@@ -35503,6 +35860,48 @@ window.MSBT_GZO_FAMILY_PART_SUPPLEMENT = [
       "18:103",
       "Rarity",
       "VLA_AR.comp_05_legendary_lasercutter"
+    ]
+  },
+  {
+    "fullId": "18:104",
+    "typeId": 18,
+    "partId": 104,
+    "name": "VLA_AR.part_barrel_01_eradication",
+    "sourceName": "VLA_AR.part_barrel_01_eradication",
+    "spawnCode": "VLA_AR.part_barrel_01_eradication",
+    "typeLabel": "Vladof Assault Rifle",
+    "manufacturer": "Vladof",
+    "itemType": "Assault Rifle",
+    "partType": "Barrel",
+    "category": "Weapon",
+    "description": "Eradication barrel",
+    "source": "GZO Parts family-data.js",
+    "searchAliases": [
+      "18:104",
+      "Barrel",
+      "Eradication barrel",
+      "VLA_AR.part_barrel_01_eradication"
+    ]
+  },
+  {
+    "fullId": "18:105",
+    "typeId": 18,
+    "partId": 105,
+    "name": "VLA_AR.comp_05_legendary_Eradication",
+    "sourceName": "VLA_AR.comp_05_legendary_Eradication",
+    "spawnCode": "VLA_AR.comp_05_legendary_Eradication",
+    "typeLabel": "Vladof Assault Rifle",
+    "manufacturer": "Vladof",
+    "itemType": "Assault Rifle",
+    "partType": "Rarity",
+    "category": "Weapon",
+    "description": "Eradication",
+    "source": "GZO Parts family-data.js",
+    "searchAliases": [
+      "18:105",
+      "Eradication",
+      "Rarity",
+      "VLA_AR.comp_05_legendary_Eradication"
     ]
   },
   {
@@ -46253,6 +46652,48 @@ window.MSBT_GZO_FAMILY_PART_SUPPLEMENT = [
     ]
   },
   {
+    "fullId": "24:82",
+    "typeId": 24,
+    "partId": 82,
+    "name": "JAK_SR.part_barrel_01_prism",
+    "sourceName": "JAK_SR.part_barrel_01_prism",
+    "spawnCode": "JAK_SR.part_barrel_01_prism",
+    "typeLabel": "Jakobs Sniper",
+    "manufacturer": "Jakobs",
+    "itemType": "Sniper",
+    "partType": "Barrel",
+    "category": "Weapon",
+    "description": "PRISM barrel",
+    "source": "GZO Parts family-data.js",
+    "searchAliases": [
+      "24:82",
+      "Barrel",
+      "JAK_SR.part_barrel_01_prism",
+      "PRISM barrel"
+    ]
+  },
+  {
+    "fullId": "24:83",
+    "typeId": 24,
+    "partId": 83,
+    "name": "JAK_SR.comp_06_pearl_PRISM",
+    "sourceName": "JAK_SR.comp_06_pearl_PRISM",
+    "spawnCode": "JAK_SR.comp_06_pearl_PRISM",
+    "typeLabel": "Jakobs Sniper",
+    "manufacturer": "Jakobs",
+    "itemType": "Sniper",
+    "partType": "Rarity",
+    "category": "Weapon",
+    "description": "PRISM",
+    "source": "GZO Parts family-data.js",
+    "searchAliases": [
+      "24:83",
+      "JAK_SR.comp_06_pearl_PRISM",
+      "PRISM",
+      "Rarity"
+    ]
+  },
+  {
     "fullId": "24:95",
     "typeId": 24,
     "partId": 95,
@@ -47974,6 +48415,48 @@ window.MSBT_GZO_FAMILY_PART_SUPPLEMENT = [
       "Conflux",
       "MAL_SR.comp_05_legendary_conflux",
       "Rarity"
+    ]
+  },
+  {
+    "fullId": "25:83",
+    "typeId": 25,
+    "partId": 83,
+    "name": "MAL_SR.comp_05_legendary_StealthAndSeek",
+    "sourceName": "MAL_SR.comp_05_legendary_StealthAndSeek",
+    "spawnCode": "MAL_SR.comp_05_legendary_StealthAndSeek",
+    "typeLabel": "Maliwan Sniper",
+    "manufacturer": "Maliwan",
+    "itemType": "Sniper",
+    "partType": "Rarity",
+    "category": "Weapon",
+    "description": "Stealth & Seek",
+    "source": "GZO Parts family-data.js",
+    "searchAliases": [
+      "25:83",
+      "MAL_SR.comp_05_legendary_StealthAndSeek",
+      "Rarity",
+      "Stealth & Seek"
+    ]
+  },
+  {
+    "fullId": "25:84",
+    "typeId": 25,
+    "partId": 84,
+    "name": "MAL_SR.part_barrel_01_stealthandseek",
+    "sourceName": "MAL_SR.part_barrel_01_stealthandseek",
+    "spawnCode": "MAL_SR.part_barrel_01_stealthandseek",
+    "typeLabel": "Maliwan Sniper",
+    "manufacturer": "Maliwan",
+    "itemType": "Sniper",
+    "partType": "Barrel",
+    "category": "Weapon",
+    "description": "Stealth & Seek barrel",
+    "source": "GZO Parts family-data.js",
+    "searchAliases": [
+      "25:84",
+      "Barrel",
+      "MAL_SR.part_barrel_01_stealthandseek",
+      "Stealth & Seek barrel"
     ]
   },
   {
@@ -89534,19 +90017,19 @@ window.MSBT_GZO_FAMILY_PART_SUPPLEMENT = [
     "fullId": "256:25",
     "typeId": 256,
     "partId": 25,
-    "name": "FilÃ¡ntropo",
-    "sourceName": "FilÃ¡ntropo",
-    "spawnCode": "FilÃ¡ntropo",
+    "name": "Filántropo",
+    "sourceName": "Filántropo",
+    "spawnCode": "Filántropo",
     "typeLabel": "Exo Class Mod",
     "manufacturer": "Exo Soldier",
     "itemType": "Class Mod",
     "partType": "Rarity",
     "category": "Class Mod",
-    "description": "FilÃ¡ntropo",
+    "description": "Filántropo",
     "source": "GZO Parts family-data.js",
     "searchAliases": [
       "256:25",
-      "FilÃ¡ntropo",
+      "Filántropo",
       "Rarity"
     ]
   },
@@ -112639,6 +113122,48 @@ window.MSBT_GZO_FAMILY_PART_SUPPLEMENT = [
     ]
   },
   {
+    "fullId": "269:8",
+    "typeId": 269,
+    "partId": 8,
+    "name": "vla_repair_kit.part_oxidation",
+    "sourceName": "vla_repair_kit.part_oxidation",
+    "spawnCode": "vla_repair_kit.part_oxidation",
+    "typeLabel": "Vladof Repkit",
+    "manufacturer": "Vladof",
+    "itemType": "Repkit",
+    "partType": "Firmware",
+    "category": "Repkit",
+    "description": "Oxidation unique part",
+    "source": "GZO Parts family-data.js",
+    "searchAliases": [
+      "269:8",
+      "Firmware",
+      "Oxidation unique part",
+      "vla_repair_kit.part_oxidation"
+    ]
+  },
+  {
+    "fullId": "269:9",
+    "typeId": 269,
+    "partId": 9,
+    "name": "vla_repair_kit.comp_05_legendary_Oxidation",
+    "sourceName": "vla_repair_kit.comp_05_legendary_Oxidation",
+    "spawnCode": "vla_repair_kit.comp_05_legendary_Oxidation",
+    "typeLabel": "Vladof Repkit",
+    "manufacturer": "Vladof",
+    "itemType": "Repkit",
+    "partType": "Rarity",
+    "category": "Repkit",
+    "description": "Oxidation",
+    "source": "GZO Parts family-data.js",
+    "searchAliases": [
+      "269:9",
+      "Oxidation",
+      "Rarity",
+      "vla_repair_kit.comp_05_legendary_Oxidation"
+    ]
+  },
+  {
     "fullId": "270:1",
     "typeId": 270,
     "partId": 1,
@@ -112838,6 +113363,48 @@ window.MSBT_GZO_FAMILY_PART_SUPPLEMENT = [
       "270:10",
       "Daedalus",
       "dad_grenade_gadget.part_dad"
+    ]
+  },
+  {
+    "fullId": "270:11",
+    "typeId": 270,
+    "partId": 11,
+    "name": "dad_grenade_gadget.part_pressurekettle",
+    "sourceName": "dad_grenade_gadget.part_pressurekettle",
+    "spawnCode": "dad_grenade_gadget.part_pressurekettle",
+    "typeLabel": "Daedalus Grenade",
+    "manufacturer": "Daedalus",
+    "itemType": "Grenade",
+    "partType": "Firmware",
+    "category": "Grenade",
+    "description": "Pressure Kettle unique part",
+    "source": "GZO Parts family-data.js",
+    "searchAliases": [
+      "270:11",
+      "Firmware",
+      "Pressure Kettle unique part",
+      "dad_grenade_gadget.part_pressurekettle"
+    ]
+  },
+  {
+    "fullId": "270:12",
+    "typeId": 270,
+    "partId": 12,
+    "name": "dad_grenade_gadget.comp_05_legendary_PressureKettle",
+    "sourceName": "dad_grenade_gadget.comp_05_legendary_PressureKettle",
+    "spawnCode": "dad_grenade_gadget.comp_05_legendary_PressureKettle",
+    "typeLabel": "Daedalus Grenade",
+    "manufacturer": "Daedalus",
+    "itemType": "Grenade",
+    "partType": "Rarity",
+    "category": "Grenade",
+    "description": "Pressure Kettle",
+    "source": "GZO Parts family-data.js",
+    "searchAliases": [
+      "270:12",
+      "Pressure Kettle",
+      "Rarity",
+      "dad_grenade_gadget.comp_05_legendary_PressureKettle"
     ]
   },
   {
@@ -114155,6 +114722,48 @@ window.MSBT_GZO_FAMILY_PART_SUPPLEMENT = [
     "source": "GZO Parts family-data.js",
     "searchAliases": [
       "273:43"
+    ]
+  },
+  {
+    "fullId": "273:44",
+    "typeId": 273,
+    "partId": 44,
+    "name": "TOR_HW.part_barrel_01_loitersploiter",
+    "sourceName": "TOR_HW.part_barrel_01_loitersploiter",
+    "spawnCode": "TOR_HW.part_barrel_01_loitersploiter",
+    "typeLabel": "Torgue Heavy Gun",
+    "manufacturer": "Torgue",
+    "itemType": "Heavy Weapon",
+    "partType": "Barrel",
+    "category": "Ordnance",
+    "description": "Loiter Sploiter barrel",
+    "source": "GZO Parts family-data.js",
+    "searchAliases": [
+      "273:44",
+      "Barrel",
+      "Loiter Sploiter barrel",
+      "TOR_HW.part_barrel_01_loitersploiter"
+    ]
+  },
+  {
+    "fullId": "273:45",
+    "typeId": 273,
+    "partId": 45,
+    "name": "TOR_HW.comp_05_legendary_LoiterSploiter",
+    "sourceName": "TOR_HW.comp_05_legendary_LoiterSploiter",
+    "spawnCode": "TOR_HW.comp_05_legendary_LoiterSploiter",
+    "typeLabel": "Torgue Heavy Gun",
+    "manufacturer": "Torgue",
+    "itemType": "Heavy Weapon",
+    "partType": "Rarity",
+    "category": "Ordnance",
+    "description": "Loiter Sploiter",
+    "source": "GZO Parts family-data.js",
+    "searchAliases": [
+      "273:45",
+      "Loiter Sploiter",
+      "Rarity",
+      "TOR_HW.comp_05_legendary_LoiterSploiter"
     ]
   },
   {
@@ -124984,6 +125593,48 @@ window.MSBT_GZO_FAMILY_PART_SUPPLEMENT = [
       "7436, 3, 23%",
       "Protection",
       "tor_shield.part_body_armor"
+    ]
+  },
+  {
+    "fullId": "321:11",
+    "typeId": 321,
+    "partId": 11,
+    "name": "tor_shield.part_hydrowerks",
+    "sourceName": "tor_shield.part_hydrowerks",
+    "spawnCode": "tor_shield.part_hydrowerks",
+    "typeLabel": "Torgue Shield",
+    "manufacturer": "Torgue",
+    "itemType": "Shield",
+    "partType": "Firmware",
+    "category": "Shield",
+    "description": "Hydrowerks unique part",
+    "source": "GZO Parts family-data.js",
+    "searchAliases": [
+      "321:11",
+      "Firmware",
+      "Hydrowerks unique part",
+      "tor_shield.part_hydrowerks"
+    ]
+  },
+  {
+    "fullId": "321:12",
+    "typeId": 321,
+    "partId": 12,
+    "name": "tor_shield.comp_05_legendary_Hydrowerks",
+    "sourceName": "tor_shield.comp_05_legendary_Hydrowerks",
+    "spawnCode": "tor_shield.comp_05_legendary_Hydrowerks",
+    "typeLabel": "Torgue Shield",
+    "manufacturer": "Torgue",
+    "itemType": "Shield",
+    "partType": "Rarity",
+    "category": "Shield",
+    "description": "Hydrowerks",
+    "source": "GZO Parts family-data.js",
+    "searchAliases": [
+      "321:12",
+      "Hydrowerks",
+      "Rarity",
+      "tor_shield.comp_05_legendary_Hydrowerks"
     ]
   },
   {

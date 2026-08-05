@@ -8,11 +8,71 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "name": "part_foregrip_01_Herald (TOR_PS)",
     "typeLabel": "TOR_PS",
     "category": "Weapon",
-    "uses": 151,
+    "uses": 153,
     "examples": [
       "Slutty Performative Herald | GZO | LePimentSanik",
       "Slutty Performative Herald | GZO | LePimentSanik",
       "Slutty Performative Herald | GZO | LePimentSanik"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "278:16",
+    "typeId": 278,
+    "partId": 16,
+    "name": "part_payload_unique_pellet (borg_grenade_gadget)",
+    "typeLabel": "borg_grenade_gadget",
+    "category": "Grenade",
+    "uses": 100,
+    "examples": [
+      "FireBalls and FireFlys - HyperSphere Grenade | GZO | Tobgun1",
+      "FireBalls and FireFlys - HyperSphere Grenade | GZO | Tobgun1",
+      "FireBalls and FireFlys - HyperSphere Grenade | GZO | Tobgun1"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "22:94",
+    "typeId": 22,
+    "partId": 94,
+    "name": "comp_05_legendary_brickhouse (VLA_SM)",
+    "typeLabel": "VLA_SM",
+    "category": "Weapon",
+    "uses": 62,
+    "examples": [
+      "Brickhouse | GZO | LePimentSanik",
+      "Brickhouse | GZO | LePimentSanik",
+      "Brickhouse | GZO | LePimentSanik"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "22:93",
+    "typeId": 22,
+    "partId": 93,
+    "name": "part_barrel_brickhouse (VLA_SM)",
+    "typeLabel": "VLA_SM",
+    "category": "Weapon",
+    "uses": 52,
+    "examples": [
+      "Domino Socialized Brickhouse Corrosive SMG | GZO | MiA_-PiTTBuLL",
+      "Domino Socialized Brickhouse Cryo SMG | GZO | MiA_-PiTTBuLL",
+      "Domino Socialized Brickhouse Fire SMG | GZO | MiA_-PiTTBuLL"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:78",
+    "typeId": 404,
+    "partId": 78,
+    "name": "passive_red_3_5_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 23,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Calculating Whale - C4sh | GZO | Azalea Asvail",
+      "Calculating Whale - C4sh | GZO | Azalea Asvail"
     ],
     "source": "GZO/custom modded catalog"
   },
@@ -32,17 +92,17 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:78",
-    "typeId": 404,
-    "partId": 78,
-    "name": "passive_red_3_5_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 19,
+    "fullId": "22:102",
+    "typeId": 22,
+    "partId": 102,
+    "name": "part_underbarrel_uni_locust_rocket (VLA_SM)",
+    "typeLabel": "VLA_SM",
+    "category": "Weapon",
+    "uses": 21,
     "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Calculating Whale - C4sh | GZO | Azalea Asvail",
-      "Calculating Whale - C4sh | GZO | Azalea Asvail"
+      "Zealous Regulated Bubbles - Locus Luncher Corrosive | GZO | MiA_-PiTTBuLL",
+      "Zealous Regulated Bubbles - Locus Luncher Cryo | GZO | MiA_-PiTTBuLL",
+      "Zealous Regulated Bubbles - Locus Luncher Fire | GZO | MiA_-PiTTBuLL"
     ],
     "source": "GZO/custom modded catalog"
   },
@@ -53,11 +113,26 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "name": "passive_red_1_1_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 16,
+    "uses": 20,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Calculating Whale - C4sh | GZO | Azalea Asvail",
       "Calculating Whale - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "275:37",
+    "typeId": 275,
+    "partId": 37,
+    "name": "part_barrel_02_draupner (BOR_HW)",
+    "typeLabel": "BOR_HW",
+    "category": "Part",
+    "uses": 19,
+    "examples": [
+      "Zealous Regulated Draupner - Killdrone Corrosive | GZO | MiA_-PiTTBuLL",
+      "Zealous Regulated Draupner - Killdrone Cryo | GZO | MiA_-PiTTBuLL",
+      "Zealous Regulated Draupner - Killdrone Fire | GZO | MiA_-PiTTBuLL"
     ],
     "source": "GZO/custom modded catalog"
   },
@@ -68,11 +143,26 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "name": "passive_blue_2_1_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 14,
+    "uses": 18,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Calculating Whale - C4sh | GZO | Azalea Asvail",
       "Calculating Whale - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "12:84",
+    "typeId": 12,
+    "partId": 84,
+    "name": "part_barrel_02_cormano (TOR_SG)",
+    "typeLabel": "TOR_SG",
+    "category": "Weapon",
+    "uses": 18,
+    "examples": [
+      "Cormano | GZO | Crayons82.0",
+      "Cormano | GZO | Crayons82.0",
+      "Cormano | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
@@ -83,7 +173,7 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "name": "passive_red_2_5_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 13,
+    "uses": 17,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Calculating Whale - C4sh | GZO | Azalea Asvail",
@@ -98,7 +188,7 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "name": "passive_red_3_1_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 13,
+    "uses": 17,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Calculating Whale - C4sh | GZO | Azalea Asvail",
@@ -113,7 +203,7 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "name": "passive_blue_1_5_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 13,
+    "uses": 17,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -128,7 +218,7 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "name": "passive_blue_2_3_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 13,
+    "uses": 17,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -143,7 +233,7 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "name": "passive_red_1_4_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 13,
+    "uses": 17,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Calculating Whale - C4sh | GZO | Azalea Asvail",
@@ -152,32 +242,47 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "21:89",
-    "typeId": 21,
-    "partId": 89,
-    "name": "part_barrel_02_Juliet (MAL_SM)",
-    "typeLabel": "MAL_SM",
+    "fullId": "20:71",
+    "typeId": 20,
+    "partId": 71,
+    "name": "part_barrel_02_Screwed (DAD_SM)",
+    "typeLabel": "DAD_SM",
     "category": "Weapon",
-    "uses": 13,
+    "uses": 17,
     "examples": [
-      "LeahG(´s) Sparkle Me Nutz! - The Sparkle Seeries Nr.3 | GZO | Tobgun1",
-      "LeahG(´s) Sparkle Me Nutz! - The Sparkle Seeries Nr.3 | GZO | Tobgun1",
-      "LeahG(´s) Sparkle Me Nutz! - The Sparkle Seeries Nr.3 | GZO | Tobgun1"
+      "Eliminating Screwstonian | GZO | Terra-Morpheous",
+      "Put Looming Screwstonian | GZO | Crayons82.0",
+      "Forceful Eliminating Screwstonian | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "22:102",
-    "typeId": 22,
-    "partId": 102,
-    "name": "part_underbarrel_uni_locust_rocket (VLA_SM)",
-    "typeLabel": "VLA_SM",
-    "category": "Weapon",
-    "uses": 13,
+    "fullId": "311:14",
+    "typeId": 311,
+    "partId": 14,
+    "name": "part_ordinance (ted_grenade_gadget)",
+    "typeLabel": "ted_grenade_gadget",
+    "category": "Grenade",
+    "uses": 17,
     "examples": [
-      "Zealous Regulated Bubbles - Locus Luncher Corrosive | GZO | MiA_-PiTTBuLL",
-      "Zealous Regulated Bubbles - Locus Luncher Cryo | GZO | MiA_-PiTTBuLL",
-      "Zealous Regulated Bubbles - Locus Luncher Fire | GZO | MiA_-PiTTBuLL"
+      "Mammon | GZO | Fen Integrum",
+      "Prosperous Extolled Ishmael | Custom Static | Crayons82.0",
+      "Prosperous Extolled Ishmael | Custom Static | Crayons82.0"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "254:75",
+    "typeId": 254,
+    "partId": 75,
+    "name": "passive_green_1_4_tier_5 (classmod_dark_siren)",
+    "typeLabel": "classmod_dark_siren",
+    "category": "Class Mod",
+    "uses": 16,
+    "examples": [
+      "Navigating Misericorde | GZO | Skippy",
+      "Navigating Misericorde | GZO | Skippy",
+      "Navigating Misericorde | GZO | Skippy"
     ],
     "source": "GZO/custom modded catalog"
   },
@@ -188,7 +293,7 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "name": "passive_green_3_4_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 12,
+    "uses": 16,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -203,7 +308,7 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "name": "passive_blue_1_1_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 12,
+    "uses": 16,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -218,41 +323,11 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "name": "passive_blue_2_5_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 12,
+    "uses": 16,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "6:86",
-    "typeId": 6,
-    "partId": 86,
-    "name": "part_barrel_01_Herald (TOR_PS)",
-    "typeLabel": "TOR_PS",
-    "category": "Weapon",
-    "uses": 12,
-    "examples": [
-      "Engorged Shameless Herald | GZO | Terra-Morpheous",
-      "spreading herald | GZO | Azalea Asvail",
-      "Smg Herald | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "254:75",
-    "typeId": 254,
-    "partId": 75,
-    "name": "passive_green_1_4_tier_5 (classmod_dark_siren)",
-    "typeLabel": "classmod_dark_siren",
-    "category": "Class Mod",
-    "uses": 11,
-    "examples": [
-      "Navigating Misericorde | GZO | Skippy",
-      "Navigating Misericorde | GZO | Skippy",
-      "Navigating Misericorde | GZO | Skippy"
     ],
     "source": "GZO/custom modded catalog"
   },
@@ -263,7 +338,7 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "name": "passive_blue_left_4_3_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 11,
+    "uses": 15,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Calculating Whale - C4sh | GZO | Azalea Asvail",
@@ -278,7 +353,7 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "name": "passive_red_left_4_3_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 11,
+    "uses": 15,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Calculating Whale - C4sh | GZO | Azalea Asvail",
@@ -293,7 +368,7 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "name": "passive_red_1_5_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 11,
+    "uses": 15,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -308,7 +383,7 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "name": "passive_red_2_3_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 11,
+    "uses": 15,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -323,7 +398,7 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "name": "passive_green_2_1_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 11,
+    "uses": 15,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -338,7 +413,7 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "name": "passive_green_2_3_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 11,
+    "uses": 15,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -353,7 +428,7 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "name": "passive_green_2_5_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 11,
+    "uses": 15,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -368,7 +443,7 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "name": "passive_green_3_2_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 11,
+    "uses": 15,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -383,7 +458,7 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "name": "passive_green_3_1_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 11,
+    "uses": 15,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -398,22 +473,7 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "name": "passive_blue_3_4_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 11,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:16",
-    "typeId": 404,
-    "partId": 16,
-    "name": "passive_red_3_2_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 11,
+    "uses": 15,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -428,7 +488,7 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "name": "passive_blue_mid_6_1_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 10,
+    "uses": 14,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Calculating Whale - C4sh | GZO | Azalea Asvail",
@@ -443,7 +503,7 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "name": "passive_blue_mid_5_3_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 10,
+    "uses": 14,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Calculating Whale - C4sh | GZO | Azalea Asvail",
@@ -458,7 +518,7 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "name": "passive_red_left_4_1_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 10,
+    "uses": 14,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Calculating Whale - C4sh | GZO | Azalea Asvail",
@@ -473,7 +533,7 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "name": "passive_green_left_4_3_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 10,
+    "uses": 14,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Calculating Whale - C4sh | GZO | Azalea Asvail",
@@ -488,7 +548,7 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "name": "passive_red_1_3_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 10,
+    "uses": 14,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -503,22 +563,7 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "name": "passive_green_1_1_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 10,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:70",
-    "typeId": 404,
-    "partId": 70,
-    "name": "passive_green_3_5_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 10,
+    "uses": 14,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -533,7 +578,157 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "name": "passive_blue_1_4_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 10,
+    "uses": 14,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:16",
+    "typeId": 404,
+    "partId": 16,
+    "name": "passive_red_3_2_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 14,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "6:86",
+    "typeId": 6,
+    "partId": 86,
+    "name": "part_barrel_01_Herald (TOR_PS)",
+    "typeLabel": "TOR_PS",
+    "category": "Weapon",
+    "uses": 14,
+    "examples": [
+      "Engorged Shameless Herald | GZO | Terra-Morpheous",
+      "spreading herald | GZO | Azalea Asvail",
+      "Smg Herald | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "21:89",
+    "typeId": 21,
+    "partId": 89,
+    "name": "part_barrel_02_Juliet (MAL_SM)",
+    "typeLabel": "MAL_SM",
+    "category": "Weapon",
+    "uses": 14,
+    "examples": [
+      "LeahG(´s) Sparkle Me Nutz! - The Sparkle Seeries Nr.3 | GZO | Tobgun1",
+      "LeahG(´s) Sparkle Me Nutz! - The Sparkle Seeries Nr.3 | GZO | Tobgun1",
+      "LeahG(´s) Sparkle Me Nutz! - The Sparkle Seeries Nr.3 | GZO | Tobgun1"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "17:84",
+    "typeId": 17,
+    "partId": 84,
+    "name": "part_barrel_lockjaw (TOR_AR)",
+    "typeLabel": "TOR_AR",
+    "category": "Weapon",
+    "uses": 14,
+    "examples": [
+      "Omni Mod Lvl 15 | GZO | BananaBandanaMan",
+      "Gatlin | GZO | Rapt0rj3sus",
+      "Apocalypse Stray | GZO | ZK"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:270",
+    "typeId": 404,
+    "partId": 270,
+    "name": "passive_blue_left_6_1_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 13,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Calculating Whale - C4sh | GZO | Azalea Asvail",
+      "Calculating Whale - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:260",
+    "typeId": 404,
+    "partId": 260,
+    "name": "passive_red_right_5_1_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 13,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Calculating Whale - C4sh | GZO | Azalea Asvail",
+      "Calculating Whale - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:254",
+    "typeId": 404,
+    "partId": 254,
+    "name": "passive_red_mid_5_2_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 13,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Calculating Whale - C4sh | GZO | Azalea Asvail",
+      "Calculating Whale - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:76",
+    "typeId": 404,
+    "partId": 76,
+    "name": "passive_green_1_3_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 13,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:70",
+    "typeId": 404,
+    "partId": 70,
+    "name": "passive_green_3_5_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 13,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:65",
+    "typeId": 404,
+    "partId": 65,
+    "name": "passive_blue_1_2_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 13,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -548,7 +743,7 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "name": "passive_blue_3_2_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 10,
+    "uses": 13,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -563,7 +758,502 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "name": "passive_blue_3_5_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 10,
+    "uses": 13,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:521",
+    "typeId": 404,
+    "partId": 521,
+    "name": "passive_blue_left_5_3_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 12,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:496",
+    "typeId": 404,
+    "partId": 496,
+    "name": "passive_red_left_4_1_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 12,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:485",
+    "typeId": 404,
+    "partId": 485,
+    "name": "passive_green_mid_5_2_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 12,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:481",
+    "typeId": 404,
+    "partId": 481,
+    "name": "passive_green_left_6_3_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 12,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:480",
+    "typeId": 404,
+    "partId": 480,
+    "name": "passive_green_left_6_1_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 12,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:476",
+    "typeId": 404,
+    "partId": 476,
+    "name": "passive_green_left_4_3_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 12,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:475",
+    "typeId": 404,
+    "partId": 475,
+    "name": "passive_green_left_4_1_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 12,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:79",
+    "typeId": 404,
+    "partId": 79,
+    "name": "passive_red_3_4_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 12,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "26:81",
+    "typeId": 26,
+    "partId": 81,
+    "name": "part_barrel_02_ishmael (ORD_SR)",
+    "typeLabel": "ORD_SR",
+    "category": "Ordnance",
+    "uses": 12,
+    "examples": [
+      "Eviscerating Raiden | GZO | Crayons82.0",
+      "Flared Nadir Broken Wings | GZO | Crayons82.0",
+      "Eviscerating Parasite | GZO | Crayons82.0"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:531",
+    "typeId": 404,
+    "partId": 531,
+    "name": "passive_blue_right_4_1_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 11,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:530",
+    "typeId": 404,
+    "partId": 530,
+    "name": "passive_blue_mid_6_3_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 11,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:524",
+    "typeId": 404,
+    "partId": 524,
+    "name": "passive_blue_mid_4_1_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 11,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:510",
+    "typeId": 404,
+    "partId": 510,
+    "name": "passive_red_right_4_1_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 11,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:507",
+    "typeId": 404,
+    "partId": 507,
+    "name": "passive_red_mid_5_3_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 11,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:506",
+    "typeId": 404,
+    "partId": 506,
+    "name": "passive_red_mid_5_2_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 11,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:504",
+    "typeId": 404,
+    "partId": 504,
+    "name": "passive_red_mid_4_3_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 11,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:500",
+    "typeId": 404,
+    "partId": 500,
+    "name": "passive_red_left_5_3_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 11,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:486",
+    "typeId": 404,
+    "partId": 486,
+    "name": "passive_green_mid_5_3_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 11,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:482",
+    "typeId": 404,
+    "partId": 482,
+    "name": "passive_green_mid_4_1_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 11,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:477",
+    "typeId": 404,
+    "partId": 477,
+    "name": "passive_green_left_5_1_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 11,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:461",
+    "typeId": 404,
+    "partId": 461,
+    "name": "passive_blue_mid_4_1_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 11,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:458",
+    "typeId": 404,
+    "partId": 458,
+    "name": "passive_blue_left_5_3_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 11,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:433",
+    "typeId": 404,
+    "partId": 433,
+    "name": "passive_red_left_4_1_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 11,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:398",
+    "typeId": 404,
+    "partId": 398,
+    "name": "passive_blue_mid_4_1_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 11,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:395",
+    "typeId": 404,
+    "partId": 395,
+    "name": "passive_blue_left_5_3_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 11,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:370",
+    "typeId": 404,
+    "partId": 370,
+    "name": "passive_red_left_4_1_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 11,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:335",
+    "typeId": 404,
+    "partId": 335,
+    "name": "passive_blue_mid_4_1_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 11,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:332",
+    "typeId": 404,
+    "partId": 332,
+    "name": "passive_blue_left_5_3_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 11,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:307",
+    "typeId": 404,
+    "partId": 307,
+    "name": "passive_red_left_4_1_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 11,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:284",
+    "typeId": 404,
+    "partId": 284,
+    "name": "passive_blue_right_6_1_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 11,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Calculating Whale - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:272",
+    "typeId": 404,
+    "partId": 272,
+    "name": "passive_blue_mid_4_1_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 11,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:269",
+    "typeId": 404,
+    "partId": 269,
+    "name": "passive_blue_left_5_3_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 11,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:223",
+    "typeId": 404,
+    "partId": 223,
+    "name": "passive_green_left_4_1_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 11,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -578,11 +1268,1676 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "name": "comp_06_pearl_Herald (TOR_PS)",
     "typeLabel": "TOR_PS",
     "category": "Weapon",
-    "uses": 10,
+    "uses": 11,
     "examples": [
       "Engorged Shameless Herald | GZO | Terra-Morpheous",
       "spreading herald | GZO | Azalea Asvail",
       "Smg Herald | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "3:84",
+    "typeId": 3,
+    "partId": 84,
+    "name": "part_barrel_shoals (JAK_PS)",
+    "typeLabel": "JAK_PS",
+    "category": "Weapon",
+    "uses": 11,
+    "examples": [
+      "Sudden Looming Shoals | GZO | Aussie_78<",
+      "Sudden Looming Shoals | GZO | Aussie_78<",
+      "Sudden Looming Shoals | GZO | Aussie_78<"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:536",
+    "typeId": 404,
+    "partId": 536,
+    "name": "passive_blue_right_6_1_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:535",
+    "typeId": 404,
+    "partId": 535,
+    "name": "passive_blue_right_5_3_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:534",
+    "typeId": 404,
+    "partId": 534,
+    "name": "passive_blue_right_5_2_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:529",
+    "typeId": 404,
+    "partId": 529,
+    "name": "passive_blue_mid_6_1_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:528",
+    "typeId": 404,
+    "partId": 528,
+    "name": "passive_blue_mid_5_3_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:525",
+    "typeId": 404,
+    "partId": 525,
+    "name": "passive_blue_mid_4_3_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:519",
+    "typeId": 404,
+    "partId": 519,
+    "name": "passive_blue_left_5_1_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:512",
+    "typeId": 404,
+    "partId": 512,
+    "name": "passive_red_right_5_1_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:511",
+    "typeId": 404,
+    "partId": 511,
+    "name": "passive_red_right_4_3_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:508",
+    "typeId": 404,
+    "partId": 508,
+    "name": "passive_red_mid_6_1_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:503",
+    "typeId": 404,
+    "partId": 503,
+    "name": "passive_red_mid_4_1_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:501",
+    "typeId": 404,
+    "partId": 501,
+    "name": "passive_red_left_6_1_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:499",
+    "typeId": 404,
+    "partId": 499,
+    "name": "passive_red_left_5_2_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:498",
+    "typeId": 404,
+    "partId": 498,
+    "name": "passive_red_left_5_1_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:497",
+    "typeId": 404,
+    "partId": 497,
+    "name": "passive_red_left_4_3_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:492",
+    "typeId": 404,
+    "partId": 492,
+    "name": "passive_green_right_5_2_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:490",
+    "typeId": 404,
+    "partId": 490,
+    "name": "passive_green_right_4_3_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:483",
+    "typeId": 404,
+    "partId": 483,
+    "name": "passive_green_mid_4_3_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:467",
+    "typeId": 404,
+    "partId": 467,
+    "name": "passive_blue_mid_6_3_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:462",
+    "typeId": 404,
+    "partId": 462,
+    "name": "passive_blue_mid_4_3_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:456",
+    "typeId": 404,
+    "partId": 456,
+    "name": "passive_blue_left_5_1_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:454",
+    "typeId": 404,
+    "partId": 454,
+    "name": "passive_blue_left_4_1_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:449",
+    "typeId": 404,
+    "partId": 449,
+    "name": "passive_red_right_5_1_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:445",
+    "typeId": 404,
+    "partId": 445,
+    "name": "passive_red_mid_6_1_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:441",
+    "typeId": 404,
+    "partId": 441,
+    "name": "passive_red_mid_4_3_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:440",
+    "typeId": 404,
+    "partId": 440,
+    "name": "passive_red_mid_4_1_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:434",
+    "typeId": 404,
+    "partId": 434,
+    "name": "passive_red_left_4_3_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:427",
+    "typeId": 404,
+    "partId": 427,
+    "name": "passive_green_right_4_3_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:418",
+    "typeId": 404,
+    "partId": 418,
+    "name": "passive_green_left_6_3_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:417",
+    "typeId": 404,
+    "partId": 417,
+    "name": "passive_green_left_6_1_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:413",
+    "typeId": 404,
+    "partId": 413,
+    "name": "passive_green_left_4_3_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:412",
+    "typeId": 404,
+    "partId": 412,
+    "name": "passive_green_left_4_1_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:404",
+    "typeId": 404,
+    "partId": 404,
+    "name": "passive_blue_mid_6_3_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:399",
+    "typeId": 404,
+    "partId": 399,
+    "name": "passive_blue_mid_4_3_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:393",
+    "typeId": 404,
+    "partId": 393,
+    "name": "passive_blue_left_5_1_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:391",
+    "typeId": 404,
+    "partId": 391,
+    "name": "passive_blue_left_4_1_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:386",
+    "typeId": 404,
+    "partId": 386,
+    "name": "passive_red_right_5_1_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:382",
+    "typeId": 404,
+    "partId": 382,
+    "name": "passive_red_mid_6_1_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:381",
+    "typeId": 404,
+    "partId": 381,
+    "name": "passive_red_mid_5_3_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:380",
+    "typeId": 404,
+    "partId": 380,
+    "name": "passive_red_mid_5_2_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:378",
+    "typeId": 404,
+    "partId": 378,
+    "name": "passive_red_mid_4_3_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:377",
+    "typeId": 404,
+    "partId": 377,
+    "name": "passive_red_mid_4_1_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:371",
+    "typeId": 404,
+    "partId": 371,
+    "name": "passive_red_left_4_3_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:364",
+    "typeId": 404,
+    "partId": 364,
+    "name": "passive_green_right_4_3_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:355",
+    "typeId": 404,
+    "partId": 355,
+    "name": "passive_green_left_6_3_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:354",
+    "typeId": 404,
+    "partId": 354,
+    "name": "passive_green_left_6_1_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:350",
+    "typeId": 404,
+    "partId": 350,
+    "name": "passive_green_left_4_3_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:349",
+    "typeId": 404,
+    "partId": 349,
+    "name": "passive_green_left_4_1_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:341",
+    "typeId": 404,
+    "partId": 341,
+    "name": "passive_blue_mid_6_3_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:336",
+    "typeId": 404,
+    "partId": 336,
+    "name": "passive_blue_mid_4_3_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:330",
+    "typeId": 404,
+    "partId": 330,
+    "name": "passive_blue_left_5_1_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:328",
+    "typeId": 404,
+    "partId": 328,
+    "name": "passive_blue_left_4_1_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:323",
+    "typeId": 404,
+    "partId": 323,
+    "name": "passive_red_right_5_1_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:319",
+    "typeId": 404,
+    "partId": 319,
+    "name": "passive_red_mid_6_1_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:318",
+    "typeId": 404,
+    "partId": 318,
+    "name": "passive_red_mid_5_3_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:317",
+    "typeId": 404,
+    "partId": 317,
+    "name": "passive_red_mid_5_2_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:315",
+    "typeId": 404,
+    "partId": 315,
+    "name": "passive_red_mid_4_3_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:314",
+    "typeId": 404,
+    "partId": 314,
+    "name": "passive_red_mid_4_1_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:308",
+    "typeId": 404,
+    "partId": 308,
+    "name": "passive_red_left_4_3_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:301",
+    "typeId": 404,
+    "partId": 301,
+    "name": "passive_green_right_4_3_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:292",
+    "typeId": 404,
+    "partId": 292,
+    "name": "passive_green_left_6_3_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:291",
+    "typeId": 404,
+    "partId": 291,
+    "name": "passive_green_left_6_1_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:287",
+    "typeId": 404,
+    "partId": 287,
+    "name": "passive_green_left_4_3_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:286",
+    "typeId": 404,
+    "partId": 286,
+    "name": "passive_green_left_4_1_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:281",
+    "typeId": 404,
+    "partId": 281,
+    "name": "passive_blue_right_5_1_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Calculating Whale - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:278",
+    "typeId": 404,
+    "partId": 278,
+    "name": "passive_blue_mid_6_3_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:273",
+    "typeId": 404,
+    "partId": 273,
+    "name": "passive_blue_mid_4_3_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:267",
+    "typeId": 404,
+    "partId": 267,
+    "name": "passive_blue_left_5_1_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:265",
+    "typeId": 404,
+    "partId": 265,
+    "name": "passive_blue_left_4_1_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:262",
+    "typeId": 404,
+    "partId": 262,
+    "name": "passive_red_right_5_3_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:256",
+    "typeId": 404,
+    "partId": 256,
+    "name": "passive_red_mid_6_1_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:255",
+    "typeId": 404,
+    "partId": 255,
+    "name": "passive_red_mid_5_3_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:252",
+    "typeId": 404,
+    "partId": 252,
+    "name": "passive_red_mid_4_3_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:251",
+    "typeId": 404,
+    "partId": 251,
+    "name": "passive_red_mid_4_1_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:238",
+    "typeId": 404,
+    "partId": 238,
+    "name": "passive_green_right_4_3_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:237",
+    "typeId": 404,
+    "partId": 237,
+    "name": "passive_green_right_4_1_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:233",
+    "typeId": 404,
+    "partId": 233,
+    "name": "passive_green_mid_5_2_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:229",
+    "typeId": 404,
+    "partId": 229,
+    "name": "passive_green_left_6_3_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:228",
+    "typeId": 404,
+    "partId": 228,
+    "name": "passive_green_left_6_1_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:202",
+    "typeId": 404,
+    "partId": 202,
+    "name": "passive_green_1_5_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:200",
+    "typeId": 404,
+    "partId": 200,
+    "name": "passive_green_2_3_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:194",
+    "typeId": 404,
+    "partId": 194,
+    "name": "passive_blue_1_1_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:191",
+    "typeId": 404,
+    "partId": 191,
+    "name": "passive_blue_1_5_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:189",
+    "typeId": 404,
+    "partId": 189,
+    "name": "passive_blue_2_3_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:174",
+    "typeId": 404,
+    "partId": 174,
+    "name": "passive_red_3_5_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:170",
+    "typeId": 404,
+    "partId": 170,
+    "name": "passive_green_1_5_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:168",
+    "typeId": 404,
+    "partId": 168,
+    "name": "passive_green_2_3_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:162",
+    "typeId": 404,
+    "partId": 162,
+    "name": "passive_blue_1_1_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:159",
+    "typeId": 404,
+    "partId": 159,
+    "name": "passive_blue_1_5_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:157",
+    "typeId": 404,
+    "partId": 157,
+    "name": "passive_blue_2_3_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:142",
+    "typeId": 404,
+    "partId": 142,
+    "name": "passive_red_3_5_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:138",
+    "typeId": 404,
+    "partId": 138,
+    "name": "passive_green_1_5_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:136",
+    "typeId": 404,
+    "partId": 136,
+    "name": "passive_green_2_3_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:130",
+    "typeId": 404,
+    "partId": 130,
+    "name": "passive_blue_1_1_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:127",
+    "typeId": 404,
+    "partId": 127,
+    "name": "passive_blue_1_5_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:125",
+    "typeId": 404,
+    "partId": 125,
+    "name": "passive_blue_2_3_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:110",
+    "typeId": 404,
+    "partId": 110,
+    "name": "passive_red_3_5_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:106",
+    "typeId": 404,
+    "partId": 106,
+    "name": "passive_green_1_5_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:104",
+    "typeId": 404,
+    "partId": 104,
+    "name": "passive_green_2_3_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:98",
+    "typeId": 404,
+    "partId": 98,
+    "name": "passive_blue_1_1_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:95",
+    "typeId": 404,
+    "partId": 95,
+    "name": "passive_blue_1_5_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:93",
+    "typeId": 404,
+    "partId": 93,
+    "name": "passive_blue_2_3_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:92",
+    "typeId": 404,
+    "partId": 92,
+    "name": "passive_blue_2_5_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:74",
+    "typeId": 404,
+    "partId": 74,
+    "name": "passive_green_1_5_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:58",
+    "typeId": 404,
+    "partId": 58,
+    "name": "passive_blue_3_3_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Calculating Whale - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:46",
+    "typeId": 404,
+    "partId": 46,
+    "name": "passive_green_3_3_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Calculating Whale - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:30",
+    "typeId": 404,
+    "partId": 30,
+    "name": "passive_blue_3_4_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:29",
+    "typeId": 404,
+    "partId": 29,
+    "name": "passive_blue_3_4_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:28",
+    "typeId": 404,
+    "partId": 28,
+    "name": "passive_blue_3_4_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:27",
+    "typeId": 404,
+    "partId": 27,
+    "name": "passive_blue_3_4_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 10,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
     ],
     "source": "GZO/custom modded catalog"
   },
@@ -602,706 +2957,17 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:485",
-    "typeId": 404,
-    "partId": 485,
-    "name": "passive_green_mid_5_2_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 9,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:270",
-    "typeId": 404,
-    "partId": 270,
-    "name": "passive_blue_left_6_1_tier_1 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 9,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Calculating Whale - C4sh | GZO | Azalea Asvail",
-      "Calculating Whale - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:260",
-    "typeId": 404,
-    "partId": 260,
-    "name": "passive_red_right_5_1_tier_1 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 9,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Calculating Whale - C4sh | GZO | Azalea Asvail",
-      "Calculating Whale - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:254",
-    "typeId": 404,
-    "partId": 254,
-    "name": "passive_red_mid_5_2_tier_1 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 9,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Calculating Whale - C4sh | GZO | Azalea Asvail",
-      "Calculating Whale - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:79",
-    "typeId": 404,
-    "partId": 79,
-    "name": "passive_red_3_4_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 9,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:76",
-    "typeId": 404,
-    "partId": 76,
-    "name": "passive_green_1_3_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 9,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:65",
-    "typeId": 404,
-    "partId": 65,
-    "name": "passive_blue_1_2_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 9,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "20:71",
+    "fullId": "20:70",
     "typeId": 20,
-    "partId": 71,
-    "name": "part_barrel_02_Screwed (DAD_SM)",
+    "partId": 70,
+    "name": "comp_06_pearl_raiden (DAD_SM)",
     "typeLabel": "DAD_SM",
     "category": "Weapon",
-    "uses": 9,
+    "uses": 10,
     "examples": [
-      "Eliminating Screwstonian | GZO | Terra-Morpheous",
-      "Smashing Eliminating Raiden | Custom Static | Crayons82.0",
-      "Smashing Eliminating Raiden | Custom Static | Crayons82.0"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "17:84",
-    "typeId": 17,
-    "partId": 84,
-    "name": "part_barrel_lockjaw (TOR_AR)",
-    "typeLabel": "TOR_AR",
-    "category": "Weapon",
-    "uses": 9,
-    "examples": [
-      "Omni Mod Lvl 15 | GZO | BananaBandanaMan",
-      "Gatlin | GZO | Rapt0rj3sus",
-      "Apocalypse Stray | GZO | ZK"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:521",
-    "typeId": 404,
-    "partId": 521,
-    "name": "passive_blue_left_5_3_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 8,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:507",
-    "typeId": 404,
-    "partId": 507,
-    "name": "passive_red_mid_5_3_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 8,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:506",
-    "typeId": 404,
-    "partId": 506,
-    "name": "passive_red_mid_5_2_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 8,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:496",
-    "typeId": 404,
-    "partId": 496,
-    "name": "passive_red_left_4_1_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 8,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:481",
-    "typeId": 404,
-    "partId": 481,
-    "name": "passive_green_left_6_3_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 8,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:480",
-    "typeId": 404,
-    "partId": 480,
-    "name": "passive_green_left_6_1_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 8,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:476",
-    "typeId": 404,
-    "partId": 476,
-    "name": "passive_green_left_4_3_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 8,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:475",
-    "typeId": 404,
-    "partId": 475,
-    "name": "passive_green_left_4_1_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 8,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:536",
-    "typeId": 404,
-    "partId": 536,
-    "name": "passive_blue_right_6_1_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 7,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:531",
-    "typeId": 404,
-    "partId": 531,
-    "name": "passive_blue_right_4_1_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 7,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:530",
-    "typeId": 404,
-    "partId": 530,
-    "name": "passive_blue_mid_6_3_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 7,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:524",
-    "typeId": 404,
-    "partId": 524,
-    "name": "passive_blue_mid_4_1_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 7,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:510",
-    "typeId": 404,
-    "partId": 510,
-    "name": "passive_red_right_4_1_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 7,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:504",
-    "typeId": 404,
-    "partId": 504,
-    "name": "passive_red_mid_4_3_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 7,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:501",
-    "typeId": 404,
-    "partId": 501,
-    "name": "passive_red_left_6_1_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 7,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:500",
-    "typeId": 404,
-    "partId": 500,
-    "name": "passive_red_left_5_3_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 7,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:499",
-    "typeId": 404,
-    "partId": 499,
-    "name": "passive_red_left_5_2_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 7,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:486",
-    "typeId": 404,
-    "partId": 486,
-    "name": "passive_green_mid_5_3_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 7,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:482",
-    "typeId": 404,
-    "partId": 482,
-    "name": "passive_green_mid_4_1_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 7,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:477",
-    "typeId": 404,
-    "partId": 477,
-    "name": "passive_green_left_5_1_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 7,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:461",
-    "typeId": 404,
-    "partId": 461,
-    "name": "passive_blue_mid_4_1_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 7,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:458",
-    "typeId": 404,
-    "partId": 458,
-    "name": "passive_blue_left_5_3_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 7,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:433",
-    "typeId": 404,
-    "partId": 433,
-    "name": "passive_red_left_4_1_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 7,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:398",
-    "typeId": 404,
-    "partId": 398,
-    "name": "passive_blue_mid_4_1_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 7,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:395",
-    "typeId": 404,
-    "partId": 395,
-    "name": "passive_blue_left_5_3_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 7,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:370",
-    "typeId": 404,
-    "partId": 370,
-    "name": "passive_red_left_4_1_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 7,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:335",
-    "typeId": 404,
-    "partId": 335,
-    "name": "passive_blue_mid_4_1_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 7,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:332",
-    "typeId": 404,
-    "partId": 332,
-    "name": "passive_blue_left_5_3_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 7,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:307",
-    "typeId": 404,
-    "partId": 307,
-    "name": "passive_red_left_4_1_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 7,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:284",
-    "typeId": 404,
-    "partId": 284,
-    "name": "passive_blue_right_6_1_tier_1 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 7,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Calculating Whale - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:272",
-    "typeId": 404,
-    "partId": 272,
-    "name": "passive_blue_mid_4_1_tier_1 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 7,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:269",
-    "typeId": 404,
-    "partId": 269,
-    "name": "passive_blue_left_5_3_tier_1 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 7,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:223",
-    "typeId": 404,
-    "partId": 223,
-    "name": "passive_green_left_4_1_tier_1 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 7,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:58",
-    "typeId": 404,
-    "partId": 58,
-    "name": "passive_blue_3_3_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 7,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Calculating Whale - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:46",
-    "typeId": 404,
-    "partId": 46,
-    "name": "passive_green_3_3_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 7,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Calculating Whale - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "19:60",
-    "typeId": 19,
-    "partId": 60,
-    "name": "part_barrel_01_Jailbroken (BOR_SM)",
-    "typeLabel": "BOR_SM",
-    "category": "Part",
-    "uses": 7,
-    "examples": [
-      "Gatlin | GZO | Rapt0rj3sus",
-      "Eviscerating Waterfall | Custom Static | Crayons82.0"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:535",
-    "typeId": 404,
-    "partId": 535,
-    "name": "passive_blue_right_5_3_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 6,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:534",
-    "typeId": 404,
-    "partId": 534,
-    "name": "passive_blue_right_5_2_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 6,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+      "Smashing Fatal Raiden | GZO | Crayons82.0",
+      "Smashing Fatal Raiden | GZO | Crayons82.0",
+      "Smashing Eliminating Raiden | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
@@ -1312,7 +2978,7 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "name": "passive_blue_right_5_1_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -1321,13 +2987,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:529",
+    "fullId": "404:532",
     "typeId": 404,
-    "partId": 529,
-    "name": "passive_blue_mid_6_1_tier_5 (classmod_robodealer)",
+    "partId": 532,
+    "name": "passive_blue_right_4_3_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -1336,13 +3002,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:528",
+    "fullId": "404:518",
     "typeId": 404,
-    "partId": 528,
-    "name": "passive_blue_mid_5_3_tier_5 (classmod_robodealer)",
+    "partId": 518,
+    "name": "passive_blue_left_4_3_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -1351,28 +3017,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:525",
+    "fullId": "404:517",
     "typeId": 404,
-    "partId": 525,
-    "name": "passive_blue_mid_4_3_tier_5 (classmod_robodealer)",
+    "partId": 517,
+    "name": "passive_blue_left_4_1_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:519",
-    "typeId": 404,
-    "partId": 519,
-    "name": "passive_blue_left_5_1_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -1387,7 +3038,7 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "name": "passive_red_right_6_3_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -1396,88 +3047,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:512",
+    "fullId": "404:514",
     "typeId": 404,
-    "partId": 512,
-    "name": "passive_red_right_5_1_tier_5 (classmod_robodealer)",
+    "partId": 514,
+    "name": "passive_red_right_5_3_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:511",
-    "typeId": 404,
-    "partId": 511,
-    "name": "passive_red_right_4_3_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 6,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:508",
-    "typeId": 404,
-    "partId": 508,
-    "name": "passive_red_mid_6_1_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 6,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:503",
-    "typeId": 404,
-    "partId": 503,
-    "name": "passive_red_mid_4_1_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 6,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:498",
-    "typeId": 404,
-    "partId": 498,
-    "name": "passive_red_left_5_1_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 6,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:497",
-    "typeId": 404,
-    "partId": 497,
-    "name": "passive_red_left_4_3_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -1492,7 +3068,7 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "name": "passive_green_right_6_3_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -1507,7 +3083,7 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "name": "passive_green_right_6_1_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -1516,28 +3092,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:492",
+    "fullId": "404:489",
     "typeId": 404,
-    "partId": 492,
-    "name": "passive_green_right_5_2_tier_5 (classmod_robodealer)",
+    "partId": 489,
+    "name": "passive_green_right_4_1_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:490",
-    "typeId": 404,
-    "partId": 490,
-    "name": "passive_green_right_4_3_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -1552,22 +3113,7 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "name": "passive_green_mid_5_1_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:483",
-    "typeId": 404,
-    "partId": 483,
-    "name": "passive_green_mid_4_3_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -1582,7 +3128,7 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "name": "passive_green_left_5_3_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -1597,7 +3143,7 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "name": "passive_blue_right_6_1_tier_4 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -1606,13 +3152,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:467",
+    "fullId": "404:472",
     "typeId": 404,
-    "partId": 467,
-    "name": "passive_blue_mid_6_3_tier_4 (classmod_robodealer)",
+    "partId": 472,
+    "name": "passive_blue_right_5_3_tier_4 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -1621,13 +3167,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:462",
+    "fullId": "404:471",
     "typeId": 404,
-    "partId": 462,
-    "name": "passive_blue_mid_4_3_tier_4 (classmod_robodealer)",
+    "partId": 471,
+    "name": "passive_blue_right_5_2_tier_4 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -1636,13 +3182,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:456",
+    "fullId": "404:469",
     "typeId": 404,
-    "partId": 456,
-    "name": "passive_blue_left_5_1_tier_4 (classmod_robodealer)",
+    "partId": 469,
+    "name": "passive_blue_right_4_3_tier_4 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -1651,13 +3197,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:454",
+    "fullId": "404:468",
     "typeId": 404,
-    "partId": 454,
-    "name": "passive_blue_left_4_1_tier_4 (classmod_robodealer)",
+    "partId": 468,
+    "name": "passive_blue_right_4_1_tier_4 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -1666,13 +3212,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:449",
+    "fullId": "404:466",
     "typeId": 404,
-    "partId": 449,
-    "name": "passive_red_right_5_1_tier_4 (classmod_robodealer)",
+    "partId": 466,
+    "name": "passive_blue_mid_6_1_tier_4 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -1681,13 +3227,73 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:445",
+    "fullId": "404:465",
     "typeId": 404,
-    "partId": 445,
-    "name": "passive_red_mid_6_1_tier_4 (classmod_robodealer)",
+    "partId": 465,
+    "name": "passive_blue_mid_5_3_tier_4 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:455",
+    "typeId": 404,
+    "partId": 455,
+    "name": "passive_blue_left_4_3_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:451",
+    "typeId": 404,
+    "partId": 451,
+    "name": "passive_red_right_5_3_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:448",
+    "typeId": 404,
+    "partId": 448,
+    "name": "passive_red_right_4_3_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:447",
+    "typeId": 404,
+    "partId": 447,
+    "name": "passive_red_right_4_1_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -1702,7 +3308,7 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "name": "passive_red_mid_5_3_tier_4 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -1717,7 +3323,7 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "name": "passive_red_mid_5_2_tier_4 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -1726,13 +3332,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:441",
+    "fullId": "404:437",
     "typeId": 404,
-    "partId": 441,
-    "name": "passive_red_mid_4_3_tier_4 (classmod_robodealer)",
+    "partId": 437,
+    "name": "passive_red_left_5_3_tier_4 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -1741,13 +3347,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:440",
+    "fullId": "404:435",
     "typeId": 404,
-    "partId": 440,
-    "name": "passive_red_mid_4_1_tier_4 (classmod_robodealer)",
+    "partId": 435,
+    "name": "passive_red_left_5_1_tier_4 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -1756,13 +3362,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:434",
+    "fullId": "404:429",
     "typeId": 404,
-    "partId": 434,
-    "name": "passive_red_left_4_3_tier_4 (classmod_robodealer)",
+    "partId": 429,
+    "name": "passive_green_right_5_2_tier_4 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -1771,13 +3377,28 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:427",
+    "fullId": "404:426",
     "typeId": 404,
-    "partId": 427,
-    "name": "passive_green_right_4_3_tier_4 (classmod_robodealer)",
+    "partId": 426,
+    "name": "passive_green_right_4_1_tier_4 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:423",
+    "typeId": 404,
+    "partId": 423,
+    "name": "passive_green_mid_5_3_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -1792,7 +3413,7 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "name": "passive_green_mid_5_2_tier_4 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -1801,13 +3422,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:418",
+    "fullId": "404:420",
     "typeId": 404,
-    "partId": 418,
-    "name": "passive_green_left_6_3_tier_4 (classmod_robodealer)",
+    "partId": 420,
+    "name": "passive_green_mid_4_3_tier_4 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -1816,13 +3437,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:417",
+    "fullId": "404:419",
     "typeId": 404,
-    "partId": 417,
-    "name": "passive_green_left_6_1_tier_4 (classmod_robodealer)",
+    "partId": 419,
+    "name": "passive_green_mid_4_1_tier_4 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -1831,28 +3452,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:413",
+    "fullId": "404:414",
     "typeId": 404,
-    "partId": 413,
-    "name": "passive_green_left_4_3_tier_4 (classmod_robodealer)",
+    "partId": 414,
+    "name": "passive_green_left_5_1_tier_4 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:412",
-    "typeId": 404,
-    "partId": 412,
-    "name": "passive_green_left_4_1_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -1867,7 +3473,7 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "name": "passive_blue_right_6_1_tier_3 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -1876,13 +3482,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:404",
+    "fullId": "404:409",
     "typeId": 404,
-    "partId": 404,
-    "name": "passive_blue_mid_6_3_tier_3 (classmod_robodealer)",
+    "partId": 409,
+    "name": "passive_blue_right_5_3_tier_3 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -1891,13 +3497,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:399",
+    "fullId": "404:408",
     "typeId": 404,
-    "partId": 399,
-    "name": "passive_blue_mid_4_3_tier_3 (classmod_robodealer)",
+    "partId": 408,
+    "name": "passive_blue_right_5_2_tier_3 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -1906,13 +3512,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:393",
+    "fullId": "404:406",
     "typeId": 404,
-    "partId": 393,
-    "name": "passive_blue_left_5_1_tier_3 (classmod_robodealer)",
+    "partId": 406,
+    "name": "passive_blue_right_4_3_tier_3 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -1921,13 +3527,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:391",
+    "fullId": "404:405",
     "typeId": 404,
-    "partId": 391,
-    "name": "passive_blue_left_4_1_tier_3 (classmod_robodealer)",
+    "partId": 405,
+    "name": "passive_blue_right_4_1_tier_3 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -1936,13 +3542,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:386",
+    "fullId": "404:403",
     "typeId": 404,
-    "partId": 386,
-    "name": "passive_red_right_5_1_tier_3 (classmod_robodealer)",
+    "partId": 403,
+    "name": "passive_blue_mid_6_1_tier_3 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -1951,13 +3557,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:382",
+    "fullId": "404:402",
     "typeId": 404,
-    "partId": 382,
-    "name": "passive_red_mid_6_1_tier_3 (classmod_robodealer)",
+    "partId": 402,
+    "name": "passive_blue_mid_5_3_tier_3 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -1966,13 +3572,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:381",
+    "fullId": "404:396",
     "typeId": 404,
-    "partId": 381,
-    "name": "passive_red_mid_5_3_tier_3 (classmod_robodealer)",
+    "partId": 396,
+    "name": "passive_blue_left_6_1_tier_3 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -1981,13 +3587,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:380",
+    "fullId": "404:394",
     "typeId": 404,
-    "partId": 380,
-    "name": "passive_red_mid_5_2_tier_3 (classmod_robodealer)",
+    "partId": 394,
+    "name": "passive_blue_left_5_2_tier_3 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -1996,13 +3602,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:378",
+    "fullId": "404:392",
     "typeId": 404,
-    "partId": 378,
-    "name": "passive_red_mid_4_3_tier_3 (classmod_robodealer)",
+    "partId": 392,
+    "name": "passive_blue_left_4_3_tier_3 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2011,13 +3617,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:377",
+    "fullId": "404:388",
     "typeId": 404,
-    "partId": 377,
-    "name": "passive_red_mid_4_1_tier_3 (classmod_robodealer)",
+    "partId": 388,
+    "name": "passive_red_right_5_3_tier_3 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2026,13 +3632,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:371",
+    "fullId": "404:385",
     "typeId": 404,
-    "partId": 371,
-    "name": "passive_red_left_4_3_tier_3 (classmod_robodealer)",
+    "partId": 385,
+    "name": "passive_red_right_4_3_tier_3 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2041,13 +3647,118 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:364",
+    "fullId": "404:384",
     "typeId": 404,
-    "partId": 364,
-    "name": "passive_green_right_4_3_tier_3 (classmod_robodealer)",
+    "partId": 384,
+    "name": "passive_red_right_4_1_tier_3 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:374",
+    "typeId": 404,
+    "partId": 374,
+    "name": "passive_red_left_5_3_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:373",
+    "typeId": 404,
+    "partId": 373,
+    "name": "passive_red_left_5_2_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:372",
+    "typeId": 404,
+    "partId": 372,
+    "name": "passive_red_left_5_1_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:366",
+    "typeId": 404,
+    "partId": 366,
+    "name": "passive_green_right_5_2_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:363",
+    "typeId": 404,
+    "partId": 363,
+    "name": "passive_green_right_4_1_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:362",
+    "typeId": 404,
+    "partId": 362,
+    "name": "passive_green_mid_6_3_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:360",
+    "typeId": 404,
+    "partId": 360,
+    "name": "passive_green_mid_5_3_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2062,7 +3773,7 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "name": "passive_green_mid_5_2_tier_3 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2071,13 +3782,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:355",
+    "fullId": "404:358",
     "typeId": 404,
-    "partId": 355,
-    "name": "passive_green_left_6_3_tier_3 (classmod_robodealer)",
+    "partId": 358,
+    "name": "passive_green_mid_5_1_tier_3 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2086,13 +3797,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:354",
+    "fullId": "404:357",
     "typeId": 404,
-    "partId": 354,
-    "name": "passive_green_left_6_1_tier_3 (classmod_robodealer)",
+    "partId": 357,
+    "name": "passive_green_mid_4_3_tier_3 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2101,13 +3812,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:350",
+    "fullId": "404:356",
     "typeId": 404,
-    "partId": 350,
-    "name": "passive_green_left_4_3_tier_3 (classmod_robodealer)",
+    "partId": 356,
+    "name": "passive_green_mid_4_1_tier_3 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2116,13 +3827,28 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:349",
+    "fullId": "404:353",
     "typeId": 404,
-    "partId": 349,
-    "name": "passive_green_left_4_1_tier_3 (classmod_robodealer)",
+    "partId": 353,
+    "name": "passive_green_left_5_3_tier_3 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:351",
+    "typeId": 404,
+    "partId": 351,
+    "name": "passive_green_left_5_1_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2137,7 +3863,7 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "name": "passive_blue_right_6_1_tier_2 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2146,13 +3872,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:341",
+    "fullId": "404:346",
     "typeId": 404,
-    "partId": 341,
-    "name": "passive_blue_mid_6_3_tier_2 (classmod_robodealer)",
+    "partId": 346,
+    "name": "passive_blue_right_5_3_tier_2 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2161,13 +3887,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:336",
+    "fullId": "404:345",
     "typeId": 404,
-    "partId": 336,
-    "name": "passive_blue_mid_4_3_tier_2 (classmod_robodealer)",
+    "partId": 345,
+    "name": "passive_blue_right_5_2_tier_2 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2176,13 +3902,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:330",
+    "fullId": "404:343",
     "typeId": 404,
-    "partId": 330,
-    "name": "passive_blue_left_5_1_tier_2 (classmod_robodealer)",
+    "partId": 343,
+    "name": "passive_blue_right_4_3_tier_2 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2191,13 +3917,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:328",
+    "fullId": "404:342",
     "typeId": 404,
-    "partId": 328,
-    "name": "passive_blue_left_4_1_tier_2 (classmod_robodealer)",
+    "partId": 342,
+    "name": "passive_blue_right_4_1_tier_2 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2206,13 +3932,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:323",
+    "fullId": "404:340",
     "typeId": 404,
-    "partId": 323,
-    "name": "passive_red_right_5_1_tier_2 (classmod_robodealer)",
+    "partId": 340,
+    "name": "passive_blue_mid_6_1_tier_2 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2221,13 +3947,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:319",
+    "fullId": "404:339",
     "typeId": 404,
-    "partId": 319,
-    "name": "passive_red_mid_6_1_tier_2 (classmod_robodealer)",
+    "partId": 339,
+    "name": "passive_blue_mid_5_3_tier_2 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2236,13 +3962,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:318",
+    "fullId": "404:333",
     "typeId": 404,
-    "partId": 318,
-    "name": "passive_red_mid_5_3_tier_2 (classmod_robodealer)",
+    "partId": 333,
+    "name": "passive_blue_left_6_1_tier_2 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2251,13 +3977,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:317",
+    "fullId": "404:331",
     "typeId": 404,
-    "partId": 317,
-    "name": "passive_red_mid_5_2_tier_2 (classmod_robodealer)",
+    "partId": 331,
+    "name": "passive_blue_left_5_2_tier_2 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2266,13 +3992,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:315",
+    "fullId": "404:329",
     "typeId": 404,
-    "partId": 315,
-    "name": "passive_red_mid_4_3_tier_2 (classmod_robodealer)",
+    "partId": 329,
+    "name": "passive_blue_left_4_3_tier_2 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2281,13 +4007,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:314",
+    "fullId": "404:325",
     "typeId": 404,
-    "partId": 314,
-    "name": "passive_red_mid_4_1_tier_2 (classmod_robodealer)",
+    "partId": 325,
+    "name": "passive_red_right_5_3_tier_2 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2296,13 +4022,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:308",
+    "fullId": "404:322",
     "typeId": 404,
-    "partId": 308,
-    "name": "passive_red_left_4_3_tier_2 (classmod_robodealer)",
+    "partId": 322,
+    "name": "passive_red_right_4_3_tier_2 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2311,13 +4037,118 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:301",
+    "fullId": "404:321",
     "typeId": 404,
-    "partId": 301,
-    "name": "passive_green_right_4_3_tier_2 (classmod_robodealer)",
+    "partId": 321,
+    "name": "passive_red_right_4_1_tier_2 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:311",
+    "typeId": 404,
+    "partId": 311,
+    "name": "passive_red_left_5_3_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:310",
+    "typeId": 404,
+    "partId": 310,
+    "name": "passive_red_left_5_2_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:309",
+    "typeId": 404,
+    "partId": 309,
+    "name": "passive_red_left_5_1_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:303",
+    "typeId": 404,
+    "partId": 303,
+    "name": "passive_green_right_5_2_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:300",
+    "typeId": 404,
+    "partId": 300,
+    "name": "passive_green_right_4_1_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:299",
+    "typeId": 404,
+    "partId": 299,
+    "name": "passive_green_mid_6_3_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:297",
+    "typeId": 404,
+    "partId": 297,
+    "name": "passive_green_mid_5_3_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2332,7 +4163,7 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "name": "passive_green_mid_5_2_tier_2 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2341,13 +4172,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:292",
+    "fullId": "404:295",
     "typeId": 404,
-    "partId": 292,
-    "name": "passive_green_left_6_3_tier_2 (classmod_robodealer)",
+    "partId": 295,
+    "name": "passive_green_mid_5_1_tier_2 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2356,13 +4187,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:291",
+    "fullId": "404:294",
     "typeId": 404,
-    "partId": 291,
-    "name": "passive_green_left_6_1_tier_2 (classmod_robodealer)",
+    "partId": 294,
+    "name": "passive_green_mid_4_3_tier_2 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2371,13 +4202,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:287",
+    "fullId": "404:293",
     "typeId": 404,
-    "partId": 287,
-    "name": "passive_green_left_4_3_tier_2 (classmod_robodealer)",
+    "partId": 293,
+    "name": "passive_green_mid_4_1_tier_2 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2386,13 +4217,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:286",
+    "fullId": "404:290",
     "typeId": 404,
-    "partId": 286,
-    "name": "passive_green_left_4_1_tier_2 (classmod_robodealer)",
+    "partId": 290,
+    "name": "passive_green_left_5_3_tier_2 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2401,28 +4232,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:281",
+    "fullId": "404:288",
     "typeId": 404,
-    "partId": 281,
-    "name": "passive_blue_right_5_1_tier_1 (classmod_robodealer)",
+    "partId": 288,
+    "name": "passive_green_left_5_1_tier_2 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Calculating Whale - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:278",
-    "typeId": 404,
-    "partId": 278,
-    "name": "passive_blue_mid_6_3_tier_1 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2431,13 +4247,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:273",
+    "fullId": "404:283",
     "typeId": 404,
-    "partId": 273,
-    "name": "passive_blue_mid_4_3_tier_1 (classmod_robodealer)",
+    "partId": 283,
+    "name": "passive_blue_right_5_3_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2446,13 +4262,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:267",
+    "fullId": "404:282",
     "typeId": 404,
-    "partId": 267,
-    "name": "passive_blue_left_5_1_tier_1 (classmod_robodealer)",
+    "partId": 282,
+    "name": "passive_blue_right_5_2_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2461,13 +4277,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:265",
+    "fullId": "404:280",
     "typeId": 404,
-    "partId": 265,
-    "name": "passive_blue_left_4_1_tier_1 (classmod_robodealer)",
+    "partId": 280,
+    "name": "passive_blue_right_4_3_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2476,13 +4292,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:262",
+    "fullId": "404:279",
     "typeId": 404,
-    "partId": 262,
-    "name": "passive_red_right_5_3_tier_1 (classmod_robodealer)",
+    "partId": 279,
+    "name": "passive_blue_right_4_1_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2491,13 +4307,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:256",
+    "fullId": "404:275",
     "typeId": 404,
-    "partId": 256,
-    "name": "passive_red_mid_6_1_tier_1 (classmod_robodealer)",
+    "partId": 275,
+    "name": "passive_blue_mid_5_2_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2506,13 +4322,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:255",
+    "fullId": "404:268",
     "typeId": 404,
-    "partId": 255,
-    "name": "passive_red_mid_5_3_tier_1 (classmod_robodealer)",
+    "partId": 268,
+    "name": "passive_blue_left_5_2_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2521,13 +4337,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:252",
+    "fullId": "404:264",
     "typeId": 404,
-    "partId": 252,
-    "name": "passive_red_mid_4_3_tier_1 (classmod_robodealer)",
+    "partId": 264,
+    "name": "passive_red_right_6_3_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2536,13 +4352,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:251",
+    "fullId": "404:259",
     "typeId": 404,
-    "partId": 251,
-    "name": "passive_red_mid_4_1_tier_1 (classmod_robodealer)",
+    "partId": 259,
+    "name": "passive_red_right_4_3_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2551,13 +4367,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:238",
+    "fullId": "404:258",
     "typeId": 404,
-    "partId": 238,
-    "name": "passive_green_right_4_3_tier_1 (classmod_robodealer)",
+    "partId": 258,
+    "name": "passive_red_right_4_1_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2566,13 +4382,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:237",
+    "fullId": "404:249",
     "typeId": 404,
-    "partId": 237,
-    "name": "passive_green_right_4_1_tier_1 (classmod_robodealer)",
+    "partId": 249,
+    "name": "passive_red_left_6_1_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2581,13 +4397,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:233",
+    "fullId": "404:248",
     "typeId": 404,
-    "partId": 233,
-    "name": "passive_green_mid_5_2_tier_1 (classmod_robodealer)",
+    "partId": 248,
+    "name": "passive_red_left_5_3_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2596,13 +4412,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:229",
+    "fullId": "404:247",
     "typeId": 404,
-    "partId": 229,
-    "name": "passive_green_left_6_3_tier_1 (classmod_robodealer)",
+    "partId": 247,
+    "name": "passive_red_left_5_2_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2611,13 +4427,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:228",
+    "fullId": "404:246",
     "typeId": 404,
-    "partId": 228,
-    "name": "passive_green_left_6_1_tier_1 (classmod_robodealer)",
+    "partId": 246,
+    "name": "passive_red_left_5_1_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2626,13 +4442,163 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:202",
+    "fullId": "404:243",
     "typeId": 404,
-    "partId": 202,
-    "name": "passive_green_1_5_tier_1 (classmod_robodealer)",
+    "partId": 243,
+    "name": "passive_green_right_6_3_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:242",
+    "typeId": 404,
+    "partId": 242,
+    "name": "passive_green_right_6_1_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:240",
+    "typeId": 404,
+    "partId": 240,
+    "name": "passive_green_right_5_2_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:236",
+    "typeId": 404,
+    "partId": 236,
+    "name": "passive_green_mid_6_3_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:234",
+    "typeId": 404,
+    "partId": 234,
+    "name": "passive_green_mid_5_3_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:232",
+    "typeId": 404,
+    "partId": 232,
+    "name": "passive_green_mid_5_1_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:231",
+    "typeId": 404,
+    "partId": 231,
+    "name": "passive_green_mid_4_3_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:230",
+    "typeId": 404,
+    "partId": 230,
+    "name": "passive_green_mid_4_1_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:227",
+    "typeId": 404,
+    "partId": 227,
+    "name": "passive_green_left_5_3_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:225",
+    "typeId": 404,
+    "partId": 225,
+    "name": "passive_green_left_5_1_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:216",
+    "typeId": 404,
+    "partId": 216,
+    "name": "passive_red_1_1_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2641,13 +4607,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:200",
+    "fullId": "404:214",
     "typeId": 404,
-    "partId": 200,
-    "name": "passive_green_2_3_tier_1 (classmod_robodealer)",
+    "partId": 214,
+    "name": "passive_red_1_3_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2656,13 +4622,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:194",
+    "fullId": "404:211",
     "typeId": 404,
-    "partId": 194,
-    "name": "passive_blue_1_1_tier_1 (classmod_robodealer)",
+    "partId": 211,
+    "name": "passive_red_2_3_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2671,13 +4637,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:191",
+    "fullId": "404:210",
     "typeId": 404,
-    "partId": 191,
-    "name": "passive_blue_1_5_tier_1 (classmod_robodealer)",
+    "partId": 210,
+    "name": "passive_red_2_5_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2686,13 +4652,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:189",
+    "fullId": "404:209",
     "typeId": 404,
-    "partId": 189,
-    "name": "passive_blue_2_3_tier_1 (classmod_robodealer)",
+    "partId": 209,
+    "name": "passive_red_3_1_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2701,13 +4667,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:174",
+    "fullId": "404:207",
     "typeId": 404,
-    "partId": 174,
-    "name": "passive_red_3_5_tier_2 (classmod_robodealer)",
+    "partId": 207,
+    "name": "passive_red_3_4_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2716,13 +4682,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:170",
+    "fullId": "404:206",
     "typeId": 404,
-    "partId": 170,
-    "name": "passive_green_1_5_tier_2 (classmod_robodealer)",
+    "partId": 206,
+    "name": "passive_red_3_5_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2731,13 +4697,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:168",
+    "fullId": "404:205",
     "typeId": 404,
-    "partId": 168,
-    "name": "passive_green_2_3_tier_2 (classmod_robodealer)",
+    "partId": 205,
+    "name": "passive_green_1_1_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2746,13 +4712,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:162",
+    "fullId": "404:201",
     "typeId": 404,
-    "partId": 162,
-    "name": "passive_blue_1_1_tier_2 (classmod_robodealer)",
+    "partId": 201,
+    "name": "passive_green_2_1_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2761,13 +4727,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:159",
+    "fullId": "404:199",
     "typeId": 404,
-    "partId": 159,
-    "name": "passive_blue_1_5_tier_2 (classmod_robodealer)",
+    "partId": 199,
+    "name": "passive_green_2_5_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2776,13 +4742,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:157",
+    "fullId": "404:196",
     "typeId": 404,
-    "partId": 157,
-    "name": "passive_blue_2_3_tier_2 (classmod_robodealer)",
+    "partId": 196,
+    "name": "passive_green_3_2_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2791,13 +4757,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:142",
+    "fullId": "404:192",
     "typeId": 404,
-    "partId": 142,
-    "name": "passive_red_3_5_tier_3 (classmod_robodealer)",
+    "partId": 192,
+    "name": "passive_blue_1_4_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2806,13 +4772,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:138",
+    "fullId": "404:190",
     "typeId": 404,
-    "partId": 138,
-    "name": "passive_green_1_5_tier_3 (classmod_robodealer)",
+    "partId": 190,
+    "name": "passive_blue_2_1_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2821,13 +4787,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:136",
+    "fullId": "404:188",
     "typeId": 404,
-    "partId": 136,
-    "name": "passive_green_2_3_tier_3 (classmod_robodealer)",
+    "partId": 188,
+    "name": "passive_blue_2_5_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2836,13 +4802,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:130",
+    "fullId": "404:185",
     "typeId": 404,
-    "partId": 130,
-    "name": "passive_blue_1_1_tier_3 (classmod_robodealer)",
+    "partId": 185,
+    "name": "passive_blue_3_5_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2851,13 +4817,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:127",
+    "fullId": "404:184",
     "typeId": 404,
-    "partId": 127,
-    "name": "passive_blue_1_5_tier_3 (classmod_robodealer)",
+    "partId": 184,
+    "name": "passive_red_1_1_tier_2 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2866,13 +4832,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:125",
+    "fullId": "404:181",
     "typeId": 404,
-    "partId": 125,
-    "name": "passive_blue_2_3_tier_3 (classmod_robodealer)",
+    "partId": 181,
+    "name": "passive_red_1_3_tier_2 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2881,13 +4847,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:110",
+    "fullId": "404:179",
     "typeId": 404,
-    "partId": 110,
-    "name": "passive_red_3_5_tier_4 (classmod_robodealer)",
+    "partId": 179,
+    "name": "passive_red_2_3_tier_2 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2896,13 +4862,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:106",
+    "fullId": "404:178",
     "typeId": 404,
-    "partId": 106,
-    "name": "passive_green_1_5_tier_4 (classmod_robodealer)",
+    "partId": 178,
+    "name": "passive_red_2_5_tier_2 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2911,13 +4877,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:104",
+    "fullId": "404:177",
     "typeId": 404,
-    "partId": 104,
-    "name": "passive_green_2_3_tier_4 (classmod_robodealer)",
+    "partId": 177,
+    "name": "passive_red_3_1_tier_2 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2926,13 +4892,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:98",
+    "fullId": "404:169",
     "typeId": 404,
-    "partId": 98,
-    "name": "passive_blue_1_1_tier_4 (classmod_robodealer)",
+    "partId": 169,
+    "name": "passive_green_2_1_tier_2 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2941,13 +4907,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:95",
+    "fullId": "404:167",
     "typeId": 404,
-    "partId": 95,
-    "name": "passive_blue_1_5_tier_4 (classmod_robodealer)",
+    "partId": 167,
+    "name": "passive_green_2_5_tier_2 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2956,13 +4922,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:93",
+    "fullId": "404:164",
     "typeId": 404,
-    "partId": 93,
-    "name": "passive_blue_2_3_tier_4 (classmod_robodealer)",
+    "partId": 164,
+    "name": "passive_green_3_2_tier_2 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2971,13 +4937,358 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:92",
+    "fullId": "404:160",
     "typeId": 404,
-    "partId": 92,
-    "name": "passive_blue_2_5_tier_4 (classmod_robodealer)",
+    "partId": 160,
+    "name": "passive_blue_1_4_tier_2 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:158",
+    "typeId": 404,
+    "partId": 158,
+    "name": "passive_blue_2_1_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:156",
+    "typeId": 404,
+    "partId": 156,
+    "name": "passive_blue_2_5_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:152",
+    "typeId": 404,
+    "partId": 152,
+    "name": "passive_red_1_1_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:149",
+    "typeId": 404,
+    "partId": 149,
+    "name": "passive_red_1_3_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:147",
+    "typeId": 404,
+    "partId": 147,
+    "name": "passive_red_2_3_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:146",
+    "typeId": 404,
+    "partId": 146,
+    "name": "passive_red_2_5_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:145",
+    "typeId": 404,
+    "partId": 145,
+    "name": "passive_red_3_1_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:137",
+    "typeId": 404,
+    "partId": 137,
+    "name": "passive_green_2_1_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:135",
+    "typeId": 404,
+    "partId": 135,
+    "name": "passive_green_2_5_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:132",
+    "typeId": 404,
+    "partId": 132,
+    "name": "passive_green_3_2_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:128",
+    "typeId": 404,
+    "partId": 128,
+    "name": "passive_blue_1_4_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:126",
+    "typeId": 404,
+    "partId": 126,
+    "name": "passive_blue_2_1_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:124",
+    "typeId": 404,
+    "partId": 124,
+    "name": "passive_blue_2_5_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:120",
+    "typeId": 404,
+    "partId": 120,
+    "name": "passive_red_1_1_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:117",
+    "typeId": 404,
+    "partId": 117,
+    "name": "passive_red_1_3_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:115",
+    "typeId": 404,
+    "partId": 115,
+    "name": "passive_red_2_3_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:114",
+    "typeId": 404,
+    "partId": 114,
+    "name": "passive_red_2_5_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:113",
+    "typeId": 404,
+    "partId": 113,
+    "name": "passive_red_3_1_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:105",
+    "typeId": 404,
+    "partId": 105,
+    "name": "passive_green_2_1_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:103",
+    "typeId": 404,
+    "partId": 103,
+    "name": "passive_green_2_5_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:100",
+    "typeId": 404,
+    "partId": 100,
+    "name": "passive_green_3_2_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:96",
+    "typeId": 404,
+    "partId": 96,
+    "name": "passive_blue_1_4_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:94",
+    "typeId": 404,
+    "partId": 94,
+    "name": "passive_blue_2_1_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -2992,7 +5303,7 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "name": "passive_red_3_3_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Calculating Whale - C4sh | GZO | Azalea Asvail",
@@ -3001,13 +5312,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:74",
+    "fullId": "404:25",
     "typeId": 404,
-    "partId": 74,
-    "name": "passive_green_1_5_tier_5 (classmod_robodealer)",
+    "partId": 25,
+    "name": "passive_red_1_4_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -3016,13 +5327,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:30",
+    "fullId": "404:24",
     "typeId": 404,
-    "partId": 30,
-    "name": "passive_blue_3_4_tier_1 (classmod_robodealer)",
+    "partId": 24,
+    "name": "passive_red_1_4_tier_2 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -3031,13 +5342,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:29",
+    "fullId": "404:23",
     "typeId": 404,
-    "partId": 29,
-    "name": "passive_blue_3_4_tier_2 (classmod_robodealer)",
+    "partId": 23,
+    "name": "passive_red_1_4_tier_3 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -3046,13 +5357,13 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:28",
+    "fullId": "404:22",
     "typeId": 404,
-    "partId": 28,
-    "name": "passive_blue_3_4_tier_3 (classmod_robodealer)",
+    "partId": 22,
+    "name": "passive_red_1_4_tier_4 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
-    "uses": 6,
+    "uses": 9,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
@@ -3061,17 +5372,1307 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:27",
+    "fullId": "404:20",
     "typeId": 404,
-    "partId": 27,
-    "name": "passive_blue_3_4_tier_4 (classmod_robodealer)",
+    "partId": 20,
+    "name": "passive_red_3_2_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:19",
+    "typeId": 404,
+    "partId": 19,
+    "name": "passive_red_3_2_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:18",
+    "typeId": 404,
+    "partId": 18,
+    "name": "passive_red_3_2_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 9,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "27:82",
+    "typeId": 27,
+    "partId": 82,
+    "name": "part_barrel_02_fishward (JAK_AR)",
+    "typeLabel": "JAK_AR",
+    "category": "Weapon",
+    "uses": 9,
+    "examples": [
+      "Maintained Roaring Fishward | GZO | Crayons82.0",
+      "Maintained Roaring Fishward | GZO | Crayons82.0",
+      "Fishward | GZO | Crayons82.0"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "26:82",
+    "typeId": 26,
+    "partId": 82,
+    "name": "comp_05_legendary_ishmael (ORD_SR)",
+    "typeLabel": "ORD_SR",
+    "category": "Ordnance",
+    "uses": 9,
+    "examples": [
+      "Prosperous Extolled Ishmael | Custom Static | Crayons82.0",
+      "Prosperous Extolled Ishmael | Custom Static | Crayons82.0",
+      "Prosperous Extolled Darkbeast | Custom Static | Crayons82.0"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:527",
+    "typeId": 404,
+    "partId": 527,
+    "name": "passive_blue_mid_5_2_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:522",
+    "typeId": 404,
+    "partId": 522,
+    "name": "passive_blue_left_6_1_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:520",
+    "typeId": 404,
+    "partId": 520,
+    "name": "passive_blue_left_5_2_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:470",
+    "typeId": 404,
+    "partId": 470,
+    "name": "passive_blue_right_5_1_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:464",
+    "typeId": 404,
+    "partId": 464,
+    "name": "passive_blue_mid_5_2_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:459",
+    "typeId": 404,
+    "partId": 459,
+    "name": "passive_blue_left_6_1_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:457",
+    "typeId": 404,
+    "partId": 457,
+    "name": "passive_blue_left_5_2_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:453",
+    "typeId": 404,
+    "partId": 453,
+    "name": "passive_red_right_6_3_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:438",
+    "typeId": 404,
+    "partId": 438,
+    "name": "passive_red_left_6_1_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:436",
+    "typeId": 404,
+    "partId": 436,
+    "name": "passive_red_left_5_2_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:432",
+    "typeId": 404,
+    "partId": 432,
+    "name": "passive_green_right_6_3_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:431",
+    "typeId": 404,
+    "partId": 431,
+    "name": "passive_green_right_6_1_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:425",
+    "typeId": 404,
+    "partId": 425,
+    "name": "passive_green_mid_6_3_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:421",
+    "typeId": 404,
+    "partId": 421,
+    "name": "passive_green_mid_5_1_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:416",
+    "typeId": 404,
+    "partId": 416,
+    "name": "passive_green_left_5_3_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:407",
+    "typeId": 404,
+    "partId": 407,
+    "name": "passive_blue_right_5_1_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:401",
+    "typeId": 404,
+    "partId": 401,
+    "name": "passive_blue_mid_5_2_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:390",
+    "typeId": 404,
+    "partId": 390,
+    "name": "passive_red_right_6_3_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:375",
+    "typeId": 404,
+    "partId": 375,
+    "name": "passive_red_left_6_1_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:369",
+    "typeId": 404,
+    "partId": 369,
+    "name": "passive_green_right_6_3_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:368",
+    "typeId": 404,
+    "partId": 368,
+    "name": "passive_green_right_6_1_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:344",
+    "typeId": 404,
+    "partId": 344,
+    "name": "passive_blue_right_5_1_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:338",
+    "typeId": 404,
+    "partId": 338,
+    "name": "passive_blue_mid_5_2_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:327",
+    "typeId": 404,
+    "partId": 327,
+    "name": "passive_red_right_6_3_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:312",
+    "typeId": 404,
+    "partId": 312,
+    "name": "passive_red_left_6_1_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:306",
+    "typeId": 404,
+    "partId": 306,
+    "name": "passive_green_right_6_3_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:305",
+    "typeId": 404,
+    "partId": 305,
+    "name": "passive_green_right_6_1_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:212",
+    "typeId": 404,
+    "partId": 212,
+    "name": "passive_red_1_5_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:204",
+    "typeId": 404,
+    "partId": 204,
+    "name": "passive_green_1_3_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:198",
+    "typeId": 404,
+    "partId": 198,
+    "name": "passive_green_3_5_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:197",
+    "typeId": 404,
+    "partId": 197,
+    "name": "passive_green_3_4_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:195",
+    "typeId": 404,
+    "partId": 195,
+    "name": "passive_green_3_1_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:193",
+    "typeId": 404,
+    "partId": 193,
+    "name": "passive_blue_1_2_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:187",
+    "typeId": 404,
+    "partId": 187,
+    "name": "passive_blue_3_2_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:180",
+    "typeId": 404,
+    "partId": 180,
+    "name": "passive_red_1_5_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:175",
+    "typeId": 404,
+    "partId": 175,
+    "name": "passive_red_3_4_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:173",
+    "typeId": 404,
+    "partId": 173,
+    "name": "passive_green_1_1_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:172",
+    "typeId": 404,
+    "partId": 172,
+    "name": "passive_green_1_3_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:165",
+    "typeId": 404,
+    "partId": 165,
+    "name": "passive_green_3_4_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:163",
+    "typeId": 404,
+    "partId": 163,
+    "name": "passive_green_3_1_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:161",
+    "typeId": 404,
+    "partId": 161,
+    "name": "passive_blue_1_2_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:153",
+    "typeId": 404,
+    "partId": 153,
+    "name": "passive_blue_3_5_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:148",
+    "typeId": 404,
+    "partId": 148,
+    "name": "passive_red_1_5_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:143",
+    "typeId": 404,
+    "partId": 143,
+    "name": "passive_red_3_4_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:141",
+    "typeId": 404,
+    "partId": 141,
+    "name": "passive_green_1_1_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:140",
+    "typeId": 404,
+    "partId": 140,
+    "name": "passive_green_1_3_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:133",
+    "typeId": 404,
+    "partId": 133,
+    "name": "passive_green_3_4_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:131",
+    "typeId": 404,
+    "partId": 131,
+    "name": "passive_green_3_1_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:129",
+    "typeId": 404,
+    "partId": 129,
+    "name": "passive_blue_1_2_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:121",
+    "typeId": 404,
+    "partId": 121,
+    "name": "passive_blue_3_5_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:116",
+    "typeId": 404,
+    "partId": 116,
+    "name": "passive_red_1_5_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:111",
+    "typeId": 404,
+    "partId": 111,
+    "name": "passive_red_3_4_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:109",
+    "typeId": 404,
+    "partId": 109,
+    "name": "passive_green_1_1_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:108",
+    "typeId": 404,
+    "partId": 108,
+    "name": "passive_green_1_3_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:101",
+    "typeId": 404,
+    "partId": 101,
+    "name": "passive_green_3_4_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:99",
+    "typeId": 404,
+    "partId": 99,
+    "name": "passive_green_3_1_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:97",
+    "typeId": 404,
+    "partId": 97,
+    "name": "passive_blue_1_2_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:89",
+    "typeId": 404,
+    "partId": 89,
+    "name": "passive_blue_3_5_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:50",
+    "typeId": 404,
+    "partId": 50,
+    "name": "passive_green_3_3_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:49",
+    "typeId": 404,
+    "partId": 49,
+    "name": "passive_green_3_3_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:48",
+    "typeId": 404,
+    "partId": 48,
+    "name": "passive_green_3_3_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:47",
+    "typeId": 404,
+    "partId": 47,
+    "name": "passive_green_3_3_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:17",
+    "typeId": 404,
+    "partId": 17,
+    "name": "passive_red_3_2_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:488",
+    "typeId": 404,
+    "partId": 488,
+    "name": "passive_green_mid_6_3_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 8,
+    "examples": [
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "9:102",
+    "typeId": 9,
+    "partId": 102,
+    "name": "part_barrel_01_Constable (JAK_SG)",
+    "typeLabel": "JAK_SG",
+    "category": "Weapon",
+    "uses": 8,
+    "examples": [
+      "Looming Constable | GZO | Handsomematt616",
+      "Constable | GZO | Rapt0rj3sus",
+      "Sudden Looming TK Wave | GZO | Crayons82.0"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "19:60",
+    "typeId": 19,
+    "partId": 60,
+    "name": "part_barrel_01_Jailbroken (BOR_SM)",
+    "typeLabel": "BOR_SM",
+    "category": "Part",
+    "uses": 8,
+    "examples": [
+      "Gatlin | GZO | Rapt0rj3sus",
+      "Eviscerating Waterfall | GZO | Crayons82.0",
+      "Eviscerating Waterfall | Custom Static | Crayons82.0"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:208",
+    "typeId": 404,
+    "partId": 208,
+    "name": "passive_red_3_3_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 7,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:186",
+    "typeId": 404,
+    "partId": 186,
+    "name": "passive_blue_3_3_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 7,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:176",
+    "typeId": 404,
+    "partId": 176,
+    "name": "passive_red_3_3_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 7,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:166",
+    "typeId": 404,
+    "partId": 166,
+    "name": "passive_green_3_5_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 7,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:155",
+    "typeId": 404,
+    "partId": 155,
+    "name": "passive_blue_3_2_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 7,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:154",
+    "typeId": 404,
+    "partId": 154,
+    "name": "passive_blue_3_3_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 7,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:144",
+    "typeId": 404,
+    "partId": 144,
+    "name": "passive_red_3_3_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 7,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:134",
+    "typeId": 404,
+    "partId": 134,
+    "name": "passive_green_3_5_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 7,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:123",
+    "typeId": 404,
+    "partId": 123,
+    "name": "passive_blue_3_2_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 7,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:122",
+    "typeId": 404,
+    "partId": 122,
+    "name": "passive_blue_3_3_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 7,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:112",
+    "typeId": 404,
+    "partId": 112,
+    "name": "passive_red_3_3_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 7,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:102",
+    "typeId": 404,
+    "partId": 102,
+    "name": "passive_green_3_5_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 7,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:91",
+    "typeId": 404,
+    "partId": 91,
+    "name": "passive_blue_3_2_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 7,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:90",
+    "typeId": 404,
+    "partId": 90,
+    "name": "passive_blue_3_3_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 7,
+    "examples": [
+      "Unruly Hooligan | GZO | Skippy",
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "275:38",
+    "typeId": 275,
+    "partId": 38,
+    "name": "comp_05_legendary_draupner (BOR_HW)",
+    "typeLabel": "BOR_HW",
+    "category": "Part",
+    "uses": 7,
+    "examples": [
+      "The Hardest Nippy | GZO | Fen Integrum",
+      "Consecrated Draupner | Custom Static | Crayons82.0",
+      "Consecrated Draupner | Custom Static | Crayons82.0"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:51",
+    "typeId": 404,
+    "partId": 51,
+    "name": "leg_body_06 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 6,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0",
+      "Madcap Hotshot | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
@@ -3091,6 +6692,21 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
+    "fullId": "3:85",
+    "typeId": 3,
+    "partId": 85,
+    "name": "comp_05_legendary_shoals (JAK_PS)",
+    "typeLabel": "JAK_PS",
+    "category": "Weapon",
+    "uses": 6,
+    "examples": [
+      "MayaAva's Pink Punisher! - Sprezzatura | GZO | Tobgun1",
+      "Sprezzatura the Italian Stallion | GZO | Tobgun1",
+      "The Pocket Rocket in my Socket (Rocket Socket) | GZO | Tobgun1"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
     "fullId": "13:87",
     "typeId": 13,
     "partId": 87,
@@ -3105,2822 +6721,1322 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "9:102",
-    "typeId": 9,
-    "partId": 102,
-    "name": "part_barrel_01_Constable (JAK_SG)",
-    "typeLabel": "JAK_SG",
+    "fullId": "12:82",
+    "typeId": 12,
+    "partId": 82,
+    "name": "part_foregrip_01_cormano (TOR_SG)",
+    "typeLabel": "TOR_SG",
     "category": "Weapon",
     "uses": 6,
     "examples": [
-      "Looming Constable | GZO | Handsomematt616",
-      "Constable | GZO | Rapt0rj3sus",
-      "Sudden Looming TK Wave | Custom Static | Crayons82.0"
+      "Cormano | GZO | Crayons82.0",
+      "Cormano | GZO | Crayons82.0",
+      "Cormano | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:532",
-    "typeId": 404,
-    "partId": 532,
-    "name": "passive_blue_right_4_3_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:527",
-    "typeId": 404,
-    "partId": 527,
-    "name": "passive_blue_mid_5_2_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:522",
-    "typeId": 404,
-    "partId": 522,
-    "name": "passive_blue_left_6_1_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:520",
-    "typeId": 404,
-    "partId": 520,
-    "name": "passive_blue_left_5_2_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:518",
-    "typeId": 404,
-    "partId": 518,
-    "name": "passive_blue_left_4_3_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:517",
-    "typeId": 404,
-    "partId": 517,
-    "name": "passive_blue_left_4_1_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:514",
-    "typeId": 404,
-    "partId": 514,
-    "name": "passive_red_right_5_3_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:489",
-    "typeId": 404,
-    "partId": 489,
-    "name": "passive_green_right_4_1_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:472",
-    "typeId": 404,
-    "partId": 472,
-    "name": "passive_blue_right_5_3_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:471",
-    "typeId": 404,
-    "partId": 471,
-    "name": "passive_blue_right_5_2_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:470",
-    "typeId": 404,
-    "partId": 470,
-    "name": "passive_blue_right_5_1_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:469",
-    "typeId": 404,
-    "partId": 469,
-    "name": "passive_blue_right_4_3_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:468",
-    "typeId": 404,
-    "partId": 468,
-    "name": "passive_blue_right_4_1_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:466",
-    "typeId": 404,
-    "partId": 466,
-    "name": "passive_blue_mid_6_1_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:465",
-    "typeId": 404,
-    "partId": 465,
-    "name": "passive_blue_mid_5_3_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:464",
-    "typeId": 404,
-    "partId": 464,
-    "name": "passive_blue_mid_5_2_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:459",
-    "typeId": 404,
-    "partId": 459,
-    "name": "passive_blue_left_6_1_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:457",
-    "typeId": 404,
-    "partId": 457,
-    "name": "passive_blue_left_5_2_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:455",
-    "typeId": 404,
-    "partId": 455,
-    "name": "passive_blue_left_4_3_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:453",
-    "typeId": 404,
-    "partId": 453,
-    "name": "passive_red_right_6_3_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:451",
-    "typeId": 404,
-    "partId": 451,
-    "name": "passive_red_right_5_3_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:448",
-    "typeId": 404,
-    "partId": 448,
-    "name": "passive_red_right_4_3_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:447",
-    "typeId": 404,
-    "partId": 447,
-    "name": "passive_red_right_4_1_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:438",
-    "typeId": 404,
-    "partId": 438,
-    "name": "passive_red_left_6_1_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:437",
-    "typeId": 404,
-    "partId": 437,
-    "name": "passive_red_left_5_3_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:436",
-    "typeId": 404,
-    "partId": 436,
-    "name": "passive_red_left_5_2_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:435",
-    "typeId": 404,
-    "partId": 435,
-    "name": "passive_red_left_5_1_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:432",
-    "typeId": 404,
-    "partId": 432,
-    "name": "passive_green_right_6_3_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:431",
-    "typeId": 404,
-    "partId": 431,
-    "name": "passive_green_right_6_1_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:429",
-    "typeId": 404,
-    "partId": 429,
-    "name": "passive_green_right_5_2_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:426",
-    "typeId": 404,
-    "partId": 426,
-    "name": "passive_green_right_4_1_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:425",
-    "typeId": 404,
-    "partId": 425,
-    "name": "passive_green_mid_6_3_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:423",
-    "typeId": 404,
-    "partId": 423,
-    "name": "passive_green_mid_5_3_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:421",
-    "typeId": 404,
-    "partId": 421,
-    "name": "passive_green_mid_5_1_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:420",
-    "typeId": 404,
-    "partId": 420,
-    "name": "passive_green_mid_4_3_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:419",
-    "typeId": 404,
-    "partId": 419,
-    "name": "passive_green_mid_4_1_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:416",
-    "typeId": 404,
-    "partId": 416,
-    "name": "passive_green_left_5_3_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:414",
-    "typeId": 404,
-    "partId": 414,
-    "name": "passive_green_left_5_1_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:409",
-    "typeId": 404,
-    "partId": 409,
-    "name": "passive_blue_right_5_3_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:408",
-    "typeId": 404,
-    "partId": 408,
-    "name": "passive_blue_right_5_2_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:407",
-    "typeId": 404,
-    "partId": 407,
-    "name": "passive_blue_right_5_1_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:406",
-    "typeId": 404,
-    "partId": 406,
-    "name": "passive_blue_right_4_3_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:405",
-    "typeId": 404,
-    "partId": 405,
-    "name": "passive_blue_right_4_1_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:403",
-    "typeId": 404,
-    "partId": 403,
-    "name": "passive_blue_mid_6_1_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:402",
-    "typeId": 404,
-    "partId": 402,
-    "name": "passive_blue_mid_5_3_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:401",
-    "typeId": 404,
-    "partId": 401,
-    "name": "passive_blue_mid_5_2_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:396",
-    "typeId": 404,
-    "partId": 396,
-    "name": "passive_blue_left_6_1_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:394",
-    "typeId": 404,
-    "partId": 394,
-    "name": "passive_blue_left_5_2_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:392",
-    "typeId": 404,
-    "partId": 392,
-    "name": "passive_blue_left_4_3_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:390",
-    "typeId": 404,
-    "partId": 390,
-    "name": "passive_red_right_6_3_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:388",
-    "typeId": 404,
-    "partId": 388,
-    "name": "passive_red_right_5_3_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:385",
-    "typeId": 404,
-    "partId": 385,
-    "name": "passive_red_right_4_3_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:384",
-    "typeId": 404,
-    "partId": 384,
-    "name": "passive_red_right_4_1_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:375",
-    "typeId": 404,
-    "partId": 375,
-    "name": "passive_red_left_6_1_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:374",
-    "typeId": 404,
-    "partId": 374,
-    "name": "passive_red_left_5_3_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:373",
-    "typeId": 404,
-    "partId": 373,
-    "name": "passive_red_left_5_2_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:372",
-    "typeId": 404,
-    "partId": 372,
-    "name": "passive_red_left_5_1_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:369",
-    "typeId": 404,
-    "partId": 369,
-    "name": "passive_green_right_6_3_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:368",
-    "typeId": 404,
-    "partId": 368,
-    "name": "passive_green_right_6_1_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:366",
-    "typeId": 404,
-    "partId": 366,
-    "name": "passive_green_right_5_2_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:363",
-    "typeId": 404,
-    "partId": 363,
-    "name": "passive_green_right_4_1_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:362",
-    "typeId": 404,
-    "partId": 362,
-    "name": "passive_green_mid_6_3_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:360",
-    "typeId": 404,
-    "partId": 360,
-    "name": "passive_green_mid_5_3_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:358",
-    "typeId": 404,
-    "partId": 358,
-    "name": "passive_green_mid_5_1_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:357",
-    "typeId": 404,
-    "partId": 357,
-    "name": "passive_green_mid_4_3_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:356",
-    "typeId": 404,
-    "partId": 356,
-    "name": "passive_green_mid_4_1_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:353",
-    "typeId": 404,
-    "partId": 353,
-    "name": "passive_green_left_5_3_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:351",
-    "typeId": 404,
-    "partId": 351,
-    "name": "passive_green_left_5_1_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:346",
-    "typeId": 404,
-    "partId": 346,
-    "name": "passive_blue_right_5_3_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:345",
-    "typeId": 404,
-    "partId": 345,
-    "name": "passive_blue_right_5_2_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:344",
-    "typeId": 404,
-    "partId": 344,
-    "name": "passive_blue_right_5_1_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:343",
-    "typeId": 404,
-    "partId": 343,
-    "name": "passive_blue_right_4_3_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:342",
-    "typeId": 404,
-    "partId": 342,
-    "name": "passive_blue_right_4_1_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:340",
-    "typeId": 404,
-    "partId": 340,
-    "name": "passive_blue_mid_6_1_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:339",
-    "typeId": 404,
-    "partId": 339,
-    "name": "passive_blue_mid_5_3_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:338",
-    "typeId": 404,
-    "partId": 338,
-    "name": "passive_blue_mid_5_2_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:333",
-    "typeId": 404,
-    "partId": 333,
-    "name": "passive_blue_left_6_1_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:331",
-    "typeId": 404,
-    "partId": 331,
-    "name": "passive_blue_left_5_2_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:329",
-    "typeId": 404,
-    "partId": 329,
-    "name": "passive_blue_left_4_3_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:327",
-    "typeId": 404,
-    "partId": 327,
-    "name": "passive_red_right_6_3_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:325",
-    "typeId": 404,
-    "partId": 325,
-    "name": "passive_red_right_5_3_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:322",
-    "typeId": 404,
-    "partId": 322,
-    "name": "passive_red_right_4_3_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:321",
-    "typeId": 404,
-    "partId": 321,
-    "name": "passive_red_right_4_1_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:312",
-    "typeId": 404,
-    "partId": 312,
-    "name": "passive_red_left_6_1_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:311",
-    "typeId": 404,
-    "partId": 311,
-    "name": "passive_red_left_5_3_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:310",
-    "typeId": 404,
-    "partId": 310,
-    "name": "passive_red_left_5_2_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:309",
-    "typeId": 404,
-    "partId": 309,
-    "name": "passive_red_left_5_1_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:306",
-    "typeId": 404,
-    "partId": 306,
-    "name": "passive_green_right_6_3_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:305",
-    "typeId": 404,
-    "partId": 305,
-    "name": "passive_green_right_6_1_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:303",
-    "typeId": 404,
-    "partId": 303,
-    "name": "passive_green_right_5_2_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:300",
-    "typeId": 404,
-    "partId": 300,
-    "name": "passive_green_right_4_1_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:299",
-    "typeId": 404,
-    "partId": 299,
-    "name": "passive_green_mid_6_3_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:297",
-    "typeId": 404,
-    "partId": 297,
-    "name": "passive_green_mid_5_3_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:295",
-    "typeId": 404,
-    "partId": 295,
-    "name": "passive_green_mid_5_1_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:294",
-    "typeId": 404,
-    "partId": 294,
-    "name": "passive_green_mid_4_3_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:293",
-    "typeId": 404,
-    "partId": 293,
-    "name": "passive_green_mid_4_1_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:290",
-    "typeId": 404,
-    "partId": 290,
-    "name": "passive_green_left_5_3_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:288",
-    "typeId": 404,
-    "partId": 288,
-    "name": "passive_green_left_5_1_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:283",
-    "typeId": 404,
-    "partId": 283,
-    "name": "passive_blue_right_5_3_tier_1 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:282",
-    "typeId": 404,
-    "partId": 282,
-    "name": "passive_blue_right_5_2_tier_1 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
+    "fullId": "289:30",
+    "typeId": 289,
+    "partId": 30,
+    "name": "part_barrel_02_barrel (MAL_HW)",
+    "typeLabel": "MAL_HW",
+    "category": "Weapon",
+    "uses": 6,
     "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+      "Cormano | GZO | Crayons82.0",
+      "Cormano | GZO | Crayons82.0",
+      "Cormano | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:280",
+    "fullId": "404:537",
     "typeId": 404,
-    "partId": 280,
-    "name": "passive_blue_right_4_3_tier_1 (classmod_robodealer)",
+    "partId": 537,
+    "name": "passive_blue_right_6_3_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:279",
+    "fullId": "404:526",
     "typeId": 404,
-    "partId": 279,
-    "name": "passive_blue_right_4_1_tier_1 (classmod_robodealer)",
+    "partId": 526,
+    "name": "passive_blue_mid_5_1_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:275",
+    "fullId": "404:523",
     "typeId": 404,
-    "partId": 275,
-    "name": "passive_blue_mid_5_2_tier_1 (classmod_robodealer)",
+    "partId": 523,
+    "name": "passive_blue_left_6_3_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:268",
+    "fullId": "404:515",
     "typeId": 404,
-    "partId": 268,
-    "name": "passive_blue_left_5_2_tier_1 (classmod_robodealer)",
+    "partId": 515,
+    "name": "passive_red_right_6_1_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:264",
+    "fullId": "404:513",
     "typeId": 404,
-    "partId": 264,
-    "name": "passive_red_right_6_3_tier_1 (classmod_robodealer)",
+    "partId": 513,
+    "name": "passive_red_right_5_2_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:259",
+    "fullId": "404:509",
     "typeId": 404,
-    "partId": 259,
-    "name": "passive_red_right_4_3_tier_1 (classmod_robodealer)",
+    "partId": 509,
+    "name": "passive_red_mid_6_3_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:258",
+    "fullId": "404:505",
     "typeId": 404,
-    "partId": 258,
-    "name": "passive_red_right_4_1_tier_1 (classmod_robodealer)",
+    "partId": 505,
+    "name": "passive_red_mid_5_1_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:249",
+    "fullId": "404:502",
     "typeId": 404,
-    "partId": 249,
-    "name": "passive_red_left_6_1_tier_1 (classmod_robodealer)",
+    "partId": 502,
+    "name": "passive_red_left_6_3_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:248",
+    "fullId": "404:493",
     "typeId": 404,
-    "partId": 248,
-    "name": "passive_red_left_5_3_tier_1 (classmod_robodealer)",
+    "partId": 493,
+    "name": "passive_green_right_5_3_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:247",
+    "fullId": "404:491",
     "typeId": 404,
-    "partId": 247,
-    "name": "passive_red_left_5_2_tier_1 (classmod_robodealer)",
+    "partId": 491,
+    "name": "passive_green_right_5_1_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:246",
+    "fullId": "404:478",
     "typeId": 404,
-    "partId": 246,
-    "name": "passive_red_left_5_1_tier_1 (classmod_robodealer)",
+    "partId": 478,
+    "name": "passive_green_left_5_2_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:243",
+    "fullId": "404:474",
     "typeId": 404,
-    "partId": 243,
-    "name": "passive_green_right_6_3_tier_1 (classmod_robodealer)",
+    "partId": 474,
+    "name": "passive_blue_right_6_3_tier_4 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:242",
+    "fullId": "404:463",
     "typeId": 404,
-    "partId": 242,
-    "name": "passive_green_right_6_1_tier_1 (classmod_robodealer)",
+    "partId": 463,
+    "name": "passive_blue_mid_5_1_tier_4 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:240",
+    "fullId": "404:460",
     "typeId": 404,
-    "partId": 240,
-    "name": "passive_green_right_5_2_tier_1 (classmod_robodealer)",
+    "partId": 460,
+    "name": "passive_blue_left_6_3_tier_4 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:236",
+    "fullId": "404:452",
     "typeId": 404,
-    "partId": 236,
-    "name": "passive_green_mid_6_3_tier_1 (classmod_robodealer)",
+    "partId": 452,
+    "name": "passive_red_right_6_1_tier_4 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:234",
+    "fullId": "404:450",
     "typeId": 404,
-    "partId": 234,
-    "name": "passive_green_mid_5_3_tier_1 (classmod_robodealer)",
+    "partId": 450,
+    "name": "passive_red_right_5_2_tier_4 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:232",
+    "fullId": "404:446",
     "typeId": 404,
-    "partId": 232,
-    "name": "passive_green_mid_5_1_tier_1 (classmod_robodealer)",
+    "partId": 446,
+    "name": "passive_red_mid_6_3_tier_4 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:231",
+    "fullId": "404:442",
     "typeId": 404,
-    "partId": 231,
-    "name": "passive_green_mid_4_3_tier_1 (classmod_robodealer)",
+    "partId": 442,
+    "name": "passive_red_mid_5_1_tier_4 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:230",
+    "fullId": "404:439",
     "typeId": 404,
-    "partId": 230,
-    "name": "passive_green_mid_4_1_tier_1 (classmod_robodealer)",
+    "partId": 439,
+    "name": "passive_red_left_6_3_tier_4 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:227",
+    "fullId": "404:430",
     "typeId": 404,
-    "partId": 227,
-    "name": "passive_green_left_5_3_tier_1 (classmod_robodealer)",
+    "partId": 430,
+    "name": "passive_green_right_5_3_tier_4 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:225",
+    "fullId": "404:428",
     "typeId": 404,
-    "partId": 225,
-    "name": "passive_green_left_5_1_tier_1 (classmod_robodealer)",
+    "partId": 428,
+    "name": "passive_green_right_5_1_tier_4 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:216",
+    "fullId": "404:415",
     "typeId": 404,
-    "partId": 216,
-    "name": "passive_red_1_1_tier_1 (classmod_robodealer)",
+    "partId": 415,
+    "name": "passive_green_left_5_2_tier_4 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:214",
+    "fullId": "404:411",
     "typeId": 404,
-    "partId": 214,
-    "name": "passive_red_1_3_tier_1 (classmod_robodealer)",
+    "partId": 411,
+    "name": "passive_blue_right_6_3_tier_3 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:211",
+    "fullId": "404:400",
     "typeId": 404,
-    "partId": 211,
-    "name": "passive_red_2_3_tier_1 (classmod_robodealer)",
+    "partId": 400,
+    "name": "passive_blue_mid_5_1_tier_3 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:210",
+    "fullId": "404:397",
     "typeId": 404,
-    "partId": 210,
-    "name": "passive_red_2_5_tier_1 (classmod_robodealer)",
+    "partId": 397,
+    "name": "passive_blue_left_6_3_tier_3 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:209",
+    "fullId": "404:389",
     "typeId": 404,
-    "partId": 209,
-    "name": "passive_red_3_1_tier_1 (classmod_robodealer)",
+    "partId": 389,
+    "name": "passive_red_right_6_1_tier_3 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:207",
+    "fullId": "404:387",
     "typeId": 404,
-    "partId": 207,
-    "name": "passive_red_3_4_tier_1 (classmod_robodealer)",
+    "partId": 387,
+    "name": "passive_red_right_5_2_tier_3 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:206",
+    "fullId": "404:383",
     "typeId": 404,
-    "partId": 206,
-    "name": "passive_red_3_5_tier_1 (classmod_robodealer)",
+    "partId": 383,
+    "name": "passive_red_mid_6_3_tier_3 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:201",
+    "fullId": "404:379",
     "typeId": 404,
-    "partId": 201,
-    "name": "passive_green_2_1_tier_1 (classmod_robodealer)",
+    "partId": 379,
+    "name": "passive_red_mid_5_1_tier_3 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:199",
+    "fullId": "404:376",
     "typeId": 404,
-    "partId": 199,
-    "name": "passive_green_2_5_tier_1 (classmod_robodealer)",
+    "partId": 376,
+    "name": "passive_red_left_6_3_tier_3 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:196",
+    "fullId": "404:367",
     "typeId": 404,
-    "partId": 196,
-    "name": "passive_green_3_2_tier_1 (classmod_robodealer)",
+    "partId": 367,
+    "name": "passive_green_right_5_3_tier_3 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:192",
+    "fullId": "404:365",
     "typeId": 404,
-    "partId": 192,
-    "name": "passive_blue_1_4_tier_1 (classmod_robodealer)",
+    "partId": 365,
+    "name": "passive_green_right_5_1_tier_3 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:190",
+    "fullId": "404:352",
     "typeId": 404,
-    "partId": 190,
-    "name": "passive_blue_2_1_tier_1 (classmod_robodealer)",
+    "partId": 352,
+    "name": "passive_green_left_5_2_tier_3 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:188",
+    "fullId": "404:348",
     "typeId": 404,
-    "partId": 188,
-    "name": "passive_blue_2_5_tier_1 (classmod_robodealer)",
+    "partId": 348,
+    "name": "passive_blue_right_6_3_tier_2 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:185",
+    "fullId": "404:337",
     "typeId": 404,
-    "partId": 185,
-    "name": "passive_blue_3_5_tier_1 (classmod_robodealer)",
+    "partId": 337,
+    "name": "passive_blue_mid_5_1_tier_2 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:184",
+    "fullId": "404:334",
     "typeId": 404,
-    "partId": 184,
-    "name": "passive_red_1_1_tier_2 (classmod_robodealer)",
+    "partId": 334,
+    "name": "passive_blue_left_6_3_tier_2 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:181",
+    "fullId": "404:326",
     "typeId": 404,
-    "partId": 181,
-    "name": "passive_red_1_3_tier_2 (classmod_robodealer)",
+    "partId": 326,
+    "name": "passive_red_right_6_1_tier_2 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:179",
+    "fullId": "404:324",
     "typeId": 404,
-    "partId": 179,
-    "name": "passive_red_2_3_tier_2 (classmod_robodealer)",
+    "partId": 324,
+    "name": "passive_red_right_5_2_tier_2 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:178",
+    "fullId": "404:320",
     "typeId": 404,
-    "partId": 178,
-    "name": "passive_red_2_5_tier_2 (classmod_robodealer)",
+    "partId": 320,
+    "name": "passive_red_mid_6_3_tier_2 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:177",
+    "fullId": "404:316",
     "typeId": 404,
-    "partId": 177,
-    "name": "passive_red_3_1_tier_2 (classmod_robodealer)",
+    "partId": 316,
+    "name": "passive_red_mid_5_1_tier_2 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:175",
+    "fullId": "404:313",
     "typeId": 404,
-    "partId": 175,
-    "name": "passive_red_3_4_tier_2 (classmod_robodealer)",
+    "partId": 313,
+    "name": "passive_red_left_6_3_tier_2 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:169",
+    "fullId": "404:304",
     "typeId": 404,
-    "partId": 169,
-    "name": "passive_green_2_1_tier_2 (classmod_robodealer)",
+    "partId": 304,
+    "name": "passive_green_right_5_3_tier_2 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:167",
+    "fullId": "404:302",
     "typeId": 404,
-    "partId": 167,
-    "name": "passive_green_2_5_tier_2 (classmod_robodealer)",
+    "partId": 302,
+    "name": "passive_green_right_5_1_tier_2 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:164",
+    "fullId": "404:289",
     "typeId": 404,
-    "partId": 164,
-    "name": "passive_green_3_2_tier_2 (classmod_robodealer)",
+    "partId": 289,
+    "name": "passive_green_left_5_2_tier_2 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:160",
+    "fullId": "404:285",
     "typeId": 404,
-    "partId": 160,
-    "name": "passive_blue_1_4_tier_2 (classmod_robodealer)",
+    "partId": 285,
+    "name": "passive_blue_right_6_3_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:158",
+    "fullId": "404:274",
     "typeId": 404,
-    "partId": 158,
-    "name": "passive_blue_2_1_tier_2 (classmod_robodealer)",
+    "partId": 274,
+    "name": "passive_blue_mid_5_1_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:156",
+    "fullId": "404:271",
     "typeId": 404,
-    "partId": 156,
-    "name": "passive_blue_2_5_tier_2 (classmod_robodealer)",
+    "partId": 271,
+    "name": "passive_blue_left_6_3_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:153",
+    "fullId": "404:263",
     "typeId": 404,
-    "partId": 153,
-    "name": "passive_blue_3_5_tier_2 (classmod_robodealer)",
+    "partId": 263,
+    "name": "passive_red_right_6_1_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:152",
+    "fullId": "404:261",
     "typeId": 404,
-    "partId": 152,
-    "name": "passive_red_1_1_tier_3 (classmod_robodealer)",
+    "partId": 261,
+    "name": "passive_red_right_5_2_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:149",
+    "fullId": "404:257",
     "typeId": 404,
-    "partId": 149,
-    "name": "passive_red_1_3_tier_3 (classmod_robodealer)",
+    "partId": 257,
+    "name": "passive_red_mid_6_3_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:147",
+    "fullId": "404:253",
     "typeId": 404,
-    "partId": 147,
-    "name": "passive_red_2_3_tier_3 (classmod_robodealer)",
+    "partId": 253,
+    "name": "passive_red_mid_5_1_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:146",
+    "fullId": "404:250",
     "typeId": 404,
-    "partId": 146,
-    "name": "passive_red_2_5_tier_3 (classmod_robodealer)",
+    "partId": 250,
+    "name": "passive_red_left_6_3_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:145",
+    "fullId": "404:241",
     "typeId": 404,
-    "partId": 145,
-    "name": "passive_red_3_1_tier_3 (classmod_robodealer)",
+    "partId": 241,
+    "name": "passive_green_right_5_3_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:143",
+    "fullId": "404:239",
     "typeId": 404,
-    "partId": 143,
-    "name": "passive_red_3_4_tier_3 (classmod_robodealer)",
+    "partId": 239,
+    "name": "passive_green_right_5_1_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:137",
+    "fullId": "404:226",
     "typeId": 404,
-    "partId": 137,
-    "name": "passive_green_2_1_tier_3 (classmod_robodealer)",
+    "partId": 226,
+    "name": "passive_green_left_5_2_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:135",
+    "fullId": "404:215",
     "typeId": 404,
-    "partId": 135,
-    "name": "passive_green_2_5_tier_3 (classmod_robodealer)",
+    "partId": 215,
+    "name": "passive_red_1_2_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:132",
+    "fullId": "404:213",
     "typeId": 404,
-    "partId": 132,
-    "name": "passive_green_3_2_tier_3 (classmod_robodealer)",
+    "partId": 213,
+    "name": "passive_red_2_1_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:128",
+    "fullId": "404:203",
     "typeId": 404,
-    "partId": 128,
-    "name": "passive_blue_1_4_tier_3 (classmod_robodealer)",
+    "partId": 203,
+    "name": "passive_green_1_4_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:126",
+    "fullId": "404:183",
     "typeId": 404,
-    "partId": 126,
-    "name": "passive_blue_2_1_tier_3 (classmod_robodealer)",
+    "partId": 183,
+    "name": "passive_red_1_2_tier_2 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:124",
+    "fullId": "404:182",
     "typeId": 404,
-    "partId": 124,
-    "name": "passive_blue_2_5_tier_3 (classmod_robodealer)",
+    "partId": 182,
+    "name": "passive_red_2_1_tier_2 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:121",
+    "fullId": "404:171",
     "typeId": 404,
-    "partId": 121,
-    "name": "passive_blue_3_5_tier_3 (classmod_robodealer)",
+    "partId": 171,
+    "name": "passive_green_1_4_tier_2 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:120",
+    "fullId": "404:151",
     "typeId": 404,
-    "partId": 120,
-    "name": "passive_red_1_1_tier_4 (classmod_robodealer)",
+    "partId": 151,
+    "name": "passive_red_1_2_tier_3 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:117",
+    "fullId": "404:150",
     "typeId": 404,
-    "partId": 117,
-    "name": "passive_red_1_3_tier_4 (classmod_robodealer)",
+    "partId": 150,
+    "name": "passive_red_2_1_tier_3 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:115",
+    "fullId": "404:139",
     "typeId": 404,
-    "partId": 115,
-    "name": "passive_red_2_3_tier_4 (classmod_robodealer)",
+    "partId": 139,
+    "name": "passive_green_1_4_tier_3 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:114",
+    "fullId": "404:119",
     "typeId": 404,
-    "partId": 114,
-    "name": "passive_red_2_5_tier_4 (classmod_robodealer)",
+    "partId": 119,
+    "name": "passive_red_1_2_tier_4 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:113",
+    "fullId": "404:118",
     "typeId": 404,
-    "partId": 113,
-    "name": "passive_red_3_1_tier_4 (classmod_robodealer)",
+    "partId": 118,
+    "name": "passive_red_2_1_tier_4 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:111",
+    "fullId": "404:107",
     "typeId": 404,
-    "partId": 111,
-    "name": "passive_red_3_4_tier_4 (classmod_robodealer)",
+    "partId": 107,
+    "name": "passive_green_1_4_tier_4 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:105",
+    "fullId": "404:87",
     "typeId": 404,
-    "partId": 105,
-    "name": "passive_green_2_1_tier_4 (classmod_robodealer)",
+    "partId": 87,
+    "name": "passive_red_1_2_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:103",
+    "fullId": "404:86",
     "typeId": 404,
-    "partId": 103,
-    "name": "passive_green_2_5_tier_4 (classmod_robodealer)",
+    "partId": 86,
+    "name": "passive_red_2_1_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:100",
+    "fullId": "404:75",
     "typeId": 404,
-    "partId": 100,
-    "name": "passive_green_3_2_tier_4 (classmod_robodealer)",
+    "partId": 75,
+    "name": "passive_green_1_4_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:96",
+    "fullId": "404:45",
     "typeId": 404,
-    "partId": 96,
-    "name": "passive_blue_1_4_tier_4 (classmod_robodealer)",
+    "partId": 45,
+    "name": "passive_green_1_2_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:94",
+    "fullId": "404:44",
     "typeId": 404,
-    "partId": 94,
-    "name": "passive_blue_2_1_tier_4 (classmod_robodealer)",
+    "partId": 44,
+    "name": "passive_green_1_2_tier_2 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:89",
+    "fullId": "404:43",
     "typeId": 404,
-    "partId": 89,
-    "name": "passive_blue_3_5_tier_4 (classmod_robodealer)",
+    "partId": 43,
+    "name": "passive_green_1_2_tier_3 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:50",
+    "fullId": "404:42",
     "typeId": 404,
-    "partId": 50,
-    "name": "passive_green_3_3_tier_1 (classmod_robodealer)",
+    "partId": 42,
+    "name": "passive_green_1_2_tier_4 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:49",
+    "fullId": "404:41",
     "typeId": 404,
-    "partId": 49,
-    "name": "passive_green_3_3_tier_2 (classmod_robodealer)",
+    "partId": 41,
+    "name": "passive_green_1_2_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:48",
+    "fullId": "404:40",
     "typeId": 404,
-    "partId": 48,
-    "name": "passive_green_3_3_tier_3 (classmod_robodealer)",
+    "partId": 40,
+    "name": "passive_blue_1_3_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:47",
+    "fullId": "404:39",
     "typeId": 404,
-    "partId": 47,
-    "name": "passive_green_3_3_tier_4 (classmod_robodealer)",
+    "partId": 39,
+    "name": "passive_blue_1_3_tier_2 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:25",
+    "fullId": "404:38",
     "typeId": 404,
-    "partId": 25,
-    "name": "passive_red_1_4_tier_1 (classmod_robodealer)",
+    "partId": 38,
+    "name": "passive_blue_1_3_tier_3 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:24",
+    "fullId": "404:37",
     "typeId": 404,
-    "partId": 24,
-    "name": "passive_red_1_4_tier_2 (classmod_robodealer)",
+    "partId": 37,
+    "name": "passive_blue_1_3_tier_4 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:23",
+    "fullId": "404:36",
     "typeId": 404,
-    "partId": 23,
-    "name": "passive_red_1_4_tier_3 (classmod_robodealer)",
+    "partId": 36,
+    "name": "passive_blue_1_3_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:22",
+    "fullId": "404:35",
     "typeId": 404,
-    "partId": 22,
-    "name": "passive_red_1_4_tier_4 (classmod_robodealer)",
+    "partId": 35,
+    "name": "passive_blue_3_1_tier_1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:20",
+    "fullId": "404:34",
     "typeId": 404,
-    "partId": 20,
-    "name": "passive_red_3_2_tier_1 (classmod_robodealer)",
+    "partId": 34,
+    "name": "passive_blue_3_1_tier_2 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:19",
+    "fullId": "404:33",
     "typeId": 404,
-    "partId": 19,
-    "name": "passive_red_3_2_tier_2 (classmod_robodealer)",
+    "partId": 33,
+    "name": "passive_blue_3_1_tier_3 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:18",
+    "fullId": "404:32",
     "typeId": 404,
-    "partId": 18,
-    "name": "passive_red_3_2_tier_3 (classmod_robodealer)",
+    "partId": 32,
+    "name": "passive_blue_3_1_tier_4 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:17",
+    "fullId": "404:31",
     "typeId": 404,
-    "partId": 17,
-    "name": "passive_red_3_2_tier_4 (classmod_robodealer)",
+    "partId": 31,
+    "name": "passive_blue_3_1_tier_5 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 5,
     "examples": [
       "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:488",
-    "typeId": 404,
-    "partId": 488,
-    "name": "passive_green_mid_6_3_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 5,
-    "examples": [
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
       "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "20:70",
-    "typeId": 20,
-    "partId": 70,
-    "name": "comp_06_pearl_raiden (DAD_SM)",
-    "typeLabel": "DAD_SM",
+    "fullId": "27:80",
+    "typeId": 27,
+    "partId": 80,
+    "name": "part_barrel_01_Gomie (JAK_AR)",
+    "typeLabel": "JAK_AR",
     "category": "Weapon",
     "uses": 5,
     "examples": [
-      "Smashing Eliminating Raiden | Custom Static | Crayons82.0",
-      "Smashing Eliminating Raiden | Custom Static | Crayons82.0",
-      "Smashing Eliminating Raiden | Custom Static | Crayons82.0"
+      "Maintained Looming Flash Cylcone | GZO | Crayons82.0",
+      "Maintained Looming Flash Cylcone | Custom Static | Crayons82.0",
+      "Maintained Looming Flash Cylcone | Custom Static | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
@@ -5940,602 +8056,89 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:212",
-    "typeId": 404,
-    "partId": 212,
-    "name": "passive_red_1_5_tier_1 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
+    "fullId": "4:86",
+    "typeId": 4,
+    "partId": 86,
+    "name": "part_barrel_rhythm (ORD_PS)",
+    "typeLabel": "ORD_PS",
+    "category": "Ordnance",
     "uses": 4,
     "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Catchy Regulated Aegon's Dream | GZO | Crayons82.0",
+      "Catchy Regulated Aegon's Dream | GZO | Crayons82.0",
+      "BROKEN WINGS | Custom Static | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:208",
-    "typeId": 404,
-    "partId": 208,
-    "name": "passive_red_3_3_tier_1 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
+    "fullId": "8:81",
+    "typeId": 8,
+    "partId": 81,
+    "name": "part_underbarrel_01_cannonbrawl (DAD_SG)",
+    "typeLabel": "DAD_SG",
+    "category": "Weapon",
     "uses": 4,
     "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Put Looming Screwstonian | GZO | Crayons82.0",
+      "Put Ambushing Screwtonian | Custom Static | Crayons82.0",
+      "Smashing Fatal Rowan's Charge | Custom Static | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:205",
-    "typeId": 404,
-    "partId": 205,
-    "name": "passive_green_1_1_tier_1 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
+    "fullId": "25:85",
+    "typeId": 25,
+    "partId": 85,
+    "name": "part_barrel_01_manifest (MAL_SR)",
+    "typeLabel": "MAL_SR",
+    "category": "Weapon",
     "uses": 4,
     "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Synchrotron Nadir Marshall's Claw | GZO | Crayons82.0",
+      "Synchrotron Nadir Bod | GZO | Crayons82.0",
+      "Synchrotron Nadir Marshall's Claw | Custom Static | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:204",
-    "typeId": 404,
-    "partId": 204,
-    "name": "passive_green_1_3_tier_1 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
+    "fullId": "25:86",
+    "typeId": 25,
+    "partId": 86,
+    "name": "part_mag_05_borg_acc_manifest (MAL_SR)",
+    "typeLabel": "MAL_SR",
+    "category": "Weapon",
     "uses": 4,
     "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Synchrotron Nadir Marshall's Claw | GZO | Crayons82.0",
+      "Synchrotron Nadir Bod | GZO | Crayons82.0",
+      "Synchrotron Nadir Marshall's Claw | Custom Static | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:198",
-    "typeId": 404,
-    "partId": 198,
-    "name": "passive_green_3_5_tier_1 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
+    "fullId": "10:82",
+    "typeId": 10,
+    "partId": 82,
+    "name": "part_barrel_01_discybusiness (MAL_SG)",
+    "typeLabel": "MAL_SG",
+    "category": "Weapon",
     "uses": 4,
     "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Overproduced Socialized Light Gun | Custom Static | Crayons82.0",
+      "Discy Business | Phosphene Curated | Tobgun1 / Squiggs"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:197",
-    "typeId": 404,
-    "partId": 197,
-    "name": "passive_green_3_4_tier_1 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
+    "fullId": "8:60",
+    "typeId": 8,
+    "partId": 60,
+    "name": "part_barrel_cannonbrawl (DAD_SG)",
+    "typeLabel": "DAD_SG",
+    "category": "Weapon",
     "uses": 4,
     "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:195",
-    "typeId": 404,
-    "partId": 195,
-    "name": "passive_green_3_1_tier_1 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 4,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:193",
-    "typeId": 404,
-    "partId": 193,
-    "name": "passive_blue_1_2_tier_1 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 4,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:187",
-    "typeId": 404,
-    "partId": 187,
-    "name": "passive_blue_3_2_tier_1 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 4,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:186",
-    "typeId": 404,
-    "partId": 186,
-    "name": "passive_blue_3_3_tier_1 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 4,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:180",
-    "typeId": 404,
-    "partId": 180,
-    "name": "passive_red_1_5_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 4,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:176",
-    "typeId": 404,
-    "partId": 176,
-    "name": "passive_red_3_3_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 4,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:173",
-    "typeId": 404,
-    "partId": 173,
-    "name": "passive_green_1_1_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 4,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:172",
-    "typeId": 404,
-    "partId": 172,
-    "name": "passive_green_1_3_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 4,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:166",
-    "typeId": 404,
-    "partId": 166,
-    "name": "passive_green_3_5_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 4,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:165",
-    "typeId": 404,
-    "partId": 165,
-    "name": "passive_green_3_4_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 4,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:163",
-    "typeId": 404,
-    "partId": 163,
-    "name": "passive_green_3_1_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 4,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:161",
-    "typeId": 404,
-    "partId": 161,
-    "name": "passive_blue_1_2_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 4,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:155",
-    "typeId": 404,
-    "partId": 155,
-    "name": "passive_blue_3_2_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 4,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:154",
-    "typeId": 404,
-    "partId": 154,
-    "name": "passive_blue_3_3_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 4,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:148",
-    "typeId": 404,
-    "partId": 148,
-    "name": "passive_red_1_5_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 4,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:144",
-    "typeId": 404,
-    "partId": 144,
-    "name": "passive_red_3_3_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 4,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:141",
-    "typeId": 404,
-    "partId": 141,
-    "name": "passive_green_1_1_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 4,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:140",
-    "typeId": 404,
-    "partId": 140,
-    "name": "passive_green_1_3_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 4,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:134",
-    "typeId": 404,
-    "partId": 134,
-    "name": "passive_green_3_5_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 4,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:133",
-    "typeId": 404,
-    "partId": 133,
-    "name": "passive_green_3_4_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 4,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:131",
-    "typeId": 404,
-    "partId": 131,
-    "name": "passive_green_3_1_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 4,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:129",
-    "typeId": 404,
-    "partId": 129,
-    "name": "passive_blue_1_2_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 4,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:123",
-    "typeId": 404,
-    "partId": 123,
-    "name": "passive_blue_3_2_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 4,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:122",
-    "typeId": 404,
-    "partId": 122,
-    "name": "passive_blue_3_3_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 4,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:116",
-    "typeId": 404,
-    "partId": 116,
-    "name": "passive_red_1_5_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 4,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:112",
-    "typeId": 404,
-    "partId": 112,
-    "name": "passive_red_3_3_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 4,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:109",
-    "typeId": 404,
-    "partId": 109,
-    "name": "passive_green_1_1_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 4,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:108",
-    "typeId": 404,
-    "partId": 108,
-    "name": "passive_green_1_3_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 4,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:102",
-    "typeId": 404,
-    "partId": 102,
-    "name": "passive_green_3_5_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 4,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:101",
-    "typeId": 404,
-    "partId": 101,
-    "name": "passive_green_3_4_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 4,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:99",
-    "typeId": 404,
-    "partId": 99,
-    "name": "passive_green_3_1_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 4,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:97",
-    "typeId": 404,
-    "partId": 97,
-    "name": "passive_blue_1_2_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 4,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:91",
-    "typeId": 404,
-    "partId": 91,
-    "name": "passive_blue_3_2_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 4,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:90",
-    "typeId": 404,
-    "partId": 90,
-    "name": "passive_blue_3_3_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 4,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail"
+      "Smashing Fatal Rowan's Charge | Custom Static | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
@@ -6555,15 +8158,59 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:51",
+    "fullId": "404:222",
     "typeId": 404,
-    "partId": 51,
-    "name": "leg_body_06 (classmod_robodealer)",
+    "partId": 222,
+    "name": "leg_body_dlc1 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 3,
     "examples": [
-      "Unruly Hooligan | GZO | Skippy"
+      "Unruly Hooligan | GZO | Skippy",
+      "Calculating Whale | GZO | Crayons82.0"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "259:546",
+    "typeId": 259,
+    "partId": 546,
+    "name": "leg_body_raid2 (classmod_gravitar)",
+    "typeLabel": "classmod_gravitar",
+    "category": "Class Mod",
+    "uses": 3,
+    "examples": [
+      "The Gohan: Harlowe | GZO | Fen Integrum",
+      "Unshielded Reactor | GZO | Crayons82.0"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "256:544",
+    "typeId": 256,
+    "partId": 544,
+    "name": "leg_body_raid2 (classmod_exo_soldier)",
+    "typeLabel": "classmod_exo_soldier",
+    "category": "Class Mod",
+    "uses": 3,
+    "examples": [
+      "The Gohan: Rafa | GZO | Fen Integrum",
+      "Devastating Dancer | GZO | Crayons82.0"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:14",
+    "typeId": 404,
+    "partId": 14,
+    "name": "leg_body_04 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 3,
+    "examples": [
+      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail",
+      "CASH LVL 1 Classmod Evil eyed cooler - all skills | GZO | Azalea Asvail",
+      "Calculating Whale | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
@@ -6596,14 +8243,43 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "27:80",
+    "fullId": "19:61",
+    "typeId": 19,
+    "partId": 61,
+    "name": "comp_05_legendary_Jailbroken (BOR_SM)",
+    "typeLabel": "BOR_SM",
+    "category": "Part",
+    "uses": 3,
+    "examples": [
+      "Gatlin | GZO | Rapt0rj3sus",
+      "Eviscerating Waterfall | GZO | Crayons82.0",
+      "Eviscerating Waterfall | Custom Static | Crayons82.0"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "282:30",
+    "typeId": 282,
+    "partId": 30,
+    "name": "part_barrel_02_Flak (VLA_HW)",
+    "typeLabel": "VLA_HW",
+    "category": "Weapon",
+    "uses": 3,
+    "examples": [
+      "Ultimate Flak Cannon | GZO | Light7"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "27:81",
     "typeId": 27,
-    "partId": 80,
-    "name": "part_barrel_01_Gomie (JAK_AR)",
+    "partId": 81,
+    "name": "comp_05_legendary_Gomie (JAK_AR)",
     "typeLabel": "JAK_AR",
     "category": "Weapon",
     "uses": 3,
     "examples": [
+      "Maintained Looming Flash Cylcone | GZO | Crayons82.0",
       "Maintained Looming Flash Cylcone | Custom Static | Crayons82.0",
       "Maintained Looming Flash Cylcone | Custom Static | Crayons82.0"
     ],
@@ -6651,1209 +8327,6 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:222",
-    "typeId": 404,
-    "partId": 222,
-    "name": "leg_body_dlc1 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:537",
-    "typeId": 404,
-    "partId": 537,
-    "name": "passive_blue_right_6_3_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:526",
-    "typeId": 404,
-    "partId": 526,
-    "name": "passive_blue_mid_5_1_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:523",
-    "typeId": 404,
-    "partId": 523,
-    "name": "passive_blue_left_6_3_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:515",
-    "typeId": 404,
-    "partId": 515,
-    "name": "passive_red_right_6_1_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:513",
-    "typeId": 404,
-    "partId": 513,
-    "name": "passive_red_right_5_2_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:509",
-    "typeId": 404,
-    "partId": 509,
-    "name": "passive_red_mid_6_3_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:505",
-    "typeId": 404,
-    "partId": 505,
-    "name": "passive_red_mid_5_1_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:502",
-    "typeId": 404,
-    "partId": 502,
-    "name": "passive_red_left_6_3_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:493",
-    "typeId": 404,
-    "partId": 493,
-    "name": "passive_green_right_5_3_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:491",
-    "typeId": 404,
-    "partId": 491,
-    "name": "passive_green_right_5_1_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:478",
-    "typeId": 404,
-    "partId": 478,
-    "name": "passive_green_left_5_2_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:474",
-    "typeId": 404,
-    "partId": 474,
-    "name": "passive_blue_right_6_3_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:463",
-    "typeId": 404,
-    "partId": 463,
-    "name": "passive_blue_mid_5_1_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:460",
-    "typeId": 404,
-    "partId": 460,
-    "name": "passive_blue_left_6_3_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:452",
-    "typeId": 404,
-    "partId": 452,
-    "name": "passive_red_right_6_1_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:450",
-    "typeId": 404,
-    "partId": 450,
-    "name": "passive_red_right_5_2_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:446",
-    "typeId": 404,
-    "partId": 446,
-    "name": "passive_red_mid_6_3_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:442",
-    "typeId": 404,
-    "partId": 442,
-    "name": "passive_red_mid_5_1_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:439",
-    "typeId": 404,
-    "partId": 439,
-    "name": "passive_red_left_6_3_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:430",
-    "typeId": 404,
-    "partId": 430,
-    "name": "passive_green_right_5_3_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:428",
-    "typeId": 404,
-    "partId": 428,
-    "name": "passive_green_right_5_1_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:415",
-    "typeId": 404,
-    "partId": 415,
-    "name": "passive_green_left_5_2_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:411",
-    "typeId": 404,
-    "partId": 411,
-    "name": "passive_blue_right_6_3_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:400",
-    "typeId": 404,
-    "partId": 400,
-    "name": "passive_blue_mid_5_1_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:397",
-    "typeId": 404,
-    "partId": 397,
-    "name": "passive_blue_left_6_3_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:389",
-    "typeId": 404,
-    "partId": 389,
-    "name": "passive_red_right_6_1_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:387",
-    "typeId": 404,
-    "partId": 387,
-    "name": "passive_red_right_5_2_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:383",
-    "typeId": 404,
-    "partId": 383,
-    "name": "passive_red_mid_6_3_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:379",
-    "typeId": 404,
-    "partId": 379,
-    "name": "passive_red_mid_5_1_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:376",
-    "typeId": 404,
-    "partId": 376,
-    "name": "passive_red_left_6_3_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:367",
-    "typeId": 404,
-    "partId": 367,
-    "name": "passive_green_right_5_3_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:365",
-    "typeId": 404,
-    "partId": 365,
-    "name": "passive_green_right_5_1_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:352",
-    "typeId": 404,
-    "partId": 352,
-    "name": "passive_green_left_5_2_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:348",
-    "typeId": 404,
-    "partId": 348,
-    "name": "passive_blue_right_6_3_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:337",
-    "typeId": 404,
-    "partId": 337,
-    "name": "passive_blue_mid_5_1_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:334",
-    "typeId": 404,
-    "partId": 334,
-    "name": "passive_blue_left_6_3_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:326",
-    "typeId": 404,
-    "partId": 326,
-    "name": "passive_red_right_6_1_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:324",
-    "typeId": 404,
-    "partId": 324,
-    "name": "passive_red_right_5_2_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:320",
-    "typeId": 404,
-    "partId": 320,
-    "name": "passive_red_mid_6_3_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:316",
-    "typeId": 404,
-    "partId": 316,
-    "name": "passive_red_mid_5_1_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:313",
-    "typeId": 404,
-    "partId": 313,
-    "name": "passive_red_left_6_3_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:304",
-    "typeId": 404,
-    "partId": 304,
-    "name": "passive_green_right_5_3_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:302",
-    "typeId": 404,
-    "partId": 302,
-    "name": "passive_green_right_5_1_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:289",
-    "typeId": 404,
-    "partId": 289,
-    "name": "passive_green_left_5_2_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:285",
-    "typeId": 404,
-    "partId": 285,
-    "name": "passive_blue_right_6_3_tier_1 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:274",
-    "typeId": 404,
-    "partId": 274,
-    "name": "passive_blue_mid_5_1_tier_1 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:271",
-    "typeId": 404,
-    "partId": 271,
-    "name": "passive_blue_left_6_3_tier_1 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:263",
-    "typeId": 404,
-    "partId": 263,
-    "name": "passive_red_right_6_1_tier_1 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:261",
-    "typeId": 404,
-    "partId": 261,
-    "name": "passive_red_right_5_2_tier_1 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:257",
-    "typeId": 404,
-    "partId": 257,
-    "name": "passive_red_mid_6_3_tier_1 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:253",
-    "typeId": 404,
-    "partId": 253,
-    "name": "passive_red_mid_5_1_tier_1 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:250",
-    "typeId": 404,
-    "partId": 250,
-    "name": "passive_red_left_6_3_tier_1 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:241",
-    "typeId": 404,
-    "partId": 241,
-    "name": "passive_green_right_5_3_tier_1 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:239",
-    "typeId": 404,
-    "partId": 239,
-    "name": "passive_green_right_5_1_tier_1 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:226",
-    "typeId": 404,
-    "partId": 226,
-    "name": "passive_green_left_5_2_tier_1 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:215",
-    "typeId": 404,
-    "partId": 215,
-    "name": "passive_red_1_2_tier_1 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:213",
-    "typeId": 404,
-    "partId": 213,
-    "name": "passive_red_2_1_tier_1 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:203",
-    "typeId": 404,
-    "partId": 203,
-    "name": "passive_green_1_4_tier_1 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:183",
-    "typeId": 404,
-    "partId": 183,
-    "name": "passive_red_1_2_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:182",
-    "typeId": 404,
-    "partId": 182,
-    "name": "passive_red_2_1_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:171",
-    "typeId": 404,
-    "partId": 171,
-    "name": "passive_green_1_4_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:151",
-    "typeId": 404,
-    "partId": 151,
-    "name": "passive_red_1_2_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:150",
-    "typeId": 404,
-    "partId": 150,
-    "name": "passive_red_2_1_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:139",
-    "typeId": 404,
-    "partId": 139,
-    "name": "passive_green_1_4_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:119",
-    "typeId": 404,
-    "partId": 119,
-    "name": "passive_red_1_2_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:118",
-    "typeId": 404,
-    "partId": 118,
-    "name": "passive_red_2_1_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:107",
-    "typeId": 404,
-    "partId": 107,
-    "name": "passive_green_1_4_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:87",
-    "typeId": 404,
-    "partId": 87,
-    "name": "passive_red_1_2_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:86",
-    "typeId": 404,
-    "partId": 86,
-    "name": "passive_red_2_1_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:75",
-    "typeId": 404,
-    "partId": 75,
-    "name": "passive_green_1_4_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:45",
-    "typeId": 404,
-    "partId": 45,
-    "name": "passive_green_1_2_tier_1 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:44",
-    "typeId": 404,
-    "partId": 44,
-    "name": "passive_green_1_2_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:43",
-    "typeId": 404,
-    "partId": 43,
-    "name": "passive_green_1_2_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:42",
-    "typeId": 404,
-    "partId": 42,
-    "name": "passive_green_1_2_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:41",
-    "typeId": 404,
-    "partId": 41,
-    "name": "passive_green_1_2_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:40",
-    "typeId": 404,
-    "partId": 40,
-    "name": "passive_blue_1_3_tier_1 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:39",
-    "typeId": 404,
-    "partId": 39,
-    "name": "passive_blue_1_3_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:38",
-    "typeId": 404,
-    "partId": 38,
-    "name": "passive_blue_1_3_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:37",
-    "typeId": 404,
-    "partId": 37,
-    "name": "passive_blue_1_3_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:36",
-    "typeId": 404,
-    "partId": 36,
-    "name": "passive_blue_1_3_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:35",
-    "typeId": 404,
-    "partId": 35,
-    "name": "passive_blue_3_1_tier_1 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:34",
-    "typeId": 404,
-    "partId": 34,
-    "name": "passive_blue_3_1_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:33",
-    "typeId": 404,
-    "partId": 33,
-    "name": "passive_blue_3_1_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:32",
-    "typeId": 404,
-    "partId": 32,
-    "name": "passive_blue_3_1_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:31",
-    "typeId": 404,
-    "partId": 31,
-    "name": "passive_blue_3_1_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "Unruly Hooligan | GZO | Skippy",
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
     "fullId": "404:56",
     "typeId": 404,
     "partId": 56,
@@ -7862,32 +8335,6 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "category": "Class Mod",
     "uses": 2,
     "examples": [],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "259:546",
-    "typeId": 259,
-    "partId": 546,
-    "name": "leg_body_raid2 (classmod_gravitar)",
-    "typeLabel": "classmod_gravitar",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "The Gohan: Harlowe | GZO | Fen Integrum"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "256:544",
-    "typeId": 256,
-    "partId": 544,
-    "name": "leg_body_raid2 (classmod_exo_soldier)",
-    "typeLabel": "classmod_exo_soldier",
-    "category": "Class Mod",
-    "uses": 2,
-    "examples": [
-      "The Gohan: Rafa | GZO | Fen Integrum"
-    ],
     "source": "GZO/custom modded catalog"
   },
   {
@@ -7916,6 +8363,104 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
+    "fullId": "404:15",
+    "typeId": 404,
+    "partId": 15,
+    "name": "leg_body_05 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 2,
+    "examples": [
+      "Calculating Whale - C4sh | GZO | Azalea Asvail",
+      "Calculating Whale | GZO | Crayons82.0"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:13",
+    "typeId": 404,
+    "partId": 13,
+    "name": "leg_body_03 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 2,
+    "examples": [
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Madcap Hotshot | GZO | Crayons82.0"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:235",
+    "typeId": 404,
+    "partId": 235,
+    "name": "passive_green_mid_6_1_tier_1 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 2,
+    "examples": [
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Loaded Prestigitator | GZO | ZK"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:298",
+    "typeId": 404,
+    "partId": 298,
+    "name": "passive_green_mid_6_1_tier_2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 2,
+    "examples": [
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Loaded Prestigitator | GZO | ZK"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:361",
+    "typeId": 404,
+    "partId": 361,
+    "name": "passive_green_mid_6_1_tier_3 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 2,
+    "examples": [
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Loaded Prestigitator | GZO | ZK"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:424",
+    "typeId": 404,
+    "partId": 424,
+    "name": "passive_green_mid_6_1_tier_4 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 2,
+    "examples": [
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Loaded Prestigitator | GZO | ZK"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:487",
+    "typeId": 404,
+    "partId": 487,
+    "name": "passive_green_mid_6_1_tier_5 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 2,
+    "examples": [
+      "Madcap Hotshot - C4sh | GZO | Azalea Asvail",
+      "Loaded Prestigitator | GZO | ZK"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
     "fullId": "404:218",
     "typeId": 404,
     "partId": 218,
@@ -7930,16 +8475,30 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "404:14",
+    "fullId": "404:544",
     "typeId": 404,
-    "partId": 14,
-    "name": "leg_body_04 (classmod_robodealer)",
+    "partId": 544,
+    "name": "comp_05_legendary_raid2 (classmod_robodealer)",
     "typeLabel": "classmod_robodealer",
     "category": "Class Mod",
     "uses": 2,
     "examples": [
-      "III-Fated Cooler (LvL60Version) | GZO | Azalea Asvail",
-      "CASH LVL 1 Classmod Evil eyed cooler - all skills | GZO | Azalea Asvail"
+      "Prestidigitator +5 Brim + 5 Finger and Brass, ASDMG, GunDMG | GZO | Tobgun1",
+      "Loaded Prestigitator | GZO | ZK"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:543",
+    "typeId": 404,
+    "partId": 543,
+    "name": "leg_body_raid2 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 2,
+    "examples": [
+      "Prestidigitator +5 Brim + 5 Finger and Brass, ASDMG, GunDMG | GZO | Tobgun1",
+      "Loaded Prestigitator | GZO | ZK"
     ],
     "source": "GZO/custom modded catalog"
   },
@@ -7958,30 +8517,170 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "19:61",
-    "typeId": 19,
-    "partId": 61,
-    "name": "comp_05_legendary_Jailbroken (BOR_SM)",
-    "typeLabel": "BOR_SM",
-    "category": "Part",
+    "fullId": "255:544",
+    "typeId": 255,
+    "partId": 544,
+    "name": "leg_body_raid2 (classmod_paladin)",
+    "typeLabel": "classmod_paladin",
+    "category": "Class Mod",
     "uses": 2,
     "examples": [
-      "Gatlin | GZO | Rapt0rj3sus",
-      "Eviscerating Waterfall | Custom Static | Crayons82.0"
+      "Adapt Artificer | GZO | Handsomematt616",
+      "Adept Artificer | GZO | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "27:81",
-    "typeId": 27,
-    "partId": 81,
-    "name": "comp_05_legendary_Gomie (JAK_AR)",
-    "typeLabel": "JAK_AR",
+    "fullId": "259:548",
+    "typeId": 259,
+    "partId": 548,
+    "name": "class_mod_body (classmod_gravitar)",
+    "typeLabel": "classmod_gravitar",
+    "category": "Class Mod",
+    "uses": 2,
+    "examples": [
+      "The Gohan: Harlowe | GZO | Fen Integrum",
+      "Unshielded Reactor | GZO | Crayons82.0"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "23:61",
+    "typeId": 23,
+    "partId": 61,
+    "name": "comp_05_legendary_Abyss (BOR_SR)",
+    "typeLabel": "BOR_SR",
+    "category": "Part",
+    "uses": 2,
+    "examples": [
+      "Mammon | GZO | Fen Integrum",
+      "Fully Loaded Vampiric Vampiric Honey Badger | GZO | Fen Integrum"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "22:103",
+    "typeId": 22,
+    "partId": 103,
+    "name": "part_barrel_Locust (VLA_SM)",
+    "typeLabel": "VLA_SM",
     "category": "Weapon",
     "uses": 2,
     "examples": [
-      "Maintained Looming Flash Cylcone | Custom Static | Crayons82.0",
-      "Maintained Looming Flash Cylcone | Custom Static | Crayons82.0"
+      "Eviscerating Parasite | GZO | Crayons82.0",
+      "Deteriorating State Flash Cyclone | GZO | Crayons82.0"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "5:88",
+    "typeId": 5,
+    "partId": 88,
+    "name": "part_barrel_01_Shammy (TED_PS)",
+    "typeLabel": "TED_PS",
+    "category": "Weapon",
+    "uses": 2,
+    "examples": [
+      "Hurled Prosumer Shammy Kablammy | GZO | Crayons82.0",
+      "Hurled Prosumer Shammy Kablammy | Custom Static | Crayons82.0"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "21:90",
+    "typeId": 21,
+    "partId": 90,
+    "name": "comp_06_pearl_Juliet (MAL_SM)",
+    "typeLabel": "MAL_SM",
+    "category": "Weapon",
+    "uses": 2,
+    "examples": [
+      "Accelerated Nadir Juiliet Sparkels | GZO | Crayons82.0",
+      "Juiliet Sparkels | Custom Static | Crayons82.0"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "11:90",
+    "typeId": 11,
+    "partId": 90,
+    "name": "comp_06_pearl_sharkbait (TED_SG)",
+    "typeLabel": "TED_SG",
+    "category": "Weapon",
+    "uses": 2,
+    "examples": [
+      "Harled Prosumer Sharkbait | GZO | Crayons82.0",
+      "Harled Prosumer Sharkbait | Custom Static | Crayons82.0"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "11:89",
+    "typeId": 11,
+    "partId": 89,
+    "name": "part_barrel_01_sharkbait (TED_SG)",
+    "typeLabel": "TED_SG",
+    "category": "Weapon",
+    "uses": 2,
+    "examples": [
+      "Harled Prosumer Sharkbait | GZO | Crayons82.0",
+      "Harled Prosumer Sharkbait | Custom Static | Crayons82.0"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "4:87",
+    "typeId": 4,
+    "partId": 87,
+    "name": "comp_05_legendary_rhythm (ORD_PS)",
+    "typeLabel": "ORD_PS",
+    "category": "Ordnance",
+    "uses": 2,
+    "examples": [
+      "BROKEN WINGS | Custom Static | Crayons82.0",
+      "Rhythm | Phosphene Curated | Tobgun1 / Squiggs"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "16:91",
+    "typeId": 16,
+    "partId": 91,
+    "name": "comp_05_legendary_lightgun (VLA_SR)",
+    "typeLabel": "VLA_SR",
+    "category": "Weapon",
+    "uses": 2,
+    "examples": [
+      "Overproduced Socialized Light Gun | Custom Static | Crayons82.0",
+      "Lightgun | Phosphene Curated | Tobgun1 / Squiggs"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "16:90",
+    "typeId": 16,
+    "partId": 90,
+    "name": "part_barrel_01_lightgun (VLA_SR)",
+    "typeLabel": "VLA_SR",
+    "category": "Weapon",
+    "uses": 2,
+    "examples": [
+      "Overproduced Socialized Light Gun | Custom Static | Crayons82.0",
+      "Lightgun | Phosphene Curated | Tobgun1 / Squiggs"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "8:82",
+    "typeId": 8,
+    "partId": 82,
+    "name": "comp_05_legendary_cannonbrawl (DAD_SG)",
+    "typeLabel": "DAD_SG",
+    "category": "Weapon",
+    "uses": 2,
+    "examples": [
+      "Fragging Fatal Rowan's Charge | Custom Static | Crayons82.0",
+      "Smashing Fatal Rowan's Charge | Custom Static | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
@@ -8055,123 +8754,6 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "category": "Class Mod",
     "uses": 1,
     "examples": [],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:15",
-    "typeId": 404,
-    "partId": 15,
-    "name": "leg_body_05 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 1,
-    "examples": [
-      "Calculating Whale - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:13",
-    "typeId": 404,
-    "partId": 13,
-    "name": "leg_body_03 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 1,
-    "examples": [
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:235",
-    "typeId": 404,
-    "partId": 235,
-    "name": "passive_green_mid_6_1_tier_1 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 1,
-    "examples": [
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:298",
-    "typeId": 404,
-    "partId": 298,
-    "name": "passive_green_mid_6_1_tier_2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 1,
-    "examples": [
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:361",
-    "typeId": 404,
-    "partId": 361,
-    "name": "passive_green_mid_6_1_tier_3 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 1,
-    "examples": [
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:424",
-    "typeId": 404,
-    "partId": 424,
-    "name": "passive_green_mid_6_1_tier_4 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 1,
-    "examples": [
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:487",
-    "typeId": 404,
-    "partId": 487,
-    "name": "passive_green_mid_6_1_tier_5 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 1,
-    "examples": [
-      "Madcap Hotshot - C4sh | GZO | Azalea Asvail"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:544",
-    "typeId": 404,
-    "partId": 544,
-    "name": "comp_05_legendary_raid2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 1,
-    "examples": [
-      "Prestidigitator +5 Brim + 5 Finger and Brass, ASDMG, GunDMG | GZO | Tobgun1"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
-    "fullId": "404:543",
-    "typeId": 404,
-    "partId": 543,
-    "name": "leg_body_raid2 (classmod_robodealer)",
-    "typeLabel": "classmod_robodealer",
-    "category": "Class Mod",
-    "uses": 1,
-    "examples": [
-      "Prestidigitator +5 Brim + 5 Finger and Brass, ASDMG, GunDMG | GZO | Tobgun1"
-    ],
     "source": "GZO/custom modded catalog"
   },
   {
@@ -8357,19 +8939,6 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "255:544",
-    "typeId": 255,
-    "partId": 544,
-    "name": "leg_body_raid2 (classmod_paladin)",
-    "typeLabel": "classmod_paladin",
-    "category": "Class Mod",
-    "uses": 1,
-    "examples": [
-      "Adapt Artificer | GZO | Handsomematt616"
-    ],
-    "source": "GZO/custom modded catalog"
-  },
-  {
     "fullId": "234:104",
     "typeId": 234,
     "partId": 104,
@@ -8403,6 +8972,45 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
+    "fullId": "244:29",
+    "typeId": 244,
+    "partId": 29,
+    "name": "part_firmware_bruiser (heavy_weapon_gadget)",
+    "typeLabel": "heavy_weapon_gadget",
+    "category": "Part",
+    "uses": 1,
+    "examples": [
+      "Noisy Cricket | GZO | Fen Integrum"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "256:546",
+    "typeId": 256,
+    "partId": 546,
+    "name": "class_mod_body (classmod_exo_soldier)",
+    "typeLabel": "classmod_exo_soldier",
+    "category": "Class Mod",
+    "uses": 1,
+    "examples": [
+      "The Gohan: Rafa | GZO | Fen Integrum"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "259:549",
+    "typeId": 259,
+    "partId": 549,
+    "name": "comp_05_legendary_tuba (classmod_gravitar)",
+    "typeLabel": "classmod_gravitar",
+    "category": "Class Mod",
+    "uses": 1,
+    "examples": [
+      "The Gohan: Harlowe | GZO | Fen Integrum"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
     "fullId": "389:4",
     "typeId": 389,
     "partId": 4,
@@ -8418,6 +9026,19 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "typeId": 254,
     "partId": 543,
     "name": "leg_body_raid2 (classmod_dark_siren)",
+    "typeLabel": "classmod_dark_siren",
+    "category": "Class Mod",
+    "uses": 1,
+    "examples": [
+      "The Gohan: Vex | GZO | Fen Integrum"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "254:545",
+    "typeId": 254,
+    "partId": 545,
+    "name": "class_mod_body (classmod_dark_siren)",
     "typeLabel": "classmod_dark_siren",
     "category": "Class Mod",
     "uses": 1,
@@ -9389,6 +10010,110 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
+    "fullId": "287:13",
+    "typeId": 287,
+    "partId": 13,
+    "name": "part_body_pocketbuddies (ted_shield)",
+    "typeLabel": "ted_shield",
+    "category": "Shield",
+    "uses": 1,
+    "examples": [
+      "Extra Medium Mini Nova Compleation | GZO | ZK"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "6:83",
+    "typeId": 6,
+    "partId": 83,
+    "name": "part_foregrip_02_Herald (TOR_PS)",
+    "typeLabel": "TOR_PS",
+    "category": "Weapon",
+    "uses": 1,
+    "examples": [
+      "Speedy Herald + Handcannon Hybrid | GZO | Light7"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "6:82",
+    "typeId": 6,
+    "partId": 82,
+    "name": "part_foregrip_03_Herald (TOR_PS)",
+    "typeLabel": "TOR_PS",
+    "category": "Weapon",
+    "uses": 1,
+    "examples": [
+      "Speedy Herald + Handcannon Hybrid | GZO | Light7"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "282:31",
+    "typeId": 282,
+    "partId": 31,
+    "name": "comp_05_legendary_Flak (VLA_HW)",
+    "typeLabel": "VLA_HW",
+    "category": "Weapon",
+    "uses": 1,
+    "examples": [
+      "Ultimate Flak Cannon | GZO | Light7"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "255:546",
+    "typeId": 255,
+    "partId": 546,
+    "name": "class_mod_body (classmod_paladin)",
+    "typeLabel": "classmod_paladin",
+    "category": "Class Mod",
+    "uses": 1,
+    "examples": [
+      "Adept Artificer | GZO | Crayons82.0"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:12",
+    "typeId": 404,
+    "partId": 12,
+    "name": "leg_body_02 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 1,
+    "examples": [
+      "Calculating Whale | GZO | Crayons82.0"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "404:11",
+    "typeId": 404,
+    "partId": 11,
+    "name": "leg_body_01 (classmod_robodealer)",
+    "typeLabel": "classmod_robodealer",
+    "category": "Class Mod",
+    "uses": 1,
+    "examples": [
+      "Carefree Windrider | GZO | Crayons82.0"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "22:101",
+    "typeId": 22,
+    "partId": 101,
+    "name": "comp_06_pearl_Locust (VLA_SM)",
+    "typeLabel": "VLA_SM",
+    "category": "Weapon",
+    "uses": 1,
+    "examples": [
+      "Deteriorating State Flash Cyclone | GZO | Crayons82.0"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
     "fullId": "17:85",
     "typeId": 17,
     "partId": 85,
@@ -9402,28 +10127,54 @@ window.MSBT_OBSERVED_MODDED_PART_SUPPLEMENT = [
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "5:88",
-    "typeId": 5,
-    "partId": 88,
-    "name": "part_barrel_01_Shammy (TED_PS)",
-    "typeLabel": "TED_PS",
-    "category": "Weapon",
+    "fullId": "311:13",
+    "typeId": 311,
+    "partId": 13,
+    "name": "comp_05_legendary_ordinance (ted_grenade_gadget)",
+    "typeLabel": "ted_grenade_gadget",
+    "category": "Grenade",
     "uses": 1,
     "examples": [
-      "Hurled Prosumer Shammy Kablammy | Custom Static | Crayons82.0"
+      "Booming Rapid Rapid Countermeasure | Custom Static | Crayons82.0"
     ],
     "source": "GZO/custom modded catalog"
   },
   {
-    "fullId": "21:90",
-    "typeId": 21,
-    "partId": 90,
-    "name": "comp_06_pearl_Juliet (MAL_SM)",
-    "typeLabel": "MAL_SM",
+    "fullId": "10:81",
+    "typeId": 10,
+    "partId": 81,
+    "name": "comp_05_legendary_discybusiness (MAL_SG)",
+    "typeLabel": "MAL_SG",
     "category": "Weapon",
     "uses": 1,
     "examples": [
-      "Juiliet Sparkels | Custom Static | Crayons82.0"
+      "Discy Business | Phosphene Curated | Tobgun1 / Squiggs"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "27:83",
+    "typeId": 27,
+    "partId": 83,
+    "name": "comp_05_legendary_fishward (JAK_AR)",
+    "typeLabel": "JAK_AR",
+    "category": "Weapon",
+    "uses": 1,
+    "examples": [
+      "Fishward | Phosphene Curated | Tobgun1 / Squiggs"
+    ],
+    "source": "GZO/custom modded catalog"
+  },
+  {
+    "fullId": "26:80",
+    "typeId": 26,
+    "partId": 80,
+    "name": "part_underbarrel_02_tether_snare_ishmael (ORD_SR)",
+    "typeLabel": "ORD_SR",
+    "category": "Ordnance",
+    "uses": 1,
+    "examples": [
+      "Ishmael | Phosphene Curated | Tobgun1 / Squiggs"
     ],
     "source": "GZO/custom modded catalog"
   }

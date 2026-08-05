@@ -89,6 +89,11 @@ _QUEUE_PRESERVING_ACTIONS = frozenset({
     "quick_menu_set_layout",
     "quick_menu_assign_slot",
     "quick_menu_clear_page",
+    "read_equipped_serials",
+    "read_backpack_serials",
+    "read_inventory",
+    "copy_read_serial",
+    "copy_all_read_serials",
 })
 
 _QUICK_MENU_LAYOUT_MUTATIONS = frozenset({
@@ -190,11 +195,13 @@ UI_LAYOUT: dict[str, Any] = {
                 {"id":"max_player_level","label":"MAX PLAYER 60","accent":"cyan"},
                 {"id":"max_spec_level","label":"MAX SPEC 701","accent":"purple"}
             ]},
-            {"id":"serial_rewards","label":"SERIAL REWARDS","accent":"purple","text":"Paste one or more serials below. Rewards are created with GiveRewardAllPlayers, then custom serials are patched onto the selected target packages.","fields":[
+            {"id":"serial_rewards","label":"SERIAL REWARDS","accent":"purple","text":"Paste one or more serials below, or Read Equipped / Backpack from the selected party target (P1–P4). Host can read a guest's equipped gear. Rewards use GiveRewardAllPlayers then patch serials onto target packages. Ground/dropped serials are not supported.","fields":[
                 {"id":"serial_text","label":"Serial Input","type":"multiline","default":""},
                 {"id":"serial_override_level","label":"Override delivery level?","type":"choice","choices":["false","true"],"default":"false"},
                 {"id":"serial_level","label":"Level","type":"int","default":60}
             ],"actions":[
+                {"id":"read_equipped_serials","label":"Read Equipped","accent":"cyan"},
+                {"id":"read_backpack_serials","label":"Read Backpack","accent":"cyan"},
                 {"id":"give_serial_selected","label":"Give Selected","accent":"purple","uses_fields":["serial_text","serial_override_level","serial_level"]},
                 {"id":"give_serial_all","label":"Give All","accent":"gold","uses_fields":["serial_text","serial_override_level","serial_level"]},
                 {"id":"give_serial_nonhost","label":"Give Non-Host","accent":"cyan","uses_fields":["serial_text","serial_override_level","serial_level"]},
@@ -369,10 +376,13 @@ UI_LAYOUT: dict[str, Any] = {
             {"id":"movement_utility","label":"WORLD / UTILITY","accent":"pink","actions":[
                 {"id":"movement_set_time","label":"Set Time","accent":"gold"},
                 {"id":"movement_reset_time","label":"Reset Time","accent":"purple"},
-                {"id":"movement_delete_ground_items","label":"Delete Ground Items","accent":"red"},
+                {"id":"movement_delete_ground_items","label":"Clear Ground Loot (Destroy)","accent":"red"},
+                {"id":"movement_hide_ground_loot","label":"Clear Loot (Hide)","accent":"orange"},
                 {"id":"movement_pull_ground_loot","label":"Pull Loot Here","accent":"gold"},
-                {"id":"movement_super_dash","label":"Super Dash","accent":"cyan"},
-                {"id":"movement_super_dash_toggle","label":"Super Dash Toggle","accent":"cyan"},
+                {"id":"movement_super_dash","label":"Super Dash (MSBT)","accent":"cyan"},
+                {"id":"movement_super_dash_toggle","label":"Super Dash Toggle (MSBT)","accent":"cyan"},
+                {"id":"movement_azzy_super_dash","label":"Super Dash Fire (Azzy)","accent":"purple"},
+                {"id":"movement_azzy_super_dash_toggle","label":"Super Dash Toggle (Azzy)","accent":"purple"},
                 {"id":"movement_zero_vault","label":"Zero Vault Cooldown","accent":"cyan"}
             ]}
         ]},
@@ -637,12 +647,18 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
         return backend_actions.travel_to_station(payload.get("travel_station"))
     if action == "movement_delete_ground_items":
         return backend_actions.movement_delete_ground_items()
+    if action == "movement_hide_ground_loot":
+        return backend_actions.movement_hide_ground_loot()
     if action == "movement_pull_ground_loot":
         return backend_actions.movement_pull_ground_loot()
     if action == "movement_super_dash":
         return backend_actions.movement_super_dash(body.get("dash_strength"))
     if action == "movement_super_dash_toggle":
         return backend_actions.movement_super_dash_toggle()
+    if action == "movement_azzy_super_dash":
+        return backend_actions.movement_azzy_super_dash(body.get("dash_strength"))
+    if action == "movement_azzy_super_dash_toggle":
+        return backend_actions.movement_azzy_super_dash_toggle()
     if action == "movement_zero_vault":
         return backend_actions.movement_zero_vault()
     if action == "movement_apply_all":
@@ -751,6 +767,18 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
             override_level,
             payload.get("serial_level") or payload.get("code_delivery_level") or 60,
         )
+    if action == "read_equipped_serials":
+        return backend_actions.read_equipped_serials(payload.get("target_player"))
+    if action == "read_backpack_serials":
+        return backend_actions.read_backpack_serials(payload.get("target_player"))
+    if action == "read_inventory":
+        return backend_actions.read_inventory(payload.get("target_player"))
+    if action == "copy_read_serial":
+        return backend_actions.copy_read_serial(
+            payload.get("index") if "index" in payload else payload.get("serial_index")
+        )
+    if action == "copy_all_read_serials":
+        return backend_actions.copy_all_read_serials()
     if action == "repeat_last_drop":
         return backend_actions.repeat_last_drop(payload.get("target_player"))
     if action == "set_drop_player_lock":
@@ -797,6 +825,8 @@ def _status() -> dict[str, Any]:
         "last_drop": backend_status.get("last_drop"),
         "drop_player_lock": backend_status.get("drop_player_lock") or {"enabled": False},
         "serial_delivery": backend_status.get("serial_delivery", {}),
+        "serial_text": backend_status.get("serial_text") or "",
+        "read_serials": backend_status.get("read_serials") or {},
         "rarity_weights": backend_status.get("rarity_weights") or {},
         "rarity_revision": int(backend_status.get("rarity_revision") or 0),
         "diagnostics": diagnostics,

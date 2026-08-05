@@ -36,10 +36,13 @@ from .movement_adjustments import (
     apply_movement_advanced_to_all_players,
     delete_ground_items,
     fire_super_dash,
+    get_azzy_super_dash_state,
     get_super_dash_state,
+    hide_ground_loot,
     pawn_for_controller,
     pull_ground_loot_here,
     refresh_jump_counts_all_players,
+    request_azzy_super_dash,
     reset_movement_advanced_all_players,
     set_infinite_jump_all,
     set_infinite_jump_for_index,
@@ -48,6 +51,7 @@ from .movement_adjustments import (
     set_super_dash_strength,
     set_time_dilation,
     teleport_pawn_to_pawn,
+    toggle_azzy_super_dash,
     toggle_infinite_jump_for_index,
     toggle_players_only,
     toggle_super_dash,
@@ -101,6 +105,11 @@ serial_tools_serialized: str = ""
 serial_tools_deserialized: str = ""
 serial_tools_parts_breakdown: str = ""
 serial_tools_status: str = "Paste a @U serial or deserialized serial text above."
+# Last in-game serial read (equipped / backpack). Bridge + QM picker consume this.
+_last_read_serials: list[dict[str, Any]] = []
+_last_read_serials_title: str = ""
+_last_read_serials_clipboard: bool = False
+_last_read_serials_dump_paths: list[str] = []
 _movement_no_target_enabled = False
 _movement_noclip_enabled = False
 _rarity_baseline: dict[str, dict[str, float]] = {}
@@ -1246,12 +1255,18 @@ def run_quick_menu_action(
         result = movement_toggle_players_only()
     elif key == "movement_delete_ground_items":
         result = movement_delete_ground_items()
+    elif key == "movement_hide_ground_loot":
+        result = movement_hide_ground_loot()
     elif key == "movement_pull_ground_loot":
         result = movement_pull_ground_loot()
     elif key == "movement_super_dash":
         result = movement_super_dash(payload.get("dash_strength"))
     elif key == "movement_super_dash_toggle":
         result = movement_super_dash_toggle()
+    elif key == "movement_azzy_super_dash":
+        result = movement_azzy_super_dash(payload.get("dash_strength"))
+    elif key == "movement_azzy_super_dash_toggle":
+        result = movement_azzy_super_dash_toggle()
     elif key == "movement_zero_vault":
         result = movement_zero_vault()
     elif key == "movement_set_time":
@@ -1314,6 +1329,19 @@ def run_quick_menu_action(
         result = {"ok": True, "message": f"Refreshed {len(players)} player(s).", "players": players}
     elif key == "set_target_player":
         result = set_target_player(payload.get("target_player"))
+    elif key == "read_equipped_serials":
+        result = read_equipped_serials(payload.get("target_player"))
+        needs_player = True
+    elif key == "read_backpack_serials":
+        result = read_backpack_serials(payload.get("target_player"))
+        needs_player = True
+    elif key == "read_inventory":
+        result = read_inventory(payload.get("target_player"))
+        needs_player = True
+    elif key == "copy_read_serial":
+        result = copy_read_serial(payload.get("index") if "index" in payload else payload.get("serial_index"))
+    elif key == "copy_all_read_serials":
+        result = copy_all_read_serials()
     else:
         return {"ok": False, "message": f"Unknown quick menu action: {key}"}
 
@@ -1359,6 +1387,8 @@ def get_status() -> dict[str, Any]:
         "last_drop": get_last_drop(),
         "drop_player_lock": get_drop_player_lock(),
         "serial_delivery": delivery_progress,
+        "serial_text": serial_text,
+        "read_serials": get_last_read_serials(),
         "diagnostics": _sdk_diagnostics(),
         "rarity_weights": get_rarity_weights(),
         "rarity_revision": get_rarity_revision(),
@@ -2463,6 +2493,18 @@ def movement_delete_ground_items() -> dict[str, Any]:
         return {"ok": False, "message": f"Delete ground items failed: {exc!r}"}
 
 
+def movement_hide_ground_loot() -> dict[str, Any]:
+    try:
+        msg = hide_ground_loot()
+        low = str(msg).lower()
+        ok = "failed" not in low and "load into" not in low
+        if "no ground loot" in low or "moved" in low:
+            ok = True
+        return {"ok": ok, "message": msg}
+    except Exception as exc:
+        return {"ok": False, "message": f"Clear Loot (Hide) failed: {exc!r}"}
+
+
 def movement_pull_ground_loot() -> dict[str, Any]:
     try:
         msg = pull_ground_loot_here()
@@ -2481,7 +2523,7 @@ def movement_super_dash(strength: object = None) -> dict[str, Any]:
         msg = fire_super_dash(value)
         return {"ok": "failed" not in str(msg).lower(), "message": msg, "super_dash": get_super_dash_state()}
     except Exception as exc:
-        return {"ok": False, "message": f"Super Dash failed: {exc!r}"}
+        return {"ok": False, "message": f"Super Dash (MSBT) failed: {exc!r}"}
 
 
 def movement_super_dash_toggle() -> dict[str, Any]:
@@ -2489,7 +2531,28 @@ def movement_super_dash_toggle() -> dict[str, Any]:
         msg = toggle_super_dash()
         return {"ok": True, "message": msg, "super_dash": get_super_dash_state()}
     except Exception as exc:
-        return {"ok": False, "message": f"Super Dash toggle failed: {exc!r}"}
+        return {"ok": False, "message": f"Super Dash (MSBT) toggle failed: {exc!r}"}
+
+
+def movement_azzy_super_dash(strength: object = None) -> dict[str, Any]:
+    try:
+        value = None if strength is None or str(strength).strip() == "" else int(strength)
+        msg = request_azzy_super_dash(value)
+        return {
+            "ok": "failed" not in str(msg).lower() and "load into" not in str(msg).lower(),
+            "message": msg,
+            "super_dash": get_azzy_super_dash_state(),
+        }
+    except Exception as exc:
+        return {"ok": False, "message": f"Super Dash (Azzy) failed: {exc!r}"}
+
+
+def movement_azzy_super_dash_toggle() -> dict[str, Any]:
+    try:
+        msg = toggle_azzy_super_dash()
+        return {"ok": True, "message": msg, "super_dash": get_azzy_super_dash_state()}
+    except Exception as exc:
+        return {"ok": False, "message": f"Super Dash (Azzy) toggle failed: {exc!r}"}
 
 
 def movement_zero_vault() -> dict[str, Any]:
@@ -3007,6 +3070,333 @@ def rarity_only(allowed_key: object) -> dict[str, Any]:
     for key, _label, _fields in RARITY_ROWS:
         _rarity_weights[key] = 1.0 if key == allowed else 0.0
     return _rarity_apply_current()
+
+
+def get_last_read_serials() -> dict[str, Any]:
+    return {
+        "title": _last_read_serials_title,
+        "entries": [dict(e) for e in _last_read_serials],
+        "clipboard_ok": bool(_last_read_serials_clipboard),
+        "dump_paths": list(_last_read_serials_dump_paths),
+        "serial_text": serial_text,
+    }
+
+
+def _store_read_serials(
+    entries: list[dict[str, Any]],
+    *,
+    title: str,
+    empty_detail: str = "",
+    clipboard: bool = True,
+    dump: bool = True,
+) -> dict[str, Any]:
+    """Persist read results, optionally copy to clipboard / dump to disk, seed serial_text."""
+    global serial_text, _last_read_serials, _last_read_serials_title
+    global _last_read_serials_clipboard, _last_read_serials_dump_paths
+    from . import item_serial_reader
+
+    cleaned = [dict(e) for e in entries if str(e.get("serial") or "").startswith("@U")]
+    _last_read_serials = cleaned
+    _last_read_serials_title = str(title or "")
+    text = item_serial_reader.entries_to_serial_text(cleaned)
+    serial_text = text
+    clipboard_ok = False
+    if text and clipboard:
+        clipboard_ok = bool(item_serial_reader.write_clipboard_text(text))
+    _last_read_serials_clipboard = clipboard_ok
+    dump_paths = (
+        item_serial_reader.write_serial_dump(cleaned, title=title)
+        if cleaned and dump
+        else []
+    )
+    _last_read_serials_dump_paths = dump_paths
+    summaries = [str(e.get("summary") or e.get("label") or "Item") for e in cleaned]
+    if not cleaned:
+        detail = (empty_detail or "").strip()
+        message = f"{title}: no readable @U serials found."
+        if detail:
+            message = f"{message} ({detail})"
+        return {
+            "ok": False,
+            "message": message,
+            "open_serial_pick": False,
+            "read_serials": get_last_read_serials(),
+            "empty_detail": detail,
+        }
+    if clipboard:
+        clip_note = "copied to clipboard" if clipboard_ok else "clipboard unavailable — see toast/log/dump"
+        message = f"{title}: {len(cleaned)} serial(s) ({', '.join(summaries[:6])}); {clip_note}."
+    else:
+        message = f"{title}: {len(cleaned)} serial(s) ({', '.join(summaries[:6])})."
+    return {
+        "ok": True,
+        "message": message,
+        "open_serial_pick": True,
+        "read_serials": get_last_read_serials(),
+        "serial_text": serial_text,
+    }
+
+
+def _reading_target_label(idx: int | None, name: str) -> str:
+    """Footer/status label: Reading: PlayerName (P2)."""
+    who = (name or "").strip() or (f"Player {idx}" if idx is not None else "player")
+    if idx is None:
+        return f"Reading: {who}"
+    return f"Reading: {who} (P{int(idx) + 1})"
+
+
+def _serial_read_host_note(target_index: int | None) -> str:
+    """Soft hint when reading another player off-host (inventory may be incomplete)."""
+    if target_index is None:
+        return ""
+    try:
+        from .party_helpers import _gbc_is_listen_host_world, _gbc_session_world_and_gamestate
+
+        world, _gs = _gbc_session_world_and_gamestate()
+        if world is not None and _gbc_is_listen_host_world(world):
+            return ""
+    except Exception:
+        pass
+    host_idx = _host_player_index_value()
+    if host_idx is not None and int(target_index) == int(host_idx):
+        return ""
+    # Joined client reading a remote party member — local memory often lacks full identities.
+    return " (best on listen host; clients often cannot see other players' full inventory serials)"
+
+
+def _ensure_inventory_read_target(target_player: object | None = None) -> dict[str, Any]:
+    """Honor explicit target_player when provided; else keep / auto-pick selected party player."""
+    raw = "" if target_player is None else str(target_player).strip()
+    if raw:
+        selected = set_target_player(target_player)
+        if not selected.get("ok"):
+            return {
+                "ok": False,
+                "message": str(selected.get("message") or "Could not set target player."),
+                "needs_player": True,
+            }
+        return selected
+    return ensure_selected_player(prefer_host=True)
+
+
+def read_equipped_serials(target_player: object | None = None) -> dict[str, Any]:
+    """Read equipped-slot @U serials for the selected party player (P1–P4 target)."""
+    ensured = _ensure_inventory_read_target(target_player)
+    if not ensured.get("ok"):
+        return {
+            "ok": False,
+            "message": str(ensured.get("message") or "No party player selected."),
+            "needs_player": True,
+        }
+    idx = get_selected_player_index()
+    name = get_selected_player_name()
+    reading = _reading_target_label(idx, name)
+    try:
+        from . import item_serial_reader
+
+        entries = item_serial_reader.read_equipped_serials_for_party_index(
+            idx,
+            player_name=name or f"Player {idx}",
+        )
+        empty_detail = ""
+        if not entries:
+            empty_detail = item_serial_reader.empty_read_reason(
+                item_serial_reader.get_last_read_diagnostics("equipped"),
+                mode="equipped",
+            )
+    except Exception as exc:
+        return {"ok": False, "message": f"{reading} — Read equipped serials failed: {exc!r}"}
+    title = f"{reading} — Equipped"
+    result = _store_read_serials(entries, title=title, empty_detail=empty_detail)
+    note = _serial_read_host_note(idx)
+    if note and not result.get("ok"):
+        result["message"] = str(result.get("message") or "") + note
+    elif note and result.get("ok"):
+        # Keep success message clean; note only when empty/failed for guests.
+        pass
+    result["reading"] = reading
+    result["selected_player"] = name
+    result["selected_player_index"] = idx
+    return result
+
+
+def read_backpack_serials(target_player: object | None = None) -> dict[str, Any]:
+    """Read backpack/inventory @U serials for the selected party player (capped list)."""
+    ensured = _ensure_inventory_read_target(target_player)
+    if not ensured.get("ok"):
+        return {
+            "ok": False,
+            "message": str(ensured.get("message") or "No party player selected."),
+            "needs_player": True,
+        }
+    idx = get_selected_player_index()
+    name = get_selected_player_name()
+    reading = _reading_target_label(idx, name)
+    try:
+        from . import item_serial_reader
+
+        entries = item_serial_reader.read_backpack_serials_for_party_index(
+            idx,
+            player_name=name or f"Player {idx}",
+        )
+        empty_detail = ""
+        if not entries:
+            empty_detail = item_serial_reader.empty_read_reason(
+                item_serial_reader.get_last_read_diagnostics("backpack"),
+                mode="backpack",
+            )
+    except Exception as exc:
+        return {"ok": False, "message": f"{reading} — Read backpack serials failed: {exc!r}"}
+    title = f"{reading} — Backpack"
+    result = _store_read_serials(entries, title=title, empty_detail=empty_detail)
+    note = _serial_read_host_note(idx)
+    if note and not result.get("ok"):
+        result["message"] = str(result.get("message") or "") + note
+    result["reading"] = reading
+    result["selected_player"] = name
+    result["selected_player_index"] = idx
+    return result
+
+
+def read_inventory(target_player: object | None = None) -> dict[str, Any]:
+    """Read equipped + backpack inventory for the selected party player (browser payload)."""
+    ensured = _ensure_inventory_read_target(target_player)
+    if not ensured.get("ok"):
+        return {
+            "ok": False,
+            "message": str(ensured.get("message") or "No party player selected."),
+            "needs_player": True,
+        }
+    idx = get_selected_player_index()
+    name = get_selected_player_name()
+    reading = _reading_target_label(idx, name)
+    try:
+        from . import item_serial_reader
+
+        snapshot = item_serial_reader.read_inventory_for_party_index(
+            idx,
+            player_name=name or f"Player {idx}",
+        )
+    except Exception as exc:
+        return {"ok": False, "message": f"{reading} — Read inventory failed: {exc!r}"}
+
+    equipped = list(snapshot.get("equipped") or [])
+    backpack = list(snapshot.get("backpack") or [])
+    combined = equipped + backpack
+    title = f"{reading} — Inventory"
+    empty_detail = ""
+    if not combined:
+        equipped_diag = item_serial_reader.get_last_read_diagnostics("equipped")
+        inv_diag = item_serial_reader.get_last_read_diagnostics("inventory")
+        empty_detail = item_serial_reader.empty_read_reason(
+            equipped_diag if equipped_diag.get("rows") else inv_diag,
+            mode="backpack",
+        )
+    # Avoid dumping / clipboard-pasting hundreds of serials on every browser refresh.
+    # Cache equipped (or a tiny backpack sample) for the serial picker — do not echo the
+    # full backpack twice on the wire (inventory.* already carries the browser payload).
+    cache_entries = equipped if equipped else backpack[:12]
+    result = _store_read_serials(
+        cache_entries,
+        title=title,
+        empty_detail=empty_detail if not combined else "",
+        clipboard=False,
+        dump=False,
+    )
+    # Browser success is based on the full snapshot, not the lean picker cache.
+    if combined:
+        result["ok"] = True
+        result["open_serial_pick"] = False
+        result.pop("serial_text", None)
+        # Keep a count-only read_serials stub so clients do not re-download megabytes.
+        cached = get_last_read_serials()
+        result["read_serials"] = {
+            "title": str(cached.get("title") or title),
+            "entries": list(cached.get("entries") or []),
+            "clipboard_ok": False,
+            "dump_paths": [],
+            "count": len(combined),
+        }
+    note = _serial_read_host_note(idx)
+    if note and not result.get("ok"):
+        result["message"] = str(result.get("message") or "") + note
+    result["reading"] = reading
+    result["selected_player"] = name
+    result["selected_player_index"] = idx
+    result["inventory"] = {
+        "equipped": equipped,
+        "backpack": backpack,
+        "total_rows": int(snapshot.get("total_rows") or 0),
+        "equipped_count": int(snapshot.get("equipped_count") or len(equipped)),
+        "backpack_count": int(snapshot.get("backpack_count") or len(backpack)),
+        "backpack_cap": int(snapshot.get("backpack_cap") or 0),
+        "truncated": bool(snapshot.get("truncated")),
+    }
+    if result.get("ok"):
+        trunc = " (capped)" if snapshot.get("truncated") else ""
+        result["message"] = (
+            f"{title}: {len(equipped)} equipped, {len(backpack)} backpack{trunc}."
+        )
+    return result
+
+
+def copy_read_serial(index: object = 0) -> dict[str, Any]:
+    """Copy one previously-read serial to clipboard and seed serial_text."""
+    global serial_text, _last_read_serials_clipboard
+    from . import item_serial_reader
+
+    try:
+        idx = int(index)
+    except Exception:
+        idx = 0
+    if idx < 0 or idx >= len(_last_read_serials):
+        return {"ok": False, "message": "No read serial at that index. Run Read Equipped / Backpack first."}
+    entry = dict(_last_read_serials[idx])
+    serial = str(entry.get("serial") or "")
+    if not serial.startswith("@U"):
+        return {"ok": False, "message": "Selected entry has no @U serial."}
+    serial_text = serial
+    clipboard_ok = bool(item_serial_reader.write_clipboard_text(serial))
+    _last_read_serials_clipboard = clipboard_ok
+    summary = str(entry.get("summary") or entry.get("label") or "Item")
+    if clipboard_ok:
+        return {
+            "ok": True,
+            "message": f"Copied {summary} serial to clipboard.",
+            "serial_text": serial_text,
+            "read_serials": get_last_read_serials(),
+        }
+    return {
+        "ok": True,
+        "message": f"{summary} serial ready in serial_text/log (clipboard unavailable).",
+        "serial_text": serial_text,
+        "read_serials": get_last_read_serials(),
+    }
+
+
+def copy_all_read_serials() -> dict[str, Any]:
+    global serial_text, _last_read_serials_clipboard
+    from . import item_serial_reader
+
+    if not _last_read_serials:
+        return {"ok": False, "message": "No read serials cached. Run Read Equipped / Backpack first."}
+    text = item_serial_reader.entries_to_serial_text(_last_read_serials)
+    serial_text = text
+    clipboard_ok = bool(item_serial_reader.write_clipboard_text(text)) if text else False
+    _last_read_serials_clipboard = clipboard_ok
+    if clipboard_ok:
+        return {
+            "ok": True,
+            "message": f"Copied {len(_last_read_serials)} serial(s) to clipboard.",
+            "serial_text": serial_text,
+            "read_serials": get_last_read_serials(),
+        }
+    return {
+        "ok": True,
+        "message": f"{len(_last_read_serials)} serial(s) ready in serial_text/log (clipboard unavailable).",
+        "serial_text": serial_text,
+        "read_serials": get_last_read_serials(),
+    }
 
 
 def clear_serials() -> dict[str, Any]:

@@ -41,6 +41,20 @@ _DEFAULT_MAP_ROWS: list[dict[str, str]] = [
 
 _STATION_CACHE: list[dict[str, str]] | None = None
 _MAP_CACHE: list[dict[str, str]] | None = None
+_MAP_META_CACHE: dict[str, dict[str, str]] | None = None
+
+# Maps that can soft-lock a save if raw servertravel lands on a bad checkpoint.
+# Prefer station travel when a defaultstation exists; otherwise refuse.
+_BLOCK_RAW_SERVERTRAVEL_NORMS = frozenset(
+    {
+        "bespoke_visionquest",
+        "harmonica_p",
+        "elpiselevator_p",
+        "mandolin_missioncos_p",
+        "raid1_p",
+        "raid2_p",
+    }
+)
 
 
 def _norm_map_name(value: str) -> str:
@@ -56,6 +70,69 @@ def canonical_travel_map_name(map_name: str) -> str:
         if _norm_map_name(str(row.get('map', ''))) == needle:
             return str(row.get('map', map_name))
     return str(map_name or '').strip()
+
+
+def _load_travel_map_meta() -> dict[str, dict[str, str]]:
+    """Return norm(map) -> metadata from travelmaps_flat.json (best-effort)."""
+    global _MAP_META_CACHE
+    if _MAP_META_CACHE is not None:
+        return dict(_MAP_META_CACHE)
+    out: dict[str, dict[str, str]] = {}
+    blob = pkgutil.get_data(__package__ or __name__.rpartition('.')[0], 'travelmaps_flat.json')
+    if blob is None:
+        _MAP_META_CACHE = out
+        return dict(out)
+    try:
+        data = json.loads(blob.decode('utf-8'))
+    except Exception as exc:
+        _log(f"travelmaps_flat.json meta parse failed: {exc!r}")
+        _MAP_META_CACHE = out
+        return dict(out)
+    rows = data.get('maps') if isinstance(data, dict) else None
+    if not isinstance(rows, list):
+        _MAP_META_CACHE = out
+        return dict(out)
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        name = str(row.get('map', '')).strip()
+        if not name:
+            continue
+        out[_norm_map_name(name)] = {
+            'map': name,
+            'display_name': str(row.get('display_name') or name).strip(),
+            'defaultstation': str(row.get('defaultstation') or '').strip(),
+            'mappath': str(row.get('mappath') or '').strip(),
+            'category': str(row.get('category') or '').strip(),
+            'synthetic': '1' if row.get('synthetic') else '0',
+        }
+    _MAP_META_CACHE = out
+    return dict(out)
+
+
+def _resolve_default_station(map_name: str) -> str:
+    meta = _load_travel_map_meta().get(_norm_map_name(map_name), {})
+    station = str(meta.get('defaultstation') or '').strip()
+    if station:
+        return station
+    # Fall back to the first known station for this world.
+    map_norm = _norm_map_name(map_name)
+    for row in load_travel_stations():
+        if _norm_map_name(str(row.get('world', ''))) != map_norm:
+            continue
+        typedef = str(row.get('typedef') or '').strip().lower()
+        station = str(row.get('station') or '').strip()
+        if not station:
+            continue
+        # Prefer fast-travel / level-transition style stations over raw respawns.
+        if typedef in {'fast_travel', 'leveltransition', 'level_transition'}:
+            return station
+    for row in load_travel_stations():
+        if _norm_map_name(str(row.get('world', ''))) == map_norm:
+            station = str(row.get('station') or '').strip()
+            if station:
+                return station
+    return ''
 
 
 def _display_with_canonical_map_name(display: str, canonical: str, original: str) -> str:
@@ -345,9 +422,43 @@ def filter_travel_stations(map_name: str = '', search: str = '', limit: int = 12
 
 
 def travel_to_map(map_name: str) -> str:
-    map_name = str(map_name or '').strip()
-    if not map_name:
+    """Travel to a map, preferring a known station over raw servertravel.
+
+    Raw ``servertravel`` can persist a bad checkpoint into the character save
+    (seen with DLC/instance maps such as Mandolin1_P). Prefer
+    ``gbx.servertraveltostation`` when a default station is known.
+    """
+    raw = str(map_name or '').strip()
+    if not raw:
         raise RuntimeError('No map selected.')
+    map_name = canonical_travel_map_name(raw)
+    map_norm = _norm_map_name(map_name)
+    meta = _load_travel_map_meta().get(map_norm, {})
+
+    if meta.get('synthetic') == '1' or (meta and not meta.get('mappath')):
+        raise RuntimeError(
+            f"Refusing travel to unsafe/synthetic map '{map_name}'. "
+            "Pick a curated map or travel by station instead."
+        )
+
+    known_maps = {_norm_map_name(str(r.get('map', ''))) for r in load_travel_maps()}
+    if known_maps and map_norm not in known_maps:
+        raise RuntimeError(
+            f"Unknown travel map '{map_name}'. Select a map from the curated list."
+        )
+
+    station = _resolve_default_station(map_name)
+    if station:
+        _log(f"Map travel routed via station {station} (safer than raw servertravel).")
+        return travel_to_station(station)
+
+    if map_norm in _BLOCK_RAW_SERVERTRAVEL_NORMS:
+        raise RuntimeError(
+            f"Refusing raw servertravel to '{map_name}' (no safe default station). "
+            "Travel to a known station on that map instead."
+        )
+
+    _log(f"No default station for {map_name}; falling back to raw servertravel.")
     _exec_console(f"servertravel {map_name}")
     return f"Requested travel to map {map_name}."
 
@@ -356,5 +467,9 @@ def travel_to_station(station: str) -> str:
     station = str(station or '').strip()
     if not station:
         raise RuntimeError('No travel station selected.')
+    known = {str(row.get('station', '')).strip() for row in load_travel_stations()}
+    if known and station not in known:
+        # Allow typed/custom stations, but make the risk visible in the log.
+        _log(f"Station '{station}' is not in travelstations.json; sending anyway.")
     _exec_console(f"gbx.servertraveltostation {station}")
     return f"Requested travel to station {station}."

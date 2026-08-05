@@ -6532,6 +6532,19 @@
                 "depTableName": "entry",
                 "depTableId": 2,
                 "depIndex": 0,
+                "head40_infiltrator": {
+                  "entry": "Head40_Infiltrator",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_DarkSiren, FF04A37F40785FE87FCB4EB6F754AC09, Unlocked through Vault Card tickets.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.PlayerHead"
+                  }
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
                 "skin41_monster": {
                   "entry": "Skin41_Monster",
                   "factname": "any_cosmetic_unlocked",
@@ -6885,6 +6898,71 @@
                     "tagname": "Reward.Item.Cosmetic.PlayerMaterial"
                   }
                 }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "skin73_phishnet": {
+                  "entry": "Skin73_Phishnet",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_DarkSiren_Cosmetics, 78A48B50445795C41FFC8091F2AB09A4, Unlocked through Vault Card tickets.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.PlayerMaterial"
+                  }
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "skin74_salty": {
+                  "entry": "Skin74_Salty",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_DarkSiren_Cosmetics, 0730378D4E5086E74FC85BACD693C01A, Unlocked through Vault Card tickets.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.PlayerMaterial"
+                  }
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "skin75_radiattractive": {
+                  "entry": "Skin75_RadiAttractive",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_DarkSiren_Cosmetics, DEA77B844C7084F3738B4A91C830D49C, Unlocked through Vault Card tickets.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.PlayerMaterial"
+                  }
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "skin76_nuclearcool": {
+                  "entry": "Skin76_NuclearCool",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_DarkSiren_Cosmetics, 9D7FE7134FE022A8442A22893F1A4C13, Unlocked through Vault Card tickets.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.PlayerMaterial"
+                  }
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "skin77_tartansplash": {
+                  "entry": "Skin77_TartanSplash",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_DarkSiren_Cosmetics, E2C44FCD4288295F2674CDBFC27BAC1C, Unlocked from completing a mission.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.PlayerMaterial"
+                  }
+                }
               }
             ]
           },
@@ -7003,6 +7081,32 @@
                   "entry": "Attachment22_CableManagement",
                   "factname": "any_cosmetic_unlocked",
                   "unlockmethod": "Unlockable_Echo4, C55E08C3403F92F7899C65B80BF6BE87, Unlocked through Vault Card tickets.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.EchoOrnament"
+                  }
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "attachment23_wired": {
+                  "entry": "Attachment23_Wired",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_Echo4, F4002C8F49B6F657D200A1B12F100BFE, Unlocked through Vault Card tickets.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.EchoOrnament"
+                  }
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "attachment24_wartoy": {
+                  "entry": "Attachment24_WarToy",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_Echo4, E416E6FF43A27F74E522519321671AA6, Unlocked through Vault Card tickets.",
                   "typetag": {
                     "tagname": "Reward.Item.Cosmetic.EchoOrnament"
                   }
@@ -7323,6 +7427,71 @@
                     "tagname": "Reward.Item.Cosmetic.EchoMaterial"
                   }
                 }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "skin73_phishnet": {
+                  "entry": "Skin73_Phishnet",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_Echo4, 6BDA002544113978169BFDAAC03E7BE9, Unlocked through Vault Card tickets.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.EchoMaterial"
+                  }
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "skin74_salty": {
+                  "entry": "Skin74_Salty",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_Echo4, 698E2A9F42574E310C20729DBA9CE7D4, Unlocked through Vault Card tickets.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.EchoMaterial"
+                  }
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "skin75_radiattractive": {
+                  "entry": "Skin75_RadiAttractive",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_Echo4, 2F10CEC442F1157F57074DB3D895DC64, Unlocked through Vault Card tickets.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.EchoMaterial"
+                  }
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "skin76_nuclearcool": {
+                  "entry": "Skin76_NuclearCool",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_Echo4, 0C0D1D8A4AD7CF0466F17386462255B9, Unlocked through Vault Card tickets.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.EchoMaterial"
+                  }
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "skin77_tartansplash": {
+                  "entry": "Skin77_TartanSplash",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_Echo4, B39F61304AF5EB0699EED0AD9738DEA5, Unlocked from completing a mission.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.EchoMaterial"
+                  }
+                }
               }
             ]
           },
@@ -7520,6 +7689,19 @@
                   "entry": "Head36_ProjectorHead",
                   "factname": "any_cosmetic_unlocked",
                   "unlockmethod": "Unlockable_ExoSoldier, 78B2362A408A859FE4A17E80998682BA, Unlocked through Vault Card tickets.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.PlayerHead"
+                  }
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "head40_shrike": {
+                  "entry": "Head40_Shrike",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_ExoSoldier, BF1008304D128D611978C4A09E30E2BA, Unlocked through Vault Card tickets.",
                   "typetag": {
                     "tagname": "Reward.Item.Cosmetic.PlayerHead"
                   }
@@ -7882,6 +8064,71 @@
                     "tagname": "Reward.Item.Cosmetic.PlayerMaterial"
                   }
                 }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "skin73_phishnet": {
+                  "entry": "Skin73_Phishnet",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_ExoSoldier_Cosmetics, 67DF2F724796A0EC32F28BB4E9545A43, Unlocked through Vault Card tickets.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.PlayerMaterial"
+                  }
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "skin74_salty": {
+                  "entry": "Skin74_Salty",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_ExoSoldier_Cosmetics, B9C559354C6B137D576F0E8A888F1EF8, Unlocked through Vault Card tickets.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.PlayerMaterial"
+                  }
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "skin75_radiattractive": {
+                  "entry": "Skin75_RadiAttractive",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_ExoSoldier_Cosmetics, DFFCCB154DCCBEFDE58DA18DC1DCACE7, Unlocked through Vault Card tickets.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.PlayerMaterial"
+                  }
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "skin76_nuclearcool": {
+                  "entry": "Skin76_NuclearCool",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_ExoSoldier_Cosmetics, D5C974F147DFD84CE771378E28D05C2C, Unlocked through Vault Card tickets.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.PlayerMaterial"
+                  }
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "skin77_tartansplash": {
+                  "entry": "Skin77_TartanSplash",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_ExoSoldier_Cosmetics, 04DE28134BB26933EB957FB45B52F455, Unlocked from completing a mission.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.PlayerMaterial"
+                  }
+                }
               }
             ]
           },
@@ -8079,6 +8326,19 @@
                   "entry": "Head36_ProjectorHead",
                   "factname": "any_cosmetic_unlocked",
                   "unlockmethod": "Unlockable_Gravitar, DD859DB14E883A40DEBBA2AD6F3DD48D, Unlocked through Vault Card tickets.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.PlayerHead"
+                  }
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "head40_threadripper": {
+                  "entry": "Head40_ThreadRipper",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_Gravitar, 7BCA8DE74B44A269FFCBCF85FF9F525E, Unlocked through Vault Card tickets.",
                   "typetag": {
                     "tagname": "Reward.Item.Cosmetic.PlayerHead"
                   }
@@ -8441,6 +8701,71 @@
                     "tagname": "Reward.Item.Cosmetic.PlayerMaterial"
                   }
                 }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "skin73_phishnet": {
+                  "entry": "Skin73_Phishnet",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_Gravitar_Cosmetics, 59895B104C6BF5EFE1083588AA36C33A, Unlocked through Vault Card tickets.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.PlayerMaterial"
+                  }
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "skin74_salty": {
+                  "entry": "Skin74_Salty",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_Gravitar_Cosmetics, F6A4627F4E60E2DC7CAB26B0BA921898, Unlocked through Vault Card tickets.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.PlayerMaterial"
+                  }
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "skin75_radiattractive": {
+                  "entry": "Skin75_RadiAttractive",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_Gravitar_Cosmetics, 5C64D0AB47A98DDF4944E0AF23541CCB, Unlocked through Vault Card tickets.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.PlayerMaterial"
+                  }
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "skin76_nuclearcool": {
+                  "entry": "Skin76_NuclearCool",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_Gravitar_Cosmetics, 415EE6254E784A21B1F05CAD0069EAA1, Unlocked through Vault Card tickets.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.PlayerMaterial"
+                  }
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "skin77_tartansplash": {
+                  "entry": "Skin77_TartanSplash",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_Gravitar_Cosmetics, 9AFB549C4B06E9CDF5534B981928DE02, Unlocked from completing a mission.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.PlayerMaterial"
+                  }
+                }
               }
             ]
           },
@@ -8638,6 +8963,19 @@
                   "entry": "Head36_ProjectorHead",
                   "factname": "any_cosmetic_unlocked",
                   "unlockmethod": "Unlockable_Paladin, 119EC2714DE771682CCD11853DB7EF83, Unlocked through Vault Card tickets.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.PlayerHead"
+                  }
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "head40_tungsten": {
+                  "entry": "Head40_Tungsten",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_Paladin, ACCC21C44F1EE474B01E5BA9855BEB6D, Unlocked through Vault Card tickets.",
                   "typetag": {
                     "tagname": "Reward.Item.Cosmetic.PlayerHead"
                   }
@@ -9000,6 +9338,71 @@
                     "tagname": "Reward.Item.Cosmetic.PlayerMaterial"
                   }
                 }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "skin73_phishnet": {
+                  "entry": "Skin73_Phishnet",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_Paladin_Cosmetics, 366C1776499FA4A7AD1DC38A442EE8A9, Unlocked through Vault Card tickets.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.PlayerMaterial"
+                  }
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "skin74_salty": {
+                  "entry": "Skin74_Salty",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_Paladin_Cosmetics, 766D377342EE06D68799A3A050980B38, Unlocked through Vault Card tickets.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.PlayerMaterial"
+                  }
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "skin75_radiattractive": {
+                  "entry": "Skin75_RadiAttractive",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_Paladin_Cosmetics, 947391594BD9464A9CB75896C4405064, Unlocked through Vault Card tickets.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.PlayerMaterial"
+                  }
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "skin76_nuclearcool": {
+                  "entry": "Skin76_NuclearCool",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_Paladin_Cosmetics, 91F2E5B44CC63322BDF5E8AF1D7CF77A, Unlocked through Vault Card tickets.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.PlayerMaterial"
+                  }
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "skin77_tartansplash": {
+                  "entry": "Skin77_TartanSplash",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_Paladin_Cosmetics, B0B7C6804CE51094DC4AF9A4262DE06C, Unlocked from completing a mission.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.PlayerMaterial"
+                  }
+                }
               }
             ]
           },
@@ -9131,6 +9534,71 @@
                   "entry": "Skin72_Malwear",
                   "factname": "any_cosmetic_unlocked",
                   "unlockmethod": "Unlockable_RoboDealer, AA71B4A346B410D9737891BDA04EF76A, Unlocked from completing a mission.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.PlayerMaterial"
+                  }
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "skin73_phishnet": {
+                  "entry": "Skin73_Phishnet",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_RoboDealer, 1BC1A1034F8218715F3F2B950691E7DB, Unlocked through Vault Card tickets.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.PlayerMaterial"
+                  }
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "skin74_salty": {
+                  "entry": "Skin74_Salty",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_RoboDealer, 634282D54C5D6BFDA6C8A4962643F94C, Unlocked through Vault Card tickets.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.PlayerMaterial"
+                  }
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "skin75_radiattractive": {
+                  "entry": "Skin75_RadiAttractive",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_RoboDealer, DA98A4AB4BD5965EF14A409A89F74B9A, Unlocked through Vault Card tickets.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.PlayerMaterial"
+                  }
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "skin76_nuclearcool": {
+                  "entry": "Skin76_NuclearCool",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_RoboDealer, AF9FE03140635E9EF43C05B10C1E5B57, Unlocked through Vault Card tickets.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.PlayerMaterial"
+                  }
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "skin77_tartansplash": {
+                  "entry": "Skin77_TartanSplash",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_RoboDealer, A906774E41B88FA8B3565CA19A2EA585, Unlocked from completing a mission.",
                   "typetag": {
                     "tagname": "Reward.Item.Cosmetic.PlayerMaterial"
                   }
@@ -9405,6 +9873,71 @@
                 "depTableName": "entry",
                 "depTableId": 2,
                 "depIndex": 0,
+                "mat72_rusty": {
+                  "entry": "Mat72_Rusty",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_Vehicles, 740B4FDF4A96632FE7425885C91D85B6, Unlocked through Vault Card tickets.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.VehicleMaterial"
+                  }
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "mat73_flock": {
+                  "entry": "Mat73_Flock",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_Vehicles, 0DEE04B74E31FAF690BDBBB66C77B6FC, Unlocked through Vault Card tickets.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.VehicleMaterial"
+                  }
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "mat74_nuclearglowing": {
+                  "entry": "Mat74_NuclearGlowing",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_Vehicles, 993833914C3563F38A6349B2BDF93FB4, Unlocked through Vault Card tickets.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.VehicleMaterial"
+                  }
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "mat75_crackling": {
+                  "entry": "Mat75_Crackling",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_Vehicles, B96A085D4A6E49AC1C4AAEA2092A8A0F, Unlocked through Vault Card tickets.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.VehicleMaterial"
+                  }
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "mat76_blasphemists": {
+                  "entry": "Mat76_Blasphemists",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_Vehicles, 7232A1754659B600CACE1DA30C943723, Unlocked through Vault Card tickets.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.VehicleMaterial"
+                  }
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
                 "mountain": {
                   "entry": "Mountain",
                   "factname": "any_vehicle_unlocked",
@@ -9422,6 +9955,19 @@
                   "entry": "ShatterlandV1",
                   "factname": "any_vehicle_unlocked",
                   "unlockmethod": "vehicle_unlockables, E3B28E634A1104ACD5BB37AA4358345F, Unlocked as a promotional gift.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.VehicleMesh"
+                  }
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "shatterlandv2": {
+                  "entry": "ShatterlandV2",
+                  "factname": "any_vehicle_unlocked",
+                  "unlockmethod": "vehicle_unlockables, F9108D3F4544E24DD6754E925E61A89F, Unlocked as a promotional gift.",
                   "typetag": {
                     "tagname": "Reward.Item.Cosmetic.VehicleMesh"
                   }
@@ -9741,6 +10287,113 @@
                 "depTableName": "entry",
                 "depTableId": 2,
                 "depIndex": 0,
+                "mat63_goldenhoneycomb": {
+                  "entry": "Mat63_GoldenHoneycomb",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_WeaponSkin, 8E5A4C9747F33B46CDA6739FA8754068, Unlocked through Vault Card tickets.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.WeaponMaterial"
+                  }
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "mat64_fancysometimes": {
+                  "entry": "Mat64_FancySometimes",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_WeaponSkin, B16F072645E5CD97EAEE17955B82B746, Unlocked through Vault Card tickets.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.WeaponMaterial"
+                  }
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "mat65_acridlandscape": {
+                  "entry": "Mat65_AcridLandscape",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_WeaponSkin, E5AFDF2F4615FE6F09FBF3B9526AE0D8, Unlocked through Vault Card tickets.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.WeaponMaterial"
+                  }
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "mat66_techrain": {
+                  "entry": "Mat66_TechRain",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_WeaponSkin, F4545267415F5E6261501E94F6C0EA41, Unlocked through Vault Card tickets.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.WeaponMaterial"
+                  }
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "mat67_oilcamo": {
+                  "entry": "Mat67_OilCamo",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_WeaponSkin, E8C5784948E915B548179EB83102055D, Unlocked through Vault Card tickets.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.WeaponMaterial"
+                  }
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "mat68_bubbles": {
+                  "entry": "Mat68_Bubbles",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_WeaponSkin, FCD1ACF34929A7058C358497BF4E3D0D, Unlocked from completing a mission.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.WeaponMaterial"
+                  },
+                  "bcanpreview": "false"
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "mat69_empirecamo": {
+                  "entry": "Mat69_EmpireCamo",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_WeaponSkin, 2D7E44A54DBC7850A629F69A2EB87E37, Unlocked from completing a mission.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.WeaponMaterial"
+                  },
+                  "bcanpreview": "false"
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "mat70_shinymap": {
+                  "entry": "Mat70_ShinyMap",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_WeaponSkin, A9BED10B4F25CCAB0C9C40BF99DD3C1B, Unlocked from completing a mission.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.WeaponMaterial"
+                  },
+                  "bcanpreview": "false"
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
                 "shiny_arctic": {
                   "entry": "Shiny_arctic",
                   "factname": "any_cosmetic_unlocked",
@@ -9787,6 +10440,20 @@
                   "entry": "Shiny_bubbles",
                   "factname": "any_cosmetic_unlocked",
                   "unlockmethod": "Unlockable_Weapons, C3BA114543416CDC69DFD6B09469682A, Unlocked from a very rare drop.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.WeaponMaterial"
+                  },
+                  "bcanpreview": "false"
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "shiny_burrow": {
+                  "entry": "Shiny_Burrow",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_Weapons, 12EB90314017E3F7A208458CB5378385, Unlocked from a very rare drop.",
                   "typetag": {
                     "tagname": "Reward.Item.Cosmetic.WeaponMaterial"
                   },
@@ -9871,6 +10538,34 @@
                   "entry": "Shiny_Doeshot",
                   "factname": "any_cosmetic_unlocked",
                   "unlockmethod": "Unlockable_Weapons, C3BA114543416CDC69DFD6B09469682A, Unlocked from a very rare drop.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.WeaponMaterial"
+                  },
+                  "bcanpreview": "false"
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "shiny_earlyexcess": {
+                  "entry": "Shiny_EarlyExcess",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_Weapons, E320C2D64C43FFE52C281A8CD100D7A7, Unlocked from a very rare drop.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.WeaponMaterial"
+                  },
+                  "bcanpreview": "false"
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "shiny_extinction": {
+                  "entry": "Shiny_Extinction",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_Weapons, 12EB90314017E3F7A208458CB5378385, Unlocked from a very rare drop.",
                   "typetag": {
                     "tagname": "Reward.Item.Cosmetic.WeaponMaterial"
                   },
@@ -10189,6 +10884,34 @@
                 "depTableName": "entry",
                 "depTableId": 2,
                 "depIndex": 0,
+                "shiny_pchonk": {
+                  "entry": "Shiny_PChonk",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_Weapons, E0C522A74327C21F1814D8BE8AB4B5E7, Unlocked from a very rare drop.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.WeaponMaterial"
+                  },
+                  "bcanpreview": "false"
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "shiny_plumbbob": {
+                  "entry": "Shiny_PlumbBob",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_Weapons, 6E686C6846010E073C19C4A33EB797BC, Unlocked from a very rare drop.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.WeaponMaterial"
+                  },
+                  "bcanpreview": "false"
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
                 "shiny_rainmaker": {
                   "entry": "Shiny_rainmaker",
                   "factname": "any_cosmetic_unlocked",
@@ -10343,6 +11066,20 @@
                 "depTableName": "entry",
                 "depTableId": 2,
                 "depIndex": 0,
+                "shiny_silversliver": {
+                  "entry": "Shiny_silversliver",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_Weapons, E320C2D64C43FFE52C281A8CD100D7A7, Unlocked from a very rare drop.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.WeaponMaterial"
+                  },
+                  "bcanpreview": "false"
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
                 "shiny_songbird": {
                   "entry": "Shiny_songbird",
                   "factname": "any_cosmetic_unlocked",
@@ -10361,6 +11098,20 @@
                   "entry": "Shiny_soulsurvivor",
                   "factname": "any_cosmetic_unlocked",
                   "unlockmethod": "Unlockable_Weapons, C3BA114543416CDC69DFD6B09469682A, Unlocked from a very rare drop.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.WeaponMaterial"
+                  },
+                  "bcanpreview": "false"
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "shiny_stealth": {
+                  "entry": "Shiny_Stealth",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_Weapons, 6E686C6846010E073C19C4A33EB797BC, Unlocked from a very rare drop.",
                   "typetag": {
                     "tagname": "Reward.Item.Cosmetic.WeaponMaterial"
                   },
@@ -10403,6 +11154,20 @@
                   "entry": "Shiny_Unstable",
                   "factname": "any_cosmetic_unlocked",
                   "unlockmethod": "Unlockable_Weapons, C3BA114543416CDC69DFD6B09469682A, Unlocked from a very rare drop.",
+                  "typetag": {
+                    "tagname": "Reward.Item.Cosmetic.WeaponMaterial"
+                  },
+                  "bcanpreview": "false"
+                }
+              },
+              {
+                "depTableName": "entry",
+                "depTableId": 2,
+                "depIndex": 0,
+                "shiny_verce": {
+                  "entry": "Shiny_Verce",
+                  "factname": "any_cosmetic_unlocked",
+                  "unlockmethod": "Unlockable_Weapons, CEC18BFF43C0271A4B64CC9C30817346, Unlocked from a very rare drop.",
                   "typetag": {
                     "tagname": "Reward.Item.Cosmetic.WeaponMaterial"
                   },
@@ -20151,6 +20916,50 @@
             }
           },
           {
+            "49_harp_responses_all": {
+              "stat_collection": "49_Harp_responses_all",
+              "stats": [
+                {
+                  "skankeyes1": "skankeyes1"
+                },
+                {
+                  "skankeyes2": "skankeyes2"
+                },
+                {
+                  "dave1": "dave1"
+                },
+                {
+                  "dave2": "dave2"
+                },
+                {
+                  "william1": "william1"
+                },
+                {
+                  "william2": "william2"
+                }
+              ]
+            }
+          },
+          {
+            "50_harp_boss_defeat": {
+              "stat_collection": "50_Harp_boss_defeat",
+              "stats": [
+                {
+                  "infamousdave": "infamousdave"
+                },
+                {
+                  "maxxxsupreme": "maxxxsupreme"
+                },
+                {
+                  "skankeyes": "skankeyes"
+                },
+                {
+                  "betamaxxx": "betamaxxx"
+                }
+              ]
+            }
+          },
+          {
             "cello_achievements": {
               "stat_collection": "cello_achievements",
               "root": "1",
@@ -20356,6 +21165,66 @@
             }
           },
           {
+            "harp_achievements": {
+              "stat_collection": "harp_achievements",
+              "root": "1",
+              "stats": [
+                {
+                  "49_harp_responses_all": "49_Harp_responses_all"
+                },
+                {
+                  "50_harp_boss_defeat": "50_Harp_boss_defeat"
+                },
+                {
+                  "51_harp_missions_main": "51_Harp_missions_main"
+                }
+              ]
+            }
+          },
+          {
+            "harp_collectibles": {
+              "stat_collection": "Harp_collectibles",
+              "stats": [
+                {
+                  "harp_echologs": "harp_echologs"
+                }
+              ]
+            }
+          },
+          {
+            "harp_echologs": {
+              "stat_collection": "harp_echologs",
+              "stats": [
+                {
+                  "harp_echolog_1": "harp_echolog_1"
+                },
+                {
+                  "harp_echolog_2": "harp_echolog_2"
+                },
+                {
+                  "harp_echolog_3": "harp_echolog_3"
+                },
+                {
+                  "harp_echolog_4": "harp_echolog_4"
+                },
+                {
+                  "harp_echolog_5": "harp_echolog_5"
+                }
+              ]
+            }
+          },
+          {
+            "harp_openworld": {
+              "stat_collection": "Harp_openworld",
+              "root": "1",
+              "stats": [
+                {
+                  "harp_collectibles": "Harp_collectibles"
+                }
+              ]
+            }
+          },
+          {
             "mandolin_achievements": {
               "stat_collection": "mandolin_achievements",
               "root": "1",
@@ -20466,6 +21335,25 @@
                 },
                 {
                   "order_bp3": "order_bp3"
+                }
+              ]
+            }
+          },
+          {
+            "boss_replays_bp4": {
+              "stat_collection": "boss_replays_bp4",
+              "stats": [
+                {
+                  "all_bp4": "all_bp4"
+                },
+                {
+                  "ripper_bp4": "ripper_bp4"
+                },
+                {
+                  "creature_bp4": "creature_bp4"
+                },
+                {
+                  "order_bp4": "order_bp4"
                 }
               ]
             }
@@ -20650,6 +21538,31 @@
             }
           },
           {
+            "contract_bp4": {
+              "stat_collection": "contract_bp4",
+              "stats": [
+                {
+                  "acquire_bp4": "acquire_bp4"
+                },
+                {
+                  "patrol_bp4": "patrol_bp4"
+                },
+                {
+                  "collect_bp4": "collect_bp4"
+                },
+                {
+                  "bounty_bp4": "bounty_bp4"
+                },
+                {
+                  "corrupted_bp4": "corrupted_bp4"
+                },
+                {
+                  "search_bp4": "search_bp4"
+                }
+              ]
+            }
+          },
+          {
             "contracts_bp2": {
               "stat_collection": "contracts_bp2",
               "stats": [
@@ -20749,6 +21662,58 @@
                 },
                 {
                   "search_creature_bp3": "search_creature_bp3"
+                }
+              ]
+            }
+          },
+          {
+            "contracts_bp4": {
+              "stat_collection": "contracts_bp4",
+              "stats": [
+                {
+                  "acquire_bandit_bp4": "acquire_bandit_bp4"
+                },
+                {
+                  "acquire_creature_bp4": "acquire_creature_bp4"
+                },
+                {
+                  "acquire_order_bp4": "acquire_order_bp4"
+                },
+                {
+                  "bounty_bandit_bp4": "bounty_bandit_bp4"
+                },
+                {
+                  "bounty_creature_bp4": "bounty_creature_bp4"
+                },
+                {
+                  "bounty_order_bp4": "bounty_order_bp4"
+                },
+                {
+                  "patrol_bandit_bp4": "patrol_bandit_bp4"
+                },
+                {
+                  "patrol_order_bp4": "patrol_order_bp4"
+                },
+                {
+                  "patrol_creature_bp4": "patrol_creature_bp4"
+                },
+                {
+                  "collect_bandit_bp4": "collect_bandit_bp4"
+                },
+                {
+                  "collect_order_bp4": "collect_order_bp4"
+                },
+                {
+                  "collect_creature_bp4": "collect_creature_bp4"
+                },
+                {
+                  "search_bandit_bp4": "search_bandit_bp4"
+                },
+                {
+                  "search_order_bp4": "search_order_bp4"
+                },
+                {
+                  "search_creature_bp4": "search_creature_bp4"
                 }
               ]
             }
@@ -20909,6 +21874,19 @@
             }
           },
           {
+            "currency_bp4": {
+              "stat_collection": "currency_bp4",
+              "stats": [
+                {
+                  "cash_daily_bp4": "cash_daily_bp4"
+                },
+                {
+                  "eridium_bp4": "eridium_bp4"
+                }
+              ]
+            }
+          },
+          {
             "currency_daily": {
               "stat_collection": "currency_daily",
               "stats": [
@@ -21001,6 +21979,32 @@
                 },
                 {
                   "currency_bp3": "currency_bp3"
+                }
+              ]
+            }
+          },
+          {
+            "daily_bp4_vc": {
+              "stat_collection": "daily_bp4_vc",
+              "root": "1",
+              "stats": [
+                {
+                  "kill_daily_bp4": "kill_daily_bp4"
+                },
+                {
+                  "loot_bp4": "loot_bp4"
+                },
+                {
+                  "general_daily_bp4": "general_daily_bp4"
+                },
+                {
+                  "boss_replays_bp4": "boss_replays_bp4"
+                },
+                {
+                  "contracts_bp4": "contracts_bp4"
+                },
+                {
+                  "currency_bp4": "currency_bp4"
                 }
               ]
             }
@@ -21211,6 +22215,19 @@
                 },
                 {
                   "heal_bp3": "heal_bp3"
+                }
+              ]
+            }
+          },
+          {
+            "general_daily_bp4": {
+              "stat_collection": "general_daily_bp4",
+              "stats": [
+                {
+                  "secondwind_bp4": "secondwind_bp4"
+                },
+                {
+                  "heal_bp4": "heal_bp4"
                 }
               ]
             }
@@ -21803,6 +22820,184 @@
             }
           },
           {
+            "kill_daily_bp4": {
+              "stat_collection": "kill_daily_bp4",
+              "stats": [
+                {
+                  "enemies_bp4": "enemies_bp4"
+                },
+                {
+                  "badass_enemies_bp4": "badass_enemies_bp4"
+                },
+                {
+                  "guntoter_bp4": "guntoter_bp4"
+                },
+                {
+                  "meathead_bp4": "meathead_bp4"
+                },
+                {
+                  "phalanx_bp4": "phalanx_bp4"
+                },
+                {
+                  "psycho_bp4": "psycho_bp4"
+                },
+                {
+                  "splice_bp4": "splice_bp4"
+                },
+                {
+                  "turret_bp4": "turret_bp4"
+                },
+                {
+                  "kratch_bp4": "kratch_bp4"
+                },
+                {
+                  "wildhorn_bp4": "wildhorn_bp4"
+                },
+                {
+                  "mangler_bp4": "mangler_bp4"
+                },
+                {
+                  "creep_bp4": "creep_bp4"
+                },
+                {
+                  "pangolin_bp4": "pangolin_bp4"
+                },
+                {
+                  "thresher_bp4": "thresher_bp4"
+                },
+                {
+                  "bulkhead_bp4": "bulkhead_bp4"
+                },
+                {
+                  "witness_bp4": "witness_bp4"
+                },
+                {
+                  "grunt_bp4": "grunt_bp4"
+                },
+                {
+                  "oppressors_bp4": "oppressors_bp4"
+                },
+                {
+                  "warden_bp4": "warden_bp4"
+                },
+                {
+                  "armature_bp4": "armature_bp4"
+                },
+                {
+                  "engine_bp4": "engine_bp4"
+                },
+                {
+                  "corrupted_bp4": "corrupted_bp4"
+                },
+                {
+                  "bandits_bp4": "bandits_bp4"
+                },
+                {
+                  "creatures_bp4": "creatures_bp4"
+                },
+                {
+                  "order_bp4": "order_bp4"
+                },
+                {
+                  "banditsingrassland_bp4": "banditsingrassland_bp4"
+                },
+                {
+                  "creatureingrassland_bp4": "creatureingrassland_bp4"
+                },
+                {
+                  "orderingrassland_bp4": "orderingrassland_bp4"
+                },
+                {
+                  "banditinmountains_bp4": "banditinmountains_bp4"
+                },
+                {
+                  "creatureinmountains_bp4": "creatureinmountains_bp4"
+                },
+                {
+                  "orderinmountains_bp4": "orderinmountains_bp4"
+                },
+                {
+                  "banditinshatteredlands_bp4": "banditinshatteredlands_bp4"
+                },
+                {
+                  "creatureinshatteredlands_bp4": "creatureinshatteredlands_bp4"
+                },
+                {
+                  "orderinshatteredlands_bp4": "orderinshatteredlands_bp4"
+                },
+                {
+                  "banditincity_bp4": "banditincity_bp4"
+                },
+                {
+                  "creatureincity_bp4": "creatureincity_bp4"
+                },
+                {
+                  "orderincity_bp4": "orderincity_bp4"
+                },
+                {
+                  "pistol_bp4": "pistol_bp4"
+                },
+                {
+                  "smg_bp4": "smg_bp4"
+                },
+                {
+                  "ar_bp4": "ar_bp4"
+                },
+                {
+                  "shotgun_bp4": "shotgun_bp4"
+                },
+                {
+                  "sniper_bp4": "sniper_bp4"
+                },
+                {
+                  "grenade_bp4": "grenade_bp4"
+                },
+                {
+                  "heavyweapon_bp4": "heavyweapon_bp4"
+                },
+                {
+                  "incendiary_bp4": "incendiary_bp4"
+                },
+                {
+                  "cryo_bp4": "cryo_bp4"
+                },
+                {
+                  "corrosive_bp4": "corrosive_bp4"
+                },
+                {
+                  "radiation_bp4": "radiation_bp4"
+                },
+                {
+                  "shock_bp4": "shock_bp4"
+                },
+                {
+                  "jakobs_bp4": "jakobs_bp4"
+                },
+                {
+                  "vladof_bp4": "vladof_bp4"
+                },
+                {
+                  "torgue_bp4": "torgue_bp4"
+                },
+                {
+                  "tediore_bp4": "tediore_bp4"
+                },
+                {
+                  "maliwan_bp4": "maliwan_bp4"
+                },
+                {
+                  "daedalus_bp4": "daedalus_bp4"
+                },
+                {
+                  "borg_bp4": "borg_bp4"
+                },
+                {
+                  "order_bp4": "order_bp4"
+                }
+              ]
+            }
+          },
+          {
             "kill_weekly_bp2": {
               "stat_collection": "kill_weekly_bp2",
               "stats": [
@@ -21889,6 +23084,49 @@
             }
           },
           {
+            "kill_weekly_bp4": {
+              "stat_collection": "kill_weekly_bp4",
+              "stats": [
+                {
+                  "groundslam_bp4": "groundslam_bp4"
+                },
+                {
+                  "melee_bp4": "melee_bp4"
+                },
+                {
+                  "enemies_weekly_bp4": "enemies_weekly_bp4"
+                },
+                {
+                  "fire_bp4": "fire_bp4"
+                },
+                {
+                  "cryo_bp4": "cryo_bp4"
+                },
+                {
+                  "corrosive_bp4": "corrosive_bp4"
+                },
+                {
+                  "radiation_bp4": "radiation_bp4"
+                },
+                {
+                  "shock_bp4": "shock_bp4"
+                },
+                {
+                  "grasslands_bp4": "grasslands_bp4"
+                },
+                {
+                  "mountains_bp4": "mountains_bp4"
+                },
+                {
+                  "shatterlands_bp4": "shatterlands_bp4"
+                },
+                {
+                  "city_bp4": "city_bp4"
+                }
+              ]
+            }
+          },
+          {
             "loot": {
               "stat_collection": "loot",
               "stats": [
@@ -21961,6 +23199,34 @@
             }
           },
           {
+            "loot_bp4": {
+              "stat_collection": "loot_bp4",
+              "stats": [
+                {
+                  "open_bp4": "open_bp4"
+                },
+                {
+                  "weapon_bp4": "weapon_bp4"
+                },
+                {
+                  "repkit_bp4": "repkit_bp4"
+                },
+                {
+                  "classmod_bp4": "classmod_bp4"
+                },
+                {
+                  "shield_bp4": "shield_bp4"
+                },
+                {
+                  "gadget_bp4": "gadget_bp4"
+                },
+                {
+                  "purple_bp4": "purple_bp4"
+                }
+              ]
+            }
+          },
+          {
             "loot_daily": {
               "stat_collection": "loot_daily",
               "stats": [
@@ -22016,6 +23282,22 @@
                 },
                 {
                   "legendary_weekly_bp3": "legendary_weekly_bp3"
+                }
+              ]
+            }
+          },
+          {
+            "loot_weekly_bp4": {
+              "stat_collection": "loot_weekly_bp4",
+              "stats": [
+                {
+                  "cash_weekly_bp4": "cash_weekly_bp4"
+                },
+                {
+                  "general_weekly_bp4": "general_weekly_bp4"
+                },
+                {
+                  "legendary_weekly_bp4": "legendary_weekly_bp4"
                 }
               ]
             }
@@ -22200,6 +23482,41 @@
                 },
                 {
                   "firmwaretransfer_bp3": "firmwaretransfer_bp3"
+                }
+              ]
+            }
+          },
+          {
+            "weekly_bp4_vc": {
+              "stat_collection": "weekly_bp4_vc",
+              "root": "1",
+              "stats": [
+                {
+                  "traitmission_bp4": "traitmission_bp4"
+                },
+                {
+                  "killtrueboss_bp4": "killtrueboss_bp4"
+                },
+                {
+                  "badasssecondwind_bp4": "badasssecondwind_bp4"
+                },
+                {
+                  "kill_weekly_bp4": "kill_weekly_bp4"
+                },
+                {
+                  "sell_bp4": "sell_bp4"
+                },
+                {
+                  "bmvm_bp4": "bmvm_bp4"
+                },
+                {
+                  "loot_weekly_bp4": "loot_weekly_bp4"
+                },
+                {
+                  "contract_bp4": "contract_bp4"
+                },
+                {
+                  "firmwaretransfer_bp4": "firmwaretransfer_bp4"
                 }
               ]
             }
@@ -39186,63 +40503,38 @@
       {
         "entries": [
           {
-            "dlcdef_headhunter_oak2": {
-              "dlcdef": "DLCDef_Headhunter_Oak2",
-              "dlctitle": "DLCInfo, 07D18B2848446090AECFCC93A0A60F5C, Firehawk's Fury",
-              "dlcname": "headhunter",
-              "autounlockreward": "rewards'RewardPackage_Headhunter'",
-              "entitlementfact": "entitlement.headhunter.enabled",
-              "steamid": "3802360",
-              "sonyid": "FIREHAWKSFINERY0",
-              "epicstoreid": "2d54bef017aa40d782648b86b662195d",
-              "epicentitlementid": "be603215efc14d3cb92705cb51d02ddc",
-              "microsoftid": "9NV59LHQFB75"
+            "dlcdef_harp": {
+              "dlcdef": "DLCDef_Harp",
+              "dlctitle": "DLCInfo, 04E241ED497F06B7D5682AA2E18F7A9F, Murders and Acquisitions",
+              "dlcshorttitle": "DLCInfo, E09660AE4E7B0B47BE5B918C7BDF7A5E, Murders and Acquisitions",
+              "dlcname": "Harp",
+              "dlcdatalayer": "Asset'/Game/GameData/Entitlements/DLC_Harp.DLC_Harp'",
+              "autounlockreward": "rewards'RewardPackage_HarpVehicle'",
+              "uiclass": "vc4",
+              "entitlementfact": "entitlement.harp.enabled",
+              "steamid": "4614350",
+              "epicstoreid": "borderlands-4-borderlands-4-bounty-pack-4-content-part-1-78973e",
+              "epicentitlementid": "2df5040d551a4578b1ad180908b40046",
+              "sonyid": "BL4BOUNTYPACK4A0",
+              "microsoftid": "9P49504012N6",
+              "nintendoid": "aoc8",
+              "btravelstationsrequireentitlement": "true",
+              "patchtravelstations": [
+                {
+                  "travelstationdef": "map'World_P.LT_DLC_WorldPtoHarp'",
+                  "travelobjectdef": "gbxactor'LevelTravelStation_ToDLC_Harp'",
+                  "leveloverride": "3SPJ2LW1AEFFO86YOIQP9GXFQ"
+                }
+              ],
+              "dedicateddroptable": "gbx_ue_data_table'Table_Harp_DedicatedDrops'",
+              "bismatchmakingrelevant": "true",
+              "matchmakingmissionname": "Mission_DLC_Harp",
+              "bisbountypack": "true",
+              "assetstoappend": [
+                "Asset'/Game/DLC/Harp/Gear/Vehicles/Personal/_Shared/Animation/DLC_ASetPicker_PersonalVehicle_Harp.DLC_ASetPicker_PersonalVehicle_Harp'"
+              ]
             }
           },
-          {
-            "dlcdef_oak2": {
-              "dlcdef": "DLCDef_Oak2",
-              "dlctitle": "DLCInfo, 9124DEEB42EFA3BB8CB7F79BEB32FAEB, Borderlands® 4",
-              "dlcname": "Oak2",
-              "entitlementfact": "entitlement.oak2.enabled",
-              "steamid": "1285190",
-              "epicid": "fd6cec81f186427ab53df7128c199353",
-              "microsoftid": "9MX6HKF5647G",
-              "sonyid": "UP1001-PPSA01494_00-000000000000OAK2"
-            }
-          },
-          {
-            "dlcdef_premium_oak2": {
-              "dlcdef": "DLCDef_Premium_Oak2",
-              "dlctitle": "DLCInfo, 035C9B8A42BBA227827CC2B0EA1F42D7, Ornate Order Pack",
-              "dlcname": "premium",
-              "autounlockreward": "rewards'RewardPackage_Premium'",
-              "entitlementfact": "entitlement.premium.enabled",
-              "steamid": "3802370",
-              "sonyid": "ORNATEORDERPACK0",
-              "epicstoreid": "fc431baa8bef4d7696384ffbc8288a08",
-              "epicentitlementid": "dee9d5471e61469196735c1492194ad5",
-              "microsoftid": "9P8154JMJKFQ"
-            }
-          },
-          {
-            "dlcdef_preorder_oak2": {
-              "dlcdef": "DLCDef_PreOrder_Oak2",
-              "dlctitle": "DLCInfo, 926EA4C94C6EDC9A0E56F08C62392DB2, Gilded Glory Pack",
-              "dlcname": "preorder",
-              "autounlockreward": "rewards'RewardPackage_PreOrder'",
-              "entitlementfact": "entitlement.preorder.enabled",
-              "steamid": "2013850",
-              "epicstoreid": "86211008444d4be5bdf2b839e2b8877e",
-              "epicentitlementid": "f7ce75cb3609450087dffb7096c9a3fe",
-              "sonyid": "PREORDERBONUS000",
-              "microsoftid": "9MZKJPZXTVGM"
-            }
-          }
-        ]
-      },
-      {
-        "entries": [
           {
             "dlcdef_mandolin": {
               "dlcdef": "DLCDef_Mandolin",
@@ -39322,7 +40614,81 @@
             "dlcdef_vaultcard2": {
               "dlcdef": "DLCDef_VaultCard2",
               "dlcname": "VaultCard2",
+              "uiclass": "vc2",
               "entitlementfact": "entitlement.vaultcard2.enabled"
+            }
+          },
+          {
+            "dlcdef_vaultcard4": {
+              "dlcdef": "DLCDef_VaultCard4",
+              "dlctitle": "DLCInfo, B0B468EB4C29A85B998AE5AFB09F5091, Desert Dreams",
+              "dlcshorttitle": "DLCInfo, 2BE6688F45CC29D3F16DD4BC99D40F3A, Desert Dreams",
+              "dlcname": "VaultCard4",
+              "uiclass": "vc4",
+              "entitlementfact": "entitlement.vaultcard4.enabled",
+              "steamid": "4614360",
+              "epicstoreid": "borderlands-4-borderlands-4-bounty-pack-4-vault-card-part-2-a341a3",
+              "epicentitlementid": "28275a06a4224a2ca6c9babc071cdede",
+              "sonyid": "BL4BOUNTYPACK4B0",
+              "microsoftid": "9N7B2L2ZWG48"
+            }
+          }
+        ]
+      },
+      {
+        "entries": [
+          {
+            "dlcdef_headhunter_oak2": {
+              "dlcdef": "DLCDef_Headhunter_Oak2",
+              "dlctitle": "DLCInfo, 07D18B2848446090AECFCC93A0A60F5C, Firehawk's Fury",
+              "dlcname": "headhunter",
+              "autounlockreward": "rewards'RewardPackage_Headhunter'",
+              "entitlementfact": "entitlement.headhunter.enabled",
+              "steamid": "3802360",
+              "sonyid": "FIREHAWKSFINERY0",
+              "epicstoreid": "2d54bef017aa40d782648b86b662195d",
+              "epicentitlementid": "be603215efc14d3cb92705cb51d02ddc",
+              "microsoftid": "9NV59LHQFB75"
+            }
+          },
+          {
+            "dlcdef_oak2": {
+              "dlcdef": "DLCDef_Oak2",
+              "dlctitle": "DLCInfo, 9124DEEB42EFA3BB8CB7F79BEB32FAEB, Borderlands® 4",
+              "dlcname": "Oak2",
+              "entitlementfact": "entitlement.oak2.enabled",
+              "steamid": "1285190",
+              "epicid": "fd6cec81f186427ab53df7128c199353",
+              "microsoftid": "9MX6HKF5647G",
+              "sonyid": "UP1001-PPSA01494_00-000000000000OAK2"
+            }
+          },
+          {
+            "dlcdef_premium_oak2": {
+              "dlcdef": "DLCDef_Premium_Oak2",
+              "dlctitle": "DLCInfo, 035C9B8A42BBA227827CC2B0EA1F42D7, Ornate Order Pack",
+              "dlcname": "premium",
+              "autounlockreward": "rewards'RewardPackage_Premium'",
+              "entitlementfact": "entitlement.premium.enabled",
+              "steamid": "3802370",
+              "sonyid": "ORNATEORDERPACK0",
+              "epicstoreid": "fc431baa8bef4d7696384ffbc8288a08",
+              "epicentitlementid": "dee9d5471e61469196735c1492194ad5",
+              "microsoftid": "9P8154JMJKFQ"
+            }
+          },
+          {
+            "dlcdef_preorder_oak2": {
+              "dlcdef": "DLCDef_PreOrder_Oak2",
+              "dlctitle": "DLCInfo, 926EA4C94C6EDC9A0E56F08C62392DB2, Gilded Glory Pack",
+              "dlcname": "preorder",
+              "autounlockreward": "rewards'RewardPackage_PreOrder'",
+              "entitlementfact": "entitlement.preorder.enabled",
+              "steamid": "2013850",
+              "epicstoreid": "86211008444d4be5bdf2b839e2b8877e",
+              "epicentitlementid": "f7ce75cb3609450087dffb7096c9a3fe",
+              "sonyid": "PREORDERBONUS000",
+              "microsoftid": "9MZKJPZXTVGM"
             }
           }
         ]

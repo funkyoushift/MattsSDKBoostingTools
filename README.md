@@ -2,7 +2,7 @@
 
 MSBT is a Borderlands 4 boosting and item toolkit: a standalone Windows app outside the game, plus a small SDK mod that talks to Borderlands 4 while you play. Use it for currency/XP/SDU helpers, serial delivery, BL4 code browsing, Mattmab’s save/profile/item editor, Dev Spawner, map travel, movement tools, and more.
 
-**Current release: [v2.1.0](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.1.0)**
+**Current release: [v2.2.0](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.2.0)**
 
 This project is **unofficial**. It is not affiliated with, endorsed by, or connected to Gearbox, 2K, or the Borderlands franchise owners.
 
@@ -14,11 +14,11 @@ This project is **unofficial**. It is not affiliated with, endorsed by, or conne
 
 **Recommended:** grab the latest Windows installer from GitHub Releases:
 
-[![Installer downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Installer-v2.1.0.exe?label=Installer%20downloads&color=2ea44f)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest)
-[![Portable downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Portable-v2.1.0-win-x64.zip?label=Portable%20downloads&color=0969da)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest)
+[![Installer downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Installer-v2.2.0.exe?label=Installer%20downloads&color=2ea44f)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest)
+[![Portable downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Portable-v2.2.0-win-x64.zip?label=Portable%20downloads&color=0969da)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest)
 
 - [GitHub Releases — download page](https://github.com/funkyoushift/MattsSDKBoostingTools/releases)
-- Latest installer example: `MSBT-Installer-v2.1.0.exe`
+- Latest installer example: `MSBT-Installer-v2.2.0.exe`
 
 **Portable option:** if you do not want an installer, download the portable ZIP instead (`MSBT-Portable-v…-win-x64.zip`), extract it, and run the app from that folder.
 
@@ -45,7 +45,8 @@ In plain terms, the Electron app is the control panel. The SDK mod does the live
   <img src="docs/media/msbt-boosting.jpg" alt="MSBT Boosting tab — targeting, UVH booster, serial copies" width="900">
 </p>
 
-- **Quick Menu** — native in-game F7 panel (no BLImGui required): pin/repeat/lock, optional rarity-weight strip, MOVE/THEME/resize, plus the Electron **★ Quick Menu** editor and gold `+ QM` pin buttons
+- **Quick Menu** — native in-game F7 panel (no BLImGui required): pin/repeat/lock, optional rarity-weight strip, **INV inventory tab**, MOVE/THEME/resize, plus the Electron **★ Quick Menu** editor and gold `+ QM` pin buttons
+- **Inventory** — live equipped + backpack browser in the Electron app and on F7 **INV**; GZO names, sort/filter, party player picker, **Send to Game** with separate Give-to target and multiplier
 - **Boosting** — cash, Eridium, XP/spec, SDU, inventory size helpers, rarity drop weights, lobby targeting (selected / all / non-host), and UVH booster controls
 - **Serial tools** — paste, validate, bookmark, and deliver `@U` item serials
 - **BL4 Codes** — search/browse a merged local catalog (GZO image cards, Lootlemon references, custom/static codes), then deliver from a sticky delivery panel
@@ -63,11 +64,17 @@ In plain terms, the Electron app is the control panel. The SDK mod does the live
   <img src="docs/media/msbt-dev-spawner.jpg" alt="MSBT Dev Spawner with favorites and condensed actor rows" width="900">
 </p>
 
+<p align="center">
+  <img src="docs/media/msbt-inventory-tab.png" alt="MSBT Inventory tab — equipped strip, rarity-bordered grid, sort and category filters, Send to Game" width="900">
+</p>
+
+<p align="center"><em><strong>Inventory</strong> tab — live serial read from the game session (listen host recommended)</em></p>
+
 A lot of community testing, late nights, and real money went into keeping this usable after the SDK v0.3 break. Tips help, but the tool stays free for normal community use under the license below.
 
 ---
 
-## Quick Menu (v2.1)
+## Quick Menu (v2.2)
 
 Native in-game F7 panel plus an external editor. **BLImGui is not required.**
 
@@ -86,15 +93,22 @@ Native in-game F7 panel plus an external editor. **BLImGui is not required.**
 Also use the on-screen **Close F7** button. Prefer F7 for normal open/close; use F6 only when the cursor or camera feels stuck after the menu. On the panel itself: **MOVE** to reposition, **− / +** to resize, **THEME** to switch looks.
 
 <p align="center">
-  <img src="docs/media/msbt-quick-menu-ingame.jpg" alt="In-game MSBT Quick Menu (F7) — slot grid, Pin Last / Lock / Target, optional rarity drop weights strip" width="900">
+  <img src="docs/media/msbt-quick-menu-neon.png" alt="In-game MSBT Quick Menu (F7) — MSBT Neon theme, 3×7 slot grid, Pin Last / Lock / Target, optional rarity drop weights strip" width="900">
 </p>
 
-<p align="center"><em>In-game Quick Menu (press <strong>F7</strong>) — right-docked native panel over Borderlands 4</em></p>
+<p align="center"><em>In-game Quick Menu (press <strong>F7</strong>) — <strong>MSBT Neon</strong> theme with mixed neon slot colors</em></p>
+
+<p align="center">
+  <img src="docs/media/msbt-quick-menu-inventory.png" alt="In-game Quick Menu INV tab — equipped strip, sort/filter, backpack list, Give-to and serial actions" width="900">
+</p>
+
+<p align="center"><em>F7 <strong>INV</strong> tab — browse equipped + backpack, tap an item for Give-to / multiplier / serial copy</em></p>
 
 **What you get**
 
-- Up to **5 pages** of **3×7** slots (21 buttons per page)
-- **Pin Last**, **Repeat Last Drop**, optional **Lock Player**, player target tabs
+- Up to **5 pages** of **3×7** slots (21 buttons per page) plus a dedicated **INV** inventory tab
+- **MSBT Neon (Azzy)** theme and many other looks via **THEME**
+- **Pin Last**, **Repeat Last Drop**, optional **Lock Player**, player target tabs (P1–P4 / PAll)
 - Optional **rarity drop weights** strip on F7 (Apply / Reset / Leg Only / Pearl Only) — equip or hide it from the Electron editor; live apply stays in sync with Boosting
 - Edit / assign / clear slots in-game or from the app; layout edits apply live over the bridge (no game restart)
 

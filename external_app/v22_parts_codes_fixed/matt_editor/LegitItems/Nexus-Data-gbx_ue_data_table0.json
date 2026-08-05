@@ -3848,7 +3848,7 @@
                   "row_name": "Pearl",
                   "row_value": {
                     "local_modifier": "attribute'Att_LocalRarityModifier_06_Pearlescent'",
-                    "base_weight": "0.000200",
+                    "base_weight": "0.000150",
                     "growth_exponent": "0.800000",
                     "damage_scale_level": "1.650000",
                     "stat_scale": "1.650000"
@@ -6907,7 +6907,7 @@
                       "raremodifier": "40.000000",
                       "veryraremodifier": "32.000000",
                       "legendarymodifier": "16.000000",
-                      "pearlmodifier": "16.000000"
+                      "pearlmodifier": "14.000000"
                     },
                     "classmods_probability": "0.200000",
                     "enhancements_howmany": {
@@ -7003,7 +7003,7 @@
                       "raremodifier": "40.000000",
                       "veryraremodifier": "32.000000",
                       "legendarymodifier": "16.000000",
-                      "pearlmodifier": "16.000000"
+                      "pearlmodifier": "14.000000"
                     },
                     "classmods_howmany": {
                       "chances": [
@@ -7096,7 +7096,7 @@
                       "raremodifier": "40.000000",
                       "veryraremodifier": "40.000000",
                       "legendarymodifier": "21.000000",
-                      "pearlmodifier": "21.000000"
+                      "pearlmodifier": "17.000000"
                     },
                     "classmods_howmany": {
                       "chances": [
@@ -7348,7 +7348,7 @@
                       "raremodifier": "40.000000",
                       "veryraremodifier": "75.000000",
                       "legendarymodifier": "23.000000",
-                      "pearlmodifier": "23.000000"
+                      "pearlmodifier": "20.000000"
                     },
                     "classmods_howmany": {
                       "chances": [
@@ -7494,7 +7494,7 @@
                       "raremodifier": "40.000000",
                       "veryraremodifier": "75.000000",
                       "legendarymodifier": "23.000000",
-                      "pearlmodifier": "23.000000"
+                      "pearlmodifier": "20.000000"
                     },
                     "classmods_howmany": {
                       "chances": [
@@ -7637,7 +7637,7 @@
                       "raremodifier": "40.000000",
                       "veryraremodifier": "75.000000",
                       "legendarymodifier": "25.000000",
-                      "pearlmodifier": "25.000000"
+                      "pearlmodifier": "22.000000"
                     },
                     "classmods_howmany": {
                       "chances": [
@@ -8624,6 +8624,17 @@
                     "legendarymodifier": "18.000000",
                     "veryraremodifier": "30.000000",
                     "raremodifier": "0.250000",
+                    "uncommonmodifier": "0.005000",
+                    "commonmodifier": "0.001000"
+                  }
+                },
+                {
+                  "row_name": "DynamicEventChest",
+                  "row_value": {
+                    "pearlmodifier": "200.000000",
+                    "legendarymodifier": "118.000000",
+                    "veryraremodifier": "50.000000",
+                    "raremodifier": "0.100000",
                     "uncommonmodifier": "0.005000",
                     "commonmodifier": "0.001000"
                   }
@@ -19825,7 +19836,7 @@
                     "description 2": "Cooldown",
                     "modifier 2": "30.000000",
                     "description": "Radius",
-                    "modifier 1": "768.000000"
+                    "modifier 1": "960.000000"
                   }
                 }
               ]
@@ -28255,7 +28266,7 @@
                 {
                   "row_name": "Hardcore",
                   "row_value": {
-                    "enemyhealth": "6.000000",
+                    "enemyhealth": "12.000000",
                     "combatexperience": "0.325000",
                     "eridium": "0.650000",
                     "cash": "0.650000",
@@ -28274,7 +28285,7 @@
                 {
                   "row_name": "Mayhem1",
                   "row_value": {
-                    "enemyhealth": "1.500000",
+                    "enemyhealth": "2.500000",
                     "combatexperience": "0.100000",
                     "eridium": "0.200000",
                     "cash": "0.200000",
@@ -28285,7 +28296,7 @@
                 {
                   "row_name": "Mayhem2",
                   "row_value": {
-                    "enemyhealth": "2.000000",
+                    "enemyhealth": "3.250000",
                     "combatexperience": "0.125000",
                     "eridium": "0.250000",
                     "cash": "0.250000",
@@ -28296,7 +28307,7 @@
                 {
                   "row_name": "Mayhem3",
                   "row_value": {
-                    "enemyhealth": "2.500000",
+                    "enemyhealth": "4.150000",
                     "combatexperience": "0.150000",
                     "eridium": "0.300000",
                     "cash": "0.300000",
@@ -28307,7 +28318,7 @@
                 {
                   "row_name": "Mayhem4",
                   "row_value": {
-                    "enemyhealth": "3.000000",
+                    "enemyhealth": "5.200000",
                     "combatexperience": "0.175000",
                     "eridium": "0.350000",
                     "cash": "0.350000",
@@ -28318,7 +28329,7 @@
                 {
                   "row_name": "Mayhem5",
                   "row_value": {
-                    "enemyhealth": "3.500000",
+                    "enemyhealth": "6.000000",
                     "combatexperience": "0.200000",
                     "eridium": "0.400000",
                     "cash": "0.400000",
@@ -28329,7 +28340,7 @@
                 {
                   "row_name": "Mayhem6",
                   "row_value": {
-                    "enemyhealth": "4.000000",
+                    "enemyhealth": "7.000000",
                     "combatexperience": "0.225000",
                     "eridium": "0.450000",
                     "cash": "0.450000",
@@ -28340,7 +28351,7 @@
                 {
                   "row_name": "Mayhem7",
                   "row_value": {
-                    "enemyhealth": "4.500000",
+                    "enemyhealth": "8.000000",
                     "combatexperience": "0.250000",
                     "eridium": "0.500000",
                     "cash": "0.500000",
@@ -28351,7 +28362,7 @@
                 {
                   "row_name": "Mayhem8",
                   "row_value": {
-                    "enemyhealth": "5.000000",
+                    "enemyhealth": "9.200000",
                     "combatexperience": "0.275000",
                     "eridium": "0.550000",
                     "cash": "0.550000",
@@ -28362,7 +28373,7 @@
                 {
                   "row_name": "Mayhem9",
                   "row_value": {
-                    "enemyhealth": "5.500000",
+                    "enemyhealth": "10.500000",
                     "combatexperience": "0.300000",
                     "eridium": "0.600000",
                     "cash": "0.600000",
@@ -28373,7 +28384,7 @@
                 {
                   "row_name": "Mayhem10",
                   "row_value": {
-                    "enemyhealth": "6.000000",
+                    "enemyhealth": "12.000000",
                     "combatexperience": "0.325000",
                     "eridium": "0.650000",
                     "cash": "0.650000",
@@ -28384,7 +28395,7 @@
                 {
                   "row_name": "Mayhem11",
                   "row_value": {
-                    "enemyhealth": "6.250000",
+                    "enemyhealth": "13.500000",
                     "combatexperience": "0.350000",
                     "eridium": "0.675000",
                     "cash": "0.675000",
@@ -28395,7 +28406,7 @@
                 {
                   "row_name": "Mayhem12",
                   "row_value": {
-                    "enemyhealth": "6.500000",
+                    "enemyhealth": "14.800000",
                     "combatexperience": "0.375000",
                     "eridium": "0.700000",
                     "cash": "0.700000",
@@ -28406,7 +28417,7 @@
                 {
                   "row_name": "Mayhem13",
                   "row_value": {
-                    "enemyhealth": "6.750000",
+                    "enemyhealth": "16.000000",
                     "combatexperience": "0.400000",
                     "eridium": "0.725000",
                     "cash": "0.725000",
@@ -28417,7 +28428,7 @@
                 {
                   "row_name": "Mayhem14",
                   "row_value": {
-                    "enemyhealth": "7.000000",
+                    "enemyhealth": "17.500000",
                     "combatexperience": "0.425000",
                     "eridium": "0.750000",
                     "cash": "0.750000",
@@ -28428,7 +28439,7 @@
                 {
                   "row_name": "Mayhem15",
                   "row_value": {
-                    "enemyhealth": "7.250000",
+                    "enemyhealth": "18.750000",
                     "combatexperience": "0.450000",
                     "eridium": "0.775000",
                     "cash": "0.775000",
@@ -28439,7 +28450,7 @@
                 {
                   "row_name": "Mayhem16",
                   "row_value": {
-                    "enemyhealth": "7.500000",
+                    "enemyhealth": "20.000000",
                     "combatexperience": "0.475000",
                     "eridium": "0.800000",
                     "cash": "0.800000",
@@ -28450,7 +28461,7 @@
                 {
                   "row_name": "Mayhem17",
                   "row_value": {
-                    "enemyhealth": "7.750000",
+                    "enemyhealth": "22.000000",
                     "combatexperience": "0.500000",
                     "eridium": "0.825000",
                     "cash": "0.825000",
@@ -28461,7 +28472,7 @@
                 {
                   "row_name": "Mayhem18",
                   "row_value": {
-                    "enemyhealth": "8.000000",
+                    "enemyhealth": "24.500000",
                     "combatexperience": "0.525000",
                     "eridium": "0.850000",
                     "cash": "0.850000",
@@ -28472,7 +28483,7 @@
                 {
                   "row_name": "Mayhem19",
                   "row_value": {
-                    "enemyhealth": "8.250000",
+                    "enemyhealth": "27.000000",
                     "combatexperience": "0.550000",
                     "eridium": "0.875000",
                     "cash": "0.875000",
@@ -28483,7 +28494,7 @@
                 {
                   "row_name": "Mayhem20",
                   "row_value": {
-                    "enemyhealth": "8.500000",
+                    "enemyhealth": "30.000000",
                     "combatexperience": "0.575000",
                     "eridium": "0.900000",
                     "cash": "0.900000",

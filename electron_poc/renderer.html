@@ -47,6 +47,7 @@
     <button class="active" data-tab="boosting">Boosting</button>
     <button data-tab="quick-menu">★ Quick Menu</button>
     <button data-tab="serial-tools">Serial Tools</button>
+    <button data-tab="inventory">Inventory</button>
     <button data-tab="bl4-codes">BL4 Codes</button>
     <button data-tab="matt-editor">Matt Editor</button>
     <button data-tab="item-pool">Item Pool Spawning</button>
@@ -577,6 +578,130 @@
         <div id="validatorStatus" class="status-line warning">Idle</div>
         <label for="validatorOutput">Validation result</label>
         <textarea id="validatorOutput" class="output-box large" spellcheck="false" readonly></textarea>
+      </section>
+    </section>
+
+    <section id="tab-inventory" class="tab-panel">
+      <section class="panel cyan inv-root">
+        <div class="section-heading">
+          <div>
+            <h2>Inventory</h2>
+            <p>
+              Live equipped + backpack serials for a party player (P1–P4 / Boosting target).
+              Best on listen host when reading other players. Names use GZO unique parts when present.
+              Select an item to Send to Game with a multiplier and a Give-to player separate from viewing.
+            </p>
+          </div>
+          <div class="button-row wrap">
+            <button id="invRefreshBtn">Refresh Inventory</button>
+            <button id="invCopyAllBtn" class="secondary">Copy Visible Serials</button>
+          </div>
+        </div>
+        <div class="inv-player-row">
+          <label for="invTargetSelect">Party player</label>
+          <select id="invTargetSelect">
+            <option value="">No players loaded — Refresh Status on Boosting</option>
+          </select>
+        </div>
+        <div id="invStatus" class="status-line warning">Pick a party player, then Refresh Inventory while in-game (listen host recommended).</div>
+        <div id="invReading" class="muted-line">Reading: none</div>
+
+        <section class="inv-equipped" aria-label="Equipped slots">
+          <div class="inv-section-title">Equipped</div>
+          <div id="invEquippedGrid" class="inv-equip-grid">
+            <div class="dev-empty-row">No equipped items loaded yet.</div>
+          </div>
+        </section>
+
+        <div class="inv-toolbar">
+          <div class="inv-sort-row" role="group" aria-label="Sort">
+            <span class="inv-toolbar-label">Sort</span>
+            <button type="button" id="invSortDirBtn" class="inv-chip inv-sort-dir" title="Sort direction (high→low / low→high)" aria-label="Sort direction">↓</button>
+            <button type="button" class="inv-chip active" data-inv-sort="recent">Recent</button>
+            <button type="button" class="inv-chip" data-inv-sort="rarity">Rarity</button>
+            <button type="button" class="inv-chip" data-inv-sort="type">Type</button>
+            <button type="button" class="inv-chip" data-inv-sort="level">Level</button>
+            <button type="button" class="inv-chip" data-inv-sort="manufacturer">Manufacturer</button>
+          </div>
+          <div class="inv-cat-row" role="group" aria-label="Category">
+            <span class="inv-toolbar-label">Show</span>
+            <button type="button" class="inv-chip active" data-inv-category="All">All</button>
+            <button type="button" class="inv-chip" data-inv-category="Guns">Guns</button>
+            <button type="button" class="inv-chip" data-inv-category="Shields">Shields</button>
+            <button type="button" class="inv-chip" data-inv-category="Ordnance">Ordnance</button>
+            <button type="button" class="inv-chip" data-inv-category="Repkits">Repkits</button>
+            <button type="button" class="inv-chip" data-inv-category="Enhancements">Enhancements</button>
+            <button type="button" class="inv-chip" data-inv-category="Class Mods">Class Mods</button>
+            <button type="button" class="inv-chip" data-inv-category="Other">Other</button>
+          </div>
+        </div>
+
+        <details class="inv-filters" open>
+          <summary>Filter <span id="invFilterCount">Filter: 0</span></summary>
+          <div class="inv-filter-grid">
+            <label>
+              Search
+              <input id="invSearch" type="search" autocomplete="off" spellcheck="false" placeholder="name, type, manufacturer, serial…">
+            </label>
+            <label>
+              Rarity
+              <select id="invRarityFilter"><option value="All">All</option></select>
+            </label>
+            <label>
+              Damage Type
+              <select id="invDamageFilter"><option value="All">All</option></select>
+            </label>
+            <label>
+              Type
+              <select id="invTypeFilter"><option value="All">All</option></select>
+            </label>
+            <label>
+              Manufacturer
+              <select id="invManufacturerFilter"><option value="All">All</option></select>
+            </label>
+          </div>
+        </details>
+
+        <div class="inv-count-row">
+          <div id="invBackpackCount" class="status-line">0 backpack / 0 equipped</div>
+          <div class="button-row wrap">
+            <button id="invPrevPageBtn" class="secondary">Prev</button>
+            <span id="invPageLabel" class="muted-line">Page 1</span>
+            <button id="invNextPageBtn" class="secondary">Next</button>
+          </div>
+        </div>
+
+        <div id="invBackpackGrid" class="inv-item-grid" aria-label="Backpack items">
+          <div class="dev-empty-row">No backpack items loaded yet.</div>
+        </div>
+
+        <section id="invDetail" class="inv-detail hidden" aria-live="polite">
+          <div class="section-heading compact-heading">
+            <h3 id="invDetailTitle">Item</h3>
+            <button id="invDetailCloseBtn" class="secondary">Close</button>
+          </div>
+          <div id="invDetailMeta" class="muted-line"></div>
+          <textarea id="invDetailSerial" class="output-box small" spellcheck="false" readonly></textarea>
+          <div class="inv-give-row">
+            <label for="invGiveTargetSelect">
+              Give to
+              <select id="invGiveTargetSelect">
+                <option value="">No players loaded — Refresh Status on Boosting</option>
+              </select>
+            </label>
+            <label for="invSerialCopies">
+              Multiplier
+              <input id="invSerialCopies" type="number" min="1" max="50" value="1" title="How many copies to give (max 50)">
+            </label>
+            <button id="invGiveSerialBtn">Send to Game</button>
+          </div>
+          <div class="button-row wrap">
+            <button id="invCopySerialBtn">Copy Serial</button>
+            <button id="invSendRewardsBtn">Send to Serial Rewards</button>
+            <button id="invOpenToolsBtn">Open in Serial Tools</button>
+            <button id="invOpenEditorBtn">Open Matt Editor</button>
+          </div>
+        </section>
       </section>
     </section>
 

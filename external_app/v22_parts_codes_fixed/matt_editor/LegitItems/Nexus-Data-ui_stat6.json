@@ -486,7 +486,7 @@
               "staticon": "Asset'/Game/uiresources/_shared/assets/ico_ui_art_discovery/ico_misc_legendaries.ico_misc_legendaries'",
               "statvalue": {
                 "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
-                "formattext": "Uni_MAL_SG_Kickballer, 1723F1B443EF63B43A377297B65955F1, [rarity_legendary]Fish Fry[/rarity_legendary] - On [secondary]Kill[/secondary], increase the [secondary]Damage Dealt[/secondary] of the next [secondary]Mag[/secondary] by [secondary]+20%[/secondary] for a Maximum [secondary]5[/secondary] stacks",
+                "formattext": "Uni_MAL_SG_Kickballer, 1723F1B443EF63B43A377297B65955F1, [rarity_legendary]Fish Fry[/rarity_legendary] - On [secondary]Kill[/secondary], increase the [secondary]Damage Dealt[/secondary] of the next [secondary]Mag[/secondary] by [secondary]{mod}[/secondary] for a [secondary]Maximum[/secondary] [secondary]5 stacks[/secondary]",
                 "argsmap": {
                   "pairs": {
                     "pair2013007324": {
@@ -628,7 +628,7 @@
               "staticon": "Asset'/Game/uiresources/_shared/assets/ico_ui_art_discovery/ico_misc_legendaries.ico_misc_legendaries'",
               "statvalue": {
                 "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
-                "formattext": "Uni_Supernova, 1393E3E94EB953D3738B50B0ECB70B87, [rarity_legendary]Sister[/rarity_legendary] - [secondary]On Segment break[/secondary], spawn a [secondary]Kill Drone[/secondary] that fires alongside the [secondary]Vault Hunter[/secondary], mimicing their Gun's [secondary]Element[/secondary] and deals [secondary]{damage}[/secondary] of the Gun's [secondary]Damage[/secondary]",
+                "formattext": "Uni_Supernova, 1393E3E94EB953D3738B50B0ECB70B87, [rarity_legendary]Sister[/rarity_legendary] - [secondary]On Segment break[/secondary], spawn a [secondary]Kill Drone[/secondary] that fires alongside the [secondary]Vault Hunter[/secondary], mimicking their [secondary]Gun's Element[/secondary] and deals [secondary]{damage}[/secondary] of the [secondary]Gun's Damage[/secondary]",
                 "argsmap": {
                   "pairs": {
                     "pair3195346958": {
@@ -697,7 +697,7 @@
               "staticon": "Asset'/Game/DLC/Common/uiresources/dlc_rarity_pips/assets/ico_misc_pearl.ico_misc_pearl'",
               "statvalue": {
                 "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
-                "formattext": "Uni_Inv_TED_SG_Anarchy, 92DC3EA7425FB909419F39A15665CEAF, [rarity_pearl]Chum the Water[/rarity_pearl] - Every bullet that [secondary]hits enemies[/secondary] applies [secondary]1[/secondary] stack of [primary]Chum[/primary].  At [secondary]{mod1}[/secondary] stacks of [primary]Chum[/primary], the [secondary]enemy[/secondary] explodes for [secondary]{mod2} Damage[/secondary].",
+                "formattext": "Uni_Inv_TED_SG_Anarchy, 92DC3EA7425FB909419F39A15665CEAF, [rarity_pearl]Chum the Water[/rarity_pearl] - Every [secondary]bullet[/secondary] that [secondary]hits enemies[/secondary] applies [secondary]1 stack[/secondary] of [primary]Chum[/primary].  At [secondary]{mod1} stacks[/secondary] of [primary]Chum[/primary], the [secondary]enemy[/secondary] explodes for [secondary]{mod2} Damage[/secondary].",
                 "argsmap": {
                   "pairs": {
                     "pair4019983703": {

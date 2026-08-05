@@ -4848,6 +4848,29 @@
                 {
                   "itempool": {
                     "item": {
+                      "binstance": "true",
+                      "instance": {
+                        "structtype": "Asset'/Script/GbxGame.ItemPoolDef'",
+                        "items": [
+                          {
+                            "item": {
+                              "item": {
+                                "handle": "inv'VLA_SM.comp_06_pearl_Locust'"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "probability": {
+                    "attribute": "attribute'Att_Loot_UVH_TertiaryScalar'",
+                    "postscale": "0.200000"
+                  }
+                },
+                {
+                  "itempool": {
+                    "item": {
                       "handle": "itempool'itempool_grasslands_commander_classmods'"
                     }
                   },
@@ -4968,6 +4991,29 @@
                       "rowname": "Launch_Dedicated_Drops",
                       "columnname": "TrueBoss_12_47D1E0FA435EA53697F51F829004964B"
                     }
+                  }
+                },
+                {
+                  "itempool": {
+                    "item": {
+                      "binstance": "true",
+                      "instance": {
+                        "structtype": "Asset'/Script/GbxGame.ItemPoolDef'",
+                        "items": [
+                          {
+                            "item": {
+                              "item": {
+                                "handle": "inv'VLA_SM.comp_06_pearl_Locust'"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "probability": {
+                    "attribute": "attribute'Att_Loot_UVH_TertiaryScalar'",
+                    "postscale": "0.250000"
                   }
                 },
                 {
@@ -5192,6 +5238,29 @@
                 {
                   "itempool": {
                     "item": {
+                      "binstance": "true",
+                      "instance": {
+                        "structtype": "Asset'/Script/GbxGame.ItemPoolDef'",
+                        "items": [
+                          {
+                            "item": {
+                              "item": {
+                                "handle": "inv'TOR_PS.comp_06_pearl_Herald'"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "probability": {
+                    "attribute": "attribute'Att_Loot_UVH_TertiaryScalar'",
+                    "postscale": "0.200000"
+                  }
+                },
+                {
+                  "itempool": {
+                    "item": {
                       "handle": "itempool'itempool_grasslands_guardian_classmods'"
                     }
                   },
@@ -5292,6 +5361,29 @@
                       "rowname": "Launch_Dedicated_Drops",
                       "columnname": "TrueBoss_12_47D1E0FA435EA53697F51F829004964B"
                     }
+                  }
+                },
+                {
+                  "itempool": {
+                    "item": {
+                      "binstance": "true",
+                      "instance": {
+                        "structtype": "Asset'/Script/GbxGame.ItemPoolDef'",
+                        "items": [
+                          {
+                            "item": {
+                              "item": {
+                                "handle": "inv'TOR_PS.comp_06_pearl_Herald'"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "probability": {
+                    "attribute": "attribute'Att_Loot_UVH_TertiaryScalar'",
+                    "postscale": "0.250000"
                   }
                 },
                 {
@@ -6743,6 +6835,29 @@
                 {
                   "itempool": {
                     "item": {
+                      "binstance": "true",
+                      "instance": {
+                        "structtype": "Asset'/Script/GbxGame.ItemPoolDef'",
+                        "items": [
+                          {
+                            "item": {
+                              "item": {
+                                "handle": "inv'bor_sr.comp_05_legendary_Abyss'"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "probability": {
+                    "attribute": "attribute'Att_Loot_UVH_TertiaryScalar'",
+                    "postscale": "0.200000"
+                  }
+                },
+                {
+                  "itempool": {
+                    "item": {
                       "handle": "itempool'itempool_mountains_commander_classmods'"
                     }
                   },
@@ -6843,6 +6958,29 @@
                       "rowname": "Launch_Dedicated_Drops",
                       "columnname": "TrueBoss_12_47D1E0FA435EA53697F51F829004964B"
                     }
+                  }
+                },
+                {
+                  "itempool": {
+                    "item": {
+                      "binstance": "true",
+                      "instance": {
+                        "structtype": "Asset'/Script/GbxGame.ItemPoolDef'",
+                        "items": [
+                          {
+                            "item": {
+                              "item": {
+                                "handle": "inv'bor_sr.comp_05_legendary_Abyss'"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "probability": {
+                    "attribute": "attribute'Att_Loot_UVH_TertiaryScalar'",
+                    "postscale": "0.250000"
                   }
                 },
                 {
@@ -7039,6 +7177,29 @@
                 {
                   "itempool": {
                     "item": {
+                      "binstance": "true",
+                      "instance": {
+                        "structtype": "Asset'/Script/GbxGame.ItemPoolDef'",
+                        "items": [
+                          {
+                            "item": {
+                              "item": {
+                                "handle": "inv'DAD_SM.comp_06_pearl_Screwed'"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "probability": {
+                    "attribute": "attribute'Att_Loot_UVH_TertiaryScalar'",
+                    "postscale": "0.200000"
+                  }
+                },
+                {
+                  "itempool": {
+                    "item": {
                       "handle": "itempool'itempool_mountains_guardian_classmods'"
                     }
                   },
@@ -7139,6 +7300,29 @@
                       "rowname": "Launch_Dedicated_Drops",
                       "columnname": "TrueBoss_12_47D1E0FA435EA53697F51F829004964B"
                     }
+                  }
+                },
+                {
+                  "itempool": {
+                    "item": {
+                      "binstance": "true",
+                      "instance": {
+                        "structtype": "Asset'/Script/GbxGame.ItemPoolDef'",
+                        "items": [
+                          {
+                            "item": {
+                              "item": {
+                                "handle": "inv'DAD_SM.comp_06_pearl_Screwed'"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "probability": {
+                    "attribute": "attribute'Att_Loot_UVH_TertiaryScalar'",
+                    "postscale": "0.250000"
                   }
                 },
                 {
@@ -8106,6 +8290,29 @@
                 {
                   "itempool": {
                     "item": {
+                      "binstance": "true",
+                      "instance": {
+                        "structtype": "Asset'/Script/GbxGame.ItemPoolDef'",
+                        "items": [
+                          {
+                            "item": {
+                              "item": {
+                                "handle": "inv'MAL_SM.comp_06_pearl_Juliet'"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "probability": {
+                    "attribute": "attribute'Att_Loot_UVH_TertiaryScalar'",
+                    "postscale": "0.200000"
+                  }
+                },
+                {
+                  "itempool": {
+                    "item": {
                       "handle": "itempool'itempool_shatterlands_commander_classmods'"
                     }
                   },
@@ -8180,6 +8387,29 @@
                       "rowname": "Launch_Dedicated_Drops",
                       "columnname": "TrueBoss_12_47D1E0FA435EA53697F51F829004964B"
                     }
+                  }
+                },
+                {
+                  "itempool": {
+                    "item": {
+                      "binstance": "true",
+                      "instance": {
+                        "structtype": "Asset'/Script/GbxGame.ItemPoolDef'",
+                        "items": [
+                          {
+                            "item": {
+                              "item": {
+                                "handle": "inv'MAL_SM.comp_06_pearl_Juliet'"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "probability": {
+                    "attribute": "attribute'Att_Loot_UVH_TertiaryScalar'",
+                    "postscale": "0.250000"
                   }
                 },
                 {
@@ -8354,6 +8584,29 @@
                 {
                   "itempool": {
                     "item": {
+                      "binstance": "true",
+                      "instance": {
+                        "structtype": "Asset'/Script/GbxGame.ItemPoolDef'",
+                        "items": [
+                          {
+                            "item": {
+                              "item": {
+                                "handle": "inv'ORD_AR.comp_05_legendary_PChonk'"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "probability": {
+                    "attribute": "attribute'Att_Loot_UVH_TertiaryScalar'",
+                    "postscale": "0.200000"
+                  }
+                },
+                {
+                  "itempool": {
+                    "item": {
                       "handle": "itempool'itempool_shatterlands_guardian_classmods'"
                     }
                   },
@@ -8428,6 +8681,29 @@
                       "rowname": "Launch_Dedicated_Drops",
                       "columnname": "TrueBoss_12_47D1E0FA435EA53697F51F829004964B"
                     }
+                  }
+                },
+                {
+                  "itempool": {
+                    "item": {
+                      "binstance": "true",
+                      "instance": {
+                        "structtype": "Asset'/Script/GbxGame.ItemPoolDef'",
+                        "items": [
+                          {
+                            "item": {
+                              "item": {
+                                "handle": "inv'ORD_AR.comp_05_legendary_PChonk'"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "probability": {
+                    "attribute": "attribute'Att_Loot_UVH_TertiaryScalar'",
+                    "postscale": "0.250000"
                   }
                 },
                 {
@@ -10032,6 +10308,29 @@
                 {
                   "itempool": {
                     "item": {
+                      "binstance": "true",
+                      "instance": {
+                        "structtype": "Asset'/Script/GbxGame.ItemPoolDef'",
+                        "items": [
+                          {
+                            "item": {
+                              "item": {
+                                "handle": "inv'ORD_SR.comp_05_legendary_Temper'"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "probability": {
+                    "attribute": "attribute'Att_Loot_UVH_TertiaryScalar'",
+                    "postscale": "0.300000"
+                  }
+                },
+                {
+                  "itempool": {
+                    "item": {
                       "handle": "itempool'itempool_mal_sm_05_legendary_PlasmaCoil_shiny'"
                     }
                   },
@@ -10132,6 +10431,29 @@
                       "rowname": "Launch_Dedicated_Drops",
                       "columnname": "TrueBoss_12_47D1E0FA435EA53697F51F829004964B"
                     }
+                  }
+                },
+                {
+                  "itempool": {
+                    "item": {
+                      "binstance": "true",
+                      "instance": {
+                        "structtype": "Asset'/Script/GbxGame.ItemPoolDef'",
+                        "items": [
+                          {
+                            "item": {
+                              "item": {
+                                "handle": "inv'ORD_SR.comp_05_legendary_Temper'"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "probability": {
+                    "attribute": "attribute'Att_Loot_UVH_TertiaryScalar'",
+                    "postscale": "0.375000"
                   }
                 },
                 {

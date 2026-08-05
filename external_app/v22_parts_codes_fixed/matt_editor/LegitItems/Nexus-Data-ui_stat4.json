@@ -3913,7 +3913,7 @@
               "staticon": "Asset'/Game/DLC/Common/uiresources/dlc_rarity_pips/assets/ico_misc_pearl.ico_misc_pearl'",
               "statvalue": {
                 "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
-                "formattext": "Uni_MAL_SG_Kickballer, 63BB6A8242B0AF850E7F3FA53C5D7C00, [rarity_pearl]Abyss[/rarity_pearl] - Increases [secondary]damage[/secondary] the higher it is [secondary]charged[/secondary]. If full [secondary]charge[/secondary] is held too long, triggers a [secondary]self-damaging explosion[/secondary]."
+                "formattext": "Uni_MAL_SG_Kickballer, 63BB6A8242B0AF850E7F3FA53C5D7C00, [rarity_pearl]Abyss[/rarity_pearl] - Increases [secondary]Damage[/secondary] the higher it is [secondary]charged[/secondary]. If full [secondary]charge[/secondary] is held too long, triggers a [secondary]self-damaging explosion[/secondary]."
               }
             }
           },
@@ -4009,7 +4009,7 @@
               "staticon": "Asset'/Game/uiresources/_shared/assets/ico_ui_art_discovery/ico_misc_legendaries.ico_misc_legendaries'",
               "statvalue": {
                 "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
-                "formattext": "Uni_TOR_HW_Sidewinder, 4BC2E4FA446D2868350BC8ACA1B98EB1, [rarity_legendary]Holo-Barrel[/rarity_legendary] - [secondary]Shoots[/secondary] holographic barrels that [secondary]pierce[/secondary] enemies and [secondary]attach[/secondary] to the world. [secondary]Shooting attached[/secondary] barrels causes it to [secondary]explode[/secondary], dealing [secondary]{dmg}[/secondary] damage.",
+                "formattext": "Uni_TOR_HW_Sidewinder, 4BC2E4FA446D2868350BC8ACA1B98EB1, [rarity_legendary]Holo-Barrel[/rarity_legendary] - [secondary]Shoots holographic barrels[/secondary] that [secondary]pierce enemies[/secondary] and [secondary]attach[/secondary] to the world. [secondary]Shooting attached barrels[/secondary] causes them to [secondary]explode[/secondary], dealing [secondary]{dmg} Damage[/secondary].",
                 "argsmap": {
                   "pairs": {
                     "pair2747350507": {
@@ -4208,7 +4208,7 @@
               "staticon": "Asset'/Game/uiresources/_shared/assets/ico_ui_art_discovery/ico_misc_legendaries.ico_misc_legendaries'",
               "statvalue": {
                 "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
-                "formattext": "Inv_DAD_SM_BloodStarved, EC4A97AF466858E7ADCE8699D91A225A, [rarity_legendary]Multi-ball[/rarity_legendary] - Every [secondary]10th[/secondary] shot fires a projectile that returns toward the player which can bounce and has a chance to spawn 2 additional projectiles when colliding with enemies or players."
+                "formattext": "Inv_DAD_SM_BloodStarved, EC4A97AF466858E7ADCE8699D91A225A, [rarity_legendary]Multi-ball[/rarity_legendary] - Every [secondary]10th[/secondary] shot fires a [secondary]special projectile[/secondary] that returns toward you.   This [secondary]projectile[/secondary] has a chance to spawn [secondary]2 additional projectiles[/secondary] when colliding with you or [secondary]enemies[/secondary]."
               }
             }
           },
@@ -4241,6 +4241,39 @@
               "statvalue": {
                 "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
                 "formattext": "Uni_VLA_AR_Lucian, 5E82A494461863434B3D6AB1BED20FD1, So sassy."
+              }
+            }
+          },
+          {
+            "uistat_burrow_desc": {
+              "ui_stat": "uistat_Burrow_desc",
+              "displaygroup": "ui_stat_group'Secondary'",
+              "sortingpriority": "-0.500000",
+              "staticon": "Asset'/Game/DLC/Common/uiresources/dlc_rarity_pips/assets/ico_misc_pearl.ico_misc_pearl'",
+              "statvalue": {
+                "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
+                "formattext": "Uni_MAL_SG_Kickballer, C39A34524A39FE7A7A6A729CBEBD77A2, [rarity_pearl]Prismatic[/rarity_pearl] - [secondary]Critical Hits[/secondary] trigger a bonus [secondary]Ricochet[/secondary] projectile. Bonus [secondary]Ricochet[/secondary] projectiles have a random [secondary]element[/secondary]. For each consecutive [secondary]Crit[/secondary], gain an additional bonus [secondary]Ricochet[/secondary] projectile up to a cap of [secondary]{cap}[/secondary].",
+                "argsmap": {
+                  "pairs": {
+                    "pair785469064": {
+                      "key": "cap",
+                      "value": {
+                        "structtype": "Asset'/Script/GbxGame.NumericDisplayValue'",
+                        "attributedef": "attribute'att_Burrow_RicochetCap'"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "uistat_burrow_red_text": {
+              "ui_stat": "uistat_Burrow_red_text",
+              "displaygroup": "ui_stat_group'RedText'",
+              "statvalue": {
+                "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
+                "formattext": "Uni_JAK_SR_Ballista, 132BEDF74F2EF1F39E4E45AC7940FE4D, The Dark Side of the Sun."
               }
             }
           },
@@ -4942,7 +4975,7 @@
               "staticon": "Asset'/Game/uiresources/_shared/assets/ico_ui_art_discovery/ico_misc_legendaries.ico_misc_legendaries'",
               "statvalue": {
                 "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
-                "formattext": "Uni_TOR_SG_Cormano, DF47E3F54ACA4ABDC0E3BDA84B6A6BB3, [rarity_legendary]Scattergun[/rarity_legendary] - Fires a patterned spread of projectiles",
+                "formattext": "Uni_TOR_SG_Cormano, DF47E3F54ACA4ABDC0E3BDA84B6A6BB3, [rarity_legendary]Scattergun[/rarity_legendary]",
                 "argsmap": {
                   "pairs": {
                     "pair2013007324": {
@@ -5270,6 +5303,39 @@
             }
           },
           {
+            "uistat_earlyexcess_desc": {
+              "ui_stat": "uistat_EarlyExcess_desc",
+              "displaygroup": "ui_stat_group'Secondary'",
+              "sortingpriority": "-1.000000",
+              "staticon": "Asset'/Game/uiresources/_shared/assets/ico_ui_art_discovery/ico_misc_legendaries.ico_misc_legendaries'",
+              "statvalue": {
+                "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
+                "formattext": "Uni_MAL_SG_Kickballer, B474C3574F0A5F460E14C58EAEC02871, [rarity_legendary]Excess[/rarity_legendary]",
+                "argsmap": {
+                  "pairs": {
+                    "pair2314167982": {
+                      "key": "quantify",
+                      "value": {
+                        "structtype": "Asset'/Script/GbxGame.NumericDisplayValue'",
+                        "attributedef": "attribute'weapon_ted_replicator'"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "uistat_earlyexcess_red_text": {
+              "ui_stat": "uistat_EarlyExcess_red_text",
+              "displaygroup": "ui_stat_group'RedText'",
+              "statvalue": {
+                "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
+                "formattext": "Uni_MAL_SG_Kickballer, 75B11A0044D1F71BCCDABA854CC5E4D1, How pale I look!"
+              }
+            }
+          },
+          {
             "uistat_eigenburst_desc": {
               "ui_stat": "uistat_Eigenburst_desc",
               "displaygroup": "ui_stat_group'Secondary'",
@@ -5321,6 +5387,40 @@
               "statvalue": {
                 "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
                 "formattext": "Uni_Supernova, 59C34A7940B2A0C233F3FC8F6589182A, Make a wish."
+              }
+            }
+          },
+          {
+            "uistat_extinction_desc": {
+              "ui_stat": "uistat_Extinction_desc",
+              "displaygroup": "ui_stat_group'Secondary'",
+              "sortingpriority": "-1.000000",
+              "staticon": "Asset'/Game/uiresources/_shared/assets/ico_ui_art_discovery/ico_misc_legendaries.ico_misc_legendaries'",
+              "statvalue": {
+                "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
+                "formattext": "Inv_DAD_SM_BloodStarved, 2657AB0542A50C4F77842B98886138A6, [rarity_legendary]Extinction[/rarity_legendary] - [secondary]On Kill[/secondary], fire underbarrel projectile at up to [secondary]2[/secondary] nearby [secondary]enemies[/secondary] at [secondary]{dmg} Damage[/secondary]",
+                "argsmap": {
+                  "pairs": {
+                    "pair2747350507": {
+                      "key": "dmg",
+                      "value": {
+                        "structtype": "Asset'/Script/GbxGame.NumericDisplayValue'",
+                        "attributedef": "attribute'att_Extinction_DMGBonusScalar'",
+                        "bdisplayaspercentage": "true"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "uistat_extinction_red_text": {
+              "ui_stat": "uistat_Extinction_red_text",
+              "displaygroup": "ui_stat_group'RedText'",
+              "statvalue": {
+                "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
+                "formattext": "Uni_VLA_AR_WomboCombo, BCB1632E48A283E9F31C28B156CD4E2A, They only had themselves to blame."
               }
             }
           },
@@ -6012,6 +6112,39 @@
             }
           },
           {
+            "uistat_hydrowerks_desc": {
+              "ui_stat": "uistat_hydrowerks_desc",
+              "displaygroup": "ui_stat_group'Secondary'",
+              "sortingpriority": "-1.000000",
+              "staticon": "Asset'/Game/uiresources/_shared/assets/ico_ui_art_discovery/ico_misc_legendaries.ico_misc_legendaries'",
+              "statvalue": {
+                "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
+                "formattext": "Uni_CinderShelly, 6ADE7B164303C92B9659049F69A24745, [rarity_legendary]Electric Eel[/rarity_legendary] - While sliding, launch missiles toward nearby [secondary]enemies[/secondary].  Gain armor at the end of a slide.",
+                "argsmap": {
+                  "pairs": {
+                    "pair2747350507": {
+                      "key": "dmg",
+                      "value": {
+                        "structtype": "Asset'/Script/GbxGame.NumericDisplayValue'",
+                        "attributedef": "attribute'calc_firewerks_damage'"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "uistat_hydrowerks_red_text": {
+              "ui_stat": "uistat_hydrowerks_red_text",
+              "displaygroup": "ui_stat_group'RedText'",
+              "statvalue": {
+                "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
+                "formattext": "Uni_Firewerks, 17093EB9487A348F4AC6638C4E427173, Down and dirty."
+              }
+            }
+          },
+          {
             "uistat_ichor_desc": {
               "ui_stat": "uistat_Ichor_desc",
               "displaygroup": "ui_stat_group'Secondary'",
@@ -6085,6 +6218,28 @@
             }
           },
           {
+            "uistat_io_pickup_davebomb_awardwinning": {
+              "ui_stat": "UIStat_IO_Pickup_DaveBomb_AwardWinning",
+              "displaygroup": "ui_stat_group'Text'",
+              "statlabel": {
+                "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
+                "formattext": "IO_Pickup_Bottle, BF1BFB9A416336962D0132A6C36B37ED, Infamous Dave's Prize Winner"
+              },
+              "type": "/Script/GbxGame.UIStatDisplayDef"
+            }
+          },
+          {
+            "uistat_io_pickup_davebomb_custommade": {
+              "ui_stat": "UIStat_IO_Pickup_DaveBomb_CustomMade",
+              "displaygroup": "ui_stat_group'Text'",
+              "statlabel": {
+                "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
+                "formattext": "IO_Pickup_Bottle, 090AE36940EB23F6F82F51A2D0D0BD2D, An Infamous Dave Special"
+              },
+              "type": "/Script/GbxGame.UIStatDisplayDef"
+            }
+          },
+          {
             "uistat_io_pickup_digizanehead": {
               "ui_stat": "UIStat_IO_Pickup_DigiZaneHead",
               "displaygroup": "ui_stat_group'Text'",
@@ -6096,12 +6251,67 @@
             }
           },
           {
+            "uistat_io_pickup_fertilizer": {
+              "ui_stat": "UIStat_IO_Pickup_Fertilizer",
+              "displaygroup": "ui_stat_group'Text'",
+              "statlabel": {
+                "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
+                "formattext": "IO_Pickup_Fertilizer, 93E3B1374607F430A0B7ABA6252F3C24, Enriches soil... and explosives."
+              },
+              "type": "/Script/GbxGame.UIStatDisplayDef"
+            }
+          },
+          {
+            "uistat_io_pickup_kratchblood": {
+              "ui_stat": "UIStat_IO_Pickup_KratchBlood",
+              "displaygroup": "ui_stat_group'Text'",
+              "statlabel": {
+                "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
+                "formattext": "IO_Pickup_Bottle, 3F32CC154E471336C97CD9A9C1F3D7B5, This is blood. And it's from a Kratch. "
+              },
+              "type": "/Script/GbxGame.UIStatDisplayDef"
+            }
+          },
+          {
+            "uistat_io_pickup_motoroil": {
+              "ui_stat": "UIStat_IO_Pickup_MotorOil",
+              "displaygroup": "ui_stat_group'Text'",
+              "statlabel": {
+                "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
+                "formattext": "IO_Pickup_Bottle, 32E654FE4D95A21263CC0F9F2A8106A5, Let's get greasy!"
+              },
+              "type": "/Script/GbxGame.UIStatDisplayDef"
+            }
+          },
+          {
+            "uistat_io_pickup_ordertech": {
+              "ui_stat": "UIStat_IO_Pickup_OrderTech",
+              "displaygroup": "ui_stat_group'Text'",
+              "statlabel": {
+                "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
+                "formattext": "IO_Pickup_Bottle, 17F2D60541B4CC5ADAE1B7970CB6EBDE, This is why you're here. "
+              },
+              "type": "/Script/GbxGame.UIStatDisplayDef"
+            }
+          },
+          {
             "uistat_io_pickup_paperscrap": {
               "ui_stat": "UIStat_IO_Pickup_PaperScrap",
               "displaygroup": "ui_stat_group'Text'",
               "statlabel": {
                 "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
                 "formattext": "IO_Pickup_PaperScrap, 876B9A124BA197511E1B098EC81145CD, Skyline Chamber Luxury apartment eviction notice."
+              },
+              "type": "/Script/GbxGame.UIStatDisplayDef"
+            }
+          },
+          {
+            "uistat_io_pickup_radablasthead": {
+              "ui_stat": "UIStat_IO_Pickup_RadablastHead",
+              "displaygroup": "ui_stat_group'Text'",
+              "statlabel": {
+                "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
+                "formattext": "IO_Pickup_Bottle, E8CCCFB3417BE5F3C521EDB654A45A6B, A masterfully shaped head."
               },
               "type": "/Script/GbxGame.UIStatDisplayDef"
             }
@@ -6177,7 +6387,7 @@
               "staticon": "Asset'/Game/DLC/Common/uiresources/dlc_rarity_pips/assets/ico_misc_pearl.ico_misc_pearl'",
               "statvalue": {
                 "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
-                "formattext": "Uni_MAL_SG_Kickballer, A0211CB548487E5F8533BB913B840EE6, [rarity_pearl]Starfall[/rarity_pearl] -  [secondary]{mod} Chance[/secondary] for [secondary]Stars[/secondary] to fall for [secondary]{mod2} damage[/secondary]",
+                "formattext": "Uni_MAL_SG_Kickballer, A0211CB548487E5F8533BB913B840EE6, [rarity_pearl]Starfall[/rarity_pearl] -  [secondary]{mod} Chance[/secondary] for [secondary]Stars[/secondary] to fall for [secondary]{mod2} Damage[/secondary]",
                 "argsmap": {
                   "pairs": {
                     "pair2013007324": {
@@ -6207,6 +6417,39 @@
               "statvalue": {
                 "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
                 "formattext": "Uni_JAK_AR_Rowan, 4BCE37FA4B8594585FDA518B5B7BA1A5, Dazzle the world."
+              }
+            }
+          },
+          {
+            "uistat_kaos_desc": {
+              "ui_stat": "uistat_Kaos_desc",
+              "displaygroup": "ui_stat_group'Secondary'",
+              "sortingpriority": "-1.000000",
+              "staticon": "Asset'/Game/DLC/Common/uiresources/dlc_rarity_pips/assets/ico_misc_pearl.ico_misc_pearl'",
+              "statvalue": {
+                "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
+                "formattext": "Uni_MAL_SG_Kickballer, E1914F3942E4EB8B42384EBA2683D658, [rarity_pearl]Impact[/rarity_pearl] - Killing an enemy creates an explosion dealing [secondary]{mod}[/secondary] damage.",
+                "argsmap": {
+                  "pairs": {
+                    "pair2013007324": {
+                      "key": "mod",
+                      "value": {
+                        "structtype": "Asset'/Script/GbxGame.NumericDisplayValue'",
+                        "attributedef": "attribute'DAD_AR_barrel_02_damage_Kaos_pres'"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "uistat_kaos_red_text": {
+              "ui_stat": "uistat_Kaos_red_text",
+              "displaygroup": "ui_stat_group'RedText'",
+              "statvalue": {
+                "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
+                "formattext": "Uni_JAK_AR_Rowan, 4491E6CF4DBA1EAD1E55D98A5C00EF6C, Grants explosions."
               }
             }
           },
@@ -6296,7 +6539,7 @@
               },
               "statvalue": {
                 "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
-                "formattext": "Uni_VLA_SR_LightGun, 7265D63A4A46B96AFDC65189A66618AB, [rarity_legendary]Wait/Action![/rarity_legendary] Cannot be [secondary]reloaded[/secondary], crouching grants [secondary]Damage Reduction[/secondary] and refills the magazine after a brief delay.",
+                "formattext": "Uni_VLA_SR_LightGun, 7265D63A4A46B96AFDC65189A66618AB, [rarity_legendary]Wait/Action![/rarity_legendary] Cannot be [secondary]reloaded[/secondary].  Crouching grants [secondary]Damage Reduction[/secondary] and refills the [secondary]Magazine[/secondary] after a [secondary]brief delay[/secondary].",
                 "argsmap": {
                   "pairs": {
                     "pair4019983703": {
@@ -6386,6 +6629,50 @@
               "statvalue": {
                 "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
                 "formattext": "Uni_VLA_SM_Locust, F68BBE00431D13F84B7654ADFFBC0F29, The obligation of the weak is to nourish the strong."
+              }
+            }
+          },
+          {
+            "uistat_loiter_desc": {
+              "ui_stat": "uistat_Loiter_desc",
+              "displaygroup": "ui_stat_group'Secondary'",
+              "staticon": "Asset'/Game/uiresources/_shared/assets/ico_ui_art_discovery/ico_misc_legendaries.ico_misc_legendaries'",
+              "statvalue": {
+                "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
+                "formattext": "Uni_TOR_HW_Sidewinder, CE17799945A2322EE1270687FE65C092, [rarity_legendary]Sploiter[/rarity_legendary] "
+              }
+            }
+          },
+          {
+            "uistat_loiter_red_text": {
+              "ui_stat": "uistat_Loiter_red_text",
+              "displaygroup": "ui_stat_group'RedText'",
+              "statvalue": {
+                "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
+                "formattext": "Uni_TOR_HW_Javelin, 53B2FB2E46872597665787A46908B7E9, Hanging around... Sploiding"
+              }
+            }
+          },
+          {
+            "uistat_lp_hyp_shield_ricochet_testament": {
+              "ui_stat": "uistat_lp_hyp_shield_ricochet_Testament",
+              "displaygroup": "ui_stat_group'Secondary'",
+              "staticon": "Asset'/Game/uiresources/_shared/assets/ico_ui_art_item_augments/guns/ico_universal_licensed_parts_hyperion_reflect.ico_universal_licensed_parts_hyperion_reflect'",
+              "statvalue": {
+                "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
+                "formattext": "weapon_uistats, FB51408B47A3A41AEEDBB9A8C86DEE81, [hyperion_icon][secondary]Hyperion-Licensed Ricochet Shield[/secondary] - [secondary]Damage[/secondary] to [secondary]Gun Shields[/secondary] has a [secondary]{chance}[/secondary] chance to [secondary]Ricochet[/secondary] back toward enemies",
+                "argsmap": {
+                  "pairs": {
+                    "pair1534583640": {
+                      "key": "chance",
+                      "value": {
+                        "structtype": "Asset'/Script/GbxGame.NumericDisplayValue'",
+                        "attributedef": "attribute'att_Testament_ReflectChance'",
+                        "bdisplayaspercentage": "true"
+                      }
+                    }
+                  }
+                }
               }
             }
           },
@@ -6595,7 +6882,7 @@
               "staticon": "Asset'/Game/uiresources/_shared/assets/ico_ui_art_discovery/ico_misc_legendaries.ico_misc_legendaries'",
               "statvalue": {
                 "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
-                "formattext": "Uni_Supernova, 42B1BE524DBF516105DD2BB948A8CAEF, [rarity_legendary]Swarm[/rarity_legendary] - When [secondary]Energy Shield[/secondary] breaks, spawn [secondary]Kill Drones[/secondary] that charge a nearby enemy, deal [secondary]{damage}[/secondary] damage and restore [secondary]{shield}[/secondary] shield. [secondary]Kill Drones[/secondary] recharge while [secondary]Shield[/secondary] is [secondary]full[/secondary].",
+                "formattext": "Uni_Supernova, 42B1BE524DBF516105DD2BB948A8CAEF, [rarity_legendary]Swarm[/rarity_legendary] - On [secondary]Shield[/secondary] break, spawns [secondary]Kill Drones[/secondary] that charge nearby [secondary]enemies[/secondary], dealing [secondary]{damage} Damage[/secondary] and restoring [secondary]{shield} Shield[/secondary]. [secondary]Kill Drones[/secondary] recharge while [secondary]full shield[/secondary].",
                 "argsmap": {
                   "pairs": {
                     "pair3195346958": {
@@ -6625,6 +6912,47 @@
               "statvalue": {
                 "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
                 "formattext": "Uni_Supernova, D927F2C5406D902C9F7EF59864AE8745, Thought we wouldn't notice but we did."
+              }
+            }
+          },
+          {
+            "uistat_pchonk_desc": {
+              "ui_stat": "uistat_PChonk_desc",
+              "displaygroup": "ui_stat_group'Secondary'",
+              "sortingpriority": "-1.000000",
+              "staticon": "Asset'/Game/DLC/Common/uiresources/dlc_rarity_pips/assets/ico_misc_pearl.ico_misc_pearl'",
+              "statvalue": {
+                "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
+                "formattext": "Uni_MAL_SG_Kickballer, EFAFCC7748E4884FE649009B66BFAE9E, [rarity_pearl]Magic Missiles[/rarity_pearl] -  Killing an enemy fires projectiles outward that increase [secondary]weapon damage[/secondary] by [secondary]{mod}[/secondary] for [secondary]{mod2}[/secondary] seconds upon contact.",
+                "argsmap": {
+                  "pairs": {
+                    "pair2013007324": {
+                      "key": "mod",
+                      "value": {
+                        "structtype": "Asset'/Script/GbxGame.NumericDisplayValue'",
+                        "attributedef": "attribute'ORD_AR_barrel_02_PChonk_dmgbuff'",
+                        "bdisplayaspercentage": "true"
+                      }
+                    },
+                    "pair3703827863": {
+                      "key": "mod2",
+                      "value": {
+                        "structtype": "Asset'/Script/GbxGame.NumericDisplayValue'",
+                        "attributedef": "attribute'ORD_AR_barrel_02_PChonk_bufftime'"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "uistat_pchonk_red_text": {
+              "ui_stat": "uistat_PChonk_red_text",
+              "displaygroup": "ui_stat_group'RedText'",
+              "statvalue": {
+                "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
+                "formattext": "Uni_JAK_AR_Rowan, D052E8074DD33568695C9EB09E5BD8BA, Fit for a Grand Champion Warlord."
               }
             }
           },
@@ -6773,7 +7101,7 @@
               "staticon": "Asset'/Game/uiresources/_shared/assets/ico_ui_art_discovery/ico_misc_legendaries.ico_misc_legendaries'",
               "statvalue": {
                 "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
-                "formattext": "Uni_Spinning_Blade, 64E21A8E48B9D7B5379795A7B1424671, [rarity_legendary]Orbiting Body[/rarity_legendary] - On equip, spawns an orbiting [primary]Observer[/primary] that deals [secondary]{dmg}/s[/secondary] to nearby enemies.  The [primary]Observer[/primary] will briefly attack enemies damaged by the grenade.",
+                "formattext": "Uni_Spinning_Blade, 64E21A8E48B9D7B5379795A7B1424671, [rarity_legendary]Orbiting Body[/rarity_legendary] - On [secondary]equip[/secondary], [secondary]spawns[/secondary] an orbiting [primary]Observer[/primary] that deals [secondary]{dmg} Damage/s[/secondary] to nearby [secondary]enemies[/secondary].  The [primary]Observer[/primary] will briefly attack [secondary]enemies[/secondary] damaged by the [secondary]grenade[/secondary].",
                 "argsmap": {
                   "pairs": {
                     "pair2747350507": {
@@ -7039,6 +7367,60 @@
             }
           },
           {
+            "uistat_plumbbob_desc": {
+              "ui_stat": "uistat_plumbbob_desc",
+              "displaygroup": "ui_stat_group'Secondary'",
+              "sortingpriority": "-1.000000",
+              "staticon": "Asset'/Game/uiresources/_shared/assets/ico_ui_art_discovery/ico_misc_legendaries.ico_misc_legendaries'",
+              "statvalue": {
+                "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
+                "formattext": "Uni_BOR_SG_Convergence, 8F62CC2A4352EDC237FA8EAC8243AF80, [rarity_legendary]Fine Line[/rarity_legendary] "
+              }
+            }
+          },
+          {
+            "uistat_plumbbob_red_text": {
+              "ui_stat": "uistat_plumbbob_red_text",
+              "displaygroup": "ui_stat_group'RedText'",
+              "statvalue": {
+                "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
+                "formattext": "Uni_BOR_SG_Convergence, EDF3BCF746FE016AA7E44D9ACDA811E4, The perfect cast."
+              }
+            }
+          },
+          {
+            "uistat_pressurecooker_desc": {
+              "ui_stat": "uistat_pressurecooker_desc",
+              "displaygroup": "ui_stat_group'Secondary'",
+              "staticon": "Asset'/Game/uiresources/_shared/assets/ico_ui_art_discovery/ico_misc_legendaries.ico_misc_legendaries'",
+              "statvalue": {
+                "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
+                "formattext": "Uni_Spinning_Blade, F941AB0645131EE89AD205B2950915EE, [rarity_legendary]Diamond Hands[/rarity_legendary] - Throws [secondary]5 Divider[/secondary] grenades. Cooking the grenade increases the [secondary]Damage[/secondary] it deals and reduces the number of projectiles thrown.",
+                "argsmap": {
+                  "pairs": {
+                    "pair4019983703": {
+                      "key": "mod1",
+                      "value": {
+                        "structtype": "Asset'/Script/GbxGame.NumericDisplayValue'",
+                        "attributedef": "attribute'grenade_artillery_rocket_dmg'"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "uistat_pressurecooker_redtext": {
+              "ui_stat": "uistat_pressurecooker_redtext",
+              "displaygroup": "ui_stat_group'RedText'",
+              "statvalue": {
+                "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
+                "formattext": "Uni_DAD_GRN_Fuse, 7B39332E47CBFD168E922CACD928A8AE, Pressing down on you."
+              }
+            }
+          },
+          {
             "uistat_raiden_desc": {
               "ui_stat": "uistat_Raiden_desc",
               "displaygroup": "ui_stat_group'Secondary'",
@@ -7134,6 +7516,18 @@
               "statvalue": {
                 "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
                 "formattext": "Uni_MAL_SG_Kickballer, E341601F4707E999946CFFA4D5B87C81, What goes around..."
+              }
+            }
+          },
+          {
+            "uistat_repkit_aug_uni_bloodiron_desc": {
+              "ui_stat": "uistat_repkit_aug_uni_BloodIron_desc",
+              "displaygroup": "ui_stat_group'Secondary'",
+              "sortingpriority": "-1.000000",
+              "staticon": "Asset'/Game/uiresources/_shared/assets/ico_ui_art_discovery/ico_misc_legendaries.ico_misc_legendaries'",
+              "statvalue": {
+                "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
+                "formattext": "repair_kit_uistats, B2D41BBB4B38ED8046DB1F9FE4753BB1, [rarity_legendary]Blood Iron[/rarity_legendary] - [secondary]Reloads[/secondary] a percentage of [secondary]ammo[/secondary] equal to the percentage of [secondary]health[/secondary] healed on [secondary]use[/secondary]"
               }
             }
           },
@@ -7295,7 +7689,7 @@
               "staticon": "Asset'/Game/uiresources/_shared/assets/ico_ui_art_discovery/ico_misc_legendaries.ico_misc_legendaries'",
               "statvalue": {
                 "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
-                "formattext": "Uni_BOR_RepKit_Hugger, C1F6B0FF4E2109991214439857AD3BA8, [rarity_legendary]Energizer[/rarity_legendary] - While [secondary]Repair Kit[/secondary] is active, deal  [shock]{dmg} Shock Damage[/shock] per second to nearby enemies and gain a {chance} chance to [secondary]reflect[/secondary] bullets.",
+                "formattext": "Uni_BOR_RepKit_Hugger, C1F6B0FF4E2109991214439857AD3BA8, [rarity_legendary]Energizer[/rarity_legendary] - While [secondary]Repkit[/secondary] is active, deal  [shock]{dmg} Shock Damage/s[/shock] to nearby [secondary]enemies[/secondary] and gain a [secondary]{chance} chance[/secondary] to [secondary]reflect bullets[/secondary]",
                 "argsmap": {
                   "pairs": {
                     "pair2747350507": {
@@ -7367,6 +7761,17 @@
             }
           },
           {
+            "uistat_repkit_redtext_bloodiron": {
+              "ui_stat": "uistat_repkit_redtext_BloodIron",
+              "displaygroup": "ui_stat_group'RedText'",
+              "sortingpriority": "1.000000",
+              "statvalue": {
+                "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
+                "formattext": "Inv_VLA_RepKit_AdrenalinePump, E885635F4B2836132C2CC4B8D158C376, Rage against the dying light."
+              }
+            }
+          },
+          {
             "uistat_repkit_redtext_geigerroid": {
               "ui_stat": "uistat_repkit_redtext_GeigerRoid",
               "displaygroup": "ui_stat_group'RedText'",
@@ -7407,7 +7812,7 @@
               "staticon": "Asset'/Game/uiresources/_shared/assets/ico_ui_art_discovery/ico_misc_legendaries.ico_misc_legendaries'",
               "statvalue": {
                 "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
-                "formattext": "Inv_DAD_SM_BloodStarved, B5D3C29247C9B7B39EC35C9E8494C241, [rarity_legendary]Tempo[/rarity_legendary] - Firing at [secondary]{stack}[/secondary] [secondary]Charge Stacks[/secondary] deals [cryo]{mod1} Cryo Damage[/cryo] and refunds it's ammo cost.  Reloading changes the charge speed.",
+                "formattext": "Inv_DAD_SM_BloodStarved, B5D3C29247C9B7B39EC35C9E8494C241, [rarity_legendary]Tempo[/rarity_legendary] - Firing at [secondary]{stack}[/secondary] [secondary]Charge Stacks[/secondary] deals [cryo]{mod1} Cryo Damage[/cryo] and refunds its [secondary]Ammo[/secondary] cost.  [secondary]Reloading[/secondary] changes the [secondary]charge speed[/secondary].",
                 "argsmap": {
                   "pairs": {
                     "pair4019983703": {
@@ -7723,6 +8128,55 @@
             }
           },
           {
+            "uistat_silversliver_desc": {
+              "ui_stat": "uistat_silversliver_desc",
+              "displaygroup": "ui_stat_group'Secondary'",
+              "sortingpriority": "-0.500000",
+              "staticon": "Asset'/Game/uiresources/_shared/assets/ico_ui_art_discovery/ico_misc_legendaries.ico_misc_legendaries'",
+              "statvalue": {
+                "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
+                "formattext": "Uni_MAL_SG_Kickballer, DF2345584E0BDF2F5FC4169DE33E6F61, [rarity_legendary]Splinter[/rarity_legendary] - On hit, enemies take [secondary]{mod} Damage[/secondary] for [secondary]{mod1}[/secondary] seconds, stacking up to [secondary]{mod2}[/secondary] times.",
+                "argsmap": {
+                  "pairs": {
+                    "pair2013007324": {
+                      "key": "mod",
+                      "value": {
+                        "structtype": "Asset'/Script/GbxGame.NumericDisplayValue'",
+                        "attributedef": "attribute'attr_silversliver_bonusdamage'",
+                        "bdisplayaspercentage": "true",
+                        "bdisplayplussign": "true"
+                      }
+                    },
+                    "pair4019983703": {
+                      "key": "mod1",
+                      "value": {
+                        "structtype": "Asset'/Script/GbxGame.NumericDisplayValue'",
+                        "attributedef": "attribute'attr_silversliver_duration'"
+                      }
+                    },
+                    "pair3703827863": {
+                      "key": "mod2",
+                      "value": {
+                        "structtype": "Asset'/Script/GbxGame.NumericDisplayValue'",
+                        "attributedef": "attribute'attr_silversliver_maxstacks'"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "uistat_silversliver_red_text": {
+              "ui_stat": "uistat_silversliver_red_text",
+              "displaygroup": "ui_stat_group'RedText'",
+              "statvalue": {
+                "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
+                "formattext": "Uni_DAD_PS_Rangefinder, 48947EEA406ACD95C79675A0A9E842CD, Slithers stealthily salvaging snakes..."
+              }
+            }
+          },
+          {
             "uistat_skully_desc": {
               "ui_stat": "uistat_skully_desc",
               "displaygroup": "ui_stat_group'Secondary'",
@@ -7809,6 +8263,41 @@
               "statvalue": {
                 "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
                 "formattext": "Uni_DAD_PS_Rangefinder, 9EC0D7CC4C0D902A371FDAA6F63BA9E1, At first I was afraid..."
+              }
+            }
+          },
+          {
+            "uistat_stealth_desc": {
+              "ui_stat": "uistat_stealth_desc",
+              "displaygroup": "ui_stat_group'Secondary'",
+              "sortingpriority": "-1.000000",
+              "staticon": "Asset'/Game/uiresources/_shared/assets/ico_ui_art_discovery/ico_misc_legendaries.ico_misc_legendaries'",
+              "statvalue": {
+                "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
+                "formattext": "Uni_MAL_SR_ComplexRoot, 5D33838A47E28A19DED8F98B115E081E, [rarity_legendary]Unseen[/rarity_legendary] - Attached Projectiles fire additional projectiles at nearby targets",
+                "argsmap": {
+                  "pairs": {
+                    "pair4019983703": {
+                      "key": "mod1",
+                      "value": {
+                        "structtype": "Asset'/Script/GbxGame.NumericDisplayValue'",
+                        "attributedef": "attribute'attr_conflux_dmgbonus'",
+                        "bdisplayaspercentage": "true",
+                        "bdisplayplussign": "true"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "uistat_stealth_red_text": {
+              "ui_stat": "uistat_stealth_red_text",
+              "displaygroup": "ui_stat_group'RedText'",
+              "statvalue": {
+                "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
+                "formattext": "Uni_MAL_SR_ComplexRoot, F0D6D22F4F9577DDE076A6BA16A5B295, Ready or not, here I come."
               }
             }
           },
@@ -7904,6 +8393,48 @@
               "statvalue": {
                 "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
                 "formattext": "Uni_ORD_SR_Symmetry, 7D89B0B14261B8F2B5D7C291BD62C8DD, Carrington's Omen."
+              }
+            }
+          },
+          {
+            "uistat_testament_desc": {
+              "ui_stat": "uistat_Testament_desc",
+              "displaygroup": "ui_stat_group'Secondary'",
+              "sortingpriority": "-1.000000",
+              "staticon": "Asset'/Game/uiresources/_shared/assets/ico_ui_art_discovery/ico_misc_legendaries.ico_misc_legendaries'",
+              "statvalue": {
+                "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
+                "formattext": "Uni_MAL_SG_Kickballer, 6A3570004815A8DD04F90B9CBD1F88D1, [rarity_legendary]Irradiation[/rarity_legendary] - [secondary]Enemies[/secondary] damaged by the [secondary]Ricochet Shield[/secondary] take [secondary]{dmgscalar}[/secondary] increased [radiation]Radiation Damage[/radiation] for [secondary]{duration}[/secondary] seconds and are inflicted with [radiation_icon] [radiation] Radiation Status Effect [/radiation]",
+                "argsmap": {
+                  "pairs": {
+                    "pair3107892664": {
+                      "key": "dmgscalar",
+                      "value": {
+                        "structtype": "Asset'/Script/GbxGame.NumericDisplayValue'",
+                        "attributedef": "attribute'att_Testament_RadiationDMGScalar'",
+                        "bdisplayaspercentage": "true",
+                        "bdisplayplussign": "true"
+                      }
+                    },
+                    "pair2624834046": {
+                      "key": "duration",
+                      "value": {
+                        "structtype": "Asset'/Script/GbxGame.NumericDisplayValue'",
+                        "attributedef": "attribute'att_Testament_StatusDuration'"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "uistat_testament_red_text": {
+              "ui_stat": "uistat_Testament_red_text",
+              "displaygroup": "ui_stat_group'RedText'",
+              "statvalue": {
+                "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
+                "formattext": "Uni_MAL_SG_Kickballer, 5AA6BF174920199D66FA0FB1ADB24673, Give your bodies to Atom!"
               }
             }
           },
@@ -8068,6 +8599,48 @@
                 "formattext": "Uni_BOR_Rubber, 9805D2A04E5B7D1BD4E8D480CC6F5294, Benthic boogie."
               }
             }
+          },
+          {
+            "uistat_verce_desc": {
+              "ui_stat": "uistat_Verce_desc",
+              "displaygroup": "ui_stat_group'Secondary'",
+              "sortingpriority": "-1.000000",
+              "staticon": "Asset'/Game/uiresources/_shared/assets/ico_ui_art_discovery/ico_misc_legendaries.ico_misc_legendaries'",
+              "statvalue": {
+                "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
+                "formattext": "Uni_MAL_SG_Kickballer, 2B0B7F4949D5407F549E7A8A24CB2799, [rarity_legendary]Rapid Infusion[/rarity_legendary] - [secondary]5%[/secondary] of [secondary]weapon's damage[/secondary] heals [secondary]energy shields[/secondary] and [secondary]{mod2} chance[/secondary] on hit to gain [secondary]{mod}[/secondary] firerate",
+                "argsmap": {
+                  "pairs": {
+                    "pair2013007324": {
+                      "key": "mod",
+                      "value": {
+                        "structtype": "Asset'/Script/GbxGame.NumericDisplayValue'",
+                        "attributedef": "attribute'JAK_SG_barrel_02_Verce_firerate_pres'",
+                        "bdisplayaspercentage": "true"
+                      }
+                    },
+                    "pair3703827863": {
+                      "key": "mod2",
+                      "value": {
+                        "structtype": "Asset'/Script/GbxGame.NumericDisplayValue'",
+                        "attributedef": "attribute'JAK_SG_barrel_02_Verce_Chance_Pres'",
+                        "bdisplayaspercentage": "true"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "uistat_verce_red_text": {
+              "ui_stat": "uistat_Verce_red_text",
+              "displaygroup": "ui_stat_group'RedText'",
+              "statvalue": {
+                "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
+                "formattext": "Uni_JAK_AR_Rowan, 47871FB0451114226831BE924F81C1B6, Pleased to make your acquaintance."
+              }
+            }
           }
         ]
       },
@@ -8185,7 +8758,7 @@
               "staticon": "Asset'/Game/uiresources/_shared/assets/ico_ui_art_discovery/ico_misc_legendaries.ico_misc_legendaries'",
               "statvalue": {
                 "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
-                "formattext": "Inv_DAD_SM_BloodStarved, 028C519940225885F33F9C904F02533D, [rarity_legendary]Parley[/rarity_legendary] - Bullets [secondary]pierce enemies[/secondary], and have a [secondary]{chn}[/secondary] Chance when hitting an [secondary]enemy[/secondary] to cause an [secondary]explosion[/secondary] that deals [secondary]{dmg} Damage[/secondary]",
+                "formattext": "Inv_DAD_SM_BloodStarved, 028C519940225885F33F9C904F02533D, [rarity_legendary]Parley[/rarity_legendary] - [secondary]Bullets pierce enemies[/secondary], and have a [secondary]{chn} Chance[/secondary] when hitting an [secondary]enemy[/secondary] to cause an [secondary]explosion[/secondary] that deals [secondary]{dmg} Damage[/secondary]",
                 "argsmap": {
                   "pairs": {
                     "pair2747350507": {

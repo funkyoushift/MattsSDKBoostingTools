@@ -27,6 +27,14 @@
             }
           },
           {
+            "missionset_dlc_harp": {
+              "missionset": "MissionSet_DLC_Harp",
+              "bisdlcmissionset": "true",
+              "dlc": "DLCDef'DLCDef_Harp'",
+              "type": "/Script/OakGame.OakMissionSetDef"
+            }
+          },
+          {
             "missionset_dlc_mandolin": {
               "missionset": "MissionSet_DLC_Mandolin",
               "bisdlcmissionset": "true",

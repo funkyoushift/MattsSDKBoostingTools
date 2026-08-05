@@ -1350,324 +1350,95 @@
       {
         "entries": [
           {
-            "challenge_collect_echo_log_dogleg_1": {
-              "challenge": "Challenge_Collect_Echo_Log_Dogleg_1",
-              "displayname": "Challenges_EchoLogs_General, 32C9A8824164F0D70DED7584C8452DE7, Echo Log ",
-              "description": "Challenges_EchoLogs_General, F672E3F44E3E051468CBFEA1ACF2F233, Collect this Echo Log",
+            "challenge_collect_bp4_echolog_1": {
+              "challenge": "Challenge_Collect_BP4_EchoLog_1",
+              "displayname": "Challenge_Collect_BP4_EchoLogs, 5B418D224AB28F3B531989A85BD831EB, BP4 Echo Log",
+              "description": "Challenge_Collect_BP4_EchoLogs, 7A41531D4CD62755414F0E9A11BD759B, Collect this Echo Log",
               "showprogressui": "false",
               "showcompletionui": "false",
-              "associatedstat": "stats.cello_openworld.cello_collectibles.dlc2_echologs.dlc2_echolog_01",
+              "associatedstat": "stats.harp_openworld.harp_collectibles.harp_echologs.harp_echolog_1",
               "bisprogressreplicated": "true",
-              "accountwideunlockable": "unlockable'SharedProgress_Cello.Collectible_EchoLog1'",
               "challengetype": "FactTrigger",
               "challengetiers": [
                 {
                   "goalvalue": "1",
-                  "notificationthreshold": "1",
-                  "reward": {
-                    "type": "Inline",
-                    "value": {
-                      "rewarddata": [
-                        {
-                          "structtype": "Asset'/Script/GbxGame.GbxRewardData_Unlockable'",
-                          "unlockabledef": "unlockable'SharedProgress_Cello.Collectible_EchoLog1'"
-                        }
-                      ],
-                      "customdata": {
-                        "structtype": "Asset'none'"
-                      },
-                      "bisunique": "false",
-                      "uniquename": "challenge_Challenge_Collect_Echo_Log_Dogleg_1_t0"
-                    }
-                  }
+                  "notificationthreshold": "1"
                 }
               ]
             }
           },
           {
-            "challenge_collect_echo_log_dogleg_2": {
-              "challenge": "Challenge_Collect_Echo_Log_Dogleg_2",
-              "displayname": "Challenges_EchoLogs_General, 62F574EA465BDBC953963A95D37B2A84, Echo Log ",
-              "description": "Challenges_EchoLogs_General, 1F37FC5B4CF75ED515AC12B44A1C88D7, Collect this Echo Log",
+            "challenge_collect_bp4_echolog_2": {
+              "challenge": "Challenge_Collect_BP4_EchoLog_2",
+              "displayname": "Challenge_Collect_BP4_EchoLogs, 77698F85452437047E5FC39DC3960A1D, BP4 Echo Log",
+              "description": "Challenge_Collect_BP4_EchoLogs, 28DEFA484056106F30110A90BF8B02E4, Collect this Echo Log",
               "showprogressui": "false",
               "showcompletionui": "false",
-              "associatedstat": "stats.cello_openworld.cello_collectibles.dlc2_echologs.dlc2_echolog_02",
+              "associatedstat": "stats.harp_openworld.harp_collectibles.harp_echologs.harp_echolog_2",
               "bisprogressreplicated": "true",
-              "accountwideunlockable": "unlockable'SharedProgress_Cello.Collectible_EchoLog2'",
               "challengetype": "FactTrigger",
               "challengetiers": [
                 {
                   "goalvalue": "1",
-                  "notificationthreshold": "1",
-                  "reward": {
-                    "type": "Inline",
-                    "value": {
-                      "rewarddata": [
-                        {
-                          "structtype": "Asset'/Script/GbxGame.GbxRewardData_Unlockable'",
-                          "unlockabledef": "unlockable'SharedProgress_Cello.Collectible_EchoLog2'"
-                        }
-                      ],
-                      "customdata": {
-                        "structtype": "Asset'none'"
-                      },
-                      "bisunique": "false",
-                      "uniquename": "challenge_Challenge_Collect_Echo_Log_Dogleg_2_t0"
-                    }
-                  }
+                  "notificationthreshold": "1"
                 }
               ]
             }
           },
           {
-            "challenge_collect_echo_log_dogleg_3": {
-              "challenge": "Challenge_Collect_Echo_Log_Dogleg_3",
-              "displayname": "Challenges_EchoLogs_General, E13C19A8405341728E490CB5FE9C34C0, Echo Log ",
-              "description": "Challenges_EchoLogs_General, 5CC07D594111A5FDC3CD45B67096727D, Collect this Echo Log",
+            "challenge_collect_bp4_echolog_3": {
+              "challenge": "Challenge_Collect_BP4_EchoLog_3",
+              "displayname": "Challenge_Collect_BP4_EchoLogs, 010D0ECF4F7F75FB0742A9A612ACAF23, BP4 Echo Log",
+              "description": "Challenge_Collect_BP4_EchoLogs, E5D7701446959594910256AAEC30912D, Collect this Echo Log",
               "showprogressui": "false",
               "showcompletionui": "false",
-              "associatedstat": "stats.cello_openworld.cello_collectibles.dlc2_echologs.dlc2_echolog_03",
+              "associatedstat": "stats.harp_openworld.harp_collectibles.harp_echologs.harp_echolog_3",
               "bisprogressreplicated": "true",
-              "accountwideunlockable": "unlockable'SharedProgress_Cello.Collectible_EchoLog3'",
               "challengetype": "FactTrigger",
               "challengetiers": [
                 {
                   "goalvalue": "1",
-                  "notificationthreshold": "1",
-                  "reward": {
-                    "type": "Inline",
-                    "value": {
-                      "rewarddata": [
-                        {
-                          "structtype": "Asset'/Script/GbxGame.GbxRewardData_Unlockable'",
-                          "unlockabledef": "unlockable'SharedProgress_Cello.Collectible_EchoLog3'"
-                        }
-                      ],
-                      "customdata": {
-                        "structtype": "Asset'none'"
-                      },
-                      "bisunique": "false",
-                      "uniquename": "challenge_Challenge_Collect_Echo_Log_Dogleg_3_t0"
-                    }
-                  }
+                  "notificationthreshold": "1"
                 }
               ]
             }
           },
           {
-            "challenge_collect_echolog_auger_fallen": {
-              "challenge": "Challenge_Collect_EchoLog_Auger_Fallen",
-              "displayname": "Challenges_EchoLogs_General, 77882F0747D5C45A164D56B595FE2716, Echo Log",
-              "description": "Challenges_EchoLogs_General, 92113088431A1FD3CB9D30B2EDCE3726, Collect this Echo Log",
+            "challenge_collect_bp4_echolog_4": {
+              "challenge": "Challenge_Collect_BP4_EchoLog_4",
+              "displayname": "Challenge_Collect_BP4_EchoLogs, 8D3AD7AD4BAAFAC691C4CA92B422FA84, BP4 Echo Log",
+              "description": "Challenge_Collect_BP4_EchoLogs, 1CFEE7C84B8B657D22649BB260BED7FD, Collect this Echo Log",
               "showprogressui": "false",
               "showcompletionui": "false",
-              "associatedstat": "stats.cello_openworld.cello_collectibles.dlc2_echologs.dlc2_echolog_04",
+              "associatedstat": "stats.harp_openworld.harp_collectibles.harp_echologs.harp_echolog_4",
               "bisprogressreplicated": "true",
-              "accountwideunlockable": "unlockable'SharedProgress_Cello.Collectible_EchoLog4'",
               "challengetype": "FactTrigger",
               "challengetiers": [
                 {
                   "goalvalue": "1",
-                  "notificationthreshold": "1",
-                  "reward": {
-                    "type": "Inline",
-                    "value": {
-                      "rewarddata": [
-                        {
-                          "structtype": "Asset'/Script/GbxGame.GbxRewardData_Unlockable'",
-                          "unlockabledef": "unlockable'SharedProgress_Cello.Collectible_EchoLog4'"
-                        }
-                      ],
-                      "customdata": {
-                        "structtype": "Asset'none'"
-                      },
-                      "bisunique": "false",
-                      "uniquename": "challenge_Challenge_Collect_EchoLog_Auger_Fallen_t0"
-                    }
-                  }
+                  "notificationthreshold": "1"
                 }
               ]
             }
           },
           {
-            "challenge_collect_echolog_auger_smashed": {
-              "challenge": "Challenge_Collect_EchoLog_Auger_Smashed",
-              "displayname": "Challenges_EchoLogs_General, 34B429C34C8E5A54432369A48DEE2D83, Echo Log",
-              "description": "Challenges_EchoLogs_General, BF38157A44ECB293BFA0EF812698A32A, Collect this Echo Log",
+            "challenge_collect_bp4_echolog_5": {
+              "challenge": "Challenge_Collect_BP4_EchoLog_5",
+              "displayname": "Challenge_Collect_BP4_EchoLogs, F80DBED4490746DA19E6BAA4BF10F6AE, BP4 Echo Log",
+              "description": "Challenge_Collect_BP4_EchoLogs, 051C747A44C63ADA0D6EAD9D3F5AAF31, Collect this Echo Log",
               "showprogressui": "false",
               "showcompletionui": "false",
-              "associatedstat": "stats.cello_openworld.cello_collectibles.dlc2_echologs.dlc2_echolog_05",
+              "associatedstat": "stats.harp_openworld.harp_collectibles.harp_echologs.harp_echolog_5",
               "bisprogressreplicated": "true",
-              "accountwideunlockable": "unlockable'SharedProgress_Cello.Collectible_EchoLog5'",
               "challengetype": "FactTrigger",
               "challengetiers": [
                 {
                   "goalvalue": "1",
-                  "notificationthreshold": "1",
-                  "reward": {
-                    "type": "Inline",
-                    "value": {
-                      "rewarddata": [
-                        {
-                          "structtype": "Asset'/Script/GbxGame.GbxRewardData_Unlockable'",
-                          "unlockabledef": "unlockable'SharedProgress_Cello.Collectible_EchoLog5'"
-                        }
-                      ],
-                      "customdata": {
-                        "structtype": "Asset'none'"
-                      },
-                      "bisunique": "false",
-                      "uniquename": "challenge_Challenge_Collect_EchoLog_Auger_Smashed_t0"
-                    }
-                  }
+                  "notificationthreshold": "1"
                 }
               ]
             }
           },
-          {
-            "challenge_collect_echolog_pietro_log1": {
-              "challenge": "Challenge_Collect_EchoLog_Pietro_Log1",
-              "displayname": "Challenges_EchoLogs_Arjay, DB2D3CEF4A07D4BB87A53EA9206C7C0C, Echo Log",
-              "description": "Challenges_EchoLogs_Arjay, 8723B85A45B1DD20BA5F1BBF30BCCC72, Collect this Echo Log",
-              "showprogressui": "false",
-              "showcompletionui": "false",
-              "associatedstat": "stats.cello_openworld.cello_collectibles.dlc2_echologs.dlc2_echolog_06",
-              "bisprogressreplicated": "true",
-              "accountwideunlockable": "unlockable'SharedProgress_Cello.Collectible_EchoLog6'",
-              "challengetype": "FactTrigger",
-              "challengetiers": [
-                {
-                  "goalvalue": "1",
-                  "notificationthreshold": "1",
-                  "reward": {
-                    "type": "Inline",
-                    "value": {
-                      "rewarddata": [
-                        {
-                          "structtype": "Asset'/Script/GbxGame.GbxRewardData_Unlockable'",
-                          "unlockabledef": "unlockable'SharedProgress_Cello.Collectible_EchoLog6'"
-                        }
-                      ],
-                      "customdata": {
-                        "structtype": "Asset'none'"
-                      },
-                      "bisunique": "false",
-                      "uniquename": "challenge_Challenge_Collect_EchoLog_Pietro_Log1_t0"
-                    }
-                  }
-                }
-              ]
-            }
-          },
-          {
-            "challenge_collect_echolog_pietro_log2": {
-              "challenge": "Challenge_Collect_EchoLog_Pietro_Log2",
-              "displayname": "Challenges_EchoLogs_General, DD5D41234879191778CA368579C47BBE, Echo Log",
-              "description": "Challenges_EchoLogs_General, 84676B524D05423C99C33EA811307BB5, Collect this Echo Log",
-              "showprogressui": "false",
-              "showcompletionui": "false",
-              "associatedstat": "stats.cello_openworld.cello_collectibles.dlc2_echologs.dlc2_echolog_07",
-              "bisprogressreplicated": "true",
-              "accountwideunlockable": "unlockable'SharedProgress_Cello.Collectible_EchoLog7'",
-              "challengetype": "FactTrigger",
-              "challengetiers": [
-                {
-                  "goalvalue": "1",
-                  "notificationthreshold": "1",
-                  "reward": {
-                    "type": "Inline",
-                    "value": {
-                      "rewarddata": [
-                        {
-                          "structtype": "Asset'/Script/GbxGame.GbxRewardData_Unlockable'",
-                          "unlockabledef": "unlockable'SharedProgress_Cello.Collectible_EchoLog7'"
-                        }
-                      ],
-                      "customdata": {
-                        "structtype": "Asset'none'"
-                      },
-                      "bisunique": "false",
-                      "uniquename": "challenge_Challenge_Collect_EchoLog_Pietro_Log2_t0"
-                    }
-                  }
-                }
-              ]
-            }
-          },
-          {
-            "challenge_collect_echolog_pietro_log3": {
-              "challenge": "Challenge_Collect_EchoLog_Pietro_Log3",
-              "displayname": "Challenges_EchoLogs_General, C6C2FE3A41515B0E6C0C69AFD53B4C76, Echo Log",
-              "description": "Challenges_EchoLogs_General, 3211C68E4F380389814537BEDA6C4CC7, Collect this Echo Log",
-              "showprogressui": "false",
-              "showcompletionui": "false",
-              "associatedstat": "stats.cello_openworld.cello_collectibles.dlc2_echologs.dlc2_echolog_08",
-              "bisprogressreplicated": "true",
-              "accountwideunlockable": "unlockable'SharedProgress_Cello.Collectible_EchoLog8'",
-              "challengetype": "FactTrigger",
-              "challengetiers": [
-                {
-                  "goalvalue": "1",
-                  "notificationthreshold": "1",
-                  "reward": {
-                    "type": "Inline",
-                    "value": {
-                      "rewarddata": [
-                        {
-                          "structtype": "Asset'/Script/GbxGame.GbxRewardData_Unlockable'",
-                          "unlockabledef": "unlockable'SharedProgress_Cello.Collectible_EchoLog8'"
-                        }
-                      ],
-                      "customdata": {
-                        "structtype": "Asset'none'"
-                      },
-                      "bisunique": "false",
-                      "uniquename": "challenge_Challenge_Collect_EchoLog_Pietro_Log3_t0"
-                    }
-                  }
-                }
-              ]
-            }
-          },
-          {
-            "challenge_collect_echolog_pietro_log4": {
-              "challenge": "Challenge_Collect_EchoLog_Pietro_Log4",
-              "displayname": "Challenges_EchoLogs_General, A8CBA2844AC5F819373C9C88D723E36F, Echo Log",
-              "description": "Challenges_EchoLogs_General, 214B052B4EE72FC9958468A6472CEBD3, Collect this Echo Log",
-              "showprogressui": "false",
-              "showcompletionui": "false",
-              "associatedstat": "stats.cello_openworld.cello_collectibles.dlc2_echologs.dlc2_echolog_09",
-              "bisprogressreplicated": "true",
-              "accountwideunlockable": "unlockable'SharedProgress_Cello.Collectible_EchoLog9'",
-              "challengetype": "FactTrigger",
-              "challengetiers": [
-                {
-                  "goalvalue": "1",
-                  "notificationthreshold": "1",
-                  "reward": {
-                    "type": "Inline",
-                    "value": {
-                      "rewarddata": [
-                        {
-                          "structtype": "Asset'/Script/GbxGame.GbxRewardData_Unlockable'",
-                          "unlockabledef": "unlockable'SharedProgress_Cello.Collectible_EchoLog9'"
-                        }
-                      ],
-                      "customdata": {
-                        "structtype": "Asset'none'"
-                      },
-                      "bisunique": "false",
-                      "uniquename": "challenge_Challenge_Collect_EchoLog_Pietro_Log4_t0"
-                    }
-                  }
-                }
-              ]
-            }
-          }
-        ]
-      },
-      {
-        "entries": [
           {
             "challenge_dlc1_echolog_recordplayer_parent": {
               "challenge": "Challenge_DLC1_EchoLog_RecordPlayer_Parent",
@@ -2190,6 +1961,142 @@
             }
           },
           {
+            "challenges_achievements_49_harp_responses_all": {
+              "challenge": "Challenges_Achievements_49_Harp_responses_all",
+              "displayname": "Challenges_Achievements, 0A29667B4BBEE1BD8FE2919567877C3C, The Full Flock ",
+              "description": "Challenges_Achievements, 4692B2C246E10A2C875D7694E55AF3CF, Select all responses in mission \"Murders & Acquisitions\".",
+              "showprogressui": "false",
+              "showcompletionui": "false",
+              "associatedstat": "stats.harp_achievements.49_harp_responses_all",
+              "bisaccountwideunlockablesharedprogression": "false",
+              "achievementdef": "achievement'ID_Achievement_49_Harp_responses_all'",
+              "challengetype": "ParentChallenge",
+              "challengetiers": [
+                {
+                  "goalvalue": "6",
+                  "notificationthreshold": "6"
+                }
+              ]
+            }
+          },
+          {
+            "challenges_achievements_50_harp_boss_betamaxxx": {
+              "challenge": "Challenges_Achievements_50_Harp_boss_betamaxxx",
+              "showprogressui": "false",
+              "showcompletionui": "false",
+              "associatedstat": "stats.harp_achievements.50_harp_boss_defeat.betamaxxx",
+              "bispartychallenge": "true",
+              "challengetype": "Enemy_Kill",
+              "damagetargettags": {
+                "gameplaytags": [
+                  {
+                    "tagname": "Bosses.Harp.BlasphemerBoss"
+                  }
+                ]
+              },
+              "challengetiers": [
+                {
+                  "goalvalue": "1",
+                  "notificationthreshold": "1"
+                }
+              ]
+            }
+          },
+          {
+            "challenges_achievements_50_harp_boss_defeat": {
+              "challenge": "Challenges_Achievements_50_Harp_boss_defeat",
+              "displayname": "Challenges_Achievements, 0C53CE7B4CD9DC9A563119A4B863BD33, Detoxed and Ready to Rock",
+              "description": "Challenges_Achievements, DB9ABE4C43D5BF3A804FBB874228D6E3, Defeat all bosses in The Toxic Scowl.",
+              "showprogressui": "false",
+              "showcompletionui": "false",
+              "associatedstat": "stats.harp_achievements.50_harp_boss_defeat",
+              "bisaccountwideunlockablesharedprogression": "false",
+              "achievementdef": "achievement'ID_Achievement_50_Harp_boss_defeat'",
+              "challengetype": "ParentChallenge",
+              "challengetiers": [
+                {
+                  "goalvalue": "4",
+                  "notificationthreshold": "4"
+                }
+              ]
+            }
+          },
+          {
+            "challenges_achievements_50_harp_boss_infamousdave": {
+              "challenge": "Challenges_Achievements_50_Harp_boss_infamousdave",
+              "showprogressui": "false",
+              "showcompletionui": "false",
+              "associatedstat": "stats.harp_achievements.50_harp_boss_defeat.infamousdave",
+              "bispartychallenge": "true",
+              "bisprogressreplicated": "true",
+              "bisaccountwideunlockablesharedprogression": "false",
+              "challengetype": "Enemy_Kill",
+              "damagetargettags": {
+                "gameplaytags": [
+                  {
+                    "tagname": "Bosses.Harp.InfamousDave"
+                  }
+                ]
+              },
+              "challengetiers": [
+                {
+                  "goalvalue": "1",
+                  "notificationthreshold": "1"
+                }
+              ]
+            }
+          },
+          {
+            "challenges_achievements_50_harp_boss_maxxxsupreme": {
+              "challenge": "Challenges_Achievements_50_Harp_boss_maxxxsupreme",
+              "showprogressui": "false",
+              "showcompletionui": "false",
+              "associatedstat": "stats.harp_achievements.50_harp_boss_defeat.maxxxsupreme",
+              "bispartychallenge": "true",
+              "bisprogressreplicated": "true",
+              "bisaccountwideunlockablesharedprogression": "false",
+              "challengetype": "Enemy_Kill",
+              "damagetargettags": {
+                "gameplaytags": [
+                  {
+                    "tagname": "Bosses.Harp.MaxxxSupreme"
+                  }
+                ]
+              },
+              "challengetiers": [
+                {
+                  "goalvalue": "1",
+                  "notificationthreshold": "1"
+                }
+              ]
+            }
+          },
+          {
+            "challenges_achievements_50_harp_boss_skankeyes": {
+              "challenge": "Challenges_Achievements_50_Harp_boss_skankeyes",
+              "showprogressui": "false",
+              "showcompletionui": "false",
+              "associatedstat": "stats.harp_achievements.50_harp_boss_defeat.skankeyes",
+              "bispartychallenge": "true",
+              "bisprogressreplicated": "true",
+              "bisaccountwideunlockablesharedprogression": "false",
+              "challengetype": "Enemy_Kill",
+              "damagetargettags": {
+                "gameplaytags": [
+                  {
+                    "tagname": "Bosses.Harp.SkankEyes"
+                  }
+                ]
+              },
+              "challengetiers": [
+                {
+                  "goalvalue": "1",
+                  "notificationthreshold": "1"
+                }
+              ]
+            }
+          },
+          {
             "vc1_killbadassenemies30": {
               "challenge": "VC1_KillBadassEnemies30",
               "celebratorynotification": "display_data'daily_challenge_complete_notification_vc1'",
@@ -2270,6 +2177,36 @@
               "rewardcurrencytype": "vc3",
               "celebratorynotification": "display_data'daily_challenge_complete_notification_vc3'",
               "associatedstat": "stats.daily_bp3_vc.kill_daily_bp3.enemies_bp3",
+              "parent": "challenge'VCChallenge_KillEnemies25'"
+            }
+          },
+          {
+            "vc4_killbadassenemies30": {
+              "challenge": "VC4_KillBadassEnemies30",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.enemies_bp4",
+              "parent": "challenge'VCChallenge_KillEnemies30'"
+            }
+          },
+          {
+            "vc4_killenemies20": {
+              "challenge": "VC4_KillEnemies20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.enemies_bp4",
+              "parent": "challenge'VCChallenge_KillEnemies20'"
+            }
+          },
+          {
+            "vc4_killenemies25": {
+              "challenge": "VC4_KillEnemies25",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.enemies_bp4",
               "parent": "challenge'VCChallenge_KillEnemies25'"
             }
           },
@@ -2367,6 +2304,325 @@
                   "reward": {
                     "type": "RewardDef",
                     "value": "rewards'ChallengeReward_Daily_Large'"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "entries": [
+          {
+            "challenge_collect_echo_log_dogleg_1": {
+              "challenge": "Challenge_Collect_Echo_Log_Dogleg_1",
+              "displayname": "Challenges_EchoLogs_General, 32C9A8824164F0D70DED7584C8452DE7, Echo Log ",
+              "description": "Challenges_EchoLogs_General, F672E3F44E3E051468CBFEA1ACF2F233, Collect this Echo Log",
+              "showprogressui": "false",
+              "showcompletionui": "false",
+              "associatedstat": "stats.cello_openworld.cello_collectibles.dlc2_echologs.dlc2_echolog_01",
+              "bisprogressreplicated": "true",
+              "accountwideunlockable": "unlockable'SharedProgress_Cello.Collectible_EchoLog1'",
+              "challengetype": "FactTrigger",
+              "challengetiers": [
+                {
+                  "goalvalue": "1",
+                  "notificationthreshold": "1",
+                  "reward": {
+                    "type": "Inline",
+                    "value": {
+                      "rewarddata": [
+                        {
+                          "structtype": "Asset'/Script/GbxGame.GbxRewardData_Unlockable'",
+                          "unlockabledef": "unlockable'SharedProgress_Cello.Collectible_EchoLog1'"
+                        }
+                      ],
+                      "customdata": {
+                        "structtype": "Asset'none'"
+                      },
+                      "bisunique": "false",
+                      "uniquename": "challenge_Challenge_Collect_Echo_Log_Dogleg_1_t0"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "challenge_collect_echo_log_dogleg_2": {
+              "challenge": "Challenge_Collect_Echo_Log_Dogleg_2",
+              "displayname": "Challenges_EchoLogs_General, 62F574EA465BDBC953963A95D37B2A84, Echo Log ",
+              "description": "Challenges_EchoLogs_General, 1F37FC5B4CF75ED515AC12B44A1C88D7, Collect this Echo Log",
+              "showprogressui": "false",
+              "showcompletionui": "false",
+              "associatedstat": "stats.cello_openworld.cello_collectibles.dlc2_echologs.dlc2_echolog_02",
+              "bisprogressreplicated": "true",
+              "accountwideunlockable": "unlockable'SharedProgress_Cello.Collectible_EchoLog2'",
+              "challengetype": "FactTrigger",
+              "challengetiers": [
+                {
+                  "goalvalue": "1",
+                  "notificationthreshold": "1",
+                  "reward": {
+                    "type": "Inline",
+                    "value": {
+                      "rewarddata": [
+                        {
+                          "structtype": "Asset'/Script/GbxGame.GbxRewardData_Unlockable'",
+                          "unlockabledef": "unlockable'SharedProgress_Cello.Collectible_EchoLog2'"
+                        }
+                      ],
+                      "customdata": {
+                        "structtype": "Asset'none'"
+                      },
+                      "bisunique": "false",
+                      "uniquename": "challenge_Challenge_Collect_Echo_Log_Dogleg_2_t0"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "challenge_collect_echo_log_dogleg_3": {
+              "challenge": "Challenge_Collect_Echo_Log_Dogleg_3",
+              "displayname": "Challenges_EchoLogs_General, E13C19A8405341728E490CB5FE9C34C0, Echo Log ",
+              "description": "Challenges_EchoLogs_General, 5CC07D594111A5FDC3CD45B67096727D, Collect this Echo Log",
+              "showprogressui": "false",
+              "showcompletionui": "false",
+              "associatedstat": "stats.cello_openworld.cello_collectibles.dlc2_echologs.dlc2_echolog_03",
+              "bisprogressreplicated": "true",
+              "accountwideunlockable": "unlockable'SharedProgress_Cello.Collectible_EchoLog3'",
+              "challengetype": "FactTrigger",
+              "challengetiers": [
+                {
+                  "goalvalue": "1",
+                  "notificationthreshold": "1",
+                  "reward": {
+                    "type": "Inline",
+                    "value": {
+                      "rewarddata": [
+                        {
+                          "structtype": "Asset'/Script/GbxGame.GbxRewardData_Unlockable'",
+                          "unlockabledef": "unlockable'SharedProgress_Cello.Collectible_EchoLog3'"
+                        }
+                      ],
+                      "customdata": {
+                        "structtype": "Asset'none'"
+                      },
+                      "bisunique": "false",
+                      "uniquename": "challenge_Challenge_Collect_Echo_Log_Dogleg_3_t0"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "challenge_collect_echolog_auger_fallen": {
+              "challenge": "Challenge_Collect_EchoLog_Auger_Fallen",
+              "displayname": "Challenges_EchoLogs_General, 77882F0747D5C45A164D56B595FE2716, Echo Log",
+              "description": "Challenges_EchoLogs_General, 92113088431A1FD3CB9D30B2EDCE3726, Collect this Echo Log",
+              "showprogressui": "false",
+              "showcompletionui": "false",
+              "associatedstat": "stats.cello_openworld.cello_collectibles.dlc2_echologs.dlc2_echolog_04",
+              "bisprogressreplicated": "true",
+              "accountwideunlockable": "unlockable'SharedProgress_Cello.Collectible_EchoLog4'",
+              "challengetype": "FactTrigger",
+              "challengetiers": [
+                {
+                  "goalvalue": "1",
+                  "notificationthreshold": "1",
+                  "reward": {
+                    "type": "Inline",
+                    "value": {
+                      "rewarddata": [
+                        {
+                          "structtype": "Asset'/Script/GbxGame.GbxRewardData_Unlockable'",
+                          "unlockabledef": "unlockable'SharedProgress_Cello.Collectible_EchoLog4'"
+                        }
+                      ],
+                      "customdata": {
+                        "structtype": "Asset'none'"
+                      },
+                      "bisunique": "false",
+                      "uniquename": "challenge_Challenge_Collect_EchoLog_Auger_Fallen_t0"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "challenge_collect_echolog_auger_smashed": {
+              "challenge": "Challenge_Collect_EchoLog_Auger_Smashed",
+              "displayname": "Challenges_EchoLogs_General, 34B429C34C8E5A54432369A48DEE2D83, Echo Log",
+              "description": "Challenges_EchoLogs_General, BF38157A44ECB293BFA0EF812698A32A, Collect this Echo Log",
+              "showprogressui": "false",
+              "showcompletionui": "false",
+              "associatedstat": "stats.cello_openworld.cello_collectibles.dlc2_echologs.dlc2_echolog_05",
+              "bisprogressreplicated": "true",
+              "accountwideunlockable": "unlockable'SharedProgress_Cello.Collectible_EchoLog5'",
+              "challengetype": "FactTrigger",
+              "challengetiers": [
+                {
+                  "goalvalue": "1",
+                  "notificationthreshold": "1",
+                  "reward": {
+                    "type": "Inline",
+                    "value": {
+                      "rewarddata": [
+                        {
+                          "structtype": "Asset'/Script/GbxGame.GbxRewardData_Unlockable'",
+                          "unlockabledef": "unlockable'SharedProgress_Cello.Collectible_EchoLog5'"
+                        }
+                      ],
+                      "customdata": {
+                        "structtype": "Asset'none'"
+                      },
+                      "bisunique": "false",
+                      "uniquename": "challenge_Challenge_Collect_EchoLog_Auger_Smashed_t0"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "challenge_collect_echolog_pietro_log1": {
+              "challenge": "Challenge_Collect_EchoLog_Pietro_Log1",
+              "displayname": "Challenges_EchoLogs_Arjay, DB2D3CEF4A07D4BB87A53EA9206C7C0C, Echo Log",
+              "description": "Challenges_EchoLogs_Arjay, 8723B85A45B1DD20BA5F1BBF30BCCC72, Collect this Echo Log",
+              "showprogressui": "false",
+              "showcompletionui": "false",
+              "associatedstat": "stats.cello_openworld.cello_collectibles.dlc2_echologs.dlc2_echolog_06",
+              "bisprogressreplicated": "true",
+              "accountwideunlockable": "unlockable'SharedProgress_Cello.Collectible_EchoLog6'",
+              "challengetype": "FactTrigger",
+              "challengetiers": [
+                {
+                  "goalvalue": "1",
+                  "notificationthreshold": "1",
+                  "reward": {
+                    "type": "Inline",
+                    "value": {
+                      "rewarddata": [
+                        {
+                          "structtype": "Asset'/Script/GbxGame.GbxRewardData_Unlockable'",
+                          "unlockabledef": "unlockable'SharedProgress_Cello.Collectible_EchoLog6'"
+                        }
+                      ],
+                      "customdata": {
+                        "structtype": "Asset'none'"
+                      },
+                      "bisunique": "false",
+                      "uniquename": "challenge_Challenge_Collect_EchoLog_Pietro_Log1_t0"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "challenge_collect_echolog_pietro_log2": {
+              "challenge": "Challenge_Collect_EchoLog_Pietro_Log2",
+              "displayname": "Challenges_EchoLogs_General, DD5D41234879191778CA368579C47BBE, Echo Log",
+              "description": "Challenges_EchoLogs_General, 84676B524D05423C99C33EA811307BB5, Collect this Echo Log",
+              "showprogressui": "false",
+              "showcompletionui": "false",
+              "associatedstat": "stats.cello_openworld.cello_collectibles.dlc2_echologs.dlc2_echolog_07",
+              "bisprogressreplicated": "true",
+              "accountwideunlockable": "unlockable'SharedProgress_Cello.Collectible_EchoLog7'",
+              "challengetype": "FactTrigger",
+              "challengetiers": [
+                {
+                  "goalvalue": "1",
+                  "notificationthreshold": "1",
+                  "reward": {
+                    "type": "Inline",
+                    "value": {
+                      "rewarddata": [
+                        {
+                          "structtype": "Asset'/Script/GbxGame.GbxRewardData_Unlockable'",
+                          "unlockabledef": "unlockable'SharedProgress_Cello.Collectible_EchoLog7'"
+                        }
+                      ],
+                      "customdata": {
+                        "structtype": "Asset'none'"
+                      },
+                      "bisunique": "false",
+                      "uniquename": "challenge_Challenge_Collect_EchoLog_Pietro_Log2_t0"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "challenge_collect_echolog_pietro_log3": {
+              "challenge": "Challenge_Collect_EchoLog_Pietro_Log3",
+              "displayname": "Challenges_EchoLogs_General, C6C2FE3A41515B0E6C0C69AFD53B4C76, Echo Log",
+              "description": "Challenges_EchoLogs_General, 3211C68E4F380389814537BEDA6C4CC7, Collect this Echo Log",
+              "showprogressui": "false",
+              "showcompletionui": "false",
+              "associatedstat": "stats.cello_openworld.cello_collectibles.dlc2_echologs.dlc2_echolog_08",
+              "bisprogressreplicated": "true",
+              "accountwideunlockable": "unlockable'SharedProgress_Cello.Collectible_EchoLog8'",
+              "challengetype": "FactTrigger",
+              "challengetiers": [
+                {
+                  "goalvalue": "1",
+                  "notificationthreshold": "1",
+                  "reward": {
+                    "type": "Inline",
+                    "value": {
+                      "rewarddata": [
+                        {
+                          "structtype": "Asset'/Script/GbxGame.GbxRewardData_Unlockable'",
+                          "unlockabledef": "unlockable'SharedProgress_Cello.Collectible_EchoLog8'"
+                        }
+                      ],
+                      "customdata": {
+                        "structtype": "Asset'none'"
+                      },
+                      "bisunique": "false",
+                      "uniquename": "challenge_Challenge_Collect_EchoLog_Pietro_Log3_t0"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "challenge_collect_echolog_pietro_log4": {
+              "challenge": "Challenge_Collect_EchoLog_Pietro_Log4",
+              "displayname": "Challenges_EchoLogs_General, A8CBA2844AC5F819373C9C88D723E36F, Echo Log",
+              "description": "Challenges_EchoLogs_General, 214B052B4EE72FC9958468A6472CEBD3, Collect this Echo Log",
+              "showprogressui": "false",
+              "showcompletionui": "false",
+              "associatedstat": "stats.cello_openworld.cello_collectibles.dlc2_echologs.dlc2_echolog_09",
+              "bisprogressreplicated": "true",
+              "accountwideunlockable": "unlockable'SharedProgress_Cello.Collectible_EchoLog9'",
+              "challengetype": "FactTrigger",
+              "challengetiers": [
+                {
+                  "goalvalue": "1",
+                  "notificationthreshold": "1",
+                  "reward": {
+                    "type": "Inline",
+                    "value": {
+                      "rewarddata": [
+                        {
+                          "structtype": "Asset'/Script/GbxGame.GbxRewardData_Unlockable'",
+                          "unlockabledef": "unlockable'SharedProgress_Cello.Collectible_EchoLog9'"
+                        }
+                      ],
+                      "customdata": {
+                        "structtype": "Asset'none'"
+                      },
+                      "bisunique": "false",
+                      "uniquename": "challenge_Challenge_Collect_EchoLog_Pietro_Log4_t0"
+                    }
                   }
                 }
               ]

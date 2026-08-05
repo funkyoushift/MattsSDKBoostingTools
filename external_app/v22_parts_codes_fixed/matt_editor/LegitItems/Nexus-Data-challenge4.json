@@ -17482,6 +17482,127 @@
             }
           },
           {
+            "challenges_achievements_49_harp_response_dave1": {
+              "challenge": "Challenges_Achievements_49_Harp_response_dave1",
+              "showprogressui": "false",
+              "showcompletionui": "false",
+              "associatedstat": "stats.harp_achievements.49_harp_responses_all.dave1",
+              "bisaccountwideunlockablesharedprogression": "false",
+              "challengetype": "BlueprintDriven",
+              "challengetiers": [
+                {
+                  "goalvalue": "1",
+                  "notificationthreshold": "1"
+                }
+              ]
+            }
+          },
+          {
+            "challenges_achievements_49_harp_response_dave2": {
+              "challenge": "Challenges_Achievements_49_Harp_response_dave2",
+              "showprogressui": "false",
+              "showcompletionui": "false",
+              "associatedstat": "stats.harp_achievements.49_harp_responses_all.dave2",
+              "bisaccountwideunlockablesharedprogression": "false",
+              "challengetype": "BlueprintDriven",
+              "challengetiers": [
+                {
+                  "goalvalue": "1",
+                  "notificationthreshold": "1"
+                }
+              ]
+            }
+          },
+          {
+            "challenges_achievements_49_harp_response_skankeyes1": {
+              "challenge": "Challenges_Achievements_49_Harp_response_skankeyes1",
+              "showprogressui": "false",
+              "showcompletionui": "false",
+              "associatedstat": "stats.harp_achievements.49_harp_responses_all.skankeyes1",
+              "bisaccountwideunlockablesharedprogression": "false",
+              "challengetype": "BlueprintDriven",
+              "challengetiers": [
+                {
+                  "goalvalue": "1",
+                  "notificationthreshold": "1"
+                }
+              ]
+            }
+          },
+          {
+            "challenges_achievements_49_harp_response_skankeyes2": {
+              "challenge": "Challenges_Achievements_49_Harp_response_skankeyes2",
+              "showprogressui": "false",
+              "showcompletionui": "false",
+              "associatedstat": "stats.harp_achievements.49_harp_responses_all.skankeyes2",
+              "bisaccountwideunlockablesharedprogression": "false",
+              "challengetype": "BlueprintDriven",
+              "challengetiers": [
+                {
+                  "goalvalue": "1",
+                  "notificationthreshold": "1"
+                }
+              ]
+            }
+          },
+          {
+            "challenges_achievements_49_harp_response_william1": {
+              "challenge": "Challenges_Achievements_49_Harp_response_william1",
+              "showprogressui": "false",
+              "showcompletionui": "false",
+              "associatedstat": "stats.harp_achievements.49_harp_responses_all.william1",
+              "bisaccountwideunlockablesharedprogression": "false",
+              "challengetype": "BlueprintDriven",
+              "challengetiers": [
+                {
+                  "goalvalue": "1",
+                  "notificationthreshold": "1"
+                }
+              ]
+            }
+          },
+          {
+            "challenges_achievements_49_harp_response_william2": {
+              "challenge": "Challenges_Achievements_49_Harp_response_william2",
+              "showprogressui": "false",
+              "showcompletionui": "false",
+              "associatedstat": "stats.harp_achievements.49_harp_responses_all.william2",
+              "bisaccountwideunlockablesharedprogression": "false",
+              "challengetype": "BlueprintDriven",
+              "challengetiers": [
+                {
+                  "goalvalue": "1",
+                  "notificationthreshold": "1"
+                }
+              ]
+            }
+          },
+          {
+            "challenges_achievements_51_harp_missions_main": {
+              "challenge": "Challenges_Achievements_51_Harp_missions_main",
+              "displayname": "Challenges_Achievements, BBC29E974AA6E3218499D2B65CFD343B, Murdered & Acquired",
+              "description": "Challenges_Achievements, E8BA25FC4E676B87F6A1779CDE4ACE95, Complete mission \"Murders & Acquisitions\".",
+              "showprogressui": "false",
+              "showcompletionui": "false",
+              "associatedstat": "stats.harp_achievements.51_harp_missions_main",
+              "bispartychallenge": "true",
+              "bisprogressreplicated": "true",
+              "bisaccountwideunlockablesharedprogression": "false",
+              "achievementdef": "achievement'ID_Achievement_51_Harp_missions_main'",
+              "challengetype": "Mission",
+              "busecustommissionlist": "true",
+              "missiondefs": [
+                "mission'Mission_DLC_Mandolin'"
+              ],
+              "challengetiers": [
+                {
+                  "goalvalue": "1",
+                  "notificationthreshold": "1"
+                }
+              ]
+            }
+          },
+          {
             "cowbell_challenges_world_spookystory_buyerremorse": {
               "challenge": "Cowbell_Challenges_World_SpookyStory_BuyerRemorse",
               "showprogressui": "false",
@@ -17712,6 +17833,3797 @@
                   "notificationthreshold": "1"
                 }
               ]
+            }
+          },
+          {
+            "vc4_acquirecontract10": {
+              "challenge": "VC4_AcquireContract10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.contract_bp4.acquire_bp4",
+              "parent": "challenge'VCChallenge_AcquireContract10'"
+            }
+          },
+          {
+            "vc4_acquirecontract20": {
+              "challenge": "VC4_AcquireContract20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.contract_bp4.acquire_bp4",
+              "parent": "challenge'VCChallenge_AcquireContract20'"
+            }
+          },
+          {
+            "vc4_acquirecontract30": {
+              "challenge": "VC4_AcquireContract30",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.contract_bp4.acquire_bp4",
+              "parent": "challenge'VCChallenge_AcquireContract30'"
+            }
+          },
+          {
+            "vc4_badasssecondwind1": {
+              "challenge": "VC4_BadassSecondWind1",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.badasssecondwind_bp4",
+              "parent": "challenge'VCChallenge_BadassSecondWind1'"
+            }
+          },
+          {
+            "vc4_badasssecondwind2": {
+              "challenge": "VC4_BadassSecondWind2",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.badasssecondwind_bp4",
+              "parent": "challenge'VCChallenge_BadassSecondWind2'"
+            }
+          },
+          {
+            "vc4_badasssecondwind3": {
+              "challenge": "VC4_BadassSecondWind3",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.badasssecondwind_bp4",
+              "parent": "challenge'VCChallenge_BadassSecondWind3'"
+            }
+          },
+          {
+            "vc4_banditacquire2": {
+              "challenge": "VC4_BanditAcquire2",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.contracts_bp4.acquire_bandit_bp4",
+              "parent": "challenge'VCChallenge_BanditAcquire2'"
+            }
+          },
+          {
+            "vc4_banditacquire4": {
+              "challenge": "VC4_BanditAcquire4",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.contracts_bp4.acquire_bandit_bp4",
+              "parent": "challenge'VCChallenge_BanditAcquire4'"
+            }
+          },
+          {
+            "vc4_banditacquire6": {
+              "challenge": "VC4_BanditAcquire6",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.contracts_bp4.acquire_bandit_bp4",
+              "parent": "challenge'VCChallenge_BanditAcquire6'"
+            }
+          },
+          {
+            "vc4_banditbounty2": {
+              "challenge": "VC4_BanditBounty2",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.contracts_bp4.bounty_bandit_bp4",
+              "parent": "challenge'VCChallenge_BanditBounty2'"
+            }
+          },
+          {
+            "vc4_banditbounty4": {
+              "challenge": "VC4_BanditBounty4",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.contracts_bp4.bounty_bandit_bp4",
+              "parent": "challenge'VCChallenge_BanditBounty4'"
+            }
+          },
+          {
+            "vc4_banditbounty6": {
+              "challenge": "VC4_BanditBounty6",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.contracts_bp4.bounty_bandit_bp4",
+              "parent": "challenge'VCChallenge_BanditBounty6'"
+            }
+          },
+          {
+            "vc4_banditcollect2": {
+              "challenge": "VC4_BanditCollect2",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.contracts_bp4.collect_bandit_bp4",
+              "parent": "challenge'VCChallenge_BanditCollect2'"
+            }
+          },
+          {
+            "vc4_banditcollect4": {
+              "challenge": "VC4_BanditCollect4",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.contracts_bp4.collect_bandit_bp4",
+              "parent": "challenge'VCChallenge_BanditCollect4'"
+            }
+          },
+          {
+            "vc4_banditcollect6": {
+              "challenge": "VC4_BanditCollect6",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.contracts_bp4.collect_bandit_bp4",
+              "parent": "challenge'VCChallenge_BanditCollect6'"
+            }
+          },
+          {
+            "vc4_banditpatrol2": {
+              "challenge": "VC4_BanditPatrol2",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.contracts_bp4.patrol_bandit_bp4",
+              "parent": "challenge'VCChallenge_BanditPatrol2'"
+            }
+          },
+          {
+            "vc4_banditpatrol4": {
+              "challenge": "VC4_BanditPatrol4",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.contracts_bp4.patrol_bandit_bp4",
+              "parent": "challenge'VCChallenge_BanditPatrol4'"
+            }
+          },
+          {
+            "vc4_banditpatrol6": {
+              "challenge": "VC4_BanditPatrol6",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.contracts_bp4.patrol_bandit_bp4",
+              "parent": "challenge'VCChallenge_BanditPatrol6'"
+            }
+          },
+          {
+            "vc4_banditsearch2": {
+              "challenge": "VC4_BanditSearch2",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.contracts_bp4.search_bandit_bp4",
+              "parent": "challenge'VCChallenge_BanditSearch2'"
+            }
+          },
+          {
+            "vc4_banditsearch4": {
+              "challenge": "VC4_BanditSearch4",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.contracts_bp4.search_bandit_bp4",
+              "parent": "challenge'VCChallenge_BanditSearch4'"
+            }
+          },
+          {
+            "vc4_banditsearch6": {
+              "challenge": "VC4_BanditSearch6",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.contracts_bp4.search_bandit_bp4",
+              "parent": "challenge'VCChallenge_BanditSearch6'"
+            }
+          },
+          {
+            "vc4_bountycontract10": {
+              "challenge": "VC4_BountyContract10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.contract_bp4.bounty_bp4",
+              "parent": "challenge'VCChallenge_BountyContract10'"
+            }
+          },
+          {
+            "vc4_bountycontract20": {
+              "challenge": "VC4_BountyContract20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.contract_bp4.bounty_bp4",
+              "parent": "challenge'VCChallenge_BountyContract20'"
+            }
+          },
+          {
+            "vc4_bountycontract30": {
+              "challenge": "VC4_BountyContract30",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.contract_bp4.bounty_bp4",
+              "parent": "challenge'VCChallenge_BountyContract30'"
+            }
+          },
+          {
+            "vc4_collectcontract10": {
+              "challenge": "VC4_CollectContract10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.contract_bp4.collect_bp4",
+              "parent": "challenge'VCChallenge_CollectContract10'"
+            }
+          },
+          {
+            "vc4_collectcontract20": {
+              "challenge": "VC4_CollectContract20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.contract_bp4.collect_bp4",
+              "parent": "challenge'VCChallenge_CollectContract20'"
+            }
+          },
+          {
+            "vc4_collectcontract30": {
+              "challenge": "VC4_CollectContract30",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.contract_bp4.collect_bp4",
+              "parent": "challenge'VCChallenge_CollectContract30'"
+            }
+          },
+          {
+            "vc4_corruptedbountycontract10": {
+              "challenge": "VC4_CorruptedBountyContract10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.contract_bp4.corrupted_bp4",
+              "parent": "challenge'VCChallenge_CorruptedBountyContract10'"
+            }
+          },
+          {
+            "vc4_corruptedbountycontract20": {
+              "challenge": "VC4_CorruptedBountyContract20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.contract_bp4.corrupted_bp4",
+              "parent": "challenge'VCChallenge_CorruptedBountyContract20'"
+            }
+          },
+          {
+            "vc4_corruptedbountycontract30": {
+              "challenge": "VC4_CorruptedBountyContract30",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.contract_bp4.corrupted_bp4",
+              "parent": "challenge'VCChallenge_CorruptedBountyContract30'"
+            }
+          },
+          {
+            "vc4_creatureacquire2": {
+              "challenge": "VC4_CreatureAcquire2",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.contracts_bp4.acquire_creature_bp4",
+              "parent": "challenge'VCChallenge_CreatureAcquire2'"
+            }
+          },
+          {
+            "vc4_creatureacquire4": {
+              "challenge": "VC4_CreatureAcquire4",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.contracts_bp4.acquire_creature_bp4",
+              "parent": "challenge'VCChallenge_CreatureAcquire4'"
+            }
+          },
+          {
+            "vc4_creatureacquire6": {
+              "challenge": "VC4_CreatureAcquire6",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.contracts_bp4.acquire_creature_bp4",
+              "parent": "challenge'VCChallenge_CreatureAcquire6'"
+            }
+          },
+          {
+            "vc4_creaturebounty2": {
+              "challenge": "VC4_CreatureBounty2",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.contracts_bp4.bounty_creature_bp4",
+              "parent": "challenge'VCChallenge_CreatureBounty2'"
+            }
+          },
+          {
+            "vc4_creaturebounty4": {
+              "challenge": "VC4_CreatureBounty4",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.contracts_bp4.bounty_creature_bp4",
+              "parent": "challenge'VCChallenge_CreatureBounty4'"
+            }
+          },
+          {
+            "vc4_creaturebounty6": {
+              "challenge": "VC4_CreatureBounty6",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.contracts_bp4.bounty_creature_bp4",
+              "parent": "challenge'VCChallenge_CreatureBounty6'"
+            }
+          },
+          {
+            "vc4_creaturecollect2": {
+              "challenge": "VC4_CreatureCollect2",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.contracts_bp4.collect_creature_bp4",
+              "parent": "challenge'VCChallenge_CreatureCollect2'"
+            }
+          },
+          {
+            "vc4_creaturecollect4": {
+              "challenge": "VC4_CreatureCollect4",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.contracts_bp4.collect_creature_bp4",
+              "parent": "challenge'VCChallenge_CreatureCollect4'"
+            }
+          },
+          {
+            "vc4_creaturecollect6": {
+              "challenge": "VC4_CreatureCollect6",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.contracts_bp4.collect_creature_bp4",
+              "parent": "challenge'VCChallenge_CreatureCollect6'"
+            }
+          },
+          {
+            "vc4_creaturepatrol2": {
+              "challenge": "VC4_CreaturePatrol2",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.contracts_bp4.patrol_creature_bp4",
+              "parent": "challenge'VCChallenge_CreaturePatrol2'"
+            }
+          },
+          {
+            "vc4_creaturepatrol4": {
+              "challenge": "VC4_CreaturePatrol4",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.contracts_bp4.patrol_creature_bp4",
+              "parent": "challenge'VCChallenge_CreaturePatrol4'"
+            }
+          },
+          {
+            "vc4_creaturepatrol6": {
+              "challenge": "VC4_CreaturePatrol6",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.contracts_bp4.patrol_creature_bp4",
+              "parent": "challenge'VCChallenge_CreaturePatrol6'"
+            }
+          },
+          {
+            "vc4_creaturesearch2": {
+              "challenge": "VC4_CreatureSearch2",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.contracts_bp4.search_creature_bp4",
+              "parent": "challenge'VCChallenge_CreatureSearch2'"
+            }
+          },
+          {
+            "vc4_creaturesearch4": {
+              "challenge": "VC4_CreatureSearch4",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.contracts_bp4.search_creature_bp4",
+              "parent": "challenge'VCChallenge_CreatureSearch4'"
+            }
+          },
+          {
+            "vc4_creaturesearch6": {
+              "challenge": "VC4_CreatureSearch6",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.contracts_bp4.search_creature_bp4",
+              "parent": "challenge'VCChallenge_CreatureSearch6'"
+            }
+          },
+          {
+            "vc4_firmwaretransfer5": {
+              "challenge": "VC4_FirmwareTransfer5",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.firmwaretransfer_bp4",
+              "parent": "challenge'VCChallenge_FirmwareTransfer5'"
+            }
+          },
+          {
+            "vc4_firmwaretransfer7": {
+              "challenge": "VC4_FirmwareTransfer7",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.firmwaretransfer_bp4",
+              "parent": "challenge'VCChallenge_FirmwareTransfer7'"
+            }
+          },
+          {
+            "vc4_firmwaretransfer9": {
+              "challenge": "VC4_FirmwareTransfer9",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.firmwaretransfer_bp4",
+              "parent": "challenge'VCChallenge_FirmwareTransfer9'"
+            }
+          },
+          {
+            "vc4_getsecondwind10": {
+              "challenge": "VC4_GetSecondWind10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.general_daily_bp4.secondwind_bp4",
+              "parent": "challenge'VCChallenge_GetSecondWind10'"
+            }
+          },
+          {
+            "vc4_getsecondwind15": {
+              "challenge": "VC4_GetSecondWind15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.general_daily_bp4.secondwind_bp4",
+              "parent": "challenge'VCChallenge_GetSecondWind15'"
+            }
+          },
+          {
+            "vc4_getsecondwind5": {
+              "challenge": "VC4_GetSecondWind5",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.general_daily_bp4.secondwind_bp4",
+              "parent": "challenge'VCChallenge_GetSecondWind5'"
+            }
+          },
+          {
+            "vc4_heal10000": {
+              "challenge": "VC4_Heal10000",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.general_daily_bp4.heal_bp4",
+              "btrackdamageorhealingamount": "true",
+              "parent": "challenge'VCChallenge_Heal10000'"
+            }
+          },
+          {
+            "vc4_heal100000": {
+              "challenge": "VC4_Heal100000",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.general_daily_bp4.heal_bp4",
+              "btrackdamageorhealingamount": "true",
+              "parent": "challenge'VCChallenge_Heal100000'"
+            }
+          },
+          {
+            "vc4_heal1000000": {
+              "challenge": "VC4_Heal1000000",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.general_daily_bp4.heal_bp4",
+              "btrackdamageorhealingamount": "true",
+              "parent": "challenge'VCChallenge_Heal1000000'"
+            }
+          },
+          {
+            "vc4_killarmature10": {
+              "challenge": "VC4_KillArmature10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.armature_bp4",
+              "parent": "challenge'VCChallenge_KillArmature10'"
+            }
+          },
+          {
+            "vc4_killarmature15": {
+              "challenge": "VC4_KillArmature15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.armature_bp4",
+              "parent": "challenge'VCChallenge_KillArmature15'"
+            }
+          },
+          {
+            "vc4_killarmature20": {
+              "challenge": "VC4_KillArmature20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.armature_bp4",
+              "parent": "challenge'VCChallenge_KillArmature20'"
+            }
+          },
+          {
+            "vc4_killbadassenemies10": {
+              "challenge": "VC4_KillBadassEnemies10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.badass_enemies_bp4",
+              "parent": "challenge'VCChallenge_KillBadassEnemies10'"
+            }
+          },
+          {
+            "vc4_killbadassenemies15": {
+              "challenge": "VC4_KillBadassEnemies15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.badass_enemies_bp4",
+              "parent": "challenge'VCChallenge_KillBadassEnemies15'"
+            }
+          },
+          {
+            "vc4_killbadassenemies20": {
+              "challenge": "VC4_KillBadassEnemies20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.badass_enemies_bp4",
+              "parent": "challenge'VCChallenge_KillBadassEnemies20'"
+            }
+          },
+          {
+            "vc4_killbandits20": {
+              "challenge": "VC4_KillBandits20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.bandits_bp4",
+              "parent": "challenge'VCChallenge_KillBandits20'"
+            }
+          },
+          {
+            "vc4_killbandits25": {
+              "challenge": "VC4_KillBandits25",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.bandits_bp4",
+              "parent": "challenge'VCChallenge_KillBandits25'"
+            }
+          },
+          {
+            "vc4_killbandits30": {
+              "challenge": "VC4_KillBandits30",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.bandits_bp4",
+              "parent": "challenge'VCChallenge_KillBandits30'"
+            }
+          },
+          {
+            "vc4_killbanditsincity15": {
+              "challenge": "VC4_KillBanditsinCITY15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.banditincity_bp4",
+              "parent": "challenge'VCChallenge_KillBanditsinCITY15'"
+            }
+          },
+          {
+            "vc4_killbanditsincity20": {
+              "challenge": "VC4_KillBanditsinCITY20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.banditincity_bp4",
+              "parent": "challenge'VCChallenge_KillBanditsinCITY20'"
+            }
+          },
+          {
+            "vc4_killbanditsincity25": {
+              "challenge": "VC4_KillBanditsinCITY25",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.banditincity_bp4",
+              "parent": "challenge'VCChallenge_KillBanditsinCITY25'"
+            }
+          },
+          {
+            "vc4_killbanditsingra15": {
+              "challenge": "VC4_KillBanditsinGRA15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.banditsingrassland_bp4",
+              "parent": "challenge'VCChallenge_KillBanditsinGRA15'"
+            }
+          },
+          {
+            "vc4_killbanditsingra20": {
+              "challenge": "VC4_KillBanditsinGRA20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.banditsingrassland_bp4",
+              "parent": "challenge'VCChallenge_KillBanditsinGRA20'"
+            }
+          },
+          {
+            "vc4_killbanditsingra25": {
+              "challenge": "VC4_KillBanditsinGRA25",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.banditsingrassland_bp4",
+              "parent": "challenge'VCChallenge_KillBanditsinGRA25'"
+            }
+          },
+          {
+            "vc4_killbanditsinmou15": {
+              "challenge": "VC4_KillBanditsinMOU15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.banditinmountains_bp4",
+              "parent": "challenge'VCChallenge_KillBanditsinMOU15'"
+            }
+          },
+          {
+            "vc4_killbanditsinmou20": {
+              "challenge": "VC4_KillBanditsinMOU20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.banditinmountains_bp4",
+              "parent": "challenge'VCChallenge_KillBanditsinMOU20'"
+            }
+          },
+          {
+            "vc4_killbanditsinmou25": {
+              "challenge": "VC4_KillBanditsinMOU25",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.banditinmountains_bp4",
+              "parent": "challenge'VCChallenge_KillBanditsinMOU25'"
+            }
+          },
+          {
+            "vc4_killbanditsinsha15": {
+              "challenge": "VC4_KillBanditsinSHA15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.banditinshatteredlands_bp4",
+              "parent": "challenge'VCChallenge_KillBanditsinSHA15'"
+            }
+          },
+          {
+            "vc4_killbanditsinsha20": {
+              "challenge": "VC4_KillBanditsinSHA20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.banditinshatteredlands_bp4",
+              "parent": "challenge'VCChallenge_KillBanditsinSHA20'"
+            }
+          },
+          {
+            "vc4_killbanditsinsha25": {
+              "challenge": "VC4_KillBanditsinSHA25",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.banditinshatteredlands_bp4",
+              "parent": "challenge'VCChallenge_KillBanditsinSHA25'"
+            }
+          },
+          {
+            "vc4_killbossreplay3": {
+              "challenge": "VC4_KillBossReplay3",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.boss_replays_bp4.all_bp4",
+              "parent": "challenge'VCChallenge_KillBossReplay3'"
+            }
+          },
+          {
+            "vc4_killbossreplay5": {
+              "challenge": "VC4_KillBossReplay5",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.boss_replays_bp4.all_bp4",
+              "parent": "challenge'VCChallenge_KillBossReplay5'"
+            }
+          },
+          {
+            "vc4_killbossreplay7": {
+              "challenge": "VC4_KillBossReplay7",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.boss_replays_bp4.all_bp4",
+              "parent": "challenge'VCChallenge_KillBossReplay7'"
+            }
+          },
+          {
+            "vc4_killbulkhead10": {
+              "challenge": "VC4_KillBulkhead10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.bulkhead_bp4",
+              "parent": "challenge'VCChallenge_KillBulkhead10'"
+            }
+          },
+          {
+            "vc4_killbulkhead15": {
+              "challenge": "VC4_KillBulkhead15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.bulkhead_bp4",
+              "parent": "challenge'VCChallenge_KillBulkhead15'"
+            }
+          },
+          {
+            "vc4_killbulkhead20": {
+              "challenge": "VC4_KillBulkhead20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.bulkhead_bp4",
+              "parent": "challenge'VCChallenge_KillBulkhead20'"
+            }
+          },
+          {
+            "vc4_killcorrupted10": {
+              "challenge": "VC4_KillCorrupted10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.corrupted_bp4",
+              "parent": "challenge'VCChallenge_KillCorrupted10'"
+            }
+          },
+          {
+            "vc4_killcorrupted15": {
+              "challenge": "VC4_KillCorrupted15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.corrupted_bp4",
+              "parent": "challenge'VCChallenge_KillCorrupted15'"
+            }
+          },
+          {
+            "vc4_killcorrupted20": {
+              "challenge": "VC4_KillCorrupted20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.corrupted_bp4",
+              "parent": "challenge'VCChallenge_KillCorrupted20'"
+            }
+          },
+          {
+            "vc4_killcreature20": {
+              "challenge": "VC4_KillCreature20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "damagetargettags": {
+                "gameplaytags": [
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Bat"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Beast"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Cat"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Creep"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Kraggon"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Pangolin"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Thresher"
+                  }
+                ]
+              },
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.creatures_bp4",
+              "parent": "challenge'VCChallenge_KillCreature20'"
+            }
+          },
+          {
+            "vc4_killcreature25": {
+              "challenge": "VC4_KillCreature25",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "damagetargettags": {
+                "gameplaytags": [
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Bat"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Beast"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Cat"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Creep"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Kraggon"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Pangolin"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Thresher"
+                  }
+                ]
+              },
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.creatures_bp4",
+              "parent": "challenge'VCChallenge_KillCreature25'"
+            }
+          },
+          {
+            "vc4_killcreature30": {
+              "challenge": "VC4_KillCreature30",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "damagetargettags": {
+                "gameplaytags": [
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Bat"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Beast"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Cat"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Creep"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Kraggon"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Pangolin"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Thresher"
+                  }
+                ]
+              },
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.creatures_bp4",
+              "parent": "challenge'VCChallenge_KillCreature30'"
+            }
+          },
+          {
+            "vc4_killcreaturebossreplay1": {
+              "challenge": "VC4_KillCreatureBossReplay1",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.boss_replays_bp4.creature_bp4",
+              "parent": "challenge'VCChallenge_KillCreatureBossReplay1'"
+            }
+          },
+          {
+            "vc4_killcreaturebossreplay2": {
+              "challenge": "VC4_KillCreatureBossReplay2",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.boss_replays_bp4.creature_bp4",
+              "parent": "challenge'VCChallenge_KillCreatureBossReplay2'"
+            }
+          },
+          {
+            "vc4_killcreaturebossreplay3": {
+              "challenge": "VC4_KillCreatureBossReplay3",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.boss_replays_bp4.creature_bp4",
+              "parent": "challenge'VCChallenge_KillCreatureBossReplay3'"
+            }
+          },
+          {
+            "vc4_killcreatureincity15": {
+              "challenge": "VC4_KillCreatureinCITY15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "damagetargettags": {
+                "gameplaytags": [
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Bat"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Beast"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Cat"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Creep"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Kraggon"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Pangolin"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Thresher"
+                  }
+                ]
+              },
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.creatureincity_bp4",
+              "parent": "challenge'VCChallenge_KillCreatureinCITY15'"
+            }
+          },
+          {
+            "vc4_killcreatureincity20": {
+              "challenge": "VC4_KillCreatureinCITY20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "damagetargettags": {
+                "gameplaytags": [
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Bat"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Beast"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Cat"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Creep"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Kraggon"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Pangolin"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Thresher"
+                  }
+                ]
+              },
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.creatureincity_bp4",
+              "parent": "challenge'VCChallenge_KillCreatureinCITY20'"
+            }
+          },
+          {
+            "vc4_killcreatureincity25": {
+              "challenge": "VC4_KillCreatureinCITY25",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "damagetargettags": {
+                "gameplaytags": [
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Bat"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Beast"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Cat"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Creep"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Kraggon"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Pangolin"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Thresher"
+                  }
+                ]
+              },
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.creatureincity_bp4",
+              "parent": "challenge'VCChallenge_KillCreatureinCITY25'"
+            }
+          },
+          {
+            "vc4_killcreatureingra15": {
+              "challenge": "VC4_KillCreatureinGRA15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "damagetargettags": {
+                "gameplaytags": [
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Bat"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Beast"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Cat"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Creep"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Kraggon"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Pangolin"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Thresher"
+                  }
+                ]
+              },
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.creatureingrassland_bp4",
+              "parent": "challenge'VCChallenge_KillCreatureinGRA15'"
+            }
+          },
+          {
+            "vc4_killcreatureingra20": {
+              "challenge": "VC4_KillCreatureinGRA20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "damagetargettags": {
+                "gameplaytags": [
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Bat"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Beast"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Cat"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Creep"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Kraggon"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Pangolin"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Thresher"
+                  }
+                ]
+              },
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.creatureingrassland_bp4",
+              "parent": "challenge'VCChallenge_KillCreatureinGRA20'"
+            }
+          },
+          {
+            "vc4_killcreatureingra25": {
+              "challenge": "VC4_KillCreatureinGRA25",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "damagetargettags": {
+                "gameplaytags": [
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Bat"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Beast"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Cat"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Creep"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Kraggon"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Pangolin"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Thresher"
+                  }
+                ]
+              },
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.creatureingrassland_bp4",
+              "parent": "challenge'VCChallenge_KillCreatureinGRA25'"
+            }
+          },
+          {
+            "vc4_killcreatureinmou15": {
+              "challenge": "VC4_KillCreatureinMOU15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "damagetargettags": {
+                "gameplaytags": [
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Bat"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Beast"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Cat"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Creep"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Kraggon"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Pangolin"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Thresher"
+                  }
+                ]
+              },
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.creatureinmountains_bp4",
+              "parent": "challenge'VCChallenge_KillCreatureinMOU15'"
+            }
+          },
+          {
+            "vc4_killcreatureinmou20": {
+              "challenge": "VC4_KillCreatureinMOU20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "damagetargettags": {
+                "gameplaytags": [
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Bat"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Beast"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Cat"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Creep"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Kraggon"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Pangolin"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Thresher"
+                  }
+                ]
+              },
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.creatureinmountains_bp4",
+              "parent": "challenge'VCChallenge_KillCreatureinMOU20'"
+            }
+          },
+          {
+            "vc4_killcreatureinmou25": {
+              "challenge": "VC4_KillCreatureinMOU25",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "damagetargettags": {
+                "gameplaytags": [
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Bat"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Beast"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Cat"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Creep"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Kraggon"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Pangolin"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Thresher"
+                  }
+                ]
+              },
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.creatureinmountains_bp4",
+              "parent": "challenge'VCChallenge_KillCreatureinMOU25'"
+            }
+          },
+          {
+            "vc4_killcreatureinsha15": {
+              "challenge": "VC4_KillCreatureinSHA15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "damagetargettags": {
+                "gameplaytags": [
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Bat"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Beast"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Cat"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Creep"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Kraggon"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Pangolin"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Thresher"
+                  }
+                ]
+              },
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.creatureinshatteredlands_bp4",
+              "parent": "challenge'VCChallenge_KillCreatureinSHA15'"
+            }
+          },
+          {
+            "vc4_killcreatureinsha20": {
+              "challenge": "VC4_KillCreatureinSHA20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "damagetargettags": {
+                "gameplaytags": [
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Bat"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Beast"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Cat"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Creep"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Kraggon"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Pangolin"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Thresher"
+                  }
+                ]
+              },
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.creatureinshatteredlands_bp4",
+              "parent": "challenge'VCChallenge_KillCreatureinSHA20'"
+            }
+          },
+          {
+            "vc4_killcreatureinsha25": {
+              "challenge": "VC4_KillCreatureinSHA25",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "damagetargettags": {
+                "gameplaytags": [
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Bat"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Beast"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Cat"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Creep"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Kraggon"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Pangolin"
+                  },
+                  {
+                    "tagname": "GbxActor.Character.EnemyType.Thresher"
+                  }
+                ]
+              },
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.creatureinshatteredlands_bp4",
+              "parent": "challenge'VCChallenge_KillCreatureinSHA25'"
+            }
+          },
+          {
+            "vc4_killcreep10": {
+              "challenge": "VC4_KillCreep10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.creep_bp4",
+              "parent": "challenge'VCChallenge_KillCreep10'"
+            }
+          },
+          {
+            "vc4_killcreep15": {
+              "challenge": "VC4_KillCreep15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.creep_bp4",
+              "parent": "challenge'VCChallenge_KillCreep15'"
+            }
+          },
+          {
+            "vc4_killcreep20": {
+              "challenge": "VC4_KillCreep20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.creep_bp4",
+              "parent": "challenge'VCChallenge_KillCreep20'"
+            }
+          },
+          {
+            "vc4_killenemies200": {
+              "challenge": "VC4_KillEnemies200",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.kill_weekly_bp4.enemies_weekly_bp4",
+              "parent": "challenge'VCChallenge_KillEnemies200'"
+            }
+          },
+          {
+            "vc4_killenemies400": {
+              "challenge": "VC4_KillEnemies400",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.kill_weekly_bp4.enemies_weekly_bp4",
+              "parent": "challenge'VCChallenge_KillEnemies400'"
+            }
+          },
+          {
+            "vc4_killenemies600": {
+              "challenge": "VC4_KillEnemies600",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.kill_weekly_bp4.enemies_weekly_bp4",
+              "parent": "challenge'VCChallenge_KillEnemies600'"
+            }
+          },
+          {
+            "vc4_killenemiesincity100": {
+              "challenge": "VC4_KillEnemiesInCity100",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.kill_weekly_bp4.city_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesInCity100'"
+            }
+          },
+          {
+            "vc4_killenemiesincity200": {
+              "challenge": "VC4_KillEnemiesInCity200",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.kill_weekly_bp4.city_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesInCity200'"
+            }
+          },
+          {
+            "vc4_killenemiesincity300": {
+              "challenge": "VC4_KillEnemiesInCity300",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.kill_weekly_bp4.city_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesInCity300'"
+            }
+          },
+          {
+            "vc4_killenemiesingra100": {
+              "challenge": "VC4_KillEnemiesInGRA100",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.kill_weekly_bp4.grasslands_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesInGRA100'"
+            }
+          },
+          {
+            "vc4_killenemiesingra200": {
+              "challenge": "VC4_KillEnemiesInGRA200",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.kill_weekly_bp4.grasslands_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesInGRA200'"
+            }
+          },
+          {
+            "vc4_killenemiesingra300": {
+              "challenge": "VC4_KillEnemiesInGRA300",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.kill_weekly_bp4.grasslands_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesInGRA300'"
+            }
+          },
+          {
+            "vc4_killenemiesinmou100": {
+              "challenge": "VC4_KillEnemiesInMOU100",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.kill_weekly_bp4.mountains_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesInMOU100'"
+            }
+          },
+          {
+            "vc4_killenemiesinmou200": {
+              "challenge": "VC4_KillEnemiesInMOU200",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.kill_weekly_bp4.mountains_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesInMOU200'"
+            }
+          },
+          {
+            "vc4_killenemiesinmou300": {
+              "challenge": "VC4_KillEnemiesInMOU300",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.kill_weekly_bp4.mountains_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesInMOU300'"
+            }
+          },
+          {
+            "vc4_killenemiesinsha100": {
+              "challenge": "VC4_KillEnemiesInSHA100",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.kill_weekly_bp4.shatterlands_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesInSHA100'"
+            }
+          },
+          {
+            "vc4_killenemiesinsha200": {
+              "challenge": "VC4_KillEnemiesInSHA200",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.kill_weekly_bp4.shatterlands_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesInSHA200'"
+            }
+          },
+          {
+            "vc4_killenemiesinsha300": {
+              "challenge": "VC4_KillEnemiesInSHA300",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.kill_weekly_bp4.shatterlands_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesInSHA300'"
+            }
+          },
+          {
+            "vc4_killenemieswithar10": {
+              "challenge": "VC4_KillEnemiesWithAR10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.smg_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithAR10'"
+            }
+          },
+          {
+            "vc4_killenemieswithar20": {
+              "challenge": "VC4_KillEnemiesWithAR20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.smg_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithAR20'"
+            }
+          },
+          {
+            "vc4_killenemieswithar30": {
+              "challenge": "VC4_KillEnemiesWithAR30",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.smg_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithAR30'"
+            }
+          },
+          {
+            "vc4_killenemieswithborg10": {
+              "challenge": "VC4_KillEnemiesWithBorg10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.borg_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithBorg10'"
+            }
+          },
+          {
+            "vc4_killenemieswithborg15": {
+              "challenge": "VC4_KillEnemiesWithBorg15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.borg_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithBorg15'"
+            }
+          },
+          {
+            "vc4_killenemieswithborg20": {
+              "challenge": "VC4_KillEnemiesWithBorg20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.borg_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithBorg20'"
+            }
+          },
+          {
+            "vc4_killenemieswithcorrosive10": {
+              "challenge": "VC4_KillEnemiesWithCorrosive10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.corrosive_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithCorrosive10'"
+            }
+          },
+          {
+            "vc4_killenemieswithcorrosive100": {
+              "challenge": "VC4_KillEnemiesWithCorrosive100",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.kill_weekly_bp4.corrosive_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithCorrosive100'"
+            }
+          },
+          {
+            "vc4_killenemieswithcorrosive15": {
+              "challenge": "VC4_KillEnemiesWithCorrosive15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.corrosive_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithCorrosive15'"
+            }
+          },
+          {
+            "vc4_killenemieswithcorrosive20": {
+              "challenge": "VC4_KillEnemiesWithCorrosive20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.corrosive_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithCorrosive20'"
+            }
+          },
+          {
+            "vc4_killenemieswithcorrosive300": {
+              "challenge": "VC4_KillEnemiesWithCorrosive300",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.kill_weekly_bp4.corrosive_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithCorrosive300'"
+            }
+          },
+          {
+            "vc4_killenemieswithcorrosive500": {
+              "challenge": "VC4_KillEnemiesWithCorrosive500",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.kill_weekly_bp4.corrosive_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithCorrosive500'"
+            }
+          },
+          {
+            "vc4_killenemieswithcryo10": {
+              "challenge": "VC4_KillEnemiesWithCryo10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.cryo_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithCryo10'"
+            }
+          },
+          {
+            "vc4_killenemieswithcryo100": {
+              "challenge": "VC4_KillEnemiesWithCryo100",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.kill_weekly_bp4.cryo_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithCryo100'"
+            }
+          },
+          {
+            "vc4_killenemieswithcryo15": {
+              "challenge": "VC4_KillEnemiesWithCryo15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.cryo_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithCryo15'"
+            }
+          },
+          {
+            "vc4_killenemieswithcryo20": {
+              "challenge": "VC4_KillEnemiesWithCryo20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.cryo_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithCryo20'"
+            }
+          },
+          {
+            "vc4_killenemieswithcryo300": {
+              "challenge": "VC4_KillEnemiesWithCryo300",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.kill_weekly_bp4.cryo_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithCryo300'"
+            }
+          },
+          {
+            "vc4_killenemieswithcryo500": {
+              "challenge": "VC4_KillEnemiesWithCryo500",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.kill_weekly_bp4.cryo_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithCryo500'"
+            }
+          },
+          {
+            "vc4_killenemieswithdaedalus10": {
+              "challenge": "VC4_KillEnemiesWithDaedalus10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.daedalus_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithDaedalus10'"
+            }
+          },
+          {
+            "vc4_killenemieswithdaedalus15": {
+              "challenge": "VC4_KillEnemiesWithDaedalus15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.daedalus_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithDaedalus15'"
+            }
+          },
+          {
+            "vc4_killenemieswithdaedalus20": {
+              "challenge": "VC4_KillEnemiesWithDaedalus20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.daedalus_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithDaedalus20'"
+            }
+          },
+          {
+            "vc4_killenemieswithgrenades10": {
+              "challenge": "VC4_KillEnemiesWithGrenades10",
+              "rewardcurrencytype": "vc4",
+              "uichallengeicontype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.grenade_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithGrenades10'"
+            }
+          },
+          {
+            "vc4_killenemieswithgrenades15": {
+              "challenge": "VC4_KillEnemiesWithGrenades15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.grenade_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithGrenades15'"
+            }
+          },
+          {
+            "vc4_killenemieswithgrenades20": {
+              "challenge": "VC4_KillEnemiesWithGrenades20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.grenade_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithGrenades20'"
+            }
+          },
+          {
+            "vc4_killenemieswithheavyweapon10": {
+              "challenge": "VC4_KillEnemiesWithHeavyWeapon10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.heavyweapon_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithHeavyWeapon10'"
+            }
+          },
+          {
+            "vc4_killenemieswithheavyweapon20": {
+              "challenge": "VC4_KillEnemiesWithHeavyWeapon20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.heavyweapon_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithHeavyWeapon20'"
+            }
+          },
+          {
+            "vc4_killenemieswithheavyweapon30": {
+              "challenge": "VC4_KillEnemiesWithHeavyWeapon30",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.heavyweapon_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithHeavyWeapon30'"
+            }
+          },
+          {
+            "vc4_killenemieswithincendiary10": {
+              "challenge": "VC4_KillEnemiesWithIncendiary10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.incendiary_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithIncendiary10'"
+            }
+          },
+          {
+            "vc4_killenemieswithincendiary100": {
+              "challenge": "VC4_KillEnemiesWithIncendiary100",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.kill_weekly_bp4.fire_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithIncendiary100'"
+            }
+          },
+          {
+            "vc4_killenemieswithincendiary15": {
+              "challenge": "VC4_KillEnemiesWithIncendiary15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.incendiary_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithIncendiary15'"
+            }
+          },
+          {
+            "vc4_killenemieswithincendiary20": {
+              "challenge": "VC4_KillEnemiesWithIncendiary20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.incendiary_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithIncendiary20'"
+            }
+          },
+          {
+            "vc4_killenemieswithincendiary300": {
+              "challenge": "VC4_KillEnemiesWithIncendiary300",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.kill_weekly_bp4.fire_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithIncendiary300'"
+            }
+          },
+          {
+            "vc4_killenemieswithincendiary500": {
+              "challenge": "VC4_KillEnemiesWithIncendiary500",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.kill_weekly_bp4.fire_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithIncendiary500'"
+            }
+          },
+          {
+            "vc4_killenemieswithjakobs10": {
+              "challenge": "VC4_KillEnemiesWithJakobs10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.jakobs_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithJakobs10'"
+            }
+          },
+          {
+            "vc4_killenemieswithjakobs15": {
+              "challenge": "VC4_KillEnemiesWithJakobs15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.jakobs_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithJakobs15'"
+            }
+          },
+          {
+            "vc4_killenemieswithjakobs20": {
+              "challenge": "VC4_KillEnemiesWithJakobs20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.jakobs_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithJakobs20'"
+            }
+          },
+          {
+            "vc4_killenemieswithmaliwan10": {
+              "challenge": "VC4_KillEnemiesWithMaliwan10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.maliwan_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithMaliwan10'"
+            }
+          },
+          {
+            "vc4_killenemieswithmaliwan15": {
+              "challenge": "VC4_KillEnemiesWithMaliwan15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.maliwan_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithMaliwan15'"
+            }
+          },
+          {
+            "vc4_killenemieswithmaliwan20": {
+              "challenge": "VC4_KillEnemiesWithMaliwan20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.maliwan_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithMaliwan20'"
+            }
+          },
+          {
+            "vc4_killenemieswithorder10": {
+              "challenge": "VC4_KillEnemiesWithOrder10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.order_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithOrder10'"
+            }
+          },
+          {
+            "vc4_killenemieswithorder15": {
+              "challenge": "VC4_KillEnemiesWithOrder15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.order_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithOrder15'"
+            }
+          },
+          {
+            "vc4_killenemieswithorder20": {
+              "challenge": "VC4_KillEnemiesWithOrder20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.order_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithOrder20'"
+            }
+          },
+          {
+            "vc4_killenemieswithpistol10": {
+              "challenge": "VC4_KillEnemiesWithPistol10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.pistol_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithPistol10'"
+            }
+          },
+          {
+            "vc4_killenemieswithpistol20": {
+              "challenge": "VC4_KillEnemiesWithPistol20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.pistol_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithPistol20'"
+            }
+          },
+          {
+            "vc4_killenemieswithpistol30": {
+              "challenge": "VC4_KillEnemiesWithPistol30",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.pistol_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithPistol30'"
+            }
+          },
+          {
+            "vc4_killenemieswithradiation10": {
+              "challenge": "VC4_KillEnemiesWithRadiation10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.radiation_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithRadiation10'"
+            }
+          },
+          {
+            "vc4_killenemieswithradiation100": {
+              "challenge": "VC4_KillEnemiesWithRadiation100",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.kill_weekly_bp4.radiation_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithRadiation100'"
+            }
+          },
+          {
+            "vc4_killenemieswithradiation15": {
+              "challenge": "VC4_KillEnemiesWithRadiation15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.radiation_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithRadiation15'"
+            }
+          },
+          {
+            "vc4_killenemieswithradiation20": {
+              "challenge": "VC4_KillEnemiesWithRadiation20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.radiation_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithRadiation20'"
+            }
+          },
+          {
+            "vc4_killenemieswithradiation300": {
+              "challenge": "VC4_KillEnemiesWithRadiation300",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.kill_weekly_bp4.radiation_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithRadiation300'"
+            }
+          },
+          {
+            "vc4_killenemieswithradiation500": {
+              "challenge": "VC4_KillEnemiesWithRadiation500",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.kill_weekly_bp4.radiation_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithRadiation500'"
+            }
+          },
+          {
+            "vc4_killenemieswithshock10": {
+              "challenge": "VC4_KillEnemiesWithShock10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.shock_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithShock10'"
+            }
+          },
+          {
+            "vc4_killenemieswithshock100": {
+              "challenge": "VC4_KillEnemiesWithShock100",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.kill_weekly_bp4.shock_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithShock100'"
+            }
+          },
+          {
+            "vc4_killenemieswithshock15": {
+              "challenge": "VC4_KillEnemiesWithShock15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.shock_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithShock15'"
+            }
+          },
+          {
+            "vc4_killenemieswithshock20": {
+              "challenge": "VC4_KillEnemiesWithShock20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.shock_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithShock20'"
+            }
+          },
+          {
+            "vc4_killenemieswithshock300": {
+              "challenge": "VC4_KillEnemiesWithShock300",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.kill_weekly_bp4.shock_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithShock300'"
+            }
+          },
+          {
+            "vc4_killenemieswithshock500": {
+              "challenge": "VC4_KillEnemiesWithShock500",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.kill_weekly_bp4.shock_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithShock500'"
+            }
+          },
+          {
+            "vc4_killenemieswithshotgun10": {
+              "challenge": "VC4_KillEnemiesWithShotgun10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.shotgun_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithShotgun10'"
+            }
+          },
+          {
+            "vc4_killenemieswithshotgun20": {
+              "challenge": "VC4_KillEnemiesWithShotgun20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.shotgun_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithShotgun20'"
+            }
+          },
+          {
+            "vc4_killenemieswithshotgun30": {
+              "challenge": "VC4_KillEnemiesWithShotgun30",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.shotgun_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithShotgun30'"
+            }
+          },
+          {
+            "vc4_killenemieswithsmg10": {
+              "challenge": "VC4_KillEnemiesWithSMG10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.smg_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithSMG10'"
+            }
+          },
+          {
+            "vc4_killenemieswithsmg20": {
+              "challenge": "VC4_KillEnemiesWithSMG20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.smg_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithSMG20'"
+            }
+          },
+          {
+            "vc4_killenemieswithsmg30": {
+              "challenge": "VC4_KillEnemiesWithSMG30",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.smg_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithSMG30'"
+            }
+          },
+          {
+            "vc4_killenemieswithsniper10": {
+              "challenge": "VC4_KillEnemiesWithSniper10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.sniper_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithSniper10'"
+            }
+          },
+          {
+            "vc4_killenemieswithsniper20": {
+              "challenge": "VC4_KillEnemiesWithSniper20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.sniper_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithSniper20'"
+            }
+          },
+          {
+            "vc4_killenemieswithsniper30": {
+              "challenge": "VC4_KillEnemiesWithSniper30",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.sniper_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithSniper30'"
+            }
+          },
+          {
+            "vc4_killenemieswithtediore10": {
+              "challenge": "VC4_KillEnemiesWithTediore10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.tediore_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithTediore10'"
+            }
+          },
+          {
+            "vc4_killenemieswithtediore15": {
+              "challenge": "VC4_KillEnemiesWithTediore15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.tediore_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithTediore15'"
+            }
+          },
+          {
+            "vc4_killenemieswithtediore20": {
+              "challenge": "VC4_KillEnemiesWithTediore20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.tediore_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithTediore20'"
+            }
+          },
+          {
+            "vc4_killenemieswithtorgue10": {
+              "challenge": "VC4_KillEnemiesWithTorgue10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.torgue_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithTorgue10'"
+            }
+          },
+          {
+            "vc4_killenemieswithtorgue15": {
+              "challenge": "VC4_KillEnemiesWithTorgue15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.torgue_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithTorgue15'"
+            }
+          },
+          {
+            "vc4_killenemieswithtorgue20": {
+              "challenge": "VC4_KillEnemiesWithTorgue20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.torgue_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithTorgue20'"
+            }
+          },
+          {
+            "vc4_killenemieswithvladof10": {
+              "challenge": "VC4_KillEnemiesWithVladof10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.vladof_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithVladof10'"
+            }
+          },
+          {
+            "vc4_killenemieswithvladof15": {
+              "challenge": "VC4_KillEnemiesWithVladof15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.vladof_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithVladof15'"
+            }
+          },
+          {
+            "vc4_killenemieswithvladof20": {
+              "challenge": "VC4_KillEnemiesWithVladof20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.vladof_bp4",
+              "parent": "challenge'VCChallenge_KillEnemiesWithVladof20'"
+            }
+          },
+          {
+            "vc4_killenemygroundpound100": {
+              "challenge": "VC4_KillEnemyGroundPound100",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.kill_weekly_bp4.groundslam_bp4",
+              "parent": "challenge'VCChallenge_KillEnemyGroundPound100'"
+            }
+          },
+          {
+            "vc4_killenemygroundpound150": {
+              "challenge": "VC4_KillEnemyGroundPound150",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.kill_weekly_bp4.groundslam_bp4",
+              "parent": "challenge'VCChallenge_KillEnemyGroundPound150'"
+            }
+          },
+          {
+            "vc4_killenemygroundpound50": {
+              "challenge": "VC4_KillEnemyGroundPound50",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.kill_weekly_bp4.groundslam_bp4",
+              "parent": "challenge'VCChallenge_KillEnemyGroundPound50'"
+            }
+          },
+          {
+            "vc4_killenemymelee20": {
+              "challenge": "VC4_KillEnemyMelee20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.kill_weekly_bp4.melee_bp4",
+              "parent": "challenge'VCChallenge_KillEnemyMelee20'"
+            }
+          },
+          {
+            "vc4_killenemymelee40": {
+              "challenge": "VC4_KillEnemyMelee40",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.kill_weekly_bp4.melee_bp4",
+              "parent": "challenge'VCChallenge_KillEnemyMelee40'"
+            }
+          },
+          {
+            "vc4_killenemymelee60": {
+              "challenge": "VC4_KillEnemyMelee60",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.kill_weekly_bp4.melee_bp4",
+              "parent": "challenge'VCChallenge_KillEnemyMelee60'"
+            }
+          },
+          {
+            "vc4_killengine10": {
+              "challenge": "VC4_KillEngine10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.engine_bp4",
+              "parent": "challenge'VCChallenge_KillEngine10'"
+            }
+          },
+          {
+            "vc4_killengine15": {
+              "challenge": "VC4_KillEngine15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.engine_bp4",
+              "parent": "challenge'VCChallenge_KillEngine15'"
+            }
+          },
+          {
+            "vc4_killengine20": {
+              "challenge": "VC4_KillEngine20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.engine_bp4",
+              "parent": "challenge'VCChallenge_KillEngine20'"
+            }
+          },
+          {
+            "vc4_killgrunt10": {
+              "challenge": "VC4_KillGrunt10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.grunt_bp4",
+              "parent": "challenge'VCChallenge_KillGrunt10'"
+            }
+          },
+          {
+            "vc4_killgrunt15": {
+              "challenge": "VC4_KillGrunt15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.grunt_bp4",
+              "parent": "challenge'VCChallenge_KillGrunt15'"
+            }
+          },
+          {
+            "vc4_killgrunt20": {
+              "challenge": "VC4_KillGrunt20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.grunt_bp4",
+              "parent": "challenge'VCChallenge_KillGrunt20'"
+            }
+          },
+          {
+            "vc4_killguntoter10": {
+              "challenge": "VC4_KillGunToter10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.guntoter_bp4",
+              "parent": "challenge'VCChallenge_KillGunToter10'"
+            }
+          },
+          {
+            "vc4_killguntoter15": {
+              "challenge": "VC4_KillGunToter15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.guntoter_bp4",
+              "parent": "challenge'VCChallenge_KillGunToter15'"
+            }
+          },
+          {
+            "vc4_killguntoter20": {
+              "challenge": "VC4_KillGunToter20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.guntoter_bp4",
+              "parent": "challenge'VCChallenge_KillGunToter20'"
+            }
+          },
+          {
+            "vc4_killkratch10": {
+              "challenge": "VC4_KillKratch10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.kratch_bp4",
+              "parent": "challenge'VCChallenge_KillKratch10'"
+            }
+          },
+          {
+            "vc4_killkratch15": {
+              "challenge": "VC4_KillKratch15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.kratch_bp4",
+              "parent": "challenge'VCChallenge_KillKratch15'"
+            }
+          },
+          {
+            "vc4_killkratch20": {
+              "challenge": "VC4_KillKratch20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.kratch_bp4",
+              "parent": "challenge'VCChallenge_KillKratch20'"
+            }
+          },
+          {
+            "vc4_killmangler10": {
+              "challenge": "VC4_KillMangler10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.mangler_bp4",
+              "parent": "challenge'VCChallenge_KillMangler10'"
+            }
+          },
+          {
+            "vc4_killmangler15": {
+              "challenge": "VC4_KillMangler15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.mangler_bp4",
+              "parent": "challenge'VCChallenge_KillMangler15'"
+            }
+          },
+          {
+            "vc4_killmangler20": {
+              "challenge": "VC4_KillMangler20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.mangler_bp4",
+              "parent": "challenge'VCChallenge_KillMangler20'"
+            }
+          },
+          {
+            "vc4_killmeathead10": {
+              "challenge": "VC4_KillMeathead10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.meathead_bp4",
+              "parent": "challenge'VCChallenge_KillMeathead10'"
+            }
+          },
+          {
+            "vc4_killmeathead15": {
+              "challenge": "VC4_KillMeathead15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.meathead_bp4",
+              "parent": "challenge'VCChallenge_KillMeathead15'"
+            }
+          },
+          {
+            "vc4_killmeathead20": {
+              "challenge": "VC4_KillMeathead20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.meathead_bp4",
+              "parent": "challenge'VCChallenge_KillMeathead20'"
+            }
+          },
+          {
+            "vc4_killoppressors10": {
+              "challenge": "VC4_KillOppressors10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.oppressors_bp4",
+              "parent": "challenge'VCChallenge_KillOppressors10'"
+            }
+          },
+          {
+            "vc4_killoppressors15": {
+              "challenge": "VC4_KillOppressors15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.oppressors_bp4",
+              "parent": "challenge'VCChallenge_KillOppressors15'"
+            }
+          },
+          {
+            "vc4_killoppressors20": {
+              "challenge": "VC4_KillOppressors20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.oppressors_bp4",
+              "parent": "challenge'VCChallenge_KillOppressors20'"
+            }
+          },
+          {
+            "vc4_killorder20": {
+              "challenge": "VC4_KillOrder20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.order_bp4",
+              "parent": "challenge'VCChallenge_KillOrder20'"
+            }
+          },
+          {
+            "vc4_killorder25": {
+              "challenge": "VC4_KillOrder25",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.order_bp4",
+              "parent": "challenge'VCChallenge_KillOrder25'"
+            }
+          },
+          {
+            "vc4_killorder30": {
+              "challenge": "VC4_KillOrder30",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.order_bp4",
+              "parent": "challenge'VCChallenge_KillOrder30'"
+            }
+          },
+          {
+            "vc4_killorderbossreplay1": {
+              "challenge": "VC4_KillOrderBossReplay1",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.boss_replays_bp4.order_bp4",
+              "parent": "challenge'VCChallenge_KillOrderBossReplay1'"
+            }
+          },
+          {
+            "vc4_killorderbossreplay2": {
+              "challenge": "VC4_KillOrderBossReplay2",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.boss_replays_bp4.order_bp4",
+              "parent": "challenge'VCChallenge_KillOrderBossReplay2'"
+            }
+          },
+          {
+            "vc4_killorderbossreplay3": {
+              "challenge": "VC4_KillOrderBossReplay3",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.boss_replays_bp4.order_bp4",
+              "parent": "challenge'VCChallenge_KillOrderBossReplay3'"
+            }
+          },
+          {
+            "vc4_killorderincity15": {
+              "challenge": "VC4_KillOrderinCITY15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.orderincity_bp4",
+              "parent": "challenge'VCChallenge_KillOrderinCITY15'"
+            }
+          },
+          {
+            "vc4_killorderincity20": {
+              "challenge": "VC4_KillOrderinCITY20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.orderincity_bp4",
+              "parent": "challenge'VCChallenge_KillOrderinCITY20'"
+            }
+          },
+          {
+            "vc4_killorderincity25": {
+              "challenge": "VC4_KillOrderinCITY25",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.orderincity_bp4",
+              "parent": "challenge'VCChallenge_KillOrderinCITY25'"
+            }
+          },
+          {
+            "vc4_killorderingra15": {
+              "challenge": "VC4_KillOrderinGRA15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.orderingrassland_bp4",
+              "parent": "challenge'VCChallenge_KillOrderinGRA15'"
+            }
+          },
+          {
+            "vc4_killorderingra20": {
+              "challenge": "VC4_KillOrderinGRA20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.orderingrassland_bp4",
+              "parent": "challenge'VCChallenge_KillOrderinGRA20'"
+            }
+          },
+          {
+            "vc4_killorderingra25": {
+              "challenge": "VC4_KillOrderinGRA25",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.orderingrassland_bp4",
+              "parent": "challenge'VCChallenge_KillOrderinGRA25'"
+            }
+          },
+          {
+            "vc4_killorderinmou15": {
+              "challenge": "VC4_KillOrderinMOU15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.orderinmountains_bp4",
+              "parent": "challenge'VCChallenge_KillOrderinMOU15'"
+            }
+          },
+          {
+            "vc4_killorderinmou20": {
+              "challenge": "VC4_KillOrderinMOU20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.orderinmountains_bp4",
+              "parent": "challenge'VCChallenge_KillOrderinMOU20'"
+            }
+          },
+          {
+            "vc4_killorderinmou25": {
+              "challenge": "VC4_KillOrderinMOU25",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.orderinmountains_bp4",
+              "parent": "challenge'VCChallenge_KillOrderinMOU25'"
+            }
+          },
+          {
+            "vc4_killorderinsha15": {
+              "challenge": "VC4_KillOrderinSHA15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.orderinshatteredlands_bp4",
+              "parent": "challenge'VCChallenge_KillOrderinSHA15'"
+            }
+          },
+          {
+            "vc4_killorderinsha20": {
+              "challenge": "VC4_KillOrderinSHA20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.orderinshatteredlands_bp4",
+              "parent": "challenge'VCChallenge_KillOrderinSHA20'"
+            }
+          },
+          {
+            "vc4_killorderinsha25": {
+              "challenge": "VC4_KillOrderinSHA25",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.orderinshatteredlands_bp4",
+              "parent": "challenge'VCChallenge_KillOrderinSHA25'"
+            }
+          },
+          {
+            "vc4_killpangolin10": {
+              "challenge": "VC4_KillPangolin10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.pangolin_bp4",
+              "parent": "challenge'VCChallenge_KillPangolin10'"
+            }
+          },
+          {
+            "vc4_killpangolin15": {
+              "challenge": "VC4_KillPangolin15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.pangolin_bp4",
+              "parent": "challenge'VCChallenge_KillPangolin15'"
+            }
+          },
+          {
+            "vc4_killpangolin20": {
+              "challenge": "VC4_KillPangolin20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.pangolin_bp4",
+              "parent": "challenge'VCChallenge_KillPangolin20'"
+            }
+          },
+          {
+            "vc4_killphalanx10": {
+              "challenge": "VC4_KillPhalanx10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.phalanx_bp4",
+              "parent": "challenge'VCChallenge_KillPhalanx10'"
+            }
+          },
+          {
+            "vc4_killphalanx15": {
+              "challenge": "VC4_KillPhalanx15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.phalanx_bp4",
+              "parent": "challenge'VCChallenge_KillPhalanx15'"
+            }
+          },
+          {
+            "vc4_killphalanx20": {
+              "challenge": "VC4_KillPhalanx20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.phalanx_bp4",
+              "parent": "challenge'VCChallenge_KillPhalanx20'"
+            }
+          },
+          {
+            "vc4_killpsycho10": {
+              "challenge": "VC4_KillPsycho10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.psycho_bp4",
+              "parent": "challenge'VCChallenge_KillPsycho10'"
+            }
+          },
+          {
+            "vc4_killpsycho15": {
+              "challenge": "VC4_KillPsycho15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.psycho_bp4",
+              "parent": "challenge'VCChallenge_KillPsycho15'"
+            }
+          },
+          {
+            "vc4_killpsycho20": {
+              "challenge": "VC4_KillPsycho20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.psycho_bp4",
+              "parent": "challenge'VCChallenge_KillPsycho20'"
+            }
+          },
+          {
+            "vc4_killripperbossreplay1": {
+              "challenge": "VC4_KillRipperBossReplay1",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.boss_replays_bp4.ripper_bp4",
+              "parent": "challenge'VCChallenge_KillRipperBossReplay1'"
+            }
+          },
+          {
+            "vc4_killripperbossreplay2": {
+              "challenge": "VC4_KillRipperBossReplay2",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.boss_replays_bp4.ripper_bp4",
+              "parent": "challenge'VCChallenge_KillRipperBossReplay2'"
+            }
+          },
+          {
+            "vc4_killripperbossreplay3": {
+              "challenge": "VC4_KillRipperBossReplay3",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.boss_replays_bp4.ripper_bp4",
+              "parent": "challenge'VCChallenge_KillRipperBossReplay3'"
+            }
+          },
+          {
+            "vc4_killsplice10": {
+              "challenge": "VC4_KillSplice10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.splice_bp4",
+              "parent": "challenge'VCChallenge_KillSplice10'"
+            }
+          },
+          {
+            "vc4_killsplice15": {
+              "challenge": "VC4_KillSplice15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.splice_bp4",
+              "parent": "challenge'VCChallenge_KillSplice15'"
+            }
+          },
+          {
+            "vc4_killsplice20": {
+              "challenge": "VC4_KillSplice20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.splice_bp4",
+              "parent": "challenge'VCChallenge_KillSplice20'"
+            }
+          },
+          {
+            "vc4_killthresher10": {
+              "challenge": "VC4_KillThresher10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.thresher_bp4",
+              "parent": "challenge'VCChallenge_KillThresher10'"
+            }
+          },
+          {
+            "vc4_killthresher15": {
+              "challenge": "VC4_KillThresher15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.thresher_bp4",
+              "parent": "challenge'VCChallenge_KillThresher15'"
+            }
+          },
+          {
+            "vc4_killthresher20": {
+              "challenge": "VC4_KillThresher20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.thresher_bp4",
+              "parent": "challenge'VCChallenge_KillThresher20'"
+            }
+          },
+          {
+            "vc4_killtrueboss": {
+              "challenge": "VC4_KillTrueBoss",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.killtrueboss_bp4",
+              "parent": "challenge'VCChallenge_KillTrueBoss'"
+            }
+          },
+          {
+            "vc4_killturret10": {
+              "challenge": "VC4_KillTurret10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.turret_bp4",
+              "parent": "challenge'VCChallenge_KillTurret10'"
+            }
+          },
+          {
+            "vc4_killturret15": {
+              "challenge": "VC4_KillTurret15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.turret_bp4",
+              "parent": "challenge'VCChallenge_KillTurret15'"
+            }
+          },
+          {
+            "vc4_killturret20": {
+              "challenge": "VC4_KillTurret20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.turret_bp4",
+              "parent": "challenge'VCChallenge_KillTurret20'"
+            }
+          },
+          {
+            "vc4_killwarden10": {
+              "challenge": "VC4_KillWarden10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.warden_bp4",
+              "parent": "challenge'VCChallenge_KillWarden10'"
+            }
+          },
+          {
+            "vc4_killwarden15": {
+              "challenge": "VC4_KillWarden15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.warden_bp4",
+              "parent": "challenge'VCChallenge_KillWarden15'"
+            }
+          },
+          {
+            "vc4_killwarden20": {
+              "challenge": "VC4_KillWarden20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.warden_bp4",
+              "parent": "challenge'VCChallenge_KillWarden20'"
+            }
+          },
+          {
+            "vc4_killwildhorn10": {
+              "challenge": "VC4_KillWildhorn10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.wildhorn_bp4",
+              "parent": "challenge'VCChallenge_KillWildhorn10'"
+            }
+          },
+          {
+            "vc4_killwildhorn15": {
+              "challenge": "VC4_KillWildhorn15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.wildhorn_bp4",
+              "parent": "challenge'VCChallenge_KillWildhorn15'"
+            }
+          },
+          {
+            "vc4_killwildhorn20": {
+              "challenge": "VC4_KillWildhorn20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.wildhorn_bp4",
+              "parent": "challenge'VCChallenge_KillWildhorn20'"
+            }
+          },
+          {
+            "vc4_killwitness10": {
+              "challenge": "VC4_KillWitness10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.witness_bp4",
+              "parent": "challenge'VCChallenge_KillWitness10'"
+            }
+          },
+          {
+            "vc4_killwitness15": {
+              "challenge": "VC4_KillWitness15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.witness_bp4",
+              "parent": "challenge'VCChallenge_KillWitness15'"
+            }
+          },
+          {
+            "vc4_killwitness20": {
+              "challenge": "VC4_KillWitness20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.witness_bp4",
+              "parent": "challenge'VCChallenge_KillWitness20'"
+            }
+          },
+          {
+            "vc4_lootclassmod3": {
+              "challenge": "VC4_LootClassMod3",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.loot_bp4.classmod_bp4",
+              "parent": "challenge'VCChallenge_LootClassMod3'"
+            }
+          },
+          {
+            "vc4_lootclassmod5": {
+              "challenge": "VC4_LootClassMod5",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.loot_bp4.classmod_bp4",
+              "parent": "challenge'VCChallenge_LootClassMod5'"
+            }
+          },
+          {
+            "vc4_lootclassmod7": {
+              "challenge": "VC4_LootClassMod7",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.loot_bp4.classmod_bp4",
+              "parent": "challenge'VCChallenge_LootClassMod7'"
+            }
+          },
+          {
+            "vc4_lootgadget3": {
+              "challenge": "VC4_LootGadget3",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.loot_bp4.gadget_bp4",
+              "parent": "challenge'VCChallenge_LootGadget3'"
+            }
+          },
+          {
+            "vc4_lootgadget5": {
+              "challenge": "VC4_LootGadget5",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.loot_bp4.gadget_bp4",
+              "parent": "challenge'VCChallenge_LootGadget5'"
+            }
+          },
+          {
+            "vc4_lootgadget7": {
+              "challenge": "VC4_LootGadget7",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.loot_bp4.gadget_bp4",
+              "parent": "challenge'VCChallenge_LootGadget7'"
+            }
+          },
+          {
+            "vc4_lootlegendary10": {
+              "challenge": "VC4_LootLegendary10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.loot_weekly_bp4.legendary_weekly_bp4",
+              "parent": "challenge'VCChallenge_LootLegendary10'"
+            }
+          },
+          {
+            "vc4_lootlegendary15": {
+              "challenge": "VC4_LootLegendary15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.loot_weekly_bp4.legendary_weekly_bp4",
+              "parent": "challenge'VCChallenge_LootLegendary15'"
+            }
+          },
+          {
+            "vc4_lootlegendary5": {
+              "challenge": "VC4_LootLegendary5",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.loot_weekly_bp4.legendary_weekly_bp4",
+              "parent": "challenge'VCChallenge_LootLegendary5'"
+            }
+          },
+          {
+            "vc4_lootpurple10": {
+              "challenge": "VC4_LootPurple10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.loot_bp4.purple_bp4",
+              "parent": "challenge'VCChallenge_LootPurple10'"
+            }
+          },
+          {
+            "vc4_lootpurple15": {
+              "challenge": "VC4_LootPurple15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.loot_bp4.purple_bp4",
+              "parent": "challenge'VCChallenge_LootPurple15'"
+            }
+          },
+          {
+            "vc4_lootpurple5": {
+              "challenge": "VC4_LootPurple5",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.loot_bp4.purple_bp4",
+              "parent": "challenge'VCChallenge_LootPurple5'"
+            }
+          },
+          {
+            "vc4_lootrepkit3": {
+              "challenge": "VC4_LootRepkit3",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.loot_bp4.repkit_bp4",
+              "parent": "challenge'VCChallenge_LootRepkit3'"
+            }
+          },
+          {
+            "vc4_lootrepkit5": {
+              "challenge": "VC4_LootRepkit5",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.loot_bp4.repkit_bp4",
+              "parent": "challenge'VCChallenge_LootRepkit5'"
+            }
+          },
+          {
+            "vc4_lootrepkit7": {
+              "challenge": "VC4_LootRepkit7",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.loot_bp4.repkit_bp4",
+              "parent": "challenge'VCChallenge_LootRepkit7'"
+            }
+          },
+          {
+            "vc4_lootshield3": {
+              "challenge": "VC4_LootShield3",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.loot_bp4.shield_bp4",
+              "parent": "challenge'VCChallenge_LootShield3'"
+            }
+          },
+          {
+            "vc4_lootshield5": {
+              "challenge": "VC4_LootShield5",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.loot_bp4.shield_bp4",
+              "parent": "challenge'VCChallenge_LootShield5'"
+            }
+          },
+          {
+            "vc4_lootshield7": {
+              "challenge": "VC4_LootShield7",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.loot_bp4.shield_bp4",
+              "parent": "challenge'VCChallenge_LootShield7'"
+            }
+          },
+          {
+            "vc4_lootweapon10": {
+              "challenge": "VC4_LootWeapon10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.loot_bp4.weapon_bp4",
+              "parent": "challenge'VCChallenge_LootWeapon10'"
+            }
+          },
+          {
+            "vc4_lootweapon15": {
+              "challenge": "VC4_LootWeapon15",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.loot_bp4.weapon_bp4",
+              "parent": "challenge'VCChallenge_LootWeapon15'"
+            }
+          },
+          {
+            "vc4_lootweapon5": {
+              "challenge": "VC4_LootWeapon5",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.loot_bp4.weapon_bp4",
+              "parent": "challenge'VCChallenge_LootWeapon5'"
+            }
+          },
+          {
+            "vc4_openlootables100": {
+              "challenge": "VC4_openlootables100",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.loot_weekly_bp4.general_weekly_bp4",
+              "parent": "challenge'VCChallenge_openlootables100'"
+            }
+          },
+          {
+            "vc4_openlootables20": {
+              "challenge": "VC4_OpenLootables20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.loot_bp4.open_bp4",
+              "parent": "challenge'VCChallenge_OpenLootables20'"
+            }
+          },
+          {
+            "vc4_openlootables200": {
+              "challenge": "VC4_openlootables200",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.loot_weekly_bp4.general_weekly_bp4",
+              "parent": "challenge'VCChallenge_openlootables200'"
+            }
+          },
+          {
+            "vc4_openlootables30": {
+              "challenge": "VC4_OpenLootables30",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.loot_bp4.open_bp4",
+              "parent": "challenge'VCChallenge_OpenLootables30'"
+            }
+          },
+          {
+            "vc4_openlootables300": {
+              "challenge": "VC4_openlootables300",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.loot_weekly_bp4.general_weekly_bp4",
+              "parent": "challenge'VCChallenge_openlootables300'"
+            }
+          },
+          {
+            "vc4_openlootables40": {
+              "challenge": "VC4_OpenLootables40",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.loot_bp4.open_bp4",
+              "parent": "challenge'VCChallenge_OpenLootables40'"
+            }
+          },
+          {
+            "vc4_orderacquire2": {
+              "challenge": "VC4_OrderAcquire2",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.contracts_bp4.acquire_order_bp4",
+              "parent": "challenge'VCChallenge_OrderAcquire2'"
+            }
+          },
+          {
+            "vc4_orderacquire4": {
+              "challenge": "VC4_OrderAcquire4",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.contracts_bp4.acquire_order_bp4",
+              "parent": "challenge'VCChallenge_OrderAcquire4'"
+            }
+          },
+          {
+            "vc4_orderacquire6": {
+              "challenge": "VC4_OrderAcquire6",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.contracts_bp4.acquire_order_bp4",
+              "parent": "challenge'VCChallenge_OrderAcquire6'"
+            }
+          },
+          {
+            "vc4_orderbounty2": {
+              "challenge": "VC4_OrderBounty2",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.contracts_bp4.bounty_order_bp4",
+              "parent": "challenge'VCChallenge_OrderBounty2'"
+            }
+          },
+          {
+            "vc4_orderbounty4": {
+              "challenge": "VC4_OrderBounty4",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.contracts_bp4.bounty_order_bp4",
+              "parent": "challenge'VCChallenge_OrderBounty4'"
+            }
+          },
+          {
+            "vc4_orderbounty6": {
+              "challenge": "VC4_OrderBounty6",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.contracts_bp4.bounty_order_bp4",
+              "parent": "challenge'VCChallenge_OrderBounty6'"
+            }
+          },
+          {
+            "vc4_ordercollect2": {
+              "challenge": "VC4_OrderCollect2",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.contracts_bp4.collect_order_bp4",
+              "parent": "challenge'VCChallenge_OrderCollect2'"
+            }
+          },
+          {
+            "vc4_ordercollect4": {
+              "challenge": "VC4_OrderCollect4",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.contracts_bp4.collect_order_bp4",
+              "parent": "challenge'VCChallenge_OrderCollect4'"
+            }
+          },
+          {
+            "vc4_ordercollect6": {
+              "challenge": "VC4_OrderCollect6",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.contracts_bp4.collect_order_bp4",
+              "parent": "challenge'VCChallenge_OrderCollect6'"
+            }
+          },
+          {
+            "vc4_orderpatrol2": {
+              "challenge": "VC4_OrderPatrol2",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.contracts_bp4.patrol_order_bp4",
+              "parent": "challenge'VCChallenge_OrderPatrol2'"
+            }
+          },
+          {
+            "vc4_orderpatrol4": {
+              "challenge": "VC4_OrderPatrol4",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.contracts_bp4.patrol_order_bp4",
+              "parent": "challenge'VCChallenge_OrderPatrol4'"
+            }
+          },
+          {
+            "vc4_orderpatrol6": {
+              "challenge": "VC4_OrderPatrol6",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.contracts_bp4.patrol_order_bp4",
+              "parent": "challenge'VCChallenge_OrderPatrol6'"
+            }
+          },
+          {
+            "vc4_ordersearch2": {
+              "challenge": "VC4_OrderSearch2",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.contracts_bp4.search_order_bp4",
+              "parent": "challenge'VCChallenge_OrderSearch2'"
+            }
+          },
+          {
+            "vc4_ordersearch4": {
+              "challenge": "VC4_OrderSearch4",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.contracts_bp4.search_order_bp4",
+              "parent": "challenge'VCChallenge_OrderSearch4'"
+            }
+          },
+          {
+            "vc4_ordersearch6": {
+              "challenge": "VC4_OrderSearch6",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.contracts_bp4.search_order_bp4",
+              "parent": "challenge'VCChallenge_OrderSearch6'"
+            }
+          },
+          {
+            "vc4_patrolcontract10": {
+              "challenge": "VC4_PatrolContract10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.contract_bp4.patrol_bp4",
+              "parent": "challenge'VCChallenge_PatrolContract10'"
+            }
+          },
+          {
+            "vc4_patrolcontract20": {
+              "challenge": "VC4_PatrolContract20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.contract_bp4.patrol_bp4",
+              "parent": "challenge'VCChallenge_PatrolContract20'"
+            }
+          },
+          {
+            "vc4_patrolcontract30": {
+              "challenge": "VC4_PatrolContract30",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.contract_bp4.patrol_bp4",
+              "parent": "challenge'VCChallenge_PatrolContract30'"
+            }
+          },
+          {
+            "vc4_pickupcash1000": {
+              "challenge": "VC4_PickupCash1000",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.currency_bp4.cash_daily_bp4",
+              "parent": "challenge'VCChallenge_PickupCash1000'"
+            }
+          },
+          {
+            "vc4_pickupcash100000": {
+              "challenge": "VC4_PickupCash100000",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.loot_weekly_bp4.cash_weekly_bp4",
+              "parent": "challenge'VCChallenge_PickupCash100000'"
+            }
+          },
+          {
+            "vc4_pickupcash1000000": {
+              "challenge": "VC4_PickupCash1000000",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.loot_weekly_bp4.cash_weekly_bp4",
+              "parent": "challenge'VCChallenge_PickupCash1000000'"
+            }
+          },
+          {
+            "vc4_pickupcash1500": {
+              "challenge": "VC4_PickupCash1500",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.currency_bp4.cash_daily_bp4",
+              "parent": "challenge'VCChallenge_PickupCash1500'"
+            }
+          },
+          {
+            "vc4_pickupcash500": {
+              "challenge": "VC4_PickupCash500",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.currency_bp4.cash_daily_bp4",
+              "parent": "challenge'VCChallenge_PickupCash500'"
+            }
+          },
+          {
+            "vc4_pickupcash500000": {
+              "challenge": "VC4_PickupCash500000",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.loot_weekly_bp4.cash_weekly_bp4",
+              "parent": "challenge'VCChallenge_PickupCash500000'"
+            }
+          },
+          {
+            "vc4_pickuperidium100": {
+              "challenge": "VC4_PickupEridium100",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.currency_bp4.eridium_bp4",
+              "parent": "challenge'VCChallenge_PickupEridium100'"
+            }
+          },
+          {
+            "vc4_pickuperidium200": {
+              "challenge": "VC4_PickupEridium200",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.currency_bp4.eridium_bp4",
+              "parent": "challenge'VCChallenge_PickupEridium200'"
+            }
+          },
+          {
+            "vc4_pickuperidium300": {
+              "challenge": "VC4_PickupEridium300",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.daily_bp4_vc.currency_bp4.eridium_bp4",
+              "parent": "challenge'VCChallenge_PickupEridium300'"
+            }
+          },
+          {
+            "vc4_purchaseitemfrombmvm2": {
+              "challenge": "VC4_PurchaseItemFromBMVM2",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.bmvm_bp4",
+              "parent": "challenge'VCChallenge_PurchaseItemFromBMVM2'"
+            }
+          },
+          {
+            "vc4_purchaseitemfrombmvm4": {
+              "challenge": "VC4_PurchaseItemFromBMVM4",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.bmvm_bp4",
+              "parent": "challenge'VCChallenge_PurchaseItemFromBMVM4'"
+            }
+          },
+          {
+            "vc4_purchaseitemfrombmvm6": {
+              "challenge": "VC4_PurchaseItemFromBMVM6",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.bmvm_bp4",
+              "parent": "challenge'VCChallenge_PurchaseItemFromBMVM6'"
+            }
+          },
+          {
+            "vc4_searchcontract10": {
+              "challenge": "VC4_SearchContract10",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.contract_bp4.search_bp4",
+              "parent": "challenge'VCChallenge_SearchContract10'"
+            }
+          },
+          {
+            "vc4_searchcontract20": {
+              "challenge": "VC4_SearchContract20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.contract_bp4.search_bp4",
+              "parent": "challenge'VCChallenge_SearchContract20'"
+            }
+          },
+          {
+            "vc4_searchcontract30": {
+              "challenge": "VC4_SearchContract30",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "missiontype": "Contract",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.contract_bp4.search_bp4",
+              "parent": "challenge'VCChallenge_SearchContract30'"
+            }
+          },
+          {
+            "vc4_sellitemtovendingmachine20": {
+              "challenge": "VC4_SellItemToVendingMachine20",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.sell_bp4",
+              "parent": "challenge'VCChallenge_SellItemToVendingMachine20'"
+            }
+          },
+          {
+            "vc4_sellitemtovendingmachine30": {
+              "challenge": "VC4_SellItemToVendingMachine30",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.sell_bp4",
+              "parent": "challenge'VCChallenge_SellItemToVendingMachine30'"
+            }
+          },
+          {
+            "vc4_sellitemtovendingmachine40": {
+              "challenge": "VC4_SellItemToVendingMachine40",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.sell_bp4",
+              "parent": "challenge'VCChallenge_SellItemToVendingMachine40'"
+            }
+          },
+          {
+            "vc4_weeklytraitmission": {
+              "challenge": "VC4_WeeklyTraitMission",
+              "uichallengeicontype": "vc4",
+              "rewardcurrencytype": "vc4",
+              "celebratorynotification": "display_data'weekly_challenge_complete_notification_vc4'",
+              "associatedstat": "stats.weekly_bp4_vc.traitmission_bp4",
+              "parent": "challenge'VCChallenge_WeeklyTraitMission'"
             }
           }
         ]

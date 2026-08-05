@@ -241,6 +241,36 @@ const els = {
   serialToolsInput: document.getElementById("serialToolsInput"),
   serialToolsSerialized: document.getElementById("serialToolsSerialized"),
   serialToolsStatus: document.getElementById("serialToolsStatus"),
+  invRefreshBtn: document.getElementById("invRefreshBtn"),
+  invCopyAllBtn: document.getElementById("invCopyAllBtn"),
+  invTargetSelect: document.getElementById("invTargetSelect"),
+  invGiveTargetSelect: document.getElementById("invGiveTargetSelect"),
+  invSerialCopies: document.getElementById("invSerialCopies"),
+  invGiveSerialBtn: document.getElementById("invGiveSerialBtn"),
+  invSortDirBtn: document.getElementById("invSortDirBtn"),
+  invStatus: document.getElementById("invStatus"),
+  invReading: document.getElementById("invReading"),
+  invEquippedGrid: document.getElementById("invEquippedGrid"),
+  invFilterCount: document.getElementById("invFilterCount"),
+  invSearch: document.getElementById("invSearch"),
+  invRarityFilter: document.getElementById("invRarityFilter"),
+  invDamageFilter: document.getElementById("invDamageFilter"),
+  invTypeFilter: document.getElementById("invTypeFilter"),
+  invManufacturerFilter: document.getElementById("invManufacturerFilter"),
+  invBackpackCount: document.getElementById("invBackpackCount"),
+  invPrevPageBtn: document.getElementById("invPrevPageBtn"),
+  invNextPageBtn: document.getElementById("invNextPageBtn"),
+  invPageLabel: document.getElementById("invPageLabel"),
+  invBackpackGrid: document.getElementById("invBackpackGrid"),
+  invDetail: document.getElementById("invDetail"),
+  invDetailTitle: document.getElementById("invDetailTitle"),
+  invDetailCloseBtn: document.getElementById("invDetailCloseBtn"),
+  invDetailMeta: document.getElementById("invDetailMeta"),
+  invDetailSerial: document.getElementById("invDetailSerial"),
+  invCopySerialBtn: document.getElementById("invCopySerialBtn"),
+  invSendRewardsBtn: document.getElementById("invSendRewardsBtn"),
+  invOpenToolsBtn: document.getElementById("invOpenToolsBtn"),
+  invOpenEditorBtn: document.getElementById("invOpenEditorBtn"),
   savedDataBackupBtn: document.getElementById("savedDataBackupBtn"),
   savedDataOpenBtn: document.getElementById("savedDataOpenBtn"),
   savedDataOutput: document.getElementById("savedDataOutput"),
@@ -318,6 +348,19 @@ const state = {
   bridgeStatusPollTimer: null,
   boostTargetScope: "selected",
   hostPlayerIndex: null,
+  invEquipped: [],
+  invBackpack: [],
+  invFiltered: [],
+  invSort: "recent",
+  invSortDir: "desc",
+  invCategory: "All",
+  invPage: 0,
+  invPageSize: 72,
+  invSelectedKey: "",
+  invSelectedEntry: null,
+  invReading: "",
+  invTruncated: false,
+  invGiveTarget: "",
   bookmarkActiveId: "",
   bookmarkCheckedIds: new Set(),
   bookmarkConfirmedId: "",
@@ -2108,27 +2151,49 @@ function renderPlayers(status = {}) {
     state.selectedTargetName = "";
   }
 
-  const fillSelect = (selectNode) => {
+  const fillSelect = (selectNode, preferredValue = null) => {
     if (!selectNode) return;
+    const previous = preferredValue !== null && preferredValue !== undefined
+      ? String(preferredValue)
+      : String(selectNode.value || "");
+    const fallback = String(state.selectedTarget || "");
     selectNode.innerHTML = "";
     const blank = document.createElement("option");
     blank.value = "";
     blank.textContent = state.players.length ? "Choose player" : "No players loaded";
     selectNode.appendChild(blank);
 
+    let matched = false;
     state.players.forEach((player) => {
       const option = document.createElement("option");
       option.value = playerValue(player);
       option.textContent = playerLabel(player);
-      if (String(option.value) === String(state.selectedTarget)) option.selected = true;
+      const value = String(option.value);
+      if (previous && value === previous) {
+        option.selected = true;
+        matched = true;
+      }
       selectNode.appendChild(option);
     });
+    if (!matched && fallback) {
+      const fallbackOption = Array.from(selectNode.options).find((option) => String(option.value) === fallback);
+      if (fallbackOption) fallbackOption.selected = true;
+    }
   };
 
-  fillSelect(els.targetSelect);
-  fillSelect(els.bookmarkTargetSelect);
-  fillSelect(els.bl4TargetSelect);
-  fillSelect(els.movementTargetSelect);
+  fillSelect(els.targetSelect, state.selectedTarget);
+  fillSelect(els.bookmarkTargetSelect, state.selectedTarget);
+  fillSelect(els.bl4TargetSelect, state.selectedTarget);
+  fillSelect(els.movementTargetSelect, els.movementTargetSelect && els.movementTargetSelect.value);
+  // Inventory viewing vs give-to stay independent of each other and of Boosting target.
+  fillSelect(els.invTargetSelect, els.invTargetSelect && els.invTargetSelect.value);
+  fillSelect(
+    els.invGiveTargetSelect,
+    (els.invGiveTargetSelect && els.invGiveTargetSelect.value) || state.invGiveTarget || state.selectedTarget
+  );
+  if (els.invGiveTargetSelect) {
+    state.invGiveTarget = String(els.invGiveTargetSelect.value || "");
+  }
 
   updateBoostTargetSummary();
   const selectedPlayer = state.players.find((player) => String(playerValue(player)) === String(state.selectedTarget));
@@ -2137,6 +2202,16 @@ function renderPlayers(status = {}) {
   setLine(els.bookmarkTargetSummary, text, kind);
   setLine(els.bl4TargetSummary, text, kind);
   setLine(els.movementStatus, text, kind);
+  const viewPlayer = state.players.find(
+    (player) => String(playerValue(player)) === String((els.invTargetSelect && els.invTargetSelect.value) || "")
+  );
+  if (els.invReading && !state.invEquipped.length && !state.invBackpack.length) {
+    els.invReading.textContent = viewPlayer
+      ? `Reading: ${playerLabel(viewPlayer)} (press Refresh)`
+      : selectedPlayer
+        ? `Reading: ${playerLabel(selectedPlayer)} (press Refresh)`
+        : "Reading: none";
+  }
 }
 
 const PLAYER_SCOPED_BOOST_ACTIONS = new Set([
@@ -2443,6 +2518,9 @@ async function setTarget(value, options = {}) {
     setLine(els.bookmarkTargetSummary, "Selected target: none", "warning");
     setLine(els.bl4TargetSummary, "Selected target: none", "warning");
     setLine(els.movementStatus, "Selected target: none", "warning");
+    if (els.invReading && !state.invEquipped.length && !state.invBackpack.length) {
+      els.invReading.textContent = "Reading: none";
+    }
     updateSerialState();
     return null;
   }
@@ -2451,6 +2529,7 @@ async function setTarget(value, options = {}) {
   setLine(els.bookmarkTargetSummary, `Setting target ${target}...`, "warning");
   setLine(els.bl4TargetSummary, `Setting target ${target}...`, "warning");
   setLine(els.movementStatus, `Setting target ${target}...`, "warning");
+  if (els.invStatus) setLine(els.invStatus, `Setting target ${target}...`, "warning");
   const result = await bridgeAction("set_target_player", { target_player: target }, 10000);
   setOutput(els.statusOutput, result);
   const ok = Boolean(result && result.data && result.data.ok);
@@ -2465,6 +2544,7 @@ async function setTarget(value, options = {}) {
     setLine(els.bookmarkTargetSummary, message, "bad");
     setLine(els.bl4TargetSummary, message, "bad");
     setLine(els.movementStatus, message, "bad");
+    if (els.invStatus) setLine(els.invStatus, message, "bad");
     updateSerialState();
   }
   return result;
@@ -6705,6 +6785,659 @@ async function openReportIssue() {
   setLine(els.reportStatus, "Opened a GitHub issue draft. Review it, attach screenshots/logs if needed, then click Submit new issue on GitHub.", "ok");
 }
 
+const INV_EQUIP_SLOTS = [
+  { slot: 0, label: "Weapon 1" },
+  { slot: 1, label: "Weapon 2" },
+  { slot: 2, label: "Weapon 3" },
+  { slot: 3, label: "Weapon 4" },
+  { slot: 4, label: "Shield" },
+  { slot: 5, label: "Ordnance" },
+  { slot: 6, label: "Repkit" },
+  { slot: 7, label: "Enhancement" },
+  { slot: 8, label: "Class Mod" }
+];
+
+const INV_RARITY_RANK = {
+  Pearlescent: 6,
+  Legendary: 5,
+  Epic: 4,
+  Rare: 3,
+  Uncommon: 2,
+  Common: 1
+};
+
+function invEntryKey(entry, fallback = "") {
+  if (!entry) return fallback;
+  return String(entry.serial || "") || `${entry.label || ""}:${entry.slot}:${fallback}`;
+}
+
+function invRarityClass(rarity) {
+  const key = String(rarity || "").trim().toLowerCase();
+  if (!key) return "inv-rarity-unknown";
+  if (key.includes("pearl")) return "inv-rarity-pearlescent";
+  if (key.includes("legend")) return "inv-rarity-legendary";
+  if (key.includes("epic")) return "inv-rarity-epic";
+  if (key.includes("rare")) return "inv-rarity-rare";
+  if (key.includes("uncommon")) return "inv-rarity-uncommon";
+  if (key.includes("common")) return "inv-rarity-common";
+  return "inv-rarity-unknown";
+}
+
+function invDisplayName(entry) {
+  if (!entry) return "Empty";
+  return String(entry.display_name || entry.summary || entry.label || "Item").trim() || "Item";
+}
+
+function invFillSelect(select, values) {
+  if (!select) return;
+  const current = select.value || "All";
+  const unique = ["All", ...Array.from(new Set(values.filter(Boolean))).sort((a, b) => String(a).localeCompare(String(b)))];
+  select.innerHTML = "";
+  unique.forEach((value) => {
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = value;
+    select.appendChild(option);
+  });
+  select.value = unique.includes(current) ? current : "All";
+}
+
+function invRefreshFilterOptions() {
+  const pool = [...state.invEquipped, ...state.invBackpack];
+  invFillSelect(els.invRarityFilter, pool.map((e) => e.rarity).filter(Boolean));
+  invFillSelect(els.invDamageFilter, pool.map((e) => e.damage_type).filter(Boolean));
+  invFillSelect(els.invTypeFilter, pool.map((e) => e.item_type || e.character_class).filter(Boolean));
+  invFillSelect(els.invManufacturerFilter, pool.map((e) => e.manufacturer).filter(Boolean));
+}
+
+function invCompare(a, b) {
+  const sort = state.invSort || "recent";
+  // Ascending baseline; flipped when invSortDir === "desc" (default ↓).
+  let cmp = 0;
+  if (sort === "rarity") {
+    const ra = INV_RARITY_RANK[String(a.rarity || "")] || 0;
+    const rb = INV_RARITY_RANK[String(b.rarity || "")] || 0;
+    cmp = ra - rb;
+  } else if (sort === "type") {
+    cmp = String(a.item_type || a.category || "").localeCompare(String(b.item_type || b.category || ""));
+  } else if (sort === "level") {
+    const la = Number(a.level);
+    const lb = Number(b.level);
+    const na = Number.isFinite(la) ? la : -1;
+    const nb = Number.isFinite(lb) ? lb : -1;
+    cmp = na - nb;
+  } else if (sort === "manufacturer") {
+    cmp = String(a.manufacturer || "").localeCompare(String(b.manufacturer || ""));
+  } else {
+    // recent: backpack_index ascending = older/lower index first
+    const ia = Number(a.backpack_index);
+    const ib = Number(b.backpack_index);
+    const na = Number.isFinite(ia) ? ia : 1e9;
+    const nb = Number.isFinite(ib) ? ib : 1e9;
+    cmp = na - nb;
+  }
+  if (cmp && state.invSortDir !== "asc") cmp = -cmp;
+  if (cmp) return cmp;
+  return invDisplayName(a).localeCompare(invDisplayName(b));
+}
+
+function invUpdateSortDirButton() {
+  if (!els.invSortDirBtn) return;
+  const desc = state.invSortDir !== "asc";
+  els.invSortDirBtn.textContent = desc ? "↓" : "↑";
+  els.invSortDirBtn.title = desc
+    ? "Sort direction: high → low (click for low → high)"
+    : "Sort direction: low → high (click for high → low)";
+  els.invSortDirBtn.setAttribute("aria-label", els.invSortDirBtn.title);
+}
+
+function invApplyFilters() {
+  const term = String(els.invSearch && els.invSearch.value || "").trim().toLowerCase();
+  const rarity = String(els.invRarityFilter && els.invRarityFilter.value || "All");
+  const damage = String(els.invDamageFilter && els.invDamageFilter.value || "All");
+  const type = String(els.invTypeFilter && els.invTypeFilter.value || "All");
+  const manufacturer = String(els.invManufacturerFilter && els.invManufacturerFilter.value || "All");
+  const category = state.invCategory || "All";
+  const filtered = state.invBackpack.filter((entry) => {
+    if (category !== "All" && String(entry.category || "Other") !== category) return false;
+    if (rarity !== "All" && String(entry.rarity || "") !== rarity) return false;
+    if (damage !== "All" && String(entry.damage_type || "") !== damage) return false;
+    if (manufacturer !== "All" && String(entry.manufacturer || "") !== manufacturer) return false;
+    const entryType = String(entry.item_type || entry.character_class || "");
+    if (type !== "All" && entryType !== type) return false;
+    if (!term) return true;
+    const hay = [
+      invDisplayName(entry),
+      entry.label,
+      entry.summary,
+      entry.manufacturer,
+      entry.item_type,
+      entry.character_class,
+      entry.category,
+      entry.rarity,
+      entry.damage_type,
+      entry.serial,
+      entry.set
+    ].join(" ").toLowerCase();
+    return hay.includes(term);
+  });
+  filtered.sort(invCompare);
+  state.invFiltered = filtered;
+  const maxPage = Math.max(0, Math.ceil(filtered.length / state.invPageSize) - 1);
+  if (state.invPage > maxPage) state.invPage = maxPage;
+  if (els.invFilterCount) els.invFilterCount.textContent = `Filter: ${filtered.length.toLocaleString()}`;
+}
+
+function invMakeCard(entry, { slotLabel = "", empty = false, equipped = false } = {}) {
+  const card = document.createElement("button");
+  card.type = "button";
+  const rarityClass = empty ? "inv-rarity-unknown" : invRarityClass(entry && entry.rarity);
+  card.className = `${equipped || empty ? "inv-slot-card" : "inv-item-card"} ${rarityClass}${empty ? " empty" : ""}`;
+  if (!empty && entry && invEntryKey(entry) === state.invSelectedKey) card.classList.add("selected");
+  if (slotLabel) {
+    const lab = document.createElement("div");
+    lab.className = "inv-slot-label";
+    lab.textContent = slotLabel;
+    card.appendChild(lab);
+  }
+  const name = document.createElement("div");
+  name.className = "inv-item-name";
+  name.textContent = empty ? "Empty" : invDisplayName(entry);
+  card.appendChild(name);
+  const meta = document.createElement("div");
+  meta.className = "inv-item-meta";
+  if (empty) {
+    meta.textContent = "—";
+  } else {
+    const rarity = String(entry.rarity || "Unknown");
+    const level = Number(entry.level);
+    const bits = [];
+    bits.push(`<span class="inv-rarity-dot"></span>${rarity}`);
+    if (Number.isFinite(level) && level >= 0) bits.push(`L${level}`);
+    const typeBit = String(entry.item_type || entry.character_class || entry.category || "").trim();
+    if (typeBit) bits.push(typeBit);
+    if (entry.manufacturer) bits.push(String(entry.manufacturer));
+    if (entry.damage_type) bits.push(String(entry.damage_type));
+    meta.innerHTML = bits.join(" · ");
+  }
+  card.appendChild(meta);
+  if (!empty && entry) {
+    card.addEventListener("click", () => invSelectEntry(entry));
+  }
+  return card;
+}
+
+function invRenderEquipped() {
+  if (!els.invEquippedGrid) return;
+  els.invEquippedGrid.innerHTML = "";
+  const bySlot = new Map();
+  state.invEquipped.forEach((entry) => {
+    const slot = Number(entry.slot);
+    if (Number.isFinite(slot) && slot >= 0) bySlot.set(slot, entry);
+  });
+  INV_EQUIP_SLOTS.forEach(({ slot, label }) => {
+    const entry = bySlot.get(slot);
+    const card = entry
+      ? invMakeCard(entry, { slotLabel: label, equipped: true })
+      : invMakeCard(null, { slotLabel: label, empty: true, equipped: true });
+    els.invEquippedGrid.appendChild(card);
+  });
+  // Extra equipped rows (active weapon / unknown slots)
+  state.invEquipped.forEach((entry) => {
+    const slot = Number(entry.slot);
+    if (Number.isFinite(slot) && slot >= 0 && slot <= 8) return;
+    els.invEquippedGrid.appendChild(
+      invMakeCard(entry, { slotLabel: entry.label || "Equipped", equipped: true })
+    );
+  });
+}
+
+function invRenderBackpack() {
+  if (!els.invBackpackGrid) return;
+  els.invBackpackGrid.innerHTML = "";
+  const start = state.invPage * state.invPageSize;
+  const pageItems = state.invFiltered.slice(start, start + state.invPageSize);
+  if (!pageItems.length) {
+    const empty = document.createElement("div");
+    empty.className = "dev-empty-row";
+    empty.textContent = state.invBackpack.length
+      ? "No items match the current filters."
+      : "No backpack items loaded yet.";
+    els.invBackpackGrid.appendChild(empty);
+  } else {
+    pageItems.forEach((entry) => els.invBackpackGrid.appendChild(invMakeCard(entry)));
+  }
+  const totalPages = Math.max(1, Math.ceil(state.invFiltered.length / state.invPageSize) || 1);
+  if (els.invPageLabel) {
+    els.invPageLabel.textContent = `Page ${Math.min(state.invPage + 1, totalPages)} / ${totalPages}`;
+  }
+  if (els.invPrevPageBtn) els.invPrevPageBtn.disabled = state.invPage <= 0;
+  if (els.invNextPageBtn) {
+    els.invNextPageBtn.disabled = start + state.invPageSize >= state.invFiltered.length;
+  }
+  if (els.invBackpackCount) {
+    const trunc = state.invTruncated ? " (capped)" : "";
+    els.invBackpackCount.textContent =
+      `${state.invFiltered.length.toLocaleString()} shown / ${state.invBackpack.length.toLocaleString()} backpack · ${state.invEquipped.length} equipped${trunc}`;
+  }
+}
+
+function invRenderAll() {
+  invApplyFilters();
+  invRenderEquipped();
+  invRenderBackpack();
+}
+
+function invSelectEntry(entry) {
+  if (!entry) return;
+  state.invSelectedEntry = entry;
+  state.invSelectedKey = invEntryKey(entry);
+  if (els.invDetail) els.invDetail.classList.remove("hidden");
+  if (els.invDetailTitle) els.invDetailTitle.textContent = invDisplayName(entry);
+  if (els.invDetailMeta) {
+    const bits = [
+      entry.label,
+      entry.category,
+      entry.item_type || entry.character_class,
+      entry.manufacturer,
+      entry.rarity,
+      entry.damage_type,
+      Number(entry.level) >= 0 ? `L${entry.level}` : ""
+    ].filter(Boolean);
+    els.invDetailMeta.textContent = bits.join(" · ");
+  }
+  if (els.invDetailSerial) els.invDetailSerial.value = String(entry.serial || "");
+  invRenderAll();
+}
+
+function invClearDetail() {
+  state.invSelectedEntry = null;
+  state.invSelectedKey = "";
+  if (els.invDetail) els.invDetail.classList.add("hidden");
+  if (els.invDetailSerial) els.invDetailSerial.value = "";
+  invRenderAll();
+}
+
+function invActionData(result) {
+  return result && result.data !== undefined ? result.data : result;
+}
+
+function invEntriesFromReadResult(result) {
+  const data = invActionData(result);
+  if (!data || typeof data !== "object") return [];
+  if (data.read_serials && Array.isArray(data.read_serials.entries)) {
+    return data.read_serials.entries;
+  }
+  if (Array.isArray(data.entries)) return data.entries;
+  return [];
+}
+
+function invNormalizeInventoryBlob(inventory) {
+  if (!inventory || typeof inventory !== "object") {
+    return { equipped: [], backpack: [], truncated: false };
+  }
+  return {
+    equipped: Array.isArray(inventory.equipped) ? inventory.equipped : [],
+    backpack: Array.isArray(inventory.backpack) ? inventory.backpack : [],
+    truncated: Boolean(inventory.truncated)
+  };
+}
+
+function invMessageLooksUnknown(message) {
+  return /unknown action|unknown quick menu action/i.test(String(message || ""));
+}
+
+function invInventoryTargetPayload() {
+  const target = String(
+    (els.invTargetSelect && els.invTargetSelect.value) || state.selectedTarget || ""
+  ).trim();
+  return target ? { target_player: target } : {};
+}
+
+async function refreshInventoryFallback(targetPayload = {}) {
+  // Older installed .sdkmods only expose read_equipped_serials / read_backpack_serials.
+  const eqResult = await bridgeAction("read_equipped_serials", targetPayload, 60000);
+  const bpResult = await bridgeAction("read_backpack_serials", targetPayload, 60000);
+  const eqData = invActionData(eqResult);
+  const bpData = invActionData(bpResult);
+  if ((eqData && eqData.queued) || (bpData && bpData.queued)) {
+    return {
+      ok: true,
+      data: {
+        ok: true,
+        queued: true,
+        message:
+          "Inventory read still queued — unpause in-game, then press Refresh Inventory again.",
+        reading: String((eqData && eqData.reading) || (bpData && bpData.reading) || "")
+      }
+    };
+  }
+  const equipped = invEntriesFromReadResult(eqResult).filter((entry) => {
+    const origin = String((entry && entry.origin) || "");
+    if (origin === "backpack") return false;
+    const slot = Number(entry && entry.slot);
+    return origin === "equipped" || origin === "active_weapon" || (Number.isFinite(slot) && slot >= 0 && slot <= 64);
+  });
+  const equippedSerials = new Set(equipped.map((e) => String(e.serial || "")).filter(Boolean));
+  const backpack = invEntriesFromReadResult(bpResult).filter((entry) => {
+    const serial = String((entry && entry.serial) || "");
+    if (serial && equippedSerials.has(serial)) return false;
+    const origin = String((entry && entry.origin) || "");
+    if (origin === "equipped" || origin === "active_weapon") return false;
+    const slot = Number(entry && entry.slot);
+    if (Number.isFinite(slot) && slot >= 0 && slot <= 64) return false;
+    return true;
+  });
+  const eqOk = actionSucceeded(eqResult) || equipped.length > 0;
+  const bpOk = actionSucceeded(bpResult) || backpack.length > 0;
+  const ok = eqOk || bpOk;
+  const reading = String((eqData && eqData.reading) || (bpData && bpData.reading) || "");
+  const message = ok
+    ? `${reading || "Inventory"}: ${equipped.length} equipped, ${backpack.length} backpack (legacy read).`
+    : resultMessage(eqResult) || resultMessage(bpResult) || "Inventory refresh failed.";
+  return {
+    ok,
+    data: {
+      ok,
+      message,
+      reading,
+      selected_player: (eqData && eqData.selected_player) || (bpData && bpData.selected_player),
+      selected_player_index:
+        (eqData && eqData.selected_player_index) ?? (bpData && bpData.selected_player_index),
+      inventory: {
+        equipped,
+        backpack,
+        equipped_count: equipped.length,
+        backpack_count: backpack.length,
+        truncated: false
+      }
+    }
+  };
+}
+
+async function refreshInventory() {
+  const targetPayload = invInventoryTargetPayload();
+  const target = String(targetPayload.target_player || "").trim();
+  if (target) {
+    const setResult = await setTarget(target, { keepBoostScope: true });
+    if (setResult && setResult.data && setResult.data.ok === false) {
+      setLine(els.invStatus, resultMessage(setResult) || "Could not set inventory target.", "warning");
+      return setResult;
+    }
+  } else if (!state.players.length) {
+    setLine(els.invStatus, "Refresh Status on Boosting first, then pick a party player.", "warning");
+    if (els.invReading) els.invReading.textContent = "Reading: none";
+    return null;
+  }
+
+  setLine(els.invStatus, "Reading inventory from bridge...", "warning");
+  if (els.invReading) {
+    const selectedPlayer = state.players.find(
+      (player) => String(playerValue(player)) === String(state.selectedTarget || target)
+    );
+    els.invReading.textContent = selectedPlayer
+      ? `Reading: ${playerLabel(selectedPlayer)}…`
+      : "Reading: …";
+  }
+  appendActivity("Inventory: refreshing...");
+  let result = await bridgeAction("read_inventory", targetPayload, 60000);
+  let data = invActionData(result);
+  if (data && data.queued) {
+    setLine(
+      els.invStatus,
+      resultMessage(result) ||
+        "Inventory read still queued — unpause in-game, then press Refresh Inventory again.",
+      "warning"
+    );
+    appendActivity("Inventory: queued (retry after unpause).");
+    return result;
+  }
+  let inventory = data && data.inventory ? invNormalizeInventoryBlob(data.inventory) : null;
+  const unknown = invMessageLooksUnknown(data && data.message);
+  const missingShape = !inventory || (!inventory.equipped.length && !inventory.backpack.length && !actionSucceeded(result));
+  if (unknown || missingShape || !(data && data.inventory)) {
+    appendActivity("Inventory: falling back to read_equipped + read_backpack...");
+    result = await refreshInventoryFallback(targetPayload);
+    data = invActionData(result);
+    inventory = data && data.inventory ? invNormalizeInventoryBlob(data.inventory) : { equipped: [], backpack: [], truncated: false };
+  }
+  const ok = Boolean(data && data.ok !== false) && (actionSucceeded(result) || (inventory.equipped.length + inventory.backpack.length) > 0);
+  state.invEquipped = inventory.equipped;
+  state.invBackpack = inventory.backpack;
+  state.invTruncated = Boolean(inventory.truncated);
+  state.invReading = String((data && data.reading) || "");
+  state.invPage = 0;
+  state.invSelectedEntry = null;
+  state.invSelectedKey = "";
+  if (els.invDetail) els.invDetail.classList.add("hidden");
+  if (els.invReading) {
+    els.invReading.textContent = state.invReading || "Reading: none";
+  }
+  invRefreshFilterOptions();
+  invRenderAll();
+  const message = resultMessage(result) || (ok ? "Inventory refreshed." : "Inventory refresh failed.");
+  setLine(els.invStatus, message, ok ? "ok" : "warning");
+  appendActivity(`Inventory: ${message}`);
+  return result;
+}
+
+async function invCopySerial() {
+  const serial = String((state.invSelectedEntry && state.invSelectedEntry.serial) || (els.invDetailSerial && els.invDetailSerial.value) || "").trim();
+  if (!serial) {
+    setLine(els.invStatus, "No serial selected.", "warning");
+    return;
+  }
+  try {
+    await navigator.clipboard.writeText(serial);
+    setLine(els.invStatus, "Serial copied.", "ok");
+  } catch (_err) {
+    setLine(els.invStatus, "Clipboard write failed.", "bad");
+  }
+}
+
+async function invCopyVisibleSerials() {
+  const serials = state.invFiltered.map((e) => String(e.serial || "").trim()).filter((s) => s.startsWith("@U"));
+  if (!serials.length) {
+    setLine(els.invStatus, "No visible serials to copy.", "warning");
+    return;
+  }
+  try {
+    await navigator.clipboard.writeText(serials.join("\n"));
+    setLine(els.invStatus, `Copied ${serials.length} visible serial(s).`, "ok");
+  } catch (_err) {
+    setLine(els.invStatus, "Clipboard write failed.", "bad");
+  }
+}
+
+function invSendToSerialRewards() {
+  const serial = String((state.invSelectedEntry && state.invSelectedEntry.serial) || "").trim();
+  if (!serial) {
+    setLine(els.invStatus, "Select an item first.", "warning");
+    return;
+  }
+  if (els.boostSerialText) els.boostSerialText.value = serial;
+  switchTab("boosting");
+  setLine(els.invStatus, "Serial pasted into Serial Rewards on Boosting.", "ok");
+  appendActivity("Inventory: sent serial to Serial Rewards.");
+}
+
+function invOpenInSerialTools() {
+  const serial = String((state.invSelectedEntry && state.invSelectedEntry.serial) || "").trim();
+  if (!serial) {
+    setLine(els.invStatus, "Select an item first.", "warning");
+    return;
+  }
+  if (els.serialToolsInput) els.serialToolsInput.value = serial;
+  switchTab("serial-tools");
+  void convertSerialTools();
+  setLine(els.invStatus, "Opened serial in Serial Tools.", "ok");
+}
+
+function invOpenInMattEditor() {
+  const serial = String((state.invSelectedEntry && state.invSelectedEntry.serial) || "").trim();
+  if (!serial) {
+    setLine(els.invStatus, "Select an item first.", "warning");
+    return;
+  }
+  if (els.serialToolsInput) els.serialToolsInput.value = serial;
+  if (els.boostSerialText) els.boostSerialText.value = serial;
+  switchTab("matt-editor");
+  setLine(els.invStatus, "Serial ready — use Matt Editor with Serial Tools / pasted @U.", "ok");
+  appendActivity("Inventory: opened item toward Matt Editor.");
+}
+
+function invPlayerLabelForValue(value) {
+  const target = String(value || "").trim();
+  if (!target) return "none";
+  const player = state.players.find((row) => String(playerValue(row)) === target);
+  return player ? playerLabel(player) : target;
+}
+
+async function invGiveSerialToGame() {
+  const serial = String(
+    (state.invSelectedEntry && state.invSelectedEntry.serial)
+    || (els.invDetailSerial && els.invDetailSerial.value)
+    || ""
+  ).trim();
+  if (!serial || !serial.startsWith("@U")) {
+    setLine(els.invStatus, "Select an item with a valid @U serial first.", "warning");
+    return;
+  }
+  const giveTarget = String((els.invGiveTargetSelect && els.invGiveTargetSelect.value) || state.invGiveTarget || "").trim();
+  if (!giveTarget) {
+    setLine(els.invStatus, "Pick a Give-to player (separate from Party player / viewing).", "warning");
+    return;
+  }
+  state.invGiveTarget = giveTarget;
+  const copies = getInt(els.invSerialCopies, 1, 50, 1);
+  if (els.invSerialCopies) els.invSerialCopies.value = String(copies);
+  const giveLabel = invPlayerLabelForValue(giveTarget);
+  const viewLabel = invPlayerLabelForValue(
+    (els.invTargetSelect && els.invTargetSelect.value) || ""
+  );
+  setLine(
+    els.invStatus,
+    `Sending ${copies}× to ${giveLabel} (viewing ${viewLabel || "n/a"})...`,
+    "warning"
+  );
+  appendActivity(`Inventory: give ${copies}× serial to ${giveLabel} (view ${viewLabel || "n/a"}).`);
+
+  const setResult = await setTarget(giveTarget, { keepBoostScope: true });
+  if (!(setResult && setResult.data && setResult.data.ok)) {
+    const message = resultMessage(setResult) || "Could not set give-to player.";
+    setLine(els.invStatus, message, "bad");
+    return;
+  }
+
+  const result = await sendSerialPayload(
+    "selected",
+    serial,
+    false,
+    60,
+    els.boostOutput,
+    copies,
+    "Inventory"
+  );
+  const ok = actionSucceeded(result);
+  const message = resultMessage(result)
+    || (ok
+      ? (copies > 1
+        ? `Queued/sent ${copies} copies to ${giveLabel}.`
+        : `Queued/sent to ${giveLabel}.`)
+      : "Give serial failed.");
+  setLine(els.invStatus, message, ok ? "ok" : "bad");
+  appendActivity(`Inventory give: ${message}`);
+  return result;
+}
+
+function wireInventoryEvents() {
+  if (!els.invRefreshBtn) return;
+  els.invRefreshBtn.addEventListener("click", () => void refreshInventory());
+  if (els.invTargetSelect) {
+    els.invTargetSelect.addEventListener("change", () => {
+      const value = els.invTargetSelect.value;
+      void setTarget(value, { keepBoostScope: true });
+      if (els.invReading && !state.invEquipped.length && !state.invBackpack.length) {
+        const selectedPlayer = state.players.find(
+          (player) => String(playerValue(player)) === String(value)
+        );
+        els.invReading.textContent = selectedPlayer
+          ? `Reading: ${playerLabel(selectedPlayer)} (press Refresh)`
+          : "Reading: none";
+      }
+    });
+  }
+  if (els.invGiveTargetSelect) {
+    els.invGiveTargetSelect.addEventListener("change", () => {
+      state.invGiveTarget = String(els.invGiveTargetSelect.value || "");
+    });
+  }
+  if (els.invCopyAllBtn) els.invCopyAllBtn.addEventListener("click", () => void invCopyVisibleSerials());
+  if (els.invPrevPageBtn) {
+    els.invPrevPageBtn.addEventListener("click", () => {
+      if (state.invPage > 0) {
+        state.invPage -= 1;
+        invRenderBackpack();
+      }
+    });
+  }
+  if (els.invNextPageBtn) {
+    els.invNextPageBtn.addEventListener("click", () => {
+      const maxPage = Math.max(0, Math.ceil(state.invFiltered.length / state.invPageSize) - 1);
+      if (state.invPage < maxPage) {
+        state.invPage += 1;
+        invRenderBackpack();
+      }
+    });
+  }
+  if (els.invSortDirBtn) {
+    invUpdateSortDirButton();
+    els.invSortDirBtn.addEventListener("click", () => {
+      state.invSortDir = state.invSortDir === "asc" ? "desc" : "asc";
+      invUpdateSortDirButton();
+      state.invPage = 0;
+      invRenderAll();
+    });
+  }
+  document.querySelectorAll("[data-inv-sort]").forEach((button) => {
+    button.addEventListener("click", () => {
+      if (button.disabled) return;
+      const next = String(button.dataset.invSort || "recent");
+      state.invSort = next;
+      document.querySelectorAll("[data-inv-sort]").forEach((b) => {
+        b.classList.toggle("active", b === button);
+      });
+      state.invPage = 0;
+      invRenderAll();
+    });
+  });
+  document.querySelectorAll("[data-inv-category]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.invCategory = String(button.dataset.invCategory || "All");
+      document.querySelectorAll("[data-inv-category]").forEach((b) => {
+        b.classList.toggle("active", b === button);
+      });
+      state.invPage = 0;
+      invRenderAll();
+    });
+  });
+  const filterHandler = () => {
+    state.invPage = 0;
+    invRenderAll();
+  };
+  if (els.invSearch) els.invSearch.addEventListener("input", filterHandler);
+  if (els.invRarityFilter) els.invRarityFilter.addEventListener("change", filterHandler);
+  if (els.invDamageFilter) els.invDamageFilter.addEventListener("change", filterHandler);
+  if (els.invTypeFilter) els.invTypeFilter.addEventListener("change", filterHandler);
+  if (els.invManufacturerFilter) els.invManufacturerFilter.addEventListener("change", filterHandler);
+  if (els.invDetailCloseBtn) els.invDetailCloseBtn.addEventListener("click", invClearDetail);
+  if (els.invCopySerialBtn) els.invCopySerialBtn.addEventListener("click", () => void invCopySerial());
+  if (els.invGiveSerialBtn) els.invGiveSerialBtn.addEventListener("click", () => void invGiveSerialToGame());
+  if (els.invSendRewardsBtn) els.invSendRewardsBtn.addEventListener("click", invSendToSerialRewards);
+  if (els.invOpenToolsBtn) els.invOpenToolsBtn.addEventListener("click", invOpenInSerialTools);
+  if (els.invOpenEditorBtn) els.invOpenEditorBtn.addEventListener("click", invOpenInMattEditor);
+}
+
 function switchTab(tabId) {
   document.querySelectorAll(".tab-bar [data-tab]").forEach((button) => {
     button.classList.toggle("active", button.dataset.tab === tabId);
@@ -6717,6 +7450,14 @@ function switchTab(tabId) {
   } else if (tabId === "quick-menu") {
     void loadQuickMenuLayout({ quiet: Boolean(state.quickMenuSnapshot) });
     void refreshQuickMenuPinPanel({ quiet: true });
+  } else if (tabId === "inventory") {
+    if (!state.invEquipped.length && !state.invBackpack.length) {
+      setLine(
+        els.invStatus,
+        "Pick a party player, then Refresh Inventory while in-game (listen host recommended for other players).",
+        "warning"
+      );
+    }
   } else if (tabId === "serial-tools" || tabId === "bl4-codes" || tabId === "boosting" || tabId === "movement" || tabId === "item-pool" || tabId === "dev-spawner") {
     if (state.quickMenuSnapshot) {
       installQuickMenuAddButtons();
@@ -6857,6 +7598,7 @@ function wireEvents() {
   els.copyDeserializedBtn.addEventListener("click", () => copyText(els.serialToolsDeserialized.value, els.serialToolsStatus, "Deserialized output"));
   els.copyBreakdownBtn.addEventListener("click", () => copyText(els.serialToolsBreakdown.value, els.serialToolsStatus, "Parts breakdown"));
   els.copySerializedBtn.addEventListener("click", () => copyText(els.serialToolsSerialized.value, els.serialToolsStatus, "@U serialized output"));
+  wireInventoryEvents();
 
   els.bookmarkSearch.addEventListener("input", renderBookmarks);
   els.bookmarkGroupFilter.addEventListener("change", renderBookmarks);

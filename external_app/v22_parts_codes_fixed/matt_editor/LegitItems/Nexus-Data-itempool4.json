@@ -8,6 +8,29 @@
       {
         "entries": [
           {
+            "itempool_bor_sg_05_legendary_plumbbob_shiny": {
+              "itempool": "itempool_bor_sg_05_legendary_PlumbBob_shiny",
+              "items": [
+                {
+                  "item": {
+                    "item": {
+                      "handle": "inv'bor_sg.comp_05_legendary_plumbbob'"
+                    }
+                  }
+                }
+              ],
+              "mingamestage": "attribute'Att_MinGameStage_WeaponType_Shotgun'",
+              "customizationlist": [
+                {
+                  "probability": {
+                    "attribute": "attribute'attr_is_story_complete'"
+                  },
+                  "customization": "inv_custom'Cosmetics_Weapon_Shiny_PlumbBob'"
+                }
+              ]
+            }
+          },
+          {
             "itempool_classmods_raid2": {
               "itempool": "itempool_ClassMods_Raid2",
               "items": [
@@ -107,6 +130,29 @@
                     "attribute": "attribute'attr_is_story_complete'"
                   },
                   "customization": "inv_custom'Cosmetics_Weapon_Shiny_DiscyBusiness'"
+                }
+              ]
+            }
+          },
+          {
+            "itempool_dad_ps_05_legendary_silversliver_shiny": {
+              "itempool": "itempool_dad_ps_05_legendary_silversliver_shiny",
+              "items": [
+                {
+                  "item": {
+                    "item": {
+                      "handle": "inv'dad_ps.comp_05_legendary_silversliver'"
+                    }
+                  }
+                }
+              ],
+              "mingamestage": "attribute'Att_MinGameStage_WeaponType_Pistol'",
+              "customizationlist": [
+                {
+                  "probability": {
+                    "attribute": "attribute'attr_is_story_complete'"
+                  },
+                  "customization": "inv_custom'Cosmetics_Weapon_Shiny_silversliver'"
                 }
               ]
             }
@@ -340,6 +386,29 @@
                     "attribute": "attribute'attr_is_story_complete'"
                   },
                   "customization": "inv_custom'Cosmetics_Weapon_Shiny_murder'"
+                }
+              ]
+            }
+          },
+          {
+            "itempool_ted_ps_05_legendary_earlyexcess_shiny": {
+              "itempool": "itempool_ted_ps_05_legendary_EarlyExcess_shiny",
+              "items": [
+                {
+                  "item": {
+                    "item": {
+                      "handle": "inv'TED_PS.comp_05_legendary_EarlyExcess'"
+                    }
+                  }
+                }
+              ],
+              "mingamestage": "attribute'Att_MinGameStage_WeaponType_Pistol'",
+              "customizationlist": [
+                {
+                  "probability": {
+                    "attribute": "attribute'attr_is_story_complete'"
+                  },
+                  "customization": "inv_custom'Cosmetics_Weapon_Shiny_EarlyExcess'"
                 }
               ]
             }

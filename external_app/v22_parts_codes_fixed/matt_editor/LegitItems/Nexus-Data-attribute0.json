@@ -10531,18 +10531,6 @@
             }
           },
           {
-            "att_skillgrade_exo_09_metalmanagement": {
-              "attribute": "Att_SkillGrade_Exo_09_MetalManagement",
-              "parent": "attribute'_ExoSoldierSkillGrades'",
-              "value": {
-                "progressgraphnoderef": {
-                  "progressgraph": "progress_graph'Progress_EXO_Trunk_PeoplePerson'",
-                  "nodename": "Trunk - Row 3 - 4"
-                }
-              }
-            }
-          },
-          {
             "att_skillgrade_exo_10_abajo": {
               "attribute": "Att_SkillGrade_Exo_10_Abajo",
               "parent": "attribute'_ExoSoldierSkillGrades'",
@@ -14183,51 +14171,6 @@
                     }
                   },
                   "formula": "Stat*Rank*Overdrive*Stacks"
-                }
-              },
-              "parent": "attribute'none'"
-            }
-          },
-          {
-            "calc_exo_passive_09_metalmanagement_duration": {
-              "attribute": "Calc_Exo_Passive_09_MetalManagement_Duration",
-              "context": {
-                "structtype": "Asset'/Script/OakGame.CharacterContextResolver'"
-              },
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
-                "expression": {
-                  "variables": {
-                    "variablevalues": {
-                      "pairs": {
-                        "pair2866833187": {
-                          "key": "Stat",
-                          "value": {
-                            "targettype": "Float",
-                            "value": {
-                              "type": "DataTable",
-                              "value": {
-                                "datatable": "gbx_ue_data_table'Table_Exo_Balance_Passives'",
-                                "rowname": "ExoPassive_09",
-                                "columnname": "Modifier1_7_CF228F3C4DA52D4C5E63D7A7350E4BC6"
-                              }
-                            }
-                          }
-                        },
-                        "pair4121209554": {
-                          "key": "Rank",
-                          "value": {
-                            "targettype": "Float",
-                            "value": {
-                              "type": "Attribute",
-                              "value": "attribute'Att_SkillGrade_Exo_09_MetalManagement'"
-                            }
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "formula": "Stat*Rank"
                 }
               },
               "parent": "attribute'none'"
@@ -23206,383 +23149,6 @@
             }
           },
           {
-            "att_robodealer_crossfire_animfiresequenceexpression_heavy": {
-              "attribute": "Att_RoboDealer_CrossFire_AnimFireSequenceExpression_Heavy",
-              "context": {
-                "structtype": "Asset'/Script/GbxEngine.ActorContextResolver'",
-                "chain": ""
-              },
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
-                "statedef": "skill_state''",
-                "expression": {
-                  "variables": {
-                    "variablevalues": {
-                      "pairs": {
-                        "pair3045572392": {
-                          "key": "HeavyFire",
-                          "value": {
-                            "targettype": "Float",
-                            "value": {
-                              "type": "Attribute",
-                              "value": "attribute'Att_RoboDealer_CrossFire_HeavyFireNotActive'"
-                            }
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "formula": "!HeavyFire"
-                }
-              },
-              "parent": "attribute'RoboDealerSkillResolvers'"
-            }
-          },
-          {
-            "att_robodealer_crossfire_animfiresequenceexpression_var1": {
-              "attribute": "Att_RoboDealer_CrossFire_AnimFireSequenceExpression_Var1",
-              "context": {
-                "structtype": "Asset'/Script/GbxEngine.ActorContextResolver'",
-                "chain": ""
-              },
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
-                "statedef": "skill_state''",
-                "expression": {
-                  "variables": {
-                    "variablevalues": {
-                      "pairs": {
-                        "pair781917585": {
-                          "key": "CondAtt",
-                          "value": {
-                            "targettype": "Float",
-                            "value": {
-                              "type": "Attribute",
-                              "value": "attribute'CondAtt_Robo_Crossfire_AnimFireSequence_Var1'"
-                            }
-                          }
-                        },
-                        "pair3045572392": {
-                          "key": "HeavyFire",
-                          "value": {
-                            "targettype": "Float",
-                            "value": {
-                              "type": "Attribute",
-                              "value": "attribute'Att_RoboDealer_CrossFire_HeavyFireNotActive'"
-                            }
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "formula": "CondAtt && HeavyFire"
-                }
-              },
-              "parent": "attribute'RoboDealerSkillResolvers'"
-            }
-          },
-          {
-            "att_robodealer_crossfire_animfiresequenceexpression_var2": {
-              "attribute": "Att_RoboDealer_CrossFire_AnimFireSequenceExpression_Var2",
-              "context": {
-                "structtype": "Asset'/Script/GbxEngine.ActorContextResolver'",
-                "chain": ""
-              },
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
-                "statedef": "skill_state''",
-                "expression": {
-                  "variables": {
-                    "variablevalues": {
-                      "pairs": {
-                        "pair781917585": {
-                          "key": "CondAtt",
-                          "value": {
-                            "targettype": "Float",
-                            "value": {
-                              "type": "Attribute",
-                              "value": "attribute'CondAtt_Robo_Crossfire_AnimFireSequence_Var2'"
-                            }
-                          }
-                        },
-                        "pair3045572392": {
-                          "key": "HeavyFire",
-                          "value": {
-                            "targettype": "Float",
-                            "value": {
-                              "type": "Attribute",
-                              "value": "attribute'Att_RoboDealer_CrossFire_HeavyFireNotActive'"
-                            }
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "formula": "CondAtt && HeavyFire"
-                }
-              },
-              "parent": "attribute'RoboDealerSkillResolvers'"
-            }
-          },
-          {
-            "att_robodealer_crossfire_animfiresequenceexpression_var3": {
-              "attribute": "Att_RoboDealer_CrossFire_AnimFireSequenceExpression_Var3",
-              "context": {
-                "structtype": "Asset'/Script/GbxEngine.ActorContextResolver'",
-                "chain": ""
-              },
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
-                "statedef": "skill_state''",
-                "expression": {
-                  "variables": {
-                    "variablevalues": {
-                      "pairs": {
-                        "pair781917585": {
-                          "key": "CondAtt",
-                          "value": {
-                            "targettype": "Float",
-                            "value": {
-                              "type": "Attribute",
-                              "value": "attribute'CondAtt_Robo_Crossfire_AnimFireSequence_Var3'"
-                            }
-                          }
-                        },
-                        "pair3045572392": {
-                          "key": "HeavyFire",
-                          "value": {
-                            "targettype": "Float",
-                            "value": {
-                              "type": "Attribute",
-                              "value": "attribute'Att_RoboDealer_CrossFire_HeavyFireNotActive'"
-                            }
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "formula": "CondAtt && HeavyFire"
-                }
-              },
-              "parent": "attribute'RoboDealerSkillResolvers'"
-            }
-          },
-          {
-            "att_robodealer_crossfire_animfiresequenceexpression_var4": {
-              "attribute": "Att_RoboDealer_CrossFire_AnimFireSequenceExpression_Var4",
-              "context": {
-                "structtype": "Asset'/Script/GbxEngine.ActorContextResolver'",
-                "chain": ""
-              },
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
-                "statedef": "skill_state''",
-                "expression": {
-                  "variables": {
-                    "variablevalues": {
-                      "pairs": {
-                        "pair781917585": {
-                          "key": "CondAtt",
-                          "value": {
-                            "targettype": "Float",
-                            "value": {
-                              "type": "Attribute",
-                              "value": "attribute'CondAtt_Robo_Crossfire_AnimFireSequence_Var4'"
-                            }
-                          }
-                        },
-                        "pair3045572392": {
-                          "key": "HeavyFire",
-                          "value": {
-                            "targettype": "Float",
-                            "value": {
-                              "type": "Attribute",
-                              "value": "attribute'Att_RoboDealer_CrossFire_HeavyFireNotActive'"
-                            }
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "formula": "CondAtt && HeavyFire"
-                }
-              },
-              "parent": "attribute'RoboDealerSkillResolvers'"
-            }
-          },
-          {
-            "att_robodealer_crossfire_animfiresequenceexpression_var5": {
-              "attribute": "Att_RoboDealer_CrossFire_AnimFireSequenceExpression_Var5",
-              "context": {
-                "structtype": "Asset'/Script/GbxEngine.ActorContextResolver'",
-                "chain": ""
-              },
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
-                "statedef": "skill_state''",
-                "expression": {
-                  "variables": {
-                    "variablevalues": {
-                      "pairs": {
-                        "pair781917585": {
-                          "key": "CondAtt",
-                          "value": {
-                            "targettype": "Float",
-                            "value": {
-                              "type": "Attribute",
-                              "value": "attribute'CondAtt_Robo_Crossfire_AnimFireSequence_Var5'"
-                            }
-                          }
-                        },
-                        "pair3045572392": {
-                          "key": "HeavyFire",
-                          "value": {
-                            "targettype": "Float",
-                            "value": {
-                              "type": "Attribute",
-                              "value": "attribute'Att_RoboDealer_CrossFire_HeavyFireNotActive'"
-                            }
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "formula": "CondAtt && HeavyFire"
-                }
-              },
-              "parent": "attribute'RoboDealerSkillResolvers'"
-            }
-          },
-          {
-            "att_robodealer_crossfire_animfiresequenceexpression_var6": {
-              "attribute": "Att_RoboDealer_CrossFire_AnimFireSequenceExpression_Var6",
-              "context": {
-                "structtype": "Asset'/Script/GbxEngine.ActorContextResolver'",
-                "chain": ""
-              },
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
-                "statedef": "skill_state''",
-                "expression": {
-                  "variables": {
-                    "variablevalues": {
-                      "pairs": {
-                        "pair781917585": {
-                          "key": "CondAtt",
-                          "value": {
-                            "targettype": "Float",
-                            "value": {
-                              "type": "Attribute",
-                              "value": "attribute'CondAtt_Robo_Crossfire_AnimFireSequence_Var6'"
-                            }
-                          }
-                        },
-                        "pair3045572392": {
-                          "key": "HeavyFire",
-                          "value": {
-                            "targettype": "Float",
-                            "value": {
-                              "type": "Attribute",
-                              "value": "attribute'Att_RoboDealer_CrossFire_HeavyFireNotActive'"
-                            }
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "formula": "CondAtt && HeavyFire"
-                }
-              },
-              "parent": "attribute'RoboDealerSkillResolvers'"
-            }
-          },
-          {
-            "att_robodealer_crossfire_animfiresequenceexpression_var7": {
-              "attribute": "Att_RoboDealer_CrossFire_AnimFireSequenceExpression_Var7",
-              "context": {
-                "structtype": "Asset'/Script/GbxEngine.ActorContextResolver'",
-                "chain": ""
-              },
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
-                "statedef": "skill_state''",
-                "expression": {
-                  "variables": {
-                    "variablevalues": {
-                      "pairs": {
-                        "pair781917585": {
-                          "key": "CondAtt",
-                          "value": {
-                            "targettype": "Float",
-                            "value": {
-                              "type": "Attribute",
-                              "value": "attribute'CondAtt_Robo_Crossfire_AnimFireSequence_Var7'"
-                            }
-                          }
-                        },
-                        "pair3045572392": {
-                          "key": "HeavyFire",
-                          "value": {
-                            "targettype": "Float",
-                            "value": {
-                              "type": "Attribute",
-                              "value": "attribute'Att_RoboDealer_CrossFire_HeavyFireNotActive'"
-                            }
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "formula": "CondAtt && HeavyFire"
-                }
-              },
-              "parent": "attribute'RoboDealerSkillResolvers'"
-            }
-          },
-          {
-            "att_robodealer_crossfire_animfiresequenceexpression_var8": {
-              "attribute": "Att_RoboDealer_CrossFire_AnimFireSequenceExpression_Var8",
-              "context": {
-                "structtype": "Asset'/Script/GbxEngine.ActorContextResolver'",
-                "chain": ""
-              },
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
-                "statedef": "skill_state''",
-                "expression": {
-                  "variables": {
-                    "variablevalues": {
-                      "pairs": {
-                        "pair781917585": {
-                          "key": "CondAtt",
-                          "value": {
-                            "targettype": "Float",
-                            "value": {
-                              "type": "Attribute",
-                              "value": "attribute'CondAtt_Robo_Crossfire_AnimFireSequence_Var8'"
-                            }
-                          }
-                        },
-                        "pair3045572392": {
-                          "key": "HeavyFire",
-                          "value": {
-                            "targettype": "Float",
-                            "value": {
-                              "type": "Attribute",
-                              "value": "attribute'Att_RoboDealer_CrossFire_HeavyFireNotActive'"
-                            }
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "formula": "CondAtt && HeavyFire"
-                }
-              },
-              "parent": "attribute'RoboDealerSkillResolvers'"
-            }
-          },
-          {
             "att_robodealer_crossfire_animoverride": {
               "attribute": "Att_RoboDealer_CrossFire_AnimOverride",
               "context": {
@@ -23637,6 +23203,44 @@
             }
           },
           {
+            "att_robodealer_crossfire_crystaldestroyed_perm": {
+              "attribute": "Att_RoboDealer_CrossFire_CrystalDestroyed_Perm",
+              "context": {
+                "structtype": "Asset'/Script/GbxEngine.ActorContextResolver'"
+              },
+              "value": {
+                "structtype": "Asset'/Script/GbxEngine.GbxBlackboardValueResolver'",
+                "variable": "Corruption_RemovedPermanently",
+                "defaultvalue": {
+                  "targettype": "None",
+                  "value": {
+                    "type": "Bool"
+                  }
+                }
+              },
+              "parent": "attribute'RoboDealerAttributes'"
+            }
+          },
+          {
+            "att_robodealer_crossfire_crystaldestroyed_temp": {
+              "attribute": "Att_RoboDealer_CrossFire_CrystalDestroyed_Temp",
+              "context": {
+                "structtype": "Asset'/Script/GbxEngine.ActorContextResolver'"
+              },
+              "value": {
+                "structtype": "Asset'/Script/GbxEngine.GbxBlackboardValueResolver'",
+                "variable": "Corruption_RemovedTemporarily",
+                "defaultvalue": {
+                  "targettype": "None",
+                  "value": {
+                    "type": "Bool"
+                  }
+                }
+              },
+              "parent": "attribute'RoboDealerAttributes'"
+            }
+          },
+          {
             "att_robodealer_crossfire_enabled": {
               "attribute": "Att_RoboDealer_CrossFire_Enabled",
               "context": {
@@ -23671,18 +23275,68 @@
             }
           },
           {
-            "att_robodealer_crossfire_heavyfirenotactive": {
-              "attribute": "Att_RoboDealer_CrossFire_HeavyFireNotActive",
-              "context": {
-                "structtype": "Asset'/Script/GbxEngine.ActorContextResolver'",
-                "chain": ""
-              },
+            "att_robodealer_crossfire_iscrystaldestroyed": {
+              "attribute": "Att_RoboDealer_CrossFire_isCrystalDestroyed",
               "value": {
-                "statedef": "skill_state'State_Robo_Crossfire_Augment_7_Firing'",
-                "skilldef": "skill'Skill_Robo_CrossFire'",
-                "bisenabled": "false"
+                "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
+                "expression": {
+                  "variables": {
+                    "variablevalues": {
+                      "pairs": {
+                        "pair2584642876": {
+                          "key": "Perm",
+                          "value": {
+                            "targettype": "Float",
+                            "value": {
+                              "type": "Attribute",
+                              "value": "attribute'Att_RoboDealer_CrossFire_CrystalDestroyed_Perm'"
+                            }
+                          }
+                        },
+                        "pair4261132074": {
+                          "key": "Temp",
+                          "value": {
+                            "targettype": "Float",
+                            "value": {
+                              "type": "Attribute",
+                              "value": "attribute'Att_RoboDealer_CrossFire_CrystalDestroyed_Temp'"
+                            }
+                          }
+                        },
+                        "pair1164934002": {
+                          "key": "NotCorrupt",
+                          "value": {
+                            "targettype": "Float",
+                            "value": {
+                              "type": "Attribute",
+                              "value": "attribute'Att_RoboDealer_CrossFire_isNotCorrupt'"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "formula": "Perm || NotCorrupt"
+                }
               },
-              "parent": "attribute'RoboDealerSkillResolvers'"
+              "parent": "attribute'RoboDealerAttributes'"
+            }
+          },
+          {
+            "att_robodealer_crossfire_isnotcorrupt": {
+              "attribute": "Att_RoboDealer_CrossFire_isNotCorrupt",
+              "value": {
+                "structtype": "Asset'/Script/GbxGame.GbxCondition_HasGameplayTags'",
+                "gameplaytags": {
+                  "gameplaytags": [
+                    {
+                      "tagname": "GbxActor.Character.Rank.Badass.Corrupt"
+                    }
+                  ]
+                },
+                "binvert": "true"
+              },
+              "parent": "attribute'RoboDealerAttributes'"
             }
           },
           {
@@ -24845,11 +24499,21 @@
                               "value": "attribute'CondAtt_Robo_FortuneStackCount'"
                             }
                           }
+                        },
+                        "pair2034230981": {
+                          "key": "FortuneScalar",
+                          "value": {
+                            "targettype": "Float",
+                            "value": {
+                              "type": "Attribute",
+                              "value": "attribute'CondAtt_Robo_FortuneScalar'"
+                            }
+                          }
                         }
                       }
                     }
                   },
-                  "formula": "SkillGrade * Scalar * StackCount"
+                  "formula": "SkillGrade * Scalar * StackCount * FortuneScalar"
                 }
               },
               "parent": "attribute'RoboDealerCalcs'"
@@ -26134,57 +25798,6 @@
             }
           },
           {
-            "calc_robo_45_debtstopay_basedamage": {
-              "attribute": "Calc_Robo_45_DebtsToPay_BaseDamage",
-              "value": {
-                "expression": {
-                  "variables": {
-                    "variablevalues": {
-                      "pairs": {
-                        "pair297334453": {
-                          "key": "SkillGrade",
-                          "value": {
-                            "targettype": "Float",
-                            "value": {
-                              "type": "Attribute",
-                              "value": "attribute'SkillGrade_Robo_45_DebtsToPay'"
-                            }
-                          }
-                        },
-                        "pair3927582116": {
-                          "key": "Scalar",
-                          "value": {
-                            "targettype": "Float",
-                            "value": {
-                              "type": "DataTable",
-                              "value": {
-                                "datatable": "gbx_ue_data_table'DataTable_Robo_Passives'",
-                                "rowname": "Passive45",
-                                "columnname": "Modifier1_7_CF228F3C4DA52D4C5E63D7A7350E4BC6"
-                              }
-                            }
-                          }
-                        },
-                        "pair2205066623": {
-                          "key": "SkillDamage",
-                          "value": {
-                            "targettype": "Float",
-                            "value": {
-                              "type": "Attribute",
-                              "value": "attribute'calc_playeractionskill_damage_formula'"
-                            }
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "formula": "SkillGrade * Scalar * SkillDamage"
-                }
-              },
-              "parent": "attribute'RoboDealerCalcs'"
-            }
-          },
-          {
             "calc_robo_46_hellandback_damagescalar": {
               "attribute": "Calc_Robo_46_HellAndBack_DamageScalar",
               "value": {
@@ -26989,47 +26602,6 @@
                     }
                   },
                   "formula": "SkillGrade * Scalar * Overshield"
-                }
-              },
-              "parent": "attribute'RoboDealerCalcs'"
-            }
-          },
-          {
-            "calc_robo_55_cottonmouth_maxovershield": {
-              "attribute": "Calc_Robo_55_Cottonmouth_MaxOvershield",
-              "value": {
-                "expression": {
-                  "variables": {
-                    "variablevalues": {
-                      "pairs": {
-                        "pair297334453": {
-                          "key": "SkillGrade",
-                          "value": {
-                            "targettype": "Float",
-                            "value": {
-                              "type": "Attribute",
-                              "value": "attribute'SkillGrade_Robo_55_Cottonmouth'"
-                            }
-                          }
-                        },
-                        "pair3927582116": {
-                          "key": "Scalar",
-                          "value": {
-                            "targettype": "Float",
-                            "value": {
-                              "type": "DataTable",
-                              "value": {
-                                "datatable": "gbx_ue_data_table'DataTable_Robo_Passives'",
-                                "rowname": "Passive55_Update",
-                                "columnname": "Modifier2_16_467A97EC46FEC297931F6BBE916B7D4B"
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "formula": "SkillGrade * Scalar"
                 }
               },
               "parent": "attribute'RoboDealerCalcs'"
@@ -30774,7 +30346,7 @@
                             "targettype": "Float",
                             "value": {
                               "type": "Attribute",
-                              "value": "attribute'CondAtt_Robo_FortuneScalar'"
+                              "value": "attribute'Calc_Robo_FortuneScalar'"
                             }
                           }
                         }
@@ -31503,21 +31075,11 @@
                               }
                             }
                           }
-                        },
-                        "pair4248297739": {
-                          "key": "WindfallScalar",
-                          "value": {
-                            "targettype": "Float",
-                            "value": {
-                              "type": "Attribute",
-                              "value": "attribute'CondAtt_Robo_WindfallScalar'"
-                            }
-                          }
                         }
                       }
                     }
                   },
-                  "formula": "Scalar * WindfallScalar"
+                  "formula": "Scalar"
                 }
               },
               "parent": "attribute'RoboDealerCalcs'"
@@ -31571,21 +31133,11 @@
                               }
                             }
                           }
-                        },
-                        "pair4248297739": {
-                          "key": "WindfallScalar",
-                          "value": {
-                            "targettype": "Float",
-                            "value": {
-                              "type": "Attribute",
-                              "value": "attribute'CondAtt_Robo_WindfallScalar'"
-                            }
-                          }
                         }
                       }
                     }
                   },
-                  "formula": "Scalar * WindfallScalar"
+                  "formula": "Scalar"
                 }
               },
               "parent": "attribute'RoboDealerCalcs'"
@@ -33824,16 +33376,6 @@
             }
           },
           {
-            "tokenstackmax_robo_crossfire_augment8": {
-              "attribute": "TokenStackMax_Robo_Crossfire_Augment8",
-              "value": {
-                "stackdef": "skill_token_stack'Token_Robo_Crossfire_Augment8'",
-                "valuetype": "MaxAmount"
-              },
-              "parent": "attribute'RoboDealerTokenStackCounts'"
-            }
-          },
-          {
             "tokenstackmax_robo_windfall_fortune": {
               "attribute": "TokenStackMax_Robo_Windfall_Fortune",
               "value": {
@@ -33890,70 +33432,6 @@
               },
               "value": {
                 "structtype": "Asset'/Script/OakGame.GbxSkillTokenStackValueResolver'"
-              }
-            }
-          },
-          {
-            "att_calc_pld_p_adaptivecharge_armorregenerationrate": {
-              "attribute": "Att_Calc_PLD_P_AdaptiveCharge_ArmorRegenerationRate",
-              "context": {
-                "structtype": "Asset'/Script/GbxEngine.ActorContextResolver'"
-              },
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
-                "expression": {
-                  "variables": {
-                    "variablevalues": {
-                      "pairs": {
-                        "pair1584129646": {
-                          "key": "Effect",
-                          "value": {
-                            "targettype": "Float",
-                            "value": {
-                              "type": "DataTable",
-                              "value": {
-                                "datatable": "gbx_ue_data_table'datatable_paladin_passives_calamity'",
-                                "rowname": "AdaptiveCharge_Armor_RegenerationScalar",
-                                "columnname": "Value_2_D970BF0B44895FECDFE922A2D420BFF2"
-                              }
-                            }
-                          }
-                        },
-                        "pair309043966": {
-                          "key": "Grade",
-                          "value": {
-                            "targettype": "Float",
-                            "value": {
-                              "type": "Attribute",
-                              "value": "attribute'Att_PLD_P_Grade_AdaptiveCharge'"
-                            }
-                          }
-                        },
-                        "pair4171954150": {
-                          "key": "TokenStacks",
-                          "value": {
-                            "targettype": "Float",
-                            "value": {
-                              "type": "Attribute",
-                              "value": "attribute'Att_PLD_P_TokenCount_AdaptiveCharge'"
-                            }
-                          }
-                        },
-                        "pair428032092": {
-                          "key": "KillSkillEffectiveness",
-                          "value": {
-                            "targettype": "Float",
-                            "value": {
-                              "type": "Attribute",
-                              "value": "attribute'killskill_effectiveness'"
-                            }
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "formula": "Effect * Grade * TokenStacks * KillSkillEffectiveness"
-                }
               }
             }
           },
@@ -41192,7 +40670,10 @@
               "value": {
                 "structtype": "Asset'/Script/GbxEngine.GbxConstantAttributeValueResolver'",
                 "attributeinit": {
-                  "constant": "30.000000"
+                  "constant": "450.000000",
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'none'"
+                  }
                 }
               }
             }
@@ -41230,20 +40711,6 @@
               },
               "context": {
                 "structtype": "Asset'/Script/GbxEngine.ActorContextResolver'"
-              }
-            }
-          },
-          {
-            "actor_has_health": {
-              "attribute": "actor_has_health",
-              "context": {
-                "structtype": "Asset'/Script/GbxEngine.ActorContextResolver'"
-              },
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
-                "expression": {
-                  "formula": "attr(ai_health_resource_Total_current_value) > 1"
-                }
               }
             }
           },
@@ -41413,35 +40880,6 @@
             }
           },
           {
-            "actor_total_health": {
-              "attribute": "actor_total_health",
-              "value": {
-                "value": "TotalHealth",
-                "structtype": "Asset'/Script/GbxGame.GbxHealthStateValueResolver'"
-              },
-              "context": {
-                "structtype": "Asset'/Script/GbxEngine.ActorContextResolver'"
-              }
-            }
-          },
-          {
-            "ai_01_health_resource_active_regeneration_rate": {
-              "attribute": "ai_01_health_resource_active_regeneration_rate",
-              "value": {
-                "propertysupportsmodifierremoval": "true",
-                "resolvedtype": "Float",
-                "property": {
-                  "propertypath": "ActiveRegenerationRate"
-                },
-                "structtype": "Asset'/Script/GbxEngine.PropertyValueResolver'"
-              },
-              "context": {
-                "resourcedef": "resource'Resource_AI_Health_01'",
-                "structtype": "Asset'/Script/GbxGame.GameResourcePoolContextResolver'"
-              }
-            }
-          },
-          {
             "ai_gadget_turret_deployed_detonation": {
               "attribute": "ai_gadget_turret_deployed_detonation",
               "value": {
@@ -41535,19 +40973,6 @@
             }
           },
           {
-            "ai_health_resource_01_current_pct": {
-              "attribute": "ai_health_resource_01_current_pct",
-              "value": {
-                "expression": "attr(ai_health_resource_01_current_value) / attr(ai_health_resource_01_max_value)",
-                "structtype": "Asset'/Script/GbxGame.GbxHealthStateValueResolver'",
-                "value": "HealthPercent"
-              },
-              "context": {
-                "structtype": "Asset'/Script/GbxEngine.ActorContextResolver'"
-              }
-            }
-          },
-          {
             "ai_health_resource_01_current_value": {
               "attribute": "ai_health_resource_01_current_value",
               "context": {
@@ -41631,20 +41056,6 @@
                   "propertypath": "PassivePercentRegenerationRate"
                 },
                 "resolvedtype": "Float"
-              }
-            }
-          },
-          {
-            "ai_health_resource_02_current_pct": {
-              "attribute": "ai_health_resource_02_current_pct",
-              "value": {
-                "expression": "attr(ai_health_resource_02_current_value) / attr(ai_health_resource_02_max_value)",
-                "structtype": "Asset'/Script/GbxGame.GbxHealthStateValueResolver'",
-                "value": "HealthPercent",
-                "layer": "1"
-              },
-              "context": {
-                "structtype": "Asset'/Script/GbxEngine.ActorContextResolver'"
               }
             }
           },
@@ -41738,20 +41149,6 @@
                 "resolvedtype": "Float",
                 "value": "MaxHealth",
                 "layer": "1"
-              }
-            }
-          },
-          {
-            "ai_health_resource_03_current_pct": {
-              "attribute": "ai_health_resource_03_current_pct",
-              "value": {
-                "expression": "attr(ai_health_resource_03_current_value) / attr(ai_health_resource_03_max_value)",
-                "structtype": "Asset'/Script/GbxGame.GbxHealthStateValueResolver'",
-                "value": "HealthPercent",
-                "layer": "2"
-              },
-              "context": {
-                "structtype": "Asset'/Script/GbxEngine.ActorContextResolver'"
               }
             }
           },
@@ -41940,44 +41337,8 @@
             }
           },
           {
-            "ai_heldexplosive_requesting": {
-              "attribute": "ai_HeldExplosive_Requesting",
-              "value": {
-                "defaultvalue": {
-                  "targettype": "Bool",
-                  "value": "Bool.False"
-                },
-                "structtype": "Asset'/Script/GbxEngine.GbxBlackboardValueResolver'"
-              }
-            }
-          },
-          {
             "ai_heldexplosive_requesting_l": {
               "attribute": "ai_HeldExplosive_Requesting_L",
-              "value": {
-                "defaultvalue": {
-                  "targettype": "Bool",
-                  "value": "Bool.False"
-                },
-                "structtype": "Asset'/Script/GbxEngine.GbxBlackboardValueResolver'"
-              }
-            }
-          },
-          {
-            "ai_heldexplosive_requesting_r": {
-              "attribute": "ai_HeldExplosive_Requesting_R",
-              "value": {
-                "defaultvalue": {
-                  "targettype": "Bool",
-                  "value": "Bool.False"
-                },
-                "structtype": "Asset'/Script/GbxEngine.GbxBlackboardValueResolver'"
-              }
-            }
-          },
-          {
-            "ai_heldmelee_requesting": {
-              "attribute": "ai_HeldMelee_Requesting",
               "value": {
                 "defaultvalue": {
                   "targettype": "Bool",
@@ -42888,6 +42249,19 @@
                   },
                   {
                     "tag": {
+                      "tagname": "GbxActor.Character.Rank.Badass"
+                    },
+                    "valueifcontexthastag": {
+                      "constant": "2.500000",
+                      "datatablevalue": {
+                        "datatable": "gbx_ue_data_table'Table_EnemyDrops'",
+                        "rowname": "Badass",
+                        "columnname": "EXP_Multiplier_36_615DFBBD414624D661EFA8842830565E"
+                      }
+                    }
+                  },
+                  {
+                    "tag": {
                       "tagname": "GbxActor.Character.Rank.Badass.Super"
                     },
                     "valueifcontexthastag": {
@@ -42914,19 +42288,6 @@
                   },
                   {
                     "tag": {
-                      "tagname": "GbxActor.Character.Rank.Badass"
-                    },
-                    "valueifcontexthastag": {
-                      "constant": "2.500000",
-                      "datatablevalue": {
-                        "datatable": "gbx_ue_data_table'Table_EnemyDrops'",
-                        "rowname": "Badass",
-                        "columnname": "EXP_Multiplier_36_615DFBBD414624D661EFA8842830565E"
-                      }
-                    }
-                  },
-                  {
-                    "tag": {
                       "tagname": "GbxActor.Character.Rank.Boss.Mini"
                     },
                     "valueifcontexthastag": {
@@ -42934,6 +42295,19 @@
                       "datatablevalue": {
                         "datatable": "gbx_ue_data_table'Table_EnemyDrops'",
                         "rowname": "BossMini",
+                        "columnname": "EXP_Multiplier_36_615DFBBD414624D661EFA8842830565E"
+                      }
+                    }
+                  },
+                  {
+                    "tag": {
+                      "tagname": "GbxActor.Character.Rank.Boss"
+                    },
+                    "valueifcontexthastag": {
+                      "constant": "30.000000",
+                      "datatablevalue": {
+                        "datatable": "gbx_ue_data_table'Table_EnemyDrops'",
+                        "rowname": "Boss",
                         "columnname": "EXP_Multiplier_36_615DFBBD414624D661EFA8842830565E"
                       }
                     }
@@ -42960,19 +42334,6 @@
                       "datatablevalue": {
                         "datatable": "gbx_ue_data_table'Table_EnemyDrops'",
                         "rowname": "BossRaid",
-                        "columnname": "EXP_Multiplier_36_615DFBBD414624D661EFA8842830565E"
-                      }
-                    }
-                  },
-                  {
-                    "tag": {
-                      "tagname": "GbxActor.Character.Rank.Boss"
-                    },
-                    "valueifcontexthastag": {
-                      "constant": "30.000000",
-                      "datatablevalue": {
-                        "datatable": "gbx_ue_data_table'Table_EnemyDrops'",
-                        "rowname": "Boss",
                         "columnname": "EXP_Multiplier_36_615DFBBD414624D661EFA8842830565E"
                       }
                     }
@@ -43046,17 +42407,6 @@
                 "table_row_struct": "/Script/OakGame.LocalRarityModiferData",
                 "type": "Float",
                 "balance_table_col": "LegendaryModifier"
-              }
-            }
-          },
-          {
-            "att_localraritymodifier_06_pearlescent": {
-              "attribute": "Att_LocalRarityModifier_06_Pearlescent",
-              "value": {
-                "structtype": "Asset'/Script/GbxGame.BalanceDataTableValueResolver'",
-                "balancetablecolumn": "PearlModifier",
-                "tablerowstruct": "Asset'/Script/OakGame.LocalRarityModiferData'",
-                "resolvedtype": "Float"
               }
             }
           },
@@ -43723,15 +43073,6 @@
             }
           },
           {
-            "att_rarityweight_06_pearl": {
-              "attribute": "Att_RarityWeight_06_Pearl",
-              "value": {
-                "structtype": "Asset'/Script/OakGame.RarityWeightValueResolver'",
-                "rarity": "rarity'06_pearlescent'"
-              }
-            }
-          },
-          {
             "att_se_duration_fire": {
               "attribute": "Att_SE_Duration_Fire",
               "value": {
@@ -43843,33 +43184,6 @@
                   "datatablevalue": {
                     "datatable": "gbx_ue_data_table'Economy_BaseCosts'",
                     "rowname": "Enhancement"
-                  }
-                },
-                "power": {
-                  "constant": "1.000000",
-                  "datatablevalue": {
-                    "datatable": "gbx_ue_data_table'none'"
-                  }
-                }
-              }
-            }
-          },
-          {
-            "attr_calc_price_grenade": {
-              "attribute": "attr_calc_price_grenade",
-              "value": {
-                "structtype": "Asset'/Script/GbxGame.BalanceFormulaValueResolver'",
-                "multiplier": {
-                  "datatablevalue": {
-                    "datatable": "gbx_ue_data_table'none'"
-                  },
-                  "attribute": "attribute'attr_calc_price'"
-                },
-                "level": {
-                  "constant": "1.000000",
-                  "datatablevalue": {
-                    "datatable": "gbx_ue_data_table'Economy_BaseCosts'",
-                    "rowname": "Grenade"
                   }
                 },
                 "power": {
@@ -44158,21 +43472,6 @@
                   "datatablevalue": {
                     "datatable": "gbx_ue_data_table'Economy_BaseCosts'",
                     "rowname": "Multiplier_Rarity_Legendary"
-                  }
-                }
-              }
-            }
-          },
-          {
-            "attr_calc_pricemod_rarity_pearlescent": {
-              "attribute": "attr_calc_pricemod_rarity_pearlescent",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxConstantAttributeValueResolver'",
-                "attributeinit": {
-                  "constant": "1.000000",
-                  "datatablevalue": {
-                    "datatable": "gbx_ue_data_table'Economy_BaseCosts'",
-                    "rowname": "Multiplier_Rarity_Pearl"
                   }
                 }
               }
@@ -45600,32 +44899,6 @@
             }
           },
           {
-            "calc_iohealth_base": {
-              "attribute": "Calc_IOHealth_Base",
-              "value": {
-                "structtype": "Asset'/Script/GbxGame.BalanceFormulaValueResolver'",
-                "multiplier": {
-                  "datatablevalue": {
-                    "datatable": "gbx_ue_data_table'damage_and_health_scalars'",
-                    "rowname": "IO_HealthBase"
-                  }
-                },
-                "level": {
-                  "datatablevalue": {
-                    "datatable": "gbx_ue_data_table'General'",
-                    "rowname": "universal_balance_scalar"
-                  }
-                },
-                "power": {
-                  "attribute": "attribute'pawn_experience_level'"
-                },
-                "scalar": {
-                  "attribute": "attribute'IO_health_multiplier'"
-                }
-              }
-            }
-          },
-          {
             "calc_playeractionskill_damage_formula": {
               "attribute": "calc_playeractionskill_damage_formula",
               "value": {
@@ -46802,25 +46075,6 @@
             }
           },
           {
-            "caused_damage_paladin_detonation_multiplier_owner": {
-              "attribute": "caused_damage_paladin_detonation_multiplier_owner",
-              "context": {
-                "structtype": "Asset'/Script/GbxEngine.InstigatorContextResolver'"
-              },
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxBlackboardValueResolver'",
-                "variable": "caused_damage_paladin_detonation_multiplier",
-                "defaultvalue": {
-                  "targettype": "Float",
-                  "value": {
-                    "type": "Float",
-                    "value": "1.000000"
-                  }
-                }
-              }
-            }
-          },
-          {
             "caused_damage_passive_skill_multiplier": {
               "attribute": "caused_damage_passive_skill_multiplier",
               "context": {
@@ -47938,17 +47192,6 @@
             }
           },
           {
-            "dialog_voice_pitch_offset": {
-              "attribute": "dialog_voice_pitch_offset",
-              "context": {
-                "structtype": "Asset'/Script/GbxEngine.ActorContextResolver'"
-              },
-              "value": {
-                "structtype": "Asset'/Script/GbxGame.GbxDialogVoicePitchOffset_ValueResolver'"
-              }
-            }
-          },
-          {
             "dialogweight_isspeaking": {
               "attribute": "DialogWeight_IsSpeaking",
               "value": {
@@ -48867,6 +48110,18 @@
             }
           },
           {
+            "goldenkeys_held": {
+              "attribute": "goldenkeys_held",
+              "context": {
+                "structtype": "Asset'/Script/GbxGame.GbxPlayerControllerContextResolver'"
+              },
+              "value": {
+                "structtype": "Asset'/Script/GbxGame.GbxCurrencyValueResolver'",
+                "currencytypename": "golden_key"
+              }
+            }
+          },
+          {
             "grenade_damage_amp_duration": {
               "attribute": "grenade_damage_amp_duration",
               "context": {
@@ -48874,128 +48129,6 @@
               },
               "value": {
                 "structtype": "Asset'/Script/GbxGame.InventoryStatsContainerValueResolver'",
-                "resolvedtype": "Float"
-              }
-            }
-          },
-          {
-            "grenade_damage_modifier_base_status_effect_chance": {
-              "attribute": "grenade_damage_modifier_base_status_effect_chance",
-              "context": {
-                "structtype": "Asset'/Script/GbxGame.InventoryContextResolver'"
-              },
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.PropertyValueResolver'",
-                "propertysupportsmodifierremoval": "true",
-                "property": {
-                  "parsedpath": {
-                    "0": {
-                      "propertyname": "StatusEffectModifierData"
-                    },
-                    "1": {
-                      "propertyname": "ChanceApplicationModifier"
-                    }
-                  },
-                  "parsedpathlength": "2",
-                  "propertypath": "StatusEffectModifierData.ChanceApplicationModifier"
-                },
-                "resolvedtype": "Float"
-              }
-            }
-          },
-          {
-            "grenade_damage_modifier_base_status_effect_charge": {
-              "attribute": "grenade_damage_modifier_base_status_effect_charge",
-              "context": {
-                "structtype": "Asset'/Script/GbxGame.InventoryContextResolver'"
-              },
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.PropertyValueResolver'",
-                "propertysupportsmodifierremoval": "true",
-                "property": {
-                  "parsedpath": {
-                    "0": {
-                      "propertyname": "StatusEffectModifierData"
-                    },
-                    "1": {
-                      "propertyname": "ChargeApplicationModifier"
-                    }
-                  },
-                  "parsedpathlength": "2",
-                  "propertypath": "StatusEffectModifierData.ChargeApplicationModifier"
-                },
-                "resolvedtype": "Float"
-              }
-            }
-          },
-          {
-            "grenade_damage_modifier_base_status_effect_damage": {
-              "attribute": "grenade_damage_modifier_base_status_effect_damage",
-              "context": {
-                "structtype": "Asset'/Script/GbxGame.InventoryContextResolver'"
-              },
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.PropertyValueResolver'",
-                "propertysupportsmodifierremoval": "true",
-                "property": {
-                  "parsedpath": {
-                    "0": {
-                      "propertyname": "StatusEffectModifierData"
-                    },
-                    "1": {
-                      "propertyname": "DPSApplicationModifier"
-                    }
-                  },
-                  "parsedpathlength": "2",
-                  "propertypath": "StatusEffectModifierData.DPSApplicationModifier"
-                },
-                "resolvedtype": "Float"
-              }
-            }
-          },
-          {
-            "grenade_gadget_crit_chance": {
-              "attribute": "grenade_gadget_crit_chance",
-              "context": {
-                "structtype": "Asset'/Script/GbxGame.InventoryContextResolver'"
-              },
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.PropertyValueResolver'",
-                "propertysupportsmodifierremoval": "true",
-                "property": {
-                  "parsedpath": {
-                    "0": {
-                      "propertyname": "CriticalHitChance"
-                    }
-                  },
-                  "parsedpathlength": "1",
-                  "propertypath": "CriticalHitChance"
-                },
-                "resolvedtype": "Float"
-              }
-            }
-          },
-          {
-            "grenade_gadget_crit_damage": {
-              "attribute": "grenade_gadget_crit_damage",
-              "context": {
-                "structtype": "Asset'/Script/GbxGame.InventoryContextResolver'"
-              },
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.PropertyValueResolver'",
-                "propertysupportsmodifierremoval": "true",
-                "property": {
-                  "parsedpath": {
-                    "0": {
-                      "propertyname": "DamageModifierData"
-                    },
-                    "1": {
-                      "propertyname": "CriticalHitMultiplier"
-                    }
-                  },
-                  "parsedpathlength": "2",
-                  "propertypath": "DamageModifierData.CriticalHitMultiplier"
-                },
                 "resolvedtype": "Float"
               }
             }
@@ -49017,28 +48150,6 @@
                   },
                   "parsedpathlength": "1",
                   "propertypath": "Damage"
-                },
-                "resolvedtype": "Float"
-              }
-            }
-          },
-          {
-            "grenade_gadget_force": {
-              "attribute": "grenade_gadget_force",
-              "context": {
-                "structtype": "Asset'/Script/GbxGame.InventoryContextResolver'"
-              },
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.PropertyValueResolver'",
-                "propertysupportsmodifierremoval": "true",
-                "property": {
-                  "parsedpath": {
-                    "0": {
-                      "propertyname": "Force"
-                    }
-                  },
-                  "parsedpathlength": "1",
-                  "propertypath": "Force"
                 },
                 "resolvedtype": "Float"
               }
@@ -49087,50 +48198,6 @@
             }
           },
           {
-            "grenade_gadget_homing_turn_speed_scale": {
-              "attribute": "grenade_gadget_homing_turn_speed_scale",
-              "context": {
-                "structtype": "Asset'/Script/GbxGame.InventoryContextResolver'"
-              },
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.PropertyValueResolver'",
-                "propertysupportsmodifierremoval": "true",
-                "property": {
-                  "parsedpath": {
-                    "0": {
-                      "propertyname": "HomingTurnSpeedScale"
-                    }
-                  },
-                  "parsedpathlength": "1",
-                  "propertypath": "HomingTurnSpeedScale"
-                },
-                "resolvedtype": "Float"
-              }
-            }
-          },
-          {
-            "grenade_gadget_max_number_of_charges": {
-              "attribute": "grenade_gadget_max_number_of_charges",
-              "context": {
-                "structtype": "Asset'/Script/GbxGame.InventoryContextResolver'"
-              },
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.PropertyValueResolver'",
-                "propertysupportsmodifierremoval": "true",
-                "property": {
-                  "parsedpath": {
-                    "0": {
-                      "propertyname": "MaxNumberOfCharges"
-                    }
-                  },
-                  "parsedpathlength": "1",
-                  "propertypath": "MaxNumberOfCharges"
-                },
-                "resolvedtype": "Int"
-              }
-            }
-          },
-          {
             "grenade_gadget_multiple_throw_delay": {
               "attribute": "grenade_gadget_multiple_throw_delay",
               "context": {
@@ -49169,18 +48236,6 @@
                   "parsedpathlength": "1",
                   "propertypath": "Radius"
                 },
-                "resolvedtype": "Float"
-              }
-            }
-          },
-          {
-            "grenade_gadget_transfusion_percent": {
-              "attribute": "grenade_gadget_transfusion_percent",
-              "context": {
-                "structtype": "Asset'/Script/GbxGame.InventoryStatsContainerContextResolver'"
-              },
-              "value": {
-                "structtype": "Asset'/Script/GbxGame.InventoryStatsContainerValueResolver'",
                 "resolvedtype": "Float"
               }
             }
@@ -49501,48 +48556,6 @@
               },
               "context": {
                 "structtype": "Asset'/Script/GbxGame.InventoryStatsContainerContextResolver'"
-              }
-            }
-          },
-          {
-            "grenade_ui_calc_elemental_chance": {
-              "attribute": "grenade_ui_calc_elemental_chance",
-              "context": {
-                "structtype": "Asset'/Script/GbxGame.InventoryContextResolver'"
-              },
-              "value": {
-                "structtype": "Asset'/Script/OakGame.OakStatusEffectApplicationDefaultsValueResolver'",
-                "datatable": "gbx_ue_data_table'Status_Application_Defaults'",
-                "bresolveelementfromcontext": "true",
-                "property": "Chance"
-              }
-            }
-          },
-          {
-            "grenade_ui_elemental_chance": {
-              "attribute": "grenade_ui_elemental_chance",
-              "context": {
-                "structtype": "Asset'/Script/GbxGame.InventoryContextResolver'"
-              },
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
-                "expression": {
-                  "formula": "attr(grenade_damage_modifier_base_status_effect_chance)*attr(grenade_ui_calc_elemental_chance)"
-                }
-              }
-            }
-          },
-          {
-            "grenade_ui_elemental_dps": {
-              "attribute": "grenade_ui_elemental_dps",
-              "context": {
-                "structtype": "Asset'/Script/GbxGame.InventoryContextResolver'"
-              },
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
-                "expression": {
-                  "formula": "attr(grenade_damage_modifier_base_status_effect_damage)*attr(grenade_gadget_damage)*attr(weapon_ui_calc_elemental_dps_scalar)*(1/attr(att_playershared_dotinterval))"
-                }
               }
             }
           },
@@ -49885,19 +48898,6 @@
               "value": {
                 "structtype": "Asset'/Script/GbxGame.BalanceDataTableValueResolver'",
                 "balancetablecolumn": "Damage",
-                "resolvedtype": "Float"
-              }
-            }
-          },
-          {
-            "io_health_multiplier": {
-              "attribute": "IO_health_multiplier",
-              "context": {
-                "structtype": "Asset'/Script/GbxEngine.ActorContextResolver'"
-              },
-              "value": {
-                "structtype": "Asset'/Script/GbxGame.BalanceDataTableValueResolver'",
-                "balancetablecolumn": "Health",
                 "resolvedtype": "Float"
               }
             }
@@ -55215,28 +54215,6 @@
             }
           },
           {
-            "weapon_current_fire_socket_index": {
-              "attribute": "weapon_current_fire_socket_index",
-              "context": {
-                "structtype": "Asset'/Script/GbxWeapon.WeaponAttributeContextResolver'",
-                "behaviortypetofurtherresolveto": "Asset'/Script/GbxWeapon.WeaponBehavior_Fire'"
-              },
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.PropertyValueResolver'",
-                "property": {
-                  "parsedpath": {
-                    "0": {
-                      "propertyname": "CurrentUseModeIndex"
-                    }
-                  },
-                  "parsedpathlength": "1",
-                  "propertypath": "CurrentFireSocketIndex"
-                },
-                "resolvedtype": "Int"
-              }
-            }
-          },
-          {
             "weapon_damage": {
               "attribute": "weapon_damage",
               "context": {
@@ -55791,30 +54769,6 @@
                   "propertypath": "FireRateDecelDuration"
                 },
                 "resolvedtype": "Float"
-              }
-            }
-          },
-          {
-            "weapon_fire_socket_one": {
-              "attribute": "weapon_fire_socket_one",
-              "context": {
-                "structtype": "Asset'/Script/GbxWeapon.WeaponAttributeContextResolver'"
-              },
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
-                "expression": "attr(weapon_current_fire_socket_index)==1"
-              }
-            }
-          },
-          {
-            "weapon_fire_socket_zero": {
-              "attribute": "weapon_fire_socket_zero",
-              "context": {
-                "structtype": "Asset'/Script/GbxWeapon.WeaponAttributeContextResolver'"
-              },
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
-                "expression": "attr(weapon_current_fire_socket_index)==0"
               }
             }
           },
@@ -58517,944 +57471,6 @@
       {
         "entries": [
           {
-            "ai_phalanx_friendlytarget": {
-              "attribute": "ai_Phalanx_FriendlyTarget",
-              "context": {
-                "structtype": "Asset'/Script/GbxEngine.GbxBlackboardOwnerContextResolver'"
-              },
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxBlackboardValueResolver'",
-                "defaultvalue": {
-                  "targettype": "Actor",
-                  "value": {
-                    "type": "Actor"
-                  }
-                }
-              }
-            }
-          },
-          {
-            "ai_secondary_or_tertiary_health_full": {
-              "attribute": "ai_secondary_or_tertiary_health_full",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
-                "expression": {
-                  "formula": "((attr(ai_health_resource_02_current_pct)>=1) || (attr(ai_health_resource_03_current_pct)>=1))"
-                }
-              }
-            }
-          },
-          {
-            "att_grassboss_bioarmor_weaponspawned": {
-              "attribute": "att_GrassBoss_BioArmor_WeaponSpawned",
-              "context": {
-                "structtype": "Asset'/Script/GbxEngine.ActorContextResolver'"
-              },
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxBlackboardValueResolver'",
-                "defaultvalue": {
-                  "targettype": "Int",
-                  "value": {
-                    "type": "Int"
-                  }
-                }
-              }
-            }
-          },
-          {
-            "att_grassboss_cantrashtalkvo": {
-              "attribute": "att_GrassBoss_canTrashTalkVO",
-              "context": {
-                "structtype": "Asset'/Script/GbxEngine.ActorContextResolver'"
-              },
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxBlackboardValueResolver'",
-                "defaultvalue": {
-                  "targettype": "Bool",
-                  "value": {
-                    "type": "Bool"
-                  }
-                }
-              }
-            }
-          },
-          {
-            "attr_difficulttraitlimit_postbeach": {
-              "attribute": "Attr_DifficultTraitLimit_PostBeach",
-              "value": {
-                "structtype": "Asset'/Script/GbxGame.GbxCondition_Fact'",
-                "address": "missions.missionset_main_beach.mission_main_beach.status",
-                "value": "Completed"
-              }
-            }
-          },
-          {
-            "attr_element_globalbaseline": {
-              "attribute": "Attr_Element_GlobalBaseline",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxConditionalAttributeValueResolver'",
-                "defaultvalue": {
-                  "attribute": "attribute'Attr_Element_GlobalBaseline_None'"
-                },
-                "conditionalvalues": [
-                  {
-                    "value": {
-                      "attribute": "attribute'Attr_Element_GlobalBaseline_High'"
-                    },
-                    "condition": {
-                      "type": "ValueResolver",
-                      "inlinestruct": {
-                        "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
-                        "expression": {
-                          "variables": {
-                            "variablevalues": {
-                              "pairs": {
-                                "pair3090493939": {
-                                  "key": "Attr_Infamy_Global_Capped",
-                                  "value": {
-                                    "targettype": "Float",
-                                    "value": {
-                                      "type": "Attribute",
-                                      "value": "attribute'Attr_Infamy_Global_Capped'"
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                          },
-                          "formula": "Attr_Infamy_Global_Capped > 6"
-                        }
-                      }
-                    }
-                  },
-                  {
-                    "value": {
-                      "attribute": "attribute'Attr_Element_GlobalBaseline_Med'"
-                    },
-                    "condition": {
-                      "type": "ValueResolver",
-                      "inlinestruct": {
-                        "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
-                        "expression": {
-                          "variables": {
-                            "variablevalues": {
-                              "pairs": {
-                                "pair3090493939": {
-                                  "key": "Attr_Infamy_Global_Capped",
-                                  "value": {
-                                    "targettype": "Float",
-                                    "value": {
-                                      "type": "Attribute",
-                                      "value": "attribute'Attr_Infamy_Global_Capped'"
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                          },
-                          "formula": "Attr_Infamy_Global_Capped > 3"
-                        }
-                      }
-                    }
-                  },
-                  {
-                    "value": {
-                      "attribute": "attribute'Attr_Element_GlobalBaseline_Low'"
-                    },
-                    "condition": {
-                      "type": "ValueResolver",
-                      "inlinestruct": {
-                        "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
-                        "expression": {
-                          "variables": {
-                            "variablevalues": {
-                              "pairs": {
-                                "pair3090493939": {
-                                  "key": "Attr_Infamy_Global_Capped",
-                                  "value": {
-                                    "targettype": "Float",
-                                    "value": {
-                                      "type": "Attribute",
-                                      "value": "attribute'Attr_Infamy_Global_Capped'"
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                          },
-                          "formula": "Attr_Infamy_Global_Capped > 0"
-                        }
-                      }
-                    }
-                  }
-                ]
-              }
-            }
-          },
-          {
-            "attr_element_globalbaseline_high": {
-              "attribute": "Attr_Element_GlobalBaseline_High",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
-                "expression": {
-                  "formula": ".25"
-                }
-              }
-            }
-          },
-          {
-            "attr_element_globalbaseline_low": {
-              "attribute": "Attr_Element_GlobalBaseline_Low",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
-                "expression": {
-                  "formula": ".15"
-                }
-              }
-            }
-          },
-          {
-            "attr_element_globalbaseline_med": {
-              "attribute": "Attr_Element_GlobalBaseline_Med",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
-                "expression": {
-                  "formula": ".2"
-                }
-              }
-            }
-          },
-          {
-            "attr_element_globalbaseline_none": {
-              "attribute": "Attr_Element_GlobalBaseline_None",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
-                "expression": {
-                  "formula": ".1"
-                }
-              }
-            }
-          },
-          {
-            "attr_element_specificbaseline": {
-              "attribute": "Attr_Element_SpecificBaseline",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxConditionalAttributeValueResolver'",
-                "defaultvalue": {
-                  "attribute": "attribute'Attr_Element_SpecificBaseline_None'"
-                },
-                "conditionalvalues": [
-                  {
-                    "value": {
-                      "attribute": "attribute'Attr_Element_SpecificBaseline_High'"
-                    },
-                    "condition": {
-                      "type": "ValueResolver",
-                      "inlinestruct": {
-                        "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
-                        "expression": {
-                          "variables": {
-                            "variablevalues": {
-                              "pairs": {
-                                "pair3090493939": {
-                                  "key": "Attr_Infamy_Global_Capped",
-                                  "value": {
-                                    "targettype": "Float",
-                                    "value": {
-                                      "type": "Attribute",
-                                      "value": "attribute'Attr_Infamy_Global_Capped'"
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                          },
-                          "formula": "Attr_Infamy_Global_Capped > 6"
-                        }
-                      }
-                    }
-                  },
-                  {
-                    "value": {
-                      "attribute": "attribute'Attr_Element_SpecificBaseline_Med'"
-                    },
-                    "condition": {
-                      "type": "ValueResolver",
-                      "inlinestruct": {
-                        "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
-                        "expression": {
-                          "variables": {
-                            "variablevalues": {
-                              "pairs": {
-                                "pair3090493939": {
-                                  "key": "Attr_Infamy_Global_Capped",
-                                  "value": {
-                                    "targettype": "Float",
-                                    "value": {
-                                      "type": "Attribute",
-                                      "value": "attribute'Attr_Infamy_Global_Capped'"
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                          },
-                          "formula": "Attr_Infamy_Global_Capped > 3"
-                        }
-                      }
-                    }
-                  },
-                  {
-                    "value": {
-                      "attribute": "attribute'Attr_Element_SpecificBaseline_Low'"
-                    },
-                    "condition": {
-                      "type": "ValueResolver",
-                      "inlinestruct": {
-                        "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
-                        "expression": {
-                          "variables": {
-                            "variablevalues": {
-                              "pairs": {
-                                "pair3090493939": {
-                                  "key": "Attr_Infamy_Global_Capped",
-                                  "value": {
-                                    "targettype": "Float",
-                                    "value": {
-                                      "type": "Attribute",
-                                      "value": "attribute'Attr_Infamy_Global_Capped'"
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                          },
-                          "formula": "Attr_Infamy_Global_Capped > 0"
-                        }
-                      }
-                    }
-                  }
-                ]
-              }
-            }
-          },
-          {
-            "attr_element_specificbaseline_high": {
-              "attribute": "Attr_Element_SpecificBaseline_High",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
-                "expression": {
-                  "formula": ".45"
-                }
-              }
-            }
-          },
-          {
-            "attr_element_specificbaseline_low": {
-              "attribute": "Attr_Element_SpecificBaseline_Low",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
-                "expression": {
-                  "formula": ".25"
-                }
-              }
-            }
-          },
-          {
-            "attr_element_specificbaseline_med": {
-              "attribute": "Attr_Element_SpecificBaseline_Med",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
-                "expression": {
-                  "formula": ".35"
-                }
-              }
-            }
-          },
-          {
-            "attr_element_specificbaseline_none": {
-              "attribute": "Attr_Element_SpecificBaseline_None",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
-                "expression": {
-                  "formula": ".15"
-                }
-              }
-            }
-          },
-          {
-            "attr_infamy_global_capped": {
-              "attribute": "Attr_Infamy_Global_Capped",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
-                "expression": {
-                  "variables": {
-                    "variablevalues": {
-                      "pairs": {
-                        "pair2908710145": {
-                          "key": "Attr_Infamy_Region_GRA_Capped",
-                          "value": {
-                            "targettype": "Float",
-                            "value": {
-                              "type": "Attribute",
-                              "value": "attribute'Attr_Infamy_Region_GRA_Capped'"
-                            }
-                          }
-                        },
-                        "pair2180610700": {
-                          "key": "Attr_Infamy_Region_MOU_Capped",
-                          "value": {
-                            "targettype": "Float",
-                            "value": {
-                              "type": "Attribute",
-                              "value": "attribute'Attr_Infamy_Region_MOU_Capped'"
-                            }
-                          }
-                        },
-                        "pair961642713": {
-                          "key": "Attr_Infamy_Region_SHA_Capped",
-                          "value": {
-                            "targettype": "Float",
-                            "value": {
-                              "type": "Attribute",
-                              "value": "attribute'Attr_Infamy_Region_SHA_Capped'"
-                            }
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "formula": "Attr_Infamy_Region_GRA_Capped+Attr_Infamy_Region_MOU_Capped+Attr_Infamy_Region_SHA_Capped"
-                }
-              }
-            }
-          },
-          {
-            "attr_infamy_global_pct": {
-              "attribute": "Attr_Infamy_Global_Pct",
-              "value": {
-                "structtype": "Asset'/Script/OakGame.OakWorldInfamyValueResolver'",
-                "source": "World",
-                "worldregion": "game_region'city'"
-              }
-            }
-          },
-          {
-            "attr_infamy_localcap": {
-              "attribute": "Attr_Infamy_LocalCap",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
-                "expression": "3"
-              }
-            }
-          },
-          {
-            "attr_infamy_mixvariety_order_high": {
-              "attribute": "Attr_Infamy_MixVariety_Order_High",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
-                "expression": {
-                  "variables": {
-                    "variablevalues": {
-                      "pairs": {
-                        "pair3090493939": {
-                          "key": "Attr_Infamy_Global_Capped",
-                          "value": {
-                            "targettype": "Float",
-                            "value": {
-                              "type": "Attribute",
-                              "value": "attribute'Attr_Infamy_Global_Capped'"
-                            }
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "formula": "Attr_Infamy_Global_Capped >= 9"
-                }
-              }
-            }
-          },
-          {
-            "attr_infamy_mixvariety_order_low": {
-              "attribute": "Attr_Infamy_MixVariety_Order_Low",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
-                "expression": {
-                  "variables": {
-                    "variablevalues": {
-                      "pairs": {
-                        "pair3090493939": {
-                          "key": "Attr_Infamy_Global_Capped",
-                          "value": {
-                            "targettype": "Float",
-                            "value": {
-                              "type": "Attribute",
-                              "value": "attribute'Attr_Infamy_Global_Capped'"
-                            }
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "formula": "Attr_Infamy_Global_Capped >= 0"
-                }
-              }
-            }
-          },
-          {
-            "attr_infamy_mixvariety_order_med": {
-              "attribute": "Attr_Infamy_MixVariety_Order_Med",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
-                "expression": {
-                  "variables": {
-                    "variablevalues": {
-                      "pairs": {
-                        "pair3090493939": {
-                          "key": "Attr_Infamy_Global_Capped",
-                          "value": {
-                            "targettype": "Float",
-                            "value": {
-                              "type": "Attribute",
-                              "value": "attribute'Attr_Infamy_Global_Capped'"
-                            }
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "formula": "Attr_Infamy_Global_Capped >= 6"
-                }
-              }
-            }
-          },
-          {
-            "attr_infamy_mixvariety_order_none": {
-              "attribute": "Attr_Infamy_MixVariety_Order_None",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
-                "expression": {
-                  "variables": {
-                    "variablevalues": {
-                      "pairs": {
-                        "pair3090493939": {
-                          "key": "Attr_Infamy_Global_Capped",
-                          "value": {
-                            "targettype": "Float",
-                            "value": {
-                              "type": "Attribute",
-                              "value": "attribute'Attr_Infamy_Global_Capped'"
-                            }
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "formula": "Attr_Infamy_Global_Capped >= 0"
-                }
-              }
-            }
-          },
-          {
-            "attr_infamy_region_city_pct": {
-              "attribute": "Attr_Infamy_Region_CITY_Pct",
-              "value": {
-                "structtype": "Asset'/Script/OakGame.OakWorldInfamyValueResolver'",
-                "source": "Region",
-                "worldregion": "game_region'city'"
-              }
-            }
-          },
-          {
-            "attr_infamy_region_gra": {
-              "attribute": "Attr_Infamy_Region_GRA",
-              "value": {
-                "structtype": "Asset'/Script/OakGame.OakWorldInfamyValueResolver'",
-                "valuetype": "Level",
-                "source": "Region",
-                "worldregion": "game_region'grasslands'"
-              }
-            }
-          },
-          {
-            "attr_infamy_region_gra_capped": {
-              "attribute": "Attr_Infamy_Region_GRA_Capped",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxConditionalAttributeValueResolver'",
-                "defaultvalue": {
-                  "attribute": "attribute'Attr_Infamy_Region_GRA'"
-                },
-                "conditionalvalues": [
-                  {
-                    "value": {
-                      "attribute": "attribute'Attr_Infamy_LocalCap'"
-                    },
-                    "condition": {
-                      "type": "ValueResolver",
-                      "inlinestruct": {
-                        "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
-                        "expression": {
-                          "variables": {
-                            "variablevalues": {
-                              "pairs": {
-                                "pair3617999638": {
-                                  "key": "Attr_Infamy_Region_GRA",
-                                  "value": {
-                                    "targettype": "Float",
-                                    "value": {
-                                      "type": "Attribute",
-                                      "value": "attribute'Attr_Infamy_Region_GRA'"
-                                    }
-                                  }
-                                },
-                                "pair1727762082": {
-                                  "key": "Attr_Infamy_LocalCap",
-                                  "value": {
-                                    "targettype": "Float",
-                                    "value": {
-                                      "type": "Attribute",
-                                      "value": "attribute'Attr_Infamy_LocalCap'"
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                          },
-                          "formula": "Attr_Infamy_Region_GRA >= Attr_Infamy_LocalCap"
-                        }
-                      }
-                    }
-                  }
-                ]
-              }
-            }
-          },
-          {
-            "attr_infamy_region_mou": {
-              "attribute": "Attr_Infamy_Region_MOU",
-              "value": {
-                "structtype": "Asset'/Script/OakGame.OakWorldInfamyValueResolver'",
-                "valuetype": "Level",
-                "source": "Region",
-                "worldregion": "game_region'mountains'"
-              }
-            }
-          },
-          {
-            "attr_infamy_region_mou_capped": {
-              "attribute": "Attr_Infamy_Region_MOU_Capped",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxConditionalAttributeValueResolver'",
-                "defaultvalue": {
-                  "attribute": "attribute'Attr_Infamy_Region_MOU'"
-                },
-                "conditionalvalues": [
-                  {
-                    "value": {
-                      "attribute": "attribute'Attr_Infamy_LocalCap'"
-                    },
-                    "condition": {
-                      "type": "ValueResolver",
-                      "inlinestruct": {
-                        "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
-                        "expression": {
-                          "variables": {
-                            "variablevalues": {
-                              "pairs": {
-                                "pair2009548507": {
-                                  "key": "Attr_Infamy_Region_MOU",
-                                  "value": {
-                                    "targettype": "Float",
-                                    "value": {
-                                      "type": "Attribute",
-                                      "value": "attribute'Attr_Infamy_Region_MOU'"
-                                    }
-                                  }
-                                },
-                                "pair1727762082": {
-                                  "key": "Attr_Infamy_LocalCap",
-                                  "value": {
-                                    "targettype": "Float",
-                                    "value": {
-                                      "type": "Attribute",
-                                      "value": "attribute'Attr_Infamy_LocalCap'"
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                          },
-                          "formula": "Attr_Infamy_Region_MOU >= Attr_Infamy_LocalCap"
-                        }
-                      }
-                    }
-                  }
-                ]
-              }
-            }
-          },
-          {
-            "attr_infamy_region_sha": {
-              "attribute": "Attr_Infamy_Region_SHA",
-              "value": {
-                "structtype": "Asset'/Script/OakGame.OakWorldInfamyValueResolver'",
-                "valuetype": "Level",
-                "source": "Region",
-                "worldregion": "game_region'shatteredlands'"
-              }
-            }
-          },
-          {
-            "attr_infamy_region_sha_capped": {
-              "attribute": "Attr_Infamy_Region_SHA_Capped",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxConditionalAttributeValueResolver'",
-                "defaultvalue": {
-                  "attribute": "attribute'Attr_Infamy_Region_SHA'"
-                },
-                "conditionalvalues": [
-                  {
-                    "value": {
-                      "attribute": "attribute'Attr_Infamy_LocalCap'"
-                    },
-                    "condition": {
-                      "type": "ValueResolver",
-                      "inlinestruct": {
-                        "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
-                        "expression": {
-                          "variables": {
-                            "variablevalues": {
-                              "pairs": {
-                                "pair238839119": {
-                                  "key": "Attr_Infamy_Region_SHA",
-                                  "value": {
-                                    "targettype": "Float",
-                                    "value": {
-                                      "type": "Attribute",
-                                      "value": "attribute'Attr_Infamy_Region_SHA'"
-                                    }
-                                  }
-                                },
-                                "pair1727762082": {
-                                  "key": "Attr_Infamy_LocalCap",
-                                  "value": {
-                                    "targettype": "Float",
-                                    "value": {
-                                      "type": "Attribute",
-                                      "value": "attribute'Attr_Infamy_LocalCap'"
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                          },
-                          "formula": "Attr_Infamy_Region_SHA >= Attr_Infamy_LocalCap"
-                        }
-                      }
-                    }
-                  }
-                ]
-              }
-            }
-          },
-          {
-            "attr_uvhm_enabled": {
-              "attribute": "Attr_UVHM_Enabled",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxConditionalAttributeValueResolver'",
-                "conditionalvalues": [
-                  {
-                    "value": {
-                      "constant": "1.000000"
-                    },
-                    "condition": {
-                      "type": "ValueResolver",
-                      "inlinestruct": {
-                        "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
-                        "expression": {
-                          "variables": {
-                            "variablevalues": {
-                              "pairs": {
-                                "pair2737802860": {
-                                  "key": "Attr_UVHM_Level",
-                                  "value": {
-                                    "targettype": "Float",
-                                    "value": {
-                                      "type": "Attribute",
-                                      "value": "attribute'Attr_UVHM_Level'"
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                          },
-                          "formula": "Attr_UVHM_Level > 0"
-                        }
-                      }
-                    }
-                  }
-                ]
-              }
-            }
-          },
-          {
-            "attr_uvhm_level": {
-              "attribute": "Attr_UVHM_Level",
-              "context": {
-                "structtype": "Asset'/Script/GbxEngine.GameStateContextResolver'"
-              },
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.PropertyValueResolver'",
-                "propertysupportsmodifierremoval": "true",
-                "property": {
-                  "propertypath": "VaultHunterLevel"
-                },
-                "resolvedtype": "Int"
-              }
-            }
-          },
-          {
-            "attribute_corruption_instigatorhealthpool2": {
-              "attribute": "Attribute_Corruption_InstigatorHealthPool2",
-              "context": {
-                "structtype": "Asset'/Script/GbxEngine.GbxAttributeDefinedContextResolver'",
-                "contextattribute": "attribute'actor_instigator'"
-              },
-              "value": {
-                "structtype": "Asset'/Script/GbxGame.GbxHealthStateValueResolver'",
-                "value": "MaxHealth",
-                "layer": "1"
-              }
-            }
-          },
-          {
-            "attribute_corruption_instigatorhealthpool3": {
-              "attribute": "Attribute_Corruption_InstigatorHealthPool3",
-              "context": {
-                "structtype": "Asset'/Script/GbxEngine.GbxAttributeDefinedContextResolver'",
-                "contextattribute": "attribute'actor_instigator'"
-              },
-              "value": {
-                "structtype": "Asset'/Script/GbxGame.GbxHealthStateValueResolver'",
-                "value": "MaxHealth",
-                "layer": "2"
-              }
-            }
-          },
-          {
-            "echo4_hoverinview_maxrange": {
-              "attribute": "Echo4_HoverInView_MaxRange",
-              "value": {
-                "structtype": "Asset'/Script/OakGame.OakEcho4ValueResolver'",
-                "value": "Echo4HoverRadius",
-                "walkradius": "650.000000",
-                "sprintradius": "900.000000"
-              }
-            }
-          },
-          {
-            "echo4_hoverinview_minrange": {
-              "attribute": "Echo4_HoverInView_MinRange",
-              "value": {
-                "structtype": "Asset'/Script/OakGame.OakEcho4ValueResolver'",
-                "value": "Echo4HoverRadius",
-                "sprintradius": "850.000000"
-              }
-            }
-          },
-          {
-            "order_fastforwardspeedincrease": {
-              "attribute": "order_FastForwardSpeedIncrease",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxConstantAttributeValueResolver'",
-                "attributeinit": {
-                  "constant": "0.250000",
-                  "datatablevalue": {
-                    "datatable": "gbx_ue_data_table'none'"
-                  }
-                }
-              }
-            }
-          },
-          {
-            "order_fastforwardticketholdduration": {
-              "attribute": "order_FastForwardTicketHoldDuration",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxBlackboardValueResolver'",
-                "defaultvalue": {
-                  "targettype": "Float",
-                  "value": {
-                    "type": "Float",
-                    "value": "10.000000"
-                  }
-                }
-              }
-            }
-          },
-          {
-            "order_rewindticketholdduration": {
-              "attribute": "order_RewindTicketHoldDuration",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxBlackboardValueResolver'",
-                "defaultvalue": {
-                  "targettype": "Float",
-                  "value": {
-                    "type": "Float",
-                    "value": "15.000000"
-                  }
-                }
-              }
-            }
-          },
-          {
-            "phalanx_isfrenzied": {
-              "attribute": "Phalanx_IsFrenzied",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxBlackboardValueResolver'"
-              }
-            }
-          },
-          {
-            "player_echo4panel_canuse": {
-              "attribute": "player_Echo4Panel_CanUse",
-              "value": {
-                "structtype": "Asset'/Script/OakGame.OakEcho4ValueResolver'"
-              }
-            }
-          },
-          {
-            "stance_combat_closed_run": {
-              "attribute": "stance_combat_closed_run",
-              "value": {
-                "structtype": "Asset'/Script/GbxNav.GbxCondition_Stance'",
-                "stance": "stance'Stance_Drone_Closed_Run'"
-              }
-            }
-          },
-          {
-            "striker_ward_has_shield_weight": {
-              "attribute": "striker_ward_has_shield_weight",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
-                "expression": "(bb(HasShield) * 1.5)"
-              }
-            }
-          },
-          {
-            "striker_ward_hasnt_shield_weight": {
-              "attribute": "striker_ward_hasnt_shield_weight",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
-                "expression": "((!bb(HasShield)) * 1.5)"
-              }
-            }
-          }
-        ]
-      },
-      {
-        "entries": [
-          {
             "ai_tedgrounded": {
               "attribute": "ai_TedGrounded",
               "value": {
@@ -60556,18 +58572,6 @@
             }
           },
           {
-            "att_corpohacker_bpanim_ia_active": {
-              "attribute": "Att_CorpoHacker_BPAnim_IA_Active",
-              "context": {
-                "structtype": "Asset'/Script/GbxGame.GbxSkillContextResolver'"
-              },
-              "value": {
-                "structtype": "Asset'/Script/GbxGame.GbxCondition_SkillState'",
-                "statedef": "skill_state'S_General_Active'"
-              }
-            }
-          },
-          {
             "att_crazyearl_bloodflower_idleloop": {
               "attribute": "att_CrazyEarl_BloodFlower_IdleLoop",
               "context": {
@@ -61493,1371 +59497,6 @@
             }
           },
           {
-            "att_playerdifficulty_cash_hardcore_tooltip": {
-              "attribute": "Att_PlayerDifficulty_Cash_Hardcore_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Hardcore'",
-                  "rowname": "Hardcore",
-                  "columnname": "Cash_42_6EE698A74322C099B3E638B650A3A49A"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_cash_mayhem10_tooltip": {
-              "attribute": "Att_PlayerDifficulty_Cash_Mayhem10_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem10",
-                  "columnname": "Cash_42_6EE698A74322C099B3E638B650A3A49A"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_cash_mayhem11_tooltip": {
-              "attribute": "Att_PlayerDifficulty_Cash_Mayhem11_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem11",
-                  "columnname": "Cash_42_6EE698A74322C099B3E638B650A3A49A"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_cash_mayhem12_tooltip": {
-              "attribute": "Att_PlayerDifficulty_Cash_Mayhem12_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem12",
-                  "columnname": "Cash_42_6EE698A74322C099B3E638B650A3A49A"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_cash_mayhem13_tooltip": {
-              "attribute": "Att_PlayerDifficulty_Cash_Mayhem13_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem13",
-                  "columnname": "Cash_42_6EE698A74322C099B3E638B650A3A49A"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_cash_mayhem14_tooltip": {
-              "attribute": "Att_PlayerDifficulty_Cash_Mayhem14_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem14",
-                  "columnname": "Cash_42_6EE698A74322C099B3E638B650A3A49A"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_cash_mayhem15_tooltip": {
-              "attribute": "Att_PlayerDifficulty_Cash_Mayhem15_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem15",
-                  "columnname": "Cash_42_6EE698A74322C099B3E638B650A3A49A"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_cash_mayhem16_tooltip": {
-              "attribute": "Att_PlayerDifficulty_Cash_Mayhem16_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem16",
-                  "columnname": "Cash_42_6EE698A74322C099B3E638B650A3A49A"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_cash_mayhem17_tooltip": {
-              "attribute": "Att_PlayerDifficulty_Cash_Mayhem17_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem17",
-                  "columnname": "Cash_42_6EE698A74322C099B3E638B650A3A49A"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_cash_mayhem18_tooltip": {
-              "attribute": "Att_PlayerDifficulty_Cash_Mayhem18_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem18",
-                  "columnname": "Cash_42_6EE698A74322C099B3E638B650A3A49A"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_cash_mayhem19_tooltip": {
-              "attribute": "Att_PlayerDifficulty_Cash_Mayhem19_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem19",
-                  "columnname": "Cash_42_6EE698A74322C099B3E638B650A3A49A"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_cash_mayhem1_tooltip": {
-              "attribute": "Att_PlayerDifficulty_Cash_Mayhem1_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem1",
-                  "columnname": "Cash_42_6EE698A74322C099B3E638B650A3A49A"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_cash_mayhem20_tooltip": {
-              "attribute": "Att_PlayerDifficulty_Cash_Mayhem20_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem20",
-                  "columnname": "Cash_42_6EE698A74322C099B3E638B650A3A49A"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_cash_mayhem2_tooltip": {
-              "attribute": "Att_PlayerDifficulty_Cash_Mayhem2_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem2",
-                  "columnname": "Cash_42_6EE698A74322C099B3E638B650A3A49A"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_cash_mayhem3_tooltip": {
-              "attribute": "Att_PlayerDifficulty_Cash_Mayhem3_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem3",
-                  "columnname": "Cash_42_6EE698A74322C099B3E638B650A3A49A"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_cash_mayhem4_tooltip": {
-              "attribute": "Att_PlayerDifficulty_Cash_Mayhem4_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem4",
-                  "columnname": "Cash_42_6EE698A74322C099B3E638B650A3A49A"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_cash_mayhem5_tooltip": {
-              "attribute": "Att_PlayerDifficulty_Cash_Mayhem5_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem5",
-                  "columnname": "Cash_42_6EE698A74322C099B3E638B650A3A49A"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_cash_mayhem6_tooltip": {
-              "attribute": "Att_PlayerDifficulty_Cash_Mayhem6_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem6",
-                  "columnname": "Cash_42_6EE698A74322C099B3E638B650A3A49A"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_cash_mayhem7_tooltip": {
-              "attribute": "Att_PlayerDifficulty_Cash_Mayhem7_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem7",
-                  "columnname": "Cash_42_6EE698A74322C099B3E638B650A3A49A"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_cash_mayhem8_tooltip": {
-              "attribute": "Att_PlayerDifficulty_Cash_Mayhem8_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem8",
-                  "columnname": "Cash_42_6EE698A74322C099B3E638B650A3A49A"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_cash_mayhem9_tooltip": {
-              "attribute": "Att_PlayerDifficulty_Cash_Mayhem9_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem9",
-                  "columnname": "Cash_42_6EE698A74322C099B3E638B650A3A49A"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_damagetaken_hardcore_tooltip": {
-              "attribute": "Att_PlayerDifficulty_DamageTaken_Hardcore_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Hardcore'",
-                  "rowname": "Hardcore",
-                  "columnname": "DamageTaken_25_E226403045D32494C2AD269EA1C3A6BF"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_damagetaken_mayhem10_tooltip": {
-              "attribute": "Att_PlayerDifficulty_DamageTaken_Mayhem10_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem10",
-                  "columnname": "DamageTaken_25_E226403045D32494C2AD269EA1C3A6BF"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_damagetaken_mayhem11_tooltip": {
-              "attribute": "Att_PlayerDifficulty_DamageTaken_Mayhem11_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem11",
-                  "columnname": "DamageTaken_25_E226403045D32494C2AD269EA1C3A6BF"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_damagetaken_mayhem12_tooltip": {
-              "attribute": "Att_PlayerDifficulty_DamageTaken_Mayhem12_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem12",
-                  "columnname": "DamageTaken_25_E226403045D32494C2AD269EA1C3A6BF"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_damagetaken_mayhem13_tooltip": {
-              "attribute": "Att_PlayerDifficulty_DamageTaken_Mayhem13_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem13",
-                  "columnname": "DamageTaken_25_E226403045D32494C2AD269EA1C3A6BF"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_damagetaken_mayhem14_tooltip": {
-              "attribute": "Att_PlayerDifficulty_DamageTaken_Mayhem14_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem14",
-                  "columnname": "DamageTaken_25_E226403045D32494C2AD269EA1C3A6BF"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_damagetaken_mayhem15_tooltip": {
-              "attribute": "Att_PlayerDifficulty_DamageTaken_Mayhem15_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem15",
-                  "columnname": "DamageTaken_25_E226403045D32494C2AD269EA1C3A6BF"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_damagetaken_mayhem16_tooltip": {
-              "attribute": "Att_PlayerDifficulty_DamageTaken_Mayhem16_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem16",
-                  "columnname": "DamageTaken_25_E226403045D32494C2AD269EA1C3A6BF"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_damagetaken_mayhem17_tooltip": {
-              "attribute": "Att_PlayerDifficulty_DamageTaken_Mayhem17_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem17",
-                  "columnname": "DamageTaken_25_E226403045D32494C2AD269EA1C3A6BF"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_damagetaken_mayhem18_tooltip": {
-              "attribute": "Att_PlayerDifficulty_DamageTaken_Mayhem18_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem18",
-                  "columnname": "DamageTaken_25_E226403045D32494C2AD269EA1C3A6BF"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_damagetaken_mayhem19_tooltip": {
-              "attribute": "Att_PlayerDifficulty_DamageTaken_Mayhem19_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem19",
-                  "columnname": "DamageTaken_25_E226403045D32494C2AD269EA1C3A6BF"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_damagetaken_mayhem1_tooltip": {
-              "attribute": "Att_PlayerDifficulty_DamageTaken_Mayhem1_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem1",
-                  "columnname": "DamageTaken_25_E226403045D32494C2AD269EA1C3A6BF"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_damagetaken_mayhem20_tooltip": {
-              "attribute": "Att_PlayerDifficulty_DamageTaken_Mayhem20_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem20",
-                  "columnname": "DamageTaken_25_E226403045D32494C2AD269EA1C3A6BF"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_damagetaken_mayhem2_tooltip": {
-              "attribute": "Att_PlayerDifficulty_DamageTaken_Mayhem2_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem2",
-                  "columnname": "DamageTaken_25_E226403045D32494C2AD269EA1C3A6BF"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_damagetaken_mayhem3_tooltip": {
-              "attribute": "Att_PlayerDifficulty_DamageTaken_Mayhem3_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem3",
-                  "columnname": "DamageTaken_25_E226403045D32494C2AD269EA1C3A6BF"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_damagetaken_mayhem4_tooltip": {
-              "attribute": "Att_PlayerDifficulty_DamageTaken_Mayhem4_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem4",
-                  "columnname": "DamageTaken_25_E226403045D32494C2AD269EA1C3A6BF"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_damagetaken_mayhem5_tooltip": {
-              "attribute": "Att_PlayerDifficulty_DamageTaken_Mayhem5_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem5",
-                  "columnname": "DamageTaken_25_E226403045D32494C2AD269EA1C3A6BF"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_damagetaken_mayhem6_tooltip": {
-              "attribute": "Att_PlayerDifficulty_DamageTaken_Mayhem6_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem6",
-                  "columnname": "DamageTaken_25_E226403045D32494C2AD269EA1C3A6BF"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_damagetaken_mayhem7_tooltip": {
-              "attribute": "Att_PlayerDifficulty_DamageTaken_Mayhem7_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem7",
-                  "columnname": "DamageTaken_25_E226403045D32494C2AD269EA1C3A6BF"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_damagetaken_mayhem8_tooltip": {
-              "attribute": "Att_PlayerDifficulty_DamageTaken_Mayhem8_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem8",
-                  "columnname": "DamageTaken_25_E226403045D32494C2AD269EA1C3A6BF"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_damagetaken_mayhem9_tooltip": {
-              "attribute": "Att_PlayerDifficulty_DamageTaken_Mayhem9_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem9",
-                  "columnname": "DamageTaken_25_E226403045D32494C2AD269EA1C3A6BF"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_enemyhealth_hardcore_tooltip": {
-              "attribute": "Att_PlayerDifficulty_EnemyHealth_Hardcore_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Hardcore'",
-                  "rowname": "Hardcore",
-                  "columnname": "EnemyHealth_76_0B61BB8543E4615905115AADDE7E8EEF"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_enemyhealth_mayhem10_tooltip": {
-              "attribute": "Att_PlayerDifficulty_EnemyHealth_Mayhem10_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem10",
-                  "columnname": "EnemyHealth_76_0B61BB8543E4615905115AADDE7E8EEF"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_enemyhealth_mayhem11_tooltip": {
-              "attribute": "Att_PlayerDifficulty_EnemyHealth_Mayhem11_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem11",
-                  "columnname": "EnemyHealth_76_0B61BB8543E4615905115AADDE7E8EEF"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_enemyhealth_mayhem12_tooltip": {
-              "attribute": "Att_PlayerDifficulty_EnemyHealth_Mayhem12_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem12",
-                  "columnname": "EnemyHealth_76_0B61BB8543E4615905115AADDE7E8EEF"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_enemyhealth_mayhem13_tooltip": {
-              "attribute": "Att_PlayerDifficulty_EnemyHealth_Mayhem13_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem13",
-                  "columnname": "EnemyHealth_76_0B61BB8543E4615905115AADDE7E8EEF"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_enemyhealth_mayhem14_tooltip": {
-              "attribute": "Att_PlayerDifficulty_EnemyHealth_Mayhem14_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem14",
-                  "columnname": "EnemyHealth_76_0B61BB8543E4615905115AADDE7E8EEF"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_enemyhealth_mayhem15_tooltip": {
-              "attribute": "Att_PlayerDifficulty_EnemyHealth_Mayhem15_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem15",
-                  "columnname": "EnemyHealth_76_0B61BB8543E4615905115AADDE7E8EEF"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_enemyhealth_mayhem16_tooltip": {
-              "attribute": "Att_PlayerDifficulty_EnemyHealth_Mayhem16_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem16",
-                  "columnname": "EnemyHealth_76_0B61BB8543E4615905115AADDE7E8EEF"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_enemyhealth_mayhem17_tooltip": {
-              "attribute": "Att_PlayerDifficulty_EnemyHealth_Mayhem17_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem17",
-                  "columnname": "EnemyHealth_76_0B61BB8543E4615905115AADDE7E8EEF"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_enemyhealth_mayhem18_tooltip": {
-              "attribute": "Att_PlayerDifficulty_EnemyHealth_Mayhem18_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem18",
-                  "columnname": "EnemyHealth_76_0B61BB8543E4615905115AADDE7E8EEF"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_enemyhealth_mayhem19_tooltip": {
-              "attribute": "Att_PlayerDifficulty_EnemyHealth_Mayhem19_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem19",
-                  "columnname": "EnemyHealth_76_0B61BB8543E4615905115AADDE7E8EEF"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_enemyhealth_mayhem1_tooltip": {
-              "attribute": "Att_PlayerDifficulty_EnemyHealth_Mayhem1_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem1",
-                  "columnname": "EnemyHealth_76_0B61BB8543E4615905115AADDE7E8EEF"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_enemyhealth_mayhem20_tooltip": {
-              "attribute": "Att_PlayerDifficulty_EnemyHealth_Mayhem20_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem20",
-                  "columnname": "EnemyHealth_76_0B61BB8543E4615905115AADDE7E8EEF"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_enemyhealth_mayhem2_tooltip": {
-              "attribute": "Att_PlayerDifficulty_EnemyHealth_Mayhem2_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem2",
-                  "columnname": "EnemyHealth_76_0B61BB8543E4615905115AADDE7E8EEF"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_enemyhealth_mayhem3_tooltip": {
-              "attribute": "Att_PlayerDifficulty_EnemyHealth_Mayhem3_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem3",
-                  "columnname": "EnemyHealth_76_0B61BB8543E4615905115AADDE7E8EEF"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_enemyhealth_mayhem4_tooltip": {
-              "attribute": "Att_PlayerDifficulty_EnemyHealth_Mayhem4_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem4",
-                  "columnname": "EnemyHealth_76_0B61BB8543E4615905115AADDE7E8EEF"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_enemyhealth_mayhem5_tooltip": {
-              "attribute": "Att_PlayerDifficulty_EnemyHealth_Mayhem5_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem5",
-                  "columnname": "EnemyHealth_76_0B61BB8543E4615905115AADDE7E8EEF"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_enemyhealth_mayhem6_tooltip": {
-              "attribute": "Att_PlayerDifficulty_EnemyHealth_Mayhem6_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem6",
-                  "columnname": "EnemyHealth_76_0B61BB8543E4615905115AADDE7E8EEF"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_enemyhealth_mayhem7_tooltip": {
-              "attribute": "Att_PlayerDifficulty_EnemyHealth_Mayhem7_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem7",
-                  "columnname": "EnemyHealth_76_0B61BB8543E4615905115AADDE7E8EEF"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_enemyhealth_mayhem8_tooltip": {
-              "attribute": "Att_PlayerDifficulty_EnemyHealth_Mayhem8_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem8",
-                  "columnname": "EnemyHealth_76_0B61BB8543E4615905115AADDE7E8EEF"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_enemyhealth_mayhem9_tooltip": {
-              "attribute": "Att_PlayerDifficulty_EnemyHealth_Mayhem9_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem9",
-                  "columnname": "EnemyHealth_76_0B61BB8543E4615905115AADDE7E8EEF"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_eridium_hardcore_tooltip": {
-              "attribute": "Att_PlayerDifficulty_Eridium_Hardcore_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Hardcore'",
-                  "rowname": "Hardcore",
-                  "columnname": "Eridium_44_AA20800F4DB24D2EEEF55D87BE9CA619"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_eridium_mayhem10_tooltip": {
-              "attribute": "Att_PlayerDifficulty_Eridium_Mayhem10_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem10",
-                  "columnname": "Eridium_44_AA20800F4DB24D2EEEF55D87BE9CA619"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_eridium_mayhem11_tooltip": {
-              "attribute": "Att_PlayerDifficulty_Eridium_Mayhem11_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem11",
-                  "columnname": "Eridium_44_AA20800F4DB24D2EEEF55D87BE9CA619"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_eridium_mayhem12_tooltip": {
-              "attribute": "Att_PlayerDifficulty_Eridium_Mayhem12_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem12",
-                  "columnname": "Eridium_44_AA20800F4DB24D2EEEF55D87BE9CA619"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_eridium_mayhem13_tooltip": {
-              "attribute": "Att_PlayerDifficulty_Eridium_Mayhem13_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem13",
-                  "columnname": "Eridium_44_AA20800F4DB24D2EEEF55D87BE9CA619"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_eridium_mayhem14_tooltip": {
-              "attribute": "Att_PlayerDifficulty_Eridium_Mayhem14_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem14",
-                  "columnname": "Eridium_44_AA20800F4DB24D2EEEF55D87BE9CA619"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_eridium_mayhem15_tooltip": {
-              "attribute": "Att_PlayerDifficulty_Eridium_Mayhem15_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem15",
-                  "columnname": "Eridium_44_AA20800F4DB24D2EEEF55D87BE9CA619"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_eridium_mayhem16_tooltip": {
-              "attribute": "Att_PlayerDifficulty_Eridium_Mayhem16_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem16",
-                  "columnname": "Eridium_44_AA20800F4DB24D2EEEF55D87BE9CA619"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_eridium_mayhem17_tooltip": {
-              "attribute": "Att_PlayerDifficulty_Eridium_Mayhem17_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem17",
-                  "columnname": "Eridium_44_AA20800F4DB24D2EEEF55D87BE9CA619"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_eridium_mayhem18_tooltip": {
-              "attribute": "Att_PlayerDifficulty_Eridium_Mayhem18_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem18",
-                  "columnname": "Eridium_44_AA20800F4DB24D2EEEF55D87BE9CA619"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_eridium_mayhem19_tooltip": {
-              "attribute": "Att_PlayerDifficulty_Eridium_Mayhem19_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem19",
-                  "columnname": "Eridium_44_AA20800F4DB24D2EEEF55D87BE9CA619"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_eridium_mayhem1_tooltip": {
-              "attribute": "Att_PlayerDifficulty_Eridium_Mayhem1_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem1",
-                  "columnname": "Eridium_44_AA20800F4DB24D2EEEF55D87BE9CA619"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_eridium_mayhem20_tooltip": {
-              "attribute": "Att_PlayerDifficulty_Eridium_Mayhem20_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem20",
-                  "columnname": "Eridium_44_AA20800F4DB24D2EEEF55D87BE9CA619"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_eridium_mayhem2_tooltip": {
-              "attribute": "Att_PlayerDifficulty_Eridium_Mayhem2_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem2",
-                  "columnname": "Eridium_44_AA20800F4DB24D2EEEF55D87BE9CA619"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_eridium_mayhem3_tooltip": {
-              "attribute": "Att_PlayerDifficulty_Eridium_Mayhem3_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem3",
-                  "columnname": "Eridium_44_AA20800F4DB24D2EEEF55D87BE9CA619"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_eridium_mayhem4_tooltip": {
-              "attribute": "Att_PlayerDifficulty_Eridium_Mayhem4_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem4",
-                  "columnname": "Eridium_44_AA20800F4DB24D2EEEF55D87BE9CA619"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_eridium_mayhem5_tooltip": {
-              "attribute": "Att_PlayerDifficulty_Eridium_Mayhem5_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem5",
-                  "columnname": "Eridium_44_AA20800F4DB24D2EEEF55D87BE9CA619"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_eridium_mayhem6_tooltip": {
-              "attribute": "Att_PlayerDifficulty_Eridium_Mayhem6_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem6",
-                  "columnname": "Eridium_44_AA20800F4DB24D2EEEF55D87BE9CA619"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_eridium_mayhem7_tooltip": {
-              "attribute": "Att_PlayerDifficulty_Eridium_Mayhem7_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem7",
-                  "columnname": "Eridium_44_AA20800F4DB24D2EEEF55D87BE9CA619"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_eridium_mayhem8_tooltip": {
-              "attribute": "Att_PlayerDifficulty_Eridium_Mayhem8_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem8",
-                  "columnname": "Eridium_44_AA20800F4DB24D2EEEF55D87BE9CA619"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_eridium_mayhem9_tooltip": {
-              "attribute": "Att_PlayerDifficulty_Eridium_Mayhem9_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem9",
-                  "columnname": "Eridium_44_AA20800F4DB24D2EEEF55D87BE9CA619"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_xp_hardcore_tooltip": {
-              "attribute": "Att_PlayerDifficulty_XP_Hardcore_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Hardcore'",
-                  "rowname": "Hardcore",
-                  "columnname": "CombatExperience_46_8242440547E49F474B6D4AA0104E108B"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_xp_mayhem10_tooltip": {
-              "attribute": "Att_PlayerDifficulty_XP_Mayhem10_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem10",
-                  "columnname": "CombatExperience_46_8242440547E49F474B6D4AA0104E108B"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_xp_mayhem11_tooltip": {
-              "attribute": "Att_PlayerDifficulty_XP_Mayhem11_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem11",
-                  "columnname": "CombatExperience_46_8242440547E49F474B6D4AA0104E108B"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_xp_mayhem12_tooltip": {
-              "attribute": "Att_PlayerDifficulty_XP_Mayhem12_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem12",
-                  "columnname": "CombatExperience_46_8242440547E49F474B6D4AA0104E108B"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_xp_mayhem13_tooltip": {
-              "attribute": "Att_PlayerDifficulty_XP_Mayhem13_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem13",
-                  "columnname": "CombatExperience_46_8242440547E49F474B6D4AA0104E108B"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_xp_mayhem14_tooltip": {
-              "attribute": "Att_PlayerDifficulty_XP_Mayhem14_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem14",
-                  "columnname": "CombatExperience_46_8242440547E49F474B6D4AA0104E108B"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_xp_mayhem15_tooltip": {
-              "attribute": "Att_PlayerDifficulty_XP_Mayhem15_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem15",
-                  "columnname": "CombatExperience_46_8242440547E49F474B6D4AA0104E108B"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_xp_mayhem16_tooltip": {
-              "attribute": "Att_PlayerDifficulty_XP_Mayhem16_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem16",
-                  "columnname": "CombatExperience_46_8242440547E49F474B6D4AA0104E108B"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_xp_mayhem17_tooltip": {
-              "attribute": "Att_PlayerDifficulty_XP_Mayhem17_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem17",
-                  "columnname": "CombatExperience_46_8242440547E49F474B6D4AA0104E108B"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_xp_mayhem18_tooltip": {
-              "attribute": "Att_PlayerDifficulty_XP_Mayhem18_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem18",
-                  "columnname": "CombatExperience_46_8242440547E49F474B6D4AA0104E108B"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_xp_mayhem19_tooltip": {
-              "attribute": "Att_PlayerDifficulty_XP_Mayhem19_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem19",
-                  "columnname": "CombatExperience_46_8242440547E49F474B6D4AA0104E108B"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_xp_mayhem1_tooltip": {
-              "attribute": "Att_PlayerDifficulty_XP_Mayhem1_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem1",
-                  "columnname": "CombatExperience_46_8242440547E49F474B6D4AA0104E108B"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_xp_mayhem20_tooltip": {
-              "attribute": "Att_PlayerDifficulty_XP_Mayhem20_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem20",
-                  "columnname": "CombatExperience_46_8242440547E49F474B6D4AA0104E108B"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_xp_mayhem2_tooltip": {
-              "attribute": "Att_PlayerDifficulty_XP_Mayhem2_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem2",
-                  "columnname": "CombatExperience_46_8242440547E49F474B6D4AA0104E108B"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_xp_mayhem3_tooltip": {
-              "attribute": "Att_PlayerDifficulty_XP_Mayhem3_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem3",
-                  "columnname": "CombatExperience_46_8242440547E49F474B6D4AA0104E108B"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_xp_mayhem4_tooltip": {
-              "attribute": "Att_PlayerDifficulty_XP_Mayhem4_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem4",
-                  "columnname": "CombatExperience_46_8242440547E49F474B6D4AA0104E108B"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_xp_mayhem5_tooltip": {
-              "attribute": "Att_PlayerDifficulty_XP_Mayhem5_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem5",
-                  "columnname": "CombatExperience_46_8242440547E49F474B6D4AA0104E108B"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_xp_mayhem6_tooltip": {
-              "attribute": "Att_PlayerDifficulty_XP_Mayhem6_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem6",
-                  "columnname": "CombatExperience_46_8242440547E49F474B6D4AA0104E108B"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_xp_mayhem7_tooltip": {
-              "attribute": "Att_PlayerDifficulty_XP_Mayhem7_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem7",
-                  "columnname": "CombatExperience_46_8242440547E49F474B6D4AA0104E108B"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_xp_mayhem8_tooltip": {
-              "attribute": "Att_PlayerDifficulty_XP_Mayhem8_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem8",
-                  "columnname": "CombatExperience_46_8242440547E49F474B6D4AA0104E108B"
-                }
-              }
-            }
-          },
-          {
-            "att_playerdifficulty_xp_mayhem9_tooltip": {
-              "attribute": "Att_PlayerDifficulty_XP_Mayhem9_Tooltip",
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
-                "datatablevalue": {
-                  "datatable": "gbx_ue_data_table'Table_Difficulty_Mayhem'",
-                  "rowname": "Mayhem9",
-                  "columnname": "CombatExperience_46_8242440547E49F474B6D4AA0104E108B"
-                }
-              }
-            }
-          },
-          {
             "att_reward_contract_cash_large": {
               "attribute": "Att_Reward_Contract_Cash_Large",
               "value": {
@@ -63248,22 +59887,6 @@
             }
           },
           {
-            "attr_is_leg_demo": {
-              "attribute": "attr_is_leg_demo",
-              "context": {
-                "structtype": "Asset'/Script/GbxWeapon.WeaponAttributeContextResolver'"
-              },
-              "value": {
-                "structtype": "Asset'/Script/GbxGame.GbxCondition_HasInventoryTag'",
-                "tags": [
-                  {
-                    "uni_demo": "uni_demo"
-                  }
-                ]
-              }
-            }
-          },
-          {
             "attr_is_leg_hemorrhage": {
               "attribute": "attr_is_leg_hemorrhage",
               "value": {
@@ -63273,18 +59896,6 @@
                     "uni_hemorrhage": "uni_hemorrhage"
                   }
                 ]
-              }
-            }
-          },
-          {
-            "attr_vehicle_is_pv_cityorder": {
-              "attribute": "Attr_Vehicle_Is_PV_CityOrder",
-              "context": {
-                "structtype": "Asset'/Script/GbxGame.GbxSkillContextResolver'"
-              },
-              "value": {
-                "structtype": "Asset'/Script/GbxGame.GbxCondition_SkillState'",
-                "statedef": "skill_state'S_General_Active'"
               }
             }
           },
@@ -63306,82 +59917,6 @@
               "value": {
                 "structtype": "Asset'/Script/GbxGame.GbxPerchUserValueResolver'",
                 "value": "PerchRotation"
-              }
-            }
-          },
-          {
-            "entitlement_banjo": {
-              "attribute": "Entitlement_Banjo",
-              "context": {
-                "structtype": "Asset'/Script/GbxEngine.ActorContextResolver'"
-              },
-              "value": {
-                "structtype": "Asset'/Script/OakGame.DLCEntitlementValueResolver'",
-                "dlc": "DLCDef'DLCDef_Banjo'"
-              }
-            }
-          },
-          {
-            "entitlement_banjo_local": {
-              "attribute": "Entitlement_Banjo_Local",
-              "context": {
-                "structtype": "Asset'/Script/GbxEngine.ActorContextResolver'"
-              },
-              "value": {
-                "structtype": "Asset'/Script/OakGame.DLCEntitlementValueResolver'",
-                "dlc": "DLCDef'DLCDef_Banjo'",
-                "bchecklocal": "true"
-              }
-            }
-          },
-          {
-            "entitlement_banjo_session": {
-              "attribute": "Entitlement_Banjo_Session",
-              "context": {
-                "structtype": "Asset'/Script/GbxEngine.ActorContextResolver'"
-              },
-              "value": {
-                "structtype": "Asset'/Script/OakGame.DLCEntitlementValueResolver'",
-                "dlc": "DLCDef'DLCDef_Banjo'",
-                "bchecksession": "true"
-              }
-            }
-          },
-          {
-            "entitlement_cello": {
-              "attribute": "Entitlement_Cello",
-              "context": {
-                "structtype": "Asset'/Script/GbxEngine.ActorContextResolver'"
-              },
-              "value": {
-                "structtype": "Asset'/Script/OakGame.DLCEntitlementValueResolver'",
-                "dlc": "DLCDef'DLCDef_Cello'"
-              }
-            }
-          },
-          {
-            "entitlement_cello_local": {
-              "attribute": "Entitlement_Cello_Local",
-              "context": {
-                "structtype": "Asset'/Script/GbxEngine.ActorContextResolver'"
-              },
-              "value": {
-                "structtype": "Asset'/Script/OakGame.DLCEntitlementValueResolver'",
-                "dlc": "DLCDef'DLCDef_Cello'",
-                "bchecklocal": "true"
-              }
-            }
-          },
-          {
-            "entitlement_cello_session": {
-              "attribute": "Entitlement_Cello_Session",
-              "context": {
-                "structtype": "Asset'/Script/GbxEngine.ActorContextResolver'"
-              },
-              "value": {
-                "structtype": "Asset'/Script/OakGame.DLCEntitlementValueResolver'",
-                "dlc": "DLCDef'DLCDef_Cello'",
-                "bchecksession": "true"
               }
             }
           },
@@ -63439,9 +59974,707 @@
           {
             "vehicle_def_is_shatteredlandsv1": {
               "attribute": "vehicle_def_is_shatteredlandsv1",
+              "context": {
+                "structtype": "Asset'/Script/OakGame.OakVehicleContextResolver'"
+              },
               "value": {
                 "structtype": "Asset'/Script/OakGame.GbxCondition_PersonalVehicleDef'",
                 "actordef": "gbxactor'PV_shatterlandV1'"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "entries": [
+          {
+            "att_grassboss_bioarmor_weaponspawned": {
+              "attribute": "att_GrassBoss_BioArmor_WeaponSpawned",
+              "context": {
+                "structtype": "Asset'/Script/GbxEngine.ActorContextResolver'"
+              },
+              "value": {
+                "structtype": "Asset'/Script/GbxEngine.GbxBlackboardValueResolver'",
+                "defaultvalue": {
+                  "targettype": "Int",
+                  "value": {
+                    "type": "Int"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "att_grassboss_cantrashtalkvo": {
+              "attribute": "att_GrassBoss_canTrashTalkVO",
+              "context": {
+                "structtype": "Asset'/Script/GbxEngine.ActorContextResolver'"
+              },
+              "value": {
+                "structtype": "Asset'/Script/GbxEngine.GbxBlackboardValueResolver'",
+                "defaultvalue": {
+                  "targettype": "Bool",
+                  "value": {
+                    "type": "Bool"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "attr_difficulttraitlimit_postbeach": {
+              "attribute": "Attr_DifficultTraitLimit_PostBeach",
+              "value": {
+                "structtype": "Asset'/Script/GbxGame.GbxCondition_Fact'",
+                "address": "missions.missionset_main_beach.mission_main_beach.status",
+                "value": "Completed"
+              }
+            }
+          },
+          {
+            "attr_element_globalbaseline": {
+              "attribute": "Attr_Element_GlobalBaseline",
+              "value": {
+                "structtype": "Asset'/Script/GbxEngine.GbxConditionalAttributeValueResolver'",
+                "defaultvalue": {
+                  "attribute": "attribute'Attr_Element_GlobalBaseline_None'"
+                },
+                "conditionalvalues": [
+                  {
+                    "value": {
+                      "attribute": "attribute'Attr_Element_GlobalBaseline_High'"
+                    },
+                    "condition": {
+                      "type": "ValueResolver",
+                      "inlinestruct": {
+                        "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
+                        "expression": {
+                          "variables": {
+                            "variablevalues": {
+                              "pairs": {
+                                "pair3090493939": {
+                                  "key": "Attr_Infamy_Global_Capped",
+                                  "value": {
+                                    "targettype": "Float",
+                                    "value": {
+                                      "type": "Attribute",
+                                      "value": "attribute'Attr_Infamy_Global_Capped'"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "formula": "Attr_Infamy_Global_Capped > 6"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "value": {
+                      "attribute": "attribute'Attr_Element_GlobalBaseline_Med'"
+                    },
+                    "condition": {
+                      "type": "ValueResolver",
+                      "inlinestruct": {
+                        "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
+                        "expression": {
+                          "variables": {
+                            "variablevalues": {
+                              "pairs": {
+                                "pair3090493939": {
+                                  "key": "Attr_Infamy_Global_Capped",
+                                  "value": {
+                                    "targettype": "Float",
+                                    "value": {
+                                      "type": "Attribute",
+                                      "value": "attribute'Attr_Infamy_Global_Capped'"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "formula": "Attr_Infamy_Global_Capped > 3"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "value": {
+                      "attribute": "attribute'Attr_Element_GlobalBaseline_Low'"
+                    },
+                    "condition": {
+                      "type": "ValueResolver",
+                      "inlinestruct": {
+                        "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
+                        "expression": {
+                          "variables": {
+                            "variablevalues": {
+                              "pairs": {
+                                "pair3090493939": {
+                                  "key": "Attr_Infamy_Global_Capped",
+                                  "value": {
+                                    "targettype": "Float",
+                                    "value": {
+                                      "type": "Attribute",
+                                      "value": "attribute'Attr_Infamy_Global_Capped'"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "formula": "Attr_Infamy_Global_Capped > 0"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "attr_element_globalbaseline_high": {
+              "attribute": "Attr_Element_GlobalBaseline_High",
+              "value": {
+                "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
+                "expression": {
+                  "formula": ".25"
+                }
+              }
+            }
+          },
+          {
+            "attr_element_globalbaseline_low": {
+              "attribute": "Attr_Element_GlobalBaseline_Low",
+              "value": {
+                "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
+                "expression": {
+                  "formula": ".15"
+                }
+              }
+            }
+          },
+          {
+            "attr_element_globalbaseline_med": {
+              "attribute": "Attr_Element_GlobalBaseline_Med",
+              "value": {
+                "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
+                "expression": {
+                  "formula": ".2"
+                }
+              }
+            }
+          },
+          {
+            "attr_element_globalbaseline_none": {
+              "attribute": "Attr_Element_GlobalBaseline_None",
+              "value": {
+                "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
+                "expression": {
+                  "formula": ".1"
+                }
+              }
+            }
+          },
+          {
+            "attr_element_specificbaseline": {
+              "attribute": "Attr_Element_SpecificBaseline",
+              "value": {
+                "structtype": "Asset'/Script/GbxEngine.GbxConditionalAttributeValueResolver'",
+                "defaultvalue": {
+                  "attribute": "attribute'Attr_Element_SpecificBaseline_None'"
+                },
+                "conditionalvalues": [
+                  {
+                    "value": {
+                      "attribute": "attribute'Attr_Element_SpecificBaseline_High'"
+                    },
+                    "condition": {
+                      "type": "ValueResolver",
+                      "inlinestruct": {
+                        "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
+                        "expression": {
+                          "variables": {
+                            "variablevalues": {
+                              "pairs": {
+                                "pair3090493939": {
+                                  "key": "Attr_Infamy_Global_Capped",
+                                  "value": {
+                                    "targettype": "Float",
+                                    "value": {
+                                      "type": "Attribute",
+                                      "value": "attribute'Attr_Infamy_Global_Capped'"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "formula": "Attr_Infamy_Global_Capped > 6"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "value": {
+                      "attribute": "attribute'Attr_Element_SpecificBaseline_Med'"
+                    },
+                    "condition": {
+                      "type": "ValueResolver",
+                      "inlinestruct": {
+                        "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
+                        "expression": {
+                          "variables": {
+                            "variablevalues": {
+                              "pairs": {
+                                "pair3090493939": {
+                                  "key": "Attr_Infamy_Global_Capped",
+                                  "value": {
+                                    "targettype": "Float",
+                                    "value": {
+                                      "type": "Attribute",
+                                      "value": "attribute'Attr_Infamy_Global_Capped'"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "formula": "Attr_Infamy_Global_Capped > 3"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "value": {
+                      "attribute": "attribute'Attr_Element_SpecificBaseline_Low'"
+                    },
+                    "condition": {
+                      "type": "ValueResolver",
+                      "inlinestruct": {
+                        "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
+                        "expression": {
+                          "variables": {
+                            "variablevalues": {
+                              "pairs": {
+                                "pair3090493939": {
+                                  "key": "Attr_Infamy_Global_Capped",
+                                  "value": {
+                                    "targettype": "Float",
+                                    "value": {
+                                      "type": "Attribute",
+                                      "value": "attribute'Attr_Infamy_Global_Capped'"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "formula": "Attr_Infamy_Global_Capped > 0"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "attr_element_specificbaseline_high": {
+              "attribute": "Attr_Element_SpecificBaseline_High",
+              "value": {
+                "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
+                "expression": {
+                  "formula": ".45"
+                }
+              }
+            }
+          },
+          {
+            "attr_element_specificbaseline_low": {
+              "attribute": "Attr_Element_SpecificBaseline_Low",
+              "value": {
+                "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
+                "expression": {
+                  "formula": ".25"
+                }
+              }
+            }
+          },
+          {
+            "attr_element_specificbaseline_med": {
+              "attribute": "Attr_Element_SpecificBaseline_Med",
+              "value": {
+                "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
+                "expression": {
+                  "formula": ".35"
+                }
+              }
+            }
+          },
+          {
+            "attr_element_specificbaseline_none": {
+              "attribute": "Attr_Element_SpecificBaseline_None",
+              "value": {
+                "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
+                "expression": {
+                  "formula": ".15"
+                }
+              }
+            }
+          },
+          {
+            "attr_infamy_global_capped": {
+              "attribute": "Attr_Infamy_Global_Capped",
+              "value": {
+                "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
+                "expression": {
+                  "variables": {
+                    "variablevalues": {
+                      "pairs": {
+                        "pair2908710145": {
+                          "key": "Attr_Infamy_Region_GRA_Capped",
+                          "value": {
+                            "targettype": "Float",
+                            "value": {
+                              "type": "Attribute",
+                              "value": "attribute'Attr_Infamy_Region_GRA_Capped'"
+                            }
+                          }
+                        },
+                        "pair2180610700": {
+                          "key": "Attr_Infamy_Region_MOU_Capped",
+                          "value": {
+                            "targettype": "Float",
+                            "value": {
+                              "type": "Attribute",
+                              "value": "attribute'Attr_Infamy_Region_MOU_Capped'"
+                            }
+                          }
+                        },
+                        "pair961642713": {
+                          "key": "Attr_Infamy_Region_SHA_Capped",
+                          "value": {
+                            "targettype": "Float",
+                            "value": {
+                              "type": "Attribute",
+                              "value": "attribute'Attr_Infamy_Region_SHA_Capped'"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "formula": "Attr_Infamy_Region_GRA_Capped+Attr_Infamy_Region_MOU_Capped+Attr_Infamy_Region_SHA_Capped"
+                }
+              }
+            }
+          },
+          {
+            "attr_infamy_global_pct": {
+              "attribute": "Attr_Infamy_Global_Pct",
+              "value": {
+                "structtype": "Asset'/Script/OakGame.OakWorldInfamyValueResolver'",
+                "source": "World",
+                "worldregion": "game_region'city'"
+              }
+            }
+          },
+          {
+            "attr_infamy_localcap": {
+              "attribute": "Attr_Infamy_LocalCap",
+              "value": {
+                "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
+                "expression": "3"
+              }
+            }
+          },
+          {
+            "attr_infamy_region_city_pct": {
+              "attribute": "Attr_Infamy_Region_CITY_Pct",
+              "value": {
+                "structtype": "Asset'/Script/OakGame.OakWorldInfamyValueResolver'",
+                "source": "Region",
+                "worldregion": "game_region'city'"
+              }
+            }
+          },
+          {
+            "attr_infamy_region_gra": {
+              "attribute": "Attr_Infamy_Region_GRA",
+              "value": {
+                "structtype": "Asset'/Script/OakGame.OakWorldInfamyValueResolver'",
+                "valuetype": "Level",
+                "source": "Region",
+                "worldregion": "game_region'grasslands'"
+              }
+            }
+          },
+          {
+            "attr_infamy_region_gra_capped": {
+              "attribute": "Attr_Infamy_Region_GRA_Capped",
+              "value": {
+                "structtype": "Asset'/Script/GbxEngine.GbxConditionalAttributeValueResolver'",
+                "defaultvalue": {
+                  "attribute": "attribute'Attr_Infamy_Region_GRA'"
+                },
+                "conditionalvalues": [
+                  {
+                    "value": {
+                      "attribute": "attribute'Attr_Infamy_LocalCap'"
+                    },
+                    "condition": {
+                      "type": "ValueResolver",
+                      "inlinestruct": {
+                        "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
+                        "expression": {
+                          "variables": {
+                            "variablevalues": {
+                              "pairs": {
+                                "pair3617999638": {
+                                  "key": "Attr_Infamy_Region_GRA",
+                                  "value": {
+                                    "targettype": "Float",
+                                    "value": {
+                                      "type": "Attribute",
+                                      "value": "attribute'Attr_Infamy_Region_GRA'"
+                                    }
+                                  }
+                                },
+                                "pair1727762082": {
+                                  "key": "Attr_Infamy_LocalCap",
+                                  "value": {
+                                    "targettype": "Float",
+                                    "value": {
+                                      "type": "Attribute",
+                                      "value": "attribute'Attr_Infamy_LocalCap'"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "formula": "Attr_Infamy_Region_GRA >= Attr_Infamy_LocalCap"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "attr_infamy_region_mou": {
+              "attribute": "Attr_Infamy_Region_MOU",
+              "value": {
+                "structtype": "Asset'/Script/OakGame.OakWorldInfamyValueResolver'",
+                "valuetype": "Level",
+                "source": "Region",
+                "worldregion": "game_region'mountains'"
+              }
+            }
+          },
+          {
+            "attr_infamy_region_mou_capped": {
+              "attribute": "Attr_Infamy_Region_MOU_Capped",
+              "value": {
+                "structtype": "Asset'/Script/GbxEngine.GbxConditionalAttributeValueResolver'",
+                "defaultvalue": {
+                  "attribute": "attribute'Attr_Infamy_Region_MOU'"
+                },
+                "conditionalvalues": [
+                  {
+                    "value": {
+                      "attribute": "attribute'Attr_Infamy_LocalCap'"
+                    },
+                    "condition": {
+                      "type": "ValueResolver",
+                      "inlinestruct": {
+                        "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
+                        "expression": {
+                          "variables": {
+                            "variablevalues": {
+                              "pairs": {
+                                "pair2009548507": {
+                                  "key": "Attr_Infamy_Region_MOU",
+                                  "value": {
+                                    "targettype": "Float",
+                                    "value": {
+                                      "type": "Attribute",
+                                      "value": "attribute'Attr_Infamy_Region_MOU'"
+                                    }
+                                  }
+                                },
+                                "pair1727762082": {
+                                  "key": "Attr_Infamy_LocalCap",
+                                  "value": {
+                                    "targettype": "Float",
+                                    "value": {
+                                      "type": "Attribute",
+                                      "value": "attribute'Attr_Infamy_LocalCap'"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "formula": "Attr_Infamy_Region_MOU >= Attr_Infamy_LocalCap"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "attr_infamy_region_sha": {
+              "attribute": "Attr_Infamy_Region_SHA",
+              "value": {
+                "structtype": "Asset'/Script/OakGame.OakWorldInfamyValueResolver'",
+                "valuetype": "Level",
+                "source": "Region",
+                "worldregion": "game_region'shatteredlands'"
+              }
+            }
+          },
+          {
+            "attr_infamy_region_sha_capped": {
+              "attribute": "Attr_Infamy_Region_SHA_Capped",
+              "value": {
+                "structtype": "Asset'/Script/GbxEngine.GbxConditionalAttributeValueResolver'",
+                "defaultvalue": {
+                  "attribute": "attribute'Attr_Infamy_Region_SHA'"
+                },
+                "conditionalvalues": [
+                  {
+                    "value": {
+                      "attribute": "attribute'Attr_Infamy_LocalCap'"
+                    },
+                    "condition": {
+                      "type": "ValueResolver",
+                      "inlinestruct": {
+                        "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
+                        "expression": {
+                          "variables": {
+                            "variablevalues": {
+                              "pairs": {
+                                "pair238839119": {
+                                  "key": "Attr_Infamy_Region_SHA",
+                                  "value": {
+                                    "targettype": "Float",
+                                    "value": {
+                                      "type": "Attribute",
+                                      "value": "attribute'Attr_Infamy_Region_SHA'"
+                                    }
+                                  }
+                                },
+                                "pair1727762082": {
+                                  "key": "Attr_Infamy_LocalCap",
+                                  "value": {
+                                    "targettype": "Float",
+                                    "value": {
+                                      "type": "Attribute",
+                                      "value": "attribute'Attr_Infamy_LocalCap'"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "formula": "Attr_Infamy_Region_SHA >= Attr_Infamy_LocalCap"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "attr_uvhm_enabled": {
+              "attribute": "Attr_UVHM_Enabled",
+              "value": {
+                "structtype": "Asset'/Script/GbxEngine.GbxConditionalAttributeValueResolver'",
+                "conditionalvalues": [
+                  {
+                    "value": {
+                      "constant": "1.000000"
+                    },
+                    "condition": {
+                      "type": "ValueResolver",
+                      "inlinestruct": {
+                        "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
+                        "expression": {
+                          "variables": {
+                            "variablevalues": {
+                              "pairs": {
+                                "pair2737802860": {
+                                  "key": "Attr_UVHM_Level",
+                                  "value": {
+                                    "targettype": "Float",
+                                    "value": {
+                                      "type": "Attribute",
+                                      "value": "attribute'Attr_UVHM_Level'"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "formula": "Attr_UVHM_Level > 0"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "attr_uvhm_level": {
+              "attribute": "Attr_UVHM_Level",
+              "context": {
+                "structtype": "Asset'/Script/GbxEngine.GameStateContextResolver'"
+              },
+              "value": {
+                "structtype": "Asset'/Script/GbxEngine.PropertyValueResolver'",
+                "propertysupportsmodifierremoval": "true",
+                "property": {
+                  "propertypath": "VaultHunterLevel"
+                },
+                "resolvedtype": "Int"
+              }
+            }
+          },
+          {
+            "echo4_hoverinview_maxrange": {
+              "attribute": "Echo4_HoverInView_MaxRange",
+              "value": {
+                "structtype": "Asset'/Script/OakGame.OakEcho4ValueResolver'",
+                "value": "Echo4HoverRadius",
+                "walkradius": "650.000000",
+                "sprintradius": "900.000000"
+              }
+            }
+          },
+          {
+            "echo4_hoverinview_minrange": {
+              "attribute": "Echo4_HoverInView_MinRange",
+              "value": {
+                "structtype": "Asset'/Script/OakGame.OakEcho4ValueResolver'",
+                "value": "Echo4HoverRadius",
+                "sprintradius": "850.000000"
+              }
+            }
+          },
+          {
+            "player_echo4panel_canuse": {
+              "attribute": "player_Echo4Panel_CanUse",
+              "value": {
+                "structtype": "Asset'/Script/OakGame.OakEcho4ValueResolver'"
               }
             }
           }
@@ -63524,27 +60757,10 @@
       {
         "entries": [
           {
-            "attr_vehicle_is_pv_cityorder": {
-              "attribute": "Attr_Vehicle_Is_PV_CityOrder",
-              "context": {
-                "structtype": "Asset'none'"
-              },
-              "value": {
-                "structtype": "Asset'/Script/OakGame.GbxCondition_PersonalVehicleDef'",
-                "statedef": "skill_state''",
-                "actordef": "gbxactor'PV_CityOrder'"
-              }
-            }
-          }
-        ]
-      },
-      {
-        "entries": [
-          {
             "attr_vehicle_is_pv_mountain": {
               "attribute": "Attr_Vehicle_Is_PV_Mountain",
               "context": {
-                "structtype": "Asset'none'"
+                "structtype": "Asset'/Script/OakGame.OakVehicleContextResolver'"
               },
               "value": {
                 "structtype": "Asset'/Script/OakGame.GbxCondition_PersonalVehicleDef'",

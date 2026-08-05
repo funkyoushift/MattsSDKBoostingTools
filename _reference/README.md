@@ -8,6 +8,8 @@ Small pieces kept in-repo for look-back, not day-to-day product paths.
 | [`docs/`](docs/) | Historical architecture / one-shot review markdown |
 | [`CODE_HYGIENE.md`](CODE_HYGIENE.md) | Deferred vs done cleanup chips |
 
+Related helper (not under `_reference/`): [`tools/NearbyDump/`](../tools/NearbyDump/) — BL4 folder mod that dumps nearby live object paths for Dev Spawner / DLC coin hunting.
+
 Bulk research dumps, peeks, and build scratch live outside this repo in:
 
 `C:\Users\mwenn\Desktop\MSBT_Codex_Work\_msbt_archive\`

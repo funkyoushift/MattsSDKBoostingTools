@@ -8240,6 +8240,83 @@
             }
           },
           {
+            "att_se_dps_bleed": {
+              "attribute": "Att_SE_DPS_Bleed",
+              "value": {
+                "structtype": "Asset'/Script/OakGame.OakStatusEffectApplicationDefaultsValueResolver'",
+                "datatable": "gbx_ue_data_table'Status_Application_Defaults'",
+                "rowname": "Default",
+                "property": "DPS"
+              }
+            }
+          },
+          {
+            "att_se_dps_corrosive": {
+              "attribute": "Att_SE_DPS_Corrosive",
+              "value": {
+                "structtype": "Asset'/Script/OakGame.OakStatusEffectApplicationDefaultsValueResolver'",
+                "datatable": "gbx_ue_data_table'Status_Application_Defaults'",
+                "rowname": "Corrosive",
+                "property": "DPS"
+              }
+            }
+          },
+          {
+            "att_se_dps_cryo": {
+              "attribute": "Att_SE_DPS_Cryo",
+              "value": {
+                "structtype": "Asset'/Script/OakGame.OakStatusEffectApplicationDefaultsValueResolver'",
+                "datatable": "gbx_ue_data_table'Status_Application_Defaults'",
+                "rowname": "Cryo",
+                "property": "DPS"
+              }
+            }
+          },
+          {
+            "att_se_dps_fire": {
+              "attribute": "Att_SE_DPS_Fire",
+              "value": {
+                "structtype": "Asset'/Script/OakGame.OakStatusEffectApplicationDefaultsValueResolver'",
+                "datatable": "gbx_ue_data_table'Status_Application_Defaults'",
+                "rowname": "Fire",
+                "property": "DPS"
+              }
+            }
+          },
+          {
+            "att_se_dps_radiation": {
+              "attribute": "Att_SE_DPS_Radiation",
+              "value": {
+                "structtype": "Asset'/Script/OakGame.OakStatusEffectApplicationDefaultsValueResolver'",
+                "datatable": "gbx_ue_data_table'Status_Application_Defaults'",
+                "rowname": "Radiation",
+                "property": "DPS"
+              }
+            }
+          },
+          {
+            "att_se_dps_shock": {
+              "attribute": "Att_SE_DPS_Shock",
+              "value": {
+                "structtype": "Asset'/Script/OakGame.OakStatusEffectApplicationDefaultsValueResolver'",
+                "datatable": "gbx_ue_data_table'Status_Application_Defaults'",
+                "rowname": "Shock",
+                "property": "DPS"
+              }
+            }
+          },
+          {
+            "att_se_duration_bleed": {
+              "attribute": "Att_SE_Duration_Bleed",
+              "value": {
+                "structtype": "Asset'/Script/OakGame.OakStatusEffectApplicationDefaultsValueResolver'",
+                "datatable": "gbx_ue_data_table'Status_Application_Defaults'",
+                "rowname": "Default",
+                "property": "Duration"
+              }
+            }
+          },
+          {
             "att_se_duration_corrosive": {
               "attribute": "Att_SE_Duration_Corrosive",
               "value": {
@@ -8923,18 +9000,6 @@
               "value": {
                 "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
                 "expression": "attr(caused_damage_radiation_multiplier) + attr(caused_damage_elemental_multiplier) - 1"
-              }
-            }
-          },
-          {
-            "calc_eridium_pickup": {
-              "attribute": "calc_eridium_pickup",
-              "context": {
-                "structtype": "Asset'/Script/GbxEngine.ActorContextResolver'"
-              },
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
-                "expression": "1 * attr(Att_PickupEridium_Multiplier)"
               }
             }
           },
@@ -10297,18 +10362,6 @@
               },
               "context": {
                 "structtype": "Asset'/Script/OakGame.CharacterContextResolver'"
-              }
-            }
-          },
-          {
-            "goldenkeys_held": {
-              "attribute": "goldenkeys_held",
-              "context": {
-                "structtype": "Asset'/Script/GbxGame.GbxPlayerControllerContextResolver'"
-              },
-              "value": {
-                "structtype": "Asset'/Script/GbxGame.GbxCurrencyValueResolver'",
-                "currencytypename": "golden_key"
               }
             }
           },
@@ -13019,23 +13072,6 @@
                 "structtype": "Asset'/Script/OakGame.GbxCondition_WeaponPartValue'",
                 "type": "Melee",
                 "binvert": "true"
-              }
-            }
-          },
-          {
-            "weapon_has_pearl_tag": {
-              "attribute": "weapon_has_pearl_tag",
-              "context": {
-                "structtype": "Asset'/Script/GbxWeapon.WeaponAttributeContextResolver'"
-              },
-              "value": {
-                "structtype": "Asset'/Script/GbxGame.GbxCondition_HasInventoryTag'",
-                "bmusthavealltags": "true",
-                "tags": [
-                  {
-                    "pearlescent": "pearlescent"
-                  }
-                ]
               }
             }
           },
@@ -16983,14 +17019,44 @@
             }
           },
           {
-            "attr_vehicle_is_pv_shatterland_v2": {
-              "attribute": "Attr_Vehicle_Is_PV_Shatterland_V2",
+            "attr_vehicle_is_pv_stingray": {
+              "attribute": "Attr_Vehicle_Is_PV_Stingray",
               "context": {
                 "structtype": "Asset'/Script/GbxGame.GbxSkillContextResolver'"
               },
               "value": {
                 "structtype": "Asset'/Script/GbxGame.GbxCondition_SkillState'",
                 "statedef": "skill_state'S_General_Active'"
+              }
+            }
+          },
+          {
+            "calc_attr_weapon_shield_capacity_testament": {
+              "attribute": "calc_attr_weapon_shield_capacity_Testament",
+              "value": {
+                "structtype": "Asset'/Script/GbxGame.BalanceFormulaValueResolver'",
+                "multiplier": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Weapon'",
+                    "rowname": "weapon_shield_base"
+                  }
+                },
+                "level": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'General'",
+                    "rowname": "universal_balance_scalar"
+                  }
+                },
+                "power": {
+                  "attribute": "attribute'weapon_level'"
+                },
+                "scalar": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Weapon_Unique_Init_Harp'",
+                    "rowname": "ORD_AR_Testament",
+                    "columnname": "Value_2_70_435CE4B14BED79682FC94FB100E4B857"
+                  }
+                }
               }
             }
           },
@@ -17010,6 +17076,48 @@
                 },
                 "level": {
                   "attribute": "attribute'attr_fishward_current_stacks'"
+                },
+                "power": {
+                  "constant": "1.000000"
+                }
+              }
+            }
+          },
+          {
+            "calc_hydrowerks_damage": {
+              "attribute": "calc_hydrowerks_damage",
+              "value": {
+                "structtype": "Asset'/Script/GbxGame.BalanceFormulaValueResolver'",
+                "multiplier": {
+                  "attribute": "attribute'player_shield_damage_formula'"
+                },
+                "level": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Unique_Shield_Armor_Harp'",
+                    "rowname": "TOR_Hydrowerks",
+                    "columnname": "Value_2_100_0608396B4FCD88C5AD645B82A8827B25"
+                  }
+                },
+                "power": {
+                  "constant": "1.000000"
+                }
+              }
+            }
+          },
+          {
+            "calc_hydrowerks_shield": {
+              "attribute": "calc_hydrowerks_shield",
+              "value": {
+                "structtype": "Asset'/Script/GbxGame.BalanceFormulaValueResolver'",
+                "multiplier": {
+                  "attribute": "attribute'player_shield_damage_formula'"
+                },
+                "level": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Unique_Shield_Armor_Harp'",
+                    "rowname": "TOR_Hydrowerks",
+                    "columnname": "Value_1_99_69E441E543482BCED8E266B8CA41F7DE"
+                  }
                 },
                 "power": {
                   "constant": "1.000000"
@@ -17421,6 +17529,44 @@
               "value": {
                 "structtype": "Asset'/Script/OakGame.DLCEntitlementValueResolver'",
                 "dlc": "DLCDef'DLCDef_Harmonica'",
+                "bchecksession": "true"
+              }
+            }
+          },
+          {
+            "entitlement_harp": {
+              "attribute": "Entitlement_Harp",
+              "context": {
+                "structtype": "Asset'/Script/GbxEngine.ActorContextResolver'"
+              },
+              "value": {
+                "structtype": "Asset'/Script/OakGame.DLCEntitlementValueResolver'",
+                "dlc": "DLCDef'DLCDef_Harp'"
+              }
+            }
+          },
+          {
+            "entitlement_harp_local": {
+              "attribute": "Entitlement_Harp_Local",
+              "context": {
+                "structtype": "Asset'/Script/GbxEngine.ActorContextResolver'"
+              },
+              "value": {
+                "structtype": "Asset'/Script/OakGame.DLCEntitlementValueResolver'",
+                "dlc": "DLCDef'DLCDef_Harp'",
+                "bchecklocal": "true"
+              }
+            }
+          },
+          {
+            "entitlement_harp_session": {
+              "attribute": "Entitlement_Harp_Session",
+              "context": {
+                "structtype": "Asset'/Script/GbxEngine.ActorContextResolver'"
+              },
+              "value": {
+                "structtype": "Asset'/Script/OakGame.DLCEntitlementValueResolver'",
+                "dlc": "DLCDef'DLCDef_Harp'",
                 "bchecksession": "true"
               }
             }
@@ -18225,6 +18371,27 @@
             }
           },
           {
+            "tor_hw_barrel_loiter_damage": {
+              "attribute": "tor_hw_barrel_Loiter_damage",
+              "value": {
+                "structtype": "Asset'/Script/GbxGame.BalanceFormulaValueResolver'",
+                "multiplier": {
+                  "attribute": "attribute'gadget_heavy_damage_formula'"
+                },
+                "level": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Unique_HW_Barrels'",
+                    "rowname": "TOR_Javelin",
+                    "columnname": "Damage_Scale"
+                  }
+                },
+                "power": {
+                  "constant": "1.000000"
+                }
+              }
+            }
+          },
+          {
             "tor_sg_unstable_stickydamage": {
               "attribute": "TOR_SG_Unstable_StickyDamage",
               "value": {
@@ -18270,30 +18437,6 @@
                 }
               }
             }
-          },
-          {
-            "weapon_damage_mode_02": {
-              "attribute": "weapon_damage_mode_02",
-              "context": {
-                "structtype": "Asset'/Script/GbxWeapon.WeaponAttributeContextResolver'",
-                "behaviortypetofurtherresolveto": "Asset'/Script/GbxWeapon.WeaponBehavior_Fire'",
-                "usemodebitmask": "2"
-              },
-              "value": {
-                "structtype": "Asset'/Script/GbxEngine.PropertyValueResolver'",
-                "propertysupportsmodifierremoval": "true",
-                "property": {
-                  "parsedpath": {
-                    "0": {
-                      "propertyname": "Damage"
-                    }
-                  },
-                  "parsedpathlength": "1",
-                  "propertypath": "Damage"
-                },
-                "resolvedtype": "Float"
-              }
-            }
           }
         ]
       },
@@ -18308,18 +18451,6 @@
                   "value": "Float.10.000000"
                 },
                 "structtype": "Asset'/Script/GbxEngine.GbxBlackboardValueResolver'"
-              }
-            }
-          },
-          {
-            "golden_keys_held": {
-              "attribute": "golden_keys_held",
-              "value": {
-                "currencytypename": "capital'golden_key'",
-                "structtype": "Asset'/Script/GbxGame.GbxCurrencyValueResolver'"
-              },
-              "context": {
-                "structtype": "Asset'/Script/GbxGame.GbxPlayerControllerContextResolver'"
               }
             }
           }

@@ -21,32 +21,6 @@
             }
           },
           {
-            "tooltip_abandon_takedown": {
-              "uitooltipdata": "tooltip_abandon_takedown",
-              "body": "PauseMenu, AbandonTakedownDescriptionText, Abandon the Takedown mission.",
-              "hintentries": [
-                {
-                  "input_action": "action_ui_cursor_click",
-                  "displaydata": "display_data'SelectText'"
-                }
-              ],
-              "type": "Asset'/Script/GbxUICoherent.ToolTipDataDef'"
-            }
-          },
-          {
-            "tooltip_abandon_true_activity": {
-              "uitooltipdata": "tooltip_abandon_true_activity",
-              "body": "PauseMenu, AbandonTrueReplayDescriptionText, Abandon the Ordonite Fracture mission.",
-              "hintentries": [
-                {
-                  "input_action": "action_ui_cursor_click",
-                  "displaydata": "display_data'SelectText'"
-                }
-              ],
-              "type": "Asset'/Script/GbxUICoherent.ToolTipDataDef'"
-            }
-          },
-          {
             "tooltip_action_skill": {
               "uitooltipdata": "tooltip_action_skill",
               "header": "tooltips_skills, 1ECF36C64D287094CB26F5B814B08BAF, Name",
@@ -802,20 +776,6 @@
             }
           },
           {
-            "tooltip_truemode_disabled": {
-              "uitooltipdata": "tooltip_truemode_disabled",
-              "body": "PauseMenu, FBEE28654563A7A383545F9A9E42BF33, You can not change UVH levels at this time.",
-              "type": "Asset'/Script/GbxUICoherent.ToolTipDataDef'"
-            }
-          },
-          {
-            "tooltip_uvh_disabled": {
-              "uitooltipdata": "tooltip_uvh_disabled",
-              "body": "PauseMenu, 25BF26B74425EC0EACE2758BEC86559D, You can not change UVH levels at this time.",
-              "type": "Asset'/Script/GbxUICoherent.ToolTipDataDef'"
-            }
-          },
-          {
             "tooltip_vault_hunter_level": {
               "uitooltipdata": "tooltip_vault_hunter_level",
               "body": "GameSettings, GameSettingsVaultHunterLevelText, Select an Ultimate Vault Hunter rank for your game. NOTE: You must be at your highest current UVH rank to access the Wildcard rank-up mission.",
@@ -899,36 +859,6 @@
                 }
               ],
               "type": "Asset'/Script/OakGame.OakUISkillTooltipDataDef'"
-            }
-          },
-          {
-            "tooltip_shared_progression_off": {
-              "uitooltipdata": "tooltip_shared_progression_off",
-              "header": "menu_new_game, CD77EF774E3DD3C8114CD3A188C6732C, Off",
-              "body": "menu_new_game, 1512B668483B75A10BF0728139B9A99D, This character will start fresh with minimal [secondary]unlocks[/secondary]  and  [secondary]discoveries[/secondary] carrying over.[newline][newline][newline][warning][warning_text]Warning: This cannot be undone.[/warning_text]",
-              "image": "Asset'/Game/uiresources/menu_new_game/assets/ui_art_asset/shared_progression_off_bg.shared_progression_off_bg'",
-              "hintentries": [
-                {
-                  "input_action": "action_ui_cursor_click",
-                  "displaydata": "display_data'SelectText'"
-                }
-              ],
-              "type": "/Script/OakGame.OakUITooltipDataDef"
-            }
-          },
-          {
-            "tooltip_shared_progression_on": {
-              "uitooltipdata": "tooltip_shared_progression_on",
-              "header": "menu_new_game, EB171A5D4D675EE3C18114A6D9AA2172, On",
-              "body": "menu_new_game, AA3266A549E717056CA98AAB4EDE4FFE, This character inherits [secondary]Collectibles, Activities, Map Progress, SDU Tokens, Vault Powers, Vehicle Skins[/secondary] and [secondary]Hover Drives[/secondary]. [newline][newline][secondary]Fast Travel[/secondary] locations require campaign progress to unlock, even if revealed.[newline][newline][newline][warning][warning_text]Warning: This cannot be undone.[/warning_text]",
-              "image": "Asset'/Game/uiresources/menu_new_game/assets/ui_art_asset/shared_progression_on_bg.shared_progression_on_bg'",
-              "hintentries": [
-                {
-                  "input_action": "action_ui_cursor_click",
-                  "displaydata": "display_data'SelectText'"
-                }
-              ],
-              "type": "/Script/OakGame.OakUITooltipDataDef"
             }
           }
         ]

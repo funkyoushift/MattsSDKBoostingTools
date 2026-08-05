@@ -12259,6 +12259,23 @@
             }
           },
           {
+            "itempool_circleofslaughter_standard_fivepieces": {
+              "itempool": "itempool_circleofslaughter_standard_fivepieces",
+              "items": [
+                {
+                  "item": {
+                    "criteria": {
+                      "preset": "criteria_preset'LootPreset_CircleOfSlaughter_Standard'"
+                    }
+                  }
+                }
+              ],
+              "quantity": {
+                "constant": "5.000000"
+              }
+            }
+          },
+          {
             "itempool_classmods_tuba": {
               "itempool": "itempool_ClassMods_Tuba",
               "items": [
@@ -12960,6 +12977,75 @@
             }
           },
           {
+            "itempool_jak_sg_05_legendary_verce_shiny": {
+              "itempool": "itempool_JAK_sg_05_legendary_Verce_shiny",
+              "items": [
+                {
+                  "item": {
+                    "item": {
+                      "handle": "inv'JAK_SG.comp_05_legendary_Verce'"
+                    }
+                  }
+                }
+              ],
+              "mingamestage": "attribute'Att_MinGameStage_WeaponType_Shotgun'",
+              "customizationlist": [
+                {
+                  "probability": {
+                    "attribute": "attribute'attr_is_story_complete'"
+                  },
+                  "customization": "inv_custom'Cosmetics_Weapon_Shiny_Verce'"
+                }
+              ]
+            }
+          },
+          {
+            "itempool_jak_sr_legendary_burrow_shiny": {
+              "itempool": "itempool_jak_sr_legendary_Burrow_shiny",
+              "items": [
+                {
+                  "item": {
+                    "item": {
+                      "handle": "inv'JAK_SR.comp_05_legendary_fearstalker'"
+                    }
+                  }
+                }
+              ],
+              "mingamestage": "attribute'Att_MinGameStage_WeaponType_SniperRifle'",
+              "customizationlist": [
+                {
+                  "probability": {
+                    "attribute": "attribute'attr_is_story_complete'"
+                  },
+                  "customization": "inv_custom'Cosmetics_Weapon_Shiny_Burrow'"
+                }
+              ]
+            }
+          },
+          {
+            "itempool_jak_sr_legendary_extinction_shiny": {
+              "itempool": "itempool_jak_sr_legendary_Extinction_shiny",
+              "items": [
+                {
+                  "item": {
+                    "item": {
+                      "handle": "inv'VLA_AR.comp_05_legendary_Extinction'"
+                    }
+                  }
+                }
+              ],
+              "mingamestage": "attribute'Att_MinGameStage_WEaponType_AssaultRifle'",
+              "customizationlist": [
+                {
+                  "probability": {
+                    "attribute": "attribute'attr_is_story_complete'"
+                  },
+                  "customization": "inv_custom'Cosmetics_Weapon_Shiny_Extinction'"
+                }
+              ]
+            }
+          },
+          {
             "itempool_mal_sg_05_legendary_crazedearl_shiny": {
               "itempool": "itempool_mal_sg_05_legendary_CrazedEarl_shiny",
               "items": [
@@ -13047,6 +13133,29 @@
                     "attribute": "attribute'attr_is_story_complete'"
                   },
                   "customization": "inv_custom'Cosmetics_Weapon_Shiny_roil'"
+                }
+              ]
+            }
+          },
+          {
+            "itempool_mal_sr_05_legendary_stealth_shiny": {
+              "itempool": "itempool_mal_sr_05_legendary_Stealth_shiny",
+              "items": [
+                {
+                  "item": {
+                    "item": {
+                      "handle": "inv'mal_sr.comp_05_legendary_stealth'"
+                    }
+                  }
+                }
+              ],
+              "mingamestage": "attribute'Att_MinGameStage_WeaponType_SniperRifle'",
+              "customizationlist": [
+                {
+                  "probability": {
+                    "attribute": "attribute'attr_is_story_complete'"
+                  },
+                  "customization": "inv_custom'Cosmetics_Weapon_Shiny_Stealth'"
                 }
               ]
             }
@@ -13257,7 +13366,7 @@
                 }
               ],
               "quantity": {
-                "constant": "30.000000"
+                "constant": "5.000000"
               }
             }
           },
@@ -13274,7 +13383,7 @@
                 }
               ],
               "quantity": {
-                "constant": "20.000000"
+                "constant": "3.000000"
               }
             }
           },
@@ -13289,10 +13398,7 @@
                     }
                   }
                 }
-              ],
-              "quantity": {
-                "constant": "10.000000"
-              }
+              ]
             }
           },
           {
@@ -13361,6 +13467,29 @@
             }
           },
           {
+            "itempool_ord_ar_05_legendary_pchonk_shiny": {
+              "itempool": "itempool_ord_ar_05_legendary_Pchonk_shiny",
+              "items": [
+                {
+                  "item": {
+                    "item": {
+                      "handle": "inv'ORD_AR.comp_05_legendary_PChonk'"
+                    }
+                  }
+                }
+              ],
+              "mingamestage": "attribute'Att_MinGameStage_WEaponType_AssaultRifle'",
+              "customizationlist": [
+                {
+                  "probability": {
+                    "attribute": "attribute'attr_is_story_complete'"
+                  },
+                  "customization": "inv_custom'Cosmetics_Weapon_Shiny_Pchonk'"
+                }
+              ]
+            }
+          },
+          {
             "itempool_ord_ps_05_legendary_rhythm_shiny": {
               "itempool": "itempool_ord_ps_05_legendary_Rhythm_shiny",
               "items": [
@@ -13404,6 +13533,36 @@
                   "customization": "inv_custom'Cosmetics_Weapon_Shiny_seamstress'"
                 }
               ]
+            }
+          },
+          {
+            "itempool_platinum_weapon_raid1": {
+              "itempool": "itempool_Platinum_Weapon_Raid1",
+              "items": [
+                {
+                  "item": {
+                    "item": {
+                      "handle": "inv'bor_sr.comp_05_legendary_rainmaker'"
+                    }
+                  },
+                  "weight": {
+                    "attribute": "attribute'Att_Loot_UVH_PrimaryScalar_Raid1'",
+                    "postscale": "5.000000"
+                  }
+                },
+                {
+                  "item": {
+                    "item": {
+                      "handle": "inv'JAK_SG.comp_06_pearl_Constable'"
+                    }
+                  },
+                  "weight": {
+                    "attribute": "attribute'Att_Loot_UVH_TertiaryScalar_Raid1'",
+                    "postscale": "0.500000"
+                  }
+                }
+              ],
+              "mingamestage": "attribute'Att_MinGameStage_ClassMod'"
             }
           },
           {

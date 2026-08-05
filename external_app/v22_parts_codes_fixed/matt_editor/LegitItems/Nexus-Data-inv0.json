@@ -38091,6 +38091,72 @@
                 }
               },
               {
+                "depTableName": "body_ele",
+                "depTableId": 18,
+                "depIndex": 16,
+                "part_radiation_testament": {
+                  "body_ele": "part_radiation_Testament",
+                  "mingamestage": {
+                    "attribute": "attribute'Att_MinGameStage_Element_Radiation'"
+                  },
+                  "weight": {
+                    "attribute": "attribute'attr_weight_weapon_elemental_radiation'"
+                  },
+                  "addtags": [
+                    {
+                      "elem": "elem"
+                    },
+                    {
+                      "radiation": "radiation"
+                    }
+                  ],
+                  "dependencytags": [
+                    {
+                      "uni_testament": "uni_Testament"
+                    }
+                  ],
+                  "exclusiontags": [
+                    {
+                      "elem": "elem"
+                    }
+                  ],
+                  "aspects": [
+                    {
+                      "parent": "inv_aspect'weapon_damage_type'",
+                      "impacteffect": "impact_effect'Radiation_Bullet'",
+                      "damagetype": "damagetype'Radiation'"
+                    },
+                    {
+                      "parent": "inv_aspect'weapon_element_material'",
+                      "vectorparameters": [
+                        {
+                          "name": "E_Elemental_Color",
+                          "value": {
+                            "r": "1.000000",
+                            "g": "0.670000"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "parent": "inv_aspect'weapon_audio_Mal_Mode1_Rad'"
+                    },
+                    {
+                      "parent": "inv_aspect'weapon_element_damage_scalar'"
+                    }
+                  ],
+                  "monetaryvaluemodifier": {
+                    "attribute": "attribute'attr_calc_pricemod_element'"
+                  },
+                  "serialindex": {
+                    "status": "Active",
+                    "index": "62",
+                    "_category": "inv_type",
+                    "_scope": "Sub"
+                  }
+                }
+              },
+              {
                 "depTableName": "pearl_elem",
                 "depTableId": 20,
                 "depIndex": 18,
@@ -38518,7 +38584,7 @@
                           }
                         },
                         {
-                          "stattagname": "magazine_size",
+                          "stattagname": "accuracy",
                           "modifiervalue": {
                             "constant": "-1.000000"
                           }

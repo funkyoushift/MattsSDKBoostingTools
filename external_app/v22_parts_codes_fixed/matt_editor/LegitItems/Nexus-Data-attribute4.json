@@ -34812,10 +34812,7 @@
               "value": {
                 "structtype": "Asset'/Script/GbxEngine.GbxConstantAttributeValueResolver'",
                 "attributeinit": {
-                  "constant": "10.000000",
-                  "datatablevalue": {
-                    "datatable": "gbx_ue_data_table'none'"
-                  }
+                  "constant": "-1.000000"
                 }
               }
             }
@@ -37264,6 +37261,18 @@
                     "datatable": "gbx_ue_data_table'none'"
                   }
                 }
+              }
+            }
+          },
+          {
+            "calc_eridium_pickup": {
+              "attribute": "calc_eridium_pickup",
+              "context": {
+                "structtype": "Asset'/Script/GbxEngine.ActorContextResolver'"
+              },
+              "value": {
+                "structtype": "Asset'/Script/GbxEngine.GbxExpressionValueResolver'",
+                "expression": "1 * attr(Att_PickupEridium_Multiplier)"
               }
             }
           },
@@ -43859,6 +43868,18 @@
               "value": {
                 "structtype": "Asset'/Script/GbxGame.InventoryStatsContainerValueResolver'",
                 "resolvedtype": "Float"
+              }
+            }
+          },
+          {
+            "goldenkeys_held": {
+              "attribute": "goldenkeys_held",
+              "context": {
+                "structtype": "Asset'/Script/GbxGame.GbxPlayerControllerContextResolver'"
+              },
+              "value": {
+                "structtype": "Asset'/Script/GbxGame.GbxCurrencyValueResolver'",
+                "currencytypename": "golden_key"
               }
             }
           },
@@ -50919,6 +50940,23 @@
             }
           },
           {
+            "weapon_has_pearl_tag": {
+              "attribute": "weapon_has_pearl_tag",
+              "context": {
+                "structtype": "Asset'/Script/GbxWeapon.WeaponAttributeContextResolver'"
+              },
+              "value": {
+                "structtype": "Asset'/Script/GbxGame.GbxCondition_HasInventoryTag'",
+                "bmusthavealltags": "true",
+                "tags": [
+                  {
+                    "pearlescent": "pearlescent"
+                  }
+                ]
+              }
+            }
+          },
+          {
             "weapon_is_charged": {
               "attribute": "weapon_is_charged",
               "context": {
@@ -51967,6 +52005,19 @@
             }
           },
           {
+            "att_burrow_ricochetcap": {
+              "attribute": "att_Burrow_RicochetCap",
+              "value": {
+                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
+                "datatablevalue": {
+                  "datatable": "gbx_ue_data_table'Weapon_Unique_Init_Harp'",
+                  "rowname": "JAK_SR_Burrow",
+                  "columnname": "Value_1_68_67DA482B483B02CAC87864955A611952"
+                }
+              }
+            }
+          },
+          {
             "att_calc_pld_cm_shockdamage_cowbell": {
               "attribute": "Att_Calc_PLD_CM_ShockDamage_Cowbell",
               "context": {
@@ -52081,6 +52132,70 @@
               "value": {
                 "structtype": "Asset'/Script/OakGame.GbxSkillTokenStackValueResolver'",
                 "stackdef": "skill_token_stack'TokenStack_Exo_Raid2'"
+              }
+            }
+          },
+          {
+            "att_extinction_dmgbonusscalar": {
+              "attribute": "att_Extinction_DMGBonusScalar",
+              "value": {
+                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
+                "datatablevalue": {
+                  "datatable": "gbx_ue_data_table'Weapon_Unique_Init_Harp'",
+                  "rowname": "VLA_AR_Extinction",
+                  "columnname": "Value_1_68_67DA482B483B02CAC87864955A611952"
+                }
+              }
+            }
+          },
+          {
+            "att_extinction_isatlasball": {
+              "attribute": "att_Extinction_IsAtlasBall",
+              "context": {
+                "structtype": "Asset'/Script/GbxGame.InventoryContextResolver'"
+              },
+              "value": {
+                "structtype": "Asset'/Script/GbxGame.GbxCondition_HasInventoryTag'",
+                "bmusthavealltags": "true",
+                "tags": [
+                  {
+                    "atlas_ball": "atlas_ball"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "att_extinction_isatlasdart": {
+              "attribute": "att_Extinction_IsAtlasDart",
+              "context": {
+                "structtype": "Asset'/Script/GbxGame.InventoryContextResolver'"
+              },
+              "value": {
+                "structtype": "Asset'/Script/GbxGame.GbxCondition_HasInventoryTag'",
+                "bmusthavealltags": "true",
+                "tags": [
+                  {
+                    "atlas_dart": "atlas_dart"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "att_extinction_isgrenade": {
+              "attribute": "att_Extinction_IsGrenade",
+              "context": {
+                "structtype": "Asset'/Script/GbxGame.InventoryContextResolver'"
+              },
+              "value": {
+                "structtype": "Asset'/Script/GbxGame.GbxCondition_HasInventoryTag'",
+                "bmusthavealltags": "true",
+                "tags": [
+                  {
+                    "underbarrel_grenade": "underbarrel_grenade"
+                  }
+                ]
               }
             }
           },
@@ -53091,6 +53206,45 @@
             }
           },
           {
+            "att_testament_radiationdmgscalar": {
+              "attribute": "att_Testament_RadiationDMGScalar",
+              "value": {
+                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
+                "datatablevalue": {
+                  "datatable": "gbx_ue_data_table'Weapon_Unique_Init_Harp'",
+                  "rowname": "ORD_AR_Testament",
+                  "columnname": "Value_3_72_5E425BA54AABD6722A79F085B44D814F"
+                }
+              }
+            }
+          },
+          {
+            "att_testament_reflectchance": {
+              "attribute": "att_Testament_ReflectChance",
+              "value": {
+                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
+                "datatablevalue": {
+                  "datatable": "gbx_ue_data_table'Weapon_Unique_Init_Harp'",
+                  "rowname": "ORD_AR_Testament",
+                  "columnname": "Value_1_68_67DA482B483B02CAC87864955A611952"
+                }
+              }
+            }
+          },
+          {
+            "att_testament_statusduration": {
+              "attribute": "att_Testament_StatusDuration",
+              "value": {
+                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
+                "datatablevalue": {
+                  "datatable": "gbx_ue_data_table'Weapon_Unique_Init_Harp'",
+                  "rowname": "ORD_AR_Testament",
+                  "columnname": "Value_5_81_D893EDE44E017167ED279F891A83419B"
+                }
+              }
+            }
+          },
+          {
             "att_ui_grav_cm_raid2_cryodamage": {
               "attribute": "Att_UI_Grav_CM_Raid2_CryoDamage",
               "context": {
@@ -53268,6 +53422,108 @@
             }
           },
           {
+            "attr_burrow_pearlcorrosive": {
+              "attribute": "attr_Burrow_pearlcorrosive",
+              "context": {
+                "structtype": "Asset'/Script/GbxWeapon.WeaponAttributeContextResolver'"
+              },
+              "value": {
+                "structtype": "Asset'/Script/GbxGame.GbxCondition_HasInventoryTag'",
+                "bmusthavealltags": "true",
+                "tags": [
+                  {
+                    "pearl_corrosive": "pearl_corrosive"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "attr_burrow_pearlcryo": {
+              "attribute": "attr_Burrow_pearlcryo",
+              "context": {
+                "structtype": "Asset'/Script/GbxWeapon.WeaponAttributeContextResolver'"
+              },
+              "value": {
+                "structtype": "Asset'/Script/GbxGame.GbxCondition_HasInventoryTag'",
+                "bmusthavealltags": "true",
+                "tags": [
+                  {
+                    "pearl_cryo": "pearl_cryo"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "attr_burrow_pearlfire": {
+              "attribute": "attr_Burrow_pearlfire",
+              "context": {
+                "structtype": "Asset'/Script/GbxWeapon.WeaponAttributeContextResolver'"
+              },
+              "value": {
+                "structtype": "Asset'/Script/GbxGame.GbxCondition_HasInventoryTag'",
+                "bmusthavealltags": "true",
+                "tags": [
+                  {
+                    "pearl_fire": "pearl_fire"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "attr_burrow_pearlnormal": {
+              "attribute": "attr_Burrow_pearlnormal",
+              "context": {
+                "structtype": "Asset'/Script/GbxWeapon.WeaponAttributeContextResolver'"
+              },
+              "value": {
+                "structtype": "Asset'/Script/GbxGame.GbxCondition_HasInventoryTag'",
+                "bmusthavealltags": "true",
+                "tags": [
+                  {
+                    "pearl_normal": "pearl_normal"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "attr_burrow_pearlradiation": {
+              "attribute": "attr_Burrow_pearlradiation",
+              "context": {
+                "structtype": "Asset'/Script/GbxWeapon.WeaponAttributeContextResolver'"
+              },
+              "value": {
+                "structtype": "Asset'/Script/GbxGame.GbxCondition_HasInventoryTag'",
+                "bmusthavealltags": "true",
+                "tags": [
+                  {
+                    "pearl_radiation": "pearl_radiation"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "attr_burrow_pearlshock": {
+              "attribute": "attr_Burrow_pearlshock",
+              "context": {
+                "structtype": "Asset'/Script/GbxWeapon.WeaponAttributeContextResolver'"
+              },
+              "value": {
+                "structtype": "Asset'/Script/GbxGame.GbxCondition_HasInventoryTag'",
+                "bmusthavealltags": "true",
+                "tags": [
+                  {
+                    "pearl_shock": "pearl_shock"
+                  }
+                ]
+              }
+            }
+          },
+          {
             "attr_conflux_dmgbonus": {
               "attribute": "attr_conflux_dmgbonus",
               "value": {
@@ -53366,6 +53622,54 @@
             }
           },
           {
+            "attr_silversliver_bonusdamage": {
+              "attribute": "attr_silversliver_bonusdamage",
+              "context": {
+                "structtype": "Asset'/Script/GbxWeapon.WeaponAttributeContextResolver'"
+              },
+              "value": {
+                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
+                "datatablevalue": {
+                  "datatable": "gbx_ue_data_table'Weapon_Unique_Init_Harp'",
+                  "rowname": "DAD_PS_SilverSliver",
+                  "columnname": "Value_1_68_67DA482B483B02CAC87864955A611952"
+                }
+              }
+            }
+          },
+          {
+            "attr_silversliver_duration": {
+              "attribute": "attr_silversliver_duration",
+              "context": {
+                "structtype": "Asset'/Script/GbxWeapon.WeaponAttributeContextResolver'"
+              },
+              "value": {
+                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
+                "datatablevalue": {
+                  "datatable": "gbx_ue_data_table'Weapon_Unique_Init_Harp'",
+                  "rowname": "DAD_PS_SilverSliver",
+                  "columnname": "Value_2_70_435CE4B14BED79682FC94FB100E4B857"
+                }
+              }
+            }
+          },
+          {
+            "attr_silversliver_maxstacks": {
+              "attribute": "attr_silversliver_maxstacks",
+              "context": {
+                "structtype": "Asset'/Script/GbxWeapon.WeaponAttributeContextResolver'"
+              },
+              "value": {
+                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
+                "datatablevalue": {
+                  "datatable": "gbx_ue_data_table'Weapon_Unique_Init_Harp'",
+                  "rowname": "DAD_PS_SilverSliver",
+                  "columnname": "Value_3_72_5E425BA54AABD6722A79F085B44D814F"
+                }
+              }
+            }
+          },
+          {
             "attr_tankbuster_extra_dmg": {
               "attribute": "attr_tankbuster_extra_dmg",
               "value": {
@@ -53404,6 +53708,18 @@
                 "power": {
                   "constant": "1.000000"
                 }
+              }
+            }
+          },
+          {
+            "attr_vehicle_is_pv_shatterland_v2": {
+              "attribute": "Attr_Vehicle_Is_PV_Shatterland_V2",
+              "context": {
+                "structtype": "Asset'/Script/GbxGame.GbxSkillContextResolver'"
+              },
+              "value": {
+                "structtype": "Asset'/Script/GbxGame.GbxCondition_SkillState'",
+                "statedef": "skill_state'S_General_Active'"
               }
             }
           },
@@ -53472,6 +53788,27 @@
                   "datatablevalue": {
                     "datatable": "gbx_ue_data_table'Unique_Barrel_Init_Cello'",
                     "rowname": "BOR_SG_Demo",
+                    "columnname": "Damage_Scale"
+                  }
+                },
+                "power": {
+                  "constant": "1.000000"
+                }
+              }
+            }
+          },
+          {
+            "bor_sg_plumbbob_damage": {
+              "attribute": "bor_sg_plumbbob_damage",
+              "value": {
+                "structtype": "Asset'/Script/GbxGame.BalanceFormulaValueResolver'",
+                "multiplier": {
+                  "attribute": "attribute'shotgun_damage_formula'"
+                },
+                "level": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Unique_Barrel_Init_Harp'",
+                    "rowname": "BOR_SG_PlumbBob",
                     "columnname": "Damage_Scale"
                   }
                 },
@@ -53846,6 +54183,48 @@
             }
           },
           {
+            "dad_ar_barrel_02_damage_kaos": {
+              "attribute": "DAD_AR_barrel_02_damage_Kaos",
+              "value": {
+                "structtype": "Asset'/Script/GbxGame.BalanceFormulaValueResolver'",
+                "multiplier": {
+                  "attribute": "attribute'assault_rifle_damage_formula'"
+                },
+                "level": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Unique_Barrel_Init_OrdoniteFracture'",
+                    "rowname": "DAD_AR_Kaos",
+                    "columnname": "Damage_Scale"
+                  }
+                },
+                "power": {
+                  "constant": "1.000000"
+                }
+              }
+            }
+          },
+          {
+            "dad_ar_barrel_02_damage_kaos_pres": {
+              "attribute": "DAD_AR_barrel_02_damage_Kaos_pres",
+              "value": {
+                "structtype": "Asset'/Script/GbxGame.BalanceFormulaValueResolver'",
+                "multiplier": {
+                  "attribute": "attribute'weapon_damage'"
+                },
+                "level": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Weapon_Unique_Init_OrdoniteFracture'",
+                    "rowname": "Kaos",
+                    "columnname": "Value_1_68_67DA482B483B02CAC87864955A611952"
+                  }
+                },
+                "power": {
+                  "constant": "1.000000"
+                }
+              }
+            }
+          },
+          {
             "dad_ar_barrel_harddark_damage": {
               "attribute": "dad_ar_barrel_HardDark_damage",
               "value": {
@@ -53885,6 +54264,32 @@
                   "constant": "1.000000"
                 }
               }
+            }
+          },
+          {
+            "dad_ps_barrel_01_damage_silversliver": {
+              "attribute": "dad_ps_barrel_01_damage_silversliver",
+              "value": {
+                "structtype": "Asset'/Script/GbxGame.BalanceFormulaValueResolver'",
+                "multiplier": {
+                  "attribute": "attribute'pistol_damage_formula'"
+                },
+                "level": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Unique_Barrel_Init_Harp'",
+                    "rowname": "DAD_PS_SilverSliver",
+                    "columnname": "Damage_Scale"
+                  }
+                },
+                "power": {
+                  "constant": "1.000000"
+                }
+              }
+            }
+          },
+          {
+            "dad_ps_barrel_02_damage_silversliver": {
+              "ref": "dad_ps_barrel_01_damage_silversliver"
             }
           },
           {
@@ -54525,6 +54930,53 @@
             }
           },
           {
+            "jak_sg_barrel_02_damage_verce": {
+              "attribute": "JAK_SG_barrel_02_damage_Verce",
+              "value": {
+                "structtype": "Asset'/Script/GbxGame.BalanceFormulaValueResolver'",
+                "multiplier": {
+                  "attribute": "attribute'shotgun_damage_formula'"
+                },
+                "level": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Unique_Barrel_Init_OrdoniteFracture'",
+                    "rowname": "JAK_SG_Verce",
+                    "columnname": "Damage_Scale"
+                  }
+                },
+                "power": {
+                  "constant": "1.000000"
+                }
+              }
+            }
+          },
+          {
+            "jak_sg_barrel_02_verce_chance_pres": {
+              "attribute": "JAK_SG_barrel_02_Verce_Chance_Pres",
+              "value": {
+                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
+                "datatablevalue": {
+                  "datatable": "gbx_ue_data_table'Weapon_Unique_Init_OrdoniteFracture'",
+                  "rowname": "Verce",
+                  "columnname": "Value_3_72_5E425BA54AABD6722A79F085B44D814F"
+                }
+              }
+            }
+          },
+          {
+            "jak_sg_barrel_02_verce_firerate_pres": {
+              "attribute": "JAK_SG_barrel_02_Verce_firerate_pres",
+              "value": {
+                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
+                "datatablevalue": {
+                  "datatable": "gbx_ue_data_table'Weapon_Unique_Init_OrdoniteFracture'",
+                  "rowname": "Verce",
+                  "columnname": "Value_4_74_740BF8EA43AFEE45A6A954B40FD8101E"
+                }
+              }
+            }
+          },
+          {
             "jak_sg_barrel_doeshot_damage": {
               "attribute": "jak_sg_barrel_Doeshot_damage",
               "value": {
@@ -54536,6 +54988,27 @@
                   "datatablevalue": {
                     "datatable": "gbx_ue_data_table'Unique_Barrel_Init_Cello'",
                     "rowname": "JAK_SG_Doeshot",
+                    "columnname": "Damage_Scale_14_4D6E5A8840F57DBD840197B3CB05686D"
+                  }
+                },
+                "power": {
+                  "constant": "1.000000"
+                }
+              }
+            }
+          },
+          {
+            "jak_sr_barrel_02_damage_burrow": {
+              "attribute": "jak_sr_barrel_02_damage_Burrow",
+              "value": {
+                "structtype": "Asset'/Script/GbxGame.BalanceFormulaValueResolver'",
+                "multiplier": {
+                  "attribute": "attribute'sniper_damage_formula'"
+                },
+                "level": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Unique_Barrel_Init_Harp'",
+                    "rowname": "JAK_SR_Burrow",
                     "columnname": "Damage_Scale_14_4D6E5A8840F57DBD840197B3CB05686D"
                   }
                 },
@@ -54846,6 +55319,27 @@
             }
           },
           {
+            "mal_sr_damage_stealth": {
+              "attribute": "mal_sr_damage_stealth",
+              "value": {
+                "structtype": "Asset'/Script/GbxGame.BalanceFormulaValueResolver'",
+                "multiplier": {
+                  "attribute": "attribute'sniper_damage_formula'"
+                },
+                "level": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Unique_Barrel_Init_Harp'",
+                    "rowname": "MAL_SR_Stealth",
+                    "columnname": "Damage_Scale"
+                  }
+                },
+                "power": {
+                  "constant": "1.000000"
+                }
+              }
+            }
+          },
+          {
             "mercreditokencount_targetlock": {
               "attribute": "MercrediTokenCount_TargetLock",
               "context": {
@@ -54887,6 +55381,74 @@
                 },
                 "power": {
                   "constant": "1.000000"
+                }
+              }
+            }
+          },
+          {
+            "ord_ar_barrel_02_damage_pchonk": {
+              "attribute": "ORD_AR_barrel_02_damage_PChonk",
+              "value": {
+                "structtype": "Asset'/Script/GbxGame.BalanceFormulaValueResolver'",
+                "multiplier": {
+                  "attribute": "attribute'assault_rifle_damage_formula'"
+                },
+                "level": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Unique_Barrel_Init_OrdoniteFracture'",
+                    "rowname": "ORD_AR_PChonk",
+                    "columnname": "Damage_Scale"
+                  }
+                },
+                "power": {
+                  "constant": "1.000000"
+                }
+              }
+            }
+          },
+          {
+            "ord_ar_barrel_02_damage_testament": {
+              "attribute": "ord_ar_barrel_02_damage_Testament",
+              "value": {
+                "structtype": "Asset'/Script/GbxGame.BalanceFormulaValueResolver'",
+                "multiplier": {
+                  "attribute": "attribute'assault_rifle_damage_formula'"
+                },
+                "level": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Unique_Barrel_Init_Harp'",
+                    "rowname": "ORD_AR_Testament",
+                    "columnname": "Damage_Scale_14_4D6E5A8840F57DBD840197B3CB05686D"
+                  }
+                },
+                "power": {
+                  "constant": "1.000000"
+                }
+              }
+            }
+          },
+          {
+            "ord_ar_barrel_02_pchonk_bufftime": {
+              "attribute": "ORD_AR_barrel_02_PChonk_bufftime",
+              "value": {
+                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
+                "datatablevalue": {
+                  "datatable": "gbx_ue_data_table'Weapon_Unique_Init_OrdoniteFracture'",
+                  "rowname": "ORD_AR_PChonk",
+                  "columnname": "Value_3_72_5E425BA54AABD6722A79F085B44D814F"
+                }
+              }
+            }
+          },
+          {
+            "ord_ar_barrel_02_pchonk_dmgbuff": {
+              "attribute": "ORD_AR_barrel_02_PChonk_dmgbuff",
+              "value": {
+                "structtype": "Asset'/Script/GbxEngine.GbxDataTableValueResolver'",
+                "datatablevalue": {
+                  "datatable": "gbx_ue_data_table'Weapon_Unique_Init_OrdoniteFracture'",
+                  "rowname": "ORD_AR_PChonk",
+                  "columnname": "Value_1_68_67DA482B483B02CAC87864955A611952"
                 }
               }
             }
@@ -55354,6 +55916,27 @@
             }
           },
           {
+            "ted_ps_barrel_02_damage_earlyexcess": {
+              "attribute": "TED_PS_barrel_02_damage_EarlyExcess",
+              "value": {
+                "structtype": "Asset'/Script/GbxGame.BalanceFormulaValueResolver'",
+                "multiplier": {
+                  "attribute": "attribute'pistol_damage_formula'"
+                },
+                "level": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Unique_Barrel_Init_Harp'",
+                    "rowname": "TED_PS_EarlyExcess",
+                    "columnname": "Damage_Scale"
+                  }
+                },
+                "power": {
+                  "constant": "1.000000"
+                }
+              }
+            }
+          },
+          {
             "ted_ps_barrel_02_damage_inscriber": {
               "attribute": "TED_PS_barrel_02_damage_Inscriber",
               "value": {
@@ -55679,6 +56262,27 @@
             }
           },
           {
+            "vla_ar_barrel_01_damage_extinction": {
+              "attribute": "vla_ar_barrel_01_damage_Extinction",
+              "value": {
+                "structtype": "Asset'/Script/GbxGame.BalanceFormulaValueResolver'",
+                "multiplier": {
+                  "attribute": "attribute'assault_rifle_damage_formula'"
+                },
+                "level": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Unique_Barrel_Init_Harp'",
+                    "rowname": "VLA_AR_Extinction",
+                    "columnname": "Damage_Scale"
+                  }
+                },
+                "power": {
+                  "constant": "1.000000"
+                }
+              }
+            }
+          },
+          {
             "vla_ar_barrel_01_damage_lasercutter": {
               "attribute": "vla_ar_barrel_01_damage_lasercutter",
               "value": {
@@ -55876,6 +56480,30 @@
                     }
                   }
                 ]
+              }
+            }
+          },
+          {
+            "weapon_damage_mode_02": {
+              "attribute": "weapon_damage_mode_02",
+              "context": {
+                "structtype": "Asset'/Script/GbxWeapon.WeaponAttributeContextResolver'",
+                "behaviortypetofurtherresolveto": "Asset'/Script/GbxWeapon.WeaponBehavior_Fire'",
+                "usemodebitmask": "2"
+              },
+              "value": {
+                "structtype": "Asset'/Script/GbxEngine.PropertyValueResolver'",
+                "propertysupportsmodifierremoval": "true",
+                "property": {
+                  "parsedpath": {
+                    "0": {
+                      "propertyname": "Damage"
+                    }
+                  },
+                  "parsedpathlength": "1",
+                  "propertypath": "Damage"
+                },
+                "resolvedtype": "Float"
               }
             }
           },
@@ -56379,6 +57007,18 @@
                 "expression": {
                   "formula": "attr(weapon_use_mode_two)&&attr(Condition_CanTEDAIUseSecondaryMode)"
                 }
+              }
+            }
+          },
+          {
+            "golden_keys_held": {
+              "attribute": "golden_keys_held",
+              "value": {
+                "currencytypename": "capital'golden_key'",
+                "structtype": "Asset'/Script/GbxGame.GbxCurrencyValueResolver'"
+              },
+              "context": {
+                "structtype": "Asset'/Script/GbxGame.GbxPlayerControllerContextResolver'"
               }
             }
           }
@@ -66427,6 +67067,23 @@
                     "type": "Float"
                   }
                 }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "entries": [
+          {
+            "attr_vehicle_is_pv_shatterland_v2": {
+              "attribute": "Attr_Vehicle_Is_PV_Shatterland_V2",
+              "context": {
+                "structtype": "Asset'none'"
+              },
+              "value": {
+                "structtype": "Asset'/Script/OakGame.GbxCondition_PersonalVehicleDef'",
+                "statedef": "skill_state''",
+                "actordef": "gbxactor'PV_ShatterlandV2'"
               }
             }
           }

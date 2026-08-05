@@ -1690,15 +1690,62 @@ def delete_ground_items() -> str:
         return f"Delete ground items failed: {exc!r}"
 
 
+def hide_ground_loot() -> str:
+    """Azzy-style soft clear: teleport loot far away (does not DestroyJunk)."""
+    pc = get_pc()
+    if pc is None:
+        return "Clear Loot (Hide): load into a character first."
+    try:
+        away = unrealsdk.make_struct("Vector", X=100000.0, Y=100000.0, Z=-1000000000.0)
+    except Exception as exc:
+        return f"Clear Loot (Hide) failed: {exc!r}"
+    try:
+        ignore = unrealsdk.make_struct("Rotator")
+    except Exception:
+        ignore = None
+    loot = _sorted_ground_loot()
+    removed = 0
+    for inv in loot["Pickups"] + loot["Gear"]:
+        try:
+            root = getattr(inv, "RootPrimitiveComponent", None)
+            if root is not None:
+                try:
+                    root.SetSimulatePhysics(True)
+                except Exception:
+                    pass
+            inv.K2_TeleportTo(away, ignore)
+            removed += 1
+        except Exception:
+            continue
+    if removed:
+        return f"Clear Loot (Hide): moved {removed} item(s) out of play."
+    return "Clear Loot (Hide): no ground loot found."
+
+
 _LOOT_PER_RING = 8
 _LOOT_BASE_RADIUS = 120.0
 _LOOT_RING_SPACING = 90.0
 _LOOT_PICKUP_MATERIALS = ("Ammo", "Cash", "Eridium", "Health", "Shield", "Grenade")
 _SUPER_DASH_MIN = 100
 _SUPER_DASH_MAX = 20000
+_SUPER_DASH_COOLDOWN_S = 0.12
+_SUPER_DASH_STOP_JUMP_DELAY_S = 0.015
 _super_dash_enabled = False
 _super_dash_strength = 1000
 _super_dash_key_was_down = False
+# MSBT dash key (edge-triggered). LeftShift conflicts with sprint/walk in BL4,
+# so default to V — still distinct from Azzy NumPadZero.
+_MSBT_SUPER_DASH_KEY = "V"
+# Azzy-style Super Dash (separate from MSBT).
+# Impulse must run on the camera/game tick — never from a daemon Thread.
+_AZZY_SUPER_DASH_KEY = "NumPadZero"
+_azzy_super_dash_enabled = False
+_azzy_super_dash_strength = 1000
+_azzy_super_dash_key_was_down = False
+_pending_msbt_super_dash = False
+_pending_azzy_super_dash = False
+_pending_dash_stop_jump_at = 0.0
+_dash_cooldown_until = 0.0
 
 
 def _live_actor(obj: Any) -> bool:
@@ -1822,6 +1869,9 @@ def get_super_dash_state() -> dict[str, Any]:
         "strength": int(_super_dash_strength),
         "min": _SUPER_DASH_MIN,
         "max": _SUPER_DASH_MAX,
+        "key": _MSBT_SUPER_DASH_KEY,
+        "variant": "msbt",
+        "pending": bool(_pending_msbt_super_dash),
     }
 
 
@@ -1832,72 +1882,213 @@ def toggle_super_dash(enabled: bool | None = None) -> str:
     else:
         _super_dash_enabled = bool(enabled)
     state = "ON" if _super_dash_enabled else "OFF"
-    return f"Super Dash {state} (strength {_super_dash_strength}). Hold Left Shift while enabled."
+    return (
+        f"Super Dash (MSBT) {state} (strength {_super_dash_strength}). "
+        f"Press {_MSBT_SUPER_DASH_KEY} while enabled (camera tick)."
+    )
 
 
-def fire_super_dash(strength: int | None = None) -> str:
-    if strength is not None:
-        set_super_dash_strength(int(strength))
-    pc = get_pc()
-    character = getattr(pc, "OakCharacter", None) if pc is not None else None
+def _dash_character(pc: Any) -> Any:
+    if pc is None:
+        return None
+    character = getattr(pc, "OakCharacter", None)
     if character is None:
-        character = getattr(pc, "Pawn", None) if pc is not None else None
-    if not _live_actor(character):
+        character = getattr(pc, "Pawn", None)
+    return character if _live_actor(character) else None
+
+
+def _dash_forward_xy(pc: Any, character: Any) -> tuple[float, float]:
+    """Horizontal look/move direction. Pitch must not shrink dash strength."""
+    forward = None
+    for obj in (pc, character):
+        if obj is None:
+            continue
+        getter = getattr(obj, "GetActorForwardVector", None)
+        if not callable(getter):
+            continue
+        try:
+            forward = getter()
+            if forward is not None:
+                break
+        except Exception:
+            forward = None
+    fx = fy = 0.0
+    if forward is not None:
+        try:
+            fx = float(getattr(forward, "X", 0.0) or 0.0)
+            fy = float(getattr(forward, "Y", 0.0) or 0.0)
+        except Exception:
+            fx = fy = 0.0
+    length = math.sqrt(fx * fx + fy * fy)
+    if length < 1e-4:
+        try:
+            rot = character.K2_GetActorRotation() if character is not None else None
+            yaw = math.radians(float(getattr(rot, "Yaw", 0.0) or 0.0))
+            fx, fy = math.cos(yaw), math.sin(yaw)
+            length = 1.0
+        except Exception:
+            return 1.0, 0.0
+    return fx / length, fy / length
+
+
+def _fire_super_dash_impulse(strength: float) -> str:
+    """Jump + horizontal AddImpulse. StopJumping is deferred on camera tick."""
+    pc = get_pc()
+    character = _dash_character(pc)
+    if character is None:
         return "Super Dash: load into a character first."
     try:
         try:
             character.Jump()
         except Exception:
             pass
-        forward = None
-        try:
-            forward = pc.GetActorForwardVector()
-        except Exception:
-            try:
-                rot = character.K2_GetActorRotation()
-                yaw = math.radians(float(getattr(rot, "Yaw", 0.0)))
-                forward = unrealsdk.make_struct("Vector", X=math.cos(yaw), Y=math.sin(yaw), Z=0.0)
-            except Exception:
-                forward = unrealsdk.make_struct("Vector", X=1.0, Y=0.0, Z=0.0)
+        fx, fy = _dash_forward_xy(pc, character)
         impulse = unrealsdk.make_struct(
             "Vector",
-            X=float(forward.X) * float(_super_dash_strength),
-            Y=float(forward.Y) * float(_super_dash_strength),
+            X=float(fx) * float(strength),
+            Y=float(fy) * float(strength),
             Z=10.0,
         )
         move = getattr(character, "OakCharacterMovement", None) or getattr(character, "CharacterMovement", None)
         if move is None:
             return "Super Dash failed: no movement component."
         move.AddImpulse(impulse, True)
-        try:
-            character.StopJumping()
-        except Exception:
-            pass
-        return f"Super Dash fired ({_super_dash_strength})."
+        return f"Super Dash fired ({int(strength)})."
     except Exception as exc:
         return f"Super Dash failed: {exc!r}"
 
 
-def _super_dash_camera_hook(*_args: Any, **_kwargs: Any) -> None:
-    global _super_dash_key_was_down
-    if not _super_dash_enabled:
-        _super_dash_key_was_down = False
+def _schedule_dash_stop_jump(now: float) -> None:
+    global _pending_dash_stop_jump_at
+    _pending_dash_stop_jump_at = float(now) + _SUPER_DASH_STOP_JUMP_DELAY_S
+
+
+def _tick_dash_stop_jump(now: float) -> None:
+    global _pending_dash_stop_jump_at
+    if not _pending_dash_stop_jump_at or now < _pending_dash_stop_jump_at:
         return
-    pc = get_pc()
-    if pc is None:
+    _pending_dash_stop_jump_at = 0.0
+    character = _dash_character(get_pc())
+    if character is None:
         return
-    down = False
     try:
-        key = unrealsdk.make_struct("Key", KeyName="LeftShift")
-        down = bool(pc.IsInputKeyDown(key))
+        character.StopJumping()
+    except Exception:
+        pass
+
+
+def _execute_super_dash(strength: float, *, label: str) -> str:
+    """Game-thread dash: impulse now, StopJumping a few ms later (Azzy timing)."""
+    global _dash_cooldown_until
+    now = time.monotonic()
+    if now < float(_dash_cooldown_until or 0.0):
+        return f"{label}: cooling down."
+    msg = _fire_super_dash_impulse(strength)
+    if "fired" in msg.lower():
+        _schedule_dash_stop_jump(now)
+        _dash_cooldown_until = now + _SUPER_DASH_COOLDOWN_S
+        return f"{label} fired ({int(strength)})."
+    return msg.replace("Super Dash", label, 1)
+
+
+def fire_super_dash(strength: int | None = None) -> str:
+    """Queue MSBT dash for the camera tick (safe from bridge/HTTP threads)."""
+    global _pending_msbt_super_dash
+    if strength is not None:
+        set_super_dash_strength(int(strength))
+    if get_pc() is None:
+        return "Super Dash (MSBT): load into a character first."
+    _pending_msbt_super_dash = True
+    return f"Super Dash (MSBT) queued ({_super_dash_strength})."
+
+
+def set_azzy_super_dash_strength(value: int) -> int:
+    global _azzy_super_dash_strength
+    _azzy_super_dash_strength = max(_SUPER_DASH_MIN, min(_SUPER_DASH_MAX, int(value)))
+    return _azzy_super_dash_strength
+
+
+def get_azzy_super_dash_state() -> dict[str, Any]:
+    return {
+        "enabled": bool(_azzy_super_dash_enabled),
+        "strength": int(_azzy_super_dash_strength),
+        "min": _SUPER_DASH_MIN,
+        "max": _SUPER_DASH_MAX,
+        "key": _AZZY_SUPER_DASH_KEY,
+        "variant": "azzy",
+        "pending": bool(_pending_azzy_super_dash),
+    }
+
+
+def toggle_azzy_super_dash(enabled: bool | None = None) -> str:
+    global _azzy_super_dash_enabled
+    if enabled is None:
+        _azzy_super_dash_enabled = not _azzy_super_dash_enabled
+    else:
+        _azzy_super_dash_enabled = bool(enabled)
+    state = "ON" if _azzy_super_dash_enabled else "OFF"
+    return (
+        f"Super Dash (Azzy) {state} (strength {_azzy_super_dash_strength}). "
+        f"Press {_AZZY_SUPER_DASH_KEY} while enabled (camera tick)."
+    )
+
+
+def request_azzy_super_dash(strength: int | None = None) -> str:
+    """Queue an Azzy-style dash for the next camera tick (never Thread)."""
+    global _pending_azzy_super_dash
+    if get_pc() is None:
+        return "Super Dash (Azzy): load into a character first."
+    if strength is not None:
+        set_azzy_super_dash_strength(int(strength))
+    _pending_azzy_super_dash = True
+    return f"Super Dash (Azzy) queued ({_azzy_super_dash_strength})."
+
+
+def _input_key_down(pc: Any, key_name: str) -> bool:
+    if pc is None or not key_name:
+        return False
+    try:
+        key = unrealsdk.make_struct("Key", KeyName=str(key_name))
+        return bool(pc.IsInputKeyDown(key))
     except Exception:
         try:
-            down = bool(pc.IsInputKeyDown("LeftShift"))
+            return bool(pc.IsInputKeyDown(str(key_name)))
         except Exception:
-            down = False
-    if down and not _super_dash_key_was_down:
-        fire_super_dash()
-    _super_dash_key_was_down = down
+            return False
+
+
+def _tick_pending_super_dashes(now: float) -> None:
+    global _pending_msbt_super_dash, _pending_azzy_super_dash
+    if _pending_msbt_super_dash:
+        _pending_msbt_super_dash = False
+        _execute_super_dash(_super_dash_strength, label="Super Dash (MSBT)")
+    if _pending_azzy_super_dash:
+        _pending_azzy_super_dash = False
+        _execute_super_dash(_azzy_super_dash_strength, label="Super Dash (Azzy)")
+    _tick_dash_stop_jump(now)
+
+
+def _super_dash_camera_hook(*_args: Any, **_kwargs: Any) -> None:
+    global _super_dash_key_was_down, _azzy_super_dash_key_was_down
+    now = time.monotonic()
+    _tick_pending_super_dashes(now)
+
+    pc = get_pc()
+    if _super_dash_enabled and pc is not None:
+        down = _input_key_down(pc, _MSBT_SUPER_DASH_KEY)
+        if down and not _super_dash_key_was_down:
+            _execute_super_dash(_super_dash_strength, label="Super Dash (MSBT)")
+        _super_dash_key_was_down = down
+    else:
+        _super_dash_key_was_down = False
+
+    if _azzy_super_dash_enabled and pc is not None:
+        down = _input_key_down(pc, _AZZY_SUPER_DASH_KEY)
+        if down and not _azzy_super_dash_key_was_down:
+            _execute_super_dash(_azzy_super_dash_strength, label="Super Dash (Azzy)")
+        _azzy_super_dash_key_was_down = down
+    else:
+        _azzy_super_dash_key_was_down = False
 
 
 def _register_super_dash_hook() -> None:
@@ -1905,7 +2096,7 @@ def _register_super_dash_hook() -> None:
         hook(
             "/Script/Engine.CameraModifier:BlueprintModifyCamera",
             immediately_enable=True,
-            hook_identifier="matts_sdk_boosting_tools_super_dash_camera_v1",
+            hook_identifier="matts_sdk_boosting_tools_super_dash_camera_v2",
         )(_super_dash_camera_hook)
     except Exception as exc:
         _log(f"Super Dash camera hook skipped: {exc!r}")
