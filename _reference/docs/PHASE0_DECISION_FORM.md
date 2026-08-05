@@ -38,7 +38,7 @@ Use **Notes** for anything special (“keep ActorScriptDeployer only”, “dele
 | A7  | `tools/`                                                                                          | X    |           |         |                              |
 | A8  | `third_party/sdk_mods/ActorScriptDeployer/`                                                       | X    |           |         | Installer dependency         |
 | A9  | `.github/`                                                                                        | X    |           |         | CI                           |
-| A10 | `README.md` / `AGENTS.md` / `LICENSE` / `VERSIONING.md` / `THIRD_PARTY_NOTICES.md` / `.gitignore` | X    |           |         |                              |
+| A10 | `README.md` / `AGENTS.md` / `LICENSE` / `docs/VERSIONING.md` / `docs/THIRD_PARTY_NOTICES.md` / `.gitignore` | X    |           |         |                              |
 
 
 ---

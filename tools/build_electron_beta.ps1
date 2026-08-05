@@ -4,7 +4,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-$RepoRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
+$RepoRoot = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
 $ElectronRoot = Join-Path $RepoRoot "electron_poc"
 $NodeModules = Join-Path $ElectronRoot "node_modules"
 $OutputRoot = Join-Path $RepoRoot "dist_electron"
@@ -59,7 +59,7 @@ function Assert-ReleaseManifestVersion {
     $manifest = Get-Content -Raw $ReleaseManifest | ConvertFrom-Json
     $manifestVersion = [string]$manifest.package_version
     if ($manifestVersion -ne $ExpectedVersion) {
-        throw "Release manifest package_version '$manifestVersion' does not match Electron version '$ExpectedVersion'. Update releases\latest.json before .\build_electron_beta.ps1 -Installer."
+        throw "Release manifest package_version '$manifestVersion' does not match Electron version '$ExpectedVersion'. Update releases\latest.json before .\tools\build_electron_beta.ps1 -Installer."
     }
 }
 
@@ -120,14 +120,14 @@ Assert-GzoCatalogImages -CatalogPath $SourceGzoCatalog -Label "Source GZO catalo
 
 Push-Location $RepoRoot
 try {
-    & (Join-Path $RepoRoot "build_sdkmod.ps1")
+    & (Join-Path $RepoRoot "tools\build_sdkmod.ps1")
 } finally {
     Pop-Location
 }
 
 $SdkMod = Join-Path $RepoRoot "MattsSDKBoostingTools.sdkmod"
 if (-not (Test-Path $SdkMod)) {
-    throw "MattsSDKBoostingTools.sdkmod was not produced by build_sdkmod.ps1."
+    throw "MattsSDKBoostingTools.sdkmod was not produced by tools\build_sdkmod.ps1."
 }
 
 Invoke-Checked "powershell.exe" @("-NoProfile", "-ExecutionPolicy", "Bypass", "-File", $PrepareElectronPython)

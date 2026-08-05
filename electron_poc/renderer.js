@@ -1294,7 +1294,7 @@ function openQuickMenuAddModal(action, commandPayload = {}, label = "") {
     const custom = quickMenuNode("quickMenuAddLabel");
     const metadata = snapshot.catalog[action] || {};
     if (title) title.textContent = `Add ${label || metadata.basic || action}`;
-    if (description) description.textContent = `Store ${action} with the current supported values.`;
+    if (description) description.textContent = `Pin ${action} with today's settings.`;
     if (custom) custom.value = String(label || "").trim().slice(0, 48);
     setLine(quickMenuNode("quickMenuAddStatus"), "Choose a page and slot.", "");
     quickMenuNode("quickMenuAddModal").classList.remove("hidden");
@@ -5805,7 +5805,7 @@ function renderDevActorDetails() {
 
   const note = document.createElement("div");
   note.className = "dev-detail-note";
-  note.textContent = "Details are read from local bundled catalog/reference data only. Live-confirmed status is not inferred from names.";
+  note.textContent = "Notes come from the local actor list, not live game checks.";
   els.devActorDetails.appendChild(note);
 }
 
@@ -7909,8 +7909,8 @@ function wireEvents() {
 
 const WALKTHROUGH_STEPS = [
   {
-    title: "Welcome to MSBT",
-    body: "This tour shows how the external app and the in-game Quick Menu work together — including how to pin basic actions and harder ones like item pools and Dev Spawner. Skip anytime.",
+    title: "Quick MSBT tour",
+    body: "How to pin Boosting, Item Pool, and Dev Spawner actions to the F7 Quick Menu. Skip anytime.",
     tab: "boosting",
     target: null
   },
@@ -7946,19 +7946,19 @@ const WALKTHROUGH_STEPS = [
     target: "quickMenuRarityPanelEquip"
   },
   {
-    title: "Harder pin: Item Pool",
+    title: "Pin an item pool",
     body: "On Item Pool Spawning, search/select a pool, set level/count, then use + QM next to Spawn Selected Item Pool(s). That locks the chosen pool(s) into a Quick Menu button.",
     tab: "item-pool",
     target: "spawnItempoolBtn"
   },
   {
-    title: "Harder pin: Dev Spawner",
+    title: "Pin a Dev Spawner actor",
     body: "On Dev Spawner, browse/select an actor so Selected Actor is filled, then use + QM beside Spawn Selected Actor. The pin stores that actor name and spawn options.",
     tab: "dev-spawner",
     target: "devSpawnerSpawnAiBtn"
   },
   {
-    title: "Confirm in the editor",
+    title: "Check your pins",
     body: "Return to ★ Quick Menu to rename labels, clear slots, or rearrange pages. Pin Last Command also works after you run something once from the app.",
     tab: "quick-menu",
     target: "quickMenuPinLastBtn"
@@ -8053,7 +8053,7 @@ async function refreshWalkthroughSdkNote() {
       sdkNote.classList.remove("hidden");
       return;
     }
-    sdkNote.textContent = `${message} SDK tools look present.`;
+    sdkNote.textContent = `${message} SDK mod detected.`;
     sdkNote.classList.remove("hidden");
   } catch {
     sdkNote.textContent = `Required: ${DEFAULT_SDK_REQUIRED}. Open Updates if you still need to install SDK tools.`;

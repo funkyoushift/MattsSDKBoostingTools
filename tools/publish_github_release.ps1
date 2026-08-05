@@ -7,7 +7,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-$RepoRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
+$RepoRoot = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
 $ManifestPath = Join-Path $RepoRoot "releases\latest.json"
 $ElectronDist = Join-Path $RepoRoot "dist_electron"
 $ElectronPackageJson = Join-Path $RepoRoot "electron_poc\package.json"
@@ -75,7 +75,7 @@ if ($Title -match '\d{8,}|beta-[0-9a-f]{6,}|run|workflow|commit') {
 
 $ElectronInstaller = Join-Path $ElectronDist $ElectronInstallerName
 if (-not (Test-Path $ElectronInstaller)) {
-    throw "Electron installer not found: $ElectronInstaller. Run .\build_electron_beta.ps1 -Installer first."
+    throw "Electron installer not found: $ElectronInstaller. Run .\tools\build_electron_beta.ps1 -Installer first."
 }
 
 $latestYml = Join-Path $ElectronDist "latest.yml"
@@ -91,11 +91,11 @@ if (-not (Test-Path $ManifestPath)) {
 }
 $PackagedManifestPath = Join-Path $ElectronDist "win-unpacked\resources\releases\latest.json"
 if (-not (Test-Path $PackagedManifestPath)) {
-    throw "Packaged Electron release manifest not found: $PackagedManifestPath. Run .\build_electron_beta.ps1 -Installer."
+    throw "Packaged Electron release manifest not found: $PackagedManifestPath. Run .\tools\build_electron_beta.ps1 -Installer."
 }
 $PackagedManifest = Get-Content -Raw $PackagedManifestPath | ConvertFrom-Json
 if ([string]$PackagedManifest.package_version -ne $PackageVersion) {
-    throw "Packaged Electron release manifest package_version '$($PackagedManifest.package_version)' does not match package version '$PackageVersion'. Run .\build_electron_beta.ps1 -Installer."
+    throw "Packaged Electron release manifest package_version '$($PackagedManifest.package_version)' does not match package version '$PackageVersion'. Run .\tools\build_electron_beta.ps1 -Installer."
 }
 
 # Always publish the packaged latest.json so remote update checks match the

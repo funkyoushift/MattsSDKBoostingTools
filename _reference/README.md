@@ -10,6 +10,4 @@ Small pieces kept in-repo for look-back, not day-to-day product paths.
 
 Related helper (not under `_reference/`): [`tools/NearbyDump/`](../tools/NearbyDump/) — BL4 folder mod that dumps nearby live object paths for Dev Spawner / DLC coin hunting.
 
-Bulk research dumps, peeks, and build scratch live outside this repo in:
-
-`C:\Users\mwenn\Desktop\MSBT_Codex_Work\_msbt_archive\`
+Bulk research dumps, peeks, and build scratch live outside this repo in a sibling folder: `../_msbt_archive/` (next to your working clone).

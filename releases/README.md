@@ -5,10 +5,12 @@ This folder stores **small** release metadata tracked in source control — not 
 ## Keep in git
 
 - `latest.json` — version manifest for the app updater
-- `RELEASE_NOTES_v*.md` — human release notes (publisher/CI append download badges)
+- `RELEASE_NOTES_v*.md` — human release notes for the **current** package version (publisher/CI append download badges)
 - `README.md` — this policy
 - `discord_media/` — optional promo screenshots / Discord copy
 - `QUICK_MENU_PREVIEW_NOTES.txt` — optional tester notes
+
+Older historical notes live under [`docs/release-notes/`](../docs/release-notes/) (kept out of the publisher path).
 
 ## Do not commit here
 
@@ -26,7 +28,7 @@ Upload binaries to GitHub Releases only.
 
 ## Badge warning
 
-`publish_github_release.ps1` and CI inject installer/portable download badges into the release body.  
+`tools/publish_github_release.ps1` and CI inject installer/portable download badges into the release body.  
 `gh release edit --notes-file …` with notes-only content **wipes** those badges — re-run the publisher or append the badge block again.
 
-See [`VERSIONING.md`](../VERSIONING.md) and [`docs/BUILD_AND_PACKAGE.md`](../docs/BUILD_AND_PACKAGE.md).
+See [`docs/VERSIONING.md`](../docs/VERSIONING.md) and [`docs/BUILD_AND_PACKAGE.md`](../docs/BUILD_AND_PACKAGE.md).

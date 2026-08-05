@@ -486,9 +486,9 @@ Write-Host "sdk_mods: $SdkModsPath"
 Write-Host "Archive bucket: _msbt_test_archive\$ArchiveName"
 
 if ($BuildSdkMod) {
-    $builder = Join-Path $RepoRoot "build_sdkmod.ps1"
+    $builder = Join-Path $RepoRoot "tools\build_sdkmod.ps1"
     if (-not (Test-Path -LiteralPath $builder)) {
-        throw "build_sdkmod.ps1 not found: $builder"
+        throw "tools\build_sdkmod.ps1 not found: $builder"
     }
     if ($DryRun) {
         Write-Step "build current MattsSDKBoostingTools.sdkmod"

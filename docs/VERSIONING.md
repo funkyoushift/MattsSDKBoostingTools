@@ -68,10 +68,10 @@ When bumping the public version, update the versioned installer/portable filenam
 
 1. Update `electron_poc/package.json` and `electron_poc/package-lock.json`.
 2. Commit the version change and related release notes.
-3. Build the SDK mod, Electron installer, and Electron portable ZIP with `.\build_electron_beta.ps1 -Installer`.
+3. Build the SDK mod, Electron installer, and Electron portable ZIP with `.\tools\build_electron_beta.ps1 -Installer`.
 4. Create the semantic tag, for example `v1.0.0`.
 5. Push the tag.
-6. Publish assets with `.\publish_github_release.ps1`.
+6. Publish assets with `.\tools\publish_github_release.ps1`.
 
 Do **not** rewrite `releases/latest.json` `git_commit` / compared metadata after the installer is built unless you also rebuild and re-upload the installer. Installed apps compare their bundled manifest to the remote `latest.json`; a post-release stamp (`pending` → real SHA) looks like a same-version rebuild and triggers a false update prompt. The publisher uploads the packaged `latest.json` so the release asset matches what users install.
 

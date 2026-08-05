@@ -1,6 +1,6 @@
 $ErrorActionPreference = "Stop"
 
-$RepoRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
+$RepoRoot = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
 $SourceDir = Join-Path $RepoRoot "mod_extracted\MattsSDKBoostingTools"
 $BuildRoot = Join-Path $RepoRoot "build\sdkmod"
 $StageRoot = Join-Path $BuildRoot "stage"

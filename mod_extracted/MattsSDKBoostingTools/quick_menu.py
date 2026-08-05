@@ -353,7 +353,7 @@ class QuickMenuState:
     inv_sort_dir: str = "desc"
     inv_category: str = "All"
     inv_page: int = 0
-    inv_page_size: int = 10
+    inv_page_size: int = 16
     inv_selected_key: str = ""
     inv_selected_entry: dict[str, Any] | None = None
     inv_give_target: int | None = None
@@ -1390,7 +1390,7 @@ def _render_rarity_controls(factory: NativeUMG, root: Any, px: float, rarity_y: 
     factory.border(root, px + 15, rarity_y + 3, pw - 30, RARITY_RESERVE_H - 6, _with_alpha(C_BTN_MUTED, opacity), 4)
     factory.text(
         root,
-        "Rarity Drop Weights — live apply (100% = vanilla, 0% = off)",
+        "Rarity weights (100% = normal, 0% = off)",
         px + 20,
         rarity_y + 8,
         pw - 40,
@@ -2035,7 +2035,7 @@ def rebuild_ui() -> None:
             factory.border(root, px + 12, grid_y0, pw - 24, 34, _with_alpha(C_BTN_GOLD, opacity), 8)
             factory.text(
                 root,
-                "Empty page — tap + Assign or Reset. Use + QM in the app to pin tools.",
+                "Empty page. Tap a slot to assign, or use + QM in the desktop app.",
                 px + 18,
                 grid_y0 + 4,
                 pw - 36,

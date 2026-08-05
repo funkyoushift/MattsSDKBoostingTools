@@ -9,7 +9,7 @@ $ResourcesSource = Join-Path $AppSource "resources"
 $MattEditorSource = Join-Path $AppSource "matt_editor"
 $MattEditorAdapter = Join-Path $AppSource "matt_editor_adapter.js"
 $SdkMod = Join-Path $RepoRoot "MattsSDKBoostingTools.sdkmod"
-$SdkBuildScript = Join-Path $RepoRoot "build_sdkmod.ps1"
+$SdkBuildScript = Join-Path $RepoRoot "tools\build_sdkmod.ps1"
 $ActorScriptDeployerSource = Join-Path $RepoRoot "third_party\sdk_mods\ActorScriptDeployer"
 $LegacyZipPath = Join-Path $RepoRoot "MSBT_External_Beta.zip"
 $ZipPath = $LegacyZipPath
@@ -211,4 +211,4 @@ Write-Host $ZipPath
 Write-Host "Latest update manifest:"
 Write-Host $LatestManifestPath
 Write-Host "Publish the ZIP to GitHub Releases with:"
-Write-Host ".\publish_github_release.ps1"
+Write-Host ".\tools\publish_github_release.ps1"

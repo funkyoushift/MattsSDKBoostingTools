@@ -47,7 +47,7 @@ jobs:
 
       - name: Build Electron installer
         shell: pwsh
-        run: .\build_electron_beta.ps1 -Installer
+        run: .\tools\build_electron_beta.ps1 -Installer
 
       - name: Validate release assets
         shell: pwsh

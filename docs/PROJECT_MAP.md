@@ -11,9 +11,8 @@ What lives where in the MSBT repo (after Phase 1–3 cleanup).
 | [`external_app/v22_parts_codes_fixed/`](../external_app/v22_parts_codes_fixed/) | **Runtime helpers + resources**, not the main UI. Electron packages this tree for catalogs, serial tools, and Matt Editor host. Tkinter shells inside are legacy rollback only — do not rearrange without an explicit ask. |
 | [`third_party/sdk_mods/ActorScriptDeployer/`](../third_party/sdk_mods/ActorScriptDeployer/) | Bundled Dev Spawner support mod |
 | [`docs/`](./) | Current human docs + README media |
-| [`releases/`](../releases/) | `latest.json`, `RELEASE_NOTES_v*.md`, Discord promo media — **not** installers/ZIPs |
-| [`tests/`](../tests/), [`tools/`](../tools/) | Tests and helper scripts |
-| [`build_electron_beta.ps1`](../build_electron_beta.ps1), [`build_sdkmod.ps1`](../build_sdkmod.ps1), [`publish_github_release.ps1`](../publish_github_release.ps1) | Ship / package |
+| [`releases/`](../releases/) | Current `latest.json`, `RELEASE_NOTES_v*.md`, Discord promo media — **not** installers/ZIPs. Older notes: [`docs/release-notes/`](./release-notes/) |
+| [`tests/`](../tests/), [`tools/`](../tools/) | Tests and helper scripts (including `build_electron_beta.ps1`, `build_sdkmod.ps1`, `publish_github_release.ps1`) |
 | [`.github/workflows/`](../.github/workflows/) | CI release |
 
 ## Reference (in-repo, not daily)
@@ -41,4 +40,4 @@ SDK __init__
   → optional BLImGui panel (fallback only)
 ```
 
-See [`AGENTS.md`](../AGENTS.md) and [`ELECTRON_ROADMAP.md`](ELECTRON_ROADMAP.md).
+See [`ELECTRON_ROADMAP.md`](ELECTRON_ROADMAP.md). Maintainer AI notes live in local `AGENTS.md` (gitignored).

@@ -26,7 +26,7 @@ npm.cmd rebuild electron
 From the repository root:
 
 ```powershell
-.\build_electron_beta.ps1
+.\tools\build_electron_beta.ps1
 ```
 
 This rebuilds `MattsSDKBoostingTools.sdkmod`, runs Electron syntax checks, and creates an unpacked Electron app under `dist_electron`.
@@ -34,7 +34,7 @@ This rebuilds `MattsSDKBoostingTools.sdkmod`, runs Electron syntax checks, and c
 To build the Windows installer:
 
 ```powershell
-.\build_electron_beta.ps1 -Installer
+.\tools\build_electron_beta.ps1 -Installer
 ```
 
 Installer builds use `electron-builder` with NSIS. They do not publish to GitHub automatically.
@@ -55,7 +55,7 @@ The Electron app includes a GitHub Releases update foundation:
 - there is no embedded GitHub token;
 - user data remains in Electron's `app.getPath("userData")` location across updates.
 
-Production update testing requires a GitHub Release containing the Electron builder artifacts such as the installer, `latest.yml`, and block map files. The app does not auto-publish those files. Release/version rules are documented in [../VERSIONING.md](../VERSIONING.md).
+Production update testing requires a GitHub Release containing the Electron builder artifacts such as the installer, `latest.yml`, and block map files. The app does not auto-publish those files. Release/version rules are documented in [../docs/VERSIONING.md](../docs/VERSIONING.md).
 
 ## SDK Mod Install
 

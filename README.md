@@ -212,7 +212,7 @@ Borderlands 4/
 - After an **SDK mod** update, **fully restart Borderlands 4** before testing live actions. An Electron-only update is not enough if the in-game `.sdkmod` changed.
 - Bookmarks, favorites, opacity, and other user settings live in the Electron user-data folder — not inside the install directory — so they should survive app updates.
 
-Versioning rules: [VERSIONING.md](VERSIONING.md).
+Versioning rules: [docs/VERSIONING.md](docs/VERSIONING.md).
 
 ---
 
@@ -243,7 +243,7 @@ Huge thanks to the people who built pieces of this, shared data, and helped prov
 | **Azzarock, Frag Em All, Tobgun1, Crayons82.0** | Testing, feedback, item data, and community reports that caught real breakage. |
 | **Everyone else** | Item-code authors and players who published lists, filed bugs, and shared serials — a lot of this only works because of public community work. |
 
-Third-party notices and license details for bundled/adapted pieces: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+Third-party notices and license details for bundled/adapted pieces: [docs/THIRD_PARTY_NOTICES.md](docs/THIRD_PARTY_NOTICES.md).
 
 ---
 
@@ -266,19 +266,19 @@ If you are building from source or digging into packaging, start here:
 | Doc | Topic |
 | --- | --- |
 | [electron_poc/README.md](electron_poc/README.md) | Run/build the Electron app |
-| [VERSIONING.md](VERSIONING.md) | SemVer, tags, installer names |
+| [docs/VERSIONING.md](docs/VERSIONING.md) | SemVer, tags, installer names |
 | [docs/BUILD_AND_PACKAGE.md](docs/BUILD_AND_PACKAGE.md) | Packaging notes |
 | [docs/BLIMGUI_REPLACEMENT_ARCHITECTURE.md](docs/BLIMGUI_REPLACEMENT_ARCHITECTURE.md) | App vs SDK boundary |
 | [docs/ELECTRON_ROADMAP.md](docs/ELECTRON_ROADMAP.md) | Current Electron priorities |
 | [docs/NEXUS_RELEASE_SYNC.md](docs/NEXUS_RELEASE_SYNC.md) | Nexus file-list sync |
-| [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) | Bundled third-party notices |
+| [docs/THIRD_PARTY_NOTICES.md](docs/THIRD_PARTY_NOTICES.md) | Bundled third-party notices |
 
 Quick build from repo root (Windows, Node/npm, Python 3.13 for tooling; the packaged app bundles a portable Python runtime for users):
 
 ```powershell
-.\build_electron_beta.ps1            # unpacked build
-.\build_electron_beta.ps1 -Installer # Windows installer + portable ZIP
-.\publish_github_release.ps1         # upload assets to GitHub Releases
+.\tools\build_electron_beta.ps1            # unpacked build
+.\tools\build_electron_beta.ps1 -Installer # Windows installer + portable ZIP
+.\tools\publish_github_release.ps1         # upload assets to GitHub Releases
 ```
 
 Repo layout in short:
@@ -287,6 +287,7 @@ Repo layout in short:
 - `electron_poc/` — Electron desktop app
 - `external_app/v22_parts_codes_fixed/` — legacy Tkinter app, resources, Matt editor assets
 - `docs/` — deeper developer notes
+- `tools/` — packaging / release scripts (`build_electron_beta.ps1`, `build_sdkmod.ps1`, `publish_github_release.ps1`)
 
 ---
 

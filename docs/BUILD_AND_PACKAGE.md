@@ -2,14 +2,14 @@
 
 Prefer the **Electron** app for shipping. Tkinter packaging is legacy and lives under [`_reference/legacy_tkinter/`](../_reference/legacy_tkinter/).
 
-Repo layout: [`PROJECT_MAP.md`](PROJECT_MAP.md). Versioning: [`VERSIONING.md`](../VERSIONING.md).
+Repo layout: [`PROJECT_MAP.md`](PROJECT_MAP.md). Versioning: [`VERSIONING.md`](VERSIONING.md).
 
 ## Build The Electron App (recommended)
 
 From the repository root:
 
 ```powershell
-.\build_electron_beta.ps1 -Installer
+.\tools\build_electron_beta.ps1 -Installer
 ```
 
 This builds the installer, portable ZIP, and packages the bundled SDK mod / ActorScriptDeployer resources used by the Updates tab and NSIS install helper.
@@ -21,7 +21,7 @@ Output typically lands under `dist_electron/` (gitignored).
 From the repository root:
 
 ```powershell
-.\build_sdkmod.ps1
+.\tools\build_sdkmod.ps1
 ```
 
 Output:
@@ -37,12 +37,12 @@ Keep the SDK `__version__` / `pyproject.toml` SemVer aligned with `electron_poc/
 After building installer + portable assets:
 
 ```powershell
-.\publish_github_release.ps1
+.\tools\publish_github_release.ps1
 ```
 
 Or push a matching `v*` tag and let `.github/workflows/electron-release.yml` publish.
 
-**Important:** `publish_github_release.ps1` and CI append download-count badges to the release body. If you later run `gh release edit --notes-file` with notes-only content, you will wipe those badges — re-run the publisher notes assembly or append the badge block again.
+**Important:** `tools/publish_github_release.ps1` and CI append download-count badges to the release body. If you later run `gh release edit --notes-file` with notes-only content, you will wipe those badges — re-run the publisher notes assembly or append the badge block again.
 
 ## Build The Legacy Tkinter EXE (reference only)
 

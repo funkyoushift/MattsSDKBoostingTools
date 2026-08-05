@@ -94,6 +94,8 @@ RARITY_RANK: dict[str, int] = {
 }
 
 # Azzy neon rarity tiles — pink / purple / cyan / lime (no mustard/cream).
+INV_LIST_COLS = 2
+
 RARITY_FILL: dict[str, tuple[float, float, float, float]] = {
     "Pearlescent": (0.85, 0.63, 0.97, 0.98),  # soft purple
     "Legendary": (1.0, 0.18, 0.44, 0.98),  # hot pink
@@ -380,7 +382,9 @@ def render_tab(factory: Any, root: Any, px: float, py: float, pw: float, opacity
     y += 38
 
     filtered = filtered_backpack()
-    page_size = max(1, int(st.inv_page_size or 10))
+    page_size = max(INV_LIST_COLS, int(st.inv_page_size or 16))
+    if page_size % INV_LIST_COLS:
+        page_size += INV_LIST_COLS - (page_size % INV_LIST_COLS)
     max_page = max(0, (len(filtered) - 1) // page_size) if filtered else 0
     if st.inv_page > max_page:
         st.inv_page = max_page
@@ -401,33 +405,53 @@ def render_tab(factory: Any, root: Any, px: float, py: float, pw: float, opacity
     y += 22
 
     scroll = factory.scroll_box(root, px + 12, y, pw - 24, 320, z=5)
+    inner_w = pw - 64
+    col_gap = 6.0
+    col_w = max(80.0, (inner_w - col_gap) / INV_LIST_COLS)
+    row_h = 54.0
     if not page_items:
-        row = factory.scroll_row(scroll, pw - 64, 56)
-        msg = "No items — Refresh Inventory." if not st.inv_backpack else "No items match filters."
-        factory.text(row, msg, 8, 10, pw - 80, 36, scale=ui["SCALE_BTN"], z=1, center=True)
-    for entry in page_items:
-        name = display_name(entry)[:28]
-        meta_bits = []
-        rarity = str(entry.get("rarity") or "")
-        if rarity:
-            meta_bits.append(rarity[:8])
-        level = entry.get("level")
-        if level is not None:
-            meta_bits.append(f"L{level}")
-        mfr = str(entry.get("manufacturer") or "")[:10]
-        if mfr:
-            meta_bits.append(mfr)
-        meta = " · ".join(meta_bits)
-        label = f"{name}\n{meta}" if meta else name
-        fill = rarity_fill(entry, c["slot"])
-        if entry_key(entry) == st.inv_selected_key:
-            fill = c["slot_sel"]
+        row = factory.scroll_row(scroll, inner_w, 56)
+        msg = "No items — tap Refresh." if not st.inv_backpack else "No items match filters."
+        factory.text(row, msg, 8, 10, inner_w - 16, 36, scale=ui["SCALE_BTN"], z=1, center=True)
+    else:
+        current_row = None
+        for idx, entry in enumerate(page_items):
+            col = idx % INV_LIST_COLS
+            if col == 0:
+                current_row = factory.scroll_row(scroll, inner_w, row_h + 4)
+            name = display_name(entry)[:22]
+            meta_bits = []
+            rarity = str(entry.get("rarity") or "")
+            if rarity:
+                meta_bits.append(rarity[:8])
+            level = entry.get("level")
+            if level is not None:
+                meta_bits.append(f"L{level}")
+            mfr = str(entry.get("manufacturer") or "")[:8]
+            if mfr:
+                meta_bits.append(mfr)
+            meta = " · ".join(meta_bits)
+            label = f"{name}\n{meta}" if meta else name
+            fill = rarity_fill(entry, c["slot"])
+            if entry_key(entry) == st.inv_selected_key:
+                fill = c["slot_sel"]
 
-        def _pick(e: dict[str, Any] = entry) -> Callable[[], None]:
-            return lambda: select_entry(e)
+            def _pick(e: dict[str, Any] = entry) -> Callable[[], None]:
+                return lambda: select_entry(e)
 
-        row = factory.scroll_row(scroll, pw - 64, 62)
-        factory.button(row, label, 0, 2, pw - 72, 56, _pick(), fill=fill, scale=0.26, z=1)
+            bx = col * (col_w + col_gap)
+            factory.button(
+                current_row,
+                label,
+                bx,
+                2,
+                col_w,
+                row_h,
+                _pick(),
+                fill=fill,
+                scale=0.24,
+                z=1,
+            )
 
     y += 328
     prev_disabled = st.inv_page <= 0
