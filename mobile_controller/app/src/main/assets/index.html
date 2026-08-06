@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>MSBT Mobile Controller</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="appbar">
+    <div><strong>MSBT</strong><span>Mobile Controller</span></div>
+    <span class="badge offline">OFFLINE</span>
+  </header>
+
+  <main id="view">
+    <section data-screen="home" class="screen active">
+      <div class="hero card">
+        <p class="eyebrow">CONTROLLER STATUS</p>
+        <h1>PC not paired</h1>
+        <p>Layout and offline tools are ready. Live actions stay disabled until the PC gateway is connected.</p>
+        <button class="primary" disabled>Pair with PC</button>
+      </div>
+      <div class="grid two">
+        <article class="card"><span>Bridge</span><strong>Unavailable</strong></article>
+        <article class="card"><span>Target</span><strong>None</strong></article>
+      </div>
+      <article class="card"><p class="eyebrow">RECENT RESULT</p><p>No actions yet.</p></article>
+    </section>
+
+    <section data-screen="boost" class="screen">
+      <h2>Boost</h2>
+      <article class="card"><p class="eyebrow">TARGET PLAYER</p><button class="select" disabled>No connection</button></article>
+      <article class="card"><p class="eyebrow">QUICK MAX</p><div class="button-grid"><button disabled>MAX ALL</button><button disabled>MAX CASH</button><button disabled>MAX ERIDIUM</button><button disabled>MAX PLAYER</button><button disabled>MAX SPEC</button></div></article>
+      <article class="card"><p class="eyebrow">SERIAL SENDER</p><textarea placeholder="Paste one or more @U serials"></textarea><div class="row"><button>Validate</button><button>Confirm</button></div><div class="button-grid"><button disabled>Selected</button><button disabled>All</button><button disabled>Non-Host</button></div></article>
+      <article class="card"><p class="eyebrow">RARITY PRESETS</p><div class="button-grid"><button disabled>Legendary</button><button disabled>Pearlescent</button><button disabled>Reset</button></div></article>
+    </section>
+
+    <section data-screen="codes" class="screen">
+      <div class="title-row"><h2>BL4 Codes</h2><button id="refreshCodes">Refresh</button></div>
+      <input id="codeSearch" type="search" placeholder="Search weapons, shields, mods…">
+      <div class="filters"><button>All</button><button>Weapons</button><button>Gear</button><button>Custom</button></div>
+      <div id="codeList" class="list"></div>
+    </section>
+
+    <section data-screen="control" class="screen">
+      <h2>Control</h2>
+      <div class="tool-grid">
+        <button data-open="quick">★ Quick Menu</button><button>Inventory</button><button>Map Travel</button><button>Movement</button><button>Dev Spawner</button><button>Item Pools</button>
+      </div>
+      <article id="quickMenu" class="card hidden">
+        <div class="title-row"><p class="eyebrow">FULL QUICK MENU</p><span>Page 1 / 5</span></div>
+        <div class="quick-grid" id="quickGrid"></div>
+      </article>
+    </section>
+
+    <section data-screen="more" class="screen">
+      <h2>More</h2>
+      <div class="list menu"><button>Serial Bookmarks</button><button>Activity Log</button><button>Report Bug</button><button>Connection Settings</button><button>Appearance</button><button>About</button></div>
+      <article class="card"><p class="eyebrow">SERIAL BOOKMARKS</p><p>The mobile store will mirror the desktop bookmark shape: name, group, serial, metadata, timestamps.</p></article>
+    </section>
+  </main>
+
+  <nav class="bottom-nav">
+    <button class="active" data-nav="home">Home</button><button data-nav="boost">Boost</button><button data-nav="codes">Codes</button><button data-nav="control">Control</button><button data-nav="more">More</button>
+  </nav>
+  <script src="app.js"></script>
+</body>
+</html>
