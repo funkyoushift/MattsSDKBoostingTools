@@ -58,7 +58,7 @@ const SOURCE_ROOT = path.resolve(__dirname, "..");
 const RESOURCE_ROOT = app.isPackaged ? process.resourcesPath : SOURCE_ROOT;
 const DEFAULT_BRIDGE = "http://127.0.0.1:49774";
 const LATEST_MANIFEST_URL = "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/latest.json";
-const FALLBACK_LATEST_MANIFEST_URL = "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/releases/latest.json";
+const FALLBACK_LATEST_MANIFEST_URL = "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/docs/releases/latest.json";
 const CODES_API = "https://save-editor.be/GZO/Borderlands4/codes/api.php";
 const SMOKE_MODE = process.argv.includes("--smoke");
 const INSTALL_SDKMODS_AND_EXIT = process.argv.includes("--install-sdkmods-and-exit");
@@ -79,7 +79,7 @@ const BUNDLED_SDKMOD_PATH = app.isPackaged
   : path.join(SOURCE_ROOT, "MattsSDKBoostingTools.sdkmod");
 const BUNDLED_ACTOR_SCRIPT_DEPLOYER_PATH = app.isPackaged
   ? path.join(RESOURCE_ROOT, "sdkmods", "ActorScriptDeployer")
-  : path.join(SOURCE_ROOT, "third_party", "sdk_mods", "ActorScriptDeployer");
+  : path.join(SOURCE_ROOT, "tools", "third_party", "sdk_mods", "ActorScriptDeployer");
 const ALLOWED_RESOURCE_FILES = new Set([
   "item_pools.json",
   "travelmaps_flat.json",

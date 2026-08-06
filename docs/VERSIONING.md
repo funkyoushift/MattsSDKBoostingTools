@@ -25,7 +25,7 @@ The Electron app version in `electron_poc/package.json` is the authoritative ver
 - `electron_poc/package.json` (+ lockfile)
 - `mod_extracted/MattsSDKBoostingTools/__init__.py` (`__version__`)
 - `mod_extracted/MattsSDKBoostingTools/pyproject.toml` (`version` / `[tool.sdkmod].version`)
-- `releases/latest.json`
+- `docs/releases/latest.json`
 - `external_app/v22_parts_codes_fixed/resources/version_info.json` (packaged helper metadata)
 
 Release scripts derive these values from that package version:
@@ -73,7 +73,7 @@ When bumping the public version, update the versioned installer/portable filenam
 5. Push the tag.
 6. Publish assets with `.\tools\publish_github_release.ps1`.
 
-Do **not** rewrite `releases/latest.json` `git_commit` / compared metadata after the installer is built unless you also rebuild and re-upload the installer. Installed apps compare their bundled manifest to the remote `latest.json`; a post-release stamp (`pending` → real SHA) looks like a same-version rebuild and triggers a false update prompt. The publisher uploads the packaged `latest.json` so the release asset matches what users install.
+Do **not** rewrite `docs/releases/latest.json` `git_commit` / compared metadata after the installer is built unless you also rebuild and re-upload the installer. Installed apps compare their bundled manifest to the remote `latest.json`; a post-release stamp (`pending` → real SHA) looks like a same-version rebuild and triggers a false update prompt. The publisher uploads the packaged `latest.json` so the release asset matches what users install.
 
 The publisher refuses to publish when:
 

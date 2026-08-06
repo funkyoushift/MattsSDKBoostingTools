@@ -12,7 +12,7 @@ Use this before pushing the repository public or posting it in Discord.
 - Confirm probe/staging dirs are ignored: `_loot_probe_*`, `_explore_*`, `_install_stage/`, `_pack_stage_*`, etc.
 - Confirm user data is ignored under `external_app/v22_parts_codes_fixed/resources/`.
 - Confirm Electron helpers under `external_app/` do not import SDK/game modules.
-- Confirm the SDK bridge starts without BLImGui installed (`/status` + `tests/test_quick_menu_no_blimgui.py`).
+- Confirm the SDK bridge starts without BLImGui installed (`/status` + `tools/tests/test_quick_menu_no_blimgui.py`).
 
 ## Recommended GitHub Release Files
 

@@ -6,7 +6,7 @@ MSBT is a Borderlands 4 boosting and item toolkit: a standalone Windows app outs
 
 This project is **unofficial**. It is not affiliated with, endorsed by, or connected to Gearbox, 2K, or the Borderlands franchise owners.
 
-**Repo layout (developers):** see [`docs/PROJECT_MAP.md`](docs/PROJECT_MAP.md) for what each folder is for.
+**Repo layout (developers):** see [`docs/PROJECT_MAP.md`](docs/PROJECT_MAP.md). On GitHub’s file list, the grey text next to a folder is the *last commit that touched it*, not a folder description — so a big multi-folder commit can make every line look the same.
 
 ---
 
@@ -268,7 +268,7 @@ If you are building from source or digging into packaging, start here:
 | [electron_poc/README.md](electron_poc/README.md) | Run/build the Electron app |
 | [docs/VERSIONING.md](docs/VERSIONING.md) | SemVer, tags, installer names |
 | [docs/BUILD_AND_PACKAGE.md](docs/BUILD_AND_PACKAGE.md) | Packaging notes |
-| [docs/BLIMGUI_REPLACEMENT_ARCHITECTURE.md](docs/BLIMGUI_REPLACEMENT_ARCHITECTURE.md) | App vs SDK boundary |
+| [docs/reference/docs/BLIMGUI_REPLACEMENT_ARCHITECTURE.md](docs/reference/docs/BLIMGUI_REPLACEMENT_ARCHITECTURE.md) | App vs SDK boundary (historical) |
 | [docs/ELECTRON_ROADMAP.md](docs/ELECTRON_ROADMAP.md) | Current Electron priorities |
 | [docs/NEXUS_RELEASE_SYNC.md](docs/NEXUS_RELEASE_SYNC.md) | Nexus file-list sync |
 | [docs/THIRD_PARTY_NOTICES.md](docs/THIRD_PARTY_NOTICES.md) | Bundled third-party notices |
@@ -281,13 +281,13 @@ Quick build from repo root (Windows, Node/npm, Python 3.13 for tooling; the pack
 .\tools\publish_github_release.ps1         # upload assets to GitHub Releases
 ```
 
-Repo layout in short:
+Repo layout in short (see [`docs/PROJECT_MAP.md`](docs/PROJECT_MAP.md) for nested detail):
 
-- `mod_extracted/MattsSDKBoostingTools/` — SDK mod, bridge, live actions, optional BLImGui panel
-- `electron_poc/` — Electron desktop app
-- `external_app/v22_parts_codes_fixed/` — legacy Tkinter app, resources, Matt editor assets
-- `docs/` — deeper developer notes
-- `tools/` — packaging / release scripts (`build_electron_beta.ps1`, `build_sdkmod.ps1`, `publish_github_release.ps1`)
+- `mod_extracted/MattsSDKBoostingTools/` — SDK mod, bridge, live actions, Quick Menu, optional BLImGui
+- `electron_poc/` — shipping Electron desktop app (folder name is historical)
+- `external_app/v22_parts_codes_fixed/` — packaged catalogs, serial helpers, Matt Editor host (not the main UI)
+- `docs/` — developer docs, screenshots, versioning, release metadata (`docs/releases/`), look-back (`docs/reference/`)
+- `tools/` — build/publish scripts, `tools/tests/`, bundled `tools/third_party/` (ActorScriptDeployer), NearbyDump
 
 ---
 

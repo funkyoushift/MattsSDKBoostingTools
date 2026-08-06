@@ -1,6 +1,6 @@
 # Build and Package Guide
 
-Prefer the **Electron** app for shipping. Tkinter packaging is legacy and lives under [`_reference/legacy_tkinter/`](../_reference/legacy_tkinter/).
+Prefer the **Electron** app for shipping. Tkinter packaging is legacy and lives under [`docs/reference/legacy_tkinter/`](reference/legacy_tkinter/).
 
 Repo layout: [`PROJECT_MAP.md`](PROJECT_MAP.md). Versioning: [`VERSIONING.md`](VERSIONING.md).
 
@@ -47,8 +47,8 @@ Or push a matching `v*` tag and let `.github/workflows/electron-release.yml` pub
 ## Build The Legacy Tkinter EXE (reference only)
 
 ```powershell
-.\_reference\legacy_tkinter\build_external_exe.ps1
-.\_reference\legacy_tkinter\package_external_beta.ps1
+.\docs\reference\legacy_tkinter\build_external_exe.ps1
+.\docs\reference\legacy_tkinter\package_external_beta.ps1
 ```
 
 Output (gitignored):

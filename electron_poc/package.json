@@ -52,7 +52,7 @@
         "to": "sdkmod/MattsSDKBoostingTools.sdkmod"
       },
       {
-        "from": "../third_party/sdk_mods/ActorScriptDeployer",
+        "from": "../tools/third_party/sdk_mods/ActorScriptDeployer",
         "to": "sdkmods/ActorScriptDeployer",
         "filter": [
           "**/*",
@@ -62,7 +62,7 @@
         ]
       },
       {
-        "from": "../releases/latest.json",
+        "from": "../docs/releases/latest.json",
         "to": "releases/latest.json"
       }
     ],

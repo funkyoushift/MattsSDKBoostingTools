@@ -421,6 +421,26 @@ def filter_travel_stations(map_name: str = '', search: str = '', limit: int = 12
     return results
 
 
+def _close_quick_menu_before_travel() -> None:
+    """Tear down F7 overlay/input before world travel.
+
+    Travel while Quick Menu is open has crashed locally (Python ACCESS_VIOLATION
+    via unrealsdk during map change). Close is best-effort and must never block
+    travel itself.
+    """
+    try:
+        from . import quick_menu
+
+        if getattr(quick_menu.STATE, "is_open", False) or quick_menu.live(getattr(quick_menu.STATE, "overlay", None)):
+            _log("Closing Quick Menu before travel.")
+            quick_menu.close_panel()
+    except Exception as exc:
+        try:
+            _log(f"Quick Menu close before travel skipped: {exc!r}")
+        except Exception:
+            pass
+
+
 def travel_to_map(map_name: str) -> str:
     """Travel to a map, preferring a known station over raw servertravel.
 
@@ -459,6 +479,7 @@ def travel_to_map(map_name: str) -> str:
         )
 
     _log(f"No default station for {map_name}; falling back to raw servertravel.")
+    _close_quick_menu_before_travel()
     _exec_console(f"servertravel {map_name}")
     return f"Requested travel to map {map_name}."
 
@@ -471,5 +492,6 @@ def travel_to_station(station: str) -> str:
     if known and station not in known:
         # Allow typed/custom stations, but make the risk visible in the log.
         _log(f"Station '{station}' is not in travelstations.json; sending anyway.")
+    _close_quick_menu_before_travel()
     _exec_console(f"gbx.servertraveltostation {station}")
     return f"Requested travel to station {station}."

@@ -18,12 +18,12 @@ The MSBT wrapper starts a local Python host for these assets and routes serial c
 
 This repository vendors ActorScriptDeployer under:
 
-- `third_party/sdk_mods/ActorScriptDeployer/`
+- `tools/third_party/sdk_mods/ActorScriptDeployer/`
 
 Author and license:
 
 - Author: Matt
-- License: MIT, per `third_party/sdk_mods/ActorScriptDeployer/pyproject.toml`
+- License: MIT, per `tools/third_party/sdk_mods/ActorScriptDeployer/pyproject.toml`
 
 MSBT bundles ActorScriptDeployer as a folder-form SDK mod dependency for the
 Dev Spawner tab. Live game actions still go through the MSBT bridge/backend,

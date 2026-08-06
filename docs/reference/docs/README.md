@@ -1,4 +1,4 @@
-﻿# _reference/docs/
+﻿# docs/reference/docs/
 
 Parked / historical docs. Prefer current docs:
 

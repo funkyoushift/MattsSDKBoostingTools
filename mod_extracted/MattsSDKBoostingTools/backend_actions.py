@@ -226,6 +226,90 @@ _ASD_COMMAND_ATTRS = {
     "ASD_logo_options": "_cmd_logo_options",
     "ASD_spawnerdiag": "_cmd_spawnerdiag",
 }
+# ASD auto-clear uses fixed batch windows (not an extending idle timer):
+# - First spawn opens a batch; spawns for the next BATCH_WINDOW_S stay in it.
+# - At batch end we ASD_clear (clears that wave; ASD has no per-age clear API).
+# - Spawns after the window clear the prior wave and open a new batch timer.
+# Set batch window to 0 to disable.
+_ASD_BATCH_WINDOW_S = 60.0
+_asd_batch_start = 0.0
+_asd_batch_clear_due = 0.0
+_asd_batch_armed = False
+
+
+def _asd_note_spawn_for_autoclear() -> None:
+    global _asd_batch_start, _asd_batch_clear_due, _asd_batch_armed
+    if float(_ASD_BATCH_WINDOW_S) <= 0.0:
+        return
+    now = time.monotonic()
+    if not _asd_batch_armed:
+        _asd_batch_start = now
+        _asd_batch_clear_due = now + float(_ASD_BATCH_WINDOW_S)
+        _asd_batch_armed = True
+        return
+    # Still inside the current collection window — leave the clear time alone.
+    if now <= float(_asd_batch_clear_due):
+        return
+    # Past the window: clear the prior wave now, then open a new batch for this spawn.
+    try:
+        ok, msg = _run_actor_script_deployer_command("ASD_clear")
+        try:
+            from unrealsdk import logging as _ulog
+
+            _ulog.info(
+                f"[Matts SDK Boosting Tools | DevSpawner] Closed ASD batch on late spawn "
+                f"(ok={ok}): {msg}"
+            )
+        except Exception:
+            pass
+    except Exception:
+        pass
+    _asd_batch_start = now
+    _asd_batch_clear_due = now + float(_ASD_BATCH_WINDOW_S)
+    _asd_batch_armed = True
+
+
+def _asd_disarm_autoclear() -> None:
+    global _asd_batch_armed, _asd_batch_clear_due, _asd_batch_start
+    _asd_batch_armed = False
+    _asd_batch_clear_due = 0.0
+    _asd_batch_start = 0.0
+
+
+def tick_asd_autoclear() -> None:
+    """Clear one ASD spawn batch when its window ends."""
+    global _asd_batch_armed
+    if not _asd_batch_armed or float(_ASD_BATCH_WINDOW_S) <= 0.0:
+        return
+    now = time.monotonic()
+    if now < float(_asd_batch_clear_due):
+        return
+    ok = False
+    msg = "ASD auto-clear skipped"
+    try:
+        ok, msg = _run_actor_script_deployer_command("ASD_clear")
+        try:
+            note_last_command(
+                "dev_spawner_clear",
+                label="Auto Clear ASD Spawns (batch)",
+                payload={},
+                is_drop=False,
+                needs_player=False,
+            )
+        except Exception:
+            pass
+    except Exception as exc:
+        ok, msg = False, f"ASD auto-clear failed: {exc!r}"
+    try:
+        from unrealsdk import logging as _ulog
+
+        _ulog.info(
+            f"[Matts SDK Boosting Tools | DevSpawner] Auto-cleared ASD batch "
+            f"({int(_ASD_BATCH_WINDOW_S)}s window, ok={ok}): {msg}"
+        )
+    except Exception:
+        pass
+    _asd_disarm_autoclear()
 
 
 def _clamp_int(value: object, min_value: int, max_value: int) -> int:
@@ -2413,6 +2497,16 @@ def run_dev_spawner_action(action: str, payload: dict[str, Any] | None = None) -
                 "command": cmd,
                 "mode": direct_message,
             }
+
+        if action == "dev_spawner_clear":
+            _asd_disarm_autoclear()
+        elif action in (
+            "dev_spawner_spawnai",
+            "dev_spawner_spawn",
+            "dev_spawner_lostloot",
+            "dev_spawner_barrel_logo",
+        ) and result.get("ok"):
+            _asd_note_spawn_for_autoclear()
 
         if result.get("ok") and action in (
             "dev_spawner_spawnai",

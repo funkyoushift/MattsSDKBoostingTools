@@ -8,7 +8,7 @@ Use **Notes** for anything special (“keep ActorScriptDeployer only”, “dele
 **Legend**
 
 - **Keep** — stays in `working` (main project)
-- **Reference** — small in-repo `_reference/` (handy later, not day-to-day)
+- **Reference** — small in-repo `docs/reference/` (handy later, not day-to-day)
 - **Archive** — move to sibling `_msbt_archive/` (out of main)
 
 ---
@@ -34,9 +34,9 @@ Use **Notes** for anything special (“keep ActorScriptDeployer only”, “dele
 | A3  | `external_app/`                                                                                   | X    |           |         | Electron helpers + resources |
 | A4  | `docs/`                                                                                           | X    |           |         | Product docs                 |
 | A5  | `releases/`                                                                                       | X    |           |         | Notes + latest.json          |
-| A6  | `tests/`                                                                                          | X    |           |         |                              |
+| A6  | `tools/tests/`                                                                                          | X    |           |         |                              |
 | A7  | `tools/`                                                                                          | X    |           |         |                              |
-| A8  | `third_party/sdk_mods/ActorScriptDeployer/`                                                       | X    |           |         | Installer dependency         |
+| A8  | `tools/third_party/sdk_mods/ActorScriptDeployer/`                                                       | X    |           |         | Installer dependency         |
 | A9  | `.github/`                                                                                        | X    |           |         | CI                           |
 | A10 | `README.md` / `AGENTS.md` / `LICENSE` / `docs/VERSIONING.md` / `docs/THIRD_PARTY_NOTICES.md` / `.gitignore` | X    |           |         |                              |
 
@@ -53,8 +53,8 @@ Use **Notes** for anything special (“keep ActorScriptDeployer only”, “dele
 | B1  | `_loot_probe_dumps/`                       |      |           | X       |       |
 | B2  | `_lov_peek/`                               |      |           | X       |       |
 | B3  | `lov_agent_client/`                        |      |           | X       |       |
-| B4  | `third_party/sdk_mods/DedicatedLootProbe/` |      |           | X       |       |
-| B5  | `third_party/sdk_mods/LOVAgentBridge/`     |      |           | X       |       |
+| B4  | `tools/third_party/sdk_mods/DedicatedLootProbe/` |      |           | X       |       |
+| B5  | `tools/third_party/sdk_mods/LOVAgentBridge/`     |      |           | X       |       |
 
 
 ---
@@ -109,7 +109,7 @@ Put `X` on one choice, or write your own in Notes.
 | Choice                                                                                                                                  | X   | Notes                                                                                                                |
 | --------------------------------------------------------------------------------------------------------------------------------------- | --- | -------------------------------------------------------------------------------------------------------------------- |
 | Keep at root (`build_external_exe.ps1`, `package_external_beta.ps1`, `Launch_MSBT_External_App.bat`, `requirements-external-build.txt`) |     |                                                                                                                      |
-| Move to `_reference/legacy_tkinter/`                                                                                                    | X   | ASSUMING WE DON'T NEED THIS UNLESS WE ARE LOOKING AT IT FOR REFERENCE THEN IT CAN PROBABLY GO INTO ARCHIVE/REFERENCE |
+| Move to `docs/reference/legacy_tkinter/`                                                                                                    | X   | ASSUMING WE DON'T NEED THIS UNLESS WE ARE LOOKING AT IT FOR REFERENCE THEN IT CAN PROBABLY GO INTO ARCHIVE/REFERENCE |
 | Archive off-repo                                                                                                                        |     |                                                                                                                      |
 
 
@@ -131,7 +131,7 @@ Put `X` on one choice, or write your own in Notes.
 
 | Choice                                        | X   | Notes                                                                                                    |
 | --------------------------------------------- | --- | -------------------------------------------------------------------------------------------------------- |
-| Move to `_reference/audits/` and commit       |     |                                                                                                          |
+| Move to `docs/reference/audits/` and commit       |     |                                                                                                          |
 | Archive off-repo only (remove from main tree) | X   | UNLESS WE REALLY DON'T NEED THEM. i WOULD THINK YOU COULD STILL USE THEM FOR LOOKING BACK AT WHAT WE DID |
 | Delete (I don’t need them)                    |     |                                                                                                          |
 

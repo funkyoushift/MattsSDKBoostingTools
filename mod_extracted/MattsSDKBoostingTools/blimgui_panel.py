@@ -4654,19 +4654,20 @@ def _movement_hook_arg_to_pawn(obj: object) -> object | None:
 
 
 def _movement_camera_infinite_jump_hook(*args, **kwargs):
-    """Hot, cheap Infinite Jump path.
+    """Throttled Infinite Jump camera path for the BLImGui enable set.
 
-    CameraModifier:BlueprintModifyCamera was the proven reliable tick source for
-    BL4. It fires while the player is active, before jump input needs the counters
-    open, and does not depend on HUD widgets, menu draw, or GameState polling.
+    Backend movement_adjustments owns the Electron/QM path. This hook only
+    touches pawns in ``_movement_infinite_jump_indices`` and only clears spent
+    jump counters (avoids every-frame zeroing jitter).
     """
     try:
         if not _movement_infinite_jump_indices:
             return None
-        try:
-            now = time.monotonic()
-        except Exception:
-            now = 0.0
+        now = time.monotonic()
+        last = float(getattr(_movement_camera_infinite_jump_hook, "_last", 0.0) or 0.0)
+        if now - last < 0.08:
+            return None
+        setattr(_movement_camera_infinite_jump_hook, "_last", now)
         contexts = _movement_infinite_jump_cached_contexts(now)
         touched = set()
         for idx, _name, _pc, pawn, move in contexts:
@@ -4681,16 +4682,13 @@ def _movement_camera_infinite_jump_hook(*args, **kwargs):
             if key in touched:
                 continue
             touched.add(key)
-            _movement_force_infinite_jump_ready(pawn, move)
-        # Safety fallback: when party contexts fail during travel/initial load,
-        # still keep the local player working if slot 0 is enabled.
-        try:
-            if 0 in _movement_infinite_jump_indices:
-                pawn = _movement_local_pawn_direct()
-                if pawn is not None and str(pawn) not in touched:
-                    _movement_force_infinite_jump_ready(pawn, _movement_infinite_move_for_pawn(pawn))
-        except Exception:
-            pass
+            # Prefer light clears when possible; fall back to full prep.
+            try:
+                cur = getattr(pawn, "JumpCurrentCount", 0)
+                if int(cur or 0) > 0 or int(getattr(pawn, "JumpMaxCount", 0) or 0) < 999:
+                    _movement_force_infinite_jump_ready(pawn, move)
+            except Exception:
+                _movement_force_infinite_jump_ready(pawn, move)
     except Exception:
         pass
     return None

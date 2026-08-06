@@ -890,10 +890,10 @@
     </section>
 
     <section id="tab-dev-spawner" class="tab-panel">
-      <div class="dev-spawner-stack">
+      <div class="grid three dev-spawner-row">
         <section class="panel cyan">
           <h2>Standard Spawning</h2>
-          <div id="devSpawnerWarning" class="status-line warning">No Dev Spawner action sent yet. After heavy spawning, use Clear ASD Spawns — leftover ASD timers can crash the game.</div>
+          <div id="devSpawnerWarning" class="status-line warning">No Dev Spawner action sent yet. After heavy spawning, use Clear ASD Spawns.</div>
           <div class="grid two compact dev-spawn-fields">
             <label>
               Distance
@@ -1046,7 +1046,7 @@
         <input id="devAiDirectOnly" type="checkbox" class="hidden-check">
         <div id="devActorSummary" class="status-line">Loading actor catalog...</div>
 
-        <div class="dev-browser-picks">
+        <div class="grid three dev-spawner-row compact dev-browser-split">
           <div class="dev-browser-section">
             <h3>Active Boss Chars</h3>
             <div id="devBossPickSummary" class="status-line">Loading active boss characters...</div>
@@ -1057,7 +1057,7 @@
             <div id="devQuickPickSummary" class="status-line">Loading example list...</div>
             <div id="devQuickPickRows" class="dev-row-list compact"></div>
           </div>
-          <div class="dev-browser-section dev-browser-favorites">
+          <div class="dev-browser-section">
             <h3>My Favorites</h3>
             <div class="button-row wrap compact-actions">
               <button id="devMyFavoriteAddBtn">Add Selected</button>
@@ -1079,8 +1079,8 @@
           </div>
         </div>
 
-        <div class="dev-browser-results">
-          <div class="dev-browser-section">
+        <div class="grid three dev-spawner-row compact dev-browser-split">
+          <div class="dev-browser-section dev-browser-span-2">
             <h3>Actor Results</h3>
             <div class="button-row wrap compact-actions">
               <button id="devPrevActorPageBtn">Prev Page</button>

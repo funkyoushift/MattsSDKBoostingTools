@@ -88,7 +88,9 @@ _INFINITE_JUMP_INDICES: set[int] = set()
 _INFINITE_JUMP_LABEL_CACHE: dict[int, str] = {}
 _INFINITE_JUMP_LABEL_CACHE_TIME: float = 0.0
 _INFINITE_JUMP_CAMERA_LAST_APPLY: float = 0.0
-_INFINITE_JUMP_CAMERA_INTERVAL_S: float = 0.12
+# Camera tick keeps JumpMaxCount open and clears spent jump counters only when
+# needed. Full every-frame resets felt jittery; Jump/CanJump still do a full prep.
+_INFINITE_JUMP_CAMERA_INTERVAL_S: float = 0.08
 
 
 def _uobject_alive(obj: Any) -> bool:
@@ -1399,7 +1401,7 @@ def _set_if_needed(obj: Any, attr: str, value: Any) -> bool:
         return False
 
 
-def _force_infinite_jump_ready(pawn: Any, move: Any | None = None) -> bool:
+def _force_infinite_jump_ready(pawn: Any, move: Any | None = None, *, light: bool = False) -> bool:
     if pawn is None or not _uobject_alive(pawn) or _is_default(pawn):
         return False
     try:
@@ -1411,22 +1413,50 @@ def _force_infinite_jump_ready(pawn: Any, move: Any | None = None) -> bool:
     except Exception:
         move = None
     changed = False
-    # Minimal writes — only jump counters. Avoid broad attribute hammering every tick.
-    for attr, value in (
-        ("JumpCurrentCount", 0),
-        ("JumpCurrentCountPreJump", 0),
-        ("JumpMaxCount", 999),
-    ):
-        if _set_if_needed(pawn, attr, value):
-            changed = True
-    if move is not None:
-        for attr, value in (
+    # light=True (camera tick): only open JumpMaxCount and clear spent counters.
+    # Full prep (Jump/CanJump) also zeros alternate counter names used by BL4 builds.
+    if light:
+        pawn_attrs: tuple[tuple[str, Any], ...] = (
+            ("JumpMaxCount", 999),
             ("JumpCurrentCount", 0),
             ("JumpCurrentCountPreJump", 0),
+        )
+        move_attrs = pawn_attrs
+    else:
+        pawn_attrs = (
             ("JumpMaxCount", 999),
-        ):
-            if _set_if_needed(move, attr, value):
+            ("JumpCurrentCount", 0),
+            ("JumpCurrentCountPreJump", 0),
+            ("JumpedCount", 0),
+            ("CurrentJumpCount", 0),
+            ("CurrentJumpCountPreJump", 0),
+        )
+        move_attrs = (
+            ("JumpMaxCount", 999),
+            ("JumpCurrentCount", 0),
+            ("JumpCurrentCountPreJump", 0),
+            ("CurrentJumpCount", 0),
+            ("CurrentJumpCountPreJump", 0),
+        )
+
+    def _apply(obj: Any, pairs: tuple[tuple[str, Any], ...]) -> None:
+        nonlocal changed
+        for attr, value in pairs:
+            if light and attr in ("JumpCurrentCount", "JumpCurrentCountPreJump", "CurrentJumpCount", "CurrentJumpCountPreJump", "JumpedCount"):
+                try:
+                    cur = getattr(obj, attr, None)
+                    if cur is None:
+                        continue
+                    if int(cur) <= 0:
+                        continue
+                except Exception:
+                    continue
+            if _set_if_needed(obj, attr, value):
                 changed = True
+
+    _apply(pawn, pawn_attrs)
+    if move is not None:
+        _apply(move, move_attrs)
     return changed
 
 
@@ -1535,7 +1565,6 @@ def _camera_infinite_jump_hook(*args, **kwargs):
             return None
         now = time.monotonic()
         # Throttle: BlueprintModifyCamera can fire many times per frame.
-        # Continuous UObject writes were linked to ACCESS_VIOLATION crash reports.
         if now - float(_INFINITE_JUMP_CAMERA_LAST_APPLY) < float(_INFINITE_JUMP_CAMERA_INTERVAL_S):
             return None
         _INFINITE_JUMP_CAMERA_LAST_APPLY = now
@@ -1561,7 +1590,7 @@ def _camera_infinite_jump_hook(*args, **kwargs):
             if key in touched:
                 continue
             touched.add(key)
-            _force_infinite_jump_ready(pawn, None)
+            _force_infinite_jump_ready(pawn, None, light=True)
     except Exception:
         pass
     return None

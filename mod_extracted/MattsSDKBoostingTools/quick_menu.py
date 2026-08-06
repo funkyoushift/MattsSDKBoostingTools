@@ -3094,6 +3094,10 @@ def _refresh_layout_if_changed() -> None:
 
 def tick(_obj: Any, _args: Any, _ret: Any, _func: Any) -> None:
     try:
+        try:
+            backend_actions.tick_asd_autoclear()
+        except Exception:
+            pass
         _poll_delivery_toasts()
         _expire_toast()
         # Hotkeys first so F6 can recover even if overlay state is inconsistent.

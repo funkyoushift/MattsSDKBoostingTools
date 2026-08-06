@@ -1,13 +1,13 @@
 # Code hygiene notes (Phase 4)
 
-Small, evidence-based cleanups applied / deferred. Prefer `_reference/` or archive over deletes. Never delete BLImGui UI.
+Small, evidence-based cleanups applied / deferred. Prefer `docs/reference/` or archive over deletes. Never delete BLImGui UI.
 
 ## Done this pass
 
 | Item | Action |
 | --- | --- |
 | `probe_challenge_apis` | Gated behind `MSBT_DEBUG_PROBES=1` (bridge + optional console registration). Shipping default: disabled. |
-| Stale Tkinter-as-replacement architecture doc | Moved to `_reference/docs/` |
+| Stale Tkinter-as-replacement architecture doc | Moved to `docs/reference/docs/` |
 | Version skew (`1.2.1` / `"1"` / `dev`) | Lockstep SemVer **2.1.0** with Electron / `latest.json` |
 
 ## Deferred (needs Matt / separate commits)

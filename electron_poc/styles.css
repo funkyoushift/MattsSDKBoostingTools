@@ -894,53 +894,6 @@ button.gzo-submit-cta:hover {
   gap: 8px;
 }
 
-/* Dev Spawner: calm vertical stack (not cramped 3-col) */
-.dev-spawner-stack {
-  display: grid;
-  gap: 12px;
-  grid-template-columns: 1fr;
-  margin-bottom: 12px;
-}
-
-.dev-browser-picks,
-.dev-browser-results {
-  display: grid;
-  gap: 12px;
-  grid-template-columns: 1fr;
-  margin-top: 10px;
-}
-
-/* Wide enough: Boss | Example, Favorites full-width below (2 cols max) */
-@media (min-width: 1100px) {
-  .dev-browser-picks {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .dev-browser-picks .dev-browser-favorites {
-    grid-column: 1 / -1;
-  }
-
-  .dev-browser-results {
-    grid-template-columns: minmax(0, 1.45fr) minmax(280px, 1fr);
-  }
-}
-
-#tab-dev-spawner h2 {
-  font-size: 16px;
-  margin-bottom: 8px;
-}
-
-#tab-dev-spawner label {
-  font-size: 13px;
-}
-
-#tab-dev-spawner input,
-#tab-dev-spawner button,
-#tab-dev-spawner select,
-#tab-dev-spawner textarea {
-  font-size: 13px;
-}
-
 #tab-dev-spawner .dev-spawn-fields label {
   margin: 0;
 }
@@ -949,25 +902,11 @@ button.gzo-submit-cta:hover {
   grid-column: 1 / -1;
 }
 
-#tab-dev-spawner .status-line {
-  font-size: 13px;
-}
-
-#tab-dev-spawner .dev-fold > summary {
-  font-size: 13px;
-}
-
 .dev-browser-toolbar {
   display: grid;
-  gap: 12px;
-  grid-template-columns: 1fr;
-  margin-bottom: 10px;
-}
-
-@media (min-width: 900px) {
-  .dev-browser-toolbar {
-    grid-template-columns: minmax(260px, 380px) minmax(0, 1fr);
-  }
+  gap: 8px;
+  grid-template-columns: minmax(220px, 320px) minmax(0, 1fr);
+  margin-bottom: 6px;
 }
 
 .dev-browser-span-2 {
@@ -975,22 +914,21 @@ button.gzo-submit-cta:hover {
 }
 
 .dev-spawner-browser h2 {
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
-.dev-spawner-browser h3,
-#tab-dev-spawner .dev-browser-section h3 {
+.dev-spawner-browser h3 {
   color: var(--cyan);
-  font-size: 14px;
-  margin: 0 0 6px;
+  font-size: 12px;
+  margin: 0 0 4px;
 }
 
 .dev-browser-section {
-  margin-top: 4px;
+  margin-top: 8px;
 }
 
 .dev-browser-section .status-line {
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .dev-browser-split .dev-row-list {
@@ -998,48 +936,31 @@ button.gzo-submit-cta:hover {
 }
 
 .dev-logo-lines.compact {
-  margin: 8px 0;
+  margin: 6px 0;
 }
 
-.dev-spawner-output,
-#tab-dev-spawner .dev-spawner-output {
+.dev-spawner-output {
   margin: 0;
-  max-height: 420px;
-  min-height: 180px;
+  max-height: 220px;
+  min-height: 72px;
   overflow: auto;
-  font-size: 13px;
 }
 
 .dev-spawner-browser .dev-detail-card {
-  max-height: 420px;
-  min-height: 200px;
+  max-height: 260px;
   overflow: auto;
 }
 
 #tab-dev-spawner .dev-row-list {
-  max-height: 380px;
+  max-height: 220px;
 }
 
 #tab-dev-spawner .dev-row-list.compact {
-  max-height: 340px;
+  max-height: 200px;
 }
 
 #tab-dev-spawner .dev-row-list:not(.compact) {
-  max-height: 420px;
-}
-
-#tab-dev-spawner .dev-spawn-button,
-#tab-dev-spawner .dev-actor-label,
-#tab-dev-spawner .dev-row-actions button {
-  font-size: 13px;
-  line-height: 1.3;
-  min-height: 26px;
-  padding: 4px 8px;
-}
-
-#tab-dev-spawner .dev-actor-row {
-  gap: 6px;
-  padding: 4px 0;
+  max-height: 240px;
 }
 
 .dev-spawner-layout {
@@ -1593,7 +1514,7 @@ button.active-scope {
   }
 
   .dev-row-list {
-    max-height: 420px;
+    max-height: 240px;
   }
 }
 

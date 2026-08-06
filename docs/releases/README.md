@@ -10,14 +10,14 @@ This folder stores **small** release metadata tracked in source control — not 
 - `discord_media/` — optional promo screenshots / Discord copy
 - `QUICK_MENU_PREVIEW_NOTES.txt` — optional tester notes
 
-Older historical notes live under [`docs/release-notes/`](../docs/release-notes/) (kept out of the publisher path).
+Older historical notes live under [`docs/release-notes/`](../release-notes/) (kept out of the publisher path).
 
 ## Do not commit here
 
 - `MSBT-Installer-*.exe`
 - `MSBT-Portable-*.zip`
 - `*.blockmap`, packaged `latest.yml` copies
-- Tester pack ZIPs / Electron-Patch staging (archive locally under `../_msbt_archive/` if needed)
+- Tester pack ZIPs / Electron-Patch staging (archive locally under `../../_msbt_archive/` if needed)
 
 Upload binaries to GitHub Releases only.
 
@@ -31,4 +31,4 @@ Upload binaries to GitHub Releases only.
 `tools/publish_github_release.ps1` and CI inject installer/portable download badges into the release body.  
 `gh release edit --notes-file …` with notes-only content **wipes** those badges — re-run the publisher or append the badge block again.
 
-See [`docs/VERSIONING.md`](../docs/VERSIONING.md) and [`docs/BUILD_AND_PACKAGE.md`](../docs/BUILD_AND_PACKAGE.md).
+See [`VERSIONING.md`](../VERSIONING.md) and [`BUILD_AND_PACKAGE.md`](../BUILD_AND_PACKAGE.md).
