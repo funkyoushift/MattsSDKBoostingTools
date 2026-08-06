@@ -1,7 +1,7 @@
 param(
     [string]$GameDomain = "borderlands4",
     [int]$ModId = 276,
-    [string]$ManifestPath = ".\releases\latest.json"
+    [string]$ManifestPath = ".\docs\releases\latest.json"
 )
 
 $ErrorActionPreference = "Stop"

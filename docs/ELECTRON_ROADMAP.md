@@ -68,7 +68,7 @@ Block a release only for issues such as:
 
 Before publishing a stable release:
 
-1. Confirm `electron_poc/package.json`, `releases/latest.json`, and release asset names use the same SemVer version.
+1. Confirm `electron_poc/package.json`, `docs/releases/latest.json`, and release asset names use the same SemVer version.
 2. Build the SDK mod and Electron installer/portable package from the current source.
 3. Install from the freshly built installer on the test machine.
 4. Confirm the installed SDK mod and ActorScriptDeployer are copied to `sdk_mods`.

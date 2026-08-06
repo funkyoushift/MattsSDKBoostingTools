@@ -6,6 +6,7 @@
   <title>Matt's SDK Boosting Tools</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="ui-designer.css">
+  <link rel="stylesheet" href="vendor/gridstack/gridstack.min.css">
 </head>
 <body>
   <header class="app-header">
@@ -91,12 +92,15 @@
   <section id="walkthroughModal" class="modal-shell hidden" role="dialog" aria-modal="true" aria-labelledby="walkthroughTitle">
     <div class="walkthrough-spotlight" id="walkthroughSpotlight" hidden></div>
     <div class="modal-card walkthrough-modal">
+      <div class="walkthrough-progress" id="walkthroughProgress" aria-live="polite"></div>
       <h2 id="walkthroughTitle">Welcome to MSBT</h2>
-      <p id="walkthroughBody">A short tour of the app and Quick Menu pins.</p>
+      <p id="walkthroughBody">A short overview of the main tabs and what they do.</p>
+      <div id="walkthroughLinks" class="walkthrough-links hidden"></div>
       <p id="walkthroughSdkNote" class="status-line warning hidden"></p>
-      <label class="walkthrough-dont-show">
+      <div id="walkthroughChoices" class="walkthrough-choices hidden" role="group" aria-label="Choose a walkthrough"></div>
+      <label class="walkthrough-dont-show" id="walkthroughDontShowRow">
         <input id="walkthroughDontShow" type="checkbox">
-        Don't show this walkthrough again
+        Don't auto-show this tour again until the next update
       </label>
       <div class="button-row wrap">
         <button id="walkthroughBackBtn" class="secondary">Back</button>
@@ -107,7 +111,7 @@
   </section>
 
   <main class="tab-shell">
-    <section id="tab-boosting" class="tab-panel active">
+    <section id="tab-boosting" class="tab-panel active" data-msbt-layout-tab="boosting">
       <section id="boostUpdateNotice" class="update-notice hidden" aria-live="polite">
         <div class="update-notice-copy">
           <h2 id="boostUpdateTitle">Update Available</h2>
@@ -122,7 +126,7 @@
       </section>
 
       <div class="grid two">
-        <section class="panel cyan">
+        <section class="panel cyan" data-msbt-panel="boost-target" data-msbt-span="6" data-msbt-title="Target Player">
           <h2>Target Player</h2>
           <p>Choose one player, or set Boost scope to All / Non-Host for Quick Max, XP, Currency, and Set Selected inventory. Serial Rewards still use their own Give Selected / All / Non-Host buttons.</p>
           <div id="bridgeSummary" class="status-line warning">Checking bridge...</div>
@@ -140,7 +144,7 @@
           <div id="targetSummary" class="status-line">Selected target: none</div>
         </section>
 
-        <section class="panel gold">
+        <section class="panel gold" data-msbt-panel="boost-quick-max" data-msbt-span="6" data-msbt-title="Quick Max">
           <h2>Quick Max</h2>
           <div class="button-grid">
             <button data-action="max_all">Max All</button>
@@ -154,7 +158,7 @@
       </div>
 
       <div class="grid two boost-dual-row">
-        <section class="panel purple uvh-panel">
+        <section class="panel purple uvh-panel" data-msbt-panel="boost-uvh" data-msbt-span="6" data-msbt-title="UVH Booster">
           <h2>UVH Booster</h2>
           <p>Runs UVH rank-up challenge tiers for the whole live lobby. Pressing UVH N runs tiers 1 through N; Run All queues tiers 1-7.</p>
           <div class="button-grid compact-buttons">
@@ -172,7 +176,7 @@
           <div class="status-line compact-note">Credit: UVH workflow adapted from Azzy UVH Booster by Azalea Asvail. Source credits Pyrex for UVH6/UVH7 challenge paths.</div>
         </section>
 
-        <section class="panel purple">
+        <section class="panel purple" data-msbt-panel="boost-rarity" data-msbt-span="6" data-msbt-title="Rarity Drop Weights">
           <h2>Rarity Drop Weights</h2>
           <p>Control drop-weight multipliers from GameState.RarityState. 100% is vanilla weight, 50% is half weight, and 0% removes that rarity from the drop pool.</p>
           <div class="rarity-grid compact-rarity">
@@ -235,7 +239,7 @@
         </section>
       </div>
 
-      <section class="panel gold">
+      <section class="panel gold" data-msbt-panel="boost-helpers" data-msbt-span="12" data-msbt-title="Quick Helpers">
         <h2>Quick Helpers</h2>
         <p>Pull ground loot to you and Super Dash helpers (Azzy-style). Use the gold <strong>+ QM</strong> buttons to pin them onto the in-game Quick Menu.</p>
         <div class="button-grid">
@@ -246,7 +250,7 @@
       </section>
 
       <div class="grid two">
-        <section class="panel purple">
+        <section class="panel purple" data-msbt-panel="boost-serial" data-msbt-span="6" data-msbt-title="Serial Rewards">
           <h2>Serial Rewards</h2>
           <p>Paste one or more serials. Delivery still uses the SDK bridge and the selected target.</p>
           <label for="boostSerialText">Serial Input</label>
@@ -276,7 +280,7 @@
           </div>
         </section>
 
-        <section class="panel cyan">
+        <section class="panel cyan" data-msbt-panel="boost-xp" data-msbt-span="6" data-msbt-title="Experience">
           <h2>Experience</h2>
           <div class="inline-fields">
             <label>
@@ -304,7 +308,7 @@
       </div>
 
       <div class="grid three">
-        <section class="panel green">
+        <section class="panel green" data-msbt-panel="boost-currency" data-msbt-span="4" data-msbt-title="Currency">
           <h2>Currency</h2>
           <label for="currencyKind">Currency Kind</label>
           <select id="currencyKind">
@@ -324,7 +328,7 @@
           </div>
         </section>
 
-        <section class="panel cyan">
+        <section class="panel cyan" data-msbt-panel="boost-inventory" data-msbt-span="4" data-msbt-title="Backpack / Bank Size">
           <h2>Backpack / Bank Size</h2>
           <label for="backpackSize">Backpack Size</label>
           <input id="backpackSize" type="number" min="1" value="999">
@@ -341,7 +345,7 @@
           <div id="inventoryStatus" class="status-line warning">Manual apply only. Enable auto to keep applying sizes while players load in.</div>
         </section>
 
-        <section class="panel pink">
+        <section class="panel pink" data-msbt-panel="boost-cheats" data-msbt-span="4" data-msbt-title="Cheats / Chests / Shinies">
           <h2>Cheats / Chests / Shinies</h2>
           <div class="button-grid">
             <button data-action="devperk_0">Give Experience</button>
@@ -365,7 +369,7 @@
         </section>
       </div>
 
-      <section class="panel">
+      <section class="panel" data-msbt-panel="boost-result" data-msbt-span="12" data-msbt-title="Boosting Result" data-msbt-resize="1">
         <h2>Boosting Result</h2>
         <pre id="boostOutput">No boosting action sent yet.</pre>
         <div class="do-not-click-wrap">
@@ -374,7 +378,7 @@
       </section>
     </section>
 
-    <section id="tab-quick-menu" class="tab-panel">
+    <section id="tab-quick-menu" class="tab-panel" data-msbt-layout-tab="quick-menu">
       <div class="section-heading">
         <div>
           <h2>Quick Menu Editor</h2>
@@ -383,11 +387,11 @@
         <div class="button-row wrap">
           <button id="quickMenuRefreshBtn">Refresh From Game</button>
           <button id="quickMenuClearPageBtn" class="danger">Clear Current Page</button>
-          <button id="walkthroughReplayBtn" class="secondary">Replay Walkthrough</button>
+          <button id="walkthroughReplayBtn" class="secondary">App Walkthrough</button>
         </div>
       </div>
       <div id="quickMenuStatus" class="status-line warning">Connect to the in-game bridge to load the Quick Menu layout.</div>
-      <section class="panel purple">
+      <section class="panel purple" data-msbt-panel="qm-modules" data-msbt-span="6" data-msbt-title="F7 Panel Modules">
         <h2>F7 Panel Modules</h2>
         <p class="muted-line">Optional panels (like rarity sliders) for the in-game menu. Off keeps the action grid compact.</p>
         <label class="checkbox-row">
@@ -396,7 +400,7 @@
         </label>
         <div id="quickMenuModulesStatus" class="status-line compact-note">Rarity panel: unequipped</div>
       </section>
-      <section class="panel gold quick-menu-pin-panel">
+      <section class="panel gold quick-menu-pin-panel" data-msbt-panel="qm-pin" data-msbt-span="6" data-msbt-title="Pin / Repeat From MSBT">
         <h2>Pin / Repeat From MSBT</h2>
         <p class="muted-line">Use the gold or small <strong>+ QM</strong> buttons on other tabs (Boosting, Player Movement, Serial Tools, …) to pin actions here with their current values.</p>
         <div id="quickMenuLastCommand" class="status-line">No last command recorded yet.</div>
@@ -411,14 +415,14 @@
       </section>
       <div id="quickMenuPageTabs" class="quick-menu-page-tabs" aria-label="Quick Menu pages"></div>
       <div class="quick-menu-editor-shell">
-        <section class="panel cyan quick-menu-slots-panel">
+        <section class="panel cyan quick-menu-slots-panel" data-msbt-panel="qm-slots" data-msbt-span="8" data-msbt-title="Quick Menu Slots" data-msbt-resize="1">
           <div class="section-heading">
             <h2 id="quickMenuPageTitle">Page 1</h2>
             <span id="quickMenuPageSummary" class="muted-line">0 / 21 assigned</span>
           </div>
           <div id="quickMenuSlotGrid" class="quick-menu-slot-grid"></div>
         </section>
-        <section class="panel purple quick-menu-slot-editor">
+        <section class="panel purple quick-menu-slot-editor" data-msbt-panel="qm-slot-editor" data-msbt-span="4" data-msbt-title="Selected Slot">
           <h2>Selected Slot</h2>
           <div id="quickMenuSelectedSummary" class="status-line">Select a slot.</div>
           <label for="quickMenuActionSelect">Command</label>
@@ -435,8 +439,8 @@
       </div>
     </section>
 
-    <section id="tab-serial-tools" class="tab-panel">
-      <section class="panel cyan">
+    <section id="tab-serial-tools" class="tab-panel" data-msbt-layout-tab="serial-tools">
+      <section class="panel cyan" data-msbt-panel="serial-tools-main" data-msbt-span="12" data-msbt-title="Serial Tools" data-msbt-resize="1">
         <h2>Serial Tools</h2>
         <p>Convert @U serials here. Works offline — no game connection needed.</p>
         <label for="serialToolsInput">Input</label>
@@ -471,7 +475,7 @@
         </div>
       </section>
 
-      <section class="panel purple">
+      <section class="panel purple" data-msbt-panel="serial-bookmarks" data-msbt-span="12" data-msbt-title="Serial Bookmarks" data-msbt-resize="1">
         <div class="section-heading">
           <div>
             <h2>Serial Bookmarks</h2>
@@ -555,7 +559,7 @@
         </div>
       </section>
 
-      <section class="panel purple">
+      <section class="panel purple" data-msbt-panel="serial-validator" data-msbt-span="12" data-msbt-title="Validator" data-msbt-resize="1">
         <h2>Validator</h2>
         <p>Validate one serial or a pasted list. Runs locally in the app.</p>
         <div class="grid two">
@@ -581,8 +585,8 @@
       </section>
     </section>
 
-    <section id="tab-inventory" class="tab-panel">
-      <section class="panel cyan inv-root">
+    <section id="tab-inventory" class="tab-panel" data-msbt-layout-tab="inventory">
+      <section class="panel cyan inv-root" data-msbt-panel="inv-main" data-msbt-span="12" data-msbt-title="Inventory" data-msbt-resize="1">
         <div class="section-heading">
           <div>
             <h2>Inventory</h2>
@@ -705,9 +709,9 @@
       </section>
     </section>
 
-    <section id="tab-bl4-codes" class="tab-panel">
+    <section id="tab-bl4-codes" class="tab-panel" data-msbt-layout-tab="bl4-codes">
       <div class="bl4-layout">
-        <section class="panel gold bl4-main-pane">
+        <section class="panel gold bl4-main-pane" data-msbt-panel="bl4-main" data-msbt-span="8" data-msbt-title="BL4 Codes" data-msbt-resize="1">
           <div class="section-heading">
             <div>
               <h2>BL4 Codes</h2>
@@ -793,7 +797,7 @@
           </section>
         </section>
 
-        <aside class="panel purple bl4-delivery-side" aria-label="BL4 Codes delivery">
+        <aside class="panel purple bl4-delivery-side" aria-label="BL4 Codes delivery" data-msbt-panel="bl4-delivery" data-msbt-span="4" data-msbt-title="Delivery">
           <h2>Delivery</h2>
           <p class="muted-line">Stays visible while you scroll the catalog. Sends checked cards, or the active code if none are checked.</p>
           <label for="bl4TargetSelect">Target</label>
@@ -839,12 +843,12 @@
       </div>
     </section>
 
-    <section id="tab-matt-editor" class="tab-panel">
-      <section class="panel editor-panel purple editor-panel-full">
+    <section id="tab-matt-editor" class="tab-panel" data-msbt-layout-tab="matt-editor">
+      <section class="panel editor-panel purple editor-panel-full" data-msbt-panel="matt-editor-main" data-msbt-span="12" data-msbt-title="Matt Editor" data-msbt-resize="1">
         <div class="section-heading">
           <div>
-            <h2>Embedded Matt Editor</h2>
-            <p>Build inside the editor, then use the draggable MSBT Delivery panel inside the editor to choose a target and send the final @U serial.</p>
+            <h2>Matt Editor</h2>
+            <p>Full save editor and item creator. Build or edit items and saves, then use the draggable MSBT Delivery panel to choose a target and send the final @U serial.</p>
             <p class="muted-line">Drag the MSBT Delivery header to move that panel out of the way while you edit.</p>
           </div>
           <div class="button-row">
@@ -852,12 +856,12 @@
             <button id="reloadEditorBtn">Reload</button>
           </div>
         </div>
-        <iframe id="editorFrame" title="Matt editor local frame"></iframe>
+        <iframe id="editorFrame" title="Matt Editor"></iframe>
       </section>
     </section>
 
-    <section id="tab-item-pool" class="tab-panel">
-      <section class="panel gold">
+    <section id="tab-item-pool" class="tab-panel" data-msbt-layout-tab="item-pool">
+      <section class="panel gold" data-msbt-panel="item-pool-main" data-msbt-span="12" data-msbt-title="Item Pool Spawning" data-msbt-resize="1">
         <h2>Item Pool Spawning</h2>
         <p>Filter item pools, select one or more rows, then spawn the selected pool(s) near the local player.</p>
         <div class="grid three compact">
@@ -889,9 +893,9 @@
       </section>
     </section>
 
-    <section id="tab-dev-spawner" class="tab-panel">
+    <section id="tab-dev-spawner" class="tab-panel" data-msbt-layout-tab="dev-spawner">
       <div class="grid three dev-spawner-row">
-        <section class="panel cyan">
+        <section class="panel cyan" data-msbt-panel="dev-spawn" data-msbt-span="4" data-msbt-title="Standard Spawning">
           <h2>Standard Spawning</h2>
           <div id="devSpawnerWarning" class="status-line warning">No Dev Spawner action sent yet. After heavy spawning, use Clear ASD Spawns.</div>
           <div class="grid two compact dev-spawn-fields">
@@ -930,7 +934,7 @@
           </div>
         </section>
 
-        <section class="panel purple">
+        <section class="panel purple" data-msbt-panel="dev-setup" data-msbt-span="4" data-msbt-title="Setup / Inspect">
           <h2>Setup / Inspect</h2>
           <div class="button-row wrap">
             <button data-dev-spawner-action="dev_spawner_status">ASD Status</button>
@@ -982,7 +986,7 @@
           </details>
         </section>
 
-        <section class="panel gold">
+        <section class="panel gold" data-msbt-panel="dev-barrel" data-msbt-span="4" data-msbt-title="Barrel Logo">
           <h2>Barrel Logo</h2>
           <div class="grid two compact">
             <label>
@@ -1025,7 +1029,7 @@
         </section>
       </div>
 
-      <section class="panel cyan dev-spawner-browser">
+      <section class="panel cyan dev-spawner-browser" data-msbt-panel="dev-browser" data-msbt-span="12" data-msbt-title="Actor Browser" data-msbt-resize="1">
         <div class="dev-browser-toolbar">
           <div>
             <h2>Actor Browser</h2>
@@ -1046,16 +1050,11 @@
         <input id="devAiDirectOnly" type="checkbox" class="hidden-check">
         <div id="devActorSummary" class="status-line">Loading actor catalog...</div>
 
-        <div class="grid three dev-spawner-row compact dev-browser-split">
+        <div class="grid two dev-spawner-row compact dev-browser-split">
           <div class="dev-browser-section">
             <h3>Active Boss Chars</h3>
             <div id="devBossPickSummary" class="status-line">Loading active boss characters...</div>
             <div id="devBossPickRows" class="dev-row-list compact"></div>
-          </div>
-          <div class="dev-browser-section">
-            <h3>Example List</h3>
-            <div id="devQuickPickSummary" class="status-line">Loading example list...</div>
-            <div id="devQuickPickRows" class="dev-row-list compact"></div>
           </div>
           <div class="dev-browser-section">
             <h3>My Favorites</h3>
@@ -1097,14 +1096,14 @@
         </div>
       </section>
 
-      <section class="panel">
+      <section class="panel" data-msbt-panel="dev-result" data-msbt-span="12" data-msbt-title="Dev Spawner Result" data-msbt-resize="1">
         <h2>Dev Spawner Result</h2>
         <pre id="devSpawnerOutput" class="dev-spawner-output">No Dev Spawner action sent yet.</pre>
       </section>
     </section>
 
-    <section id="tab-map-travel" class="tab-panel">
-      <section class="panel pink">
+    <section id="tab-map-travel" class="tab-panel" data-msbt-layout-tab="map-travel">
+      <section class="panel pink" data-msbt-panel="travel-main" data-msbt-span="12" data-msbt-title="Map Travel" data-msbt-resize="1">
         <h2>Map Travel</h2>
         <p>Select a map first, then choose a travel station on that map. Favorites can hold maps or stations in one list.</p>
         <div class="grid two">
@@ -1132,7 +1131,7 @@
         </div>
       </section>
 
-      <section class="panel cyan">
+      <section class="panel cyan" data-msbt-panel="travel-favorites" data-msbt-span="12" data-msbt-title="Travel Favorites" data-msbt-resize="1">
         <h2>Travel Favorites</h2>
         <p>One favorites list for maps and stations. Rename labels anytime; Travel uses the saved location type.</p>
         <div class="button-row wrap compact-actions">
@@ -1156,8 +1155,8 @@
       </section>
     </section>
 
-    <section id="tab-player-movement" class="tab-panel">
-      <section class="panel green">
+    <section id="tab-player-movement" class="tab-panel" data-msbt-layout-tab="player-movement">
+      <section class="panel green" data-msbt-panel="move-presets" data-msbt-span="12" data-msbt-title="Presets / Save / Apply">
         <h2>Presets / Save / Apply</h2>
         <p>UI-only controls. Apply Now sends the visible movement values through the SDK bridge.</p>
         <div class="button-row wrap">
@@ -1180,7 +1179,7 @@
       </section>
 
       <div class="grid three">
-        <section class="panel cyan">
+        <section class="panel cyan" data-msbt-panel="move-speed" data-msbt-span="4" data-msbt-title="Speed">
           <h2>Speed</h2>
           <label for="movementSpeedScale">Speed Scale</label>
           <input id="movementSpeedScale" type="number" min="0.05" max="25" step="0.05" value="1">
@@ -1191,7 +1190,7 @@
           </div>
         </section>
 
-        <section class="panel purple">
+        <section class="panel purple" data-msbt-panel="move-jump" data-msbt-span="4" data-msbt-title="Jump / Gravity">
           <h2>Jump / Gravity</h2>
           <label for="movementJumpHeight">Master JumpGoal Height</label>
           <input id="movementJumpHeight" type="number" min="0" max="10000" step="1" value="198">
@@ -1217,7 +1216,7 @@
           <input id="movementGravityScale" type="number" min="0" max="10" step="0.01" value="1">
         </section>
 
-        <section class="panel green">
+        <section class="panel green" data-msbt-panel="move-infjump" data-msbt-span="4" data-msbt-title="Infinite Jump">
           <h2>Infinite Jump</h2>
           <p>Enable per player. All ON applies to every current party player.</p>
           <div class="button-row wrap">
@@ -1237,7 +1236,7 @@
       </div>
 
       <div class="grid three">
-        <section class="panel gold">
+        <section class="panel gold" data-msbt-panel="move-wall" data-msbt-span="4" data-msbt-title="Wall / Step">
           <h2>Wall / Step</h2>
           <label for="movementStepHeight">Max Step Height</label>
           <input id="movementStepHeight" type="number" min="0" max="1000" step="1" value="45">
@@ -1250,7 +1249,7 @@
           </div>
         </section>
 
-        <section class="panel cyan">
+        <section class="panel cyan" data-msbt-panel="move-glide" data-msbt-span="4" data-msbt-title="Glide / Dash / Vault">
           <h2>Glide / Dash / Vault</h2>
           <div class="grid two compact">
             <label>
@@ -1280,7 +1279,7 @@
           </div>
         </section>
 
-        <section class="panel purple">
+        <section class="panel purple" data-msbt-panel="move-world" data-msbt-span="4" data-msbt-title="World / Utility">
           <h2>World / Utility</h2>
           <label for="movementTimeDilation">Time Dilation</label>
           <input id="movementTimeDilation" type="number" min="0.01" max="64" step="0.01" value="1">
@@ -1299,7 +1298,7 @@
         </section>
       </div>
 
-      <section class="panel cyan">
+      <section class="panel cyan" data-msbt-panel="move-teleport" data-msbt-span="12" data-msbt-title="Teleport Selected Player">
         <h2>Teleport Selected Player</h2>
         <p>Teleports the selected target player to the selected party slot pawn.</p>
         <div class="button-row wrap">
@@ -1310,15 +1309,15 @@
         </div>
       </section>
 
-      <section class="panel">
+      <section class="panel" data-msbt-panel="move-result" data-msbt-span="12" data-msbt-title="Player Movement Result" data-msbt-resize="1">
         <h2>Player Movement Result</h2>
         <pre id="movementOutput">No movement action sent yet.</pre>
       </section>
     </section>
 
-    <section id="tab-activity" class="tab-panel">
+    <section id="tab-activity" class="tab-panel" data-msbt-layout-tab="activity">
       <div class="grid two">
-        <section class="panel purple">
+        <section class="panel purple" data-msbt-panel="activity-log" data-msbt-span="6" data-msbt-title="Activity Log" data-msbt-resize="1">
           <h2>Activity Log</h2>
           <div class="button-row wrap">
             <button id="refreshActivityBtn">Refresh Status</button>
@@ -1327,16 +1326,16 @@
           </div>
           <pre id="activityOutput">Activity starts here.</pre>
         </section>
-        <section class="panel cyan">
+        <section class="panel cyan" data-msbt-panel="activity-bridge" data-msbt-span="6" data-msbt-title="Bridge Raw Status" data-msbt-resize="1">
           <h2>Bridge Raw Status</h2>
           <pre id="statusOutput">Click Refresh Status to check the SDK bridge.</pre>
         </section>
       </div>
     </section>
 
-    <section id="tab-report" class="tab-panel">
+    <section id="tab-report" class="tab-panel" data-msbt-layout-tab="report">
       <div class="grid two">
-        <section class="panel purple">
+        <section class="panel purple" data-msbt-panel="report-form" data-msbt-span="6" data-msbt-title="Report an Issue" data-msbt-resize="1">
           <h2>Report an Issue to the Developer</h2>
           <p>Use this tab to send bugs or feature requests to the MSBT developer (FunkYouSHiFT) on GitHub. The app builds a clean report, opens a GitHub issue draft, then you can attach screenshots or logs before submitting.</p>
           <label for="reportKind">Report Type</label>
@@ -1374,15 +1373,15 @@
           </div>
           <div id="reportStatus" class="status-line">Issues go to the developer on github.com/funkyoushift/MattsSDKBoostingTools/issues.</div>
         </section>
-        <section class="panel cyan">
+        <section class="panel cyan" data-msbt-panel="report-preview" data-msbt-span="6" data-msbt-title="Preview" data-msbt-resize="1">
           <h2>Preview</h2>
           <pre id="reportPreview">Fill out the fields, then refresh the preview.</pre>
         </section>
       </div>
     </section>
 
-    <section id="tab-updates" class="tab-panel">
-      <section class="panel purple">
+    <section id="tab-updates" class="tab-panel" data-msbt-layout-tab="updates">
+      <section class="panel purple" data-msbt-panel="updates-main" data-msbt-span="12" data-msbt-title="MSBT Updates" data-msbt-resize="1">
         <h2>MSBT Updates</h2>
         <div id="versionSummary" class="status-line">Loading local version info...</div>
         <div id="updateSummary" class="status-line">No update check yet.</div>
@@ -1413,7 +1412,7 @@
         <pre id="updateOutput">Checks GitHub Releases metadata without changing files.</pre>
       </section>
 
-      <section class="panel green">
+      <section class="panel green" data-msbt-panel="updates-saved" data-msbt-span="6" data-msbt-title="Saved Data / Backups">
         <h2>Saved Data / Backups</h2>
         <p>Bookmarks, Dev Spawner favorites, Travel favorites, movement presets, rarity presets, and window size are stored outside the install folder so updates should not erase them.</p>
         <div id="savedDataSummary" class="status-line">Saved data folder not checked yet.</div>
@@ -1425,7 +1424,7 @@
         <pre id="savedDataOutput">Use this before updating if you want a manual backup of saved Electron data.</pre>
       </section>
 
-      <section class="panel cyan">
+      <section class="panel cyan" data-msbt-panel="updates-sdk" data-msbt-span="6" data-msbt-title="SDK Mod Install / Update">
         <h2>SDK Mod Install / Update</h2>
         <p>Installs MattsSDKBoostingTools.sdkmod and the ActorScriptDeployer folder required by Dev Spawner. It will not touch unrelated mods.</p>
         <label for="sdkModsPath">Borderlands 4 sdk_mods folder</label>
@@ -1539,6 +1538,8 @@
     </div>
   </div>
 
+  <script src="vendor/gridstack/gridstack-all.js"></script>
+  <script src="panel_layout.js"></script>
   <script src="renderer.js"></script>
 </body>
 </html>

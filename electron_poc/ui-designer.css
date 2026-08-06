@@ -33,13 +33,14 @@
   --ui-grid-gap: 8px;
   --ui-section-gap: 8px;
 
-  /* Text sizing */
+  /* Chrome text/control sizes stay fixed. Content text scale is applied in
+     styles.css on .msbt-panel-body via --msbt-text-scale (View → Text size). */
   --ui-title-size: 20px;
   --ui-section-title-size: 13px;
   --ui-body-size: 12px;
   --ui-small-size: 10px;
 
-  /* Buttons */
+  /* Buttons (layout chrome / header / tabs — never scale with text size) */
   --ui-button-height: 30px;
   --ui-button-padding-y: 6px;
   --ui-button-padding-x: 10px;
@@ -49,7 +50,7 @@
   --ui-tab-button-padding-y: 6px;
   --ui-tab-button-padding-x: 8px;
 
-  /* Form fields */
+  /* Form fields (base); panel bodies may scale textarea mins only */
   --ui-field-height: 30px;
   --ui-field-padding-y: 5px;
   --ui-field-padding-x: 7px;

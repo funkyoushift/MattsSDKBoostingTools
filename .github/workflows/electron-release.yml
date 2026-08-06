@@ -57,7 +57,7 @@ jobs:
             ".\dist_electron\MSBT-Installer-v$version.exe",
             ".\dist_electron\MSBT-Installer-v$version.exe.blockmap",
             ".\dist_electron\latest.yml",
-            ".\releases\latest.json",
+            ".\docs\releases\latest.json",
             ".\dist_electron\MSBT-Portable-v$version-win-x64.zip"
           )
           foreach ($path in $required) {
@@ -88,7 +88,7 @@ jobs:
             $title = "Matt's SDK Boosting Tools v$version"
           }
           $buildDate = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
-          $notesFile = ".\releases\RELEASE_NOTES_v$version.md"
+          $notesFile = ".\docs\releases\RELEASE_NOTES_v$version.md"
           if (Test-Path $notesFile) {
             $notesBody = (Get-Content -Raw $notesFile).TrimEnd()
           } else {
@@ -156,7 +156,7 @@ https://github.com/bl-sdk/oak2-mod-manager/releases/tag/v0.3
             ".\dist_electron\MSBT-Installer-v$version.exe",
             ".\dist_electron\MSBT-Installer-v$version.exe.blockmap",
             ".\dist_electron\latest.yml",
-            ".\releases\latest.json",
+            ".\docs\releases\latest.json",
             ".\dist_electron\MSBT-Portable-v$version-win-x64.zip"
           )
           $args = @("release", "create", $tag) + $assets + @("--title", $title, "--notes-file", $notesPath, "--verify-tag")

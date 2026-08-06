@@ -22,7 +22,7 @@ Upload these to a GitHub Release instead of committing them to source:
 - `MSBT-Portable-v<version>-win-x64.zip`
 - checksums for release files (optional)
 
-Do **not** commit installers or portable ZIPs into `releases/` in git. Keep `releases/latest.json` + `RELEASE_NOTES_v*.md` (+ Discord media if desired).
+Do **not** commit installers or portable ZIPs into `docs/releases/` in git. Keep `docs/releases/latest.json` + `RELEASE_NOTES_v*.md` (+ Discord media if desired).
 
 Public download page:
 

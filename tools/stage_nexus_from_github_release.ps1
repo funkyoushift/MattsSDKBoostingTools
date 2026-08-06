@@ -1,5 +1,5 @@
 param(
-    [string]$ManifestPath = ".\releases\latest.json",
+    [string]$ManifestPath = ".\docs\releases\latest.json",
     [string]$OutputRoot = ".\_nexus_upload",
     [switch]$OpenFolder
 )

@@ -9,7 +9,7 @@ $ElectronRoot = Join-Path $RepoRoot "electron_poc"
 $NodeModules = Join-Path $ElectronRoot "node_modules"
 $OutputRoot = Join-Path $RepoRoot "dist_electron"
 $ElectronPackageJson = Join-Path $ElectronRoot "package.json"
-$ReleaseManifest = Join-Path $RepoRoot "releases\latest.json"
+$ReleaseManifest = Join-Path $RepoRoot "docs\releases\latest.json"
 $PrepareElectronPython = Join-Path $RepoRoot "tools\prepare_electron_python.ps1"
 $SourceGzoCatalog = Join-Path $RepoRoot "external_app\v22_parts_codes_fixed\resources\MattsSDKBoostingTools_gzo_codes.json"
 
@@ -53,13 +53,13 @@ function Assert-ReleaseManifestVersion {
     param([Parameter(Mandatory=$true)][string]$ExpectedVersion)
 
     if (-not (Test-Path $ReleaseManifest)) {
-        throw "Release manifest not found: $ReleaseManifest. Update releases\latest.json before building Electron so the app bundles the current update manifest."
+        throw "Release manifest not found: $ReleaseManifest. Update docs\releases\latest.json before building Electron so the app bundles the current update manifest."
     }
 
     $manifest = Get-Content -Raw $ReleaseManifest | ConvertFrom-Json
     $manifestVersion = [string]$manifest.package_version
     if ($manifestVersion -ne $ExpectedVersion) {
-        throw "Release manifest package_version '$manifestVersion' does not match Electron version '$ExpectedVersion'. Update releases\latest.json before .\tools\build_electron_beta.ps1 -Installer."
+        throw "Release manifest package_version '$manifestVersion' does not match Electron version '$ExpectedVersion'. Update docs\releases\latest.json before .\tools\build_electron_beta.ps1 -Installer."
     }
 }
 

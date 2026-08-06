@@ -74,8 +74,8 @@ The Electron NSIS installer bundles the app, `MattsSDKBoostingTools.sdkmod`, and
 Example assets:
 
 ```text
-MSBT-Installer-v2.2.0.exe
-MSBT-Portable-v2.2.0-win-x64.zip
+MSBT-Installer-v2.2.1.exe
+MSBT-Portable-v2.2.1-win-x64.zip
 ```
 
 ## Preflight Syntax Checks

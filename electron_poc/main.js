@@ -61,6 +61,7 @@ const LATEST_MANIFEST_URL = "https://github.com/funkyoushift/MattsSDKBoostingToo
 const FALLBACK_LATEST_MANIFEST_URL = "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/docs/releases/latest.json";
 const CODES_API = "https://save-editor.be/GZO/Borderlands4/codes/api.php";
 const SMOKE_MODE = process.argv.includes("--smoke");
+const FORCE_TOUR = process.argv.includes("--force-tour");
 const INSTALL_SDKMODS_AND_EXIT = process.argv.includes("--install-sdkmods-and-exit");
 const MATT_EDITOR_INDEX = path.join(
   RESOURCE_ROOT,
@@ -541,6 +542,16 @@ function createWindow() {
       win.webContents.setZoomFactor(1);
     } catch {
       // Ignore zoom APIs missing on older Electron builds.
+    }
+    if (FORCE_TOUR) {
+      // After renderer init (update check + maybe auto-tour), force Welcome 1/8.
+      setTimeout(() => {
+        win.webContents
+          .executeJavaScript(
+            "typeof window.msbtResetTutorials === 'function' && window.msbtResetTutorials()"
+          )
+          .catch(() => {});
+      }, 2800);
     }
   });
   bindWindowState(win);

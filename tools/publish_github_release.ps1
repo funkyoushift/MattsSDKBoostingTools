@@ -8,7 +8,7 @@ param(
 $ErrorActionPreference = "Stop"
 
 $RepoRoot = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
-$ManifestPath = Join-Path $RepoRoot "releases\latest.json"
+$ManifestPath = Join-Path $RepoRoot "docs\releases\latest.json"
 $ElectronDist = Join-Path $RepoRoot "dist_electron"
 $ElectronPackageJson = Join-Path $RepoRoot "electron_poc\package.json"
 
@@ -127,7 +127,7 @@ try {
 $BuiltAtUtc = [DateTime]::UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ")
 
 if ($Manifest.package_version -and [string]$Manifest.package_version -ne $PackageVersion) {
-    throw "releases\latest.json package_version '$($Manifest.package_version)' does not match package version '$PackageVersion'."
+    throw "docs\releases\latest.json package_version '$($Manifest.package_version)' does not match package version '$PackageVersion'."
 }
 
 $InstallerDownloadsBadge = "https://img.shields.io/github/downloads/$Repository/$TagName/$ElectronInstallerName`?label=Installer%20downloads&color=2ea44f"
@@ -135,7 +135,7 @@ $PortableDownloadsBadge = "https://img.shields.io/github/downloads/$Repository/$
 $InstallerDownloadUrl = "https://github.com/$Repository/releases/download/$TagName/$ElectronInstallerName"
 $PortableDownloadUrl = "https://github.com/$Repository/releases/download/$TagName/$ElectronUnpackedZipName"
 
-$ReleaseNotesFile = Join-Path $RepoRoot "releases\RELEASE_NOTES_v$PackageVersion.md"
+$ReleaseNotesFile = Join-Path $RepoRoot "docs\releases\RELEASE_NOTES_v$PackageVersion.md"
 if (Test-Path $ReleaseNotesFile) {
     $notesBody = (Get-Content -Raw $ReleaseNotesFile).TrimEnd()
 } else {

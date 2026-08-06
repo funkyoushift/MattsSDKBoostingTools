@@ -418,6 +418,7 @@ const state = {
   selectedTarget: "",
   selectedTargetName: "",
   startupUpdateNoticeShown: false,
+  deferredStartupUpdateInfo: null,
   travelFavorites: { version: 1, favorites: {} },
   travelFavoriteSelectedKey: "",
   travelMaps: [],
@@ -4423,7 +4424,9 @@ function updateNoticeInfo(info) {
 function renderBoostUpdateNotice(info) {
   if (!els.boostUpdateNotice) return;
   const notice = updateNoticeInfo(info);
-  if (!notice) {
+  // Keep update chrome out of the way while any coach-mark tour is open —
+  // the Boosting banner otherwise collides with the tour overlay.
+  if (!notice || walkthroughState.active) {
     els.boostUpdateNotice.classList.add("hidden");
     return;
   }
@@ -4457,6 +4460,12 @@ function maybeShowStartupUpdateModal(info) {
   if (state.startupUpdateNoticeShown) return;
   const notice = updateNoticeInfo(info);
   if (!notice) return;
+  // Defer until the first-run / post-update tour finishes so the two modals
+  // do not stack on top of each other.
+  if (walkthroughState.active || shouldAutoShowMainTutorial()) {
+    state.deferredStartupUpdateInfo = info;
+    return;
+  }
   state.startupUpdateNoticeShown = true;
   renderStartupUpdateModal(notice);
 }
@@ -6135,14 +6144,12 @@ function renderDevActors() {
     state.devSpawnerSelectedActor
     && !state.devSpawnerFilteredActors.includes(state.devSpawnerSelectedActor)
     && !state.devSpawnerFilteredBossPicks.includes(state.devSpawnerSelectedActor)
-    && !state.devSpawnerFilteredQuickPicks.includes(state.devSpawnerSelectedActor)
     && !state.devSpawnerFilteredMyFavorites.includes(state.devSpawnerSelectedActor)
   ) {
     clearDevActorSelection();
   }
 
   renderDevBossPicks(query, rawQuery);
-  renderDevQuickPicks(query, rawQuery);
   renderDevMyFavorites(query, rawQuery);
 
   const pageSize = 36;
@@ -7445,6 +7452,9 @@ function switchTab(tabId) {
   document.querySelectorAll(".tab-panel").forEach((panel) => {
     panel.classList.toggle("active", panel.id === `tab-${tabId}`);
   });
+  if (window.MsbtPanelLayout && typeof window.MsbtPanelLayout.onTabShown === "function") {
+    window.MsbtPanelLayout.onTabShown(tabId);
+  }
   if (tabId === "matt-editor") {
     void loadEditor();
   } else if (tabId === "quick-menu") {
@@ -7469,6 +7479,8 @@ function switchTab(tabId) {
     }
   }
 }
+
+window.switchTab = switchTab;
 
 function wireEvents() {
   document.querySelectorAll(".tab-bar [data-tab]").forEach((button) => {
@@ -7904,77 +7916,589 @@ function wireEvents() {
   if (walkthroughNextBtn) walkthroughNextBtn.addEventListener("click", () => walkthroughNext());
   if (walkthroughBackBtn) walkthroughBackBtn.addEventListener("click", () => walkthroughBack());
   if (walkthroughSkipBtn) walkthroughSkipBtn.addEventListener("click", () => void endWalkthrough({ skipped: true }));
-  if (walkthroughReplayBtn) walkthroughReplayBtn.addEventListener("click", () => void startWalkthrough({ force: true }));
+  if (walkthroughReplayBtn) walkthroughReplayBtn.addEventListener("click", () => void startMainTutorial({ force: true }));
 }
 
-const WALKTHROUGH_STEPS = [
-  {
-    title: "Quick MSBT tour",
-    body: "How to pin Boosting, Item Pool, and Dev Spawner actions to the F7 Quick Menu. Skip anytime.",
-    tab: "boosting",
-    target: null
-  },
-  {
-    title: "Install the SDK tools",
-    body: "Live actions need oak2-mod-manager v0.3 and the MSBT SDK mod. Use Updates to install/update the bundled .sdkmod, then fully restart Borderlands 4.",
-    tab: "updates",
-    target: "tab-updates",
-    sdk: true
-  },
-  {
-    title: "Bridge must be green",
-    body: "With the game running and MSBT loaded, this summary turns green. + QM pins and Quick Menu actions need that live bridge.",
-    tab: "boosting",
-    target: "bridgeSummary"
-  },
-  {
-    title: "Basic pin: look for + QM",
-    body: "Gold + QM buttons appear beside supported actions (Max All, rarity Apply, Pull Loot, etc.). They capture the command and its current values into a Quick Menu slot.",
-    tab: "boosting",
-    target: "tab-boosting"
-  },
-  {
-    title: "Pick the slot first (optional)",
-    body: "Open ★ Quick Menu, choose a page and click an empty slot. The next + QM pin can target that slot — or the pin dialog lets you pick page/slot when you add.",
-    tab: "quick-menu",
-    target: "quickMenuSlotGrid"
-  },
-  {
-    title: "Equip rarity on the Quick Menu",
-    body: "Optional in-game modules live here. Check Equip rarity weight sliders so the Quick Menu shows the same rarity controls as Boosting. Dragging those sliders live-applies and syncs back to this app.",
-    tab: "quick-menu",
-    target: "quickMenuRarityPanelEquip"
-  },
-  {
-    title: "Pin an item pool",
-    body: "On Item Pool Spawning, search/select a pool, set level/count, then use + QM next to Spawn Selected Item Pool(s). That locks the chosen pool(s) into a Quick Menu button.",
-    tab: "item-pool",
-    target: "spawnItempoolBtn"
-  },
-  {
-    title: "Pin a Dev Spawner actor",
-    body: "On Dev Spawner, browse/select an actor so Selected Actor is filled, then use + QM beside Spawn Selected Actor. The pin stores that actor name and spawn options.",
-    tab: "dev-spawner",
-    target: "devSpawnerSpawnAiBtn"
-  },
-  {
-    title: "Check your pins",
-    body: "Return to ★ Quick Menu to rename labels, clear slots, or rearrange pages. Pin Last Command also works after you run something once from the app.",
-    tab: "quick-menu",
-    target: "quickMenuPinLastBtn"
-  },
-  {
-    title: "Open it in-game",
-    body: "In Borderlands 4, press F7 to open the Quick Menu. Esc closes modals, F6 unstuck restores mouse/look, and MOVE / −/+ / THEME adjust the panel. Your pinned item pools and spawns fire with the values you saved.",
-    tab: "quick-menu",
-    target: "quickMenuSlotGrid"
-  }
+/** localStorage keys for post-update / first-run main tour gating */
+const TUTORIAL_LS_LAST_SEEN = "msbt.lastSeenVersion";
+const TUTORIAL_LS_MAIN_SEEN = "msbt.tutorial.mainSeen";
+
+/** Per-tab chooser entries (end of main tour + View menu helpers) */
+const MAIN_TAB_CHOICES = [
+  { id: "boosting", label: "Boosting" },
+  { id: "serial-tools", label: "Serial Tools" },
+  { id: "inventory", label: "Inventory" },
+  { id: "bl4-codes", label: "BL4 Codes" },
+  { id: "matt-editor", label: "Matt Editor" },
+  { id: "item-pool", label: "Item Pool" },
+  { id: "dev-spawner", label: "Dev Spawner" },
+  { id: "map-travel", label: "Map Travel" },
+  { id: "player-movement", label: "Player Movement" },
+  { id: "activity", label: "Activity Log" },
+  { id: "report", label: "Report" },
+  { id: "updates", label: "Updates" }
 ];
+
+/**
+ * Structured tutorial content map.
+ * Tour ids: main | layout | quick-menu-setup | tab:<tabId> (via TAB_TUTORIALS)
+ */
+const TUTORIAL_TOURS = {
+  /** First-run / post-update: brief overview of what the app does */
+  main: [
+    {
+      title: "Welcome to MSBT",
+      body: "You need Borderlands 4 + the MSBT SDK mod (.sdkmod in the game’s sdk_mods folder) + this Electron app. Live actions also need a connected bridge — use header Refresh Status.\n\nOffline: serial convert/validate. Live (game + mod + bridge): boosting, spawns, travel, delivery.\n\nPut MattsSDKBoostingTools.sdkmod next to ActorScriptDeployer under Borderlands 4/sdk_mods/. Or use Updates → Install / Update SDK Mod.",
+      tab: "boosting",
+      target: "statusBtn",
+      sdk: true,
+      links: [
+        {
+          label: "Download latest release (app + .sdkmod)",
+          url: "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest"
+        },
+        {
+          label: "Open Updates tab (install SDK mod)",
+          action: "updates-tab"
+        }
+      ]
+    },
+    {
+      title: "Bridge & status",
+      body: "Live actions need the SDK bridge. Click Refresh Status in the header — this line shows whether the bridge is up and which players are available. Offline tools (serial convert, catalogs) still work without it.",
+      tab: "boosting",
+      target: "bridgeSummary"
+    },
+    {
+      title: "Boosting",
+      body: "This is the main live lobby tab. Pick a target player (or All / Non-Host), then use Quick Max, UVH, rarity weights, XP, currency, backpack/bank size, helpers, cheats, and serial rewards. Most buttons need the bridge.",
+      tab: "boosting",
+      targetSel: "#tab-boosting [data-msbt-panel='boost-quick-max']"
+    },
+    {
+      title: "Serial Tools",
+      body: "Paste a @U or decoded serial → Convert to decode parts and rebuild @U (works offline). Validate serials, save keepers as Bookmarks (named groups), then Deliver Selected / All / Non-Host when the bridge is connected.",
+      tab: "serial-tools",
+      targetSel: "#tab-serial-tools [data-msbt-panel='serial-tools-main']"
+    },
+    {
+      title: "Map Travel",
+      body: "Jump to a map or travel station while the game is running. Select a map, then a station when you can — station travel is usually safer. Save places you reuse under Travel Favorites.",
+      tab: "map-travel",
+      targetSel: "#tab-map-travel [data-msbt-panel='travel-main']"
+    },
+    {
+      title: "Player Movement",
+      body: "Tune speed, jump, gravity, Infinite Jump, glide/dash, and world helpers. Sliders only change the form until you press Apply Now (bridge required). Save presets if you switch styles often.",
+      tab: "player-movement",
+      targetSel: "#tab-player-movement [data-msbt-panel='move-presets']"
+    },
+    {
+      title: "Quick Menu",
+      body: "In Borderlands 4, open the in-game Quick Menu (F7) for an action dock (no BLImGui). This ★ Quick Menu tab is the desktop editor for that dock: Refresh From Game, click a slot, pick a command, Save Slot. Pin common actions with + QM so you stay in-game.",
+      tab: "quick-menu",
+      targetSel: "#tab-quick-menu .section-heading"
+    },
+    {
+      title: "Updates",
+      body: "Check Electron app and SDK mod versions here. Download Electron updates, or Install / Update SDK Mod into your Borderlands 4 sdk_mods folder. Fully restart the game after any SDK change.",
+      tab: "updates",
+      targetSel: "#tab-updates [data-msbt-panel='updates-main']",
+      sdk: true
+    },
+    {
+      title: "Activity Log",
+      body: "Recent app and bridge messages appear here. If a button seems to do nothing, check this log first. Clear Local Log when it gets noisy; copy useful lines before opening Report.",
+      tab: "activity",
+      targetSel: "#tab-activity [data-msbt-panel='activity-log']"
+    },
+    {
+      title: "Arrange your layout",
+      body: "Every tab has a layout toolbar: drag panels by the title bar, stack by dropping center-on-center, Compact to tidy, Reset for defaults. Full editor tour is on the next screen — or View → Layout walkthrough anytime.",
+      tab: "boosting",
+      targetSel: "#tab-boosting .msbt-layout-toolbar"
+    },
+    {
+      title: "What would you like to do now?",
+      body: "Pick a full deep-dive or a short per-tab walkthrough. After each one you’ll return here so you can take another. Tap I’m done when you’re finished. Replay anytime from View, Quick Menu → App Walkthrough, or each tab’s Walkthrough button.\n\nQuick Menu setup covers the ★ Quick Menu tab and in-game dock — there is no separate QM-tab-only tour.",
+      tab: "boosting",
+      type: "choices"
+    }
+  ],
+
+  /** Full layout editor tour (always reachable) */
+  layout: [
+    {
+      title: "Layout toolbar",
+      body: "Every main tab has a layout bar: Panels (show/hide), Compact, Reset layout, and Walkthrough. Arrangements save per tab in this profile.",
+      tab: "boosting",
+      targetSel: "#tab-boosting .msbt-layout-toolbar"
+    },
+    {
+      title: "Drag, overlap, click to front",
+      body: "Drag a panel by its title bar. Panels may overlap while you arrange. Click a panel to bring it to the front. Resize from edges or the corner handle.",
+      tab: "boosting",
+      targetSel: "#tab-boosting [data-msbt-panel='boost-target']"
+    },
+    {
+      title: "Stack panels (center drop)",
+      body: "Drop a panel onto the center of another (dashed highlight) to stack them as tabs inside one frame. Switch with the stack tab buttons.",
+      tab: "boosting",
+      targetSel: "#tab-boosting .msbt-layout-hint"
+    },
+    {
+      title: "Detach a stacked panel",
+      body: "Drag a stack tab's name outward to detach that panel, or use ⧉ on the active stack tab.",
+      tab: "boosting",
+      targetSel: "#tab-boosting .msbt-layout-toolbar"
+    },
+    {
+      title: "Compact and Reset",
+      body: "Compact packs panels, fills gaps, and clears overlaps. Reset layout restores that tab's default arrangement.",
+      tab: "boosting",
+      targetSel: "#tab-boosting .msbt-layout-toolbar-actions"
+    },
+    {
+      title: "Restore hidden panels",
+      body: "Collapse/hide from panel chrome, then restore from the toolbar Panels menu or View → Panels (checkbox list for the active tab).",
+      tab: "boosting",
+      targetSel: "#tab-boosting .msbt-panels-menu"
+    },
+    {
+      title: "View — text size & tabs",
+      body: "Header View menu: content text size (A− / A+ / slider, 85%–140%), show/hide or reorder main nav tabs, and walkthrough shortcuts (Layout / Quick Menu setup / App overview).",
+      tab: "boosting",
+      targetSel: "[data-msbt-view-menu]"
+    }
+  ],
+
+  /** Full Quick Menu setup tour (always reachable; also launched from ★ Quick Menu Walkthrough) */
+  "quick-menu-setup": [
+    {
+      title: "In-game Quick Menu (F7)",
+      body: "With the MSBT SDK mod loaded, open the in-game Quick Menu (F7) in Borderlands 4 — a right-docked action panel. No BLImGui required. F7 also closes it; Close F7 works from the header.",
+      tab: "quick-menu",
+      targetSel: "#tab-quick-menu .section-heading"
+    },
+    {
+      title: "Esc, F6, dock chrome",
+      body: "Esc closes Quick Menu modals (release-gated so pause is not stolen). F6 unstuck restores GameOnly mouse/look if UI capture sticks. On the dock: MOVE places it, THEME cycles looks, −/+ resizes.",
+      tab: "quick-menu",
+      target: "quickMenuStatus"
+    },
+    {
+      title: "Pages, slots, INV",
+      body: "Up to 5 pages × 21 slots (3×7). Page tabs switch sets of actions. The INV tab browses live inventory in-game (same idea as the Electron Inventory tab).",
+      tab: "quick-menu",
+      targetSel: "#tab-quick-menu [data-msbt-panel='qm-slots']"
+    },
+    {
+      title: "Electron editor",
+      body: "This tab edits the live layout: Refresh From Game loads current pages; click a slot, pick a command, optional custom label, then Save Slot. Clear Current Page wipes the active page.",
+      tab: "quick-menu",
+      target: "quickMenuRefreshBtn"
+    },
+    {
+      title: "Pin with + QM",
+      body: "On Boosting, Movement, Serial Tools, BL4, Item Pool, Travel, and more, gold + QM buttons capture the action with current values into a slot. Pin Last Command (on the Quick Menu tab) works after you run something once.",
+      tab: "boosting",
+      targetSel: "#tab-boosting .qm-add-button",
+      targetSelFallback: "#tab-boosting [data-msbt-panel='boost-helpers']"
+    },
+    {
+      title: "Modules & rarity",
+      body: "Optional F7 Panel Modules (e.g. rarity weight sliders) keep Apply / Reset / Leg Only / Pearl Only on the dock. Unequip to keep the action grid compact. Sliders stay in sync with Boosting.",
+      tab: "quick-menu",
+      targetSel: "#tab-quick-menu [data-msbt-panel='qm-modules']"
+    },
+    {
+      title: "Travel closes Quick Menu",
+      body: "Map or station travel closes the in-game Quick Menu first so input is not stuck during the world change. Prefer station travel when you can. Electron Map Travel and pinned travel actions share that path.",
+      tab: "map-travel",
+      targetSel: "#tab-map-travel [data-msbt-panel='travel-main']"
+    },
+    {
+      title: "Desktop complements the dock",
+      body: "Use Electron for heavy browsing (catalogs, inventory filters, spawner search). Pin the few actions you need mid-fight onto the in-game Quick Menu (F7) so you stay in-game. Replay this tour anytime from View → Quick Menu walkthrough or the ★ Quick Menu Walkthrough button.",
+      tab: "quick-menu",
+      targetSel: "#tab-quick-menu .section-heading"
+    }
+  ]
+};
+
+/** Post-update / first-run tour steps */
+const MAIN_TUTORIAL_STEPS = TUTORIAL_TOURS.main;
+
+/** Per-tab tips (Walkthrough button on each layout toolbar) */
+const TAB_TUTORIALS = {
+  boosting: [
+    {
+      title: "Target & bridge",
+      body: "Refresh Status (header) until the bridge is green. Choose a party player, or Target All / Non-Host for Quick Max, XP, Currency, and backpack/bank Set Selected. Kick uses the selected player.",
+      tab: "boosting",
+      targetSel: "#tab-boosting [data-msbt-panel='boost-target']"
+    },
+    {
+      title: "Quick Max & UVH",
+      body: "Quick Max one-shots cash, eridium, level 60, spec 701, SDUs, or Max All. UVH Booster runs lobby challenge tiers 1–N (or Run All 1–7); Cancel stops a queued run.",
+      tab: "boosting",
+      targetSel: "#tab-boosting [data-msbt-panel='boost-quick-max']"
+    },
+    {
+      title: "Rarity drop weights",
+      body: "Sliders are % of vanilla weight (0 removes that rarity). Apply pushes to the game; presets only change the UI until Apply. Optional Remember on startup loads sliders without applying.",
+      tab: "boosting",
+      targetSel: "#tab-boosting [data-msbt-panel='boost-rarity']"
+    },
+    {
+      title: "Experience",
+      body: "Pick XP track + target level, then Set Level or Max Player Level / Spec 701. Needs bridge + target.",
+      tab: "boosting",
+      targetSel: "#tab-boosting [data-msbt-panel='boost-xp']"
+    },
+    {
+      title: "Currency & backpack / bank",
+      body: "Currency: kind + amount, Give / Max. Backpack / Bank Size: set numbers, Set Selected or Apply to All Party; auto checkbox keeps re-applying as players load.",
+      tab: "boosting",
+      targetSel: "#tab-boosting [data-msbt-panel='boost-inventory']"
+    },
+    {
+      title: "Serial Rewards",
+      body: "Paste @U serials, optional level override + copies, then Give Selected / All / Non-Host. Delivery needs the bridge; progress shows in the top Serial Delivery bar.",
+      tab: "boosting",
+      targetSel: "#tab-boosting [data-msbt-panel='boost-serial']"
+    },
+    {
+      title: "Helpers, cheats, + QM",
+      body: "Quick Helpers: Pull Loot / Super Dash. Cheats panel covers ammo, demigod, chests, shinies, debug cam, etc. Gold + QM beside supported buttons pins that action into the in-game Quick Menu (F7) with current values.",
+      tab: "boosting",
+      targetSel: "#tab-boosting [data-msbt-panel='boost-helpers']"
+    },
+    {
+      title: "Layout tip",
+      body: "Panels are rearrangeable — stack Target with Quick Max, Compact when messy. See View → Layout walkthrough for the full editor tour.",
+      tab: "boosting",
+      targetSel: "#tab-boosting .msbt-layout-toolbar"
+    }
+  ],
+  "serial-tools": [
+    {
+      title: "Convert & decode",
+      body: "Paste a @U or decoded serial → Convert. Copy Deserialized, Parts Breakdown, or rebuilt @U. No bridge required for convert/decode.",
+      tab: "serial-tools",
+      targetSel: "#tab-serial-tools [data-msbt-panel='serial-tools-main']"
+    },
+    {
+      title: "Bookmarks",
+      body: "Save named serials in groups. Search/filter, check rows or whole folders, Copy Selected, then Deliver Selected / All / Non-Host (bridge + target required).",
+      tab: "serial-tools",
+      targetSel: "#tab-serial-tools [data-msbt-panel='serial-bookmarks']"
+    },
+    {
+      title: "Validate",
+      body: "Details → Validate / Confirm Active checks the open bookmark. The Validator panel does basic or bulk line-by-line checks locally.",
+      tab: "serial-tools",
+      targetSel: "#tab-serial-tools [data-msbt-panel='serial-validator']"
+    },
+    {
+      title: "Delivery & + QM",
+      body: "Set Serial Bookmarks Target and Copies before Deliver. + QM Selected/All/Non-Host pins checked serials into the in-game Quick Menu (F7). Watch the top Serial Delivery progress bar during live gives.",
+      tab: "serial-tools",
+      target: "bookmarkQmSelectedBtn"
+    },
+    {
+      title: "Layout tip",
+      body: "Stack Convert + Bookmarks for a tighter workspace — View → Layout walkthrough covers drag/stack/Compact.",
+      tab: "serial-tools",
+      targetSel: "#tab-serial-tools .msbt-layout-toolbar"
+    }
+  ],
+  inventory: [
+    {
+      title: "Load a player's bags",
+      body: "Pick Party player (P1–P4 / Boosting target), then Refresh Inventory while in-game. Listen host works best for reading other players. Bridge required.",
+      tab: "inventory",
+      target: "invRefreshBtn"
+    },
+    {
+      title: "Browse & filter",
+      body: "Equipped strip on top; backpack grid below. Sort (Recent/Rarity/Type/Level/Manufacturer), category chips, and Filter (search, rarity, damage, type, manufacturer).",
+      tab: "inventory",
+      targetSel: "#tab-inventory .inv-toolbar"
+    },
+    {
+      title: "Item detail & give",
+      body: "Click an equipped or backpack item to open this detail strip (serial + meta). Give to is separate from the viewing player — set recipient + Multiplier, then Send to Game.",
+      tab: "inventory",
+      targetSel: "#invDetail .inv-give-row",
+      revealInvDetail: true
+    },
+    {
+      title: "Send elsewhere",
+      body: "From the open item detail: Copy Serial, Send to Serial Rewards (Boosting paste), Open in Serial Tools, or Open Matt Editor.",
+      tab: "inventory",
+      targetSel: "#invDetail .button-row.wrap",
+      revealInvDetail: true
+    },
+    {
+      title: "Capacity note",
+      body: "Backpack/bank size lives on Boosting → Backpack / Bank Size (not this tab). The in-game Quick Menu (F7) also has an INV tab with the same live inventory idea.",
+      tab: "inventory",
+      targetSel: "#tab-inventory [data-msbt-panel='inv-main']"
+    }
+  ],
+  "bl4-codes": [
+    {
+      title: "Browse offline",
+      body: "Load Catalog / Refresh GZO, then filter by search, manufacturer, listing, rarity, type, creator, Mattmab result. Image cards load from GZO when available.",
+      tab: "bl4-codes",
+      targetSel: "#tab-bl4-codes [data-msbt-panel='bl4-main']"
+    },
+    {
+      title: "Select & inspect",
+      body: "Check cards or click one for Details (serial + parts). Copy, Bookmark This, Import Selected To Bookmarks, or Validate / Confirm Active.",
+      tab: "bl4-codes",
+      target: "bl4ValidateBtn"
+    },
+    {
+      title: "Delivery panel",
+      body: "Right-side Delivery stays visible while you scroll. Set Target, optional level override + copies, then Deliver Selected / All / Non-Host (bridge required).",
+      tab: "bl4-codes",
+      targetSel: "#tab-bl4-codes [data-msbt-panel='bl4-delivery']"
+    },
+    {
+      title: "+ QM & submit",
+      body: "+ QM pins checked/active codes into the in-game Quick Menu (F7). Submit Your Code to GZO opens the submit flow (serial normalize + required screenshot).",
+      tab: "bl4-codes",
+      target: "bl4SubmitGzoBtn"
+    }
+  ],
+  "matt-editor": [
+    {
+      title: "Matt Editor",
+      body: "A full save editor and item creator. Press Load Editor to open it — build or edit items and saves here.",
+      tab: "matt-editor",
+      target: "loadEditorBtn"
+    },
+    {
+      title: "Support Mattmab",
+      body: "If Matt Editor helps you, consider supporting Mattmab on Ko-fi. The button below opens his page in your browser.",
+      tab: "matt-editor",
+      target: "loadEditorBtn",
+      links: [
+        {
+          label: "Support Mattmab on Ko-fi",
+          url: "https://ko-fi.com/mattmab"
+        }
+      ]
+    }
+  ],
+  "item-pool": [
+    {
+      title: "Find pools",
+      body: "Search and Category filter the list. Multi-select rows (Ctrl/Shift click). Set Level (1–60) and Quantity.",
+      tab: "item-pool",
+      target: "itempoolSearch"
+    },
+    {
+      title: "Spawn near you",
+      body: "Spawn Selected Item Pool(s) drops loot near the local player through the bridge. Watch the result pre below the buttons.",
+      tab: "item-pool",
+      target: "spawnItempoolBtn"
+    },
+    {
+      title: "+ QM pin",
+      body: "When the Quick Menu catalog is loaded, the gold + QM beside Spawn Selected pins that pool spawn (with level/count) into an in-game Quick Menu slot.",
+      tab: "item-pool",
+      targetSel: "#tab-item-pool .qm-add-button",
+      targetSelFallback: "#spawnItempoolBtn"
+    },
+    {
+      title: "Layout tip",
+      body: "Single-panel tab — Compact/Reset still help if you resize oddly. See Layout walkthrough for shared editor habits.",
+      tab: "item-pool",
+      targetSel: "#tab-item-pool .msbt-layout-toolbar"
+    }
+  ],
+  "dev-spawner": [
+    {
+      title: "Pick an actor",
+      body: "Actor Browser: search, Categories, Active Boss Chars, My Favorites, then Actor Results. Selecting a row fills Selected Actor and the spawn name field.",
+      tab: "dev-spawner",
+      targetSel: "#tab-dev-spawner [data-msbt-panel='dev-browser']"
+    },
+    {
+      title: "Spawn settings",
+      body: "Standard Spawning: Distance, +Z, Count, Spacing, Scale, Target/List Limit. Spawn Selected Actor sends via Actor Script Deployer (ASD).",
+      tab: "dev-spawner",
+      targetSel: "#tab-dev-spawner [data-msbt-panel='dev-spawn']"
+    },
+    {
+      title: "Setup / Inspect & clear",
+      body: "ASD Status, Cache, Diagnostics, Probe, Template Spawn, Lost Loot, etc. After heavy spawning use Clear ASD Spawns. The SDK also auto-clears each spawn batch after ~60s.",
+      tab: "dev-spawner",
+      targetSel: "#tab-dev-spawner [data-msbt-panel='dev-setup']"
+    },
+    {
+      title: "Favorites & barrel logo",
+      body: "Add Selected to My Favorites with optional label/note. Barrel Logo spells text with actors — Run Barrel Logo / Use Selected from the logo panel.",
+      tab: "dev-spawner",
+      targetSel: "#tab-dev-spawner [data-msbt-panel='dev-barrel']"
+    },
+    {
+      title: "Layout tip",
+      body: "Stack Standard Spawning with Setup / Inspect for a tighter workspace. View → Layout walkthrough for drag/stack details.",
+      tab: "dev-spawner",
+      targetSel: "#tab-dev-spawner .msbt-layout-toolbar"
+    }
+  ],
+  "map-travel": [
+    {
+      title: "Maps then stations",
+      body: "Select a map (search works), then pick a travel station filtered to that map — or enable Show all travel stations. Prefer station travel when you can.",
+      tab: "map-travel",
+      targetSel: "#tab-map-travel [data-msbt-panel='travel-main']"
+    },
+    {
+      title: "Travel buttons",
+      body: "Travel to Selected Map / Station needs the bridge. Travel Favorites hold maps or stations in one list — Travel Favorite uses the saved type.",
+      tab: "map-travel",
+      target: "travelStationBtn"
+    },
+    {
+      title: "Favorites workflow",
+      body: "Add Map/Station to Favorites, rename Label/Note, Save Label/Note, Remove Favorite. + QM can pin map/station travel when the catalog is loaded.",
+      tab: "map-travel",
+      targetSel: "#tab-map-travel [data-msbt-panel='travel-favorites']"
+    },
+    {
+      title: "Quick Menu note",
+      body: "Travel closes the in-game Quick Menu (F7) first so mouse/look are not stuck across the load. Safe to travel from Electron or a pinned Quick Menu travel action.",
+      tab: "map-travel",
+      target: "travelOutput"
+    }
+  ],
+  "player-movement": [
+    {
+      title: "Apply is what counts",
+      body: "Sliders/fields are UI-only until Apply Now (or any Apply Movement Settings). Save/Load Preset and Fast/Moon/etc. only change the form until you apply through the bridge.",
+      tab: "player-movement",
+      targetSel: "#tab-player-movement [data-msbt-panel='move-presets']"
+    },
+    {
+      title: "Speed, jump, gravity",
+      body: "Speed Scale / Walk speed; JumpGoal height (optional per sprint/double/slide); Gravity Scale. Extreme values can feel bad — Reset Defaults restores the form.",
+      tab: "player-movement",
+      targetSel: "#tab-player-movement [data-msbt-panel='move-speed']"
+    },
+    {
+      title: "Infinite Jump",
+      body: "All ON/OFF for the party, or Selected ON/OFF/Toggle for one player. Needs bridge + player list. Useful with travel; leave OFF if you want vanilla jump.",
+      tab: "player-movement",
+      targetSel: "#tab-player-movement [data-msbt-panel='move-infjump']"
+    },
+    {
+      title: "Wall, glide, world",
+      body: "Wall/Step, Glide/Dash/Vault (optional zero vault costs), Time Dilation, Noclip, No Target, Pull Loot, Super Dash, Delete Ground Items. + QM pins supported helpers to the in-game Quick Menu (F7).",
+      tab: "player-movement",
+      targetSel: "#tab-player-movement [data-msbt-panel='move-world']"
+    },
+    {
+      title: "Teleport party",
+      body: "Teleport Selected Player → To P1–P4 moves the movement-target player to that party slot pawn.",
+      tab: "player-movement",
+      targetSel: "#tab-player-movement [data-msbt-panel='move-teleport']"
+    },
+    {
+      title: "Layout tip",
+      body: "Stack presets with Infinite Jump if you tweak often. Full layout tour: View → Layout walkthrough.",
+      tab: "player-movement",
+      targetSel: "#tab-player-movement .msbt-layout-toolbar"
+    }
+  ],
+  activity: [
+    {
+      title: "Activity Log",
+      body: "Chronological app messages (actions, tour starts, errors). Clear Local Log when noisy. Useful to copy context before Report.",
+      tab: "activity",
+      targetSel: "#tab-activity [data-msbt-panel='activity-log']"
+    },
+    {
+      title: "Bridge raw status",
+      body: "Refresh Status hits the SDK bridge and dumps raw status here. Clear Bridge Markers clears bridge-side log markers when supported.",
+      tab: "activity",
+      targetSel: "#tab-activity [data-msbt-panel='activity-bridge']"
+    },
+    {
+      title: "When to use it",
+      body: "If a button “does nothing,” check Activity + Bridge Raw first — offline bridge vs action failure looks different here than in the game.",
+      tab: "activity",
+      target: "refreshActivityBtn"
+    }
+  ],
+  report: [
+    {
+      title: "Fill the form",
+      body: "Bug or Feature, Title, Description, Steps, Expected/Actual, optional Notes. Keep titles short; steps numbered.",
+      tab: "report",
+      targetSel: "#tab-report [data-msbt-panel='report-form']"
+    },
+    {
+      title: "Diagnostics & preview",
+      body: "Include redacted app/bridge diagnostics (on by default). Refresh Preview, then Copy or Save Report locally.",
+      tab: "report",
+      targetSel: "#tab-report [data-msbt-panel='report-preview']"
+    },
+    {
+      title: "Submit on GitHub",
+      body: "Submit Issue to Developer on GitHub opens a prefilled draft for the MSBT repo — attach screenshots/logs there before posting.",
+      tab: "report",
+      target: "reportGithubBtn",
+      targetSel: "#reportGithubBtn"
+    }
+  ],
+  updates: [
+    {
+      title: "Version cards",
+      body: "Shows Electron app current/latest, bundled SDK mod version, and detected installed .sdkmod path. Check Updates from the header anytime.",
+      tab: "updates",
+      targetSel: "#tab-updates [data-msbt-panel='updates-main']",
+      sdk: true
+    },
+    {
+      title: "Electron update",
+      body: "Download Electron Update, then Restart / Install, or open the installer / manual ZIP from GitHub Releases.",
+      tab: "updates",
+      target: "updateDownloadBtn"
+    },
+    {
+      title: "SDK mod install",
+      body: "Detect or browse your Borderlands 4 sdk_mods folder, then Install / Update SDK Mod (MSBT + ActorScriptDeployer for Dev Spawner). Fully restart the game afterward.",
+      tab: "updates",
+      targetSel: "#tab-updates [data-msbt-panel='updates-sdk']"
+    },
+    {
+      title: "Saved data / backups",
+      body: "Bookmarks, favorites, presets, and window size live outside the install folder. Export Settings Backup before major upgrades if you want an extra copy.",
+      tab: "updates",
+      targetSel: "#tab-updates [data-msbt-panel='updates-saved']"
+    }
+  ]
+};
 
 const walkthroughState = {
   active: false,
   step: 0,
-  dontShowAgain: false
+  mode: "main", // "main" | "layout" | "quick-menu-setup" | "tab"
+  steps: MAIN_TUTORIAL_STEPS,
+  tabId: null,
+  dontShowAgain: false,
+  /** When true, finishing/skipping a nested tour reopens the main chooser. */
+  chooserSession: false,
+  _spotlightTimer: null,
+  _spotlightToken: 0,
+  _repositionBound: false,
+  _revealedInvDetail: false
 };
 
 function walkthroughNodes() {
@@ -7982,12 +8506,88 @@ function walkthroughNodes() {
     modal: document.getElementById("walkthroughModal"),
     title: document.getElementById("walkthroughTitle"),
     body: document.getElementById("walkthroughBody"),
+    links: document.getElementById("walkthroughLinks"),
     sdkNote: document.getElementById("walkthroughSdkNote"),
     dontShow: document.getElementById("walkthroughDontShow"),
+    dontShowRow: document.getElementById("walkthroughDontShowRow"),
+    choices: document.getElementById("walkthroughChoices"),
+    progress: document.getElementById("walkthroughProgress"),
     spotlight: document.getElementById("walkthroughSpotlight"),
     back: document.getElementById("walkthroughBackBtn"),
-    next: document.getElementById("walkthroughNextBtn")
+    next: document.getElementById("walkthroughNextBtn"),
+    skip: document.getElementById("walkthroughSkipBtn")
   };
+}
+
+function mainTourChoicesStepIndex() {
+  const steps = TUTORIAL_TOURS.main;
+  const idx = steps.findIndex((row) => row && row.type === "choices");
+  return idx >= 0 ? idx : Math.max(0, steps.length - 1);
+}
+
+/** Reopen the post-overview chooser without ending the keep-offering session. */
+function reopenMainChooser() {
+  walkthroughState.mode = "main";
+  walkthroughState.tabId = null;
+  walkthroughState.steps = TUTORIAL_TOURS.main;
+  walkthroughState.step = mainTourChoicesStepIndex();
+  walkthroughState.chooserSession = true;
+  walkthroughState.active = true;
+  suppressTourCollidingChrome();
+  const nodes = walkthroughNodes();
+  if (nodes.modal) nodes.modal.classList.remove("hidden");
+  renderWalkthroughStep();
+}
+
+function walkthroughModeLabel() {
+  if (walkthroughState.mode === "layout") return "Layout editor";
+  if (walkthroughState.mode === "quick-menu-setup") return "Quick Menu setup";
+  if (walkthroughState.mode === "tab") {
+    const id = walkthroughState.tabId;
+    const entry = MAIN_TAB_CHOICES.find((row) => row.id === id);
+    return entry ? `${entry.label} tips` : "Tab tips";
+  }
+  return "App tour";
+}
+
+function currentAppVersionString() {
+  const info = state.versionInfo || {};
+  return String(info.appVersion || info.packageVersion || "0.0.0").trim() || "0.0.0";
+}
+
+function readTutorialLocal(key) {
+  try {
+    return String(localStorage.getItem(key) || "").trim();
+  } catch {
+    return "";
+  }
+}
+
+function writeTutorialLocal(key, value) {
+  try {
+    localStorage.setItem(key, String(value || ""));
+  } catch {
+    /* ignore quota / private mode */
+  }
+}
+
+function markMainTutorialSeen(version) {
+  const ver = String(version || currentAppVersionString());
+  writeTutorialLocal(TUTORIAL_LS_LAST_SEEN, ver);
+  writeTutorialLocal(TUTORIAL_LS_MAIN_SEEN, ver);
+}
+
+function shouldAutoShowMainTutorial() {
+  const current = currentAppVersionString();
+  const lastSeen = readTutorialLocal(TUTORIAL_LS_LAST_SEEN);
+  const mainSeen = readTutorialLocal(TUTORIAL_LS_MAIN_SEEN);
+  // First install / first run in this profile
+  if (!lastSeen) return true;
+  // Updated since last marked version
+  if (lastSeen !== current) return true;
+  // Same version already completed/skipped
+  if (mainSeen === current) return false;
+  return false;
 }
 
 function clearWalkthroughSpotlight() {
@@ -8000,25 +8600,305 @@ function clearWalkthroughSpotlight() {
   spotlight.style.height = "0px";
 }
 
-function placeWalkthroughSpotlight(targetId) {
-  const { spotlight } = walkthroughNodes();
-  if (!spotlight) return;
-  if (!targetId) {
-    clearWalkthroughSpotlight();
+function suppressTourCollidingChrome() {
+  walkthroughState.hidStartupUpdateModal = Boolean(
+    els.startupUpdateModal && !els.startupUpdateModal.classList.contains("hidden")
+  );
+  if (els.boostUpdateNotice) els.boostUpdateNotice.classList.add("hidden");
+  hideStartupUpdateModal();
+}
+
+function restoreTourCollidingChrome() {
+  const info = state.versionInfo
+    ? { ...state.versionInfo, updateState: state.latestUpdateState }
+    : null;
+  if (info) renderBoostUpdateNotice(info);
+  const deferred = state.deferredStartupUpdateInfo;
+  if (deferred) {
+    state.deferredStartupUpdateInfo = null;
+    maybeShowStartupUpdateModal(deferred);
+    walkthroughState.hidStartupUpdateModal = false;
     return;
   }
-  const target = document.getElementById(targetId);
+  if (walkthroughState.hidStartupUpdateModal) {
+    walkthroughState.hidStartupUpdateModal = false;
+    const notice = info ? updateNoticeInfo(info) : null;
+    if (notice) renderStartupUpdateModal(notice);
+  }
+}
+
+function clearWalkthroughLinks() {
+  const { links } = walkthroughNodes();
+  if (!links) return;
+  links.innerHTML = "";
+  links.classList.add("hidden");
+}
+
+function renderWalkthroughLinks(step) {
+  const { links } = walkthroughNodes();
+  if (!links) return;
+  const rows = Array.isArray(step && step.links) ? step.links : [];
+  links.innerHTML = "";
+  if (!rows.length) {
+    links.classList.add("hidden");
+    return;
+  }
+  links.classList.remove("hidden");
+  rows.forEach((row) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = row.action === "updates-tab" ? "secondary" : "";
+    btn.textContent = row.label || "Open link";
+    btn.addEventListener("click", () => {
+      if (row.action === "updates-tab") {
+        switchTab("updates");
+        return;
+      }
+      const url = String(row.url || state.latestInstallerUrl || state.latestDownloadUrl || "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest").trim();
+      if (window.msbt && typeof window.msbt.openExternal === "function") {
+        window.msbt.openExternal(url);
+      }
+    });
+    links.appendChild(btn);
+  });
+}
+
+function resolveWalkthroughTarget(step) {
+  if (!step) return null;
+  if (step.target) {
+    const byId = document.getElementById(step.target);
+    if (byId) return byId;
+  }
+  if (step.targetSel) {
+    const node = document.querySelector(step.targetSel);
+    if (node) return node;
+  }
+  if (step.targetSelFallback) {
+    const fallback = document.querySelector(step.targetSelFallback);
+    if (fallback) return fallback;
+  }
+  return null;
+}
+
+function walkthroughCardNode() {
+  return document.querySelector("#walkthroughModal .walkthrough-modal");
+}
+
+function clampWalkthroughNumber(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function resetWalkthroughCardPosition() {
+  const card = walkthroughCardNode();
+  if (!card) return;
+  card.classList.remove("walkthrough-modal-anchored", "walkthrough-modal-centered");
+  card.style.top = "";
+  card.style.left = "";
+  card.style.right = "";
+  card.style.bottom = "";
+  card.style.transform = "";
+}
+
+function centerWalkthroughCard() {
+  const card = walkthroughCardNode();
+  if (!card) return;
+  card.classList.remove("walkthrough-modal-anchored");
+  card.classList.add("walkthrough-modal-centered");
+  card.style.top = "";
+  card.style.left = "";
+  card.style.right = "";
+  card.style.bottom = "";
+  card.style.transform = "";
+}
+
+function rectsOverlap(a, b, pad = 10) {
+  return !(
+    a.right + pad < b.left
+    || a.left - pad > b.right
+    || a.bottom + pad < b.top
+    || a.top - pad > b.bottom
+  );
+}
+
+function placeWalkthroughCardAwayFrom(target) {
+  const card = walkthroughCardNode();
+  if (!card) return;
+  if (!target) {
+    centerWalkthroughCard();
+    return;
+  }
+  card.classList.remove("walkthrough-modal-centered");
+  card.classList.add("walkthrough-modal-anchored");
+  // Measure with current width class applied.
+  const gap = 14;
+  const vw = window.innerWidth || 1200;
+  const vh = window.innerHeight || 800;
+  const highlight = target.getBoundingClientRect();
+  const measured = card.getBoundingClientRect();
+  const cw = Math.min(measured.width || 440, vw - 24);
+  const ch = Math.min(measured.height || 280, Math.min(vh - 32, 640));
+  const candidates = [
+    { top: highlight.bottom + gap, left: highlight.left }, // below
+    { top: highlight.top - ch - gap, left: highlight.left }, // above
+    { top: highlight.top, left: highlight.right + gap }, // right
+    { top: highlight.top, left: highlight.left - cw - gap }, // left
+    { top: gap, left: vw - cw - gap }, // top-right fallback
+    { top: vh - ch - gap, left: gap } // bottom-left fallback
+  ];
+  const highlightBox = {
+    left: highlight.left,
+    top: highlight.top,
+    right: highlight.right,
+    bottom: highlight.bottom
+  };
+  let best = null;
+  for (const raw of candidates) {
+    const left = clampWalkthroughNumber(raw.left, gap, Math.max(gap, vw - cw - gap));
+    const top = clampWalkthroughNumber(raw.top, gap, Math.max(gap, vh - ch - gap));
+    const box = { left, top, right: left + cw, bottom: top + ch };
+    if (!rectsOverlap(box, highlightBox, 12)) {
+      best = { left, top };
+      break;
+    }
+    if (!best) best = { left, top };
+  }
+  if (!best) {
+    best = { left: gap, top: gap };
+  }
+  card.style.top = `${Math.round(best.top)}px`;
+  card.style.left = `${Math.round(best.left)}px`;
+  card.style.transform = "none";
+}
+
+function activateWalkthroughStackPanel(panel) {
+  if (!panel) return;
+  const stack = panel.closest(".msbt-stack");
+  if (!stack) return;
+  const panelId = panel.getAttribute("data-msbt-panel");
+  if (!panelId) return;
+  if (panel.classList.contains("msbt-stack-active")) return;
+  const escaped = (typeof CSS !== "undefined" && CSS.escape) ? CSS.escape(panelId) : panelId;
+  const tabBtn = stack.querySelector(`[data-panel-id="${escaped}"]`);
+  if (tabBtn && typeof tabBtn.click === "function") {
+    tabBtn.click();
+  }
+}
+
+function prepareWalkthroughTarget(step) {
+  if (!step) return;
+  if (step.revealInvDetail) {
+    const detail = document.getElementById("invDetail");
+    if (detail) {
+      detail.classList.remove("hidden");
+      walkthroughState._revealedInvDetail = true;
+      const title = document.getElementById("invDetailTitle");
+      if (title && (!String(title.textContent || "").trim() || title.textContent === "Item")) {
+        title.textContent = "Selected item detail";
+      }
+      const meta = document.getElementById("invDetailMeta");
+      if (meta && !String(meta.textContent || "").trim()) {
+        meta.textContent = "Opens when you click an equipped or backpack item. Tour preview shown so the controls are visible.";
+      }
+    }
+  } else if (walkthroughState._revealedInvDetail) {
+    // Leave detail open if the user already had items; only hide when we opened a blank preview.
+    const meta = document.getElementById("invDetailMeta");
+    const serial = document.getElementById("invDetailSerial");
+    const isPreview = meta && /Tour preview/i.test(String(meta.textContent || ""));
+    const emptySerial = !serial || !String(serial.value || "").trim();
+    if (isPreview && emptySerial) {
+      const detail = document.getElementById("invDetail");
+      if (detail) detail.classList.add("hidden");
+    }
+    walkthroughState._revealedInvDetail = false;
+  }
+}
+
+function scrollWalkthroughTargetIntoView(target) {
+  if (!target || typeof target.scrollIntoView !== "function") return;
+  const panel = target.closest("[data-msbt-panel]") || (target.hasAttribute && target.hasAttribute("data-msbt-panel") ? target : null);
+  activateWalkthroughStackPanel(panel);
+  try {
+    target.scrollIntoView({ block: "center", inline: "nearest", behavior: "smooth" });
+  } catch {
+    try {
+      target.scrollIntoView(true);
+    } catch {
+      /* ignore */
+    }
+  }
+  const shell = document.querySelector(".tab-shell");
+  if (shell && typeof shell.getBoundingClientRect === "function") {
+    const shellRect = shell.getBoundingClientRect();
+    const rect = target.getBoundingClientRect();
+    if (rect.top < shellRect.top || rect.bottom > shellRect.bottom) {
+      const delta = rect.top - shellRect.top - shellRect.height / 2 + rect.height / 2;
+      shell.scrollTop += delta;
+    }
+  }
+}
+
+function applyWalkthroughSpotlightRect(target) {
+  const { spotlight } = walkthroughNodes();
+  if (!spotlight) return;
   if (!target) {
     clearWalkthroughSpotlight();
     return;
   }
   const rect = target.getBoundingClientRect();
   const pad = 8;
+  const width = Math.max(36, rect.width + pad * 2);
+  const height = Math.max(36, rect.height + pad * 2);
   spotlight.hidden = false;
   spotlight.style.top = `${Math.max(0, rect.top - pad)}px`;
   spotlight.style.left = `${Math.max(0, rect.left - pad)}px`;
-  spotlight.style.width = `${Math.max(40, rect.width + pad * 2)}px`;
-  spotlight.style.height = `${Math.max(40, rect.height + pad * 2)}px`;
+  spotlight.style.width = `${width}px`;
+  spotlight.style.height = `${height}px`;
+}
+
+function placeWalkthroughSpotlight(step, { skipScroll = false } = {}) {
+  const { spotlight } = walkthroughNodes();
+  if (!spotlight) return;
+  if (walkthroughState._spotlightTimer) {
+    window.clearTimeout(walkthroughState._spotlightTimer);
+    walkthroughState._spotlightTimer = null;
+  }
+  prepareWalkthroughTarget(step);
+  const target = resolveWalkthroughTarget(step);
+  if (!target) {
+    clearWalkthroughSpotlight();
+    centerWalkthroughCard();
+    return;
+  }
+  const token = ++walkthroughState._spotlightToken;
+  if (!skipScroll) {
+    scrollWalkthroughTargetIntoView(target);
+  }
+  const finish = () => {
+    if (token !== walkthroughState._spotlightToken || !walkthroughState.active) return;
+    const live = resolveWalkthroughTarget(step) || target;
+    applyWalkthroughSpotlightRect(live);
+    placeWalkthroughCardAwayFrom(live);
+  };
+  // Smooth scroll + tab/layout paint: reposition after scroll settles.
+  finish();
+  walkthroughState._spotlightTimer = window.setTimeout(finish, skipScroll ? 40 : 320);
+}
+
+function bindWalkthroughReposition() {
+  if (walkthroughState._repositionBound) return;
+  walkthroughState._repositionBound = true;
+  const handler = () => {
+    if (!walkthroughState.active) return;
+    const steps = currentWalkthroughSteps();
+    const step = steps[walkthroughState.step];
+    if (!step || step.type === "choices") return;
+    placeWalkthroughSpotlight(step, { skipScroll: true });
+  };
+  window.addEventListener("resize", handler);
+  const shell = document.querySelector(".tab-shell");
+  if (shell) shell.addEventListener("scroll", handler, { passive: true });
+  walkthroughState._repositionHandler = handler;
 }
 
 async function refreshWalkthroughSdkNote() {
@@ -8061,18 +8941,131 @@ async function refreshWalkthroughSdkNote() {
   }
 }
 
+function clearWalkthroughChoices() {
+  const { choices } = walkthroughNodes();
+  if (!choices) return;
+  choices.innerHTML = "";
+  choices.classList.add("hidden");
+}
+
+function appendWalkthroughChoiceButton(host, { label, className, onClick }) {
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = className || "secondary";
+  btn.textContent = label;
+  btn.addEventListener("click", onClick);
+  host.appendChild(btn);
+  return btn;
+}
+
+function launchWalkthroughAfterMainChoice(starter) {
+  walkthroughState.chooserSession = true;
+  void endWalkthrough({ skipped: false, quiet: true }).then(() => {
+    starter({ fromChooser: true });
+  });
+}
+
+function renderWalkthroughChoices() {
+  const { choices, next } = walkthroughNodes();
+  if (!choices) return;
+  choices.innerHTML = "";
+  choices.classList.remove("hidden");
+  centerWalkthroughCard();
+
+  const deep = document.createElement("div");
+  deep.className = "walkthrough-choice-group";
+  const deepHead = document.createElement("div");
+  deepHead.className = "walkthrough-choice-heading";
+  deepHead.textContent = "Full walkthroughs";
+  deep.appendChild(deepHead);
+  appendWalkthroughChoiceButton(deep, {
+    label: "Layout editor",
+    className: "secondary walkthrough-choice-featured",
+    onClick: () => launchWalkthroughAfterMainChoice((opts) => startLayoutTutorial({ force: true, ...opts }))
+  });
+  appendWalkthroughChoiceButton(deep, {
+    label: "Quick Menu setup",
+    className: "secondary walkthrough-choice-featured",
+    onClick: () => launchWalkthroughAfterMainChoice((opts) => startQuickMenuSetupTutorial({ force: true, ...opts }))
+  });
+  choices.appendChild(deep);
+
+  const tabs = document.createElement("div");
+  tabs.className = "walkthrough-choice-group";
+  const tabsHead = document.createElement("div");
+  tabsHead.className = "walkthrough-choice-heading";
+  tabsHead.textContent = "Per-tab walkthroughs";
+  tabs.appendChild(tabsHead);
+  MAIN_TAB_CHOICES.forEach((entry) => {
+    appendWalkthroughChoiceButton(tabs, {
+      label: entry.label,
+      className: "secondary",
+      onClick: () => launchWalkthroughAfterMainChoice((opts) => startTabTutorial(entry.id, opts))
+    });
+  });
+  choices.appendChild(tabs);
+
+  // Single "I'm done" lives on the footer Skip button (see renderWalkthroughStep).
+  if (next) {
+    next.disabled = true;
+    next.textContent = "Pick above";
+  }
+}
+
+function currentWalkthroughSteps() {
+  return Array.isArray(walkthroughState.steps) && walkthroughState.steps.length
+    ? walkthroughState.steps
+    : MAIN_TUTORIAL_STEPS;
+}
+
 function renderWalkthroughStep() {
   const nodes = walkthroughNodes();
   if (!nodes.modal) return;
-  const step = WALKTHROUGH_STEPS[walkthroughState.step] || WALKTHROUGH_STEPS[0];
+  bindWalkthroughReposition();
+  const steps = currentWalkthroughSteps();
+  const step = steps[walkthroughState.step] || steps[0];
   if (step.tab) switchTab(step.tab);
   if (nodes.title) nodes.title.textContent = step.title;
-  if (nodes.body) nodes.body.textContent = step.body;
-  if (nodes.back) nodes.back.disabled = walkthroughState.step <= 0;
-  if (nodes.next) {
-    nodes.next.textContent = walkthroughState.step >= WALKTHROUGH_STEPS.length - 1 ? "Finish" : "Next";
+  if (nodes.body) {
+    nodes.body.textContent = step.body || "";
+    nodes.body.style.whiteSpace = String(step.body || "").includes("\n") ? "pre-line" : "";
   }
-  window.setTimeout(() => placeWalkthroughSpotlight(step.target), 80);
+  renderWalkthroughLinks(step);
+  if (nodes.progress) {
+    nodes.progress.textContent = `${walkthroughModeLabel()} · ${walkthroughState.step + 1} / ${steps.length}`;
+  }
+  if (nodes.back) nodes.back.disabled = walkthroughState.step <= 0;
+  const isChoices = step.type === "choices";
+  if (isChoices && walkthroughState.mode === "main") {
+    walkthroughState.chooserSession = true;
+  }
+  if (nodes.dontShowRow) {
+    // Show on main overview steps and the end chooser (not on nested tours).
+    const showDont = walkthroughState.mode === "main";
+    nodes.dontShowRow.classList.toggle("hidden", !showDont);
+  }
+  if (nodes.skip) {
+    if (isChoices) nodes.skip.textContent = "I'm done";
+    else if (walkthroughState.chooserSession && walkthroughState.mode !== "main") {
+      nodes.skip.textContent = "Back to chooser";
+    } else {
+      nodes.skip.textContent = "Skip";
+    }
+  }
+  if (isChoices) {
+    renderWalkthroughChoices();
+    clearWalkthroughSpotlight();
+    centerWalkthroughCard();
+  } else {
+    clearWalkthroughChoices();
+    // Keep card visible while scroll/spotlight settle.
+    centerWalkthroughCard();
+    if (nodes.next) {
+      nodes.next.disabled = false;
+      nodes.next.textContent = walkthroughState.step >= steps.length - 1 ? "Finish" : "Next";
+    }
+    window.setTimeout(() => placeWalkthroughSpotlight(step), 80);
+  }
   if (step.sdk) void refreshWalkthroughSdkNote();
   else if (nodes.sdkNote) nodes.sdkNote.classList.add("hidden");
 }
@@ -8088,20 +9081,59 @@ async function persistWalkthroughSettings(extra = {}) {
   });
 }
 
-async function endWalkthrough({ skipped = false } = {}) {
-  walkthroughState.active = false;
+async function endWalkthrough({ skipped = false, quiet = false } = {}) {
+  const wasMain = walkthroughState.mode === "main";
   const nodes = walkthroughNodes();
+  const suppressUntilUpdate = Boolean(nodes.dontShow && nodes.dontShow.checked);
+  const launchingNested = quiet && wasMain && walkthroughState.chooserSession;
+
+  // Nested tour started from the App tour chooser: keep offering more.
+  if (!wasMain && walkthroughState.chooserSession) {
+    const label = walkthroughModeLabel();
+    clearWalkthroughSpotlight();
+    clearWalkthroughChoices();
+    clearWalkthroughLinks();
+    appendActivity(skipped ? `${label} skipped — back to chooser.` : `${label} finished — back to chooser.`);
+    reopenMainChooser();
+    return;
+  }
+
+  if (!launchingNested) {
+    walkthroughState.chooserSession = false;
+  }
+
+  walkthroughState.active = false;
   if (nodes.modal) nodes.modal.classList.add("hidden");
   clearWalkthroughSpotlight();
-  await persistWalkthroughSettings({
-    dismissed: true,
-    dontShowAgain: Boolean(nodes.dontShow && nodes.dontShow.checked)
-  });
-  if (skipped) appendActivity("Walkthrough skipped.");
+  clearWalkthroughChoices();
+  clearWalkthroughLinks();
+  resetWalkthroughCardPosition();
+  if (walkthroughState._spotlightTimer) {
+    window.clearTimeout(walkthroughState._spotlightTimer);
+    walkthroughState._spotlightTimer = null;
+  }
+  // Quiet end chains into another tour — keep update chrome suppressed.
+  if (!quiet) restoreTourCollidingChrome();
+  if (wasMain) {
+    markMainTutorialSeen(currentAppVersionString());
+    await persistWalkthroughSettings({
+      dismissed: true,
+      dontShowAgain: suppressUntilUpdate
+    });
+    if (!quiet) {
+      appendActivity(skipped ? "App walkthrough skipped." : "App walkthrough finished.");
+    }
+  } else if (!quiet) {
+    const label = walkthroughModeLabel();
+    appendActivity(skipped ? `${label} skipped.` : `${label} finished.`);
+  }
 }
 
 function walkthroughNext() {
-  if (walkthroughState.step >= WALKTHROUGH_STEPS.length - 1) {
+  const steps = currentWalkthroughSteps();
+  const step = steps[walkthroughState.step];
+  if (step && step.type === "choices") return;
+  if (walkthroughState.step >= steps.length - 1) {
     void endWalkthrough({ skipped: false });
     return;
   }
@@ -8115,45 +9147,171 @@ function walkthroughBack() {
   renderWalkthroughStep();
 }
 
-async function startWalkthrough({ force = false } = {}) {
+function openWalkthroughModal() {
   const nodes = walkthroughNodes();
-  if (!nodes.modal) return;
+  if (!nodes.modal) return false;
   walkthroughState.active = true;
-  walkthroughState.step = 0;
+  suppressTourCollidingChrome();
   if (nodes.dontShow) nodes.dontShow.checked = false;
   nodes.modal.classList.remove("hidden");
   renderWalkthroughStep();
-  if (force) appendActivity("Walkthrough replay started.");
+  return true;
+}
+
+function beginNamedTour(mode, steps, { force = false, activity = "" } = {}) {
+  walkthroughState.mode = mode;
+  walkthroughState.tabId = mode === "tab" ? walkthroughState.tabId : null;
+  walkthroughState.steps = steps;
+  walkthroughState.step = 0;
+  if (!openWalkthroughModal()) return false;
+  if (force && activity) appendActivity(activity);
+  return true;
+}
+
+async function startMainTutorial({ force = false } = {}) {
+  walkthroughState.chooserSession = false;
+  beginNamedTour("main", TUTORIAL_TOURS.main, {
+    force,
+    activity: "App walkthrough started."
+  });
+}
+
+function startLayoutTutorial({ force = true, fromChooser = false } = {}) {
+  if (!fromChooser) walkthroughState.chooserSession = false;
+  beginNamedTour("layout", TUTORIAL_TOURS.layout, {
+    force,
+    activity: "Layout editor walkthrough started."
+  });
+}
+
+function startQuickMenuSetupTutorial({ force = true, fromChooser = false } = {}) {
+  if (!fromChooser) walkthroughState.chooserSession = false;
+  beginNamedTour("quick-menu-setup", TUTORIAL_TOURS["quick-menu-setup"], {
+    force,
+    activity: "Quick Menu setup walkthrough started."
+  });
+}
+
+function startTabTutorial(tabId, { fromChooser = false } = {}) {
+  const id = String(tabId || "").trim();
+  // ★ Quick Menu Walkthrough launches the full QM setup tour (no redundant tab-only tour).
+  if (id === "quick-menu") {
+    startQuickMenuSetupTutorial({ force: true, fromChooser });
+    return;
+  }
+  const steps = TAB_TUTORIALS[id];
+  if (!steps || !steps.length) {
+    appendActivity(`No walkthrough for tab "${id}" yet.`);
+    return;
+  }
+  if (!fromChooser) walkthroughState.chooserSession = false;
+  walkthroughState.tabId = id;
+  beginNamedTour("tab", steps, {
+    force: true,
+    activity: `Tab walkthrough: ${id}`
+  });
+}
+
+/** Hook used by panel layout Walkthrough buttons / View menu */
+window.msbtStartTabTutorial = startTabTutorial;
+window.msbtStartMainTutorial = startMainTutorial;
+window.msbtStartLayoutTutorial = startLayoutTutorial;
+window.msbtStartQuickMenuSetupTutorial = startQuickMenuSetupTutorial;
+
+/** Dev helper: clear gating keys then force main tour */
+window.msbtResetTutorials = function msbtResetTutorials() {
+  try {
+    localStorage.removeItem(TUTORIAL_LS_LAST_SEEN);
+    localStorage.removeItem(TUTORIAL_LS_MAIN_SEEN);
+  } catch {
+    /* ignore */
+  }
+  void startMainTutorial({ force: true });
+};
+
+async function startWalkthrough({ force = false } = {}) {
+  return startMainTutorial({ force });
 }
 
 async function maybeStartWalkthrough() {
-  if (!window.msbt || typeof window.msbt.loadWalkthroughSettings !== "function") return;
-  try {
-    const result = await window.msbt.loadWalkthroughSettings();
-    const data = result && result.data ? result.data : result;
-    if (data && (data.dontShowAgain || data.dismissed)) return;
-  } catch {
-    // First-run preference missing is fine — show the tour.
+  // Ensure version info is available for gating
+  if (!state.versionInfo) {
+    try {
+      await refreshVersionInfo();
+    } catch {
+      /* continue with fallback version */
+    }
   }
-  await startWalkthrough({ force: false });
+  if (!shouldAutoShowMainTutorial()) return;
+  await startMainTutorial({ force: false });
 }
 
 async function init() {
   wireEvents();
+  try {
+    if (window.MsbtPanelLayout && typeof window.MsbtPanelLayout.initViewChrome === "function") {
+      window.MsbtPanelLayout.initViewChrome();
+    }
+    if (window.MsbtPanelLayout && typeof window.MsbtPanelLayout.initAll === "function") {
+      window.MsbtPanelLayout.initAll();
+    }
+  } catch (error) {
+    console.error("[MSBT] panel layout bootstrap failed:", error);
+  }
   updateDevperkToggleButtons();
   if (window.msbt && typeof window.msbt.onUpdateState === "function") {
     window.msbt.onUpdateState(renderUpdateState);
   }
-  await loadWindowSettings();
-  await refreshVersionInfo();
-  await refreshSavedDataInfo();
+  // Keep catalog / resource loading resilient: one failed IPC must not leave
+  // Dev Spawner lists stuck on "Loading...".
+  try {
+    await loadWindowSettings();
+  } catch (error) {
+    console.warn("[MSBT] window settings load failed:", error);
+  }
+  try {
+    await refreshVersionInfo();
+  } catch (error) {
+    console.warn("[MSBT] version info load failed:", error);
+  }
+  try {
+    await refreshSavedDataInfo();
+  } catch (error) {
+    console.warn("[MSBT] saved data info load failed:", error);
+  }
   syncDevSpawnerAdvancedControls();
-  await Promise.all([loadItemPools(), loadTravelResources(), loadTravelFavorites(), loadDevSpawnerCatalog(), loadDevSpawnerFavorites(), loadSerialBookmarks(), loadBl4Catalog(), loadMovementSettings(), loadRaritySettings()]);
-  await bridgeStatus();
-  await loadQuickMenuLayout({ quiet: true });
+  await Promise.all([
+    loadItemPools().catch((error) => console.warn("[MSBT] item pools load failed:", error)),
+    loadTravelResources().catch((error) => console.warn("[MSBT] travel resources load failed:", error)),
+    loadTravelFavorites().catch((error) => console.warn("[MSBT] travel favorites load failed:", error)),
+    loadDevSpawnerCatalog().catch((error) => console.warn("[MSBT] dev spawner catalog load failed:", error)),
+    loadDevSpawnerFavorites().catch((error) => console.warn("[MSBT] dev spawner favorites load failed:", error)),
+    loadSerialBookmarks().catch((error) => console.warn("[MSBT] serial bookmarks load failed:", error)),
+    loadBl4Catalog().catch((error) => console.warn("[MSBT] BL4 catalog load failed:", error)),
+    loadMovementSettings().catch((error) => console.warn("[MSBT] movement settings load failed:", error)),
+    loadRaritySettings().catch((error) => console.warn("[MSBT] rarity settings load failed:", error))
+  ]);
+  try {
+    await bridgeStatus();
+  } catch (error) {
+    console.warn("[MSBT] bridge status failed:", error);
+  }
+  try {
+    await loadQuickMenuLayout({ quiet: true });
+  } catch (error) {
+    console.warn("[MSBT] quick menu layout load failed:", error);
+  }
   startBridgeStatusPolling();
-  await checkUpdates({ startup: true });
-  await maybeStartWalkthrough();
+  try {
+    await checkUpdates({ startup: true });
+  } catch (error) {
+    console.warn("[MSBT] update check failed:", error);
+  }
+  try {
+    await maybeStartWalkthrough();
+  } catch (error) {
+    console.warn("[MSBT] walkthrough start failed:", error);
+  }
 }
 
 init();

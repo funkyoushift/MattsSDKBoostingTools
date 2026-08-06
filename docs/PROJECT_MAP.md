@@ -26,7 +26,7 @@ Local-only / gitignored scratch (not on GitHub): `dist_electron/`, `build/`, `.v
 | [`releases/`](./releases/) | Tracked release metadata (`latest.json`, current notes, Discord promo media) — **not** installers |
 | [`release-notes/`](./release-notes/) | Older historical release notes |
 | [`reference/`](./reference/) | Look-back only (legacy Tkinter packagers, one-shot architecture reviews) |
-| `VERSIONING.md`, `BUILD_AND_PACKAGE.md`, `ELECTRON_ROADMAP.md`, … | Maintainer docs |
+| `VERSIONING.md`, `BUILD_AND_PACKAGE.md`, `ELECTRON_ROADMAP.md`, `PANEL_LAYOUT.md`, … | Maintainer docs |
 
 ## Inside `tools/`
 
