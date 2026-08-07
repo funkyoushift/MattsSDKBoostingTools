@@ -2,11 +2,11 @@ MSBT Mobile Controller — Open Android Beta (recommended: 0.1.0-beta.15)
 
 Public open beta — install from the links below (anyone can try).
 
-Bookmark/install (always latest APK):
+Phone APK (always latest):
 https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/mobile-beta/MSBT-Mobile-Controller.apk
 
-Desktop (Mobile Gateway + QR pairing):
-https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/mobile-msbt-closed-beta/MSBT-Installer-mobile-controller-beta.exe
+Desktop MSBT v2.3.0+ (Latest — Mobile Gateway + QR):
+https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest
 
 Confirm More → About shows 0.1.0-beta.15 (or newer). The app can also check for APK updates in-app.
 
@@ -14,12 +14,12 @@ You also need:
 • Phone + PC on the same Wi‑Fi
 • Borderlands 4 in-world with MSBT for live actions
 
-Setup: desktop Activity → Mobile Gateway → Scan QR on phone (More → Connection Settings → Scan QR to pair). Manual address/port/code still works.
+Setup: update desktop to v2.3.0+ → Activity → Mobile Gateway → Scan QR on phone (More → Connection Settings → Scan QR to pair).
 
 Quick checks: Boost MAX CASH · Codes catalog · QM Pull From PC + tap slot · Spawn (check risk → Enable).
 
-Full package + test kit:
-https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/mobile-msbt-closed-beta
+Phone release / test kit:
+https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/mobile-beta
 
 Send feedback + full-screen screenshots in Discord DMs to FunkYouSHiFT.
 Do not share pairing codes publicly.

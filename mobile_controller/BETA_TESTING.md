@@ -2,7 +2,7 @@
 
 **Recommended build: `0.1.0-beta.15`** — current working open beta.
 
-Open beta layout + **live LAN pairing** beta. Separate from the Windows MSBT installer.
+Open beta layout + **live LAN pairing**. Use desktop **MSBT v2.3.0+** ([Latest](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest)) for Mobile Gateway / QR.
 
 ## Tester package
 
@@ -27,7 +27,7 @@ Kit source lives in `mobile_controller/test_kit/`:
 ## Fast path
 
 1. Install/update the APK from the static link.
-2. PC: desktop MSBT (this branch) + BL4 in-world with MSBT.
+2. PC: desktop **MSBT v2.3.0+** ([Latest](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest)) + BL4 in-world with MSBT.
 3. PC: **Activity → Mobile Gateway** (QR + address / `49775` / pairing code).
 4. Phone: **More → Connection Settings** → **Scan QR to pair** (or manual Save → Connect).
 5. Try Boost → **MAX CASH**, QM → **Pull From PC** + tap a slot, then work through `CHECKLIST.md`.
