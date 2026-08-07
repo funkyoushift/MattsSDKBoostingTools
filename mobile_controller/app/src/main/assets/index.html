@@ -8,13 +8,26 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header class="appbar">
-    <div class="brand"><strong>MSBT</strong><span>Mobile Controller</span></div>
-    <span id="connectionBadge" class="badge offline">OFFLINE</span>
-  </header>
-  <div class="session-strip">
-    <span><b>PC</b> <span id="pcSummary">Not paired</span></span>
-    <span><b>Target</b> <span id="targetSummary">None</span></span>
+  <div class="chrome-top">
+    <header class="appbar">
+      <div class="brand"><strong>MSBT</strong><span>Mobile Controller</span></div>
+      <span id="connectionBadge" class="badge offline">OFFLINE</span>
+    </header>
+    <div class="session-strip">
+      <span><b>PC</b> <span id="pcSummary">Not paired</span></span>
+      <span><b>Target</b> <span id="targetSummary">None</span></span>
+    </div>
+    <div id="updateBanner" class="update-banner hidden" role="status" aria-live="polite">
+      <div class="update-banner-copy">
+        <p class="eyebrow">UPDATE AVAILABLE</p>
+        <p id="updateBannerText">A newer closed-beta APK is ready.</p>
+        <small id="updateBannerMeta" class="muted"></small>
+      </div>
+      <div class="update-banner-actions">
+        <button type="button" id="updateInstallBtn" class="primary">Update</button>
+        <button type="button" id="updateLaterBtn" class="ghost">Later</button>
+      </div>
+    </div>
   </div>
 
   <main id="view">
@@ -381,7 +394,16 @@
 
       <article id="activityPanel" class="card hidden"><p class="eyebrow">ACTIVITY LOG</p><div id="activityRows" class="list compact"><small class="muted">No activity yet.</small></div></article>
       <article id="feedbackPanel" class="card hidden"><p class="eyebrow">BETA FEEDBACK</p><p>For this closed beta, send feedback directly to FunkYouSHiFT in Discord DMs.</p><p class="muted">Please include phone make/model, Android version, what screen you were on, what you expected, what happened, and full-screen screenshots. For layout issues, capture the whole screen including navigation.</p><button id="copyFeedbackTemplate">Copy Feedback Template</button></article>
-      <article id="aboutPanel" class="card hidden"><p class="eyebrow">ABOUT</p><p><strong>MSBT Mobile Controller</strong><br>Android beta 0.1.0-beta.12</p><p class="muted">Companion controller for Matt's SDK Boosting Tools. Live game actions require desktop MSBT.</p></article>
+      <article id="aboutPanel" class="card hidden">
+        <p class="eyebrow">ABOUT</p>
+        <p><strong>MSBT Mobile Controller</strong><br>Android beta <span id="aboutVersion">0.1.0-beta.13</span></p>
+        <p class="muted">Companion controller for Matt's SDK Boosting Tools. Live game actions require desktop MSBT.</p>
+        <p id="aboutUpdateStatus" class="muted">Update check idle.</p>
+        <div class="button-row-wrap">
+          <button type="button" id="checkUpdatesBtn">Check for updates</button>
+          <button type="button" id="aboutInstallUpdateBtn" class="primary hidden">Download &amp; install</button>
+        </div>
+      </article>
     </section>
   </main>
 
