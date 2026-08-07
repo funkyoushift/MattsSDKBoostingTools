@@ -1,30 +1,55 @@
 # MSBT Mobile Controller — Closed Android Beta
 
-This is a **closed layout/function beta** for MSBT Mobile Controller. It is intentionally separate from the Windows MSBT installer.
+Closed layout + **live LAN pairing** beta for MSBT Mobile Controller. Separate from the Windows MSBT installer.
+
+## Fast path (select beta)
+
+**Phone install / update (bookmark this):**
+https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/mobile-beta/MSBT-Mobile-Controller.apk
+
+1. Open that link on your Android phone and install/update the APK.
+2. On the PC: run desktop MSBT from this branch (with **Mobile Gateway**), launch Borderlands 4 with the MSBT SDK mod, get in-world.
+3. In desktop MSBT open **Activity → Mobile Gateway**. Note **PC address**, port **49775**, and the **6-digit pairing code**.
+4. Phone and PC on the **same Wi‑Fi**. Allow Windows Firewall for the app/port if prompted.
+5. On the phone: **More → Connection Settings** → enter address / `49775` / pairing code → **Save Setup** → **Connect / Test**.
+6. Home should show gateway/bridge online. Try one live action (e.g. Boost → **MAX CASH**).
+
+If Connect fails: confirm desktop MSBT is open, the Activity tab shows Gateway online, you used the LAN IPv4 (not `127.0.0.1`), and the phone is not on cellular-only data.
 
 ## What testers receive
 
-- `MSBT-Mobile-Controller-0.1.0-beta.1.apk` — Android app only.
-- `MSBT-Mobile-Beta-Test-Kit-0.1.0-beta.1.zip` — this guide/checklist only.
+- `MSBT-Mobile-Controller-0.1.0-beta.2.apk` — Android app.
+- `MSBT-Mobile-Beta-Test-Kit-0.1.0-beta.2.zip` — this guide/checklist.
 
 Do **not** package the APK inside the Windows MSBT installer.
+
+Desktop note: live phone actions need a desktop MSBT build that includes the **Mobile Gateway** (this `mobile-controller-prototype` branch). The SDK bridge itself stays bound to `127.0.0.1`; Electron proxies LAN requests.
 
 ## Before installing
 
 1. Confirm your phone make and model in Discord.
 2. Note your Android version: **Settings → About phone → Android version**.
-3. Keep your current desktop MSBT installation unchanged.
-4. This first build can be reviewed offline. Live PC/game actions may remain unavailable until the connection gateway is enabled.
+3. Keep your current desktop MSBT installation; for live pairing use a build from this branch.
 
 ## Install the APK
 
-1. Download the APK from the Discord post or linked GitHub Actions/Release page.
-2. Open the downloaded APK.
-3. Android may ask permission for your browser/Discord/file manager to install unknown apps. Allow it for the app you are using to open the APK.
-4. Install **MSBT Mobile Controller**.
-5. Open it and confirm the Home screen loads without crashing.
+1. On your phone, open the static beta link:
+   https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/mobile-beta/MSBT-Mobile-Controller.apk
+2. Android may ask permission for your browser to install unknown apps. Allow it.
+3. Install/update **MSBT Mobile Controller** (same package ID as prior betas — local data should survive).
+4. Open it and confirm the Home screen loads without crashing.
 
 If Android refuses to install an update over an older mobile beta, report the exact message before uninstalling anything.
+
+## Pair phone ↔ PC (live actions)
+
+1. PC: desktop MSBT running + Borderlands 4 in-world with MSBT loaded.
+2. PC: **Activity → Mobile Gateway** → copy address / port / pairing code (**Copy Pairing Details**).
+3. Phone: **More → Connection Settings** → paste values → **Save Setup** → **Connect / Test**.
+4. Badge should move to **ONLINE**. Boost / serial send / rarity / movement Apply become enabled.
+5. Pick a target player when the party list loads, then fire one action.
+
+**Disconnect** keeps the saved setup on the phone.
 
 ## What to test first
 
@@ -41,118 +66,51 @@ Take a full-screen screenshot in portrait.
 
 ### 2. BL4 Codes
 
-- Bundled catalog loads.
-- Search works.
-- Source filter includes GZO, Lootlemon, and MSBT/custom data when present.
-- Type, manufacturer, and rarity filters work.
-- Multi-select works.
-- **Select all filtered** selects the current filtered result set.
-- **Clear** removes the selection.
-- Item images that are available online display correctly; missing images should not break the list.
-- Scroll a large result set and note any lag.
+- Bundled catalog loads with a **nonzero** count (expect roughly thousands total: GZO + Lootlemon + MSBT).
+- Status line shows Total · GZO · Lootlemon · MSBT counts (or an explicit `Bundled catalog unavailable: …` error — never silent zero).
+- Search / filters / multi-select / Select All Filtered / Clear Selection work.
+- With Wi‑Fi off, relaunch and confirm the bundled catalog still loads.
+- Item images that are available online display; missing images should not break the list.
 
-Take screenshots of:
+### 3. Boost (live when paired)
 
-- normal results;
-- filters open/selected;
-- multiple selected codes;
-- any image/layout problem.
+- Target player dropdown populates after Connect while in-game.
+- Quick Max / currency / XP / serial send / rarity buttons fire through the gateway.
+- Offline (not connected): live buttons stay disabled or clearly refuse to send.
 
-### 3. Boost
+### 4. Serial Bookmarks / Quick Menu / Movement
 
-Check the layout for:
+- Bookmarks and movement presets persist offline.
+- Quick Menu offline edits persist; sync conflict dialog remains for later full PC sync.
+- Movement **Apply to Target** works when paired.
 
-- target player area;
-- Quick Max actions;
-- Currency / XP fields;
-- serial sender;
-- copies / level options;
-- Validate / Confirm;
-- Selected / All / Non-Host delivery buttons;
-- rarity presets.
+### 5. Connection Setup
 
-Offline live actions should clearly say a PC connection is required rather than pretending they worked.
-
-### 4. Serial Bookmarks
-
-- Add a bookmark.
-- Give it a name and group.
-- Close and reopen the app.
-- Confirm the bookmark is still there.
-- Edit it.
-- Delete it.
-
-This mobile shape is intended to stay compatible with the desktop bookmark model.
-
-### 5. Quick Menu
-
-- Open the full Quick Menu.
-- Verify the complete 3×7 layout is visible/usable.
-- Switch pages.
-- Rename several slots while offline.
-- Close/reopen the app and confirm the changes remain.
-- Rotate to landscape and take a screenshot.
-
-**Important:** offline Quick Menu changes must never be silently deleted. Future PC sync will ask whether to merge, keep phone, or keep PC. Renamed commands should be preserved by command identity when possible; newly introduced commands should be appended into open/end slots during merge.
-
-### 6. Movement
-
-Check every visible field for clipping/usability:
-
-- Speed Scale
-- Walk Speed
-- Jump Height
-- Gravity Scale
-- Step Height
-- Floor Angle
-- Glide Speed
-- Glide Boost
-- Glide Air Control
-- Dash Speed
-- Time Dilation
-- Sprint Jump
-- Double Jump
-- Slide Jump
-- Individual jump goals
-- Zero vault on apply
-
-Save a preset, close/reopen the app, and confirm the preset remains.
-
-### 7. Connection Setup
-
-- Open **More → Connection Settings**.
-- Enter a test PC name, IP address, gateway port, and pairing code.
-- Save setup.
-- Close/reopen the app and confirm it remains.
-- The first beta may report that the live gateway is not enabled yet; that is acceptable if the state is clear and the saved setup is not lost.
+- Save address / port / pairing code; reopen app and confirm it remains.
+- **Connect / Test** reaches the PC gateway.
+- Wrong pairing code fails clearly without wiping the saved setup.
 
 ## Screenshots we need
 
 Please send **full-screen** screenshots rather than cropping to one button whenever possible.
 
-Required screenshots:
-
-1. Home — portrait
-2. BL4 Codes — results
-3. BL4 Codes — multi-select
-4. Quick Menu — portrait
-5. Quick Menu — landscape
-6. Movement
-7. Connection Settings
-8. Any broken/clipped screen
+1. Home — connected (or clear offline state)
+2. Connection Settings with saved PC
+3. Boost after a successful live action (or the error if it failed)
+4. BL4 Codes — multi-select
+5. Quick Menu — portrait
+6. Any broken/clipped screen
 
 ## How to give useful feedback
 
 For this closed beta, send feedback **directly to FunkYouSHiFT in Discord DMs**.
-
-Copy/paste this template:
 
 ```text
 MSBT MOBILE BETA FEEDBACK
 
 Phone make/model:
 Android version:
-MSBT Mobile version: 0.1.0-beta.1
+MSBT Mobile version: 0.1.0-beta.2
 Desktop MSBT version (if connected):
 
 Screen/feature:
@@ -165,11 +123,29 @@ Screenshots attached: Yes / No
 Anything else:
 ```
 
-Good feedback tells us **what you tapped, what happened, and what you expected**. A screenshot plus one sentence such as “the bottom Send button is behind the Android navigation bar after rotating to landscape” is much more useful than “movement is broken.”
-
 ## Known beta limitations
 
-- The mobile-to-PC MSBT gateway may not be enabled yet in the first APK.
-- Live game actions require desktop MSBT and the in-game bridge once connection support is enabled.
-- Matt Editor, save editing, Legit Builder, and deep item-building tools are intentionally not part of the mobile controller.
-- This is a controller beta; expect rough edges and send screenshots when you find them.
+- Travel / Dev Spawner / Item Pool / inventory browsers are shells — pairing + Boost/serial/rarity/movement Apply are the live focus.
+- Quick Menu full PC sync upload is not finished; offline edits are kept safely on the phone.
+- Matt Editor, save editing, Legit Builder are intentionally not on mobile.
+- Phone and PC must share a LAN/Wi‑Fi path; the game bridge is never exposed directly to the network.
+- Expect rough edges; screenshots help.
+
+## Build / install (maintainers)
+
+GitHub Actions: `.github/workflows/mobile-beta-build.yml` on `mobile-controller-prototype` (or **workflow_dispatch**).
+
+Artifacts:
+
+- `MSBT-Mobile-Controller-0.1.0-beta.2.apk`
+- `MSBT-Mobile-Beta-Test-Kit-0.1.0-beta.2.zip`
+
+Local APK (optional):
+
+```bash
+# decode keystore once if needed
+base64 -d mobile_controller/debug-signing/msbt-mobile-debug.keystore.b64 > mobile_controller/debug-signing/msbt-mobile-debug.keystore
+gradle -p mobile_controller :app:assembleDebug
+```
+
+Desktop gateway for local testing: run Electron from `electron_poc` on this branch; Activity → Mobile Gateway.

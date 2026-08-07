@@ -10,8 +10,8 @@ android {
         applicationId 'com.funkyoushift.msbt.mobile'
         minSdk 28
         targetSdk 35
-        versionCode 2
-        versionName '0.1.0-beta.1'
+        versionCode 4
+        versionName '0.1.0-beta.2'
     }
 
     def betaKeystore = file('../debug-signing/msbt-mobile-debug.keystore')
@@ -42,6 +42,10 @@ android {
             assets.srcDir "$buildDir/generated/mobileAssets"
         }
     }
+}
+
+dependencies {
+    implementation 'androidx.webkit:webkit:1.12.1'
 }
 
 // Keep the Android beta self-contained without duplicating multi-megabyte catalogs in git.

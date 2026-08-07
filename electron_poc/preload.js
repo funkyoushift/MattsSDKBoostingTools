@@ -52,5 +52,9 @@ contextBridge.exposeInMainWorld("msbt", {
   readResourceJson: (resourceName) => ipcRenderer.invoke("app:readResourceJson", resourceName),
   saveReportFile: (text) => ipcRenderer.invoke("app:saveReportFile", text),
   openExternal: (url) => ipcRenderer.invoke("app:openExternal", url),
-  setWindowOpacity: (opacity) => ipcRenderer.invoke("app:setWindowOpacity", opacity)
+  setWindowOpacity: (opacity) => ipcRenderer.invoke("app:setWindowOpacity", opacity),
+  mobileGatewayGetInfo: () => ipcRenderer.invoke("mobileGateway:getInfo"),
+  mobileGatewayStart: () => ipcRenderer.invoke("mobileGateway:start"),
+  mobileGatewayStop: () => ipcRenderer.invoke("mobileGateway:stop"),
+  mobileGatewayRotateCode: () => ipcRenderer.invoke("mobileGateway:rotateCode")
 });

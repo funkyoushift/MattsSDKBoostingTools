@@ -1330,6 +1330,20 @@
           <h2>Bridge Raw Status</h2>
           <pre id="statusOutput">Click Refresh Status to check the SDK bridge.</pre>
         </section>
+        <section class="panel" data-msbt-panel="mobile-gateway" data-msbt-span="12" data-msbt-title="Mobile Gateway">
+          <h2>Mobile Gateway (select beta)</h2>
+          <p class="muted-line">Phone controllers on the same Wi‑Fi connect here. The SDK bridge stays on localhost; Electron proxies approved requests.</p>
+          <div id="mobileGatewaySummary" class="status-line warning">Loading mobile gateway…</div>
+          <p class="muted-line"><strong>Pairing code:</strong> <span id="mobileGatewayCode">------</span></p>
+          <p class="muted-line"><strong>PC address:</strong> <span id="mobileGatewayAddress">Detecting…</span></p>
+          <p class="muted-line"><strong>Gateway port:</strong> <span id="mobileGatewayPort">49775</span></p>
+          <div class="button-row wrap">
+            <button id="mobileGatewayRefreshBtn">Refresh Gateway Info</button>
+            <button id="mobileGatewayRotateBtn">New Pairing Code</button>
+            <button id="mobileGatewayCopyBtn">Copy Pairing Details</button>
+          </div>
+          <pre id="mobileGatewayDetails">Closed-beta pairing: enter the PC address, port 49775, and pairing code in MSBT Mobile → More → Connection Settings.</pre>
+        </section>
       </div>
     </section>
 

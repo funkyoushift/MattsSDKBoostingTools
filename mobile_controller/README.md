@@ -4,9 +4,17 @@ Android companion controller for Matt's SDK Boosting Tools.
 
 Package ID: `com.funkyoushift.msbt.mobile`
 
-Current beta: `0.1.0-beta.1`
+Current beta: `0.1.0-beta.2`
 
-## Product boundary
+## Phone download (static link)
+
+Bookmark this on your phone — it always points at the latest closed-beta APK from CI:
+
+https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/mobile-beta/MSBT-Mobile-Controller.apk
+
+Prerelease page: https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/mobile-beta
+
+Install/update over the previous beta (same package ID + signing) so bookmarks / Quick Menu / connection settings survive.
 
 The mobile app is a **live cheat/controller companion**, not a mobile save editor.
 
@@ -36,7 +44,7 @@ Intentionally omitted:
 
 ## Offline-first behavior
 
-The first beta is useful without a PC connection:
+Useful without a PC connection:
 
 - current GZO/Lootlemon/MSBT catalog snapshots are copied into the APK at build time;
 - catalog search/filter/multi-select work offline;
@@ -45,7 +53,16 @@ The first beta is useful without a PC connection:
 - Quick Menu edits persist locally;
 - PC connection settings persist locally.
 
-Live game actions remain disabled unless a PC gateway is connected.
+## Live pairing (select beta)
+
+Desktop MSBT on this branch starts a **Mobile Gateway** on LAN port `49775` that proxies to the localhost SDK bridge (`127.0.0.1:49774`). The in-game bridge is not opened to all interfaces.
+
+1. PC: run desktop MSBT + Borderlands 4 with MSBT loaded.
+2. PC: **Activity → Mobile Gateway** for LAN IP + pairing code.
+3. Phone: **More → Connection Settings** → save address / `49775` / code → **Connect / Test**.
+4. Live Boost / serial / rarity / movement Apply unlock when the gateway is reachable.
+
+See `BETA_TESTING.md` for the short tester path.
 
 ## Quick Menu sync rule
 
@@ -92,8 +109,8 @@ Closed beta distribution is through Discord using either direct files or a GitHu
 
 Build workflow outputs two separate artifacts:
 
-- `MSBT-Mobile-Controller-0.1.0-beta.1.apk`
-- `MSBT-Mobile-Beta-Test-Kit-0.1.0-beta.1.zip`
+- `MSBT-Mobile-Controller-0.1.0-beta.2.apk`
+- `MSBT-Mobile-Beta-Test-Kit-0.1.0-beta.2.zip`
 
 See `BETA_TESTING.md` for tester instructions and Discord DM feedback format.
 

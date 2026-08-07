@@ -41,6 +41,11 @@ const {
   loadBl4Catalog,
   refreshGzoCatalog
 } = require("./bl4_codes_catalog");
+const {
+  createMobileGateway,
+  DEFAULT_PORT: MOBILE_GATEWAY_PORT,
+  generatePairingCode
+} = require("./mobile_gateway");
 
 function reportFatalStartupError(kind, error) {
   const message = error && error.stack ? error.stack : String(error);
@@ -57,6 +62,12 @@ const execFileAsync = promisify(execFile);
 const SOURCE_ROOT = path.resolve(__dirname, "..");
 const RESOURCE_ROOT = app.isPackaged ? process.resourcesPath : SOURCE_ROOT;
 const DEFAULT_BRIDGE = "http://127.0.0.1:49774";
+const MOBILE_PAIRING_FILE = () => path.join(app.getPath("userData"), "mobile_gateway_pairing.json");
+const mobileGateway = createMobileGateway({
+  port: MOBILE_GATEWAY_PORT,
+  bridgeBase: DEFAULT_BRIDGE,
+  pairingCode: generatePairingCode()
+});
 const LATEST_MANIFEST_URL = "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/latest.json";
 const FALLBACK_LATEST_MANIFEST_URL = "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/docs/releases/latest.json";
 const CODES_API = "https://save-editor.be/GZO/Borderlands4/codes/api.php";
@@ -585,6 +596,57 @@ async function requestBridge({ method = "GET", path: route = "/status", payload 
 }
 
 ipcMain.handle("bridge:request", async (_event, args) => requestBridge(args || {}));
+
+async function loadMobilePairingCode() {
+  try {
+    const raw = await fs.readFile(MOBILE_PAIRING_FILE(), "utf8");
+    const parsed = JSON.parse(raw);
+    const code = String(parsed && parsed.pairingCode ? parsed.pairingCode : "").trim();
+    if (/^\d{6}$/.test(code)) {
+      mobileGateway.setPairingCode(code);
+      return code;
+    }
+  } catch {
+    // First launch or unreadable file — generate below.
+  }
+  const code = mobileGateway.rotatePairingCode();
+  await saveMobilePairingCode(code);
+  return code;
+}
+
+async function saveMobilePairingCode(code) {
+  const pairingCode = String(code || mobileGateway.info().pairingCode || "").trim();
+  await fs.mkdir(path.dirname(MOBILE_PAIRING_FILE()), { recursive: true });
+  await fs.writeFile(
+    MOBILE_PAIRING_FILE(),
+    JSON.stringify({ pairingCode, updated_at: new Date().toISOString() }, null, 2),
+    "utf8"
+  );
+  return pairingCode;
+}
+
+async function startMobileGateway() {
+  await loadMobilePairingCode();
+  try {
+    return await mobileGateway.start();
+  } catch (error) {
+    return {
+      ...mobileGateway.info(),
+      ok: false,
+      enabled: false,
+      lastError: String(error && error.message ? error.message : error)
+    };
+  }
+}
+
+ipcMain.handle("mobileGateway:getInfo", async () => mobileGateway.info());
+ipcMain.handle("mobileGateway:start", async () => startMobileGateway());
+ipcMain.handle("mobileGateway:stop", async () => mobileGateway.stop());
+ipcMain.handle("mobileGateway:rotateCode", async () => {
+  const pairingCode = mobileGateway.rotatePairingCode();
+  await saveMobilePairingCode(pairingCode);
+  return mobileGateway.info();
+});
 
 async function fileExists(filePath) {
   try {
@@ -1685,6 +1747,19 @@ app.whenReady().then(() => {
   }
 
   configureAutoUpdater();
+  startMobileGateway()
+    .then((info) => {
+      if (info && info.enabled) {
+        console.log(
+          `[MSBT Mobile Gateway] listening on 0.0.0.0:${info.port} pairing=${info.pairingCode} lans=${(info.lanAddresses || []).join(",")}`
+        );
+      } else {
+        console.warn(`[MSBT Mobile Gateway] failed to start: ${info && info.lastError ? info.lastError : "unknown"}`);
+      }
+    })
+    .catch((error) => {
+      console.warn(`[MSBT Mobile Gateway] failed to start: ${error && error.message ? error.message : error}`);
+    });
   createWindow();
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) {
@@ -1700,6 +1775,7 @@ app.on("window-all-closed", () => {
 });
 
 app.on("before-quit", () => {
+  mobileGateway.stop().catch(() => {});
   if (hostProcessIsAlive()) {
     mattHostProcess.kill();
   }

@@ -290,6 +290,14 @@ const els = {
   startupUpdateTitle: document.getElementById("startupUpdateTitle"),
   startupUpdateUpdatesTabBtn: document.getElementById("startupUpdateUpdatesTabBtn"),
   statusOutput: document.getElementById("statusOutput"),
+  mobileGatewaySummary: document.getElementById("mobileGatewaySummary"),
+  mobileGatewayCode: document.getElementById("mobileGatewayCode"),
+  mobileGatewayAddress: document.getElementById("mobileGatewayAddress"),
+  mobileGatewayPort: document.getElementById("mobileGatewayPort"),
+  mobileGatewayDetails: document.getElementById("mobileGatewayDetails"),
+  mobileGatewayRefreshBtn: document.getElementById("mobileGatewayRefreshBtn"),
+  mobileGatewayRotateBtn: document.getElementById("mobileGatewayRotateBtn"),
+  mobileGatewayCopyBtn: document.getElementById("mobileGatewayCopyBtn"),
   targetSelect: document.getElementById("targetSelect"),
   targetSummary: document.getElementById("targetSummary"),
   travelMapBtn: document.getElementById("travelMapBtn"),
@@ -2375,6 +2383,81 @@ function updateSerialDeliveryProgress(progress = {}) {
   if (message && message !== state.serialDeliveryLastMessage) {
     state.serialDeliveryLastMessage = message;
     appendActivity(`SDK serial delivery: ${message}`);
+  }
+}
+
+function formatMobileGatewayDetails(info) {
+  const addresses = Array.isArray(info && info.lanAddresses) ? info.lanAddresses : [];
+  const primary = addresses[0] || "(no LAN IPv4 detected — check Wi‑Fi)";
+  const port = (info && info.port) || 49775;
+  const code = (info && info.pairingCode) || "------";
+  const lines = [
+    "MSBT Mobile Gateway pairing",
+    "",
+    `PC address: ${primary}`,
+    addresses.length > 1 ? `Other LAN IPs: ${addresses.slice(1).join(", ")}` : "",
+    `Gateway port: ${port}`,
+    `Pairing code: ${code}`,
+    "",
+    "On your phone: More → Connection Settings → enter address, port, pairing code → Save → Test Connection.",
+    "Phone and PC must be on the same Wi‑Fi. Allow Windows Firewall for Node/Electron on port 49775 if prompted.",
+    "Keep Borderlands 4 running with the MSBT SDK mod so live actions can reach the game bridge."
+  ].filter(Boolean);
+  return lines.join("\n");
+}
+
+async function refreshMobileGatewayInfo() {
+  if (!window.msbt || typeof window.msbt.mobileGatewayGetInfo !== "function") {
+    setLine(els.mobileGatewaySummary, "Mobile gateway API unavailable in this build.", "warning");
+    return null;
+  }
+  let info = await window.msbt.mobileGatewayGetInfo();
+  if (!info || !info.enabled) {
+    info = await window.msbt.mobileGatewayStart();
+  }
+  const addresses = Array.isArray(info.lanAddresses) ? info.lanAddresses : [];
+  const primary = addresses[0] || "";
+  if (els.mobileGatewayCode) els.mobileGatewayCode.textContent = info.pairingCode || "------";
+  if (els.mobileGatewayAddress) {
+    els.mobileGatewayAddress.textContent = primary
+      ? (addresses.length > 1 ? `${primary} (also ${addresses.slice(1).join(", ")})` : primary)
+      : "No LAN IPv4 detected";
+  }
+  if (els.mobileGatewayPort) els.mobileGatewayPort.textContent = String(info.port || 49775);
+  if (els.mobileGatewayDetails) els.mobileGatewayDetails.textContent = formatMobileGatewayDetails(info);
+  if (info.enabled) {
+    setLine(
+      els.mobileGatewaySummary,
+      `Gateway online on port ${info.port}. Pair phones with code ${info.pairingCode}.`,
+      "ok"
+    );
+  } else {
+    setLine(
+      els.mobileGatewaySummary,
+      `Gateway offline: ${info.lastError || "could not bind LAN port"}.`,
+      "bad"
+    );
+  }
+  return info;
+}
+
+async function rotateMobileGatewayCode() {
+  if (!window.msbt || typeof window.msbt.mobileGatewayRotateCode !== "function") return null;
+  const info = await window.msbt.mobileGatewayRotateCode();
+  await refreshMobileGatewayInfo();
+  appendActivity(`Mobile gateway pairing code rotated to ${info && info.pairingCode ? info.pairingCode : "new code"}.`);
+  return info;
+}
+
+async function copyMobileGatewayDetails() {
+  const text = els.mobileGatewayDetails
+    ? els.mobileGatewayDetails.textContent
+    : formatMobileGatewayDetails(await refreshMobileGatewayInfo());
+  try {
+    await navigator.clipboard.writeText(text);
+    setLine(els.mobileGatewaySummary, "Pairing details copied to clipboard.", "ok");
+  } catch {
+    window.prompt("Copy these pairing details:", text);
   }
 }
 
@@ -7909,6 +7992,16 @@ function wireEvents() {
   });
   document.getElementById("clearBridgeLogBtn").addEventListener("click", () => runAction("clear_external_log", {}, els.activityOutput, 10000));
 
+  if (els.mobileGatewayRefreshBtn) {
+    els.mobileGatewayRefreshBtn.addEventListener("click", () => void refreshMobileGatewayInfo());
+  }
+  if (els.mobileGatewayRotateBtn) {
+    els.mobileGatewayRotateBtn.addEventListener("click", () => void rotateMobileGatewayCode());
+  }
+  if (els.mobileGatewayCopyBtn) {
+    els.mobileGatewayCopyBtn.addEventListener("click", () => void copyMobileGatewayDetails());
+  }
+
   const walkthroughNextBtn = document.getElementById("walkthroughNextBtn");
   const walkthroughBackBtn = document.getElementById("walkthroughBackBtn");
   const walkthroughSkipBtn = document.getElementById("walkthroughSkipBtn");
@@ -9295,6 +9388,11 @@ async function init() {
     await bridgeStatus();
   } catch (error) {
     console.warn("[MSBT] bridge status failed:", error);
+  }
+  try {
+    await refreshMobileGatewayInfo();
+  } catch (error) {
+    console.warn("[MSBT] mobile gateway info failed:", error);
   }
   try {
     await loadQuickMenuLayout({ quiet: true });

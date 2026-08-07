@@ -7,7 +7,7 @@
         android:allowBackup="true"
         android:label="MSBT Mobile Controller"
         android:theme="@style/AppTheme"
-        android:usesCleartextTraffic="false">
+        android:usesCleartextTraffic="true">
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
