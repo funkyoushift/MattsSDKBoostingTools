@@ -3,14 +3,22 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#070a12">
   <title>MSBT Mobile Controller</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <header class="appbar">
-    <div><strong>MSBT</strong><span>Mobile Controller</span></div>
+    <div class="brand">
+      <strong>MSBT</strong>
+      <span>Mobile Controller</span>
+    </div>
     <span class="badge offline">OFFLINE</span>
   </header>
+  <div class="session-strip" aria-label="Current controller session">
+    <span><b>PC</b> Not paired</span>
+    <span><b>Target</b> None</span>
+  </div>
 
   <main id="view">
     <section data-screen="home" class="screen active">
@@ -60,8 +68,12 @@
     </section>
   </main>
 
-  <nav class="bottom-nav">
-    <button class="active" data-nav="home">Home</button><button data-nav="boost">Boost</button><button data-nav="codes">Codes</button><button data-nav="control">Control</button><button data-nav="more">More</button>
+  <nav class="bottom-nav" aria-label="Main navigation">
+    <button class="active" data-nav="home"><span class="nav-icon">⌂</span><span>Home</span></button>
+    <button data-nav="boost"><span class="nav-icon">⚡</span><span>Boost</span></button>
+    <button data-nav="codes"><span class="nav-icon">⌕</span><span>Codes</span></button>
+    <button data-nav="control"><span class="nav-icon">✦</span><span>Control</span></button>
+    <button data-nav="more"><span class="nav-icon">•••</span><span>More</span></button>
   </nav>
   <script src="app.js"></script>
 </body>
