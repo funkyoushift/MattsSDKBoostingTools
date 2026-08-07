@@ -85,3 +85,9 @@ external_app/v22_parts_codes_fixed/resources/user_external_app_settings.json
 *.xlsx
 *.xls
 *.csv
+
+# Local Android / Gradle scratch (never commit)
+mobile_controller/.gradle/
+mobile_controller/**/build/
+mobile_controller/debug-signing/*.keystore
+!mobile_controller/debug-signing/*.keystore.b64
