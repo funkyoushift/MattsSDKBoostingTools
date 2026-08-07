@@ -1,1 +1,1 @@
-MSBT Mobile Controller v0.2.0 signing verification build.
+MSBT Mobile Controller v0.2.0 signing verification build 2.
