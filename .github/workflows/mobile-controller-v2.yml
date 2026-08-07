@@ -22,14 +22,42 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
-      - name: Restore Android debug signing identity
+      - name: Restore persistent Android debug signing key
         uses: actions/cache@v4
         with:
-          path: ~/.android/debug.keystore
-          key: msbt-mobile-debug-keystore-v1
+          path: ~/.msbt-mobile-signing/debug.keystore
+          key: msbt-mobile-debug-keystore-v2
+      - name: Create signing key on first build
+        shell: bash
+        run: |
+          set -euo pipefail
+          key_path="$HOME/.msbt-mobile-signing/debug.keystore"
+          if [ ! -f "$key_path" ]; then
+            mkdir -p "$(dirname "$key_path")"
+            keytool -genkeypair -noprompt \
+              -keystore "$key_path" \
+              -storepass android \
+              -alias androiddebugkey \
+              -keypass android \
+              -keyalg RSA \
+              -keysize 2048 \
+              -validity 10000 \
+              -dname "CN=MSBT Mobile Debug,O=FunkYouSHiFT,C=US"
+          fi
+          keytool -list -v -keystore "$key_path" -storepass android -alias androiddebugkey | grep 'SHA256:'
       - name: Build debug APK
         working-directory: mobile_controller
-        run: gradle assembleDebug --stacktrace
+        shell: bash
+        run: |
+          set -euo pipefail
+          export MSBT_MOBILE_DEBUG_KEYSTORE="$HOME/.msbt-mobile-signing/debug.keystore"
+          gradle assembleDebug --stacktrace
+      - name: Verify APK signer
+        shell: bash
+        run: |
+          set -euo pipefail
+          apksigner_bin="$(find "$ANDROID_HOME/build-tools" -type f -name apksigner | sort -V | tail -1)"
+          "$apksigner_bin" verify --print-certs mobile_controller/app/build/outputs/apk/debug/app-debug.apk | grep 'Signer #1 certificate SHA-256 digest'
       - uses: actions/upload-artifact@v4
         with:
           name: MSBT-Mobile-Controller-debug
