@@ -1,24 +1,27 @@
 # MSBT Mobile Controller — Open Beta Release
 
-Open Android beta for **MSBT Mobile Controller**, paired with desktop **Matt's SDK Boosting Tools v2.3.0+** (Mobile Gateway + QR).
+Open Android beta for **MSBT Mobile Controller**, paired with desktop **Matt's SDK Boosting Tools v2.3.1+** (Mobile Gateway + QR).
 
-Desktop **v2.3.0** is the current GitHub **Latest** Windows release and includes Mobile Gateway.
+Desktop **v2.3.1** is the current GitHub **Latest** Windows release and includes Mobile Gateway plus a phone-friendly install page for the home QR.
 
 ## What you get
 
 | Piece | What it is |
 |-------|------------|
 | **Android APK** | MSBT Mobile Controller (`0.1.0-beta.15+`) |
-| **Desktop MSBT v2.3.0+** | Electron app with **Mobile Gateway** + **QR pairing** + home APK QR |
+| **Desktop MSBT v2.3.1+** | Electron app with **Mobile Gateway** + **QR pairing** + home install QR |
 | **Test kit** | Checklist, known issues, Discord feedback template |
 
 ## Downloads (always current)
 
-**Phone APK (bookmark this):**  
+**Phone install page (scan / bookmark this):**  
+https://www.funkyoushift.com/MattsSDKBoostingTools/mobile-install.html
+
+**Phone APK (direct):**  
 https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/mobile-beta/MSBT-Mobile-Controller.apk
 
 **Desktop installer (Latest — Mobile Gateway):**  
-https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.3.0/MSBT-Installer-v2.3.0.exe
+https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.3.1/MSBT-Installer-v2.3.1.exe
 
 **Desktop Latest release page:**  
 https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest
@@ -30,7 +33,7 @@ https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/mobile-beta
 
 - Android 9+ phone (API 28+)
 - Same Wi‑Fi as the gaming PC (not cellular-only)
-- Desktop MSBT **v2.3.0 or newer** (Check Updates in the app, or install from Latest)
+- Desktop MSBT **v2.3.1 or newer** (Check Updates in the app, or install from Latest)
 - Borderlands 4 + MSBT SDK mod for live in-game actions
 - Windows Firewall: allow Electron/Node on port **49775** if prompted
 

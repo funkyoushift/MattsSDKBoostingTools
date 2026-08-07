@@ -62,11 +62,13 @@ jobs:
           cp mobile_controller/app/build/outputs/apk/debug/app-debug.apk "mobile_beta_out/MSBT-Mobile-Controller-${VERSION_NAME}.apk"
           cp -r mobile_controller/test_kit/. mobile_beta_out/test-kit/
           printf '%s\n' "MSBT Mobile Controller open beta ${VERSION_NAME}" > mobile_beta_out/test-kit/VERSION.txt
-          printf '%s\n' 'https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/mobile-beta/MSBT-Mobile-Controller.apk' > mobile_beta_out/test-kit/DOWNLOAD.txt
+          printf '%s\n' 'Install page: https://www.funkyoushift.com/MattsSDKBoostingTools/mobile-install.html' > mobile_beta_out/test-kit/DOWNLOAD.txt
+          printf '%s\n' 'Direct APK: https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/mobile-beta/MSBT-Mobile-Controller.apk' >> mobile_beta_out/test-kit/DOWNLOAD.txt
           cat > mobile_beta_out/mobile-beta-version.json <<EOF
           {
             "versionName": "${VERSION_NAME}",
             "versionCode": ${VERSION_CODE},
+            "installUrl": "https://www.funkyoushift.com/MattsSDKBoostingTools/mobile-install.html",
             "apkUrl": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/mobile-beta/MSBT-Mobile-Controller.apk",
             "apkVersionedUrl": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/mobile-beta/MSBT-Mobile-Controller-${VERSION_NAME}.apk",
             "publishedAt": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
@@ -111,22 +113,25 @@ jobs:
 
             **Recommended build: `${{ env.VERSION_NAME }}`** (current open beta).
 
-            **Always-current APK (public):**
+            **Phone install page (recommended):**
+            https://www.funkyoushift.com/MattsSDKBoostingTools/mobile-install.html
+
+            **Always-current APK (direct):**
             https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/mobile-beta/MSBT-Mobile-Controller.apk
 
             Confirm **More → About** shows `${{ env.VERSION_NAME }}` (or newer).
 
             The app can check for updates in-app (launch / Connect / About → Check for updates).
 
-            **Desktop + full package:** https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/mobile-msbt-closed-beta
+            **Desktop Latest (Mobile Gateway + install QR):** https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest
 
             **Test kit:** download `MSBT-Mobile-Beta-Test-Kit-*.zip` from this release.
 
             Install over previous betas to keep local data.
 
-            This is an **open beta** prerelease on `mobile-controller-prototype` / `release/mobile-beta`. It is not the public Windows MSBT Latest (`v2.2.x`).
+            This is an **open beta** prerelease on `mobile-controller-prototype` / `release/mobile-beta`. It is not the public Windows MSBT Latest.
 
-            This prerelease is updated by CI on `mobile-controller-prototype` and `release/mobile-beta`. It is not a public Windows MSBT release.
+            This prerelease is updated by CI on `mobile-controller-prototype` and `release/mobile-beta`.
           files: |
             mobile_beta_out/MSBT-Mobile-Controller.apk
             mobile_beta_out/MSBT-Mobile-Controller-${{ env.VERSION_NAME }}.apk

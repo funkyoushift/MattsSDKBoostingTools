@@ -2551,8 +2551,9 @@ async function copyMobileGatewayDetails() {
   }
 }
 
-const MOBILE_APK_URL =
-  "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/mobile-beta/MSBT-Mobile-Controller.apk";
+/** Phone-friendly install page (not the raw APK). Pairing uses a different QR in Mobile Gateway. */
+const MOBILE_INSTALL_URL =
+  "https://www.funkyoushift.com/MattsSDKBoostingTools/mobile-install.html";
 const MOBILE_ANNOUNCE_DISMISS_KEY = "msbt.mobileAnnounce.dismissed.v1";
 
 function isMobileAnnounceDismissed() {
@@ -2578,10 +2579,10 @@ async function renderMobileAnnounceQr() {
     els.mobileAnnounceQr.alt = "QR unavailable in this build";
     return;
   }
-  const result = await window.msbt.mobileGatewayMakeQr(MOBILE_APK_URL);
+  const result = await window.msbt.mobileGatewayMakeQr(MOBILE_INSTALL_URL);
   if (result && result.ok && result.dataUrl) {
     els.mobileAnnounceQr.src = result.dataUrl;
-    els.mobileAnnounceQr.alt = "Scan to download MSBT Mobile Controller APK";
+    els.mobileAnnounceQr.alt = "Scan to open the MSBT Mobile install page";
   } else {
     els.mobileAnnounceQr.removeAttribute("src");
     els.mobileAnnounceQr.alt = (result && result.message) || "Could not render install QR";
@@ -2627,11 +2628,12 @@ function openMobileGatewayPanel() {
   void refreshMobileGatewayInfo();
 }
 
-function openMobileApkDownload() {
+function openMobileInstallPage() {
+  const url = MOBILE_INSTALL_URL;
   if (window.msbt && typeof window.msbt.openExternal === "function") {
-    window.msbt.openExternal(MOBILE_APK_URL);
+    window.msbt.openExternal(url);
   } else {
-    window.open(MOBILE_APK_URL, "_blank", "noopener,noreferrer");
+    window.open(url, "_blank", "noopener,noreferrer");
   }
 }
 
@@ -8191,7 +8193,7 @@ function wireEvents() {
     });
   }
   if (els.mobileAnnounceOpenApkBtn) {
-    els.mobileAnnounceOpenApkBtn.addEventListener("click", openMobileApkDownload);
+    els.mobileAnnounceOpenApkBtn.addEventListener("click", openMobileInstallPage);
   }
   if (els.mobileAnnounceOpenGatewayBtn) {
     els.mobileAnnounceOpenGatewayBtn.addEventListener("click", openMobileGatewayPanel);
