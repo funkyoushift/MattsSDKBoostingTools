@@ -300,6 +300,16 @@ const els = {
   mobileGatewayRefreshBtn: document.getElementById("mobileGatewayRefreshBtn"),
   mobileGatewayRotateBtn: document.getElementById("mobileGatewayRotateBtn"),
   mobileGatewayCopyBtn: document.getElementById("mobileGatewayCopyBtn"),
+  mobileAnnounceModal: document.getElementById("mobileAnnounceModal"),
+  mobileAnnounceQr: document.getElementById("mobileAnnounceQr"),
+  mobileAnnounceDontShow: document.getElementById("mobileAnnounceDontShow"),
+  mobileAnnounceDismissBtn: document.getElementById("mobileAnnounceDismissBtn"),
+  mobileAnnounceOpenApkBtn: document.getElementById("mobileAnnounceOpenApkBtn"),
+  mobileAnnounceOpenGatewayBtn: document.getElementById("mobileAnnounceOpenGatewayBtn"),
+  mobileAnnounceOpenBtn: document.getElementById("mobileAnnounceOpenBtn"),
+  boostMobileAnnounceBtn: document.getElementById("boostMobileAnnounceBtn"),
+  boostMobileGatewayBtn: document.getElementById("boostMobileGatewayBtn"),
+  boostMobileNotice: document.getElementById("boostMobileNotice"),
   targetSelect: document.getElementById("targetSelect"),
   targetSummary: document.getElementById("targetSummary"),
   travelMapBtn: document.getElementById("travelMapBtn"),
@@ -429,6 +439,7 @@ const state = {
   selectedTargetName: "",
   startupUpdateNoticeShown: false,
   deferredStartupUpdateInfo: null,
+  deferredMobileAnnounce: false,
   travelFavorites: { version: 1, favorites: {} },
   travelFavoriteSelectedKey: "",
   travelMaps: [],
@@ -2540,6 +2551,90 @@ async function copyMobileGatewayDetails() {
   }
 }
 
+const MOBILE_APK_URL =
+  "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/mobile-beta/MSBT-Mobile-Controller.apk";
+const MOBILE_ANNOUNCE_DISMISS_KEY = "msbt.mobileAnnounce.dismissed.v1";
+
+function isMobileAnnounceDismissed() {
+  try {
+    return localStorage.getItem(MOBILE_ANNOUNCE_DISMISS_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function setMobileAnnounceDismissed(dismissed) {
+  try {
+    if (dismissed) localStorage.setItem(MOBILE_ANNOUNCE_DISMISS_KEY, "1");
+    else localStorage.removeItem(MOBILE_ANNOUNCE_DISMISS_KEY);
+  } catch {
+    /* ignore */
+  }
+}
+
+async function renderMobileAnnounceQr() {
+  if (!els.mobileAnnounceQr) return;
+  if (!window.msbt || typeof window.msbt.mobileGatewayMakeQr !== "function") {
+    els.mobileAnnounceQr.alt = "QR unavailable in this build";
+    return;
+  }
+  const result = await window.msbt.mobileGatewayMakeQr(MOBILE_APK_URL);
+  if (result && result.ok && result.dataUrl) {
+    els.mobileAnnounceQr.src = result.dataUrl;
+    els.mobileAnnounceQr.alt = "Scan to download MSBT Mobile Controller APK";
+  } else {
+    els.mobileAnnounceQr.removeAttribute("src");
+    els.mobileAnnounceQr.alt = (result && result.message) || "Could not render install QR";
+  }
+}
+
+function hideMobileAnnounceModal() {
+  if (els.mobileAnnounceModal) els.mobileAnnounceModal.classList.add("hidden");
+}
+
+async function showMobileAnnounceModal({ force = false } = {}) {
+  if (!els.mobileAnnounceModal) return;
+  if (!force && isMobileAnnounceDismissed()) return;
+  if (!force && walkthroughState.active) {
+    state.deferredMobileAnnounce = true;
+    return;
+  }
+  const updateOpen =
+    els.startupUpdateModal && !els.startupUpdateModal.classList.contains("hidden");
+  if (!force && updateOpen) {
+    state.deferredMobileAnnounce = true;
+    return;
+  }
+  await renderMobileAnnounceQr();
+  if (els.mobileAnnounceDontShow) els.mobileAnnounceDontShow.checked = false;
+  els.mobileAnnounceModal.classList.remove("hidden");
+}
+
+function openMobileGatewayPanel() {
+  hideMobileAnnounceModal();
+  const activityTab = document.querySelector('[data-tab="activity"]');
+  if (activityTab) activityTab.click();
+  const panel = document.querySelector('[data-msbt-panel="mobile-gateway"]');
+  if (panel) {
+    requestAnimationFrame(() => {
+      try {
+        panel.scrollIntoView({ behavior: "smooth", block: "start" });
+      } catch {
+        panel.scrollIntoView();
+      }
+    });
+  }
+  void refreshMobileGatewayInfo();
+}
+
+function openMobileApkDownload() {
+  if (window.msbt && typeof window.msbt.openExternal === "function") {
+    window.msbt.openExternal(MOBILE_APK_URL);
+  } else {
+    window.open(MOBILE_APK_URL, "_blank", "noopener,noreferrer");
+  }
+}
+
 function applyBridgeStatusResult(result, options = {}) {
   const data = result && result.data ? result.data : {};
   if (!result.ok || !data.ok) {
@@ -4604,6 +4699,10 @@ function renderBoostUpdateNotice(info) {
 
 function hideStartupUpdateModal() {
   if (els.startupUpdateModal) els.startupUpdateModal.classList.add("hidden");
+  if (!walkthroughState.active && state.deferredMobileAnnounce) {
+    state.deferredMobileAnnounce = false;
+    window.setTimeout(() => void showMobileAnnounceModal({ force: false }), 200);
+  }
 }
 
 function renderStartupUpdateModal(notice) {
@@ -8083,6 +8182,29 @@ function wireEvents() {
   if (els.mobileGatewayHostSelect) {
     els.mobileGatewayHostSelect.addEventListener("change", () => void refreshMobileGatewayInfo());
   }
+  if (els.mobileAnnounceDismissBtn) {
+    els.mobileAnnounceDismissBtn.addEventListener("click", () => {
+      if (els.mobileAnnounceDontShow && els.mobileAnnounceDontShow.checked) {
+        setMobileAnnounceDismissed(true);
+      }
+      hideMobileAnnounceModal();
+    });
+  }
+  if (els.mobileAnnounceOpenApkBtn) {
+    els.mobileAnnounceOpenApkBtn.addEventListener("click", openMobileApkDownload);
+  }
+  if (els.mobileAnnounceOpenGatewayBtn) {
+    els.mobileAnnounceOpenGatewayBtn.addEventListener("click", openMobileGatewayPanel);
+  }
+  if (els.mobileAnnounceOpenBtn) {
+    els.mobileAnnounceOpenBtn.addEventListener("click", () => void showMobileAnnounceModal({ force: true }));
+  }
+  if (els.boostMobileAnnounceBtn) {
+    els.boostMobileAnnounceBtn.addEventListener("click", () => void showMobileAnnounceModal({ force: true }));
+  }
+  if (els.boostMobileGatewayBtn) {
+    els.boostMobileGatewayBtn.addEventListener("click", openMobileGatewayPanel);
+  }
 
   const walkthroughNextBtn = document.getElementById("walkthroughNextBtn");
   const walkthroughBackBtn = document.getElementById("walkthroughBackBtn");
@@ -8781,6 +8903,7 @@ function suppressTourCollidingChrome() {
   );
   if (els.boostUpdateNotice) els.boostUpdateNotice.classList.add("hidden");
   hideStartupUpdateModal();
+  hideMobileAnnounceModal();
 }
 
 function restoreTourCollidingChrome() {
@@ -8788,18 +8911,27 @@ function restoreTourCollidingChrome() {
     ? { ...state.versionInfo, updateState: state.latestUpdateState }
     : null;
   if (info) renderBoostUpdateNotice(info);
+  let showedUpdateModal = false;
   const deferred = state.deferredStartupUpdateInfo;
   if (deferred) {
     state.deferredStartupUpdateInfo = null;
     maybeShowStartupUpdateModal(deferred);
     walkthroughState.hidStartupUpdateModal = false;
-    return;
-  }
-  if (walkthroughState.hidStartupUpdateModal) {
+    showedUpdateModal = Boolean(
+      els.startupUpdateModal && !els.startupUpdateModal.classList.contains("hidden")
+    );
+  } else if (walkthroughState.hidStartupUpdateModal) {
     walkthroughState.hidStartupUpdateModal = false;
     const notice = info ? updateNoticeInfo(info) : null;
-    if (notice) renderStartupUpdateModal(notice);
+    if (notice) {
+      renderStartupUpdateModal(notice);
+      showedUpdateModal = true;
+    }
   }
+  // Prefer update modal first; show mobile announce shortly after (or immediately if no update UI).
+  const delayMs = showedUpdateModal ? 500 : 250;
+  state.deferredMobileAnnounce = false;
+  window.setTimeout(() => void showMobileAnnounceModal({ force: false }), delayMs);
 }
 
 function clearWalkthroughLinks() {
@@ -9491,6 +9623,15 @@ async function init() {
     await maybeStartWalkthrough();
   } catch (error) {
     console.warn("[MSBT] walkthrough start failed:", error);
+  }
+  if (!walkthroughState.active) {
+    try {
+      await showMobileAnnounceModal({ force: false });
+    } catch (error) {
+      console.warn("[MSBT] mobile announce failed:", error);
+    }
+  } else {
+    state.deferredMobileAnnounce = true;
   }
 }
 
