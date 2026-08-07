@@ -9,72 +9,65 @@
 </head>
 <body>
   <header class="appbar">
-    <div class="brand">
-      <strong>MSBT</strong>
-      <span>Mobile Controller</span>
-    </div>
-    <span class="badge offline">OFFLINE</span>
+    <div class="brand"><strong>MSBT</strong><span>Mobile Controller</span></div>
+    <span class="badge offline" id="connectionBadge">OFFLINE</span>
   </header>
-  <div class="session-strip" aria-label="Current controller session">
-    <span><b>PC</b> Not paired</span>
-    <span><b>Target</b> None</span>
-  </div>
+  <div class="session-strip"><span><b>PC</b> <span id="pcStatus">Not paired</span></span><span><b>Target</b> <span id="targetStatus">None</span></span></div>
 
   <main id="view">
     <section data-screen="home" class="screen active">
-      <div class="hero card">
-        <p class="eyebrow">CONTROLLER STATUS</p>
-        <h1>PC not paired</h1>
-        <p>Layout and offline tools are ready. Live actions stay disabled until the PC gateway is connected.</p>
-        <button class="primary" disabled>Pair with PC</button>
-      </div>
-      <div class="grid two">
-        <article class="card"><span>Bridge</span><strong>Unavailable</strong></article>
-        <article class="card"><span>Target</span><strong>None</strong></article>
-      </div>
-      <article class="card"><p class="eyebrow">RECENT RESULT</p><p>No actions yet.</p></article>
+      <div class="hero card"><p class="eyebrow">CONTROLLER STATUS</p><h1>PC not paired</h1><p>Offline tools are ready. Live actions remain disabled until the PC gateway is connected.</p><button class="primary" disabled>Pair with PC</button></div>
+      <div class="grid two"><article class="card"><span>Bridge</span><strong>Unavailable</strong></article><article class="card"><span>Target</span><strong>None</strong></article></div>
+      <article class="card"><p class="eyebrow">RECENT RESULT</p><p id="recentResult">No actions yet.</p></article>
+      <article class="card"><p class="eyebrow">OFFLINE READY</p><div class="chip-row"><span class="chip">BL4 Codes</span><span class="chip">Bookmarks</span><span class="chip">Quick Menu</span><span class="chip">Settings</span></div></article>
     </section>
 
     <section data-screen="boost" class="screen">
       <h2>Boost</h2>
-      <article class="card"><p class="eyebrow">TARGET PLAYER</p><button class="select" disabled>No connection</button></article>
-      <article class="card"><p class="eyebrow">QUICK MAX</p><div class="button-grid"><button disabled>MAX ALL</button><button disabled>MAX CASH</button><button disabled>MAX ERIDIUM</button><button disabled>MAX PLAYER</button><button disabled>MAX SPEC</button></div></article>
-      <article class="card"><p class="eyebrow">SERIAL SENDER</p><textarea placeholder="Paste one or more @U serials"></textarea><div class="row"><button>Validate</button><button>Confirm</button></div><div class="button-grid"><button disabled>Selected</button><button disabled>All</button><button disabled>Non-Host</button></div></article>
-      <article class="card"><p class="eyebrow">RARITY PRESETS</p><div class="button-grid"><button disabled>Legendary</button><button disabled>Pearlescent</button><button disabled>Reset</button></div></article>
+      <article class="card"><p class="eyebrow">TARGET PLAYER</p><button class="select" disabled>No connection</button><div class="button-grid compact"><button disabled>Refresh Players</button><button disabled>Use Selected</button><button class="danger" disabled>Kick Player</button></div></article>
+      <article class="card"><p class="eyebrow">QUICK MAX</p><div class="button-grid"><button disabled>MAX ALL</button><button disabled>MAX CASH</button><button disabled>MAX ERIDIUM</button><button disabled>MAX PLAYER 60</button><button disabled>MAX SPEC 701</button></div></article>
+      <article class="card"><p class="eyebrow">SERIAL SENDER</p><textarea id="serialInput" placeholder="Paste one or more @U serials"></textarea><div class="field-grid"><label>Override level<select id="serialOverride"><option>false</option><option>true</option></select></label><label>Level<input id="serialLevel" type="number" value="60"></label></div><div class="row"><button id="validateSerial">Validate</button><button id="confirmSerial">Confirm</button></div><div class="button-grid"><button disabled>Give Selected</button><button disabled>Give All</button><button disabled>Give Non-Host</button><button id="clearSerial">Clear</button></div><p class="status-line" id="serialStatus">Not confirmed.</p></article>
+      <article class="card"><p class="eyebrow">EXPERIENCE</p><div class="field-grid"><label>XP Track<select><option>player</option><option>specialization</option><option>vaultcard_xp_1</option><option>vaultcard_xp_2</option><option>vaultcard_xp_3</option><option>vaultcard_xp_4</option></select></label><label>Target Level<input type="number" value="60"></label></div><div class="button-grid"><button disabled>Set Player Level</button><button disabled>Max Player Level</button><button disabled>Set Spec 701</button></div></article>
+      <article class="card"><p class="eyebrow">CURRENCY</p><div class="field-grid"><label>Currency<select><option>cash</option><option>eridium</option><option>vaultcard1</option><option>vaultcard2</option><option>vaultcard3</option><option>vaultcard4</option></select></label><label>Amount<input type="number" value="1000000"></label></div><div class="button-grid"><button disabled>Give Currency</button><button disabled>Max Currency</button><button disabled>Max Eridium</button><button disabled>Max All</button></div></article>
+      <article class="card"><p class="eyebrow">BACKPACK / BANK SIZE</p><div class="field-grid"><label>Backpack<input type="number" value="999"></label><label>Bank<input type="number" value="1500"></label></div><label class="check"><input type="checkbox"> Automatic Backpack and Bank Size for Party</label><div class="button-grid"><button disabled>Set Selected</button><button disabled>Apply to All Party</button></div></article>
+      <article class="card"><p class="eyebrow">RARITY DROP WEIGHTS</p><div id="raritySliders" class="sliders"></div><div class="button-grid"><button disabled>Apply</button><button disabled>Reset All</button><button disabled>Only Legendary</button><button disabled>Only Pearlescent</button></div></article>
+      <article class="card"><p class="eyebrow">CHEATS / DEBUG CAM</p><div class="button-grid"><button disabled>Give Experience</button><button disabled>Give 1 Million Cash</button><button disabled>Give 100k Eridium</button><button class="danger" disabled>Kill All Enemies</button><button disabled>All Customs + Hovers</button><button disabled>Infinite Ammo</button><button disabled>Open Bank Anywhere</button><button disabled>Toggle Debug Cam</button><button disabled>Teleport to Debug Cam</button></div></article>
+      <article class="card"><p class="eyebrow">SDU / GOLDEN CHEST / SHINIES</p><div class="button-grid"><button disabled>Max SDU Selected</button><button disabled>Open Golden Chest</button><button disabled>Close Golden Chest</button><button disabled>Drop All Shinies</button><button disabled>Shiny Selected</button><button disabled>Shiny All</button><button disabled>Shiny Non-Host</button></div></article>
     </section>
 
     <section data-screen="codes" class="screen">
       <div class="title-row"><h2>BL4 Codes</h2><button id="refreshCodes">Refresh</button></div>
+      <p class="muted small" id="catalogStatus">Bundled baseline ready. Refresh checks GZO and MSBT sources when online.</p>
       <input id="codeSearch" type="search" placeholder="Search weapons, shields, mods…">
-      <div class="filters"><button>All</button><button>Weapons</button><button>Gear</button><button>Custom</button></div>
+      <div class="filters" id="codeFilters"><button class="active-filter" data-filter="all">All</button><button data-filter="weapon">Weapons</button><button data-filter="gear">Gear</button><button data-filter="custom">Custom</button></div>
       <div id="codeList" class="list"></div>
+      <article id="codeDetail" class="card hidden"><div class="title-row"><p class="eyebrow">CODE DETAIL</p><button id="closeCodeDetail" class="small-button">Close</button></div><div id="codeDetailBody"></div><div class="button-grid"><button id="copyCode">Copy Serial</button><button id="bookmarkCode">Save Bookmark</button><button id="confirmCode">Confirm</button><button disabled>Send Selected</button><button disabled>Send All</button><button disabled>Send Non-Host</button></div></article>
     </section>
 
     <section data-screen="control" class="screen">
       <h2>Control</h2>
-      <div class="tool-grid">
-        <button data-open="quick">★ Quick Menu</button><button>Inventory</button><button>Map Travel</button><button>Movement</button><button>Dev Spawner</button><button>Item Pools</button>
-      </div>
-      <article id="quickMenu" class="card hidden">
-        <div class="title-row"><p class="eyebrow">FULL QUICK MENU</p><span>Page 1 / 5</span></div>
-        <div class="quick-grid" id="quickGrid"></div>
-      </article>
+      <div class="tool-grid"><button data-tool="quick">★ Quick Menu</button><button data-tool="inventory">Inventory</button><button data-tool="travel">Map Travel</button><button data-tool="movement">Movement</button><button data-tool="spawner">Dev Spawner</button><button data-tool="pools">Item Pools</button></div>
+      <article class="card tool-panel" data-panel="quick"><div class="title-row"><p class="eyebrow">FULL QUICK MENU</p><span id="quickPageLabel">Page 1 / 5</span></div><div class="page-tabs" id="quickPages"></div><div class="quick-grid" id="quickGrid"></div><div class="button-grid"><button id="editQuickSlot">Edit Selected Slot</button><button id="clearQuickPage">Clear Page</button><button disabled>Pin Last</button><button disabled>Repeat Last</button><button disabled>Lock Target</button></div></article>
+      <article class="card tool-panel hidden" data-panel="inventory"><p class="eyebrow">INVENTORY</p><p class="muted">Live equipped and backpack inventory will populate from the selected player when connected.</p><div class="field-grid"><label>Sort<select><option>Name</option><option>Rarity</option><option>Type</option></select></label><label>Give To<select><option>No players loaded</option></select></label></div><div class="empty-state">No live inventory available offline.</div></article>
+      <article class="card tool-panel hidden" data-panel="travel"><p class="eyebrow">MAP TRAVEL</p><input id="travelSearch" type="search" placeholder="Search maps or stations"><div class="button-grid"><button disabled>Travel Selected</button><button disabled>Travel Favorite</button></div><div class="empty-state">Favorites and live station list will sync from the PC.</div></article>
+      <article class="card tool-panel hidden" data-panel="movement"><p class="eyebrow">PLAYER MOVEMENT</p><div class="button-grid"><button disabled>Infinite Jump</button><button disabled>Fly / Ghost</button><button disabled>Walk</button><button disabled>Teleport Forward</button><button disabled>Save Position</button><button disabled>Restore Position</button></div><div class="field-grid"><label>Walk Speed<input type="number" value="1"></label><label>Jump Scale<input type="number" value="1" step="0.1"></label></div></article>
+      <article class="card tool-panel hidden" data-panel="spawner"><p class="eyebrow">DEV SPAWNER</p><input type="search" placeholder="Search actors"><div class="field-grid"><label>Count<input type="number" value="1"></label><label>Spacing<input type="number" value="250"></label></div><div class="button-grid"><button disabled>Spawn Selected</button><button disabled>Spawn Favorite</button></div><div class="empty-state">Actor catalog/favorites will populate after PC sync.</div></article>
+      <article class="card tool-panel hidden" data-panel="pools"><p class="eyebrow">ITEM POOLS</p><input type="search" placeholder="Search item pools"><div class="button-grid"><button disabled>Spawn Selected Pool</button><button disabled>Spawn to Target</button></div><div class="empty-state">Item pool data will populate after PC sync.</div></article>
     </section>
 
     <section data-screen="more" class="screen">
       <h2>More</h2>
-      <div class="list menu"><button>Serial Bookmarks</button><button>Activity Log</button><button>Report Bug</button><button>Connection Settings</button><button>Appearance</button><button>About</button></div>
-      <article class="card"><p class="eyebrow">SERIAL BOOKMARKS</p><p>The mobile store will mirror the desktop bookmark shape: name, group, serial, metadata, timestamps.</p></article>
+      <div class="list menu"><button data-more="bookmarks">Serial Bookmarks</button><button data-more="activity">Activity Log</button><button data-more="report">Report Bug</button><button data-more="connection">Connection Settings</button><button data-more="appearance">Appearance</button><button data-more="about">About</button></div>
+      <article class="card more-panel" data-more-panel="bookmarks"><div class="title-row"><p class="eyebrow">SERIAL BOOKMARKS</p><button id="newBookmark">New</button></div><div class="field-grid"><label>Search<input id="bookmarkSearch" type="search"></label><label>Group Filter<input id="bookmarkGroupFilter" type="text" placeholder="All groups"></label></div><div id="bookmarkList" class="list bookmark-list"></div><hr><div class="field-grid"><label>Name<input id="bookmarkName" type="text"></label><label>Group<input id="bookmarkGroup" type="text" value="Default"></label></div><label>Serial<textarea id="bookmarkSerial"></textarea></label><div class="button-grid"><button id="saveBookmark">Save</button><button id="deleteBookmark" class="danger">Delete</button><button id="copyBookmark">Copy</button><button id="confirmBookmark">Confirm</button><button disabled>Send Selected</button><button disabled>Send All</button><button disabled>Send Non-Host</button></div><p id="bookmarkStatus" class="status-line">No bookmark selected.</p></article>
+      <article class="card more-panel hidden" data-more-panel="activity"><p class="eyebrow">ACTIVITY LOG</p><div id="activityLog" class="empty-state">No actions yet.</div></article>
+      <article class="card more-panel hidden" data-more-panel="report"><p class="eyebrow">REPORT BUG / SUGGEST FEATURE</p><label>Type<select><option>Bug Report</option><option>Feature Request</option></select></label><label>Title<input type="text"></label><label>Description<textarea></textarea></label><button>Copy Report Draft</button></article>
+      <article class="card more-panel hidden" data-more-panel="connection"><p class="eyebrow">CONNECTION SETTINGS</p><p class="muted">PC gateway pairing will be added here. No fake connection is used in this build.</p><label>PC Address<input type="text" placeholder="192.168.1.x"></label><label>Gateway Port<input type="number" value="49775"></label><button disabled>Pair with PC</button></article>
+      <article class="card more-panel hidden" data-more-panel="appearance"><p class="eyebrow">APPEARANCE</p><p class="muted">MSBT Neon is the active mobile theme.</p><label class="check"><input id="compactCards" type="checkbox"> Compact cards</label></article>
+      <article class="card more-panel hidden" data-more-panel="about"><p class="eyebrow">ABOUT</p><p><strong>MSBT Mobile Controller</strong></p><p class="muted">Android controller companion for Matt's SDK Boosting Tools. Offline tools work locally; game actions require the PC gateway.</p></article>
     </section>
   </main>
 
-  <nav class="bottom-nav" aria-label="Main navigation">
-    <button class="active" data-nav="home"><span class="nav-icon">⌂</span><span>Home</span></button>
-    <button data-nav="boost"><span class="nav-icon">⚡</span><span>Boost</span></button>
-    <button data-nav="codes"><span class="nav-icon">⌕</span><span>Codes</span></button>
-    <button data-nav="control"><span class="nav-icon">✦</span><span>Control</span></button>
-    <button data-nav="more"><span class="nav-icon">•••</span><span>More</span></button>
-  </nav>
+  <nav class="bottom-nav" aria-label="Main navigation"><button class="active" data-nav="home"><span class="nav-icon">⌂</span><span>Home</span></button><button data-nav="boost"><span class="nav-icon">⚡</span><span>Boost</span></button><button data-nav="codes"><span class="nav-icon">⌕</span><span>Codes</span></button><button data-nav="control"><span class="nav-icon">✦</span><span>Control</span></button><button data-nav="more"><span class="nav-icon">•••</span><span>More</span></button></nav>
   <script src="app.js"></script>
 </body>
 </html>

@@ -1,0 +1,37 @@
+name: Build MSBT Mobile Controller APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - mobile-controller-v2
+    paths:
+      - 'mobile_controller/**'
+      - '.github/workflows/mobile-controller-v2.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Restore Android debug signing identity
+        uses: actions/cache@v4
+        with:
+          path: ~/.android/debug.keystore
+          key: msbt-mobile-debug-keystore-v1
+      - name: Build debug APK
+        working-directory: mobile_controller
+        run: gradle assembleDebug --stacktrace
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MSBT-Mobile-Controller-debug
+          path: mobile_controller/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
