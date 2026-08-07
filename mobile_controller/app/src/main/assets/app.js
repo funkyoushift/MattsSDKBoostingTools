@@ -2,7 +2,7 @@ const $=(id)=>document.getElementById(id);
 const $$=(selector)=>[...document.querySelectorAll(selector)];
 const STORE={connection:'msbt.mobile.connection.v1',bookmarks:'msbt.mobile.bookmarks.v1',movement:'msbt.mobile.movement.v1',quick:'msbt.mobile.quick.v1',activity:'msbt.mobile.activity.v1',target:'msbt.mobile.target.v1',updateDismiss:'msbt.mobile.updateDismiss.v1'};
 const PLAYER_SCOPED=new Set(['max_all','max_currency','max_eridium','max_player_level','max_spec_level','max_sdu','give_currency','set_level','give_serial_selected','set_backpack_bank_selected','shiny_selected','movement_apply_all','movement_infinite_jump_selected_on','movement_infinite_jump_selected_off','movement_infinite_jump_toggle_selected','movement_teleport_to_slot','read_inventory','read_equipped_serials','read_backpack_serials']);
-const FALLBACK_APP_VERSION='0.1.0-beta.14';
+const FALLBACK_APP_VERSION='0.1.0-beta.15';
 const state={online:false,bridgeOnline:false,codes:[],filteredCodes:[],selectedCodes:new Set(),activeQuickPage:0,quick:null,bookmarks:[],selectedBookmarks:new Set(),movementPicks:new Set(),connection:{},activity:[],players:[],selectedTarget:'',pollTimer:null,busy:false,inventory:{equipped:[],backpack:[],selected:null,selectedIds:new Set()},travel:{maps:[],stations:[],selectedMap:null,selectedStation:null,showAllStations:false},pools:{rows:[],selected:null},dev:{categories:{},actors:[],filtered:[],category:'All',selected:'',page:0,pageSize:80,warningAccepted:false},update:{currentVersion:FALLBACK_APP_VERSION,availableVersion:'',apkUrl:'',updateAvailable:false,checking:false,lastMessage:''}};
 const DEV_NEED_ACTOR=new Set(['dev_spawner_spawnai','dev_spawner_probeai','dev_spawner_cache','dev_spawner_spawn','dev_spawner_targets']);
 const read=(key,fallback)=>{try{return JSON.parse(localStorage.getItem(key))??fallback}catch{return fallback}};
@@ -988,7 +988,7 @@ function showUpdateBanner(show){
   banner.classList.toggle('hidden',!show);
   if(!show)return;
   if($('updateBannerText')){
-    $('updateBannerText').textContent=`Closed beta ${state.update.availableVersion} is available (you have ${state.update.currentVersion}).`;
+    $('updateBannerText').textContent=`Open beta ${state.update.availableVersion} is available (you have ${state.update.currentVersion}).`;
   }
   if($('updateBannerMeta')){
     $('updateBannerMeta').textContent='Download installs over this app and keeps local pairing data.';
@@ -1062,7 +1062,7 @@ window.__msbtUpdateCheck=(payload)=>{
   }else{
     showUpdateBanner(false);
     if($('aboutInstallUpdateBtn'))$('aboutInstallUpdateBtn').classList.add('hidden');
-    setAboutUpdateStatus(`You are on the latest closed beta (${state.update.currentVersion}).`);
+    setAboutUpdateStatus(`You are on the latest open beta (${state.update.currentVersion}).`);
   }
   state.update._forceBanner=false;
 };
