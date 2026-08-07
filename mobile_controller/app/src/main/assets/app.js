@@ -2,7 +2,8 @@ const $=(id)=>document.getElementById(id);
 const $$=(selector)=>[...document.querySelectorAll(selector)];
 const STORE={connection:'msbt.mobile.connection.v1',bookmarks:'msbt.mobile.bookmarks.v1',movement:'msbt.mobile.movement.v1',quick:'msbt.mobile.quick.v1',activity:'msbt.mobile.activity.v1',target:'msbt.mobile.target.v1'};
 const PLAYER_SCOPED=new Set(['max_all','max_currency','max_eridium','max_player_level','max_spec_level','max_sdu','give_currency','set_level','give_serial_selected','set_backpack_bank_selected','shiny_selected','movement_apply_all','movement_infinite_jump_selected_on','movement_infinite_jump_selected_off','movement_infinite_jump_toggle_selected','movement_teleport_to_slot','read_inventory','read_equipped_serials','read_backpack_serials']);
-const state={online:false,bridgeOnline:false,codes:[],filteredCodes:[],selectedCodes:new Set(),activeQuickPage:0,quick:null,bookmarks:[],connection:{},activity:[],players:[],selectedTarget:'',pollTimer:null,busy:false,inventory:{equipped:[],backpack:[],selected:null},travel:{maps:[],stations:[],mode:'map',selected:null},pools:{rows:[],selected:null}};
+const state={online:false,bridgeOnline:false,codes:[],filteredCodes:[],selectedCodes:new Set(),activeQuickPage:0,quick:null,bookmarks:[],selectedBookmarks:new Set(),movementPicks:new Set(),connection:{},activity:[],players:[],selectedTarget:'',pollTimer:null,busy:false,inventory:{equipped:[],backpack:[],selected:null,selectedIds:new Set()},travel:{maps:[],stations:[],selectedMap:null,selectedStation:null,showAllStations:false},pools:{rows:[],selected:null},dev:{categories:{},actors:[],filtered:[],category:'All',selected:'',page:0,pageSize:80,warningAccepted:false}};
+const DEV_NEED_ACTOR=new Set(['dev_spawner_spawnai','dev_spawner_probeai','dev_spawner_cache','dev_spawner_spawn','dev_spawner_targets']);
 const read=(key,fallback)=>{try{return JSON.parse(localStorage.getItem(key))??fallback}catch{return fallback}};
 const write=(key,value)=>localStorage.setItem(key,JSON.stringify(value));
 const now=()=>new Date().toISOString();
@@ -17,8 +18,12 @@ function setLiveEnabled(){
   $$('[data-live]').forEach((button)=>button.disabled=!state.online||state.busy);
   $$('[data-live-optional]').forEach((button)=>button.disabled=!state.online||state.busy);
   ['invRefresh','invEquipped','invBackpack'].forEach((id)=>{const el=$(id);if(el)el.disabled=!state.online||state.busy});
-  const travelGo=$('travelGo');if(travelGo)travelGo.disabled=!state.online||state.busy||!state.travel.selected;
+  const travelMapGo=$('travelMapGo');if(travelMapGo)travelMapGo.disabled=!state.online||state.busy||!(state.travel.selectedMap&&state.travel.selectedMap.map);
+  const travelStationGo=$('travelStationGo');if(travelStationGo)travelStationGo.disabled=!state.online||state.busy||!(state.travel.selectedStation&&state.travel.selectedStation.station);
   const poolSpawn=$('poolSpawn');if(poolSpawn)poolSpawn.disabled=!state.online||state.busy||!state.pools.selected;
+  const invSend=$('invSendSelected');if(invSend)invSend.disabled=!state.online||state.busy||!state.inventory.selectedIds.size;
+  const runMove=$('runSelectedMovement');if(runMove)runMove.disabled=!state.online||state.busy||!state.movementPicks.size;
+  $$('[data-dev-risk]').forEach((button)=>{if(!state.dev.warningAccepted)button.disabled=true});
 }
 function playerValue(player){const index=player&&player.index;const name=player&&player.name?String(player.name):'';if(index===null||index===undefined||index==='')return name;return name?`${index}|${name}`:String(index)}
 function playerLabel(player){const index=player&&player.index;const name=player&&player.name?String(player.name):'';if(index===null||index===undefined||index==='')return name||'Unknown player';return `${index} | ${name||'Unknown player'}`}
@@ -207,8 +212,30 @@ $('codeSearch').addEventListener('input',filterCodes);['listingFilter','creatorF
 $('selectAllCodes').addEventListener('click',()=>{state.filteredCodes.forEach(row=>state.selectedCodes.add(row.id));renderCodes()});$('clearCodeSelection').addEventListener('click',()=>{state.selectedCodes.clear();renderCodes()});
 $('refreshCodes').addEventListener('click',async()=>{await loadCatalogs();logActivity('Reloaded the bundled BL4 Codes cache. Online GZO refresh will use the same screen once PC/network sync is enabled.')});
 
-function initBookmarks(){state.bookmarks=read(STORE.bookmarks,[]);renderBookmarks()}
-function renderBookmarks(){const q=text($('bookmarkSearch').value).toLowerCase(),rows=$('bookmarkRows');rows.innerHTML='';state.bookmarks.filter(b=>!q||`${b.name} ${b.group} ${b.serial}`.toLowerCase().includes(q)).forEach(b=>{const button=document.createElement('button');button.textContent=`${b.name||'Unnamed'}${b.group?` · ${b.group}`:''}`;button.addEventListener('click',()=>{$('bookmarkName').value=b.name||'';$('bookmarkGroup').value=b.group||'';$('bookmarkSerial').value=b.serial||'';$('bookmarkSerial').dataset.id=b.id});rows.appendChild(button)});if(!rows.children.length)rows.innerHTML='<small class="muted">No saved serial bookmarks.</small>'}
+function initBookmarks(){state.bookmarks=read(STORE.bookmarks,[]);state.selectedBookmarks=new Set();renderBookmarks()}
+function filteredBookmarks(){
+  const q=text($('bookmarkSearch')&&$('bookmarkSearch').value).toLowerCase();
+  return state.bookmarks.filter(b=>!q||`${b.name} ${b.group} ${b.serial}`.toLowerCase().includes(q));
+}
+function renderBookmarks(){
+  const rows=$('bookmarkRows');if(!rows)return;
+  const list=filteredBookmarks();
+  rows.innerHTML='';
+  list.forEach(b=>{
+    const button=document.createElement('button');
+    const selected=state.selectedBookmarks.has(b.id);
+    button.className=selected?'selected':'';
+    button.textContent=`${selected?'✓ ':''}${b.name||'Unnamed'}${b.group?` · ${b.group}`:''}`;
+    button.addEventListener('click',()=>{
+      if(state.selectedBookmarks.has(b.id))state.selectedBookmarks.delete(b.id);else state.selectedBookmarks.add(b.id);
+      $('bookmarkName').value=b.name||'';$('bookmarkGroup').value=b.group||'';$('bookmarkSerial').value=b.serial||'';$('bookmarkSerial').dataset.id=b.id;
+      renderBookmarks();
+    });
+    rows.appendChild(button);
+  });
+  if(!rows.children.length)rows.innerHTML='<small class="muted">No saved serial bookmarks.</small>';
+  if($('bookmarkSelectionSummary'))$('bookmarkSelectionSummary').textContent=`${state.selectedBookmarks.size} selected · ${list.length} shown`;
+}
 async function pullDesktopBookmarks({quiet=false}={}){
   if(!state.online){if(!quiet)alert('Connect to desktop MSBT first.');return false}
   try{
@@ -216,6 +243,7 @@ async function pullDesktopBookmarks({quiet=false}={}){
     if(!result.ok)throw new Error((result.data&&result.data.message)||`HTTP ${result.status}`);
     const rows=Array.isArray(result.data&&result.data.bookmarks)?result.data.bookmarks:[];
     state.bookmarks=rows.map((b)=>({id:b.id||`pc-${compact(b.serial||Date.now())}`,name:text(b.name)||'Unnamed',group:text(b.group)||'Default',serial:text(b.serial),created_at:b.created_at||now(),updated_at:b.updated_at||now(),metadata:b.metadata||{}})).filter((b)=>validSerial(b.serial));
+    state.selectedBookmarks=new Set();
     write(STORE.bookmarks,state.bookmarks);
     renderBookmarks();
     const message=`Pulled ${state.bookmarks.length} serial bookmark(s) from desktop MSBT.`;
@@ -229,7 +257,7 @@ async function pullDesktopBookmarks({quiet=false}={}){
     return false;
   }
 }
-$('bookmarkSearch').addEventListener('input',renderBookmarks);$('saveBookmark').addEventListener('click',()=>{const serial=text($('bookmarkSerial').value);if(!validSerial(serial)){alert('Bookmark serial must be one valid @U serial.');return}const id=$('bookmarkSerial').dataset.id||`mobile-${Date.now()}`;const existing=state.bookmarks.find(b=>b.id===id);const record={...(existing||{}),id,name:text($('bookmarkName').value)||'Unnamed',group:text($('bookmarkGroup').value),serial,created_at:existing?.created_at||now(),updated_at:now(),metadata:existing?.metadata||{}};state.bookmarks=state.bookmarks.filter(b=>b.id!==id);state.bookmarks.push(record);write(STORE.bookmarks,state.bookmarks);$('bookmarkSerial').dataset.id=id;renderBookmarks();logActivity(`Saved serial bookmark: ${record.name}`)});$('deleteBookmark').addEventListener('click',()=>{const id=$('bookmarkSerial').dataset.id;if(!id)return;state.bookmarks=state.bookmarks.filter(b=>b.id!==id);write(STORE.bookmarks,state.bookmarks);$('bookmarkSerial').dataset.id='';$('bookmarkName').value='';$('bookmarkGroup').value='';$('bookmarkSerial').value='';renderBookmarks();logActivity('Deleted serial bookmark.')});
+$('bookmarkSearch').addEventListener('input',renderBookmarks);$('saveBookmark').addEventListener('click',()=>{const serial=text($('bookmarkSerial').value);if(!validSerial(serial)){alert('Bookmark serial must be one valid @U serial.');return}const id=$('bookmarkSerial').dataset.id||`mobile-${Date.now()}`;const existing=state.bookmarks.find(b=>b.id===id);const record={...(existing||{}),id,name:text($('bookmarkName').value)||'Unnamed',group:text($('bookmarkGroup').value),serial,created_at:existing?.created_at||now(),updated_at:now(),metadata:existing?.metadata||{}};state.bookmarks=state.bookmarks.filter(b=>b.id!==id);state.bookmarks.push(record);write(STORE.bookmarks,state.bookmarks);$('bookmarkSerial').dataset.id=id;renderBookmarks();logActivity(`Saved serial bookmark: ${record.name}`)});$('deleteBookmark').addEventListener('click',()=>{const id=$('bookmarkSerial').dataset.id;if(!id)return;state.bookmarks=state.bookmarks.filter(b=>b.id!==id);state.selectedBookmarks.delete(id);write(STORE.bookmarks,state.bookmarks);$('bookmarkSerial').dataset.id='';$('bookmarkName').value='';$('bookmarkGroup').value='';$('bookmarkSerial').value='';renderBookmarks();logActivity('Deleted serial bookmark.')});
 const pullDesktopBookmarksBtn=$('pullDesktopBookmarks');
 if(pullDesktopBookmarksBtn)pullDesktopBookmarksBtn.addEventListener('click',()=>void pullDesktopBookmarks());
 const bookmarkUseBoostBtn=$('bookmarkUseBoost');
@@ -244,12 +272,50 @@ if(bookmarkUseBoostBtn)bookmarkUseBoostBtn.addEventListener('click',()=>{
   window.scrollTo(0,0);
   logActivity('Loaded bookmark serial into Boost sender.');
 });
+if($('bookmarkClearSelection'))$('bookmarkClearSelection').addEventListener('click',()=>{state.selectedBookmarks=new Set();renderBookmarks()});
 
 let boostConfirmed='';$('boostValidate').addEventListener('click',()=>{const serials=text($('boostSerialText').value).split(/\s+/).filter(Boolean);const ok=serials.length>0&&serials.every(validSerial);$('boostSerialStatus').textContent=ok?`${serials.length} valid @U serial(s).`:'Serial text contains an invalid value.'});$('boostConfirm').addEventListener('click',()=>{const value=text($('boostSerialText').value);const serials=value.split(/\s+/).filter(Boolean);if(!serials.length||!serials.every(validSerial)){alert('Validate the @U serials first.');return}boostConfirmed=value;$('boostSerialStatus').textContent='Confirmed for delivery. Editing the serials will invalidate confirmation.'});$('boostSerialText').addEventListener('input',()=>{if(boostConfirmed&&text($('boostSerialText').value)!==boostConfirmed){boostConfirmed='';$('boostSerialStatus').textContent='Serial changed; confirmation cleared.'}});
 
 const MOVEMENT_DEFAULT={speedScale:'1.00',walkSpeed:'600',jumpHeight:'198',gravityScale:'1.00',stepHeight:'45',floorAngle:'44.8',floorZ:'0.71',glideSpeed:'1200',glideBoost:'0',glideAirControl:'0.60',dashSpeed:'2500',timeDilation:'1.00',sprintJumpGoal:'198',doubleJumpGoal:'198',slideJumpGoal:'198',individualJumpGoals:false,zeroVaultOnApply:false};
-function loadMovement(){const preset={...MOVEMENT_DEFAULT,...read(STORE.movement,{})};$$('[data-movement]').forEach(el=>{const key=el.dataset.movement;if(el.type==='checkbox')el.checked=!!preset[key];else el.value=preset[key]??''})}
-$('saveMovement').addEventListener('click',()=>{const preset={};$$('[data-movement]').forEach(el=>preset[el.dataset.movement]=el.type==='checkbox'?el.checked:text(el.value));write(STORE.movement,preset);$('movementStatus').textContent='Preset saved locally. It will remain available offline.';logActivity('Saved movement preset locally.')});
+function loadMovement(){const preset={...MOVEMENT_DEFAULT,...read(STORE.movement,{})};$$('[data-movement]').forEach(el=>{const key=el.dataset.movement;if(el.type==='checkbox')el.checked=!!preset[key];else el.value=preset[key]??''});refreshMovementPicks()}
+function movementPickKey(button){return `${text(button.dataset.action)}|${text(button.dataset.slot)}`}
+function refreshMovementPicks(){
+  $$('[data-movement-pick]').forEach((button)=>{
+    button.classList.toggle('picked',state.movementPicks.has(movementPickKey(button)));
+  });
+  setLiveEnabled();
+}
+$$('[data-movement-pick]').forEach((button)=>{
+  button.addEventListener('contextmenu',(event)=>{
+    event.preventDefault();
+    const key=movementPickKey(button);
+    if(state.movementPicks.has(key))state.movementPicks.delete(key);else state.movementPicks.add(key);
+    refreshMovementPicks();
+  });
+  button.addEventListener('long-press',()=>{});
+});
+// Tap-hold alternative: double-tap toggles pick; normal click still fires via data-live.
+$$('[data-movement-pick]').forEach((button)=>{
+  let lastTap=0;
+  button.addEventListener('click',(event)=>{
+    const nowTs=Date.now();
+    if(nowTs-lastTap<320){
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      const key=movementPickKey(button);
+      if(state.movementPicks.has(key))state.movementPicks.delete(key);else state.movementPicks.add(key);
+      refreshMovementPicks();
+      if($('movementStatus'))$('movementStatus').textContent=`${state.movementPicks.size} movement action(s) selected. Tap Run Selected, or single-tap to fire one.`;
+    }
+    lastTap=nowTs;
+  },true);
+});
+if($('saveMovement'))$('saveMovement').addEventListener('click',()=>{const preset={};$$('[data-movement]').forEach(el=>preset[el.dataset.movement]=el.type==='checkbox'?el.checked:text(el.value));write(STORE.movement,preset);$('movementStatus').textContent='Preset saved locally. It will remain available offline.';logActivity('Saved movement preset locally.')});
+if($('runSelectedMovement'))$('runSelectedMovement').addEventListener('click',async()=>{
+  if(!state.movementPicks.size){alert('Double-tap actions to select them, then Run Selected.');return}
+  const buttons=$$('[data-movement-pick]').filter((button)=>state.movementPicks.has(movementPickKey(button)));
+  for(const button of buttons)await runLiveAction(button);
+});
 
 function defaultQuick(){return{version:1,baseRevision:'',localRevision:now(),dirty:false,pages:Array.from({length:5},(_,page)=>({name:`Page ${page+1}`,slots:Array.from({length:21},(_,index)=>({slot:index+1,commandId:'',label:`Slot ${index+1}`,payload:null,renamed:false}))}))}}
 function loadQuick(){state.quick={...defaultQuick(),...read(STORE.quick,defaultQuick())};if(!Array.isArray(state.quick.pages)||!state.quick.pages.length)state.quick=defaultQuick();renderQuick()}
@@ -523,12 +589,12 @@ function buildActionPayload(action,button){
     return{target_player:state.selectedTarget,infinite_jump_target:state.selectedTarget};
   }
   if(action==='travel_to_map'){
-    const map=state.travel.selected&&state.travel.selected.map;
+    const map=state.travel.selectedMap&&state.travel.selectedMap.map;
     if(!map)throw new Error('Select a travel map first.');
     return{travel_map:map};
   }
   if(action==='travel_to_station'){
-    const station=state.travel.selected&&state.travel.selected.station;
+    const station=state.travel.selectedStation&&state.travel.selectedStation.station;
     if(!station)throw new Error('Select a travel station first.');
     return{travel_station:station};
   }
@@ -537,16 +603,25 @@ function buildActionPayload(action,button){
     if(!name)throw new Error('Select an item pool first.');
     return{itempool_name:name,level:intValue($('poolLevel').value,60),count:intValue($('poolCount').value,1)};
   }
+  if(action&&action.startsWith('dev_spawner_'))return buildDevSpawnerPayload(action);
   if(button&&button._quickPayload&&typeof button._quickPayload==='object')return{...button._quickPayload};
   if(action==='give_serial_selected'||action==='give_serial_all'||action==='give_serial_nonhost'){
     const fromCodes=button&&button.dataset.serialSource==='codes';
     const fromBookmark=button&&button.dataset.serialSource==='bookmark';
+    const fromInventory=button&&button.dataset.serialSource==='inventory';
     let serialText='';
     let copies=1;
-    if(fromBookmark){
-      serialText=text($('bookmarkSerial').value);
-      if(!validSerial(serialText))throw new Error('Pick a bookmark serial first.');
-      copies=1;
+    if(fromInventory){
+      const serials=invAllRows().filter((row)=>state.inventory.selectedIds.has(invRowId(row))).map((row)=>text(row.serial)).filter(validSerial);
+      if(!serials.length)throw new Error('Select one or more inventory serials first.');
+      serialText=serials.join(' ');
+    }else if(fromBookmark){
+      const selected=state.bookmarks.filter((b)=>state.selectedBookmarks.has(b.id)&&validSerial(b.serial));
+      if(selected.length)serialText=selected.map((b)=>b.serial).join(' ');
+      else{
+        serialText=text($('bookmarkSerial').value);
+        if(!validSerial(serialText))throw new Error('Select bookmark(s) or enter one @U serial first.');
+      }
     }else if(fromCodes){
       const selected=[...state.selectedCodes].map((id)=>state.codes.find((row)=>row.id===id)).filter(Boolean);
       if(!selected.length)throw new Error('Select one or more codes first.');
@@ -571,6 +646,10 @@ async function runLiveAction(button){
   const action=text(button.dataset.action);
   if(!action){alert('This control is not wired for live actions yet.');return}
   if(!state.online){alert('Connect to desktop MSBT first (More → Connection Settings).');return}
+  if(button.hasAttribute('data-dev-risk')&&!state.dev.warningAccepted){
+    alert('Enable Dev Spawner This Session first (Spawn tab).');
+    return;
+  }
   if(state.busy)return;
   state.busy=true;setLiveEnabled();
   try{
@@ -585,6 +664,7 @@ async function runLiveAction(button){
     const result=await gatewayAction(action,payload,45000);
     const message=(result.data&&(result.data.message||result.data.error))||(result.ok?`${action} sent.`:`${action} failed.`);
     logActivity(`${action}: ${message}`);
+    if($('devSpawnerOutput')&&action.startsWith('dev_spawner_'))$('devSpawnerOutput').textContent=typeof result.data==='object'?JSON.stringify(result.data,null,2):message;
     if(!result.ok)alert(message);
     else if(action==='refresh_players'||PLAYER_SCOPED.has(action)){
       try{const status=await gatewayFetch('/status',{timeoutMs:8000});applyStatus(status.data||{})}catch{/* keep prior status */}
@@ -592,36 +672,48 @@ async function runLiveAction(button){
   }catch(error){
     const message=error&&error.message?error.message:String(error);
     logActivity(`${action||'live action'} failed: ${message}`);
+    if($('devSpawnerOutput')&&action&&action.startsWith('dev_spawner_'))$('devSpawnerOutput').textContent=message;
     alert(message);
   }finally{state.busy=false;setLiveEnabled()}
 }
 
 function renderActivity(){const rows=$('activityRows');if(!rows)return;if(!state.activity.length){rows.innerHTML='<small class="muted">No activity yet.</small>';return}rows.innerHTML=state.activity.slice(0,30).map(item=>`<div><small class="muted">${esc(new Date(item.at).toLocaleString())}</small><br>${esc(item.message)}</div>`).join('')}
-$('copyFeedbackTemplate').addEventListener('click',async()=>{const template=`MSBT MOBILE BETA FEEDBACK\n\nPhone make/model:\nAndroid version:\nMSBT Mobile version: 0.1.0-beta.6\nDesktop MSBT version (if connected):\n\nScreen/feature:\nWhat I expected:\nWhat happened:\nSteps to reproduce:\nDoes it happen every time? Yes / No / Sometimes\n\nScreenshots attached: Yes / No\nAnything else:`;try{await navigator.clipboard.writeText(template);alert('Feedback template copied. Send it with screenshots directly to FunkYouSHiFT in Discord DMs.')}catch{prompt('Copy this feedback template:',template)}});
+$('copyFeedbackTemplate').addEventListener('click',async()=>{const template=`MSBT MOBILE BETA FEEDBACK\n\nPhone make/model:\nAndroid version:\nMSBT Mobile version: 0.1.0-beta.7\nDesktop MSBT version (if connected):\n\nScreen/feature:\nWhat I expected:\nWhat happened:\nSteps to reproduce:\nDoes it happen every time? Yes / No / Sometimes\n\nScreenshots attached: Yes / No\nAnything else:`;try{await navigator.clipboard.writeText(template);alert('Feedback template copied. Send it with screenshots directly to FunkYouSHiFT in Discord DMs.')}catch{prompt('Copy this feedback template:',template)}});
 
 function invEntryLabel(entry){
   return text(entry&&(entry.summary||entry.label||entry.name||entry.slot_name))||'Item';
 }
+function invRowId(entry){
+  return text(entry&&entry.serial)||`${entry&&entry._bucket}:${invEntryLabel(entry)}`;
+}
 function invAllRows(){
   return [...(state.inventory.equipped||[]).map((e)=>({...e,_bucket:'equipped'})),...(state.inventory.backpack||[]).map((e)=>({...e,_bucket:'backpack'}))];
 }
+function filteredInventoryRows(){
+  const q=text($('invSearch')&&$('invSearch').value).toLowerCase();
+  return invAllRows().filter((e)=>!q||`${invEntryLabel(e)} ${e.serial||''} ${e._bucket}`.toLowerCase().includes(q));
+}
 function renderInventory(){
   const rows=$('invRows');if(!rows)return;
-  const q=text($('invSearch')&&$('invSearch').value).toLowerCase();
-  const list=invAllRows().filter((e)=>!q||`${invEntryLabel(e)} ${e.serial||''} ${e._bucket}`.toLowerCase().includes(q));
+  const list=filteredInventoryRows();
   rows.innerHTML='';
-  list.slice(0,400).forEach((entry,index)=>{
+  list.slice(0,400).forEach((entry)=>{
     const button=document.createElement('button');
     const serial=text(entry.serial);
-    button.textContent=`[${entry._bucket==='equipped'?'EQ':'BP'}] ${invEntryLabel(entry)}`;
+    const id=invRowId(entry);
+    const selected=state.inventory.selectedIds.has(id);
+    button.className=selected?'selected':'';
+    button.textContent=`${selected?'✓ ':''}[${entry._bucket==='equipped'?'EQ':'BP'}] ${invEntryLabel(entry)}`;
     button.title=serial;
-    button.className=state.inventory.selected&&state.inventory.selected.serial===serial?'selected':'';
     button.addEventListener('click',()=>{
+      if(state.inventory.selectedIds.has(id))state.inventory.selectedIds.delete(id);
+      else state.inventory.selectedIds.add(id);
       state.inventory.selected=entry;
       const use=$('invUseBoost');const bm=$('invSaveBookmark');
       if(use)use.disabled=!validSerial(serial);
       if(bm)bm.disabled=!validSerial(serial);
       renderInventory();
+      setLiveEnabled();
     });
     rows.appendChild(button);
   });
@@ -632,6 +724,7 @@ function renderInventory(){
     more.textContent=`Showing 400 of ${list.length}. Refine the filter to narrow.`;
     rows.appendChild(more);
   }
+  if($('invSelectionSummary'))$('invSelectionSummary').textContent=`${state.inventory.selectedIds.size} selected · ${list.length} shown`;
 }
 async function ensureInventoryTarget(){
   const target=text($('boostTarget').value)||state.selectedTarget;
@@ -651,10 +744,11 @@ function applyInventoryResult(data,fallbackEquipped,fallbackBackpack){
     const eqSet=new Set(equipped.map((e)=>text(e.serial)).filter(Boolean));
     backpack=entries.filter((e)=>!eqSet.has(text(e.serial)));
   }
-  state.inventory={equipped,backpack,selected:null};
+  state.inventory={equipped,backpack,selected:null,selectedIds:new Set()};
   const use=$('invUseBoost');const bm=$('invSaveBookmark');
   if(use)use.disabled=true;if(bm)bm.disabled=true;
   renderInventory();
+  setLiveEnabled();
   const message=(data&&data.message)||`Inventory: ${equipped.length} equipped, ${backpack.length} backpack.`;
   if($('invStatus'))$('invStatus').textContent=message;
   logActivity(message);
@@ -732,38 +826,71 @@ if($('invSaveBookmark'))$('invSaveBookmark').addEventListener('click',()=>{
   if($('invStatus'))$('invStatus').textContent=`Bookmarked ${record.name}.`;
   logActivity(`Bookmarked inventory serial: ${record.name}`);
 });
+if($('invClearSelection'))$('invClearSelection').addEventListener('click',()=>{state.inventory.selectedIds=new Set();renderInventory();setLiveEnabled()});
 
-function renderTravel(){
-  const rows=$('travelRows');if(!rows)return;
-  const mode=text($('travelMode')&&$('travelMode').value)||'map';
-  state.travel.mode=mode;
-  const q=text($('travelSearch')&&$('travelSearch').value).toLowerCase();
-  const source=mode==='station'?state.travel.stations:state.travel.maps;
-  const filtered=source.filter((row)=>{
-    const hay=`${row.display_name||''} ${row.map||''} ${row.station||''} ${row.world||''} ${row.category||''}`.toLowerCase();
+function travelMapKey(map){return text(map&&(map.map||map.map_key))}
+function travelWorldKey(map){return text(map&&(map.map||map.world||'')).toLowerCase()}
+function renderTravelMaps(){
+  const rows=$('travelMapRows');if(!rows)return;
+  const q=text($('travelMapSearch')&&$('travelMapSearch').value).toLowerCase();
+  const list=state.travel.maps.filter((row)=>{
+    const hay=`${row.display_name||''} ${row.map||''} ${row.category||''}`.toLowerCase();
     return !q||hay.includes(q);
   }).slice(0,250);
   rows.innerHTML='';
-  filtered.forEach((row)=>{
-    const id=mode==='station'?row.station:row.map;
+  list.forEach((row)=>{
     const button=document.createElement('button');
-    button.textContent=mode==='station'
-      ? `${row.display_name||row.station_name||row.station}${row.world?` · ${row.world}`:''}`
-      : `${row.display_name||row.map}${row.category?` · ${row.category}`:''}`;
-    button.className=state.travel.selected&&((mode==='station'?state.travel.selected.station:state.travel.selected.map)===id)?'selected':'';
+    const selected=state.travel.selectedMap&&travelMapKey(state.travel.selectedMap)===travelMapKey(row);
+    button.className=selected?'selected':'';
+    button.textContent=`${row.display_name||row.map}${row.category?` · ${row.category}`:''}`;
     button.addEventListener('click',()=>{
-      state.travel.selected=row;
-      const go=$('travelGo');
-      if(go){
-        go.dataset.action=mode==='station'?'travel_to_station':'travel_to_map';
-        go.disabled=!state.online||state.busy;
-      }
-      if($('travelStatus'))$('travelStatus').textContent=`Selected: ${button.textContent}`;
-      renderTravel();
+      state.travel.selectedMap=row;
+      state.travel.selectedStation=null;
+      renderTravelMaps();
+      renderTravelStations();
+      setLiveEnabled();
+      if($('travelStatus'))$('travelStatus').textContent=`Map: ${button.textContent}`;
     });
     rows.appendChild(button);
   });
-  if(!rows.children.length)rows.innerHTML='<small class="muted">No travel entries match.</small>';
+  if(!rows.children.length)rows.innerHTML='<small class="muted">No maps match.</small>';
+  if($('travelMapSummary'))$('travelMapSummary').textContent=`${list.length} maps shown · ${state.travel.maps.length} total`;
+}
+function renderTravelStations(){
+  const rows=$('travelStationRows');if(!rows)return;
+  const q=text($('travelStationSearch')&&$('travelStationSearch').value).toLowerCase();
+  const showAll=Boolean($('travelShowAllStations')&&$('travelShowAllStations').checked);
+  state.travel.showAllStations=showAll;
+  const world=state.travel.selectedMap?travelWorldKey(state.travel.selectedMap):'';
+  let list=state.travel.stations;
+  if(!showAll){
+    if(!world){
+      rows.innerHTML='<small class="muted">Select a map to filter stations, or enable Show all travel stations.</small>';
+      if($('travelStationSummary'))$('travelStationSummary').textContent='Select a map to filter stations.';
+      return;
+    }
+    list=list.filter((row)=>text(row.world||'').toLowerCase()===world||text(row.station||'').toLowerCase().startsWith(world));
+  }
+  list=list.filter((row)=>{
+    const hay=`${row.display_name||''} ${row.station||''} ${row.world||''} ${row.category||''} ${row.station_name||''}`.toLowerCase();
+    return !q||hay.includes(q);
+  }).slice(0,300);
+  rows.innerHTML='';
+  list.forEach((row)=>{
+    const button=document.createElement('button');
+    const selected=state.travel.selectedStation&&state.travel.selectedStation.station===row.station;
+    button.className=selected?'selected':'';
+    button.textContent=`${row.display_name||row.station_name||row.station}${row.world?` · ${row.world}`:''}`;
+    button.addEventListener('click',()=>{
+      state.travel.selectedStation=row;
+      renderTravelStations();
+      setLiveEnabled();
+      if($('travelStatus'))$('travelStatus').textContent=`Station: ${button.textContent}`;
+    });
+    rows.appendChild(button);
+  });
+  if(!rows.children.length)rows.innerHTML='<small class="muted">No stations match.</small>';
+  if($('travelStationSummary'))$('travelStationSummary').textContent=`${list.length} stations shown${showAll?' (all maps)':world?` for ${state.travel.selectedMap.display_name||state.travel.selectedMap.map}`:''}`;
 }
 async function loadTravelCatalog(){
   try{
@@ -776,14 +903,16 @@ async function loadTravelCatalog(){
     state.travel.maps=Array.isArray(mapsJson.maps)?mapsJson.maps:[];
     state.travel.stations=Array.isArray(stationsJson.stations)?stationsJson.stations:[];
     if($('travelStatus'))$('travelStatus').textContent=`${state.travel.maps.length} maps · ${state.travel.stations.length} stations`;
-    renderTravel();
+    renderTravelMaps();
+    renderTravelStations();
   }catch(error){
     if($('travelStatus'))$('travelStatus').textContent=`Travel catalog unavailable: ${error&&error.message?error.message:error}`;
-    if($('travelRows'))$('travelRows').innerHTML='<small class="muted">Travel catalog failed to load.</small>';
+    if($('travelMapRows'))$('travelMapRows').innerHTML='<small class="muted">Travel catalog failed to load.</small>';
   }
 }
-if($('travelMode'))$('travelMode').addEventListener('change',()=>{state.travel.selected=null;setLiveEnabled();renderTravel()});
-if($('travelSearch'))$('travelSearch').addEventListener('input',renderTravel);
+if($('travelMapSearch'))$('travelMapSearch').addEventListener('input',renderTravelMaps);
+if($('travelStationSearch'))$('travelStationSearch').addEventListener('input',renderTravelStations);
+if($('travelShowAllStations'))$('travelShowAllStations').addEventListener('change',()=>{renderTravelStations();setLiveEnabled()});
 
 function renderPools(){
   const rows=$('poolRows');if(!rows)return;
@@ -822,7 +951,148 @@ async function loadPoolCatalog(){
 }
 if($('poolSearch'))$('poolSearch').addEventListener('input',renderPools);
 
+function floatValue(value,fallback=0){const n=Number.parseFloat(String(value??'').trim());return Number.isFinite(n)?n:fallback}
+function buildDevSpawnerPayload(action){
+  const distance=floatValue($('devActorDistance')&&$('devActorDistance').value,350);
+  const spacing=floatValue($('devActorSpacing')&&$('devActorSpacing').value,125);
+  const scale=floatValue($('devActorScale')&&$('devActorScale').value,1);
+  const zOffset=floatValue($('devActorZOffset')&&$('devActorZOffset').value,0);
+  const count=intValue($('devActorCount')&&$('devActorCount').value,1);
+  const actor=text($('devAiName')&&$('devAiName').value)||state.dev.selected;
+  if(DEV_NEED_ACTOR.has(action)&&!actor)throw new Error('Select an actor from the browser first.');
+  if(action==='dev_spawner_barrel_logo'){
+    const lines=[text($('devLogoLine1')&&$('devLogoLine1').value),text($('devLogoLine2')&&$('devLogoLine2').value),text($('devLogoLine3')&&$('devLogoLine3').value)].filter(Boolean);
+    if(!lines.length)throw new Error('Enter Barrel Logo text lines first.');
+  }
+  return{
+    dev_actor_name:actor,
+    dev_actor_class:text($('devActorClass')&&$('devActorClass').value),
+    dev_actor_count:count,
+    dev_actor_delay:floatValue($('devActorDelay')&&$('devActorDelay').value,1),
+    dev_actor_disable_states:text($('devActorDisableStates')&&$('devActorDisableStates').value),
+    dev_actor_distance:distance,
+    dev_actor_enable_states:text($('devActorEnableStates')&&$('devActorEnableStates').value),
+    dev_actor_include_non_generated:Boolean($('devActorIncludeNonGenerated')&&$('devActorIncludeNonGenerated').checked),
+    dev_actor_no_activate:Boolean($('devActorNoActivate')&&$('devActorNoActivate').checked),
+    dev_actor_scale:scale,
+    dev_actor_spacing:spacing,
+    dev_actor_target_limit:intValue($('devActorTargetLimit')&&$('devActorTargetLimit').value,20),
+    dev_actor_z_offset:zOffset,
+    dev_ai_name:actor,
+    dev_ai_class:'',
+    dev_ai_count:count,
+    dev_ai_cache_index:0,
+    dev_ai_cache_limit:10,
+    dev_ai_advanced_spawn:true,
+    dev_ai_direct_only:false,
+    dev_ai_distance:distance,
+    dev_ai_load:'',
+    dev_ai_scale:scale,
+    dev_ai_spacing:spacing,
+    dev_ai_z_offset:zOffset,
+    dev_logo_actor:text($('devLogoActor')&&$('devLogoActor').value)||'barrel',
+    dev_logo_distance:floatValue($('devLogoDistance')&&$('devLogoDistance').value,2500),
+    dev_logo_height:floatValue($('devLogoHeight')&&$('devLogoHeight').value,750),
+    dev_logo_include_non_generated:Boolean($('devLogoIncludeNonGenerated')&&$('devLogoIncludeNonGenerated').checked),
+    dev_logo_scale:floatValue($('devLogoScale')&&$('devLogoScale').value,0.45),
+    dev_logo_spacing:floatValue($('devLogoSpacing')&&$('devLogoSpacing').value,70),
+    dev_logo_text:[text($('devLogoLine1')&&$('devLogoLine1').value),text($('devLogoLine2')&&$('devLogoLine2').value),text($('devLogoLine3')&&$('devLogoLine3').value)].filter(Boolean).join('|')
+  };
+}
+function renderDevActors(){
+  const rows=$('devActorRows');if(!rows)return;
+  const start=state.dev.page*state.dev.pageSize;
+  const page=state.dev.filtered.slice(start,start+state.dev.pageSize);
+  rows.innerHTML='';
+  page.forEach((name)=>{
+    const button=document.createElement('button');
+    button.className=state.dev.selected===name?'selected':'';
+    button.textContent=name;
+    button.addEventListener('click',()=>{
+      state.dev.selected=name;
+      if($('devAiName'))$('devAiName').value=name;
+      renderDevActors();
+    });
+    rows.appendChild(button);
+  });
+  if(!rows.children.length)rows.innerHTML='<small class="muted">No actors match.</small>';
+  const total=state.dev.filtered.length;
+  if($('devActorSummary'))$('devActorSummary').textContent=`${total.toLocaleString()} actors · page ${state.dev.page+1}/${Math.max(1,Math.ceil(total/state.dev.pageSize)||1)}`;
+}
+function filterDevActors(){
+  const q=text($('devActorSearch')&&$('devActorSearch').value).toLowerCase();
+  const cat=text($('devActorCategory')&&$('devActorCategory').value)||'All';
+  state.dev.category=cat;
+  const source=Array.isArray(state.dev.categories[cat])?state.dev.categories[cat]:(state.dev.categories.All||[]);
+  state.dev.filtered=source.filter((name)=>!q||String(name).toLowerCase().includes(q));
+  state.dev.page=0;
+  renderDevActors();
+}
+async function loadDevCatalog(){
+  try{
+    const raw=await readBundledAssetText('dev_spawner_catalog.json');
+    const json=JSON.parse(raw);
+    state.dev.categories=json.categories&&typeof json.categories==='object'?json.categories:{All:[]};
+    const select=$('devActorCategory');
+    if(select){
+      const current=select.value||'All';
+      select.innerHTML='';
+      Object.keys(state.dev.categories).sort((a,b)=>a.localeCompare(b)).forEach((key)=>{
+        const opt=document.createElement('option');
+        opt.value=key;opt.textContent=`${key} (${(state.dev.categories[key]||[]).length})`;
+        select.appendChild(opt);
+      });
+      if([...select.options].some((o)=>o.value===current))select.value=current;
+      else select.value='All';
+    }
+    filterDevActors();
+  }catch(error){
+    if($('devActorSummary'))$('devActorSummary').textContent=`Actor catalog unavailable: ${error&&error.message?error.message:error}`;
+  }
+}
+if($('devAcceptRisk'))$('devAcceptRisk').addEventListener('click',()=>{
+  const ok=window.confirm('Experimental Dev Spawner tools can crash the game, corrupt saves, or affect other players.\n\nOnly continue if you understand the risk.');
+  if(!ok)return;
+  state.dev.warningAccepted=true;
+  setLiveEnabled();
+  if($('devSpawnerOutput'))$('devSpawnerOutput').textContent='Dev Spawner enabled for this session.';
+  logActivity('Enabled Dev Spawner for this phone session.');
+});
+if($('devActorSearch'))$('devActorSearch').addEventListener('input',filterDevActors);
+if($('devActorCategory'))$('devActorCategory').addEventListener('change',filterDevActors);
+if($('devPrevPage'))$('devPrevPage').addEventListener('click',()=>{if(state.dev.page>0){state.dev.page-=1;renderDevActors()}});
+if($('devNextPage'))$('devNextPage').addEventListener('click',()=>{const max=Math.max(0,Math.ceil(state.dev.filtered.length/state.dev.pageSize)-1);if(state.dev.page<max){state.dev.page+=1;renderDevActors()}});
+if($('devLogoUseSelected'))$('devLogoUseSelected').addEventListener('click',()=>{
+  const actor=text($('devAiName')&&$('devAiName').value)||state.dev.selected;
+  if(!actor){alert('Select an actor first.');return}
+  if($('devLogoActor'))$('devLogoActor').value=actor;
+});
+
+$$('[data-collapse-panel]').forEach((button)=>{
+  button.addEventListener('click',()=>{
+    const panel=$(button.dataset.collapsePanel);
+    if(panel)panel.classList.add('hidden');
+  });
+});
+$$('[data-select-all]').forEach((button)=>{
+  button.addEventListener('click',()=>{
+    const kind=button.dataset.selectAll;
+    if(kind==='bookmarks'){
+      filteredBookmarks().forEach((b)=>state.selectedBookmarks.add(b.id));
+      renderBookmarks();
+    }else if(kind==='inventory'){
+      filteredInventoryRows().forEach((row)=>state.inventory.selectedIds.add(invRowId(row)));
+      renderInventory();
+      setLiveEnabled();
+    }else if(kind==='movement'){
+      $$('[data-movement-pick]').forEach((el)=>state.movementPicks.add(movementPickKey(el)));
+      refreshMovementPicks();
+      if($('movementStatus'))$('movementStatus').textContent=`${state.movementPicks.size} movement action(s) selected. Tap Run Selected Actions.`;
+    }
+  });
+});
+
 $$('[data-live]').forEach(button=>button.addEventListener('click',()=>void runLiveAction(button)));
 
-state.activity=read(STORE.activity,[]);setLiveEnabled();initBookmarks();loadMovement();loadQuick();loadConnection();renderActivity();loadCatalogs();loadTravelCatalog();loadPoolCatalog();
+state.activity=read(STORE.activity,[]);setLiveEnabled();initBookmarks();loadMovement();loadQuick();loadConnection();renderActivity();loadCatalogs();loadTravelCatalog();loadPoolCatalog();loadDevCatalog();
 if(text(state.connection.address)&&text(state.connection.pairingCode))void connectGateway({quiet:true});
