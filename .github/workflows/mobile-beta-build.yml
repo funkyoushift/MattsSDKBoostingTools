@@ -54,27 +54,29 @@ jobs:
       - name: Prepare beta files
         shell: bash
         run: |
+          VERSION_NAME=$(grep -oP "versionName '\\K[^']+" mobile_controller/app/build.gradle | head -1)
           mkdir -p mobile_beta_out/test-kit
           cp mobile_controller/app/build/outputs/apk/debug/app-debug.apk mobile_beta_out/MSBT-Mobile-Controller.apk
-          cp mobile_controller/app/build/outputs/apk/debug/app-debug.apk mobile_beta_out/MSBT-Mobile-Controller-0.1.0-beta.7.apk
-          cp mobile_controller/BETA_TESTING.md mobile_beta_out/test-kit/README-FIRST.md
-          printf '%s\n' 'MSBT Mobile Controller closed beta 0.1.0-beta.7' > mobile_beta_out/test-kit/VERSION.txt
+          cp mobile_controller/app/build/outputs/apk/debug/app-debug.apk "mobile_beta_out/MSBT-Mobile-Controller-${VERSION_NAME}.apk"
+          cp -r mobile_controller/test_kit/. mobile_beta_out/test-kit/
+          printf '%s\n' "MSBT Mobile Controller closed beta ${VERSION_NAME}" > mobile_beta_out/test-kit/VERSION.txt
           printf '%s\n' 'https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/mobile-beta/MSBT-Mobile-Controller.apk' > mobile_beta_out/test-kit/DOWNLOAD.txt
-          (cd mobile_beta_out/test-kit && zip -r ../MSBT-Mobile-Beta-Test-Kit-0.1.0-beta.7.zip .)
+          (cd mobile_beta_out/test-kit && zip -r "../MSBT-Mobile-Beta-Test-Kit-${VERSION_NAME}.zip" .)
+          echo "VERSION_NAME=${VERSION_NAME}" >> "$GITHUB_ENV"
 
       - name: Upload APK only
         uses: actions/upload-artifact@v4
         with:
-          name: MSBT-Mobile-Controller-0.1.0-beta.7-APK
-          path: mobile_beta_out/MSBT-Mobile-Controller-0.1.0-beta.7.apk
+          name: MSBT-Mobile-Controller-${{ env.VERSION_NAME }}-APK
+          path: mobile_beta_out/MSBT-Mobile-Controller-${{ env.VERSION_NAME }}.apk
           if-no-files-found: error
           retention-days: 14
 
       - name: Upload beta test kit separately
         uses: actions/upload-artifact@v4
         with:
-          name: MSBT-Mobile-Beta-Test-Kit-0.1.0-beta.7
-          path: mobile_beta_out/MSBT-Mobile-Beta-Test-Kit-0.1.0-beta.7.zip
+          name: MSBT-Mobile-Beta-Test-Kit-${{ env.VERSION_NAME }}
+          path: mobile_beta_out/MSBT-Mobile-Beta-Test-Kit-${{ env.VERSION_NAME }}.zip
           if-no-files-found: error
           retention-days: 14
 
@@ -91,13 +93,15 @@ jobs:
             **Always-current APK (bookmark this on your phone):**
             https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/mobile-beta/MSBT-Mobile-Controller.apk
 
-            Current build: `0.1.0-beta.7` (`versionCode` 9). Install over previous betas to keep local data.
+            **Test kit (checklist + feedback template):** download `MSBT-Mobile-Beta-Test-Kit-*.zip` from this release.
+
+            Current build: `${{ env.VERSION_NAME }}`. Install over previous betas to keep local data.
 
             This prerelease is updated by CI on `mobile-controller-prototype`. It is not a public Windows MSBT release.
           files: |
             mobile_beta_out/MSBT-Mobile-Controller.apk
-            mobile_beta_out/MSBT-Mobile-Controller-0.1.0-beta.7.apk
-            mobile_beta_out/MSBT-Mobile-Beta-Test-Kit-0.1.0-beta.7.zip
+            mobile_beta_out/MSBT-Mobile-Controller-${{ env.VERSION_NAME }}.apk
+            mobile_beta_out/MSBT-Mobile-Beta-Test-Kit-${{ env.VERSION_NAME }}.zip
           fail_on_unmatched_files: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

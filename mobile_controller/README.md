@@ -112,7 +112,7 @@ Build workflow outputs two separate artifacts:
 - `MSBT-Mobile-Controller-0.1.0-beta.7.apk`
 - `MSBT-Mobile-Beta-Test-Kit-0.1.0-beta.7.zip`
 
-See `BETA_TESTING.md` for tester instructions and Discord DM feedback format.
+See `BETA_TESTING.md` and the `test_kit/` folder for tester instructions, checklist, and Discord DM feedback format.
 
 ## Build
 

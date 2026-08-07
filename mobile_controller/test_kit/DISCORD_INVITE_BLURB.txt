@@ -1,0 +1,18 @@
+MSBT Mobile Controller — closed Android beta
+
+Bookmark/install (always latest APK):
+https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/mobile-beta/MSBT-Mobile-Controller.apk
+
+You also need:
+• Desktop MSBT from the mobile-controller-prototype branch (Mobile Gateway)
+• Phone + PC on the same Wi‑Fi
+• Borderlands 4 in-world with MSBT for live actions
+
+Setup: desktop Activity → Mobile Gateway → copy address / port 49775 / pairing code → phone More → Connection Settings → Connect.
+
+Test kit (checklist + feedback template):
+https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/mobile-beta
+(look for MSBT-Mobile-Beta-Test-Kit-*.zip)
+
+Send feedback + full-screen screenshots in Discord DMs to FunkYouSHiFT.
+Do not share pairing codes publicly.
