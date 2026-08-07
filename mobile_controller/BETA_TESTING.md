@@ -8,7 +8,7 @@ Ship testers:
 
 1. **APK** — always-current link (bookmark on phone):  
    https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/mobile-beta/MSBT-Mobile-Controller.apk
-2. **Test kit zip** — `MSBT-Mobile-Beta-Test-Kit-0.1.0-beta.7.zip` from the same [mobile-beta](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/mobile-beta) prerelease (or CI artifact).
+2. **Test kit zip** — `MSBT-Mobile-Beta-Test-Kit-0.1.0-beta.8.zip` from the same [mobile-beta](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/mobile-beta) prerelease (or CI artifact).
 
 Kit source lives in `mobile_controller/test_kit/`:
 

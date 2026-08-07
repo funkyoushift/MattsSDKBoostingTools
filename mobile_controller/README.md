@@ -4,7 +4,7 @@ Android companion controller for Matt's SDK Boosting Tools.
 
 Package ID: `com.funkyoushift.msbt.mobile`
 
-Current beta: `0.1.0-beta.7`
+Current beta: `0.1.0-beta.8`
 
 ## Phone download (static link)
 
@@ -109,8 +109,8 @@ Closed beta distribution is through Discord using either direct files or a GitHu
 
 Build workflow outputs two separate artifacts:
 
-- `MSBT-Mobile-Controller-0.1.0-beta.7.apk`
-- `MSBT-Mobile-Beta-Test-Kit-0.1.0-beta.7.zip`
+- `MSBT-Mobile-Controller-0.1.0-beta.8.apk`
+- `MSBT-Mobile-Beta-Test-Kit-0.1.0-beta.8.zip`
 
 See `BETA_TESTING.md` and the `test_kit/` folder for tester instructions, checklist, and Discord DM feedback format.
 
