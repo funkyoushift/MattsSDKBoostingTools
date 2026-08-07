@@ -41,10 +41,11 @@ jobs:
         with:
           gradle-version: '8.9'
 
-      - name: Decode stable beta signing key
+      - name: Decode and verify stable beta signing key
         shell: bash
         run: |
           base64 -d mobile_controller/debug-signing/msbt-mobile-debug.keystore.b64 > mobile_controller/debug-signing/msbt-mobile-debug.keystore
+          keytool -list -keystore mobile_controller/debug-signing/msbt-mobile-debug.keystore -storepass android -alias androiddebugkey
 
       - name: Build Android debug APK
         shell: bash
