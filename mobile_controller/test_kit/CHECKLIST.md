@@ -95,7 +95,8 @@ Check boxes as you go. Test **portrait** and **landscape** where it matters. Pre
 
 ## L. Spawn (Dev Spawner)
 
-- [ ] **Enable Dev Spawner This Session** required before actions
+- [ ] Check **I understand the risk**, then **Enable Dev Spawner This Session**
+- [ ] Button label becomes **Dev Spawner Enabled**; spawn actions unlock
 - [ ] Actor browser loads / search / category / paging work
 - [ ] Spawn Selected Actor works (expect experimental risk)
 - [ ] Setup/Inspect + Advanced buttons respond

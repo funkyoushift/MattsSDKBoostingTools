@@ -1,5 +1,7 @@
 # MSBT Mobile Controller — Closed Android Beta
 
+**Recommended build: `0.1.0-beta.10`** — current working closed beta for select testers.
+
 Closed layout + **live LAN pairing** beta. Separate from the Windows MSBT installer.
 
 ## Tester package
@@ -7,8 +9,9 @@ Closed layout + **live LAN pairing** beta. Separate from the Windows MSBT instal
 Ship testers:
 
 1. **APK** — always-current link (bookmark on phone):  
-   https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/mobile-beta/MSBT-Mobile-Controller.apk
-2. **Test kit zip** — `MSBT-Mobile-Beta-Test-Kit-0.1.0-beta.10.zip` from the same [mobile-beta](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/mobile-beta) prerelease (or CI artifact).
+   https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/mobile-beta/MSBT-Mobile-Controller.apk  
+   Testers should confirm **More → About** shows **`0.1.0-beta.10`** (or newer).
+2. **Test kit zip** — `MSBT-Mobile-Beta-Test-Kit-0.1.0-beta.10.zip` from the same [mobile-beta](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/mobile-beta) prerelease.
 
 Kit source lives in `mobile_controller/test_kit/`:
 
@@ -27,7 +30,7 @@ Kit source lives in `mobile_controller/test_kit/`:
 2. PC: desktop MSBT (this branch) + BL4 in-world with MSBT.
 3. PC: **Activity → Mobile Gateway** → address / `49775` / pairing code.
 4. Phone: **More → Connection Settings** → Save → **Connect / Test**.
-5. Try Boost → **MAX CASH**, then work through `CHECKLIST.md`.
+5. Try Boost → **MAX CASH**, QM → **Pull From PC** + tap a slot, then work through `CHECKLIST.md`.
 
 ## Feedback
 
@@ -35,13 +38,4 @@ Direct Discord DMs to **FunkYouSHiFT** using `FEEDBACK_TEMPLATE.txt`. Full-scree
 
 ## Maintainer build
 
-CI: `.github/workflows/mobile-beta-build.yml` on `mobile-controller-prototype`.
-
-Local kit zip (without rebuilding APK):
-
-```powershell
-cd mobile_controller
-# after editing test_kit/
-```
-
-See workflow “Prepare beta files” step for the exact packaging commands.
+CI: `.github/workflows/mobile-beta-build.yml` on `mobile-controller-prototype` (or **workflow_dispatch**).

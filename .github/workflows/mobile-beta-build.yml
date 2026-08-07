@@ -90,12 +90,16 @@ jobs:
           body: |
             Closed Android beta for MSBT Mobile Controller.
 
+            **Recommended build: `0.1.0-beta.10`** (current working closed beta).
+
             **Always-current APK (bookmark this on your phone):**
             https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/mobile-beta/MSBT-Mobile-Controller.apk
 
+            Confirm **More → About** shows `${{ env.VERSION_NAME }}` (or newer).
+
             **Test kit (checklist + feedback template):** download `MSBT-Mobile-Beta-Test-Kit-*.zip` from this release.
 
-            Current build: `${{ env.VERSION_NAME }}`. Install over previous betas to keep local data.
+            Install over previous betas to keep local data.
 
             This prerelease is updated by CI on `mobile-controller-prototype`. It is not a public Windows MSBT release.
           files: |

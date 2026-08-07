@@ -4,7 +4,7 @@ Android companion controller for Matt's SDK Boosting Tools.
 
 Package ID: `com.funkyoushift.msbt.mobile`
 
-Current beta: `0.1.0-beta.10`
+Current beta: `0.1.0-beta.10` (recommended closed beta)
 
 ## Phone download (static link)
 
@@ -21,18 +21,16 @@ The mobile app is a **live cheat/controller companion**, not a mobile save edito
 Included controller areas:
 
 - Home/status
-- Boosting
-- Boost serial sender
-- BL4 Codes with source/type/manufacturer/rarity filtering, multi-select, select-all-filtered, and delivery layout
-- Serial Bookmarks
-- full Quick Menu layout
-- Inventory controller shell
-- Map Travel controller shell
-- Player Movement preset controls
-- Dev Spawner controller shell
-- Item Pool controller shell
-- connection setup
-- activity/beta feedback
+- Boosting + serial sender
+- BL4 Codes (filters, multi-select, delivery)
+- Quick Menu (Pull From PC + tap-to-fire)
+- Serial Bookmarks (desktop pull)
+- Inventory browse / send
+- Map Travel (maps + stations)
+- Player Movement
+- Dev Spawner (experimental; risk checkbox + Enable)
+- Item Pools
+- Connection setup / activity / feedback
 
 Intentionally omitted:
 

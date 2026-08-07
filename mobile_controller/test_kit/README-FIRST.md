@@ -1,5 +1,7 @@
 # MSBT Mobile Controller — Closed Beta Test Kit
 
+**Current recommended build: `0.1.0-beta.10`** (verified working for live pairing + core tabs).
+
 Welcome. This kit is for **select Discord testers** only. It is separate from the public Windows MSBT installer.
 
 ## What you need
@@ -16,10 +18,10 @@ Welcome. This kit is for **select Discord testers** only. It is separate from th
 **Always-current APK (bookmark on your phone):**  
 https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/mobile-beta/MSBT-Mobile-Controller.apk
 
+Confirm **More → About** shows **`0.1.0-beta.10`** (or newer). Install **over** older mobile betas so local data survives.
+
 Prerelease page:  
 https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/mobile-beta
-
-Install **over** previous mobile betas (same package ID) so connection settings / bookmarks / Quick Menu data survive.
 
 ## 10-minute setup
 
@@ -28,19 +30,20 @@ Install **over** previous mobile betas (same package ID) so connection settings 
 3. Desktop: **Activity → Mobile Gateway**. Note **PC address**, port **49775**, **6-digit pairing code**.
 4. Phone: **More → Connection Settings** → enter address / `49775` / code → **Save Setup** → **Connect / Test**.
 5. Home should show gateway + game bridge online. Pick a Boost target, then try **MAX CASH**.
+6. Optional: **QM → Pull From PC**, then tap a filled slot. **Spawn**: check risk box → Enable → fire a spawn.
 
 If Connect fails: desktop MSBT open, Gateway online in Activity, LAN IPv4 (not `127.0.0.1`), same Wi‑Fi, Windows Firewall allowed for the app/port.
 
-## App tabs (beta.7+)
+## App tabs
 
 | Tab | What it is |
 |-----|------------|
 | **Home** | Pairing status, recent result |
 | **Boost** | Max / UVH / currency / serials / rarity / cheats |
 | **Codes** | Bundled BL4 codes catalog + delivery |
-| **QM** | Full F7 Quick Menu (pull from PC) |
+| **QM** | Full F7 Quick Menu (Pull From PC, then tap slots) |
 | **Control** | Inventory, Bookmarks, Map Travel, Movement, Item Pools |
-| **Spawn** | Dev Spawner (experimental — enable session first) |
+| **Spawn** | Dev Spawner (check risk → Enable; experimental) |
 | **More** | Connection, activity, feedback, about |
 
 ## What to do next
@@ -57,7 +60,8 @@ Read **`KNOWN_ISSUES.md`** before filing “bugs” that are already expected.
 - `CHECKLIST.md` — what to test  
 - `FEEDBACK_TEMPLATE.txt` — Discord DM template  
 - `KNOWN_ISSUES.md` — expected limits  
-- `VERSION.txt` — build label (filled by CI)  
-- `DOWNLOAD.txt` — APK URL (filled by CI)  
+- `DISCORD_INVITE_BLURB.txt` — paste for inviting testers  
+- `VERSION.txt` — build label  
+- `DOWNLOAD.txt` — APK URL  
 
 The APK is published separately (not inside this zip) so updates stay a single bookmarkable link.
