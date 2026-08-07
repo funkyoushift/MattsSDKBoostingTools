@@ -56,25 +56,25 @@ jobs:
         run: |
           mkdir -p mobile_beta_out/test-kit
           cp mobile_controller/app/build/outputs/apk/debug/app-debug.apk mobile_beta_out/MSBT-Mobile-Controller.apk
-          cp mobile_controller/app/build/outputs/apk/debug/app-debug.apk mobile_beta_out/MSBT-Mobile-Controller-0.1.0-beta.3.apk
+          cp mobile_controller/app/build/outputs/apk/debug/app-debug.apk mobile_beta_out/MSBT-Mobile-Controller-0.1.0-beta.4.apk
           cp mobile_controller/BETA_TESTING.md mobile_beta_out/test-kit/README-FIRST.md
-          printf '%s\n' 'MSBT Mobile Controller closed beta 0.1.0-beta.3' > mobile_beta_out/test-kit/VERSION.txt
+          printf '%s\n' 'MSBT Mobile Controller closed beta 0.1.0-beta.4' > mobile_beta_out/test-kit/VERSION.txt
           printf '%s\n' 'https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/mobile-beta/MSBT-Mobile-Controller.apk' > mobile_beta_out/test-kit/DOWNLOAD.txt
-          (cd mobile_beta_out/test-kit && zip -r ../MSBT-Mobile-Beta-Test-Kit-0.1.0-beta.3.zip .)
+          (cd mobile_beta_out/test-kit && zip -r ../MSBT-Mobile-Beta-Test-Kit-0.1.0-beta.4.zip .)
 
       - name: Upload APK only
         uses: actions/upload-artifact@v4
         with:
-          name: MSBT-Mobile-Controller-0.1.0-beta.3-APK
-          path: mobile_beta_out/MSBT-Mobile-Controller-0.1.0-beta.3.apk
+          name: MSBT-Mobile-Controller-0.1.0-beta.4-APK
+          path: mobile_beta_out/MSBT-Mobile-Controller-0.1.0-beta.4.apk
           if-no-files-found: error
           retention-days: 14
 
       - name: Upload beta test kit separately
         uses: actions/upload-artifact@v4
         with:
-          name: MSBT-Mobile-Beta-Test-Kit-0.1.0-beta.3
-          path: mobile_beta_out/MSBT-Mobile-Beta-Test-Kit-0.1.0-beta.3.zip
+          name: MSBT-Mobile-Beta-Test-Kit-0.1.0-beta.4
+          path: mobile_beta_out/MSBT-Mobile-Beta-Test-Kit-0.1.0-beta.4.zip
           if-no-files-found: error
           retention-days: 14
 
@@ -91,13 +91,13 @@ jobs:
             **Always-current APK (bookmark this on your phone):**
             https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/mobile-beta/MSBT-Mobile-Controller.apk
 
-            Current build: `0.1.0-beta.3` (`versionCode` 5). Install over previous betas to keep local data.
+            Current build: `0.1.0-beta.4` (`versionCode` 6). Install over previous betas to keep local data.
 
             This prerelease is updated by CI on `mobile-controller-prototype`. It is not a public Windows MSBT release.
           files: |
             mobile_beta_out/MSBT-Mobile-Controller.apk
-            mobile_beta_out/MSBT-Mobile-Controller-0.1.0-beta.3.apk
-            mobile_beta_out/MSBT-Mobile-Beta-Test-Kit-0.1.0-beta.3.zip
+            mobile_beta_out/MSBT-Mobile-Controller-0.1.0-beta.4.apk
+            mobile_beta_out/MSBT-Mobile-Beta-Test-Kit-0.1.0-beta.4.zip
           fail_on_unmatched_files: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
