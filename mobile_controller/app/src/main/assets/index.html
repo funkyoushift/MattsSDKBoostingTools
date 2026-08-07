@@ -52,6 +52,13 @@
       <div class="title-row"><div><h2>BL4 Codes</h2><small id="catalogStatus" class="muted">Loading bundled catalog…</small></div><button id="refreshCodes">Refresh</button></div>
       <input id="codeSearch" type="search" placeholder="Search name, type, maker, creator, tag…">
       <div class="filter-grid">
+        <select id="listingFilter">
+          <option value="">All listings</option>
+          <option value="Modded">Modded</option>
+          <option value="Legit">Legit</option>
+          <option value="Lootlemon">Lootlemon</option>
+        </select>
+        <select id="creatorFilter"><option value="">All creators</option></select>
         <select id="sourceFilter"><option value="">All sources</option></select>
         <select id="typeFilter"><option value="">All types</option></select>
         <select id="manufacturerFilter"><option value="">All manufacturers</option></select>
@@ -127,7 +134,7 @@
 
       <article id="activityPanel" class="card hidden"><p class="eyebrow">ACTIVITY LOG</p><div id="activityRows" class="list compact"><small class="muted">No activity yet.</small></div></article>
       <article id="feedbackPanel" class="card hidden"><p class="eyebrow">BETA FEEDBACK</p><p>For this closed beta, send feedback directly to FunkYouSHiFT in Discord DMs.</p><p class="muted">Please include phone make/model, Android version, what screen you were on, what you expected, what happened, and full-screen screenshots. For layout issues, capture the whole screen including navigation.</p><button id="copyFeedbackTemplate">Copy Feedback Template</button></article>
-      <article id="aboutPanel" class="card hidden"><p class="eyebrow">ABOUT</p><p><strong>MSBT Mobile Controller</strong><br>Android beta 0.1.0-beta.2</p><p class="muted">Companion controller for Matt's SDK Boosting Tools. Live game actions require desktop MSBT.</p></article>
+      <article id="aboutPanel" class="card hidden"><p class="eyebrow">ABOUT</p><p><strong>MSBT Mobile Controller</strong><br>Android beta 0.1.0-beta.3</p><p class="muted">Companion controller for Matt's SDK Boosting Tools. Live game actions require desktop MSBT.</p></article>
     </section>
   </main>
 

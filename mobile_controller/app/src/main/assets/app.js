@@ -36,12 +36,36 @@ function updateConnectionChrome(){
 $$('[data-nav]').forEach((button)=>button.addEventListener('click',()=>{ $$('[data-nav]').forEach(x=>x.classList.remove('active'));button.classList.add('active');$$('.screen').forEach(screen=>screen.classList.toggle('active',screen.dataset.screen===button.dataset.nav));window.scrollTo(0,0)}));
 $$('[data-open-panel]').forEach((button)=>button.addEventListener('click',()=>{const panel=$(button.dataset.openPanel);if(panel)panel.classList.toggle('hidden')}));
 
+function normalizeListingValue(raw,source,classification,tags){
+  const sourceKey=compact(source);
+  if(sourceKey==='lootlemon')return 'Lootlemon';
+  let listing=text(raw?.listing||raw?.targetListing||raw?.destination||raw?.bucket||raw?.folder||raw?.legitOrModded||raw?.list);
+  let key=compact(listing);
+  // Custom Static is not a listing category on mobile — remap via classification/tags.
+  if(!key||key==='custom_static'||key==='gzo'||key==='msbt_custom'||key==='custom'){
+    const classKey=compact(classification||raw?.classification||raw?.legitOrModded);
+    if(classKey==='modded')return 'Modded';
+    if(classKey==='legit')return 'Legit';
+    const tagKeys=(tags||[]).map(compact);
+    if(tagKeys.includes('modded'))return 'Modded';
+    if(tagKeys.includes('legit'))return 'Legit';
+    return '';
+  }
+  if(key==='modded')return 'Modded';
+  if(key==='legit')return 'Legit';
+  if(key==='lootlemon')return 'Lootlemon';
+  if(listing==='Modded'||listing==='Legit'||listing==='Lootlemon')return listing;
+  return '';
+}
 function normalizeCode(raw,source){
   const serial=text(raw?.serial||raw?.code||raw?.base85||raw?.Base85||raw?.value);
   if(!validSerial(serial))return null;
   const name=text(raw?.name||raw?.title||raw?.label||raw?.displayName||raw?.itemName)||`${source} Serial`;
   const type=text(raw?.type||raw?.itemType||raw?.category||raw?.item_category||raw?.gear_type);
-  return {id:`${source}:${compact(raw?.id||raw?.uuid||raw?.key||serial.slice(0,20))}`,name,serial,source,type,category:text(raw?.category||raw?.group||type),manufacturer:text(raw?.manufacturer||raw?.maker||raw?.mfr),rarity:text(raw?.rarity||raw?.quality),creator:text(raw?.creator||raw?.author||raw?.creatorName),listing:text(raw?.listing||raw?.targetListing||raw?.destination||source),image:text(raw?.image_url||raw?.imageUrl||raw?.image||raw?.thumbnail||raw?.screenshot||raw?.picture),url:text(raw?.url||raw?.websiteUrl||raw?.lootlemon_url||raw?.link),tags:Array.isArray(raw?.tags)?raw.tags.map(text):text(raw?.tags).split(/[;,|]/).map(text).filter(Boolean)};
+  const tags=Array.isArray(raw?.tags)?raw.tags.map(text):text(raw?.tags).split(/[;,|]/).map(text).filter(Boolean);
+  const classification=text(raw?.classification||raw?.legitOrModded);
+  const listing=normalizeListingValue(raw,source,classification,tags);
+  return {id:`${source}:${compact(raw?.id||raw?.uuid||raw?.key||serial.slice(0,20))}`,name,serial,source,type,category:text(raw?.category||raw?.group||type),manufacturer:text(raw?.manufacturer||raw?.maker||raw?.mfr),rarity:text(raw?.rarity||raw?.quality),creator:text(raw?.creator||raw?.author||raw?.creatorName),classification,listing,image:text(raw?.image_url||raw?.imageUrl||raw?.image||raw?.thumbnail||raw?.screenshot||raw?.picture),url:text(raw?.url||raw?.websiteUrl||raw?.lootlemon_url||raw?.link),tags};
 }
 function walkCatalog(value,source,out,seen){
   if(Array.isArray(value)){value.forEach(v=>walkCatalog(v,source,out,seen));return}
@@ -102,13 +126,46 @@ async function loadCatalogs(){
   const suffix=errors.length?` · warnings: ${errors.join(' · ')}`:'';
   $('catalogStatus').textContent=`${merged.length.toLocaleString()} bundled codes · GZO ${gzo.rows.length} · Lootlemon ${lootlemon.rows.length} · MSBT ${custom.rows.length}${suffix}`;
 }
-function populateSelect(id,values,label){const select=$(id);const current=select.value;select.innerHTML=`<option value="">${label}</option>`;[...new Set(values.map(text).filter(Boolean))].sort((a,b)=>a.localeCompare(b)).forEach(value=>{const o=document.createElement('option');o.value=value;o.textContent=value;select.appendChild(o)});select.value=current}
-function populateFilters(){populateSelect('sourceFilter',state.codes.map(x=>x.source),'All sources');populateSelect('typeFilter',state.codes.flatMap(x=>[x.type,x.category]),'All types');populateSelect('manufacturerFilter',state.codes.map(x=>x.manufacturer),'All manufacturers');populateSelect('rarityFilter',state.codes.map(x=>x.rarity),'All rarities')}
-function filterCodes(){const q=text($('codeSearch').value).toLowerCase(),src=$('sourceFilter').value,type=$('typeFilter').value,mfr=$('manufacturerFilter').value,rarity=$('rarityFilter').value;state.filteredCodes=state.codes.filter(row=>{const blob=[row.name,row.source,row.type,row.category,row.manufacturer,row.rarity,row.creator,row.listing,...row.tags].join(' ').toLowerCase();return(!q||blob.includes(q))&&(!src||row.source===src)&&(!type||row.type===type||row.category===type)&&(!mfr||row.manufacturer===mfr)&&(!rarity||row.rarity===rarity)});renderCodes()}
-function renderCodes(){const list=$('codeList');list.innerHTML='';state.filteredCodes.slice(0,300).forEach(row=>{const selected=state.selectedCodes.has(row.id);const card=document.createElement('div');card.className=`code-card${selected?' selected':''}`;const image=row.image?`<img src="${esc(row.image)}" alt="" loading="lazy" onerror="this.parentElement.textContent='BL4'">`:'BL4';card.innerHTML=`<input type="checkbox" ${selected?'checked':''} aria-label="Select ${esc(row.name)}"><span class="code-thumb">${image}</span><span><strong>${esc(row.name)}</strong><br><small>${esc([row.source,row.type||row.category,row.manufacturer,row.rarity].filter(Boolean).join(' · '))}</small></span><button type="button">›</button>`;card.querySelector('input').addEventListener('change',e=>{if(e.target.checked)state.selectedCodes.add(row.id);else state.selectedCodes.delete(row.id);renderCodes();updateSelectionSummary()});card.querySelector('button').addEventListener('click',()=>showCodeDetail(row));list.appendChild(card)});if(state.filteredCodes.length>300){const p=document.createElement('small');p.className='muted';p.textContent=`Showing first 300 of ${state.filteredCodes.length}. Refine filters to narrow results.`;list.appendChild(p)}if(!state.filteredCodes.length)list.innerHTML='<div class="card"><p>No matching codes.</p></div>';updateSelectionSummary()}
-function showCodeDetail(row){const details=[row.name,row.source,row.type||row.category,row.manufacturer,row.rarity,row.creator,row.serial].filter(Boolean).join('\n');alert(details)}
+function populateSelect(id,values,label){const select=$(id);if(!select)return;const current=select.value;select.innerHTML=`<option value="">${label}</option>`;[...new Set(values.map(text).filter(Boolean))].sort((a,b)=>a.localeCompare(b)).forEach(value=>{const o=document.createElement('option');o.value=value;o.textContent=value;select.appendChild(o)});if([...select.options].some(opt=>opt.value===current))select.value=current}
+function listingMatches(row,wanted){
+  if(!wanted)return true;
+  const key=wanted.toLowerCase();
+  const tags=Array.isArray(row.tags)?row.tags.map(t=>String(t).toLowerCase()):[];
+  return [row.listing,row.classification,row.source].some(item=>String(item||'').toLowerCase()===key)
+    || tags.includes(key)
+    || (key==='modded'&&(String(row.classification||'').toLowerCase()==='modded'||tags.includes('modded')))
+    || (key==='legit'&&(String(row.classification||'').toLowerCase()==='legit'||tags.includes('legit')))
+    || (key==='lootlemon'&&(String(row.source||'').toLowerCase()==='lootlemon'||String(row.listing||'').toLowerCase()==='lootlemon'));
+}
+function populateFilters(){
+  // Listing options stay fixed: Modded / Legit / Lootlemon (never Custom Static).
+  populateSelect('creatorFilter',state.codes.map(x=>x.creator),'All creators');
+  populateSelect('sourceFilter',state.codes.map(x=>x.source),'All sources');
+  populateSelect('typeFilter',state.codes.flatMap(x=>[x.type,x.category]),'All types');
+  populateSelect('manufacturerFilter',state.codes.map(x=>x.manufacturer),'All manufacturers');
+  populateSelect('rarityFilter',state.codes.map(x=>x.rarity),'All rarities');
+}
+function filterCodes(){
+  const q=text($('codeSearch').value).toLowerCase();
+  const listing=text($('listingFilter')&&$('listingFilter').value);
+  const creator=text($('creatorFilter')&&$('creatorFilter').value);
+  const src=$('sourceFilter').value,type=$('typeFilter').value,mfr=$('manufacturerFilter').value,rarity=$('rarityFilter').value;
+  state.filteredCodes=state.codes.filter(row=>{
+    const blob=[row.name,row.source,row.type,row.category,row.manufacturer,row.rarity,row.creator,row.listing,row.classification,...row.tags].join(' ').toLowerCase();
+    return(!q||blob.includes(q))
+      &&listingMatches(row,listing)
+      &&(!creator||row.creator===creator)
+      &&(!src||row.source===src)
+      &&(!type||row.type===type||row.category===type)
+      &&(!mfr||row.manufacturer===mfr)
+      &&(!rarity||row.rarity===rarity);
+  });
+  renderCodes();
+}
+function renderCodes(){const list=$('codeList');list.innerHTML='';state.filteredCodes.slice(0,300).forEach(row=>{const selected=state.selectedCodes.has(row.id);const card=document.createElement('div');card.className=`code-card${selected?' selected':''}`;const image=row.image?`<img src="${esc(row.image)}" alt="" loading="lazy" onerror="this.parentElement.textContent='BL4'">`:'BL4';card.innerHTML=`<input type="checkbox" ${selected?'checked':''} aria-label="Select ${esc(row.name)}"><span class="code-thumb">${image}</span><span><strong>${esc(row.name)}</strong><br><small>${esc([row.listing||row.source,row.type||row.category,row.manufacturer,row.rarity,row.creator].filter(Boolean).join(' · '))}</small></span><button type="button">›</button>`;card.querySelector('input').addEventListener('change',e=>{if(e.target.checked)state.selectedCodes.add(row.id);else state.selectedCodes.delete(row.id);renderCodes();updateSelectionSummary()});card.querySelector('button').addEventListener('click',()=>showCodeDetail(row));list.appendChild(card)});if(state.filteredCodes.length>300){const p=document.createElement('small');p.className='muted';p.textContent=`Showing first 300 of ${state.filteredCodes.length}. Refine filters to narrow results.`;list.appendChild(p)}if(!state.filteredCodes.length)list.innerHTML='<div class="card"><p>No matching codes.</p></div>';updateSelectionSummary()}
+function showCodeDetail(row){const details=[row.name,row.listing||row.source,row.source,row.type||row.category,row.manufacturer,row.rarity,row.creator,row.serial].filter(Boolean).join('\n');alert(details)}
 function updateSelectionSummary(){$('selectionSummary').textContent=`${state.selectedCodes.size} selected`}
-$('codeSearch').addEventListener('input',filterCodes);['sourceFilter','typeFilter','manufacturerFilter','rarityFilter'].forEach(id=>$(id).addEventListener('change',filterCodes));
+$('codeSearch').addEventListener('input',filterCodes);['listingFilter','creatorFilter','sourceFilter','typeFilter','manufacturerFilter','rarityFilter'].forEach(id=>{const el=$(id);if(el)el.addEventListener('change',filterCodes)});
 $('selectAllCodes').addEventListener('click',()=>{state.filteredCodes.forEach(row=>state.selectedCodes.add(row.id));renderCodes()});$('clearCodeSelection').addEventListener('click',()=>{state.selectedCodes.clear();renderCodes()});
 $('refreshCodes').addEventListener('click',async()=>{await loadCatalogs();logActivity('Reloaded the bundled BL4 Codes cache. Online GZO refresh will use the same screen once PC/network sync is enabled.')});
 
@@ -373,7 +430,7 @@ async function runLiveAction(button){
 }
 
 function renderActivity(){const rows=$('activityRows');if(!rows)return;if(!state.activity.length){rows.innerHTML='<small class="muted">No activity yet.</small>';return}rows.innerHTML=state.activity.slice(0,30).map(item=>`<div><small class="muted">${esc(new Date(item.at).toLocaleString())}</small><br>${esc(item.message)}</div>`).join('')}
-$('copyFeedbackTemplate').addEventListener('click',async()=>{const template=`MSBT MOBILE BETA FEEDBACK\n\nPhone make/model:\nAndroid version:\nMSBT Mobile version: 0.1.0-beta.2\nDesktop MSBT version (if connected):\n\nScreen/feature:\nWhat I expected:\nWhat happened:\nSteps to reproduce:\nDoes it happen every time? Yes / No / Sometimes\n\nScreenshots attached: Yes / No\nAnything else:`;try{await navigator.clipboard.writeText(template);alert('Feedback template copied. Send it with screenshots directly to FunkYouSHiFT in Discord DMs.')}catch{prompt('Copy this feedback template:',template)}});
+$('copyFeedbackTemplate').addEventListener('click',async()=>{const template=`MSBT MOBILE BETA FEEDBACK\n\nPhone make/model:\nAndroid version:\nMSBT Mobile version: 0.1.0-beta.3\nDesktop MSBT version (if connected):\n\nScreen/feature:\nWhat I expected:\nWhat happened:\nSteps to reproduce:\nDoes it happen every time? Yes / No / Sometimes\n\nScreenshots attached: Yes / No\nAnything else:`;try{await navigator.clipboard.writeText(template);alert('Feedback template copied. Send it with screenshots directly to FunkYouSHiFT in Discord DMs.')}catch{prompt('Copy this feedback template:',template)}});
 
 $$('[data-live]').forEach(button=>button.addEventListener('click',()=>void runLiveAction(button)));
 
