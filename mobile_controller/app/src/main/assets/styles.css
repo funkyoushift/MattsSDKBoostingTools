@@ -15,8 +15,8 @@
   --nav-bottom:max(8px,env(safe-area-inset-bottom));
   --appbar-h:72px;
   --session-h:34px;
-  --nav-h:72px;
-  --chrome-bottom:calc(var(--nav-h) + var(--nav-bottom));
+  --nav-h:76px;
+  --chrome-bottom:calc(var(--nav-h) + var(--nav-bottom) + 12px);
 }
 *{box-sizing:border-box}
 html{background:var(--bg)}
@@ -85,12 +85,12 @@ body{
 .update-banner-actions button{min-height:42px;width:100%}
 
 main{
-  padding:18px 18px calc(var(--chrome-bottom) + 28px);
+  padding:18px 18px calc(var(--chrome-bottom) + 56px);
   max-width:760px;
   margin:auto;
 }
 .screen{display:none}
-.screen.active{display:block}
+.screen.active{display:block;padding-bottom:8px}
 .screen h2{margin:8px 2px 16px;font-size:clamp(24px,6vw,30px);line-height:1.1}
 .card{
   background:linear-gradient(160deg,rgba(26,36,57,.96),rgba(13,19,33,.96));
