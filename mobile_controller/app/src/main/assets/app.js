@@ -391,8 +391,18 @@ async function pullQuickMenuFromPc({quiet=false}={}){
 function renderQuick(){const pages=$('quickPages');pages.innerHTML='';state.quick.pages.forEach((page,i)=>{const b=document.createElement('button');b.textContent=`${i+1}`;b.classList.toggle('active',i===state.activeQuickPage);b.addEventListener('click',()=>{state.activeQuickPage=i;renderQuick()});pages.appendChild(b)});$('quickPageLabel').textContent=`Page ${state.activeQuickPage+1} / ${state.quick.pages.length}`;const grid=$('quickGrid');grid.innerHTML='';state.quick.pages[state.activeQuickPage].slots.forEach(slot=>{const b=document.createElement('button');b.textContent=slot.label||`Slot ${slot.slot}`;if(slot.renamed)b.classList.add('dirty');if(!slot.commandId)b.classList.add('empty');b.addEventListener('click',()=>void activateQuickSlot(slot));grid.appendChild(b)})}
 async function activateQuickSlot(slot){
   if(state.online&&slot.commandId){
-    const fakeButton={dataset:{action:slot.commandId},_quickPayload:slot.payload||{}};
-    await runLiveAction(fakeButton);
+    try{
+      const fakeButton={dataset:{action:slot.commandId},_quickPayload:slot.payload&&typeof slot.payload==='object'?slot.payload:{}};
+      await runLiveAction(fakeButton);
+    }catch(error){
+      const message=error&&error.message?error.message:String(error);
+      logActivity(`Quick Menu failed: ${message}`);
+      alert(message);
+    }
+    return;
+  }
+  if(!state.online&&slot.commandId){
+    alert('Connect to desktop MSBT first, then tap the Quick Menu slot to fire it.');
     return;
   }
   const label=prompt(slot.commandId?'Rename Quick Menu label':`Empty slot ${slot.slot}. Connect and Pull From PC to load the live F7 menu, or set a local label.`,slot.label||`Slot ${slot.slot}`);
@@ -596,6 +606,10 @@ function movementPayload(){
   };
 }
 function buildActionPayload(action,button){
+  // Quick Menu slots carry their own payload — prefer it over live form fields.
+  if(button&&button._quickPayload&&typeof button._quickPayload==='object'&&Object.keys(button._quickPayload).length){
+    return{...button._quickPayload};
+  }
   if(action==='give_currency')return{currency_kind:text($('boostCurrencyKind').value)||'cash',amount:intValue($('boostCurrencyAmount').value,1000000)};
   if(action==='set_level')return{xp_track:text($('boostXpTrack').value)||'player',level:intValue($('boostXpLevel').value,60)};
   if(action==='set_backpack_bank_selected'||action==='set_backpack_bank_all')return{backpack_size:intValue($('boostBackpackSize').value,999),bank_size:intValue($('boostBankSize').value,1500)};
@@ -605,7 +619,8 @@ function buildActionPayload(action,button){
     return{movement_time_dilation:Number(preset.timeDilation||1)};
   }
   if(action==='movement_teleport_to_slot'){
-    return{slot:Math.max(0,Math.min(3,intValue(button&&button.dataset.slot,0))),target_player:state.selectedTarget};
+    const slotAttr=button&&button.dataset?button.dataset.slot:undefined;
+    return{slot:Math.max(0,Math.min(3,intValue(slotAttr,0))),target_player:state.selectedTarget};
   }
   if(action==='movement_infinite_jump_selected_on'||action==='movement_infinite_jump_selected_off'||action==='movement_infinite_jump_toggle_selected'){
     return{target_player:state.selectedTarget,infinite_jump_target:state.selectedTarget};
@@ -626,11 +641,10 @@ function buildActionPayload(action,button){
     return{itempool_name:name,level:intValue($('poolLevel').value,60),count:intValue($('poolCount').value,1)};
   }
   if(action&&action.startsWith('dev_spawner_'))return buildDevSpawnerPayload(action);
-  if(button&&button._quickPayload&&typeof button._quickPayload==='object')return{...button._quickPayload};
   if(action==='give_serial_selected'||action==='give_serial_all'||action==='give_serial_nonhost'){
-    const fromCodes=button&&button.dataset.serialSource==='codes';
-    const fromBookmark=button&&button.dataset.serialSource==='bookmark';
-    const fromInventory=button&&button.dataset.serialSource==='inventory';
+    const fromCodes=button&&button.dataset&&button.dataset.serialSource==='codes';
+    const fromBookmark=button&&button.dataset&&button.dataset.serialSource==='bookmark';
+    const fromInventory=button&&button.dataset&&button.dataset.serialSource==='inventory';
     let serialText='';
     let copies=1;
     if(fromInventory){
@@ -664,11 +678,18 @@ function buildActionPayload(action,button){
   }
   return{};
 }
+function buttonHasDataAttr(button,name){
+  if(!button)return false;
+  if(typeof button.hasAttribute==='function')return button.hasAttribute(name);
+  if(!button.dataset||typeof button.dataset!=='object')return false;
+  const key=String(name||'').replace(/^data-/,'').replace(/-([a-z])/g,(_,c)=>c.toUpperCase());
+  return button.dataset[key]!=null&&button.dataset[key]!==false&&button.dataset[key]!=='false';
+}
 async function runLiveAction(button){
-  const action=text(button.dataset.action);
+  const action=text(button&&button.dataset&&button.dataset.action);
   if(!action){alert('This control is not wired for live actions yet.');return}
   if(!state.online){alert('Connect to desktop MSBT first (More → Connection Settings).');return}
-  if(button.hasAttribute('data-dev-risk')&&!state.dev.warningAccepted){
+  if(buttonHasDataAttr(button,'data-dev-risk')&&!state.dev.warningAccepted){
     alert('Enable Dev Spawner This Session first (Spawn tab).');
     return;
   }
@@ -700,7 +721,7 @@ async function runLiveAction(button){
 }
 
 function renderActivity(){const rows=$('activityRows');if(!rows)return;if(!state.activity.length){rows.innerHTML='<small class="muted">No activity yet.</small>';return}rows.innerHTML=state.activity.slice(0,30).map(item=>`<div><small class="muted">${esc(new Date(item.at).toLocaleString())}</small><br>${esc(item.message)}</div>`).join('')}
-$('copyFeedbackTemplate').addEventListener('click',async()=>{const template=`MSBT MOBILE BETA FEEDBACK\n\nPhone make/model:\nAndroid version:\nMSBT Mobile version: 0.1.0-beta.9\nDesktop MSBT version (if connected):\n\nScreen/feature:\nWhat I expected:\nWhat happened:\nSteps to reproduce:\nDoes it happen every time? Yes / No / Sometimes\n\nScreenshots attached: Yes / No\nAnything else:`;try{await navigator.clipboard.writeText(template);alert('Feedback template copied. Send it with screenshots directly to FunkYouSHiFT in Discord DMs.')}catch{prompt('Copy this feedback template:',template)}});
+$('copyFeedbackTemplate').addEventListener('click',async()=>{const template=`MSBT MOBILE BETA FEEDBACK\n\nPhone make/model:\nAndroid version:\nMSBT Mobile version: 0.1.0-beta.10\nDesktop MSBT version (if connected):\n\nScreen/feature:\nWhat I expected:\nWhat happened:\nSteps to reproduce:\nDoes it happen every time? Yes / No / Sometimes\n\nScreenshots attached: Yes / No\nAnything else:`;try{await navigator.clipboard.writeText(template);alert('Feedback template copied. Send it with screenshots directly to FunkYouSHiFT in Discord DMs.')}catch{prompt('Copy this feedback template:',template)}});
 
 function invEntryLabel(entry){
   return text(entry&&(entry.summary||entry.label||entry.name||entry.slot_name))||'Item';
