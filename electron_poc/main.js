@@ -69,8 +69,12 @@ const mobileGateway = createMobileGateway({
   pairingCode: generatePairingCode(),
   getSerialBookmarks: async () => {
     try {
-      const data = await readBookmarks(bookmarksFilePath(app.getPath("userData")));
-      return Array.isArray(data && data.bookmarks) ? data.bookmarks : [];
+      // readBookmarks() returns { ok, data: { version, bookmarks }, warnings }
+      const result = await readBookmarks(bookmarksFilePath(app.getPath("userData")));
+      const bookmarks = result && result.data && Array.isArray(result.data.bookmarks)
+        ? result.data.bookmarks
+        : [];
+      return bookmarks;
     } catch (error) {
       return [];
     }

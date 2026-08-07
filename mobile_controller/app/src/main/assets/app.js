@@ -1,8 +1,8 @@
 const $=(id)=>document.getElementById(id);
 const $$=(selector)=>[...document.querySelectorAll(selector)];
 const STORE={connection:'msbt.mobile.connection.v1',bookmarks:'msbt.mobile.bookmarks.v1',movement:'msbt.mobile.movement.v1',quick:'msbt.mobile.quick.v1',activity:'msbt.mobile.activity.v1',target:'msbt.mobile.target.v1'};
-const PLAYER_SCOPED=new Set(['max_all','max_currency','max_eridium','max_player_level','max_spec_level','max_sdu','give_currency','set_level','give_serial_selected','set_backpack_bank_selected','shiny_selected']);
-const state={online:false,bridgeOnline:false,codes:[],filteredCodes:[],selectedCodes:new Set(),activeQuickPage:0,quick:null,bookmarks:[],connection:{},activity:[],players:[],selectedTarget:'',pollTimer:null,busy:false};
+const PLAYER_SCOPED=new Set(['max_all','max_currency','max_eridium','max_player_level','max_spec_level','max_sdu','give_currency','set_level','give_serial_selected','set_backpack_bank_selected','shiny_selected','movement_apply_all','movement_infinite_jump_selected_on','movement_infinite_jump_selected_off','movement_infinite_jump_toggle_selected','movement_teleport_to_slot','read_inventory','read_equipped_serials','read_backpack_serials']);
+const state={online:false,bridgeOnline:false,codes:[],filteredCodes:[],selectedCodes:new Set(),activeQuickPage:0,quick:null,bookmarks:[],connection:{},activity:[],players:[],selectedTarget:'',pollTimer:null,busy:false,inventory:{equipped:[],backpack:[],selected:null},travel:{maps:[],stations:[],mode:'map',selected:null},pools:{rows:[],selected:null}};
 const read=(key,fallback)=>{try{return JSON.parse(localStorage.getItem(key))??fallback}catch{return fallback}};
 const write=(key,value)=>localStorage.setItem(key,JSON.stringify(value));
 const now=()=>new Date().toISOString();
@@ -16,6 +16,9 @@ function logActivity(message){state.activity.unshift({at:now(),message});state.a
 function setLiveEnabled(){
   $$('[data-live]').forEach((button)=>button.disabled=!state.online||state.busy);
   $$('[data-live-optional]').forEach((button)=>button.disabled=!state.online||state.busy);
+  ['invRefresh','invEquipped','invBackpack'].forEach((id)=>{const el=$(id);if(el)el.disabled=!state.online||state.busy});
+  const travelGo=$('travelGo');if(travelGo)travelGo.disabled=!state.online||state.busy||!state.travel.selected;
+  const poolSpawn=$('poolSpawn');if(poolSpawn)poolSpawn.disabled=!state.online||state.busy||!state.pools.selected;
 }
 function playerValue(player){const index=player&&player.index;const name=player&&player.name?String(player.name):'';if(index===null||index===undefined||index==='')return name;return name?`${index}|${name}`:String(index)}
 function playerLabel(player){const index=player&&player.index;const name=player&&player.name?String(player.name):'';if(index===null||index===undefined||index==='')return name||'Unknown player';return `${index} | ${name||'Unknown player'}`}
@@ -209,7 +212,7 @@ function renderBookmarks(){const q=text($('bookmarkSearch').value).toLowerCase()
 async function pullDesktopBookmarks({quiet=false}={}){
   if(!state.online){if(!quiet)alert('Connect to desktop MSBT first.');return false}
   try{
-    const result=await gatewayFetch('/mobile/bookmarks',{timeoutMs:12000});
+    const result=await gatewayFetch('/mobile/bookmarks',{timeoutMs:60000});
     if(!result.ok)throw new Error((result.data&&result.data.message)||`HTTP ${result.status}`);
     const rows=Array.isArray(result.data&&result.data.bookmarks)?result.data.bookmarks:[];
     state.bookmarks=rows.map((b)=>({id:b.id||`pc-${compact(b.serial||Date.now())}`,name:text(b.name)||'Unnamed',group:text(b.group)||'Default',serial:text(b.serial),created_at:b.created_at||now(),updated_at:b.updated_at||now(),metadata:b.metadata||{}})).filter((b)=>validSerial(b.serial));
@@ -229,10 +232,22 @@ async function pullDesktopBookmarks({quiet=false}={}){
 $('bookmarkSearch').addEventListener('input',renderBookmarks);$('saveBookmark').addEventListener('click',()=>{const serial=text($('bookmarkSerial').value);if(!validSerial(serial)){alert('Bookmark serial must be one valid @U serial.');return}const id=$('bookmarkSerial').dataset.id||`mobile-${Date.now()}`;const existing=state.bookmarks.find(b=>b.id===id);const record={...(existing||{}),id,name:text($('bookmarkName').value)||'Unnamed',group:text($('bookmarkGroup').value),serial,created_at:existing?.created_at||now(),updated_at:now(),metadata:existing?.metadata||{}};state.bookmarks=state.bookmarks.filter(b=>b.id!==id);state.bookmarks.push(record);write(STORE.bookmarks,state.bookmarks);$('bookmarkSerial').dataset.id=id;renderBookmarks();logActivity(`Saved serial bookmark: ${record.name}`)});$('deleteBookmark').addEventListener('click',()=>{const id=$('bookmarkSerial').dataset.id;if(!id)return;state.bookmarks=state.bookmarks.filter(b=>b.id!==id);write(STORE.bookmarks,state.bookmarks);$('bookmarkSerial').dataset.id='';$('bookmarkName').value='';$('bookmarkGroup').value='';$('bookmarkSerial').value='';renderBookmarks();logActivity('Deleted serial bookmark.')});
 const pullDesktopBookmarksBtn=$('pullDesktopBookmarks');
 if(pullDesktopBookmarksBtn)pullDesktopBookmarksBtn.addEventListener('click',()=>void pullDesktopBookmarks());
+const bookmarkUseBoostBtn=$('bookmarkUseBoost');
+if(bookmarkUseBoostBtn)bookmarkUseBoostBtn.addEventListener('click',()=>{
+  const serial=text($('bookmarkSerial').value);
+  if(!validSerial(serial)){alert('Pick or enter a valid @U serial first.');return}
+  $('boostSerialText').value=serial;
+  boostConfirmed='';
+  $('boostSerialStatus').textContent='Loaded from bookmark — validate/confirm before send.';
+  $$('[data-nav]').forEach((nav)=>nav.classList.toggle('active',nav.dataset.nav==='boost'));
+  $$('.screen').forEach((node)=>node.classList.toggle('active',node.dataset.screen==='boost'));
+  window.scrollTo(0,0);
+  logActivity('Loaded bookmark serial into Boost sender.');
+});
 
 let boostConfirmed='';$('boostValidate').addEventListener('click',()=>{const serials=text($('boostSerialText').value).split(/\s+/).filter(Boolean);const ok=serials.length>0&&serials.every(validSerial);$('boostSerialStatus').textContent=ok?`${serials.length} valid @U serial(s).`:'Serial text contains an invalid value.'});$('boostConfirm').addEventListener('click',()=>{const value=text($('boostSerialText').value);const serials=value.split(/\s+/).filter(Boolean);if(!serials.length||!serials.every(validSerial)){alert('Validate the @U serials first.');return}boostConfirmed=value;$('boostSerialStatus').textContent='Confirmed for delivery. Editing the serials will invalidate confirmation.'});$('boostSerialText').addEventListener('input',()=>{if(boostConfirmed&&text($('boostSerialText').value)!==boostConfirmed){boostConfirmed='';$('boostSerialStatus').textContent='Serial changed; confirmation cleared.'}});
 
-const MOVEMENT_DEFAULT={speedScale:'1.00',walkSpeed:'600',jumpHeight:'198',gravityScale:'1.00',stepHeight:'45',floorAngle:'44.8',glideSpeed:'1200',glideBoost:'0',glideAirControl:'0.60',dashSpeed:'2500',timeDilation:'1.00',sprintJumpGoal:'198',doubleJumpGoal:'198',slideJumpGoal:'198',individualJumpGoals:false,zeroVaultOnApply:false};
+const MOVEMENT_DEFAULT={speedScale:'1.00',walkSpeed:'600',jumpHeight:'198',gravityScale:'1.00',stepHeight:'45',floorAngle:'44.8',floorZ:'0.71',glideSpeed:'1200',glideBoost:'0',glideAirControl:'0.60',dashSpeed:'2500',timeDilation:'1.00',sprintJumpGoal:'198',doubleJumpGoal:'198',slideJumpGoal:'198',individualJumpGoals:false,zeroVaultOnApply:false};
 function loadMovement(){const preset={...MOVEMENT_DEFAULT,...read(STORE.movement,{})};$$('[data-movement]').forEach(el=>{const key=el.dataset.movement;if(el.type==='checkbox')el.checked=!!preset[key];else el.value=preset[key]??''})}
 $('saveMovement').addEventListener('click',()=>{const preset={};$$('[data-movement]').forEach(el=>preset[el.dataset.movement]=el.type==='checkbox'?el.checked:text(el.value));write(STORE.movement,preset);$('movementStatus').textContent='Preset saved locally. It will remain available offline.';logActivity('Saved movement preset locally.')});
 
@@ -477,7 +492,7 @@ function movementPayload(){
     movement_jump_count:2,
     movement_jump_off_z_factor:0.5,
     movement_floor_angle:Number(preset.floorAngle||44.8),
-    movement_floor_z:0.71,
+    movement_floor_z:Number(preset.floorZ||0.71),
     movement_individual_jump_goals:Boolean(preset.individualJumpGoals),
     movement_sprint_jump_goal:Number(preset.sprintJumpGoal||jump),
     movement_double_jump_goal:Number(preset.doubleJumpGoal||jump),
@@ -497,12 +512,42 @@ function buildActionPayload(action,button){
   if(action==='set_level')return{xp_track:text($('boostXpTrack').value)||'player',level:intValue($('boostXpLevel').value,60)};
   if(action==='set_backpack_bank_selected'||action==='set_backpack_bank_all')return{backpack_size:intValue($('boostBackpackSize').value,999),bank_size:intValue($('boostBankSize').value,1500)};
   if(action==='movement_apply_all')return movementPayload();
+  if(action==='movement_set_time'){
+    const preset={};$$('[data-movement]').forEach(el=>preset[el.dataset.movement]=el.type==='checkbox'?el.checked:text(el.value));
+    return{movement_time_dilation:Number(preset.timeDilation||1)};
+  }
+  if(action==='movement_teleport_to_slot'){
+    return{slot:Math.max(0,Math.min(3,intValue(button&&button.dataset.slot,0))),target_player:state.selectedTarget};
+  }
+  if(action==='movement_infinite_jump_selected_on'||action==='movement_infinite_jump_selected_off'||action==='movement_infinite_jump_toggle_selected'){
+    return{target_player:state.selectedTarget,infinite_jump_target:state.selectedTarget};
+  }
+  if(action==='travel_to_map'){
+    const map=state.travel.selected&&state.travel.selected.map;
+    if(!map)throw new Error('Select a travel map first.');
+    return{travel_map:map};
+  }
+  if(action==='travel_to_station'){
+    const station=state.travel.selected&&state.travel.selected.station;
+    if(!station)throw new Error('Select a travel station first.');
+    return{travel_station:station};
+  }
+  if(action==='spawn_itempool'){
+    const name=state.pools.selected&&(state.pools.selected.itempool||state.pools.selected.name);
+    if(!name)throw new Error('Select an item pool first.');
+    return{itempool_name:name,level:intValue($('poolLevel').value,60),count:intValue($('poolCount').value,1)};
+  }
   if(button&&button._quickPayload&&typeof button._quickPayload==='object')return{...button._quickPayload};
   if(action==='give_serial_selected'||action==='give_serial_all'||action==='give_serial_nonhost'){
     const fromCodes=button&&button.dataset.serialSource==='codes';
+    const fromBookmark=button&&button.dataset.serialSource==='bookmark';
     let serialText='';
     let copies=1;
-    if(fromCodes){
+    if(fromBookmark){
+      serialText=text($('bookmarkSerial').value);
+      if(!validSerial(serialText))throw new Error('Pick a bookmark serial first.');
+      copies=1;
+    }else if(fromCodes){
       const selected=[...state.selectedCodes].map((id)=>state.codes.find((row)=>row.id===id)).filter(Boolean);
       if(!selected.length)throw new Error('Select one or more codes first.');
       serialText=selected.map((row)=>row.serial).join(' ');
@@ -552,9 +597,232 @@ async function runLiveAction(button){
 }
 
 function renderActivity(){const rows=$('activityRows');if(!rows)return;if(!state.activity.length){rows.innerHTML='<small class="muted">No activity yet.</small>';return}rows.innerHTML=state.activity.slice(0,30).map(item=>`<div><small class="muted">${esc(new Date(item.at).toLocaleString())}</small><br>${esc(item.message)}</div>`).join('')}
-$('copyFeedbackTemplate').addEventListener('click',async()=>{const template=`MSBT MOBILE BETA FEEDBACK\n\nPhone make/model:\nAndroid version:\nMSBT Mobile version: 0.1.0-beta.5\nDesktop MSBT version (if connected):\n\nScreen/feature:\nWhat I expected:\nWhat happened:\nSteps to reproduce:\nDoes it happen every time? Yes / No / Sometimes\n\nScreenshots attached: Yes / No\nAnything else:`;try{await navigator.clipboard.writeText(template);alert('Feedback template copied. Send it with screenshots directly to FunkYouSHiFT in Discord DMs.')}catch{prompt('Copy this feedback template:',template)}});
+$('copyFeedbackTemplate').addEventListener('click',async()=>{const template=`MSBT MOBILE BETA FEEDBACK\n\nPhone make/model:\nAndroid version:\nMSBT Mobile version: 0.1.0-beta.6\nDesktop MSBT version (if connected):\n\nScreen/feature:\nWhat I expected:\nWhat happened:\nSteps to reproduce:\nDoes it happen every time? Yes / No / Sometimes\n\nScreenshots attached: Yes / No\nAnything else:`;try{await navigator.clipboard.writeText(template);alert('Feedback template copied. Send it with screenshots directly to FunkYouSHiFT in Discord DMs.')}catch{prompt('Copy this feedback template:',template)}});
+
+function invEntryLabel(entry){
+  return text(entry&&(entry.summary||entry.label||entry.name||entry.slot_name))||'Item';
+}
+function invAllRows(){
+  return [...(state.inventory.equipped||[]).map((e)=>({...e,_bucket:'equipped'})),...(state.inventory.backpack||[]).map((e)=>({...e,_bucket:'backpack'}))];
+}
+function renderInventory(){
+  const rows=$('invRows');if(!rows)return;
+  const q=text($('invSearch')&&$('invSearch').value).toLowerCase();
+  const list=invAllRows().filter((e)=>!q||`${invEntryLabel(e)} ${e.serial||''} ${e._bucket}`.toLowerCase().includes(q));
+  rows.innerHTML='';
+  list.slice(0,400).forEach((entry,index)=>{
+    const button=document.createElement('button');
+    const serial=text(entry.serial);
+    button.textContent=`[${entry._bucket==='equipped'?'EQ':'BP'}] ${invEntryLabel(entry)}`;
+    button.title=serial;
+    button.className=state.inventory.selected&&state.inventory.selected.serial===serial?'selected':'';
+    button.addEventListener('click',()=>{
+      state.inventory.selected=entry;
+      const use=$('invUseBoost');const bm=$('invSaveBookmark');
+      if(use)use.disabled=!validSerial(serial);
+      if(bm)bm.disabled=!validSerial(serial);
+      renderInventory();
+    });
+    rows.appendChild(button);
+  });
+  if(!rows.children.length)rows.innerHTML='<small class="muted">No inventory rows. Refresh while in-game (listen host works best).</small>';
+  if(list.length>400){
+    const more=document.createElement('small');
+    more.className='muted';
+    more.textContent=`Showing 400 of ${list.length}. Refine the filter to narrow.`;
+    rows.appendChild(more);
+  }
+}
+async function ensureInventoryTarget(){
+  const target=text($('boostTarget').value)||state.selectedTarget;
+  if(!target)throw new Error('Select a target player on Boost first (Connect while in-game).');
+  state.selectedTarget=target;
+  const setResult=await gatewayAction('set_target_player',{target_player:target},10000);
+  if(!setResult.ok)throw new Error((setResult.data&&(setResult.data.message||setResult.data.error))||'Could not set target player.');
+  return target;
+}
+function applyInventoryResult(data,fallbackEquipped,fallbackBackpack){
+  const inventory=data&&data.inventory?data.inventory:null;
+  let equipped=inventory&&Array.isArray(inventory.equipped)?inventory.equipped:(fallbackEquipped||[]);
+  let backpack=inventory&&Array.isArray(inventory.backpack)?inventory.backpack:(fallbackBackpack||[]);
+  if((!equipped.length&&!backpack.length)&&data&&data.read_serials&&Array.isArray(data.read_serials.entries)){
+    const entries=data.read_serials.entries;
+    equipped=entries.filter((e)=>{const o=text(e.origin);return o==='equipped'||o==='active_weapon'||(Number.isFinite(Number(e.slot))&&Number(e.slot)>=0&&Number(e.slot)<=64)});
+    const eqSet=new Set(equipped.map((e)=>text(e.serial)).filter(Boolean));
+    backpack=entries.filter((e)=>!eqSet.has(text(e.serial)));
+  }
+  state.inventory={equipped,backpack,selected:null};
+  const use=$('invUseBoost');const bm=$('invSaveBookmark');
+  if(use)use.disabled=true;if(bm)bm.disabled=true;
+  renderInventory();
+  const message=(data&&data.message)||`Inventory: ${equipped.length} equipped, ${backpack.length} backpack.`;
+  if($('invStatus'))$('invStatus').textContent=message;
+  logActivity(message);
+}
+async function refreshInventory(mode='all'){
+  if(!state.online){alert('Connect to desktop MSBT first.');return}
+  if(state.busy)return;
+  state.busy=true;setLiveEnabled();
+  if($('invStatus'))$('invStatus').textContent='Reading inventory…';
+  try{
+    const target=await ensureInventoryTarget();
+    const payload={target_player:target};
+    if(mode==='equipped'){
+      const result=await gatewayAction('read_equipped_serials',payload,60000);
+      if(!result.ok&&!(result.data&&result.data.read_serials))throw new Error((result.data&&result.data.message)||'Equipped read failed.');
+      const entries=(result.data&&result.data.read_serials&&result.data.read_serials.entries)||[];
+      applyInventoryResult({...(result.data||{}),message:(result.data&&result.data.message)||`Equipped: ${entries.length}`},entries,[]);
+      return;
+    }
+    if(mode==='backpack'){
+      const result=await gatewayAction('read_backpack_serials',payload,60000);
+      if(!result.ok&&!(result.data&&result.data.read_serials))throw new Error((result.data&&result.data.message)||'Backpack read failed.');
+      const entries=(result.data&&result.data.read_serials&&result.data.read_serials.entries)||[];
+      applyInventoryResult({...(result.data||{}),message:(result.data&&result.data.message)||`Backpack: ${entries.length}`},[],entries);
+      return;
+    }
+    let result=await gatewayAction('read_inventory',payload,60000);
+    let data=result.data||{};
+    if(data.queued)throw new Error(data.message||'Inventory still queued — unpause in-game, then retry.');
+    const unknown=/unknown action|unknown quick menu action/i.test(String(data.message||''));
+    if((!result.ok&&unknown)||(result.ok&&!data.inventory)){
+      const eq=await gatewayAction('read_equipped_serials',payload,60000);
+      const bp=await gatewayAction('read_backpack_serials',payload,60000);
+      const eqEntries=(eq.data&&eq.data.read_serials&&eq.data.read_serials.entries)||[];
+      const bpEntries=(bp.data&&bp.data.read_serials&&bp.data.read_serials.entries)||[];
+      applyInventoryResult({
+        ok:true,
+        message:`Inventory: ${eqEntries.length} equipped, ${bpEntries.length} backpack (legacy read).`,
+        inventory:{equipped:eqEntries,backpack:bpEntries}
+      });
+      return;
+    }
+    if(!result.ok&&!(data.inventory&&((data.inventory.equipped||[]).length||(data.inventory.backpack||[]).length))){
+      throw new Error(data.message||'Inventory refresh failed.');
+    }
+    applyInventoryResult(data);
+  }catch(error){
+    const message=error&&error.message?error.message:String(error);
+    if($('invStatus'))$('invStatus').textContent=message;
+    logActivity(`Inventory failed: ${message}`);
+    alert(message);
+  }finally{state.busy=false;setLiveEnabled()}
+}
+if($('invSearch'))$('invSearch').addEventListener('input',renderInventory);
+if($('invRefresh'))$('invRefresh').addEventListener('click',()=>void refreshInventory('all'));
+if($('invEquipped'))$('invEquipped').addEventListener('click',()=>void refreshInventory('equipped'));
+if($('invBackpack'))$('invBackpack').addEventListener('click',()=>void refreshInventory('backpack'));
+if($('invUseBoost'))$('invUseBoost').addEventListener('click',()=>{
+  const serial=text(state.inventory.selected&&state.inventory.selected.serial);
+  if(!validSerial(serial))return;
+  $('boostSerialText').value=serial;boostConfirmed='';
+  $('boostSerialStatus').textContent='Loaded from inventory — validate/confirm before send.';
+  $$('[data-nav]').forEach((nav)=>nav.classList.toggle('active',nav.dataset.nav==='boost'));
+  $$('.screen').forEach((node)=>node.classList.toggle('active',node.dataset.screen==='boost'));
+  window.scrollTo(0,0);
+});
+if($('invSaveBookmark'))$('invSaveBookmark').addEventListener('click',()=>{
+  const entry=state.inventory.selected;const serial=text(entry&&entry.serial);
+  if(!validSerial(serial))return;
+  const id=`inv-${compact(serial)}`;
+  const record={id,name:invEntryLabel(entry),group:'Inventory',serial,created_at:now(),updated_at:now(),metadata:{}};
+  state.bookmarks=state.bookmarks.filter((b)=>b.id!==id);state.bookmarks.push(record);
+  write(STORE.bookmarks,state.bookmarks);renderBookmarks();
+  $('bookmarkName').value=record.name;$('bookmarkGroup').value=record.group;$('bookmarkSerial').value=serial;$('bookmarkSerial').dataset.id=id;
+  if($('invStatus'))$('invStatus').textContent=`Bookmarked ${record.name}.`;
+  logActivity(`Bookmarked inventory serial: ${record.name}`);
+});
+
+function renderTravel(){
+  const rows=$('travelRows');if(!rows)return;
+  const mode=text($('travelMode')&&$('travelMode').value)||'map';
+  state.travel.mode=mode;
+  const q=text($('travelSearch')&&$('travelSearch').value).toLowerCase();
+  const source=mode==='station'?state.travel.stations:state.travel.maps;
+  const filtered=source.filter((row)=>{
+    const hay=`${row.display_name||''} ${row.map||''} ${row.station||''} ${row.world||''} ${row.category||''}`.toLowerCase();
+    return !q||hay.includes(q);
+  }).slice(0,250);
+  rows.innerHTML='';
+  filtered.forEach((row)=>{
+    const id=mode==='station'?row.station:row.map;
+    const button=document.createElement('button');
+    button.textContent=mode==='station'
+      ? `${row.display_name||row.station_name||row.station}${row.world?` · ${row.world}`:''}`
+      : `${row.display_name||row.map}${row.category?` · ${row.category}`:''}`;
+    button.className=state.travel.selected&&((mode==='station'?state.travel.selected.station:state.travel.selected.map)===id)?'selected':'';
+    button.addEventListener('click',()=>{
+      state.travel.selected=row;
+      const go=$('travelGo');
+      if(go){
+        go.dataset.action=mode==='station'?'travel_to_station':'travel_to_map';
+        go.disabled=!state.online||state.busy;
+      }
+      if($('travelStatus'))$('travelStatus').textContent=`Selected: ${button.textContent}`;
+      renderTravel();
+    });
+    rows.appendChild(button);
+  });
+  if(!rows.children.length)rows.innerHTML='<small class="muted">No travel entries match.</small>';
+}
+async function loadTravelCatalog(){
+  try{
+    const [mapsRaw,stationsRaw]=await Promise.all([
+      readBundledAssetText('travelmaps_flat.json'),
+      readBundledAssetText('travelstations.json')
+    ]);
+    const mapsJson=JSON.parse(mapsRaw);
+    const stationsJson=JSON.parse(stationsRaw);
+    state.travel.maps=Array.isArray(mapsJson.maps)?mapsJson.maps:[];
+    state.travel.stations=Array.isArray(stationsJson.stations)?stationsJson.stations:[];
+    if($('travelStatus'))$('travelStatus').textContent=`${state.travel.maps.length} maps · ${state.travel.stations.length} stations`;
+    renderTravel();
+  }catch(error){
+    if($('travelStatus'))$('travelStatus').textContent=`Travel catalog unavailable: ${error&&error.message?error.message:error}`;
+    if($('travelRows'))$('travelRows').innerHTML='<small class="muted">Travel catalog failed to load.</small>';
+  }
+}
+if($('travelMode'))$('travelMode').addEventListener('change',()=>{state.travel.selected=null;setLiveEnabled();renderTravel()});
+if($('travelSearch'))$('travelSearch').addEventListener('input',renderTravel);
+
+function renderPools(){
+  const rows=$('poolRows');if(!rows)return;
+  const q=text($('poolSearch')&&$('poolSearch').value).toLowerCase();
+  const filtered=state.pools.rows.filter((row)=>{
+    const hay=`${row.display_name||''} ${row.itempool||''} ${row.category||''}`.toLowerCase();
+    return !q||hay.includes(q);
+  }).slice(0,300);
+  rows.innerHTML='';
+  filtered.forEach((row)=>{
+    const button=document.createElement('button');
+    button.textContent=`${row.display_name||row.itempool}${row.category?` · ${row.category}`:''}`;
+    button.className=state.pools.selected&&state.pools.selected.itempool===row.itempool?'selected':'';
+    button.addEventListener('click',()=>{
+      state.pools.selected=row;
+      const spawn=$('poolSpawn');
+      if(spawn)spawn.disabled=!state.online||state.busy;
+      if($('poolStatus'))$('poolStatus').textContent=`Selected: ${row.display_name||row.itempool}`;
+      renderPools();
+    });
+    rows.appendChild(button);
+  });
+  if(!rows.children.length)rows.innerHTML='<small class="muted">No item pools match.</small>';
+}
+async function loadPoolCatalog(){
+  try{
+    const raw=await readBundledAssetText('item_pools.json');
+    const json=JSON.parse(raw);
+    state.pools.rows=Array.isArray(json)?json:(Array.isArray(json.pools)?json.pools:[]);
+    if($('poolStatus'))$('poolStatus').textContent=`${state.pools.rows.length} item pools loaded`;
+    renderPools();
+  }catch(error){
+    if($('poolStatus'))$('poolStatus').textContent=`Item pools unavailable: ${error&&error.message?error.message:error}`;
+    if($('poolRows'))$('poolRows').innerHTML='<small class="muted">Item pool catalog failed to load.</small>';
+  }
+}
+if($('poolSearch'))$('poolSearch').addEventListener('input',renderPools);
 
 $$('[data-live]').forEach(button=>button.addEventListener('click',()=>void runLiveAction(button)));
 
-state.activity=read(STORE.activity,[]);setLiveEnabled();initBookmarks();loadMovement();loadQuick();loadConnection();renderActivity();loadCatalogs();
+state.activity=read(STORE.activity,[]);setLiveEnabled();initBookmarks();loadMovement();loadQuick();loadConnection();renderActivity();loadCatalogs();loadTravelCatalog();loadPoolCatalog();
 if(text(state.connection.address)&&text(state.connection.pairingCode))void connectGateway({quiet:true});

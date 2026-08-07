@@ -18,8 +18,8 @@ If Connect fails: confirm desktop MSBT is open, the Activity tab shows Gateway o
 
 ## What testers receive
 
-- `MSBT-Mobile-Controller-0.1.0-beta.5.apk` — Android app.
-- `MSBT-Mobile-Beta-Test-Kit-0.1.0-beta.5.zip` — this guide/checklist.
+- `MSBT-Mobile-Controller-0.1.0-beta.6.apk` — Android app.
+- `MSBT-Mobile-Beta-Test-Kit-0.1.0-beta.6.zip` — this guide/checklist.
 
 Do **not** package the APK inside the Windows MSBT installer.
 
@@ -110,7 +110,7 @@ MSBT MOBILE BETA FEEDBACK
 
 Phone make/model:
 Android version:
-MSBT Mobile version: 0.1.0-beta.5
+MSBT Mobile version: 0.1.0-beta.6
 Desktop MSBT version (if connected):
 
 Screen/feature:
@@ -137,8 +137,8 @@ GitHub Actions: `.github/workflows/mobile-beta-build.yml` on `mobile-controller-
 
 Artifacts:
 
-- `MSBT-Mobile-Controller-0.1.0-beta.5.apk`
-- `MSBT-Mobile-Beta-Test-Kit-0.1.0-beta.5.zip`
+- `MSBT-Mobile-Controller-0.1.0-beta.6.apk`
+- `MSBT-Mobile-Beta-Test-Kit-0.1.0-beta.6.zip`
 
 Local APK (optional):
 
