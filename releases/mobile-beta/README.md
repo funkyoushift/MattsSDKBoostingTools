@@ -1,6 +1,6 @@
-# MSBT Mobile Controller — Closed Beta Release
+# MSBT Mobile Controller — Open Beta Release
 
-This branch (`release/mobile-beta`) is the **closed Android + desktop Mobile Gateway** release line for select Discord testers.
+This branch (`release/mobile-beta`) is the **open Android + desktop Mobile Gateway** release line for open beta testers.
 
 It is **not** the public Windows MSBT stable channel (`main` / `v2.2.x` Latest).
 
@@ -30,7 +30,7 @@ https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/mobile-beta
 
 - Android 9+ phone (API 28+)
 - Same Wi‑Fi as the gaming PC (not cellular-only)
-- Desktop MSBT from this closed-beta package / `release/mobile-beta` branch (stock public `v2.2.1` may lack Mobile Gateway / QR)
+- Desktop MSBT from this open-beta package / `release/mobile-beta` branch (stock public `v2.2.1` may lack Mobile Gateway / QR)
 - Borderlands 4 + MSBT SDK mod for live in-game actions
 - Windows Firewall: allow Electron/Node on port **49775** if prompted
 
@@ -81,7 +81,7 @@ Include:
 
 - Phone make/model + Android version
 - MSBT Mobile version (**More → About**)
-- Desktop build (Mobile Gateway closed beta)
+- Desktop build (Mobile Gateway open beta)
 - Full-screen screenshots
 - What you expected vs what happened
 
@@ -91,7 +91,7 @@ Include:
 
 | Branch | Purpose |
 |--------|---------|
-| `release/mobile-beta` | Closed-beta release docs + packaging pointer (this README) |
+| `release/mobile-beta` | Open-beta release docs + packaging pointer (this README) |
 | `mobile-controller-prototype` | Active development for mobile + gateway |
 | `main` | Public stable Windows MSBT (no merge of mobile beta without approval) |
 

@@ -4,11 +4,11 @@ Android companion controller for Matt's SDK Boosting Tools.
 
 Package ID: `com.funkyoushift.msbt.mobile`
 
-Current beta: `0.1.0-beta.13` (recommended closed beta)
+Current beta: `0.1.0-beta.13` (recommended open beta)
 
 ## Phone download (static link)
 
-Bookmark this on your phone — it always points at the latest closed-beta APK from CI:
+Bookmark this on your phone — it always points at the latest open-beta APK from CI:
 
 https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/mobile-beta/MSBT-Mobile-Controller.apk
 
@@ -51,7 +51,7 @@ Useful without a PC connection:
 - Quick Menu edits persist locally;
 - PC connection settings persist locally.
 
-## Live pairing (select beta)
+## Live pairing (open beta)
 
 Desktop MSBT on this branch starts a **Mobile Gateway** on LAN port `49775` that proxies to the localhost SDK bridge (`127.0.0.1:49774`). The in-game bridge is not opened to all interfaces.
 
@@ -103,7 +103,7 @@ Future refresh behavior:
 
 Do not bundle the Android APK inside the Windows MSBT installer.
 
-Closed beta distribution is through Discord using either direct files or a GitHub Actions/Release link.
+Open beta downloads are public GitHub Release links (APK + desktop Mobile Gateway build + test kit). Share those links freely; do not post live pairing codes.
 
 Build workflow outputs two separate artifacts:
 

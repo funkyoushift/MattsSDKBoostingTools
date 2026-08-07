@@ -1,8 +1,8 @@
-# MSBT Mobile Controller — Closed Android Beta
+# MSBT Mobile Controller — Open Android Beta
 
-**Recommended build: `0.1.0-beta.13`** — current working closed beta for select testers.
+**Recommended build: `0.1.0-beta.13`** — current working open beta.
 
-Closed layout + **live LAN pairing** beta. Separate from the Windows MSBT installer.
+Open beta layout + **live LAN pairing** beta. Separate from the Windows MSBT installer.
 
 ## Tester package
 

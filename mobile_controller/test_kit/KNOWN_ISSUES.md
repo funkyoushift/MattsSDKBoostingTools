@@ -1,6 +1,6 @@
-# Known limits (closed beta)
+# Known limits (open beta)
 
-**Baseline build:** `0.1.0-beta.13` — current recommended closed beta (in-app APK update check + live pairing + Boost/Codes/QM/Control/Spawn).
+**Baseline build:** `0.1.0-beta.13` — current recommended open beta (in-app APK update check + live pairing + Boost/Codes/QM/Control/Spawn).
 
 Do **not** treat these as surprise bugs unless they regressed.
 

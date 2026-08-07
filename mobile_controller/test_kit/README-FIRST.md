@@ -1,8 +1,8 @@
-# MSBT Mobile Controller — Closed Beta Test Kit
+# MSBT Mobile Controller — Open Beta Test Kit
 
 **Current recommended build: `0.1.0-beta.13`** (verified working for live pairing + core tabs).
 
-Welcome. This kit is for **select Discord testers** only. It is separate from the public Windows MSBT installer.
+Welcome. This kit is for the **open Android beta**. It is separate from the public Windows MSBT stable installer (`v2.2.x`).
 
 ## What you need
 
