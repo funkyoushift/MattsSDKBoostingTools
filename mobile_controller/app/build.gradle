@@ -10,13 +10,12 @@ android {
         applicationId 'com.funkyoushift.msbt.mobile'
         minSdk 28
         targetSdk 35
-        versionCode 1
-        versionName '0.1.0'
+        versionCode 2
+        versionName '0.1.0-beta.1'
     }
 
     buildTypes {
         debug {
-            applicationIdSuffix '.debug'
             versionNameSuffix '-debug'
         }
         release {
@@ -24,4 +23,31 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    sourceSets {
+        main {
+            assets.srcDirs += [layout.buildDirectory.dir('generated/mobileAssets')]
+        }
+    }
 }
+
+// Keep the Android beta self-contained without duplicating multi-megabyte catalogs in git.
+// The APK gets current snapshots from the same resources that ship with desktop MSBT.
+def generatedMobileAssets = layout.buildDirectory.dir('generated/mobileAssets')
+
+tasks.register('syncMobileCatalogAssets', Copy) {
+    into generatedMobileAssets
+    from('../../external_app/v22_parts_codes_fixed/resources') {
+        include 'MattsSDKBoostingTools_gzo_codes.json'
+        include 'MattsSDKBoostingTools_lootlemon_codes.json'
+        include 'custom_bl4_codes.json'
+        include 'item_pools.json'
+        include 'travelmaps_flat.json'
+        include 'travelstations.json'
+    }
+    from('../../electron_poc') {
+        include 'dev_spawner_catalog.json'
+    }
+}
+
+preBuild.dependsOn syncMobileCatalogAssets
