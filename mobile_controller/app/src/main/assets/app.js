@@ -1,7 +1,7 @@
 const $=(id)=>document.getElementById(id);
 const $$=(selector)=>[...document.querySelectorAll(selector)];
 const STORE={connection:'msbt.mobile.connection.v1',bookmarks:'msbt.mobile.bookmarks.v1',movement:'msbt.mobile.movement.v1',quick:'msbt.mobile.quick.v1',activity:'msbt.mobile.activity.v1',target:'msbt.mobile.target.v1'};
-const PLAYER_SCOPED=new Set(['max_all','max_currency','max_eridium','max_player_level','max_spec_level','max_sdu','give_currency','set_level','give_serial_selected']);
+const PLAYER_SCOPED=new Set(['max_all','max_currency','max_eridium','max_player_level','max_spec_level','max_sdu','give_currency','set_level','give_serial_selected','set_backpack_bank_selected','shiny_selected']);
 const state={online:false,bridgeOnline:false,codes:[],filteredCodes:[],selectedCodes:new Set(),activeQuickPage:0,quick:null,bookmarks:[],connection:{},activity:[],players:[],selectedTarget:'',pollTimer:null,busy:false};
 const read=(key,fallback)=>{try{return JSON.parse(localStorage.getItem(key))??fallback}catch{return fallback}};
 const write=(key,value)=>localStorage.setItem(key,JSON.stringify(value));
@@ -13,7 +13,10 @@ const validSerial=(value)=>/^@U[!-~]+$/.test(text(value));
 const intValue=(value,fallback=0)=>{const n=Number.parseInt(String(value??'').trim(),10);return Number.isFinite(n)?n:fallback};
 
 function logActivity(message){state.activity.unshift({at:now(),message});state.activity=state.activity.slice(0,100);write(STORE.activity,state.activity);renderActivity();$('recentResult').textContent=message}
-function setLiveEnabled(){$$('[data-live]').forEach((button)=>button.disabled=!state.online||state.busy)}
+function setLiveEnabled(){
+  $$('[data-live]').forEach((button)=>button.disabled=!state.online||state.busy);
+  $$('[data-live-optional]').forEach((button)=>button.disabled=!state.online||state.busy);
+}
 function playerValue(player){const index=player&&player.index;const name=player&&player.name?String(player.name):'';if(index===null||index===undefined||index==='')return name;return name?`${index}|${name}`:String(index)}
 function playerLabel(player){const index=player&&player.index;const name=player&&player.name?String(player.name):'';if(index===null||index===undefined||index==='')return name||'Unknown player';return `${index} | ${name||'Unknown player'}`}
 function gatewayBase(){const address=text(state.connection.address);const port=text(state.connection.port)||'49775';if(!address)return '';return `http://${address}:${port}`}
@@ -34,7 +37,33 @@ function updateConnectionChrome(){
 }
 
 $$('[data-nav]').forEach((button)=>button.addEventListener('click',()=>{ $$('[data-nav]').forEach(x=>x.classList.remove('active'));button.classList.add('active');$$('.screen').forEach(screen=>screen.classList.toggle('active',screen.dataset.screen===button.dataset.nav));window.scrollTo(0,0)}));
-$$('[data-open-panel]').forEach((button)=>button.addEventListener('click',()=>{const panel=$(button.dataset.openPanel);if(panel)panel.classList.toggle('hidden')}));
+function openPanel(panelId,{scroll=true}={}){
+  const panel=$(panelId);
+  if(!panel)return false;
+  const screen=panel.closest('.screen');
+  if(screen&&screen.dataset.screen){
+    $$('[data-nav]').forEach((nav)=>nav.classList.toggle('active',nav.dataset.nav===screen.dataset.screen));
+    $$('.screen').forEach((node)=>node.classList.toggle('active',node===screen));
+  }
+  panel.classList.remove('hidden');
+  if(scroll){
+    requestAnimationFrame(()=>{try{panel.scrollIntoView({behavior:'smooth',block:'start'})}catch{panel.scrollIntoView()}});
+  }
+  return true;
+}
+$$('[data-open-panel]').forEach((button)=>button.addEventListener('click',()=>{
+  const panelId=button.dataset.openPanel;
+  const panel=$(panelId);
+  if(!panel)return;
+  // If already visible on the active screen, allow toggle closed; otherwise always open + navigate.
+  const screen=panel.closest('.screen');
+  const onActiveScreen=Boolean(screen&&screen.classList.contains('active'));
+  if(onActiveScreen&&!panel.classList.contains('hidden')){
+    panel.classList.add('hidden');
+    return;
+  }
+  openPanel(panelId);
+}));
 
 function normalizeListingValue(raw,source,classification,tags){
   const sourceKey=compact(source);
@@ -176,8 +205,30 @@ $('selectAllCodes').addEventListener('click',()=>{state.filteredCodes.forEach(ro
 $('refreshCodes').addEventListener('click',async()=>{await loadCatalogs();logActivity('Reloaded the bundled BL4 Codes cache. Online GZO refresh will use the same screen once PC/network sync is enabled.')});
 
 function initBookmarks(){state.bookmarks=read(STORE.bookmarks,[]);renderBookmarks()}
-function renderBookmarks(){const q=text($('bookmarkSearch').value).toLowerCase(),rows=$('bookmarkRows');rows.innerHTML='';state.bookmarks.filter(b=>!q||`${b.name} ${b.group} ${b.serial}`.toLowerCase().includes(q)).forEach(b=>{const button=document.createElement('button');button.textContent=`${b.name||'Unnamed'}${b.group?` · ${b.group}`:''}`;button.addEventListener('click',()=>{$('bookmarkName').value=b.name;$('bookmarkGroup').value=b.group;$('bookmarkSerial').value=b.serial;$('bookmarkSerial').dataset.id=b.id});rows.appendChild(button)});if(!rows.children.length)rows.innerHTML='<small class="muted">No saved serial bookmarks.</small>'}
+function renderBookmarks(){const q=text($('bookmarkSearch').value).toLowerCase(),rows=$('bookmarkRows');rows.innerHTML='';state.bookmarks.filter(b=>!q||`${b.name} ${b.group} ${b.serial}`.toLowerCase().includes(q)).forEach(b=>{const button=document.createElement('button');button.textContent=`${b.name||'Unnamed'}${b.group?` · ${b.group}`:''}`;button.addEventListener('click',()=>{$('bookmarkName').value=b.name||'';$('bookmarkGroup').value=b.group||'';$('bookmarkSerial').value=b.serial||'';$('bookmarkSerial').dataset.id=b.id});rows.appendChild(button)});if(!rows.children.length)rows.innerHTML='<small class="muted">No saved serial bookmarks.</small>'}
+async function pullDesktopBookmarks({quiet=false}={}){
+  if(!state.online){if(!quiet)alert('Connect to desktop MSBT first.');return false}
+  try{
+    const result=await gatewayFetch('/mobile/bookmarks',{timeoutMs:12000});
+    if(!result.ok)throw new Error((result.data&&result.data.message)||`HTTP ${result.status}`);
+    const rows=Array.isArray(result.data&&result.data.bookmarks)?result.data.bookmarks:[];
+    state.bookmarks=rows.map((b)=>({id:b.id||`pc-${compact(b.serial||Date.now())}`,name:text(b.name)||'Unnamed',group:text(b.group)||'Default',serial:text(b.serial),created_at:b.created_at||now(),updated_at:b.updated_at||now(),metadata:b.metadata||{}})).filter((b)=>validSerial(b.serial));
+    write(STORE.bookmarks,state.bookmarks);
+    renderBookmarks();
+    const message=`Pulled ${state.bookmarks.length} serial bookmark(s) from desktop MSBT.`;
+    if($('bookmarkStatus'))$('bookmarkStatus').textContent=message;
+    if(!quiet)logActivity(message);
+    return true;
+  }catch(error){
+    const message=error&&error.message?error.message:String(error);
+    if($('bookmarkStatus'))$('bookmarkStatus').textContent=`Pull failed: ${message}`;
+    if(!quiet){logActivity(`Bookmark pull failed: ${message}`);alert(message)}
+    return false;
+  }
+}
 $('bookmarkSearch').addEventListener('input',renderBookmarks);$('saveBookmark').addEventListener('click',()=>{const serial=text($('bookmarkSerial').value);if(!validSerial(serial)){alert('Bookmark serial must be one valid @U serial.');return}const id=$('bookmarkSerial').dataset.id||`mobile-${Date.now()}`;const existing=state.bookmarks.find(b=>b.id===id);const record={...(existing||{}),id,name:text($('bookmarkName').value)||'Unnamed',group:text($('bookmarkGroup').value),serial,created_at:existing?.created_at||now(),updated_at:now(),metadata:existing?.metadata||{}};state.bookmarks=state.bookmarks.filter(b=>b.id!==id);state.bookmarks.push(record);write(STORE.bookmarks,state.bookmarks);$('bookmarkSerial').dataset.id=id;renderBookmarks();logActivity(`Saved serial bookmark: ${record.name}`)});$('deleteBookmark').addEventListener('click',()=>{const id=$('bookmarkSerial').dataset.id;if(!id)return;state.bookmarks=state.bookmarks.filter(b=>b.id!==id);write(STORE.bookmarks,state.bookmarks);$('bookmarkSerial').dataset.id='';$('bookmarkName').value='';$('bookmarkGroup').value='';$('bookmarkSerial').value='';renderBookmarks();logActivity('Deleted serial bookmark.')});
+const pullDesktopBookmarksBtn=$('pullDesktopBookmarks');
+if(pullDesktopBookmarksBtn)pullDesktopBookmarksBtn.addEventListener('click',()=>void pullDesktopBookmarks());
 
 let boostConfirmed='';$('boostValidate').addEventListener('click',()=>{const serials=text($('boostSerialText').value).split(/\s+/).filter(Boolean);const ok=serials.length>0&&serials.every(validSerial);$('boostSerialStatus').textContent=ok?`${serials.length} valid @U serial(s).`:'Serial text contains an invalid value.'});$('boostConfirm').addEventListener('click',()=>{const value=text($('boostSerialText').value);const serials=value.split(/\s+/).filter(Boolean);if(!serials.length||!serials.every(validSerial)){alert('Validate the @U serials first.');return}boostConfirmed=value;$('boostSerialStatus').textContent='Confirmed for delivery. Editing the serials will invalidate confirmation.'});$('boostSerialText').addEventListener('input',()=>{if(boostConfirmed&&text($('boostSerialText').value)!==boostConfirmed){boostConfirmed='';$('boostSerialStatus').textContent='Serial changed; confirmation cleared.'}});
 
@@ -188,9 +239,68 @@ $('saveMovement').addEventListener('click',()=>{const preset={};$$('[data-moveme
 function defaultQuick(){return{version:1,baseRevision:'',localRevision:now(),dirty:false,pages:Array.from({length:5},(_,page)=>({name:`Page ${page+1}`,slots:Array.from({length:21},(_,index)=>({slot:index+1,commandId:'',label:`Slot ${index+1}`,payload:null,renamed:false}))}))}}
 function loadQuick(){state.quick={...defaultQuick(),...read(STORE.quick,defaultQuick())};if(!Array.isArray(state.quick.pages)||!state.quick.pages.length)state.quick=defaultQuick();renderQuick()}
 function saveQuick(){state.quick.localRevision=now();state.quick.dirty=true;write(STORE.quick,state.quick);$('quickSyncStatus').textContent='Offline changes saved on this phone. They will not be discarded when a PC connects.';$('quickResolve').disabled=true}
-function renderQuick(){const pages=$('quickPages');pages.innerHTML='';state.quick.pages.forEach((page,i)=>{const b=document.createElement('button');b.textContent=`${i+1}`;b.classList.toggle('active',i===state.activeQuickPage);b.addEventListener('click',()=>{state.activeQuickPage=i;renderQuick()});pages.appendChild(b)});$('quickPageLabel').textContent=`Page ${state.activeQuickPage+1} / ${state.quick.pages.length}`;const grid=$('quickGrid');grid.innerHTML='';state.quick.pages[state.activeQuickPage].slots.forEach(slot=>{const b=document.createElement('button');b.textContent=slot.label||`Slot ${slot.slot}`;if(slot.renamed)b.classList.add('dirty');b.addEventListener('click',()=>editQuickSlot(slot));grid.appendChild(b)})}
-function editQuickSlot(slot){const label=prompt('Quick Menu label',slot.label||`Slot ${slot.slot}`);if(label===null)return;slot.label=text(label)||`Slot ${slot.slot}`;slot.renamed=true;saveQuick();renderQuick()}
-$('quickAddPage').addEventListener('click',()=>{if(state.quick.pages.length>=5){alert('Quick Menu already has the full five pages.');return}const index=state.quick.pages.length;state.quick.pages.push({name:`Page ${index+1}`,slots:Array.from({length:21},(_,i)=>({slot:i+1,commandId:'',label:`Slot ${i+1}`,payload:null,renamed:false}))});saveQuick();renderQuick()});
+function mapBridgeQuickMenu(snapshot){
+  const layout=snapshot&&snapshot.layout?snapshot.layout:{};
+  const catalog=snapshot&&snapshot.catalog?snapshot.catalog:{};
+  const rawPages=Array.isArray(layout.pages)?layout.pages:[];
+  const pages=Array.from({length:5},(_,pageIndex)=>{
+    const raw=rawPages[pageIndex];
+    const slotsSource=Array.isArray(raw)?raw:(raw&&Array.isArray(raw.slots)?raw.slots:[]);
+    return{
+      name:`Page ${pageIndex+1}`,
+      slots:Array.from({length:21},(_,slotIndex)=>{
+        const slot=slotsSource[slotIndex]||null;
+        const action=text(slot&&slot.action);
+        if(!action)return{slot:slotIndex+1,commandId:'',label:`Slot ${slotIndex+1}`,payload:null,renamed:false};
+        const custom=text(slot.custom_label);
+        const basic=text(catalog[action]&&catalog[action].basic)||action;
+        return{slot:slotIndex+1,commandId:action,label:custom||basic,payload:slot.payload&&typeof slot.payload==='object'?slot.payload:{},renamed:Boolean(custom)};
+      })
+    };
+  });
+  return{version:Number(snapshot&&snapshot.version)||1,baseRevision:String(layout.revision||snapshot.revision||now()),localRevision:now(),dirty:false,pages};
+}
+async function pullQuickMenuFromPc({quiet=false}={}){
+  if(!state.online){if(!quiet)alert('Connect to desktop MSBT first.');return false}
+  try{
+    const result=await gatewayFetch('/quick_menu',{timeoutMs:12000});
+    if(result.status===502)throw new Error('Game bridge offline. Launch Borderlands 4 with MSBT for live Quick Menu.');
+    if(!result.ok)throw new Error((result.data&&result.data.message)||`HTTP ${result.status}`);
+    const remote=mapBridgeQuickMenu(result.data||{});
+    if(state.quick&&state.quick.dirty){
+      resolveQuickConflict(remote);
+      if(!quiet)logActivity('Quick Menu pulled from PC; local dirty layout needs conflict choice.');
+      return true;
+    }
+    state.quick=remote;
+    write(STORE.quick,state.quick);
+    renderQuick();
+    $('quickSyncStatus').textContent=`Loaded live Quick Menu from PC (revision ${state.quick.baseRevision||'n/a'}).`;
+    if(!quiet)logActivity('Pulled live Quick Menu layout from PC.');
+    return true;
+  }catch(error){
+    const message=error&&error.message?error.message:String(error);
+    $('quickSyncStatus').textContent=`Quick Menu pull failed: ${message}`;
+    if(!quiet){logActivity(`Quick Menu pull failed: ${message}`);alert(message)}
+    return false;
+  }
+}
+function renderQuick(){const pages=$('quickPages');pages.innerHTML='';state.quick.pages.forEach((page,i)=>{const b=document.createElement('button');b.textContent=`${i+1}`;b.classList.toggle('active',i===state.activeQuickPage);b.addEventListener('click',()=>{state.activeQuickPage=i;renderQuick()});pages.appendChild(b)});$('quickPageLabel').textContent=`Page ${state.activeQuickPage+1} / ${state.quick.pages.length}`;const grid=$('quickGrid');grid.innerHTML='';state.quick.pages[state.activeQuickPage].slots.forEach(slot=>{const b=document.createElement('button');b.textContent=slot.label||`Slot ${slot.slot}`;if(slot.renamed)b.classList.add('dirty');if(!slot.commandId)b.classList.add('empty');b.addEventListener('click',()=>void activateQuickSlot(slot));grid.appendChild(b)})}
+async function activateQuickSlot(slot){
+  if(state.online&&slot.commandId){
+    const fakeButton={dataset:{action:slot.commandId},_quickPayload:slot.payload||{}};
+    await runLiveAction(fakeButton);
+    return;
+  }
+  const label=prompt(slot.commandId?'Rename Quick Menu label':`Empty slot ${slot.slot}. Connect and Pull From PC to load the live F7 menu, or set a local label.`,slot.label||`Slot ${slot.slot}`);
+  if(label===null)return;
+  slot.label=text(label)||`Slot ${slot.slot}`;
+  slot.renamed=true;
+  saveQuick();
+  renderQuick();
+}
+const quickPullPcBtn=$('quickPullPc');
+if(quickPullPcBtn)quickPullPcBtn.addEventListener('click',()=>void pullQuickMenuFromPc());
 function mergeQuickLayouts(remote,local){const result=structuredClone(remote);const remoteByCommand=new Map();result.pages.forEach((p,pi)=>p.slots.forEach((s,si)=>{if(s.commandId)remoteByCommand.set(s.commandId,{p:pi,s:si})}));local.pages.forEach(page=>page.slots.forEach(localSlot=>{if(!localSlot.commandId&&!localSlot.renamed)return;const match=localSlot.commandId?remoteByCommand.get(localSlot.commandId):null;if(match){const target=result.pages[match.p].slots[match.s];if(localSlot.renamed)target.label=localSlot.label}else if(localSlot.commandId||localSlot.renamed){let page=result.pages[result.pages.length-1];let open=page.slots.find(s=>!s.commandId);if(!open&&result.pages.length<5){page={name:`Page ${result.pages.length+1}`,slots:Array.from({length:21},(_,i)=>({slot:i+1,commandId:'',label:`Slot ${i+1}`,payload:null,renamed:false}))};result.pages.push(page);open=page.slots[0]}if(open)Object.assign(open,structuredClone(localSlot))}}));result.dirty=false;result.baseRevision=remote.localRevision||remote.baseRevision||'';result.localRevision=now();return result}
 function resolveQuickConflict(remote){if(!state.quick.dirty){state.quick=remote;write(STORE.quick,state.quick);renderQuick();return}const dialog=$('quickMergeDialog');$('quickResolve').disabled=false;$('quickResolve').onclick=()=>dialog.showModal();dialog.onclose=()=>{if(dialog.returnValue==='merge')state.quick=mergeQuickLayouts(remote,state.quick);else if(dialog.returnValue==='pc')state.quick=remote;else if(dialog.returnValue==='phone'){state.quick.baseRevision=remote.localRevision||remote.baseRevision||'';state.quick.dirty=true}else return;write(STORE.quick,state.quick);renderQuick();$('quickSyncStatus').textContent=state.quick.dirty?'Phone layout kept; pending upload to PC.':'Quick Menu conflict resolved.'}}
 
@@ -283,6 +393,10 @@ async function connectGateway({quiet=false}={}){
     $('connectionStatus').textContent=message;
     if(!quiet)logActivity(message);
     startStatusPolling();
+    if(state.bridgeOnline){
+      void pullQuickMenuFromPc({quiet:true});
+      void pullDesktopBookmarks({quiet:true});
+    }
     return true;
   }catch(error){
     state.online=false;state.bridgeOnline=false;state.players=[];fillPlayerSelects();updateConnectionChrome();stopStatusPolling();
@@ -381,7 +495,9 @@ function movementPayload(){
 function buildActionPayload(action,button){
   if(action==='give_currency')return{currency_kind:text($('boostCurrencyKind').value)||'cash',amount:intValue($('boostCurrencyAmount').value,1000000)};
   if(action==='set_level')return{xp_track:text($('boostXpTrack').value)||'player',level:intValue($('boostXpLevel').value,60)};
+  if(action==='set_backpack_bank_selected'||action==='set_backpack_bank_all')return{backpack_size:intValue($('boostBackpackSize').value,999),bank_size:intValue($('boostBankSize').value,1500)};
   if(action==='movement_apply_all')return movementPayload();
+  if(button&&button._quickPayload&&typeof button._quickPayload==='object')return{...button._quickPayload};
   if(action==='give_serial_selected'||action==='give_serial_all'||action==='give_serial_nonhost'){
     const fromCodes=button&&button.dataset.serialSource==='codes';
     let serialText='';
@@ -436,7 +552,7 @@ async function runLiveAction(button){
 }
 
 function renderActivity(){const rows=$('activityRows');if(!rows)return;if(!state.activity.length){rows.innerHTML='<small class="muted">No activity yet.</small>';return}rows.innerHTML=state.activity.slice(0,30).map(item=>`<div><small class="muted">${esc(new Date(item.at).toLocaleString())}</small><br>${esc(item.message)}</div>`).join('')}
-$('copyFeedbackTemplate').addEventListener('click',async()=>{const template=`MSBT MOBILE BETA FEEDBACK\n\nPhone make/model:\nAndroid version:\nMSBT Mobile version: 0.1.0-beta.4\nDesktop MSBT version (if connected):\n\nScreen/feature:\nWhat I expected:\nWhat happened:\nSteps to reproduce:\nDoes it happen every time? Yes / No / Sometimes\n\nScreenshots attached: Yes / No\nAnything else:`;try{await navigator.clipboard.writeText(template);alert('Feedback template copied. Send it with screenshots directly to FunkYouSHiFT in Discord DMs.')}catch{prompt('Copy this feedback template:',template)}});
+$('copyFeedbackTemplate').addEventListener('click',async()=>{const template=`MSBT MOBILE BETA FEEDBACK\n\nPhone make/model:\nAndroid version:\nMSBT Mobile version: 0.1.0-beta.5\nDesktop MSBT version (if connected):\n\nScreen/feature:\nWhat I expected:\nWhat happened:\nSteps to reproduce:\nDoes it happen every time? Yes / No / Sometimes\n\nScreenshots attached: Yes / No\nAnything else:`;try{await navigator.clipboard.writeText(template);alert('Feedback template copied. Send it with screenshots directly to FunkYouSHiFT in Discord DMs.')}catch{prompt('Copy this feedback template:',template)}});
 
 $$('[data-live]').forEach(button=>button.addEventListener('click',()=>void runLiveAction(button)));
 

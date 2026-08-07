@@ -199,6 +199,28 @@ function createMobileGateway(options = {}) {
       return;
     }
 
+    if (method === "GET" && pathname === "/mobile/bookmarks") {
+      if (!authorized(req)) {
+        sendJson(res, 401, { ok: false, message: "Invalid or missing pairing code." });
+        return;
+      }
+      try {
+        const bookmarks =
+          typeof options.getSerialBookmarks === "function" ? await options.getSerialBookmarks() : [];
+        sendJson(res, 200, {
+          ok: true,
+          bookmarks: Array.isArray(bookmarks) ? bookmarks : [],
+          count: Array.isArray(bookmarks) ? bookmarks.length : 0
+        });
+      } catch (error) {
+        sendJson(res, 500, {
+          ok: false,
+          message: String(error && error.message ? error.message : error)
+        });
+      }
+      return;
+    }
+
     if (!authorized(req)) {
       sendJson(res, 401, { ok: false, message: "Invalid or missing pairing code." });
       return;

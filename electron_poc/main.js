@@ -66,7 +66,15 @@ const MOBILE_PAIRING_FILE = () => path.join(app.getPath("userData"), "mobile_gat
 const mobileGateway = createMobileGateway({
   port: MOBILE_GATEWAY_PORT,
   bridgeBase: DEFAULT_BRIDGE,
-  pairingCode: generatePairingCode()
+  pairingCode: generatePairingCode(),
+  getSerialBookmarks: async () => {
+    try {
+      const data = await readBookmarks(bookmarksFilePath(app.getPath("userData")));
+      return Array.isArray(data && data.bookmarks) ? data.bookmarks : [];
+    } catch (error) {
+      return [];
+    }
+  }
 });
 const LATEST_MANIFEST_URL = "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/latest.json";
 const FALLBACK_LATEST_MANIFEST_URL = "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/docs/releases/latest.json";
