@@ -1,4 +1,4 @@
-MSBT Mobile Controller — Open Android Beta (recommended: 0.1.0-beta.14)
+MSBT Mobile Controller — Open Android Beta (recommended: 0.1.0-beta.15)
 
 Public open beta — install from the links below (anyone can try).
 
@@ -8,7 +8,7 @@ https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/mobile-b
 Desktop (Mobile Gateway + QR pairing):
 https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/mobile-msbt-closed-beta/MSBT-Installer-mobile-controller-beta.exe
 
-Confirm More → About shows 0.1.0-beta.14 (or newer). The app can also check for APK updates in-app.
+Confirm More → About shows 0.1.0-beta.15 (or newer). The app can also check for APK updates in-app.
 
 You also need:
 • Phone + PC on the same Wi‑Fi

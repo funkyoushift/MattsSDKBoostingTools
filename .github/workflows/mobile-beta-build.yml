@@ -61,7 +61,7 @@ jobs:
           cp mobile_controller/app/build/outputs/apk/debug/app-debug.apk mobile_beta_out/MSBT-Mobile-Controller.apk
           cp mobile_controller/app/build/outputs/apk/debug/app-debug.apk "mobile_beta_out/MSBT-Mobile-Controller-${VERSION_NAME}.apk"
           cp -r mobile_controller/test_kit/. mobile_beta_out/test-kit/
-          printf '%s\n' "MSBT Mobile Controller closed beta ${VERSION_NAME}" > mobile_beta_out/test-kit/VERSION.txt
+          printf '%s\n' "MSBT Mobile Controller open beta ${VERSION_NAME}" > mobile_beta_out/test-kit/VERSION.txt
           printf '%s\n' 'https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/mobile-beta/MSBT-Mobile-Controller.apk' > mobile_beta_out/test-kit/DOWNLOAD.txt
           cat > mobile_beta_out/mobile-beta-version.json <<EOF
           {
@@ -103,24 +103,28 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: mobile-beta
-          name: MSBT Mobile Controller (closed beta)
+          name: MSBT Mobile Controller (open beta)
           prerelease: true
           make_latest: false
           body: |
-            Closed Android beta for MSBT Mobile Controller.
+            Open Android beta for MSBT Mobile Controller.
 
-            **Recommended build: `0.1.0-beta.14`** (current working closed beta).
+            **Recommended build: `${{ env.VERSION_NAME }}`** (current open beta).
 
-            **Always-current APK (bookmark this on your phone):**
+            **Always-current APK (public):**
             https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/mobile-beta/MSBT-Mobile-Controller.apk
 
             Confirm **More → About** shows `${{ env.VERSION_NAME }}` (or newer).
 
             The app can check for updates in-app (launch / Connect / About → Check for updates).
 
-            **Test kit (checklist + feedback template):** download `MSBT-Mobile-Beta-Test-Kit-*.zip` from this release.
+            **Desktop + full package:** https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/mobile-msbt-closed-beta
+
+            **Test kit:** download `MSBT-Mobile-Beta-Test-Kit-*.zip` from this release.
 
             Install over previous betas to keep local data.
+
+            This is an **open beta** prerelease on `mobile-controller-prototype` / `release/mobile-beta`. It is not the public Windows MSBT Latest (`v2.2.x`).
 
             This prerelease is updated by CI on `mobile-controller-prototype` and `release/mobile-beta`. It is not a public Windows MSBT release.
           files: |
