@@ -20,7 +20,9 @@ public class MainActivity extends Activity {
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
-        settings.setAllowFileAccess(false);
+        // The beta ships large BL4/MSBT catalogs as local Android assets. File access
+        // is required so the bundled HTML can fetch those sibling assets offline.
+        settings.setAllowFileAccess(true);
         settings.setAllowContentAccess(false);
         settings.setBuiltInZoomControls(false);
         settings.setDisplayZoomControls(false);
