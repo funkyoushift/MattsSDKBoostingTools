@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - mobile-controller-prototype
+      - release/mobile-beta
     paths:
       - 'mobile_controller/**'
       - 'external_app/v22_parts_codes_fixed/resources/MattsSDKBoostingTools_gzo_codes.json'
@@ -55,14 +56,32 @@ jobs:
         shell: bash
         run: |
           VERSION_NAME=$(grep -oP "versionName '\\K[^']+" mobile_controller/app/build.gradle | head -1)
+          VERSION_CODE=$(grep -oP "versionCode \\K[0-9]+" mobile_controller/app/build.gradle | head -1)
           mkdir -p mobile_beta_out/test-kit
           cp mobile_controller/app/build/outputs/apk/debug/app-debug.apk mobile_beta_out/MSBT-Mobile-Controller.apk
           cp mobile_controller/app/build/outputs/apk/debug/app-debug.apk "mobile_beta_out/MSBT-Mobile-Controller-${VERSION_NAME}.apk"
           cp -r mobile_controller/test_kit/. mobile_beta_out/test-kit/
           printf '%s\n' "MSBT Mobile Controller closed beta ${VERSION_NAME}" > mobile_beta_out/test-kit/VERSION.txt
           printf '%s\n' 'https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/mobile-beta/MSBT-Mobile-Controller.apk' > mobile_beta_out/test-kit/DOWNLOAD.txt
+          cat > mobile_beta_out/mobile-beta-version.json <<EOF
+          {
+            "versionName": "${VERSION_NAME}",
+            "versionCode": ${VERSION_CODE},
+            "apkUrl": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/mobile-beta/MSBT-Mobile-Controller.apk",
+            "apkVersionedUrl": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/mobile-beta/MSBT-Mobile-Controller-${VERSION_NAME}.apk",
+            "publishedAt": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          }
+          EOF
+          # Trim leading spaces from heredoc indentation for valid JSON consumers.
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('mobile_beta_out/mobile-beta-version.json')
+          text = '\n'.join(line.lstrip() for line in p.read_text(encoding='utf-8').splitlines())
+          p.write_text(text + '\n', encoding='utf-8')
+          PY
           (cd mobile_beta_out/test-kit && zip -r "../MSBT-Mobile-Beta-Test-Kit-${VERSION_NAME}.zip" .)
           echo "VERSION_NAME=${VERSION_NAME}" >> "$GITHUB_ENV"
+          echo "VERSION_CODE=${VERSION_CODE}" >> "$GITHUB_ENV"
 
       - name: Upload APK only
         uses: actions/upload-artifact@v4
@@ -90,21 +109,24 @@ jobs:
           body: |
             Closed Android beta for MSBT Mobile Controller.
 
-            **Recommended build: `0.1.0-beta.12`** (current working closed beta).
+            **Recommended build: `0.1.0-beta.13`** (current working closed beta).
 
             **Always-current APK (bookmark this on your phone):**
             https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/mobile-beta/MSBT-Mobile-Controller.apk
 
             Confirm **More → About** shows `${{ env.VERSION_NAME }}` (or newer).
 
+            The app can check for updates in-app (launch / Connect / About → Check for updates).
+
             **Test kit (checklist + feedback template):** download `MSBT-Mobile-Beta-Test-Kit-*.zip` from this release.
 
             Install over previous betas to keep local data.
 
-            This prerelease is updated by CI on `mobile-controller-prototype`. It is not a public Windows MSBT release.
+            This prerelease is updated by CI on `mobile-controller-prototype` and `release/mobile-beta`. It is not a public Windows MSBT release.
           files: |
             mobile_beta_out/MSBT-Mobile-Controller.apk
             mobile_beta_out/MSBT-Mobile-Controller-${{ env.VERSION_NAME }}.apk
+            mobile_beta_out/mobile-beta-version.json
             mobile_beta_out/MSBT-Mobile-Beta-Test-Kit-${{ env.VERSION_NAME }}.zip
           fail_on_unmatched_files: true
         env:

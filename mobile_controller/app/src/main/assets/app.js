@@ -1,8 +1,9 @@
 const $=(id)=>document.getElementById(id);
 const $$=(selector)=>[...document.querySelectorAll(selector)];
-const STORE={connection:'msbt.mobile.connection.v1',bookmarks:'msbt.mobile.bookmarks.v1',movement:'msbt.mobile.movement.v1',quick:'msbt.mobile.quick.v1',activity:'msbt.mobile.activity.v1',target:'msbt.mobile.target.v1'};
+const STORE={connection:'msbt.mobile.connection.v1',bookmarks:'msbt.mobile.bookmarks.v1',movement:'msbt.mobile.movement.v1',quick:'msbt.mobile.quick.v1',activity:'msbt.mobile.activity.v1',target:'msbt.mobile.target.v1',updateDismiss:'msbt.mobile.updateDismiss.v1'};
 const PLAYER_SCOPED=new Set(['max_all','max_currency','max_eridium','max_player_level','max_spec_level','max_sdu','give_currency','set_level','give_serial_selected','set_backpack_bank_selected','shiny_selected','movement_apply_all','movement_infinite_jump_selected_on','movement_infinite_jump_selected_off','movement_infinite_jump_toggle_selected','movement_teleport_to_slot','read_inventory','read_equipped_serials','read_backpack_serials']);
-const state={online:false,bridgeOnline:false,codes:[],filteredCodes:[],selectedCodes:new Set(),activeQuickPage:0,quick:null,bookmarks:[],selectedBookmarks:new Set(),movementPicks:new Set(),connection:{},activity:[],players:[],selectedTarget:'',pollTimer:null,busy:false,inventory:{equipped:[],backpack:[],selected:null,selectedIds:new Set()},travel:{maps:[],stations:[],selectedMap:null,selectedStation:null,showAllStations:false},pools:{rows:[],selected:null},dev:{categories:{},actors:[],filtered:[],category:'All',selected:'',page:0,pageSize:80,warningAccepted:false}};
+const FALLBACK_APP_VERSION='0.1.0-beta.13';
+const state={online:false,bridgeOnline:false,codes:[],filteredCodes:[],selectedCodes:new Set(),activeQuickPage:0,quick:null,bookmarks:[],selectedBookmarks:new Set(),movementPicks:new Set(),connection:{},activity:[],players:[],selectedTarget:'',pollTimer:null,busy:false,inventory:{equipped:[],backpack:[],selected:null,selectedIds:new Set()},travel:{maps:[],stations:[],selectedMap:null,selectedStation:null,showAllStations:false},pools:{rows:[],selected:null},dev:{categories:{},actors:[],filtered:[],category:'All',selected:'',page:0,pageSize:80,warningAccepted:false},update:{currentVersion:FALLBACK_APP_VERSION,availableVersion:'',apkUrl:'',updateAvailable:false,checking:false,lastMessage:''}};
 const DEV_NEED_ACTOR=new Set(['dev_spawner_spawnai','dev_spawner_probeai','dev_spawner_cache','dev_spawner_spawn','dev_spawner_targets']);
 const read=(key,fallback)=>{try{return JSON.parse(localStorage.getItem(key))??fallback}catch{return fallback}};
 const write=(key,value)=>localStorage.setItem(key,JSON.stringify(value));
@@ -94,6 +95,10 @@ $$('[data-nav]').forEach((button)=>button.addEventListener('click',()=>{ $$('[da
 function openPanel(panelId,{scroll=true}={}){
   const panel=$(panelId);
   if(!panel)return false;
+  if(panelId==='aboutPanel'){
+    syncAboutVersion();
+    requestUpdateCheck({quiet:false,reason:'about',forceBanner:true});
+  }
   const screen=panel.closest('.screen');
   if(screen&&screen.dataset.screen){
     $$('[data-nav]').forEach((nav)=>nav.classList.toggle('active',nav.dataset.nav===screen.dataset.screen));
@@ -575,6 +580,7 @@ async function connectGateway({quiet=false, hostCandidates=null}={}){
         void pullQuickMenuFromPc({quiet:true});
         void pullDesktopBookmarks({quiet:true});
       }
+      requestUpdateCheck({quiet:true,reason:'connect'});
       return true;
     }catch(error){
       lastError=error&&error.message?error.message:String(error);
@@ -957,7 +963,126 @@ async function runLiveAction(button){
 }
 
 function renderActivity(){const rows=$('activityRows');if(!rows)return;if(!state.activity.length){rows.innerHTML='<small class="muted">No activity yet.</small>';return}rows.innerHTML=state.activity.slice(0,30).map(item=>`<div><small class="muted">${esc(new Date(item.at).toLocaleString())}</small><br>${esc(item.message)}</div>`).join('')}
-$('copyFeedbackTemplate').addEventListener('click',async()=>{const template=`MSBT MOBILE BETA FEEDBACK\n\nPhone make/model:\nAndroid version:\nMSBT Mobile version: 0.1.0-beta.12\nDesktop MSBT version (if connected):\n\nScreen/feature:\nWhat I expected:\nWhat happened:\nSteps to reproduce:\nDoes it happen every time? Yes / No / Sometimes\n\nScreenshots attached: Yes / No\nAnything else:`;try{await navigator.clipboard.writeText(template);alert('Feedback template copied. Send it with screenshots directly to FunkYouSHiFT in Discord DMs.')}catch{prompt('Copy this feedback template:',template)}});
+$('copyFeedbackTemplate').addEventListener('click',async()=>{const template=`MSBT MOBILE BETA FEEDBACK\n\nPhone make/model:\nAndroid version:\nMSBT Mobile version: ${state.update.currentVersion||FALLBACK_APP_VERSION}\nDesktop MSBT version (if connected):\n\nScreen/feature:\nWhat I expected:\nWhat happened:\nSteps to reproduce:\nDoes it happen every time? Yes / No / Sometimes\n\nScreenshots attached: Yes / No\nAnything else:`;try{await navigator.clipboard.writeText(template);alert('Feedback template copied. Send it with screenshots directly to FunkYouSHiFT in Discord DMs.')}catch{prompt('Copy this feedback template:',template)}});
+
+function appVersionFromNative(){
+  try{
+    if(window.MSBTAssets&&typeof MSBTAssets.getAppVersion==='function'){
+      const value=text(MSBTAssets.getAppVersion());
+      if(value)return value;
+    }
+  }catch{/* WebView bridge unavailable in browser preview */}
+  return FALLBACK_APP_VERSION;
+}
+function syncAboutVersion(){
+  state.update.currentVersion=appVersionFromNative();
+  if($('aboutVersion'))$('aboutVersion').textContent=state.update.currentVersion;
+}
+function setAboutUpdateStatus(message){
+  state.update.lastMessage=message||'';
+  if($('aboutUpdateStatus'))$('aboutUpdateStatus').textContent=state.update.lastMessage||'Update check idle.';
+}
+function showUpdateBanner(show){
+  const banner=$('updateBanner');
+  if(!banner)return;
+  banner.classList.toggle('hidden',!show);
+  if(!show)return;
+  if($('updateBannerText')){
+    $('updateBannerText').textContent=`Closed beta ${state.update.availableVersion} is available (you have ${state.update.currentVersion}).`;
+  }
+  if($('updateBannerMeta')){
+    $('updateBannerMeta').textContent='Download installs over this app and keeps local pairing data.';
+  }
+}
+function renderUpdateUi({forceBanner=false}={}){
+  syncAboutVersion();
+  const installAbout=$('aboutInstallUpdateBtn');
+  if(installAbout)installAbout.classList.toggle('hidden',!state.update.updateAvailable);
+  if(!state.update.updateAvailable){
+    showUpdateBanner(false);
+    return;
+  }
+  const dismissed=read(STORE.updateDismiss,{});
+  const dismissedFor=text(dismissed.version);
+  const hideBanner=!forceBanner&&dismissedFor&&dismissedFor===text(state.update.availableVersion);
+  showUpdateBanner(!hideBanner);
+  setAboutUpdateStatus(`Update available: ${state.update.availableVersion} (current ${state.update.currentVersion}).`);
+}
+function requestUpdateCheck({quiet=true,reason='manual',forceBanner=false}={}){
+  if(!(window.MSBTAssets&&typeof MSBTAssets.checkForUpdate==='function')){
+    if(!quiet)setAboutUpdateStatus('Update checks need the Android app build.');
+    return;
+  }
+  if(state.update.checking){
+    if(!quiet)setAboutUpdateStatus('Checking for updates…');
+    return;
+  }
+  state.update.checking=true;
+  state.update._forceBanner=Boolean(forceBanner)||reason==='manual'||reason==='about';
+  if(!quiet||reason==='about')setAboutUpdateStatus('Checking for updates…');
+  try{MSBTAssets.checkForUpdate()}catch(error){
+    state.update.checking=false;
+    if(!quiet)setAboutUpdateStatus(error&&error.message?error.message:String(error));
+  }
+}
+function startUpdateInstall(){
+  const url=text(state.update.apkUrl);
+  if(!(window.MSBTAssets&&typeof MSBTAssets.downloadAndInstallUpdate==='function')){
+    if(url&&window.MSBTAssets&&typeof MSBTAssets.openExternalUrl==='function'){
+      MSBTAssets.openExternalUrl(url);
+      return;
+    }
+    alert('In-app install is only available in the Android APK build.');
+    return;
+  }
+  setAboutUpdateStatus('Starting download…');
+  try{MSBTAssets.downloadAndInstallUpdate(url)}catch(error){
+    setAboutUpdateStatus(error&&error.message?error.message:String(error));
+  }
+}
+window.__msbtUpdateCheck=(payload)=>{
+  state.update.checking=false;
+  const data=payload&&typeof payload==='object'?payload:{};
+  if(!data.ok){
+    if(data.offline){
+      setAboutUpdateStatus('Update check skipped (offline or unreachable).');
+      return;
+    }
+    setAboutUpdateStatus(text(data.message)||'Update check failed.');
+    return;
+  }
+  if(data.currentVersion)state.update.currentVersion=text(data.currentVersion);
+  state.update.availableVersion=text(data.availableVersion);
+  state.update.apkUrl=text(data.apkVersionedUrl)||text(data.apkUrl);
+  state.update.updateAvailable=Boolean(data.updateAvailable);
+  syncAboutVersion();
+  if(state.update.updateAvailable){
+    renderUpdateUi({forceBanner:Boolean(state.update._forceBanner)});
+    if(state.update._forceBanner)logActivity(`Update available: ${state.update.availableVersion}`);
+  }else{
+    showUpdateBanner(false);
+    if($('aboutInstallUpdateBtn'))$('aboutInstallUpdateBtn').classList.add('hidden');
+    setAboutUpdateStatus(`You are on the latest closed beta (${state.update.currentVersion}).`);
+  }
+  state.update._forceBanner=false;
+};
+window.__msbtUpdateProgress=(payload)=>{
+  const data=payload&&typeof payload==='object'?payload:{};
+  const phase=text(data.phase);
+  const message=text(data.message)||phase||'Update progress';
+  setAboutUpdateStatus(message);
+  if(phase==='error'||phase==='need_permission'){
+    logActivity(`Update: ${message}`);
+    if(phase==='error')alert(message);
+  }
+};
+if($('updateLaterBtn'))$('updateLaterBtn').addEventListener('click',()=>{
+  if(state.update.availableVersion)write(STORE.updateDismiss,{version:state.update.availableVersion,at:now()});
+  showUpdateBanner(false);
+});
+if($('updateInstallBtn'))$('updateInstallBtn').addEventListener('click',startUpdateInstall);
+if($('checkUpdatesBtn'))$('checkUpdatesBtn').addEventListener('click',()=>requestUpdateCheck({quiet:false,reason:'manual',forceBanner:true}));
+if($('aboutInstallUpdateBtn'))$('aboutInstallUpdateBtn').addEventListener('click',startUpdateInstall);
 
 function invEntryLabel(entry){
   return text(entry&&(entry.summary||entry.label||entry.name||entry.slot_name))||'Item';
@@ -1383,4 +1508,6 @@ $$('[data-select-all]').forEach((button)=>{
 $$('[data-live]').forEach(button=>button.addEventListener('click',()=>void runLiveAction(button)));
 
 state.activity=read(STORE.activity,[]);setLiveEnabled();initBookmarks();loadMovement();loadQuick();loadConnection();renderActivity();loadCatalogs();loadTravelCatalog();loadPoolCatalog();loadDevCatalog();
+syncAboutVersion();
+requestUpdateCheck({quiet:true,reason:'launch'});
 if(text(state.connection.address)&&text(state.connection.pairingCode))void connectGateway({quiet:true});
