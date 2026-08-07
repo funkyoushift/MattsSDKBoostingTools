@@ -1,0 +1,76 @@
+name: MSBT Mobile Beta Build
+
+on:
+  push:
+    branches:
+      - mobile-controller-prototype
+    paths:
+      - 'mobile_controller/**'
+      - 'external_app/v22_parts_codes_fixed/resources/MattsSDKBoostingTools_gzo_codes.json'
+      - 'external_app/v22_parts_codes_fixed/resources/MattsSDKBoostingTools_lootlemon_codes.json'
+      - 'external_app/v22_parts_codes_fixed/resources/custom_bl4_codes.json'
+      - 'external_app/v22_parts_codes_fixed/resources/item_pools.json'
+      - 'external_app/v22_parts_codes_fixed/resources/travelmaps_flat.json'
+      - 'external_app/v22_parts_codes_fixed/resources/travelstations.json'
+      - 'electron_poc/dev_spawner_catalog.json'
+      - '.github/workflows/mobile-beta-build.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-android-beta:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Decode stable beta signing key
+        shell: bash
+        run: |
+          base64 -d mobile_controller/debug-signing/msbt-mobile-debug.keystore.b64 > mobile_controller/debug-signing/msbt-mobile-debug.keystore
+
+      - name: Build Android debug APK
+        shell: bash
+        run: gradle -p mobile_controller :app:assembleDebug --stacktrace
+
+      - name: Prepare beta files
+        shell: bash
+        run: |
+          mkdir -p mobile_beta_out/test-kit
+          cp mobile_controller/app/build/outputs/apk/debug/app-debug.apk mobile_beta_out/MSBT-Mobile-Controller-0.1.0-beta.1.apk
+          cp mobile_controller/BETA_TESTING.md mobile_beta_out/test-kit/README-FIRST.md
+          printf '%s\n' 'MSBT Mobile Controller closed beta 0.1.0-beta.1' > mobile_beta_out/test-kit/VERSION.txt
+          (cd mobile_beta_out/test-kit && zip -r ../MSBT-Mobile-Beta-Test-Kit-0.1.0-beta.1.zip .)
+
+      - name: Upload APK only
+        uses: actions/upload-artifact@v4
+        with:
+          name: MSBT-Mobile-Controller-0.1.0-beta.1-APK
+          path: mobile_beta_out/MSBT-Mobile-Controller-0.1.0-beta.1.apk
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload beta test kit separately
+        uses: actions/upload-artifact@v4
+        with:
+          name: MSBT-Mobile-Beta-Test-Kit-0.1.0-beta.1
+          path: mobile_beta_out/MSBT-Mobile-Beta-Test-Kit-0.1.0-beta.1.zip
+          if-no-files-found: error
+          retention-days: 14
