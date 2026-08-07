@@ -1,1 +1,1 @@
-0.1.0-beta.10 (recommended closed beta)
+0.1.0-beta.11 (recommended closed beta)

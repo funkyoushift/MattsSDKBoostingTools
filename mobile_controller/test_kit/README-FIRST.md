@@ -1,6 +1,6 @@
 # MSBT Mobile Controller — Closed Beta Test Kit
 
-**Current recommended build: `0.1.0-beta.10`** (verified working for live pairing + core tabs).
+**Current recommended build: `0.1.0-beta.11`** (verified working for live pairing + core tabs).
 
 Welcome. This kit is for **select Discord testers** only. It is separate from the public Windows MSBT installer.
 
@@ -18,7 +18,7 @@ Welcome. This kit is for **select Discord testers** only. It is separate from th
 **Always-current APK (bookmark on your phone):**  
 https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/mobile-beta/MSBT-Mobile-Controller.apk
 
-Confirm **More → About** shows **`0.1.0-beta.10`** (or newer). Install **over** older mobile betas so local data survives.
+Confirm **More → About** shows **`0.1.0-beta.11`** (or newer). Install **over** older mobile betas so local data survives.
 
 Prerelease page:  
 https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/mobile-beta

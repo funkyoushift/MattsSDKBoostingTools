@@ -1,6 +1,6 @@
 # Known limits (closed beta)
 
-**Baseline build:** `0.1.0-beta.10` — current recommended closed beta (live pairing + Boost/Codes/QM/Control/Spawn verified).
+**Baseline build:** `0.1.0-beta.11` — current recommended closed beta (live pairing + Boost/Codes/QM/Control/Spawn verified).
 
 Do **not** treat these as surprise bugs unless they regressed.
 
@@ -14,6 +14,11 @@ Do **not** treat these as surprise bugs unless they regressed.
 - **Quick Menu upload** — Pull From PC + tap-to-fire works; full two-way push/conflict resolve may still be incomplete. Offline edits stay on the phone.
 - **Not on mobile (by design)** — Matt Editor, save editing, Legit Builder, deep item construction, desktop installer admin.
 
+## Fixed before beta.11 (re-open only if still broken)
+
+- Target player missing on Control / QM / Movement / Inventory / Bookmarks / Travel / Item Pools.
+- Target selection snapping back after leaving Boost (status poll overwrite).
+
 ## Fixed before beta.10 (re-open only if still broken)
 
 - Bookmark **Pull From MSBT** returning empty while desktop has bookmarks (needs current Electron from this branch).
@@ -25,7 +30,7 @@ Do **not** treat these as surprise bugs unless they regressed.
 
 ## Reporting tips
 
-- Include app version from **More → About** (want `0.1.0-beta.10`+).
+- Include app version from **More → About** (want `0.1.0-beta.11`+).
 - Say whether desktop Gateway showed online.
 - Full-screen screenshots beat cropped button shots.
 - Never paste live pairing codes in public Discord.

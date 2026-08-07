@@ -49,6 +49,30 @@ function setLiveEnabled(){
 }
 function playerValue(player){const index=player&&player.index;const name=player&&player.name?String(player.name):'';if(index===null||index===undefined||index==='')return name;return name?`${index}|${name}`:String(index)}
 function playerLabel(player){const index=player&&player.index;const name=player&&player.name?String(player.name):'';if(index===null||index===undefined||index==='')return name||'Unknown player';return `${index} | ${name||'Unknown player'}`}
+function resolveTargetValue(value,players){
+  const raw=text(value);
+  if(!raw)return '';
+  const list=Array.isArray(players)?players:[];
+  if(!list.length)return raw;
+  const exact=list.find((player)=>playerValue(player)===raw);
+  if(exact)return playerValue(exact);
+  const name=raw.includes('|')?raw.split('|').slice(1).join('|'):raw;
+  const byName=list.find((player)=>String(player.name||'')===name);
+  if(byName)return playerValue(byName);
+  const indexPart=raw.includes('|')?raw.split('|')[0]:raw;
+  const byIndex=list.find((player)=>String(player.index)===String(indexPart));
+  if(byIndex)return playerValue(byIndex);
+  return '';
+}
+function targetDisplay(value){
+  const resolved=resolveTargetValue(value,state.players)||text(value);
+  if(!resolved)return 'None';
+  const player=state.players.find((row)=>playerValue(row)===resolved);
+  return player?playerLabel(player):resolved;
+}
+function currentTarget(){
+  return text(state.selectedTarget)||text($('boostTarget')&&$('boostTarget').value)||text($('controlTarget')&&$('controlTarget').value)||'';
+}
 function gatewayBase(){const address=text(state.connection.address);const port=text(state.connection.port)||'49775';if(!address)return '';return `http://${address}:${port}`}
 function updateConnectionChrome(){
   const badge=$('connectionBadge');
@@ -62,7 +86,7 @@ function updateConnectionChrome(){
   $('homeStatusText').textContent=state.online
     ? (state.bridgeOnline?'Live actions are enabled for this paired session.':'Desktop MSBT gateway is reachable. Launch Borderlands 4 with the MSBT SDK mod for live game actions.')
     : 'Offline tools stay usable. Live actions unlock when desktop MSBT Mobile Gateway is paired on the same Wi‑Fi.';
-  $('targetSummary').textContent=state.selectedTarget||'None';
+  $('targetSummary').textContent=targetDisplay(state.selectedTarget);
   setLiveEnabled();
 }
 
@@ -418,25 +442,50 @@ function mergeQuickLayouts(remote,local){const result=structuredClone(remote);co
 function resolveQuickConflict(remote){if(!state.quick.dirty){state.quick=remote;write(STORE.quick,state.quick);renderQuick();return}const dialog=$('quickMergeDialog');$('quickResolve').disabled=false;$('quickResolve').onclick=()=>dialog.showModal();dialog.onclose=()=>{if(dialog.returnValue==='merge')state.quick=mergeQuickLayouts(remote,state.quick);else if(dialog.returnValue==='pc')state.quick=remote;else if(dialog.returnValue==='phone'){state.quick.baseRevision=remote.localRevision||remote.baseRevision||'';state.quick.dirty=true}else return;write(STORE.quick,state.quick);renderQuick();$('quickSyncStatus').textContent=state.quick.dirty?'Phone layout kept; pending upload to PC.':'Quick Menu conflict resolved.'}}
 
 function fillPlayerSelects(){
+  const preferred=resolveTargetValue(state.selectedTarget,state.players)||text(state.selectedTarget);
   const options=state.players.length
-    ? state.players.map((player)=>{const value=playerValue(player);return `<option value="${esc(value)}">${esc(playerLabel(player))}</option>`}).join('')
+    ? `<option value="">Choose player</option>${state.players.map((player)=>{const value=playerValue(player);return `<option value="${esc(value)}">${esc(playerLabel(player))}</option>`}).join('')}`
     : '<option value="">No players loaded</option>';
-  ['boostTarget','codeTarget'].forEach((id)=>{
-    const select=$(id);
-    if(!select)return;
-    const previous=state.selectedTarget||select.value;
+  $$('.player-target').forEach((select)=>{
     select.innerHTML=options;
     select.disabled=!state.online||!state.players.length;
-    if(previous&&[...select.options].some((opt)=>opt.value===previous))select.value=previous;
-    else if(select.options.length){select.selectedIndex=0;state.selectedTarget=select.value}
+    if(preferred&&[...select.options].some((opt)=>opt.value===preferred))select.value=preferred;
+    else select.value='';
   });
+  if(state.players.length){
+    const matched=resolveTargetValue(preferred,state.players);
+    state.selectedTarget=matched||'';
+  }
   if(state.selectedTarget)write(STORE.target,{target:state.selectedTarget});
-  $('targetSummary').textContent=state.selectedTarget||'None';
+  $('targetSummary').textContent=targetDisplay(state.selectedTarget);
 }
-['boostTarget','codeTarget'].forEach((id)=>{
-  const select=$(id);
-  if(!select)return;
-  select.addEventListener('change',()=>{state.selectedTarget=select.value;write(STORE.target,{target:state.selectedTarget});fillPlayerSelects();updateConnectionChrome()});
+let targetPushTimer=null;
+async function pushSelectedTarget({quiet=true}={}){
+  const target=currentTarget();
+  if(!target||!state.online)return false;
+  try{
+    const setResult=await gatewayAction('set_target_player',{target_player:target},10000);
+    if(!setResult.ok){
+      const message=(setResult.data&&(setResult.data.message||setResult.data.error))||'Could not set target player.';
+      if(!quiet)alert(message);
+      return false;
+    }
+    return true;
+  }catch(error){
+    if(!quiet)alert(error&&error.message?error.message:String(error));
+    return false;
+  }
+}
+function onTargetSelectChange(select){
+  state.selectedTarget=text(select&&select.value);
+  write(STORE.target,{target:state.selectedTarget});
+  fillPlayerSelects();
+  updateConnectionChrome();
+  if(targetPushTimer)window.clearTimeout(targetPushTimer);
+  targetPushTimer=window.setTimeout(()=>{void pushSelectedTarget({quiet:true})},150);
+}
+$$('.player-target').forEach((select)=>{
+  select.addEventListener('change',()=>onTargetSelectChange(select));
 });
 
 async function gatewayFetch(route,{method='GET',payload=null,timeoutMs=15000,requirePairing=true}={}){
@@ -468,14 +517,19 @@ async function gatewayAction(action,payload={},timeoutMs=30000){
 function applyStatus(data){
   state.bridgeOnline=Boolean(data&&data.ok!==false&&(data.started||data.players||data.name));
   state.players=Array.isArray(data&&data.players)?data.players:[];
-  if(data&&data.selected_player){
-    const selected=state.players.find((player)=>String(player.name||'')===String(data.selected_player)||playerValue(player)===String(data.selected_player));
-    if(selected)state.selectedTarget=playerValue(selected);
-  }
-  if(!state.selectedTarget){
-    const saved=read(STORE.target,{});
-    if(saved.target)state.selectedTarget=saved.target;
-  }
+  const statusValue=data&&data.selected_player
+    ? (data.selected_player_index!==null&&data.selected_player_index!==undefined&&data.selected_player_index!==''
+      ? `${data.selected_player_index}|${data.selected_player}`
+      : String(data.selected_player))
+    : '';
+  const fromStatus=resolveTargetValue(statusValue,state.players);
+  const saved=read(STORE.target,{});
+  // Prefer the phone's current/saved pick so status polls do not wipe Boost/Control selection.
+  let next=resolveTargetValue(state.selectedTarget,state.players);
+  if(!next)next=resolveTargetValue(saved.target,state.players);
+  if(!next)next=fromStatus;
+  if(state.players.length)state.selectedTarget=next||'';
+  else if(text(saved.target))state.selectedTarget=text(saved.target);
   fillPlayerSelects();
   updateConnectionChrome();
 }
@@ -601,8 +655,8 @@ function movementPayload(){
     movement_dash_speed:Number(preset.dashSpeed||2500),
     movement_zero_vault_on_apply:Boolean(preset.zeroVaultOnApply),
     movement_time_dilation:Number(preset.timeDilation||1),
-    target_player:state.selectedTarget,
-    infinite_jump_target:state.selectedTarget
+    target_player:currentTarget(),
+    infinite_jump_target:currentTarget()
   };
 }
 function buildActionPayload(action,button){
@@ -620,25 +674,25 @@ function buildActionPayload(action,button){
   }
   if(action==='movement_teleport_to_slot'){
     const slotAttr=button&&button.dataset?button.dataset.slot:undefined;
-    return{slot:Math.max(0,Math.min(3,intValue(slotAttr,0))),target_player:state.selectedTarget};
+    return{slot:Math.max(0,Math.min(3,intValue(slotAttr,0))),target_player:currentTarget()};
   }
   if(action==='movement_infinite_jump_selected_on'||action==='movement_infinite_jump_selected_off'||action==='movement_infinite_jump_toggle_selected'){
-    return{target_player:state.selectedTarget,infinite_jump_target:state.selectedTarget};
+    return{target_player:currentTarget(),infinite_jump_target:currentTarget()};
   }
   if(action==='travel_to_map'){
     const map=state.travel.selectedMap&&state.travel.selectedMap.map;
     if(!map)throw new Error('Select a travel map first.');
-    return{travel_map:map};
+    return{travel_map:map,target_player:currentTarget()};
   }
   if(action==='travel_to_station'){
     const station=state.travel.selectedStation&&state.travel.selectedStation.station;
     if(!station)throw new Error('Select a travel station first.');
-    return{travel_station:station};
+    return{travel_station:station,target_player:currentTarget()};
   }
   if(action==='spawn_itempool'){
     const name=state.pools.selected&&(state.pools.selected.itempool||state.pools.selected.name);
     if(!name)throw new Error('Select an item pool first.');
-    return{itempool_name:name,level:intValue($('poolLevel').value,60),count:intValue($('poolCount').value,1)};
+    return{itempool_name:name,level:intValue($('poolLevel').value,60),count:intValue($('poolCount').value,1),target_player:currentTarget()};
   }
   if(action&&action.startsWith('dev_spawner_'))return buildDevSpawnerPayload(action);
   if(action==='give_serial_selected'||action==='give_serial_all'||action==='give_serial_nonhost'){
@@ -673,7 +727,8 @@ function buildActionPayload(action,button){
     return{
       serial_text:expandSerialText(serialText,copies),
       serial_override_level:text($('boostOverride').value)==='yes',
-      serial_level:intValue($('boostSerialLevel').value,60)
+      serial_level:intValue($('boostSerialLevel').value,60),
+      target_player:currentTarget()
     };
   }
   return{};
@@ -697,11 +752,15 @@ async function runLiveAction(button){
   state.busy=true;setLiveEnabled();
   try{
     if(PLAYER_SCOPED.has(action)){
-      const target=text($('boostTarget').value)||state.selectedTarget;
+      const target=currentTarget();
       if(!target)throw new Error('Select a target player first. Tap Connect while in-game to load the party list.');
       state.selectedTarget=target;
+      write(STORE.target,{target});
+      fillPlayerSelects();
       const setResult=await gatewayAction('set_target_player',{target_player:target},10000);
       if(!setResult.ok)throw new Error((setResult.data&&(setResult.data.message||setResult.data.error))||'Could not set target player.');
+    }else if(currentTarget()&&(action==='travel_to_map'||action==='travel_to_station'||action==='spawn_itempool'||action==='give_serial_all'||action==='give_serial_nonhost')){
+      await pushSelectedTarget({quiet:true});
     }
     const payload=buildActionPayload(action,button);
     const result=await gatewayAction(action,payload,45000);
@@ -721,7 +780,7 @@ async function runLiveAction(button){
 }
 
 function renderActivity(){const rows=$('activityRows');if(!rows)return;if(!state.activity.length){rows.innerHTML='<small class="muted">No activity yet.</small>';return}rows.innerHTML=state.activity.slice(0,30).map(item=>`<div><small class="muted">${esc(new Date(item.at).toLocaleString())}</small><br>${esc(item.message)}</div>`).join('')}
-$('copyFeedbackTemplate').addEventListener('click',async()=>{const template=`MSBT MOBILE BETA FEEDBACK\n\nPhone make/model:\nAndroid version:\nMSBT Mobile version: 0.1.0-beta.10\nDesktop MSBT version (if connected):\n\nScreen/feature:\nWhat I expected:\nWhat happened:\nSteps to reproduce:\nDoes it happen every time? Yes / No / Sometimes\n\nScreenshots attached: Yes / No\nAnything else:`;try{await navigator.clipboard.writeText(template);alert('Feedback template copied. Send it with screenshots directly to FunkYouSHiFT in Discord DMs.')}catch{prompt('Copy this feedback template:',template)}});
+$('copyFeedbackTemplate').addEventListener('click',async()=>{const template=`MSBT MOBILE BETA FEEDBACK\n\nPhone make/model:\nAndroid version:\nMSBT Mobile version: 0.1.0-beta.11\nDesktop MSBT version (if connected):\n\nScreen/feature:\nWhat I expected:\nWhat happened:\nSteps to reproduce:\nDoes it happen every time? Yes / No / Sometimes\n\nScreenshots attached: Yes / No\nAnything else:`;try{await navigator.clipboard.writeText(template);alert('Feedback template copied. Send it with screenshots directly to FunkYouSHiFT in Discord DMs.')}catch{prompt('Copy this feedback template:',template)}});
 
 function invEntryLabel(entry){
   return text(entry&&(entry.summary||entry.label||entry.name||entry.slot_name))||'Item';
@@ -770,9 +829,11 @@ function renderInventory(){
   if($('invSelectionSummary'))$('invSelectionSummary').textContent=`${state.inventory.selectedIds.size} selected · ${list.length} shown`;
 }
 async function ensureInventoryTarget(){
-  const target=text($('boostTarget').value)||state.selectedTarget;
-  if(!target)throw new Error('Select a target player on Boost first (Connect while in-game).');
+  const target=currentTarget();
+  if(!target)throw new Error('Select a target player first (Boost / Control target). Connect while in-game to load the party list.');
   state.selectedTarget=target;
+  write(STORE.target,{target});
+  fillPlayerSelects();
   const setResult=await gatewayAction('set_target_player',{target_player:target},10000);
   if(!setResult.ok)throw new Error((setResult.data&&(setResult.data.message||setResult.data.error))||'Could not set target player.');
   return target;

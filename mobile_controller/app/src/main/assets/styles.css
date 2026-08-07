@@ -16,3 +16,5 @@ button.ghost{min-height:36px;padding:6px 10px;font-size:12px;background:#152033;
 .movement-select-grid button.picked{outline:2px solid var(--gold);border-color:var(--gold)}
 .list.compact button.selected,.list button.selected{outline:2px solid var(--cyan);background:#1c2a44}
 .result-pre{white-space:pre-wrap;word-break:break-word;max-height:240px;overflow:auto;background:#0b1220;border:1px solid #24344f;border-radius:12px;padding:12px;color:#d7e6ff;font-size:12px}
+.target-card .muted{display:block;margin-top:8px;font-size:12px}
+.player-target{margin-bottom:4px}

@@ -38,9 +38,10 @@
 
     <section data-screen="boost" class="screen">
       <h2>Boost</h2>
-      <article class="card">
+      <article class="card target-card">
         <p class="eyebrow">TARGET PLAYER</p>
-        <select id="boostTarget" class="select" disabled><option>No connection</option></select>
+        <select id="boostTarget" class="select player-target" disabled><option value="">No connection</option></select>
+        <small class="muted">Selection is shared across Boost, Codes, QM, and Control.</small>
       </article>
       <article class="card"><p class="eyebrow">QUICK MAX</p><div class="button-grid"><button data-live data-action="max_all">MAX ALL</button><button data-live data-action="max_currency">MAX CASH</button><button data-live data-action="max_eridium">MAX ERIDIUM</button><button data-live data-action="max_player_level">MAX PLAYER</button><button data-live data-action="max_spec_level">MAX SPEC</button><button data-live data-action="max_sdu">MAX SDU</button></div></article>
       <article class="card"><p class="eyebrow">UVH BOOSTER</p><p class="muted">UVH N runs tiers 1 through N for the live lobby.</p><div class="button-grid"><button data-live data-action="uvh_boost_tier_1">UVH 1</button><button data-live data-action="uvh_boost_tier_2">UVH 2</button><button data-live data-action="uvh_boost_tier_3">UVH 3</button><button data-live data-action="uvh_boost_tier_4">UVH 4</button><button data-live data-action="uvh_boost_tier_5">UVH 5</button><button data-live data-action="uvh_boost_tier_6">UVH 6</button><button data-live data-action="uvh_boost_tier_7">UVH 7</button><button data-live data-action="uvh_boost_all">Run All 1-7</button><button data-live data-action="uvh_boost_status">UVH Status</button><button data-live data-action="uvh_boost_cancel" class="danger">Cancel UVH</button></div></article>
@@ -70,11 +71,16 @@
       </div>
       <div class="selection-bar"><span id="selectionSummary">0 selected</span><button id="selectAllCodes">Select all filtered</button><button id="clearCodeSelection">Clear</button></div>
       <div id="codeList" class="list"></div>
-      <article class="card sticky-delivery"><p class="eyebrow">DELIVERY</p><div class="fields two"><label>Copies<input id="codeCopies" value="1" inputmode="numeric"></label><label>Target<select id="codeTarget" disabled><option>No connection</option></select></label></div><div class="button-row-wrap"><button data-live data-action="give_serial_selected" data-serial-source="codes">Send Selected</button><button data-live data-action="give_serial_all" data-serial-source="codes">Send All</button><button data-live data-action="give_serial_nonhost" data-serial-source="codes">Send Non-Host</button></div></article>
+      <article class="card sticky-delivery"><p class="eyebrow">DELIVERY</p><div class="fields two"><label>Copies<input id="codeCopies" value="1" inputmode="numeric"></label><label>Target<select id="codeTarget" class="player-target" disabled><option value="">No connection</option></select></label></div><div class="button-row-wrap"><button data-live data-action="give_serial_selected" data-serial-source="codes">Send Selected</button><button data-live data-action="give_serial_all" data-serial-source="codes">Send All</button><button data-live data-action="give_serial_nonhost" data-serial-source="codes">Send Non-Host</button></div></article>
     </section>
 
     <section data-screen="quick" class="screen">
       <div class="title-row"><div><h2>Quick Menu</h2><small id="quickSyncStatus" class="muted">Offline edits are stored locally.</small></div><span id="quickPageLabel">Page 1 / 5</span></div>
+      <article class="card target-card">
+        <p class="eyebrow">TARGET PLAYER</p>
+        <select id="qmTarget" class="select player-target" disabled><option value="">No connection</option></select>
+        <small class="muted">Synced with Boost. Player-scoped Quick Menu slots use this target.</small>
+      </article>
       <div class="page-tabs" id="quickPages"></div>
       <div class="quick-grid" id="quickGrid"></div>
       <div class="row"><button id="quickPullPc" data-live-optional>Pull From PC</button><button id="quickResolve" disabled>Resolve Sync</button></div>
@@ -83,6 +89,11 @@
 
     <section data-screen="control" class="screen">
       <h2>Control</h2>
+      <article class="card target-card">
+        <p class="eyebrow">TARGET PLAYER</p>
+        <select id="controlTarget" class="select player-target" disabled><option value="">No connection</option></select>
+        <small class="muted">Shared across Inventory, Bookmarks, Movement, Travel, and Item Pools.</small>
+      </article>
       <div class="tool-grid">
         <button data-open-panel="inventoryPanel">Inventory</button>
         <button data-open-panel="bookmarkPanel">Bookmarks</button>
@@ -99,7 +110,8 @@
             <button type="button" class="ghost" data-collapse-panel="movementPanel">Collapse</button>
           </div>
         </div>
-        <p class="muted">Uses Boost target. Fields stay local until Apply / Set Time.</p>
+        <label>Target<select id="movementTarget" class="player-target" disabled><option value="">No connection</option></select></label>
+        <p class="muted">Applies to the selected target. Fields stay local until Apply / Set Time.</p>
         <div class="panel-scroll" id="movementScroll">
           <details class="fold" open><summary>Presets</summary>
             <div class="button-grid movement-select-grid">
@@ -180,7 +192,8 @@
             <button type="button" class="ghost" data-collapse-panel="inventoryPanel">Collapse</button>
           </div>
         </div>
-        <p class="muted">Reads equipped + backpack for the Boost target. Best on listen host.</p>
+        <label>Target<select id="invTarget" class="player-target" disabled><option value="">No connection</option></select></label>
+        <p class="muted">Reads equipped + backpack for the selected target. Best on listen host.</p>
         <div class="button-grid">
           <button id="invRefresh">Refresh Inventory</button>
           <button id="invEquipped">Equipped Only</button>
@@ -206,6 +219,7 @@
             <button type="button" class="ghost" data-collapse-panel="bookmarkPanel">Collapse</button>
           </div>
         </div>
+        <label>Target<select id="bookmarkTarget" class="player-target" disabled><option value="">No connection</option></select></label>
         <div class="row"><button id="pullDesktopBookmarks" data-live-optional>Pull From MSBT</button><button id="saveBookmark">Save Local</button><button id="deleteBookmark">Delete</button></div>
         <div class="fields two"><label>Name<input id="bookmarkName"></label><label>Group<input id="bookmarkGroup"></label></div>
         <textarea id="bookmarkSerial" placeholder="@U serial"></textarea>
@@ -221,6 +235,7 @@
           <p class="eyebrow">MAP TRAVEL</p>
           <button type="button" class="ghost" data-collapse-panel="travelPanel">Collapse</button>
         </div>
+        <label>Target<select id="travelTarget" class="player-target" disabled><option value="">No connection</option></select></label>
         <p class="muted">Pick a map, then a travel station on that map — same flow as desktop MSBT.</p>
         <label>Search maps<input id="travelMapSearch" type="search" placeholder="world, fortress, raid…"></label>
         <div id="travelMapSummary" class="muted">Loading maps…</div>
@@ -239,6 +254,7 @@
           <p class="eyebrow">ITEM POOLS</p>
           <button type="button" class="ghost" data-collapse-panel="poolPanel">Collapse</button>
         </div>
+        <label>Target<select id="poolTarget" class="player-target" disabled><option value="">No connection</option></select></label>
         <div class="fields two">
           <label>Level<input id="poolLevel" value="60" inputmode="numeric"></label>
           <label>Count<input id="poolCount" value="1" inputmode="numeric"></label>
@@ -347,7 +363,7 @@
 
       <article id="activityPanel" class="card hidden"><p class="eyebrow">ACTIVITY LOG</p><div id="activityRows" class="list compact"><small class="muted">No activity yet.</small></div></article>
       <article id="feedbackPanel" class="card hidden"><p class="eyebrow">BETA FEEDBACK</p><p>For this closed beta, send feedback directly to FunkYouSHiFT in Discord DMs.</p><p class="muted">Please include phone make/model, Android version, what screen you were on, what you expected, what happened, and full-screen screenshots. For layout issues, capture the whole screen including navigation.</p><button id="copyFeedbackTemplate">Copy Feedback Template</button></article>
-      <article id="aboutPanel" class="card hidden"><p class="eyebrow">ABOUT</p><p><strong>MSBT Mobile Controller</strong><br>Android beta 0.1.0-beta.10</p><p class="muted">Companion controller for Matt's SDK Boosting Tools. Live game actions require desktop MSBT.</p></article>
+      <article id="aboutPanel" class="card hidden"><p class="eyebrow">ABOUT</p><p><strong>MSBT Mobile Controller</strong><br>Android beta 0.1.0-beta.11</p><p class="muted">Companion controller for Matt's SDK Boosting Tools. Live game actions require desktop MSBT.</p></article>
     </section>
   </main>
 

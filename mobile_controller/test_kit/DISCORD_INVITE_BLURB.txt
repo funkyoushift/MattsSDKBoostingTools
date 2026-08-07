@@ -1,9 +1,9 @@
-MSBT Mobile Controller — closed Android beta (recommended: 0.1.0-beta.10)
+MSBT Mobile Controller — closed Android beta (recommended: 0.1.0-beta.11)
 
 Bookmark/install (always latest APK):
 https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/mobile-beta/MSBT-Mobile-Controller.apk
 
-Confirm More → About shows 0.1.0-beta.10 (or newer).
+Confirm More → About shows 0.1.0-beta.11 (or newer).
 
 You also need:
 • Desktop MSBT from the mobile-controller-prototype branch (Mobile Gateway)
@@ -16,7 +16,7 @@ Quick checks: Boost MAX CASH · Codes catalog · QM Pull From PC + tap slot · S
 
 Test kit (checklist + feedback):
 https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/mobile-beta
-(look for MSBT-Mobile-Beta-Test-Kit-0.1.0-beta.10.zip)
+(look for MSBT-Mobile-Beta-Test-Kit-0.1.0-beta.11.zip)
 
 Send feedback + full-screen screenshots in Discord DMs to FunkYouSHiFT.
 Do not share pairing codes publicly.
