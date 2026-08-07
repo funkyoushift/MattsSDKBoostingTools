@@ -2,7 +2,7 @@ MSBT MOBILE BETA FEEDBACK
 
 Phone make/model:
 Android version:
-MSBT Mobile version: 0.1.0-beta.8
+MSBT Mobile version: 0.1.0-beta.9
 Desktop MSBT version (if connected):
 
 Screen/feature:

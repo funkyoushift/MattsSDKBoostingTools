@@ -17,7 +17,8 @@ function logActivity(message){state.activity.unshift({at:now(),message});state.a
 function setLiveEnabled(){
   $$('[data-live]').forEach((button)=>{
     if(button.hasAttribute('data-dev-risk')){
-      button.disabled=!state.dev.warningAccepted||!state.online||state.busy;
+      // Unlock after in-app risk accept. Online is enforced when the action runs.
+      button.disabled=!state.dev.warningAccepted||state.busy;
     }else{
       button.disabled=!state.online||state.busy;
     }
@@ -29,6 +30,11 @@ function setLiveEnabled(){
   const poolSpawn=$('poolSpawn');if(poolSpawn)poolSpawn.disabled=!state.online||state.busy||!state.pools.selected;
   const invSend=$('invSendSelected');if(invSend)invSend.disabled=!state.online||state.busy||!state.inventory.selectedIds.size;
   const runMove=$('runSelectedMovement');if(runMove)runMove.disabled=!state.online||state.busy||!state.movementPicks.size;
+  const riskCheck=$('devRiskCheck');
+  if(riskCheck){
+    riskCheck.disabled=state.dev.warningAccepted;
+    if(state.dev.warningAccepted)riskCheck.checked=true;
+  }
   const accept=$('devAcceptRisk');
   if(accept){
     accept.disabled=state.dev.warningAccepted;
@@ -36,9 +42,9 @@ function setLiveEnabled(){
   }
   const riskStatus=$('devRiskStatus');
   if(riskStatus){
-    if(!state.dev.warningAccepted)riskStatus.textContent='Spawn buttons stay locked until you enable this session and Connect.';
-    else if(!state.online)riskStatus.textContent='Enabled for this session — Connect to desktop MSBT to unlock spawn actions.';
-    else riskStatus.textContent='Enabled. Spawn actions are unlocked.';
+    if(!state.dev.warningAccepted)riskStatus.textContent='Check the box, then tap Enable. Spawn actions also need a live PC connection.';
+    else if(!state.online)riskStatus.textContent='Enabled. Connect to desktop MSBT to fire spawn actions (buttons are tappable).';
+    else riskStatus.textContent='Enabled and connected. Spawn actions are ready.';
   }
 }
 function playerValue(player){const index=player&&player.index;const name=player&&player.name?String(player.name):'';if(index===null||index===undefined||index==='')return name;return name?`${index}|${name}`:String(index)}
@@ -694,7 +700,7 @@ async function runLiveAction(button){
 }
 
 function renderActivity(){const rows=$('activityRows');if(!rows)return;if(!state.activity.length){rows.innerHTML='<small class="muted">No activity yet.</small>';return}rows.innerHTML=state.activity.slice(0,30).map(item=>`<div><small class="muted">${esc(new Date(item.at).toLocaleString())}</small><br>${esc(item.message)}</div>`).join('')}
-$('copyFeedbackTemplate').addEventListener('click',async()=>{const template=`MSBT MOBILE BETA FEEDBACK\n\nPhone make/model:\nAndroid version:\nMSBT Mobile version: 0.1.0-beta.8\nDesktop MSBT version (if connected):\n\nScreen/feature:\nWhat I expected:\nWhat happened:\nSteps to reproduce:\nDoes it happen every time? Yes / No / Sometimes\n\nScreenshots attached: Yes / No\nAnything else:`;try{await navigator.clipboard.writeText(template);alert('Feedback template copied. Send it with screenshots directly to FunkYouSHiFT in Discord DMs.')}catch{prompt('Copy this feedback template:',template)}});
+$('copyFeedbackTemplate').addEventListener('click',async()=>{const template=`MSBT MOBILE BETA FEEDBACK\n\nPhone make/model:\nAndroid version:\nMSBT Mobile version: 0.1.0-beta.9\nDesktop MSBT version (if connected):\n\nScreen/feature:\nWhat I expected:\nWhat happened:\nSteps to reproduce:\nDoes it happen every time? Yes / No / Sometimes\n\nScreenshots attached: Yes / No\nAnything else:`;try{await navigator.clipboard.writeText(template);alert('Feedback template copied. Send it with screenshots directly to FunkYouSHiFT in Discord DMs.')}catch{prompt('Copy this feedback template:',template)}});
 
 function invEntryLabel(entry){
   return text(entry&&(entry.summary||entry.label||entry.name||entry.slot_name))||'Item';
@@ -1068,16 +1074,18 @@ async function loadDevCatalog(){
 }
 if($('devAcceptRisk'))$('devAcceptRisk').addEventListener('click',()=>{
   if(state.dev.warningAccepted)return;
-  const ok=window.confirm('Experimental Dev Spawner tools can crash the game, corrupt saves, or affect other players.\n\nOnly continue if you understand the risk.');
-  if(!ok)return;
+  const checked=Boolean($('devRiskCheck')&&$('devRiskCheck').checked);
+  if(!checked){
+    alert('Check “I understand the risk” first, then tap Enable.');
+    return;
+  }
   state.dev.warningAccepted=true;
   setLiveEnabled();
   const msg=state.online
-    ? 'Dev Spawner enabled. Spawn actions are unlocked.'
-    : 'Dev Spawner enabled. Connect to desktop MSBT (More → Connection) to unlock spawn actions.';
+    ? 'Dev Spawner enabled. Spawn / Barrel Logo actions are unlocked.'
+    : 'Dev Spawner enabled. Connect to desktop MSBT before firing spawn actions.';
   if($('devSpawnerOutput'))$('devSpawnerOutput').textContent=msg;
   logActivity(msg);
-  if(!state.online)alert(msg);
 });
 if($('devActorSearch'))$('devActorSearch').addEventListener('input',filterDevActors);
 if($('devActorCategory'))$('devActorCategory').addEventListener('change',filterDevActors);
