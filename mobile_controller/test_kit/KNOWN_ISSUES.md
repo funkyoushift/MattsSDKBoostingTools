@@ -1,12 +1,13 @@
 # Known limits (closed beta)
 
-**Baseline build:** `0.1.0-beta.11` — current recommended closed beta (live pairing + Boost/Codes/QM/Control/Spawn verified).
+**Baseline build:** `0.1.0-beta.12` — current recommended closed beta (live pairing + Boost/Codes/QM/Control/Spawn verified).
 
 Do **not** treat these as surprise bugs unless they regressed.
 
 ## Expected
 
-- **Desktop build required** — live actions need MSBT from `mobile-controller-prototype` with Mobile Gateway. Stock public Windows releases may not include the gateway yet.
+- **Camera for QR** — Scan QR needs Camera permission. Manual pairing still works without it.
+- **Desktop build required** — live actions need MSBT from `mobile-controller-prototype` with Mobile Gateway (+ QR). Stock public Windows releases may not include the gateway yet.
 - **Same Wi‑Fi** — phone cannot reach the PC over cellular. Use LAN IPv4, not `127.0.0.1`.
 - **Bridge stays local** — game bridge is `127.0.0.1:49774`. Phone talks to Electron gateway `:49775` only.
 - **Dev Spawner is experimental** — can crash the game / affect lobby players. Check **I understand the risk**, then **Enable** each session.
@@ -30,7 +31,7 @@ Do **not** treat these as surprise bugs unless they regressed.
 
 ## Reporting tips
 
-- Include app version from **More → About** (want `0.1.0-beta.11`+).
+- Include app version from **More → About** (want `0.1.0-beta.12`+).
 - Say whether desktop Gateway showed online.
 - Full-screen screenshots beat cropped button shots.
 - Never paste live pairing codes in public Discord.

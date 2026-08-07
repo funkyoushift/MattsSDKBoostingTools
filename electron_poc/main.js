@@ -659,6 +659,27 @@ ipcMain.handle("mobileGateway:rotateCode", async () => {
   await saveMobilePairingCode(pairingCode);
   return mobileGateway.info();
 });
+ipcMain.handle("mobileGateway:makeQr", async (_event, text) => {
+  const payload = String(text || "").trim();
+  if (!payload) {
+    return { ok: false, message: "Missing pairing payload." };
+  }
+  try {
+    const QRCode = require("qrcode");
+    const dataUrl = await QRCode.toDataURL(payload, {
+      errorCorrectionLevel: "M",
+      margin: 1,
+      width: 280,
+      color: { dark: "#0b1220", light: "#ffffff" }
+    });
+    return { ok: true, dataUrl };
+  } catch (error) {
+    return {
+      ok: false,
+      message: error && error.message ? error.message : String(error)
+    };
+  }
+});
 
 async function fileExists(filePath) {
   try {

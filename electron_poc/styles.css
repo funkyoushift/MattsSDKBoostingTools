@@ -2779,3 +2779,38 @@ button.active-scope {
 
 
 
+
+.mobile-gateway-pair-grid {
+  display: grid;
+  grid-template-columns: minmax(240px, 280px) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+  margin: 12px 0 14px;
+}
+
+.mobile-gateway-qr-block {
+  display: grid;
+  gap: 8px;
+  justify-items: start;
+}
+
+.mobile-gateway-qr {
+  width: 240px;
+  height: 240px;
+  border-radius: 12px;
+  border: 1px solid #31425f;
+  background: #fff;
+  object-fit: contain;
+}
+
+.mobile-gateway-meta-block {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+}
+
+@media (max-width: 900px) {
+  .mobile-gateway-pair-grid {
+    grid-template-columns: 1fr;
+  }
+}

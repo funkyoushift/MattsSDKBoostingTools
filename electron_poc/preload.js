@@ -56,5 +56,6 @@ contextBridge.exposeInMainWorld("msbt", {
   mobileGatewayGetInfo: () => ipcRenderer.invoke("mobileGateway:getInfo"),
   mobileGatewayStart: () => ipcRenderer.invoke("mobileGateway:start"),
   mobileGatewayStop: () => ipcRenderer.invoke("mobileGateway:stop"),
-  mobileGatewayRotateCode: () => ipcRenderer.invoke("mobileGateway:rotateCode")
+  mobileGatewayRotateCode: () => ipcRenderer.invoke("mobileGateway:rotateCode"),
+  mobileGatewayMakeQr: (text) => ipcRenderer.invoke("mobileGateway:makeQr", text)
 });

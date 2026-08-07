@@ -99,6 +99,7 @@
   },
   "dependencies": {
     "electron-updater": "^6.8.9",
-    "gridstack": "^11.5.1"
+    "gridstack": "^11.5.1",
+    "qrcode": "^1.5.4"
   }
 }

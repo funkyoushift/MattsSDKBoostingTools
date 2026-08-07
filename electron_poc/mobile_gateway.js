@@ -147,6 +147,13 @@ function createMobileGateway(options = {}) {
       port,
       pairingCode,
       lanAddresses: listLanAddresses(),
+      computerName: (() => {
+        try {
+          return String(os.hostname() || "").trim();
+        } catch {
+          return "";
+        }
+      })(),
       bridgeBase,
       startedAt,
       lastError: lastError || ""

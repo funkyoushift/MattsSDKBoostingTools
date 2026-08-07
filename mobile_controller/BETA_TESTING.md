@@ -1,6 +1,6 @@
 # MSBT Mobile Controller — Closed Android Beta
 
-**Recommended build: `0.1.0-beta.11`** — current working closed beta for select testers.
+**Recommended build: `0.1.0-beta.12`** — current working closed beta for select testers.
 
 Closed layout + **live LAN pairing** beta. Separate from the Windows MSBT installer.
 
@@ -10,8 +10,8 @@ Ship testers:
 
 1. **APK** — always-current link (bookmark on phone):  
    https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/mobile-beta/MSBT-Mobile-Controller.apk  
-   Testers should confirm **More → About** shows **`0.1.0-beta.11`** (or newer).
-2. **Test kit zip** — `MSBT-Mobile-Beta-Test-Kit-0.1.0-beta.11.zip` from the same [mobile-beta](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/mobile-beta) prerelease.
+   Testers should confirm **More → About** shows **`0.1.0-beta.12`** (or newer).
+2. **Test kit zip** — `MSBT-Mobile-Beta-Test-Kit-0.1.0-beta.12.zip` from the same [mobile-beta](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/mobile-beta) prerelease.
 
 Kit source lives in `mobile_controller/test_kit/`:
 
@@ -28,8 +28,8 @@ Kit source lives in `mobile_controller/test_kit/`:
 
 1. Install/update the APK from the static link.
 2. PC: desktop MSBT (this branch) + BL4 in-world with MSBT.
-3. PC: **Activity → Mobile Gateway** → address / `49775` / pairing code.
-4. Phone: **More → Connection Settings** → Save → **Connect / Test**.
+3. PC: **Activity → Mobile Gateway** (QR + address / `49775` / pairing code).
+4. Phone: **More → Connection Settings** → **Scan QR to pair** (or manual Save → Connect).
 5. Try Boost → **MAX CASH**, QM → **Pull From PC** + tap a slot, then work through `CHECKLIST.md`.
 
 ## Feedback

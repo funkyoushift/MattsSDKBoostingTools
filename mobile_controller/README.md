@@ -4,7 +4,7 @@ Android companion controller for Matt's SDK Boosting Tools.
 
 Package ID: `com.funkyoushift.msbt.mobile`
 
-Current beta: `0.1.0-beta.11` (recommended closed beta)
+Current beta: `0.1.0-beta.12` (recommended closed beta)
 
 ## Phone download (static link)
 
@@ -56,8 +56,8 @@ Useful without a PC connection:
 Desktop MSBT on this branch starts a **Mobile Gateway** on LAN port `49775` that proxies to the localhost SDK bridge (`127.0.0.1:49774`). The in-game bridge is not opened to all interfaces.
 
 1. PC: run desktop MSBT + Borderlands 4 with MSBT loaded.
-2. PC: **Activity → Mobile Gateway** for LAN IP + pairing code.
-3. Phone: **More → Connection Settings** → save address / `49775` / code → **Connect / Test**.
+2. PC: **Activity → Mobile Gateway** — show the QR (or note LAN IP + pairing code).
+3. Phone: **More → Connection Settings** → **Scan QR to pair** (manual entry still works) → Connect.
 4. Live Boost / serial / rarity / movement Apply unlock when the gateway is reachable.
 
 See `BETA_TESTING.md` for the short tester path.
@@ -107,8 +107,8 @@ Closed beta distribution is through Discord using either direct files or a GitHu
 
 Build workflow outputs two separate artifacts:
 
-- `MSBT-Mobile-Controller-0.1.0-beta.11.apk`
-- `MSBT-Mobile-Beta-Test-Kit-0.1.0-beta.11.zip`
+- `MSBT-Mobile-Controller-0.1.0-beta.12.apk`
+- `MSBT-Mobile-Beta-Test-Kit-0.1.0-beta.12.zip`
 
 See `BETA_TESTING.md` and the `test_kit/` folder for tester instructions, checklist, and Discord DM feedback format.
 

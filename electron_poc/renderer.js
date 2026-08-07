@@ -295,6 +295,8 @@ const els = {
   mobileGatewayAddress: document.getElementById("mobileGatewayAddress"),
   mobileGatewayPort: document.getElementById("mobileGatewayPort"),
   mobileGatewayDetails: document.getElementById("mobileGatewayDetails"),
+  mobileGatewayQr: document.getElementById("mobileGatewayQr"),
+  mobileGatewayHostSelect: document.getElementById("mobileGatewayHostSelect"),
   mobileGatewayRefreshBtn: document.getElementById("mobileGatewayRefreshBtn"),
   mobileGatewayRotateBtn: document.getElementById("mobileGatewayRotateBtn"),
   mobileGatewayCopyBtn: document.getElementById("mobileGatewayCopyBtn"),
@@ -2386,24 +2388,96 @@ function updateSerialDeliveryProgress(progress = {}) {
   }
 }
 
-function formatMobileGatewayDetails(info) {
-  const addresses = Array.isArray(info && info.lanAddresses) ? info.lanAddresses : [];
+function buildMobilePairingPayload(info, preferredHost = "") {
+  const addresses = Array.isArray(info && info.lanAddresses)
+    ? info.lanAddresses.map((value) => String(value || "").trim()).filter(Boolean)
+    : [];
+  const preferred = String(preferredHost || "").trim();
+  const hosts = preferred && addresses.includes(preferred)
+    ? [preferred, ...addresses.filter((address) => address !== preferred)]
+    : addresses.slice();
+  return {
+    v: 1,
+    name: String((info && info.computerName) || "").trim() || "MSBT PC",
+    hosts,
+    port: Number(info && info.port) > 0 ? Number(info.port) : 49775,
+    code: String((info && info.pairingCode) || "").trim()
+  };
+}
+
+function formatMobileGatewayDetails(info, preferredHost = "") {
+  const payload = buildMobilePairingPayload(info, preferredHost);
+  const addresses = payload.hosts;
   const primary = addresses[0] || "(no LAN IPv4 detected — check Wi‑Fi)";
-  const port = (info && info.port) || 49775;
-  const code = (info && info.pairingCode) || "------";
   const lines = [
     "MSBT Mobile Gateway pairing",
     "",
+    `PC name: ${payload.name}`,
     `PC address: ${primary}`,
     addresses.length > 1 ? `Other LAN IPs: ${addresses.slice(1).join(", ")}` : "",
-    `Gateway port: ${port}`,
-    `Pairing code: ${code}`,
+    `Gateway port: ${payload.port}`,
+    `Pairing code: ${payload.code || "------"}`,
     "",
-    "On your phone: More → Connection Settings → enter address, port, pairing code → Save → Test Connection.",
+    "Easiest: open MSBT Mobile → More → Connection Settings → Scan QR to pair.",
+    "Manual: enter address, port, and pairing code, then Save → Connect / Test.",
     "Phone and PC must be on the same Wi‑Fi. Allow Windows Firewall for Node/Electron on port 49775 if prompted.",
-    "Keep Borderlands 4 running with the MSBT SDK mod so live actions can reach the game bridge."
+    "Keep Borderlands 4 running with the MSBT SDK mod so live actions can reach the game bridge.",
+    "",
+    `QR payload: ${JSON.stringify(payload)}`
   ].filter(Boolean);
   return lines.join("\n");
+}
+
+function preferredMobileGatewayHost(info) {
+  const addresses = Array.isArray(info && info.lanAddresses) ? info.lanAddresses : [];
+  const selected = els.mobileGatewayHostSelect ? String(els.mobileGatewayHostSelect.value || "").trim() : "";
+  if (selected && addresses.includes(selected)) return selected;
+  return addresses[0] || "";
+}
+
+function fillMobileGatewayHostSelect(info) {
+  if (!els.mobileGatewayHostSelect) return;
+  const addresses = Array.isArray(info && info.lanAddresses) ? info.lanAddresses : [];
+  const previous = String(els.mobileGatewayHostSelect.value || "").trim();
+  els.mobileGatewayHostSelect.innerHTML = "";
+  if (!addresses.length) {
+    const option = document.createElement("option");
+    option.value = "";
+    option.textContent = "No LAN IPv4 detected";
+    els.mobileGatewayHostSelect.appendChild(option);
+    els.mobileGatewayHostSelect.disabled = true;
+    return;
+  }
+  addresses.forEach((address, index) => {
+    const option = document.createElement("option");
+    option.value = address;
+    option.textContent = index === 0 ? `${address} (preferred)` : address;
+    els.mobileGatewayHostSelect.appendChild(option);
+  });
+  els.mobileGatewayHostSelect.disabled = addresses.length < 2;
+  els.mobileGatewayHostSelect.value = previous && addresses.includes(previous) ? previous : addresses[0];
+}
+
+async function renderMobileGatewayQr(info, preferredHost = "") {
+  if (!els.mobileGatewayQr) return;
+  const payload = buildMobilePairingPayload(info, preferredHost);
+  if (!payload.code || !payload.hosts.length) {
+    els.mobileGatewayQr.removeAttribute("src");
+    els.mobileGatewayQr.alt = "Pairing QR unavailable until a LAN address and code are ready";
+    return;
+  }
+  if (!window.msbt || typeof window.msbt.mobileGatewayMakeQr !== "function") {
+    els.mobileGatewayQr.alt = "QR generation unavailable in this build";
+    return;
+  }
+  const result = await window.msbt.mobileGatewayMakeQr(JSON.stringify(payload));
+  if (result && result.ok && result.dataUrl) {
+    els.mobileGatewayQr.src = result.dataUrl;
+    els.mobileGatewayQr.alt = "Scan with MSBT Mobile to pair";
+  } else {
+    els.mobileGatewayQr.removeAttribute("src");
+    els.mobileGatewayQr.alt = (result && result.message) || "Could not render pairing QR";
+  }
 }
 
 async function refreshMobileGatewayInfo() {
@@ -2415,20 +2489,23 @@ async function refreshMobileGatewayInfo() {
   if (!info || !info.enabled) {
     info = await window.msbt.mobileGatewayStart();
   }
+  fillMobileGatewayHostSelect(info);
+  const preferred = preferredMobileGatewayHost(info);
   const addresses = Array.isArray(info.lanAddresses) ? info.lanAddresses : [];
-  const primary = addresses[0] || "";
+  const primary = preferred || addresses[0] || "";
   if (els.mobileGatewayCode) els.mobileGatewayCode.textContent = info.pairingCode || "------";
   if (els.mobileGatewayAddress) {
     els.mobileGatewayAddress.textContent = primary
-      ? (addresses.length > 1 ? `${primary} (also ${addresses.slice(1).join(", ")})` : primary)
+      ? (addresses.length > 1 ? `${primary} (also ${addresses.filter((a) => a !== primary).join(", ")})` : primary)
       : "No LAN IPv4 detected";
   }
   if (els.mobileGatewayPort) els.mobileGatewayPort.textContent = String(info.port || 49775);
-  if (els.mobileGatewayDetails) els.mobileGatewayDetails.textContent = formatMobileGatewayDetails(info);
+  if (els.mobileGatewayDetails) els.mobileGatewayDetails.textContent = formatMobileGatewayDetails(info, preferred);
+  await renderMobileGatewayQr(info, preferred);
   if (info.enabled) {
     setLine(
       els.mobileGatewaySummary,
-      `Gateway online on port ${info.port}. Pair phones with code ${info.pairingCode}.`,
+      `Gateway online on port ${info.port}. Scan the QR in MSBT Mobile (code ${info.pairingCode}).`,
       "ok"
     );
   } else {
@@ -2450,9 +2527,11 @@ async function rotateMobileGatewayCode() {
 }
 
 async function copyMobileGatewayDetails() {
+  const info = await refreshMobileGatewayInfo();
+  const preferred = preferredMobileGatewayHost(info || {});
   const text = els.mobileGatewayDetails
     ? els.mobileGatewayDetails.textContent
-    : formatMobileGatewayDetails(await refreshMobileGatewayInfo());
+    : formatMobileGatewayDetails(info || {}, preferred);
   try {
     await navigator.clipboard.writeText(text);
     setLine(els.mobileGatewaySummary, "Pairing details copied to clipboard.", "ok");
@@ -8000,6 +8079,9 @@ function wireEvents() {
   }
   if (els.mobileGatewayCopyBtn) {
     els.mobileGatewayCopyBtn.addEventListener("click", () => void copyMobileGatewayDetails());
+  }
+  if (els.mobileGatewayHostSelect) {
+    els.mobileGatewayHostSelect.addEventListener("change", () => void refreshMobileGatewayInfo());
   }
 
   const walkthroughNextBtn = document.getElementById("walkthroughNextBtn");

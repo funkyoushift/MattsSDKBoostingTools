@@ -1,6 +1,6 @@
 # MSBT Mobile Controller — Closed Beta Test Kit
 
-**Current recommended build: `0.1.0-beta.11`** (verified working for live pairing + core tabs).
+**Current recommended build: `0.1.0-beta.12`** (verified working for live pairing + core tabs).
 
 Welcome. This kit is for **select Discord testers** only. It is separate from the public Windows MSBT installer.
 
@@ -18,7 +18,7 @@ Welcome. This kit is for **select Discord testers** only. It is separate from th
 **Always-current APK (bookmark on your phone):**  
 https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/mobile-beta/MSBT-Mobile-Controller.apk
 
-Confirm **More → About** shows **`0.1.0-beta.11`** (or newer). Install **over** older mobile betas so local data survives.
+Confirm **More → About** shows **`0.1.0-beta.12`** (or newer). Install **over** older mobile betas so local data survives.
 
 Prerelease page:  
 https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/mobile-beta
@@ -27,8 +27,8 @@ https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/mobile-beta
 
 1. Install/update the APK from the link above.
 2. On PC: start desktop MSBT → launch BL4 with MSBT → get in-world.
-3. Desktop: **Activity → Mobile Gateway**. Note **PC address**, port **49775**, **6-digit pairing code**.
-4. Phone: **More → Connection Settings** → enter address / `49775` / code → **Save Setup** → **Connect / Test**.
+3. Desktop: **Activity → Mobile Gateway** — leave the **QR** visible (or note address / `49775` / code for manual).
+4. Phone: **More → Connection Settings** → **Scan QR to pair** (allow Camera). Manual entry still works under **Manual setup**.
 5. Home should show gateway + game bridge online. Pick a Boost target, then try **MAX CASH**.
 6. Optional: **QM → Pull From PC**, then tap a filled slot. **Spawn**: check risk box → Enable → fire a spawn.
 

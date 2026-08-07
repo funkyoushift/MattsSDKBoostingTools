@@ -18,3 +18,9 @@ button.ghost{min-height:36px;padding:6px 10px;font-size:12px;background:#152033;
 .result-pre{white-space:pre-wrap;word-break:break-word;max-height:240px;overflow:auto;background:#0b1220;border:1px solid #24344f;border-radius:12px;padding:12px;color:#d7e6ff;font-size:12px}
 .target-card .muted{display:block;margin-top:8px;font-size:12px}
 .player-target{margin-bottom:4px}
+.qr-scan-dialog{border:0;padding:0;background:transparent;width:min(96vw,520px);max-width:96vw}
+.qr-scan-dialog::backdrop{background:rgba(0,0,0,.82);backdrop-filter:blur(4px)}
+.qr-scan-card{background:#101827;border:1px solid #3d4c6b;border-radius:20px;padding:18px;display:grid;gap:12px}
+.qr-video-wrap{position:relative;border-radius:16px;overflow:hidden;border:1px solid #31425f;background:#000;min-height:260px}
+.qr-video-wrap video{display:block;width:100%;height:min(52vh,420px);object-fit:cover;background:#000}
+#scanPairingQr{width:100%;margin-bottom:12px}

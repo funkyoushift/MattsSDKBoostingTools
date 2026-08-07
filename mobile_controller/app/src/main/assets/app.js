@@ -534,7 +534,7 @@ function applyStatus(data){
   updateConnectionChrome();
 }
 
-async function connectGateway({quiet=false}={}){
+async function connectGateway({quiet=false, hostCandidates=null}={}){
   state.connection={name:text($('pcName').value)||state.connection.name||'',address:text($('pcAddress').value)||state.connection.address||'',port:text($('pcPort').value)||state.connection.port||'49775',pairingCode:text($('pairingCode').value)||state.connection.pairingCode||'',updated_at:now()};
   write(STORE.connection,state.connection);
   if(!text(state.connection.address)||!text(state.connection.pairingCode)){
@@ -544,34 +544,50 @@ async function connectGateway({quiet=false}={}){
     if(!quiet)alert(message);
     return false;
   }
-  try{
-    const ping=await gatewayFetch('/mobile/ping',{requirePairing:false,timeoutMs:5000});
-    if(!ping.ok&&ping.status)throw new Error((ping.data&&ping.data.message)||'Gateway ping failed.');
-    const status=await gatewayFetch('/status',{timeoutMs:8000});
-    if(status.status===401)throw new Error('Invalid pairing code. Copy the current code from desktop MSBT → Activity → Mobile Gateway.');
-    if(status.status===0)throw new Error((status.data&&status.data.message)||'Could not reach desktop MSBT gateway.');
-    // 502 means gateway is up but the in-game SDK bridge is offline — still a successful pair.
-    if(!status.ok&&status.status!==502)throw new Error((status.data&&status.data.message)||`Gateway returned HTTP ${status.status}.`);
-    state.online=true;
-    applyStatus(status.status===502?{ok:false}:status.data||{});
-    const message=state.bridgeOnline
-      ? `Connected to ${state.connection.address}:${state.connection.port||49775}. Game bridge online (${state.players.length} player(s)).`
-      : `Gateway reachable at ${state.connection.address}:${state.connection.port||49775}. Start Borderlands 4 with MSBT for live actions.`;
-    $('connectionStatus').textContent=message;
-    if(!quiet)logActivity(message);
-    startStatusPolling();
-    if(state.bridgeOnline){
-      void pullQuickMenuFromPc({quiet:true});
-      void pullDesktopBookmarks({quiet:true});
+  const hosts=[];
+  const pushHost=(value)=>{const host=text(value);if(host&&!hosts.includes(host))hosts.push(host)};
+  if(Array.isArray(hostCandidates))hostCandidates.forEach(pushHost);
+  pushHost(state.connection.address);
+  if(Array.isArray(state.connection.hosts))state.connection.hosts.forEach(pushHost);
+  let lastError='Could not reach desktop MSBT gateway.';
+  for(let i=0;i<hosts.length;i+=1){
+    const host=hosts[i];
+    state.connection.address=host;
+    if($('pcAddress'))$('pcAddress').value=host;
+    write(STORE.connection,state.connection);
+    try{
+      const ping=await gatewayFetch('/mobile/ping',{requirePairing:false,timeoutMs:5000});
+      if(!ping.ok&&ping.status)throw new Error((ping.data&&ping.data.message)||'Gateway ping failed.');
+      const status=await gatewayFetch('/status',{timeoutMs:8000});
+      if(status.status===401)throw new Error('Invalid pairing code. Scan the QR again or copy the current code from desktop MSBT → Activity → Mobile Gateway.');
+      if(status.status===0)throw new Error((status.data&&status.data.message)||'Could not reach desktop MSBT gateway.');
+      // 502 means gateway is up but the in-game SDK bridge is offline — still a successful pair.
+      if(!status.ok&&status.status!==502)throw new Error((status.data&&status.data.message)||`Gateway returned HTTP ${status.status}.`);
+      state.online=true;
+      applyStatus(status.status===502?{ok:false}:status.data||{});
+      const message=state.bridgeOnline
+        ? `Connected to ${state.connection.address}:${state.connection.port||49775}. Game bridge online (${state.players.length} player(s)).`
+        : `Gateway reachable at ${state.connection.address}:${state.connection.port||49775}. Start Borderlands 4 with MSBT for live actions.`;
+      $('connectionStatus').textContent=message;
+      if(!quiet)logActivity(message);
+      startStatusPolling();
+      if(state.bridgeOnline){
+        void pullQuickMenuFromPc({quiet:true});
+        void pullDesktopBookmarks({quiet:true});
+      }
+      return true;
+    }catch(error){
+      lastError=error&&error.message?error.message:String(error);
+      if(i<hosts.length-1){
+        $('connectionStatus').textContent=`Trying next PC address (${hosts[i+1]})…`;
+        continue;
+      }
     }
-    return true;
-  }catch(error){
-    state.online=false;state.bridgeOnline=false;state.players=[];fillPlayerSelects();updateConnectionChrome();stopStatusPolling();
-    const message=error&&error.message?error.message:String(error);
-    $('connectionStatus').textContent=message;
-    if(!quiet){logActivity(`Connect failed: ${message}`);alert(message)}
-    return false;
   }
+  state.online=false;state.bridgeOnline=false;state.players=[];fillPlayerSelects();updateConnectionChrome();stopStatusPolling();
+  $('connectionStatus').textContent=lastError;
+  if(!quiet){logActivity(`Connect failed: ${lastError}`);alert(lastError)}
+  return false;
 }
 
 function disconnectGateway(){
@@ -611,15 +627,176 @@ function loadConnection(){
   }
   updateConnectionChrome();
 }
-$('saveConnection').addEventListener('click',()=>{
-  state.connection={name:text($('pcName').value),address:text($('pcAddress').value),port:text($('pcPort').value)||'49775',pairingCode:text($('pairingCode').value),updated_at:now()};
+function saveConnectionFields(extra={}){
+  state.connection={
+    name:text($('pcName').value),
+    address:text($('pcAddress').value),
+    port:text($('pcPort').value)||'49775',
+    pairingCode:text($('pairingCode').value),
+    hosts:Array.isArray(extra.hosts)?extra.hosts:(Array.isArray(state.connection.hosts)?state.connection.hosts:[]),
+    updated_at:now()
+  };
   write(STORE.connection,state.connection);
   updateConnectionChrome();
+}
+$('saveConnection').addEventListener('click',()=>{
+  saveConnectionFields();
   $('connectionStatus').textContent=state.connection.address?`Setup saved for ${state.connection.address}:${state.connection.port}. Tap Connect / Test.`:'Enter a PC address to complete setup.';
   logActivity('Saved PC connection setup.');
 });
-$('testConnection').addEventListener('click',()=>void connectGateway());
+$('testConnection').addEventListener('click',()=>void connectGateway({hostCandidates:state.connection.hosts}));
 $('disconnectConnection').addEventListener('click',disconnectGateway);
+
+const qrScanState={stream:null,raf:0,active:false};
+function setQrScanStatus(message){if($('qrScanStatus'))$('qrScanStatus').textContent=message}
+function stopQrScanner({closeDialog=true}={}){
+  qrScanState.active=false;
+  if(qrScanState.raf){cancelAnimationFrame(qrScanState.raf);qrScanState.raf=0}
+  const video=$('qrScanVideo');
+  if(qrScanState.stream){
+    qrScanState.stream.getTracks().forEach((track)=>track.stop());
+    qrScanState.stream=null;
+  }
+  if(video)video.srcObject=null;
+  const dialog=$('qrScanDialog');
+  if(closeDialog&&dialog&&dialog.open)dialog.close();
+}
+function parsePairingPayload(raw){
+  const value=text(raw);
+  if(!value)throw new Error('Empty QR code.');
+  let data=null;
+  try{data=JSON.parse(value)}catch{
+    // Accept pasted JSON wrapped in extra text.
+    const start=value.indexOf('{');
+    const end=value.lastIndexOf('}');
+    if(start>=0&&end>start){
+      try{data=JSON.parse(value.slice(start,end+1))}catch{data=null}
+    }
+  }
+  if(!data||typeof data!=='object')throw new Error('QR is not an MSBT pairing code.');
+  if(Number(data.v)!==1)throw new Error('Unsupported pairing QR version. Update MSBT Mobile.');
+  const hosts=Array.isArray(data.hosts)
+    ? data.hosts.map((host)=>text(host)).filter(Boolean)
+    : [text(data.host||data.address)].filter(Boolean);
+  const code=text(data.code||data.pairingCode);
+  const port=text(data.port)||'49775';
+  if(!hosts.length)throw new Error('Pairing QR is missing a PC address.');
+  if(!code)throw new Error('Pairing QR is missing the pairing code.');
+  return{
+    v:1,
+    name:text(data.name)||'MSBT PC',
+    hosts,
+    port,
+    code
+  };
+}
+async function applyPairingPayload(payload){
+  if($('pcName'))$('pcName').value=payload.name||'';
+  if($('pcAddress'))$('pcAddress').value=payload.hosts[0]||'';
+  if($('pcPort'))$('pcPort').value=payload.port||'49775';
+  if($('pairingCode'))$('pairingCode').value=payload.code||'';
+  saveConnectionFields({hosts:payload.hosts});
+  $('connectionStatus').textContent=`QR paired setup for ${payload.hosts[0]}:${payload.port}. Connecting…`;
+  logActivity(`QR pairing loaded for ${payload.name||payload.hosts[0]}.`);
+  return connectGateway({quiet:false,hostCandidates:payload.hosts});
+}
+function scanQrFrame(){
+  if(!qrScanState.active)return;
+  const video=$('qrScanVideo');
+  const canvas=$('qrScanCanvas');
+  if(!video||!canvas||typeof jsQR!=='function'){
+    setQrScanStatus('QR scanner library missing in this build.');
+    return;
+  }
+  if(video.readyState>=2){
+    const width=video.videoWidth||640;
+    const height=video.videoHeight||480;
+    if(width&&height){
+      canvas.width=width;
+      canvas.height=height;
+      const ctx=canvas.getContext('2d',{willReadFrequently:true});
+      ctx.drawImage(video,0,0,width,height);
+      const image=ctx.getImageData(0,0,width,height);
+      const result=jsQR(image.data,image.width,image.height,{inversionAttempts:'dontInvert'});
+      if(result&&result.data){
+        try{
+          const payload=parsePairingPayload(result.data);
+          stopQrScanner();
+          void applyPairingPayload(payload);
+          return;
+        }catch(error){
+          setQrScanStatus(error&&error.message?error.message:'Could not read pairing QR.');
+        }
+      }
+    }
+  }
+  qrScanState.raf=requestAnimationFrame(scanQrFrame);
+}
+function waitForCameraPermission(){
+  return new Promise((resolve)=>{
+    const native=window.MSBTAssets;
+    if(native&&typeof native.hasCameraPermission==='function'&&native.hasCameraPermission()){
+      resolve(true);
+      return;
+    }
+    let settled=false;
+    const finish=(granted)=>{
+      if(settled)return;
+      settled=true;
+      window.__msbtCameraPermission=null;
+      resolve(Boolean(granted));
+    };
+    window.__msbtCameraPermission=finish;
+    if(native&&typeof native.requestCameraPermission==='function'){
+      native.requestCameraPermission();
+      window.setTimeout(()=>finish(native.hasCameraPermission&&native.hasCameraPermission()),12000);
+      return;
+    }
+    // Browser/emulator fallback: getUserMedia will prompt itself.
+    finish(true);
+  });
+}
+async function startQrScanner(){
+  openPanel('connectionPanel');
+  const dialog=$('qrScanDialog');
+  if(!dialog){alert('QR scanner UI missing.');return}
+  if(typeof jsQR!=='function'){
+    alert('QR scanner library failed to load. Use manual setup or reinstall the beta.');
+    return;
+  }
+  setQrScanStatus('Requesting camera permission…');
+  if(!dialog.open)dialog.showModal();
+  const allowed=await waitForCameraPermission();
+  if(!allowed){
+    setQrScanStatus('Camera permission denied. Enable Camera for MSBT Mobile, or enter pairing details manually.');
+    return;
+  }
+  try{
+    stopQrScanner({closeDialog:false});
+    qrScanState.active=true;
+    if(!dialog.open)dialog.showModal();
+    setQrScanStatus('Starting camera…');
+    const stream=await navigator.mediaDevices.getUserMedia({
+      audio:false,
+      video:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720}}
+    });
+    qrScanState.stream=stream;
+    const video=$('qrScanVideo');
+    video.srcObject=stream;
+    await video.play();
+    setQrScanStatus('Point at the MSBT Mobile Gateway QR…');
+    qrScanState.raf=requestAnimationFrame(scanQrFrame);
+  }catch(error){
+    stopQrScanner();
+    const message=error&&error.message?error.message:String(error);
+    alert(`Could not open camera: ${message}`);
+    $('connectionStatus').textContent=`Camera unavailable: ${message}`;
+  }
+}
+if($('scanPairingQr'))$('scanPairingQr').addEventListener('click',()=>void startQrScanner());
+if($('qrScanCancel'))$('qrScanCancel').addEventListener('click',()=>{stopQrScanner();$('connectionStatus').textContent='QR scan cancelled.'});
+if($('qrScanDialog'))$('qrScanDialog').addEventListener('close',()=>{if(qrScanState.active)stopQrScanner()});
+
 const homeConnectBtn=$('homeConnectBtn');
 if(homeConnectBtn)homeConnectBtn.addEventListener('click',()=>void connectGateway());
 
@@ -780,7 +957,7 @@ async function runLiveAction(button){
 }
 
 function renderActivity(){const rows=$('activityRows');if(!rows)return;if(!state.activity.length){rows.innerHTML='<small class="muted">No activity yet.</small>';return}rows.innerHTML=state.activity.slice(0,30).map(item=>`<div><small class="muted">${esc(new Date(item.at).toLocaleString())}</small><br>${esc(item.message)}</div>`).join('')}
-$('copyFeedbackTemplate').addEventListener('click',async()=>{const template=`MSBT MOBILE BETA FEEDBACK\n\nPhone make/model:\nAndroid version:\nMSBT Mobile version: 0.1.0-beta.11\nDesktop MSBT version (if connected):\n\nScreen/feature:\nWhat I expected:\nWhat happened:\nSteps to reproduce:\nDoes it happen every time? Yes / No / Sometimes\n\nScreenshots attached: Yes / No\nAnything else:`;try{await navigator.clipboard.writeText(template);alert('Feedback template copied. Send it with screenshots directly to FunkYouSHiFT in Discord DMs.')}catch{prompt('Copy this feedback template:',template)}});
+$('copyFeedbackTemplate').addEventListener('click',async()=>{const template=`MSBT MOBILE BETA FEEDBACK\n\nPhone make/model:\nAndroid version:\nMSBT Mobile version: 0.1.0-beta.12\nDesktop MSBT version (if connected):\n\nScreen/feature:\nWhat I expected:\nWhat happened:\nSteps to reproduce:\nDoes it happen every time? Yes / No / Sometimes\n\nScreenshots attached: Yes / No\nAnything else:`;try{await navigator.clipboard.writeText(template);alert('Feedback template copied. Send it with screenshots directly to FunkYouSHiFT in Discord DMs.')}catch{prompt('Copy this feedback template:',template)}});
 
 function invEntryLabel(entry){
   return text(entry&&(entry.summary||entry.label||entry.name||entry.slot_name))||'Item';

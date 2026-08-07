@@ -20,12 +20,15 @@ Check boxes as you go. Test **portrait** and **landscape** where it matters. Pre
 
 ## B. Connection (live)
 
-- [ ] Save PC address / port `49775` / pairing code
+- [ ] Desktop **Activity → Mobile Gateway** shows a QR
+- [ ] Phone **Scan QR to pair** fills address/port/code and connects
+- [ ] Manual setup still works (address / `49775` / pairing code)
 - [ ] Reopen app — saved setup still there
-- [ ] **Connect / Test** → badge **ONLINE**
+- [ ] Badge **ONLINE** after connect
 - [ ] Game bridge shows online while in-world
 - [ ] Wrong pairing code fails clearly; saved setup not wiped
 - [ ] **Disconnect** keeps saved setup
+- [ ] Camera permission denied → clear message; manual still works
 
 ## C. Home / navigation
 
