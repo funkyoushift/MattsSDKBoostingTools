@@ -39,7 +39,7 @@ public class MainActivity extends Activity {
      * JavascriptInterface string return (GZO alone is multi-megabyte).
      */
     public class AssetBridge {
-        private static final Set<String> ALLOWED = new HashSet<>(Arrays.asList(
+        private final Set<String> allowed = new HashSet<>(Arrays.asList(
                 "MattsSDKBoostingTools_gzo_codes.json",
                 "MattsSDKBoostingTools_lootlemon_codes.json",
                 "custom_bl4_codes.json",
@@ -55,7 +55,7 @@ public class MainActivity extends Activity {
                 return errorJson("missing file name");
             }
             String name = fileName.trim();
-            if (name.contains("/") || name.contains("\\") || name.contains("..") || !ALLOWED.contains(name)) {
+            if (name.contains("/") || name.contains("\\") || name.contains("..") || !allowed.contains(name)) {
                 return errorJson("asset not allowed: " + name);
             }
             try (InputStream input = MainActivity.this.getAssets().open(name);
@@ -74,7 +74,7 @@ public class MainActivity extends Activity {
 
         @JavascriptInterface
         public boolean canRead(String fileName) {
-            return fileName != null && ALLOWED.contains(fileName.trim());
+            return fileName != null && allowed.contains(fileName.trim());
         }
 
         @JavascriptInterface
