@@ -14,29 +14,40 @@ android {
         versionName '0.1.0-beta.1'
     }
 
+    def betaKeystore = file('../debug-signing/msbt-mobile-debug.keystore')
+    signingConfigs {
+        beta {
+            if (betaKeystore.exists()) {
+                storeFile betaKeystore
+                storePassword 'android'
+                keyAlias 'androiddebugkey'
+                keyPassword 'android'
+            }
+        }
+    }
+
     buildTypes {
         debug {
-            versionNameSuffix '-debug'
+            if (betaKeystore.exists()) signingConfig signingConfigs.beta
         }
         release {
             minifyEnabled false
+            if (betaKeystore.exists()) signingConfig signingConfigs.beta
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 
     sourceSets {
         main {
-            assets.srcDirs += [layout.buildDirectory.dir('generated/mobileAssets')]
+            assets.srcDir "$buildDir/generated/mobileAssets"
         }
     }
 }
 
 // Keep the Android beta self-contained without duplicating multi-megabyte catalogs in git.
 // The APK gets current snapshots from the same resources that ship with desktop MSBT.
-def generatedMobileAssets = layout.buildDirectory.dir('generated/mobileAssets')
-
 tasks.register('syncMobileCatalogAssets', Copy) {
-    into generatedMobileAssets
+    into "$buildDir/generated/mobileAssets"
     from('../../external_app/v22_parts_codes_fixed/resources') {
         include 'MattsSDKBoostingTools_gzo_codes.json'
         include 'MattsSDKBoostingTools_lootlemon_codes.json'
