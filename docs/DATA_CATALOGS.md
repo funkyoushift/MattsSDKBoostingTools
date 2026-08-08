@@ -91,4 +91,4 @@ Mobile does **not** load remote tutorial copy or any executable payloads.
 
 ## Phase 3
 
-See [`HOTFIX_CHANNEL.md`](./HOTFIX_CHANNEL.md). `tutorial_copy.json` ships on the data manifest `assets[]` list; Electron applies title/body overlays only.
+See [`HOTFIX_CHANNEL.md`](./HOTFIX_CHANNEL.md). `tutorial_copy.json` ships on the data manifest `assets[]` list; Electron applies title/body overlays only (Welcome / Boosting / Serial / Updates / Layout tips on **data-v1.0.3+**).

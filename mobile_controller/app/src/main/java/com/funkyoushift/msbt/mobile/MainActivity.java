@@ -62,7 +62,7 @@ public class MainActivity extends Activity {
             Pattern.compile("(\\d+)\\.(\\d+)\\.(\\d+)(?:-beta\\.(\\d+))?", Pattern.CASE_INSENSITIVE);
     private static final String DATA_CACHE_DIR = "msbt_data";
     private static final String[] DATA_MANIFEST_URLS = new String[]{
-            "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.0.2/catalog_manifest.json",
+            "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.0.3/catalog_manifest.json",
             "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/docs/data/catalog_manifest.json",
             "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.0.1/catalog_manifest.json",
             "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.0.0/catalog_manifest.json"

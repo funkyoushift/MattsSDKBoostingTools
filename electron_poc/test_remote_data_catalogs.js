@@ -301,17 +301,43 @@ async function testTutorialCopyAsset() {
   const digest = await sha256File(copyPath);
   assert.strictEqual(digest, entry.sha256);
 
-  const tours = {
-    main: [
-      { title: "Bundled welcome", body: "Bundled body" },
-      { title: "Step 2", body: "Keep me" }
-    ]
-  };
   const copy = JSON.parse(await fsp.readFile(copyPath, "utf8"));
+  assert.strictEqual(copy.kind, "json_copy");
+  const patches = (copy.tours && copy.tours.main) || [];
+  const expectedIndexes = [0, 2, 3, 7, 9];
+  for (const idx of expectedIndexes) {
+    assert.ok(
+      patches.some((row) => Number(row.index) === idx),
+      `tutorial_copy missing high-value main overlay index ${idx}`
+    );
+  }
+  for (const patch of patches) {
+    assert.ok(patch && typeof patch === "object");
+    assert.ok(!Object.prototype.hasOwnProperty.call(patch, "links"), "overlays must not ship links");
+    assert.ok(!Object.prototype.hasOwnProperty.call(patch, "url"), "overlays must not ship urls");
+    assert.ok(!Object.prototype.hasOwnProperty.call(patch, "action"), "overlays must not ship actions");
+    assert.ok(!Object.prototype.hasOwnProperty.call(patch, "target"), "overlays must not ship targets");
+    assert.ok(!Object.prototype.hasOwnProperty.call(patch, "targetSel"), "overlays must not ship selectors");
+    assert.ok(typeof patch.title === "string" && patch.title.trim(), "title required");
+    assert.ok(typeof patch.body === "string" && patch.body.trim(), "body required");
+  }
+  const welcome = patches.find((row) => Number(row.index) === 0);
+  assert.ok(/sdk_mods|MattsSDKBoostingTools\.sdkmod/i.test(welcome.body), "Welcome should keep SDK install path accurate");
+  assert.ok(/Refresh Data Catalogs/i.test(welcome.body), "Welcome should mention data refresh");
+  const updates = patches.find((row) => Number(row.index) === 7);
+  assert.ok(/Refresh Data Catalogs/i.test(updates.body), "Updates should mention data refresh");
+  assert.ok(/data channel|SemVer/i.test(updates.body), "Updates should clarify data vs app SemVer");
+
+  const tours = {
+    main: Array.from({ length: 11 }, (_, i) => ({ title: `Bundled ${i}`, body: `Bundled body ${i}` }))
+  };
   const result = applyTutorialCopyOverlay(tours, copy);
-  assert.ok(result.applied > 0, "expected overlays applied");
-  assert.notStrictEqual(tours.main[0].title, "Bundled welcome");
-  assert.strictEqual(tours.main[1].title, "Step 2");
+  assert.ok(result.applied >= expectedIndexes.length * 2, `expected title+body for ${expectedIndexes.length} steps`);
+  for (const idx of expectedIndexes) {
+    assert.notStrictEqual(tours.main[idx].title, `Bundled ${idx}`);
+    assert.notStrictEqual(tours.main[idx].body, `Bundled body ${idx}`);
+  }
+  assert.strictEqual(tours.main[1].title, "Bundled 1", "unpatched steps must stay bundled");
 
   // Reject executable kinds at normalize time.
   const bad = normalizeManifest({
@@ -329,7 +355,11 @@ async function testTutorialCopyAsset() {
     ]
   });
   assert.ok(!bad.assets.some((row) => row.id === "evil"), "script assets must be rejected");
-  record("tutorial_copy asset + overlay allowlist", true, `applied=${result.applied}`);
+  record(
+    "tutorial_copy asset + overlay allowlist",
+    true,
+    `applied=${result.applied}, indexes=${expectedIndexes.join(",")}`
+  );
 }
 
 async function testTutorialCopyRefreshIntoCache() {

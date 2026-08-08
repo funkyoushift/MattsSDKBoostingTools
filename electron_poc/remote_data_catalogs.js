@@ -18,7 +18,7 @@ const { fileURLToPath } = require("url");
 
 const DEFAULT_MANIFEST_URLS = [
   // Prefer tag-specific data release assets (never /releases/latest — that is the app channel).
-  "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.0.2/catalog_manifest.json",
+  "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.0.3/catalog_manifest.json",
   "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/docs/data/catalog_manifest.json",
   // Older data tag fallbacks while newer tags propagate.
   "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.0.1/catalog_manifest.json",

@@ -39,7 +39,9 @@ Rejected always: `script`, `native`, `sdkmod`, `archive_exec`, anything with an 
 
 ## Shipped starter: `tutorial_copy.json`
 
-Present under [`docs/data/tutorial_copy.json`](./data/tutorial_copy.json) and published with the data channel.
+Present under [`docs/data/tutorial_copy.json`](./data/tutorial_copy.json) and published with the data channel (**data-v1.0.3+**).
+
+High-value `main` tour overlays (title/body only): Welcome (0), Boosting (2), Serial Tools (3), Updates (7), Arrange layout (9). Bundled SDK download / Updates-tab **links** stay local.
 
 Schema:
 
