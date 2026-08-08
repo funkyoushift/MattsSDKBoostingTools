@@ -423,6 +423,7 @@ function filterValues(entries) {
 
 async function loadBl4Catalog(resourceDir = DEFAULT_RESOURCE_DIR, options = {}) {
   const warnings = [];
+  const filePaths = options.filePaths && typeof options.filePaths === "object" ? options.filePaths : {};
   const sources = [
     {
       key: "lootlemon",
@@ -461,7 +462,17 @@ async function loadBl4Catalog(resourceDir = DEFAULT_RESOURCE_DIR, options = {}) 
   const normalized = [];
   for (const source of sources) {
     let json = null;
-    if (source.key === "gzo" && options.gzoCachePath) {
+    const overridePath =
+      filePaths[source.key] ||
+      (source.key === "lootlemon" ? filePaths.lootlemon : "") ||
+      (source.key === "custom" ? filePaths.custom || filePaths.custom_bl4_codes : "") ||
+      (source.key === "gzo" ? filePaths.gzo || filePaths.gzo_codes : "");
+    if (overridePath) {
+      json = await readJsonFileOptional(overridePath, warnings, `${source.key} catalog`, {
+        optional: Boolean(source.defaults.optional)
+      });
+    }
+    if (!json && source.key === "gzo" && options.gzoCachePath) {
       json = await readJsonFileOptional(options.gzoCachePath, warnings, "cached GZO catalog", { optional: true });
     }
     if (!json) {
@@ -492,31 +503,70 @@ async function refreshGzoCatalog(resourceDir = DEFAULT_RESOURCE_DIR, gzoCachePat
   if (!gzoCachePath) throw new Error("No writable GZO cache path was provided.");
   const fetchImpl = options.fetch || globalThis.fetch;
   if (typeof fetchImpl !== "function") throw new Error("This Electron runtime does not provide fetch.");
-  const response = await fetchImpl(GZO_CATALOG_URL, {
-    headers: {
-      "User-Agent": "MattsBoostingToolsElectron/1.0",
-      Accept: "application/json,text/plain,*/*"
-    },
-    cache: "no-store"
-  });
-  const body = await response.text();
-  if (!response.ok) throw new Error(`GZO refresh failed: HTTP ${response.status}`);
-  const entries = parseGzoCatalogText(body);
+
+  const fallbackUrls = Array.isArray(options.fallbackUrls) ? options.fallbackUrls.filter(Boolean) : [];
+  const urls = [GZO_CATALOG_URL, ...fallbackUrls];
+  let body = "";
+  let sourceUrl = GZO_CATALOG_URL;
+  let lastError = null;
+  for (const url of urls) {
+    try {
+      const response = await fetchImpl(url, {
+        headers: {
+          "User-Agent": "MattsBoostingToolsElectron/1.0",
+          Accept: "application/json,text/plain,*/*"
+        },
+        cache: "no-store"
+      });
+      body = await response.text();
+      if (!response.ok) {
+        lastError = new Error(`GZO refresh failed: HTTP ${response.status} from ${url}`);
+        continue;
+      }
+      sourceUrl = url;
+      lastError = null;
+      break;
+    } catch (error) {
+      lastError = error;
+    }
+  }
+  if (lastError && !body) {
+    throw lastError;
+  }
+
+  let entries = parseGzoCatalogText(body);
+  if (!entries.length) {
+    // GitHub snapshot may already be a full {entries:[...]} payload.
+    try {
+      const parsed = JSON.parse(body);
+      const fromPayload = entriesFromJson(parsed)
+        .map((row) => normalizeGzoRow(row))
+        .filter(Boolean);
+      if (fromPayload.length) {
+        entries = fromPayload;
+      }
+    } catch {
+      // ignore
+    }
+  }
   if (!entries.length) throw new Error("GZO refresh returned no valid BL4 serials.");
   const payload = {
     version: GZO_CACHE_VERSION,
     updated: Math.floor(Date.now() / 1000),
-    source: GZO_CATALOG_URL,
+    source: sourceUrl,
     entries
   };
   await fs.mkdir(path.dirname(gzoCachePath), { recursive: true });
   await fs.writeFile(gzoCachePath, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
-  const catalog = await loadBl4Catalog(resourceDir, { gzoCachePath });
+  const catalog = await loadBl4Catalog(resourceDir, {
+    gzoCachePath,
+    filePaths: options.filePaths
+  });
   return {
     ...catalog,
     refreshed: entries.length,
     cachePath: gzoCachePath,
-    source: GZO_CATALOG_URL
+    source: sourceUrl
   };
 }
 

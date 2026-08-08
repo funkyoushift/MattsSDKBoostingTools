@@ -42,6 +42,17 @@ const {
   refreshGzoCatalog
 } = require("./bl4_codes_catalog");
 const {
+  DEFAULT_MANIFEST_URLS,
+  KNOWN_FILES,
+  cachedFilePath,
+  defaultDocsDataDir,
+  getDataCatalogStatus,
+  isElectronResourceFile,
+  readCatalogJson,
+  refreshRemoteDataCatalogs,
+  resolveCatalogFileMap
+} = require("./remote_data_catalogs");
+const {
   createMobileGateway,
   DEFAULT_PORT: MOBILE_GATEWAY_PORT,
   generatePairingCode
@@ -108,8 +119,15 @@ const ALLOWED_RESOURCE_FILES = new Set([
   "item_pools.json",
   "travelmaps_flat.json",
   "travelstations.json",
+  "gzo_parts_map.json",
   "version_info.json"
 ]);
+const DOCS_DATA_DIR = app.isPackaged
+  ? path.join(RESOURCE_ROOT, "docs", "data")
+  : defaultDocsDataDir(SOURCE_ROOT);
+const MOD_DATA_DIR = app.isPackaged
+  ? path.join(RESOURCE_ROOT, "sdkmod_data")
+  : path.join(SOURCE_ROOT, "mod_extracted", "MattsSDKBoostingTools");
 const LOCAL_VENV_PYTHON = path.join(SOURCE_ROOT, ".venv", "Scripts", "python.exe");
 const BUNDLED_PYTHON = path.join(RESOURCE_ROOT, "python", "python.exe");
 const MATT_HOST_START_TIMEOUT_MS = 12000;
@@ -171,6 +189,63 @@ const USER_DATA_FILE_DEFINITIONS = [
 
 function bl4GzoCacheFilePath() {
   return path.join(app.getPath("userData"), "bl4_gzo_codes.json");
+}
+
+function dataCatalogOptions() {
+  return {
+    resourceDir: RESOURCE_DIR,
+    docsDataDir: DOCS_DATA_DIR,
+    modDataDir: MOD_DATA_DIR,
+    gzoLiveCachePath: bl4GzoCacheFilePath()
+  };
+}
+
+async function bl4CatalogLoadOptions() {
+  const resolved = await resolveCatalogFileMap(app.getPath("userData"), dataCatalogOptions());
+  return {
+    gzoCachePath: bl4GzoCacheFilePath(),
+    filePaths: {
+      lootlemon: resolved.paths.lootlemon || undefined,
+      custom: resolved.paths.custom_bl4_codes || undefined,
+      custom_bl4_codes: resolved.paths.custom_bl4_codes || undefined,
+      gzo: resolved.paths.gzo_codes || undefined,
+      gzo_codes: resolved.paths.gzo_codes || undefined
+    },
+    sources: resolved.sources
+  };
+}
+
+function gzoGithubFallbackUrls() {
+  const urls = [];
+  const cachedGzo = cachedFilePath(app.getPath("userData"), KNOWN_FILES.gzo_codes);
+  // Prefer already-cached GitHub snapshot path via file URL only when fetchable remotely.
+  urls.push(
+    "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/docs/data/MattsSDKBoostingTools_gzo_codes.json"
+  );
+  if (fsSync.existsSync(cachedGzo)) {
+    // Local snapshot is applied by loadBl4Catalog via filePaths; keep URL list remote-only.
+  }
+  return urls;
+}
+
+async function softRefreshDataCatalogs() {
+  try {
+    const localManifestUrl = pathToFileURL(path.join(DOCS_DATA_DIR, "catalog_manifest.json")).href;
+    return await refreshRemoteDataCatalogs({
+      userDataPath: app.getPath("userData"),
+      docsDataDir: DOCS_DATA_DIR,
+      localSeedDir: DOCS_DATA_DIR,
+      manifestUrls: app.isPackaged
+        ? DEFAULT_MANIFEST_URLS
+        : [localManifestUrl, ...DEFAULT_MANIFEST_URLS]
+    });
+  } catch (error) {
+    return {
+      ok: false,
+      soft: true,
+      message: String(error && error.message ? error.message : error)
+    };
+  }
 }
 
 function uniquePaths(paths) {
@@ -1072,8 +1147,14 @@ ipcMain.handle("app:readResourceJson", async (_event, resourceName) => {
     return { ok: false, message: `Resource is not allowlisted: ${name}` };
   }
   try {
+    if (isElectronResourceFile(name)) {
+      const catalog = await readCatalogJson(app.getPath("userData"), name, dataCatalogOptions());
+      if (catalog.ok) {
+        return { ok: true, name, data: catalog.data, source: catalog.source, path: catalog.path };
+      }
+    }
     const text = await fs.readFile(path.join(RESOURCE_DIR, name), "utf8");
-    return { ok: true, name, data: JSON.parse(text) };
+    return { ok: true, name, data: JSON.parse(text), source: "bundled" };
   } catch (error) {
     return { ok: false, name, message: String(error && error.message ? error.message : error) };
   }
@@ -1205,7 +1286,9 @@ ipcMain.handle("app:saveWalkthroughSettings", async (_event, payload) => {
 
 ipcMain.handle("app:loadBl4Catalog", async () => {
   try {
-    return await loadBl4Catalog(RESOURCE_DIR, { gzoCachePath: bl4GzoCacheFilePath() });
+    const options = await bl4CatalogLoadOptions();
+    const catalog = await loadBl4Catalog(RESOURCE_DIR, options);
+    return { ...catalog, catalogSources: options.sources };
   } catch (error) {
     return { ok: false, message: String(error && error.message ? error.message : error) };
   }
@@ -1213,7 +1296,28 @@ ipcMain.handle("app:loadBl4Catalog", async () => {
 
 ipcMain.handle("app:refreshGzoCatalog", async () => {
   try {
-    return await refreshGzoCatalog(RESOURCE_DIR, bl4GzoCacheFilePath());
+    const options = await bl4CatalogLoadOptions();
+    return await refreshGzoCatalog(RESOURCE_DIR, bl4GzoCacheFilePath(), {
+      filePaths: options.filePaths,
+      fallbackUrls: gzoGithubFallbackUrls()
+    });
+  } catch (error) {
+    return { ok: false, message: String(error && error.message ? error.message : error) };
+  }
+});
+
+ipcMain.handle("app:refreshDataCatalogs", async () => {
+  try {
+    const result = await softRefreshDataCatalogs();
+    return result;
+  } catch (error) {
+    return { ok: false, message: String(error && error.message ? error.message : error) };
+  }
+});
+
+ipcMain.handle("app:getDataCatalogStatus", async () => {
+  try {
+    return await getDataCatalogStatus(app.getPath("userData"), dataCatalogOptions());
   } catch (error) {
     return { ok: false, message: String(error && error.message ? error.message : error) };
   }
@@ -1794,6 +1898,16 @@ app.whenReady().then(() => {
       console.warn(`[MSBT Mobile Gateway] failed to start: ${error && error.message ? error.message : error}`);
     });
   createWindow();
+  // Soft data-catalog refresh: never blocks UI; offline keeps last-good cache.
+  softRefreshDataCatalogs()
+    .then((result) => {
+      if (result && result.message) {
+        console.log(`[MSBT Data Catalogs] ${result.message}`);
+      }
+    })
+    .catch((error) => {
+      console.warn(`[MSBT Data Catalogs] soft refresh failed: ${error && error.message ? error.message : error}`);
+    });
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) {
       createWindow();

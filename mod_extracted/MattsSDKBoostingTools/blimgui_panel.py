@@ -5624,6 +5624,10 @@ def _lootlemon_repair_known_serial(serial: str, url: str = "", name: str = "") -
     scraper/cache paths dropped a final ')' from Lootlemon codes, which made
     valid catalog rows fail the validator.  Fresh extraction now preserves that
     trailing punctuation, and this narrow migration repairs already-cached rows.
+
+    Older scrapers also stripped ``<[^>]+>`` and truncated codes that contain a
+    literal ``<`` (Lootlemon stores these as ``&lt;``).  Repair those known
+    truncations here as a safety net when the bundled JSON is still stale.
     """
     serial = str(serial or "").strip()
     hay = f"{url} {name}".lower()
@@ -5635,6 +5639,15 @@ def _lootlemon_repair_known_serial(serial: str, url: str = "", name: str = "") -
     for slug, broken in known_missing_close.items():
         if slug in hay and serial == broken:
             return serial + ")"
+    known_lt_truncations = {
+        "raiden-bl4": (
+            "@UgwSAs35E/MjJ6DFiRy",
+            "@UgwSAs35E/MjJ6DFiRy<sRHE*o!lK5a%A&%c@}NSYMxl10(xK/11{yvx2LJ",
+        ),
+    }
+    for slug, (broken, fixed) in known_lt_truncations.items():
+        if slug in hay and serial == broken:
+            return fixed
     return serial
 
 

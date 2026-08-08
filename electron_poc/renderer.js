@@ -30,6 +30,7 @@ const els = {
   bl4OverrideLevel: document.getElementById("bl4OverrideLevel"),
   bl4RarityFilter: document.getElementById("bl4RarityFilter"),
   bl4RefreshGzoBtn: document.getElementById("bl4RefreshGzoBtn"),
+  bl4RefreshCatalogsBtn: document.getElementById("bl4RefreshCatalogsBtn"),
   bl4ReloadBtn: document.getElementById("bl4ReloadBtn"),
   bl4SearchBtn: document.getElementById("bl4SearchBtn"),
   bl4SearchInput: document.getElementById("bl4SearchInput"),
@@ -335,6 +336,8 @@ const els = {
   updateDownloadBtn: document.getElementById("updateDownloadBtn"),
   updateInstallBtn: document.getElementById("updateInstallBtn"),
   updateSummary: document.getElementById("updateSummary"),
+  dataCatalogSummary: document.getElementById("dataCatalogSummary"),
+  refreshDataCatalogsBtn: document.getElementById("refreshDataCatalogsBtn"),
   versionSummary: document.getElementById("versionSummary"),
   sdkInstallSummary: document.getElementById("sdkInstallSummary"),
   sdkModsPath: document.getElementById("sdkModsPath"),
@@ -4526,6 +4529,59 @@ async function refreshBl4GzoCatalog() {
   }
 }
 
+async function refreshMsbtDataCatalogs(options = {}) {
+  const fromBl4 = Boolean(options.fromBl4);
+  if (!window.msbt || typeof window.msbt.refreshDataCatalogs !== "function") {
+    const message = "Data catalog refresh is not available in this Electron build.";
+    if (fromBl4) setBl4Status(message, "bad");
+    if (els.dataCatalogSummary) setLine(els.dataCatalogSummary, message, "bad");
+    return;
+  }
+  if (els.bl4RefreshCatalogsBtn) els.bl4RefreshCatalogsBtn.disabled = true;
+  if (els.refreshDataCatalogsBtn) els.refreshDataCatalogsBtn.disabled = true;
+  const pending = "Refreshing MSBT data catalogs (manifest + changed JSON)...";
+  if (fromBl4) setBl4Status(pending, "warning");
+  if (els.dataCatalogSummary) setLine(els.dataCatalogSummary, pending, "warning");
+  try {
+    const result = await window.msbt.refreshDataCatalogs();
+    const message = result && result.message
+      ? result.message
+      : "Data catalog refresh finished.";
+    const kind = result && result.ok ? (result.soft || result.offline ? "warning" : "ok") : "bad";
+    if (els.dataCatalogSummary) setLine(els.dataCatalogSummary, message, kind);
+    if (els.updateOutput && result) {
+      els.updateOutput.textContent = JSON.stringify(
+        {
+          dataVersion: result.dataVersion || null,
+          manifestUrl: result.manifestUrl || null,
+          updated: result.updated || [],
+          skipped: result.skipped || [],
+          failed: result.failed || [],
+          warnings: result.warnings || [],
+          cacheDir: result.cacheDir || null
+        },
+        null,
+        2
+      );
+    }
+    if (fromBl4) {
+      setBl4Status(message, kind);
+      if (result && result.ok) {
+        await loadBl4Catalog();
+      }
+    }
+    return result;
+  } catch (error) {
+    const message = `Data catalog refresh failed: ${error && error.message ? error.message : error}`;
+    if (fromBl4) setBl4Status(message, "bad");
+    if (els.dataCatalogSummary) setLine(els.dataCatalogSummary, message, "bad");
+    return { ok: false, message };
+  } finally {
+    if (els.bl4RefreshCatalogsBtn) els.bl4RefreshCatalogsBtn.disabled = false;
+    if (els.refreshDataCatalogsBtn) els.refreshDataCatalogsBtn.disabled = false;
+  }
+}
+
 function versionValue(value) {
   return value === null || value === undefined || value === "" ? "unavailable" : String(value);
 }
@@ -7902,6 +7958,12 @@ function wireEvents() {
 
   els.bl4ReloadBtn.addEventListener("click", loadBl4Catalog);
   els.bl4RefreshGzoBtn.addEventListener("click", refreshBl4GzoCatalog);
+  if (els.bl4RefreshCatalogsBtn) {
+    els.bl4RefreshCatalogsBtn.addEventListener("click", () => refreshMsbtDataCatalogs({ fromBl4: true }));
+  }
+  if (els.refreshDataCatalogsBtn) {
+    els.refreshDataCatalogsBtn.addEventListener("click", () => refreshMsbtDataCatalogs({ fromBl4: false }));
+  }
   els.bl4SearchBtn.addEventListener("click", applyBl4Search);
   els.bl4SearchInput.addEventListener("keydown", (event) => {
     if (event.key === "Enter") {

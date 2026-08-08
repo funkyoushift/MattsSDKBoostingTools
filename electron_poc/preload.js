@@ -39,6 +39,8 @@ contextBridge.exposeInMainWorld("msbt", {
   saveWalkthroughSettings: (payload) => ipcRenderer.invoke("app:saveWalkthroughSettings", payload),
   loadBl4Catalog: () => ipcRenderer.invoke("app:loadBl4Catalog"),
   refreshGzoCatalog: () => ipcRenderer.invoke("app:refreshGzoCatalog"),
+  refreshDataCatalogs: () => ipcRenderer.invoke("app:refreshDataCatalogs"),
+  getDataCatalogStatus: () => ipcRenderer.invoke("app:getDataCatalogStatus"),
   bl4PartsBreakdown: (serial) => ipcRenderer.invoke("app:bl4PartsBreakdown", serial),
   getPathForFile: (file) => {
     try {
