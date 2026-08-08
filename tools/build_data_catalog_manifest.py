@@ -25,14 +25,14 @@ ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = ROOT / "docs" / "data"
 MANIFEST_PATH = DATA_DIR / "catalog_manifest.json"
 
-# Hosted raw URLs (main). Releases/latest/download is tried first by the app.
+# Hosted raw URLs (main). Tag-specific release assets are preferred over /releases/latest
+# so data-only tags never steal the app "latest" pointer.
 RAW_BASE = (
     "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/"
     "main/docs/data"
 )
-RELEASE_MANIFEST_URL = (
-    "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/"
-    "download/catalog_manifest.json"
+RELEASE_DOWNLOAD_BASE = (
+    "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download"
 )
 
 # Stable file registry: order is intentional (Phase 1 first, then Phase 2).
@@ -95,6 +95,13 @@ FILE_SPECS: list[dict[str, Any]] = [
         "schema_version": 1,
         "notes": "Challenge catalog (SDK)",
     },
+    {
+        "id": "dev_spawner_catalog",
+        "filename": "dev_spawner_catalog.json",
+        "schema_version": 1,
+        "notes": "Dev Spawner actor/template catalog (Electron)",
+        "seed_from": "electron_poc/dev_spawner_catalog.json",
+    },
 ]
 
 SEMVER_RE = re.compile(r"^(\d+)\.(\d+)\.(\d+)$")
@@ -139,7 +146,26 @@ def load_existing_data_version() -> str:
         return "1.0.0"
 
 
+def ensure_seed_copies() -> None:
+    """Copy optional seeds (e.g. Dev Spawner) into docs/data when missing or stale."""
+    for spec in FILE_SPECS:
+        seed_from = spec.get("seed_from")
+        if not seed_from:
+            continue
+        src = ROOT / seed_from
+        dst = DATA_DIR / spec["filename"]
+        if not src.is_file():
+            continue
+        if not dst.is_file() or src.stat().st_mtime > dst.stat().st_mtime or src.stat().st_size != dst.stat().st_size:
+            DATA_DIR.mkdir(parents=True, exist_ok=True)
+            dst.write_bytes(src.read_bytes())
+            print(f"Seeded {dst.relative_to(ROOT)} from {src.relative_to(ROOT)}")
+
+
 def build_manifest(data_version: str, min_app_version: str) -> dict[str, Any]:
+    ensure_seed_copies()
+    label = f"data-v{data_version}"
+    release_manifest_url = f"{RELEASE_DOWNLOAD_BASE}/{label}/catalog_manifest.json"
     files: list[dict[str, Any]] = []
     missing: list[str] = []
     for spec in FILE_SPECS:
@@ -151,10 +177,12 @@ def build_manifest(data_version: str, min_app_version: str) -> dict[str, Any]:
         entry: dict[str, Any] = {
             "id": spec["id"],
             "path": spec["filename"],
-            "url": f"{RAW_BASE}/{spec['filename']}",
+            # Prefer tag release assets so refreshes work before docs/data lands on main.
+            "url": f"{RELEASE_DOWNLOAD_BASE}/{label}/{spec['filename']}",
             "sha256": digest,
             "bytes": path.stat().st_size,
             "schema_version": int(spec["schema_version"]),
+            "raw_url": f"{RAW_BASE}/{spec['filename']}",
         }
         if spec.get("primary"):
             entry["primary_url"] = spec["primary"]
@@ -170,11 +198,11 @@ def build_manifest(data_version: str, min_app_version: str) -> dict[str, Any]:
     return {
         "schema_version": 1,
         "data_version": data_version,
-        "data_version_label": f"data-v{data_version}",
+        "data_version_label": label,
         "published_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "min_app_version": min_app_version,
         "manifest_urls": {
-            "release": RELEASE_MANIFEST_URL,
+            "release": release_manifest_url,
             "raw_main": f"{RAW_BASE}/catalog_manifest.json",
         },
         "files": files,

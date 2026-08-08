@@ -9,54 +9,84 @@ High-churn JSON (serials, travel, pools, etc.) can ship as a **data** release wi
 | [`docs/data/`](./data/) | GitHub-hosted catalog seeds + `catalog_manifest.json` |
 | `userData/msbt_data/` | Per-user Electron cache (last-good copies) |
 | `external_app/.../resources/` | Bundled offline seed (install-time) |
+| `electron_poc/dev_spawner_catalog.json` | Bundled Dev Spawner seed (also mirrored into `docs/data/`) |
 
 ## Preference order (Electron)
 
 1. **User cache** — `userData/msbt_data/<file>.json`
-2. **Bundled seed** — packaged resources / `docs/data`
+2. **Bundled seed** — packaged resources / `docs/data` / Electron app dir (Dev Spawner)
 3. **GZO only** — live `save-editor.be` catalog API, then GitHub snapshot fallback
 
-Offline never wipes a last-good cache. Refresh failures are soft.
+Offline never wipes a last-good cache. Refresh failures are soft (partial success keeps good files; hash mismatches retry then skip that file).
+
+## Phase 2 catalogs (loaded from cache when present)
+
+| id | Consumer |
+| --- | --- |
+| lootlemon / custom_bl4_codes / gzo_codes | BL4 Codes tab |
+| travelstations / travelmaps | Travel UI (`readResourceJson`) |
+| item_pools | Item pool spawn UI |
+| gzo_parts_map | Parts labels |
+| shiny_serials / challenge_catalog | Hosted for publish; SDK prefers Electron `msbt_data` cache if discoverable, else packaged seed |
+| dev_spawner_catalog | Dev Spawner (`readDevSpawnerCatalog`) |
 
 ## Publish a data fix (no app SemVer bump)
 
-1. Update the JSON under `docs/data/` (or refresh sources, then mirror — see below).
-2. Rebuild the manifest hashes:
+```bash
+# Rebuild hashes + bump data SemVer
+python tools/publish_data_release.py --bump patch --dry-run
+
+# Or create a real GitHub data-vX release (requires gh auth)
+python tools/publish_data_release.py --bump patch --create-release
+```
+
+Lower-level:
 
 ```bash
 python tools/build_data_catalog_manifest.py --bump patch
-# or pin explicitly:
-python tools/build_data_catalog_manifest.py --data-version 1.0.1
 python tools/build_data_catalog_manifest.py --check
 ```
 
-3. Commit + push to `main` (raw.githubusercontent URLs in the manifest point at `main/docs/data/...`).
-4. Optional: attach `catalog_manifest.json` (and large JSON files if desired) to a GitHub Release so the app’s primary URL works:
+Do **not** bump `electron_poc/package.json` / SDK `__version__` for data-only fixes.
 
-   `https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/catalog_manifest.json`
+URLs:
 
-   Until a release asset exists, Electron falls back to raw `main/docs/data/catalog_manifest.json`.
+- Release asset (preferred when published): `…/releases/download/data-vX.Y.Z/catalog_manifest.json`
+- Durable fallback: `raw.githubusercontent.com/.../main/docs/data/catalog_manifest.json`
 
-5. Do **not** bump `electron_poc/package.json` / SDK `__version__` for data-only fixes.
+Until `main` contains `docs/data/`, packaged clients still use the release asset + local bundled seeds.
 
 ## How users refresh
 
-- **BL4 Codes** tab → **Refresh Catalogs**, or
-- **Updates** tab → **Refresh Data Catalogs**
+- **BL4 Codes** → **Refresh Catalogs**, or
+- **Updates** → **Refresh Data Catalogs**
 
-On startup, Electron also attempts a soft background refresh.
+Status lines show **data version**, **last check time**, and **updated / unchanged / failed** counts. Startup runs a quiet auto-check and updates those lines when finished.
 
-**Refresh GZO** remains separate: it prefers live save-editor.be and writes `userData/bl4_gzo_codes.json`. GitHub’s GZO snapshot is a fallback / offline seed only.
+**Refresh GZO** remains separate (live save-editor.be → `userData/bl4_gzo_codes.json`).
 
 ## Maintainer refresh pipeline
 
-`tools/refresh_matt_editor_catalogs.py` can mirror refreshed Lootlemon / GZO / parts map into `docs/data/` and rebuild the manifest (`--mirror-docs-data`, on by default when mirroring).
-
 ```bash
 python tools/refresh_matt_editor_catalogs.py --skip-nexus --skip-audit
-python tools/build_data_catalog_manifest.py --bump patch
+python tools/publish_data_release.py --bump patch --create-release
 ```
 
-## Bridge rule
+## SDK / bridge
 
-The HTTP bridge stays **delivery-only**. Catalog scrape / GitHub fetch lives in Electron (and maintainer scripts), not in `external_bridge.py`.
+- HTTP bridge stays **delivery-only** (no catalog scrape in `external_bridge.py`, no blimgui import).
+- `backend_actions` may **read** Electron's `APPDATA/.../msbt_data/` for shiny/challenge when present; it never fetches.
+- Override cache dir with env `MSBT_DATA_CACHE`.
+
+## Mobile
+
+Mobile controller does **not** yet fetch the remote manifest at runtime. Near-term path:
+
+1. Keep shipping seed JSON with the APK/desktop pairing surface as needed.
+2. Follow-up: fetch `catalog_manifest.json` into app storage with the same sha256 rules (no remote code).
+
+Documented so overnight Phase 2 does not block on a full mobile OTA.
+
+## Phase 3
+
+See [`HOTFIX_CHANNEL.md`](./HOTFIX_CHANNEL.md) for allowlisted copy/tutorial packs (still no remote code execution).

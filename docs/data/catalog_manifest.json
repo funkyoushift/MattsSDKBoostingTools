@@ -1,95 +1,114 @@
 {
   "schema_version": 1,
-  "data_version": "1.0.0",
-  "data_version_label": "data-v1.0.0",
-  "published_at": "2026-08-08T08:31:49Z",
+  "data_version": "1.0.1",
+  "data_version_label": "data-v1.0.1",
+  "published_at": "2026-08-08T08:40:37Z",
   "min_app_version": "2.3.0",
   "manifest_urls": {
-    "release": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/catalog_manifest.json",
+    "release": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.0.1/catalog_manifest.json",
     "raw_main": "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/docs/data/catalog_manifest.json"
   },
   "files": [
     {
       "id": "lootlemon",
       "path": "MattsSDKBoostingTools_lootlemon_codes.json",
-      "url": "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/docs/data/MattsSDKBoostingTools_lootlemon_codes.json",
+      "url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.0.1/MattsSDKBoostingTools_lootlemon_codes.json",
       "sha256": "02317aab456730737a0cca231c019c77273fc83635596d3923b63a7c4ed40b0e",
       "bytes": 161314,
       "schema_version": 1,
+      "raw_url": "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/docs/data/MattsSDKBoostingTools_lootlemon_codes.json",
       "notes": "Lootlemon BL4 serials catalog"
     },
     {
       "id": "custom_bl4_codes",
       "path": "custom_bl4_codes.json",
-      "url": "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/docs/data/custom_bl4_codes.json",
+      "url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.0.1/custom_bl4_codes.json",
       "sha256": "b20a7748d9af3532e6689eb4cee9e5851cc1e410412f62661f640d0bc14a7502",
       "bytes": 306545,
       "schema_version": 1,
+      "raw_url": "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/docs/data/custom_bl4_codes.json",
       "notes": "Custom / static BL4 codes"
     },
     {
       "id": "gzo_codes",
       "path": "MattsSDKBoostingTools_gzo_codes.json",
-      "url": "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/docs/data/MattsSDKBoostingTools_gzo_codes.json",
+      "url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.0.1/MattsSDKBoostingTools_gzo_codes.json",
       "sha256": "c5c6f9d95dccec46b3db8407273c6f12fb383541162ddf40d917d4e8b0f44eaf",
       "bytes": 2573466,
       "schema_version": 1,
+      "raw_url": "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/docs/data/MattsSDKBoostingTools_gzo_codes.json",
       "primary_url": "https://save-editor.be/GZO/Borderlands4/codes/api.php?action=catalog",
       "notes": "GZO snapshot fallback. Live primary remains save-editor.be; GitHub cache is offline / fallback only."
     },
     {
       "id": "travelstations",
       "path": "travelstations.json",
-      "url": "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/docs/data/travelstations.json",
+      "url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.0.1/travelstations.json",
       "sha256": "f1c74def0df467697a91efbc8ddac489379f2c4329a9f09db1b7f61bad3719a1",
       "bytes": 762835,
       "schema_version": 1,
+      "raw_url": "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/docs/data/travelstations.json",
       "notes": "Travel station catalog"
     },
     {
       "id": "travelmaps",
       "path": "travelmaps_flat.json",
-      "url": "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/docs/data/travelmaps_flat.json",
+      "url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.0.1/travelmaps_flat.json",
       "sha256": "648224398411e298d987e9022478527e6bbae684480b682ede4124d8c7d2c9cd",
       "bytes": 9367,
       "schema_version": 1,
+      "raw_url": "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/docs/data/travelmaps_flat.json",
       "notes": "Travel map flat list"
     },
     {
       "id": "item_pools",
       "path": "item_pools.json",
-      "url": "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/docs/data/item_pools.json",
+      "url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.0.1/item_pools.json",
       "sha256": "7ad9ed53cc40d7118b3b5166be944ab1cc3c94e5bfb10e1e00105b880e18a8a7",
       "bytes": 80147,
       "schema_version": 1,
+      "raw_url": "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/docs/data/item_pools.json",
       "notes": "Item pool spawn catalog"
     },
     {
       "id": "gzo_parts_map",
       "path": "gzo_parts_map.json",
-      "url": "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/docs/data/gzo_parts_map.json",
+      "url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.0.1/gzo_parts_map.json",
       "sha256": "228c4e4ea280145ec24ea0d1bb517b34297c74f56d20e23294bfe81f520b8855",
       "bytes": 280906,
       "schema_version": 1,
+      "raw_url": "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/docs/data/gzo_parts_map.json",
       "notes": "GZO part id \u2192 label map"
     },
     {
       "id": "shiny_serials",
       "path": "shiny_serials.json",
-      "url": "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/docs/data/shiny_serials.json",
+      "url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.0.1/shiny_serials.json",
       "sha256": "5af2766674ee9b89a9b803b069e61cdfb0dc96aac43ab6ae705d0a936a337b07",
       "bytes": 17546,
       "schema_version": 1,
+      "raw_url": "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/docs/data/shiny_serials.json",
       "notes": "Shiny serial delivery list (SDK)"
     },
     {
       "id": "challenge_catalog",
       "path": "challenge_catalog.json",
-      "url": "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/docs/data/challenge_catalog.json",
+      "url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.0.1/challenge_catalog.json",
       "sha256": "793bd9587416e646585cfd920f61de72b2dcf17d1d99b74d0267464618e6dfe0",
       "bytes": 203734,
       "schema_version": 1,
+      "raw_url": "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/docs/data/challenge_catalog.json",
       "notes": "Challenge catalog (SDK)"
+    },
+    {
+      "id": "dev_spawner_catalog",
+      "path": "dev_spawner_catalog.json",
+      "url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.0.1/dev_spawner_catalog.json",
+      "sha256": "e077360bdd1ee7cc670f554c1b7e17504424d5b7de89beed6d5284fabcd3afed",
+      "bytes": 1661775,
+      "schema_version": 1,
+      "raw_url": "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/docs/data/dev_spawner_catalog.json",
+      "notes": "Dev Spawner actor/template catalog (Electron)"
     }
   ]
 }
