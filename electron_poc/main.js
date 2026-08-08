@@ -41,6 +41,23 @@ const {
   loadBl4Catalog,
   refreshGzoCatalog
 } = require("./bl4_codes_catalog");
+const {
+  DEFAULT_MANIFEST_URLS,
+  KNOWN_FILES,
+  cachedFilePath,
+  defaultDocsDataDir,
+  getDataCatalogStatus,
+  isElectronResourceFile,
+  loadTutorialCopy,
+  readCatalogJson,
+  refreshRemoteDataCatalogs,
+  resolveCatalogFileMap
+} = require("./remote_data_catalogs");
+const {
+  createMobileGateway,
+  DEFAULT_PORT: MOBILE_GATEWAY_PORT,
+  generatePairingCode
+} = require("./mobile_gateway");
 
 function reportFatalStartupError(kind, error) {
   const message = error && error.stack ? error.stack : String(error);
@@ -57,6 +74,24 @@ const execFileAsync = promisify(execFile);
 const SOURCE_ROOT = path.resolve(__dirname, "..");
 const RESOURCE_ROOT = app.isPackaged ? process.resourcesPath : SOURCE_ROOT;
 const DEFAULT_BRIDGE = "http://127.0.0.1:49774";
+const MOBILE_PAIRING_FILE = () => path.join(app.getPath("userData"), "mobile_gateway_pairing.json");
+const mobileGateway = createMobileGateway({
+  port: MOBILE_GATEWAY_PORT,
+  bridgeBase: DEFAULT_BRIDGE,
+  pairingCode: generatePairingCode(),
+  getSerialBookmarks: async () => {
+    try {
+      // readBookmarks() returns { ok, data: { version, bookmarks }, warnings }
+      const result = await readBookmarks(bookmarksFilePath(app.getPath("userData")));
+      const bookmarks = result && result.data && Array.isArray(result.data.bookmarks)
+        ? result.data.bookmarks
+        : [];
+      return bookmarks;
+    } catch (error) {
+      return [];
+    }
+  }
+});
 const LATEST_MANIFEST_URL = "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/latest.json";
 const FALLBACK_LATEST_MANIFEST_URL = "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/docs/releases/latest.json";
 const CODES_API = "https://save-editor.be/GZO/Borderlands4/codes/api.php";
@@ -85,8 +120,19 @@ const ALLOWED_RESOURCE_FILES = new Set([
   "item_pools.json",
   "travelmaps_flat.json",
   "travelstations.json",
+  "gzo_parts_map.json",
+  "shiny_serials.json",
+  "challenge_catalog.json",
+  "dev_spawner_catalog.json",
   "version_info.json"
 ]);
+const DOCS_DATA_DIR = app.isPackaged
+  ? path.join(RESOURCE_ROOT, "docs", "data")
+  : defaultDocsDataDir(SOURCE_ROOT);
+const MOD_DATA_DIR = app.isPackaged
+  ? path.join(RESOURCE_ROOT, "sdkmod_data")
+  : path.join(SOURCE_ROOT, "mod_extracted", "MattsSDKBoostingTools");
+const ELECTRON_APP_DIR = __dirname;
 const LOCAL_VENV_PYTHON = path.join(SOURCE_ROOT, ".venv", "Scripts", "python.exe");
 const BUNDLED_PYTHON = path.join(RESOURCE_ROOT, "python", "python.exe");
 const MATT_HOST_START_TIMEOUT_MS = 12000;
@@ -148,6 +194,85 @@ const USER_DATA_FILE_DEFINITIONS = [
 
 function bl4GzoCacheFilePath() {
   return path.join(app.getPath("userData"), "bl4_gzo_codes.json");
+}
+
+function dataCatalogOptions() {
+  return {
+    resourceDir: RESOURCE_DIR,
+    docsDataDir: DOCS_DATA_DIR,
+    modDataDir: MOD_DATA_DIR,
+    electronAppDir: ELECTRON_APP_DIR,
+    gzoLiveCachePath: bl4GzoCacheFilePath()
+  };
+}
+
+function broadcastDataCatalogEvent(channel, payload) {
+  for (const win of BrowserWindow.getAllWindows()) {
+    if (win && !win.isDestroyed() && win.webContents) {
+      win.webContents.send(channel, payload);
+    }
+  }
+}
+
+async function bl4CatalogLoadOptions() {
+  const resolved = await resolveCatalogFileMap(app.getPath("userData"), dataCatalogOptions());
+  return {
+    gzoCachePath: bl4GzoCacheFilePath(),
+    filePaths: {
+      lootlemon: resolved.paths.lootlemon || undefined,
+      custom: resolved.paths.custom_bl4_codes || undefined,
+      custom_bl4_codes: resolved.paths.custom_bl4_codes || undefined,
+      gzo: resolved.paths.gzo_codes || undefined,
+      gzo_codes: resolved.paths.gzo_codes || undefined
+    },
+    sources: resolved.sources
+  };
+}
+
+function gzoGithubFallbackUrls() {
+  const urls = [];
+  const cachedGzo = cachedFilePath(app.getPath("userData"), KNOWN_FILES.gzo_codes);
+  // Prefer already-cached GitHub snapshot path via file URL only when fetchable remotely.
+  urls.push(
+    "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/docs/data/MattsSDKBoostingTools_gzo_codes.json"
+  );
+  if (fsSync.existsSync(cachedGzo)) {
+    // Local snapshot is applied by loadBl4Catalog via filePaths; keep URL list remote-only.
+  }
+  return urls;
+}
+
+async function softRefreshDataCatalogs(options = {}) {
+  const quiet = Boolean(options.quiet);
+  try {
+    const localManifestUrl = pathToFileURL(path.join(DOCS_DATA_DIR, "catalog_manifest.json")).href;
+    const result = await refreshRemoteDataCatalogs({
+      userDataPath: app.getPath("userData"),
+      docsDataDir: DOCS_DATA_DIR,
+      localSeedDir: DOCS_DATA_DIR,
+      electronAppDir: ELECTRON_APP_DIR,
+      quiet,
+      retries: Number.isFinite(options.retries) ? options.retries : 3,
+      manifestUrls: app.isPackaged
+        ? DEFAULT_MANIFEST_URLS
+        : [localManifestUrl, ...DEFAULT_MANIFEST_URLS],
+      onProgress: (progress) => {
+        broadcastDataCatalogEvent("app:dataCatalogProgress", progress || {});
+      }
+    });
+    broadcastDataCatalogEvent("app:dataCatalogRefreshed", result || {});
+    return result;
+  } catch (error) {
+    const result = {
+      ok: false,
+      soft: true,
+      quiet,
+      message: String(error && error.message ? error.message : error),
+      checkedAt: new Date().toISOString()
+    };
+    broadcastDataCatalogEvent("app:dataCatalogRefreshed", result);
+    return result;
+  }
 }
 
 function uniquePaths(paths) {
@@ -586,6 +711,78 @@ async function requestBridge({ method = "GET", path: route = "/status", payload 
 
 ipcMain.handle("bridge:request", async (_event, args) => requestBridge(args || {}));
 
+async function loadMobilePairingCode() {
+  try {
+    const raw = await fs.readFile(MOBILE_PAIRING_FILE(), "utf8");
+    const parsed = JSON.parse(raw);
+    const code = String(parsed && parsed.pairingCode ? parsed.pairingCode : "").trim();
+    if (/^\d{6}$/.test(code)) {
+      mobileGateway.setPairingCode(code);
+      return code;
+    }
+  } catch {
+    // First launch or unreadable file — generate below.
+  }
+  const code = mobileGateway.rotatePairingCode();
+  await saveMobilePairingCode(code);
+  return code;
+}
+
+async function saveMobilePairingCode(code) {
+  const pairingCode = String(code || mobileGateway.info().pairingCode || "").trim();
+  await fs.mkdir(path.dirname(MOBILE_PAIRING_FILE()), { recursive: true });
+  await fs.writeFile(
+    MOBILE_PAIRING_FILE(),
+    JSON.stringify({ pairingCode, updated_at: new Date().toISOString() }, null, 2),
+    "utf8"
+  );
+  return pairingCode;
+}
+
+async function startMobileGateway() {
+  await loadMobilePairingCode();
+  try {
+    return await mobileGateway.start();
+  } catch (error) {
+    return {
+      ...mobileGateway.info(),
+      ok: false,
+      enabled: false,
+      lastError: String(error && error.message ? error.message : error)
+    };
+  }
+}
+
+ipcMain.handle("mobileGateway:getInfo", async () => mobileGateway.info());
+ipcMain.handle("mobileGateway:start", async () => startMobileGateway());
+ipcMain.handle("mobileGateway:stop", async () => mobileGateway.stop());
+ipcMain.handle("mobileGateway:rotateCode", async () => {
+  const pairingCode = mobileGateway.rotatePairingCode();
+  await saveMobilePairingCode(pairingCode);
+  return mobileGateway.info();
+});
+ipcMain.handle("mobileGateway:makeQr", async (_event, text) => {
+  const payload = String(text || "").trim();
+  if (!payload) {
+    return { ok: false, message: "Missing pairing payload." };
+  }
+  try {
+    const QRCode = require("qrcode");
+    const dataUrl = await QRCode.toDataURL(payload, {
+      errorCorrectionLevel: "M",
+      margin: 1,
+      width: 280,
+      color: { dark: "#0b1220", light: "#ffffff" }
+    });
+    return { ok: true, dataUrl };
+  } catch (error) {
+    return {
+      ok: false,
+      message: error && error.message ? error.message : String(error)
+    };
+  }
+});
+
 async function fileExists(filePath) {
   try {
     await fs.access(filePath);
@@ -977,18 +1174,37 @@ ipcMain.handle("app:readResourceJson", async (_event, resourceName) => {
     return { ok: false, message: `Resource is not allowlisted: ${name}` };
   }
   try {
+    if (isElectronResourceFile(name)) {
+      const catalog = await readCatalogJson(app.getPath("userData"), name, dataCatalogOptions());
+      if (catalog.ok) {
+        return { ok: true, name, data: catalog.data, source: catalog.source, path: catalog.path };
+      }
+    }
     const text = await fs.readFile(path.join(RESOURCE_DIR, name), "utf8");
-    return { ok: true, name, data: JSON.parse(text) };
+    return { ok: true, name, data: JSON.parse(text), source: "bundled" };
   } catch (error) {
     return { ok: false, name, message: String(error && error.message ? error.message : error) };
   }
 });
 
 ipcMain.handle("app:readDevSpawnerCatalog", async () => {
-  const catalogPath = path.join(__dirname, "dev_spawner_catalog.json");
   try {
+    const catalog = await readCatalogJson(
+      app.getPath("userData"),
+      KNOWN_FILES.dev_spawner_catalog,
+      dataCatalogOptions()
+    );
+    if (catalog.ok) {
+      return {
+        ok: true,
+        data: catalog.data,
+        source: catalog.source,
+        path: catalog.path
+      };
+    }
+    const catalogPath = path.join(ELECTRON_APP_DIR, "dev_spawner_catalog.json");
     const text = await fs.readFile(catalogPath, "utf8");
-    return { ok: true, data: JSON.parse(text) };
+    return { ok: true, data: JSON.parse(text), source: "bundled", path: catalogPath };
   } catch (error) {
     return { ok: false, message: String(error && error.message ? error.message : error) };
   }
@@ -1110,7 +1326,9 @@ ipcMain.handle("app:saveWalkthroughSettings", async (_event, payload) => {
 
 ipcMain.handle("app:loadBl4Catalog", async () => {
   try {
-    return await loadBl4Catalog(RESOURCE_DIR, { gzoCachePath: bl4GzoCacheFilePath() });
+    const options = await bl4CatalogLoadOptions();
+    const catalog = await loadBl4Catalog(RESOURCE_DIR, options);
+    return { ...catalog, catalogSources: options.sources };
   } catch (error) {
     return { ok: false, message: String(error && error.message ? error.message : error) };
   }
@@ -1118,7 +1336,38 @@ ipcMain.handle("app:loadBl4Catalog", async () => {
 
 ipcMain.handle("app:refreshGzoCatalog", async () => {
   try {
-    return await refreshGzoCatalog(RESOURCE_DIR, bl4GzoCacheFilePath());
+    const options = await bl4CatalogLoadOptions();
+    return await refreshGzoCatalog(RESOURCE_DIR, bl4GzoCacheFilePath(), {
+      filePaths: options.filePaths,
+      fallbackUrls: gzoGithubFallbackUrls()
+    });
+  } catch (error) {
+    return { ok: false, message: String(error && error.message ? error.message : error) };
+  }
+});
+
+ipcMain.handle("app:refreshDataCatalogs", async (_event, options = {}) => {
+  try {
+    return await softRefreshDataCatalogs({
+      quiet: Boolean(options && options.quiet),
+      retries: options && Number.isFinite(options.retries) ? options.retries : 3
+    });
+  } catch (error) {
+    return { ok: false, message: String(error && error.message ? error.message : error) };
+  }
+});
+
+ipcMain.handle("app:getDataCatalogStatus", async () => {
+  try {
+    return await getDataCatalogStatus(app.getPath("userData"), dataCatalogOptions());
+  } catch (error) {
+    return { ok: false, message: String(error && error.message ? error.message : error) };
+  }
+});
+
+ipcMain.handle("app:getTutorialCopy", async () => {
+  try {
+    return await loadTutorialCopy(app.getPath("userData"), dataCatalogOptions());
   } catch (error) {
     return { ok: false, message: String(error && error.message ? error.message : error) };
   }
@@ -1685,7 +1934,30 @@ app.whenReady().then(() => {
   }
 
   configureAutoUpdater();
+  startMobileGateway()
+    .then((info) => {
+      if (info && info.enabled) {
+        console.log(
+          `[MSBT Mobile Gateway] listening on 0.0.0.0:${info.port} pairing=${info.pairingCode} lans=${(info.lanAddresses || []).join(",")}`
+        );
+      } else {
+        console.warn(`[MSBT Mobile Gateway] failed to start: ${info && info.lastError ? info.lastError : "unknown"}`);
+      }
+    })
+    .catch((error) => {
+      console.warn(`[MSBT Mobile Gateway] failed to start: ${error && error.message ? error.message : error}`);
+    });
   createWindow();
+  // Quiet startup auto-check: never blocks UI; offline keeps last-good cache.
+  softRefreshDataCatalogs({ quiet: true })
+    .then((result) => {
+      if (result && result.message) {
+        console.log(`[MSBT Data Catalogs] ${result.message}`);
+      }
+    })
+    .catch((error) => {
+      console.warn(`[MSBT Data Catalogs] soft refresh failed: ${error && error.message ? error.message : error}`);
+    });
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) {
       createWindow();
@@ -1700,6 +1972,7 @@ app.on("window-all-closed", () => {
 });
 
 app.on("before-quit", () => {
+  mobileGateway.stop().catch(() => {});
   if (hostProcessIsAlive()) {
     mattHostProcess.kill();
   }

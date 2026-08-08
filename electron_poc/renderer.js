@@ -30,6 +30,7 @@ const els = {
   bl4OverrideLevel: document.getElementById("bl4OverrideLevel"),
   bl4RarityFilter: document.getElementById("bl4RarityFilter"),
   bl4RefreshGzoBtn: document.getElementById("bl4RefreshGzoBtn"),
+  bl4RefreshCatalogsBtn: document.getElementById("bl4RefreshCatalogsBtn"),
   bl4ReloadBtn: document.getElementById("bl4ReloadBtn"),
   bl4SearchBtn: document.getElementById("bl4SearchBtn"),
   bl4SearchInput: document.getElementById("bl4SearchInput"),
@@ -290,6 +291,26 @@ const els = {
   startupUpdateTitle: document.getElementById("startupUpdateTitle"),
   startupUpdateUpdatesTabBtn: document.getElementById("startupUpdateUpdatesTabBtn"),
   statusOutput: document.getElementById("statusOutput"),
+  mobileGatewaySummary: document.getElementById("mobileGatewaySummary"),
+  mobileGatewayCode: document.getElementById("mobileGatewayCode"),
+  mobileGatewayAddress: document.getElementById("mobileGatewayAddress"),
+  mobileGatewayPort: document.getElementById("mobileGatewayPort"),
+  mobileGatewayDetails: document.getElementById("mobileGatewayDetails"),
+  mobileGatewayQr: document.getElementById("mobileGatewayQr"),
+  mobileGatewayHostSelect: document.getElementById("mobileGatewayHostSelect"),
+  mobileGatewayRefreshBtn: document.getElementById("mobileGatewayRefreshBtn"),
+  mobileGatewayRotateBtn: document.getElementById("mobileGatewayRotateBtn"),
+  mobileGatewayCopyBtn: document.getElementById("mobileGatewayCopyBtn"),
+  mobileAnnounceModal: document.getElementById("mobileAnnounceModal"),
+  mobileAnnounceQr: document.getElementById("mobileAnnounceQr"),
+  mobileAnnounceDontShow: document.getElementById("mobileAnnounceDontShow"),
+  mobileAnnounceDismissBtn: document.getElementById("mobileAnnounceDismissBtn"),
+  mobileAnnounceOpenApkBtn: document.getElementById("mobileAnnounceOpenApkBtn"),
+  mobileAnnounceOpenGatewayBtn: document.getElementById("mobileAnnounceOpenGatewayBtn"),
+  mobileAnnounceOpenBtn: document.getElementById("mobileAnnounceOpenBtn"),
+  boostMobileAnnounceBtn: document.getElementById("boostMobileAnnounceBtn"),
+  boostMobileGatewayBtn: document.getElementById("boostMobileGatewayBtn"),
+  boostMobileNotice: document.getElementById("boostMobileNotice"),
   targetSelect: document.getElementById("targetSelect"),
   targetSummary: document.getElementById("targetSummary"),
   travelMapBtn: document.getElementById("travelMapBtn"),
@@ -315,6 +336,10 @@ const els = {
   updateDownloadBtn: document.getElementById("updateDownloadBtn"),
   updateInstallBtn: document.getElementById("updateInstallBtn"),
   updateSummary: document.getElementById("updateSummary"),
+  dataCatalogSummary: document.getElementById("dataCatalogSummary"),
+  dataCatalogDetail: document.getElementById("dataCatalogDetail"),
+  bl4DataCatalogStatus: document.getElementById("bl4DataCatalogStatus"),
+  refreshDataCatalogsBtn: document.getElementById("refreshDataCatalogsBtn"),
   versionSummary: document.getElementById("versionSummary"),
   sdkInstallSummary: document.getElementById("sdkInstallSummary"),
   sdkModsPath: document.getElementById("sdkModsPath"),
@@ -419,6 +444,7 @@ const state = {
   selectedTargetName: "",
   startupUpdateNoticeShown: false,
   deferredStartupUpdateInfo: null,
+  deferredMobileAnnounce: false,
   travelFavorites: { version: 1, favorites: {} },
   travelFavoriteSelectedKey: "",
   travelMaps: [],
@@ -2378,6 +2404,244 @@ function updateSerialDeliveryProgress(progress = {}) {
   }
 }
 
+function buildMobilePairingPayload(info, preferredHost = "") {
+  const addresses = Array.isArray(info && info.lanAddresses)
+    ? info.lanAddresses.map((value) => String(value || "").trim()).filter(Boolean)
+    : [];
+  const preferred = String(preferredHost || "").trim();
+  const hosts = preferred && addresses.includes(preferred)
+    ? [preferred, ...addresses.filter((address) => address !== preferred)]
+    : addresses.slice();
+  return {
+    v: 1,
+    name: String((info && info.computerName) || "").trim() || "MSBT PC",
+    hosts,
+    port: Number(info && info.port) > 0 ? Number(info.port) : 49775,
+    code: String((info && info.pairingCode) || "").trim()
+  };
+}
+
+function formatMobileGatewayDetails(info, preferredHost = "") {
+  const payload = buildMobilePairingPayload(info, preferredHost);
+  const addresses = payload.hosts;
+  const primary = addresses[0] || "(no LAN IPv4 detected — check Wi‑Fi)";
+  const lines = [
+    "MSBT Mobile Gateway pairing",
+    "",
+    `PC name: ${payload.name}`,
+    `PC address: ${primary}`,
+    addresses.length > 1 ? `Other LAN IPs: ${addresses.slice(1).join(", ")}` : "",
+    `Gateway port: ${payload.port}`,
+    `Pairing code: ${payload.code || "------"}`,
+    "",
+    "Easiest: open MSBT Mobile → More → Connection Settings → Scan QR to pair.",
+    "Manual: enter address, port, and pairing code, then Save → Connect / Test.",
+    "Phone and PC must be on the same Wi‑Fi. Allow Windows Firewall for Node/Electron on port 49775 if prompted.",
+    "Keep Borderlands 4 running with the MSBT SDK mod so live actions can reach the game bridge.",
+    "",
+    `QR payload: ${JSON.stringify(payload)}`
+  ].filter(Boolean);
+  return lines.join("\n");
+}
+
+function preferredMobileGatewayHost(info) {
+  const addresses = Array.isArray(info && info.lanAddresses) ? info.lanAddresses : [];
+  const selected = els.mobileGatewayHostSelect ? String(els.mobileGatewayHostSelect.value || "").trim() : "";
+  if (selected && addresses.includes(selected)) return selected;
+  return addresses[0] || "";
+}
+
+function fillMobileGatewayHostSelect(info) {
+  if (!els.mobileGatewayHostSelect) return;
+  const addresses = Array.isArray(info && info.lanAddresses) ? info.lanAddresses : [];
+  const previous = String(els.mobileGatewayHostSelect.value || "").trim();
+  els.mobileGatewayHostSelect.innerHTML = "";
+  if (!addresses.length) {
+    const option = document.createElement("option");
+    option.value = "";
+    option.textContent = "No LAN IPv4 detected";
+    els.mobileGatewayHostSelect.appendChild(option);
+    els.mobileGatewayHostSelect.disabled = true;
+    return;
+  }
+  addresses.forEach((address, index) => {
+    const option = document.createElement("option");
+    option.value = address;
+    option.textContent = index === 0 ? `${address} (preferred)` : address;
+    els.mobileGatewayHostSelect.appendChild(option);
+  });
+  els.mobileGatewayHostSelect.disabled = addresses.length < 2;
+  els.mobileGatewayHostSelect.value = previous && addresses.includes(previous) ? previous : addresses[0];
+}
+
+async function renderMobileGatewayQr(info, preferredHost = "") {
+  if (!els.mobileGatewayQr) return;
+  const payload = buildMobilePairingPayload(info, preferredHost);
+  if (!payload.code || !payload.hosts.length) {
+    els.mobileGatewayQr.removeAttribute("src");
+    els.mobileGatewayQr.alt = "Pairing QR unavailable until a LAN address and code are ready";
+    return;
+  }
+  if (!window.msbt || typeof window.msbt.mobileGatewayMakeQr !== "function") {
+    els.mobileGatewayQr.alt = "QR generation unavailable in this build";
+    return;
+  }
+  const result = await window.msbt.mobileGatewayMakeQr(JSON.stringify(payload));
+  if (result && result.ok && result.dataUrl) {
+    els.mobileGatewayQr.src = result.dataUrl;
+    els.mobileGatewayQr.alt = "Scan with MSBT Mobile to pair";
+  } else {
+    els.mobileGatewayQr.removeAttribute("src");
+    els.mobileGatewayQr.alt = (result && result.message) || "Could not render pairing QR";
+  }
+}
+
+async function refreshMobileGatewayInfo() {
+  if (!window.msbt || typeof window.msbt.mobileGatewayGetInfo !== "function") {
+    setLine(els.mobileGatewaySummary, "Mobile gateway API unavailable in this build.", "warning");
+    return null;
+  }
+  let info = await window.msbt.mobileGatewayGetInfo();
+  if (!info || !info.enabled) {
+    info = await window.msbt.mobileGatewayStart();
+  }
+  fillMobileGatewayHostSelect(info);
+  const preferred = preferredMobileGatewayHost(info);
+  const addresses = Array.isArray(info.lanAddresses) ? info.lanAddresses : [];
+  const primary = preferred || addresses[0] || "";
+  if (els.mobileGatewayCode) els.mobileGatewayCode.textContent = info.pairingCode || "------";
+  if (els.mobileGatewayAddress) {
+    els.mobileGatewayAddress.textContent = primary
+      ? (addresses.length > 1 ? `${primary} (also ${addresses.filter((a) => a !== primary).join(", ")})` : primary)
+      : "No LAN IPv4 detected";
+  }
+  if (els.mobileGatewayPort) els.mobileGatewayPort.textContent = String(info.port || 49775);
+  if (els.mobileGatewayDetails) els.mobileGatewayDetails.textContent = formatMobileGatewayDetails(info, preferred);
+  await renderMobileGatewayQr(info, preferred);
+  if (info.enabled) {
+    setLine(
+      els.mobileGatewaySummary,
+      `Gateway online on port ${info.port}. Scan the QR in MSBT Mobile (code ${info.pairingCode}).`,
+      "ok"
+    );
+  } else {
+    setLine(
+      els.mobileGatewaySummary,
+      `Gateway offline: ${info.lastError || "could not bind LAN port"}.`,
+      "bad"
+    );
+  }
+  return info;
+}
+
+async function rotateMobileGatewayCode() {
+  if (!window.msbt || typeof window.msbt.mobileGatewayRotateCode !== "function") return null;
+  const info = await window.msbt.mobileGatewayRotateCode();
+  await refreshMobileGatewayInfo();
+  appendActivity(`Mobile gateway pairing code rotated to ${info && info.pairingCode ? info.pairingCode : "new code"}.`);
+  return info;
+}
+
+async function copyMobileGatewayDetails() {
+  const info = await refreshMobileGatewayInfo();
+  const preferred = preferredMobileGatewayHost(info || {});
+  const text = els.mobileGatewayDetails
+    ? els.mobileGatewayDetails.textContent
+    : formatMobileGatewayDetails(info || {}, preferred);
+  try {
+    await navigator.clipboard.writeText(text);
+    setLine(els.mobileGatewaySummary, "Pairing details copied to clipboard.", "ok");
+  } catch {
+    window.prompt("Copy these pairing details:", text);
+  }
+}
+
+/** Phone-friendly install page (not the raw APK). Pairing uses a different QR in Mobile Gateway. */
+const MOBILE_INSTALL_URL =
+  "https://www.funkyoushift.com/MattsSDKBoostingTools/mobile-install.html";
+const MOBILE_ANNOUNCE_DISMISS_KEY = "msbt.mobileAnnounce.dismissed.v1";
+
+function isMobileAnnounceDismissed() {
+  try {
+    return localStorage.getItem(MOBILE_ANNOUNCE_DISMISS_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function setMobileAnnounceDismissed(dismissed) {
+  try {
+    if (dismissed) localStorage.setItem(MOBILE_ANNOUNCE_DISMISS_KEY, "1");
+    else localStorage.removeItem(MOBILE_ANNOUNCE_DISMISS_KEY);
+  } catch {
+    /* ignore */
+  }
+}
+
+async function renderMobileAnnounceQr() {
+  if (!els.mobileAnnounceQr) return;
+  if (!window.msbt || typeof window.msbt.mobileGatewayMakeQr !== "function") {
+    els.mobileAnnounceQr.alt = "QR unavailable in this build";
+    return;
+  }
+  const result = await window.msbt.mobileGatewayMakeQr(MOBILE_INSTALL_URL);
+  if (result && result.ok && result.dataUrl) {
+    els.mobileAnnounceQr.src = result.dataUrl;
+    els.mobileAnnounceQr.alt = "Scan to open the MSBT Mobile install page";
+  } else {
+    els.mobileAnnounceQr.removeAttribute("src");
+    els.mobileAnnounceQr.alt = (result && result.message) || "Could not render install QR";
+  }
+}
+
+function hideMobileAnnounceModal() {
+  if (els.mobileAnnounceModal) els.mobileAnnounceModal.classList.add("hidden");
+}
+
+async function showMobileAnnounceModal({ force = false } = {}) {
+  if (!els.mobileAnnounceModal) return;
+  if (!force && isMobileAnnounceDismissed()) return;
+  if (!force && walkthroughState.active) {
+    state.deferredMobileAnnounce = true;
+    return;
+  }
+  const updateOpen =
+    els.startupUpdateModal && !els.startupUpdateModal.classList.contains("hidden");
+  if (!force && updateOpen) {
+    state.deferredMobileAnnounce = true;
+    return;
+  }
+  await renderMobileAnnounceQr();
+  if (els.mobileAnnounceDontShow) els.mobileAnnounceDontShow.checked = false;
+  els.mobileAnnounceModal.classList.remove("hidden");
+}
+
+function openMobileGatewayPanel() {
+  hideMobileAnnounceModal();
+  const activityTab = document.querySelector('[data-tab="activity"]');
+  if (activityTab) activityTab.click();
+  const panel = document.querySelector('[data-msbt-panel="mobile-gateway"]');
+  if (panel) {
+    requestAnimationFrame(() => {
+      try {
+        panel.scrollIntoView({ behavior: "smooth", block: "start" });
+      } catch {
+        panel.scrollIntoView();
+      }
+    });
+  }
+  void refreshMobileGatewayInfo();
+}
+
+function openMobileInstallPage() {
+  const url = MOBILE_INSTALL_URL;
+  if (window.msbt && typeof window.msbt.openExternal === "function") {
+    window.msbt.openExternal(url);
+  } else {
+    window.open(url, "_blank", "noopener,noreferrer");
+  }
+}
+
 function applyBridgeStatusResult(result, options = {}) {
   const data = result && result.data ? result.data : {};
   if (!result.ok || !data.ok) {
@@ -4267,6 +4531,138 @@ async function refreshBl4GzoCatalog() {
   }
 }
 
+function formatDataCatalogDetail(statusOrResult) {
+  const data = statusOrResult || {};
+  const last = data.lastRefresh || data;
+  const version = last.dataVersion
+    || (data.cachedManifest && data.cachedManifest.data_version_label)
+    || (data.bundledManifest && data.bundledManifest.data_version_label)
+    || "unknown";
+  const checkedAt = last.checkedAt || "";
+  const updated = Number.isFinite(last.updatedCount)
+    ? last.updatedCount
+    : Array.isArray(last.updated)
+      ? last.updated.length
+      : 0;
+  const skipped = Number.isFinite(last.skippedCount)
+    ? last.skippedCount
+    : Array.isArray(last.skipped)
+      ? last.skipped.length
+      : 0;
+  const failed = Number.isFinite(last.failedCount)
+    ? last.failedCount
+    : Array.isArray(last.failed)
+      ? last.failed.length
+      : 0;
+  const cachedCount = Number.isFinite(data.cachedCount) ? data.cachedCount : null;
+  const known = Number.isFinite(data.knownFileCount) ? data.knownFileCount : null;
+  const parts = [
+    `Version ${version}`,
+    checkedAt ? `last check ${checkedAt}` : null,
+    `updated ${updated}`,
+    `unchanged ${skipped}`,
+    `failed ${failed}`,
+    cachedCount !== null && known !== null ? `cache ${cachedCount}/${known}` : null
+  ].filter(Boolean);
+  return parts.join(" · ");
+}
+
+function applyDataCatalogStatusUi(statusOrResult, options = {}) {
+  const quiet = Boolean(options.quiet);
+  const message = (statusOrResult && (statusOrResult.statusLine || statusOrResult.message))
+    || "Data catalogs not checked yet.";
+  const kind = statusOrResult && statusOrResult.ok === false
+    ? "bad"
+    : statusOrResult && (statusOrResult.soft || statusOrResult.offline)
+      ? "warning"
+      : statusOrResult && statusOrResult.ok
+        ? "ok"
+        : "";
+  if (els.dataCatalogSummary) {
+    setLine(els.dataCatalogSummary, quiet && statusOrResult && statusOrResult.ok
+      ? `Startup data check: ${message}`
+      : message, kind);
+  }
+  if (els.dataCatalogDetail) {
+    els.dataCatalogDetail.textContent = formatDataCatalogDetail(statusOrResult);
+  }
+  if (els.bl4DataCatalogStatus) {
+    els.bl4DataCatalogStatus.textContent = `Data catalogs: ${formatDataCatalogDetail(statusOrResult)}`;
+  }
+}
+
+async function refreshDataCatalogStatusUi() {
+  if (!window.msbt || typeof window.msbt.getDataCatalogStatus !== "function") return null;
+  try {
+    const status = await window.msbt.getDataCatalogStatus();
+    if (status && status.ok) {
+      applyDataCatalogStatusUi(status);
+    }
+    return status;
+  } catch (error) {
+    console.warn("[MSBT] data catalog status failed:", error);
+    return null;
+  }
+}
+
+async function refreshMsbtDataCatalogs(options = {}) {
+  const fromBl4 = Boolean(options.fromBl4);
+  const quiet = Boolean(options.quiet);
+  if (!window.msbt || typeof window.msbt.refreshDataCatalogs !== "function") {
+    const message = "Data catalog refresh is not available in this Electron build.";
+    if (fromBl4) setBl4Status(message, "bad");
+    if (els.dataCatalogSummary) setLine(els.dataCatalogSummary, message, "bad");
+    return;
+  }
+  if (!quiet) {
+    if (els.bl4RefreshCatalogsBtn) els.bl4RefreshCatalogsBtn.disabled = true;
+    if (els.refreshDataCatalogsBtn) els.refreshDataCatalogsBtn.disabled = true;
+    const pending = "Refreshing MSBT data catalogs (manifest + changed JSON)...";
+    if (fromBl4) setBl4Status(pending, "warning");
+    if (els.dataCatalogSummary) setLine(els.dataCatalogSummary, pending, "warning");
+  }
+  try {
+    const result = await window.msbt.refreshDataCatalogs({ quiet, retries: 3 });
+    applyDataCatalogStatusUi(result, { quiet });
+    if (els.updateOutput && result) {
+      els.updateOutput.textContent = JSON.stringify(
+        {
+          dataVersion: result.dataVersion || null,
+          publishedAt: result.publishedAt || null,
+          checkedAt: result.checkedAt || null,
+          manifestUrl: result.manifestUrl || null,
+          updated: result.updated || [],
+          skipped: result.skipped || [],
+          failed: result.failed || [],
+          warnings: result.warnings || [],
+          cacheDir: result.cacheDir || null
+        },
+        null,
+        2
+      );
+    }
+    if (fromBl4 && !quiet) {
+      const kind = result && result.ok ? (result.soft || result.offline ? "warning" : "ok") : "bad";
+      setBl4Status(result && result.message ? result.message : "Data catalog refresh finished.", kind);
+      if (result && result.ok) {
+        await loadBl4Catalog();
+      }
+    }
+    await refreshDataCatalogStatusUi();
+    return result;
+  } catch (error) {
+    const message = `Data catalog refresh failed: ${error && error.message ? error.message : error}`;
+    if (fromBl4) setBl4Status(message, "bad");
+    if (els.dataCatalogSummary) setLine(els.dataCatalogSummary, message, "bad");
+    return { ok: false, message };
+  } finally {
+    if (!quiet) {
+      if (els.bl4RefreshCatalogsBtn) els.bl4RefreshCatalogsBtn.disabled = false;
+      if (els.refreshDataCatalogsBtn) els.refreshDataCatalogsBtn.disabled = false;
+    }
+  }
+}
+
 function versionValue(value) {
   return value === null || value === undefined || value === "" ? "unavailable" : String(value);
 }
@@ -4442,6 +4838,10 @@ function renderBoostUpdateNotice(info) {
 
 function hideStartupUpdateModal() {
   if (els.startupUpdateModal) els.startupUpdateModal.classList.add("hidden");
+  if (!walkthroughState.active && state.deferredMobileAnnounce) {
+    state.deferredMobileAnnounce = false;
+    window.setTimeout(() => void showMobileAnnounceModal({ force: false }), 200);
+  }
 }
 
 function renderStartupUpdateModal(notice) {
@@ -7639,6 +8039,33 @@ function wireEvents() {
 
   els.bl4ReloadBtn.addEventListener("click", loadBl4Catalog);
   els.bl4RefreshGzoBtn.addEventListener("click", refreshBl4GzoCatalog);
+  if (els.bl4RefreshCatalogsBtn) {
+    els.bl4RefreshCatalogsBtn.addEventListener("click", () => refreshMsbtDataCatalogs({ fromBl4: true }));
+  }
+  if (els.refreshDataCatalogsBtn) {
+    els.refreshDataCatalogsBtn.addEventListener("click", () => refreshMsbtDataCatalogs({ fromBl4: false }));
+  }
+  if (window.msbt && typeof window.msbt.onDataCatalogProgress === "function") {
+    window.msbt.onDataCatalogProgress((progress) => {
+      if (!progress) return;
+      const message = progress.message
+        || (progress.phase === "download"
+          ? `Downloading ${progress.id || "catalog"}...`
+          : progress.phase === "manifest"
+            ? "Fetching catalog manifest..."
+            : "");
+      if (!message) return;
+      if (els.dataCatalogSummary) setLine(els.dataCatalogSummary, message, "warning");
+      if (els.bl4DataCatalogStatus) els.bl4DataCatalogStatus.textContent = `Data catalogs: ${message}`;
+    });
+  }
+  if (window.msbt && typeof window.msbt.onDataCatalogRefreshed === "function") {
+    window.msbt.onDataCatalogRefreshed((result) => {
+      applyDataCatalogStatusUi(result || {}, { quiet: Boolean(result && result.quiet) });
+      refreshDataCatalogStatusUi().catch(() => {});
+      applyRemoteTutorialCopy().catch(() => {});
+    });
+  }
   els.bl4SearchBtn.addEventListener("click", applyBl4Search);
   els.bl4SearchInput.addEventListener("keydown", (event) => {
     if (event.key === "Enter") {
@@ -7909,6 +8336,42 @@ function wireEvents() {
   });
   document.getElementById("clearBridgeLogBtn").addEventListener("click", () => runAction("clear_external_log", {}, els.activityOutput, 10000));
 
+  if (els.mobileGatewayRefreshBtn) {
+    els.mobileGatewayRefreshBtn.addEventListener("click", () => void refreshMobileGatewayInfo());
+  }
+  if (els.mobileGatewayRotateBtn) {
+    els.mobileGatewayRotateBtn.addEventListener("click", () => void rotateMobileGatewayCode());
+  }
+  if (els.mobileGatewayCopyBtn) {
+    els.mobileGatewayCopyBtn.addEventListener("click", () => void copyMobileGatewayDetails());
+  }
+  if (els.mobileGatewayHostSelect) {
+    els.mobileGatewayHostSelect.addEventListener("change", () => void refreshMobileGatewayInfo());
+  }
+  if (els.mobileAnnounceDismissBtn) {
+    els.mobileAnnounceDismissBtn.addEventListener("click", () => {
+      if (els.mobileAnnounceDontShow && els.mobileAnnounceDontShow.checked) {
+        setMobileAnnounceDismissed(true);
+      }
+      hideMobileAnnounceModal();
+    });
+  }
+  if (els.mobileAnnounceOpenApkBtn) {
+    els.mobileAnnounceOpenApkBtn.addEventListener("click", openMobileInstallPage);
+  }
+  if (els.mobileAnnounceOpenGatewayBtn) {
+    els.mobileAnnounceOpenGatewayBtn.addEventListener("click", openMobileGatewayPanel);
+  }
+  if (els.mobileAnnounceOpenBtn) {
+    els.mobileAnnounceOpenBtn.addEventListener("click", () => void showMobileAnnounceModal({ force: true }));
+  }
+  if (els.boostMobileAnnounceBtn) {
+    els.boostMobileAnnounceBtn.addEventListener("click", () => void showMobileAnnounceModal({ force: true }));
+  }
+  if (els.boostMobileGatewayBtn) {
+    els.boostMobileGatewayBtn.addEventListener("click", openMobileGatewayPanel);
+  }
+
   const walkthroughNextBtn = document.getElementById("walkthroughNextBtn");
   const walkthroughBackBtn = document.getElementById("walkthroughBackBtn");
   const walkthroughSkipBtn = document.getElementById("walkthroughSkipBtn");
@@ -7973,7 +8436,8 @@ const TUTORIAL_TOURS = {
       title: "Boosting",
       body: "This is the main live lobby tab. Pick a target player (or All / Non-Host), then use Quick Max, UVH, rarity weights, XP, currency, backpack/bank size, helpers, cheats, and serial rewards. Most buttons need the bridge.",
       tab: "boosting",
-      targetSel: "#tab-boosting [data-msbt-panel='boost-quick-max']"
+      targetSel: "#tab-boosting [data-msbt-panel='boost-target']",
+      revealPanels: ["boost-target", "boost-quick-max"]
     },
     {
       title: "Serial Tools",
@@ -8129,6 +8593,40 @@ const TUTORIAL_TOURS = {
 /** Post-update / first-run tour steps */
 const MAIN_TUTORIAL_STEPS = TUTORIAL_TOURS.main;
 
+async function applyRemoteTutorialCopy() {
+  try {
+    if (!window.msbt || typeof window.msbt.getTutorialCopy !== "function") return;
+    const result = await window.msbt.getTutorialCopy();
+    if (!result || !result.ok || !result.data) return;
+    const tours = result.data.tours || {};
+    let applied = 0;
+    for (const [tourId, patches] of Object.entries(tours)) {
+      const steps = TUTORIAL_TOURS[tourId];
+      if (!Array.isArray(steps) || !Array.isArray(patches)) continue;
+      for (const patch of patches) {
+        if (!patch || typeof patch !== "object") continue;
+        const idx = Number(patch.index);
+        if (!Number.isInteger(idx) || idx < 0 || !steps[idx]) continue;
+        // Allowlist: title/body text only — never target selectors, links, or actions from remote JSON.
+        if (typeof patch.title === "string" && patch.title.trim()) {
+          steps[idx].title = patch.title;
+          applied += 1;
+        }
+        if (typeof patch.body === "string" && patch.body.trim()) {
+          steps[idx].body = patch.body;
+          applied += 1;
+        }
+      }
+    }
+    if (applied > 0 && typeof appendActivity === "function") {
+      appendActivity(`Applied ${applied} tutorial copy overlay(s) from ${result.source || "cache"}.`);
+    }
+  } catch (error) {
+    // Soft-fail: keep bundled walkthrough copy.
+    console.warn("tutorial copy overlay skipped", error);
+  }
+}
+
 /** Per-tab tips (Walkthrough button on each layout toolbar) */
 const TAB_TUTORIALS = {
   boosting: [
@@ -8136,43 +8634,50 @@ const TAB_TUTORIALS = {
       title: "Target & bridge",
       body: "Refresh Status (header) until the bridge is green. Choose a party player, or Target All / Non-Host for Quick Max, XP, Currency, and backpack/bank Set Selected. Kick uses the selected player.",
       tab: "boosting",
-      targetSel: "#tab-boosting [data-msbt-panel='boost-target']"
+      targetSel: "#tab-boosting [data-msbt-panel='boost-target']",
+      revealPanels: ["boost-target"]
     },
     {
       title: "Quick Max & UVH",
       body: "Quick Max one-shots cash, eridium, level 60, spec 701, SDUs, or Max All. UVH Booster runs lobby challenge tiers 1–N (or Run All 1–7); Cancel stops a queued run.",
       tab: "boosting",
-      targetSel: "#tab-boosting [data-msbt-panel='boost-quick-max']"
+      targetSel: "#tab-boosting [data-msbt-panel='boost-quick-max']",
+      revealPanels: ["boost-quick-max", "boost-uvh"]
     },
     {
       title: "Rarity drop weights",
       body: "Sliders are % of vanilla weight (0 removes that rarity). Apply pushes to the game; presets only change the UI until Apply. Optional Remember on startup loads sliders without applying.",
       tab: "boosting",
-      targetSel: "#tab-boosting [data-msbt-panel='boost-rarity']"
+      targetSel: "#tab-boosting [data-msbt-panel='boost-rarity']",
+      revealPanels: ["boost-rarity"]
     },
     {
       title: "Experience",
       body: "Pick XP track + target level, then Set Level or Max Player Level / Spec 701. Needs bridge + target.",
       tab: "boosting",
-      targetSel: "#tab-boosting [data-msbt-panel='boost-xp']"
+      targetSel: "#tab-boosting [data-msbt-panel='boost-xp']",
+      revealPanels: ["boost-xp"]
     },
     {
       title: "Currency & backpack / bank",
       body: "Currency: kind + amount, Give / Max. Backpack / Bank Size: set numbers, Set Selected or Apply to All Party; auto checkbox keeps re-applying as players load.",
       tab: "boosting",
-      targetSel: "#tab-boosting [data-msbt-panel='boost-inventory']"
+      targetSel: "#tab-boosting [data-msbt-panel='boost-currency']",
+      revealPanels: ["boost-currency", "boost-inventory"]
     },
     {
       title: "Serial Rewards",
       body: "Paste @U serials, optional level override + copies, then Give Selected / All / Non-Host. Delivery needs the bridge; progress shows in the top Serial Delivery bar.",
       tab: "boosting",
-      targetSel: "#tab-boosting [data-msbt-panel='boost-serial']"
+      targetSel: "#tab-boosting [data-msbt-panel='boost-serial']",
+      revealPanels: ["boost-serial"]
     },
     {
       title: "Helpers, cheats, + QM",
       body: "Quick Helpers: Pull Loot / Super Dash. Cheats panel covers ammo, demigod, chests, shinies, debug cam, etc. Gold + QM beside supported buttons pins that action into the in-game Quick Menu (F7) with current values.",
       tab: "boosting",
-      targetSel: "#tab-boosting [data-msbt-panel='boost-helpers']"
+      targetSel: "#tab-boosting [data-msbt-panel='boost-helpers']",
+      revealPanels: ["boost-helpers", "boost-cheats"]
     },
     {
       title: "Layout tip",
@@ -8498,7 +9003,8 @@ const walkthroughState = {
   _spotlightTimer: null,
   _spotlightToken: 0,
   _repositionBound: false,
-  _revealedInvDetail: false
+  _revealedInvDetail: false,
+  _didRevealPanels: false
 };
 
 function walkthroughNodes() {
@@ -8606,6 +9112,7 @@ function suppressTourCollidingChrome() {
   );
   if (els.boostUpdateNotice) els.boostUpdateNotice.classList.add("hidden");
   hideStartupUpdateModal();
+  hideMobileAnnounceModal();
 }
 
 function restoreTourCollidingChrome() {
@@ -8613,18 +9120,27 @@ function restoreTourCollidingChrome() {
     ? { ...state.versionInfo, updateState: state.latestUpdateState }
     : null;
   if (info) renderBoostUpdateNotice(info);
+  let showedUpdateModal = false;
   const deferred = state.deferredStartupUpdateInfo;
   if (deferred) {
     state.deferredStartupUpdateInfo = null;
     maybeShowStartupUpdateModal(deferred);
     walkthroughState.hidStartupUpdateModal = false;
-    return;
-  }
-  if (walkthroughState.hidStartupUpdateModal) {
+    showedUpdateModal = Boolean(
+      els.startupUpdateModal && !els.startupUpdateModal.classList.contains("hidden")
+    );
+  } else if (walkthroughState.hidStartupUpdateModal) {
     walkthroughState.hidStartupUpdateModal = false;
     const notice = info ? updateNoticeInfo(info) : null;
-    if (notice) renderStartupUpdateModal(notice);
+    if (notice) {
+      renderStartupUpdateModal(notice);
+      showedUpdateModal = true;
+    }
   }
+  // Prefer update modal first; show mobile announce shortly after (or immediately if no update UI).
+  const delayMs = showedUpdateModal ? 500 : 250;
+  state.deferredMobileAnnounce = false;
+  window.setTimeout(() => void showMobileAnnounceModal({ force: false }), delayMs);
 }
 
 function clearWalkthroughLinks() {
@@ -8704,6 +9220,7 @@ function centerWalkthroughCard() {
   if (!card) return;
   card.classList.remove("walkthrough-modal-anchored");
   card.classList.add("walkthrough-modal-centered");
+  // Clear inline coords so CSS top/left/transform centering wins cleanly.
   card.style.top = "";
   card.style.left = "";
   card.style.right = "";
@@ -8720,6 +9237,71 @@ function rectsOverlap(a, b, pad = 10) {
   );
 }
 
+/** Overlap area of card box vs highlight; pad expands the highlight only. */
+function rectOverlapArea(cardBox, highlight, pad = 0) {
+  const left = Math.max(cardBox.left, highlight.left - pad);
+  const right = Math.min(cardBox.right, highlight.right + pad);
+  const top = Math.max(cardBox.top, highlight.top - pad);
+  const bottom = Math.min(cardBox.bottom, highlight.bottom + pad);
+  const w = right - left;
+  const h = bottom - top;
+  if (w <= 0 || h <= 0) return 0;
+  return w * h;
+}
+
+function walkthroughViewportSize() {
+  return {
+    vw: window.innerWidth || document.documentElement.clientWidth || 1200,
+    vh: window.innerHeight || document.documentElement.clientHeight || 800
+  };
+}
+
+/** Apply anchored position with no leftover centered translate. */
+function applyWalkthroughCardAnchor(card, left, top) {
+  if (!card) return;
+  card.classList.remove("walkthrough-modal-centered");
+  card.classList.add("walkthrough-modal-anchored");
+  card.style.right = "auto";
+  card.style.bottom = "auto";
+  card.style.transform = "none";
+  card.style.top = `${Math.round(top)}px`;
+  card.style.left = `${Math.round(left)}px`;
+}
+
+/**
+ * Measure coach-card size while anchored. Avoids getBoundingClientRect while
+ * still under centered translate(-50%,-50%), which under-reports and then pins
+ * only the footer into a viewport corner.
+ */
+function measureWalkthroughCardSize(card, gap) {
+  const { vw, vh } = walkthroughViewportSize();
+  const maxW = Math.max(160, vw - gap * 2);
+  const maxH = Math.max(120, Math.min(vh - gap * 2, 640));
+  // Park at a known origin so offsetWidth/Height match final chrome.
+  applyWalkthroughCardAnchor(card, gap, gap);
+  const cw = Math.min(Math.max(card.offsetWidth || card.getBoundingClientRect().width || 440, 160), maxW);
+  const ch = Math.min(Math.max(card.offsetHeight || card.getBoundingClientRect().height || 280, 120), maxH);
+  return { cw, ch, vw, vh, maxW, maxH };
+}
+
+function clampWalkthroughCardBox(left, top, cw, ch, gap, vw, vh) {
+  const maxLeft = Math.max(gap, vw - cw - gap);
+  const maxTop = Math.max(gap, vh - ch - gap);
+  return {
+    left: clampWalkthroughNumber(left, gap, maxLeft),
+    top: clampWalkthroughNumber(top, gap, maxTop)
+  };
+}
+
+function walkthroughCardFullyOnScreen(box, gap, vw, vh) {
+  return (
+    box.left >= gap - 1
+    && box.top >= gap - 1
+    && box.right <= vw - gap + 1
+    && box.bottom <= vh - gap + 1
+  );
+}
+
 function placeWalkthroughCardAwayFrom(target) {
   const card = walkthroughCardNode();
   if (!card) return;
@@ -8727,47 +9309,96 @@ function placeWalkthroughCardAwayFrom(target) {
     centerWalkthroughCard();
     return;
   }
-  card.classList.remove("walkthrough-modal-centered");
-  card.classList.add("walkthrough-modal-anchored");
-  // Measure with current width class applied.
-  const gap = 14;
-  const vw = window.innerWidth || 1200;
-  const vh = window.innerHeight || 800;
+  const gap = 16;
   const highlight = target.getBoundingClientRect();
-  const measured = card.getBoundingClientRect();
-  const cw = Math.min(measured.width || 440, vw - 24);
-  const ch = Math.min(measured.height || 280, Math.min(vh - 32, 640));
-  const candidates = [
-    { top: highlight.bottom + gap, left: highlight.left }, // below
-    { top: highlight.top - ch - gap, left: highlight.left }, // above
-    { top: highlight.top, left: highlight.right + gap }, // right
-    { top: highlight.top, left: highlight.left - cw - gap }, // left
-    { top: gap, left: vw - cw - gap }, // top-right fallback
-    { top: vh - ch - gap, left: gap } // bottom-left fallback
-  ];
+  // Zero-size / off-DOM targets (e.g. still-hidden panels) — keep card centered.
+  if (highlight.width < 8 || highlight.height < 8) {
+    centerWalkthroughCard();
+    return;
+  }
+
+  const { cw, ch, vw, vh } = measureWalkthroughCardSize(card, gap);
+  // Huge targets leave no free band — prefer a readable centered card over a clipped corner.
+  const highlightArea = Math.max(1, highlight.width * highlight.height);
+  const viewArea = Math.max(1, vw * vh);
+  if (highlightArea > viewArea * 0.55 || (cw * ch) > viewArea * 0.45) {
+    centerWalkthroughCard();
+    return;
+  }
+
   const highlightBox = {
     left: highlight.left,
     top: highlight.top,
     right: highlight.right,
     bottom: highlight.bottom
   };
+  const candidates = [
+    { top: highlight.bottom + gap, left: highlight.left }, // below
+    { top: highlight.top - ch - gap, left: highlight.left }, // above
+    { top: highlight.top, left: highlight.right + gap }, // right
+    { top: highlight.top, left: highlight.left - cw - gap }, // left
+    { top: highlight.bottom + gap, left: vw - cw - gap }, // below-right
+    { top: vh - ch - gap, left: gap }, // bottom-left
+    { top: gap, left: vw - cw - gap }, // top-right
+    { top: vh - ch - gap, left: vw - cw - gap } // bottom-right
+  ];
+
   let best = null;
+  let bestOverlap = Infinity;
+  let bestFullyOn = false;
   for (const raw of candidates) {
-    const left = clampWalkthroughNumber(raw.left, gap, Math.max(gap, vw - cw - gap));
-    const top = clampWalkthroughNumber(raw.top, gap, Math.max(gap, vh - ch - gap));
-    const box = { left, top, right: left + cw, bottom: top + ch };
-    if (!rectsOverlap(box, highlightBox, 12)) {
-      best = { left, top };
+    const clamped = clampWalkthroughCardBox(raw.left, raw.top, cw, ch, gap, vw, vh);
+    const box = {
+      left: clamped.left,
+      top: clamped.top,
+      right: clamped.left + cw,
+      bottom: clamped.top + ch
+    };
+    const fullyOn = walkthroughCardFullyOnScreen(box, gap, vw, vh);
+    const overlap = rectOverlapArea(box, highlightBox, 12);
+    if (overlap === 0 && fullyOn) {
+      best = clamped;
+      bestFullyOn = true;
       break;
     }
-    if (!best) best = { left, top };
+    // Prefer fully on-screen placements; among those, least highlight overlap.
+    if (fullyOn && !bestFullyOn) {
+      bestFullyOn = true;
+      bestOverlap = overlap;
+      best = clamped;
+      continue;
+    }
+    if (fullyOn === bestFullyOn && overlap < bestOverlap) {
+      bestOverlap = overlap;
+      best = clamped;
+    }
   }
-  if (!best) {
-    best = { left: gap, top: gap };
+
+  if (!best || !bestFullyOn) {
+    // No safe side placement — keep the whole card readable.
+    centerWalkthroughCard();
+    return;
   }
-  card.style.top = `${Math.round(best.top)}px`;
-  card.style.left = `${Math.round(best.left)}px`;
-  card.style.transform = "none";
+
+  applyWalkthroughCardAnchor(card, best.left, best.top);
+
+  // Second pass: layout can grow after width switch; re-clamp so footer stays in view.
+  const live = card.getBoundingClientRect();
+  const liveW = Math.min(Math.max(live.width || cw, 160), Math.max(160, vw - gap * 2));
+  const liveH = Math.min(Math.max(live.height || ch, 120), Math.max(120, Math.min(vh - gap * 2, 640)));
+  const adjusted = clampWalkthroughCardBox(live.left, live.top, liveW, liveH, gap, vw, vh);
+  if (Math.abs(adjusted.left - live.left) > 1 || Math.abs(adjusted.top - live.top) > 1) {
+    applyWalkthroughCardAnchor(card, adjusted.left, adjusted.top);
+  }
+  const finalBox = card.getBoundingClientRect();
+  if (!walkthroughCardFullyOnScreen(
+    { left: finalBox.left, top: finalBox.top, right: finalBox.right, bottom: finalBox.bottom },
+    gap,
+    vw,
+    vh
+  )) {
+    centerWalkthroughCard();
+  }
 }
 
 function activateWalkthroughStackPanel(panel) {
@@ -8784,8 +9415,75 @@ function activateWalkthroughStackPanel(panel) {
   }
 }
 
+function walkthroughLayoutTabEl(step) {
+  if (!step || !step.tab) return null;
+  const id = String(step.tab);
+  return document.querySelector(`[data-msbt-layout-tab="${id}"]`) || document.getElementById(`tab-${id}`);
+}
+
+function panelIdFromWalkthroughSelector(sel) {
+  const text = String(sel || "");
+  const match = text.match(/data-msbt-panel\s*=\s*['"]([^'"]+)['"]/i);
+  return match ? match[1] : "";
+}
+
+/** Unhide / expand a layout panel so tour spotlights are not 0×0. */
+function ensureWalkthroughPanelVisible(tabEl, panelId) {
+  const id = String(panelId || "").trim();
+  if (!tabEl || !id) return false;
+  const escaped = (typeof CSS !== "undefined" && CSS.escape) ? CSS.escape(id) : id;
+  let panel = tabEl.querySelector(`[data-msbt-panel="${escaped}"]`);
+  if (!panel) return false;
+  let changed = false;
+  const inStash = Boolean(panel.closest(".msbt-panel-stash"));
+  const hidden = panel.classList.contains("msbt-panel-hidden") || inStash;
+  if (hidden) {
+    if (window.MsbtPanelLayout && typeof window.MsbtPanelLayout.showPanel === "function") {
+      window.MsbtPanelLayout.showPanel(tabEl, id);
+    } else {
+      panel.classList.remove("msbt-panel-hidden");
+    }
+    changed = true;
+    panel = tabEl.querySelector(`[data-msbt-panel="${escaped}"]`) || panel;
+  }
+  if (panel && panel.classList.contains("msbt-panel-collapsed")) {
+    const collapseBtn = panel.querySelector(".msbt-panel-collapse");
+    if (collapseBtn && typeof collapseBtn.click === "function") {
+      collapseBtn.click();
+    } else {
+      panel.classList.remove("msbt-panel-collapsed");
+    }
+    changed = true;
+  }
+  return changed;
+}
+
+function collectWalkthroughRevealPanelIds(step) {
+  const ids = [];
+  const seen = new Set();
+  const push = (raw) => {
+    const id = String(raw || "").trim();
+    if (!id || seen.has(id)) return;
+    seen.add(id);
+    ids.push(id);
+  };
+  if (Array.isArray(step && step.revealPanels)) {
+    step.revealPanels.forEach(push);
+  }
+  push(panelIdFromWalkthroughSelector(step && step.targetSel));
+  push(panelIdFromWalkthroughSelector(step && step.targetSelFallback));
+  const target = resolveWalkthroughTarget(step);
+  if (target) {
+    const panel = target.closest("[data-msbt-panel]")
+      || (target.hasAttribute && target.hasAttribute("data-msbt-panel") ? target : null);
+    if (panel) push(panel.getAttribute("data-msbt-panel"));
+  }
+  return ids;
+}
+
 function prepareWalkthroughTarget(step) {
   if (!step) return;
+  walkthroughState._didRevealPanels = false;
   if (step.revealInvDetail) {
     const detail = document.getElementById("invDetail");
     if (detail) {
@@ -8811,6 +9509,16 @@ function prepareWalkthroughTarget(step) {
       if (detail) detail.classList.add("hidden");
     }
     walkthroughState._revealedInvDetail = false;
+  }
+
+  // Restore layout panels hidden via Panels menu / View → Panels so spotlights work.
+  const tabEl = walkthroughLayoutTabEl(step);
+  if (tabEl) {
+    let revealed = false;
+    collectWalkthroughRevealPanelIds(step).forEach((panelId) => {
+      if (ensureWalkthroughPanelVisible(tabEl, panelId)) revealed = true;
+    });
+    walkthroughState._didRevealPanels = revealed;
   }
 }
 
@@ -8871,8 +9579,19 @@ function placeWalkthroughSpotlight(step, { skipScroll = false } = {}) {
     return;
   }
   const token = ++walkthroughState._spotlightToken;
+  const settleMs = skipScroll
+    ? 40
+    : (walkthroughState._didRevealPanels ? 520 : 320);
   if (!skipScroll) {
-    scrollWalkthroughTargetIntoView(target);
+    // After unhiding into the grid, wait one frame so scroll sees real geometry.
+    if (walkthroughState._didRevealPanels) {
+      window.requestAnimationFrame(() => {
+        if (token !== walkthroughState._spotlightToken || !walkthroughState.active) return;
+        scrollWalkthroughTargetIntoView(resolveWalkthroughTarget(step) || target);
+      });
+    } else {
+      scrollWalkthroughTargetIntoView(target);
+    }
   }
   const finish = () => {
     if (token !== walkthroughState._spotlightToken || !walkthroughState.active) return;
@@ -8882,7 +9601,7 @@ function placeWalkthroughSpotlight(step, { skipScroll = false } = {}) {
   };
   // Smooth scroll + tab/layout paint: reposition after scroll settles.
   finish();
-  walkthroughState._spotlightTimer = window.setTimeout(finish, skipScroll ? 40 : 320);
+  walkthroughState._spotlightTimer = window.setTimeout(finish, settleMs);
 }
 
 function bindWalkthroughReposition() {
@@ -9297,11 +10016,26 @@ async function init() {
     console.warn("[MSBT] bridge status failed:", error);
   }
   try {
+    await refreshMobileGatewayInfo();
+  } catch (error) {
+    console.warn("[MSBT] mobile gateway info failed:", error);
+  }
+  try {
     await loadQuickMenuLayout({ quiet: true });
   } catch (error) {
     console.warn("[MSBT] quick menu layout load failed:", error);
   }
   startBridgeStatusPolling();
+  try {
+    await refreshDataCatalogStatusUi();
+  } catch (error) {
+    console.warn("[MSBT] data catalog status failed:", error);
+  }
+  try {
+    await applyRemoteTutorialCopy();
+  } catch (error) {
+    console.warn("[MSBT] tutorial copy overlay failed:", error);
+  }
   try {
     await checkUpdates({ startup: true });
   } catch (error) {
@@ -9311,6 +10045,15 @@ async function init() {
     await maybeStartWalkthrough();
   } catch (error) {
     console.warn("[MSBT] walkthrough start failed:", error);
+  }
+  if (!walkthroughState.active) {
+    try {
+      await showMobileAnnounceModal({ force: false });
+    } catch (error) {
+      console.warn("[MSBT] mobile announce failed:", error);
+    }
+  } else {
+    state.deferredMobileAnnounce = true;
   }
 }
 

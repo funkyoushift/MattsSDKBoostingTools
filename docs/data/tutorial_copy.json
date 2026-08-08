@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "json_copy",
+  "min_app_version": "2.3.0",
+  "notes": "Allowlisted tutorial title/body overlays only. Unknown tours/keys are ignored. No scripts, no remote code. Bundled links/actions/selectors stay local.",
+  "tours": {
+    "main": [
+      {
+        "index": 0,
+        "title": "Welcome to MSBT",
+        "body": "You need Borderlands 4 + the MSBT SDK mod (.sdkmod in the game’s sdk_mods folder) + this Electron app. Live actions also need a connected bridge — use header Refresh Status.\n\nOffline: serial convert/validate. Live (game + mod + bridge): boosting, spawns, travel, delivery.\n\nPut MattsSDKBoostingTools.sdkmod next to ActorScriptDeployer under Borderlands 4/sdk_mods/. Or use Updates → Install / Update SDK Mod.\n\nTip: Updates → Refresh Data Catalogs pulls the latest serial/travel/pool JSON without a full app reinstall. Use the release download button below for the app + .sdkmod package."
+      },
+      {
+        "index": 2,
+        "title": "Boosting",
+        "body": "This is the main live lobby tab. Pick a target player (or All / Non-Host), then use Quick Max, UVH, rarity weights, XP, currency, backpack/bank size, helpers, cheats, and serial rewards.\n\nMost buttons need the bridge — Refresh Status in the header first. Serial Rewards use their own Give Selected / All / Non-Host buttons (separate from the Boost target scope).\n\nTip: after a data catalog refresh, BL4 Codes / travel / pools stay current without reinstalling the Electron app."
+      },
+      {
+        "index": 3,
+        "title": "Serial Tools",
+        "body": "Paste a @U or decoded serial → Convert to decode parts and rebuild @U (works offline). Validate serials, save keepers as Bookmarks (named groups), then Deliver Selected / All / Non-Host when the bridge is connected.\n\nTip: BL4 Codes → Load Catalog / Refresh Catalogs pulls the same remote serial seeds used by desktop cache — handy when a code was truncated or newly published."
+      },
+      {
+        "index": 7,
+        "title": "Updates",
+        "body": "Check Electron app and SDK mod versions here. Download Electron updates, or Install / Update SDK Mod into your Borderlands 4 sdk_mods folder. Fully restart the game after any SDK change.\n\nRefresh Data Catalogs updates high-churn JSON (codes, travel, pools, Dev Spawner, tutorial tips) from the MSBT data channel — separate from app SemVer. Soft-fails offline and keeps your last-good cache."
+      },
+      {
+        "index": 9,
+        "title": "Arrange your layout",
+        "body": "Every tab has a layout toolbar: drag panels by the title bar, stack by dropping center-on-center, Compact to tidy, Reset for defaults.\n\nTips: stack Target with Quick Max on Boosting; Compact when panels overlap; Reset if a tab feels lost. Full editor tour is on the next screen — or View → Layout walkthrough anytime."
+      }
+    ]
+  }
+}

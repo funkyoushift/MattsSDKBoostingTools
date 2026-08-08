@@ -23,6 +23,7 @@ Local-only / gitignored scratch (not on GitHub): `dist_electron/`, `build/`, `.v
 | Path | Purpose |
 | --- | --- |
 | [`media/`](./media/) | README / Discord screenshots |
+| [`data/`](./data/) | Remote data catalogs (`catalog_manifest.json` + high-churn JSON seeds). See [`DATA_CATALOGS.md`](./DATA_CATALOGS.md). |
 | [`releases/`](./releases/) | Tracked release metadata (`latest.json`, current notes, Discord promo media) — **not** installers |
 | [`release-notes/`](./release-notes/) | Older historical release notes |
 | [`reference/`](./reference/) | Look-back only (legacy Tkinter packagers, one-shot architecture reviews) |

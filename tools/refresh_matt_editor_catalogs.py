@@ -5,7 +5,7 @@ Steps:
   1) Sync Nexus LegitItems JSON from save-editor.be nexus_data_proxy
   2) Merge live GZO family-data.js part ids into resources/gzo_parts_map.json
   3) Refresh MattsSDKBoostingTools_gzo_codes.json via tools/refresh_gzo_release_catalog.js
-  4) Refresh MattsSDKBoostingTools_lootlemon_codes.json (add missing live items + fix encoding)
+  4) Refresh MattsSDKBoostingTools_lootlemon_codes.json (re-fetch serials + add missing)
   5) Mirror updated resource JSONs into mod_extracted when present
   6) Regenerate Matt editor part supplements via tools/audit_matt_editor_modded_parts.py
 
@@ -35,6 +35,7 @@ APP = ROOT / "external_app" / "v22_parts_codes_fixed"
 RESOURCES = APP / "resources"
 LEGIT = APP / "matt_editor" / "LegitItems"
 MOD_EXTRACTED = ROOT / "mod_extracted" / "MattsSDKBoostingTools"
+DOCS_DATA = ROOT / "docs" / "data"
 BACKUP_DIR = ROOT / "_tmp_catalog_compare" / "backups"
 REPORT_PATH = ROOT / "_tmp_catalog_compare" / "refresh_report.json"
 
@@ -43,6 +44,7 @@ GZO_FAMILY_URL = "https://save-editor.be/GZO/Borderlands4/family-data.js?v=maste
 UA = "MSBT-catalog-refresh/1.1 (+maintainer catalog sync)"
 
 LOOTLEMON_CACHE_VERSION = 5
+LOOTLEMON_DETAIL_SLEEP_S = 0.2
 LOOTLEMON_CATEGORIES = [
     ("Weapons", "https://www.lootlemon.com/db/borderlands-4/weapons"),
     ("Shields", "https://www.lootlemon.com/db/borderlands-4/shields"),
@@ -59,8 +61,22 @@ ITEM_HREF_RE = re.compile(
     re.I,
 )
 ATTR_RE = re.compile(r'([\w-]+)="([^"]*)"')
-SERIAL_RE = re.compile(r"@U[!-~]{10,}")
+# Stop at whitespace/quotes — never treat a Base85 '<' as an HTML tag boundary.
+SERIAL_RE = re.compile(r"@U[^\s\"'\\]+")
+DATA_CODE_RE = re.compile(r'\bdata-code="([^"]+)"', re.I)
 DB_ITEM_OPEN_RE = re.compile(r"<div\b[^>]*\bdata-name=\"[^\"]+\"[^>]*>", re.I)
+# Cut only at real markup tails; a lone '<' inside Base85 is payload, not a tag.
+_SERIAL_MARKUP_TAIL_RES = (
+    re.compile(r"</", re.I),
+    re.compile(r"<br\b", re.I),
+    re.compile(r"<div\b", re.I),
+    re.compile(r"<span\b", re.I),
+    re.compile(r"<button\b", re.I),
+    re.compile(r"<input\b", re.I),
+    re.compile(r"<textarea\b", re.I),
+    re.compile(r"<script\b", re.I),
+    re.compile(r"<a\b", re.I),
+)
 
 # Local PHP whitelist order (must stay in sync with LegitItems/nexus_data_proxy.php).
 NEXUS_FILE_MAP: dict[str, str] = {
@@ -203,26 +219,58 @@ def parse_attrs(tag_open: str) -> dict[str, str]:
 
 
 def unescape_serial_fragment(text: str) -> str:
-    # Named entities only; keep numeric entities intact for Base85 safety.
-    out: list[str] = []
-    i = 0
-    while i < len(text):
-        if text[i] == "&":
-            m = re.match(r"&([a-zA-Z][a-zA-Z0-9]*);", text[i:])
-            if m:
-                out.append(html.unescape(m.group(0)))
-                i += len(m.group(0))
-                continue
-        out.append(text[i])
-        i += 1
-    return "".join(out)
+    """Decode HTML escapes that are safe inside BL4 Base85 serials.
+
+    Lootlemon stores codes like ``...Ry&lt;sRHE...&amp;%c...`` in attributes.
+    Full ``html.unescape`` would also turn numeric entities (e.g. ``&#4``) into
+    control characters and corrupt Base85, so only named / common escapes that
+    appear in Lootlemon markup are decoded. Never strip ``<[^>]+>`` across a
+    serial body — a literal ``<`` is payload, not a tag.
+    """
+    out = str(text or "")
+    for _ in range(3):
+        new = re.sub(r"&amp;", "&", out, flags=re.I)
+        if new == out:
+            break
+        out = new
+    replacements = {
+        "&lt;": "<",
+        "&LT;": "<",
+        "&gt;": ">",
+        "&GT;": ">",
+        "&quot;": '"',
+        "&QUOT;": '"',
+        "&apos;": "'",
+        "&APOS;": "'",
+        "&#x27;": "'",
+        "&#X27;": "'",
+        "&#39;": "'",
+        "&#x2F;": "/",
+        "&#X2F;": "/",
+        "&#47;": "/",
+        "&#x60;": "`",
+        "&#X60;": "`",
+        "&#96;": "`",
+    }
+    for k, v in replacements.items():
+        out = out.replace(k, v)
+    return out
 
 
 def trim_serial_tail(serial: str) -> str:
-    serial = str(serial or "").strip()
-    serial = re.sub(r"(</?[a-zA-Z][^>]*>)+$", "", serial)
-    serial = serial.rstrip("\\\"'>")
-    return serial
+    """Trim HTML tag tails accidentally captured after an encoded Base85 code.
+
+    Do not rstrip ``>`` / ``<`` — those are valid Base85 characters.
+    """
+    s = str(serial or "").strip()
+    for pat in _SERIAL_MARKUP_TAIL_RES:
+        m = pat.search(s)
+        if m:
+            s = s[: m.start()].rstrip()
+            break
+    # Attribute / JSON capture may include a trailing quote delimiter only.
+    s = s.rstrip("\\\"'")
+    return s
 
 
 def is_valid_serial(serial: str) -> bool:
@@ -233,6 +281,31 @@ def is_valid_serial(serial: str) -> bool:
         and "xxxx" not in serial.lower()
         and re.fullmatch(r"@[!-~]+", serial)
     )
+
+
+def extend_serial_if_split_by_markup(detail_html: str, match: re.Match[str], serial: str) -> str:
+    """Preserve a Base85 closing ')' even when page markup separates it."""
+    serial = str(serial or "").strip()
+    if not serial or serial.endswith(")"):
+        return serial
+    try:
+        tail = unescape_serial_fragment(str(detail_html or "")[match.end() : match.end() + 96])
+        # Strip only leading real tags/space — not a lone '<' Base85 char.
+        while True:
+            m = re.match(r"\s+", tail)
+            if m:
+                tail = tail[m.end() :]
+                continue
+            m = re.match(r"</?[a-zA-Z][^>]*>", tail)
+            if m:
+                tail = tail[m.end() :]
+                continue
+            break
+        if tail.startswith(")"):
+            return serial + ")"
+    except Exception:
+        pass
+    return serial
 
 
 # ---------------------------------------------------------------------------
@@ -505,20 +578,30 @@ def collect_live_lootlemon() -> list[dict[str, str]]:
 
 
 def extract_serials_from_detail(detail_html: str) -> list[str]:
-    text = unescape_serial_fragment(detail_html)
+    """Extract @U Base85 codes from a Lootlemon detail page.
+
+    Prefer ``data-code`` attributes (copy buttons). Decode ``&lt;`` / ``&amp;``
+    carefully; never strip ``<[^>]+>`` across serial bodies.
+    """
     serials: list[str] = []
+
+    def _add(serial: str) -> None:
+        serial = trim_serial_tail(serial)
+        if is_valid_serial(serial) and serial not in serials:
+            serials.append(serial)
+
+    # 1) Explicit copy-button codes (already entity-encoded in attributes).
+    for m in DATA_CODE_RE.finditer(detail_html or ""):
+        _add(unescape_serial_fragment(m.group(1)))
+    if serials:
+        return serials
+
+    # 2) Fallback: scan page after safe entity decode (no tag-stripping).
+    text = unescape_serial_fragment(detail_html)
     for m in SERIAL_RE.finditer(text):
         serial = trim_serial_tail(m.group(0))
-        # closing paren after markup
-        if serial and not serial.endswith(")"):
-            tail = unescape_serial_fragment(detail_html[m.end() : m.end() + 96])
-            tail = re.sub(r"^\s*(?:</?[^>]+>\s*)*", "", tail)
-            if tail.startswith(")"):
-                serial += ")"
-        if not is_valid_serial(serial):
-            continue
-        if serial not in serials:
-            serials.append(serial)
+        serial = extend_serial_if_split_by_markup(text, m, serial)
+        _add(serial)
     return serials
 
 
@@ -550,44 +633,88 @@ def refresh_lootlemon() -> dict[str, Any]:
 
     live_items = collect_live_lootlemon()
     added: list[str] = []
+    updated_serials: list[dict[str, str]] = []
     renamed: list[dict[str, str]] = []
     missing_serial: list[dict[str, str]] = []
+    fetch_errors: list[dict[str, str]] = []
     fetched = 0
+    unchanged = 0
 
-    for it in live_items:
+    def _apply_listing_meta(row: dict[str, Any], it: dict[str, str], url: str) -> None:
+        name = it["name"]
+        old_name = str(row.get("name") or "")
+        fk = fold_name(name)
+        if old_name != name and fold_name(old_name) == fk:
+            row["name"] = name
+            renamed.append({"from": old_name, "to": name, "category": it["category"]})
+        elif not old_name:
+            row["name"] = name
+        if url:
+            row["url"] = url
+        if it.get("category"):
+            row["category"] = it["category"]
+        if it.get("manufacturer"):
+            row["manufacturer"] = str(it["manufacturer"]).title()
+        if it.get("rarity"):
+            row["rarity"] = title_rarity(it.get("rarity") or "")
+        if it.get("content") is not None and it.get("content") != "":
+            row["content"] = it.get("content") or ""
+        row["source"] = "Lootlemon"
+
+    for idx, it in enumerate(live_items, start=1):
         name = it["name"]
         fk = fold_name(name)
         url = (it.get("url") or "").rstrip("/")
         existing = by_fold.get(fk) or (by_url.get(url.lower()) if url else None)
 
-        if existing is not None:
-            old_name = str(existing.get("name") or "")
-            if old_name != name and fold_name(old_name) == fk:
-                existing["name"] = name
-                renamed.append({"from": old_name, "to": name, "category": it["category"]})
-            if url and not existing.get("url"):
-                existing["url"] = url
-            # keep existing serial
-            continue
-
         if not url:
-            missing_serial.append({**it, "reason": "no detail url on listing"})
+            if existing is not None:
+                _apply_listing_meta(existing, it, url)
+                unchanged += 1
+            else:
+                missing_serial.append({**it, "reason": "no detail url on listing"})
             continue
 
         try:
             detail = fetch_text(url, timeout=60)
             fetched += 1
-            time.sleep(0.15)
+            time.sleep(LOOTLEMON_DETAIL_SLEEP_S)
         except Exception as exc:
-            missing_serial.append({**it, "reason": f"fetch failed: {exc}"})
+            fetch_errors.append({**it, "reason": f"fetch failed: {exc}"})
+            if existing is not None:
+                _apply_listing_meta(existing, it, url)
             continue
+
+        if idx == 1 or idx % 25 == 0 or idx == len(live_items):
+            log(f"    detail {idx}/{len(live_items)}: {name}")
 
         serials = extract_serials_from_detail(detail)
         if not serials:
             missing_serial.append({**it, "reason": "no @U serial on detail page"})
+            if existing is not None:
+                _apply_listing_meta(existing, it, url)
             continue
 
         serial = serials[0]
+        if existing is not None:
+            _apply_listing_meta(existing, it, url)
+            old_serial = str(existing.get("serial") or "").strip()
+            if old_serial != serial:
+                updated_serials.append(
+                    {
+                        "name": name,
+                        "category": it["category"],
+                        "url": url,
+                        "from": old_serial,
+                        "to": serial,
+                    }
+                )
+                existing["serial"] = serial
+                log(f"    ~ {it['category']}: {name} (serial updated)")
+            else:
+                unchanged += 1
+            continue
+
         row = {
             "category": it["category"],
             "id": f"lootlemon:{it['category']}:{name}:0:{abs(hash(serial)) & 0xFFFFFFFFFFFFFFFF}",
@@ -619,8 +746,12 @@ def refresh_lootlemon() -> dict[str, Any]:
         "before": before,
         "after": len(entries),
         "added": added,
+        "updated_serials": updated_serials,
+        "updated_serial_count": len(updated_serials),
+        "unchanged": unchanged,
         "renamed_encoding": renamed,
         "missing_serial": missing_serial,
+        "fetch_errors": fetch_errors,
         "live_unique": len(live_items),
         "detail_fetches": fetched,
         "by_category": dict(Counter(str(e.get("category") or "") for e in entries)),
@@ -696,6 +827,53 @@ def mirror_resources() -> list[str]:
     return copied
 
 
+def mirror_docs_data() -> list[str]:
+    """Copy high-churn catalogs into docs/data for GitHub-hosted refresh."""
+    DOCS_DATA.mkdir(parents=True, exist_ok=True)
+    copied: list[str] = []
+    pairs = [
+        (RESOURCES / "MattsSDKBoostingTools_lootlemon_codes.json", DOCS_DATA / "MattsSDKBoostingTools_lootlemon_codes.json"),
+        (RESOURCES / "custom_bl4_codes.json", DOCS_DATA / "custom_bl4_codes.json"),
+        (RESOURCES / "MattsSDKBoostingTools_gzo_codes.json", DOCS_DATA / "MattsSDKBoostingTools_gzo_codes.json"),
+        (RESOURCES / "travelstations.json", DOCS_DATA / "travelstations.json"),
+        (RESOURCES / "travelmaps_flat.json", DOCS_DATA / "travelmaps_flat.json"),
+        (RESOURCES / "item_pools.json", DOCS_DATA / "item_pools.json"),
+        (RESOURCES / "gzo_parts_map.json", DOCS_DATA / "gzo_parts_map.json"),
+        (MOD_EXTRACTED / "shiny_serials.json", DOCS_DATA / "shiny_serials.json"),
+        (MOD_EXTRACTED / "challenge_catalog.json", DOCS_DATA / "challenge_catalog.json"),
+    ]
+    for src, dest in pairs:
+        if not src.exists():
+            continue
+        if dest.exists():
+            backup_file(dest)
+        shutil.copy2(src, dest)
+        copied.append(str(dest.relative_to(ROOT)))
+        log(f"  mirrored {src.name} -> docs/data")
+    return copied
+
+
+def rebuild_data_manifest(bump: str = "") -> dict[str, Any]:
+    script = ROOT / "tools" / "build_data_catalog_manifest.py"
+    cmd = [sys.executable, str(script)]
+    if bump:
+        cmd.extend(["--bump", bump])
+    proc = subprocess.run(
+        cmd,
+        cwd=str(ROOT),
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+    )
+    return {
+        "ok": proc.returncode == 0,
+        "returncode": proc.returncode,
+        "stdout": (proc.stdout or "").strip(),
+        "stderr": (proc.stderr or "").strip(),
+    }
+
+
 def verify_watchlist() -> dict[str, Any]:
     ll = json.loads((RESOURCES / "MattsSDKBoostingTools_lootlemon_codes.json").read_text(encoding="utf-8"))
     entries = ll.get("entries") or []
@@ -729,6 +907,17 @@ def main() -> int:
     parser.add_argument("--skip-lootlemon", action="store_true")
     parser.add_argument("--skip-audit", action="store_true")
     parser.add_argument("--skip-mirror", action="store_true")
+    parser.add_argument(
+        "--skip-docs-data",
+        action="store_true",
+        help="Do not mirror catalogs into docs/data or rebuild catalog_manifest.json",
+    )
+    parser.add_argument(
+        "--bump-data-version",
+        choices=("patch", "minor", "major", "keep"),
+        default="patch",
+        help="When mirroring docs/data, bump data SemVer (default: patch). Use keep to leave version unchanged.",
+    )
     parser.add_argument(
         "--nexus-keys",
         default="",
@@ -764,15 +953,41 @@ def main() -> int:
         log("== Refresh LootLemon codes ==")
         report["steps"]["lootlemon"] = refresh_lootlemon()
         ll = report["steps"]["lootlemon"]
-        log(f"  entries {ll['before']} -> {ll['after']} (+{len(ll['added'])})")
+        log(
+            f"  entries {ll['before']} -> {ll['after']} "
+            f"(+{len(ll['added'])} added, ~{ll.get('updated_serial_count', 0)} serials updated, "
+            f"{ll.get('unchanged', 0)} unchanged)"
+        )
+        if ll.get("fetch_errors"):
+            log(f"  WARNING: {len(ll['fetch_errors'])} detail fetch error(s)")
+            for row in ll["fetch_errors"][:20]:
+                log(f"    - {row.get('category')}: {row.get('name')} ({row.get('reason')})")
         if ll["missing_serial"]:
             log(f"  WARNING: {len(ll['missing_serial'])} live item(s) without serial")
             for row in ll["missing_serial"]:
                 log(f"    - {row.get('category')}: {row.get('name')} ({row.get('reason')})")
+        if ll.get("updated_serials"):
+            log(f"  sample serial updates ({min(15, len(ll['updated_serials']))}):")
+            for row in ll["updated_serials"][:15]:
+                log(f"    - {row.get('name')}: {row.get('from')[:40]}... -> {row.get('to')[:40]}...")
 
     if not args.skip_mirror:
         log("== Mirror resources ==")
         report["steps"]["mirrored"] = mirror_resources()
+
+    if not args.skip_docs_data:
+        log("== Mirror docs/data catalogs ==")
+        report["steps"]["docs_data"] = mirror_docs_data()
+        bump = (args.bump_data_version or "patch").strip()
+        if bump == "keep":
+            bump = ""
+        log(f"== Rebuild catalog_manifest.json ({'bump ' + bump if bump else 'keep version'}) ==")
+        report["steps"]["data_manifest"] = rebuild_data_manifest(bump)
+        if report["steps"]["data_manifest"]["ok"]:
+            log(report["steps"]["data_manifest"]["stdout"])
+        else:
+            log("  manifest rebuild FAILED")
+            log(report["steps"]["data_manifest"]["stderr"] or report["steps"]["data_manifest"]["stdout"])
 
     if not args.skip_audit:
         log("== Regenerate Matt editor supplements ==")

@@ -1,0 +1,91 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.funkyoushift.msbt.mobile'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'com.funkyoushift.msbt.mobile'
+        minSdk 28
+        targetSdk 35
+        versionCode 17
+        versionName '0.1.0-beta.15'
+    }
+
+    def betaKeystore = file('../debug-signing/msbt-mobile-debug.keystore')
+    signingConfigs {
+        beta {
+            if (betaKeystore.exists()) {
+                storeFile betaKeystore
+                storePassword 'android'
+                keyAlias 'androiddebugkey'
+                keyPassword 'android'
+            }
+        }
+    }
+
+    buildTypes {
+        debug {
+            if (betaKeystore.exists()) signingConfig signingConfigs.beta
+        }
+        release {
+            minifyEnabled false
+            if (betaKeystore.exists()) signingConfig signingConfigs.beta
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    sourceSets {
+        main {
+            assets.srcDir "$buildDir/generated/mobileAssets"
+        }
+    }
+}
+
+dependencies {
+    implementation 'androidx.webkit:webkit:1.12.1'
+    implementation 'androidx.core:core:1.13.1'
+}
+
+// Keep the Android beta self-contained without duplicating multi-megabyte catalogs in git.
+// Prefer docs/data (remote catalog channel seeds) then fall back to packaged desktop resources.
+tasks.register('syncMobileCatalogAssets') {
+    doLast {
+        def dest = file("$buildDir/generated/mobileAssets")
+        dest.mkdirs()
+        def catalogNames = [
+            'MattsSDKBoostingTools_gzo_codes.json',
+            'MattsSDKBoostingTools_lootlemon_codes.json',
+            'custom_bl4_codes.json',
+            'item_pools.json',
+            'travelmaps_flat.json',
+            'travelstations.json',
+            'dev_spawner_catalog.json',
+            'catalog_manifest.json'
+        ]
+        def docsData = file('../../docs/data')
+        def resources = file('../../external_app/v22_parts_codes_fixed/resources')
+        def electronDir = file('../../electron_poc')
+        catalogNames.each { name ->
+            def src = new File(docsData, name)
+            if (!src.isFile() && name == 'dev_spawner_catalog.json') {
+                src = new File(electronDir, name)
+            }
+            if (!src.isFile()) {
+                src = new File(resources, name)
+            }
+            if (src.isFile()) {
+                copy {
+                    from src
+                    into dest
+                }
+            } else if (name != 'catalog_manifest.json') {
+                logger.warn("syncMobileCatalogAssets: missing ${name}")
+            }
+        }
+    }
+}
+
+preBuild.dependsOn syncMobileCatalogAssets

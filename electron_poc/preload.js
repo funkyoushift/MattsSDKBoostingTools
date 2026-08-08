@@ -39,6 +39,21 @@ contextBridge.exposeInMainWorld("msbt", {
   saveWalkthroughSettings: (payload) => ipcRenderer.invoke("app:saveWalkthroughSettings", payload),
   loadBl4Catalog: () => ipcRenderer.invoke("app:loadBl4Catalog"),
   refreshGzoCatalog: () => ipcRenderer.invoke("app:refreshGzoCatalog"),
+  refreshDataCatalogs: (options) => ipcRenderer.invoke("app:refreshDataCatalogs", options || {}),
+  getDataCatalogStatus: () => ipcRenderer.invoke("app:getDataCatalogStatus"),
+  getTutorialCopy: () => ipcRenderer.invoke("app:getTutorialCopy"),
+  onDataCatalogProgress: (callback) => {
+    if (typeof callback !== "function") return () => {};
+    const listener = (_event, state) => callback(state);
+    ipcRenderer.on("app:dataCatalogProgress", listener);
+    return () => ipcRenderer.removeListener("app:dataCatalogProgress", listener);
+  },
+  onDataCatalogRefreshed: (callback) => {
+    if (typeof callback !== "function") return () => {};
+    const listener = (_event, state) => callback(state);
+    ipcRenderer.on("app:dataCatalogRefreshed", listener);
+    return () => ipcRenderer.removeListener("app:dataCatalogRefreshed", listener);
+  },
   bl4PartsBreakdown: (serial) => ipcRenderer.invoke("app:bl4PartsBreakdown", serial),
   getPathForFile: (file) => {
     try {
@@ -52,5 +67,10 @@ contextBridge.exposeInMainWorld("msbt", {
   readResourceJson: (resourceName) => ipcRenderer.invoke("app:readResourceJson", resourceName),
   saveReportFile: (text) => ipcRenderer.invoke("app:saveReportFile", text),
   openExternal: (url) => ipcRenderer.invoke("app:openExternal", url),
-  setWindowOpacity: (opacity) => ipcRenderer.invoke("app:setWindowOpacity", opacity)
+  setWindowOpacity: (opacity) => ipcRenderer.invoke("app:setWindowOpacity", opacity),
+  mobileGatewayGetInfo: () => ipcRenderer.invoke("mobileGateway:getInfo"),
+  mobileGatewayStart: () => ipcRenderer.invoke("mobileGateway:start"),
+  mobileGatewayStop: () => ipcRenderer.invoke("mobileGateway:stop"),
+  mobileGatewayRotateCode: () => ipcRenderer.invoke("mobileGateway:rotateCode"),
+  mobileGatewayMakeQr: (text) => ipcRenderer.invoke("mobileGateway:makeQr", text)
 });

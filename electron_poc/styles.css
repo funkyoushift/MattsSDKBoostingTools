@@ -179,11 +179,29 @@ iframe {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 10px;
   flex: 0 0 auto;
-  padding: var(--ui-header-padding-y, 10px) var(--ui-header-padding-x, 14px);
+  padding: var(--ui-header-padding-y, 6px) var(--ui-header-padding-x, 12px);
   border-bottom: 1px solid var(--line);
   background: var(--header-bg);
+}
+
+.header-brand h1 {
+  margin: 0;
+  font-size: clamp(1.05rem, 1.4vw, 1.35rem);
+  line-height: 1.15;
+}
+
+.header-tagline {
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.3;
+}
+
+.header-brand .muted-line {
+  margin: 2px 0 0;
+  font-size: 11px;
 }
 
 .header-main-actions,
@@ -196,109 +214,191 @@ iframe {
 
 .header-actions {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
   justify-content: flex-end;
-  align-items: flex-end;
-  max-width: min(980px, 58vw);
+  align-items: center;
+  max-width: min(720px, 62vw);
 }
 
 .header-main-actions {
   flex-wrap: wrap;
   justify-content: flex-end;
+  gap: 6px;
+}
+
+.header-btn {
+  min-height: 30px;
+  padding: 4px 10px;
+  font-size: 12px;
 }
 
 .opacity-control {
   display: grid;
-  grid-template-columns: auto 120px 44px;
-  gap: 6px;
+  grid-template-columns: auto 96px 40px;
+  gap: 4px;
   align-items: center;
-  min-height: 30px;
+  min-height: 28px;
 }
 
 .opacity-control label {
   margin: 0;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 11px;
   white-space: nowrap;
 }
 
 .opacity-control input[type="range"] {
-  min-height: 24px;
+  min-height: 22px;
   padding: 0;
 }
 
 .opacity-control output {
   color: var(--text);
   font-family: Consolas, "Courier New", monospace;
-  font-size: 12px;
+  font-size: 11px;
   text-align: right;
 }
 
 .support-panel {
-  border: 1px solid rgba(255, 212, 71, .55);
-  background: linear-gradient(135deg, rgba(255, 212, 71, .12), rgba(179, 107, 255, .12));
-  padding: 8px;
-  min-width: min(420px, 42vw);
+  position: relative;
+  border: 1px solid rgba(255, 212, 71, .4);
+  background: linear-gradient(135deg, rgba(255, 212, 71, .1), rgba(179, 107, 255, .08));
+  padding: 0;
+  min-width: 0;
+  border-radius: 8px;
 }
 
 .support-copy {
   display: flex;
   gap: 8px;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
-  margin-bottom: 6px;
+  margin: 0;
+  padding: 5px 10px;
   cursor: pointer;
   list-style: none;
+  user-select: none;
 }
 
 .support-copy::-webkit-details-marker {
   display: none;
 }
 
+.support-copy::after {
+  color: var(--muted);
+  content: "▾";
+  font-size: 11px;
+  margin-left: 4px;
+}
+
+.support-panel[open] > .support-copy::after {
+  content: "▴";
+}
+
 .support-copy strong {
   color: var(--gold);
-  font-size: 13px;
+  font-size: 11px;
+  letter-spacing: .04em;
   text-transform: uppercase;
 }
 
 .support-copy span,
 .support-summary-hint {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 11px;
   text-align: right;
+  white-space: nowrap;
 }
 
 .support-summary-hint {
-  display: none;
+  display: inline;
 }
 
 .support-links {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 6px;
-}
-
-@media (min-width: 1181px) {
-  .support-panel > .support-copy {
-    pointer-events: none;
-  }
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 0 8px 8px;
+  max-width: min(420px, 70vw);
 }
 
 .support-link {
-  min-height: 34px;
-  padding: 6px 8px;
+  min-height: 26px;
+  padding: 3px 8px;
   color: var(--purple);
   text-align: center;
   border: 1px solid rgba(179, 107, 255, .32);
   background: #151f33;
-  line-height: 1.25;
+  line-height: 1.2;
+  font-size: 11px;
+  border-radius: 999px;
 }
 
 .support-link.featured {
   color: var(--gold);
   border-color: rgba(255, 212, 71, .55);
+}
+
+.mobile-home-notice {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border: 1px solid rgba(56, 232, 255, .35);
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(56, 232, 255, .1), rgba(13, 19, 33, .9));
+}
+
+.mobile-home-notice h2 {
+  margin: 0 0 2px;
+  font-size: 15px;
+}
+
+.mobile-home-notice p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.mobile-announce-modal {
+  max-width: min(720px, 94vw);
+}
+
+.mobile-announce-grid {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+  margin: 12px 0;
+}
+
+.mobile-announce-qr {
+  width: 220px;
+  height: 220px;
+  border-radius: 12px;
+  border: 1px solid #31425f;
+  background: #fff;
+  object-fit: contain;
+}
+
+.mobile-announce-steps {
+  margin: 8px 0 12px;
+  padding-left: 18px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+@media (max-width: 720px) {
+  .mobile-announce-grid {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
 }
 
 .wrap {
@@ -500,13 +600,30 @@ button.qm-pin-button:hover {
   position: relative;
   z-index: 40;
   max-height: min(86vh, 720px);
-  overflow: auto;
+  overflow: hidden;
   pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.walkthrough-modal-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+}
+
+.walkthrough-modal-footer {
+  flex: 0 0 auto;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(52, 64, 82, 0.9);
 }
 
 /* Tour shell: light dim + coach-mark positioning (card placed by JS). */
 #walkthroughModal.modal-shell {
   display: block;
+  overflow: visible;
   pointer-events: none;
   background: rgba(3, 6, 12, 0.1);
 }
@@ -515,14 +632,20 @@ button.qm-pin-button:hover {
   position: fixed;
   top: 50%;
   left: 50%;
+  right: auto;
+  bottom: auto;
   transform: translate(-50%, -50%);
   width: min(620px, calc(100vw - 32px));
+  max-height: min(86vh, 720px);
 }
 
 #walkthroughModal .walkthrough-modal.walkthrough-modal-anchored {
   position: fixed;
-  transform: none;
-  width: min(440px, calc(100vw - 24px));
+  right: auto;
+  bottom: auto;
+  /* Never keep the centered translate — it pins only a corner on-screen. */
+  transform: none !important;
+  width: min(440px, calc(100vw - 32px));
   max-height: min(70vh, 640px);
 }
 
@@ -1797,12 +1920,11 @@ button.active-scope {
     flex-direction: column;
   }
 
-  .header-actions,
-  .support-panel {
+  .header-actions {
     align-items: stretch;
     max-width: none;
-    min-width: 0;
     width: 100%;
+    justify-content: flex-start;
   }
 
   .header-main-actions {
@@ -1810,37 +1932,17 @@ button.active-scope {
   }
 
   .opacity-control {
-    grid-template-columns: auto minmax(120px, 1fr) 44px;
-    width: min(100%, 360px);
+    grid-template-columns: auto minmax(96px, 1fr) 40px;
+    width: min(100%, 280px);
   }
 
-  .support-copy {
-    align-items: center;
-    margin-bottom: 0;
-  }
-
-  .support-panel[open] > .support-copy {
-    margin-bottom: 6px;
-  }
-
-  .support-summary-hint {
-    display: inline;
-    text-align: right;
-  }
-
-  .support-copy::after {
-    color: var(--muted);
-    content: "▾";
-    font-size: 12px;
-    margin-left: 6px;
-  }
-
-  .support-panel[open] > .support-copy::after {
-    content: "▴";
+  .support-panel {
+    width: fit-content;
+    max-width: 100%;
   }
 
   .support-links {
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    max-width: 100%;
   }
 
   .mini-heading {
@@ -1931,7 +2033,13 @@ button.active-scope {
 
 @media (max-width: 620px) {
   .support-links {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .support-link {
+    border-radius: 8px;
+    text-align: left;
   }
 }
 
@@ -2779,3 +2887,38 @@ button.active-scope {
 
 
 
+
+.mobile-gateway-pair-grid {
+  display: grid;
+  grid-template-columns: minmax(240px, 280px) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+  margin: 12px 0 14px;
+}
+
+.mobile-gateway-qr-block {
+  display: grid;
+  gap: 8px;
+  justify-items: start;
+}
+
+.mobile-gateway-qr {
+  width: 240px;
+  height: 240px;
+  border-radius: 12px;
+  border: 1px solid #31425f;
+  background: #fff;
+  object-fit: contain;
+}
+
+.mobile-gateway-meta-block {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+}
+
+@media (max-width: 900px) {
+  .mobile-gateway-pair-grid {
+    grid-template-columns: 1fr;
+  }
+}

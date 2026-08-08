@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#12141a">
+  <title>Install MSBT Mobile Controller</title>
+  <style>
+    :root {
+      --bg0: #12141a;
+      --bg1: #1a1f2b;
+      --text: #f2f4f8;
+      --muted: #a8b0c0;
+      --accent: #e8a23a;
+      --accent-text: #1a1206;
+      --line: rgba(255, 255, 255, 0.12);
+      --ok: #7dcea0;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(1200px 600px at 20% -10%, rgba(232, 162, 58, 0.18), transparent 55%),
+        radial-gradient(900px 500px at 100% 0%, rgba(90, 140, 220, 0.14), transparent 50%),
+        linear-gradient(180deg, var(--bg1), var(--bg0));
+    }
+    main {
+      max-width: 34rem;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 3rem;
+    }
+    .brand {
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 0 0 0.75rem;
+    }
+    h1 {
+      margin: 0 0 0.75rem;
+      font-size: clamp(1.7rem, 5vw, 2.1rem);
+      line-height: 1.15;
+    }
+    .lead {
+      margin: 0 0 1.5rem;
+      color: var(--muted);
+      line-height: 1.45;
+      font-size: 1.05rem;
+    }
+    .cta {
+      display: block;
+      width: 100%;
+      text-align: center;
+      text-decoration: none;
+      background: var(--accent);
+      color: var(--accent-text);
+      font-weight: 700;
+      font-size: 1.15rem;
+      padding: 1rem 1.25rem;
+      border-radius: 0.75rem;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 10px 28px rgba(232, 162, 58, 0.28);
+    }
+    .cta:active { transform: translateY(1px); }
+    .hint {
+      margin: 0.85rem 0 0;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+    ol {
+      margin: 1.75rem 0 0;
+      padding: 1.1rem 1.1rem 1.1rem 2.1rem;
+      border: 1px solid var(--line);
+      border-radius: 0.85rem;
+      background: rgba(0, 0, 0, 0.22);
+      line-height: 1.45;
+    }
+    li + li { margin-top: 0.65rem; }
+    .note {
+      margin-top: 1.25rem;
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.4;
+    }
+    .note strong { color: var(--ok); font-weight: 600; }
+    a.secondary {
+      color: var(--accent);
+    }
+    .footer {
+      margin-top: 2rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 0.85rem;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="brand">Matt's SDK Boosting Tools</p>
+    <h1>Install MSBT Mobile Controller</h1>
+    <p class="lead">
+      Android open beta. Tap Download, then open the APK from Chrome’s download notification to install.
+      This page is the <strong>install</strong> link — pairing uses a different QR inside the desktop app.
+    </p>
+
+    <a class="cta" id="downloadBtn"
+       href="https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/mobile-beta/MSBT-Mobile-Controller.apk">
+      Download APK
+    </a>
+    <p class="hint">Android 9+ · about 6 MB · open-beta build</p>
+
+    <ol>
+      <li>Tap <strong>Download APK</strong> above.</li>
+      <li>When Chrome finishes, open the download (notification or Downloads list).</li>
+      <li>Allow install from Chrome / Files if Android asks.</li>
+      <li>On PC: MSBT → <strong>Activity → Mobile Gateway</strong>.</li>
+      <li>In the phone app: <strong>Scan QR to pair</strong> (that QR is for pairing, not this install page).</li>
+    </ol>
+
+    <p class="note">
+      <strong>Same Wi‑Fi</strong> as the gaming PC is required for pairing.
+      Reinstalling over a previous beta keeps local data.
+    </p>
+
+    <p class="footer">
+      Direct APK (advanced):
+      <a class="secondary" href="https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/mobile-beta/MSBT-Mobile-Controller.apk">MSBT-Mobile-Controller.apk</a>
+      ·
+      <a class="secondary" href="https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/mobile-beta">Release notes</a>
+    </p>
+  </main>
+</body>
+</html>

@@ -10,35 +10,36 @@
 </head>
 <body>
   <header class="app-header">
-    <div>
+    <div class="header-brand">
       <h1>Matt's SDK Boosting Tools</h1>
-      <p>Desktop control panel for MSBT. Serial tools work offline; in-game actions need the SDK mod running.</p>
+      <p class="header-tagline">Desktop control panel · offline serial tools · live actions need the SDK mod</p>
       <p id="appVersionLine" class="muted-line">Loading version info...</p>
     </div>
     <div class="header-actions">
       <div class="header-main-actions">
         <div class="opacity-control" aria-label="App opacity">
-          <label for="appOpacity">App Opacity</label>
+          <label for="appOpacity">Opacity</label>
           <input id="appOpacity" type="range" min="35" max="100" value="100">
           <output id="appOpacityValue" for="appOpacity">100%</output>
         </div>
-        <button id="statusBtn">Refresh Status</button>
-        <button id="updateBtn">Check Updates</button>
-        <button id="repoBtn">GitHub</button>
+        <button id="statusBtn" class="header-btn">Status</button>
+        <button id="updateBtn" class="header-btn">Updates</button>
+        <button id="repoBtn" class="header-btn">GitHub</button>
+        <button id="mobileAnnounceOpenBtn" class="header-btn">Mobile App</button>
       </div>
-      <details class="support-panel" open aria-label="Support and follow links">
+      <details class="support-panel" aria-label="Support and follow links">
         <summary class="support-copy">
-          <strong>Support MSBT</strong>
-          <span class="support-summary-hint">Tip, donate, Discord, Twitch</span>
+          <strong>Support</strong>
+          <span class="support-summary-hint">Tip · Donate · Discord · Twitch</span>
         </summary>
         <div class="support-links">
           <button id="streamlabsBtn" class="support-link featured">Tip FunkYouSHiFT</button>
-          <button id="mattmabKofiBtn" class="support-link">Donate to Mattmab</button>
-          <button id="funkyoushiftSiteBtn" class="support-link">FunkYouSHiFT Discord / Site</button>
+          <button id="mattmabKofiBtn" class="support-link">Donate Mattmab</button>
+          <button id="funkyoushiftSiteBtn" class="support-link">Discord / Site</button>
           <button id="gzoDiscordBtn" class="support-link">GZO Discord</button>
-          <button id="gzoToolsBtn" class="support-link">Other Tools (GZO)</button>
-          <button id="twitchBtn" class="support-link">Watch FunkYouSHiFT on Twitch</button>
-          <button id="youtubeBtn" class="support-link">Watch FunkYouSHiFT on YouTube</button>
+          <button id="gzoToolsBtn" class="support-link">Other Tools</button>
+          <button id="twitchBtn" class="support-link">Twitch</button>
+          <button id="youtubeBtn" class="support-link">YouTube</button>
         </div>
       </details>
     </div>
@@ -89,20 +90,56 @@
     </div>
   </section>
 
+  <section id="mobileAnnounceModal" class="modal-shell hidden" role="dialog" aria-modal="true" aria-labelledby="mobileAnnounceTitle">
+    <div class="modal-card mobile-announce-modal">
+      <h2 id="mobileAnnounceTitle">MSBT Mobile Controller — Open Beta</h2>
+      <p id="mobileAnnounceMessage">
+        Control Boost, Codes, Quick Menu, and more from your phone on the same Wi‑Fi.
+        This QR opens the <strong>install page</strong> (not pairing). After install, pair with a
+        different QR under <strong>Activity → Mobile Gateway</strong>.
+      </p>
+      <div class="mobile-announce-grid">
+        <img id="mobileAnnounceQr" class="mobile-announce-qr" alt="QR code to open the MSBT Mobile install page" width="220" height="220">
+        <div class="mobile-announce-side">
+          <p class="muted-line">Android 9+ · install over previous betas to keep data</p>
+          <ol class="mobile-announce-steps">
+            <li>Scan this QR → phone install page → <strong>Download APK</strong></li>
+            <li>Open the finished download and allow install if prompted</li>
+            <li>In MSBT open <strong>Activity → Mobile Gateway</strong></li>
+            <li>On the phone: <strong>Scan QR to pair</strong> (pairing QR, not this one)</li>
+          </ol>
+          <div class="button-row wrap">
+            <button id="mobileAnnounceOpenApkBtn">Open Install Page</button>
+            <button id="mobileAnnounceOpenGatewayBtn">Open Mobile Gateway</button>
+          </div>
+        </div>
+      </div>
+      <label class="walkthrough-dont-show">
+        <input id="mobileAnnounceDontShow" type="checkbox">
+        Don't show this announcement again
+      </label>
+      <div class="button-row wrap">
+        <button id="mobileAnnounceDismissBtn" class="secondary">Not Now</button>
+      </div>
+    </div>
+  </section>
+
   <section id="walkthroughModal" class="modal-shell hidden" role="dialog" aria-modal="true" aria-labelledby="walkthroughTitle">
     <div class="walkthrough-spotlight" id="walkthroughSpotlight" hidden></div>
     <div class="modal-card walkthrough-modal">
-      <div class="walkthrough-progress" id="walkthroughProgress" aria-live="polite"></div>
-      <h2 id="walkthroughTitle">Welcome to MSBT</h2>
-      <p id="walkthroughBody">A short overview of the main tabs and what they do.</p>
-      <div id="walkthroughLinks" class="walkthrough-links hidden"></div>
-      <p id="walkthroughSdkNote" class="status-line warning hidden"></p>
-      <div id="walkthroughChoices" class="walkthrough-choices hidden" role="group" aria-label="Choose a walkthrough"></div>
-      <label class="walkthrough-dont-show" id="walkthroughDontShowRow">
-        <input id="walkthroughDontShow" type="checkbox">
-        Don't auto-show this tour again until the next update
-      </label>
-      <div class="button-row wrap">
+      <div class="walkthrough-modal-body">
+        <div class="walkthrough-progress" id="walkthroughProgress" aria-live="polite"></div>
+        <h2 id="walkthroughTitle">Welcome to MSBT</h2>
+        <p id="walkthroughBody">A short overview of the main tabs and what they do.</p>
+        <div id="walkthroughLinks" class="walkthrough-links hidden"></div>
+        <p id="walkthroughSdkNote" class="status-line warning hidden"></p>
+        <div id="walkthroughChoices" class="walkthrough-choices hidden" role="group" aria-label="Choose a walkthrough"></div>
+        <label class="walkthrough-dont-show" id="walkthroughDontShowRow">
+          <input id="walkthroughDontShow" type="checkbox">
+          Don't auto-show this tour again until the next update
+        </label>
+      </div>
+      <div class="walkthrough-modal-footer button-row wrap">
         <button id="walkthroughBackBtn" class="secondary">Back</button>
         <button id="walkthroughNextBtn">Next</button>
         <button id="walkthroughSkipBtn" class="secondary">Skip</button>
@@ -122,6 +159,17 @@
           <button id="boostUpdateInstallBtn">Restart / Install Now</button>
           <button id="boostUpdateOpenInstallerBtn">Open Installer Download</button>
           <button id="boostUpdateOpenUpdatesBtn">Open Updates Tab</button>
+        </div>
+      </section>
+
+      <section id="boostMobileNotice" class="mobile-home-notice" aria-live="polite">
+        <div class="mobile-home-notice-copy">
+          <h2>Mobile Controller open beta</h2>
+          <p>Pair your phone over LAN with QR. Same Wi‑Fi · Activity → Mobile Gateway.</p>
+        </div>
+        <div class="button-row wrap">
+          <button id="boostMobileAnnounceBtn">Show install QR</button>
+          <button id="boostMobileGatewayBtn" class="secondary">Mobile Gateway</button>
         </div>
       </section>
 
@@ -720,12 +768,14 @@
             <div class="button-row wrap">
               <button id="bl4SubmitGzoBtn" class="gzo-submit-cta">Submit Your Code to GZO</button>
               <button id="bl4ReloadBtn">Load Catalog</button>
+              <button id="bl4RefreshCatalogsBtn">Refresh Catalogs</button>
               <button id="bl4RefreshGzoBtn">Refresh GZO</button>
               <button id="bl4ValidateBtn">Validate / Confirm Active</button>
               <button id="bl4ImportSelectedBtn">Import Selected To Bookmarks</button>
             </div>
           </div>
           <div id="bl4Status" class="status-line warning">Loading BL4 Codes catalog...</div>
+          <div id="bl4DataCatalogStatus" class="version-detail">Data catalogs: not checked yet.</div>
 
           <div class="filter-panel">
             <h3>Filters</h3>
@@ -1330,6 +1380,33 @@
           <h2>Bridge Raw Status</h2>
           <pre id="statusOutput">Click Refresh Status to check the SDK bridge.</pre>
         </section>
+        <section class="panel" data-msbt-panel="mobile-gateway" data-msbt-span="12" data-msbt-title="Mobile Gateway">
+          <h2>Mobile Gateway (select beta)</h2>
+          <p class="muted-line">Phone controllers on the same Wi‑Fi connect here. The SDK bridge stays on localhost; Electron proxies approved requests.</p>
+          <div id="mobileGatewaySummary" class="status-line warning">Loading mobile gateway…</div>
+          <div class="mobile-gateway-pair-grid">
+            <div class="mobile-gateway-qr-block">
+              <p class="muted-line"><strong>Scan with MSBT Mobile</strong></p>
+              <img id="mobileGatewayQr" class="mobile-gateway-qr" alt="Mobile pairing QR code" width="240" height="240">
+              <p class="muted-line">Open MSBT Mobile → More → Connection Settings → <strong>Scan QR to pair</strong>.</p>
+              <label for="mobileGatewayHostSelect">QR uses this PC address</label>
+              <select id="mobileGatewayHostSelect">
+                <option value="">Detecting…</option>
+              </select>
+            </div>
+            <div class="mobile-gateway-meta-block">
+              <p class="muted-line"><strong>Pairing code:</strong> <span id="mobileGatewayCode">------</span></p>
+              <p class="muted-line"><strong>PC address:</strong> <span id="mobileGatewayAddress">Detecting…</span></p>
+              <p class="muted-line"><strong>Gateway port:</strong> <span id="mobileGatewayPort">49775</span></p>
+              <div class="button-row wrap">
+                <button id="mobileGatewayRefreshBtn">Refresh Gateway Info</button>
+                <button id="mobileGatewayRotateBtn">New Pairing Code</button>
+                <button id="mobileGatewayCopyBtn">Copy Pairing Details</button>
+              </div>
+            </div>
+          </div>
+          <pre id="mobileGatewayDetails">Closed-beta pairing: scan the QR in MSBT Mobile, or enter the PC address, port 49775, and pairing code manually.</pre>
+        </section>
       </div>
     </section>
 
@@ -1408,7 +1485,10 @@
           <button id="updateInstallBtn">Restart / Install Downloaded Update</button>
           <button id="downloadBtn">Open Electron Installer</button>
           <button id="manualZipBtn">Open Manual ZIP</button>
+          <button id="refreshDataCatalogsBtn">Refresh Data Catalogs</button>
         </div>
+        <div id="dataCatalogSummary" class="status-line">Data catalogs not checked yet.</div>
+        <div id="dataCatalogDetail" class="version-detail">Last data version / refresh time appear here after a check.</div>
         <pre id="updateOutput">Checks GitHub Releases metadata without changing files.</pre>
       </section>
 

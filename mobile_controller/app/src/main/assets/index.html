@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#070a12">
+  <title>MSBT Mobile Controller</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="chrome-top">
+    <header class="appbar">
+      <div class="brand"><strong>MSBT</strong><span>Mobile Controller</span></div>
+      <span id="connectionBadge" class="badge offline">OFFLINE</span>
+    </header>
+    <div class="session-strip">
+      <span><b>PC</b> <span id="pcSummary">Not paired</span></span>
+      <span><b>Target</b> <span id="targetSummary">None</span></span>
+    </div>
+    <div id="updateBanner" class="update-banner hidden" role="status" aria-live="polite">
+      <div class="update-banner-copy">
+        <p class="eyebrow">UPDATE AVAILABLE</p>
+        <p id="updateBannerText">A newer open-beta APK is ready.</p>
+        <small id="updateBannerMeta" class="muted"></small>
+      </div>
+      <div class="update-banner-actions">
+        <button type="button" id="updateInstallBtn" class="primary">Update</button>
+        <button type="button" id="updateLaterBtn" class="ghost">Later</button>
+      </div>
+    </div>
+  </div>
+
+  <main id="view">
+    <section data-screen="home" class="screen active">
+      <div class="hero card">
+        <p class="eyebrow">CONTROLLER STATUS</p>
+        <h1 id="homeStatusTitle">PC not paired</h1>
+        <p id="homeStatusText">Offline tools stay usable. Live actions unlock when MSBT on the PC is paired and reachable.</p>
+        <div class="row">
+          <button class="primary" data-open-panel="connectionPanel">Set up PC connection</button>
+          <button id="homeConnectBtn">Connect</button>
+        </div>
+      </div>
+      <div class="grid two">
+        <article class="card"><span>Desktop MSBT</span><strong id="desktopStatus">Offline</strong></article>
+        <article class="card"><span>Game bridge</span><strong id="bridgeStatus">Offline</strong></article>
+      </div>
+      <article class="card"><p class="eyebrow">RECENT RESULT</p><p id="recentResult">No live actions yet.</p></article>
+      <article class="card notice"><p class="eyebrow">BETA FEEDBACK</p><p>Send feedback and full-screen screenshots directly to FunkYouSHiFT on Discord. Include phone make/model and Android version.</p></article>
+    </section>
+
+    <section data-screen="boost" class="screen">
+      <h2>Boost</h2>
+      <article class="card target-card">
+        <p class="eyebrow">TARGET PLAYER</p>
+        <select id="boostTarget" class="select player-target" disabled><option value="">No connection</option></select>
+        <small class="muted">Selection is shared across Boost, Codes, QM, and Control.</small>
+      </article>
+      <article class="card"><p class="eyebrow">QUICK MAX</p><div class="button-grid"><button data-live data-action="max_all">MAX ALL</button><button data-live data-action="max_currency">MAX CASH</button><button data-live data-action="max_eridium">MAX ERIDIUM</button><button data-live data-action="max_player_level">MAX PLAYER</button><button data-live data-action="max_spec_level">MAX SPEC</button><button data-live data-action="max_sdu">MAX SDU</button></div></article>
+      <article class="card"><p class="eyebrow">UVH BOOSTER</p><p class="muted">UVH N runs tiers 1 through N for the live lobby.</p><div class="button-grid"><button data-live data-action="uvh_boost_tier_1">UVH 1</button><button data-live data-action="uvh_boost_tier_2">UVH 2</button><button data-live data-action="uvh_boost_tier_3">UVH 3</button><button data-live data-action="uvh_boost_tier_4">UVH 4</button><button data-live data-action="uvh_boost_tier_5">UVH 5</button><button data-live data-action="uvh_boost_tier_6">UVH 6</button><button data-live data-action="uvh_boost_tier_7">UVH 7</button><button data-live data-action="uvh_boost_all">Run All 1-7</button><button data-live data-action="uvh_boost_status">UVH Status</button><button data-live data-action="uvh_boost_cancel" class="danger">Cancel UVH</button></div></article>
+      <article class="card"><p class="eyebrow">CURRENCY / XP</p><div class="fields two"><label>Currency<select id="boostCurrencyKind"><option value="cash">Cash</option><option value="eridium">Eridium</option><option value="vaultcard1">Vault Card 1</option><option value="vaultcard2">Vault Card 2</option><option value="vaultcard3">Vault Card 3</option><option value="vaultcard4">Vault Card 4</option></select></label><label>Amount<input id="boostCurrencyAmount" value="1000000" inputmode="numeric"></label><label>XP Track<select id="boostXpTrack"><option value="player">Player</option><option value="specialization">Specialization</option><option value="vaultcard_xp_1">Vault Card XP 1</option><option value="vaultcard_xp_2">Vault Card XP 2</option><option value="vaultcard_xp_3">Vault Card XP 3</option><option value="vaultcard_xp_4">Vault Card XP 4</option></select></label><label>Level<input id="boostXpLevel" value="60" inputmode="numeric"></label></div><div class="button-grid"><button data-live data-action="give_currency">Give Currency</button><button data-live data-action="set_level">Set Level</button></div></article>
+      <article class="card"><p class="eyebrow">BACKPACK / BANK</p><div class="fields two"><label>Backpack<input id="boostBackpackSize" value="999" inputmode="numeric"></label><label>Bank<input id="boostBankSize" value="1500" inputmode="numeric"></label></div><div class="button-grid"><button data-live data-action="set_backpack_bank_selected">Set Selected</button><button data-live data-action="set_backpack_bank_all">Apply All Party</button></div></article>
+      <article class="card"><p class="eyebrow">QUICK HELPERS</p><div class="button-grid"><button data-live data-action="movement_pull_ground_loot">Pull Loot Here</button><button data-live data-action="movement_super_dash">Super Dash</button><button data-live data-action="movement_super_dash_toggle">Super Dash Toggle</button></div></article>
+      <article class="card"><p class="eyebrow">SERIAL SENDER</p><textarea id="boostSerialText" placeholder="Paste one or more @U serials"></textarea><div class="fields two"><label>Copies<input id="boostCopies" value="1" inputmode="numeric"></label><label>Override Level<select id="boostOverride"><option value="no">No</option><option value="yes">Yes</option></select></label><label>Level<input id="boostSerialLevel" value="60" inputmode="numeric"></label></div><div class="row"><button id="boostValidate">Validate</button><button id="boostConfirm">Confirm</button></div><div class="button-row-wrap"><button data-live data-action="give_serial_selected">Send Selected</button><button data-live data-action="give_serial_all">Send All</button><button data-live data-action="give_serial_nonhost">Send Non-Host</button></div><small id="boostSerialStatus" class="muted">Not confirmed.</small></article>
+      <article class="card"><p class="eyebrow">RARITY PRESETS</p><div class="button-grid"><button data-live data-action="rarity_only_legendary">Only Legendary</button><button data-live data-action="rarity_only_pearlescent">Only Pearlescent</button><button data-live data-action="rarity_reset">Reset Weights</button><button data-live data-action="rarity_apply">Apply Saved</button></div></article>
+      <article class="card"><p class="eyebrow">CHEATS / CHESTS / SHINIES</p><div class="button-grid"><button data-live data-action="devperk_0">Give Experience</button><button data-live data-action="devperk_1">Give 1M Cash</button><button data-live data-action="devperk_2">Give 100k Eridium</button><button data-live data-action="devperk_3">Kill All Enemies</button><button data-live data-action="devperk_4">Customs + Hovers</button><button data-live data-action="devperk_5">Infinite Ammo</button><button data-live data-action="devperk_6">Demigod</button><button data-live data-action="devperk_7">Spawn Leg/Epic Loot</button><button data-live data-action="open_bank">Open Bank</button><button data-live data-action="toggle_debug_cam">Debug Cam</button><button data-live data-action="teleport_debug_cam">TP Debug Cam</button><button data-live data-action="open_golden_chest">Open Golden Chest</button><button data-live data-action="close_golden_chest">Close Golden Chest</button><button data-live data-action="drop_all_shinies">Drop All Shinies</button><button data-live data-action="shiny_selected">Shiny Selected</button><button data-live data-action="shiny_all">Shiny All</button><button data-live data-action="shiny_nonhost">Shiny Non-Host</button></div></article>
+    </section>
+
+    <section data-screen="codes" class="screen">
+      <div class="title-row"><div><h2>BL4 Codes</h2><small id="catalogStatus" class="muted">Loading bundled catalog…</small></div><button id="refreshCodes">Refresh</button></div>
+      <input id="codeSearch" type="search" placeholder="Search name, type, maker, creator, tag…">
+      <div class="filter-grid">
+        <select id="listingFilter">
+          <option value="">All listings</option>
+          <option value="Modded">Modded</option>
+          <option value="Legit">Legit</option>
+          <option value="Lootlemon">Lootlemon</option>
+        </select>
+        <select id="creatorFilter"><option value="">All creators</option></select>
+        <select id="sourceFilter"><option value="">All sources</option></select>
+        <select id="typeFilter"><option value="">All types</option></select>
+        <select id="manufacturerFilter"><option value="">All manufacturers</option></select>
+        <select id="rarityFilter"><option value="">All rarities</option></select>
+      </div>
+      <div class="selection-bar"><span id="selectionSummary">0 selected</span><button id="selectAllCodes">Select all filtered</button><button id="clearCodeSelection">Clear</button></div>
+      <div id="codeList" class="list"></div>
+      <article class="card sticky-delivery"><p class="eyebrow">DELIVERY</p><div class="fields two"><label>Copies<input id="codeCopies" value="1" inputmode="numeric"></label><label>Target<select id="codeTarget" class="player-target" disabled><option value="">No connection</option></select></label></div><div class="button-row-wrap"><button data-live data-action="give_serial_selected" data-serial-source="codes">Send Selected</button><button data-live data-action="give_serial_all" data-serial-source="codes">Send All</button><button data-live data-action="give_serial_nonhost" data-serial-source="codes">Send Non-Host</button></div></article>
+    </section>
+
+    <section data-screen="quick" class="screen">
+      <div class="title-row"><div><h2>Quick Menu</h2><small id="quickSyncStatus" class="muted">Offline edits are stored locally.</small></div><span id="quickPageLabel">Page 1 / 5</span></div>
+      <article class="card target-card">
+        <p class="eyebrow">TARGET PLAYER</p>
+        <select id="qmTarget" class="select player-target" disabled><option value="">No connection</option></select>
+        <small class="muted">Synced with Boost. Player-scoped Quick Menu slots use this target.</small>
+      </article>
+      <div class="page-tabs" id="quickPages"></div>
+      <div class="quick-grid" id="quickGrid"></div>
+      <div class="row"><button id="quickPullPc" data-live-optional>Pull From PC</button><button id="quickResolve" disabled>Resolve Sync</button></div>
+      <small class="muted">Pull loads the live F7 Quick Menu from the game via desktop MSBT. Tap an assigned slot to fire it while connected.</small>
+    </section>
+
+    <section data-screen="control" class="screen">
+      <h2>Control</h2>
+      <article class="card target-card">
+        <p class="eyebrow">TARGET PLAYER</p>
+        <select id="controlTarget" class="select player-target" disabled><option value="">No connection</option></select>
+        <small class="muted">Shared across Inventory, Bookmarks, Movement, Travel, and Item Pools.</small>
+      </article>
+      <div class="tool-grid">
+        <button data-open-panel="inventoryPanel">Inventory</button>
+        <button data-open-panel="bookmarkPanel">Bookmarks</button>
+        <button data-open-panel="travelPanel">Map Travel</button>
+        <button data-open-panel="movementPanel">Movement</button>
+        <button data-open-panel="poolPanel">Item Pools</button>
+      </div>
+
+      <article id="movementPanel" class="card panel-shell hidden">
+        <div class="panel-head">
+          <p class="eyebrow">PLAYER MOVEMENT</p>
+          <div class="panel-head-actions">
+            <button type="button" class="ghost" data-select-all="movement">Select All</button>
+            <button type="button" class="ghost" data-collapse-panel="movementPanel">Collapse</button>
+          </div>
+        </div>
+        <label>Target<select id="movementTarget" class="player-target" disabled><option value="">No connection</option></select></label>
+        <p class="muted">Applies to the selected target. Fields stay local until Apply / Set Time.</p>
+        <div class="panel-scroll" id="movementScroll">
+          <details class="fold" open><summary>Presets</summary>
+            <div class="button-grid movement-select-grid">
+              <button data-live data-action="movement_preset_fast" data-movement-pick>Fast</button>
+              <button data-live data-action="movement_preset_veryfast" data-movement-pick>Very Fast</button>
+              <button data-live data-action="movement_preset_moon" data-movement-pick>Moon</button>
+              <button data-live data-action="movement_preset_wallwalk" data-movement-pick>Wall Walk</button>
+              <button data-live data-action="movement_preset_fastglide" data-movement-pick>Fast Glide</button>
+              <button data-live data-action="movement_reset_all" class="danger" data-movement-pick>Reset Defaults</button>
+            </div>
+          </details>
+          <details class="fold" open><summary>Tune Values</summary>
+            <div class="fields two">
+              <label>Speed Scale<input data-movement="speedScale" value="1.00" inputmode="decimal"></label>
+              <label>Walk Speed<input data-movement="walkSpeed" value="600" inputmode="numeric"></label>
+              <label>Jump Height<input data-movement="jumpHeight" value="198" inputmode="numeric"></label>
+              <label>Gravity Scale<input data-movement="gravityScale" value="1.00" inputmode="decimal"></label>
+              <label>Step Height<input data-movement="stepHeight" value="45" inputmode="decimal"></label>
+              <label>Floor Angle<input data-movement="floorAngle" value="44.8" inputmode="decimal"></label>
+              <label>Floor Z<input data-movement="floorZ" value="0.71" inputmode="decimal"></label>
+              <label>Glide Speed<input data-movement="glideSpeed" value="1200" inputmode="numeric"></label>
+              <label>Glide Boost<input data-movement="glideBoost" value="0" inputmode="numeric"></label>
+              <label>Glide Air Control<input data-movement="glideAirControl" value="0.60" inputmode="decimal"></label>
+              <label>Dash Speed<input data-movement="dashSpeed" value="2500" inputmode="numeric"></label>
+              <label>Time Dilation<input data-movement="timeDilation" value="1.00" inputmode="decimal"></label>
+              <label>Sprint Jump<input data-movement="sprintJumpGoal" value="198" inputmode="numeric"></label>
+              <label>Double Jump<input data-movement="doubleJumpGoal" value="198" inputmode="numeric"></label>
+              <label>Slide Jump<input data-movement="slideJumpGoal" value="198" inputmode="numeric"></label>
+            </div>
+            <label class="check"><input type="checkbox" data-movement="individualJumpGoals"> Individual jump goals</label>
+            <label class="check"><input type="checkbox" data-movement="zeroVaultOnApply"> Zero vault on apply</label>
+            <div class="row"><button id="saveMovement">Save Preset</button><button data-live data-action="movement_apply_all">Apply to Target</button></div>
+          </details>
+          <details class="fold" open><summary>Infinite Jump</summary>
+            <div class="button-grid movement-select-grid">
+              <button data-live data-action="movement_infinite_jump_all_on" data-movement-pick>All ON</button>
+              <button data-live data-action="movement_infinite_jump_all_off" class="danger" data-movement-pick>All OFF</button>
+              <button data-live data-action="movement_infinite_jump_selected_on" data-movement-pick>Selected ON</button>
+              <button data-live data-action="movement_infinite_jump_selected_off" class="danger" data-movement-pick>Selected OFF</button>
+              <button data-live data-action="movement_infinite_jump_toggle_selected" data-movement-pick>Toggle Selected</button>
+            </div>
+          </details>
+          <details class="fold" open><summary>World / Helpers</summary>
+            <div class="button-grid movement-select-grid">
+              <button data-live data-action="movement_set_time" data-movement-pick>Set Time</button>
+              <button data-live data-action="movement_reset_time" data-movement-pick>Reset Time</button>
+              <button data-live data-action="movement_zero_vault" data-movement-pick>Zero Vault CD</button>
+              <button data-live data-action="movement_players_only" data-movement-pick>Players Only</button>
+              <button data-live data-action="movement_toggle_no_target" data-movement-pick>No Target</button>
+              <button data-live data-action="movement_toggle_noclip" data-movement-pick>Noclip</button>
+              <button data-live data-action="movement_pull_ground_loot" data-movement-pick>Pull Loot</button>
+              <button data-live data-action="movement_hide_ground_loot" data-movement-pick>Hide Ground Loot</button>
+              <button data-live data-action="movement_delete_ground_items" class="danger" data-movement-pick>Delete Ground</button>
+              <button data-live data-action="movement_super_dash" data-movement-pick>Super Dash</button>
+              <button data-live data-action="movement_super_dash_toggle" data-movement-pick>Super Dash Toggle</button>
+              <button data-live data-action="movement_azzy_super_dash" data-movement-pick>Azzy Super Dash</button>
+              <button data-live data-action="movement_azzy_super_dash_toggle" data-movement-pick>Azzy Dash Toggle</button>
+            </div>
+          </details>
+          <details class="fold" open><summary>Teleport Target → Party</summary>
+            <div class="button-grid movement-select-grid">
+              <button data-live data-action="movement_teleport_to_slot" data-slot="0" data-movement-pick>To P1</button>
+              <button data-live data-action="movement_teleport_to_slot" data-slot="1" data-movement-pick>To P2</button>
+              <button data-live data-action="movement_teleport_to_slot" data-slot="2" data-movement-pick>To P3</button>
+              <button data-live data-action="movement_teleport_to_slot" data-slot="3" data-movement-pick>To P4</button>
+            </div>
+          </details>
+          <div class="row"><button id="runSelectedMovement" data-live>Run Selected Actions</button></div>
+        </div>
+        <small id="movementStatus" class="muted">Preset can be edited and saved offline.</small>
+      </article>
+
+      <article id="inventoryPanel" class="card panel-shell hidden">
+        <div class="panel-head">
+          <p class="eyebrow">INVENTORY</p>
+          <div class="panel-head-actions">
+            <button type="button" class="ghost" data-select-all="inventory">Select All</button>
+            <button type="button" class="ghost" data-collapse-panel="inventoryPanel">Collapse</button>
+          </div>
+        </div>
+        <label>Target<select id="invTarget" class="player-target" disabled><option value="">No connection</option></select></label>
+        <p class="muted">Reads equipped + backpack for the selected target. Best on listen host.</p>
+        <div class="button-grid">
+          <button id="invRefresh">Refresh Inventory</button>
+          <button id="invEquipped">Equipped Only</button>
+          <button id="invBackpack">Backpack Only</button>
+          <button data-live data-action="refresh_players">Refresh Players</button>
+        </div>
+        <input id="invSearch" type="search" placeholder="Filter inventory rows…">
+        <div class="selection-bar"><span id="invSelectionSummary">0 selected</span><button type="button" id="invClearSelection">Clear</button></div>
+        <div id="invRows" class="list compact panel-scroll"><small class="muted">Connect and tap Refresh Inventory.</small></div>
+        <div class="button-row-wrap">
+          <button id="invUseBoost" disabled>Use in Boost Sender</button>
+          <button id="invSaveBookmark" disabled>Bookmark</button>
+          <button id="invSendSelected" data-live data-action="give_serial_selected" data-serial-source="inventory" disabled>Send Selected</button>
+        </div>
+        <small id="invStatus" class="muted">No inventory loaded.</small>
+      </article>
+
+      <article id="bookmarkPanel" class="card panel-shell hidden">
+        <div class="panel-head">
+          <p class="eyebrow">SERIAL BOOKMARKS</p>
+          <div class="panel-head-actions">
+            <button type="button" class="ghost" data-select-all="bookmarks">Select All</button>
+            <button type="button" class="ghost" data-collapse-panel="bookmarkPanel">Collapse</button>
+          </div>
+        </div>
+        <label>Target<select id="bookmarkTarget" class="player-target" disabled><option value="">No connection</option></select></label>
+        <div class="row"><button id="pullDesktopBookmarks" data-live-optional>Pull From MSBT</button><button id="saveBookmark">Save Local</button><button id="deleteBookmark">Delete</button></div>
+        <div class="fields two"><label>Name<input id="bookmarkName"></label><label>Group<input id="bookmarkGroup"></label></div>
+        <textarea id="bookmarkSerial" placeholder="@U serial"></textarea>
+        <div class="button-row-wrap"><button id="bookmarkUseBoost">Use in Boost Sender</button><button id="bookmarkSendSelected" data-live data-action="give_serial_selected" data-serial-source="bookmark">Send Selected</button></div>
+        <input id="bookmarkSearch" type="search" placeholder="Search bookmarks">
+        <div class="selection-bar"><span id="bookmarkSelectionSummary">0 selected</span><button type="button" id="bookmarkClearSelection">Clear</button></div>
+        <div id="bookmarkRows" class="list compact panel-scroll"></div>
+        <small id="bookmarkStatus" class="muted">Pull loads desktop Serial Bookmarks over the Mobile Gateway.</small>
+      </article>
+
+      <article id="travelPanel" class="card panel-shell hidden">
+        <div class="panel-head">
+          <p class="eyebrow">MAP TRAVEL</p>
+          <button type="button" class="ghost" data-collapse-panel="travelPanel">Collapse</button>
+        </div>
+        <label>Target<select id="travelTarget" class="player-target" disabled><option value="">No connection</option></select></label>
+        <p class="muted">Pick a map, then a travel station on that map — same flow as desktop MSBT.</p>
+        <label>Search maps<input id="travelMapSearch" type="search" placeholder="world, fortress, raid…"></label>
+        <div id="travelMapSummary" class="muted">Loading maps…</div>
+        <div id="travelMapRows" class="list compact panel-scroll"></div>
+        <div class="row"><button id="travelMapGo" data-live data-action="travel_to_map" disabled>Travel to Map</button></div>
+        <label class="check"><input type="checkbox" id="travelShowAllStations"> Show all travel stations</label>
+        <label>Search stations<input id="travelStationSearch" type="search" placeholder="boss, bunker, station…"></label>
+        <div id="travelStationSummary" class="muted">Select a map to filter stations.</div>
+        <div id="travelStationRows" class="list compact panel-scroll"></div>
+        <div class="row"><button id="travelStationGo" data-live data-action="travel_to_station" disabled>Travel to Station</button></div>
+        <small id="travelStatus" class="muted">Bundled travel maps/stations.</small>
+      </article>
+
+      <article id="poolPanel" class="card panel-shell hidden">
+        <div class="panel-head">
+          <p class="eyebrow">ITEM POOLS</p>
+          <button type="button" class="ghost" data-collapse-panel="poolPanel">Collapse</button>
+        </div>
+        <label>Target<select id="poolTarget" class="player-target" disabled><option value="">No connection</option></select></label>
+        <div class="fields two">
+          <label>Level<input id="poolLevel" value="60" inputmode="numeric"></label>
+          <label>Count<input id="poolCount" value="1" inputmode="numeric"></label>
+        </div>
+        <input id="poolSearch" type="search" placeholder="Search item pools…">
+        <div id="poolRows" class="list compact panel-scroll"><small class="muted">Loading item pools…</small></div>
+        <div class="row"><button id="poolSpawn" data-live data-action="spawn_itempool" disabled>Spawn Selected Pool</button></div>
+        <small id="poolStatus" class="muted">Bundled item_pools.json.</small>
+      </article>
+    </section>
+
+    <section data-screen="spawn" class="screen">
+      <h2>Dev Spawner</h2>
+      <article class="card notice">
+        <p class="eyebrow">EXPERIMENTAL</p>
+        <p class="muted">Same ASD tools as desktop MSBT. Can crash the game, corrupt saves, or affect lobby players. Use Clear ASD Spawns after heavy spawning.</p>
+        <label class="check"><input type="checkbox" id="devRiskCheck"> I understand the risk</label>
+        <button id="devAcceptRisk" type="button">Enable Dev Spawner This Session</button>
+        <small id="devRiskStatus" class="muted">Check the box, then tap Enable. Spawn actions also need a live PC connection.</small>
+      </article>
+      <article class="card">
+        <p class="eyebrow">SPAWN SETTINGS</p>
+        <div class="fields two">
+          <label>Distance<input id="devActorDistance" value="350" inputmode="numeric"></label>
+          <label>+Z<input id="devActorZOffset" value="0" inputmode="numeric"></label>
+          <label>Count<input id="devActorCount" value="1" inputmode="numeric"></label>
+          <label>Spacing<input id="devActorSpacing" value="125" inputmode="numeric"></label>
+          <label>Scale<input id="devActorScale" value="1.0" inputmode="decimal"></label>
+          <label>Target/List Limit<input id="devActorTargetLimit" value="20" inputmode="numeric"></label>
+        </div>
+        <label>Selected Actor<input id="devAiName" placeholder="Select from actor browser"></label>
+        <div class="button-grid">
+          <button data-live data-action="dev_spawner_spawnai" data-dev-risk>Spawn Selected Actor</button>
+        </div>
+      </article>
+      <article class="card">
+        <p class="eyebrow">SETUP / INSPECT</p>
+        <div class="button-grid">
+          <button data-live data-action="dev_spawner_status" data-dev-risk>ASD Status</button>
+          <button data-live data-action="dev_spawner_cache_status" data-dev-risk>Cache Status</button>
+          <button data-live data-action="dev_spawner_spawnerdiag" data-dev-risk>Spawner Diagnostics</button>
+          <button data-live data-action="dev_spawner_targets" data-dev-risk>List Targets</button>
+          <button data-live data-action="dev_spawner_probeai" data-dev-risk>Probe AI</button>
+          <button data-live data-action="dev_spawner_cache" data-dev-risk>Cache Live Actor</button>
+        </div>
+        <details class="fold"><summary>Template Spawn Options</summary>
+          <div class="fields two">
+            <label>Class Override<input id="devActorClass" placeholder="OakLostLootMachine…"></label>
+            <label>Activation Delay<input id="devActorDelay" value="1" inputmode="decimal"></label>
+            <label>Enable States<input id="devActorEnableStates" placeholder="Active,ActiveIdle_Anim"></label>
+            <label>Disable States<input id="devActorDisableStates" placeholder="IsInUse,InUse_Anim…"></label>
+          </div>
+          <label class="check"><input type="checkbox" id="devActorIncludeNonGenerated"> Include Non-Generated</label>
+          <label class="check"><input type="checkbox" id="devActorNoActivate"> Spawn only, do not activate</label>
+        </details>
+        <details class="fold" open><summary>Advanced Actions</summary>
+          <div class="button-grid">
+            <button data-live data-action="dev_spawner_spawn" data-dev-risk>Spawn Template</button>
+            <button data-live data-action="dev_spawner_lostloot" data-dev-risk>Spawn Lost Loot</button>
+            <button data-live data-action="dev_spawner_activate_last" data-dev-risk>Activate Last</button>
+            <button data-live data-action="dev_spawner_scriptdump" data-dev-risk>Script Dump Last</button>
+            <button data-live data-action="dev_spawner_logo_options" data-dev-risk>Logo Options</button>
+            <button data-live data-action="dev_spawner_clear" class="danger" data-dev-risk>Clear ASD Spawns</button>
+          </div>
+        </details>
+      </article>
+      <article class="card">
+        <p class="eyebrow">BARREL LOGO</p>
+        <div class="fields two">
+          <label>Actor<input id="devLogoActor" value="barrel"></label>
+          <label>Distance<input id="devLogoDistance" value="2500" inputmode="numeric"></label>
+          <label>Height<input id="devLogoHeight" value="750" inputmode="numeric"></label>
+          <label>Spacing<input id="devLogoSpacing" value="70" inputmode="numeric"></label>
+          <label>Scale<input id="devLogoScale" value="0.45" inputmode="decimal"></label>
+        </div>
+        <label class="check"><input type="checkbox" id="devLogoIncludeNonGenerated"> Include Non-Generated</label>
+        <label>Line 1<input id="devLogoLine1" value="MSBT"></label>
+        <label>Line 2<input id="devLogoLine2" value="BOOSTING"></label>
+        <label>Line 3<input id="devLogoLine3" value="TOOLS"></label>
+        <div class="button-grid">
+          <button id="devLogoUseSelected">Use Selected Actor</button>
+          <button data-live data-action="dev_spawner_barrel_logo" data-dev-risk>Run Barrel Logo</button>
+        </div>
+      </article>
+      <article class="card">
+        <p class="eyebrow">ACTOR BROWSER</p>
+        <label>Search<input id="devActorSearch" type="search" placeholder="boss, bank, barrel, turret…"></label>
+        <select id="devActorCategory" class="select"><option value="All">All</option></select>
+        <div id="devActorSummary" class="muted">Loading actor catalog…</div>
+        <div id="devActorRows" class="list compact panel-scroll"></div>
+        <div class="row"><button id="devPrevPage">Prev Page</button><button id="devNextPage">Next Page</button></div>
+      </article>
+      <article class="card"><p class="eyebrow">RESULT</p><pre id="devSpawnerOutput" class="result-pre">No Dev Spawner action sent yet.</pre></article>
+    </section>
+
+    <section data-screen="more" class="screen">
+      <h2>More</h2>
+      <div class="list menu">
+        <button data-open-panel="connectionPanel">Connection Settings</button>
+        <button data-open-panel="activityPanel">Activity Log</button>
+        <button data-open-panel="feedbackPanel">Beta Feedback</button>
+        <button data-open-panel="aboutPanel">About</button>
+      </div>
+
+      <article id="connectionPanel" class="card hidden">
+        <p class="eyebrow">PC CONNECTION</p>
+        <p class="muted">Same Wi‑Fi as the PC. Easiest: open desktop MSBT → Activity → Mobile Gateway and scan the QR.</p>
+        <button id="scanPairingQr" class="primary">Scan QR to pair</button>
+        <details class="fold" open>
+          <summary>Manual setup</summary>
+          <p class="muted">Or enter the PC address, port, and 6-digit pairing code by hand.</p>
+          <label>PC name<input id="pcName" placeholder="Gaming PC"></label>
+          <label>PC address<input id="pcAddress" placeholder="192.168.1.100"></label>
+          <label>Gateway port<input id="pcPort" value="49775" inputmode="numeric"></label>
+          <label>Pairing code<input id="pairingCode" placeholder="From desktop MSBT" inputmode="numeric"></label>
+        </details>
+        <div class="button-grid">
+          <button id="saveConnection">Save Setup</button>
+          <button id="testConnection">Connect / Test</button>
+          <button id="disconnectConnection">Disconnect</button>
+        </div>
+        <small id="connectionStatus" class="muted">Not configured.</small>
+      </article>
+
+      <article id="activityPanel" class="card hidden"><p class="eyebrow">ACTIVITY LOG</p><div id="activityRows" class="list compact"><small class="muted">No activity yet.</small></div></article>
+      <article id="feedbackPanel" class="card hidden"><p class="eyebrow">BETA FEEDBACK</p><p>For this open beta, send feedback directly to FunkYouSHiFT in Discord DMs.</p><p class="muted">Please include phone make/model, Android version, what screen you were on, what you expected, what happened, and full-screen screenshots. For layout issues, capture the whole screen including navigation.</p><button id="copyFeedbackTemplate">Copy Feedback Template</button></article>
+      <article id="aboutPanel" class="card hidden">
+        <p class="eyebrow">ABOUT</p>
+        <p><strong>MSBT Mobile Controller</strong><br>Android beta <span id="aboutVersion">0.1.0-beta.15</span></p>
+        <p class="muted">Companion controller for Matt's SDK Boosting Tools. Live game actions require desktop MSBT.</p>
+        <p id="aboutUpdateStatus" class="muted">Update check idle.</p>
+        <div class="button-row-wrap">
+          <button type="button" id="checkUpdatesBtn">Check for updates</button>
+          <button type="button" id="aboutInstallUpdateBtn" class="primary hidden">Download &amp; install</button>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <dialog id="quickMergeDialog">
+    <form method="dialog" class="dialog-card">
+      <p class="eyebrow">QUICK MENU SYNC CONFLICT</p>
+      <h3>Both layouts changed</h3>
+      <p>Choose how to resolve the phone and PC Quick Menu layouts.</p>
+      <button value="merge">Merge changes</button>
+      <button value="phone">Keep phone layout</button>
+      <button value="pc">Keep PC layout</button>
+      <button value="cancel">Decide later</button>
+    </form>
+  </dialog>
+
+  <dialog id="qrScanDialog" class="qr-scan-dialog">
+    <div class="qr-scan-card">
+      <p class="eyebrow">SCAN PAIRING QR</p>
+      <p class="muted">Point at the QR in desktop MSBT → Activity → Mobile Gateway.</p>
+      <div class="qr-video-wrap">
+        <video id="qrScanVideo" playsinline muted autoplay></video>
+        <canvas id="qrScanCanvas" class="hidden"></canvas>
+      </div>
+      <small id="qrScanStatus" class="muted">Starting camera…</small>
+      <button id="qrScanCancel" type="button">Cancel</button>
+    </div>
+  </dialog>
+
+  <nav class="bottom-nav" aria-label="Main navigation">
+    <button class="active" data-nav="home"><span class="nav-icon">⌂</span><span>Home</span></button>
+    <button data-nav="boost"><span class="nav-icon">⚡</span><span>Boost</span></button>
+    <button data-nav="codes"><span class="nav-icon">⌕</span><span>Codes</span></button>
+    <button data-nav="quick"><span class="nav-icon">★</span><span>QM</span></button>
+    <button data-nav="control"><span class="nav-icon">✦</span><span>Control</span></button>
+    <button data-nav="spawn"><span class="nav-icon">◉</span><span>Spawn</span></button>
+    <button data-nav="more"><span class="nav-icon">•••</span><span>More</span></button>
+  </nav>
+  <script src="jsQR.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

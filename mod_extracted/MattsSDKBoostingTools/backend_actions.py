@@ -1516,11 +1516,56 @@ def drop_all_shinies_selected() -> dict[str, Any]:
         return {"ok": False, "message": f"Drop All Shinies failed: {exc!r}"}
 
 
+def _electron_msbt_data_candidates(file_name: str) -> list[str]:
+    """Best-effort paths where Electron writes remote catalog cache (delivery catalogs).
+
+    Electron owns refresh; SDK only reads last-good JSON if present. Never fetches.
+    Override with MSBT_DATA_CACHE pointing at the msbt_data directory.
+    """
+    name = os.path.basename(str(file_name or "").strip())
+    if not name:
+        return []
+    out: list[str] = []
+    env_dir = str(os.environ.get("MSBT_DATA_CACHE") or "").strip()
+    if env_dir:
+        out.append(os.path.join(env_dir, name))
+    appdata = str(os.environ.get("APPDATA") or "").strip()
+    if appdata:
+        for app_folder in (
+            "matts-sdk-boosting-tools",
+            "Matt's SDK Boosting Tools",
+            "MattsSDKBoostingTools",
+        ):
+            out.append(os.path.join(appdata, app_folder, "msbt_data", name))
+    # De-dupe while preserving order.
+    seen: set[str] = set()
+    unique: list[str] = []
+    for path in out:
+        key = os.path.normcase(os.path.abspath(path))
+        if key in seen:
+            continue
+        seen.add(key)
+        unique.append(path)
+    return unique
+
+
+def _read_json_bytes_prefer_electron_cache(file_name: str, packaged_blob: bytes | None) -> tuple[bytes, str]:
+    for candidate in _electron_msbt_data_candidates(file_name):
+        try:
+            if os.path.isfile(candidate):
+                with open(candidate, "rb") as fh:
+                    return fh.read(), candidate
+        except Exception:
+            continue
+    if packaged_blob is not None:
+        return packaged_blob, "packaged"
+    raise FileNotFoundError(f"{file_name} not found in Electron cache or packaged mod data.")
+
+
 def _load_shiny_serials() -> list[str]:
     package_name = __package__ or __name__.rpartition(".")[0]
-    blob = pkgutil.get_data(package_name, "shiny_serials.json")
-    if blob is None:
-        raise RuntimeError("Could not load shiny_serials.json from the mod package data.")
+    packaged = pkgutil.get_data(package_name, "shiny_serials.json")
+    blob, _source = _read_json_bytes_prefer_electron_cache("shiny_serials.json", packaged)
     data = json.loads(blob.decode("utf-8"))
     if not isinstance(data, list):
         raise RuntimeError("shiny_serials.json must contain a JSON list.")
@@ -2086,7 +2131,8 @@ def _load_challenge_catalog() -> list[tuple[str, int]]:
     rows: list[tuple[str, int]] = []
     try:
         package = __package__ or "MattsSDKBoostingTools"
-        raw = pkgutil.get_data(package, "challenge_catalog.json")
+        packaged = pkgutil.get_data(package, "challenge_catalog.json")
+        raw, _source = _read_json_bytes_prefer_electron_cache("challenge_catalog.json", packaged)
         if raw:
             data = json.loads(raw.decode("utf-8"))
             entries = data.get("entries") if isinstance(data, dict) else None
