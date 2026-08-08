@@ -25,14 +25,18 @@ import androidx.webkit.WebViewAssetLoader;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -56,6 +60,23 @@ public class MainActivity extends Activity {
             "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/mobile-beta/MSBT-Mobile-Controller.apk";
     private static final Pattern VERSION_PATTERN =
             Pattern.compile("(\\d+)\\.(\\d+)\\.(\\d+)(?:-beta\\.(\\d+))?", Pattern.CASE_INSENSITIVE);
+    private static final String DATA_CACHE_DIR = "msbt_data";
+    private static final String[] DATA_MANIFEST_URLS = new String[]{
+            "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.0.2/catalog_manifest.json",
+            "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/docs/data/catalog_manifest.json",
+            "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.0.1/catalog_manifest.json",
+            "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.0.0/catalog_manifest.json"
+    };
+    private static final Set<String> CATALOG_ASSET_NAMES = new HashSet<>(Arrays.asList(
+            "MattsSDKBoostingTools_gzo_codes.json",
+            "MattsSDKBoostingTools_lootlemon_codes.json",
+            "custom_bl4_codes.json",
+            "item_pools.json",
+            "travelmaps_flat.json",
+            "travelstations.json",
+            "dev_spawner_catalog.json",
+            "catalog_manifest.json"
+    ));
 
     private WebView webView;
     private PermissionRequest pendingWebPermission;
@@ -63,22 +84,16 @@ public class MainActivity extends Activity {
     private String pendingInstallApkUrl;
     private volatile boolean updateCheckRunning;
     private volatile boolean downloadRunning;
+    private volatile boolean dataCatalogRefreshRunning;
 
     /**
      * Narrow asset reader fallback. Primary loading uses WebViewAssetLoader so
      * large catalog JSON can stream through normal fetch() instead of a giant
      * JavascriptInterface string return (GZO alone is multi-megabyte).
+     * Cached remote catalogs under filesDir/msbt_data/ win over APK assets.
      */
     public class AssetBridge {
-        private final Set<String> allowed = new HashSet<>(Arrays.asList(
-                "MattsSDKBoostingTools_gzo_codes.json",
-                "MattsSDKBoostingTools_lootlemon_codes.json",
-                "custom_bl4_codes.json",
-                "item_pools.json",
-                "travelmaps_flat.json",
-                "travelstations.json",
-                "dev_spawner_catalog.json"
-        ));
+        private final Set<String> allowed = new HashSet<>(CATALOG_ASSET_NAMES);
 
         @JavascriptInterface
         public String readText(String fileName) {
@@ -89,15 +104,21 @@ public class MainActivity extends Activity {
             if (name.contains("/") || name.contains("\\") || name.contains("..") || !allowed.contains(name)) {
                 return errorJson("asset not allowed: " + name);
             }
-            try (InputStream input = MainActivity.this.getAssets().open(name);
-                 BufferedReader reader = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8))) {
-                StringBuilder builder = new StringBuilder();
-                char[] buffer = new char[8192];
-                int read;
-                while ((read = reader.read(buffer)) >= 0) {
-                    builder.append(buffer, 0, read);
+            try {
+                File cached = cachedCatalogFile(name);
+                if (cached.isFile()) {
+                    return readFileUtf8(cached);
                 }
-                return builder.toString();
+                try (InputStream input = MainActivity.this.getAssets().open(name);
+                     BufferedReader reader = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8))) {
+                    StringBuilder builder = new StringBuilder();
+                    char[] buffer = new char[8192];
+                    int read;
+                    while ((read = reader.read(buffer)) >= 0) {
+                        builder.append(buffer, 0, read);
+                    }
+                    return builder.toString();
+                }
             } catch (Exception error) {
                 return errorJson(error.getMessage() == null ? String.valueOf(error) : error.getMessage());
             }
@@ -106,6 +127,62 @@ public class MainActivity extends Activity {
         @JavascriptInterface
         public boolean canRead(String fileName) {
             return fileName != null && allowed.contains(fileName.trim());
+        }
+
+        @JavascriptInterface
+        public boolean hasCachedCatalog(String fileName) {
+            if (fileName == null) {
+                return false;
+            }
+            String name = fileName.trim();
+            return allowed.contains(name) && cachedCatalogFile(name).isFile();
+        }
+
+        @JavascriptInterface
+        public String getDataCatalogStatus() {
+            try {
+                JSONObject out = new JSONObject();
+                File cacheDir = dataCacheDir();
+                out.put("ok", true);
+                out.put("cacheDir", cacheDir.getAbsolutePath());
+                int cachedCount = 0;
+                JSONObject files = new JSONObject();
+                for (String name : CATALOG_ASSET_NAMES) {
+                    File cached = cachedCatalogFile(name);
+                    boolean exists = cached.isFile();
+                    if (exists) {
+                        cachedCount += 1;
+                    }
+                    JSONObject entry = new JSONObject();
+                    entry.put("cached", exists);
+                    entry.put("bytes", exists ? cached.length() : 0);
+                    files.put(name, entry);
+                }
+                out.put("cachedCount", cachedCount);
+                out.put("files", files);
+                File manifest = cachedCatalogFile("catalog_manifest.json");
+                if (manifest.isFile()) {
+                    try {
+                        JSONObject parsed = new JSONObject(readFileUtf8(manifest));
+                        out.put("dataVersion", parsed.optString("data_version_label",
+                                parsed.optString("data_version", "")));
+                    } catch (Exception ignored) {
+                        // keep status without version
+                    }
+                }
+                File stateFile = new File(cacheDir, "refresh_state.json");
+                if (stateFile.isFile()) {
+                    out.put("lastRefresh", new JSONObject(readFileUtf8(stateFile)));
+                }
+                return out.toString();
+            } catch (Exception error) {
+                return errorJson(error.getMessage() == null ? String.valueOf(error) : error.getMessage());
+            }
+        }
+
+        @JavascriptInterface
+        public void refreshDataCatalogs() {
+            MainActivity.this.refreshDataCatalogsAsync();
         }
 
         @JavascriptInterface
@@ -168,6 +245,319 @@ public class MainActivity extends Activity {
                     .replace("\n", " ")
                     .replace("\r", " ");
             return "{\"__msbtAssetError\":true,\"message\":\"" + safe + "\"}";
+        }
+    }
+
+    private File dataCacheDir() {
+        File dir = new File(getFilesDir(), DATA_CACHE_DIR);
+        if (!dir.isDirectory()) {
+            //noinspection ResultOfMethodCallIgnored
+            dir.mkdirs();
+        }
+        return dir;
+    }
+
+    private File cachedCatalogFile(String fileName) {
+        return new File(dataCacheDir(), fileName);
+    }
+
+    private String readFileUtf8(File file) throws Exception {
+        try (InputStream input = new FileInputStream(file);
+             ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            byte[] buffer = new byte[8192];
+            int read;
+            while ((read = input.read(buffer)) >= 0) {
+                out.write(buffer, 0, read);
+            }
+            return out.toString(StandardCharsets.UTF_8.name());
+        }
+    }
+
+    private void writeBytesAtomic(File target, byte[] bytes) throws Exception {
+        File parent = target.getParentFile();
+        if (parent != null && !parent.isDirectory()) {
+            //noinspection ResultOfMethodCallIgnored
+            parent.mkdirs();
+        }
+        File tmp = new File(target.getAbsolutePath() + "." + android.os.Process.myPid() + ".tmp");
+        try (FileOutputStream out = new FileOutputStream(tmp)) {
+            out.write(bytes);
+            out.flush();
+        }
+        if (target.exists() && !target.delete()) {
+            // continue; rename may still succeed on some devices
+        }
+        if (!tmp.renameTo(target)) {
+            try (FileOutputStream out = new FileOutputStream(target)) {
+                out.write(bytes);
+            }
+            //noinspection ResultOfMethodCallIgnored
+            tmp.delete();
+        }
+    }
+
+    private static String sha256Hex(byte[] bytes) throws Exception {
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        byte[] hash = digest.digest(bytes);
+        StringBuilder sb = new StringBuilder(hash.length * 2);
+        for (byte b : hash) {
+            sb.append(String.format(Locale.US, "%02x", b));
+        }
+        return sb.toString();
+    }
+
+    private byte[] httpGetBytes(String urlText) throws Exception {
+        HttpURLConnection connection = null;
+        try {
+            URL url = new URL(urlText);
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setConnectTimeout(15000);
+            connection.setReadTimeout(60000);
+            connection.setRequestProperty("User-Agent", "MSBT-Mobile-Controller/1.0");
+            connection.setRequestProperty("Accept", "application/json,application/octet-stream,*/*");
+            int code = connection.getResponseCode();
+            InputStream stream = code >= 200 && code < 300
+                    ? connection.getInputStream()
+                    : connection.getErrorStream();
+            if (stream == null) {
+                throw new Exception("HTTP " + code + " empty body from " + urlText);
+            }
+            try (InputStream in = new BufferedInputStream(stream);
+                 ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+                byte[] buffer = new byte[8192];
+                int read;
+                while ((read = in.read(buffer)) >= 0) {
+                    out.write(buffer, 0, read);
+                }
+                if (code < 200 || code >= 300) {
+                    throw new Exception("HTTP " + code + " from " + urlText);
+                }
+                return out.toByteArray();
+            }
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+    }
+
+    private JSONObject loadBundledManifest() {
+        try (InputStream input = getAssets().open("catalog_manifest.json")) {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            byte[] buffer = new byte[8192];
+            int read;
+            while ((read = input.read(buffer)) >= 0) {
+                out.write(buffer, 0, read);
+            }
+            return new JSONObject(out.toString(StandardCharsets.UTF_8.name()));
+        } catch (Exception ignored) {
+            return null;
+        }
+    }
+
+    private JSONObject loadCachedManifest() {
+        File file = cachedCatalogFile("catalog_manifest.json");
+        if (!file.isFile()) {
+            return null;
+        }
+        try {
+            return new JSONObject(readFileUtf8(file));
+        } catch (Exception ignored) {
+            return null;
+        }
+    }
+
+    private void refreshDataCatalogsAsync() {
+        if (dataCatalogRefreshRunning) {
+            notifyJs("__msbtDataCatalogRefresh",
+                    "{\"ok\":false,\"busy\":true,\"message\":\"Catalog refresh already running.\"}");
+            return;
+        }
+        dataCatalogRefreshRunning = true;
+        bg.execute(() -> {
+            JSONObject result = new JSONObject();
+            try {
+                result.put("ok", true);
+                result.put("offline", false);
+                result.put("soft", false);
+                JSONArray updated = new JSONArray();
+                JSONArray skipped = new JSONArray();
+                JSONArray failed = new JSONArray();
+                JSONArray warnings = new JSONArray();
+                JSONObject manifest = null;
+                String manifestUrl = "";
+                Exception lastError = null;
+                for (String url : DATA_MANIFEST_URLS) {
+                    try {
+                        byte[] body = httpGetBytes(url);
+                        manifest = new JSONObject(new String(body, StandardCharsets.UTF_8));
+                        manifestUrl = url;
+                        writeBytesAtomic(cachedCatalogFile("catalog_manifest.json"), body);
+                        break;
+                    } catch (Exception error) {
+                        lastError = error;
+                    }
+                }
+                if (manifest == null) {
+                    manifest = loadCachedManifest();
+                    if (manifest == null) {
+                        manifest = loadBundledManifest();
+                        manifestUrl = "bundled";
+                    } else {
+                        manifestUrl = "cache";
+                    }
+                    result.put("offline", true);
+                    result.put("soft", true);
+                    String msg = lastError == null
+                            ? "Remote manifest unreachable."
+                            : ("Remote manifest unreachable (" + lastError.getMessage() + ").");
+                    warnings.put(msg + " Using " + manifestUrl + " manifest.");
+                    result.put("message", warnings.optString(0));
+                    if (manifest == null) {
+                        result.put("ok", false);
+                        result.put("message", msg + " No local manifest available.");
+                        result.put("updated", updated);
+                        result.put("skipped", skipped);
+                        result.put("failed", failed);
+                        result.put("warnings", warnings);
+                        result.put("checkedAt", java.time.Instant.now().toString());
+                        writeBytesAtomic(new File(dataCacheDir(), "refresh_state.json"),
+                                result.toString().getBytes(StandardCharsets.UTF_8));
+                        notifyJs("__msbtDataCatalogRefresh", result.toString());
+                        return;
+                    }
+                    JSONArray filesOffline = manifest.optJSONArray("files");
+                    if (filesOffline != null) {
+                        for (int i = 0; i < filesOffline.length(); i++) {
+                            JSONObject entry = filesOffline.optJSONObject(i);
+                            if (entry != null) {
+                                skipped.put(entry.optString("id", entry.optString("path", "")));
+                            }
+                        }
+                    }
+                    result.put("dataVersion", manifest.optString("data_version_label",
+                            manifest.optString("data_version", "")));
+                    result.put("manifestUrl", manifestUrl);
+                    result.put("updated", updated);
+                    result.put("skipped", skipped);
+                    result.put("failed", failed);
+                    result.put("warnings", warnings);
+                    result.put("checkedAt", java.time.Instant.now().toString());
+                    writeBytesAtomic(new File(dataCacheDir(), "refresh_state.json"),
+                            result.toString().getBytes(StandardCharsets.UTF_8));
+                    notifyJs("__msbtDataCatalogRefresh", result.toString());
+                    return;
+                }
+
+                JSONArray files = manifest.optJSONArray("files");
+                if (files == null) {
+                    files = new JSONArray();
+                }
+                for (int i = 0; i < files.length(); i++) {
+                    JSONObject entry = files.optJSONObject(i);
+                    if (entry == null) {
+                        continue;
+                    }
+                    String id = entry.optString("id", "");
+                    String pathName = entry.optString("path", "");
+                    String basename = pathName.contains("/")
+                            ? pathName.substring(pathName.lastIndexOf('/') + 1)
+                            : pathName;
+                    if (basename.isEmpty() || !CATALOG_ASSET_NAMES.contains(basename)) {
+                        // Skip files not used by mobile (shiny/challenge/tutorial_copy/etc).
+                        skipped.put(id.isEmpty() ? basename : id);
+                        continue;
+                    }
+                    String expectedSha = entry.optString("sha256", "").toLowerCase(Locale.US);
+                    File target = cachedCatalogFile(basename);
+                    if (target.isFile() && !expectedSha.isEmpty()) {
+                        try {
+                            byte[] existing = readFileBytes(target);
+                            if (sha256Hex(existing).equals(expectedSha)) {
+                                skipped.put(id.isEmpty() ? basename : id);
+                                continue;
+                            }
+                        } catch (Exception ignored) {
+                            // fall through to download
+                        }
+                    }
+                    try {
+                        byte[] buffer = null;
+                        String primary = entry.optString("url", "");
+                        String raw = entry.optString("raw_url", "");
+                        Exception downloadError = null;
+                        if (!primary.isEmpty()) {
+                            try {
+                                buffer = httpGetBytes(primary);
+                            } catch (Exception error) {
+                                downloadError = error;
+                            }
+                        }
+                        if (buffer == null && !raw.isEmpty() && !raw.equals(primary)) {
+                            buffer = httpGetBytes(raw);
+                        }
+                        if (buffer == null) {
+                            throw downloadError != null ? downloadError : new Exception("download failed");
+                        }
+                        if (!expectedSha.isEmpty()) {
+                            String digest = sha256Hex(buffer);
+                            if (!digest.equals(expectedSha)) {
+                                throw new Exception("sha256 mismatch for " + id);
+                            }
+                        }
+                        writeBytesAtomic(target, buffer);
+                        updated.put(id.isEmpty() ? basename : id);
+                    } catch (Exception error) {
+                        JSONObject fail = new JSONObject();
+                        fail.put("id", id.isEmpty() ? basename : id);
+                        fail.put("message", error.getMessage() == null ? String.valueOf(error) : error.getMessage());
+                        failed.put(fail);
+                    }
+                }
+                result.put("dataVersion", manifest.optString("data_version_label",
+                        manifest.optString("data_version", "")));
+                result.put("manifestUrl", manifestUrl);
+                result.put("updated", updated);
+                result.put("skipped", skipped);
+                result.put("failed", failed);
+                result.put("warnings", warnings);
+                result.put("soft", failed.length() > 0);
+                result.put("ok", failed.length() == 0 || updated.length() > 0 || skipped.length() > 0);
+                StringBuilder message = new StringBuilder("Data catalogs ");
+                message.append(result.optString("dataVersion", "unknown"));
+                message.append(": updated ").append(updated.length());
+                message.append(", unchanged ").append(skipped.length());
+                message.append(", failed ").append(failed.length());
+                result.put("message", message.toString());
+                result.put("checkedAt", java.time.Instant.now().toString());
+                writeBytesAtomic(new File(dataCacheDir(), "refresh_state.json"),
+                        result.toString().getBytes(StandardCharsets.UTF_8));
+                notifyJs("__msbtDataCatalogRefresh", result.toString());
+            } catch (Exception error) {
+                try {
+                    result.put("ok", false);
+                    result.put("soft", true);
+                    result.put("message", error.getMessage() == null ? String.valueOf(error) : error.getMessage());
+                    result.put("checkedAt", java.time.Instant.now().toString());
+                } catch (Exception ignored) {
+                    // ignore
+                }
+                notifyJs("__msbtDataCatalogRefresh", result.toString());
+            } finally {
+                dataCatalogRefreshRunning = false;
+            }
+        });
+    }
+
+    private byte[] readFileBytes(File file) throws Exception {
+        try (InputStream input = new FileInputStream(file);
+             ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            byte[] buffer = new byte[8192];
+            int read;
+            while ((read = input.read(buffer)) >= 0) {
+                out.write(buffer, 0, read);
+            }
+            return out.toByteArray();
         }
     }
 
@@ -597,6 +987,28 @@ public class MainActivity extends Activity {
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+                try {
+                    String path = request.getUrl() != null ? request.getUrl().getPath() : null;
+                    if (path != null && path.startsWith("/assets/")) {
+                        String name = path.substring("/assets/".length());
+                        if (name.contains("/")) {
+                            name = name.substring(name.lastIndexOf('/') + 1);
+                        }
+                        if (CATALOG_ASSET_NAMES.contains(name)) {
+                            File cached = cachedCatalogFile(name);
+                            if (cached.isFile()) {
+                                String mime = name.endsWith(".json") ? "application/json" : "application/octet-stream";
+                                return new WebResourceResponse(
+                                        mime,
+                                        "utf-8",
+                                        new FileInputStream(cached)
+                                );
+                            }
+                        }
+                    }
+                } catch (Exception ignored) {
+                    // Fall through to APK assets.
+                }
                 return assetLoader.shouldInterceptRequest(request.getUrl());
             }
         });

@@ -18,17 +18,36 @@ const { fileURLToPath } = require("url");
 
 const DEFAULT_MANIFEST_URLS = [
   // Prefer tag-specific data release assets (never /releases/latest — that is the app channel).
-  "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.0.1/catalog_manifest.json",
+  "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.0.2/catalog_manifest.json",
   "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/docs/data/catalog_manifest.json",
-  // Older data tag fallback while 1.0.1 propagates.
+  // Older data tag fallbacks while newer tags propagate.
+  "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.0.1/catalog_manifest.json",
   "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.0.0/catalog_manifest.json"
 ];
 
 const CACHE_DIR_NAME = "msbt_data";
 const CACHED_MANIFEST_NAME = "catalog_manifest.json";
 const REFRESH_STATE_NAME = "refresh_state.json";
+const TUTORIAL_COPY_NAME = "tutorial_copy.json";
 const DEFAULT_FETCH_RETRIES = 3;
 const RETRY_BASE_DELAY_MS = 400;
+
+const ALLOWED_ASSET_KINDS = new Set(["catalog_json", "json_copy", "markdown_doc"]);
+const REJECTED_ASSET_EXTENSIONS = new Set([
+  ".js",
+  ".mjs",
+  ".cjs",
+  ".py",
+  ".exe",
+  ".dll",
+  ".so",
+  ".dylib",
+  ".sdkmod",
+  ".bat",
+  ".cmd",
+  ".ps1",
+  ".sh"
+]);
 
 const KNOWN_FILES = {
   lootlemon: "MattsSDKBoostingTools_lootlemon_codes.json",
@@ -169,29 +188,64 @@ async function resolveCatalogFileMap(userDataPath, options = {}) {
   return { paths: map, sources };
 }
 
+function normalizeManifestEntry(entry, { requireKind = false } = {}) {
+  const pathName = path.basename(text(entry && entry.path));
+  const kind = text(entry && entry.kind) || (requireKind ? "" : "catalog_json");
+  const ext = path.extname(pathName).toLowerCase();
+  if (!pathName || !text(entry && entry.url) || !text(entry && entry.sha256)) return null;
+  if (REJECTED_ASSET_EXTENSIONS.has(ext)) return null;
+  if (kind && !ALLOWED_ASSET_KINDS.has(kind)) return null;
+  return {
+    id: text(entry.id) || pathName.replace(/\.[^.]+$/, ""),
+    path: pathName,
+    url: text(entry.url),
+    raw_url: text(entry.raw_url),
+    sha256: text(entry.sha256).toLowerCase(),
+    bytes: Number(entry.bytes) || 0,
+    schema_version: Number(entry.schema_version) || 1,
+    primary_url: text(entry.primary_url),
+    notes: text(entry.notes),
+    kind: kind || "catalog_json",
+    min_app_version: text(entry.min_app_version)
+  };
+}
+
 function normalizeManifest(payload) {
   if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
     throw new Error("Catalog manifest is not an object.");
   }
   const files = Array.isArray(payload.files) ? payload.files : [];
   if (!files.length) throw new Error("Catalog manifest has no files.");
+  const normalizedFiles = files
+    .map((entry) => normalizeManifestEntry(entry))
+    .filter(Boolean);
+  if (!normalizedFiles.length) throw new Error("Catalog manifest has no usable files.");
+
+  const rawAssets = [
+    ...(Array.isArray(payload.assets) ? payload.assets : []),
+    ...(Array.isArray(payload.packs) ? payload.packs : [])
+  ];
+  const assets = rawAssets
+    .map((entry) => normalizeManifestEntry(entry, { requireKind: true }))
+    .filter(Boolean);
+
+  // Combined download list: catalogs + allowlisted hotfix assets (dedupe by path).
+  const downloadables = normalizedFiles.slice();
+  for (const asset of assets) {
+    if (!downloadables.some((row) => row.path === asset.path)) {
+      downloadables.push(asset);
+    }
+  }
+
   return {
     schema_version: Number(payload.schema_version) || 1,
     data_version: text(payload.data_version) || "0.0.0",
     data_version_label: text(payload.data_version_label) || `data-v${text(payload.data_version) || "0.0.0"}`,
     published_at: text(payload.published_at),
     min_app_version: text(payload.min_app_version),
-    files: files.map((entry) => ({
-      id: text(entry.id),
-      path: path.basename(text(entry.path)),
-      url: text(entry.url),
-      raw_url: text(entry.raw_url),
-      sha256: text(entry.sha256).toLowerCase(),
-      bytes: Number(entry.bytes) || 0,
-      schema_version: Number(entry.schema_version) || 1,
-      primary_url: text(entry.primary_url),
-      notes: text(entry.notes)
-    })).filter((entry) => entry.id && entry.path && entry.url && entry.sha256)
+    files: normalizedFiles,
+    assets,
+    downloadables
   };
 }
 
@@ -487,9 +541,9 @@ async function refreshRemoteDataCatalogs(options = {}) {
     warnings.push(`Could not cache manifest: ${error && error.message ? error.message : error}`);
   }
 
-  const total = manifest.files.length;
+  const total = (manifest.downloadables || manifest.files).length;
   let index = 0;
-  for (const entry of manifest.files) {
+  for (const entry of manifest.downloadables || manifest.files) {
     index += 1;
     try {
       if (typeof options.onProgress === "function") {
@@ -497,6 +551,7 @@ async function refreshRemoteDataCatalogs(options = {}) {
           phase: "file",
           id: entry.id,
           path: entry.path,
+          kind: entry.kind || "catalog_json",
           index,
           total,
           bytes: entry.bytes,
@@ -521,6 +576,7 @@ async function refreshRemoteDataCatalogs(options = {}) {
           phase: "saved",
           id: entry.id,
           path: entry.path,
+          kind: entry.kind || "catalog_json",
           index,
           total,
           bytes: buffer.length,
@@ -659,16 +715,92 @@ async function readCatalogJson(userDataPath, fileName, options = {}) {
   }
 }
 
+/**
+ * Read allowlisted tutorial copy JSON (cache → docs/data seed). Soft-fail.
+ * Only title/body overlays are consumed by the renderer — never executable fields.
+ */
+async function loadTutorialCopy(userDataPath, options = {}) {
+  const resolved = await resolveLocalCatalogPath(userDataPath, TUTORIAL_COPY_NAME, {
+    docsDataDir: options.docsDataDir,
+    resourceDir: options.resourceDir,
+    electronAppDir: options.electronAppDir
+  });
+  if (!resolved.path) {
+    return { ok: false, source: "missing", message: "tutorial_copy.json not found." };
+  }
+  try {
+    const data = await readJsonFile(resolved.path);
+    if (!data || typeof data !== "object" || Array.isArray(data)) {
+      return { ok: false, source: resolved.source, message: "tutorial_copy.json is not an object." };
+    }
+    const kind = text(data.kind) || "json_copy";
+    if (kind !== "json_copy") {
+      return { ok: false, source: resolved.source, message: `Unsupported tutorial copy kind: ${kind}` };
+    }
+    return {
+      ok: true,
+      source: resolved.source,
+      path: resolved.path,
+      data: {
+        schema_version: Number(data.schema_version) || 1,
+        kind,
+        min_app_version: text(data.min_app_version),
+        notes: text(data.notes),
+        tours: data.tours && typeof data.tours === "object" ? data.tours : {}
+      }
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      source: resolved.source,
+      path: resolved.path,
+      message: String(error && error.message ? error.message : error)
+    };
+  }
+}
+
+/**
+ * Apply allowlisted title/body overlays onto a local tutorial tour map (mutates in place).
+ */
+function applyTutorialCopyOverlay(tourMap, copyPayload) {
+  if (!tourMap || typeof tourMap !== "object") return { applied: 0 };
+  const tours = copyPayload && copyPayload.tours;
+  if (!tours || typeof tours !== "object") return { applied: 0 };
+  let applied = 0;
+  for (const [tourId, patches] of Object.entries(tours)) {
+    const steps = tourMap[tourId];
+    if (!Array.isArray(steps) || !Array.isArray(patches)) continue;
+    for (const patch of patches) {
+      if (!patch || typeof patch !== "object") continue;
+      const idx = Number(patch.index);
+      if (!Number.isInteger(idx) || idx < 0 || !steps[idx]) continue;
+      if (typeof patch.title === "string" && patch.title.trim()) {
+        steps[idx].title = patch.title;
+        applied += 1;
+      }
+      if (typeof patch.body === "string" && patch.body.trim()) {
+        steps[idx].body = patch.body;
+        applied += 1;
+      }
+    }
+  }
+  return { applied };
+}
+
 function isElectronResourceFile(name) {
   return ELECTRON_RESOURCE_FILES.has(path.basename(String(name || "")));
 }
 
 module.exports = {
+  ALLOWED_ASSET_KINDS,
   CACHE_DIR_NAME,
   DEFAULT_FETCH_RETRIES,
   DEFAULT_MANIFEST_URLS,
   KNOWN_FILES,
   REFRESH_STATE_NAME,
+  REJECTED_ASSET_EXTENSIONS,
+  TUTORIAL_COPY_NAME,
+  applyTutorialCopyOverlay,
   cachedFilePath,
   cachedManifestPath,
   dataCacheDir,
@@ -677,6 +809,7 @@ module.exports = {
   getDataCatalogStatus,
   isElectronResourceFile,
   loadRefreshState,
+  loadTutorialCopy,
   normalizeManifest,
   readCatalogJson,
   refreshRemoteDataCatalogs,

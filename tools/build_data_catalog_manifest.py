@@ -104,6 +104,36 @@ FILE_SPECS: list[dict[str, Any]] = [
     },
 ]
 
+# Optional Phase 3 allowlisted copy/hotfix packs (JSON / markdown only — never code).
+ASSET_SPECS: list[dict[str, Any]] = [
+    {
+        "id": "tutorial_copy",
+        "filename": "tutorial_copy.json",
+        "kind": "json_copy",
+        "schema_version": 1,
+        "min_app_version": "2.3.0",
+        "notes": "Tutorial title/body overlays for Electron walkthroughs (no remote code)",
+    },
+]
+
+# Rejected asset kinds / extensions for hotfix packs (defense in depth at publish time).
+REJECTED_ASSET_KINDS = {"script", "native", "sdkmod", "archive_exec", "executable"}
+REJECTED_ASSET_EXTENSIONS = {
+    ".js",
+    ".mjs",
+    ".cjs",
+    ".py",
+    ".exe",
+    ".dll",
+    ".so",
+    ".dylib",
+    ".sdkmod",
+    ".bat",
+    ".cmd",
+    ".ps1",
+    ".sh",
+}
+
 SEMVER_RE = re.compile(r"^(\d+)\.(\d+)\.(\d+)$")
 
 
@@ -162,6 +192,34 @@ def ensure_seed_copies() -> None:
             print(f"Seeded {dst.relative_to(ROOT)} from {src.relative_to(ROOT)}")
 
 
+def build_asset_entries(data_version: str, label: str) -> list[dict[str, Any]]:
+    assets: list[dict[str, Any]] = []
+    for spec in ASSET_SPECS:
+        path = DATA_DIR / spec["filename"]
+        if not path.is_file():
+            continue
+        suffix = path.suffix.lower()
+        kind = str(spec.get("kind") or "json_copy")
+        if kind in REJECTED_ASSET_KINDS or suffix in REJECTED_ASSET_EXTENSIONS:
+            raise ValueError(f"Rejected hotfix asset {spec['filename']} kind={kind} ext={suffix}")
+        digest = sha256_file(path)
+        assets.append(
+            {
+                "id": spec["id"],
+                "path": spec["filename"],
+                "kind": kind,
+                "sha256": digest,
+                "bytes": path.stat().st_size,
+                "schema_version": int(spec["schema_version"]),
+                "min_app_version": str(spec.get("min_app_version") or "2.3.0"),
+                "url": f"{RELEASE_DOWNLOAD_BASE}/{label}/{spec['filename']}",
+                "raw_url": f"{RAW_BASE}/{spec['filename']}",
+                "notes": spec.get("notes") or "",
+            }
+        )
+    return assets
+
+
 def build_manifest(data_version: str, min_app_version: str) -> dict[str, Any]:
     ensure_seed_copies()
     label = f"data-v{data_version}"
@@ -183,6 +241,7 @@ def build_manifest(data_version: str, min_app_version: str) -> dict[str, Any]:
             "bytes": path.stat().st_size,
             "schema_version": int(spec["schema_version"]),
             "raw_url": f"{RAW_BASE}/{spec['filename']}",
+            "kind": "catalog_json",
         }
         if spec.get("primary"):
             entry["primary_url"] = spec["primary"]
@@ -195,6 +254,8 @@ def build_manifest(data_version: str, min_app_version: str) -> dict[str, Any]:
             "Missing docs/data files required for manifest:\n  - " + "\n  - ".join(missing)
         )
 
+    assets = build_asset_entries(data_version, label)
+
     return {
         "schema_version": 1,
         "data_version": data_version,
@@ -206,6 +267,7 @@ def build_manifest(data_version: str, min_app_version: str) -> dict[str, Any]:
             "raw_main": f"{RAW_BASE}/catalog_manifest.json",
         },
         "files": files,
+        "assets": assets,
     }
 
 
@@ -259,6 +321,32 @@ def main() -> int:
                 errors += 1
             else:
                 print(f"OK  {rel}  {digest[:12]}…  {size} bytes")
+        for entry in current.get("assets") or []:
+            rel = entry.get("path") or ""
+            kind = str(entry.get("kind") or "")
+            path = DATA_DIR / rel
+            if kind in REJECTED_ASSET_KINDS:
+                print(f"FAIL: rejected asset kind {kind} for {rel}")
+                errors += 1
+                continue
+            if path.suffix.lower() in REJECTED_ASSET_EXTENSIONS:
+                print(f"FAIL: rejected asset extension for {rel}")
+                errors += 1
+                continue
+            if not path.is_file():
+                print(f"FAIL: missing asset {rel}")
+                errors += 1
+                continue
+            digest = sha256_file(path)
+            size = path.stat().st_size
+            if digest != entry.get("sha256"):
+                print(f"FAIL: asset sha256 mismatch {rel}")
+                errors += 1
+            elif size != int(entry.get("bytes") or -1):
+                print(f"FAIL: asset bytes mismatch {rel}")
+                errors += 1
+            else:
+                print(f"OK  asset:{rel} ({kind})  {digest[:12]}…  {size} bytes")
         if errors:
             print(f"FAIL: {errors} error(s)", file=sys.stderr)
             return 1
@@ -282,8 +370,11 @@ def main() -> int:
     print(f"Wrote {MANIFEST_PATH.relative_to(ROOT)}")
     print(f"  data_version: data-v{data_version}")
     print(f"  files: {len(manifest['files'])}")
+    print(f"  assets: {len(manifest.get('assets') or [])}")
     for entry in manifest["files"]:
         print(f"  - {entry['id']}: {entry['bytes']} bytes  sha256={entry['sha256'][:12]}…")
+    for entry in manifest.get("assets") or []:
+        print(f"  - asset:{entry['id']} ({entry.get('kind')}): {entry['bytes']} bytes")
     return 0
 
 

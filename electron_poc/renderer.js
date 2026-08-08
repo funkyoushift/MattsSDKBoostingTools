@@ -8063,6 +8063,7 @@ function wireEvents() {
     window.msbt.onDataCatalogRefreshed((result) => {
       applyDataCatalogStatusUi(result || {}, { quiet: Boolean(result && result.quiet) });
       refreshDataCatalogStatusUi().catch(() => {});
+      applyRemoteTutorialCopy().catch(() => {});
     });
   }
   els.bl4SearchBtn.addEventListener("click", applyBl4Search);
@@ -8590,6 +8591,40 @@ const TUTORIAL_TOURS = {
 
 /** Post-update / first-run tour steps */
 const MAIN_TUTORIAL_STEPS = TUTORIAL_TOURS.main;
+
+async function applyRemoteTutorialCopy() {
+  try {
+    if (!window.msbt || typeof window.msbt.getTutorialCopy !== "function") return;
+    const result = await window.msbt.getTutorialCopy();
+    if (!result || !result.ok || !result.data) return;
+    const tours = result.data.tours || {};
+    let applied = 0;
+    for (const [tourId, patches] of Object.entries(tours)) {
+      const steps = TUTORIAL_TOURS[tourId];
+      if (!Array.isArray(steps) || !Array.isArray(patches)) continue;
+      for (const patch of patches) {
+        if (!patch || typeof patch !== "object") continue;
+        const idx = Number(patch.index);
+        if (!Number.isInteger(idx) || idx < 0 || !steps[idx]) continue;
+        // Allowlist: title/body text only — never target selectors, links, or actions from remote JSON.
+        if (typeof patch.title === "string" && patch.title.trim()) {
+          steps[idx].title = patch.title;
+          applied += 1;
+        }
+        if (typeof patch.body === "string" && patch.body.trim()) {
+          steps[idx].body = patch.body;
+          applied += 1;
+        }
+      }
+    }
+    if (applied > 0 && typeof appendActivity === "function") {
+      appendActivity(`Applied ${applied} tutorial copy overlay(s) from ${result.source || "cache"}.`);
+    }
+  } catch (error) {
+    // Soft-fail: keep bundled walkthrough copy.
+    console.warn("tutorial copy overlay skipped", error);
+  }
+}
 
 /** Per-tab tips (Walkthrough button on each layout toolbar) */
 const TAB_TUTORIALS = {
@@ -9783,6 +9818,11 @@ async function init() {
     await refreshDataCatalogStatusUi();
   } catch (error) {
     console.warn("[MSBT] data catalog status failed:", error);
+  }
+  try {
+    await applyRemoteTutorialCopy();
+  } catch (error) {
+    console.warn("[MSBT] tutorial copy overlay failed:", error);
   }
   try {
     await checkUpdates({ startup: true });

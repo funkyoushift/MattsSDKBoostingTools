@@ -197,7 +197,7 @@ async function loadCatalogFile(file,source){
   }
 }
 async function loadCatalogs(){
-  $('catalogStatus').textContent='Loading bundled catalog…';
+  $('catalogStatus').textContent='Loading catalog…';
   const [gzo,lootlemon,custom]=await Promise.all([
     loadCatalogFile('MattsSDKBoostingTools_gzo_codes.json','GZO'),
     loadCatalogFile('MattsSDKBoostingTools_lootlemon_codes.json','Lootlemon'),
@@ -213,9 +213,64 @@ async function loadCatalogs(){
     logActivity($('catalogStatus').textContent);
     return;
   }
+  let sourceNote='bundled';
+  try{
+    if(window.MSBTAssets&&typeof window.MSBTAssets.hasCachedCatalog==='function'){
+      const cached=[
+        window.MSBTAssets.hasCachedCatalog('MattsSDKBoostingTools_gzo_codes.json'),
+        window.MSBTAssets.hasCachedCatalog('MattsSDKBoostingTools_lootlemon_codes.json'),
+        window.MSBTAssets.hasCachedCatalog('custom_bl4_codes.json')
+      ].filter(Boolean).length;
+      if(cached)sourceNote=`cache ${cached}/3`;
+    }
+    if(window.MSBTAssets&&typeof window.MSBTAssets.getDataCatalogStatus==='function'){
+      const statusRaw=window.MSBTAssets.getDataCatalogStatus();
+      const status=JSON.parse(statusRaw);
+      if(status&&!status.__msbtAssetError&&status.dataVersion)sourceNote+=` · ${status.dataVersion}`;
+    }
+  }catch(_){ /* ignore status helpers */ }
   const suffix=errors.length?` · warnings: ${errors.join(' · ')}`:'';
-  $('catalogStatus').textContent=`${merged.length.toLocaleString()} bundled codes · GZO ${gzo.rows.length} · Lootlemon ${lootlemon.rows.length} · MSBT ${custom.rows.length}${suffix}`;
+  $('catalogStatus').textContent=`${merged.length.toLocaleString()} codes (${sourceNote}) · GZO ${gzo.rows.length} · Lootlemon ${lootlemon.rows.length} · MSBT ${custom.rows.length}${suffix}`;
 }
+function waitForDataCatalogRefresh(timeoutMs=180000){
+  return new Promise((resolve)=>{
+    let settled=false;
+    const timer=setTimeout(()=>{
+      if(settled)return;
+      settled=true;
+      resolve({ok:false,offline:true,message:'Catalog refresh timed out.'});
+    },timeoutMs);
+    window.__msbtDataCatalogRefresh=(payload)=>{
+      if(settled)return;
+      settled=true;
+      clearTimeout(timer);
+      resolve(payload&&typeof payload==='object'?payload:{ok:false,message:'empty refresh payload'});
+    };
+  });
+}
+async function refreshRemoteDataCatalogs(){
+  if(!(window.MSBTAssets&&typeof window.MSBTAssets.refreshDataCatalogs==='function')){
+    await loadCatalogs();
+    logActivity('Reloaded bundled BL4 Codes (native data refresh unavailable).');
+    return;
+  }
+  $('catalogStatus').textContent='Refreshing data catalogs…';
+  const waiter=waitForDataCatalogRefresh();
+  try{
+    window.MSBTAssets.refreshDataCatalogs();
+  }catch(error){
+    await loadCatalogs();
+    logActivity(`Catalog refresh failed to start: ${error&&error.message?error.message:error}`);
+    return;
+  }
+  const result=await waiter;
+  await loadCatalogs();
+  await Promise.all([loadTravelCatalog(),loadPoolCatalog(),loadDevCatalog()]);
+  const msg=result&&result.message?result.message:(result&&result.ok?'Catalogs refreshed.':'Catalog refresh soft-failed.');
+  logActivity(msg);
+  if(result&&result.offline)logActivity('Offline/cached catalog manifest kept; last-good files were not wiped.');
+}
+$('refreshCodes').addEventListener('click',async()=>{await refreshRemoteDataCatalogs()});
 function populateSelect(id,values,label){const select=$(id);if(!select)return;const current=select.value;select.innerHTML=`<option value="">${label}</option>`;[...new Set(values.map(text).filter(Boolean))].sort((a,b)=>a.localeCompare(b)).forEach(value=>{const o=document.createElement('option');o.value=value;o.textContent=value;select.appendChild(o)});if([...select.options].some(opt=>opt.value===current))select.value=current}
 function listingMatches(row,wanted){
   if(!wanted)return true;
@@ -261,7 +316,6 @@ function updateSelectionSummary(){
 }
 $('codeSearch').addEventListener('input',filterCodes);['listingFilter','creatorFilter','sourceFilter','typeFilter','manufacturerFilter','rarityFilter'].forEach(id=>{const el=$(id);if(el)el.addEventListener('change',filterCodes)});
 $('selectAllCodes').addEventListener('click',()=>{state.filteredCodes.forEach(row=>state.selectedCodes.add(row.id));renderCodes()});$('clearCodeSelection').addEventListener('click',()=>{state.selectedCodes.clear();renderCodes()});
-$('refreshCodes').addEventListener('click',async()=>{await loadCatalogs();logActivity('Reloaded the bundled BL4 Codes cache. Online GZO refresh will use the same screen once PC/network sync is enabled.')});
 
 function initBookmarks(){state.bookmarks=read(STORE.bookmarks,[]);state.selectedBookmarks=new Set();renderBookmarks()}
 function filteredBookmarks(){

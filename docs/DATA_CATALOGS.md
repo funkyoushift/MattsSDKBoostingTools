@@ -80,13 +80,15 @@ python tools/publish_data_release.py --bump patch --create-release
 
 ## Mobile
 
-Mobile controller does **not** yet fetch the remote manifest at runtime. Near-term path:
+Mobile controller can refresh catalog JSON at runtime:
 
-1. Keep shipping seed JSON with the APK/desktop pairing surface as needed.
-2. Follow-up: fetch `catalog_manifest.json` into app storage with the same sha256 rules (no remote code).
+1. APK build syncs seeds from `docs/data/` (fallback: packaged resources) including `catalog_manifest.json`.
+2. Codes → **Refresh** fetches the data-channel `catalog_manifest.json` (data-v tag URLs), verifies sha256, and writes into app `filesDir/msbt_data/`.
+3. WebView asset loads prefer cache over APK bundled seeds.
+4. Offline / failed refresh soft-fails and never wipes last-good cache.
 
-Documented so overnight Phase 2 does not block on a full mobile OTA.
+Mobile does **not** load remote tutorial copy or any executable payloads.
 
 ## Phase 3
 
-See [`HOTFIX_CHANNEL.md`](./HOTFIX_CHANNEL.md) for allowlisted copy/tutorial packs (still no remote code execution).
+See [`HOTFIX_CHANNEL.md`](./HOTFIX_CHANNEL.md). `tutorial_copy.json` ships on the data manifest `assets[]` list; Electron applies title/body overlays only.

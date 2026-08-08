@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import shutil
 import subprocess
 import sys
@@ -75,6 +76,7 @@ def create_github_release(manifest: dict, *, draft: bool, title: str, prerelease
     tag = label if label.startswith("data-v") else f"data-v{label}"
     published = str(manifest.get("published_at") or "")
     file_count = len(manifest.get("files") or [])
+    asset_count = len(manifest.get("assets") or [])
     notes = "\n".join(
         [
             f"MSBT **data-only** release `{tag}`.",
@@ -82,7 +84,8 @@ def create_github_release(manifest: dict, *, draft: bool, title: str, prerelease
             "Does **not** change Electron/SDK app SemVer.",
             "Marked as a **prerelease** on purpose so it does not become GitHub `releases/latest` (app update channel).",
             f"Published: {published or 'n/a'}",
-            f"Files: {file_count}",
+            f"Catalog files: {file_count}",
+            f"Allowlisted assets: {asset_count}",
             "",
             "Manifest URL:",
             f"`https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/{tag}/catalog_manifest.json`",
@@ -95,6 +98,15 @@ def create_github_release(manifest: dict, *, draft: bool, title: str, prerelease
                 f"- `{entry.get('id')}` -> `{entry.get('path')}`"
                 for entry in (manifest.get("files") or [])
             ],
+            "",
+            "Allowlisted hotfix assets:",
+            *(
+                [
+                    f"- `{entry.get('id')}` ({entry.get('kind')}) -> `{entry.get('path')}`"
+                    for entry in (manifest.get("assets") or [])
+                ]
+                or ["- (none)"]
+            ),
         ]
     )
     # Avoid Windows console encoding failures when printing long gh commands.
@@ -103,18 +115,25 @@ def create_github_release(manifest: dict, *, draft: bool, title: str, prerelease
     with tempfile.TemporaryDirectory(prefix="msbt-data-release-") as tmp:
         tmp_path = Path(tmp)
         staged: list[Path] = []
+        seen_names: set[str] = set()
         for name in ("catalog_manifest.json",):
             src = DATA_DIR / name
             dst = tmp_path / name
             shutil.copy2(src, dst)
             staged.append(dst)
-        for entry in manifest.get("files") or []:
+            seen_names.add(name)
+        for entry in list(manifest.get("files") or []) + list(manifest.get("assets") or []):
             rel = entry.get("path") or ""
             src = DATA_DIR / rel
-            if src.is_file():
-                dst = tmp_path / Path(rel).name
-                shutil.copy2(src, dst)
-                staged.append(dst)
+            if not src.is_file():
+                continue
+            dst_name = Path(rel).name
+            if dst_name in seen_names:
+                continue
+            dst = tmp_path / dst_name
+            shutil.copy2(src, dst)
+            staged.append(dst)
+            seen_names.add(dst_name)
 
         cmd = [
             "gh",
@@ -141,6 +160,40 @@ def create_github_release(manifest: dict, *, draft: bool, title: str, prerelease
     return url or f"https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/{tag}"
 
 
+def update_electron_manifest_urls(label: str) -> None:
+    """Keep Electron DEFAULT_MANIFEST_URLS tip pointing at the newest data tag."""
+    target = ROOT / "electron_poc" / "remote_data_catalogs.js"
+    if not target.is_file():
+        return
+    text = target.read_text(encoding="utf-8")
+    pattern = re.compile(
+        r'(https://github\.com/funkyoushift/MattsSDKBoostingTools/releases/download/)data-v\d+\.\d+\.\d+(/catalog_manifest\.json)'
+    )
+    new_text, count = pattern.subn(rf"\g<1>{label}\g<2>", text, count=1)
+    if count:
+        target.write_text(new_text, encoding="utf-8")
+        print(f"Updated Electron preferred manifest URL -> {label}")
+    mobile = (
+        ROOT
+        / "mobile_controller"
+        / "app"
+        / "src"
+        / "main"
+        / "java"
+        / "com"
+        / "funkyoushift"
+        / "msbt"
+        / "mobile"
+        / "MainActivity.java"
+    )
+    if mobile.is_file():
+        mtext = mobile.read_text(encoding="utf-8")
+        mnew, mcount = pattern.subn(rf"\g<1>{label}\g<2>", mtext, count=1)
+        if mcount:
+            mobile.write_text(mnew, encoding="utf-8")
+            print(f"Updated mobile preferred manifest URL -> {label}")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--bump", choices=("major", "minor", "patch"), default="")
@@ -156,6 +209,11 @@ def main() -> int:
     )
     parser.add_argument("--title", default="", help="Optional release title")
     parser.add_argument("--dry-run", action="store_true", help="Rebuild + check only; no gh release")
+    parser.add_argument(
+        "--skip-url-rewrite",
+        action="store_true",
+        help="Do not rewrite Electron/mobile preferred data-v manifest URLs",
+    )
     args = parser.parse_args()
 
     if args.bump and args.data_version:
@@ -164,8 +222,11 @@ def main() -> int:
 
     manifest = build_manifest(args)
     check_manifest()
-    label = manifest.get("data_version_label") or manifest.get("data_version")
-    print(f"Ready: {label} ({len(manifest.get('files') or [])} files)")
+    label = str(manifest.get("data_version_label") or f"data-v{manifest.get('data_version')}")
+    print(f"Ready: {label} ({len(manifest.get('files') or [])} files, {len(manifest.get('assets') or [])} assets)")
+
+    if not args.skip_url_rewrite:
+        update_electron_manifest_urls(label)
 
     if args.dry_run or not args.create_release:
         if not args.create_release:

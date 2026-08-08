@@ -48,6 +48,7 @@ const {
   defaultDocsDataDir,
   getDataCatalogStatus,
   isElectronResourceFile,
+  loadTutorialCopy,
   readCatalogJson,
   refreshRemoteDataCatalogs,
   resolveCatalogFileMap
@@ -1359,6 +1360,14 @@ ipcMain.handle("app:refreshDataCatalogs", async (_event, options = {}) => {
 ipcMain.handle("app:getDataCatalogStatus", async () => {
   try {
     return await getDataCatalogStatus(app.getPath("userData"), dataCatalogOptions());
+  } catch (error) {
+    return { ok: false, message: String(error && error.message ? error.message : error) };
+  }
+});
+
+ipcMain.handle("app:getTutorialCopy", async () => {
+  try {
+    return await loadTutorialCopy(app.getPath("userData"), dataCatalogOptions());
   } catch (error) {
     return { ok: false, message: String(error && error.message ? error.message : error) };
   }

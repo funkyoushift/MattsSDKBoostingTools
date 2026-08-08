@@ -27,8 +27,12 @@ const {
 } = require("./bl4_codes_catalog");
 const {
   KNOWN_FILES,
+  TUTORIAL_COPY_NAME,
+  applyTutorialCopyOverlay,
   cachedFilePath,
   getDataCatalogStatus,
+  loadTutorialCopy,
+  normalizeManifest,
   refreshRemoteDataCatalogs,
   resolveCatalogFileMap,
   resolveLocalCatalogPath,
@@ -56,6 +60,8 @@ async function testManifestHashes() {
   const manifest = JSON.parse(await fsp.readFile(path.join(DATA_DIR, "catalog_manifest.json"), "utf8"));
   assert.ok(manifest.data_version, "data_version missing");
   assert.ok(Array.isArray(manifest.files) && manifest.files.length >= 9, "expected Phase 2 files");
+  assert.ok(Array.isArray(manifest.assets), "expected assets array for Phase 3");
+  assert.ok(manifest.assets.some((row) => row.id === "tutorial_copy"), "tutorial_copy asset missing");
   const ids = new Set(manifest.files.map((f) => f.id));
   for (const required of [
     "lootlemon",
@@ -284,6 +290,94 @@ async function testDevSpawnerSeedPresent() {
   record("dev_spawner_catalog seeded in docs/data", true, `bytes=${fs.statSync(docsPath).size}`);
 }
 
+async function testTutorialCopyAsset() {
+  const copyPath = path.join(DATA_DIR, TUTORIAL_COPY_NAME);
+  assert.ok(fs.existsSync(copyPath), "tutorial_copy.json missing");
+  const manifest = JSON.parse(await fsp.readFile(path.join(DATA_DIR, "catalog_manifest.json"), "utf8"));
+  const assets = Array.isArray(manifest.assets) ? manifest.assets : [];
+  const entry = assets.find((row) => row.id === "tutorial_copy");
+  assert.ok(entry, "manifest.assets should include tutorial_copy");
+  assert.strictEqual(entry.kind, "json_copy");
+  const digest = await sha256File(copyPath);
+  assert.strictEqual(digest, entry.sha256);
+
+  const tours = {
+    main: [
+      { title: "Bundled welcome", body: "Bundled body" },
+      { title: "Step 2", body: "Keep me" }
+    ]
+  };
+  const copy = JSON.parse(await fsp.readFile(copyPath, "utf8"));
+  const result = applyTutorialCopyOverlay(tours, copy);
+  assert.ok(result.applied > 0, "expected overlays applied");
+  assert.notStrictEqual(tours.main[0].title, "Bundled welcome");
+  assert.strictEqual(tours.main[1].title, "Step 2");
+
+  // Reject executable kinds at normalize time.
+  const bad = normalizeManifest({
+    data_version: "9.9.9",
+    files: manifest.files,
+    assets: [
+      {
+        id: "evil",
+        path: "evil.js",
+        kind: "script",
+        url: "https://example.invalid/evil.js",
+        sha256: "a".repeat(64),
+        bytes: 1
+      }
+    ]
+  });
+  assert.ok(!bad.assets.some((row) => row.id === "evil"), "script assets must be rejected");
+  record("tutorial_copy asset + overlay allowlist", true, `applied=${result.applied}`);
+}
+
+async function testTutorialCopyRefreshIntoCache() {
+  await withTempUserData(async (userData) => {
+    const manifestUrl = pathToFileURL(path.join(DATA_DIR, "catalog_manifest.json")).href;
+    const refreshed = await refreshRemoteDataCatalogs({
+      userDataPath: userData,
+      docsDataDir: DATA_DIR,
+      localSeedDir: DATA_DIR,
+      electronAppDir: ELECTRON_APP_DIR,
+      manifestUrls: [manifestUrl],
+      fetch: globalThis.fetch
+    });
+    assert.ok(refreshed.ok, refreshed.message);
+    assert.ok(
+      refreshed.updated.includes("tutorial_copy") || refreshed.skipped.includes("tutorial_copy"),
+      "tutorial_copy should be in refresh result"
+    );
+    const cached = cachedFilePath(userData, TUTORIAL_COPY_NAME);
+    assert.ok(fs.existsSync(cached), "tutorial_copy should land in msbt_data cache");
+    const loaded = await loadTutorialCopy(userData, { docsDataDir: DATA_DIR });
+    assert.ok(loaded.ok, loaded.message);
+    assert.strictEqual(loaded.source, "cache");
+    assert.strictEqual(loaded.data.kind, "json_copy");
+    record("tutorial_copy refreshes into msbt_data cache", true, loaded.data.min_app_version || "no-min");
+  });
+}
+
+async function testRejectedExecutableAssetExtension() {
+  const manifest = JSON.parse(await fsp.readFile(path.join(DATA_DIR, "catalog_manifest.json"), "utf8"));
+  const normalized = normalizeManifest({
+    ...manifest,
+    assets: [
+      ...(manifest.assets || []),
+      {
+        id: "payload",
+        path: "payload.exe",
+        kind: "json_copy",
+        url: "https://example.invalid/payload.exe",
+        sha256: "b".repeat(64),
+        bytes: 12
+      }
+    ]
+  });
+  assert.ok(!normalized.downloadables.some((row) => row.path === "payload.exe"));
+  record("executable extensions rejected from downloadables", true);
+}
+
 async function main() {
   console.log("MSBT remote data catalog self-test");
   console.log(`ROOT=${ROOT}`);
@@ -298,7 +392,10 @@ async function main() {
     testStatusHelper,
     testPhase2CachePreference,
     testHashMismatchRetriesThenKeepsPrior,
-    testDevSpawnerSeedPresent
+    testDevSpawnerSeedPresent,
+    testTutorialCopyAsset,
+    testTutorialCopyRefreshIntoCache,
+    testRejectedExecutableAssetExtension
   ];
 
   for (const test of tests) {

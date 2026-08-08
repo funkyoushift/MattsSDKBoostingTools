@@ -41,6 +41,7 @@ contextBridge.exposeInMainWorld("msbt", {
   refreshGzoCatalog: () => ipcRenderer.invoke("app:refreshGzoCatalog"),
   refreshDataCatalogs: (options) => ipcRenderer.invoke("app:refreshDataCatalogs", options || {}),
   getDataCatalogStatus: () => ipcRenderer.invoke("app:getDataCatalogStatus"),
+  getTutorialCopy: () => ipcRenderer.invoke("app:getTutorialCopy"),
   onDataCatalogProgress: (callback) => {
     if (typeof callback !== "function") return () => {};
     const listener = (_event, state) => callback(state);

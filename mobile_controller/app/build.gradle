@@ -50,19 +50,41 @@ dependencies {
 }
 
 // Keep the Android beta self-contained without duplicating multi-megabyte catalogs in git.
-// The APK gets current snapshots from the same resources that ship with desktop MSBT.
-tasks.register('syncMobileCatalogAssets', Copy) {
-    into "$buildDir/generated/mobileAssets"
-    from('../../external_app/v22_parts_codes_fixed/resources') {
-        include 'MattsSDKBoostingTools_gzo_codes.json'
-        include 'MattsSDKBoostingTools_lootlemon_codes.json'
-        include 'custom_bl4_codes.json'
-        include 'item_pools.json'
-        include 'travelmaps_flat.json'
-        include 'travelstations.json'
-    }
-    from('../../electron_poc') {
-        include 'dev_spawner_catalog.json'
+// Prefer docs/data (remote catalog channel seeds) then fall back to packaged desktop resources.
+tasks.register('syncMobileCatalogAssets') {
+    doLast {
+        def dest = file("$buildDir/generated/mobileAssets")
+        dest.mkdirs()
+        def catalogNames = [
+            'MattsSDKBoostingTools_gzo_codes.json',
+            'MattsSDKBoostingTools_lootlemon_codes.json',
+            'custom_bl4_codes.json',
+            'item_pools.json',
+            'travelmaps_flat.json',
+            'travelstations.json',
+            'dev_spawner_catalog.json',
+            'catalog_manifest.json'
+        ]
+        def docsData = file('../../docs/data')
+        def resources = file('../../external_app/v22_parts_codes_fixed/resources')
+        def electronDir = file('../../electron_poc')
+        catalogNames.each { name ->
+            def src = new File(docsData, name)
+            if (!src.isFile() && name == 'dev_spawner_catalog.json') {
+                src = new File(electronDir, name)
+            }
+            if (!src.isFile()) {
+                src = new File(resources, name)
+            }
+            if (src.isFile()) {
+                copy {
+                    from src
+                    into dest
+                }
+            } else if (name != 'catalog_manifest.json') {
+                logger.warn("syncMobileCatalogAssets: missing ${name}")
+            }
+        }
     }
 }
 

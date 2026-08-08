@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "kind": "json_copy",
+  "min_app_version": "2.3.0",
+  "notes": "Allowlisted tutorial title/body overlays only. Unknown tours/keys are ignored. No scripts, no remote code.",
+  "tours": {
+    "main": [
+      {
+        "index": 0,
+        "title": "Welcome to MSBT",
+        "body": "You need Borderlands 4 + the MSBT SDK mod (.sdkmod in the game’s sdk_mods folder) + this Electron app. Live actions also need a connected bridge — use header Refresh Status.\n\nOffline: serial convert/validate. Live (game + mod + bridge): boosting, spawns, travel, delivery.\n\nPut MattsSDKBoostingTools.sdkmod next to ActorScriptDeployer under Borderlands 4/sdk_mods/. Or use Updates → Install / Update SDK Mod.\n\nTip: Updates → Refresh Data Catalogs pulls the latest serial/travel/pool JSON without a full app reinstall."
+      },
+      {
+        "index": 7,
+        "title": "Updates",
+        "body": "Check Electron app and SDK mod versions here. Download Electron updates, or Install / Update SDK Mod into your Borderlands 4 sdk_mods folder. Fully restart the game after any SDK change.\n\nRefresh Data Catalogs updates high-churn JSON (codes, travel, pools, Dev Spawner) from the MSBT data channel — separate from app SemVer."
+      }
+    ]
+  }
+}
