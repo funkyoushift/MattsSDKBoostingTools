@@ -1,6 +1,6 @@
 ### What's new
 
-**v2.3.2** — Remote data catalogs, walkthrough fixes, Infinite Jump / Super Dash harden, Layout Builder QM export.
+**v2.3.2** - Remote data catalogs, walkthrough fixes, Infinite Jump / Super Dash harden, Layout Builder QM export.
 
 #### Remote data catalogs
 - Data channel (`data-v*`) hotfixes for JSON catalogs without a full app update
