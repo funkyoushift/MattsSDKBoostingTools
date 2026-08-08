@@ -8436,7 +8436,8 @@ const TUTORIAL_TOURS = {
       title: "Boosting",
       body: "This is the main live lobby tab. Pick a target player (or All / Non-Host), then use Quick Max, UVH, rarity weights, XP, currency, backpack/bank size, helpers, cheats, and serial rewards. Most buttons need the bridge.",
       tab: "boosting",
-      targetSel: "#tab-boosting [data-msbt-panel='boost-quick-max']"
+      targetSel: "#tab-boosting [data-msbt-panel='boost-target']",
+      revealPanels: ["boost-target", "boost-quick-max"]
     },
     {
       title: "Serial Tools",
@@ -8633,43 +8634,50 @@ const TAB_TUTORIALS = {
       title: "Target & bridge",
       body: "Refresh Status (header) until the bridge is green. Choose a party player, or Target All / Non-Host for Quick Max, XP, Currency, and backpack/bank Set Selected. Kick uses the selected player.",
       tab: "boosting",
-      targetSel: "#tab-boosting [data-msbt-panel='boost-target']"
+      targetSel: "#tab-boosting [data-msbt-panel='boost-target']",
+      revealPanels: ["boost-target"]
     },
     {
       title: "Quick Max & UVH",
       body: "Quick Max one-shots cash, eridium, level 60, spec 701, SDUs, or Max All. UVH Booster runs lobby challenge tiers 1–N (or Run All 1–7); Cancel stops a queued run.",
       tab: "boosting",
-      targetSel: "#tab-boosting [data-msbt-panel='boost-quick-max']"
+      targetSel: "#tab-boosting [data-msbt-panel='boost-quick-max']",
+      revealPanels: ["boost-quick-max", "boost-uvh"]
     },
     {
       title: "Rarity drop weights",
       body: "Sliders are % of vanilla weight (0 removes that rarity). Apply pushes to the game; presets only change the UI until Apply. Optional Remember on startup loads sliders without applying.",
       tab: "boosting",
-      targetSel: "#tab-boosting [data-msbt-panel='boost-rarity']"
+      targetSel: "#tab-boosting [data-msbt-panel='boost-rarity']",
+      revealPanels: ["boost-rarity"]
     },
     {
       title: "Experience",
       body: "Pick XP track + target level, then Set Level or Max Player Level / Spec 701. Needs bridge + target.",
       tab: "boosting",
-      targetSel: "#tab-boosting [data-msbt-panel='boost-xp']"
+      targetSel: "#tab-boosting [data-msbt-panel='boost-xp']",
+      revealPanels: ["boost-xp"]
     },
     {
       title: "Currency & backpack / bank",
       body: "Currency: kind + amount, Give / Max. Backpack / Bank Size: set numbers, Set Selected or Apply to All Party; auto checkbox keeps re-applying as players load.",
       tab: "boosting",
-      targetSel: "#tab-boosting [data-msbt-panel='boost-inventory']"
+      targetSel: "#tab-boosting [data-msbt-panel='boost-currency']",
+      revealPanels: ["boost-currency", "boost-inventory"]
     },
     {
       title: "Serial Rewards",
       body: "Paste @U serials, optional level override + copies, then Give Selected / All / Non-Host. Delivery needs the bridge; progress shows in the top Serial Delivery bar.",
       tab: "boosting",
-      targetSel: "#tab-boosting [data-msbt-panel='boost-serial']"
+      targetSel: "#tab-boosting [data-msbt-panel='boost-serial']",
+      revealPanels: ["boost-serial"]
     },
     {
       title: "Helpers, cheats, + QM",
       body: "Quick Helpers: Pull Loot / Super Dash. Cheats panel covers ammo, demigod, chests, shinies, debug cam, etc. Gold + QM beside supported buttons pins that action into the in-game Quick Menu (F7) with current values.",
       tab: "boosting",
-      targetSel: "#tab-boosting [data-msbt-panel='boost-helpers']"
+      targetSel: "#tab-boosting [data-msbt-panel='boost-helpers']",
+      revealPanels: ["boost-helpers", "boost-cheats"]
     },
     {
       title: "Layout tip",
@@ -8995,7 +9003,8 @@ const walkthroughState = {
   _spotlightTimer: null,
   _spotlightToken: 0,
   _repositionBound: false,
-  _revealedInvDetail: false
+  _revealedInvDetail: false,
+  _didRevealPanels: false
 };
 
 function walkthroughNodes() {
@@ -9227,6 +9236,17 @@ function rectsOverlap(a, b, pad = 10) {
   );
 }
 
+function rectOverlapArea(a, b, pad = 0) {
+  const left = Math.max(a.left - pad, b.left - pad);
+  const right = Math.min(a.right + pad, b.right + pad);
+  const top = Math.max(a.top - pad, b.top - pad);
+  const bottom = Math.min(a.bottom + pad, b.bottom + pad);
+  const w = right - left;
+  const h = bottom - top;
+  if (w <= 0 || h <= 0) return 0;
+  return w * h;
+}
+
 function placeWalkthroughCardAwayFrom(target) {
   const card = walkthroughCardNode();
   if (!card) return;
@@ -9241,6 +9261,11 @@ function placeWalkthroughCardAwayFrom(target) {
   const vw = window.innerWidth || 1200;
   const vh = window.innerHeight || 800;
   const highlight = target.getBoundingClientRect();
+  // Zero-size / off-DOM targets (e.g. still-hidden panels) — keep card centered.
+  if (highlight.width < 8 || highlight.height < 8) {
+    centerWalkthroughCard();
+    return;
+  }
   const measured = card.getBoundingClientRect();
   const cw = Math.min(measured.width || 440, vw - 24);
   const ch = Math.min(measured.height || 280, Math.min(vh - 32, 640));
@@ -9250,7 +9275,8 @@ function placeWalkthroughCardAwayFrom(target) {
     { top: highlight.top, left: highlight.right + gap }, // right
     { top: highlight.top, left: highlight.left - cw - gap }, // left
     { top: gap, left: vw - cw - gap }, // top-right fallback
-    { top: vh - ch - gap, left: gap } // bottom-left fallback
+    { top: vh - ch - gap, left: gap }, // bottom-left fallback
+    { top: gap, left: gap } // top-left last resort
   ];
   const highlightBox = {
     left: highlight.left,
@@ -9259,15 +9285,20 @@ function placeWalkthroughCardAwayFrom(target) {
     bottom: highlight.bottom
   };
   let best = null;
+  let bestOverlap = Infinity;
   for (const raw of candidates) {
     const left = clampWalkthroughNumber(raw.left, gap, Math.max(gap, vw - cw - gap));
     const top = clampWalkthroughNumber(raw.top, gap, Math.max(gap, vh - ch - gap));
     const box = { left, top, right: left + cw, bottom: top + ch };
-    if (!rectsOverlap(box, highlightBox, 12)) {
+    const overlap = rectOverlapArea(box, highlightBox, 12);
+    if (overlap === 0) {
       best = { left, top };
       break;
     }
-    if (!best) best = { left, top };
+    if (overlap < bestOverlap) {
+      bestOverlap = overlap;
+      best = { left, top };
+    }
   }
   if (!best) {
     best = { left: gap, top: gap };
@@ -9291,8 +9322,75 @@ function activateWalkthroughStackPanel(panel) {
   }
 }
 
+function walkthroughLayoutTabEl(step) {
+  if (!step || !step.tab) return null;
+  const id = String(step.tab);
+  return document.querySelector(`[data-msbt-layout-tab="${id}"]`) || document.getElementById(`tab-${id}`);
+}
+
+function panelIdFromWalkthroughSelector(sel) {
+  const text = String(sel || "");
+  const match = text.match(/data-msbt-panel\s*=\s*['"]([^'"]+)['"]/i);
+  return match ? match[1] : "";
+}
+
+/** Unhide / expand a layout panel so tour spotlights are not 0×0. */
+function ensureWalkthroughPanelVisible(tabEl, panelId) {
+  const id = String(panelId || "").trim();
+  if (!tabEl || !id) return false;
+  const escaped = (typeof CSS !== "undefined" && CSS.escape) ? CSS.escape(id) : id;
+  let panel = tabEl.querySelector(`[data-msbt-panel="${escaped}"]`);
+  if (!panel) return false;
+  let changed = false;
+  const inStash = Boolean(panel.closest(".msbt-panel-stash"));
+  const hidden = panel.classList.contains("msbt-panel-hidden") || inStash;
+  if (hidden) {
+    if (window.MsbtPanelLayout && typeof window.MsbtPanelLayout.showPanel === "function") {
+      window.MsbtPanelLayout.showPanel(tabEl, id);
+    } else {
+      panel.classList.remove("msbt-panel-hidden");
+    }
+    changed = true;
+    panel = tabEl.querySelector(`[data-msbt-panel="${escaped}"]`) || panel;
+  }
+  if (panel && panel.classList.contains("msbt-panel-collapsed")) {
+    const collapseBtn = panel.querySelector(".msbt-panel-collapse");
+    if (collapseBtn && typeof collapseBtn.click === "function") {
+      collapseBtn.click();
+    } else {
+      panel.classList.remove("msbt-panel-collapsed");
+    }
+    changed = true;
+  }
+  return changed;
+}
+
+function collectWalkthroughRevealPanelIds(step) {
+  const ids = [];
+  const seen = new Set();
+  const push = (raw) => {
+    const id = String(raw || "").trim();
+    if (!id || seen.has(id)) return;
+    seen.add(id);
+    ids.push(id);
+  };
+  if (Array.isArray(step && step.revealPanels)) {
+    step.revealPanels.forEach(push);
+  }
+  push(panelIdFromWalkthroughSelector(step && step.targetSel));
+  push(panelIdFromWalkthroughSelector(step && step.targetSelFallback));
+  const target = resolveWalkthroughTarget(step);
+  if (target) {
+    const panel = target.closest("[data-msbt-panel]")
+      || (target.hasAttribute && target.hasAttribute("data-msbt-panel") ? target : null);
+    if (panel) push(panel.getAttribute("data-msbt-panel"));
+  }
+  return ids;
+}
+
 function prepareWalkthroughTarget(step) {
   if (!step) return;
+  walkthroughState._didRevealPanels = false;
   if (step.revealInvDetail) {
     const detail = document.getElementById("invDetail");
     if (detail) {
@@ -9318,6 +9416,16 @@ function prepareWalkthroughTarget(step) {
       if (detail) detail.classList.add("hidden");
     }
     walkthroughState._revealedInvDetail = false;
+  }
+
+  // Restore layout panels hidden via Panels menu / View → Panels so spotlights work.
+  const tabEl = walkthroughLayoutTabEl(step);
+  if (tabEl) {
+    let revealed = false;
+    collectWalkthroughRevealPanelIds(step).forEach((panelId) => {
+      if (ensureWalkthroughPanelVisible(tabEl, panelId)) revealed = true;
+    });
+    walkthroughState._didRevealPanels = revealed;
   }
 }
 
@@ -9378,8 +9486,19 @@ function placeWalkthroughSpotlight(step, { skipScroll = false } = {}) {
     return;
   }
   const token = ++walkthroughState._spotlightToken;
+  const settleMs = skipScroll
+    ? 40
+    : (walkthroughState._didRevealPanels ? 520 : 320);
   if (!skipScroll) {
-    scrollWalkthroughTargetIntoView(target);
+    // After unhiding into the grid, wait one frame so scroll sees real geometry.
+    if (walkthroughState._didRevealPanels) {
+      window.requestAnimationFrame(() => {
+        if (token !== walkthroughState._spotlightToken || !walkthroughState.active) return;
+        scrollWalkthroughTargetIntoView(resolveWalkthroughTarget(step) || target);
+      });
+    } else {
+      scrollWalkthroughTargetIntoView(target);
+    }
   }
   const finish = () => {
     if (token !== walkthroughState._spotlightToken || !walkthroughState.active) return;
@@ -9389,7 +9508,7 @@ function placeWalkthroughSpotlight(step, { skipScroll = false } = {}) {
   };
   // Smooth scroll + tab/layout paint: reposition after scroll settles.
   finish();
-  walkthroughState._spotlightTimer = window.setTimeout(finish, skipScroll ? 40 : 320);
+  walkthroughState._spotlightTimer = window.setTimeout(finish, settleMs);
 }
 
 function bindWalkthroughReposition() {
