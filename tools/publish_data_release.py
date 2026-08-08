@@ -29,7 +29,10 @@ BUILD_SCRIPT = ROOT / "tools" / "build_data_catalog_manifest.py"
 
 
 def run(cmd: list[str], *, check: bool = True) -> subprocess.CompletedProcess[str]:
-    print("+", " ".join(cmd))
+    preview = " ".join(cmd)
+    if len(preview) > 240:
+        preview = preview[:240] + "…"
+    print("+", preview)
     return subprocess.run(cmd, cwd=str(ROOT), text=True, capture_output=True, check=check)
 
 
@@ -88,9 +91,14 @@ def create_github_release(manifest: dict, *, draft: bool, title: str, prerelease
             "`https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/docs/data/catalog_manifest.json`",
             "",
             "Included catalogs:",
-            *[f"- `{entry.get('id')}` → `{entry.get('path')}`" for entry in (manifest.get("files") or [])],
+            *[
+                f"- `{entry.get('id')}` -> `{entry.get('path')}`"
+                for entry in (manifest.get("files") or [])
+            ],
         ]
     )
+    # Avoid Windows console encoding failures when printing long gh commands.
+    notes = notes.replace("\u2192", "->")
 
     with tempfile.TemporaryDirectory(prefix="msbt-data-release-") as tmp:
         tmp_path = Path(tmp)

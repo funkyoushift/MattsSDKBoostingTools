@@ -30,6 +30,7 @@
 | 2026-08-08T08:40:38Z | Phase 2 cache preference (travel/maps/pools/parts/shiny/challenge/dev_spawner) | PASS |
 | 2026-08-08T08:40:38Z | Hash mismatch soft-fail keeps sibling caches | PASS |
 | 2026-08-08T08:40:38Z | Raiden still valid after Phase 2 rewrites | PASS — len=60 |
+| 2026-08-08T08:42:00Z | `gh release create data-v1.0.1` (prerelease) | PASS — https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/data-v1.0.1 |
 
 ### `npm run test:data-catalogs` detail (latest)
 
