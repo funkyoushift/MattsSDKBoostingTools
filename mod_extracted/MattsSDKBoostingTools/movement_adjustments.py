@@ -89,12 +89,13 @@ _INFINITE_JUMP_INDICES: set[int] = set()
 _INFINITE_JUMP_LABEL_CACHE: dict[int, str] = {}
 _INFINITE_JUMP_LABEL_CACHE_TIME: float = 0.0
 _INFINITE_JUMP_CAMERA_LAST_APPLY: float = 0.0
-# Frequent light checks; write only when counters are spent. Heavy find_all scans
-# are throttled separately (Tobgun1: IJ ON ~76 FPS was from per-tick UE spam).
-_INFINITE_JUMP_CAMERA_INTERVAL_S: float = 0.04
-_INFINITE_JUMP_HEAVY_SCAN_INTERVAL_S: float = 1.5
+# Light checks ~10 Hz; write only when counters are spent / JumpMaxCount not open.
+# Heavy find_all scans stay rare (Tobgun1: IJ ON ~76 FPS was per-tick UE spam).
+_INFINITE_JUMP_CAMERA_INTERVAL_S: float = 0.1
+_INFINITE_JUMP_HEAVY_SCAN_INTERVAL_S: float = 3.0
 _INFINITE_JUMP_LAST_HEAVY_SCAN: float = 0.0
 _INFINITE_JUMP_WORLD_SIG: tuple[int, int, int, int] | None = None
+_INFINITE_JUMP_LOCAL_IDX: int | None = None
 
 
 def _uobject_addr(obj: Any) -> int:
@@ -1393,14 +1394,43 @@ def _set_if_needed(obj: Any, attr: str, value: Any) -> bool:
         return False
 
 
-def _force_infinite_jump_ready(pawn: Any, move: Any | None = None, *, light: bool = False) -> bool:
-    if pawn is None or not _uobject_alive(pawn) or _is_default(pawn):
+def _infinite_jump_needs_light_refresh(pawn: Any) -> bool:
+    """Cheapest spend/threshold check — read before any move resolve or writes."""
+    if pawn is None or not _uobject_alive(pawn):
         return False
     try:
-        move = move if (move is not None and _uobject_alive(move) and not _is_default(move)) else None
+        cur = getattr(pawn, "JumpCurrentCount", None)
+        if cur is not None and int(cur) > 0:
+            return True
+    except Exception:
+        pass
+    try:
+        max_c = getattr(pawn, "JumpMaxCount", None)
+        if max_c is None or int(max_c) < 999:
+            return True
+    except Exception:
+        # Missing / unreadable JumpMaxCount — still try a light open once.
+        return True
+    try:
+        pre = getattr(pawn, "JumpCurrentCountPreJump", None)
+        if pre is not None and int(pre) > 0:
+            return True
+    except Exception:
+        pass
+    return False
+
+
+def _force_infinite_jump_ready(pawn: Any, move: Any | None = None, *, light: bool = False) -> bool:
+    # Hot path: address-only liveness. Avoid str()/CDO probes every camera tick.
+    if pawn is None or not _uobject_alive(pawn):
+        return False
+    if light and not _infinite_jump_needs_light_refresh(pawn):
+        return False
+    try:
+        move = move if (move is not None and _uobject_alive(move)) else None
         if move is None:
             move = _infinite_jump_move_for_pawn(pawn)
-            if move is not None and (not _uobject_alive(move) or _is_default(move)):
+            if move is not None and not _uobject_alive(move):
                 move = None
     except Exception:
         move = None
@@ -1470,50 +1500,61 @@ def _player_label_for_controller(idx: int, pc: Any | None) -> str:
 def _clear_infinite_jump_runtime_caches() -> None:
     """Drop every long-lived UObject-adjacent cache used by Infinite Jump."""
     global _INFINITE_JUMP_LABEL_CACHE_TIME, _INFINITE_JUMP_CAMERA_LAST_APPLY
-    global _INFINITE_JUMP_LAST_HEAVY_SCAN, _INFINITE_JUMP_WORLD_SIG
+    global _INFINITE_JUMP_LAST_HEAVY_SCAN, _INFINITE_JUMP_WORLD_SIG, _INFINITE_JUMP_LOCAL_IDX
     global _JUMP_REFRESH_OBJECT_CACHE, _JUMP_REFRESH_CACHE_TIME
     _INFINITE_JUMP_LABEL_CACHE.clear()
     _INFINITE_JUMP_LABEL_CACHE_TIME = 0.0
     _INFINITE_JUMP_CAMERA_LAST_APPLY = 0.0
     _INFINITE_JUMP_LAST_HEAVY_SCAN = 0.0
     _INFINITE_JUMP_WORLD_SIG = None
+    _INFINITE_JUMP_LOCAL_IDX = None
     _JUMP_REFRESH_OBJECT_CACHE = []
     _JUMP_REFRESH_CACHE_TIME = 0.0
 
 
-def _infinite_jump_world_sig() -> tuple[int, int, int, int]:
+def _world_from_pc(pc: Any) -> Any | None:
+    if pc is None:
+        return None
+    for attr in ("World", "GetWorld"):
+        try:
+            val = getattr(pc, attr, None)
+            world = val() if callable(val) else val
+            if world is not None:
+                return world
+        except Exception:
+            pass
+    return None
+
+
+def _infinite_jump_world_sig_from(pc: Any, pawn: Any | None = None) -> tuple[int, int, int, int]:
     """Cheap world/controller/pawn/player-state address signature (no find_all)."""
-    pc = None
-    pawn = None
     world = None
     ps = None
-    try:
-        pc = get_pc()
-    except Exception:
-        pc = None
     if pc is not None and _uobject_alive(pc):
-        try:
-            pawn = pawn_for_controller(pc)
-        except Exception:
-            pawn = None
+        if pawn is None:
+            try:
+                pawn = pawn_for_controller(pc)
+            except Exception:
+                pawn = None
         try:
             ps = getattr(pc, "PlayerState", None)
         except Exception:
             ps = None
-        for attr in ("World", "GetWorld"):
-            try:
-                val = getattr(pc, attr, None)
-                world = val() if callable(val) else val
-                if world is not None:
-                    break
-            except Exception:
-                pass
+        world = _world_from_pc(pc)
     return (
         _uobject_addr(world),
         _uobject_addr(pc),
         _uobject_addr(pawn),
         _uobject_addr(ps),
     )
+
+
+def _infinite_jump_world_sig() -> tuple[int, int, int, int]:
+    try:
+        pc = get_pc()
+    except Exception:
+        pc = None
+    return _infinite_jump_world_sig_from(pc)
 
 
 def _local_party_index(pc: Any) -> int:
@@ -1559,36 +1600,47 @@ def _local_party_index(pc: Any) -> int:
     return 0
 
 
-def _infinite_jump_contexts_light() -> list[tuple[int, str, Any, Any | None]]:
+def _infinite_jump_contexts_light(pc: Any | None = None, pawn: Any | None = None) -> list[tuple[int, str, Any, Any | None]]:
     """Local resolve via get_pc only — no find_all (Tobgun FPS fix)."""
+    global _INFINITE_JUMP_LOCAL_IDX
     contexts: list[tuple[int, str, Any, Any | None]] = []
-    try:
-        pc = get_pc()
-    except Exception:
-        pc = None
+    if pc is None:
+        try:
+            pc = get_pc()
+        except Exception:
+            pc = None
     if pc is None or not _uobject_alive(pc):
         return contexts
-    pawn = pawn_for_controller(pc)
-    if pawn is None or not _uobject_alive(pawn) or _is_default(pawn):
+    if pawn is None:
+        pawn = pawn_for_controller(pc)
+    if pawn is None or not _uobject_alive(pawn):
         return contexts
-    idx = _local_party_index(pc)
+    idx = _INFINITE_JUMP_LOCAL_IDX
+    if idx is None:
+        idx = _local_party_index(pc)
+        _INFINITE_JUMP_LOCAL_IDX = int(idx)
     label = _INFINITE_JUMP_LABEL_CACHE.get(int(idx)) or _player_label_for_controller(idx, pc)
     _INFINITE_JUMP_LABEL_CACHE[int(idx)] = label
-    contexts.append((idx, label, pawn, None))
+    contexts.append((int(idx), label, pawn, None))
     return contexts
 
 
 def _infinite_jump_contexts_heavy(now: float) -> list[tuple[int, str, Any, Any | None]]:
     """Full controller + player-pawn discovery (expensive). Call rarely."""
-    global _INFINITE_JUMP_LABEL_CACHE_TIME, _INFINITE_JUMP_LAST_HEAVY_SCAN
+    global _INFINITE_JUMP_LABEL_CACHE_TIME, _INFINITE_JUMP_LAST_HEAVY_SCAN, _INFINITE_JUMP_LOCAL_IDX
     contexts: list[tuple[int, str, Any, Any | None]] = []
     controllers = live_player_controllers()
     seen: set[int] = set()
+    try:
+        local_pc = get_pc()
+    except Exception:
+        local_pc = None
+    local_pc_addr = _uobject_addr(local_pc)
     for idx, pc in enumerate(controllers):
         if pc is None or not _uobject_alive(pc):
             continue
         pawn = pawn_for_controller(pc)
-        if pawn is None or not _uobject_alive(pawn) or _is_default(pawn):
+        if pawn is None or not _uobject_alive(pawn):
             continue
         addr = _uobject_addr(pawn)
         if addr in seen:
@@ -1597,8 +1649,10 @@ def _infinite_jump_contexts_heavy(now: float) -> list[tuple[int, str, Any, Any |
         label = _player_label_for_controller(idx, pc)
         _INFINITE_JUMP_LABEL_CACHE[int(idx)] = label
         contexts.append((idx, label, pawn, None))
+        if local_pc_addr and _uobject_addr(pc) == local_pc_addr:
+            _INFINITE_JUMP_LOCAL_IDX = int(idx)
     for pawn in live_player_pawns():
-        if pawn is None or not _uobject_alive(pawn) or _is_default(pawn):
+        if pawn is None or not _uobject_alive(pawn):
             continue
         addr = _uobject_addr(pawn)
         if addr in seen:
@@ -1617,22 +1671,28 @@ def _infinite_jump_contexts(now: float | None = None) -> list[tuple[int, str, An
     Heavy find_all scans run on an interval or when world/controller/pawn identity
     changes. Between scans, reacquire through controllers only.
     """
-    global _INFINITE_JUMP_WORLD_SIG, _INFINITE_JUMP_LAST_HEAVY_SCAN
+    global _INFINITE_JUMP_WORLD_SIG, _INFINITE_JUMP_LAST_HEAVY_SCAN, _INFINITE_JUMP_LOCAL_IDX
     try:
         now = time.monotonic() if now is None else float(now)
     except Exception:
         now = 0.0
-    sig = _infinite_jump_world_sig()
+    try:
+        pc = get_pc()
+    except Exception:
+        pc = None
+    pawn = pawn_for_controller(pc) if pc is not None else None
+    sig = _infinite_jump_world_sig_from(pc, pawn)
     force_heavy = False
     if _INFINITE_JUMP_WORLD_SIG is None or sig != _INFINITE_JUMP_WORLD_SIG:
         # Travel / respawn / reload — drop labels and force a full rescan.
         _INFINITE_JUMP_LABEL_CACHE.clear()
+        _INFINITE_JUMP_LOCAL_IDX = None
         _INFINITE_JUMP_WORLD_SIG = sig
         force_heavy = True
     due = force_heavy or (now - float(_INFINITE_JUMP_LAST_HEAVY_SCAN or 0.0) >= float(_INFINITE_JUMP_HEAVY_SCAN_INTERVAL_S))
     if due:
         return _infinite_jump_contexts_heavy(now)
-    return _infinite_jump_contexts_light()
+    return _infinite_jump_contexts_light(pc, pawn)
 
 
 def _enabled_infinite_jump_names() -> str:
@@ -1642,7 +1702,7 @@ def _enabled_infinite_jump_names() -> str:
 
 
 def _hook_arg_to_pawn(obj: Any) -> Any | None:
-    if obj is None or _is_default(obj):
+    if obj is None or not _uobject_alive(obj):
         return None
     for attr in ("Object", "object", "obj", "self", "This", "this", "Caller", "caller", "Context", "context"):
         try:
@@ -1658,15 +1718,39 @@ def _hook_arg_to_pawn(obj: Any) -> Any | None:
             pawn = getattr(obj, attr, None)
         except Exception:
             pawn = None
-        if pawn is not None and not _is_default(pawn):
+        if pawn is not None and _uobject_alive(pawn):
             return pawn
-    return obj if obj in live_player_pawns() else None
+    # Cheap local match only — never find_all on the jump pre-hook hot path.
+    try:
+        local_pawn = pawn_for_controller(get_pc())
+        if local_pawn is not None and _uobject_addr(local_pawn) and _uobject_addr(obj) == _uobject_addr(local_pawn):
+            return obj
+    except Exception:
+        pass
+    # Character/pawn-shaped callers often expose JumpMaxCount directly.
+    try:
+        if getattr(obj, "JumpMaxCount", None) is not None:
+            return obj
+    except Exception:
+        pass
+    return None
 
 
 def _party_index_for_pawn(pawn: Any) -> int | None:
     if pawn is None or not _uobject_alive(pawn):
         return None
     pawn_addr = _uobject_addr(pawn)
+    # Prefer cached local index vs local pawn before any context scan.
+    try:
+        local_pc = get_pc()
+        local_pawn = pawn_for_controller(local_pc) if local_pc is not None else None
+        if local_pawn is not None and pawn_addr and _uobject_addr(local_pawn) == pawn_addr:
+            if _INFINITE_JUMP_LOCAL_IDX is not None:
+                return int(_INFINITE_JUMP_LOCAL_IDX)
+            idx = _local_party_index(local_pc)
+            return int(idx)
+    except Exception:
+        pass
     for idx, _name, ctx_pawn, _move in _infinite_jump_contexts():
         try:
             if ctx_pawn is pawn:
@@ -1679,7 +1763,7 @@ def _party_index_for_pawn(pawn: Any) -> int | None:
 
 
 def _camera_infinite_jump_hook(*args, **kwargs):
-    global _INFINITE_JUMP_CAMERA_LAST_APPLY
+    global _INFINITE_JUMP_CAMERA_LAST_APPLY, _INFINITE_JUMP_WORLD_SIG, _INFINITE_JUMP_LOCAL_IDX
     try:
         if not _INFINITE_JUMP_INDICES:
             return None
@@ -1688,29 +1772,67 @@ def _camera_infinite_jump_hook(*args, **kwargs):
         if now - float(_INFINITE_JUMP_CAMERA_LAST_APPLY) < float(_INFINITE_JUMP_CAMERA_INTERVAL_S):
             return None
         _INFINITE_JUMP_CAMERA_LAST_APPLY = now
-        # World/controller/pawn identity change clears caches inside contexts().
-        contexts = _infinite_jump_contexts(now)
-        live_idxs = {int(idx) for idx, _n, pawn, _m in contexts if pawn is not None}
-        # Drop party slots that no longer resolve (travel / disconnect) so we
-        # do not keep hammering dead indices forever — but only after a heavy
-        # scan so light local-only ticks don't wipe remote party enables.
-        if now - float(_INFINITE_JUMP_LAST_HEAVY_SCAN or 0.0) < 0.05:
+
+        # Cheapest resolve first: local pc/pawn only (no find_all, no party walk).
+        try:
+            pc = get_pc()
+        except Exception:
+            pc = None
+        if pc is None or not _uobject_alive(pc):
+            return None
+        pawn = pawn_for_controller(pc)
+        if pawn is None or not _uobject_alive(pawn):
+            return None
+
+        sig = _infinite_jump_world_sig_from(pc, pawn)
+        force_heavy = False
+        if _INFINITE_JUMP_WORLD_SIG is None or sig != _INFINITE_JUMP_WORLD_SIG:
+            _INFINITE_JUMP_LABEL_CACHE.clear()
+            _INFINITE_JUMP_LOCAL_IDX = None
+            _INFINITE_JUMP_WORLD_SIG = sig
+            force_heavy = True
+
+        local_idx = _INFINITE_JUMP_LOCAL_IDX
+        if local_idx is None:
+            local_idx = int(_local_party_index(pc))
+            _INFINITE_JUMP_LOCAL_IDX = local_idx
+
+        due_heavy = force_heavy or (
+            now - float(_INFINITE_JUMP_LAST_HEAVY_SCAN or 0.0) >= float(_INFINITE_JUMP_HEAVY_SCAN_INTERVAL_S)
+        )
+        party_needed = due_heavy or any(int(i) != int(local_idx) for i in _INFINITE_JUMP_INDICES)
+
+        # Solo / local-enabled idle path: read jump counters and bail with zero writes.
+        if int(local_idx) in _INFINITE_JUMP_INDICES and _infinite_jump_needs_light_refresh(pawn):
+            _force_infinite_jump_ready(pawn, None, light=True)
+
+        if not party_needed:
+            return None
+
+        contexts = _infinite_jump_contexts_heavy(now) if due_heavy else _infinite_jump_contexts_light(pc, pawn)
+        live_idxs = {int(idx) for idx, _n, ctx_pawn, _m in contexts if ctx_pawn is not None}
+        # Drop party slots that no longer resolve (travel / disconnect) — only after heavy.
+        if due_heavy:
             stale = [i for i in list(_INFINITE_JUMP_INDICES) if i not in live_idxs]
             for i in stale:
                 _INFINITE_JUMP_INDICES.discard(i)
         if not _INFINITE_JUMP_INDICES:
             return None
         touched: set[int] = set()
-        for idx, _name, pawn, _move in contexts:
+        local_pawn_addr = _uobject_addr(pawn)
+        if local_pawn_addr:
+            touched.add(local_pawn_addr)
+        for idx, _name, ctx_pawn, _move in contexts:
             if int(idx) not in _INFINITE_JUMP_INDICES:
                 continue
-            if pawn is None or not _uobject_alive(pawn) or _is_default(pawn):
+            if ctx_pawn is None or not _uobject_alive(ctx_pawn):
                 continue
-            key = _uobject_addr(pawn) or id(pawn)
+            key = _uobject_addr(ctx_pawn) or id(ctx_pawn)
             if key in touched:
                 continue
             touched.add(key)
-            _force_infinite_jump_ready(pawn, None, light=True)
+            if _infinite_jump_needs_light_refresh(ctx_pawn):
+                _force_infinite_jump_ready(ctx_pawn, None, light=True)
     except Exception:
         pass
     return None

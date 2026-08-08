@@ -4704,25 +4704,60 @@ def _movement_camera_infinite_jump_hook(*args, **kwargs):
 
     Backend movement_adjustments owns the Electron/QM path. This hook only
     touches pawns in ``_movement_infinite_jump_indices`` and only clears spent
-    jump counters (avoids every-frame zeroing jitter).
+    jump counters (avoids every-frame zeroing jitter). Local-first: skip party
+    walks and writes when JumpCurrentCount is idle and JumpMaxCount is open.
     """
     try:
         if not _movement_infinite_jump_indices:
             return None
         now = time.monotonic()
         last = float(getattr(_movement_camera_infinite_jump_hook, "_last", 0.0) or 0.0)
-        if now - last < 0.04:
+        if now - last < 0.1:
             return None
         setattr(_movement_camera_infinite_jump_hook, "_last", now)
+
+        # Cheap local-first idle path (aligned with backend IJ harden).
+        try:
+            pc = get_pc()
+        except Exception:
+            pc = None
+        local_pawn = None
+        if pc is not None:
+            for attr in ("Pawn", "AcknowledgedPawn", "Character", "ControlledPawn"):
+                try:
+                    local_pawn = getattr(pc, attr, None)
+                    if local_pawn is not None and _movement_uobject_alive(local_pawn):
+                        break
+                except Exception:
+                    local_pawn = None
+        party_needed = len(_movement_infinite_jump_indices) > 1 or 0 not in _movement_infinite_jump_indices
+        if local_pawn is not None and 0 in _movement_infinite_jump_indices:
+            try:
+                cur = int(getattr(local_pawn, "JumpCurrentCount", 0) or 0)
+                max_c = int(getattr(local_pawn, "JumpMaxCount", 0) or 0)
+                if cur > 0 or max_c < 999:
+                    move = _movement_infinite_move_for_pawn(local_pawn)
+                    _movement_force_infinite_jump_ready(local_pawn, move, light=True)
+            except Exception:
+                _movement_force_infinite_jump_ready(local_pawn, None, light=True)
+            if not party_needed:
+                return None
+
+        if not party_needed and local_pawn is not None:
+            return None
+
         contexts = _movement_infinite_jump_cached_contexts(now)
         touched: set[int] = set()
+        local_addr = _movement_uobject_addr(local_pawn) if local_pawn is not None else 0
+        if local_addr:
+            touched.add(local_addr)
         for idx, _name, _pc, pawn, move in contexts:
             try:
                 if int(idx) not in _movement_infinite_jump_indices:
                     continue
             except Exception:
                 continue
-            if pawn is None or not _movement_uobject_alive(pawn) or _movement_is_default_obj(pawn):
+            if pawn is None or not _movement_uobject_alive(pawn):
                 continue
             key = _movement_uobject_addr(pawn) or id(pawn)
             if key in touched:
