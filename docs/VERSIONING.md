@@ -58,9 +58,15 @@ Electron updater metadata may remain named `latest.yml`, because that filename i
 
 ## Download count badges
 
-README and generated release notes show shields.io download badges for the **installer** and **portable ZIP** only (not `latest.json` / `latest.yml` / `.blockmap`).
+README and generated release notes show shields.io download badges for the **installer** and **portable ZIP** (not `latest.json` / `latest.yml` / `.blockmap`).
 
-When bumping the public version, update the versioned installer/portable filenames in the README badge URLs. Generated release notes (manual publisher + CI) include matching badges for that tag automatically.
+The root README also shows an **Android APK** badge for the rolling asset on the `mobile-beta` prerelease:
+
+`MSBT-Mobile-Controller.apk` → `github/downloads/.../mobile-beta/MSBT-Mobile-Controller.apk`
+
+That counter only increments when the GitHub release asset is downloaded (including via the install page’s **Download APK** button). Hits on the GitHub Pages install HTML alone do not count.
+
+When bumping the public version, update the versioned installer/portable filenames in the README badge URLs. Generated release notes (manual publisher + CI) include matching desktop badges for that tag automatically. Leave the Android badge pointed at `mobile-beta` / `MSBT-Mobile-Controller.apk` unless the rolling APK name changes.
 
 **Do not** replace a published release body with a notes-only file (`gh release edit --notes-file` without the badge footer). That wipe already happened once on v2.1.0 — always keep the publisher/CI badge block.
 

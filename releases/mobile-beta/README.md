@@ -2,6 +2,8 @@
 
 Open Android beta for **MSBT Mobile Controller**, paired with desktop **Matt's SDK Boosting Tools v2.3.1+** (Mobile Gateway + QR).
 
+[![Android APK downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/mobile-beta/MSBT-Mobile-Controller.apk?label=Android%20APK%20downloads&color=e8a23a)](https://www.funkyoushift.com/MattsSDKBoostingTools/mobile-install.html)
+
 Desktop **v2.3.1** is the current GitHub **Latest** Windows release and includes Mobile Gateway plus a phone-friendly install page for the home QR.
 
 ## What you get
