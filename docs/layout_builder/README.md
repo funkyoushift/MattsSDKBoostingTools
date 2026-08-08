@@ -1,39 +1,43 @@
-# MSBT Quick Menu → BL4 SDK Layout Builder
+# MSBT Quick Menu → BL4 SDK Layout Builder (UMG-only)
 
-Matt: the live F7 Quick Menu will **not** open usefully as `MattsSDKBoostingTools.sdkmod` because Layout Builder parses **static** Azzy-style `_button(x,y,w,h)` / `_text` / `_border` calls (and discovers **Screens** from `_build_ui` + `_UI_TAB_*` branches). MSBT builds F7 procedurally in UMG loops (`quick_menu.py`).
+## Open this file
 
-This folder is a **Layout-Builder-compatible scaffold** of the default QM dock: real page labels, chrome (MOVE / THEME / P1–P4 / INV / rarity reserve), and separate Screens per page.
+```
+docs/layout_builder/MSBT_QuickMenu_UMG_Only.sdkmod
+```
+
+Tool: `C:\Users\mwenn\Desktop\BL4_SDK_Layout_Builder.exe` → **File → Open .sdkmod**
+
+Then use the **Screen** dropdown (not “(all pages)” if grids look stacked):
+
+| Screen | What you should see |
+| --- | --- |
+| **QM Page 1** | Real F7 defaults: Max All, Max Currency, Max Eridium, … |
+| **QM Page 2–4** | Suggested starter pins (movement / shinies / UVH) |
+| **QM Page 5** | Mostly empty `+ Assign` slots (like a fresh F7 page) |
+| **QM INV** | Inventory tab placeholder |
+
+Compat alias (same contents, old name): `MSBT_QuickMenu_LayoutBuilder.sdkmod`
+
+## Why full MSBT.sdkmod will not open (expected)
+
+Layout Builder rejects packages that ship **Dear ImGui / blimgui**. The live gameplay archive `MattsSDKBoostingTools.sdkmod` still includes optional `blimgui_panel.py`, so File → Open on that package fails with “UI is Dear ImGui / blimgui… not UMG”.
+
+That does **not** mean F7 is ImGui. Live F7 Quick Menu is native UMG (`quick_menu.py` + `quick_menu_registry.py`). The builder just cannot edit the full mixed package.
+
+## What this pack is
+
+A **UMG-only** Layout Builder scaffold:
+
+- Absolute `_button(x,y,w,h)` / `_text` / `_border` boxes (Azzy patterns)
+- `_build_ui` + `_UI_TAB_*` screens so the Screen dropdown works
+- Labels from live `quick_menu_registry.ACTION_CATALOG` / `DEFAULT_PAGE_0`
+- Dock chrome mirrored from `quick_menu.py` geometry (offset 0)
+- **Zero** `blimgui_panel.py`, `blimgui` imports, or Dear ImGui draw calls
 
 Editing here does **not** change in-game F7 until you port numbers back by hand.
 
-## Why the first export looked empty
-
-The v1 scaffold put all five pages’ 21-slot grids at the **same coordinates** in one function. Layout Builder stacked them; Page 5’s `+ Assign` stubs covered Page 1’s “Max All” / “Max Currency” / … labels. That’s what the “P5 + Assign” screenshot was.
-
-## Files
-
-| File | Open how |
-| --- | --- |
-| [`MSBT_QuickMenu_LayoutBuilder.sdkmod`](./MSBT_QuickMenu_LayoutBuilder.sdkmod) | **File → Open .sdkmod** (preferred) |
-| [`msbt_quick_menu.layout_preset.json`](./msbt_quick_menu.layout_preset.json) | **Load preset** |
-
-Tool path: `C:\Users\mwenn\Desktop\BL4_SDK_Layout_Builder.exe`
-
-## How to open
-
-1. Launch `BL4_SDK_Layout_Builder.exe`.
-2. **File → Open .sdkmod** →  
-   `docs/layout_builder/MSBT_QuickMenu_LayoutBuilder.sdkmod`
-3. Use the **Screen** dropdown (not “(all pages)” if grids look stacked):
-   - **QM Page 1** — default F7 pins (Max All, Max Currency, …)
-   - **QM Page 2–4** — suggested starter pins (movement / shinies / UVH)
-   - **QM Page 5** — mostly empty `+ Assign` slots (like a fresh F7 page)
-   - **QM INV** — inventory tab placeholder
-4. Or **Load preset** → `msbt_quick_menu.layout_preset.json` and filter by Screen the same way.
-
-You should see labeled actions on Page 1 (not a wall of Assign stubs).
-
-## Regenerate after QM defaults change
+## Regenerate (stays UMG-only)
 
 ```bash
 python tools/export_qm_for_layout_builder.py
@@ -41,13 +45,30 @@ python tools/export_qm_for_layout_builder.py
 
 Optional: `--out-dir path\to\folder`
 
+The exporter refuses to finish if the zip contains blimgui files/imports, lacks `_build_ui` / `_UI_TAB_*`, or regresses to the old “P5 + Assign” wall.
+
+## Verify unzip by hand
+
+```bash
+python -c "import zipfile; z=zipfile.ZipFile(r'docs/layout_builder/MSBT_QuickMenu_UMG_Only.sdkmod'); print('\n'.join(z.namelist()))"
+```
+
+Expected members only:
+
+- `MSBT_QuickMenu_UMG_Only/__init__.py`
+- `MSBT_QuickMenu_UMG_Only/qm_layout.py`
+- `MSBT_QuickMenu_UMG_Only/pyproject.toml`
+- `MSBT_QuickMenu_UMG_Only/README_LAYOUT.txt`
+
+No `blimgui_panel.py`.
+
 ## What the builder can / can’t represent
 
 | Can | Can’t / won’t match live F7 |
 | --- | --- |
 | Dock geometry, slot grid 3×7, chrome button boxes | Live UMG rebuild, themes, opacity, window scale |
 | Per-page Screens via `_UI_TAB_*` | Runtime player names / Lock / Last-drop text |
-| Slot labels from `ACTION_CATALOG` basics | Payload-bearing pins (serial text, travel map, …) as real data |
+| Slot labels from `ACTION_CATALOG` basics | Payload-bearing pins as real data |
 | Drag boxes, rebuild `.sdkmod`, save preset | INV serial browser contents |
 | Rarity strip **placeholder** boxes | Live rarity sliders wired to backend |
 

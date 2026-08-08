@@ -1,6 +1,6 @@
 {
-  "source_mod": "MSBT_QuickMenu_LayoutBuilder",
-  "package": "MSBT_QuickMenu_LayoutBuilder",
+  "source_mod": "MSBT_QuickMenu_UMG_Only",
+  "package": "MSBT_QuickMenu_UMG_Only",
   "screen": "(all pages)",
   "design_width": 1920.0,
   "design_height": 1080.0,
@@ -7727,5 +7727,5 @@
       }
     }
   ],
-  "notes": "Synthetic MSBT Quick Menu for BL4 SDK Layout Builder. Use the Screen dropdown (QM Page 1-5 / QM INV). Not the live F7 UMG menu \u2014 port coordinates back manually. Builder format: Azzy _button/_text/_border + _UI_TAB screens."
+  "notes": "UMG-only MSBT Quick Menu scaffold for BL4 SDK Layout Builder. No blimgui / Dear ImGui. Use Screen dropdown (QM Page 1-5 / QM INV). Not the live F7 UMG menu \u2014 port coordinates back manually. Builder format: Azzy _button/_text/_border + _UI_TAB screens. Full MattsSDKBoostingTools.sdkmod will not open here (ships optional ImGui panel)."
 }

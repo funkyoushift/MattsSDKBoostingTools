@@ -1,33 +1,48 @@
 #!/usr/bin/env python3
-"""Export MSBT Quick Menu layout for BL4 SDK Layout Builder.
+"""Export a UMG-only MSBT Quick Menu pack for BL4 SDK Layout Builder.
 
-Why the old export looked useless
----------------------------------
-BL4_SDK_Layout_Builder parses static Azzy-style helpers
-(`_button` / `_text` / `_border`) and discovers **screens** from
-`_build_ui` + `_UI_TAB_*` branches (or Matt-style `SCREEN_*` +
-`rebuild_menu`). The first scaffold dumped all five QM pages into one
-function at the **same x/y**, so the editor stacked them; Page 5's
-"+ Assign" stubs painted over Page 1's real labels.
+Why full MattsSDKBoostingTools.sdkmod fails
+-------------------------------------------
+Layout Builder rejects packages that ship Dear ImGui / blimgui
+(`blimgui_panel.py`, `import blimgui`, etc.). The live gameplay
+`.sdkmod` still includes the optional ImGui panel, so File -> Open on
+that archive is expected to fail with “UI is Dear ImGui / blimgui… not
+UMG”.
 
-This exporter emits builder-native tabbed screens that mirror the live
-F7 dock chrome + 3x7 slot grid from `quick_menu.py` /
-`quick_menu_registry.py`. It does **not** change the in-game F7 menu.
+This exporter builds a **UMG-only** scaffold: absolute `_button` /
+`_text` / `_border` boxes (Azzy patterns), `_build_ui` + `_UI_TAB_*`
+screens, real F7 labels from `quick_menu_registry.py`, and **zero**
+blimgui files or imports. It does **not** change the in-game F7 menu.
 
-Outputs:
-  - Layout Builder preset JSON (File -> Load preset)
-  - Scaffold .sdkmod with Azzy-style `_build_ui` tabs (File -> Open .sdkmod)
+Outputs (under docs/layout_builder/ by default):
+  - MSBT_QuickMenu_UMG_Only.sdkmod  (File -> Open .sdkmod)  ← preferred
+  - msbt_quick_menu.layout_preset.json  (Load preset)
+  - MSBT_QuickMenu_LayoutBuilder.sdkmod  (compat alias of the same pack)
 """
 
 from __future__ import annotations
 
 import argparse
+import ast
 import json
+import re
 import zipfile
 from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
+REGISTRY_PATH = ROOT / "mod_extracted" / "MattsSDKBoostingTools" / "quick_menu_registry.py"
+
+PACKAGE_NAME = "MSBT_QuickMenu_UMG_Only"
+COMPAT_PACKAGE_NAME = "MSBT_QuickMenu_LayoutBuilder"
+# Real import / dependency patterns that prove ImGui is present.
+FORBIDDEN_IMPORT_RES = (
+    re.compile(r"(?m)^\s*import\s+blimgui\b"),
+    re.compile(r"(?m)^\s*from\s+blimgui\b"),
+    re.compile(r"(?m)^\s*import\s+imgui\b"),
+    re.compile(r"(?m)^\s*from\s+imgui\b"),
+    re.compile(r"importlib\.import_module\(\s*[\"']blimgui"),
+)
 
 # --- Geometry mirrors quick_menu.py (offset_x/y = 0) ---
 DESIGN_W = 1920.0
@@ -70,8 +85,8 @@ C_TEXT = (1.0, 1.0, 1.0, 1.0)
 C_TEXT_DIM = (0.75, 0.78, 0.82, 1.0)
 C_OUTLINE = (0.02, 0.02, 0.02, 1.0)
 
-# Labels from quick_menu_registry.ACTION_CATALOG (basic mode).
-ACTION_LABELS: dict[str, str] = {
+# Fallback labels if registry AST parse fails (kept in sync with ACTION_CATALOG basics).
+_FALLBACK_ACTION_LABELS: dict[str, str] = {
     "max_all": "Max All",
     "max_currency": "Max Currency",
     "max_eridium": "Max Eridium",
@@ -119,9 +134,7 @@ ACTION_LABELS: dict[str, str] = {
     "spawn_itempool": "Spawn Item Pool",
 }
 
-# Default F7 page 1 (quick_menu_registry.DEFAULT_PAGE_0), then curated extras
-# so later pages are editable content — not a wall of blank Assign stubs.
-DEFAULT_PAGE_0: list[dict | None] = [
+_FALLBACK_PAGE_0: list[dict | None] = [
     {"action": "max_all"},
     {"action": "max_currency"},
     {"action": "max_eridium"},
@@ -136,7 +149,48 @@ DEFAULT_PAGE_0: list[dict | None] = [
     None,
 ]
 
-# Suggested starter pins for pages 2-5 (edit freely in the builder).
+
+def _ast_const(tree: ast.AST, name: str) -> Any:
+    for node in tree.body:  # type: ignore[attr-defined]
+        target = None
+        value = None
+        if isinstance(node, ast.Assign):
+            for t in node.targets:
+                if isinstance(t, ast.Name) and t.id == name:
+                    target, value = t.id, node.value
+                    break
+        elif isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name):
+            if node.target.id == name:
+                target, value = name, node.value
+        if target == name and value is not None:
+            return ast.literal_eval(value)
+    raise KeyError(name)
+
+
+def load_registry_basics() -> tuple[dict[str, str], list[dict | None]]:
+    """Pull ACTION_CATALOG basic labels + DEFAULT_PAGE_0 from live registry source."""
+    if not REGISTRY_PATH.is_file():
+        return dict(_FALLBACK_ACTION_LABELS), list(_FALLBACK_PAGE_0)
+    tree = ast.parse(REGISTRY_PATH.read_text(encoding="utf-8"), filename=str(REGISTRY_PATH))
+    catalog = _ast_const(tree, "ACTION_CATALOG")
+    page0_raw = _ast_const(tree, "DEFAULT_PAGE_0")
+    labels = {
+        str(key): str((meta or {}).get("basic") or key)
+        for key, meta in catalog.items()
+    }
+    page0: list[dict | None] = []
+    for slot in page0_raw:
+        if not slot:
+            page0.append(None)
+            continue
+        page0.append({"action": str(slot.get("action") or "")})
+    return labels, page0
+
+
+ACTION_LABELS, DEFAULT_PAGE_0 = load_registry_basics()
+
+# Suggested starter pins for pages 2-5 (live F7 pages 2-5 start empty;
+# these give the builder editable labeled content instead of Assign walls).
 SUGGESTED_PAGES: list[list[dict | None]] = [
     # Page 2 — movement / clear loot
     [
@@ -600,17 +654,18 @@ def build_widgets(pages: list[list[dict | None]]) -> list[dict[str, Any]]:
 
 def build_preset(pages: list[list[dict | None]], *, screen: str = "(all pages)") -> dict[str, Any]:
     return {
-        "source_mod": "MSBT_QuickMenu_LayoutBuilder",
-        "package": "MSBT_QuickMenu_LayoutBuilder",
+        "source_mod": PACKAGE_NAME,
+        "package": PACKAGE_NAME,
         "screen": screen,
         "design_width": DESIGN_W,
         "design_height": DESIGN_H,
         "widgets": build_widgets(pages),
         "notes": (
-            "Synthetic MSBT Quick Menu for BL4 SDK Layout Builder. "
-            "Use the Screen dropdown (QM Page 1-5 / QM INV). "
+            "UMG-only MSBT Quick Menu scaffold for BL4 SDK Layout Builder. "
+            "No blimgui / Dear ImGui. Use Screen dropdown (QM Page 1-5 / QM INV). "
             "Not the live F7 UMG menu — port coordinates back manually. "
-            "Builder format: Azzy _button/_text/_border + _UI_TAB screens."
+            "Builder format: Azzy _button/_text/_border + _UI_TAB screens. "
+            "Full MattsSDKBoostingTools.sdkmod will not open here (ships optional ImGui panel)."
         ),
     }
 
@@ -811,17 +866,26 @@ def build_scaffold_py(pages: list[list[dict | None]]) -> str:
 
     Chrome + tab strip are always drawn; only the page/INV body sits behind
     `_ui_active_tab` branches so discover_screens() can compose one page at a time.
+
+    Intentionally ImGui-free: no blimgui imports, no Dear ImGui draw calls.
+    Geometry mirrors live F7 UMG dock from quick_menu.py (offset 0).
     """
     lines: list[str] = [
-        '"""MSBT Quick Menu layout scaffold for BL4 SDK Layout Builder only.',
+        '"""UMG-only MSBT Quick Menu scaffold for BL4 SDK Layout Builder.',
         "",
         "NOT loaded by the in-game F7 Quick Menu.",
+        "NOT Dear ImGui / blimgui — absolute UMG-style boxes only.",
         "Open this .sdkmod in BL4_SDK_Layout_Builder, then use Screen filter:",
         "  QM Page 1..5 / INV (from _UI_TAB_* branches below).",
+        "Labels sourced from quick_menu_registry.ACTION_CATALOG / DEFAULT_PAGE_0.",
         '"""',
         "",
         "DESIGN_WIDTH = 1920.0",
         "DESIGN_HEIGHT = 1080.0",
+        "",
+        "# Layout Builder marks this pack as UMG (absolute x/y), not ImGui.",
+        'UI_BACKEND = "UMG"',
+        'LAYOUT_KIND = "absolute"',
         "",
         "# --- BL4 Layout Builder tabs (MSBT Quick Menu) ---",
         '_UI_TAB_P1 = "p1"',
@@ -879,19 +943,30 @@ def build_scaffold_py(pages: list[list[dict | None]]) -> str:
     return "\n".join(lines)
 
 
-def write_scaffold_sdkmod(path: Path, pages: list[list[dict | None]]) -> None:
-    package = "MSBT_QuickMenu_LayoutBuilder"
+def write_scaffold_sdkmod(path: Path, pages: list[list[dict | None]], *, package: str) -> None:
     init_py = (
-        '"""Layout-Builder-only scaffold package. Not a gameplay mod."""\n'
+        '"""UMG-only Layout Builder scaffold. Not a gameplay mod.\n\n'
+        "No blimgui / Dear ImGui. Open with BL4_SDK_Layout_Builder File -> Open .sdkmod.\n"
+        '"""\n'
         "from . import qm_layout\n\n"
         "def build_mod(*_args, **_kwargs):\n"
         "    return None\n"
     )
+    readme = (
+        "MSBT Quick Menu — UMG-only Layout Builder pack\n"
+        "==============================================\n\n"
+        "Open: File -> Open .sdkmod -> this archive.\n"
+        "Tool: C:\\Users\\mwenn\\Desktop\\BL4_SDK_Layout_Builder.exe\n\n"
+        "Use the Screen dropdown (QM Page 1..5 / QM INV).\n"
+        "This pack has zero blimgui files. Full MattsSDKBoostingTools.sdkmod\n"
+        "will NOT open in Layout Builder (expected: ships optional ImGui panel).\n\n"
+        "Regen: python tools/export_qm_for_layout_builder.py\n"
+    )
     pyproject = (
         "[project]\n"
         f'name = "{package}"\n'
-        'version = "0.0.2"\n'
-        'description = "MSBT Quick Menu scaffold for BL4 SDK Layout Builder"\n'
+        'version = "0.0.3"\n'
+        'description = "UMG-only MSBT Quick Menu scaffold for BL4 SDK Layout Builder (no blimgui)"\n'
     )
     path.parent.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(path, "w", compression=zipfile.ZIP_DEFLATED) as zf:
@@ -899,11 +974,12 @@ def write_scaffold_sdkmod(path: Path, pages: list[list[dict | None]]) -> None:
         zf.writestr(base + "__init__.py", init_py)
         zf.writestr(base + "qm_layout.py", build_scaffold_py(pages))
         zf.writestr(base + "pyproject.toml", pyproject)
+        zf.writestr(base + "README_LAYOUT.txt", readme)
 
 
 def _verify_not_all_assign(sdkmod_path: Path) -> dict[str, int]:
     """Sanity-check scaffold contents for the Matt-visible failure mode."""
-    counts = {"max_all": 0, "assign": 0, "p5_assign": 0, "ui_tabs": 0, "buttons": 0}
+    counts = {"max_all": 0, "assign": 0, "p5_assign": 0, "ui_tabs": 0, "buttons": 0, "build_ui": 0}
     with zipfile.ZipFile(sdkmod_path, "r") as zf:
         text = zf.read(f"{sdkmod_path.stem}/qm_layout.py").decode("utf-8")
     counts["max_all"] = text.count('"Max All"')
@@ -911,7 +987,38 @@ def _verify_not_all_assign(sdkmod_path: Path) -> dict[str, int]:
     counts["p5_assign"] = text.count('"P5 + Assign"')
     counts["ui_tabs"] = text.count("_UI_TAB_P")
     counts["buttons"] = text.count("_button(")
+    counts["build_ui"] = text.count("def _build_ui(")
     return counts
+
+
+def _verify_umg_only(sdkmod_path: Path) -> list[str]:
+    """Ensure the archive has no blimgui / ImGui surfaces."""
+    problems: list[str] = []
+    with zipfile.ZipFile(sdkmod_path, "r") as zf:
+        names = zf.namelist()
+        for name in names:
+            lower = name.replace("\\", "/").lower()
+            base = Path(lower).name
+            if base in {"blimgui_panel.py", "blimgui.py"} or "/blimgui/" in lower:
+                problems.append(f"forbidden file: {name}")
+            if not name.endswith(".py"):
+                continue
+            text = zf.read(name).decode("utf-8", errors="replace")
+            for rx in FORBIDDEN_IMPORT_RES:
+                if rx.search(text):
+                    problems.append(f"{name}: ImGui/blimgui import ({rx.pattern})")
+        layout_name = f"{sdkmod_path.stem}/qm_layout.py"
+        if layout_name not in names:
+            problems.append("missing qm_layout.py")
+            return problems
+        layout = zf.read(layout_name).decode("utf-8")
+        if "def _build_ui(" not in layout:
+            problems.append("qm_layout.py missing _build_ui")
+        if "_UI_TAB_P1" not in layout:
+            problems.append("qm_layout.py missing _UI_TAB_* screens")
+        if 'UI_BACKEND = "UMG"' not in layout:
+            problems.append("qm_layout.py missing UI_BACKEND = UMG marker")
+    return problems
 
 
 def main() -> int:
@@ -920,7 +1027,7 @@ def main() -> int:
         "--out-dir",
         type=Path,
         default=ROOT / "docs" / "layout_builder",
-        help="Output directory for preset + scaffold sdkmod",
+        help="Output directory for preset + UMG-only sdkmod",
     )
     args = parser.parse_args()
     out_dir: Path = args.out_dir
@@ -928,27 +1035,39 @@ def main() -> int:
 
     pages = default_pages()
     preset_path = out_dir / "msbt_quick_menu.layout_preset.json"
-    sdkmod_path = out_dir / "MSBT_QuickMenu_LayoutBuilder.sdkmod"
+    sdkmod_path = out_dir / f"{PACKAGE_NAME}.sdkmod"
+    compat_path = out_dir / f"{COMPAT_PACKAGE_NAME}.sdkmod"
     preset = build_preset(pages)
     preset_path.write_text(json.dumps(preset, indent=2) + "\n", encoding="utf-8")
-    write_scaffold_sdkmod(sdkmod_path, pages)
+    write_scaffold_sdkmod(sdkmod_path, pages, package=PACKAGE_NAME)
+    write_scaffold_sdkmod(compat_path, pages, package=COMPAT_PACKAGE_NAME)
 
     labels = [w["label"] for w in preset["widgets"] if w["kind"] == "button"]
-    unique_sample = sorted({lab for lab in labels if lab not in {"+ Assign", "P1", "P2", "P3", "P4", "P5", "INV"}})[:12]
+    unique_sample = sorted(
+        {lab for lab in labels if lab not in {"+ Assign", "P1", "P2", "P3", "P4", "P5", "INV"}}
+    )[:12]
     verify = _verify_not_all_assign(sdkmod_path)
+    umg_problems = _verify_umg_only(sdkmod_path) + _verify_umg_only(compat_path)
 
-    print(f"Wrote preset:  {preset_path}")
-    print(f"Wrote sdkmod:  {sdkmod_path}")
-    print(f"Widgets:       {len(preset['widgets'])}")
-    print(f"Screens:       QM Page 1-5 + QM INV")
-    print(f"Sample labels: {', '.join(unique_sample)}")
-    print(f"Verify:        {verify}")
+    print(f"Wrote preset:   {preset_path}")
+    print(f"Wrote sdkmod:   {sdkmod_path}  (preferred — open this)")
+    print(f"Wrote compat:   {compat_path}")
+    print(f"Registry labels:{len(ACTION_LABELS)} (from {REGISTRY_PATH.name if REGISTRY_PATH.is_file() else 'fallback'})")
+    print(f"Widgets:        {len(preset['widgets'])}")
+    print(f"Screens:        QM Page 1-5 + QM INV")
+    print(f"Sample labels:  {', '.join(unique_sample)}")
+    print(f"Verify:         {verify}")
+    if umg_problems:
+        raise SystemExit("UMG-only verify failed:\n  - " + "\n  - ".join(umg_problems))
     if verify["p5_assign"]:
         raise SystemExit("Export still contains P5 + Assign — aborting")
     if verify["max_all"] < 1:
         raise SystemExit("Export missing Max All — aborting")
     if verify["ui_tabs"] < 5:
         raise SystemExit("Export missing _UI_TAB page constants — aborting")
+    if verify["build_ui"] < 1:
+        raise SystemExit("Export missing _build_ui — aborting")
+    print("UMG-only verify: OK (no blimgui files/imports)")
     return 0
 
 
