@@ -337,6 +337,8 @@ const els = {
   updateInstallBtn: document.getElementById("updateInstallBtn"),
   updateSummary: document.getElementById("updateSummary"),
   dataCatalogSummary: document.getElementById("dataCatalogSummary"),
+  dataCatalogDetail: document.getElementById("dataCatalogDetail"),
+  bl4DataCatalogStatus: document.getElementById("bl4DataCatalogStatus"),
   refreshDataCatalogsBtn: document.getElementById("refreshDataCatalogsBtn"),
   versionSummary: document.getElementById("versionSummary"),
   sdkInstallSummary: document.getElementById("sdkInstallSummary"),
@@ -4529,30 +4531,105 @@ async function refreshBl4GzoCatalog() {
   }
 }
 
+function formatDataCatalogDetail(statusOrResult) {
+  const data = statusOrResult || {};
+  const last = data.lastRefresh || data;
+  const version = last.dataVersion
+    || (data.cachedManifest && data.cachedManifest.data_version_label)
+    || (data.bundledManifest && data.bundledManifest.data_version_label)
+    || "unknown";
+  const checkedAt = last.checkedAt || "";
+  const updated = Number.isFinite(last.updatedCount)
+    ? last.updatedCount
+    : Array.isArray(last.updated)
+      ? last.updated.length
+      : 0;
+  const skipped = Number.isFinite(last.skippedCount)
+    ? last.skippedCount
+    : Array.isArray(last.skipped)
+      ? last.skipped.length
+      : 0;
+  const failed = Number.isFinite(last.failedCount)
+    ? last.failedCount
+    : Array.isArray(last.failed)
+      ? last.failed.length
+      : 0;
+  const cachedCount = Number.isFinite(data.cachedCount) ? data.cachedCount : null;
+  const known = Number.isFinite(data.knownFileCount) ? data.knownFileCount : null;
+  const parts = [
+    `Version ${version}`,
+    checkedAt ? `last check ${checkedAt}` : null,
+    `updated ${updated}`,
+    `unchanged ${skipped}`,
+    `failed ${failed}`,
+    cachedCount !== null && known !== null ? `cache ${cachedCount}/${known}` : null
+  ].filter(Boolean);
+  return parts.join(" · ");
+}
+
+function applyDataCatalogStatusUi(statusOrResult, options = {}) {
+  const quiet = Boolean(options.quiet);
+  const message = (statusOrResult && (statusOrResult.statusLine || statusOrResult.message))
+    || "Data catalogs not checked yet.";
+  const kind = statusOrResult && statusOrResult.ok === false
+    ? "bad"
+    : statusOrResult && (statusOrResult.soft || statusOrResult.offline)
+      ? "warning"
+      : statusOrResult && statusOrResult.ok
+        ? "ok"
+        : "";
+  if (els.dataCatalogSummary) {
+    setLine(els.dataCatalogSummary, quiet && statusOrResult && statusOrResult.ok
+      ? `Startup data check: ${message}`
+      : message, kind);
+  }
+  if (els.dataCatalogDetail) {
+    els.dataCatalogDetail.textContent = formatDataCatalogDetail(statusOrResult);
+  }
+  if (els.bl4DataCatalogStatus) {
+    els.bl4DataCatalogStatus.textContent = `Data catalogs: ${formatDataCatalogDetail(statusOrResult)}`;
+  }
+}
+
+async function refreshDataCatalogStatusUi() {
+  if (!window.msbt || typeof window.msbt.getDataCatalogStatus !== "function") return null;
+  try {
+    const status = await window.msbt.getDataCatalogStatus();
+    if (status && status.ok) {
+      applyDataCatalogStatusUi(status);
+    }
+    return status;
+  } catch (error) {
+    console.warn("[MSBT] data catalog status failed:", error);
+    return null;
+  }
+}
+
 async function refreshMsbtDataCatalogs(options = {}) {
   const fromBl4 = Boolean(options.fromBl4);
+  const quiet = Boolean(options.quiet);
   if (!window.msbt || typeof window.msbt.refreshDataCatalogs !== "function") {
     const message = "Data catalog refresh is not available in this Electron build.";
     if (fromBl4) setBl4Status(message, "bad");
     if (els.dataCatalogSummary) setLine(els.dataCatalogSummary, message, "bad");
     return;
   }
-  if (els.bl4RefreshCatalogsBtn) els.bl4RefreshCatalogsBtn.disabled = true;
-  if (els.refreshDataCatalogsBtn) els.refreshDataCatalogsBtn.disabled = true;
-  const pending = "Refreshing MSBT data catalogs (manifest + changed JSON)...";
-  if (fromBl4) setBl4Status(pending, "warning");
-  if (els.dataCatalogSummary) setLine(els.dataCatalogSummary, pending, "warning");
+  if (!quiet) {
+    if (els.bl4RefreshCatalogsBtn) els.bl4RefreshCatalogsBtn.disabled = true;
+    if (els.refreshDataCatalogsBtn) els.refreshDataCatalogsBtn.disabled = true;
+    const pending = "Refreshing MSBT data catalogs (manifest + changed JSON)...";
+    if (fromBl4) setBl4Status(pending, "warning");
+    if (els.dataCatalogSummary) setLine(els.dataCatalogSummary, pending, "warning");
+  }
   try {
-    const result = await window.msbt.refreshDataCatalogs();
-    const message = result && result.message
-      ? result.message
-      : "Data catalog refresh finished.";
-    const kind = result && result.ok ? (result.soft || result.offline ? "warning" : "ok") : "bad";
-    if (els.dataCatalogSummary) setLine(els.dataCatalogSummary, message, kind);
+    const result = await window.msbt.refreshDataCatalogs({ quiet, retries: 3 });
+    applyDataCatalogStatusUi(result, { quiet });
     if (els.updateOutput && result) {
       els.updateOutput.textContent = JSON.stringify(
         {
           dataVersion: result.dataVersion || null,
+          publishedAt: result.publishedAt || null,
+          checkedAt: result.checkedAt || null,
           manifestUrl: result.manifestUrl || null,
           updated: result.updated || [],
           skipped: result.skipped || [],
@@ -4564,12 +4641,14 @@ async function refreshMsbtDataCatalogs(options = {}) {
         2
       );
     }
-    if (fromBl4) {
-      setBl4Status(message, kind);
+    if (fromBl4 && !quiet) {
+      const kind = result && result.ok ? (result.soft || result.offline ? "warning" : "ok") : "bad";
+      setBl4Status(result && result.message ? result.message : "Data catalog refresh finished.", kind);
       if (result && result.ok) {
         await loadBl4Catalog();
       }
     }
+    await refreshDataCatalogStatusUi();
     return result;
   } catch (error) {
     const message = `Data catalog refresh failed: ${error && error.message ? error.message : error}`;
@@ -4577,8 +4656,10 @@ async function refreshMsbtDataCatalogs(options = {}) {
     if (els.dataCatalogSummary) setLine(els.dataCatalogSummary, message, "bad");
     return { ok: false, message };
   } finally {
-    if (els.bl4RefreshCatalogsBtn) els.bl4RefreshCatalogsBtn.disabled = false;
-    if (els.refreshDataCatalogsBtn) els.refreshDataCatalogsBtn.disabled = false;
+    if (!quiet) {
+      if (els.bl4RefreshCatalogsBtn) els.bl4RefreshCatalogsBtn.disabled = false;
+      if (els.refreshDataCatalogsBtn) els.refreshDataCatalogsBtn.disabled = false;
+    }
   }
 }
 
@@ -7964,6 +8045,26 @@ function wireEvents() {
   if (els.refreshDataCatalogsBtn) {
     els.refreshDataCatalogsBtn.addEventListener("click", () => refreshMsbtDataCatalogs({ fromBl4: false }));
   }
+  if (window.msbt && typeof window.msbt.onDataCatalogProgress === "function") {
+    window.msbt.onDataCatalogProgress((progress) => {
+      if (!progress) return;
+      const message = progress.message
+        || (progress.phase === "download"
+          ? `Downloading ${progress.id || "catalog"}...`
+          : progress.phase === "manifest"
+            ? "Fetching catalog manifest..."
+            : "");
+      if (!message) return;
+      if (els.dataCatalogSummary) setLine(els.dataCatalogSummary, message, "warning");
+      if (els.bl4DataCatalogStatus) els.bl4DataCatalogStatus.textContent = `Data catalogs: ${message}`;
+    });
+  }
+  if (window.msbt && typeof window.msbt.onDataCatalogRefreshed === "function") {
+    window.msbt.onDataCatalogRefreshed((result) => {
+      applyDataCatalogStatusUi(result || {}, { quiet: Boolean(result && result.quiet) });
+      refreshDataCatalogStatusUi().catch(() => {});
+    });
+  }
   els.bl4SearchBtn.addEventListener("click", applyBl4Search);
   els.bl4SearchInput.addEventListener("keydown", (event) => {
     if (event.key === "Enter") {
@@ -9678,6 +9779,11 @@ async function init() {
     console.warn("[MSBT] quick menu layout load failed:", error);
   }
   startBridgeStatusPolling();
+  try {
+    await refreshDataCatalogStatusUi();
+  } catch (error) {
+    console.warn("[MSBT] data catalog status failed:", error);
+  }
   try {
     await checkUpdates({ startup: true });
   } catch (error) {

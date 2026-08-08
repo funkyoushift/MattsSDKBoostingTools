@@ -17,12 +17,18 @@ const path = require("path");
 const { fileURLToPath } = require("url");
 
 const DEFAULT_MANIFEST_URLS = [
-  "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/catalog_manifest.json",
-  "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/docs/data/catalog_manifest.json"
+  // Prefer tag-specific data release assets (never /releases/latest — that is the app channel).
+  "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.0.1/catalog_manifest.json",
+  "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/docs/data/catalog_manifest.json",
+  // Older data tag fallback while 1.0.1 propagates.
+  "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.0.0/catalog_manifest.json"
 ];
 
 const CACHE_DIR_NAME = "msbt_data";
 const CACHED_MANIFEST_NAME = "catalog_manifest.json";
+const REFRESH_STATE_NAME = "refresh_state.json";
+const DEFAULT_FETCH_RETRIES = 3;
+const RETRY_BASE_DELAY_MS = 400;
 
 const KNOWN_FILES = {
   lootlemon: "MattsSDKBoostingTools_lootlemon_codes.json",
@@ -33,9 +39,11 @@ const KNOWN_FILES = {
   item_pools: "item_pools.json",
   gzo_parts_map: "gzo_parts_map.json",
   shiny_serials: "shiny_serials.json",
-  challenge_catalog: "challenge_catalog.json"
+  challenge_catalog: "challenge_catalog.json",
+  dev_spawner_catalog: "dev_spawner_catalog.json"
 };
 
+/** Files Electron UI loaders may resolve via readResourceJson / catalog helpers. */
 const ELECTRON_RESOURCE_FILES = new Set([
   KNOWN_FILES.lootlemon,
   KNOWN_FILES.custom_bl4_codes,
@@ -43,11 +51,18 @@ const ELECTRON_RESOURCE_FILES = new Set([
   KNOWN_FILES.travelstations,
   KNOWN_FILES.travelmaps,
   KNOWN_FILES.item_pools,
-  KNOWN_FILES.gzo_parts_map
+  KNOWN_FILES.gzo_parts_map,
+  KNOWN_FILES.shiny_serials,
+  KNOWN_FILES.challenge_catalog,
+  KNOWN_FILES.dev_spawner_catalog
 ]);
 
 function text(value) {
   return String(value ?? "").trim();
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 function dataCacheDir(userDataPath) {
@@ -56,6 +71,10 @@ function dataCacheDir(userDataPath) {
 
 function cachedManifestPath(userDataPath) {
   return path.join(dataCacheDir(userDataPath), CACHED_MANIFEST_NAME);
+}
+
+function refreshStatePath(userDataPath) {
+  return path.join(dataCacheDir(userDataPath), REFRESH_STATE_NAME);
 }
 
 function cachedFilePath(userDataPath, fileName) {
@@ -96,12 +115,14 @@ function defaultDocsDataDir(sourceRoot) {
   return path.join(sourceRoot, "docs", "data");
 }
 
-function bundledCandidates(fileName, resourceDir, docsDataDir, modDataDir) {
+function bundledCandidates(fileName, resourceDir, docsDataDir, modDataDir, electronAppDir) {
   const name = path.basename(fileName);
   const out = [];
   if (resourceDir) out.push(path.join(resourceDir, name));
   if (docsDataDir) out.push(path.join(docsDataDir, name));
   if (modDataDir) out.push(path.join(modDataDir, name));
+  // Dev Spawner catalog ships next to main.js in electron_poc/.
+  if (electronAppDir) out.push(path.join(electronAppDir, name));
   return out;
 }
 
@@ -119,7 +140,8 @@ async function resolveLocalCatalogPath(userDataPath, fileName, options = {}) {
     name,
     options.resourceDir,
     options.docsDataDir,
-    options.modDataDir
+    options.modDataDir,
+    options.electronAppDir
   )) {
     if (await fileExists(candidate)) {
       return { path: candidate, source: "bundled" };
@@ -163,6 +185,7 @@ function normalizeManifest(payload) {
       id: text(entry.id),
       path: path.basename(text(entry.path)),
       url: text(entry.url),
+      raw_url: text(entry.raw_url),
       sha256: text(entry.sha256).toLowerCase(),
       bytes: Number(entry.bytes) || 0,
       schema_version: Number(entry.schema_version) || 1,
@@ -210,12 +233,28 @@ async function fetchBuffer(url, fetchImpl) {
   return Buffer.from(arrayBuffer);
 }
 
-async function fetchRemoteManifest(fetchImpl, manifestUrls = DEFAULT_MANIFEST_URLS) {
+async function withRetries(label, attempts, fn) {
+  let lastError = null;
+  const max = Math.max(1, Number(attempts) || 1);
+  for (let i = 0; i < max; i += 1) {
+    try {
+      return await fn(i);
+    } catch (error) {
+      lastError = error;
+      if (i < max - 1) {
+        await sleep(RETRY_BASE_DELAY_MS * (i + 1));
+      }
+    }
+  }
+  throw lastError || new Error(`${label} failed after ${max} attempt(s)`);
+}
+
+async function fetchRemoteManifest(fetchImpl, manifestUrls = DEFAULT_MANIFEST_URLS, retries = DEFAULT_FETCH_RETRIES) {
   const urls = (manifestUrls || []).map(text).filter(Boolean);
   let lastError = null;
   for (const url of urls) {
     try {
-      const { body } = await fetchText(url, fetchImpl);
+      const { body } = await withRetries(`manifest ${url}`, retries, () => fetchText(url, fetchImpl));
       const manifest = normalizeManifest(JSON.parse(body));
       return { manifest, url };
     } catch (error) {
@@ -246,6 +285,57 @@ async function loadBundledManifest(docsDataDir) {
   }
 }
 
+async function loadRefreshState(userDataPath) {
+  const filePath = refreshStatePath(userDataPath);
+  if (!(await fileExists(filePath))) return null;
+  try {
+    const payload = await readJsonFile(filePath);
+    if (!payload || typeof payload !== "object") return null;
+    return payload;
+  } catch {
+    return null;
+  }
+}
+
+async function writeRefreshState(userDataPath, state) {
+  await writeFileAtomic(refreshStatePath(userDataPath), `${JSON.stringify(state, null, 2)}\n`);
+}
+
+function summarizeRefreshResult(result) {
+  return {
+    ok: Boolean(result && result.ok),
+    soft: Boolean(result && result.soft),
+    offline: Boolean(result && result.offline),
+    quiet: Boolean(result && result.quiet),
+    message: text(result && result.message),
+    dataVersion: text(result && result.dataVersion),
+    publishedAt: text(result && result.publishedAt),
+    manifestUrl: text(result && result.manifestUrl),
+    updatedCount: Array.isArray(result && result.updated) ? result.updated.length : 0,
+    skippedCount: Array.isArray(result && result.skipped) ? result.skipped.length : 0,
+    failedCount: Array.isArray(result && result.failed) ? result.failed.length : 0,
+    updated: Array.isArray(result && result.updated) ? result.updated.slice() : [],
+    skipped: Array.isArray(result && result.skipped) ? result.skipped.slice() : [],
+    failed: Array.isArray(result && result.failed) ? result.failed.slice() : [],
+    warnings: Array.isArray(result && result.warnings) ? result.warnings.slice() : [],
+    checkedAt: text(result && result.checkedAt) || new Date().toISOString(),
+    cacheDir: text(result && result.cacheDir)
+  };
+}
+
+function formatDataCatalogStatusLine(summary) {
+  if (!summary) return "Data catalogs not checked yet.";
+  const version = summary.dataVersion || "unknown";
+  const when = summary.checkedAt ? ` · last check ${summary.checkedAt}` : "";
+  const counts = ` · updated ${summary.updatedCount || 0}, unchanged ${summary.skippedCount || 0}, failed ${summary.failedCount || 0}`;
+  const mode = summary.offline ? " (offline/cached)" : summary.quiet ? " (startup)" : "";
+  const base = summary.message || `${version}${counts}`;
+  if (summary.message && summary.message.includes(version)) {
+    return `${summary.message}${mode}${when}`;
+  }
+  return `${version}${counts}${mode}${when}${summary.message ? ` — ${summary.message}` : ""}`;
+}
+
 async function cacheNeedsUpdate(userDataPath, entry) {
   const target = cachedFilePath(userDataPath, entry.path);
   if (!(await fileExists(target))) return true;
@@ -255,6 +345,49 @@ async function cacheNeedsUpdate(userDataPath, entry) {
   } catch {
     return true;
   }
+}
+
+async function downloadCatalogEntry(entry, options, attemptHint = 0) {
+  const fetchImpl = options.fetch || globalThis.fetch;
+  const retries = Number.isFinite(options.retries) ? options.retries : DEFAULT_FETCH_RETRIES;
+  const localSeed = options.localSeedDir ? path.join(options.localSeedDir, entry.path) : "";
+  const electronSeed = options.electronAppDir ? path.join(options.electronAppDir, entry.path) : "";
+
+  return withRetries(`file ${entry.id}`, retries, async (attempt) => {
+    if (typeof options.onProgress === "function") {
+      options.onProgress({
+        phase: "download",
+        id: entry.id,
+        path: entry.path,
+        bytes: entry.bytes,
+        attempt: attempt + 1,
+        attemptHint: attemptHint + attempt + 1
+      });
+    }
+    let buffer;
+    if (localSeed && (await fileExists(localSeed))) {
+      buffer = await fs.readFile(localSeed);
+    } else if (electronSeed && (await fileExists(electronSeed))) {
+      buffer = await fs.readFile(electronSeed);
+    } else {
+      try {
+        buffer = await fetchBuffer(entry.url, fetchImpl);
+      } catch (primaryError) {
+        if (entry.raw_url && entry.raw_url !== entry.url) {
+          buffer = await fetchBuffer(entry.raw_url, fetchImpl);
+        } else {
+          throw primaryError;
+        }
+      }
+    }
+    const digest = sha256Buffer(buffer).toLowerCase();
+    if (digest !== entry.sha256) {
+      throw new Error(
+        `sha256 mismatch for ${entry.id}: expected ${entry.sha256.slice(0, 12)}… got ${digest.slice(0, 12)}…`
+      );
+    }
+    return buffer;
+  });
 }
 
 /**
@@ -271,6 +404,8 @@ async function refreshRemoteDataCatalogs(options = {}) {
 
   const cacheDir = dataCacheDir(userDataPath);
   await fs.mkdir(cacheDir, { recursive: true });
+  const checkedAt = new Date().toISOString();
+  const retries = Number.isFinite(options.retries) ? options.retries : DEFAULT_FETCH_RETRIES;
 
   const warnings = [];
   const updated = [];
@@ -280,7 +415,14 @@ async function refreshRemoteDataCatalogs(options = {}) {
   let manifest;
   let manifestUrl = "";
   try {
-    const remote = await fetchRemoteManifest(fetchImpl, options.manifestUrls || DEFAULT_MANIFEST_URLS);
+    if (typeof options.onProgress === "function") {
+      options.onProgress({ phase: "manifest", message: "Fetching catalog manifest..." });
+    }
+    const remote = await fetchRemoteManifest(
+      fetchImpl,
+      options.manifestUrls || DEFAULT_MANIFEST_URLS,
+      retries
+    );
     manifest = remote.manifest;
     manifestUrl = remote.url;
   } catch (error) {
@@ -288,34 +430,51 @@ async function refreshRemoteDataCatalogs(options = {}) {
     const bundled = cached ? null : await loadBundledManifest(options.docsDataDir);
     manifest = cached || bundled;
     if (!manifest) {
-      return {
+      const result = {
         ok: false,
         offline: true,
+        quiet: Boolean(options.quiet),
         message: `Catalog refresh failed and no local manifest is available: ${error && error.message ? error.message : error}`,
         warnings,
         updated,
         skipped,
         failed,
-        cacheDir
+        cacheDir,
+        checkedAt
       };
+      try {
+        await writeRefreshState(userDataPath, summarizeRefreshResult(result));
+      } catch {
+        // ignore
+      }
+      return result;
     }
     warnings.push(
       `Remote manifest unreachable (${error && error.message ? error.message : error}). Using ${cached ? "cached" : "bundled"} manifest.`
     );
-    return {
+    const result = {
       ok: true,
       offline: true,
       soft: true,
+      quiet: Boolean(options.quiet),
       message: warnings[0],
       manifest,
       manifestUrl: cached ? "cache" : "bundled",
       dataVersion: manifest.data_version_label,
+      publishedAt: manifest.published_at,
       warnings,
       updated,
       skipped: manifest.files.map((f) => f.id),
       failed,
-      cacheDir
+      cacheDir,
+      checkedAt
     };
+    try {
+      await writeRefreshState(userDataPath, summarizeRefreshResult(result));
+    } catch {
+      // ignore
+    }
+    return result;
   }
 
   // Persist manifest only after a successful remote fetch.
@@ -328,28 +487,28 @@ async function refreshRemoteDataCatalogs(options = {}) {
     warnings.push(`Could not cache manifest: ${error && error.message ? error.message : error}`);
   }
 
+  const total = manifest.files.length;
+  let index = 0;
   for (const entry of manifest.files) {
+    index += 1;
     try {
+      if (typeof options.onProgress === "function") {
+        options.onProgress({
+          phase: "file",
+          id: entry.id,
+          path: entry.path,
+          index,
+          total,
+          bytes: entry.bytes,
+          message: `Checking ${entry.id} (${index}/${total})...`
+        });
+      }
       const needs = await cacheNeedsUpdate(userDataPath, entry);
       if (!needs) {
         skipped.push(entry.id);
         continue;
       }
-      let buffer;
-      const localSeed = options.localSeedDir
-        ? path.join(options.localSeedDir, entry.path)
-        : "";
-      if (localSeed && (await fileExists(localSeed))) {
-        buffer = await fs.readFile(localSeed);
-      } else {
-        buffer = await fetchBuffer(entry.url, fetchImpl);
-      }
-      const digest = sha256Buffer(buffer).toLowerCase();
-      if (digest !== entry.sha256) {
-        throw new Error(
-          `sha256 mismatch for ${entry.id}: expected ${entry.sha256.slice(0, 12)}… got ${digest.slice(0, 12)}…`
-        );
-      }
+      const buffer = await downloadCatalogEntry(entry, { ...options, fetch: fetchImpl, retries });
       if (entry.bytes > 0 && buffer.length !== entry.bytes) {
         warnings.push(
           `${entry.id}: byte size ${buffer.length} != manifest ${entry.bytes} (sha256 matched; keeping file).`
@@ -357,6 +516,17 @@ async function refreshRemoteDataCatalogs(options = {}) {
       }
       await writeFileAtomic(cachedFilePath(userDataPath, entry.path), buffer);
       updated.push(entry.id);
+      if (typeof options.onProgress === "function") {
+        options.onProgress({
+          phase: "saved",
+          id: entry.id,
+          path: entry.path,
+          index,
+          total,
+          bytes: buffer.length,
+          message: `Updated ${entry.id}`
+        });
+      }
     } catch (error) {
       failed.push({ id: entry.id, message: String(error && error.message ? error.message : error) });
       // Keep prior cache file untouched.
@@ -368,10 +538,11 @@ async function refreshRemoteDataCatalogs(options = {}) {
   if (updated.length) parts.push(`updated ${updated.length}`);
   if (skipped.length) parts.push(`unchanged ${skipped.length}`);
   if (failed.length) parts.push(`failed ${failed.length}`);
-  return {
+  const result = {
     ok,
     offline: false,
     soft: failed.length > 0,
+    quiet: Boolean(options.quiet),
     message: `Data catalogs ${manifest.data_version_label}: ${parts.join(", ") || "no files"}.`,
     manifest,
     manifestUrl,
@@ -381,22 +552,33 @@ async function refreshRemoteDataCatalogs(options = {}) {
     updated,
     skipped,
     failed,
-    cacheDir
+    cacheDir,
+    checkedAt
   };
+  try {
+    await writeRefreshState(userDataPath, summarizeRefreshResult(result));
+  } catch (error) {
+    warnings.push(`Could not write refresh state: ${error && error.message ? error.message : error}`);
+    result.warnings = warnings;
+  }
+  return result;
 }
 
 async function getDataCatalogStatus(userDataPath, options = {}) {
   const cacheDir = dataCacheDir(userDataPath);
   const cachedManifest = await loadCachedManifest(userDataPath);
   const bundledManifest = await loadBundledManifest(options.docsDataDir);
+  const refreshState = await loadRefreshState(userDataPath);
   const fileMap = await resolveCatalogFileMap(userDataPath, options);
   const cacheFiles = {};
+  let cachedCount = 0;
   for (const [id, fileName] of Object.entries(KNOWN_FILES)) {
     const filePath = cachedFilePath(userDataPath, fileName);
     const exists = await fileExists(filePath);
     let sha256 = "";
     let bytes = 0;
     if (exists) {
+      cachedCount += 1;
       try {
         const st = await fs.stat(filePath);
         bytes = st.size;
@@ -415,9 +597,27 @@ async function getDataCatalogStatus(userDataPath, options = {}) {
       resolvedPath: fileMap.paths[id] || null
     };
   }
+
+  const activeManifest = cachedManifest || bundledManifest;
+  const summary = refreshState || {
+    dataVersion: activeManifest ? activeManifest.data_version_label : "",
+    publishedAt: activeManifest ? activeManifest.published_at : "",
+    updatedCount: 0,
+    skippedCount: 0,
+    failedCount: 0,
+    checkedAt: "",
+    message: activeManifest
+      ? `Local ${activeManifest.data_version_label} available (${cachedCount} cached file(s)).`
+      : "No data catalog manifest found yet."
+  };
+
   return {
     ok: true,
     cacheDir,
+    cachedCount,
+    knownFileCount: Object.keys(KNOWN_FILES).length,
+    lastRefresh: refreshState,
+    statusLine: formatDataCatalogStatusLine(summary),
     cachedManifest: cachedManifest
       ? {
           data_version: cachedManifest.data_version,
@@ -465,19 +665,26 @@ function isElectronResourceFile(name) {
 
 module.exports = {
   CACHE_DIR_NAME,
+  DEFAULT_FETCH_RETRIES,
   DEFAULT_MANIFEST_URLS,
   KNOWN_FILES,
+  REFRESH_STATE_NAME,
   cachedFilePath,
   cachedManifestPath,
   dataCacheDir,
   defaultDocsDataDir,
+  formatDataCatalogStatusLine,
   getDataCatalogStatus,
   isElectronResourceFile,
+  loadRefreshState,
   normalizeManifest,
   readCatalogJson,
   refreshRemoteDataCatalogs,
+  refreshStatePath,
   resolveCatalogFileMap,
   resolveLocalCatalogPath,
   sha256Buffer,
-  sha256File
+  sha256File,
+  summarizeRefreshResult,
+  writeRefreshState
 };

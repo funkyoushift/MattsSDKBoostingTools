@@ -120,6 +120,9 @@ const ALLOWED_RESOURCE_FILES = new Set([
   "travelmaps_flat.json",
   "travelstations.json",
   "gzo_parts_map.json",
+  "shiny_serials.json",
+  "challenge_catalog.json",
+  "dev_spawner_catalog.json",
   "version_info.json"
 ]);
 const DOCS_DATA_DIR = app.isPackaged
@@ -128,6 +131,7 @@ const DOCS_DATA_DIR = app.isPackaged
 const MOD_DATA_DIR = app.isPackaged
   ? path.join(RESOURCE_ROOT, "sdkmod_data")
   : path.join(SOURCE_ROOT, "mod_extracted", "MattsSDKBoostingTools");
+const ELECTRON_APP_DIR = __dirname;
 const LOCAL_VENV_PYTHON = path.join(SOURCE_ROOT, ".venv", "Scripts", "python.exe");
 const BUNDLED_PYTHON = path.join(RESOURCE_ROOT, "python", "python.exe");
 const MATT_HOST_START_TIMEOUT_MS = 12000;
@@ -196,8 +200,17 @@ function dataCatalogOptions() {
     resourceDir: RESOURCE_DIR,
     docsDataDir: DOCS_DATA_DIR,
     modDataDir: MOD_DATA_DIR,
+    electronAppDir: ELECTRON_APP_DIR,
     gzoLiveCachePath: bl4GzoCacheFilePath()
   };
+}
+
+function broadcastDataCatalogEvent(channel, payload) {
+  for (const win of BrowserWindow.getAllWindows()) {
+    if (win && !win.isDestroyed() && win.webContents) {
+      win.webContents.send(channel, payload);
+    }
+  }
 }
 
 async function bl4CatalogLoadOptions() {
@@ -228,23 +241,36 @@ function gzoGithubFallbackUrls() {
   return urls;
 }
 
-async function softRefreshDataCatalogs() {
+async function softRefreshDataCatalogs(options = {}) {
+  const quiet = Boolean(options.quiet);
   try {
     const localManifestUrl = pathToFileURL(path.join(DOCS_DATA_DIR, "catalog_manifest.json")).href;
-    return await refreshRemoteDataCatalogs({
+    const result = await refreshRemoteDataCatalogs({
       userDataPath: app.getPath("userData"),
       docsDataDir: DOCS_DATA_DIR,
       localSeedDir: DOCS_DATA_DIR,
+      electronAppDir: ELECTRON_APP_DIR,
+      quiet,
+      retries: Number.isFinite(options.retries) ? options.retries : 3,
       manifestUrls: app.isPackaged
         ? DEFAULT_MANIFEST_URLS
-        : [localManifestUrl, ...DEFAULT_MANIFEST_URLS]
+        : [localManifestUrl, ...DEFAULT_MANIFEST_URLS],
+      onProgress: (progress) => {
+        broadcastDataCatalogEvent("app:dataCatalogProgress", progress || {});
+      }
     });
+    broadcastDataCatalogEvent("app:dataCatalogRefreshed", result || {});
+    return result;
   } catch (error) {
-    return {
+    const result = {
       ok: false,
       soft: true,
-      message: String(error && error.message ? error.message : error)
+      quiet,
+      message: String(error && error.message ? error.message : error),
+      checkedAt: new Date().toISOString()
     };
+    broadcastDataCatalogEvent("app:dataCatalogRefreshed", result);
+    return result;
   }
 }
 
@@ -1161,10 +1187,23 @@ ipcMain.handle("app:readResourceJson", async (_event, resourceName) => {
 });
 
 ipcMain.handle("app:readDevSpawnerCatalog", async () => {
-  const catalogPath = path.join(__dirname, "dev_spawner_catalog.json");
   try {
+    const catalog = await readCatalogJson(
+      app.getPath("userData"),
+      KNOWN_FILES.dev_spawner_catalog,
+      dataCatalogOptions()
+    );
+    if (catalog.ok) {
+      return {
+        ok: true,
+        data: catalog.data,
+        source: catalog.source,
+        path: catalog.path
+      };
+    }
+    const catalogPath = path.join(ELECTRON_APP_DIR, "dev_spawner_catalog.json");
     const text = await fs.readFile(catalogPath, "utf8");
-    return { ok: true, data: JSON.parse(text) };
+    return { ok: true, data: JSON.parse(text), source: "bundled", path: catalogPath };
   } catch (error) {
     return { ok: false, message: String(error && error.message ? error.message : error) };
   }
@@ -1306,10 +1345,12 @@ ipcMain.handle("app:refreshGzoCatalog", async () => {
   }
 });
 
-ipcMain.handle("app:refreshDataCatalogs", async () => {
+ipcMain.handle("app:refreshDataCatalogs", async (_event, options = {}) => {
   try {
-    const result = await softRefreshDataCatalogs();
-    return result;
+    return await softRefreshDataCatalogs({
+      quiet: Boolean(options && options.quiet),
+      retries: options && Number.isFinite(options.retries) ? options.retries : 3
+    });
   } catch (error) {
     return { ok: false, message: String(error && error.message ? error.message : error) };
   }
@@ -1898,8 +1939,8 @@ app.whenReady().then(() => {
       console.warn(`[MSBT Mobile Gateway] failed to start: ${error && error.message ? error.message : error}`);
     });
   createWindow();
-  // Soft data-catalog refresh: never blocks UI; offline keeps last-good cache.
-  softRefreshDataCatalogs()
+  // Quiet startup auto-check: never blocks UI; offline keeps last-good cache.
+  softRefreshDataCatalogs({ quiet: true })
     .then((result) => {
       if (result && result.message) {
         console.log(`[MSBT Data Catalogs] ${result.message}`);

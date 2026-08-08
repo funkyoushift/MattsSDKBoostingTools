@@ -39,8 +39,20 @@ contextBridge.exposeInMainWorld("msbt", {
   saveWalkthroughSettings: (payload) => ipcRenderer.invoke("app:saveWalkthroughSettings", payload),
   loadBl4Catalog: () => ipcRenderer.invoke("app:loadBl4Catalog"),
   refreshGzoCatalog: () => ipcRenderer.invoke("app:refreshGzoCatalog"),
-  refreshDataCatalogs: () => ipcRenderer.invoke("app:refreshDataCatalogs"),
+  refreshDataCatalogs: (options) => ipcRenderer.invoke("app:refreshDataCatalogs", options || {}),
   getDataCatalogStatus: () => ipcRenderer.invoke("app:getDataCatalogStatus"),
+  onDataCatalogProgress: (callback) => {
+    if (typeof callback !== "function") return () => {};
+    const listener = (_event, state) => callback(state);
+    ipcRenderer.on("app:dataCatalogProgress", listener);
+    return () => ipcRenderer.removeListener("app:dataCatalogProgress", listener);
+  },
+  onDataCatalogRefreshed: (callback) => {
+    if (typeof callback !== "function") return () => {};
+    const listener = (_event, state) => callback(state);
+    ipcRenderer.on("app:dataCatalogRefreshed", listener);
+    return () => ipcRenderer.removeListener("app:dataCatalogRefreshed", listener);
+  },
   bl4PartsBreakdown: (serial) => ipcRenderer.invoke("app:bl4PartsBreakdown", serial),
   getPathForFile: (file) => {
     try {
