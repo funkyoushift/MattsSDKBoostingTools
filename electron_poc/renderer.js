@@ -9220,6 +9220,7 @@ function centerWalkthroughCard() {
   if (!card) return;
   card.classList.remove("walkthrough-modal-anchored");
   card.classList.add("walkthrough-modal-centered");
+  // Clear inline coords so CSS top/left/transform centering wins cleanly.
   card.style.top = "";
   card.style.left = "";
   card.style.right = "";
@@ -9236,15 +9237,69 @@ function rectsOverlap(a, b, pad = 10) {
   );
 }
 
-function rectOverlapArea(a, b, pad = 0) {
-  const left = Math.max(a.left - pad, b.left - pad);
-  const right = Math.min(a.right + pad, b.right + pad);
-  const top = Math.max(a.top - pad, b.top - pad);
-  const bottom = Math.min(a.bottom + pad, b.bottom + pad);
+/** Overlap area of card box vs highlight; pad expands the highlight only. */
+function rectOverlapArea(cardBox, highlight, pad = 0) {
+  const left = Math.max(cardBox.left, highlight.left - pad);
+  const right = Math.min(cardBox.right, highlight.right + pad);
+  const top = Math.max(cardBox.top, highlight.top - pad);
+  const bottom = Math.min(cardBox.bottom, highlight.bottom + pad);
   const w = right - left;
   const h = bottom - top;
   if (w <= 0 || h <= 0) return 0;
   return w * h;
+}
+
+function walkthroughViewportSize() {
+  return {
+    vw: window.innerWidth || document.documentElement.clientWidth || 1200,
+    vh: window.innerHeight || document.documentElement.clientHeight || 800
+  };
+}
+
+/** Apply anchored position with no leftover centered translate. */
+function applyWalkthroughCardAnchor(card, left, top) {
+  if (!card) return;
+  card.classList.remove("walkthrough-modal-centered");
+  card.classList.add("walkthrough-modal-anchored");
+  card.style.right = "auto";
+  card.style.bottom = "auto";
+  card.style.transform = "none";
+  card.style.top = `${Math.round(top)}px`;
+  card.style.left = `${Math.round(left)}px`;
+}
+
+/**
+ * Measure coach-card size while anchored. Avoids getBoundingClientRect while
+ * still under centered translate(-50%,-50%), which under-reports and then pins
+ * only the footer into a viewport corner.
+ */
+function measureWalkthroughCardSize(card, gap) {
+  const { vw, vh } = walkthroughViewportSize();
+  const maxW = Math.max(160, vw - gap * 2);
+  const maxH = Math.max(120, Math.min(vh - gap * 2, 640));
+  // Park at a known origin so offsetWidth/Height match final chrome.
+  applyWalkthroughCardAnchor(card, gap, gap);
+  const cw = Math.min(Math.max(card.offsetWidth || card.getBoundingClientRect().width || 440, 160), maxW);
+  const ch = Math.min(Math.max(card.offsetHeight || card.getBoundingClientRect().height || 280, 120), maxH);
+  return { cw, ch, vw, vh, maxW, maxH };
+}
+
+function clampWalkthroughCardBox(left, top, cw, ch, gap, vw, vh) {
+  const maxLeft = Math.max(gap, vw - cw - gap);
+  const maxTop = Math.max(gap, vh - ch - gap);
+  return {
+    left: clampWalkthroughNumber(left, gap, maxLeft),
+    top: clampWalkthroughNumber(top, gap, maxTop)
+  };
+}
+
+function walkthroughCardFullyOnScreen(box, gap, vw, vh) {
+  return (
+    box.left >= gap - 1
+    && box.top >= gap - 1
+    && box.right <= vw - gap + 1
+    && box.bottom <= vh - gap + 1
+  );
 }
 
 function placeWalkthroughCardAwayFrom(target) {
@@ -9254,58 +9309,96 @@ function placeWalkthroughCardAwayFrom(target) {
     centerWalkthroughCard();
     return;
   }
-  card.classList.remove("walkthrough-modal-centered");
-  card.classList.add("walkthrough-modal-anchored");
-  // Measure with current width class applied.
-  const gap = 14;
-  const vw = window.innerWidth || 1200;
-  const vh = window.innerHeight || 800;
+  const gap = 16;
   const highlight = target.getBoundingClientRect();
   // Zero-size / off-DOM targets (e.g. still-hidden panels) — keep card centered.
   if (highlight.width < 8 || highlight.height < 8) {
     centerWalkthroughCard();
     return;
   }
-  const measured = card.getBoundingClientRect();
-  const cw = Math.min(measured.width || 440, vw - 24);
-  const ch = Math.min(measured.height || 280, Math.min(vh - 32, 640));
-  const candidates = [
-    { top: highlight.bottom + gap, left: highlight.left }, // below
-    { top: highlight.top - ch - gap, left: highlight.left }, // above
-    { top: highlight.top, left: highlight.right + gap }, // right
-    { top: highlight.top, left: highlight.left - cw - gap }, // left
-    { top: gap, left: vw - cw - gap }, // top-right fallback
-    { top: vh - ch - gap, left: gap }, // bottom-left fallback
-    { top: gap, left: gap } // top-left last resort
-  ];
+
+  const { cw, ch, vw, vh } = measureWalkthroughCardSize(card, gap);
+  // Huge targets leave no free band — prefer a readable centered card over a clipped corner.
+  const highlightArea = Math.max(1, highlight.width * highlight.height);
+  const viewArea = Math.max(1, vw * vh);
+  if (highlightArea > viewArea * 0.55 || (cw * ch) > viewArea * 0.45) {
+    centerWalkthroughCard();
+    return;
+  }
+
   const highlightBox = {
     left: highlight.left,
     top: highlight.top,
     right: highlight.right,
     bottom: highlight.bottom
   };
+  const candidates = [
+    { top: highlight.bottom + gap, left: highlight.left }, // below
+    { top: highlight.top - ch - gap, left: highlight.left }, // above
+    { top: highlight.top, left: highlight.right + gap }, // right
+    { top: highlight.top, left: highlight.left - cw - gap }, // left
+    { top: highlight.bottom + gap, left: vw - cw - gap }, // below-right
+    { top: vh - ch - gap, left: gap }, // bottom-left
+    { top: gap, left: vw - cw - gap }, // top-right
+    { top: vh - ch - gap, left: vw - cw - gap } // bottom-right
+  ];
+
   let best = null;
   let bestOverlap = Infinity;
+  let bestFullyOn = false;
   for (const raw of candidates) {
-    const left = clampWalkthroughNumber(raw.left, gap, Math.max(gap, vw - cw - gap));
-    const top = clampWalkthroughNumber(raw.top, gap, Math.max(gap, vh - ch - gap));
-    const box = { left, top, right: left + cw, bottom: top + ch };
+    const clamped = clampWalkthroughCardBox(raw.left, raw.top, cw, ch, gap, vw, vh);
+    const box = {
+      left: clamped.left,
+      top: clamped.top,
+      right: clamped.left + cw,
+      bottom: clamped.top + ch
+    };
+    const fullyOn = walkthroughCardFullyOnScreen(box, gap, vw, vh);
     const overlap = rectOverlapArea(box, highlightBox, 12);
-    if (overlap === 0) {
-      best = { left, top };
+    if (overlap === 0 && fullyOn) {
+      best = clamped;
+      bestFullyOn = true;
       break;
     }
-    if (overlap < bestOverlap) {
+    // Prefer fully on-screen placements; among those, least highlight overlap.
+    if (fullyOn && !bestFullyOn) {
+      bestFullyOn = true;
       bestOverlap = overlap;
-      best = { left, top };
+      best = clamped;
+      continue;
+    }
+    if (fullyOn === bestFullyOn && overlap < bestOverlap) {
+      bestOverlap = overlap;
+      best = clamped;
     }
   }
-  if (!best) {
-    best = { left: gap, top: gap };
+
+  if (!best || !bestFullyOn) {
+    // No safe side placement — keep the whole card readable.
+    centerWalkthroughCard();
+    return;
   }
-  card.style.top = `${Math.round(best.top)}px`;
-  card.style.left = `${Math.round(best.left)}px`;
-  card.style.transform = "none";
+
+  applyWalkthroughCardAnchor(card, best.left, best.top);
+
+  // Second pass: layout can grow after width switch; re-clamp so footer stays in view.
+  const live = card.getBoundingClientRect();
+  const liveW = Math.min(Math.max(live.width || cw, 160), Math.max(160, vw - gap * 2));
+  const liveH = Math.min(Math.max(live.height || ch, 120), Math.max(120, Math.min(vh - gap * 2, 640)));
+  const adjusted = clampWalkthroughCardBox(live.left, live.top, liveW, liveH, gap, vw, vh);
+  if (Math.abs(adjusted.left - live.left) > 1 || Math.abs(adjusted.top - live.top) > 1) {
+    applyWalkthroughCardAnchor(card, adjusted.left, adjusted.top);
+  }
+  const finalBox = card.getBoundingClientRect();
+  if (!walkthroughCardFullyOnScreen(
+    { left: finalBox.left, top: finalBox.top, right: finalBox.right, bottom: finalBox.bottom },
+    gap,
+    vw,
+    vh
+  )) {
+    centerWalkthroughCard();
+  }
 }
 
 function activateWalkthroughStackPanel(panel) {

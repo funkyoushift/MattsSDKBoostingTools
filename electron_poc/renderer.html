@@ -127,17 +127,19 @@
   <section id="walkthroughModal" class="modal-shell hidden" role="dialog" aria-modal="true" aria-labelledby="walkthroughTitle">
     <div class="walkthrough-spotlight" id="walkthroughSpotlight" hidden></div>
     <div class="modal-card walkthrough-modal">
-      <div class="walkthrough-progress" id="walkthroughProgress" aria-live="polite"></div>
-      <h2 id="walkthroughTitle">Welcome to MSBT</h2>
-      <p id="walkthroughBody">A short overview of the main tabs and what they do.</p>
-      <div id="walkthroughLinks" class="walkthrough-links hidden"></div>
-      <p id="walkthroughSdkNote" class="status-line warning hidden"></p>
-      <div id="walkthroughChoices" class="walkthrough-choices hidden" role="group" aria-label="Choose a walkthrough"></div>
-      <label class="walkthrough-dont-show" id="walkthroughDontShowRow">
-        <input id="walkthroughDontShow" type="checkbox">
-        Don't auto-show this tour again until the next update
-      </label>
-      <div class="button-row wrap">
+      <div class="walkthrough-modal-body">
+        <div class="walkthrough-progress" id="walkthroughProgress" aria-live="polite"></div>
+        <h2 id="walkthroughTitle">Welcome to MSBT</h2>
+        <p id="walkthroughBody">A short overview of the main tabs and what they do.</p>
+        <div id="walkthroughLinks" class="walkthrough-links hidden"></div>
+        <p id="walkthroughSdkNote" class="status-line warning hidden"></p>
+        <div id="walkthroughChoices" class="walkthrough-choices hidden" role="group" aria-label="Choose a walkthrough"></div>
+        <label class="walkthrough-dont-show" id="walkthroughDontShowRow">
+          <input id="walkthroughDontShow" type="checkbox">
+          Don't auto-show this tour again until the next update
+        </label>
+      </div>
+      <div class="walkthrough-modal-footer button-row wrap">
         <button id="walkthroughBackBtn" class="secondary">Back</button>
         <button id="walkthroughNextBtn">Next</button>
         <button id="walkthroughSkipBtn" class="secondary">Skip</button>

@@ -600,13 +600,30 @@ button.qm-pin-button:hover {
   position: relative;
   z-index: 40;
   max-height: min(86vh, 720px);
-  overflow: auto;
+  overflow: hidden;
   pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.walkthrough-modal-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+}
+
+.walkthrough-modal-footer {
+  flex: 0 0 auto;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(52, 64, 82, 0.9);
 }
 
 /* Tour shell: light dim + coach-mark positioning (card placed by JS). */
 #walkthroughModal.modal-shell {
   display: block;
+  overflow: visible;
   pointer-events: none;
   background: rgba(3, 6, 12, 0.1);
 }
@@ -615,14 +632,20 @@ button.qm-pin-button:hover {
   position: fixed;
   top: 50%;
   left: 50%;
+  right: auto;
+  bottom: auto;
   transform: translate(-50%, -50%);
   width: min(620px, calc(100vw - 32px));
+  max-height: min(86vh, 720px);
 }
 
 #walkthroughModal .walkthrough-modal.walkthrough-modal-anchored {
   position: fixed;
-  transform: none;
-  width: min(440px, calc(100vw - 24px));
+  right: auto;
+  bottom: auto;
+  /* Never keep the centered translate — it pins only a corner on-screen. */
+  transform: none !important;
+  width: min(440px, calc(100vw - 32px));
   max-height: min(70vh, 640px);
 }
 
