@@ -2846,6 +2846,25 @@ _movement_live_context_cache_time: float = 0.0
 _movement_live_context_cache_signature: tuple | None = None
 
 
+def _movement_uobject_addr(obj: object) -> int:
+    if obj is None:
+        return 0
+    try:
+        get_addr = getattr(obj, "_get_address", None)
+        if callable(get_addr):
+            addr = int(get_addr())
+            if addr in (0, -1):
+                return 0
+            return addr
+    except Exception:
+        return 0
+    return 0
+
+
+def _movement_uobject_alive(obj: object) -> bool:
+    return _movement_uobject_addr(obj) != 0
+
+
 def _request_party_refresh(delay: float = _PARTY_REFRESH_DEBOUNCE_SECONDS, reason: str = "") -> None:
     global _party_players_refresh_pending, _party_players_next_refresh
     _party_players_refresh_pending = True
@@ -3495,6 +3514,10 @@ def _movement_cached_contexts_still_valid(sig: tuple | None) -> bool:
         if not _movement_live_context_cache or sig != _movement_live_context_cache_signature:
             return False
         for _idx, _name, pc, pawn, _move in _movement_live_context_cache:
+            if pc is None or not _movement_uobject_alive(pc):
+                return False
+            if pawn is not None and not _movement_uobject_alive(pawn):
+                return False
             cur_pawn = None
             for attr in ("Pawn", "AcknowledgedPawn", "Character"):
                 try:
@@ -3503,8 +3526,9 @@ def _movement_cached_contexts_still_valid(sig: tuple | None) -> bool:
                         break
                 except Exception:
                     pass
-            if cur_pawn is not None and pawn is not None and cur_pawn is not pawn and str(cur_pawn) != str(pawn):
-                return False
+            if cur_pawn is not None and pawn is not None and cur_pawn is not pawn:
+                if _movement_uobject_addr(cur_pawn) != _movement_uobject_addr(pawn):
+                    return False
         return True
     except Exception:
         return False
@@ -4131,36 +4155,42 @@ def _movement_set_if_needed(obj: object, attr: str, value: object) -> bool:
         return False
 
 
-def _movement_force_infinite_jump_ready(pawn: object, move: object | None = None) -> bool:
+def _movement_force_infinite_jump_ready(pawn: object, move: object | None = None, *, light: bool = False) -> bool:
     """Keep BL4's jump gate open without touching glide/input/jump type.
 
-    This restores the proven camera-hook behavior: reset spent jump counters and
-    keep max counts high.  Do not call StopJumping(), do not force DefaultJump,
-    and do not write CurrentJump.JumpGoal here.
+    Restores proven camera-hook behavior: reset spent jump counters and keep max
+    counts high. Do not call StopJumping(), do not force DefaultJump, and do not
+    write CurrentJump.JumpGoal here. light=True only writes when counters are spent.
     """
-    if pawn is None or _movement_is_default_obj(pawn):
+    if pawn is None or not _movement_uobject_alive(pawn) or _movement_is_default_obj(pawn):
         return False
     try:
+        if move is not None and (not _movement_uobject_alive(move) or _movement_is_default_obj(move)):
+            move = None
         move = move or _movement_infinite_move_for_pawn(pawn)
+        if move is not None and (not _movement_uobject_alive(move) or _movement_is_default_obj(move)):
+            move = None
     except Exception:
-        move = move
+        move = None
     changed = False
-    for attr, value in (
-        ("JumpCurrentCount", 0),
-        ("JumpCurrentCountPreJump", 0),
-        ("JumpedCount", 0),
-        ("CurrentJumpCount", 0),
-        ("CurrentJumpCountPreJump", 0),
-        ("JumpMaxCount", 999),
-        ("JumpMaxCountPreJump", 999),
-        ("bProxyIsJumpForceApplied", False),
-        ("JumpKeyHoldTime", 0.0),
-        ("JumpForceTimeRemaining", 0.0),
-    ):
-        if _movement_set_if_needed(pawn, attr, value):
-            changed = True
-    if move is not None and not _movement_is_default_obj(move):
-        for attr, value in (
+    if light:
+        pawn_attrs: tuple[tuple[str, object], ...] = (
+            ("JumpMaxCount", 999),
+            ("JumpCurrentCount", 0),
+            ("JumpCurrentCountPreJump", 0),
+        )
+        move_attrs = pawn_attrs
+    else:
+        pawn_attrs = (
+            ("JumpCurrentCount", 0),
+            ("JumpCurrentCountPreJump", 0),
+            ("JumpedCount", 0),
+            ("CurrentJumpCount", 0),
+            ("CurrentJumpCountPreJump", 0),
+            ("JumpMaxCount", 999),
+            ("JumpMaxCountPreJump", 999),
+        )
+        move_attrs = (
             ("JumpedCount", 0),
             ("JumpCurrentCount", 0),
             ("JumpCurrentCountPreJump", 0),
@@ -4168,25 +4198,39 @@ def _movement_force_infinite_jump_ready(pawn: object, move: object | None = None
             ("CurrentJumpCountPreJump", 0),
             ("JumpMaxCount", 999),
             ("JumpMaxCountPreJump", 999),
-        ):
-            if _movement_set_if_needed(move, attr, value):
+        )
+
+    def _apply(obj: object, pairs: tuple[tuple[str, object], ...]) -> None:
+        nonlocal changed
+        for attr, value in pairs:
+            if light and attr in ("JumpCurrentCount", "JumpCurrentCountPreJump", "CurrentJumpCount", "CurrentJumpCountPreJump", "JumpedCount"):
+                try:
+                    cur = getattr(obj, attr, None)
+                    if cur is None or int(cur) <= 0:
+                        continue
+                except Exception:
+                    continue
+            if _movement_set_if_needed(obj, attr, value):
                 changed = True
+
+    _apply(pawn, pawn_attrs)
+    if move is not None:
+        _apply(move, move_attrs)
     return bool(changed)
 
 
 def _movement_infinite_jump_cached_contexts(now: float) -> list[tuple[int, str, object, object | None, object | None]]:
-    """Resolve party contexts for Infinite Jump without scanning every HUD frame."""
+    """Resolve party contexts for Infinite Jump without retaining UObject caches.
+
+    Labels may be memoized briefly; pawns/controllers are always reacquired.
+    """
     global _movement_infinite_jump_context_cache, _movement_infinite_jump_context_cache_time
+    # Never reuse cached UObject wrappers (ACCESS_VIOLATION after travel/respawn).
+    _movement_infinite_jump_context_cache = []
     try:
-        if _movement_infinite_jump_context_cache and now - float(_movement_infinite_jump_context_cache_time) < 1.0:
-            return list(_movement_infinite_jump_context_cache)
-    except Exception:
-        pass
-    try:
-        contexts = _movement_live_party_contexts_cached(1.0)
+        contexts = _movement_live_party_contexts(False)
     except Exception:
         contexts = []
-    _movement_infinite_jump_context_cache = list(contexts)
     _movement_infinite_jump_context_cache_time = now
     return contexts
 
@@ -4198,7 +4242,7 @@ def _movement_reset_pawn_jump_counter_if_spent(pawn: object, move: object | None
     narrow counter reset only. It intentionally does not check IsFalling because
     that check caused the next air-jump gate to stay closed in some BL4 states.
     """
-    return _movement_force_infinite_jump_ready(pawn, move)
+    return _movement_force_infinite_jump_ready(pawn, move, light=True)
 
 def _movement_infinite_jump_hud_tick(now: float) -> None:
     """HUD-piggybacked infinite jump.
@@ -4608,10 +4652,12 @@ def _movement_prepare_infinite_jump_pawn(pawn: object) -> bool:
     return _movement_force_infinite_jump_ready(pawn, _movement_infinite_move_for_pawn(pawn))
 
 def _movement_is_default_obj(obj: object) -> bool:
+    if obj is None or not _movement_uobject_alive(obj):
+        return True
     try:
-        return obj is None or "Default__" in str(obj)
+        return "Default__" in str(obj)
     except Exception:
-        return obj is None
+        return True
 
 
 def _movement_hook_arg_to_pawn(obj: object) -> object | None:
@@ -4665,30 +4711,30 @@ def _movement_camera_infinite_jump_hook(*args, **kwargs):
             return None
         now = time.monotonic()
         last = float(getattr(_movement_camera_infinite_jump_hook, "_last", 0.0) or 0.0)
-        if now - last < 0.08:
+        if now - last < 0.04:
             return None
         setattr(_movement_camera_infinite_jump_hook, "_last", now)
         contexts = _movement_infinite_jump_cached_contexts(now)
-        touched = set()
+        touched: set[int] = set()
         for idx, _name, _pc, pawn, move in contexts:
             try:
                 if int(idx) not in _movement_infinite_jump_indices:
                     continue
             except Exception:
                 continue
-            if pawn is None or _movement_is_default_obj(pawn):
+            if pawn is None or not _movement_uobject_alive(pawn) or _movement_is_default_obj(pawn):
                 continue
-            key = str(pawn)
+            key = _movement_uobject_addr(pawn) or id(pawn)
             if key in touched:
                 continue
             touched.add(key)
-            # Prefer light clears when possible; fall back to full prep.
             try:
                 cur = getattr(pawn, "JumpCurrentCount", 0)
-                if int(cur or 0) > 0 or int(getattr(pawn, "JumpMaxCount", 0) or 0) < 999:
-                    _movement_force_infinite_jump_ready(pawn, move)
+                max_c = getattr(pawn, "JumpMaxCount", 0)
+                if int(cur or 0) > 0 or int(max_c or 0) < 999:
+                    _movement_force_infinite_jump_ready(pawn, move, light=True)
             except Exception:
-                _movement_force_infinite_jump_ready(pawn, move)
+                _movement_force_infinite_jump_ready(pawn, move, light=True)
     except Exception:
         pass
     return None

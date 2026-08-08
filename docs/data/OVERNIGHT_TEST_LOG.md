@@ -2,13 +2,15 @@
 
 ## READY FOR MATT
 
-Remote data catalogs + Phase 3 tutorial overlays are merge-ready on PR #11.
+Remote data catalogs + Phase 3 tutorial overlays are merge-ready on PR #11. **Also packed on this branch (2026-08-08):** Infinite Jump / Super Dash Tobgun harden (sdkmod code), hotfix-channel honesty doc, Layout Builder QM export.
 
 - **PR:** https://github.com/funkyoushift/MattsSDKBoostingTools/pull/11 *(do not merge from automation — Matt merges)*
 - **Data tag (live prerelease):** [`data-v1.0.3`](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/data-v1.0.3)
-- **App SemVer:** still **2.3.1** (not bumped)
-- **Automated:** `npm run test:data-catalogs` **11/11**, `npm run check`, `npm run smoke` PASS
-- **Matt ship steps:** merge PR → ship Electron build that includes this branch’s `remote_data_catalogs.js` → optional mobile APK rebuild (no `gradlew` in tree; see command below)
+- **App SemVer:** still **2.3.1** (not bumped) — IJ/Super Dash need a **rebuilt `.sdkmod`** at Matt’s release cut
+- **Movement notes:** [`docs/MOVEMENT_HOTFIX_NOTES.md`](../MOVEMENT_HOTFIX_NOTES.md)
+- **Layout Builder QM:** [`docs/layout_builder/README.md`](../layout_builder/README.md)
+- **Automated:** `npm run test:data-catalogs` **11/11**, `npm run check`, `npm run smoke` PASS; Python `py_compile` on movement + export script PASS
+- **Matt ship steps:** merge PR → ship Electron build that includes this branch’s `remote_data_catalogs.js` → rebuild/install `.sdkmod` for IJ/SD → optional mobile APK rebuild (no `gradlew` in tree; see command below)
 
 ---
 

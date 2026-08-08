@@ -2,6 +2,28 @@
 
 Goal: ship **copy / tutorial / JSON-only** asset packs without a full Electron installer or SDK SemVer bump, using the same trust model as remote data catalogs.
 
+## Honest assessment — what can vs cannot be hotfixed today
+
+| Change type | Hotfix via data channel today? | How it actually ships |
+| --- | --- | --- |
+| Catalog JSON (Lootlemon, GZO parts, travel, pools, shinies, challenges, spawner lists) | **Yes** | `data-vX.Y.Z` GitHub prerelease + Electron/mobile refresh into `msbt_data/` |
+| Tutorial / walkthrough **title/body** overlays (`tutorial_copy.json`) | **Yes** | Same data channel `assets[]` (`json_copy`) |
+| Markdown help panes (if allowlisted later) | **Yes (planned)** | `markdown_doc` kind only |
+| Infinite Jump / Super Dash / any UE hooks | **No** | Requires a new **`.sdkmod`** (Python hooks live inside the mod package) |
+| Electron UI logic, IPC, installers | **No** | Requires an **Electron app** release |
+| Mobile controller JS/Kotlin behavior | **No** | Requires a new **APK** (catalog JSON refresh only on device) |
+| Remote-executing Python/JS from GitHub | **Never** | Explicitly rejected — not a trust model we will add |
+
+**Why IJ / Super Dash cannot be JSON-hotfixed:** those fixes are pyunrealsdk hooks and pawn property writes inside `movement_adjustments.py`. The data channel only delivers allowlisted static assets; it must not download or `exec` Python.
+
+### Cheap wins that already exist (no remote code loading)
+
+1. **Data catalogs + tutorial copy** — already on PR #11 / `data-v*`. Use `python tools/publish_data_release.py --bump patch --create-release`.
+2. **Updates tab → Install / Update SDK Mod** — Electron can replace `MattsSDKBoostingTools.sdkmod` in the user’s `sdk_mods` folder from the **bundled** copy without bumping the Electron SemVer string. That is still a local install of a built artifact, not a remote code OTA. User must **restart Borderlands 4**.
+3. **Tiny patch sdkmod** — same as (2): build a patched `.sdkmod`, ship it with the app build or as a manual drop-in. Do not invent a GitHub→game Python loader.
+
+Squ1ggs Boosting Tools portable releases are useful UX inspiration for spawner install/restart callouts later; they are **not** a remote Python hotpatch channel for MSBT.
+
 ## Non-negotiables
 
 - **No remote code execution.** No downloading `.js`, `.py`, `.exe`, `.dll`, `.sdkmod`, or any executable payload into a load path.
@@ -75,6 +97,7 @@ Electron behavior:
 - Not an auto-updater replacement for Electron/SDK binaries.
 - Not a vehicle for UE hooks, console commands lists that execute arbitrary strings from remote, or plugin sideloads.
 - Not a mobile code OTA channel (mobile may refresh **catalog JSON** only).
+- Not a way to ship Infinite Jump / Super Dash crash fixes without a new `.sdkmod`.
 
 ## Publish
 
@@ -87,5 +110,6 @@ One command rebuilds hashes, bumps `data-vX.Y.Z`, rewrites preferred Electron/mo
 ## Related
 
 - [`DATA_CATALOGS.md`](./DATA_CATALOGS.md) — Phase 1/2 data refresh
+- [`MOVEMENT_HOTFIX_NOTES.md`](./MOVEMENT_HOTFIX_NOTES.md) — IJ / Super Dash in-mod fixes (need sdkmod)
 - `electron_poc/remote_data_catalogs.js` — shared fetch/hash/cache + tutorial copy loader
 - `docs/data/tutorial_copy.json` — allowlisted starter pack
