@@ -65,9 +65,12 @@ Because the normal Steam game folder lives under `Program Files (x86)`, installe
 
 - copies `MattsSDKBoostingTools.sdkmod`;
 - copies the bundled `ActorScriptDeployer` folder required by the Dev Spawner tab;
+- marks both required mods enabled via `sdk_mods/settings/<module>.json`;
 - preserves unrelated mods;
 - refuses to run while `Borderlands4.exe` is open;
-- supports auto-detecting the common Steam `sdk_mods` folder or pasting another `sdk_mods` path.
+- supports auto-detecting Steam / Epic `sdk_mods` folders or pasting another `sdk_mods` path.
+
+The Updates tab also detects oak2-mod-manager v0.3 on startup and can download the official unmodified `oak2-sdk.zip` (LGPL-3.0, cached under Electron `userData`) into the Borderlands 4 game folder via **Install SDK Manager**. See [../docs/THIRD_PARTY_NOTICES.md](../docs/THIRD_PARTY_NOTICES.md).
 
 BLImGui remains optional. ActorScriptDeployer is bundled as a folder-form SDK mod dependency so Dev Spawner can import it after install/update.
 

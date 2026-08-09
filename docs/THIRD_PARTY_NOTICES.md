@@ -29,6 +29,25 @@ MSBT bundles ActorScriptDeployer as a folder-form SDK mod dependency for the
 Dev Spawner tab. Live game actions still go through the MSBT bridge/backend,
 and ActorScriptDeployer remains game-side only.
 
+## oak2-mod-manager (BL4 SDK)
+
+MSBT's Electron app can download and install the official unmodified
+`oak2-sdk.zip` release asset for [oak2-mod-manager v0.3](https://github.com/bl-sdk/oak2-mod-manager/releases/tag/v0.3)
+into the detected Borderlands 4 game folder. The zip is cached under the app
+`userData` folder (`oak2-cache/`) and is not vendored in git.
+
+Upstream:
+
+- Project: https://github.com/bl-sdk/oak2-mod-manager
+- Install guide / mod DB: https://bl-sdk.github.io/oak2-mod-db/
+- License: LGPL-3.0 (see upstream `LICENSE`; GPL/LGPL texts at https://www.gnu.org/licenses/)
+
+MSBT also writes `sdk_mods/settings/<module>.json` with `"enabled": true` for
+required gameplay mods (`MattsSDKBoostingTools`, `ActorScriptDeployer`) so users
+do not have to enable them manually in the in-game mods menu. Core oak2
+libraries (`mods_base`, console mod menu) ship with the official release and
+load as part of the SDK.
+
 ## Azzy UVH Booster
 
 MSBT's Boosting tab includes UVH rank-up buttons adapted from Azzy UVH Booster.

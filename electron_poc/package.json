@@ -1,6 +1,6 @@
 {
   "name": "matts-sdk-boosting-tools",
-  "version": "2.3.4",
+  "version": "2.3.5",
   "private": true,
   "description": "Desktop app for Matt's SDK Boosting Tools.",
   "author": "FunkYouSHiFT",
@@ -8,8 +8,9 @@
   "scripts": {
     "start": "electron .",
     "smoke": "electron . --smoke",
-    "check": "node --check main.js && node --check preload.js && node --check renderer.js && node --check panel_layout.js && node --check dev_spawner_favorites_store.js && node --check travel_favorites_store.js && node --check serial_bookmarks_store.js && node --check movement_settings_store.js && node --check rarity_settings_store.js && node --check walkthrough_store.js && node --check bl4_codes_catalog.js && node --check remote_data_catalogs.js",
+    "check": "node --check main.js && node --check preload.js && node --check renderer.js && node --check oak2_install.js && node --check panel_layout.js && node --check dev_spawner_favorites_store.js && node --check travel_favorites_store.js && node --check serial_bookmarks_store.js && node --check movement_settings_store.js && node --check rarity_settings_store.js && node --check walkthrough_store.js && node --check bl4_codes_catalog.js && node --check remote_data_catalogs.js",
     "test:data-catalogs": "node test_remote_data_catalogs.js",
+    "test:oak2": "node test_oak2_install.js",
     "pack": "electron-builder --dir --publish never",
     "dist:win": "electron-builder --win nsis --publish never"
   },

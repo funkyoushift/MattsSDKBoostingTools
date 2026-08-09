@@ -58,6 +58,7 @@ const {
   DEFAULT_PORT: MOBILE_GATEWAY_PORT,
   generatePairingCode
 } = require("./mobile_gateway");
+const oak2Install = require("./oak2_install");
 
 function reportFatalStartupError(kind, error) {
   const message = error && error.stack ? error.stack : String(error);
@@ -164,24 +165,7 @@ const SDK_LOG_CANDIDATES = [
   )
 ].filter(Boolean);
 const SDK_LOG_FILTER = /MattsSDKBoostingTools|ActorScriptDeployer|ASD_|dev_spawner|spawnai|ERR\||WARN\||Traceback|Exception|did not report/i;
-const BL4_DEFAULT_SDK_MODS_CANDIDATES = [
-  path.join(
-    process.env["ProgramFiles(x86)"] || "C:\\Program Files (x86)",
-    "Steam",
-    "steamapps",
-    "common",
-    "Borderlands 4",
-    "sdk_mods"
-  ),
-  path.join(
-    process.env.ProgramFiles || "C:\\Program Files",
-    "Steam",
-    "steamapps",
-    "common",
-    "Borderlands 4",
-    "sdk_mods"
-  )
-].filter(Boolean);
+const BL4_DEFAULT_SDK_MODS_CANDIDATES = oak2Install.bl4SdkModsCandidates();
 const USER_DATA_FILE_DEFINITIONS = [
   { key: "serialBookmarks", label: "Serial Bookmarks", fileName: "serial_bookmarks.json" },
   { key: "devSpawnerFavorites", label: "Dev Spawner Favorites", fileName: "dev_spawner_favorites.json" },
@@ -290,46 +274,11 @@ function uniquePaths(paths) {
   return out;
 }
 
-function parseSteamLibraryFoldersVdf(text) {
-  const roots = [];
-  const re = /"path"\s+"([^"]+)"/g;
-  let match = re.exec(text || "");
-  while (match) {
-    roots.push(match[1].replace(/\\\\/g, "\\"));
-    match = re.exec(text || "");
-  }
-  return roots;
-}
-
-function steamRootCandidates() {
-  return uniquePaths([
-    path.join(process.env["ProgramFiles(x86)"] || "C:\\Program Files (x86)", "Steam"),
-    path.join(process.env.ProgramFiles || "C:\\Program Files", "Steam")
-  ]);
-}
-
-function steamLibraryRoots() {
-  const roots = [];
-  for (const steamRoot of steamRootCandidates()) {
-    roots.push(steamRoot);
-    const vdfPath = path.join(steamRoot, "steamapps", "libraryfolders.vdf");
-    try {
-      const text = fsSync.readFileSync(vdfPath, "utf8");
-      roots.push(...parseSteamLibraryFoldersVdf(text));
-    } catch {
-      // Steam may not be installed in the default location. Other candidates are still checked.
-    }
-  }
-  return uniquePaths(roots);
-}
-
 function bl4SdkModsCandidates() {
-  const candidates = [...BL4_DEFAULT_SDK_MODS_CANDIDATES];
-  for (const libraryRoot of steamLibraryRoots()) {
-    candidates.push(path.join(libraryRoot, "steamapps", "common", "Borderlands 4", "sdk_mods"));
-    candidates.push(path.join(libraryRoot, "common", "Borderlands 4", "sdk_mods"));
-  }
-  return uniquePaths(candidates);
+  return uniquePaths([
+    ...BL4_DEFAULT_SDK_MODS_CANDIDATES,
+    ...oak2Install.bl4SdkModsCandidates()
+  ]);
 }
 
 let mattHostProcess = null;
@@ -1014,6 +963,19 @@ async function localVersionInfo() {
   const bundledSdkmod = await bundledSdkmodInfo();
   const bundledActorScriptDeployer = await bundledActorScriptDeployerInfo();
   const installedSdkmod = await detectInstalledSdkmodInfo(bundledSdkmod.sha256);
+  let oak2 = null;
+  let requiredMods = null;
+  try {
+    const sdkModsPath = installedSdkmod && installedSdkmod.sdkModsPath
+      ? installedSdkmod.sdkModsPath
+      : "";
+    const detection = await detectOak2Status(sdkModsPath);
+    oak2 = detection.oak2 || null;
+    requiredMods = detection.requiredMods || null;
+  } catch {
+    oak2 = null;
+    requiredMods = null;
+  }
   const appVersion = app.getVersion();
   const packageVersion = normalizeManifestVersion(manifest.package_version || manifest.app_version, appVersion) || appVersion;
   return {
@@ -1026,7 +988,11 @@ async function localVersionInfo() {
     sdkmodVersion: normalizeManifestVersion(manifest.sdkmod_version, packageVersion) || "unavailable",
     resourcesVersion: normalizeManifestVersion(manifest.resources_version, packageVersion) || "unavailable",
     sdkRequired: manifest.sdk_required || "oak2-mod-manager v0.3",
-    sdkRequiredUrl: manifest.sdk_required_url || "https://bl-sdk.github.io/oak2-mod-db/",
+    sdkRequiredUrl: manifest.sdk_required_url || oak2Install.OAK2_INSTALL_GUIDE_URL,
+    oak2,
+    oak2Present: Boolean(oak2 && oak2.present),
+    hasOak2: Boolean(oak2 && oak2.ok),
+    requiredMods,
     packaged: app.isPackaged,
     localManifest: {
       ...manifest,
@@ -1077,13 +1043,28 @@ async function sdkModsPathInfo(rawPath, bundledHash = "", options = {}) {
   const destination = path.join(sdkModsPath, "MattsSDKBoostingTools.sdkmod");
   const actorScriptDeployerDestination = path.join(sdkModsPath, "ActorScriptDeployer");
   const bundledSha = bundledHash || (await bundledSdkmodInfo()).sha256;
+  const gameRoot = oak2Install.gameRootFromSdkModsPath(sdkModsPath);
+  const oak2 = gameRoot ? await oak2Install.inspectOak2Install(gameRoot) : null;
+  const requiredMods = exists
+    ? await oak2Install.requiredModsStatus(sdkModsPath)
+    : { ok: false, allInstalled: false, allEnabled: false, mods: [], message: "sdk_mods folder does not exist yet." };
+  const installedSdkmod = await installedSdkmodInfo(destination, bundledSha);
+  const installedActorScriptDeployer = await installedActorScriptDeployerInfo(actorScriptDeployerDestination);
   return {
     ok: exists || canCreate,
     path: sdkModsPath,
+    gameRoot,
     destination,
     actorScriptDeployerDestination,
-    installedSdkmod: await installedSdkmodInfo(destination, bundledSha),
-    installedActorScriptDeployer: await installedActorScriptDeployerInfo(actorScriptDeployerDestination),
+    installedSdkmod,
+    installedActorScriptDeployer,
+    oak2,
+    oak2Present: Boolean(oak2 && oak2.present),
+    hasOak2: Boolean(oak2 && oak2.ok),
+    sdkPresent: Boolean(oak2 && oak2.ok),
+    msbtInstalled: Boolean(installedSdkmod && installedSdkmod.available),
+    hasMsbt: Boolean(installedSdkmod && installedSdkmod.available),
+    requiredMods,
     message: exists
       ? "sdk_mods folder found."
       : canCreate
@@ -1148,24 +1129,138 @@ async function installBundledSdkMods(rawPath = "", options = {}) {
     force: true,
     filter: (source) => !/(^|[\\/])__pycache__($|[\\/])|\.pyc$/i.test(source)
   });
+  const enabled = await oak2Install.enableRequiredMods(info.path);
   const bundled = await bundledSdkmodInfo();
+  const refreshed = await sdkModsPathInfo(info.path, bundled.sha256, { allowMissing: true });
   return {
     ok: true,
     path: info.path,
+    gameRoot: info.gameRoot || refreshed.gameRoot,
     destination: info.destination,
     actorScriptDeployerDestination: info.actorScriptDeployerDestination,
     sha256: await safeFileHash(info.destination),
     installedSdkmod: await installedSdkmodInfo(info.destination, bundled.sha256),
     installedActorScriptDeployer: await installedActorScriptDeployerInfo(info.actorScriptDeployerDestination),
+    enabledMods: enabled,
+    oak2: refreshed.oak2,
+    requiredMods: refreshed.requiredMods,
     gameWasRunning,
     message: gameWasRunning
-      ? "MattsSDKBoostingTools.sdkmod and ActorScriptDeployer installed/updated. Borderlands 4 was open; fully restart the game before testing live actions."
-      : "MattsSDKBoostingTools.sdkmod and ActorScriptDeployer installed/updated."
+      ? "MattsSDKBoostingTools.sdkmod and ActorScriptDeployer installed/updated and marked enabled. Borderlands 4 was open; fully restart the game before testing live actions."
+      : "MattsSDKBoostingTools.sdkmod and ActorScriptDeployer installed/updated and marked enabled in sdk_mods/settings."
+  };
+}
+
+async function detectOak2Status(rawPath = "") {
+  const gameRoot = await oak2Install.resolveGameRoot(rawPath);
+  if (!gameRoot) {
+    return {
+      ok: false,
+      present: false,
+      hasOak2: false,
+      oak2Present: false,
+      sdkPresent: false,
+      message: "Could not auto-detect a Borderlands 4 install. Browse to the game folder or sdk_mods folder."
+    };
+  }
+  const oak2 = await oak2Install.inspectOak2Install(gameRoot);
+  const sdkModsPath = oak2.sdkModsPath;
+  const requiredMods = await oak2Install.requiredModsStatus(sdkModsPath);
+  const bundled = await bundledSdkmodInfo();
+  const pathInfo = await sdkModsPathInfo(sdkModsPath, bundled.sha256, { allowMissing: true });
+  return {
+    ok: Boolean(oak2.ok),
+    ...pathInfo,
+    oak2,
+    oak2Present: Boolean(oak2.present),
+    hasOak2: Boolean(oak2.ok),
+    sdkPresent: Boolean(oak2.ok),
+    requiredMods,
+    message: oak2.message
+  };
+}
+
+async function installOak2SdkManager(rawPath = "", options = {}) {
+  const allowGameRunning = Boolean(options && options.allowGameRunning);
+  const gameWasRunning = await isBorderlandsRunning();
+  if (gameWasRunning && !allowGameRunning) {
+    return { ok: false, message: "Borderlands4.exe is running. Close the game before installing oak2-mod-manager." };
+  }
+  const gameRoot = await oak2Install.resolveGameRoot(rawPath);
+  if (!gameRoot) {
+    return {
+      ok: false,
+      message: "Could not find a Borderlands 4 folder. Detect or browse to sdk_mods / the game root first."
+    };
+  }
+  const installMsbt = options.installMsbt !== false;
+  const oak2Result = await oak2Install.installOak2FromCache(app.getPath("userData"), gameRoot, options);
+  if (!oak2Result.ok && !options.dryRun) return oak2Result;
+
+  let sdkResult = null;
+  let enabled = null;
+  if (installMsbt && !options.dryRun) {
+    sdkResult = await installBundledSdkMods(path.join(gameRoot, "sdk_mods"), {
+      allowMissing: true,
+      allowGameRunning: true
+    });
+    enabled = sdkResult && sdkResult.enabledMods;
+  } else if (!options.dryRun) {
+    enabled = await oak2Install.enableRequiredMods(path.join(gameRoot, "sdk_mods"));
+  }
+
+  const detection = await detectOak2Status(path.join(gameRoot, "sdk_mods"));
+  return {
+    ok: Boolean(options.dryRun ? oak2Result.ok : detection.hasOak2 && (!installMsbt || (sdkResult && sdkResult.ok))),
+    gameWasRunning,
+    gameRoot,
+    oak2Install: oak2Result,
+    sdkModInstall: sdkResult,
+    enabledMods: enabled,
+    detection,
+    noticePath: oak2Result.noticePath || "",
+    license: {
+      spdx: oak2Install.OAK2_LICENSE_SPDX,
+      repoUrl: oak2Install.OAK2_REPO_URL,
+      licenseUrl: oak2Install.OAK2_LICENSE_URL
+    },
+    message: options.dryRun
+      ? oak2Result.message
+      : [
+          oak2Result.message,
+          sdkResult && sdkResult.message ? sdkResult.message : "",
+          gameWasRunning ? "Borderlands 4 was open; fully restart the game after install." : "Restart Borderlands 4 so oak2 and MSBT load."
+        ]
+          .filter(Boolean)
+          .join(" ")
   };
 }
 
 ipcMain.handle("app:installSdkMod", async (_event, rawPath) => {
   return installBundledSdkMods(rawPath, { allowMissing: true });
+});
+
+ipcMain.handle("app:detectOak2", async (_event, rawPath) => {
+  return detectOak2Status(rawPath || "");
+});
+
+ipcMain.handle("app:installOak2", async (_event, rawPath, options = {}) => {
+  return installOak2SdkManager(rawPath || "", options || {});
+});
+
+ipcMain.handle("app:enableRequiredSdkMods", async (_event, rawPath) => {
+  const info = String(rawPath || "").trim()
+    ? await sdkModsPathInfo(rawPath, "", { allowMissing: true })
+    : await autoDetectSdkModsPathInfo({ allowMissing: true });
+  if (!info.ok) return info;
+  await fs.mkdir(info.path, { recursive: true });
+  const enabled = await oak2Install.enableRequiredMods(info.path);
+  const requiredMods = await oak2Install.requiredModsStatus(info.path);
+  return { ...enabled, requiredMods, path: info.path, gameRoot: info.gameRoot };
+});
+
+ipcMain.handle("app:recheckSdkStack", async (_event, rawPath) => {
+  return detectOak2Status(rawPath || "");
 });
 
 ipcMain.handle("app:readResourceJson", async (_event, resourceName) => {

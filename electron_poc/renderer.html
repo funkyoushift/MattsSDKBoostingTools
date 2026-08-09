@@ -73,6 +73,19 @@
     <div id="serialDeliveryMeta" class="muted-line"></div>
   </section>
 
+  <section id="startupOak2Modal" class="modal-shell hidden" role="dialog" aria-modal="true" aria-labelledby="startupOak2Title">
+    <div class="modal-card">
+      <h2 id="startupOak2Title">oak2-mod-manager v0.3 not found</h2>
+      <p id="startupOak2Message">MSBT needs the Borderlands 4 SDK (oak2-mod-manager v0.3). You can keep using offline tools now, or install the SDK Manager from Updates.</p>
+      <p class="status-line warning">Close Borderlands 4 before installing. Writing under Program Files may prompt for admin approval. oak2 is LGPL-3.0 from bl-sdk.</p>
+      <div class="button-row wrap">
+        <button id="startupOak2InstallBtn">Install SDK Manager</button>
+        <button id="startupOak2UpdatesTabBtn" class="secondary">Open Updates Tab</button>
+        <button id="startupOak2DismissBtn" class="secondary">Not Now</button>
+      </div>
+    </div>
+  </section>
+
   <section id="startupUpdateModal" class="modal-shell hidden" role="dialog" aria-modal="true" aria-labelledby="startupUpdateTitle">
     <div class="modal-card update-modal">
       <h2 id="startupUpdateTitle">Update Available</h2>
@@ -1481,6 +1494,7 @@
           </div>
         </div>
         <div class="button-row wrap">
+          <button id="checkUpdatesBtn">Check for Updates</button>
           <button id="updateDownloadBtn">Download Electron Update</button>
           <button id="updateInstallBtn">Restart / Install Downloaded Update</button>
           <button id="downloadBtn">Open Electron Installer</button>
@@ -1506,15 +1520,20 @@
 
       <section class="panel cyan" data-msbt-panel="updates-sdk" data-msbt-span="6" data-msbt-title="SDK Mod Install / Update">
         <h2>SDK Mod Install / Update</h2>
-        <p>Installs MattsSDKBoostingTools.sdkmod and the ActorScriptDeployer folder required by Dev Spawner. It will not touch unrelated mods.</p>
+        <p>Install oak2-mod-manager v0.3 (official LGPL-3.0 release), then MattsSDKBoostingTools.sdkmod + ActorScriptDeployer. Required mods are written enabled under <code>sdk_mods/settings</code>. Close Borderlands 4 first. Unrelated mods are left alone.</p>
         <label for="sdkModsPath">Borderlands 4 sdk_mods folder</label>
         <input id="sdkModsPath" type="text" placeholder="C:\Program Files (x86)\Steam\steamapps\common\Borderlands 4\sdk_mods">
+        <div id="oak2StatusSummary" class="status-line">oak2-mod-manager status not checked yet.</div>
+        <div id="oak2StatusDetail" class="version-detail">Detect or Re-check to verify Win64 Plugins + sdk_mods core files.</div>
         <div class="button-row wrap">
           <button id="detectSdkModsBtn">Detect Folder</button>
           <button id="browseSdkModsBtn">Browse Folder</button>
+          <button id="recheckSdkStackBtn" class="secondary">Re-check SDK Stack</button>
+          <button id="installOak2Btn">Install SDK Manager</button>
           <button id="installSdkModBtn">Install / Update SDK Mod</button>
         </div>
         <div id="sdkInstallSummary" class="status-line">No SDK mod install action has run yet.</div>
+        <p class="version-detail">oak2 attribution: <a class="inline-link" href="https://github.com/bl-sdk/oak2-mod-manager" id="oak2RepoLink">bl-sdk/oak2-mod-manager</a> (LGPL-3.0). See docs/THIRD_PARTY_NOTICES.md.</p>
       </section>
     </section>
   </main>

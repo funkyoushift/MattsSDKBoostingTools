@@ -290,6 +290,16 @@ const els = {
   startupUpdateModal: document.getElementById("startupUpdateModal"),
   startupUpdateTitle: document.getElementById("startupUpdateTitle"),
   startupUpdateUpdatesTabBtn: document.getElementById("startupUpdateUpdatesTabBtn"),
+  startupOak2Modal: document.getElementById("startupOak2Modal"),
+  startupOak2Title: document.getElementById("startupOak2Title"),
+  startupOak2Message: document.getElementById("startupOak2Message"),
+  startupOak2InstallBtn: document.getElementById("startupOak2InstallBtn"),
+  startupOak2UpdatesTabBtn: document.getElementById("startupOak2UpdatesTabBtn"),
+  startupOak2DismissBtn: document.getElementById("startupOak2DismissBtn"),
+  oak2StatusSummary: document.getElementById("oak2StatusSummary"),
+  oak2StatusDetail: document.getElementById("oak2StatusDetail"),
+  recheckSdkStackBtn: document.getElementById("recheckSdkStackBtn"),
+  installOak2Btn: document.getElementById("installOak2Btn"),
   statusOutput: document.getElementById("statusOutput"),
   mobileGatewaySummary: document.getElementById("mobileGatewaySummary"),
   mobileGatewayCode: document.getElementById("mobileGatewayCode"),
@@ -443,6 +453,8 @@ const state = {
   selectedTarget: "",
   selectedTargetName: "",
   startupUpdateNoticeShown: false,
+  startupOak2NoticeShown: false,
+  deferredStartupOak2Info: null,
   deferredStartupUpdateInfo: null,
   deferredMobileAnnounce: false,
   travelFavorites: { version: 1, favorites: {} },
@@ -4838,7 +4850,11 @@ function renderBoostUpdateNotice(info) {
 
 function hideStartupUpdateModal() {
   if (els.startupUpdateModal) els.startupUpdateModal.classList.add("hidden");
-  if (!walkthroughState.active && state.deferredMobileAnnounce) {
+  if (!walkthroughState.active && state.deferredStartupOak2Info && !state.startupOak2NoticeShown) {
+    const deferred = state.deferredStartupOak2Info;
+    state.deferredStartupOak2Info = null;
+    window.setTimeout(() => maybeShowStartupOak2Modal(deferred), 200);
+  } else if (!walkthroughState.active && state.deferredMobileAnnounce) {
     state.deferredMobileAnnounce = false;
     window.setTimeout(() => void showMobileAnnounceModal({ force: false }), 200);
   }
@@ -4917,6 +4933,9 @@ function renderVersionInfo(info) {
   renderVersionLineWithSdkLink(els.versionSummary, prefixText, required, requiredUrl, kind);
   renderUpdateCards(data);
   renderBoostUpdateNotice(data);
+  if (data.oak2 || data.requiredMods || data.hasOak2 != null) {
+    renderOak2Status(data);
+  }
 }
 
 async function refreshVersionInfo() {
@@ -5022,6 +5041,7 @@ async function detectSdkModsFolder() {
   if (result && result.installedSdkmod) {
     renderVersionInfo({ ...(state.versionInfo || {}), installedSdkmod: { ...result.installedSdkmod, sdkModsPath: result.path } });
   }
+  renderOak2Status(result);
   setLine(els.sdkInstallSummary, result.message || "sdk_mods detection finished.", result.ok ? "ok" : "warning");
 }
 
@@ -5033,11 +5053,12 @@ async function browseSdkModsFolder() {
   if (result && result.installedSdkmod) {
     renderVersionInfo({ ...(state.versionInfo || {}), installedSdkmod: { ...result.installedSdkmod, sdkModsPath: result.path } });
   }
+  renderOak2Status(result);
   setLine(els.sdkInstallSummary, result.message || "sdk_mods folder selection finished.", result.ok ? "ok" : "warning");
 }
 
 async function installBundledSdkMod() {
-  const confirmed = window.confirm("Install or replace MattsSDKBoostingTools.sdkmod and ActorScriptDeployer in the selected sdk_mods folder? Borderlands 4 must be closed.");
+  const confirmed = window.confirm("Install or replace MattsSDKBoostingTools.sdkmod and ActorScriptDeployer in the selected sdk_mods folder, and mark them enabled? Borderlands 4 must be closed.");
   if (!confirmed) return;
   setLine(els.sdkInstallSummary, "Installing bundled SDK mod files...", "warning");
   const result = await window.msbt.installSdkMod(getValue(els.sdkModsPath));
@@ -5045,7 +5066,122 @@ async function installBundledSdkMod() {
   if (result && result.installedSdkmod) {
     renderVersionInfo({ ...(state.versionInfo || {}), installedSdkmod: { ...result.installedSdkmod, sdkModsPath: result.path } });
   }
+  renderOak2Status(result);
   setLine(els.sdkInstallSummary, result.message || "SDK mod install/update finished.", result.ok ? "ok" : "bad");
+}
+
+function renderOak2Status(info) {
+  const data = info || {};
+  const oak2 = data.oak2 || (state.versionInfo && state.versionInfo.oak2) || null;
+  const requiredMods = data.requiredMods || null;
+  const present = Boolean(data.hasOak2 || data.sdkPresent || (oak2 && oak2.ok));
+  const partial = Boolean((data.oak2Present || (oak2 && oak2.present)) && !present);
+  if (els.oak2StatusSummary) {
+    if (present) {
+      setLine(els.oak2StatusSummary, oak2 && oak2.message ? oak2.message : "oak2-mod-manager v0.3 detected.", "ok");
+    } else if (partial) {
+      setLine(els.oak2StatusSummary, oak2 && oak2.message ? oak2.message : "Partial oak2 install detected.", "warning");
+    } else {
+      setLine(
+        els.oak2StatusSummary,
+        oak2 && oak2.message ? oak2.message : "oak2-mod-manager v0.3 not found. Use Install SDK Manager.",
+        "warning"
+      );
+    }
+  }
+  if (els.oak2StatusDetail) {
+    const mods = (requiredMods && requiredMods.mods) || [];
+    const modBits = mods.length
+      ? mods.map((mod) => `${mod.moduleName}: ${mod.installed ? "installed" : "missing"}/${mod.enabled ? "enabled" : "disabled"}`).join(" · ")
+      : "Required mod enablement not checked yet.";
+    const version = oak2 && oak2.displayVersion ? `display_version=${oak2.displayVersion}` : "display_version=unknown";
+    els.oak2StatusDetail.textContent = `${version} · ${modBits}`;
+  }
+}
+
+async function recheckSdkStack() {
+  setLine(els.sdkInstallSummary, "Re-checking oak2 + MSBT SDK stack...", "warning");
+  const result = window.msbt && typeof window.msbt.recheckSdkStack === "function"
+    ? await window.msbt.recheckSdkStack(getValue(els.sdkModsPath))
+    : await window.msbt.detectOak2(getValue(els.sdkModsPath));
+  if (result && result.path) setTextValue(els.sdkModsPath, result.path);
+  setOutput(els.updateOutput, result);
+  renderOak2Status(result);
+  if (result && result.installedSdkmod) {
+    renderVersionInfo({
+      ...(state.versionInfo || {}),
+      installedSdkmod: { ...result.installedSdkmod, sdkModsPath: result.path },
+      oak2: result.oak2,
+      requiredMods: result.requiredMods,
+      hasOak2: result.hasOak2,
+      oak2Present: result.oak2Present
+    });
+  }
+  setLine(els.sdkInstallSummary, result.message || "SDK stack re-check finished.", result.ok ? "ok" : "warning");
+  return result;
+}
+
+async function installOak2SdkManagerFromUi(options = {}) {
+  const confirmed = options.skipConfirm
+    ? true
+    : window.confirm(
+      "Download and install official oak2-mod-manager v0.3 into your Borderlands 4 folder, then install/enable MSBT + ActorScriptDeployer?\n\nClose Borderlands 4 first. Program Files installs may prompt for admin. oak2 is LGPL-3.0 (bl-sdk/oak2-mod-manager)."
+    );
+  if (!confirmed) return null;
+  setLine(els.sdkInstallSummary, "Downloading/installing oak2-mod-manager v0.3...", "warning");
+  const result = await window.msbt.installOak2(getValue(els.sdkModsPath), { installMsbt: true });
+  setOutput(els.updateOutput, result);
+  if (result && result.detection && result.detection.path) {
+    setTextValue(els.sdkModsPath, result.detection.path);
+  }
+  renderOak2Status(result && result.detection ? result.detection : result);
+  setLine(els.sdkInstallSummary, result.message || "oak2 install finished.", result.ok ? "ok" : "bad");
+  await refreshVersionInfo();
+  return result;
+}
+
+function hideStartupOak2Modal() {
+  if (els.startupOak2Modal) els.startupOak2Modal.classList.add("hidden");
+}
+
+function renderStartupOak2Modal(info) {
+  if (!els.startupOak2Modal) return;
+  const oak2 = info && info.oak2 ? info.oak2 : info;
+  const message = (oak2 && oak2.message)
+    || (info && info.message)
+    || "oak2-mod-manager v0.3 was not detected. Install it from here or the Updates tab — the rest of the app still works offline.";
+  if (els.startupOak2Message) els.startupOak2Message.textContent = message;
+  els.startupOak2Modal.classList.remove("hidden");
+}
+
+function maybeShowStartupOak2Modal(info) {
+  if (state.startupOak2NoticeShown) return;
+  const hasOak = Boolean(info && (info.hasOak2 || info.sdkPresent || (info.oak2 && info.oak2.ok)));
+  if (hasOak) return;
+  if (walkthroughState.active || shouldAutoShowMainTutorial()) {
+    state.deferredStartupOak2Info = info || {};
+    return;
+  }
+  if (els.startupUpdateModal && !els.startupUpdateModal.classList.contains("hidden")) {
+    state.deferredStartupOak2Info = info || {};
+    return;
+  }
+  state.startupOak2NoticeShown = true;
+  renderStartupOak2Modal(info || {});
+}
+
+async function checkOak2OnStartup() {
+  if (!window.msbt || typeof window.msbt.detectOak2 !== "function") return null;
+  try {
+    const result = await window.msbt.detectOak2(getValue(els.sdkModsPath));
+    if (result && result.path) setTextValue(els.sdkModsPath, result.path);
+    renderOak2Status(result);
+    maybeShowStartupOak2Modal(result);
+    return result;
+  } catch (error) {
+    console.warn("[MSBT] oak2 detect failed:", error);
+    return null;
+  }
 }
 
 function formatBytes(value) {
@@ -8132,6 +8268,12 @@ function wireEvents() {
   els.validatorClearBtn.addEventListener("click", clearValidator);
 
   document.getElementById("updateBtn").addEventListener("click", checkUpdates);
+  const checkUpdatesBtn = document.getElementById("checkUpdatesBtn");
+  if (checkUpdatesBtn) {
+    checkUpdatesBtn.addEventListener("click", () => {
+      checkUpdates({ startup: false });
+    });
+  }
   if (els.updateDownloadBtn) els.updateDownloadBtn.addEventListener("click", downloadElectronUpdate);
   if (els.updateInstallBtn) els.updateInstallBtn.addEventListener("click", installDownloadedElectronUpdate);
   if (els.boostUpdateDownloadBtn) els.boostUpdateDownloadBtn.addEventListener("click", downloadElectronUpdate);
@@ -8219,6 +8361,32 @@ function wireEvents() {
   if (browseSdkModsBtn) browseSdkModsBtn.addEventListener("click", browseSdkModsFolder);
   const installSdkModBtn = document.getElementById("installSdkModBtn");
   if (installSdkModBtn) installSdkModBtn.addEventListener("click", installBundledSdkMod);
+  if (els.recheckSdkStackBtn) els.recheckSdkStackBtn.addEventListener("click", () => void recheckSdkStack());
+  if (els.installOak2Btn) els.installOak2Btn.addEventListener("click", () => void installOak2SdkManagerFromUi());
+  if (els.startupOak2InstallBtn) {
+    els.startupOak2InstallBtn.addEventListener("click", () => {
+      hideStartupOak2Modal();
+      void installOak2SdkManagerFromUi();
+    });
+  }
+  if (els.startupOak2UpdatesTabBtn) {
+    els.startupOak2UpdatesTabBtn.addEventListener("click", () => {
+      hideStartupOak2Modal();
+      switchTab("updates");
+    });
+  }
+  if (els.startupOak2DismissBtn) {
+    els.startupOak2DismissBtn.addEventListener("click", hideStartupOak2Modal);
+  }
+  const oak2RepoLink = document.getElementById("oak2RepoLink");
+  if (oak2RepoLink) {
+    oak2RepoLink.addEventListener("click", (event) => {
+      event.preventDefault();
+      if (window.msbt && typeof window.msbt.openExternal === "function") {
+        window.msbt.openExternal("https://github.com/bl-sdk/oak2-mod-manager");
+      }
+    });
+  }
   document.getElementById("repoBtn").addEventListener("click", () => {
     window.msbt.openExternal("https://github.com/funkyoushift/MattsSDKBoostingTools");
   });
@@ -8411,7 +8579,7 @@ const TUTORIAL_TOURS = {
   main: [
     {
       title: "Welcome to MSBT",
-      body: "You need Borderlands 4 + the MSBT SDK mod (.sdkmod in the game’s sdk_mods folder) + this Electron app. Live actions also need a connected bridge — use header Refresh Status.\n\nOffline: serial convert/validate. Live (game + mod + bridge): boosting, spawns, travel, delivery.\n\nPut MattsSDKBoostingTools.sdkmod next to ActorScriptDeployer under Borderlands 4/sdk_mods/. Or use Updates → Install / Update SDK Mod.",
+      body: "You need Borderlands 4 + oak2-mod-manager v0.3 + the MSBT SDK mod (.sdkmod in sdk_mods) + this Electron app. Live actions also need a connected bridge — use header Refresh Status.\n\nOffline: serial convert/validate. Live (game + mod + bridge): boosting, spawns, travel, delivery.\n\nUse Updates → Install SDK Manager (oak2 v0.3) then Install / Update SDK Mod for MSBT + ActorScriptDeployer (auto-enabled).",
       tab: "boosting",
       target: "statusBtn",
       sdk: true,
@@ -8465,7 +8633,7 @@ const TUTORIAL_TOURS = {
     },
     {
       title: "Updates",
-      body: "Check Electron app and SDK mod versions here. Download Electron updates, or Install / Update SDK Mod into your Borderlands 4 sdk_mods folder. Fully restart the game after any SDK change.",
+      body: "Check Electron app and SDK mod versions here. Download Electron updates, Install SDK Manager (oak2 v0.3), or Install / Update SDK Mod into your Borderlands 4 sdk_mods folder. Fully restart the game after any SDK change.",
       tab: "updates",
       targetSel: "#tab-updates [data-msbt-panel='updates-main']",
       sdk: true
@@ -8978,7 +9146,7 @@ const TAB_TUTORIALS = {
     },
     {
       title: "SDK mod install",
-      body: "Detect or browse your Borderlands 4 sdk_mods folder, then Install / Update SDK Mod (MSBT + ActorScriptDeployer for Dev Spawner). Fully restart the game afterward.",
+      body: "Detect or browse your Borderlands 4 sdk_mods folder. Install SDK Manager for oak2 v0.3 if needed, then Install / Update SDK Mod (MSBT + ActorScriptDeployer, marked enabled). Fully restart the game afterward.",
       tab: "updates",
       targetSel: "#tab-updates [data-msbt-panel='updates-sdk']"
     },
@@ -9137,10 +9305,15 @@ function restoreTourCollidingChrome() {
       showedUpdateModal = true;
     }
   }
-  // Prefer update modal first; show mobile announce shortly after (or immediately if no update UI).
+  // Prefer update modal first; show oak2 notice / mobile announce shortly after.
   const delayMs = showedUpdateModal ? 500 : 250;
+  const oakDeferred = state.deferredStartupOak2Info;
+  if (oakDeferred && !state.startupOak2NoticeShown) {
+    state.deferredStartupOak2Info = null;
+    window.setTimeout(() => maybeShowStartupOak2Modal(oakDeferred), delayMs);
+  }
   state.deferredMobileAnnounce = false;
-  window.setTimeout(() => void showMobileAnnounceModal({ force: false }), delayMs);
+  window.setTimeout(() => void showMobileAnnounceModal({ force: false }), delayMs + (oakDeferred ? 300 : 0));
 }
 
 function clearWalkthroughLinks() {
@@ -9641,7 +9814,7 @@ async function refreshWalkthroughSdkNote() {
     const hasOak = Boolean(detection.oak2Present || detection.hasOak2 || detection.sdkPresent);
     const msbtInstalled = Boolean(detection.msbtInstalled || detection.hasMsbt);
     if (!hasOak) {
-      message += ` oak2-mod-manager was not detected. Install from ${url}`;
+      message += " oak2-mod-manager was not detected. Use Updates → Install SDK Manager (or open the install guide).";
       sdkNote.textContent = message;
       sdkNote.classList.remove("hidden");
       return;
@@ -10040,6 +10213,11 @@ async function init() {
     await checkUpdates({ startup: true });
   } catch (error) {
     console.warn("[MSBT] update check failed:", error);
+  }
+  try {
+    await checkOak2OnStartup();
+  } catch (error) {
+    console.warn("[MSBT] oak2 startup check failed:", error);
   }
   try {
     await maybeStartWalkthrough();
