@@ -957,236 +957,235 @@
       </section>
     </section>
 
-    <section id="tab-dev-spawner" class="tab-panel" data-msbt-layout-tab="dev-spawner">
-      <div class="grid three dev-spawner-row">
-        <section class="panel cyan" data-msbt-panel="dev-spawn" data-msbt-span="4" data-msbt-title="Standard Spawning">
-          <h2>Standard Spawning</h2>
-          <div id="devSpawnerWarning" class="status-line warning">No Dev Spawner action sent yet. After heavy spawning, use Clear ASD Spawns.</div>
-          <div id="devSpawnerTimer" class="status-line">ASD autoclear: idle</div>
-          <div id="devFavoriteStrip" class="button-row wrap compact-actions" aria-label="Favorite spawn strip"></div>
-          <div class="button-row wrap compact-actions">
-            <button data-dev-spawner-action="dev_spawner_clear">Clear ASD Spawns</button>
-            <button id="devSpawnerReaggroBtn" data-dev-spawner-action="dev_spawner_reaggro">Re-Aggro</button>
+    <section id="tab-dev-spawner" class="tab-panel msbt-fixed-tab" data-msbt-fixed-layout="dev-spawner">
+      <div class="dev-spawner-fixed">
+        <header class="dev-spawner-header">
+          <div class="dev-spawner-title-row">
+            <h2>Dev Spawner</h2>
+            <button type="button" class="secondary" id="devSpawnerWalkthroughBtn" title="Short tips for this tab">Walkthrough</button>
           </div>
-          <div class="grid two compact dev-spawn-fields">
-            <label>
-              Aggro Mode
-              <select id="devAggroMode">
-                <option value="passive" selected>Passive</option>
-                <option value="attack_me">Attack Me</option>
-                <option value="attack_party">Attack Party</option>
-                <option value="free_for_all">Free For All</option>
-              </select>
-            </label>
-            <label>
-              Spawn Anchor
-              <select id="devSpawnAnchor">
-                <option value="local" selected>Local</option>
-                <option value="party">Party</option>
-                <option value="npc_nearest">Nearest NPC</option>
-              </select>
-            </label>
-            <label>
-              Distance
-              <input id="devActorDistance" type="number" min="0" max="20000" value="350">
-            </label>
-            <label>
-              +Z
-              <input id="devActorZOffset" type="number" min="-5000" max="5000" value="0">
-            </label>
-            <label>
-              Count
-              <input id="devActorCount" type="number" min="1" max="12" value="1">
-            </label>
-            <label>
-              Spacing
-              <input id="devActorSpacing" type="number" min="1" max="5000" value="125">
-            </label>
-            <label>
-              Scale
-              <input id="devActorScale" type="number" min="0.05" max="20" step="0.05" value="1.0">
-            </label>
-            <label>
-              Target/List Limit
-              <input id="devActorTargetLimit" type="number" min="1" max="200" value="20">
-            </label>
-            <label class="dev-spawn-wide">
-              Selected Actor
-              <input id="devAiName" type="text" placeholder="Select from browse lists">
-            </label>
+          <div class="dev-status-strip" aria-label="Dev Spawner status">
+            <div id="devSpawnerWarning" class="status-line warning">No Dev Spawner action sent yet. After heavy spawning, use Clear ASD Spawns.</div>
+            <div id="devSpawnerTimer" class="status-line">ASD autoclear: idle</div>
+            <details class="dev-result-fold">
+              <summary>Last result</summary>
+              <pre id="devSpawnerOutput" class="dev-spawner-output">No Dev Spawner action sent yet.</pre>
+            </details>
           </div>
-          <div class="button-row wrap compact-actions">
-            <button id="devSpawnerSpawnAiBtn" data-dev-spawner-action="dev_spawner_spawnai">Spawn Selected Actor</button>
-            <button id="devRefreshLogBtn">Refresh SDK Log</button>
-          </div>
-        </section>
+          <div id="devFavoriteStrip" class="dev-favorite-strip button-row wrap compact-actions" aria-label="Favorite spawn strip"></div>
+        </header>
 
-        <section class="panel purple" data-msbt-panel="dev-setup" data-msbt-span="4" data-msbt-title="Setup / Inspect">
-          <h2>Setup / Inspect</h2>
-          <div class="button-row wrap">
-            <button data-dev-spawner-action="dev_spawner_status">ASD Status</button>
-            <button data-dev-spawner-action="dev_spawner_cache_status">Cache Status</button>
-            <button data-dev-spawner-action="dev_spawner_spawnerdiag">Spawner Diagnostics</button>
-            <button data-dev-spawner-action="dev_spawner_targets">List Targets</button>
-            <button data-dev-spawner-action="dev_spawner_probeai">Probe AI</button>
-            <button data-dev-spawner-action="dev_spawner_cache">Cache Live Actor</button>
-          </div>
-          <details class="dev-fold">
-            <summary>Template Spawn Options</summary>
-            <div class="grid two compact">
-              <label>
-                Class Override
-                <input id="devActorClass" type="text" placeholder="OakLostLootMachine, OakWeapon...">
-              </label>
-              <label>
-                Activation Delay
-                <input id="devActorDelay" type="number" min="0" max="30" step="0.1" value="1">
-              </label>
-              <label>
-                Enable States
-                <input id="devActorEnableStates" type="text" placeholder="default: Active,ActiveIdle_Anim">
-              </label>
-              <label>
-                Disable States
-                <input id="devActorDisableStates" type="text" placeholder="default: IsInUse,InUse_Anim,Dispensing_Anim">
-              </label>
+        <div class="dev-spawner-body">
+          <section class="dev-spawner-primary" aria-label="Actor browser">
+            <div class="dev-browser-toolbar">
+              <div>
+                <label for="devActorSearch">Search actors</label>
+                <input id="devActorSearch" type="text" autocomplete="off" spellcheck="false" placeholder="boss, bank, barrel, turret...">
+              </div>
+              <div class="dev-browser-section">
+                <h3>Categories</h3>
+                <div id="devActorCategoryButtons" class="category-buttons"></div>
+              </div>
             </div>
-            <label class="inline-check">
-              <input id="devActorIncludeNonGenerated" type="checkbox">
-              Include Non-Generated
-            </label>
-            <label class="inline-check">
-              <input id="devActorNoActivate" type="checkbox">
-              Spawn only, do not activate script states
-            </label>
-          </details>
-          <details class="dev-fold">
-            <summary>Advanced Actions</summary>
-            <div class="button-row wrap">
-              <button data-dev-spawner-action="dev_spawner_spawn">Spawn Template</button>
-              <button data-dev-spawner-action="dev_spawner_lostloot">Spawn Lost Loot</button>
-              <button data-dev-spawner-action="dev_spawner_activate_last">Activate Last</button>
-              <button data-dev-spawner-action="dev_spawner_scriptdump">Script Dump Last</button>
-              <button data-dev-spawner-action="dev_spawner_logo_options">Logo Options</button>
-              <button data-dev-spawner-action="dev_spawner_clear">Clear ASD Spawns</button>
-            </div>
-          </details>
-        </section>
-
-        <section class="panel gold" data-msbt-panel="dev-barrel" data-msbt-span="4" data-msbt-title="Barrel Logo">
-          <h2>Barrel Logo</h2>
-          <div class="grid two compact">
-            <label>
-              Actor
-              <input id="devLogoActor" type="text" value="barrel" autocomplete="off" spellcheck="false">
-            </label>
-            <label>
-              Distance
-              <input id="devLogoDistance" type="number" min="0" max="30000" value="2500">
-            </label>
-            <label>
-              Height
-              <input id="devLogoHeight" type="number" min="0" max="10000" value="750">
-            </label>
-            <label>
-              Spacing
-              <input id="devLogoSpacing" type="number" min="1" max="1000" value="70">
-            </label>
-            <label>
-              Scale
-              <input id="devLogoScale" type="number" min="0.01" max="20" step="0.01" value="0.45">
-            </label>
-            <label class="inline-check">
-              <input id="devLogoIncludeNonGenerated" type="checkbox">
-              Include Non-Generated
-            </label>
-          </div>
-          <div id="devLogoLines" class="dev-logo-lines compact" aria-label="Barrel Logo text lines">
-            <label>Line 1 <input type="text" value="MSBT"></label>
-            <label>Line 2 <input type="text" value="BOOSTING"></label>
-            <label>Line 3 <input type="text" value="TOOLS"></label>
-          </div>
-          <textarea id="devLogoText" class="hidden" aria-hidden="true"></textarea>
-          <div class="button-row wrap compact-actions">
-            <button id="devLogoAddLineBtn">+ Line</button>
-            <button id="devLogoRemoveLineBtn">- Line</button>
-            <button data-dev-spawner-action="dev_spawner_barrel_logo">Run Barrel Logo</button>
-            <button id="devLogoUseSelectedBtn">Use Selected</button>
-          </div>
-        </section>
-      </div>
-
-      <section class="panel cyan dev-spawner-browser" data-msbt-panel="dev-browser" data-msbt-span="12" data-msbt-title="Actor Browser" data-msbt-resize="1">
-        <div class="dev-browser-toolbar">
-          <div>
-            <h2>Actor Browser</h2>
-            <label for="devActorSearch">Search actors</label>
-            <input id="devActorSearch" type="text" autocomplete="off" spellcheck="false" placeholder="boss, bank, barrel, turret...">
-          </div>
-          <div class="dev-browser-section">
-            <h3>Categories</h3>
-            <div id="devActorCategoryButtons" class="category-buttons"></div>
-          </div>
-        </div>
-        <input id="devActorName" type="hidden">
-        <input id="devAiClass" type="hidden">
-        <input id="devAiLoad" type="hidden">
-        <input id="devAiIndex" type="hidden" value="0">
-        <input id="devAiLimit" type="hidden" value="10">
-        <input id="devAiCount" type="hidden" value="1">
-        <input id="devAiDirectOnly" type="checkbox" class="hidden-check">
-        <div id="devActorSummary" class="status-line">Loading actor catalog...</div>
-
-        <div class="grid two dev-spawner-row compact dev-browser-split">
-          <div class="dev-browser-section">
-            <h3>Active Boss Chars</h3>
-            <div id="devBossPickSummary" class="status-line">Loading active boss characters...</div>
-            <div id="devBossPickRows" class="dev-row-list compact"></div>
-          </div>
-          <div class="dev-browser-section">
-            <h3>My Favorites</h3>
-            <div class="button-row wrap compact-actions">
-              <button id="devMyFavoriteAddBtn">Add Selected</button>
-              <button id="devMyFavoriteRemoveBtn">Remove Selected</button>
-              <button id="devMyFavoriteSaveBtn">Save Label/Note</button>
-            </div>
-            <div class="inline-fields compact">
-              <label>
-                Label
-                <input id="devMyFavoriteLabel" type="text" maxlength="160" autocomplete="off" spellcheck="false" placeholder="Favorite display name">
-              </label>
-              <label>
-                Note
-                <input id="devMyFavoriteNote" type="text" maxlength="320" autocomplete="off" spellcheck="false" placeholder="Optional personal note">
-              </label>
-            </div>
-            <div id="devMyFavoriteSummary" class="status-line">Loading My Favorites...</div>
-            <div id="devMyFavoriteRows" class="dev-row-list compact"></div>
-          </div>
-        </div>
-
-        <div class="grid three dev-spawner-row compact dev-browser-split">
-          <div class="dev-browser-section dev-browser-span-2">
-            <h3>Actor Results</h3>
-            <div class="button-row wrap compact-actions">
-              <button id="devPrevActorPageBtn">Prev Page</button>
-              <button id="devNextActorPageBtn">Next Page</button>
+            <input id="devActorName" type="hidden">
+            <input id="devAiClass" type="hidden">
+            <input id="devAiLoad" type="hidden">
+            <input id="devAiIndex" type="hidden" value="0">
+            <input id="devAiLimit" type="hidden" value="10">
+            <input id="devAiCount" type="hidden" value="1">
+            <input id="devAiDirectOnly" type="checkbox" class="hidden-check">
+            <div class="dev-list-toolbar">
+              <div id="devActorSummary" class="status-line">Loading actor catalog...</div>
+              <div class="button-row wrap compact-actions dev-actor-pager">
+                <button id="devPrevActorPageBtn" type="button">Prev</button>
+                <button id="devNextActorPageBtn" type="button">Next</button>
+              </div>
             </div>
             <div id="devActorRows" class="dev-row-list"></div>
-          </div>
-          <div class="dev-browser-section">
-            <h3>Selected Actor Details</h3>
-            <div id="devActorDetails" class="dev-detail-card">
-              <div class="dev-empty-row">Select an actor row to view local catalog details.</div>
+            <div class="dev-selection-row">
+              <label class="dev-selection-field">
+                Selected
+                <input id="devAiName" type="text" placeholder="Pick a row or type an actor key">
+              </label>
+              <div class="button-row wrap compact-actions">
+                <button id="devMyFavoriteAddBtn" type="button">★ Favorite</button>
+                <button id="devMyFavoriteRemoveBtn" type="button">Unstar</button>
+                <button id="devSpawnerSpawnAiBtn" data-dev-spawner-action="dev_spawner_spawnai">Spawn Selected</button>
+              </div>
             </div>
-          </div>
-        </div>
-      </section>
+            <details class="dev-fold" id="devFavoriteMetaFold">
+              <summary>Favorite label / note</summary>
+              <div class="inline-fields compact">
+                <label>
+                  Label
+                  <input id="devMyFavoriteLabel" type="text" maxlength="160" autocomplete="off" spellcheck="false" placeholder="Favorite display name">
+                </label>
+                <label>
+                  Note
+                  <input id="devMyFavoriteNote" type="text" maxlength="320" autocomplete="off" spellcheck="false" placeholder="Optional personal note">
+                </label>
+              </div>
+              <div class="button-row wrap compact-actions">
+                <button id="devMyFavoriteSaveBtn" type="button">Save Label/Note</button>
+              </div>
+              <div id="devMyFavoriteSummary" class="status-line">Loading My Favorites...</div>
+            </details>
+            <details class="dev-fold">
+              <summary>Selected actor details</summary>
+              <div id="devActorDetails" class="dev-detail-card">
+                <div class="dev-empty-row">Select an actor row to view local catalog details.</div>
+              </div>
+            </details>
+          </section>
 
-      <section class="panel" data-msbt-panel="dev-result" data-msbt-span="12" data-msbt-title="Dev Spawner Result" data-msbt-resize="1">
-        <h2>Dev Spawner Result</h2>
-        <pre id="devSpawnerOutput" class="dev-spawner-output">No Dev Spawner action sent yet.</pre>
-      </section>
+          <aside class="dev-spawner-controls" aria-label="Spawn controls">
+            <div class="grid two compact dev-spawn-fields">
+              <label>
+                Aggro Mode
+                <select id="devAggroMode">
+                  <option value="passive" selected>Passive</option>
+                  <option value="attack_me">Attack Me</option>
+                  <option value="attack_party">Attack Party</option>
+                  <option value="free_for_all">Free For All</option>
+                </select>
+              </label>
+              <label>
+                Spawn Anchor
+                <select id="devSpawnAnchor">
+                  <option value="local" selected>Local</option>
+                  <option value="party">Party</option>
+                  <option value="npc_nearest">Nearest NPC</option>
+                </select>
+              </label>
+              <label>
+                Distance
+                <input id="devActorDistance" type="number" min="0" max="20000" value="350">
+              </label>
+              <label>
+                +Z
+                <input id="devActorZOffset" type="number" min="-5000" max="5000" value="0">
+              </label>
+              <label>
+                Count
+                <input id="devActorCount" type="number" min="1" max="12" value="1">
+              </label>
+              <label>
+                Spacing
+                <input id="devActorSpacing" type="number" min="1" max="5000" value="125">
+              </label>
+              <label>
+                Scale
+                <input id="devActorScale" type="number" min="0.05" max="20" step="0.05" value="1.0">
+              </label>
+              <label>
+                Target/List Limit
+                <input id="devActorTargetLimit" type="number" min="1" max="200" value="20">
+              </label>
+            </div>
+            <div class="button-row wrap compact-actions">
+              <button id="devSpawnerSpawnAiBtnSide" data-dev-spawner-action="dev_spawner_spawnai">Spawn</button>
+              <button id="devSpawnerReaggroBtn" data-dev-spawner-action="dev_spawner_reaggro">Re-Aggro</button>
+              <button data-dev-spawner-action="dev_spawner_clear">Clear ASD Spawns</button>
+              <button id="devRefreshLogBtn" type="button">Refresh SDK Log</button>
+            </div>
+
+            <details class="dev-fold">
+              <summary>Setup / Inspect</summary>
+              <div class="button-row wrap">
+                <button data-dev-spawner-action="dev_spawner_status">ASD Status</button>
+                <button data-dev-spawner-action="dev_spawner_cache_status">Cache Status</button>
+                <button data-dev-spawner-action="dev_spawner_spawnerdiag">Spawner Diagnostics</button>
+                <button data-dev-spawner-action="dev_spawner_targets">List Targets</button>
+                <button data-dev-spawner-action="dev_spawner_probeai">Probe AI</button>
+                <button data-dev-spawner-action="dev_spawner_cache">Cache Live Actor</button>
+              </div>
+              <details class="dev-fold">
+                <summary>Template Spawn Options</summary>
+                <div class="grid two compact">
+                  <label>
+                    Class Override
+                    <input id="devActorClass" type="text" placeholder="OakLostLootMachine, OakWeapon...">
+                  </label>
+                  <label>
+                    Activation Delay
+                    <input id="devActorDelay" type="number" min="0" max="30" step="0.1" value="1">
+                  </label>
+                  <label>
+                    Enable States
+                    <input id="devActorEnableStates" type="text" placeholder="default: Active,ActiveIdle_Anim">
+                  </label>
+                  <label>
+                    Disable States
+                    <input id="devActorDisableStates" type="text" placeholder="default: IsInUse,InUse_Anim,Dispensing_Anim">
+                  </label>
+                </div>
+                <label class="inline-check">
+                  <input id="devActorIncludeNonGenerated" type="checkbox">
+                  Include Non-Generated
+                </label>
+                <label class="inline-check">
+                  <input id="devActorNoActivate" type="checkbox">
+                  Spawn only, do not activate script states
+                </label>
+              </details>
+            </details>
+
+            <details class="dev-fold">
+              <summary>Barrel Logo</summary>
+              <div class="grid two compact">
+                <label>
+                  Actor
+                  <input id="devLogoActor" type="text" value="barrel" autocomplete="off" spellcheck="false">
+                </label>
+                <label>
+                  Distance
+                  <input id="devLogoDistance" type="number" min="0" max="30000" value="2500">
+                </label>
+                <label>
+                  Height
+                  <input id="devLogoHeight" type="number" min="0" max="10000" value="750">
+                </label>
+                <label>
+                  Spacing
+                  <input id="devLogoSpacing" type="number" min="1" max="1000" value="70">
+                </label>
+                <label>
+                  Scale
+                  <input id="devLogoScale" type="number" min="0.01" max="20" step="0.01" value="0.45">
+                </label>
+                <label class="inline-check">
+                  <input id="devLogoIncludeNonGenerated" type="checkbox">
+                  Include Non-Generated
+                </label>
+              </div>
+              <div id="devLogoLines" class="dev-logo-lines compact" aria-label="Barrel Logo text lines">
+                <label>Line 1 <input type="text" value="MSBT"></label>
+                <label>Line 2 <input type="text" value="BOOSTING"></label>
+                <label>Line 3 <input type="text" value="TOOLS"></label>
+              </div>
+              <textarea id="devLogoText" class="hidden" aria-hidden="true"></textarea>
+              <div class="button-row wrap compact-actions">
+                <button id="devLogoAddLineBtn" type="button">+ Line</button>
+                <button id="devLogoRemoveLineBtn" type="button">- Line</button>
+                <button data-dev-spawner-action="dev_spawner_barrel_logo">Run Barrel Logo</button>
+                <button id="devLogoUseSelectedBtn" type="button">Use Selected</button>
+              </div>
+            </details>
+
+            <details class="dev-fold">
+              <summary>Advanced ASD actions</summary>
+              <div class="button-row wrap">
+                <button data-dev-spawner-action="dev_spawner_spawn">Spawn Template</button>
+                <button data-dev-spawner-action="dev_spawner_lostloot">Spawn Lost Loot</button>
+                <button data-dev-spawner-action="dev_spawner_activate_last">Activate Last</button>
+                <button data-dev-spawner-action="dev_spawner_scriptdump">Script Dump Last</button>
+                <button data-dev-spawner-action="dev_spawner_logo_options">Logo Options</button>
+                <button data-dev-spawner-action="dev_spawner_clear">Clear ASD Spawns</button>
+              </div>
+            </details>
+          </aside>
+        </div>
+      </div>
     </section>
 
     <section id="tab-map-travel" class="tab-panel" data-msbt-layout-tab="map-travel">

@@ -117,6 +117,8 @@ const els = {
   devSpawnerWarning: document.getElementById("devSpawnerWarning"),
   devSpawnerTimer: document.getElementById("devSpawnerTimer"),
   devFavoriteStrip: document.getElementById("devFavoriteStrip"),
+  devResultFold: document.querySelector("#tab-dev-spawner .dev-result-fold"),
+  devSpawnerWalkthroughBtn: document.getElementById("devSpawnerWalkthroughBtn"),
   devAggroMode: document.getElementById("devAggroMode"),
   devSpawnAnchor: document.getElementById("devSpawnAnchor"),
   electronAppCurrent: document.getElementById("electronAppCurrent"),
@@ -2786,7 +2788,7 @@ function renderDevFavoriteStrip() {
   if (!keys.length) {
     const note = document.createElement("span");
     note.className = "muted-line";
-    note.textContent = "Favorite strip empty — star actors under My Favorites.";
+    note.textContent = "Favorite strip empty — star a row (★) or use ★ Favorite under selection.";
     els.devFavoriteStrip.appendChild(note);
     return;
   }
@@ -2794,8 +2796,9 @@ function renderDevFavoriteStrip() {
     const entry = favorites[actorName] || {};
     const btn = document.createElement("button");
     btn.type = "button";
+    btn.className = "dev-fav-chip";
     btn.textContent = entry.label || actorName;
-    btn.title = actorName;
+    btn.title = `Spawn ${actorName}`;
     btn.addEventListener("click", async () => {
       if (els.devAiName) els.devAiName.value = actorName;
       if (els.devActorName) els.devActorName.value = actorName;
@@ -6067,6 +6070,12 @@ function devActorsForCategoryName(category) {
   const spawnMetadata = catalog.spawn_metadata || {};
   const values = [];
 
+  if (category === "Boss") {
+    return devReferenceBossPickActors();
+  }
+  if (category === "★ Favorites") {
+    return devMyFavoriteActors();
+  }
   if (category === "All") {
     return devAllKnownActors();
   }
@@ -6307,7 +6316,18 @@ function devCategoryNames() {
   if (Object.keys(catalog.spawn_metadata || {}).length && !names.includes("IO Spawn Catalog")) {
     names.push("IO Spawn Catalog");
   }
-  return names;
+  const special = ["Boss", "★ Favorites"];
+  const rest = names.filter((name) => !special.includes(name));
+  // Prefer Boss / Favorites / All first when All exists.
+  const ordered = [];
+  special.forEach((name) => ordered.push(name));
+  if (rest.includes("All")) {
+    ordered.push("All");
+    rest.filter((name) => name !== "All").forEach((name) => ordered.push(name));
+  } else {
+    rest.forEach((name) => ordered.push(name));
+  }
+  return ordered;
 }
 
 function devActorsForActiveCategory() {
@@ -6445,7 +6465,7 @@ function renderDevMyFavoriteControls() {
   const isFavorite = Boolean(actorName && devIsMyFavorite(actorName));
   if (els.devMyFavoriteAddBtn) {
     els.devMyFavoriteAddBtn.disabled = !actorName || isFavorite;
-    els.devMyFavoriteAddBtn.textContent = isFavorite ? "Already In My Favorites" : "Add Selected Actor";
+    els.devMyFavoriteAddBtn.textContent = isFavorite ? "★ Saved" : "★ Favorite";
   }
   if (els.devMyFavoriteRemoveBtn) {
     els.devMyFavoriteRemoveBtn.disabled = !isFavorite;
@@ -6588,10 +6608,17 @@ function renderDevCategories() {
     const button = document.createElement("button");
     button.type = "button";
     button.className = category === state.devActiveCategory ? "active" : "";
-    button.textContent = `${category} (${devActorsForCategoryName(category).length})`;
-    button.title = category === "All"
-      ? "Search across every actor in the source catalog."
-      : `Show ${category} actors only. Search will filter inside this category.`;
+    const count = devActorsForCategoryName(category).length;
+    button.textContent = `${category} (${count})`;
+    if (category === "Boss") {
+      button.title = "Filter the same actor list to packaged boss character picks.";
+    } else if (category === "★ Favorites") {
+      button.title = "Show only your saved My Favorites in the actor list.";
+    } else {
+      button.title = category === "All"
+        ? "Search across every actor in the source catalog."
+        : `Show ${category} actors only. Search will filter inside this category.`;
+    }
     button.addEventListener("click", () => {
       state.devActiveCategory = category;
       state.devActorPage = 0;
@@ -6628,7 +6655,8 @@ function makeDevActorRow(actorName, options = {}) {
   favoriteButton.type = "button";
   favoriteButton.className = "dev-favorite-button";
   const isFavorite = devIsMyFavorite(actorName);
-  favoriteButton.textContent = isFavorite ? "Rem" : "Fav";
+  favoriteButton.textContent = isFavorite ? "★" : "☆";
+  favoriteButton.classList.toggle("is-favorite", isFavorite);
   favoriteButton.title = isFavorite ? "Remove from My Favorites" : "Add to My Favorites";
   favoriteButton.addEventListener("click", (event) => {
     event.stopPropagation();
@@ -6810,65 +6838,66 @@ function renderDevQuickPicks(query, rawQuery) {
 }
 
 function renderDevMyFavorites(query, rawQuery) {
-  if (!els.devMyFavoriteRows) return;
-
   const favorites = devMyFavoritesMap();
   const favoriteCount = Object.keys(favorites).length;
   state.devSpawnerFilteredMyFavorites = devFilteredMyFavorites(query);
 
-  els.devMyFavoriteRows.innerHTML = "";
-  if (!favoriteCount) {
-    const empty = document.createElement("div");
-    empty.className = "dev-empty-row";
-    empty.textContent = "No My Favorites saved yet. Select an actor row, then use Add Selected Actor.";
-    els.devMyFavoriteRows.appendChild(empty);
-  } else if (!state.devSpawnerFilteredMyFavorites.length) {
-    const empty = document.createElement("div");
-    empty.className = "dev-empty-row";
-    empty.textContent = query
-      ? `No My Favorites match "${rawQuery}". Clear Search actors to see all saved favorites.`
-      : "No My Favorites are visible.";
-    els.devMyFavoriteRows.appendChild(empty);
-  } else {
-    devGroupedMyFavoriteRows(state.devSpawnerFilteredMyFavorites).forEach((group) => {
-      const groupNode = document.createElement("details");
-      groupNode.className = "dev-actor-group";
-      groupNode.open = true;
-      const summary = document.createElement("summary");
-      summary.textContent = `${group.name} (${group.actors.length})`;
-      groupNode.appendChild(summary);
-      group.actors.forEach((actorName) => {
-        const labelInfo = devMyFavoriteLabelInfo(actorName);
-        groupNode.appendChild(makeDevActorRow(actorName, {
-          groupName: group.name,
-          metaText: devActorShortMeta(actorName, {
-            secondary: labelInfo.secondary,
-            note: labelInfo.note,
-            groupName: group.name
-          }),
-          rowClass: "my-favorite-row",
-          titleText: labelInfo.primary
-        }));
+  if (els.devMyFavoriteRows) {
+    els.devMyFavoriteRows.innerHTML = "";
+    if (!favoriteCount) {
+      const empty = document.createElement("div");
+      empty.className = "dev-empty-row";
+      empty.textContent = "No My Favorites saved yet. Star a row or use ★ Favorite under selection.";
+      els.devMyFavoriteRows.appendChild(empty);
+    } else if (!state.devSpawnerFilteredMyFavorites.length) {
+      const empty = document.createElement("div");
+      empty.className = "dev-empty-row";
+      empty.textContent = query
+        ? `No My Favorites match "${rawQuery}". Clear Search actors to see all saved favorites.`
+        : "No My Favorites are visible.";
+      els.devMyFavoriteRows.appendChild(empty);
+    } else {
+      devGroupedMyFavoriteRows(state.devSpawnerFilteredMyFavorites).forEach((group) => {
+        const groupNode = document.createElement("details");
+        groupNode.className = "dev-actor-group";
+        groupNode.open = true;
+        const summary = document.createElement("summary");
+        summary.textContent = `${group.name} (${group.actors.length})`;
+        groupNode.appendChild(summary);
+        group.actors.forEach((actorName) => {
+          const labelInfo = devMyFavoriteLabelInfo(actorName);
+          groupNode.appendChild(makeDevActorRow(actorName, {
+            groupName: group.name,
+            metaText: devActorShortMeta(actorName, {
+              secondary: labelInfo.secondary,
+              note: labelInfo.note,
+              groupName: group.name
+            }),
+            rowClass: "my-favorite-row",
+            titleText: labelInfo.primary
+          }));
+        });
+        els.devMyFavoriteRows.appendChild(groupNode);
       });
-      els.devMyFavoriteRows.appendChild(groupNode);
-    });
+    }
   }
 
   const searchNote = query ? ` | search: "${rawQuery}"` : "";
   const selectedNote = state.devSpawnerSelectedActor
     ? devIsMyFavorite(state.devSpawnerSelectedActor) ? " | selected actor is saved" : " | selected actor is not saved"
     : "";
-  setLine(
-    els.devMyFavoriteSummary,
-    `${state.devSpawnerFilteredMyFavorites.length} shown / ${favoriteCount} My Favorites${searchNote}${selectedNote}`,
-    favoriteCount ? "ok" : "warning"
-  );
+  if (els.devMyFavoriteSummary) {
+    setLine(
+      els.devMyFavoriteSummary,
+      `${state.devSpawnerFilteredMyFavorites.length} shown / ${favoriteCount} My Favorites${searchNote}${selectedNote}`,
+      favoriteCount ? "ok" : "warning"
+    );
+  }
   renderDevMyFavoriteControls();
   renderDevFavoriteStrip();
 }
 
 function renderDevActors() {
-  const catalog = state.devSpawnerCatalog || {};
   const category = state.devActiveCategory || "All";
   const rawQuery = getValue(els.devActorSearch).trim();
   const query = devNormalizeSearch(rawQuery);
@@ -6876,20 +6905,21 @@ function renderDevActors() {
   state.devSpawnerFilteredActors = allNames.filter((actorName) => {
     return !query || devActorSearchText(actorName).includes(query);
   });
-  state.devSpawnerFilteredBossPicks = devFilteredReferenceBossPicks(query);
+  state.devSpawnerFilteredBossPicks = category === "Boss"
+    ? state.devSpawnerFilteredActors.slice()
+    : devFilteredReferenceBossPicks(query);
   state.devSpawnerFilteredQuickPicks = devFilteredReferenceQuickPicks(query);
-  state.devSpawnerFilteredMyFavorites = devFilteredMyFavorites(query);
+  state.devSpawnerFilteredMyFavorites = category === "★ Favorites"
+    ? state.devSpawnerFilteredActors.slice()
+    : devFilteredMyFavorites(query);
 
   if (
     state.devSpawnerSelectedActor
     && !state.devSpawnerFilteredActors.includes(state.devSpawnerSelectedActor)
-    && !state.devSpawnerFilteredBossPicks.includes(state.devSpawnerSelectedActor)
-    && !state.devSpawnerFilteredMyFavorites.includes(state.devSpawnerSelectedActor)
   ) {
     clearDevActorSelection();
   }
 
-  renderDevBossPicks(query, rawQuery);
   renderDevMyFavorites(query, rawQuery);
 
   const pageSize = 36;
@@ -6900,7 +6930,8 @@ function renderDevActors() {
 
   if (els.devActorRows) {
     els.devActorRows.innerHTML = "";
-    devGroupedActorRows(shown, category).forEach((group) => {
+    const groupCategory = (category === "Boss" || category === "★ Favorites") ? "All" : category;
+    devGroupedActorRows(shown, groupCategory).forEach((group) => {
       const groupNode = document.createElement("details");
       groupNode.className = "dev-actor-group";
       groupNode.open = true;
@@ -6908,7 +6939,22 @@ function renderDevActors() {
       summary.textContent = `${group.name} (${group.actors.length} on this page)`;
       groupNode.appendChild(summary);
       group.actors.forEach((actorName) => {
-        groupNode.appendChild(makeDevActorRow(actorName, { groupName: group.name }));
+        const meta = devActorMetadata(actorName);
+        const isBoss = Boolean(meta.is_boss || meta.is_true_boss);
+        const labelInfo = category === "Boss"
+          ? devQuickPickLabelInfo(actorName)
+          : (devIsMyFavorite(actorName) ? devMyFavoriteLabelInfo(actorName) : null);
+        groupNode.appendChild(makeDevActorRow(actorName, {
+          groupName: group.name,
+          metaText: devActorShortMeta(actorName, {
+            secondary: labelInfo ? labelInfo.secondary : "",
+            bossTag: isBoss ? (meta.is_true_boss ? "True boss" : "Boss") : "",
+            note: labelInfo && labelInfo.note ? labelInfo.note : "",
+            groupName: group.name
+          }),
+          rowClass: isBoss ? "boss-pick-row" : (devIsMyFavorite(actorName) ? "my-favorite-row" : ""),
+          titleText: labelInfo ? labelInfo.primary : undefined
+        }));
       });
       els.devActorRows.appendChild(groupNode);
     });
@@ -6916,7 +6962,9 @@ function renderDevActors() {
       const empty = document.createElement("div");
       empty.className = "dev-empty-row";
       if (!allNames.length) {
-        empty.textContent = "This category has no actors in the local catalog.";
+        empty.textContent = category === "★ Favorites"
+          ? "No My Favorites saved yet. Star a row to add one."
+          : "This category has no actors in the local catalog.";
       } else if (query) {
         empty.textContent = `No actors match "${rawQuery}" in ${category}. Clear Search actors, try All, or search by display name, actor key, or category.`;
       } else {
@@ -6973,7 +7021,8 @@ async function loadDevSpawnerFavorites() {
     }
     state.devSpawnerMyFavorites = result.data || { version: 1, favorites: {} };
     const warnings = Array.isArray(result.warnings) ? result.warnings.filter(Boolean) : [];
-    renderDevMyFavorites(devNormalizeSearch(getValue(els.devActorSearch)), getValue(els.devActorSearch).trim());
+    renderDevCategories();
+    renderDevActors();
     if (warnings.length) {
       setLine(els.devMyFavoriteSummary, warnings[0], "warning");
     }
@@ -6995,6 +7044,7 @@ async function saveDevSpawnerFavorites(statusMessage) {
   }
   state.devSpawnerMyFavorites = result.data || state.devSpawnerMyFavorites;
   const warning = Array.isArray(result.warnings) && result.warnings.length ? ` ${result.warnings[0]}` : "";
+  renderDevCategories();
   renderDevActors();
   setLine(els.devMyFavoriteSummary, `${statusMessage}${warning}`, warning ? "warning" : "ok");
   return true;
@@ -7401,6 +7451,7 @@ async function runDevSpawnerAction(action) {
 
   appendActivity(`Sending ${action}...`);
   setOutput(els.devSpawnerOutput, `Sending ${action}...`);
+  if (els.devResultFold) els.devResultFold.open = true;
   try {
     const payload = devSpawnerPayload();
     const result = await bridgeAction(action, payload, 45000);
@@ -9263,34 +9314,28 @@ const TAB_TUTORIALS = {
   ],
   "dev-spawner": [
     {
-      title: "Pick an actor",
-      body: "Actor Browser: search, Categories, Active Boss Chars, My Favorites, then Actor Results. Selecting a row fills Selected Actor and the spawn name field.",
+      title: "Pick → spawn",
+      body: "One fixed layout: search + category chips (Boss / ★ Favorites / All / …) filter a single actor list. Star rows (☆) or click the favorite strip to spawn instantly. No dock panels to rearrange here.",
       tab: "dev-spawner",
-      targetSel: "#tab-dev-spawner [data-msbt-panel='dev-browser']"
+      targetSel: "#tab-dev-spawner .dev-spawner-primary"
     },
     {
       title: "Spawn settings",
-      body: "Standard Spawning: Distance, +Z, Count, Spacing, Scale, Target/List Limit. Spawn Selected Actor sends via Actor Script Deployer (ASD).",
+      body: "Right column: Aggro, Anchor, Distance, Count, Spacing, Scale. Spawn / Re-Aggro / Clear ASD Spawns sit beside the list. ASD_spawnai stays the backend — no Oak Char_* requirement.",
       tab: "dev-spawner",
-      targetSel: "#tab-dev-spawner [data-msbt-panel='dev-spawn']"
+      targetSel: "#tab-dev-spawner .dev-spawner-controls"
     },
     {
-      title: "Setup / Inspect & clear",
-      body: "ASD Status, Cache, Diagnostics, Probe, Template Spawn, Lost Loot, etc. After heavy spawning use Clear ASD Spawns. The SDK also auto-clears each spawn batch after ~60s.",
+      title: "Status & favorites",
+      body: "Top strip shows warning + ASD autoclear timer. Expand Last result for the full log. Favorite label/note folds under the selection row.",
       tab: "dev-spawner",
-      targetSel: "#tab-dev-spawner [data-msbt-panel='dev-setup']"
+      targetSel: "#tab-dev-spawner .dev-status-strip"
     },
     {
-      title: "Favorites & barrel logo",
-      body: "Add Selected to My Favorites with optional label/note. Barrel Logo spells text with actors — Run Barrel Logo / Use Selected from the logo panel.",
+      title: "Setup / Barrel / Advanced",
+      body: "Collapsed on the right: Setup / Inspect diagnostics, Barrel Logo, and advanced ASD template actions. Open only when you need them — pick + spawn stays primary.",
       tab: "dev-spawner",
-      targetSel: "#tab-dev-spawner [data-msbt-panel='dev-barrel']"
-    },
-    {
-      title: "Layout tip",
-      body: "Stack Standard Spawning with Setup / Inspect for a tighter workspace. View → Layout walkthrough for drag/stack details.",
-      tab: "dev-spawner",
-      targetSel: "#tab-dev-spawner .msbt-layout-toolbar"
+      targetSel: "#tab-dev-spawner .dev-spawner-controls"
     }
   ],
   "map-travel": [

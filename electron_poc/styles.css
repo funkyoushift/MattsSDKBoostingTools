@@ -869,6 +869,12 @@ button.gzo-submit-cta:hover {
   overflow: auto;
 }
 
+.tab-shell:has(#tab-dev-spawner.active) {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
 .tab-panel {
   display: none;
 }
@@ -1274,22 +1280,161 @@ button.gzo-submit-cta:hover {
 }
 
 #tab-dev-spawner .dev-row-list {
-  min-height: 140px;
-  max-height: 280px;
+  min-height: 0;
+  max-height: none;
+  flex: 1 1 auto;
+  overflow: auto;
 }
 
-#tab-dev-spawner .dev-row-list.compact {
-  min-height: 120px;
-  max-height: 240px;
-}
-
+#tab-dev-spawner .dev-row-list.compact,
 #tab-dev-spawner .dev-row-list:not(.compact) {
-  min-height: 160px;
-  max-height: 320px;
+  min-height: 0;
+  max-height: none;
 }
 
 .dev-spawner-layout {
   align-items: stretch;
+}
+
+/* Fixed composition (no GridStack) for Dev Spawner only */
+#tab-dev-spawner.msbt-fixed-tab {
+  display: none;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+#tab-dev-spawner.msbt-fixed-tab.active {
+  display: flex;
+  flex: 1 1 auto;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.dev-spawner-fixed {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+  overflow: hidden;
+  padding: 4px 2px 8px;
+}
+
+.dev-spawner-header {
+  display: grid;
+  flex: 0 0 auto;
+  gap: 8px;
+}
+
+.dev-spawner-title-row {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.dev-spawner-title-row h2 {
+  margin: 0;
+}
+
+.dev-status-strip {
+  background: rgba(13, 19, 32, 0.72);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: grid;
+  gap: 4px;
+  padding: 8px 10px;
+}
+
+.dev-result-fold > summary {
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.dev-favorite-strip {
+  align-items: center;
+  min-height: 28px;
+}
+
+.dev-favorite-strip .dev-fav-chip {
+  background: #243148;
+  border-color: #3d5475;
+}
+
+.dev-spawner-body {
+  display: grid;
+  flex: 1 1 auto;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1.85fr) minmax(280px, 0.95fr);
+  min-height: 0;
+  overflow: hidden;
+}
+
+.dev-spawner-primary,
+.dev-spawner-controls {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+  overflow: auto;
+  padding: 10px 12px;
+}
+
+.dev-spawner-primary {
+  overflow: hidden;
+}
+
+.dev-list-toolbar {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.dev-list-toolbar .status-line {
+  flex: 1 1 auto;
+  margin: 0;
+}
+
+.dev-selection-row {
+  align-items: end;
+  display: grid;
+  flex: 0 0 auto;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.dev-selection-field {
+  margin: 0;
+}
+
+.dev-favorite-button.is-favorite {
+  color: var(--gold);
+}
+
+#tab-dev-spawner .dev-detail-card {
+  max-height: 220px;
+  overflow: auto;
+}
+
+#tab-dev-spawner .dev-browser-toolbar {
+  flex: 0 0 auto;
+}
+
+#tab-dev-spawner .dev-browser-section h3 {
+  color: var(--cyan);
+  font-size: 12px;
+  margin: 0 0 4px;
 }
 
 .dev-spawn-strip,
@@ -1379,31 +1524,29 @@ button.gzo-submit-cta:hover {
 
 /* Inside docked GridStack panels, let lists use available height */
 .msbt-dock-panel .dev-row-list,
-.msbt-dock-panel .dev-row-list.compact,
-#tab-dev-spawner .msbt-dock-panel .dev-row-list,
-#tab-dev-spawner .msbt-dock-panel .dev-row-list.compact {
-  min-height: 180px;
-  max-height: min(48vh, 480px);
+.msbt-dock-panel .dev-row-list.compact {
+  min-height: 160px;
+  max-height: none;
+  flex: 1 1 auto;
 }
 
 .msbt-dock-panel .dev-detail-card {
+  position: relative;
   min-height: 140px;
-  max-height: min(48vh, 480px);
+  max-height: none;
+  flex: 1 1 auto;
   overflow: auto;
+  background: #0d1320;
 }
 
 .msbt-dock-panel .dev-browser-split {
-  min-height: 220px;
+  min-height: 0;
 }
 
-.msbt-dock-panel.dev-spawner-browser .msbt-panel-body {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.msbt-dock-panel.dev-spawner-browser .dev-browser-split {
-  flex: 1 1 auto;
+/* Opaque dock surfaces so float/overlap never shows as z-fighting mush */
+.msbt-gs-content > .msbt-dock-panel.panel,
+.msbt-stack-bodies > .msbt-dock-panel.panel {
+  background: var(--panel);
 }
 
 .dev-hint {
@@ -1809,6 +1952,7 @@ button.active-scope {
   border: 1px solid var(--line);
   background: #0d1320;
   padding: 8px;
+  position: relative;
 }
 
 .dev-detail-row {
@@ -1977,10 +2121,16 @@ button.active-scope {
   .grid.three,
   .grid.five,
   .dev-spawner-row,
+  .dev-spawner-body,
   .update-card-grid,
   .rarity-grid,
   .button-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dev-spawner-body {
+    grid-template-columns: 1fr;
+    overflow: auto;
   }
 }
 
@@ -1994,10 +2144,15 @@ button.active-scope {
   .bl4-layout,
   .grid.sidecar,
   .dev-spawner-row,
+  .dev-spawner-body,
   .update-card-grid,
   .rarity-grid,
   .inline-fields,
   .button-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dev-selection-row {
     grid-template-columns: 1fr;
   }
 

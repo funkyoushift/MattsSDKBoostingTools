@@ -7,6 +7,10 @@
   "use strict";
 
   const STORAGE_PREFIX = "msbt.panelLayout.v2.";
+  /** Bump when panel ids / default tiles change incompatibly (forces stale saves to reset). */
+  const LAYOUT_REVISION = 4;
+  /** Tabs that use a fixed composition instead of multi-card GridStack. */
+  const FIXED_LAYOUT_TABS = new Set(["dev-spawner"]);
   const TEXT_SCALE_KEY = "msbt.uiTextScale";
   const NAV_TABS_KEY = "msbt.navTabs.v1";
   const TEXT_SCALE_MIN = 0.85;
@@ -79,9 +83,6 @@
       // Tall enough for first paint; syncFillTab expands to viewport.
       h = 18;
       minH = 10;
-    } else if (id === "dev-browser") {
-      h = 12;
-      minH = 6;
     } else if (id === "inv-main") {
       h = 11;
       minH = 6;
@@ -108,6 +109,96 @@
       minH = 3;
     }
     return { w, h, minH };
+  }
+
+  /** Explicit non-overlapping tiles for tabs that need packed defaults. */
+  function defaultPlacement(panel) {
+    const size = defaultSize(panel);
+    return { w: size.w, h: size.h, minH: size.minH };
+  }
+
+  function clearStaleFixedTabLayout(tabId) {
+    if (!FIXED_LAYOUT_TABS.has(tabId)) return;
+    try {
+      localStorage.removeItem(storageKey(tabId));
+    } catch (_err) {
+      /* ignore */
+    }
+  }
+
+  function initFixedLayoutTabs() {
+    document.querySelectorAll("[data-msbt-fixed-layout]").forEach((tab) => {
+      const tabId = tab.getAttribute("data-msbt-fixed-layout") || "";
+      clearStaleFixedTabLayout(tabId);
+      const walkBtn = tab.querySelector("#devSpawnerWalkthroughBtn, .msbt-fixed-walkthrough");
+      if (walkBtn && !walkBtn.dataset.msbtWalkWired) {
+        walkBtn.dataset.msbtWalkWired = "1";
+        walkBtn.addEventListener("click", () => {
+          if (typeof global.msbtStartTabTutorial === "function") {
+            global.msbtStartTabTutorial(tabId);
+          }
+        });
+      }
+    });
+  }
+
+  function panelIdFingerprint(tab) {
+    return allPanelsInTab(tab)
+      .map((p) => p.getAttribute("data-msbt-panel") || "")
+      .filter(Boolean)
+      .sort()
+      .join(",");
+  }
+
+  /** True when two axis-aligned tiles overlap by more than a tiny edge kiss. */
+  function rectsOverlap(a, b) {
+    const ax2 = a.x + a.w;
+    const ay2 = a.y + a.h;
+    const bx2 = b.x + b.w;
+    const by2 = b.y + b.h;
+    const ow = Math.max(0, Math.min(ax2, bx2) - Math.max(a.x, b.x));
+    const oh = Math.max(0, Math.min(ay2, by2) - Math.max(a.y, b.y));
+    return ow * oh >= 2;
+  }
+
+  function savedLayoutHasHeavyOverlap(saved) {
+    if (!saved || !Array.isArray(saved.items)) return false;
+    const rects = saved.items
+      .filter((spec) => spec && (spec.type === "panel" || spec.type === "stack"))
+      .map((spec) => ({
+        x: Number(spec.x) || 0,
+        y: Number(spec.y) || 0,
+        w: Math.max(1, Number(spec.w) || 1),
+        h: Math.max(1, Number(spec.h) || 1)
+      }));
+    for (let i = 0; i < rects.length; i += 1) {
+      for (let j = i + 1; j < rects.length; j += 1) {
+        if (rectsOverlap(rects[i], rects[j])) return true;
+      }
+    }
+    return false;
+  }
+
+  function liveLayoutHasHeavyOverlap(tab) {
+    const root = tab && tab.querySelector("[data-msbt-layout-root]");
+    if (!root) return false;
+    const rects = [];
+    root.querySelectorAll(":scope > .grid-stack-item").forEach((item) => {
+      const node = item.gridstackNode;
+      if (!node) return;
+      rects.push({
+        x: Number(node.x) || 0,
+        y: Number(node.y) || 0,
+        w: Math.max(1, Number(node.w) || 1),
+        h: Math.max(1, Number(node.h) || 1)
+      });
+    });
+    for (let i = 0; i < rects.length; i += 1) {
+      for (let j = i + 1; j < rects.length; j += 1) {
+        if (rectsOverlap(rects[i], rects[j])) return true;
+      }
+    }
+    return false;
   }
 
   function ensureChrome(panel) {
@@ -139,16 +230,18 @@
     const item = document.createElement("div");
     item.className = "grid-stack-item";
     item.setAttribute("data-msbt-item", "1");
-    const defaults = defaultSize(panel);
-    const w = opts && opts.w ? opts.w : defaults.w;
-    const h = opts && opts.h ? opts.h : defaults.h;
+    const defaults = defaultPlacement(panel);
+    const w = opts && opts.w != null ? opts.w : defaults.w;
+    const h = opts && opts.h != null ? opts.h : defaults.h;
     const minH = opts && opts.minH != null ? opts.minH : defaults.minH;
     item.setAttribute("gs-w", String(w));
     item.setAttribute("gs-h", String(h));
     item.setAttribute("gs-min-w", "3");
     item.setAttribute("gs-min-h", String(Math.max(2, minH || 2)));
-    if (opts && opts.x != null) item.setAttribute("gs-x", String(opts.x));
-    if (opts && opts.y != null) item.setAttribute("gs-y", String(opts.y));
+    const x = opts && opts.x != null ? opts.x : defaults.x;
+    const y = opts && opts.y != null ? opts.y : defaults.y;
+    if (x != null) item.setAttribute("gs-x", String(x));
+    if (y != null) item.setAttribute("gs-y", String(y));
     if (opts && opts.z != null) {
       item.style.zIndex = String(opts.z);
       zCounter = Math.max(zCounter, Number(opts.z) || Z_BASE);
@@ -824,7 +917,7 @@
     getStash(tab).querySelectorAll("[data-msbt-panel]").forEach((p) => {
       hidden.push(p.getAttribute("data-msbt-panel"));
     });
-    if (!root) return { version: 2, items, hidden };
+    if (!root) return { version: 2, revision: LAYOUT_REVISION, panelIds: panelIdFingerprint(tab), items, hidden };
     root.querySelectorAll(":scope > .grid-stack-item").forEach((item) => {
       if (!item.gridstackNode) return;
       const node = item.gridstackNode || {};
@@ -859,7 +952,7 @@
         });
       }
     });
-    return { version: 2, items, hidden };
+    return { version: 2, revision: LAYOUT_REVISION, panelIds: panelIdFingerprint(tab), items, hidden };
   }
 
   function persist(tab) {
@@ -869,9 +962,69 @@
     refreshPanelsMenu(tab);
   }
 
-  function captureDefaults(tab) {
-    if (tab.dataset.msbtDefaultLayoutV2) return;
+  function captureDefaults(tab, force) {
+    if (!force && tab.dataset.msbtDefaultLayoutV2) return;
     tab.dataset.msbtDefaultLayoutV2 = JSON.stringify(collectState(tab));
+  }
+
+  function applyBuiltInDefaults(tab) {
+    const root = tab.querySelector("[data-msbt-layout-root]");
+    const grid = grids.get(root);
+    if (!grid || !root) return false;
+    const stash = getStash(tab);
+    const panels = allPanelsInTab(tab);
+    panels.forEach((panel) => {
+      panel.classList.remove("msbt-panel-hidden", "msbt-stack-active", "msbt-panel-collapsed");
+      const btn = panel.querySelector(".msbt-panel-collapse");
+      if (btn) btn.textContent = "▾";
+      stash.appendChild(panel);
+    });
+    Array.from(root.querySelectorAll(":scope > .grid-stack-item")).forEach((item) => {
+      removeGridItemClean(grid, item);
+    });
+    let anyExplicit = false;
+    panels.forEach((panel) => {
+      ensureChrome(panel);
+      wirePanelActions(tab, panel);
+      const place = defaultPlacement(panel);
+      if (place.x != null && place.y != null) anyExplicit = true;
+      const item = wrapAsGridItem(panel, place);
+      grid.addWidget(item);
+      refreshItemDrag(grid, item);
+    });
+    // Explicit placements already packed; other tabs still need compact.
+    if (!anyExplicit) {
+      try {
+        grid.compact();
+      } catch (_err) {
+        /* ignore */
+      }
+    }
+    return true;
+  }
+
+  function savedLayoutIsUsable(tab, saved) {
+    if (!saved || saved.version !== 2 || !Array.isArray(saved.items) || !saved.items.length) return false;
+    if (savedLayoutHasHeavyOverlap(saved)) return false;
+    const ids = panelIdFingerprint(tab);
+    if (saved.panelIds) {
+      if (saved.panelIds !== ids) return false;
+    } else {
+      // Pre-fingerprint saves: reject if any current panel is missing (e.g. Actor Browser split).
+      const known = new Set();
+      saved.items.forEach((spec) => {
+        if (!spec) return;
+        if (spec.type === "panel" && spec.id) known.add(spec.id);
+        if (spec.type === "stack" && Array.isArray(spec.tabs)) {
+          spec.tabs.forEach((id) => known.add(id));
+        }
+      });
+      (saved.hidden || []).forEach((id) => known.add(id));
+      const needed = ids.split(",").filter(Boolean);
+      if (needed.some((id) => !known.has(id))) return false;
+    }
+    if (saved.revision != null && Number(saved.revision) > LAYOUT_REVISION) return false;
+    return true;
   }
 
   function applySavedLayout(tab, saved) {
@@ -1110,20 +1263,34 @@
 
       const tabId = tab.getAttribute("data-msbt-layout-tab");
       const isFillTab = FILL_TABS.has(tabId);
-      if (!isFillTab) captureDefaults(tab);
-
       const saved = loadState(tabId);
-      if (saved && saved.version === 2) {
+      let usedSaved = false;
+      if (savedLayoutIsUsable(tab, saved)) {
         try {
           applySavedLayout(tab, saved);
+          usedSaved = true;
         } catch (layoutErr) {
           console.warn("[MSBT] clearing bad saved layout for", tabId, layoutErr && layoutErr.message);
           try { localStorage.removeItem(storageKey(tabId)); } catch (_e) { /* ignore */ }
-          grid.compact();
+          usedSaved = false;
         }
-      } else {
-        grid.compact();
+      } else if (saved) {
+        console.warn("[MSBT] ignoring stale/overlapping layout for", tabId);
+        try { localStorage.removeItem(storageKey(tabId)); } catch (_e) { /* ignore */ }
       }
+
+      if (!usedSaved) {
+        applyBuiltInDefaults(tab);
+      } else if (liveLayoutHasHeavyOverlap(tab)) {
+        console.warn("[MSBT] auto-compacting overlapped layout for", tabId);
+        try {
+          grid.compact();
+        } catch (_err) {
+          applyBuiltInDefaults(tab);
+        }
+      }
+
+      if (!isFillTab) captureDefaults(tab, true);
 
       refreshPanelsMenu(tab);
       tab.dataset.msbtLayoutReady = "2";
@@ -1131,9 +1298,10 @@
       if (isFillTab && !tab.dataset.msbtDefaultLayoutV2) {
         requestAnimationFrame(() => {
           syncFillTab(tab);
-          captureDefaults(tab);
+          captureDefaults(tab, true);
         });
       }
+      persist(tab);
     } catch (err) {
       console.error(
         "[MSBT] panel layout init failed for",
@@ -1155,20 +1323,12 @@
       /* ignore */
     }
     try {
-      let defaults = null;
-      try {
-        defaults = tab.dataset.msbtDefaultLayoutV2 ? JSON.parse(tab.dataset.msbtDefaultLayoutV2) : null;
-      } catch (_err) {
-        defaults = null;
-      }
-      if (defaults) applySavedLayout(tab, defaults);
-      else {
-        const root = tab.querySelector("[data-msbt-layout-root]");
-        const grid = grids.get(root);
-        if (grid) grid.compact();
-      }
+      delete tab.dataset.msbtDefaultLayoutV2;
+      applyBuiltInDefaults(tab);
+      captureDefaults(tab, true);
       scheduleFillSync(tab);
       persist(tab);
+      refreshPanelsMenu(tab);
     } catch (err) {
       console.error("[MSBT] panel layout reset failed", err);
     }
@@ -1177,6 +1337,7 @@
   function initAll() {
     // Only init the visible tab up front. Hidden tabs break GridStack sizing and
     // used to abort app startup before Dev Spawner lists loaded.
+    try { initFixedLayoutTabs(); } catch (err) { console.warn("[MSBT] fixed layout init failed", err); }
     const active = document.querySelector(".tab-panel.active[data-msbt-layout-tab]");
     if (active) initTab(active);
   }

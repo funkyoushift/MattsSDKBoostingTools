@@ -36,13 +36,17 @@ Optional Steam path if you use it:
 - [ ] Confirm teleport works without map travel
 - [ ] **Delete Selected** removes the entry
 
-### 2. Dev Spawner UX
+### 2. Dev Spawner UX (fixed composition — no GridStack on this tab)
 
-- [ ] **Favorite strip** shows My Favorites; click spawns without re-picking
-- [ ] **ASD autoclear** timer line updates after a spawn (`/status` poll)
-- [ ] **Clear ASD Spawns** + **Re-Aggro** row works
-- [ ] Aggro mode / Spawn anchor dropdowns send without the heavy confirm popup
-- [ ] Spawn still returns promptly (non-blocking ASD poll)
+- [ ] Tab is **one fixed layout** (no Compact/Reset/Panels dock toolbar)
+- [ ] Top **status strip**: warning + ASD autoclear timer + expandable **Last result**
+- [ ] **Favorite strip** spawn-on-click; ☆/★ on actor rows; no My Favorites list column
+- [ ] Left: search + chips (**Boss** / ★ Favorites / All / …) + **one** actor list + selection/spawn
+- [ ] Right: aggro/anchor/dist/count + Spawn/Re-Aggro/Clear; Setup/Barrel/Advanced collapsed
+- [ ] Boss chip filters the same list (not a second list)
+- [ ] Spawn / Clear / favorites store still work (ASD_spawnai backend)
+- [ ] Walkthrough copy matches pick→spawn (no “stack panels” tip)
+- [ ] Other tabs still have docking unchanged
 
 ### 3. Movement scope
 
