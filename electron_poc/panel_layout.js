@@ -8,9 +8,19 @@
 
   const STORAGE_PREFIX = "msbt.panelLayout.v2.";
   /** Bump when panel ids / default tiles change incompatibly (forces stale saves to reset). */
-  const LAYOUT_REVISION = 4;
-  /** Tabs that use a fixed composition instead of multi-card GridStack. */
-  const FIXED_LAYOUT_TABS = new Set(["dev-spawner"]);
+  const LAYOUT_REVISION = 5;
+  /** Preferred restore order when tearing down Dev Spawner docked GridStack. */
+  const DEV_SPAWNER_PANEL_ORDER = [
+    "dev-spawn",
+    "dev-setup",
+    "dev-barrel",
+    "dev-browser",
+    "dev-boss",
+    "dev-favorites",
+    "dev-actors",
+    "dev-details",
+    "dev-result"
+  ];
   const TEXT_SCALE_KEY = "msbt.uiTextScale";
   const NAV_TABS_KEY = "msbt.navTabs.v1";
   const TEXT_SCALE_MIN = 0.85;
@@ -83,6 +93,22 @@
       // Tall enough for first paint; syncFillTab expands to viewport.
       h = 18;
       minH = 10;
+    } else if (id === "dev-browser") {
+      // Search + categories strip only (lists are sibling panels).
+      h = 4;
+      minH = 3;
+    } else if (id === "dev-boss" || id === "dev-favorites") {
+      h = 8;
+      minH = 5;
+    } else if (id === "dev-actors") {
+      h = 10;
+      minH = 6;
+    } else if (id === "dev-details") {
+      h = 10;
+      minH = 5;
+    } else if (id === "dev-spawn" || id === "dev-setup" || id === "dev-barrel") {
+      h = 6;
+      minH = 4;
     } else if (id === "inv-main") {
       h = 11;
       minH = 6;
@@ -111,14 +137,29 @@
     return { w, h, minH };
   }
 
-  /** Explicit non-overlapping tiles for tabs that need packed defaults. */
+  /** Explicit non-overlapping tiles for tabs that must stay usable out of the box. */
   function defaultPlacement(panel) {
+    const id = panel.getAttribute("data-msbt-panel") || "";
     const size = defaultSize(panel);
-    return { w: size.w, h: size.h, minH: size.minH };
+    const map = {
+      "dev-spawn": { x: 0, y: 0 },
+      "dev-setup": { x: 4, y: 0 },
+      "dev-barrel": { x: 8, y: 0 },
+      "dev-browser": { x: 0, y: 6 },
+      "dev-boss": { x: 0, y: 10 },
+      "dev-favorites": { x: 6, y: 10 },
+      "dev-actors": { x: 0, y: 18 },
+      "dev-details": { x: 8, y: 18 },
+      "dev-result": { x: 0, y: 28 }
+    };
+    const pos = map[id];
+    if (!pos) return { w: size.w, h: size.h, minH: size.minH };
+    return { x: pos.x, y: pos.y, w: size.w, h: size.h, minH: size.minH };
   }
 
   function clearStaleFixedTabLayout(tabId) {
-    if (!FIXED_LAYOUT_TABS.has(tabId)) return;
+    const tab = document.querySelector(`[data-msbt-fixed-layout="${cssEscape(tabId)}"]`);
+    if (!tab) return;
     try {
       localStorage.removeItem(storageKey(tabId));
     } catch (_err) {
@@ -1313,6 +1354,107 @@
     }
   }
 
+  function destroyTab(tabId) {
+    const tab = document.getElementById(`tab-${tabId}`)
+      || document.querySelector(`[data-msbt-layout-tab="${cssEscape(tabId)}"]`);
+    if (!tab) return;
+
+    const root = tab.querySelector("[data-msbt-layout-root]");
+    const grid = root ? grids.get(root) : null;
+    const stash = tab.querySelector("[data-msbt-panel-stash]");
+    const dockHost = tab.querySelector("[data-dev-shell='docked']") || tab;
+
+    const panels = [];
+    const seen = new Set();
+    function takePanel(panel) {
+      if (!panel || seen.has(panel)) return;
+      seen.add(panel);
+      panels.push(panel);
+    }
+    allPanelsInTab(tab).forEach(takePanel);
+    if (stash) stash.querySelectorAll("[data-msbt-panel]").forEach(takePanel);
+
+    panels.sort((a, b) => {
+      const ia = DEV_SPAWNER_PANEL_ORDER.indexOf(a.getAttribute("data-msbt-panel") || "");
+      const ib = DEV_SPAWNER_PANEL_ORDER.indexOf(b.getAttribute("data-msbt-panel") || "");
+      return (ia < 0 ? 999 : ia) - (ib < 0 ? 999 : ib);
+    });
+
+    panels.forEach((panel) => {
+      panel.classList.remove("msbt-panel-hidden", "msbt-stack-active", "msbt-panel-collapsed");
+      const collapseBtn = panel.querySelector(".msbt-panel-collapse");
+      if (collapseBtn) collapseBtn.textContent = "▾";
+      dockHost.appendChild(panel);
+    });
+
+    if (grid) {
+      try {
+        if (typeof grid.destroy === "function") grid.destroy(false);
+      } catch (_err) {
+        /* ignore */
+      }
+      try {
+        grids.delete(root);
+      } catch (_err) {
+        /* ignore */
+      }
+    }
+
+    if (root && root.parentElement) root.remove();
+    const toolbar = tab.querySelector("[data-msbt-layout-toolbar-host]");
+    if (toolbar) toolbar.remove();
+    if (stash) stash.remove();
+
+    delete tab.dataset.msbtLayoutReady;
+    delete tab.dataset.msbtDefaultLayoutV2;
+  }
+
+  function enableFixedLayout(tabId, enabled) {
+    const tab = document.getElementById(`tab-${tabId}`);
+    if (!tab) return;
+    if (enabled) {
+      if (tab.hasAttribute("data-msbt-layout-tab") || tab.querySelector("[data-msbt-layout-root]")) {
+        destroyTab(tabId);
+      }
+      tab.removeAttribute("data-msbt-layout-tab");
+      tab.classList.add("msbt-fixed-tab");
+      tab.setAttribute("data-msbt-fixed-layout", tabId);
+      tab.dataset.msbtDevLayout = "fixed";
+      clearStaleFixedTabLayout(tabId);
+      initFixedLayoutTabs();
+    } else {
+      tab.classList.remove("msbt-fixed-tab");
+      tab.removeAttribute("data-msbt-fixed-layout");
+      tab.setAttribute("data-msbt-layout-tab", tabId);
+      tab.dataset.msbtDevLayout = "docked";
+    }
+  }
+
+  function setDevSpawnerLayoutMode(mode, opts) {
+    opts = opts || {};
+    const tab = document.getElementById("tab-dev-spawner");
+    if (!tab) return;
+    const next = mode === "docked" ? "docked" : "fixed";
+    const prev = tab.dataset.msbtDevLayout || (tab.hasAttribute("data-msbt-layout-tab") ? "docked" : "fixed");
+
+    if (next === "fixed") {
+      enableFixedLayout("dev-spawner", true);
+    } else {
+      if (prev === "docked" && tab.dataset.msbtLayoutReady === "2" && !opts.force) {
+        scheduleFillSync(tab);
+        return;
+      }
+      if (prev === "docked" && tab.querySelector("[data-msbt-layout-root]")) {
+        destroyTab("dev-spawner");
+      }
+      enableFixedLayout("dev-spawner", false);
+      if (opts.init === false) return;
+      if (tab.classList.contains("active") || opts.forceInit) {
+        initTab(tab);
+      }
+    }
+  }
+
   function resetTab(tabId) {
     const tab = document.querySelector(`[data-msbt-layout-tab="${cssEscape(tabId)}"]`);
     if (!tab) return;
@@ -1790,7 +1932,10 @@
   global.MsbtPanelLayout = {
     initAll,
     initTab,
+    destroyTab,
     resetTab,
+    enableFixedLayout,
+    setDevSpawnerLayoutMode,
     onTabShown: onTabShownWrapped,
     persist,
     initViewChrome,

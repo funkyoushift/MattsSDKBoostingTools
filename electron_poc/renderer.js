@@ -2780,6 +2780,99 @@ function updateVehicleCatalogFromStatus(data) {
   if (selected) els.vehicleCatalogSelect.value = selected;
 }
 
+const DEV_SPAWNER_LAYOUT_KEY = "msbt.devSpawner.layoutMode";
+
+function getDevSpawnerLayoutMode() {
+  try {
+    const raw = localStorage.getItem(DEV_SPAWNER_LAYOUT_KEY);
+    if (raw === "docked") return "docked";
+  } catch (_err) {
+    /* ignore */
+  }
+  return "fixed";
+}
+
+function saveDevSpawnerLayoutMode(mode) {
+  const next = mode === "docked" ? "docked" : "fixed";
+  try {
+    localStorage.setItem(DEV_SPAWNER_LAYOUT_KEY, next);
+  } catch (_err) {
+    /* ignore */
+  }
+  return next;
+}
+
+function mountDevSpawnerParts(mode) {
+  const tab = document.getElementById("tab-dev-spawner");
+  if (!tab) return;
+  const shellName = mode === "docked" ? "docked" : "fixed";
+  const shell = tab.querySelector(`[data-dev-shell="${shellName}"]`);
+  if (!shell) return;
+  tab.querySelectorAll("[data-dev-part]").forEach((part) => {
+    const name = part.getAttribute("data-dev-part");
+    if (!name) return;
+    const host = shell.querySelector(`[data-dev-host="${CSS.escape ? CSS.escape(name) : name}"]`);
+    if (host && part.parentElement !== host) {
+      host.appendChild(part);
+    }
+  });
+}
+
+function syncDevSpawnerLayoutToggle(mode) {
+  const next = mode === "docked" ? "docked" : "fixed";
+  document.querySelectorAll("[data-dev-layout-mode]").forEach((btn) => {
+    const pressed = btn.getAttribute("data-dev-layout-mode") === next;
+    btn.setAttribute("aria-pressed", pressed ? "true" : "false");
+    btn.classList.toggle("active", pressed);
+  });
+  const fixedShell = document.querySelector("#tab-dev-spawner [data-dev-shell='fixed']");
+  const dockedShell = document.querySelector("#tab-dev-spawner [data-dev-shell='docked']");
+  if (fixedShell) {
+    fixedShell.hidden = next === "docked";
+    fixedShell.setAttribute("aria-hidden", next === "docked" ? "true" : "false");
+  }
+  if (dockedShell) {
+    dockedShell.hidden = next === "fixed";
+    dockedShell.setAttribute("aria-hidden", next === "fixed" ? "true" : "false");
+  }
+}
+
+function applyDevSpawnerLayoutMode(mode, opts = {}) {
+  const next = saveDevSpawnerLayoutMode(mode);
+  mountDevSpawnerParts(next);
+  syncDevSpawnerLayoutToggle(next);
+  if (window.MsbtPanelLayout && typeof window.MsbtPanelLayout.setDevSpawnerLayoutMode === "function") {
+    window.MsbtPanelLayout.setDevSpawnerLayoutMode(next, opts);
+  } else {
+    const tab = document.getElementById("tab-dev-spawner");
+    if (tab) tab.dataset.msbtDevLayout = next;
+  }
+  // Keep button labels mode-aware after remount.
+  if (els.devMyFavoriteAddBtn) {
+    els.devMyFavoriteAddBtn.textContent = next === "docked" ? "Add Selected" : "★ Favorite";
+  }
+  if (els.devMyFavoriteRemoveBtn) {
+    els.devMyFavoriteRemoveBtn.textContent = next === "docked" ? "Remove Selected" : "Unstar";
+  }
+  if (els.devSpawnerSpawnAiBtn) {
+    els.devSpawnerSpawnAiBtn.textContent = next === "docked" ? "Spawn Selected Actor" : "Spawn Selected";
+  }
+  if (els.devPrevActorPageBtn) {
+    els.devPrevActorPageBtn.textContent = next === "docked" ? "Prev Page" : "Prev";
+  }
+  if (els.devNextActorPageBtn) {
+    els.devNextActorPageBtn.textContent = next === "docked" ? "Next Page" : "Next";
+  }
+  if (!opts.skipRender) {
+    try {
+      renderDevActors();
+    } catch (_err) {
+      /* catalog may not be ready yet */
+    }
+  }
+  return next;
+}
+
 function renderDevFavoriteStrip() {
   if (!els.devFavoriteStrip) return;
   const favorites = typeof devMyFavoritesMap === "function" ? devMyFavoritesMap() : {};
@@ -6921,6 +7014,7 @@ function renderDevActors() {
   }
 
   renderDevMyFavorites(query, rawQuery);
+  renderDevBossPicks(query, rawQuery);
 
   const pageSize = 36;
   const totalPages = Math.max(1, Math.ceil(state.devSpawnerFilteredActors.length / pageSize));
@@ -8734,6 +8828,15 @@ function wireEvents() {
     button.addEventListener("click", () => runDevSpawnerAction(button.dataset.devSpawnerAction));
   });
 
+  document.querySelectorAll("[data-dev-layout-mode]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const mode = button.getAttribute("data-dev-layout-mode") === "docked" ? "docked" : "fixed";
+      const tab = document.getElementById("tab-dev-spawner");
+      if (tab && tab.dataset.msbtDevLayout === mode) return;
+      applyDevSpawnerLayoutMode(mode, { forceInit: true });
+    });
+  });
+
   els.travelMapSearch.addEventListener("input", renderMaps);
   els.travelMapList.addEventListener("change", () => {
     state.selectedMap = getValue(els.travelMapList);
@@ -9315,7 +9418,7 @@ const TAB_TUTORIALS = {
   "dev-spawner": [
     {
       title: "Pick → spawn",
-      body: "One fixed layout: search + category chips (Boss / ★ Favorites / All / …) filter a single actor list. Star rows (☆) or click the favorite strip to spawn instantly. No dock panels to rearrange here.",
+      body: "Compact mode (default): search + category chips (Boss / ★ Favorites / All / …) filter a single actor list. Star rows (☆) or click the favorite strip to spawn instantly.",
       tab: "dev-spawner",
       targetSel: "#tab-dev-spawner .dev-spawner-primary"
     },
@@ -9336,6 +9439,12 @@ const TAB_TUTORIALS = {
       body: "Collapsed on the right: Setup / Inspect diagnostics, Barrel Logo, and advanced ASD template actions. Open only when you need them — pick + spawn stays primary.",
       tab: "dev-spawner",
       targetSel: "#tab-dev-spawner .dev-spawner-controls"
+    },
+    {
+      title: "Panels mode",
+      body: "Switch Compact | Panels in the header to restore the multi-card GridStack layout (Search / Boss / Favorites / Characters / Details / Result). Choice is saved locally.",
+      tab: "dev-spawner",
+      targetSel: "#tab-dev-spawner .dev-layout-toggle"
     }
   ],
   "map-travel": [
@@ -10452,6 +10561,12 @@ async function maybeStartWalkthrough() {
 }
 
 async function init() {
+  // Mount Dev Spawner widgets into the saved shell before wiring / panel layout.
+  try {
+    applyDevSpawnerLayoutMode(getDevSpawnerLayoutMode(), { init: false, skipRender: true });
+  } catch (error) {
+    console.warn("[MSBT] Dev Spawner layout mode bootstrap failed:", error);
+  }
   wireEvents();
   try {
     if (window.MsbtPanelLayout && typeof window.MsbtPanelLayout.initViewChrome === "function") {

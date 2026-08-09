@@ -36,16 +36,15 @@ Optional Steam path if you use it:
 - [ ] Confirm teleport works without map travel
 - [ ] **Delete Selected** removes the entry
 
-### 2. Dev Spawner UX (fixed composition — no GridStack on this tab)
+### 2. Dev Spawner UX (Compact vs Panels)
 
-- [ ] Tab is **one fixed layout** (no Compact/Reset/Panels dock toolbar)
-- [ ] Top **status strip**: warning + ASD autoclear timer + expandable **Last result**
-- [ ] **Favorite strip** spawn-on-click; ☆/★ on actor rows; no My Favorites list column
-- [ ] Left: search + chips (**Boss** / ★ Favorites / All / …) + **one** actor list + selection/spawn
-- [ ] Right: aggro/anchor/dist/count + Spawn/Re-Aggro/Clear; Setup/Barrel/Advanced collapsed
-- [ ] Boss chip filters the same list (not a second list)
-- [ ] Spawn / Clear / favorites store still work (ASD_spawnai backend)
-- [ ] Walkthrough copy matches pick→spawn (no “stack panels” tip)
+- [ ] Header toggle **Compact | Panels** persists in `localStorage` key `msbt.devSpawner.layoutMode` (`fixed` / `docked`)
+- [ ] **Compact** (default): fixed Squ1ggs-inspired composition — no GridStack toolbar; status strip + favorite strip + one actor list + right spawn controls
+- [ ] **Panels**: multi-card GridStack with Search / Boss / Favorites / Characters / Details / Result + Standard Spawning / Setup / Barrel
+- [ ] Shared widgets keep unique IDs (reparented between shells — no duplicate `id=`s)
+- [ ] Compact: Boss chip filters the same list; Panels: Boss / My Favorites lists fill their own cards
+- [ ] Spawn / Clear / favorites store still work in both modes (ASD_spawnai backend)
+- [ ] Walkthrough covers Compact pick→spawn and mentions Panels mode
 - [ ] Other tabs still have docking unchanged
 
 ### 3. Movement scope
