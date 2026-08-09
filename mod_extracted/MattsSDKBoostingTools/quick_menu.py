@@ -3036,11 +3036,27 @@ def _edge_key(pc: Any, name: str, state_attr: str) -> bool:
     return bool(down and not was)
 
 
+def _bound_keybind_name(kb: Any) -> str | None:
+    """Return the live mods_base key name, or None when unbound/disabled."""
+    if kb is None:
+        return None
+    if hasattr(kb, "is_enabled") and not bool(getattr(kb, "is_enabled")):
+        return None
+    raw = getattr(kb, "key", None)
+    if raw is None:
+        return None
+    name = str(raw).strip()
+    if not name or name.lower() in ("none", "null", "unbound", ""):
+        return None
+    return name
+
+
 def process_hotkeys() -> None:
-    """Poll F7/F6 while open so toggles still work under GameAndUI capture.
+    """Poll Quick Menu toggle/unstuck keys under GameAndUI capture.
 
     mods_base keybinds often do not fire while the Quick Menu owns UI input,
-    which made F7 open-only from the player's point of view.
+    which made F7 open-only from the player's point of view. The poller must
+    still honor the live keybind assignment: unbound keys must not fire.
     """
     pc = get_pc()
     if pc is None:
@@ -3048,17 +3064,25 @@ def process_hotkeys() -> None:
         STATE.key_f6 = False
         return
 
-    # F6 always available as emergency restore, even if STATE.is_open is wrong.
-    if _edge_key(pc, "F6", "key_f6"):
-        unstuck()
-        return
+    # Unstuck: poll the *current* bind (default F6). Skip entirely when unbound.
+    unstuck_key = _bound_keybind_name(quick_menu_unstuck_key)
+    if unstuck_key:
+        if _edge_key(pc, unstuck_key, "key_f6"):
+            unstuck()
+            return
+    else:
+        STATE.key_f6 = False
 
     if not STATE.is_open:
         STATE.key_f7 = False
         return
 
-    if _edge_key(pc, "F7", "key_f7"):
-        close_panel()
+    toggle_key = _bound_keybind_name(quick_menu_toggle)
+    if toggle_key:
+        if _edge_key(pc, toggle_key, "key_f7"):
+            close_panel()
+    else:
+        STATE.key_f7 = False
 
 
 def _expire_toast() -> None:

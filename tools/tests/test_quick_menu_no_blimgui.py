@@ -6,7 +6,7 @@ import sys
 import types
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 PKG = ROOT / "mod_extracted" / "MattsSDKBoostingTools"
 
 _FORBIDDEN = ("blimgui", "blimgui_panel", "MattsSDKBoostingTools.blimgui_panel")
@@ -118,7 +118,57 @@ def test_quick_menu_source_and_load_without_blimgui():
     assert "Close F7" in qm_src
     assert "F6 unstuck" in qm_src
     assert "process_hotkeys" in qm_src
+    assert "_bound_keybind_name" in qm_src
+    assert ' _edge_key(pc, "F6", "key_f6")' not in qm_src
     assert "blimgui" not in sys.modules["MattsSDKBoostingTools.quick_menu"].__dict__
+
+
+def test_process_hotkeys_skips_unbound_f6_unstuck():
+    """Unbinding MSBT Quick Menu Unstuck must stop the tick poller from firing F6."""
+    _install_base_stubs()
+    stubs = {
+        "MattsSDKBoostingTools.backend_actions": {
+            "get_last_command": lambda: None,
+            "get_last_drop": lambda: None,
+            "get_drop_player_lock": lambda: {"enabled": False},
+            "set_drop_player_lock": lambda *a, **k: {"ok": True},
+            "repeat_last_drop": lambda *a, **k: {"ok": True},
+            "run_quick_menu_action": lambda *a, **k: {"ok": True},
+            "refresh_players": lambda: [],
+            "get_selected_player_index": lambda: None,
+            "get_selected_player_name": lambda: "",
+            "set_target_player": lambda *a, **k: {"ok": True},
+            "get_serial_delivery_progress": lambda: {"active": False},
+            "get_status": lambda: {},
+        },
+        "MattsSDKBoostingTools.inventory_capacity": {
+            "clamp_container_size": lambda value, default: int(value or default),
+            "load_inventory_settings": lambda: {},
+            "save_extra_settings": lambda **k: {},
+        },
+    }
+    module = _load_module("MattsSDKBoostingTools.quick_menu", "quick_menu.py", extra_stubs=stubs)
+
+    calls: list[str] = []
+    module.unstuck = lambda: calls.append("unstuck")
+    module.close_panel = lambda: calls.append("close")
+    module._key_down = lambda pc, name: name in ("F6", "F7")
+    module.get_pc = lambda: object()
+
+    # Unbound: poller must not treat hardcoded F6 as active.
+    module.quick_menu_unstuck_key.key = None
+    module.quick_menu_toggle.key = "F7"
+    module.STATE.is_open = False
+    module.STATE.key_f6 = False
+    module.STATE.key_f7 = False
+    module.process_hotkeys()
+    assert calls == []
+
+    # Bound again: F6 edge should fire unstuck even when menu is closed.
+    module.quick_menu_unstuck_key.key = "F6"
+    module.STATE.key_f6 = False
+    module.process_hotkeys()
+    assert calls == ["unstuck"]
 
 
 def test_quick_menu_modal_layers_and_blockers_are_consistent():
@@ -156,7 +206,7 @@ def test_quick_menu_modal_layers_and_blockers_are_consistent():
     assert module._button_layer(50, True, False) == module.MODAL_BUTTON_Z
     assert module._button_layer(50, False, True) == module.MODAL_BUTTON_Z
     source = (PKG / "quick_menu.py").read_text(encoding="utf-8")
-    assert source.count("factory.modal_blocker(root)") == 3
+    assert source.count("factory.modal_blocker(root)") == 5
 
 
 def test_external_bridge_does_not_import_blimgui_panel():
