@@ -206,6 +206,71 @@ def live_player_controllers() -> list[Any]:
     return _unique_live_objects(objs)
 
 
+def _is_local_player_controller(pc: Any) -> bool:
+    if pc is None:
+        return False
+    try:
+        local = get_pc()
+        if local is not None and pc is local:
+            return True
+    except Exception:
+        pass
+    for attr_name in ("IsLocalPlayerController", "IsPrimaryPlayer", "bIsLocalPlayerController"):
+        try:
+            attr = getattr(pc, attr_name, None)
+            if callable(attr) and bool(attr()):
+                return True
+            if attr is not None and not callable(attr) and bool(attr):
+                return True
+        except Exception:
+            continue
+    return False
+
+
+def filter_controllers_by_scope(controllers: list[Any], scope: str = "all") -> list[Any]:
+    """Filter live controllers by Local / All / Others (SQBT-inspired)."""
+    key = str(scope or "all").strip().lower()
+    if key in ("", "all", "everyone", "party"):
+        return list(controllers)
+    out: list[Any] = []
+    for pc in controllers:
+        is_local = _is_local_player_controller(pc)
+        if key == "local" and is_local:
+            out.append(pc)
+        elif key in ("others", "other", "remote") and not is_local:
+            out.append(pc)
+    return out
+
+
+def filter_pawns_by_scope(pawns: list[Any], scope: str = "all") -> list[Any]:
+    """Filter pawns whose owning controller matches Local / All / Others."""
+    key = str(scope or "all").strip().lower()
+    if key in ("", "all", "everyone", "party"):
+        return list(pawns)
+    local_pc = None
+    try:
+        local_pc = get_pc()
+    except Exception:
+        local_pc = None
+    local_pawn = pawn_for_controller(local_pc) if local_pc is not None else None
+    local_id = id(local_pawn) if local_pawn is not None else None
+    out: list[Any] = []
+    for pawn in pawns:
+        is_local = local_id is not None and id(pawn) == local_id
+        if not is_local:
+            # Secondary: controller ownership
+            try:
+                ctrl = getattr(pawn, "Controller", None)
+                is_local = _is_local_player_controller(ctrl)
+            except Exception:
+                pass
+        if key == "local" and is_local:
+            out.append(pawn)
+        elif key in ("others", "other", "remote") and not is_local:
+            out.append(pawn)
+    return out
+
+
 def _call0(obj: Any, name: str) -> Any | None:
     try:
         fn = getattr(obj, name, None)
@@ -1197,6 +1262,7 @@ def apply_movement_advanced_to_all_players(
     slide_jump_goal: float | None = None,
     sections: set[str] | None = None,
     reset_jump_defaults: bool = False,
+    scope: str = "all",
 ) -> str:
     if not _is_listen_host_safe():
         msg = "Client mode — movement apply skipped until you are host."
@@ -1224,8 +1290,8 @@ def apply_movement_advanced_to_all_players(
     if vault_cost is not None:
         vault_cost = max(0.0, min(500.0, float(vault_cost)))
 
-    controllers = live_player_controllers()
-    pawns = live_player_pawns()
+    controllers = filter_controllers_by_scope(live_player_controllers(), scope)
+    pawns = filter_pawns_by_scope(live_player_pawns(), scope)
     writes = 0
     touched = 0
     jump_writes = 0
@@ -1256,7 +1322,15 @@ def apply_movement_advanced_to_all_players(
         if pawn_writes:
             touched += 1; writes += pawn_writes
             jump_writes += pawn_jump_writes
-    msg = f"Applied movement to {len(pawns)} player pawn(s), {len(controllers)} controller(s): speed {speed_scale:.2f}x, walk {walk_speed:.0f}, JumpGoal {jump_goal:.0f}, JumpZ {jump_velocity:.0f}, jump count {jump_count}, gravity {gravity_scale:.2f}, step {max_step_height:.0f}, floor angle {walkable_floor_angle:.1f}, glide {glide_speed:.0f}/{glide_boost:.0f}, vault cost {'unchanged' if vault_cost is None else vault_cost}. Writes: {writes}; jump writes: {jump_writes}."
+    scope_key = str(scope or "all").strip().lower() or "all"
+    msg = (
+        f"Applied movement (scope={scope_key}) to {len(pawns)} player pawn(s), "
+        f"{len(controllers)} controller(s): speed {speed_scale:.2f}x, walk {walk_speed:.0f}, "
+        f"JumpGoal {jump_goal:.0f}, JumpZ {jump_velocity:.0f}, jump count {jump_count}, "
+        f"gravity {gravity_scale:.2f}, step {max_step_height:.0f}, floor angle {walkable_floor_angle:.1f}, "
+        f"glide {glide_speed:.0f}/{glide_boost:.0f}, vault cost {'unchanged' if vault_cost is None else vault_cost}. "
+        f"Writes: {writes}; jump writes: {jump_writes}."
+    )
     _log(msg)
     return msg
 

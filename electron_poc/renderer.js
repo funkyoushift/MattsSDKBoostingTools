@@ -115,6 +115,10 @@ const els = {
   devRefreshLogBtn: document.getElementById("devRefreshLogBtn"),
   devSpawnerOutput: document.getElementById("devSpawnerOutput"),
   devSpawnerWarning: document.getElementById("devSpawnerWarning"),
+  devSpawnerTimer: document.getElementById("devSpawnerTimer"),
+  devFavoriteStrip: document.getElementById("devFavoriteStrip"),
+  devAggroMode: document.getElementById("devAggroMode"),
+  devSpawnAnchor: document.getElementById("devSpawnAnchor"),
   electronAppCurrent: document.getElementById("electronAppCurrent"),
   electronAppInstaller: document.getElementById("electronAppInstaller"),
   electronAppLatest: document.getElementById("electronAppLatest"),
@@ -175,6 +179,7 @@ const els = {
   movementTimeDilation: document.getElementById("movementTimeDilation"),
   movementWalkSpeed: document.getElementById("movementWalkSpeed"),
   movementZeroVaultOnApply: document.getElementById("movementZeroVaultOnApply"),
+  movementScope: document.getElementById("movementScope"),
   rarityCommonPercent: document.getElementById("rarityCommonPercent"),
   rarityCommonValue: document.getElementById("rarityCommonValue"),
   rarityEpicPercent: document.getElementById("rarityEpicPercent"),
@@ -337,6 +342,33 @@ const els = {
   travelFavoriteSummary: document.getElementById("travelFavoriteSummary"),
   travelFavoriteTravelBtn: document.getElementById("travelFavoriteTravelBtn"),
   travelOutput: document.getElementById("travelOutput"),
+  locationBookmarkName: document.getElementById("locationBookmarkName"),
+  locationBookmarkList: document.getElementById("locationBookmarkList"),
+  locationBookmarkSummary: document.getElementById("locationBookmarkSummary"),
+  locationBookmarkSaveBtn: document.getElementById("locationBookmarkSaveBtn"),
+  locationBookmarkGoBtn: document.getElementById("locationBookmarkGoBtn"),
+  locationBookmarkDeleteBtn: document.getElementById("locationBookmarkDeleteBtn"),
+  locationBookmarkRefreshBtn: document.getElementById("locationBookmarkRefreshBtn"),
+  combatDamageDealt: document.getElementById("combatDamageDealt"),
+  combatDamageTaken: document.getElementById("combatDamageTaken"),
+  combatAmmoRegen: document.getElementById("combatAmmoRegen"),
+  combatRepairMax: document.getElementById("combatRepairMax"),
+  combatRepairCooldown: document.getElementById("combatRepairCooldown"),
+  combatScope: document.getElementById("combatScope"),
+  combatSticky: document.getElementById("combatSticky"),
+  combatApplyBtn: document.getElementById("combatApplyBtn"),
+  combatReapplyBtn: document.getElementById("combatReapplyBtn"),
+  combatResetBtn: document.getElementById("combatResetBtn"),
+  combatStatus: document.getElementById("combatStatus"),
+  combatOutput: document.getElementById("combatOutput"),
+  vehiclePresetSelect: document.getElementById("vehiclePresetSelect"),
+  vehicleScope: document.getElementById("vehicleScope"),
+  vehiclePresetApplyBtn: document.getElementById("vehiclePresetApplyBtn"),
+  vehicleCatalogSelect: document.getElementById("vehicleCatalogSelect"),
+  vehicleSpawnBtn: document.getElementById("vehicleSpawnBtn"),
+  vehicleCatalogRefreshBtn: document.getElementById("vehicleCatalogRefreshBtn"),
+  vehicleStatus: document.getElementById("vehicleStatus"),
+  vehicleOutput: document.getElementById("vehicleOutput"),
   travelShowAllStations: document.getElementById("travelShowAllStations"),
   travelStationBtn: document.getElementById("travelStationBtn"),
   travelStationList: document.getElementById("travelStationList"),
@@ -1828,6 +1860,7 @@ function movementPayload() {
     movement_dash_speed: getFloat(els.movementDashSpeed, 0, 50000, 2500),
     movement_zero_vault_on_apply: Boolean(els.movementZeroVaultOnApply && els.movementZeroVaultOnApply.checked),
     movement_time_dilation: getFloat(els.movementTimeDilation, 0.01, 64, 1),
+    movement_scope: getValue(els.movementScope) || "all",
     target_player: selectedTarget,
     infinite_jump_target: selectedTarget
   };
@@ -2680,8 +2713,178 @@ function applyBridgeStatusResult(result, options = {}) {
   updateSerialState();
   // Always pull rarity from the bridge so F7 live-apply moves Boosting sliders.
   syncBoostingRaritySlidersFromBridge(data);
+  updateAsdAutoclearTimer(data);
+  updateLocationBookmarksFromStatus(data);
+  updateVehicleCatalogFromStatus(data);
   if (!options.quiet) appendActivity(`Bridge online | players: ${playerCount} | selected: ${selected} | queue: ${queue}`);
   return data;
+}
+
+function updateAsdAutoclearTimer(data) {
+  if (!els.devSpawnerTimer) return;
+  const ac = data && data.asd_autoclear && typeof data.asd_autoclear === "object" ? data.asd_autoclear : null;
+  if (!ac || !ac.armed) {
+    setLine(els.devSpawnerTimer, "ASD autoclear: idle (non-blocking spawn poll is always on)", "ok");
+    return;
+  }
+  const secs = Number(ac.seconds_remaining);
+  const label = Number.isFinite(secs)
+    ? `ASD autoclear armed — clears in ~${secs.toFixed(1)}s`
+    : "ASD autoclear armed";
+  setLine(els.devSpawnerTimer, label, secs <= 5 ? "warning" : "ok");
+}
+
+function updateLocationBookmarksFromStatus(data) {
+  const rows = data && Array.isArray(data.location_bookmarks) ? data.location_bookmarks : null;
+  if (!rows || !els.locationBookmarkList) return;
+  const selected = getValue(els.locationBookmarkList);
+  els.locationBookmarkList.innerHTML = "";
+  rows.forEach((row) => {
+    const name = String(row.name || "").trim();
+    if (!name) return;
+    const opt = document.createElement("option");
+    opt.value = name;
+    opt.textContent = `${name}  (${Number(row.x).toFixed(0)}, ${Number(row.y).toFixed(0)}, ${Number(row.z).toFixed(0)})`;
+    els.locationBookmarkList.appendChild(opt);
+  });
+  if (selected) els.locationBookmarkList.value = selected;
+  setLine(els.locationBookmarkSummary, `${rows.length} XYZ bookmark(s)`, rows.length ? "ok" : "warning");
+}
+
+function updateVehicleCatalogFromStatus(data) {
+  if (!els.vehicleCatalogSelect) return;
+  const catalog = data && Array.isArray(data.vehicle_catalog) ? data.vehicle_catalog : null;
+  const presets = data && Array.isArray(data.vehicle_presets) ? data.vehicle_presets : null;
+  if (presets && els.vehiclePresetSelect) {
+    const current = getValue(els.vehiclePresetSelect);
+    els.vehiclePresetSelect.innerHTML = "";
+    presets.forEach((name) => {
+      const opt = document.createElement("option");
+      opt.value = name;
+      opt.textContent = name;
+      els.vehiclePresetSelect.appendChild(opt);
+    });
+    if (current) els.vehiclePresetSelect.value = current;
+  }
+  if (!catalog) return;
+  const selected = getValue(els.vehicleCatalogSelect);
+  els.vehicleCatalogSelect.innerHTML = "";
+  catalog.forEach((row) => {
+    const opt = document.createElement("option");
+    opt.value = String(row.id || "");
+    opt.textContent = `${row.label || row.id} (${row.category || "vehicle"})`;
+    els.vehicleCatalogSelect.appendChild(opt);
+  });
+  if (selected) els.vehicleCatalogSelect.value = selected;
+}
+
+function renderDevFavoriteStrip() {
+  if (!els.devFavoriteStrip) return;
+  const favorites = typeof devMyFavoritesMap === "function" ? devMyFavoritesMap() : {};
+  const keys = Object.keys(favorites).slice(0, 12);
+  els.devFavoriteStrip.innerHTML = "";
+  if (!keys.length) {
+    const note = document.createElement("span");
+    note.className = "muted-line";
+    note.textContent = "Favorite strip empty — star actors under My Favorites.";
+    els.devFavoriteStrip.appendChild(note);
+    return;
+  }
+  keys.forEach((actorName) => {
+    const entry = favorites[actorName] || {};
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = entry.label || actorName;
+    btn.title = actorName;
+    btn.addEventListener("click", async () => {
+      if (els.devAiName) els.devAiName.value = actorName;
+      if (els.devActorName) els.devActorName.value = actorName;
+      state.devSpawnerSelectedActor = actorName;
+      await runDevSpawnerAction("dev_spawner_spawnai");
+    });
+    els.devFavoriteStrip.appendChild(btn);
+  });
+}
+
+async function refreshLocationBookmarks() {
+  const result = await runAction("location_bookmark_list", {}, els.travelOutput, 15000);
+  const data = result && result.data ? result.data : result;
+  if (data && Array.isArray(data.bookmarks)) {
+    updateLocationBookmarksFromStatus({ location_bookmarks: data.bookmarks });
+  }
+  setLine(els.locationBookmarkSummary, resultMessage(result), actionSucceeded(result) ? "ok" : "warning");
+}
+
+async function saveLocationBookmark() {
+  const name = getValue(els.locationBookmarkName) || getValue(els.locationBookmarkList);
+  if (!name) {
+    setLine(els.locationBookmarkSummary, "Enter a bookmark name first.", "warning");
+    return;
+  }
+  const result = await runAction("location_bookmark_save", { bookmark_name: name }, els.travelOutput, 15000);
+  const data = result && result.data ? result.data : result;
+  if (data && Array.isArray(data.bookmarks)) {
+    updateLocationBookmarksFromStatus({ location_bookmarks: data.bookmarks });
+  }
+  setLine(els.locationBookmarkSummary, resultMessage(result), actionSucceeded(result) ? "ok" : "warning");
+}
+
+async function goLocationBookmark() {
+  const name = getValue(els.locationBookmarkList) || getValue(els.locationBookmarkName);
+  if (!name) {
+    setLine(els.locationBookmarkSummary, "Select a bookmark first.", "warning");
+    return;
+  }
+  const result = await runAction("location_bookmark_go", { bookmark_name: name }, els.travelOutput, 15000);
+  setLine(els.locationBookmarkSummary, resultMessage(result), actionSucceeded(result) ? "ok" : "warning");
+}
+
+async function deleteLocationBookmark() {
+  const name = getValue(els.locationBookmarkList) || getValue(els.locationBookmarkName);
+  if (!name) {
+    setLine(els.locationBookmarkSummary, "Select a bookmark first.", "warning");
+    return;
+  }
+  const result = await runAction("location_bookmark_delete", { bookmark_name: name }, els.travelOutput, 15000);
+  const data = result && result.data ? result.data : result;
+  if (data && Array.isArray(data.bookmarks)) {
+    updateLocationBookmarksFromStatus({ location_bookmarks: data.bookmarks });
+  }
+  setLine(els.locationBookmarkSummary, resultMessage(result), actionSucceeded(result) ? "ok" : "warning");
+}
+
+function combatPayload() {
+  return {
+    damage_dealt: getFloat(els.combatDamageDealt, 0.1, 1000000, 1),
+    damage_taken: getFloat(els.combatDamageTaken, 0, 1000000, 1),
+    ammo_regen: getFloat(els.combatAmmoRegen, 0, 1000, 0),
+    repair_kit_max: getFloat(els.combatRepairMax, 0, 99, 3),
+    repair_kit_cooldown: getFloat(els.combatRepairCooldown, 0, 600, 20),
+    scope: getValue(els.combatScope) || "local",
+    sticky: Boolean(els.combatSticky && els.combatSticky.checked)
+  };
+}
+
+async function runCombatAction(action, extra = {}) {
+  const payload = { ...combatPayload(), ...extra };
+  setLine(els.combatStatus, `Sending ${action}...`, "warning");
+  const result = await runAction(action, payload, els.combatOutput, 20000);
+  setLine(els.combatStatus, resultMessage(result), actionSucceeded(result) ? "ok" : "warning");
+  return result;
+}
+
+async function runVehicleAction(action, payload = {}) {
+  setLine(els.vehicleStatus, `Sending ${action}...`, "warning");
+  const result = await runAction(action, payload, els.vehicleOutput, 20000);
+  setLine(els.vehicleStatus, resultMessage(result), actionSucceeded(result) ? "ok" : "warning");
+  const data = result && result.data ? result.data : result;
+  if (data && (data.catalog || data.presets)) {
+    updateVehicleCatalogFromStatus({
+      vehicle_catalog: data.catalog,
+      vehicle_presets: data.presets
+    });
+  }
+  return result;
 }
 
 async function bridgeStatus(options = {}) {
@@ -6661,6 +6864,7 @@ function renderDevMyFavorites(query, rawQuery) {
     favoriteCount ? "ok" : "warning"
   );
   renderDevMyFavoriteControls();
+  renderDevFavoriteStrip();
 }
 
 function renderDevActors() {
@@ -7001,7 +7205,11 @@ function devSpawnerPayload() {
     dev_logo_include_non_generated: Boolean(els.devLogoIncludeNonGenerated && els.devLogoIncludeNonGenerated.checked),
     dev_logo_scale: getFloat(els.devLogoScale, 0.01, 20, 0.45),
     dev_logo_spacing: getFloat(els.devLogoSpacing, 1, 1000, 70),
-    dev_logo_text: normalizedDevLogoText()
+    dev_logo_text: normalizedDevLogoText(),
+    aggro_mode: getValue(els.devAggroMode) || "passive",
+    spawn_anchor: getValue(els.devSpawnAnchor) || "local",
+    mode: getValue(els.devAggroMode) || "passive",
+    anchor: getValue(els.devSpawnAnchor) || "local"
   };
 }
 
@@ -7157,7 +7365,15 @@ async function refreshDevSpawnerLogTail() {
 }
 
 async function runDevSpawnerAction(action) {
-  if (!devSpawnerConfirm()) {
+  const lightActions = new Set([
+    "dev_spawner_set_aggro",
+    "dev_spawner_set_anchor",
+    "dev_spawner_reaggro",
+    "dev_spawner_anchor_info",
+    "dev_spawner_status",
+    "dev_spawner_clear",
+  ]);
+  if (!lightActions.has(action) && !devSpawnerConfirm()) {
     setOutput(els.devSpawnerOutput, "Dev Spawner action cancelled.");
     return;
   }
@@ -8495,6 +8711,58 @@ function wireEvents() {
   }
   if (els.travelFavoriteSaveBtn) {
     els.travelFavoriteSaveBtn.addEventListener("click", saveSelectedTravelFavoriteMeta);
+  }
+  if (els.locationBookmarkSaveBtn) {
+    els.locationBookmarkSaveBtn.addEventListener("click", () => void saveLocationBookmark());
+  }
+  if (els.locationBookmarkGoBtn) {
+    els.locationBookmarkGoBtn.addEventListener("click", () => void goLocationBookmark());
+  }
+  if (els.locationBookmarkDeleteBtn) {
+    els.locationBookmarkDeleteBtn.addEventListener("click", () => void deleteLocationBookmark());
+  }
+  if (els.locationBookmarkRefreshBtn) {
+    els.locationBookmarkRefreshBtn.addEventListener("click", () => void refreshLocationBookmarks());
+  }
+  if (els.locationBookmarkList) {
+    els.locationBookmarkList.addEventListener("change", () => {
+      const name = getValue(els.locationBookmarkList);
+      if (name && els.locationBookmarkName) els.locationBookmarkName.value = name;
+    });
+  }
+  if (els.devAggroMode) {
+    els.devAggroMode.addEventListener("change", () => {
+      void runDevSpawnerAction("dev_spawner_set_aggro");
+    });
+  }
+  if (els.devSpawnAnchor) {
+    els.devSpawnAnchor.addEventListener("change", () => {
+      void runDevSpawnerAction("dev_spawner_set_anchor");
+    });
+  }
+  if (els.combatApplyBtn) {
+    els.combatApplyBtn.addEventListener("click", () => void runCombatAction("combat_tuning_apply"));
+  }
+  if (els.combatReapplyBtn) {
+    els.combatReapplyBtn.addEventListener("click", () => void runCombatAction("combat_tuning_reapply", {}));
+  }
+  if (els.combatResetBtn) {
+    els.combatResetBtn.addEventListener("click", () => void runCombatAction("combat_tuning_reset"));
+  }
+  if (els.vehiclePresetApplyBtn) {
+    els.vehiclePresetApplyBtn.addEventListener("click", () => void runVehicleAction("vehicle_preset_apply", {
+      vehicle_preset: getValue(els.vehiclePresetSelect) || "boost",
+      scope: getValue(els.vehicleScope) || "local"
+    }));
+  }
+  if (els.vehicleSpawnBtn) {
+    els.vehicleSpawnBtn.addEventListener("click", () => void runVehicleAction("vehicle_spawn", {
+      vehicle_id: getValue(els.vehicleCatalogSelect),
+      scope: getValue(els.vehicleScope) || "local"
+    }));
+  }
+  if (els.vehicleCatalogRefreshBtn) {
+    els.vehicleCatalogRefreshBtn.addEventListener("click", () => void runVehicleAction("vehicle_catalog", {}));
   }
 
   document.getElementById("refreshActivityBtn").addEventListener("click", bridgeStatus);

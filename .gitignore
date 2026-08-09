@@ -96,3 +96,7 @@ mobile_controller/.gradle/
 mobile_controller/**/build/
 mobile_controller/debug-signing/*.keystore
 !mobile_controller/debug-signing/*.keystore.b64
+
+# SQBT vs MSBT compare extract (local only)
+_compare_sqbt/
+

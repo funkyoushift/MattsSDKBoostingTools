@@ -2,14 +2,16 @@
 """Map and travel-station helpers for Matt's SDK Boosting Tools.
 
 This intentionally keeps only the travel pieces needed by the BLImGui menu.
+Also includes XYZ location bookmarks (save / teleport) for Electron + bridge.
 """
 from __future__ import annotations
 
 import json
 import pkgutil
+from pathlib import Path
 from typing import Any
 
-from mods_base import ENGINE, get_pc
+from mods_base import ENGINE, SETTINGS_DIR, get_pc
 from unrealsdk import find_class, logging
 
 _PREFIX = "[Matts SDK Boosting Tools | Travel]"
@@ -495,3 +497,145 @@ def travel_to_station(station: str) -> str:
     _close_quick_menu_before_travel()
     _exec_console(f"gbx.servertraveltostation {station}")
     return f"Requested travel to station {station}."
+
+
+# ---------------------------------------------------------------------------
+# XYZ location bookmarks (in-map teleport; separate from map/station travel)
+# ---------------------------------------------------------------------------
+
+_BOOKMARKS_PATH = Path(SETTINGS_DIR) / "msbt_location_bookmarks.json"
+_location_bookmarks: dict[str, list[float]] = {}
+
+
+def _xyz(vector: Any) -> list[float] | None:
+    values: list[float] = []
+    for upper, lower in (("X", "x"), ("Y", "y"), ("Z", "z")):
+        try:
+            value = getattr(vector, upper)
+        except Exception:
+            try:
+                value = getattr(vector, lower)
+            except Exception:
+                return None
+        values.append(float(value))
+    return values
+
+
+def _local_pawn() -> Any | None:
+    pc = get_pc()
+    if pc is None:
+        return None
+    for attr in ("Pawn", "AcknowledgedPawn", "Character", "ControlledPawn"):
+        try:
+            pawn = getattr(pc, attr, None)
+            if pawn is not None:
+                return pawn
+        except Exception:
+            continue
+    for meth in ("GetPawn", "K2_GetPawn", "GetCharacter"):
+        try:
+            fn = getattr(pc, meth, None)
+            if callable(fn):
+                pawn = fn()
+                if pawn is not None:
+                    return pawn
+        except Exception:
+            continue
+    return None
+
+
+def _load_location_bookmarks() -> None:
+    global _location_bookmarks
+    try:
+        data = json.loads(_BOOKMARKS_PATH.read_text(encoding="utf-8"))
+    except Exception:
+        data = {}
+    if not isinstance(data, dict):
+        data = {}
+    _location_bookmarks = {
+        str(name): [float(v) for v in values[:3]]
+        for name, values in data.items()
+        if isinstance(values, list) and len(values) >= 3
+    }
+
+
+def _save_location_bookmarks_file() -> None:
+    try:
+        _BOOKMARKS_PATH.parent.mkdir(parents=True, exist_ok=True)
+        _BOOKMARKS_PATH.write_text(json.dumps(_location_bookmarks, indent=2) + "\n", encoding="utf-8")
+    except OSError as exc:
+        _log(f"Could not save location bookmarks: {exc}")
+
+
+def _make_vector(values: list[float]) -> Any | None:
+    try:
+        library = find_class("KismetMathLibrary").ClassDefaultObject
+        return library.MakeVector(float(values[0]), float(values[1]), float(values[2]))
+    except Exception:
+        return None
+
+
+def list_location_bookmarks() -> list[dict[str, Any]]:
+    if not _location_bookmarks:
+        _load_location_bookmarks()
+    return [
+        {"name": name, "x": vals[0], "y": vals[1], "z": vals[2]}
+        for name, vals in sorted(_location_bookmarks.items())
+    ]
+
+
+def save_location_bookmark(name: str) -> str:
+    label = str(name or "").strip()
+    if not label:
+        raise RuntimeError("Bookmark name is required.")
+    actor = _local_pawn()
+    if actor is None:
+        raise RuntimeError("No local pawn — load into a character first.")
+    try:
+        values = _xyz(actor.K2_GetActorLocation())
+    except Exception:
+        values = None
+    if values is None:
+        raise RuntimeError("Could not read player location.")
+    if not _location_bookmarks:
+        _load_location_bookmarks()
+    _location_bookmarks[label] = values
+    _save_location_bookmarks_file()
+    _log(f"Saved location bookmark {label}: {values}")
+    return f"Saved location bookmark '{label}' at {values}."
+
+
+def go_location_bookmark(name: str) -> str:
+    label = str(name or "").strip()
+    if not _location_bookmarks:
+        _load_location_bookmarks()
+    values = _location_bookmarks.get(label)
+    actor = _local_pawn()
+    if actor is None or values is None:
+        raise RuntimeError(f"Location bookmark unavailable: {label or '(empty)'}")
+    location = _make_vector(values)
+    if location is None:
+        raise RuntimeError("This SDK build could not construct a location vector.")
+    try:
+        rotation = actor.K2_GetActorRotation()
+        ok = bool(actor.K2_TeleportTo(location, rotation))
+    except Exception as exc:
+        raise RuntimeError(f"Teleport to bookmark failed: {exc!r}") from exc
+    if not ok:
+        raise RuntimeError(f"Teleport to bookmark '{label}' returned false.")
+    _log(f"Teleported to location bookmark {label}.")
+    return f"Teleported to location bookmark '{label}'."
+
+
+def delete_location_bookmark(name: str) -> str:
+    label = str(name or "").strip()
+    if not _location_bookmarks:
+        _load_location_bookmarks()
+    if label not in _location_bookmarks:
+        raise RuntimeError(f"No location bookmark named '{label}'.")
+    del _location_bookmarks[label]
+    _save_location_bookmarks_file()
+    return f"Deleted location bookmark '{label}'."
+
+
+_load_location_bookmarks()

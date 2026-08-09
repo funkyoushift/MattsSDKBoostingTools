@@ -65,7 +65,36 @@ from .party_helpers import (
 )
 from .serial_converter import human_to_serial as _human_to_serial, serial_to_human as _serial_to_human
 from .shinies import DEFAULT_ITEM_LEVEL as _SHINY_DEFAULT_LEVEL, drop_all_shinies
-from .travel import _exec_console, travel_to_map as _travel_to_map, travel_to_station as _travel_to_station
+from .travel import (
+    _exec_console,
+    delete_location_bookmark as _delete_location_bookmark,
+    go_location_bookmark as _go_location_bookmark,
+    list_location_bookmarks as _list_location_bookmarks,
+    save_location_bookmark as _save_location_bookmark,
+    travel_to_map as _travel_to_map,
+    travel_to_station as _travel_to_station,
+)
+from .combat_tuning import (
+    apply_combat_tuning as _apply_combat_tuning,
+    reapply_combat_tuning as _reapply_combat_tuning,
+    reset_combat_tuning as _reset_combat_tuning,
+)
+from .spawn_helpers import (
+    apply_aggro_to_tracked as _apply_aggro_to_tracked,
+    get_aggro_mode as _get_aggro_mode,
+    get_spawn_anchor as _get_spawn_anchor,
+    note_spawned_actors as _note_spawned_actors,
+    reaggro_tracked as _reaggro_tracked,
+    resolve_spawn_anchor_actor as _resolve_spawn_anchor_actor,
+    set_aggro_mode as _set_aggro_mode,
+    set_spawn_anchor as _set_spawn_anchor,
+)
+from .vehicle_tuning import (
+    apply_vehicle_preset as _apply_vehicle_preset,
+    list_vehicle_catalog as _list_vehicle_catalog,
+    list_vehicle_presets as _list_vehicle_presets,
+    spawn_personal_vehicle as _spawn_personal_vehicle,
+)
 
 CURRENCY_KINDS = ["cash", "eridium", "vaultcard1", "vaultcard2", "vaultcard3", "vaultcard4"]
 EXP_TRACKS = [
@@ -123,9 +152,71 @@ ENABLE_CHALLENGE_API_PROBE = os.environ.get("MSBT_DEBUG_PROBES", "").strip().low
     "on",
 )
 
+# Double-confirm gate for complete_challenges_all (behavior only; no GPL imports).
+_CHALLENGE_CONFIRM_WINDOW_S = 10.0
+_challenge_confirm_until = 0.0
+_challenge_confirm_sig = ""
+
 
 def challenge_api_probe_enabled() -> bool:
     return bool(ENABLE_CHALLENGE_API_PROBE)
+
+
+def _challenge_roster_signature() -> str:
+    """Cancel pending confirm if lobby roster / target set changes."""
+    try:
+        players = _list_party_players()
+        roster = ",".join(f"{idx}:{name}" for idx, name in players)
+    except Exception:
+        roster = ""
+    return f"{roster}|sel={_selected_player_index}|{_selected_player_name}"
+
+
+def _challenge_confirm_arm() -> dict[str, Any]:
+    global _challenge_confirm_until, _challenge_confirm_sig
+    _challenge_confirm_until = time.monotonic() + float(_CHALLENGE_CONFIRM_WINDOW_S)
+    _challenge_confirm_sig = _challenge_roster_signature()
+    msg = (
+        f"Confirm required: press Complete All Challenges again within "
+        f"{int(_CHALLENGE_CONFIRM_WINDOW_S)}s to start. "
+        "Host authority recommended; this queues every catalog challenge."
+    )
+    _challenge_set_status(msg)
+    return {
+        "ok": False,
+        "needs_confirm": True,
+        "message": msg,
+        "confirm_window_s": _CHALLENGE_CONFIRM_WINDOW_S,
+    }
+
+
+def _challenge_confirm_clear() -> None:
+    global _challenge_confirm_until, _challenge_confirm_sig
+    _challenge_confirm_until = 0.0
+    _challenge_confirm_sig = ""
+
+
+def _challenge_confirm_ready(*, force: bool = False) -> tuple[bool, dict[str, Any] | None]:
+    """Return (ready_to_run, early_response_or_None)."""
+    if force:
+        _challenge_confirm_clear()
+        return True, None
+    now = time.monotonic()
+    sig = _challenge_roster_signature()
+    if _challenge_confirm_until <= 0.0 or now > float(_challenge_confirm_until):
+        return False, _challenge_confirm_arm()
+    if sig != _challenge_confirm_sig:
+        _challenge_confirm_clear()
+        return False, {
+            "ok": False,
+            "needs_confirm": True,
+            "message": (
+                "Challenge confirm cancelled — party roster/target changed. "
+                "Press Complete All Challenges twice again to confirm."
+            ),
+        }
+    _challenge_confirm_clear()
+    return True, None
 
 
 def _load_rarity_weights_from_settings() -> dict[str, float]:
@@ -1309,6 +1400,14 @@ def run_quick_menu_action(
         result = travel_to_map(payload.get("travel_map") or payload.get("map"))
     elif key == "travel_to_station":
         result = travel_to_station(payload.get("travel_station") or payload.get("station"))
+    elif key == "location_bookmark_save":
+        result = location_bookmark_save(payload.get("bookmark_name") or payload.get("name"))
+    elif key == "location_bookmark_go":
+        result = location_bookmark_go(payload.get("bookmark_name") or payload.get("name"))
+    elif key == "location_bookmark_list":
+        result = location_bookmark_list()
+    elif key == "location_bookmark_delete":
+        result = location_bookmark_delete(payload.get("bookmark_name") or payload.get("name"))
     elif key == "kick_player":
         result = kick_selected_player()
         needs_player = True
@@ -1386,6 +1485,32 @@ def run_quick_menu_action(
     elif key == "movement_teleport_to_slot":
         result = movement_teleport_selected_to_slot(payload.get("slot", 0))
         needs_player = True
+    elif key == "movement_teleport_selected_to_me":
+        result = movement_teleport_selected_to_me()
+        needs_player = True
+    elif key == "movement_teleport_me_to_selected":
+        result = movement_teleport_me_to_selected()
+        needs_player = True
+    elif key == "movement_teleport_all_to_me":
+        result = movement_teleport_all_to_me()
+    elif key == "combat_tuning_apply":
+        result = combat_tuning_apply(payload)
+    elif key == "combat_tuning_reapply":
+        result = combat_tuning_reapply()
+    elif key == "combat_tuning_reset":
+        result = combat_tuning_reset(payload.get("scope") or "local")
+    elif key == "vehicle_preset_apply":
+        result = vehicle_preset_apply(
+            payload.get("vehicle_preset") or payload.get("preset") or payload.get("name"),
+            payload.get("scope") or payload.get("vehicle_scope") or "local",
+        )
+    elif key == "vehicle_spawn":
+        result = vehicle_spawn(
+            payload.get("vehicle_id") or payload.get("name") or payload.get("alias"),
+            payload.get("scope") or payload.get("vehicle_scope") or "local",
+        )
+    elif key == "vehicle_catalog":
+        result = vehicle_catalog()
     elif key == "rarity_apply":
         result = rarity_apply(payload)
     elif key == "rarity_reset":
@@ -1476,6 +1601,15 @@ def get_status() -> dict[str, Any]:
         "diagnostics": _sdk_diagnostics(),
         "rarity_weights": get_rarity_weights(),
         "rarity_revision": get_rarity_revision(),
+        "asd_autoclear": _asd_autoclear_status(),
+        "spawn_aggro_mode": _get_aggro_mode(),
+        "spawn_anchor": _get_spawn_anchor(),
+        "location_bookmarks": _list_location_bookmarks(),
+        "vehicle_presets": _list_vehicle_presets(),
+        "vehicle_catalog": _list_vehicle_catalog(),
+        "challenge_confirm_pending": bool(
+            _challenge_confirm_until > 0.0 and time.monotonic() <= float(_challenge_confirm_until)
+        ),
     }
 
 
@@ -2155,10 +2289,20 @@ def _load_challenge_catalog() -> list[tuple[str, int]]:
     return list(rows)
 
 
-def complete_challenges_all() -> dict[str, Any]:
-    """Queue every catalog challenge grant for live players (hidden / console tool)."""
+def complete_challenges_all(payload: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Queue every catalog challenge grant for live players (hidden / console tool).
+
+    Requires a double-confirm within 10s unless payload.confirm / force is set
+    (console path can pass force=True after an intentional second command).
+    """
     global _challenge_queue, _challenge_targets, _challenge_next_at, _challenge_running, _challenge_total_steps
     global _challenge_capped_grants
+    payload = payload or {}
+    force = bool(payload.get("confirm") or payload.get("force") or payload.get("confirmed"))
+    # Console second-press convenience: if already armed, treat as confirm.
+    ready, early = _challenge_confirm_ready(force=force)
+    if not ready:
+        return early or {"ok": False, "message": "Challenge confirm required.", "needs_confirm": True}
     if _challenge_running or _challenge_queue:
         remaining = len(_challenge_queue)
         _challenge_set_status(
@@ -2335,6 +2479,31 @@ def spawn_itempool(pool_name: object, count: object, level: object) -> dict[str,
 
 def run_dev_spawner_action(action: str, payload: dict[str, Any] | None = None) -> dict[str, Any]:
     payload = dict(payload or {})
+    # Non-ASD helpers (aggro / anchor) — handled before console command mapping.
+    if action == "dev_spawner_set_aggro":
+        msg = _set_aggro_mode(str(payload.get("aggro_mode") or payload.get("mode") or "passive"))
+        return {"ok": True, "message": msg, "aggro_mode": _get_aggro_mode()}
+    if action == "dev_spawner_set_anchor":
+        msg = _set_spawn_anchor(str(payload.get("spawn_anchor") or payload.get("anchor") or "local"))
+        return {"ok": True, "message": msg, "spawn_anchor": _get_spawn_anchor()}
+    if action == "dev_spawner_reaggro":
+        mode = payload.get("aggro_mode") or payload.get("mode")
+        if mode:
+            _set_aggro_mode(str(mode))
+        _note_spawned_actors(None)
+        msg = _reaggro_tracked() if not mode else _apply_aggro_to_tracked(mode=str(mode))
+        return {"ok": True, "message": msg, "aggro_mode": _get_aggro_mode()}
+    if action == "dev_spawner_anchor_info":
+        actor, label = _resolve_spawn_anchor_actor()
+        name = str(getattr(actor, "Name", "") or "") if actor is not None else ""
+        return {
+            "ok": True,
+            "message": f"Spawn anchor={_get_spawn_anchor()} resolved={label} actor={name or 'none'}",
+            "spawn_anchor": _get_spawn_anchor(),
+            "resolved": label,
+            "actor": name,
+        }
+
     direct_dev_spawner_result: dict[str, Any] | None = None
     try:
         if action == "dev_spawner_status":
@@ -2553,6 +2722,14 @@ def run_dev_spawner_action(action: str, payload: dict[str, Any] | None = None) -
             "dev_spawner_barrel_logo",
         ) and result.get("ok"):
             _asd_note_spawn_for_autoclear()
+            try:
+                _note_spawned_actors(None)
+                if _get_aggro_mode() not in ("passive", "none", "off"):
+                    aggro_msg = _apply_aggro_to_tracked()
+                    prev = str(result.get("message") or "")
+                    result["message"] = f"{prev} | {aggro_msg}".strip(" |")
+            except Exception:
+                pass
 
         if result.get("ok") and action in (
             "dev_spawner_spawnai",
@@ -2623,6 +2800,52 @@ def travel_to_station(station_name: object) -> dict[str, Any]:
         return {"ok": True, "message": msg}
     except Exception as exc:
         return {"ok": False, "message": f"Travel to station failed: {exc!r}"}
+
+
+def location_bookmark_save(name: object) -> dict[str, Any]:
+    try:
+        msg = _save_location_bookmark(str(name or "").strip())
+        return {"ok": True, "message": msg, "bookmarks": _list_location_bookmarks()}
+    except Exception as exc:
+        return {"ok": False, "message": f"Save location bookmark failed: {exc!r}"}
+
+
+def location_bookmark_go(name: object) -> dict[str, Any]:
+    try:
+        msg = _go_location_bookmark(str(name or "").strip())
+        return {"ok": True, "message": msg}
+    except Exception as exc:
+        return {"ok": False, "message": f"Go location bookmark failed: {exc!r}"}
+
+
+def location_bookmark_list() -> dict[str, Any]:
+    try:
+        rows = _list_location_bookmarks()
+        return {"ok": True, "message": f"{len(rows)} location bookmark(s).", "bookmarks": rows}
+    except Exception as exc:
+        return {"ok": False, "message": f"List location bookmarks failed: {exc!r}"}
+
+
+def location_bookmark_delete(name: object) -> dict[str, Any]:
+    try:
+        msg = _delete_location_bookmark(str(name or "").strip())
+        return {"ok": True, "message": msg, "bookmarks": _list_location_bookmarks()}
+    except Exception as exc:
+        return {"ok": False, "message": f"Delete location bookmark failed: {exc!r}"}
+
+
+def _asd_autoclear_status() -> dict[str, Any]:
+    now = time.monotonic()
+    armed = bool(_asd_batch_armed)
+    due = float(_asd_batch_clear_due or 0.0)
+    remaining = max(0.0, due - now) if armed and due > 0.0 else 0.0
+    return {
+        "armed": armed,
+        "window_s": float(_ASD_BATCH_WINDOW_S),
+        "clear_due_at": due if armed else 0.0,
+        "seconds_remaining": round(remaining, 1),
+        "batch_started_at": float(_asd_batch_start or 0.0) if armed else 0.0,
+    }
 
 
 def movement_delete_ground_items() -> dict[str, Any]:
@@ -2736,6 +2959,7 @@ def _movement_apply_values(
     double_jump_goal: float | None = 225.0,
     slide_jump_goal: float | None = 198.0,
     reset_jump_defaults: bool = False,
+    scope: str = "all",
 ) -> dict[str, Any]:
     try:
         msg = apply_movement_advanced_to_all_players(
@@ -2760,6 +2984,7 @@ def _movement_apply_values(
             slide_jump_goal=slide_jump_goal,
             sections={"speed", "jump", "gravity", "wall", "glide", "vault", "jump_count"},
             reset_jump_defaults=reset_jump_defaults,
+            scope=scope,
         )
         return {"ok": True, "message": msg}
     except Exception as exc:
@@ -2772,6 +2997,7 @@ def movement_apply_all(payload: dict[str, Any] | None = None) -> dict[str, Any]:
         jump_goal = _movement_float(payload.get("movement_jump_height"), 198.0)
         floor_angle = _movement_float(payload.get("movement_floor_angle"), 44.76508331298828)
         individual = _truthy(payload.get("movement_individual_jump_goals"))
+        scope = str(payload.get("movement_scope") or payload.get("scope") or "all").strip().lower() or "all"
         return _movement_apply_values(
             speed_scale=_movement_float(payload.get("movement_speed_scale"), 1.0),
             walk_speed=_movement_float(payload.get("movement_walk_speed"), 600.0),
@@ -2791,6 +3017,7 @@ def movement_apply_all(payload: dict[str, Any] | None = None) -> dict[str, Any]:
             glide_air_control=_movement_float(payload.get("movement_glide_air_control"), 0.6000000238418579),
             dash_speed=_movement_float(payload.get("movement_dash_speed"), 2500.0),
             vault_cost=0.0 if _truthy(payload.get("movement_zero_vault_on_apply")) else None,
+            scope=scope,
         )
     except Exception as exc:
         return {"ok": False, "message": f"Movement values must be numeric: {exc!r}"}
@@ -2904,6 +3131,150 @@ def movement_teleport_selected_to_slot(slot: object) -> dict[str, Any]:
         return {"ok": True, "message": f"{msg} {src_name} -> P{slot_idx + 1}."}
     except Exception as exc:
         return {"ok": False, "message": f"Teleport selected player failed: {exc!r}"}
+
+
+def _local_party_index() -> int | None:
+    host = _host_player_index_value()
+    if host is not None:
+        return int(host)
+    try:
+        players = refresh_players()
+        if players:
+            return int(players[0].get("index", 0))
+    except Exception:
+        pass
+    return 0
+
+
+def movement_teleport_selected_to_me() -> dict[str, Any]:
+    """Teleport selected party player to local/host pawn."""
+    src_idx = get_selected_player_index()
+    me_idx = _local_party_index()
+    if src_idx is None:
+        return {"ok": False, "message": "No selected player to teleport."}
+    if me_idx is None:
+        return {"ok": False, "message": "Local player index unavailable."}
+    if int(src_idx) == int(me_idx):
+        return {"ok": False, "message": "Selected player is already you."}
+    try:
+        src = _pawn_for_party_index(src_idx)
+        dst = _pawn_for_party_index(me_idx)
+        if src is None or dst is None:
+            return {"ok": False, "message": "Teleport failed: missing pawn."}
+        msg = teleport_pawn_to_pawn(src, dst)
+        return {"ok": True, "message": f"{msg} Selected -> me."}
+    except Exception as exc:
+        return {"ok": False, "message": f"Teleport selected to me failed: {exc!r}"}
+
+
+def movement_teleport_me_to_selected() -> dict[str, Any]:
+    """Teleport local/host pawn to selected party player."""
+    dst_idx = get_selected_player_index()
+    me_idx = _local_party_index()
+    if dst_idx is None:
+        return {"ok": False, "message": "No selected player destination."}
+    if me_idx is None:
+        return {"ok": False, "message": "Local player index unavailable."}
+    if int(dst_idx) == int(me_idx):
+        return {"ok": False, "message": "Already at selected player."}
+    try:
+        src = _pawn_for_party_index(me_idx)
+        dst = _pawn_for_party_index(dst_idx)
+        if src is None or dst is None:
+            return {"ok": False, "message": "Teleport failed: missing pawn."}
+        msg = teleport_pawn_to_pawn(src, dst)
+        return {"ok": True, "message": f"{msg} Me -> selected."}
+    except Exception as exc:
+        return {"ok": False, "message": f"Teleport me to selected failed: {exc!r}"}
+
+
+def movement_teleport_all_to_me() -> dict[str, Any]:
+    """Teleport every other live party pawn to local/host."""
+    me_idx = _local_party_index()
+    if me_idx is None:
+        return {"ok": False, "message": "Local player index unavailable."}
+    try:
+        dst = _pawn_for_party_index(me_idx)
+        if dst is None:
+            return {"ok": False, "message": "Local pawn not found."}
+        players = refresh_players()
+        ok_n = 0
+        fail_n = 0
+        for row in players:
+            try:
+                idx = int(row.get("index"))
+            except Exception:
+                continue
+            if idx == int(me_idx):
+                continue
+            src = _pawn_for_party_index(idx)
+            if src is None:
+                fail_n += 1
+                continue
+            try:
+                teleport_pawn_to_pawn(src, dst)
+                ok_n += 1
+            except Exception:
+                fail_n += 1
+        return {"ok": True, "message": f"Teleported {ok_n} player(s) to you (miss={fail_n})."}
+    except Exception as exc:
+        return {"ok": False, "message": f"Teleport all to me failed: {exc!r}"}
+
+
+def combat_tuning_apply(payload: dict[str, Any] | None = None) -> dict[str, Any]:
+    try:
+        msg = _apply_combat_tuning(payload or {})
+        return {"ok": True, "message": msg}
+    except Exception as exc:
+        return {"ok": False, "message": f"Combat tuning apply failed: {exc!r}"}
+
+
+def combat_tuning_reapply() -> dict[str, Any]:
+    try:
+        msg = _reapply_combat_tuning()
+        return {"ok": True, "message": msg}
+    except Exception as exc:
+        return {"ok": False, "message": f"Combat tuning reapply failed: {exc!r}"}
+
+
+def combat_tuning_reset(scope: object = "local") -> dict[str, Any]:
+    try:
+        msg = _reset_combat_tuning(str(scope or "local"))
+        return {"ok": True, "message": msg}
+    except Exception as exc:
+        return {"ok": False, "message": f"Combat tuning reset failed: {exc!r}"}
+
+
+def vehicle_preset_apply(name: object, scope: object = "local") -> dict[str, Any]:
+    try:
+        msg = _apply_vehicle_preset(str(name or ""), scope=str(scope or "local"))
+        ok = "Unknown vehicle preset" not in msg
+        return {"ok": ok, "message": msg}
+    except Exception as exc:
+        return {"ok": False, "message": f"Vehicle preset failed: {exc!r}"}
+
+
+def vehicle_spawn(name: object, scope: object = "local") -> dict[str, Any]:
+    try:
+        msg = _spawn_personal_vehicle(str(name or ""), scope=str(scope or "local"))
+        ok = "failed" not in msg.lower() or "requested" in msg.lower()
+        return {"ok": ok, "message": msg}
+    except Exception as exc:
+        return {"ok": False, "message": f"Vehicle spawn failed: {exc!r}"}
+
+
+def vehicle_catalog() -> dict[str, Any]:
+    try:
+        rows = _list_vehicle_catalog()
+        presets = _list_vehicle_presets()
+        return {
+            "ok": True,
+            "message": f"{len(rows)} vehicle(s), {len(presets)} preset(s).",
+            "catalog": rows,
+            "presets": presets,
+        }
+    except Exception as exc:
+        return {"ok": False, "message": f"Vehicle catalog failed: {exc!r}"}
 
 
 def movement_infinite_jump_refresh() -> dict[str, Any]:

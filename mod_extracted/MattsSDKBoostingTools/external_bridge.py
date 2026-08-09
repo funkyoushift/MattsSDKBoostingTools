@@ -602,7 +602,7 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
     if action == "uvh_boost_status":
         return backend_actions.uvh_boost_status()
     if action == "complete_challenges_all":
-        return backend_actions.complete_challenges_all()
+        return backend_actions.complete_challenges_all(payload)
     if action == "complete_challenges_cancel":
         return backend_actions.complete_challenges_cancel()
     if action == "complete_challenges_status":
@@ -645,6 +645,38 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
         return backend_actions.travel_to_map(payload.get("travel_map"))
     if action == "travel_to_station":
         return backend_actions.travel_to_station(payload.get("travel_station"))
+    if action == "location_bookmark_save":
+        return backend_actions.location_bookmark_save(payload.get("bookmark_name") or payload.get("name"))
+    if action == "location_bookmark_go":
+        return backend_actions.location_bookmark_go(payload.get("bookmark_name") or payload.get("name"))
+    if action == "location_bookmark_list":
+        return backend_actions.location_bookmark_list()
+    if action == "location_bookmark_delete":
+        return backend_actions.location_bookmark_delete(payload.get("bookmark_name") or payload.get("name"))
+    if action == "combat_tuning_apply":
+        return backend_actions.combat_tuning_apply(payload)
+    if action == "combat_tuning_reapply":
+        return backend_actions.combat_tuning_reapply()
+    if action == "combat_tuning_reset":
+        return backend_actions.combat_tuning_reset(payload.get("scope") or "local")
+    if action == "vehicle_preset_apply":
+        return backend_actions.vehicle_preset_apply(
+            payload.get("vehicle_preset") or payload.get("preset") or payload.get("name"),
+            payload.get("scope") or payload.get("vehicle_scope") or "local",
+        )
+    if action == "vehicle_spawn":
+        return backend_actions.vehicle_spawn(
+            payload.get("vehicle_id") or payload.get("name") or payload.get("alias"),
+            payload.get("scope") or payload.get("vehicle_scope") or "local",
+        )
+    if action == "vehicle_catalog":
+        return backend_actions.vehicle_catalog()
+    if action == "movement_teleport_selected_to_me":
+        return backend_actions.movement_teleport_selected_to_me()
+    if action == "movement_teleport_me_to_selected":
+        return backend_actions.movement_teleport_me_to_selected()
+    if action == "movement_teleport_all_to_me":
+        return backend_actions.movement_teleport_all_to_me()
     if action == "movement_delete_ground_items":
         return backend_actions.movement_delete_ground_items()
     if action == "movement_hide_ground_loot":

@@ -56,6 +56,7 @@
     <button data-tab="dev-spawner">Dev Spawner</button>
     <button data-tab="map-travel">Map Travel</button>
     <button data-tab="player-movement">Player Movement</button>
+    <button data-tab="combat-vehicle">Combat / Vehicle</button>
     <button data-tab="activity">Activity Log</button>
     <button data-tab="report">Report to Dev</button>
     <button data-tab="updates">Updates</button>
@@ -961,7 +962,30 @@
         <section class="panel cyan" data-msbt-panel="dev-spawn" data-msbt-span="4" data-msbt-title="Standard Spawning">
           <h2>Standard Spawning</h2>
           <div id="devSpawnerWarning" class="status-line warning">No Dev Spawner action sent yet. After heavy spawning, use Clear ASD Spawns.</div>
+          <div id="devSpawnerTimer" class="status-line">ASD autoclear: idle</div>
+          <div id="devFavoriteStrip" class="button-row wrap compact-actions" aria-label="Favorite spawn strip"></div>
+          <div class="button-row wrap compact-actions">
+            <button data-dev-spawner-action="dev_spawner_clear">Clear ASD Spawns</button>
+            <button id="devSpawnerReaggroBtn" data-dev-spawner-action="dev_spawner_reaggro">Re-Aggro</button>
+          </div>
           <div class="grid two compact dev-spawn-fields">
+            <label>
+              Aggro Mode
+              <select id="devAggroMode">
+                <option value="passive" selected>Passive</option>
+                <option value="attack_me">Attack Me</option>
+                <option value="attack_party">Attack Party</option>
+                <option value="free_for_all">Free For All</option>
+              </select>
+            </label>
+            <label>
+              Spawn Anchor
+              <select id="devSpawnAnchor">
+                <option value="local" selected>Local</option>
+                <option value="party">Party</option>
+                <option value="npc_nearest">Nearest NPC</option>
+              </select>
+            </label>
             <label>
               Distance
               <input id="devActorDistance" type="number" min="0" max="20000" value="350">
@@ -1216,6 +1240,25 @@
         <div id="travelFavoriteRows" class="dev-row-list compact"></div>
         <pre id="travelOutput">No travel action sent yet.</pre>
       </section>
+
+      <section class="panel green" data-msbt-panel="travel-xyz" data-msbt-span="12" data-msbt-title="XYZ Location Bookmarks" data-msbt-resize="1">
+        <h2>XYZ Location Bookmarks</h2>
+        <p>Save your current in-map position and teleport back. Separate from map/station travel.</p>
+        <div class="inline-fields compact">
+          <label>
+            Bookmark name
+            <input id="locationBookmarkName" type="text" maxlength="80" autocomplete="off" spellcheck="false" placeholder="e.g. farm spot">
+          </label>
+        </div>
+        <div class="button-row wrap compact-actions">
+          <button id="locationBookmarkSaveBtn" type="button">Save Here</button>
+          <button id="locationBookmarkGoBtn" type="button">Go Selected</button>
+          <button id="locationBookmarkDeleteBtn" type="button">Delete Selected</button>
+          <button id="locationBookmarkRefreshBtn" type="button">Refresh List</button>
+        </div>
+        <div id="locationBookmarkSummary" class="status-line">No XYZ bookmarks loaded yet.</div>
+        <select id="locationBookmarkList" class="list-select" size="8"></select>
+      </section>
     </section>
 
     <section id="tab-player-movement" class="tab-panel" data-msbt-layout-tab="player-movement">
@@ -1233,6 +1276,12 @@
           <button data-movement-action="movement_preset_wallwalk">Wall Walk</button>
           <button data-movement-action="movement_preset_fastglide">Fast Glide</button>
         </div>
+        <label for="movementScope">Apply Scope</label>
+        <select id="movementScope">
+          <option value="local">Local only</option>
+          <option value="all" selected>All players</option>
+          <option value="others">Others (not me)</option>
+        </select>
         <label class="checkbox-row">
           <input id="movementAutoApplySaved" type="checkbox">
           Auto apply saved preset when the bridge connects
@@ -1363,18 +1412,108 @@
 
       <section class="panel cyan" data-msbt-panel="move-teleport" data-msbt-span="12" data-msbt-title="Teleport Selected Player">
         <h2>Teleport Selected Player</h2>
-        <p>Teleports the selected target player to the selected party slot pawn.</p>
+        <p>Slot buttons move the Boosting target to that party slot. P2P buttons use local host as “me”.</p>
         <div class="button-row wrap">
           <button data-movement-teleport-slot="0">To P1</button>
           <button data-movement-teleport-slot="1">To P2</button>
           <button data-movement-teleport-slot="2">To P3</button>
           <button data-movement-teleport-slot="3">To P4</button>
         </div>
+        <div class="button-row wrap">
+          <button data-movement-action="movement_teleport_selected_to_me">Selected → Me</button>
+          <button data-movement-action="movement_teleport_me_to_selected">Me → Selected</button>
+          <button data-movement-action="movement_teleport_all_to_me">All → Me</button>
+        </div>
       </section>
 
       <section class="panel" data-msbt-panel="move-result" data-msbt-span="12" data-msbt-title="Player Movement Result" data-msbt-resize="1">
         <h2>Player Movement Result</h2>
         <pre id="movementOutput">No movement action sent yet.</pre>
+      </section>
+    </section>
+
+    <section id="tab-combat-vehicle" class="tab-panel" data-msbt-layout-tab="combat-vehicle">
+      <section class="panel purple" data-msbt-panel="combat-tuning" data-msbt-span="12" data-msbt-title="Combat / Resource Tuning" data-msbt-resize="1">
+        <h2>Combat / Resource Tuning</h2>
+        <p>Apply once to OakDamageState / DamageCauserData. Sticky is off by default — use Reapply after travel if values reset.</p>
+        <div class="grid three compact">
+          <label>
+            Damage Dealt Mult
+            <input id="combatDamageDealt" type="number" min="0.1" max="1000000" step="0.05" value="1">
+          </label>
+          <label>
+            Damage Taken Mult
+            <input id="combatDamageTaken" type="number" min="0" max="1000000" step="0.05" value="1">
+          </label>
+          <label>
+            Ammo Regen Rate
+            <input id="combatAmmoRegen" type="number" min="0" max="1000" step="0.5" value="0">
+          </label>
+          <label>
+            Repair Kit Max Charges
+            <input id="combatRepairMax" type="number" min="0" max="99" step="1" value="3">
+          </label>
+          <label>
+            Repair Kit Cooldown (s)
+            <input id="combatRepairCooldown" type="number" min="0" max="600" step="0.1" value="20">
+          </label>
+          <label>
+            Scope
+            <select id="combatScope">
+              <option value="local" selected>Local</option>
+              <option value="all">All</option>
+              <option value="others">Others</option>
+            </select>
+          </label>
+        </div>
+        <label class="checkbox-row">
+          <input id="combatSticky" type="checkbox">
+          Sticky re-apply (default OFF — leave unchecked)
+        </label>
+        <div class="button-row wrap">
+          <button id="combatApplyBtn" type="button">Apply Once</button>
+          <button id="combatReapplyBtn" type="button">Reapply After Travel</button>
+          <button id="combatResetBtn" type="button">Reset Defaults</button>
+        </div>
+        <div id="combatStatus" class="status-line">Combat tuning idle.</div>
+        <pre id="combatOutput">No combat tuning action yet.</pre>
+      </section>
+
+      <section class="panel cyan" data-msbt-panel="vehicle-tuning" data-msbt-span="12" data-msbt-title="Vehicle Presets / Spawn" data-msbt-resize="1">
+        <h2>Vehicle Presets / Spawn</h2>
+        <p>Presets write movement fields on the current vehicle. Spawn uses personal-vehicle RPCs (host/solo most reliable).</p>
+        <div class="grid two compact">
+          <label>
+            Preset
+            <select id="vehiclePresetSelect">
+              <option value="boost">boost</option>
+              <option value="crawl">crawl</option>
+              <option value="floaty">floaty</option>
+              <option value="orbit">orbit</option>
+              <option value="heavy">heavy</option>
+              <option value="drift">drift</option>
+            </select>
+          </label>
+          <label>
+            Scope
+            <select id="vehicleScope">
+              <option value="local" selected>Local</option>
+              <option value="all">All</option>
+              <option value="others">Others</option>
+            </select>
+          </label>
+        </div>
+        <div class="button-row wrap">
+          <button id="vehiclePresetApplyBtn" type="button">Apply Vehicle Preset</button>
+        </div>
+        <label for="vehicleCatalogSelect">Spawn catalog</label>
+        <select id="vehicleCatalogSelect" class="list-select" size="8"></select>
+        <div class="button-row wrap">
+          <button id="vehicleSpawnBtn" type="button">Spawn Selected Vehicle</button>
+          <button id="vehicleCatalogRefreshBtn" type="button">Refresh Catalog</button>
+        </div>
+        <div id="vehicleStatus" class="status-line">Vehicle controls idle.</div>
+        <pre id="vehicleOutput">No vehicle action yet.</pre>
       </section>
     </section>
 
