@@ -58,6 +58,7 @@
     <button data-tab="player-movement">Player Movement</button>
     <button data-tab="combat-vehicle" data-msbt-wip-nav="1" hidden>Dev Tools</button>
     <button data-tab="activity">Activity Log</button>
+    <button data-tab="mobile-gateway">Mobile Gateway</button>
     <button data-tab="report">Report to Dev</button>
     <button data-tab="updates">Updates</button>
   </nav>
@@ -110,7 +111,7 @@
       <p id="mobileAnnounceMessage">
         Control Boost, Codes, Quick Menu, and more from your phone on the same Wi‑Fi.
         This QR opens the <strong>install page</strong> (not pairing). After install, pair with a
-        different QR under <strong>Activity → Mobile Gateway</strong>.
+        different QR under the <strong>Mobile Gateway</strong> tab.
       </p>
       <div class="mobile-announce-grid">
         <img id="mobileAnnounceQr" class="mobile-announce-qr" alt="QR code to open the MSBT Mobile install page" width="220" height="220">
@@ -119,7 +120,7 @@
           <ol class="mobile-announce-steps">
             <li>Scan this QR → phone install page → <strong>Download APK</strong></li>
             <li>Open the finished download and allow install if prompted</li>
-            <li>In MSBT open <strong>Activity → Mobile Gateway</strong></li>
+            <li>In MSBT open the <strong>Mobile Gateway</strong> tab</li>
             <li>On the phone: <strong>Scan QR to pair</strong> (pairing QR, not this one)</li>
           </ol>
           <div class="button-row wrap">
@@ -179,7 +180,7 @@
       <section id="boostMobileNotice" class="mobile-home-notice" aria-live="polite">
         <div class="mobile-home-notice-copy">
           <h2>Mobile Controller open beta</h2>
-          <p>Pair your phone over LAN with QR. Same Wi‑Fi · Activity → Mobile Gateway.</p>
+          <p>Pair your phone over LAN with QR. Same Wi‑Fi · open the <strong>Mobile Gateway</strong> tab.</p>
         </div>
         <div class="button-row wrap">
           <button id="boostMobileAnnounceBtn">Show install QR</button>
@@ -1700,33 +1701,36 @@
           <h2>Bridge Raw Status</h2>
           <pre id="statusOutput">Click Refresh Status to check the SDK bridge.</pre>
         </section>
-        <section class="panel" data-msbt-panel="mobile-gateway" data-msbt-span="12" data-msbt-title="Mobile Gateway">
-          <h2>Mobile Gateway (select beta)</h2>
-          <p class="muted-line">Phone controllers on the same Wi‑Fi connect here. The SDK bridge stays on localhost; Electron proxies approved requests.</p>
-          <div id="mobileGatewaySummary" class="status-line warning">Loading mobile gateway…</div>
-          <div class="mobile-gateway-pair-grid">
-            <div class="mobile-gateway-qr-block">
-              <p class="muted-line"><strong>Scan with MSBT Mobile</strong></p>
-              <img id="mobileGatewayQr" class="mobile-gateway-qr" alt="Mobile pairing QR code" width="240" height="240">
-              <p class="muted-line">Open MSBT Mobile → More → Connection Settings → <strong>Scan QR to pair</strong>.</p>
-              <label for="mobileGatewayHostSelect">QR uses this PC address</label>
-              <select id="mobileGatewayHostSelect">
-                <option value="">Detecting…</option>
-              </select>
-            </div>
-            <div class="mobile-gateway-meta-block">
-              <p class="muted-line"><strong>Pairing code:</strong> <span id="mobileGatewayCode">------</span></p>
-              <p class="muted-line"><strong>PC address:</strong> <span id="mobileGatewayAddress">Detecting…</span></p>
-              <p class="muted-line"><strong>Gateway port:</strong> <span id="mobileGatewayPort">49775</span></p>
-              <div class="button-row wrap">
-                <button id="mobileGatewayRefreshBtn">Refresh Gateway Info</button>
-                <button id="mobileGatewayRotateBtn">New Pairing Code</button>
-                <button id="mobileGatewayCopyBtn">Copy Pairing Details</button>
-              </div>
+      </div>
+    </section>
+
+    <section id="tab-mobile-gateway" class="tab-panel msbt-fixed-tab" data-msbt-fixed-layout="mobile-gateway">
+      <div class="mobile-gateway-fixed">
+        <h2>Mobile Gateway</h2>
+        <p class="muted-line">Phone controllers on the same Wi‑Fi connect here. The SDK bridge stays on localhost; Electron proxies approved requests. This tab is fixed (not dock-resizable) so the pairing QR stays fully visible.</p>
+        <div id="mobileGatewaySummary" class="status-line warning">Loading mobile gateway…</div>
+        <div class="mobile-gateway-pair-grid">
+          <div class="mobile-gateway-qr-block">
+            <p class="muted-line"><strong>Scan with MSBT Mobile</strong></p>
+            <img id="mobileGatewayQr" class="mobile-gateway-qr" alt="Mobile pairing QR code" width="280" height="280">
+            <p class="muted-line">Open MSBT Mobile → More → Connection Settings → <strong>Scan QR to pair</strong>.</p>
+            <label for="mobileGatewayHostSelect">QR uses this PC address</label>
+            <select id="mobileGatewayHostSelect">
+              <option value="">Detecting…</option>
+            </select>
+          </div>
+          <div class="mobile-gateway-meta-block">
+            <p class="muted-line"><strong>Pairing code:</strong> <span id="mobileGatewayCode">------</span></p>
+            <p class="muted-line"><strong>PC address:</strong> <span id="mobileGatewayAddress">Detecting…</span></p>
+            <p class="muted-line"><strong>Gateway port:</strong> <span id="mobileGatewayPort">49775</span></p>
+            <div class="button-row wrap">
+              <button id="mobileGatewayRefreshBtn" type="button">Refresh Gateway Info</button>
+              <button id="mobileGatewayRotateBtn" type="button">New Pairing Code</button>
+              <button id="mobileGatewayCopyBtn" type="button">Copy Pairing Details</button>
             </div>
           </div>
-          <pre id="mobileGatewayDetails">Closed-beta pairing: scan the QR in MSBT Mobile, or enter the PC address, port 49775, and pairing code manually.</pre>
-        </section>
+        </div>
+        <pre id="mobileGatewayDetails">Closed-beta pairing: scan the QR in MSBT Mobile, or enter the PC address, port 49775, and pairing code manually.</pre>
       </div>
     </section>
 

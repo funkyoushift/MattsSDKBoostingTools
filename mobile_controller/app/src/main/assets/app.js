@@ -551,7 +551,7 @@ async function gatewayFetch(route,{method='GET',payload=null,timeoutMs=15000,req
   const base=gatewayBase();
   if(!base)throw new Error('Enter a PC address first.');
   const pairingCode=text(state.connection.pairingCode);
-  if(requirePairing&&!pairingCode)throw new Error('Enter the pairing code from desktop MSBT → Activity → Mobile Gateway.');
+  if(requirePairing&&!pairingCode)throw new Error('Enter the pairing code from desktop MSBT → Mobile Gateway tab.');
   const controller=new AbortController();
   const timer=setTimeout(()=>controller.abort(),timeoutMs);
   try{
@@ -618,7 +618,7 @@ async function connectGateway({quiet=false, hostCandidates=null}={}){
       const ping=await gatewayFetch('/mobile/ping',{requirePairing:false,timeoutMs:5000});
       if(!ping.ok&&ping.status)throw new Error((ping.data&&ping.data.message)||'Gateway ping failed.');
       const status=await gatewayFetch('/status',{timeoutMs:8000});
-      if(status.status===401)throw new Error('Invalid pairing code. Scan the QR again or copy the current code from desktop MSBT → Activity → Mobile Gateway.');
+      if(status.status===401)throw new Error('Invalid pairing code. Scan the QR again or copy the current code from desktop MSBT → Mobile Gateway tab.');
       if(status.status===0)throw new Error((status.data&&status.data.message)||'Could not reach desktop MSBT gateway.');
       // 502 means gateway is up but the in-game SDK bridge is offline — still a successful pair.
       if(!status.ok&&status.status!==502)throw new Error((status.data&&status.data.message)||`Gateway returned HTTP ${status.status}.`);

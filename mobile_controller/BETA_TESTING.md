@@ -30,7 +30,7 @@ Kit source lives in `mobile_controller/test_kit/`:
 
 1. Install/update the APK from the install page (or direct APK link).
 2. PC: desktop **MSBT v2.3.1+** ([Latest](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest)) + BL4 in-world with MSBT.
-3. PC: **Activity → Mobile Gateway** (QR + address / `49775` / pairing code).
+3. PC: **Mobile Gateway tab** (QR + address / `49775` / pairing code).
 4. Phone: **More → Connection Settings** → **Scan QR to pair** (or manual Save → Connect).
 5. Try Boost → **MAX CASH**, QM → **Pull From PC** + tap a slot, then work through `CHECKLIST.md`.
 

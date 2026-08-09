@@ -14,7 +14,7 @@ You also need:
 • Phone + PC on the same Wi‑Fi
 • Borderlands 4 in-world with MSBT for live actions
 
-Setup: update desktop to v2.3.0+ → Activity → Mobile Gateway → Scan QR on phone (More → Connection Settings → Scan QR to pair).
+Setup: update desktop to v2.3.0+ → Mobile Gateway tab → Scan QR on phone (More → Connection Settings → Scan QR to pair).
 
 Quick checks: Boost MAX CASH · Codes catalog · QM Pull From PC + tap slot · Spawn (check risk → Enable).
 

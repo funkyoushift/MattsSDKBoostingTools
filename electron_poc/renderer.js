@@ -2675,17 +2675,11 @@ async function showMobileAnnounceModal({ force = false } = {}) {
 
 function openMobileGatewayPanel() {
   hideMobileAnnounceModal();
-  const activityTab = document.querySelector('[data-tab="activity"]');
-  if (activityTab) activityTab.click();
-  const panel = document.querySelector('[data-msbt-panel="mobile-gateway"]');
-  if (panel) {
-    requestAnimationFrame(() => {
-      try {
-        panel.scrollIntoView({ behavior: "smooth", block: "start" });
-      } catch {
-        panel.scrollIntoView();
-      }
-    });
+  if (typeof switchTab === "function") {
+    switchTab("mobile-gateway");
+  } else {
+    const btn = document.querySelector('[data-tab="mobile-gateway"]');
+    if (btn) btn.click();
   }
   void refreshMobileGatewayInfo();
 }
@@ -8492,6 +8486,8 @@ function switchTab(tabId) {
     if (tabId === "boosting") {
       void bridgeStatus({ quiet: true });
     }
+  } else if (tabId === "mobile-gateway") {
+    void refreshMobileGatewayInfo();
   }
 }
 
@@ -9137,6 +9133,7 @@ const MAIN_TAB_CHOICES = [
   { id: "map-travel", label: "Map Travel" },
   { id: "player-movement", label: "Player Movement" },
   { id: "activity", label: "Activity Log" },
+  { id: "mobile-gateway", label: "Mobile Gateway" },
   { id: "report", label: "Report" },
   { id: "updates", label: "Updates" }
 ];
@@ -9591,7 +9588,7 @@ const TAB_TUTORIALS = {
     },
     {
       title: "Panels mode",
-      body: "Switch Compact | Panels in the header to restore the multi-card GridStack layout (Search / Boss / Favorites / Characters / Details / Result). Choice is saved locally.",
+      body: "Header toggle Compact | Panels restores the multi-card dock layout (Search / Boss / Favorites / Characters / Details). Choice is saved locally. Compact has no dock toolbar.",
       tab: "dev-spawner",
       targetSel: "#tab-dev-spawner .dev-layout-toggle"
     }
@@ -9616,6 +9613,12 @@ const TAB_TUTORIALS = {
       targetSel: "#tab-map-travel [data-msbt-panel='travel-favorites']"
     },
     {
+      title: "XYZ location bookmarks",
+      body: "Save Here stores your current world position with a name. Select a bookmark → Go Selected to teleport without map travel. Delete Selected removes it.",
+      tab: "map-travel",
+      targetSel: "#tab-map-travel [data-msbt-panel='travel-xyz']"
+    },
+    {
       title: "Quick Menu note",
       body: "Travel closes the in-game Quick Menu (F7) first so mouse/look are not stuck across the load. Safe to travel from Electron or a pinned Quick Menu travel action.",
       tab: "map-travel",
@@ -9625,7 +9628,7 @@ const TAB_TUTORIALS = {
   "player-movement": [
     {
       title: "Apply is what counts",
-      body: "Sliders/fields are UI-only until Apply Now (or any Apply Movement Settings). Save/Load Preset and Fast/Moon/etc. only change the form until you apply through the bridge.",
+      body: "Sliders/fields are UI-only until Apply Now (or any Apply Movement Settings). Scope Local / All / Others chooses who receives the apply. Save/Load Preset and Fast/Moon/etc. only change the form until you apply through the bridge.",
       tab: "player-movement",
       targetSel: "#tab-player-movement [data-msbt-panel='move-presets']"
     },
@@ -9649,7 +9652,7 @@ const TAB_TUTORIALS = {
     },
     {
       title: "Teleport party",
-      body: "Teleport Selected Player → To P1–P4 moves the movement-target player to that party slot pawn.",
+      body: "To P1–P4 moves the movement-target player to that party slot. Selected → Me / Me → Selected / All → Me are peer teleports. + QM can pin these when the catalog is loaded.",
       tab: "player-movement",
       targetSel: "#tab-player-movement [data-msbt-panel='move-teleport']"
     },
@@ -9675,9 +9678,29 @@ const TAB_TUTORIALS = {
     },
     {
       title: "When to use it",
-      body: "If a button “does nothing,” check Activity + Bridge Raw first — offline bridge vs action failure looks different here than in the game.",
+      body: "If a button “does nothing,” check Activity + Bridge Raw first — offline bridge vs action failure looks different here than in the game. Phone pairing lives on the separate Mobile Gateway tab.",
       tab: "activity",
       target: "refreshActivityBtn"
+    }
+  ],
+  "mobile-gateway": [
+    {
+      title: "Pairing QR",
+      body: "This tab is fixed (not dock-resizable) so the pairing QR stays fully visible. Scan it from MSBT Mobile → More → Connection Settings → Scan QR to pair. Same Wi‑Fi as the PC.",
+      tab: "mobile-gateway",
+      targetSel: "#tab-mobile-gateway .mobile-gateway-qr"
+    },
+    {
+      title: "Address & code",
+      body: "If you have multiple LAN adapters, pick which PC address the QR uses. Refresh Gateway Info, New Pairing Code, or Copy Pairing Details for manual entry (address + port 49775 + code).",
+      tab: "mobile-gateway",
+      targetSel: "#tab-mobile-gateway .mobile-gateway-meta-block"
+    },
+    {
+      title: "Install vs pair",
+      body: "The home / Mobile App QR opens the install page. This tab’s QR is only for pairing after the APK is installed — they are different codes.",
+      tab: "mobile-gateway",
+      targetSel: "#tab-mobile-gateway .mobile-gateway-fixed"
     }
   ],
   report: [

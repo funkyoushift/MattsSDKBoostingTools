@@ -8,7 +8,7 @@ This project is **unofficial**. It is not affiliated with, endorsed by, or conne
 
 **Repo layout (developers):** see [`docs/PROJECT_MAP.md`](docs/PROJECT_MAP.md). On GitHub’s file list, the grey text next to a folder is the *last commit that touched it*, not a folder description — so a big multi-folder commit can make every line look the same.
 
-**Electron panels:** on Boosting, Dev Spawner, Map Travel, Player Movement, Serial Tools, and Inventory you can drag panels onto empty space, resize, stack into tabs, and compact to fill gaps — see [`docs/PANEL_LAYOUT.md`](docs/PANEL_LAYOUT.md).
+**Electron panels:** on Boosting, Map Travel, Player Movement, Serial Tools, Inventory, and Dev Spawner (Panels mode) you can drag panels onto empty space, resize, stack into tabs, and compact to fill gaps — see [`docs/PANEL_LAYOUT.md`](docs/PANEL_LAYOUT.md). Dev Spawner Compact mode and the Mobile Gateway tab use a fixed layout so key controls stay fully visible.
 
 ---
 
@@ -29,7 +29,7 @@ This project is **unofficial**. It is not affiliated with, endorsed by, or conne
 
 - Install page (best on phone): [mobile-install.html](https://www.funkyoushift.com/MattsSDKBoostingTools/mobile-install.html)
 - Or desktop home → **Mobile App** QR → same install page
-- Pairing: PC **Activity → Mobile Gateway** QR (different from the install QR)
+- Pairing: PC **Mobile Gateway** tab QR (different from the install QR)
 - Direct APK: [`MSBT-Mobile-Controller.apk`](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/mobile-beta/MSBT-Mobile-Controller.apk) · [mobile-beta notes](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/mobile-beta)
 
 Counts above track **installer**, **portable ZIP**, and the rolling **Android APK** (`MSBT-Mobile-Controller.apk` on the `mobile-beta` tag) — not update-check files (`latest.json` / `latest.yml` / `.blockmap`). Opening the install page alone does not increment the APK counter; tapping **Download APK** (GitHub asset) does.
@@ -63,9 +63,9 @@ In plain terms, the Electron app is the control panel. The SDK mod does the live
 - **BL4 Codes** — search/browse a merged local catalog (GZO image cards, Lootlemon references, custom/static codes), then deliver from a sticky delivery panel
 - **Matt Editor** — hosted Mattmab save/profile/item editor workflow with MSBT delivery buttons
 - **Item Pool Spawning** — browse and spawn from item pools through the bridge
-- **Dev Spawner** — actor/AI spawn helpers (needs the bundled ActorScriptDeployer support mod)
-- **Map Travel / Player Movement** — expanded station/map catalog, renamable travel favorites, and movement tools
-- **Activity Log / Report / Updates** — see what ran, file issues, check for new builds, install/update the bundled SDK mod
+- **Dev Spawner** — actor/AI spawn helpers with Compact | Panels layout (needs the bundled ActorScriptDeployer support mod)
+- **Map Travel / Player Movement** — expanded station/map catalog, renamable travel favorites, **XYZ location bookmarks**, movement scope (Local / All / Others), and peer teleports (Selected ↔ Me / All → Me)
+- **Activity Log / Mobile Gateway / Report / Updates** — see what ran, pair the Android controller (fixed pairing QR tab), file issues, check for new builds, install/update the bundled SDK mod
 - **Mobile Gateway / Android controller (open beta)** — pair a phone on the same Wi‑Fi and run Boost / Codes / Quick Menu / Control / Spawn from the Android app
 
 <p align="center">

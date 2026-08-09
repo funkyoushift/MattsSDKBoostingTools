@@ -3110,7 +3110,7 @@ button.active-scope {
 
 .mobile-gateway-pair-grid {
   display: grid;
-  grid-template-columns: minmax(240px, 280px) minmax(0, 1fr);
+  grid-template-columns: minmax(280px, 320px) minmax(0, 1fr);
   gap: 18px;
   align-items: start;
   margin: 12px 0 14px;
@@ -3123,8 +3123,11 @@ button.active-scope {
 }
 
 .mobile-gateway-qr {
-  width: 240px;
-  height: 240px;
+  width: 280px;
+  height: 280px;
+  min-width: 280px;
+  min-height: 280px;
+  flex-shrink: 0;
   border-radius: 12px;
   border: 1px solid #31425f;
   background: #fff;
@@ -3135,6 +3138,22 @@ button.active-scope {
   display: grid;
   gap: 8px;
   align-content: start;
+}
+
+#tab-mobile-gateway.msbt-fixed-tab {
+  overflow: auto;
+}
+
+#tab-mobile-gateway .mobile-gateway-fixed {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 100%;
+  padding: 4px 2px 16px;
+}
+
+#tab-mobile-gateway .mobile-gateway-fixed > h2 {
+  margin: 0;
 }
 
 @media (max-width: 900px) {

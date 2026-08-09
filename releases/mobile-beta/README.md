@@ -56,7 +56,7 @@ https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/mobile-beta
 
 ### 3. Pair with QR (recommended)
 
-1. Desktop: open **Activity → Mobile Gateway**.
+1. Desktop: open **Mobile Gateway tab**.
 2. Leave the **QR code** visible (gateway should show online on port `49775`).
 3. Phone: **More → Connection Settings → Scan QR to pair** (allow Camera).
 4. Home should show gateway online (and game bridge online while in-world).

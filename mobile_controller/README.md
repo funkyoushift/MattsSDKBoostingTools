@@ -56,7 +56,7 @@ Useful without a PC connection:
 Desktop MSBT on this branch starts a **Mobile Gateway** on LAN port `49775` that proxies to the localhost SDK bridge (`127.0.0.1:49774`). The in-game bridge is not opened to all interfaces.
 
 1. PC: run desktop MSBT + Borderlands 4 with MSBT loaded.
-2. PC: **Activity → Mobile Gateway** — show the QR (or note LAN IP + pairing code).
+2. PC: **Mobile Gateway tab** — show the QR (or note LAN IP + pairing code).
 3. Phone: **More → Connection Settings** → **Scan QR to pair** (manual entry still works) → Connect.
 4. Live Boost / serial / rarity / movement Apply unlock when the gateway is reachable.
 

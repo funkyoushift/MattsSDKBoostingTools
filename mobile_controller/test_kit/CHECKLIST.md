@@ -20,7 +20,7 @@ Check boxes as you go. Test **portrait** and **landscape** where it matters. Pre
 
 ## B. Connection (live)
 
-- [ ] Desktop **Activity → Mobile Gateway** shows a QR
+- [ ] Desktop **Mobile Gateway tab** shows a QR
 - [ ] Phone **Scan QR to pair** fills address/port/code and connects
 - [ ] Manual setup still works (address / `49775` / pairing code)
 - [ ] Reopen app — saved setup still there
