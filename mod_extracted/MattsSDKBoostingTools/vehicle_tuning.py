@@ -1,6 +1,8 @@
 """Vehicle presets + curated personal-vehicle spawn catalog (SQBT-inspired, reimplemented)."""
 from __future__ import annotations
 
+import json
+import pkgutil
 import time
 from typing import Any
 
@@ -45,20 +47,118 @@ _PRESETS: dict[str, dict[str, float]] = {
     },
 }
 
+# Retyped MIT-safe catalog (IDs/aliases/unlocks match SQBT vehicle_movement builtin).
 _VEHICLE_SPAWN_BUILTIN: list[dict[str, Any]] = [
-    {"id": "PV_Grazer", "aliases": ["grazer"], "label": "Grazer", "category": "base"},
-    {"id": "PV_Borg", "aliases": ["borg"], "label": "Borg", "category": "base"},
-    {"id": "PV_Base", "aliases": ["base"], "label": "Base", "category": "base"},
-    {"id": "PV_shatterlandV1", "aliases": ["shatterland", "shatter"], "label": "Shatterland V1", "category": "promo"},
-    {"id": "PV_City", "aliases": ["city"], "label": "City", "category": "promo"},
-    {"id": "PV_CityOrder", "aliases": ["cityorder"], "label": "City Order", "category": "promo"},
-    {"id": "PV_Mountain", "aliases": ["mountain", "cello"], "label": "Mountain (Vault Card)", "category": "dlc"},
-    {"id": "PV_DarkSiren", "aliases": ["darksiren", "siren"], "label": "Dark Siren", "category": "character"},
-    {"id": "PV_ExoSoldier", "aliases": ["exosoldier", "exo"], "label": "Exo Soldier", "category": "character"},
-    {"id": "PV_Gravitar", "aliases": ["gravitar"], "label": "Gravitar", "category": "character"},
-    {"id": "PV_Paladin", "aliases": ["paladin"], "label": "Paladin", "category": "character"},
+    {
+        "id": "PV_Grazer",
+        "aliases": ["grazer"],
+        "label": "Grazer",
+        "category": "base",
+        "unlock": "Unlockable_Vehicles.Grazer",
+        "verified": True,
+    },
+    {
+        "id": "PV_Borg",
+        "aliases": ["borg"],
+        "label": "Borg",
+        "category": "base",
+        "unlock": "Unlockable_Vehicles.Borg",
+        "verified": True,
+    },
+    {
+        "id": "PV_Base",
+        "aliases": ["base"],
+        "label": "Base",
+        "category": "base",
+        "unlock": "Unlockable_Vehicles.Base",
+    },
+    {
+        "id": "PV_shatterlandV1",
+        "aliases": ["shatterland", "shatterlandv1", "shatter"],
+        "label": "Shatterland V1",
+        "category": "promo",
+        "unlock": "Unlockable_Vehicles.ShatterlandV1",
+    },
+    {
+        "id": "PV_City",
+        "aliases": ["city"],
+        "label": "City",
+        "category": "promo",
+        "unlock": "Unlockable_Vehicles.City",
+    },
+    {
+        "id": "PV_CityOrder",
+        "aliases": ["cityorder", "city_order"],
+        "label": "City Order",
+        "category": "promo",
+        "unlock": "Unlockable_Vehicles.CityOrder",
+    },
+    {
+        "id": "PV_Mountain",
+        "aliases": ["mountain", "cello"],
+        "label": "Mountain (Vault Card)",
+        "category": "dlc",
+        "unlock": "Unlockable_Vehicles.Mountain",
+    },
+    {
+        "id": "PV_DarkSiren",
+        "aliases": ["darksiren", "siren"],
+        "label": "Dark Siren",
+        "category": "character",
+        "unlock": "Unlockable_Vehicles.DarkSiren",
+    },
+    {
+        "id": "PV_DarkSiren_Proto",
+        "aliases": ["darksiren_proto", "siren_proto"],
+        "label": "Dark Siren (Proto)",
+        "category": "character",
+        "unreleased": True,
+    },
+    {
+        "id": "PV_ExoSoldier",
+        "aliases": ["exosoldier", "exo"],
+        "label": "Exo Soldier",
+        "category": "character",
+        "unlock": "Unlockable_Vehicles.ExoSoldier",
+    },
+    {
+        "id": "PV_ExoSoldier_Proto",
+        "aliases": ["exosoldier_proto", "exo_proto"],
+        "label": "Exo Soldier (Proto)",
+        "category": "character",
+        "unreleased": True,
+    },
+    {
+        "id": "PV_Gravitar",
+        "aliases": ["gravitar"],
+        "label": "Gravitar",
+        "category": "character",
+        "unlock": "Unlockable_Vehicles.Gravitar",
+    },
+    {
+        "id": "PV_Gravitar_Proto",
+        "aliases": ["gravitar_proto"],
+        "label": "Gravitar (Proto)",
+        "category": "character",
+        "unreleased": True,
+    },
+    {
+        "id": "PV_Paladin",
+        "aliases": ["paladin"],
+        "label": "Paladin",
+        "category": "character",
+        "unlock": "Unlockable_Vehicles.Paladin",
+    },
+    {
+        "id": "PV_Paladin_Proto",
+        "aliases": ["paladin_proto"],
+        "label": "Paladin (Proto)",
+        "category": "character",
+        "unreleased": True,
+    },
 ]
 
+_vehicle_catalog_cache: list[dict[str, Any]] | None = None
 _last_vehicle_spawn_at = 0.0
 
 
@@ -70,8 +170,57 @@ def list_vehicle_presets() -> list[str]:
     return sorted(_PRESETS.keys())
 
 
+def _normalize_vehicle_row(raw: dict[str, Any]) -> dict[str, Any] | None:
+    def_id = str(raw.get("id") or "").strip()
+    if not def_id:
+        return None
+    aliases = raw.get("aliases") if isinstance(raw.get("aliases"), list) else []
+    row: dict[str, Any] = {
+        "id": def_id,
+        "aliases": [str(a).strip() for a in aliases if str(a).strip()],
+        "label": str(raw.get("label") or def_id).strip() or def_id,
+        "category": str(raw.get("category") or "vehicle").strip() or "vehicle",
+    }
+    unlock = str(raw.get("unlock") or "").strip()
+    if unlock:
+        row["unlock"] = unlock
+    if raw.get("verified") is True:
+        row["verified"] = True
+    if raw.get("unreleased") is True:
+        row["unreleased"] = True
+    return row
+
+
+def _load_vehicle_catalog_rows() -> list[dict[str, Any]]:
+    """Prefer packaged vehicle_catalog.json when present; else builtin."""
+    global _vehicle_catalog_cache
+    if _vehicle_catalog_cache is not None:
+        return [dict(row) for row in _vehicle_catalog_cache]
+    rows: list[dict[str, Any]] = []
+    try:
+        package = __package__ or "MattsSDKBoostingTools"
+        packaged = pkgutil.get_data(package, "vehicle_catalog.json")
+        if packaged:
+            data = json.loads(packaged.decode("utf-8"))
+            entries = data.get("entries") if isinstance(data, dict) else None
+            if isinstance(entries, list):
+                for entry in entries:
+                    if not isinstance(entry, dict):
+                        continue
+                    normalized = _normalize_vehicle_row(entry)
+                    if normalized:
+                        rows.append(normalized)
+    except Exception as exc:
+        _log(f"vehicle_catalog.json load failed: {exc!r}")
+        rows = []
+    if not rows:
+        rows = [dict(row) for row in _VEHICLE_SPAWN_BUILTIN]
+    _vehicle_catalog_cache = rows
+    return [dict(row) for row in rows]
+
+
 def list_vehicle_catalog() -> list[dict[str, Any]]:
-    return [dict(row) for row in _VEHICLE_SPAWN_BUILTIN]
+    return _load_vehicle_catalog_rows()
 
 
 def _write_float_field(obj: Any, attr: str, value: float) -> bool:
@@ -212,6 +361,86 @@ def _try_call(obj: Any, names: tuple[str, ...], arg_sets: tuple[tuple[Any, ...],
     return False, "no matching RPC"
 
 
+def _find_vehicle_entry(def_id_or_alias: str) -> dict[str, Any] | None:
+    needle = str(def_id_or_alias or "").strip()
+    if not needle:
+        return None
+    low = needle.casefold()
+    for row in _load_vehicle_catalog_rows():
+        if str(row["id"]).casefold() == low or low in {a.casefold() for a in row.get("aliases", [])}:
+            return row
+    return None
+
+
+def _unlock_token_for_vehicle(def_id: str, entry: dict[str, Any] | None = None) -> str | None:
+    if entry is not None:
+        token = str(entry.get("unlock") or "").strip()
+        if token:
+            return token
+    stem = def_id[3:] if def_id.startswith("PV_") else def_id
+    if stem.lower() == "shatterlandv1":
+        return "Unlockable_Vehicles.ShatterlandV1"
+    return f"Unlockable_Vehicles.{stem}"
+
+
+def _get_player_state(pc: Any) -> Any | None:
+    for attr in ("PlayerState", "OakPlayerState"):
+        try:
+            ps = getattr(pc, attr, None)
+            if ps is not None:
+                return ps
+        except Exception:
+            continue
+    return None
+
+
+def _try_unlock_unlockable(pc: Any, token: str) -> tuple[bool, str]:
+    """Best-effort ClientUnlockUnlockable on PlayerState (no ultra_local_menu dependency)."""
+    ps = _get_player_state(pc)
+    if ps is None:
+        return False, "no PlayerState"
+    fn = getattr(ps, "ClientUnlockUnlockable", None)
+    if not callable(fn):
+        return False, "ClientUnlockUnlockable missing"
+    last = "unlock failed"
+    candidates: list[Any] = []
+    try:
+        from unrealsdk.unreal import FGbxDefPtr  # type: ignore[import-not-found]
+
+        ptr = FGbxDefPtr(token, type="UnlockableEntryDef")
+        inst = getattr(ptr, "_experimental_instance", None)
+        if inst is not None:
+            candidates.extend([inst, ptr])
+    except Exception:
+        pass
+    candidates.append(token)
+    if "." in token:
+        ledger, entry = token.split(".", 1)
+        for lv, ev in ((ledger, entry), (f"/Script/OakGame.{ledger}", entry)):
+            for args in ((lv, ev), (ev, lv)):
+                try:
+                    fn(*args)
+                    return True, f"ClientUnlockUnlockable({lv},{ev})"
+                except Exception as exc:
+                    last = str(exc)
+    for arg in candidates:
+        try:
+            fn(arg)
+            return True, f"ClientUnlockUnlockable({token})"
+        except TypeError:
+            continue
+        except Exception as exc:
+            last = str(exc)
+    return False, last
+
+
+def _try_unlock_vehicle_for_spawn(pc: Any, def_id: str, entry: dict[str, Any] | None = None) -> tuple[bool, str]:
+    token = _unlock_token_for_vehicle(def_id, entry)
+    if not token:
+        return False, "no unlock token"
+    return _try_unlock_unlockable(pc, token)
+
+
 def spawn_personal_vehicle(def_id_or_alias: str, *, scope: str = "local") -> str:
     """Best-effort personal vehicle summon via OakPlayerController RPCs."""
     global _last_vehicle_spawn_at
@@ -221,12 +450,7 @@ def spawn_personal_vehicle(def_id_or_alias: str, *, scope: str = "local") -> str
     needle = str(def_id_or_alias or "").strip()
     if not needle:
         return "No vehicle id selected."
-    entry = None
-    low = needle.casefold()
-    for row in _VEHICLE_SPAWN_BUILTIN:
-        if str(row["id"]).casefold() == low or low in {a.casefold() for a in row.get("aliases", [])}:
-            entry = row
-            break
+    entry = _find_vehicle_entry(needle)
     def_id = str(entry["id"]) if entry else (needle if needle.startswith("PV_") else f"PV_{needle}")
     pcs = _pcs_for_scope(scope)
     if not pcs:
@@ -234,6 +458,8 @@ def spawn_personal_vehicle(def_id_or_alias: str, *, scope: str = "local") -> str
     ok_any = False
     details: list[str] = []
     for pc in pcs:
+        unlock_ok, unlock_how = _try_unlock_vehicle_for_spawn(pc, def_id, entry)
+        details.append(f"unlock={'ok:' + unlock_how if unlock_ok else 'skip:' + unlock_how}")
         wrote, how = _try_call(
             pc,
             ("ServerSetPersonalVehicleDef", "SetPersonalVehicleDef", "ClientSetPersonalVehicleDef"),

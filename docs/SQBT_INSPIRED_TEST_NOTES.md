@@ -26,6 +26,12 @@ Optional Steam path if you use it:
 
 `c:\Program Files (x86)\Steam\steamapps\common\Borderlands 4\sdk_mods\`
 
+```powershell
+# Local package + Steam copy (test only):
+.\tools\build_sdkmod.ps1
+.\tools\sync_test_sdkmods.ps1 -BuildSdkMod
+```
+
 ## Smoke checklist
 
 ### 1. XYZ location bookmarks (Map Travel)
@@ -59,19 +65,39 @@ Optional Steam path if you use it:
 - [ ] Existing **To P1–P4** slot teleports still work
 - [ ] QM can pin the new teleport actions
 
-### 5. Combat / Vehicle tab
+### 5. Dev Tools tab (WIP — hidden by default)
 
+**Do not publish until Squ1ggs conversation (combat resource tuning) and vehicle data/credits are cleared.** No release until Matt says.
+
+Unlock gate:
+
+- [ ] Tab id remains `combat-vehicle` (WIP unlock storage still works)
+- [ ] Nav label reads **Dev Tools**; tab is **hidden** in the main bar by default
+- [ ] Normal **View** menu does **not** list it under Main tabs
+- [ ] **Shift+click View** → **Development tabs** → enable **Dev Tools (WIP)**
+
+#### Combat
+
+- [ ] Description notes Squ1ggs-inspired Oak damage/ammo/repair tuning + ask before publishing
 - [ ] Curated sliders: damage dealt/taken, repair kit, ammo regen
 - [ ] **Apply Once** (sticky checkbox stays **off** unless you opt in)
 - [ ] After travel, **Reapply After Travel** restores last values
+
+#### Vehicle
+
+- [ ] Description credits **mattmab** presets; catalog seeded for local test (unlock tokens / Proto / verified)
 - [ ] Vehicle presets apply while in/near a vehicle
-- [ ] Vehicle catalog spawn requests a personal vehicle (host/solo most reliable)
+- [ ] Catalog option text shows unlock / unreleased flags
+- [ ] Spawn Selected Vehicle best-effort unlocks then summons (host/solo most reliable)
 
-### 6. Challenge confirm
+#### Challenges (moved here from Boosting)
 
-- [ ] First `complete_challenges_all` arms a 10s confirm (does not start yet)
-- [ ] Second press within 10s starts the queue
-- [ ] Changing party/target cancels pending confirm
+- [ ] Boosting Result no longer has the **do not click** button
+- [ ] Category select + search filters the list (`challenge_catalog_list`)
+- [ ] **Complete Selected** / **Complete Category** / **Complete ALL** arm confirm on first press; second press within 10s starts
+- [ ] Status line shows `needs_confirm` message; **Refresh Status** / light poll while active
+- [ ] **Cancel** stops a running queue
+- [ ] Complete ALL still queues all non-parent catalog rows; category **All non-UVHM** excludes `uvh` tokens
 
 ## Partial / skipped
 
@@ -79,7 +105,7 @@ Optional Steam path if you use it:
 |------|--------|
 | IO / world-prop picker | **Skipped** this pass (time) — ASD template/Lost Loot still available |
 | Full SQBT aggro fidelity | **Partial** — thin SetEnemy/focus reaggro, not full combat-wake matrix |
-| Vehicle spawn unlock/discovery | **Partial** — curated catalog + RPC summon, not full offline mesh scan |
+| Vehicle spawn unlock/discovery | **Partial** — full 15-row catalog + best-effort unlock RPC; not full offline mesh scan |
 | Sticky combat tick hooks | **Intentionally off** by default (apply-once + manual reapply) |
 
 ## Reminder for Matt

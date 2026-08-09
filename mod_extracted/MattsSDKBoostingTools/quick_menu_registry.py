@@ -269,6 +269,8 @@ ACTION_CATALOG: dict[str, dict[str, Any]] = {
     "vehicle_preset_apply": {"basic": "Vehicle Preset", "aliases": ["Veh Preset"]},
     "vehicle_spawn": {"basic": "Spawn Vehicle", "aliases": ["Veh Spawn"]},
     "vehicle_catalog": {"basic": "Vehicle Catalog", "aliases": ["Veh List"]},
+    "complete_challenges_cancel": {"basic": "Cancel Challenges", "aliases": ["Chal Cancel"]},
+    "complete_challenges_status": {"basic": "Challenge Status", "aliases": ["Chal Status"]},
     "rarity_apply": {"basic": "Apply Rarity", "aliases": ["Rarity"]},
     "rarity_reset": {"basic": "Reset Rarity", "aliases": ["Rarity Reset"]},
     "rarity_only_legendary": {"basic": "Only Legendary", "aliases": ["Legendary"]},

@@ -371,6 +371,16 @@ const els = {
   vehicleCatalogRefreshBtn: document.getElementById("vehicleCatalogRefreshBtn"),
   vehicleStatus: document.getElementById("vehicleStatus"),
   vehicleOutput: document.getElementById("vehicleOutput"),
+  challengeCategorySelect: document.getElementById("challengeCategorySelect"),
+  challengeSearchInput: document.getElementById("challengeSearchInput"),
+  challengeListSelect: document.getElementById("challengeListSelect"),
+  challengeCompleteSelectedBtn: document.getElementById("challengeCompleteSelectedBtn"),
+  challengeCompleteCategoryBtn: document.getElementById("challengeCompleteCategoryBtn"),
+  challengeCompleteAllBtn: document.getElementById("challengeCompleteAllBtn"),
+  challengeCancelBtn: document.getElementById("challengeCancelBtn"),
+  challengeStatusBtn: document.getElementById("challengeStatusBtn"),
+  challengeStatus: document.getElementById("challengeStatus"),
+  challengeOutput: document.getElementById("challengeOutput"),
   travelShowAllStations: document.getElementById("travelShowAllStations"),
   travelStationBtn: document.getElementById("travelStationBtn"),
   travelStationList: document.getElementById("travelStationList"),
@@ -2774,7 +2784,11 @@ function updateVehicleCatalogFromStatus(data) {
   catalog.forEach((row) => {
     const opt = document.createElement("option");
     opt.value = String(row.id || "");
-    opt.textContent = `${row.label || row.id} (${row.category || "vehicle"})`;
+    const bits = [row.label || row.id, `(${row.category || "vehicle"})`];
+    if (row.unlock) bits.push(`[${row.unlock}]`);
+    if (row.verified) bits.push("verified");
+    if (row.unreleased) bits.push("unreleased");
+    opt.textContent = bits.join(" ");
     els.vehicleCatalogSelect.appendChild(opt);
   });
   if (selected) els.vehicleCatalogSelect.value = selected;
@@ -2980,6 +2994,110 @@ async function runVehicleAction(action, payload = {}) {
       vehicle_presets: data.presets
     });
   }
+  return result;
+}
+
+let challengeListDebounceTimer = null;
+let challengeStatusPollTimer = null;
+
+function challengeListPayload() {
+  return {
+    category: getValue(els.challengeCategorySelect) || "All non-UVHM",
+    search: getValue(els.challengeSearchInput) || ""
+  };
+}
+
+function updateChallengeListFromResult(result) {
+  if (!els.challengeListSelect) return;
+  const data = result && result.data ? result.data : result;
+  const entries = data && Array.isArray(data.entries) ? data.entries : [];
+  const selected = getValue(els.challengeListSelect);
+  els.challengeListSelect.innerHTML = "";
+  entries.forEach((row) => {
+    const id = String(row.id || "").trim();
+    if (!id) return;
+    const opt = document.createElement("option");
+    opt.value = id;
+    const amount = Number(row.amount || 1);
+    opt.textContent = amount > 1 ? `${id}  (x${amount})` : id;
+    els.challengeListSelect.appendChild(opt);
+  });
+  if (selected) els.challengeListSelect.value = selected;
+  const count = Number(data && data.count != null ? data.count : entries.length);
+  if (els.challengeStatus && !String(els.challengeStatus.textContent || "").includes("Confirm")) {
+    setLine(els.challengeStatus, `${count} challenge(s) listed.`, count ? "ok" : "warning");
+  }
+}
+
+async function refreshChallengeCatalogList(options = {}) {
+  if (!els.challengeListSelect) return null;
+  const quiet = Boolean(options.quiet);
+  if (!quiet) setLine(els.challengeStatus, "Loading challenge catalog…", "warning");
+  const result = await runAction("challenge_catalog_list", challengeListPayload(), els.challengeOutput, 20000);
+  updateChallengeListFromResult(result);
+  if (!quiet) {
+    const data = result && result.data ? result.data : result;
+    const needsConfirm = Boolean(data && data.needs_confirm);
+    setLine(
+      els.challengeStatus,
+      resultMessage(result),
+      needsConfirm ? "warning" : (actionSucceeded(result) ? "ok" : "warning")
+    );
+  }
+  return result;
+}
+
+function scheduleChallengeCatalogRefresh() {
+  if (challengeListDebounceTimer) clearTimeout(challengeListDebounceTimer);
+  challengeListDebounceTimer = setTimeout(() => {
+    challengeListDebounceTimer = null;
+    void refreshChallengeCatalogList({ quiet: true });
+  }, 200);
+}
+
+function stopChallengeStatusPoll() {
+  if (challengeStatusPollTimer) {
+    clearInterval(challengeStatusPollTimer);
+    challengeStatusPollTimer = null;
+  }
+}
+
+function startChallengeStatusPoll() {
+  stopChallengeStatusPoll();
+  challengeStatusPollTimer = setInterval(() => {
+    void refreshChallengeRunStatus({ quiet: true }).then((result) => {
+      const data = result && result.data ? result.data : result;
+      if (!data || !data.active) stopChallengeStatusPoll();
+    });
+  }, 1500);
+}
+
+async function refreshChallengeRunStatus(options = {}) {
+  const quiet = Boolean(options.quiet);
+  if (!quiet) setLine(els.challengeStatus, "Refreshing challenge status…", "warning");
+  const result = await runAction("complete_challenges_status", {}, els.challengeOutput, 15000);
+  const data = result && result.data ? result.data : result;
+  const msg = resultMessage(result);
+  const active = Boolean(data && data.active);
+  setLine(els.challengeStatus, msg, active ? "warning" : (actionSucceeded(result) ? "ok" : "warning"));
+  if (active) startChallengeStatusPoll();
+  else if (!quiet) stopChallengeStatusPoll();
+  return result;
+}
+
+async function runChallengeCompleteAction(action, payload = {}) {
+  setLine(els.challengeStatus, `Sending ${action}…`, "warning");
+  const result = await runAction(action, payload, els.challengeOutput, 30000);
+  const data = result && result.data ? result.data : result;
+  const needsConfirm = Boolean(data && data.needs_confirm);
+  const msg = resultMessage(result);
+  setLine(
+    els.challengeStatus,
+    needsConfirm ? `Confirm: ${msg}` : msg,
+    needsConfirm || !actionSucceeded(result) ? "warning" : "ok"
+  );
+  appendActivity(`Challenges ${action}: ${msg}`);
+  if (actionSucceeded(result) && !needsConfirm) startChallengeStatusPoll();
   return result;
 }
 
@@ -8423,17 +8541,6 @@ function wireEvents() {
   document.querySelectorAll("[data-boost-serial-mode]").forEach((button) => {
     button.addEventListener("click", () => sendBoostSerial(button.dataset.boostSerialMode));
   });
-  const doNotClickBtn = document.getElementById("doNotClickChallengesBtn");
-  if (doNotClickBtn) {
-    doNotClickBtn.addEventListener("click", async (event) => {
-      if (!(event.shiftKey || event.ctrlKey || event.metaKey)) {
-        setOutput(els.boostOutput, "do not click");
-        return;
-      }
-      const result = await runAction("complete_challenges_all", {}, els.boostOutput, 30000);
-      appendActivity(`do not click: ${resultMessage(result)}`);
-    });
-  }
   document.getElementById("boostClearSerialsBtn").addEventListener("click", () => {
     els.boostSerialText.value = "";
     setOutput(els.boostOutput, "Cleared local serial input.");
@@ -8917,6 +9024,48 @@ function wireEvents() {
   }
   if (els.vehicleCatalogRefreshBtn) {
     els.vehicleCatalogRefreshBtn.addEventListener("click", () => void runVehicleAction("vehicle_catalog", {}));
+  }
+  if (els.challengeCategorySelect) {
+    els.challengeCategorySelect.addEventListener("change", () => scheduleChallengeCatalogRefresh());
+  }
+  if (els.challengeSearchInput) {
+    els.challengeSearchInput.addEventListener("input", () => scheduleChallengeCatalogRefresh());
+  }
+  if (els.challengeCompleteSelectedBtn) {
+    els.challengeCompleteSelectedBtn.addEventListener("click", () => {
+      const challengeId = getValue(els.challengeListSelect);
+      if (!challengeId) {
+        setLine(els.challengeStatus, "Select a challenge first.", "warning");
+        return;
+      }
+      void runChallengeCompleteAction("complete_challenges", { challenge_id: challengeId });
+    });
+  }
+  if (els.challengeCompleteCategoryBtn) {
+    els.challengeCompleteCategoryBtn.addEventListener("click", () => {
+      void runChallengeCompleteAction("complete_challenges", {
+        category: getValue(els.challengeCategorySelect) || "All non-UVHM"
+      });
+    });
+  }
+  if (els.challengeCompleteAllBtn) {
+    els.challengeCompleteAllBtn.addEventListener("click", () => {
+      void runChallengeCompleteAction("complete_challenges_all", {});
+    });
+  }
+  if (els.challengeCancelBtn) {
+    els.challengeCancelBtn.addEventListener("click", async () => {
+      stopChallengeStatusPoll();
+      const result = await runAction("complete_challenges_cancel", {}, els.challengeOutput, 15000);
+      setLine(els.challengeStatus, resultMessage(result), actionSucceeded(result) ? "ok" : "warning");
+    });
+  }
+  if (els.challengeStatusBtn) {
+    els.challengeStatusBtn.addEventListener("click", () => void refreshChallengeRunStatus());
+  }
+  // Prefetch challenge list when Dev Tools DOM is present (bridge may be offline).
+  if (els.challengeListSelect) {
+    void refreshChallengeCatalogList({ quiet: true });
   }
 
   document.getElementById("refreshActivityBtn").addEventListener("click", bridgeStatus);

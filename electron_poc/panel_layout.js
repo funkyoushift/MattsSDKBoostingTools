@@ -23,6 +23,9 @@
   ];
   const TEXT_SCALE_KEY = "msbt.uiTextScale";
   const NAV_TABS_KEY = "msbt.navTabs.v1";
+  /** Tabs kept out of normal View → Main tabs until Shift+click View unlocks them. */
+  const WIP_NAV_TABS = new Set(["combat-vehicle"]);
+  const WIP_NAV_UNLOCK_KEY = "msbt.navTabs.wipUnlocked.v1";
   const TEXT_SCALE_MIN = 0.85;
   const TEXT_SCALE_MAX = 1.4;
   const TEXT_SCALE_STEP = 0.05;
@@ -1560,11 +1563,48 @@
     return Array.from(document.querySelectorAll(".tab-bar [data-tab]")).map((btn) => btn.dataset.tab);
   }
 
+  function loadWipUnlockedNavTabs() {
+    try {
+      const raw = localStorage.getItem(WIP_NAV_UNLOCK_KEY);
+      if (!raw) return [];
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed.filter((id) => WIP_NAV_TABS.has(id)) : [];
+    } catch (_err) {
+      return [];
+    }
+  }
+
+  function saveWipUnlockedNavTabs(ids) {
+    try {
+      const next = Array.from(new Set((ids || []).filter((id) => WIP_NAV_TABS.has(id))));
+      localStorage.setItem(WIP_NAV_UNLOCK_KEY, JSON.stringify(next));
+    } catch (_err) {
+      /* ignore */
+    }
+  }
+
+  function isWipNavTab(tabId) {
+    return WIP_NAV_TABS.has(String(tabId || ""));
+  }
+
+  function enforceWipNavHidden(state) {
+    const order = Array.isArray(state.order) ? state.order.slice() : defaultNavTabIds();
+    const hidden = new Set(Array.isArray(state.hidden) ? state.hidden : []);
+    const unlocked = new Set(loadWipUnlockedNavTabs());
+    WIP_NAV_TABS.forEach((id) => {
+      if (!order.includes(id)) return;
+      if (!unlocked.has(id)) hidden.add(id);
+    });
+    return { order, hidden: Array.from(hidden) };
+  }
+
   function loadNavTabsState() {
     const defaults = defaultNavTabIds();
     try {
       const raw = localStorage.getItem(NAV_TABS_KEY);
-      if (!raw) return { order: defaults.slice(), hidden: [] };
+      if (!raw) {
+        return enforceWipNavHidden({ order: defaults.slice(), hidden: Array.from(WIP_NAV_TABS) });
+      }
       const parsed = JSON.parse(raw);
       const order = Array.isArray(parsed.order) ? parsed.order.filter((id) => defaults.includes(id)) : [];
       defaults.forEach((id) => {
@@ -1573,9 +1613,9 @@
       const hidden = Array.isArray(parsed.hidden)
         ? parsed.hidden.filter((id) => defaults.includes(id) && id !== "boosting")
         : [];
-      return { order, hidden };
+      return enforceWipNavHidden({ order, hidden });
     } catch (_err) {
-      return { order: defaults.slice(), hidden: [] };
+      return enforceWipNavHidden({ order: defaults.slice(), hidden: Array.from(WIP_NAV_TABS) });
     }
   }
 
@@ -1639,9 +1679,15 @@
     // Keep at least one visible tab.
     const visible = state.order.filter((id) => !set.has(id));
     if (!visible.length) return;
+    if (isWipNavTab(tabId)) {
+      const unlocked = new Set(loadWipUnlockedNavTabs());
+      if (hidden) unlocked.delete(tabId);
+      else unlocked.add(tabId);
+      saveWipUnlockedNavTabs(Array.from(unlocked));
+    }
     state.hidden = Array.from(set);
     saveNavTabsState(state);
-    applyNavTabsState(state);
+    applyNavTabsState(enforceWipNavHidden(state));
     refreshViewMenu();
   }
 
@@ -1713,87 +1759,130 @@
       applyTextScale(Number(slider.value) / 100);
     });
 
+    const menu = document.querySelector("[data-msbt-view-menu]");
+    const showWipTabs = Boolean(menu && menu.dataset.msbtViewWip === "1");
+
     const tabsBlock = document.createElement("div");
     tabsBlock.className = "msbt-view-menu-section";
     tabsBlock.innerHTML = '<div class="msbt-view-menu-heading">Main tabs</div>';
     const list = document.createElement("div");
     list.className = "msbt-view-tabs-list";
-    state.order.forEach((id, index) => {
+
+    function appendNavTabRow(id, index, opts) {
       const row = document.createElement("div");
       row.className = "msbt-view-tab-row";
-      row.draggable = true;
+      row.draggable = !opts.wipOnly;
       row.dataset.tabId = id;
 
       const check = document.createElement("input");
       check.type = "checkbox";
       check.checked = !(state.hidden || []).includes(id);
-      check.title = "Show / hide tab";
+      check.title = opts.wipOnly ? "Show development tab in the main bar" : "Show / hide tab";
       check.addEventListener("change", () => setNavTabHidden(id, !check.checked));
 
       const name = document.createElement("span");
       name.className = "msbt-view-tab-name";
-      name.textContent = navTabLabel(id);
-
-      const up = document.createElement("button");
-      up.type = "button";
-      up.className = "secondary";
-      up.textContent = "↑";
-      up.title = "Move tab left";
-      up.disabled = index === 0;
-      up.addEventListener("click", () => moveNavTab(id, -1));
-
-      const down = document.createElement("button");
-      down.type = "button";
-      down.className = "secondary";
-      down.textContent = "↓";
-      down.title = "Move tab right";
-      down.disabled = index === state.order.length - 1;
-      down.addEventListener("click", () => moveNavTab(id, 1));
+      name.textContent = opts.wipOnly ? `${navTabLabel(id)} (WIP)` : navTabLabel(id);
 
       row.appendChild(check);
       row.appendChild(name);
-      row.appendChild(up);
-      row.appendChild(down);
-      list.appendChild(row);
 
-      row.addEventListener("dragstart", (ev) => {
-        row.classList.add("dragging");
-        try {
-          ev.dataTransfer.setData("text/plain", id);
-          ev.dataTransfer.effectAllowed = "move";
-        } catch (_err) {
-          /* ignore */
-        }
-      });
-      row.addEventListener("dragend", () => row.classList.remove("dragging"));
-      row.addEventListener("dragover", (ev) => {
-        ev.preventDefault();
-        row.classList.add("drag-over");
-      });
-      row.addEventListener("dragleave", () => row.classList.remove("drag-over"));
-      row.addEventListener("drop", (ev) => {
-        ev.preventDefault();
-        row.classList.remove("drag-over");
-        let fromId = id;
-        try {
-          fromId = ev.dataTransfer.getData("text/plain") || id;
-        } catch (_err) {
-          /* ignore */
-        }
-        if (fromId === id) return;
-        const st = loadNavTabsState();
-        const from = st.order.indexOf(fromId);
-        const to = st.order.indexOf(id);
-        if (from < 0 || to < 0) return;
-        st.order.splice(from, 1);
-        st.order.splice(to, 0, fromId);
-        saveNavTabsState(st);
-        applyNavTabsState(st);
-        refreshViewMenu();
-      });
+      if (!opts.wipOnly) {
+        const up = document.createElement("button");
+        up.type = "button";
+        up.className = "secondary";
+        up.textContent = "↑";
+        up.title = "Move tab left";
+        up.disabled = index === 0;
+        up.addEventListener("click", () => moveNavTab(id, -1));
+
+        const down = document.createElement("button");
+        down.type = "button";
+        down.className = "secondary";
+        down.textContent = "↓";
+        down.title = "Move tab right";
+        down.disabled = index === state.order.length - 1;
+        down.addEventListener("click", () => moveNavTab(id, 1));
+
+        row.appendChild(up);
+        row.appendChild(down);
+
+        row.addEventListener("dragstart", (ev) => {
+          row.classList.add("dragging");
+          try {
+            ev.dataTransfer.setData("text/plain", id);
+            ev.dataTransfer.effectAllowed = "move";
+          } catch (_err) {
+            /* ignore */
+          }
+        });
+        row.addEventListener("dragend", () => row.classList.remove("dragging"));
+        row.addEventListener("dragover", (ev) => {
+          ev.preventDefault();
+          row.classList.add("drag-over");
+        });
+        row.addEventListener("dragleave", () => row.classList.remove("drag-over"));
+        row.addEventListener("drop", (ev) => {
+          ev.preventDefault();
+          row.classList.remove("drag-over");
+          let fromId = id;
+          try {
+            fromId = ev.dataTransfer.getData("text/plain") || id;
+          } catch (_err) {
+            /* ignore */
+          }
+          if (fromId === id || isWipNavTab(fromId)) return;
+          const st = loadNavTabsState();
+          const from = st.order.indexOf(fromId);
+          const to = st.order.indexOf(id);
+          if (from < 0 || to < 0) return;
+          st.order.splice(from, 1);
+          st.order.splice(to, 0, fromId);
+          saveNavTabsState(st);
+          applyNavTabsState(enforceWipNavHidden(st));
+          refreshViewMenu();
+        });
+      }
+
+      list.appendChild(row);
+    }
+
+    state.order.forEach((id, index) => {
+      if (isWipNavTab(id)) return;
+      appendNavTabRow(id, index, { wipOnly: false });
     });
     tabsBlock.appendChild(list);
     body.appendChild(tabsBlock);
+
+    if (showWipTabs && WIP_NAV_TABS.size) {
+      const wipBlock = document.createElement("div");
+      wipBlock.className = "msbt-view-menu-section";
+      wipBlock.innerHTML = [
+        '<div class="msbt-view-menu-heading">Development tabs</div>',
+        '<div class="msbt-view-menu-hint">Hidden by default. Dev Tools (Combat, Vehicle, Challenges) stays off for public builds until Squ1ggs / data issues are cleared.</div>'
+      ].join("");
+      const wipList = document.createElement("div");
+      wipList.className = "msbt-view-tabs-list";
+      Array.from(WIP_NAV_TABS).forEach((id) => {
+        if (!state.order.includes(id)) return;
+        const row = document.createElement("div");
+        row.className = "msbt-view-tab-row";
+        row.dataset.tabId = id;
+        const check = document.createElement("input");
+        check.type = "checkbox";
+        check.checked = !(state.hidden || []).includes(id);
+        check.title = "Show development tab in the main bar";
+        check.addEventListener("change", () => setNavTabHidden(id, !check.checked));
+        const name = document.createElement("span");
+        name.className = "msbt-view-tab-name";
+        name.textContent = `${navTabLabel(id)} (WIP)`;
+        row.appendChild(check);
+        row.appendChild(name);
+        wipList.appendChild(row);
+      });
+      wipBlock.appendChild(wipList);
+      body.appendChild(wipBlock);
+    }
 
     const panelsBlock = document.createElement("div");
     panelsBlock.className = "msbt-view-menu-section";
@@ -1844,13 +1933,22 @@
     menu.className = "msbt-view-menu";
     menu.setAttribute("data-msbt-view-menu", "");
     menu.innerHTML = [
-      "<summary>View</summary>",
+      '<summary title="Shift+click to show development tabs">View</summary>',
       '<div class="msbt-view-menu-body" data-msbt-view-menu-body></div>'
     ].join("");
     const opacity = headerActions.querySelector(".opacity-control");
     if (opacity) headerActions.insertBefore(menu, opacity.nextSibling);
     else headerActions.insertBefore(menu, headerActions.firstChild);
+    const summary = menu.querySelector("summary");
+    if (summary && !summary.dataset.msbtWipWired) {
+      summary.dataset.msbtWipWired = "1";
+      summary.addEventListener("click", (ev) => {
+        if (ev.shiftKey) menu.dataset.msbtViewWip = "1";
+        else delete menu.dataset.msbtViewWip;
+      });
+    }
     menu.addEventListener("toggle", () => {
+      if (!menu.open) delete menu.dataset.msbtViewWip;
       if (menu.open) refreshViewMenu();
     });
     return menu;

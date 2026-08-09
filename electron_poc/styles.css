@@ -2281,31 +2281,6 @@ button.active-scope {
   }
 }
 
-.do-not-click-wrap {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 0.35rem;
-}
-
-.do-not-click-btn {
-  appearance: none;
-  border: 0;
-  background: transparent;
-  color: rgba(159, 179, 217, 0.28);
-  font-size: 0.68rem;
-  font-weight: 400;
-  letter-spacing: 0.01em;
-  padding: 0.1rem 0.2rem;
-  cursor: default;
-  opacity: 0.55;
-}
-
-.do-not-click-btn:hover,
-.do-not-click-btn:focus {
-  color: rgba(159, 179, 217, 0.38);
-  outline: none;
-}
-
 /* —— Inventory tab (BL teal / cyan, rarity borders) —— */
 .inv-root {
   display: flex;
@@ -2989,6 +2964,13 @@ button.active-scope {
   text-transform: uppercase;
   letter-spacing: 0.04em;
   padding: 6px 12px 4px;
+}
+
+.msbt-view-menu-hint {
+  color: #8b95a8;
+  font-size: 12px;
+  line-height: 1.35;
+  padding: 0 12px 8px;
 }
 
 .msbt-view-text-scale {

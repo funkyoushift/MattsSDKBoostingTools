@@ -177,9 +177,8 @@ def _challenge_confirm_arm() -> dict[str, Any]:
     _challenge_confirm_until = time.monotonic() + float(_CHALLENGE_CONFIRM_WINDOW_S)
     _challenge_confirm_sig = _challenge_roster_signature()
     msg = (
-        f"Confirm required: press Complete All Challenges again within "
-        f"{int(_CHALLENGE_CONFIRM_WINDOW_S)}s to start. "
-        "Host authority recommended; this queues every catalog challenge."
+        f"Confirm required: press again within {int(_CHALLENGE_CONFIRM_WINDOW_S)}s to start. "
+        "Host authority recommended; progress changes can be permanent."
     )
     _challenge_set_status(msg)
     return {
@@ -212,7 +211,7 @@ def _challenge_confirm_ready(*, force: bool = False) -> tuple[bool, dict[str, An
             "needs_confirm": True,
             "message": (
                 "Challenge confirm cancelled — party roster/target changed. "
-                "Press Complete All Challenges twice again to confirm."
+                "Press again twice to confirm."
             ),
         }
     _challenge_confirm_clear()
@@ -1511,6 +1510,16 @@ def run_quick_menu_action(
         )
     elif key == "vehicle_catalog":
         result = vehicle_catalog()
+    elif key == "challenge_catalog_list":
+        result = challenge_catalog_list(payload)
+    elif key == "complete_challenges":
+        result = complete_challenges(payload)
+    elif key == "complete_challenges_all":
+        result = complete_challenges_all(payload)
+    elif key == "complete_challenges_cancel":
+        result = complete_challenges_cancel()
+    elif key == "complete_challenges_status":
+        result = complete_challenges_status()
     elif key == "rarity_apply":
         result = rarity_apply(payload)
     elif key == "rarity_reset":
@@ -2226,6 +2235,88 @@ _challenge_last_status = "Ready."
 _challenge_total_steps = 0
 _challenge_capped_grants = 0
 
+# MIT-reimplemented category filters (behavior inspired by SQBT; no GPL imports).
+_CHALLENGE_CATEGORY_LABELS: tuple[str, ...] = (
+    "All non-UVHM",
+    "Story challenge flags",
+    "Activities",
+    "Collectibles",
+    "Loot",
+    "Combat",
+    "Enemies",
+    "Elemental",
+    "Economy",
+    "Character",
+)
+_CHALLENGE_CATEGORY_RULES: dict[str, tuple[str, ...]] = {
+    "story challenge flags": (
+        "completemainstory",
+        "completesidemissions",
+        "challenges_achievements_24_missions_",
+        "challenges_achievements_25_missions_",
+        "challenges_achievements_26_missions_",
+        "challenges_achievements_27_missions_",
+        "challenges_achievements_28_missions_",
+        "challenges_achievements_29_missions_",
+    ),
+    "activities": ("challenge_tutorial_activity_", "challenge_activity_"),
+    "collectibles": ("challenge_tutorial_collectible_", "challenge_collect_"),
+    "loot": ("challenge_loot_",),
+    "combat": (
+        "challenge_assault_",
+        "challenge_heavyweapon_",
+        "challenge_grenade_",
+        "challenge_melee_",
+        "challenge_sniper_",
+        "challenge_shotgun_",
+        "challenge_pistol_",
+        "challenge_smg_",
+        "challenge_borg_",
+        "challenge_daedalus_",
+        "challenge_jakobs_",
+        "challenge_maliwan_",
+        "challenge_order_",
+        "challenge_ripper_",
+        "challenge_tediore_",
+        "challenge_torgue_",
+        "challenge_vladof_",
+        "challenge_repairkit_",
+        "challenge_revive",
+        "challenge_secondwind",
+        "challenge_shield_",
+        "challenge_spareparts_",
+        "loyaltychallenge_",
+        "cowbell_challenges_combat_",
+    ),
+    "enemies": ("challenge_kill_", "challenge_killarmy_", "cowbell_challenges_enemies_"),
+    "elemental": (
+        "challenge_fire_",
+        "challenge_cryo_",
+        "challenge_corrosive_",
+        "challenge_shock_",
+        "challenge_radiation_",
+        "challenge_2_status_effects",
+        "challenge_all_status_effects",
+        "challenge_maliwan_status",
+    ),
+    "economy": (
+        "challenge_sellloot",
+        "challenge_tutorial_misc_blackmarket",
+        "challenge_getcash",
+        "challenge_geteridium",
+        "challenge_havecash",
+        "challenge_havemorecash",
+    ),
+    "character": (
+        "_levelup",
+        "challenge_darksiren_",
+        "challenge_exosoldier_",
+        "challenge_gravitar_",
+        "challenge_paladin_",
+        "cowbell_challenges_characters_robodealer_",
+    ),
+}
+
 
 def _challenge_set_status(message: str) -> None:
     global _challenge_last_status
@@ -2241,6 +2332,10 @@ def _challenge_set_status(message: str) -> None:
 def _challenge_should_skip(challenge_id: str) -> bool:
     """Skip aggregate parents that cascade into many child rewards."""
     return challenge_id.startswith("ChallengeParent_")
+
+
+def _challenge_normalize_key(challenge_id: str) -> str:
+    return str(challenge_id or "").casefold().replace("-", "_")
 
 
 def _challenge_grant_amount(amount: int) -> int:
@@ -2289,25 +2384,51 @@ def _load_challenge_catalog() -> list[tuple[str, int]]:
     return list(rows)
 
 
-def complete_challenges_all(payload: dict[str, Any] | None = None) -> dict[str, Any]:
-    """Queue every catalog challenge grant for live players (hidden / console tool).
+def _challenge_rows_for_category(category: str, search: str = "") -> list[tuple[str, int]]:
+    """Filter catalog rows by category + search. Always skips UVHM tokens (uvh)."""
+    category_key = str(category or "All non-UVHM").strip().casefold()
+    rules = _CHALLENGE_CATEGORY_RULES.get(category_key)
+    needle = str(search or "").strip().casefold()
+    out: list[tuple[str, int]] = []
+    for challenge_id, amount in _load_challenge_catalog():
+        key = _challenge_normalize_key(challenge_id)
+        if "uvh" in key:
+            continue
+        if category_key != "all non-uvhm":
+            if not rules or not any(rule in key for rule in rules):
+                continue
+        if needle and needle not in challenge_id.casefold():
+            continue
+        out.append((challenge_id, amount))
+    return out
 
-    Requires a double-confirm within 10s unless payload.confirm / force is set
-    (console path can pass force=True after an intentional second command).
-    """
+
+def challenge_catalog_list(payload: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Read-only filtered challenge catalog for Dev Tools UI."""
+    payload = payload or {}
+    category = str(payload.get("category") or "All non-UVHM").strip() or "All non-UVHM"
+    search = str(payload.get("search") or payload.get("q") or "").strip()
+    rows = _challenge_rows_for_category(category, search)
+    return {
+        "ok": True,
+        "categories": list(_CHALLENGE_CATEGORY_LABELS),
+        "entries": [{"id": cid, "amount": amt} for cid, amt in rows],
+        "count": len(rows),
+        "category": category,
+        "search": search,
+        "message": f"{len(rows)} challenge(s) for {category}" + (f" matching '{search}'" if search else "") + ".",
+    }
+
+
+def _challenge_queue_start(rows: list[tuple[str, int]], *, label: str = "Challenges") -> dict[str, Any]:
+    """Shared queue start used by complete-all / selected / category."""
     global _challenge_queue, _challenge_targets, _challenge_next_at, _challenge_running, _challenge_total_steps
     global _challenge_capped_grants
-    payload = payload or {}
-    force = bool(payload.get("confirm") or payload.get("force") or payload.get("confirmed"))
-    # Console second-press convenience: if already armed, treat as confirm.
-    ready, early = _challenge_confirm_ready(force=force)
-    if not ready:
-        return early or {"ok": False, "message": "Challenge confirm required.", "needs_confirm": True}
     if _challenge_running or _challenge_queue:
         remaining = len(_challenge_queue)
         _challenge_set_status(
-            f"Complete-all-challenges already running ({remaining} step(s) left). "
-            "Use msbt_complete_challenges_cancel first."
+            f"{label} already running ({remaining} step(s) left). "
+            "Use complete_challenges_cancel first."
         )
         return {"ok": False, "message": _challenge_last_status, "active": True, "steps_remaining": remaining}
     if get_pc() is None:
@@ -2317,25 +2438,80 @@ def complete_challenges_all(payload: dict[str, Any] | None = None) -> dict[str, 
     if not targets:
         _challenge_set_status("Cannot start: no live players found.")
         return {"ok": False, "message": _challenge_last_status}
-    catalog = _load_challenge_catalog()
-    if not catalog:
-        _challenge_set_status("Cannot start: challenge catalog is empty or missing.")
+    if not rows:
+        _challenge_set_status(f"Cannot start: no challenges matched for {label}.")
         return {"ok": False, "message": _challenge_last_status}
-    _challenge_queue = list(catalog)
+    _challenge_queue = list(rows)
     _challenge_targets = targets
-    _challenge_total_steps = len(catalog)
+    _challenge_total_steps = len(rows)
     _challenge_capped_grants = 0
     _challenge_next_at = time.monotonic()
     _challenge_running = True
     _challenge_set_status(
-        f"Complete-all-challenges queued for {len(targets)} player(s); {_challenge_total_steps} step(s) "
-        f"(batch {_CHALLENGE_BATCH_SIZE}/tick, crash-speed test)."
+        f"{label} queued for {len(targets)} player(s); {_challenge_total_steps} step(s) "
+        f"(batch {_CHALLENGE_BATCH_SIZE}/tick)."
     )
     return {
         "ok": True,
         "message": _challenge_last_status,
         "steps": _challenge_total_steps,
         "players": len(targets),
+    }
+
+
+def complete_challenges_all(payload: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Queue every catalog challenge grant for live players (hidden / console tool).
+
+    Requires a double-confirm within 10s unless payload.confirm / force is set
+    (console path can pass force=True after an intentional second command).
+    Complete ALL uses all non-parent catalog rows (may include UVHM tokens).
+    """
+    payload = payload or {}
+    force = bool(payload.get("confirm") or payload.get("force") or payload.get("confirmed"))
+    ready, early = _challenge_confirm_ready(force=force)
+    if not ready:
+        return early or {"ok": False, "message": "Challenge confirm required.", "needs_confirm": True}
+    catalog = _load_challenge_catalog()
+    if not catalog:
+        _challenge_set_status("Cannot start: challenge catalog is empty or missing.")
+        return {"ok": False, "message": _challenge_last_status}
+    return _challenge_queue_start(catalog, label="Complete ALL challenges")
+
+
+def complete_challenges(payload: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Queue one challenge id or a filtered category (double-confirm unless force)."""
+    payload = payload or {}
+    force = bool(payload.get("confirm") or payload.get("force") or payload.get("confirmed"))
+    ready, early = _challenge_confirm_ready(force=force)
+    if not ready:
+        return early or {"ok": False, "message": "Challenge confirm required.", "needs_confirm": True}
+
+    challenge_id = str(
+        payload.get("challenge_id") or payload.get("id") or payload.get("token") or ""
+    ).strip()
+    category = str(payload.get("category") or "").strip()
+
+    if challenge_id:
+        rows = [
+            (cid, amt)
+            for cid, amt in _load_challenge_catalog()
+            if cid.casefold() == challenge_id.casefold()
+        ]
+        if not rows:
+            try:
+                amount = max(1, int(payload.get("amount") or 1))
+            except Exception:
+                amount = 1
+            rows = [(challenge_id, amount)]
+        return _challenge_queue_start(rows, label=f"Challenge {rows[0][0]}")
+
+    if category:
+        rows = _challenge_rows_for_category(category, "")
+        return _challenge_queue_start(rows, label=f"Category {category}")
+
+    return {
+        "ok": False,
+        "message": "Provide challenge_id or category (or use complete_challenges_all).",
     }
 
 
@@ -2347,9 +2523,9 @@ def complete_challenges_cancel() -> dict[str, Any]:
     _challenge_targets = []
     _challenge_running = False
     _challenge_set_status(
-        f"Complete-all-challenges cancelled ({remaining} step(s) left)."
+        f"Challenges cancelled ({remaining} step(s) left)."
         if active
-        else "No complete-all-challenges run is active."
+        else "No challenge run is active."
     )
     return {"ok": True, "message": _challenge_last_status}
 
@@ -2374,14 +2550,14 @@ def complete_challenges_tick() -> None:
         _challenge_queue.clear()
         _challenge_targets.clear()
         _challenge_running = False
-        _challenge_set_status("Complete-all-challenges stopped: no local player controller.")
+        _challenge_set_status("Challenges stopped: no local player controller.")
         return
     live_targets = [controller for controller in _challenge_targets if _uvh_live(controller)]
     if not live_targets:
         _challenge_queue.clear()
         _challenge_targets.clear()
         _challenge_running = False
-        _challenge_set_status("Complete-all-challenges stopped: no live players left.")
+        _challenge_set_status("Challenges stopped: no live players left.")
         return
 
     last_challenge = ""
@@ -2426,7 +2602,7 @@ def complete_challenges_tick() -> None:
         _challenge_running = False
         capped = f" Capped {_challenge_capped_grants} oversized grant(s)." if _challenge_capped_grants else ""
         _challenge_set_status(
-            f"Complete-all-challenges finished. Final step {last_challenge} sent to "
+            f"Challenges finished. Final step {last_challenge} sent to "
             f"{last_sent}/{len(live_targets)} player(s).{capped}"
         )
 

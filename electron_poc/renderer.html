@@ -56,7 +56,7 @@
     <button data-tab="dev-spawner">Dev Spawner</button>
     <button data-tab="map-travel">Map Travel</button>
     <button data-tab="player-movement">Player Movement</button>
-    <button data-tab="combat-vehicle">Combat / Vehicle</button>
+    <button data-tab="combat-vehicle" data-msbt-wip-nav="1" hidden>Dev Tools</button>
     <button data-tab="activity">Activity Log</button>
     <button data-tab="report">Report to Dev</button>
     <button data-tab="updates">Updates</button>
@@ -434,9 +434,6 @@
       <section class="panel" data-msbt-panel="boost-result" data-msbt-span="12" data-msbt-title="Boosting Result" data-msbt-resize="1">
         <h2>Boosting Result</h2>
         <pre id="boostOutput">No boosting action sent yet.</pre>
-        <div class="do-not-click-wrap">
-          <button type="button" id="doNotClickChallengesBtn" class="do-not-click-btn" title="">do not click</button>
-        </div>
       </section>
     </section>
 
@@ -1562,9 +1559,14 @@
     </section>
 
     <section id="tab-combat-vehicle" class="tab-panel" data-msbt-layout-tab="combat-vehicle">
+      <section class="panel" data-msbt-panel="dev-tools-intro" data-msbt-span="12" data-msbt-title="Dev Tools (WIP)" data-msbt-resize="1">
+        <h2>Dev Tools (WIP)</h2>
+        <p>Hidden development surface (Shift+click View → Development tabs). Not for public builds until Squ1ggs conversation (combat resource tuning) and vehicle data/credits are cleared. Challenges complete-all is long-running (~thousands of grants).</p>
+      </section>
+
       <section class="panel purple" data-msbt-panel="combat-tuning" data-msbt-span="12" data-msbt-title="Combat / Resource Tuning" data-msbt-resize="1">
         <h2>Combat / Resource Tuning</h2>
-        <p>Apply once to OakDamageState / DamageCauserData. Sticky is off by default — use Reapply after travel if values reset.</p>
+        <p>Oak damage / ammo / repair tuning inspired by Squ1ggs patterns. <strong>Ask Squ1ggs before publishing</strong> this module. Sticky is OFF by default — use Reapply after travel if values reset.</p>
         <div class="grid three compact">
           <label>
             Damage Dealt Mult
@@ -1610,7 +1612,7 @@
 
       <section class="panel cyan" data-msbt-panel="vehicle-tuning" data-msbt-span="12" data-msbt-title="Vehicle Presets / Spawn" data-msbt-resize="1">
         <h2>Vehicle Presets / Spawn</h2>
-        <p>Presets write movement fields on the current vehicle. Spawn uses personal-vehicle RPCs (host/solo most reliable).</p>
+        <p>Presets from <strong>mattmab</strong> (OK to use). Catalog seeded for local testing with unlock tokens / Proto rows. Unlock-before-spawn is best-effort; host/solo is most reliable.</p>
         <div class="grid two compact">
           <label>
             Preset
@@ -1643,6 +1645,43 @@
         </div>
         <div id="vehicleStatus" class="status-line">Vehicle controls idle.</div>
         <pre id="vehicleOutput">No vehicle action yet.</pre>
+      </section>
+
+      <section class="panel purple" data-msbt-panel="dev-challenges" data-msbt-span="12" data-msbt-title="Challenges (WIP)" data-msbt-resize="1">
+        <h2>Challenges (WIP)</h2>
+        <p class="muted-line">Warning: challenge grants write permanent progress. Prefer host / solo, and backup your save. Complete ALL queues thousands of grants and can take a long time — use Cancel to stop.</p>
+        <div class="grid two compact">
+          <label>
+            Category
+            <select id="challengeCategorySelect">
+              <option value="All non-UVHM" selected>All non-UVHM</option>
+              <option value="Story challenge flags">Story challenge flags</option>
+              <option value="Activities">Activities</option>
+              <option value="Collectibles">Collectibles</option>
+              <option value="Loot">Loot</option>
+              <option value="Combat">Combat</option>
+              <option value="Enemies">Enemies</option>
+              <option value="Elemental">Elemental</option>
+              <option value="Economy">Economy</option>
+              <option value="Character">Character</option>
+            </select>
+          </label>
+          <label>
+            Search
+            <input id="challengeSearchInput" type="search" autocomplete="off" placeholder="Filter by id…">
+          </label>
+        </div>
+        <label for="challengeListSelect">Challenges</label>
+        <select id="challengeListSelect" class="list-select" size="12"></select>
+        <div class="button-row wrap">
+          <button id="challengeCompleteSelectedBtn" type="button">Complete Selected</button>
+          <button id="challengeCompleteCategoryBtn" type="button">Complete Category</button>
+          <button id="challengeCompleteAllBtn" type="button" class="danger">Complete ALL</button>
+          <button id="challengeCancelBtn" type="button">Cancel</button>
+          <button id="challengeStatusBtn" type="button">Refresh Status</button>
+        </div>
+        <div id="challengeStatus" class="status-line">Challenges idle. First press arms confirm; second press within 10s starts.</div>
+        <pre id="challengeOutput">No challenge action yet.</pre>
       </section>
     </section>
 

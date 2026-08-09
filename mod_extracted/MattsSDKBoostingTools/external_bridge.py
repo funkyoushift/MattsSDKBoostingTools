@@ -603,6 +603,10 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
         return backend_actions.uvh_boost_status()
     if action == "complete_challenges_all":
         return backend_actions.complete_challenges_all(payload)
+    if action == "complete_challenges":
+        return backend_actions.complete_challenges(payload)
+    if action == "challenge_catalog_list":
+        return backend_actions.challenge_catalog_list(payload)
     if action == "complete_challenges_cancel":
         return backend_actions.complete_challenges_cancel()
     if action == "complete_challenges_status":
