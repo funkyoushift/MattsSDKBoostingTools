@@ -8531,17 +8531,26 @@ function switchTab(tabId) {
         "warning"
       );
     }
-  } else if (tabId === "serial-tools" || tabId === "bl4-codes" || tabId === "boosting" || tabId === "movement" || tabId === "item-pool" || tabId === "dev-spawner") {
+  } else if (tabId === "serial-tools" || tabId === "bl4-codes" || tabId === "boosting" || tabId === "player-movement" || tabId === "item-pool" || tabId === "dev-spawner") {
     if (state.quickMenuSnapshot) {
       installQuickMenuAddButtons();
     } else {
       void loadQuickMenuLayout({ quiet: true }).then(() => installQuickMenuAddButtons());
     }
-    if (tabId === "boosting") {
-      void bridgeStatus({ quiet: true });
-    }
   } else if (tabId === "mobile-gateway") {
     void refreshMobileGatewayInfo();
+  }
+
+  if (
+    tabId === "boosting" ||
+    tabId === "combat-vehicle" ||
+    tabId === "player-movement" ||
+    tabId === "item-pool" ||
+    tabId === "dev-spawner" ||
+    tabId === "map-travel" ||
+    tabId === "inventory"
+  ) {
+    void bridgeStatus({ quiet: true });
   }
 }
 
@@ -8578,6 +8587,9 @@ function wireEvents() {
   });
 
   document.getElementById("statusBtn").addEventListener("click", bridgeStatus);
+  document.querySelectorAll("[data-msbt-bridge-refresh]").forEach((button) => {
+    button.addEventListener("click", () => void bridgeStatus());
+  });
   document.getElementById("setTargetBtn").addEventListener("click", () => setTarget(els.targetSelect.value));
   document.getElementById("firstTargetBtn").addEventListener("click", firstPlayerTarget);
   document.getElementById("targetAllPlayersBtn").addEventListener("click", () => setBoostTargetScope("all"));

@@ -616,10 +616,243 @@ def _install_asd_nonblocking_spawn_poll_patch(asd: Any) -> tuple[bool, str]:
     return True, "ActorScriptDeployer non-blocking spawn poll patch installed: " + ", ".join(notes)
 
 
+def _install_asd_clear_spawners_patch(asd: Any) -> tuple[bool, str]:
+    """Ensure ASD_clear disables/destroys throwaway OakSpawners, not only tracked actors.
+
+    Heavy ASD_spawnai runs leave enabled disposable OakSpawners behind. Killing
+    spawned enemies is not enough — those spawners keep restocking. Bundle ASD
+    already clears them; this patch covers older folder installs.
+    """
+    if getattr(asd, "_msbt_clear_spawners_patch", False):
+        return True, "ActorScriptDeployer clear-spawners patch already installed"
+
+    if not hasattr(asd, "_CREATED_SPAWNERS"):
+        try:
+            setattr(asd, "_CREATED_SPAWNERS", [])
+        except Exception as exc:
+            return False, f"ActorScriptDeployer clear-spawners patch could not create tracker: {exc!r}"
+
+    original_deferred = getattr(asd, "_spawn_actor_deferred", None)
+    if callable(original_deferred) and not getattr(asd, "_msbt_track_created_spawners", False):
+        def _spawn_actor_deferred_tracked(
+            gs: Any,
+            world: Any,
+            cls: Any,
+            transform: Any,
+            *,
+            class_name: str = "Actor",
+            source: Any = None,
+            collision_handling: int = 1,
+        ) -> Any:
+            spawned = original_deferred(
+                gs,
+                world,
+                cls,
+                transform,
+                class_name=class_name,
+                source=source,
+                collision_handling=collision_handling,
+            )
+            if spawned is not None and str(class_name) == "OakSpawner":
+                track = getattr(asd, "_track_created_spawner", None)
+                if callable(track):
+                    try:
+                        track(spawned)
+                    except Exception:
+                        pass
+                else:
+                    try:
+                        created = getattr(asd, "_CREATED_SPAWNERS", None)
+                        if isinstance(created, list):
+                            created.append(spawned)
+                    except Exception:
+                        pass
+            return spawned
+
+        try:
+            setattr(asd, "_msbt_original_spawn_actor_deferred", original_deferred)
+            setattr(asd, "_spawn_actor_deferred", _spawn_actor_deferred_tracked)
+            setattr(asd, "_msbt_track_created_spawners", True)
+        except Exception as exc:
+            return False, f"ActorScriptDeployer clear-spawners spawn tracker patch failed: {exc!r}"
+
+    # If this ASD build already ships the full clear helper, keep it and only
+    # ensure the tracker flag is set.
+    if callable(getattr(asd, "_disable_and_destroy_spawner", None)) and callable(
+        getattr(asd, "_collect_tracked_spawners", None)
+    ):
+        try:
+            setattr(asd, "_msbt_clear_spawners_patch", True)
+        except Exception as exc:
+            return False, f"ActorScriptDeployer clear-spawners patch flag failed: {exc!r}"
+        return True, "ActorScriptDeployer clear-spawners patch installed: native disable/destroy helpers present"
+
+    original_clear = getattr(asd, "_clear_spawned_actors", None)
+    if not callable(original_clear):
+        return False, "ActorScriptDeployer clear-spawners patch failed: _clear_spawned_actors missing"
+
+    safe_set = getattr(asd, "_safe_set_attr", None)
+    alive_fn = getattr(asd, "_alive_actors_for_spawner_component", None)
+    safe_key = getattr(asd, "_safe_actor_key", None)
+    log_info = getattr(asd, "_log_info", None)
+    log_warn = getattr(asd, "_log_warn", None)
+    spawned_list = getattr(asd, "_SPAWNED", None)
+
+    def _collect_spawners() -> list[Any]:
+        spawners: list[Any] = []
+        seen: set[str] = set()
+        refs: list[Any] = []
+
+        def _add(candidate: Any) -> None:
+            if candidate is None:
+                return
+            key = ""
+            if callable(safe_key):
+                try:
+                    key = str(safe_key(candidate) or "")
+                except Exception:
+                    key = ""
+            if key:
+                if key in seen:
+                    return
+                seen.add(key)
+            else:
+                if any(existing is candidate for existing in refs):
+                    return
+                refs.append(candidate)
+            spawners.append(candidate)
+
+        if isinstance(spawned_list, list):
+            for item in list(spawned_list):
+                _add(getattr(item, "source", None))
+        created = getattr(asd, "_CREATED_SPAWNERS", None)
+        if isinstance(created, list):
+            for spawner in list(created):
+                _add(spawner)
+        return spawners
+
+    def _disable_and_destroy_spawner(spawner: Any) -> tuple[int, int]:
+        actors_destroyed = 0
+        spawner_destroyed = 0
+        comp = None
+        try:
+            comp = spawner.GetSpawnerComponent()
+        except Exception:
+            comp = None
+        if comp is not None:
+            for fn_name, args in (
+                ("SetSpawnerEnabled", (False,)),
+                ("SetSpawnPointEnabled", (False,)),
+                ("SetActive", (False,)),
+            ):
+                fn = getattr(comp, fn_name, None)
+                if not callable(fn):
+                    continue
+                try:
+                    fn(*args)
+                except TypeError:
+                    try:
+                        fn()
+                    except Exception:
+                        pass
+                except Exception:
+                    pass
+            if callable(safe_set):
+                for field in (
+                    "bSpawnerEnabled",
+                    "bSpawnPointEnabled",
+                    "bEnabled",
+                    "bActive",
+                    "bCanSpawn",
+                    "bAllowSpawn",
+                    "bAllowRespawn",
+                    "bRespawnEnabled",
+                    "bInfinite",
+                    "bUnlimitedSpawns",
+                ):
+                    try:
+                        safe_set(comp, field, False)
+                    except Exception:
+                        pass
+            if callable(alive_fn):
+                try:
+                    for actor in list(alive_fn(comp) or []):
+                        try:
+                            if bool(getattr(actor, "bActorIsBeingDestroyed", False)):
+                                continue
+                        except Exception:
+                            pass
+                        try:
+                            actor.K2_DestroyActor()
+                            actors_destroyed += 1
+                        except Exception:
+                            pass
+                except Exception:
+                    pass
+            try:
+                comp.ResetSpawner(False)
+            except TypeError:
+                try:
+                    comp.ResetSpawner()
+                except Exception:
+                    pass
+            except Exception:
+                pass
+        try:
+            if bool(getattr(spawner, "bActorIsBeingDestroyed", False)):
+                return actors_destroyed, 0
+        except Exception:
+            pass
+        try:
+            spawner.K2_DestroyActor()
+            spawner_destroyed = 1
+        except Exception as exc:
+            if callable(log_warn):
+                try:
+                    log_warn(f"MSBT clear could not destroy spawner {spawner}: {exc}")
+                except Exception:
+                    pass
+        return actors_destroyed, spawner_destroyed
+
+    def _clear_spawned_actors_msbt() -> int:
+        destroyed = 0
+        spawners_destroyed = 0
+        for spawner in _collect_spawners():
+            actors_from_spawner, spawner_gone = _disable_and_destroy_spawner(spawner)
+            destroyed += int(actors_from_spawner)
+            spawners_destroyed += int(spawner_gone)
+        try:
+            destroyed += int(original_clear() or 0)
+        except Exception:
+            pass
+        created = getattr(asd, "_CREATED_SPAWNERS", None)
+        if isinstance(created, list):
+            created.clear()
+        if spawners_destroyed and callable(log_info):
+            try:
+                log_info(f"MSBT clear destroyed {spawners_destroyed} throwaway OakSpawner(s).")
+            except Exception:
+                pass
+        return destroyed
+
+    try:
+        setattr(asd, "_msbt_original_clear_spawned_actors", original_clear)
+        setattr(asd, "_clear_spawned_actors", _clear_spawned_actors_msbt)
+        setattr(asd, "_msbt_clear_spawners_patch", True)
+    except Exception as exc:
+        return False, f"ActorScriptDeployer clear-spawners patch failed: {exc!r}"
+
+    return True, "ActorScriptDeployer clear-spawners patch installed: disable/destroy throwaway OakSpawners"
+
+
 def _install_asd_spawn_runtime_patches(asd: Any) -> tuple[bool, str]:
     """Install all MSBT-side ActorScriptDeployer runtime patches used for spawns."""
     messages: list[str] = []
-    for installer in (_install_asd_sdk03_actor_def_patch, _install_asd_nonblocking_spawn_poll_patch):
+    for installer in (
+        _install_asd_sdk03_actor_def_patch,
+        _install_asd_nonblocking_spawn_poll_patch,
+        _install_asd_clear_spawners_patch,
+    ):
         ok, message = installer(asd)
         messages.append(message)
         if not ok:

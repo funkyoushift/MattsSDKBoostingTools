@@ -8,7 +8,11 @@
 
   const STORAGE_PREFIX = "msbt.panelLayout.v2.";
   /** Bump when panel ids / default tiles change incompatibly (forces stale saves to reset). */
-  const LAYOUT_REVISION = 5;
+  const LAYOUT_REVISION = 6;
+  /** Force a clean default when a tab's out-of-box layout was previously unusable. */
+  const TAB_LAYOUT_MIN_REVISION = {
+    "combat-vehicle": 6
+  };
   /** Preferred restore order when tearing down Dev Spawner docked GridStack. */
   const DEV_SPAWNER_PANEL_ORDER = [
     "dev-spawn",
@@ -131,6 +135,18 @@
     } else if (id === "activity-log" || id === "activity-bridge" || id === "report-preview") {
       h = 8;
       minH = 4;
+    } else if (id === "dev-tools-intro") {
+      h = 3;
+      minH = 2;
+    } else if (id === "dev-target" || id === "streamer-chaos") {
+      h = 8;
+      minH = 5;
+    } else if (id === "combat-tuning" || id === "vehicle-tuning") {
+      h = 10;
+      minH = 6;
+    } else if (id === "dev-challenges") {
+      h = 12;
+      minH = 7;
     } else if (w >= 12) {
       h = panel.hasAttribute("data-msbt-resize") ? 8 : 4;
       minH = 3;
@@ -154,7 +170,13 @@
       "dev-favorites": { x: 6, y: 10 },
       "dev-actors": { x: 0, y: 18 },
       "dev-details": { x: 8, y: 18 },
-      "dev-result": { x: 0, y: 28 }
+      "dev-result": { x: 0, y: 28 },
+      "dev-tools-intro": { x: 0, y: 0 },
+      "dev-target": { x: 0, y: 3 },
+      "streamer-chaos": { x: 6, y: 3 },
+      "combat-tuning": { x: 0, y: 11 },
+      "vehicle-tuning": { x: 6, y: 11 },
+      "dev-challenges": { x: 0, y: 21 }
     };
     const pos = map[id];
     if (!pos) return { w: size.w, h: size.h, minH: size.minH };
@@ -1051,6 +1073,11 @@
   function savedLayoutIsUsable(tab, saved) {
     if (!saved || saved.version !== 2 || !Array.isArray(saved.items) || !saved.items.length) return false;
     if (savedLayoutHasHeavyOverlap(saved)) return false;
+    const tabId = tab.getAttribute("data-msbt-layout-tab") || "";
+    const minRevision = Number(TAB_LAYOUT_MIN_REVISION[tabId] || 0);
+    if (minRevision > 0 && (saved.revision == null || Number(saved.revision) < minRevision)) {
+      return false;
+    }
     const ids = panelIdFingerprint(tab);
     if (saved.panelIds) {
       if (saved.panelIds !== ids) return false;

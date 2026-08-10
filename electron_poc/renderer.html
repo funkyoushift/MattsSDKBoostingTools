@@ -202,6 +202,7 @@
             <button id="firstTargetBtn" data-boost-scope="selected">Use First Player</button>
             <button id="targetAllPlayersBtn" data-boost-scope="all">Target All Players</button>
             <button id="targetNonHostBtn" data-boost-scope="nonhost">Target Non-Host</button>
+            <button type="button" data-msbt-bridge-refresh class="secondary">Refresh Status</button>
             <button id="kickTargetBtn" class="danger">Kick Player</button>
           </div>
           <div id="targetSummary" class="status-line">Selected target: none</div>
@@ -446,6 +447,7 @@
         </div>
         <div class="button-row wrap">
           <button id="quickMenuRefreshBtn">Refresh From Game</button>
+          <button type="button" data-msbt-bridge-refresh class="secondary">Refresh Status</button>
           <button id="quickMenuClearPageBtn" class="danger">Clear Current Page</button>
           <button id="walkthroughReplayBtn" class="secondary">App Walkthrough</button>
         </div>
@@ -508,6 +510,7 @@
         <div class="button-row wrap">
           <button id="serialToolsConvertBtn">Convert</button>
           <button id="serialToolsClearBtn" class="danger">Clear</button>
+          <button type="button" data-msbt-bridge-refresh class="secondary">Refresh Status</button>
         </div>
         <div id="serialToolsStatus" class="status-line warning">Paste a @U serial or deserialized serial text above.</div>
         <div class="grid three">
@@ -658,6 +661,7 @@
           </div>
           <div class="button-row wrap">
             <button id="invRefreshBtn">Refresh Inventory</button>
+            <button type="button" data-msbt-bridge-refresh class="secondary">Refresh Status</button>
             <button id="invCopyAllBtn" class="secondary">Copy Visible Serials</button>
           </div>
         </div>
@@ -782,6 +786,7 @@
               <button id="bl4ReloadBtn">Load Catalog</button>
               <button id="bl4RefreshCatalogsBtn">Refresh Catalogs</button>
               <button id="bl4RefreshGzoBtn">Refresh GZO</button>
+              <button type="button" data-msbt-bridge-refresh class="secondary">Refresh Status</button>
               <button id="bl4ValidateBtn">Validate / Confirm Active</button>
               <button id="bl4ImportSelectedBtn">Import Selected To Bookmarks</button>
             </div>
@@ -916,6 +921,7 @@
           <div class="button-row">
             <button id="loadEditorBtn">Load Editor</button>
             <button id="reloadEditorBtn">Reload</button>
+            <button type="button" data-msbt-bridge-refresh class="secondary">Refresh Status</button>
           </div>
         </div>
         <iframe id="editorFrame" title="Matt Editor"></iframe>
@@ -950,6 +956,7 @@
         <select id="itempoolList" class="list-select" size="18" multiple></select>
         <div class="button-row wrap">
           <button id="spawnItempoolBtn">Spawn Selected Item Pool(s)</button>
+          <button type="button" data-msbt-bridge-refresh class="secondary">Refresh Status</button>
         </div>
         <pre id="itempoolOutput">No item pool action sent yet.</pre>
       </section>
@@ -1031,6 +1038,7 @@
               <span data-dev-host="spawn-ai-btn-side"></span>
               <span data-dev-host="reaggro-btn"></span>
               <button data-dev-spawner-action="dev_spawner_clear">Clear ASD Spawns</button>
+              <button type="button" data-msbt-bridge-refresh class="secondary">Refresh Status</button>
               <span data-dev-host="refresh-log"></span>
             </div>
 
@@ -1069,6 +1077,7 @@
             <span data-dev-host="spawn-ai-btn-side"></span>
             <span data-dev-host="reaggro-btn"></span>
             <button data-dev-spawner-action="dev_spawner_clear">Clear ASD Spawns</button>
+            <button type="button" data-msbt-bridge-refresh class="secondary">Refresh Status</button>
             <span data-dev-host="refresh-log"></span>
           </div>
         </section>
@@ -1138,7 +1147,7 @@
 
       <!-- Shared widgets (unique IDs). Reparented into active shell hosts. -->
       <div class="dev-spawner-parts" data-dev-parts-stash hidden aria-hidden="true">
-        <div id="devSpawnerWarning" class="status-line warning" data-dev-part="warning">No Dev Spawner action sent yet. After heavy spawning, use Clear ASD Spawns.</div>
+        <div id="devSpawnerWarning" class="status-line warning" data-dev-part="warning">No Dev Spawner action sent yet. After heavy spawning, use Clear ASD Spawns (destroys actors and disables leftover throwaway spawners).</div>
         <div id="devSpawnerTimer" class="status-line" data-dev-part="timer">ASD autoclear: idle</div>
         <pre id="devSpawnerOutput" class="dev-spawner-output" data-dev-part="output">No Dev Spawner action sent yet.</pre>
         <div id="devFavoriteStrip" class="dev-favorite-strip button-row wrap compact-actions" data-dev-part="favorite-strip" aria-label="Favorite spawn strip"></div>
@@ -1271,6 +1280,7 @@
           <button data-dev-spawner-action="dev_spawner_scriptdump">Script Dump Last</button>
           <button data-dev-spawner-action="dev_spawner_logo_options">Logo Options</button>
           <button data-dev-spawner-action="dev_spawner_clear">Clear ASD Spawns</button>
+          <button type="button" data-msbt-bridge-refresh class="secondary">Refresh Status</button>
         </div>
 
         <div data-dev-part="barrel-content">
@@ -1320,6 +1330,9 @@
       <section class="panel pink" data-msbt-panel="travel-main" data-msbt-span="12" data-msbt-title="Map Travel" data-msbt-resize="1">
         <h2>Map Travel</h2>
         <p>Select a map first, then choose a travel station on that map. Favorites can hold maps or stations in one list.</p>
+        <div class="button-row wrap">
+          <button type="button" data-msbt-bridge-refresh class="secondary">Refresh Status</button>
+        </div>
         <div class="grid two">
           <div>
             <label for="travelMapSearch">Search Maps</label>
@@ -1397,6 +1410,7 @@
           <button id="movementSavePresetBtn">Save Preset</button>
           <button id="movementLoadSavedBtn">Load Saved</button>
           <button data-movement-action="movement_reset_all">Reset Defaults</button>
+          <button type="button" data-msbt-bridge-refresh class="secondary">Refresh Status</button>
           <button data-movement-action="movement_preset_fast">Fast</button>
           <button data-movement-action="movement_preset_veryfast">Very Fast</button>
           <button data-movement-action="movement_preset_moon">Moon</button>
@@ -1562,19 +1576,23 @@
     <section id="tab-combat-vehicle" class="tab-panel" data-msbt-layout-tab="combat-vehicle">
       <section class="panel" data-msbt-panel="dev-tools-intro" data-msbt-span="12" data-msbt-title="Dev Tools (WIP)" data-msbt-resize="1">
         <h2>Dev Tools (WIP)</h2>
-        <p>Hidden development surface (Shift+click View → Development tabs). Not for public builds until Squ1ggs conversation (combat resource tuning) and vehicle data/credits are cleared. Challenges complete-all is long-running (~thousands of grants).</p>
+        <p>Hidden development surface (Shift+click View → Development tabs). Drag panels to rearrange — layout is saved for this session and across restarts while the tab stays unlocked this session.</p>
+        <div class="button-row wrap">
+          <button type="button" data-msbt-bridge-refresh>Refresh Status</button>
+        </div>
       </section>
 
-      <section class="panel cyan" data-msbt-panel="dev-target" data-msbt-span="12" data-msbt-title="Target Player" data-msbt-resize="1">
+      <section class="panel cyan" data-msbt-panel="dev-target" data-msbt-span="6" data-msbt-title="Target Player" data-msbt-resize="1">
         <h2>Target Player</h2>
-        <p>Party target for Streamer Chaos and other Dev Tools actions. Click <strong>Status</strong> (top bar) to refresh the player list. Host-only for remote players in co-op.</p>
+        <p>Party target for Streamer Chaos and other Dev Tools actions. Use <strong>Refresh Status</strong> to reload the player list. Host-only for remote players in co-op.</p>
         <div id="devBridgeSummary" class="status-line warning">Checking bridge...</div>
         <label for="devTargetSelect">Target Player</label>
         <div class="target-row">
           <select id="devTargetSelect">
-            <option value="">No players loaded — click Status</option>
+            <option value="">No players loaded — click Refresh Status</option>
           </select>
           <button id="devFirstTargetBtn" type="button">Use First Player</button>
+          <button type="button" data-msbt-bridge-refresh class="secondary">Refresh Status</button>
         </div>
         <div class="button-row wrap">
           <button id="devTargetAllBtn" type="button" data-dev-scope="all">Target All Players</button>
@@ -1584,9 +1602,9 @@
         <div id="devTargetSummary" class="status-line warning">Selected target: none</div>
       </section>
 
-      <section class="panel gold" data-msbt-panel="streamer-chaos" data-msbt-span="12" data-msbt-title="Streamer Chaos" data-msbt-resize="1">
+      <section class="panel gold" data-msbt-panel="streamer-chaos" data-msbt-span="6" data-msbt-title="Streamer Chaos" data-msbt-resize="1">
         <h2>Streamer Chaos</h2>
-        <p>Verified hooks (launch, drop/empty backpack, kill/FFYL, invert, lock look/move). Uses <strong>Target Player</strong> above (host or party member). <strong>Target All</strong> / <strong>Non-Host</strong> run the effect on each matching player. Whole-backpack drop only — not equipped-only.</p>
+        <p>Verified hooks (launch, drop/empty backpack, kill/FFYL, invert, lock look/move). Uses <strong>Target Player</strong> (host or party member). <strong>Target All</strong> / <strong>Non-Host</strong> run the effect on each matching player. Whole-backpack drop only — not equipped-only.</p>
         <div class="button-grid wrap">
           <button data-action="chaos_launch">Launch</button>
           <button data-action="chaos_drop_backpack">Drop Backpack</button>
@@ -1602,7 +1620,7 @@
         <div class="status-line compact-note">Standalone StreamerChaos SDK mod also provides NumPad hotkeys for the local player (rebind in oak2).</div>
       </section>
 
-      <section class="panel purple" data-msbt-panel="combat-tuning" data-msbt-span="12" data-msbt-title="Combat / Resource Tuning" data-msbt-resize="1">
+      <section class="panel purple" data-msbt-panel="combat-tuning" data-msbt-span="6" data-msbt-title="Combat / Resource Tuning" data-msbt-resize="1">
         <h2>Combat / Resource Tuning</h2>
         <p>Oak damage / ammo / repair tuning inspired by Squ1ggs patterns. <strong>Ask Squ1ggs before publishing</strong> this module. Sticky is OFF by default — use Reapply after travel if values reset.</p>
         <div class="grid three compact">
@@ -1648,7 +1666,7 @@
         <pre id="combatOutput">No combat tuning action yet.</pre>
       </section>
 
-      <section class="panel cyan" data-msbt-panel="vehicle-tuning" data-msbt-span="12" data-msbt-title="Vehicle Presets / Spawn" data-msbt-resize="1">
+      <section class="panel cyan" data-msbt-panel="vehicle-tuning" data-msbt-span="6" data-msbt-title="Vehicle Presets / Spawn" data-msbt-resize="1">
         <h2>Vehicle Presets / Spawn</h2>
         <p>Presets from <strong>mattmab</strong> (OK to use). Catalog seeded for local testing with unlock tokens / Proto rows. Unlock-before-spawn is best-effort; host/solo is most reliable.</p>
         <div class="grid two compact">
@@ -1680,6 +1698,7 @@
         <div class="button-row wrap">
           <button id="vehicleSpawnBtn" type="button">Spawn Selected Vehicle</button>
           <button id="vehicleCatalogRefreshBtn" type="button">Refresh Catalog</button>
+          <button type="button" data-msbt-bridge-refresh class="secondary">Refresh Status</button>
         </div>
         <div id="vehicleStatus" class="status-line">Vehicle controls idle.</div>
         <pre id="vehicleOutput">No vehicle action yet.</pre>
@@ -1717,6 +1736,7 @@
           <button id="challengeCompleteAllBtn" type="button" class="danger">Complete ALL</button>
           <button id="challengeCancelBtn" type="button">Cancel</button>
           <button id="challengeStatusBtn" type="button">Refresh Status</button>
+          <button type="button" data-msbt-bridge-refresh class="secondary">Refresh Bridge</button>
         </div>
         <div id="challengeStatus" class="status-line">Challenges idle. First press arms confirm; second press within 10s starts.</div>
         <pre id="challengeOutput">No challenge action yet.</pre>
@@ -1805,6 +1825,7 @@
           </label>
           <div class="button-row wrap">
             <button id="reportPreviewBtn">Refresh Preview</button>
+            <button type="button" data-msbt-bridge-refresh class="secondary">Refresh Status</button>
             <button id="reportCopyBtn">Copy Report</button>
             <button id="reportSaveBtn">Save Report</button>
             <button id="reportGithubBtn">Submit Issue to Developer on GitHub</button>
@@ -1848,6 +1869,7 @@
           <button id="downloadBtn">Open Electron Installer</button>
           <button id="manualZipBtn">Open Manual ZIP</button>
           <button id="refreshDataCatalogsBtn">Refresh Data Catalogs</button>
+          <button type="button" data-msbt-bridge-refresh class="secondary">Refresh Status</button>
         </div>
         <div id="dataCatalogSummary" class="status-line">Data catalogs not checked yet.</div>
         <div id="dataCatalogDetail" class="version-detail">Last data version / refresh time appear here after a check.</div>

@@ -90,6 +90,9 @@ class DeployedActor:
 
 
 _SPAWNED: List[DeployedActor] = []
+# Throwaway OakSpawners created by ASD_spawnai / thin-air paths. Clear must disable
+# and destroy these or they keep respawning enemies after actors are killed.
+_CREATED_SPAWNERS: List[Any] = []
 # Runtime-only cache of FGbxDefPtr values discovered from live actors.
 # These pointers cannot be reconstructed from strings in the current SDK, so
 # cache while the source actor is loaded, then spawn later in the same session.
@@ -463,11 +466,137 @@ def _spawn_actor_deferred(
 
     try:
         raw2 = gs.FinishSpawningActor(actor, transform, 0)
-        return _unwrap(raw2)
+        spawned = _unwrap(raw2)
     except Exception as exc:
         _log_error(f"FinishSpawningActor failed for {class_name}: {exc}")
         return None
+    if spawned is not None and str(class_name) == "OakSpawner":
+        _track_created_spawner(spawned)
+    return spawned
 
+
+def _track_created_spawner(spawner: Any) -> None:
+    """Remember throwaway OakSpawners so Clear can disable them later."""
+    if spawner is None:
+        return
+    key = _safe_actor_key(spawner)
+    if key:
+        for existing in _CREATED_SPAWNERS:
+            if _safe_actor_key(existing) == key:
+                return
+    else:
+        for existing in _CREATED_SPAWNERS:
+            if existing is spawner:
+                return
+    _CREATED_SPAWNERS.append(spawner)
+
+
+def _collect_tracked_spawners() -> List[Any]:
+    """Unique OakSpawner sources from tracked spawn records + created spawners."""
+    spawners: List[Any] = []
+    seen: set[str] = set()
+    refs: List[Any] = []
+
+    def _add(candidate: Any) -> None:
+        if candidate is None:
+            return
+        key = _safe_actor_key(candidate)
+        if key:
+            if key in seen:
+                return
+            seen.add(key)
+        else:
+            if any(existing is candidate for existing in refs):
+                return
+            refs.append(candidate)
+        spawners.append(candidate)
+
+    for item in list(_SPAWNED):
+        _add(getattr(item, "source", None))
+    for spawner in list(_CREATED_SPAWNERS):
+        _add(spawner)
+    return spawners
+
+
+def _disable_and_destroy_spawner(spawner: Any) -> Tuple[int, int]:
+    """Disable a throwaway spawner, destroy its live actors, then destroy the spawner.
+
+    Returns (actors_destroyed, spawner_destroyed).
+    """
+    actors_destroyed = 0
+    spawner_destroyed = 0
+    comp = None
+    try:
+        comp = spawner.GetSpawnerComponent()
+    except Exception:
+        comp = None
+
+    if comp is not None:
+        for fn_name, args in (
+            ("SetSpawnerEnabled", (False,)),
+            ("SetSpawnPointEnabled", (False,)),
+            ("SetActive", (False,)),
+        ):
+            fn = getattr(comp, fn_name, None)
+            if not callable(fn):
+                continue
+            try:
+                fn(*args)
+            except TypeError:
+                try:
+                    fn()
+                except Exception:
+                    pass
+            except Exception:
+                pass
+        for field in (
+            "bSpawnerEnabled",
+            "bSpawnPointEnabled",
+            "bEnabled",
+            "bActive",
+            "bCanSpawn",
+            "bAllowSpawn",
+            "bAllowRespawn",
+            "bRespawnEnabled",
+            "bInfinite",
+            "bUnlimitedSpawns",
+        ):
+            _safe_set_attr(comp, field, False)
+        try:
+            for actor in list(_alive_actors_for_spawner_component(comp)):
+                try:
+                    if bool(getattr(actor, "bActorIsBeingDestroyed", False)):
+                        continue
+                except Exception:
+                    pass
+                try:
+                    actor.K2_DestroyActor()
+                    actors_destroyed += 1
+                except Exception:
+                    pass
+        except Exception:
+            pass
+        try:
+            comp.ResetSpawner(False)
+        except TypeError:
+            try:
+                comp.ResetSpawner()
+            except Exception:
+                pass
+        except Exception:
+            pass
+
+    try:
+        if bool(getattr(spawner, "bActorIsBeingDestroyed", False)):
+            return actors_destroyed, 0
+    except Exception:
+        pass
+    try:
+        spawner.K2_DestroyActor()
+        spawner_destroyed = 1
+    except Exception as exc:
+        _log_warn(f"clear could not destroy spawner {spawner}: {exc}")
+    return actors_destroyed, spawner_destroyed
 
 
 def _actor_mesh(actor: Any) -> Any:
@@ -2837,6 +2966,7 @@ def _spawnai_fresh_spawner_direct(
         spawner = _spawn_actor_deferred(gs, world, cls, transform, class_name="OakSpawner", source=None, collision_handling=1)
         if spawner is None:
             continue
+        _track_created_spawner(spawner)
         try:
             comp = spawner.GetSpawnerComponent()
         except Exception as exc:
@@ -3280,6 +3410,15 @@ def _clear_spawned_actors() -> int:
     destroyed = 0
     skipped_dead = 0
     survivors: List[DeployedActor] = []
+    spawners_destroyed = 0
+
+    # Disable/destroy throwaway OakSpawners first. Leaving them enabled is what
+    # causes enemies to spontaneously respawn after a heavy ASD_spawnai run.
+    for spawner in _collect_tracked_spawners():
+        actors_from_spawner, spawner_gone = _disable_and_destroy_spawner(spawner)
+        destroyed += actors_from_spawner
+        spawners_destroyed += spawner_gone
+
     for item in list(_SPAWNED):
         actor = _find_live_spawned_actor(item)
         if actor is None:
@@ -3299,12 +3438,15 @@ def _clear_spawned_actors() -> int:
             _log_warn(f"clear skipped live actor {item.actor_key or item.actor}: {exc}")
     _SPAWNED.clear()
     _SPAWNED.extend(survivors)
+    _CREATED_SPAWNERS.clear()
     if skipped_dead:
         _log_info(f"clear ignored {skipped_dead} actor references that were already gone/exploded.")
+    if spawners_destroyed:
+        _log_info(f"clear destroyed {spawners_destroyed} throwaway OakSpawner(s).")
     return destroyed
 
 
-@command("ASD_clear", description="Destroy actors spawned by ActorScriptDeployer.")
+@command("ASD_clear", description="Destroy actors and disable throwaway OakSpawners created by ActorScriptDeployer.")
 def _cmd_clear(_: argparse.Namespace) -> None:
     destroyed = _clear_spawned_actors()
     _log_info(f"cleared {destroyed} spawned actors.")
