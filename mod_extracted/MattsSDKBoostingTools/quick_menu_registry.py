@@ -279,6 +279,16 @@ ACTION_CATALOG: dict[str, dict[str, Any]] = {
     "set_backpack_bank_all": {"basic": "Inv All Party 1k", "aliases": ["Inv All"]},
     "kick_player": {"basic": "Kick Selected", "aliases": ["Kick"]},
     "refresh_players": {"basic": "Refresh Players", "aliases": ["Refresh"]},
+    "chaos_launch": {"basic": "Chaos Launch", "aliases": ["Launch", "Yeet"]},
+    "chaos_drop_backpack": {"basic": "Chaos Drop Bag", "aliases": ["Drop Bag", "Spill Bag"]},
+    "chaos_empty_backpack": {"basic": "Chaos Empty Bag", "aliases": ["Empty Bag", "Delete Bag"]},
+    "chaos_kill": {"basic": "Chaos Kill", "aliases": ["Kill"]},
+    "chaos_ffyl": {"basic": "Chaos FFYL", "aliases": ["FFYL", "Down"]},
+    "chaos_invert_look": {"basic": "Chaos Invert Look", "aliases": ["Invert"]},
+    "chaos_lock_look": {"basic": "Chaos Lock Look", "aliases": ["No Look"]},
+    "chaos_lock_move": {"basic": "Chaos Lock Move", "aliases": ["No Move"]},
+    "chaos_lock_both": {"basic": "Chaos Lock Both", "aliases": ["Freeze"]},
+    "chaos_unlock": {"basic": "Chaos Unlock", "aliases": ["Unlock Input"]},
 }
 
 for _tier in range(1, 8):

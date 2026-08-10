@@ -79,6 +79,7 @@ from .combat_tuning import (
     reapply_combat_tuning as _reapply_combat_tuning,
     reset_combat_tuning as _reset_combat_tuning,
 )
+from . import streamer_chaos
 from .spawn_helpers import (
     apply_aggro_to_tracked as _apply_aggro_to_tracked,
     get_aggro_mode as _get_aggro_mode,
@@ -1560,6 +1561,37 @@ def run_quick_menu_action(
         result = copy_read_serial(payload.get("index") if "index" in payload else payload.get("serial_index"))
     elif key == "copy_all_read_serials":
         result = copy_all_read_serials()
+    elif key == "chaos_launch":
+        result = chaos_launch(payload.get("z") or payload.get("launch_z"))
+        needs_player = True
+    elif key == "chaos_drop_backpack":
+        result = chaos_drop_backpack()
+        needs_player = True
+        is_drop = True
+    elif key == "chaos_empty_backpack":
+        result = chaos_empty_backpack()
+        needs_player = True
+    elif key == "chaos_kill":
+        result = chaos_kill()
+        needs_player = True
+    elif key == "chaos_ffyl":
+        result = chaos_ffyl()
+        needs_player = True
+    elif key == "chaos_invert_look":
+        result = chaos_invert_look(payload.get("seconds") or payload.get("secs"))
+        needs_player = True
+    elif key == "chaos_lock_look":
+        result = chaos_lock_look(payload.get("seconds") or payload.get("secs"))
+        needs_player = True
+    elif key == "chaos_lock_move":
+        result = chaos_lock_move(payload.get("seconds") or payload.get("secs"))
+        needs_player = True
+    elif key == "chaos_lock_both":
+        result = chaos_lock_both(payload.get("seconds") or payload.get("secs"))
+        needs_player = True
+    elif key == "chaos_unlock":
+        result = chaos_unlock()
+        needs_player = True
     else:
         return {"ok": False, "message": f"Unknown quick menu action: {key}"}
 
@@ -3403,6 +3435,116 @@ def combat_tuning_apply(payload: dict[str, Any] | None = None) -> dict[str, Any]
         return {"ok": True, "message": msg}
     except Exception as exc:
         return {"ok": False, "message": f"Combat tuning apply failed: {exc!r}"}
+
+
+def _chaos_selected_pc() -> tuple[Any | None, str]:
+    """Resolve selected party PC (host or other) for Streamer Chaos actions."""
+    refresh_players()
+    idx = get_selected_player_index()
+    name = get_selected_player_name()
+    if idx is None and not name:
+        auto = ensure_selected_player(prefer_host=True)
+        if not auto.get("ok"):
+            return None, "No party player selected."
+        idx = get_selected_player_index()
+        name = get_selected_player_name()
+    label = _selected_player_label(idx, name)
+    pc = _party_controller_for_index(idx)
+    if pc is None:
+        return None, f"Could not resolve live controller for {label}."
+    return pc, label
+
+
+def _chaos_run(effect_name: str, runner: Any, *args: Any) -> dict[str, Any]:
+    pc, label = _chaos_selected_pc()
+    if pc is None:
+        return {"ok": False, "message": label}
+    try:
+        msg = runner(pc, *args) if args else runner(pc)
+    except Exception as exc:
+        return {"ok": False, "message": f"{effect_name} failed for {label}: {exc!r}"}
+    ok = streamer_chaos.result_ok(str(msg))
+    return {"ok": ok, "message": f"{effect_name} → {label}: {msg}"}
+
+
+def chaos_launch(z: object = None) -> dict[str, Any]:
+    try:
+        z_boost = (
+            float(z)
+            if z is not None and str(z).strip() != ""
+            else streamer_chaos._DEFAULT_LAUNCH_Z
+        )
+    except Exception:
+        z_boost = streamer_chaos._DEFAULT_LAUNCH_Z
+    return _chaos_run("Launch", streamer_chaos.launch_for_pc, z_boost)
+
+
+def chaos_drop_backpack() -> dict[str, Any]:
+    return _chaos_run("Drop backpack", streamer_chaos.drop_backpack_for_pc)
+
+
+def chaos_empty_backpack() -> dict[str, Any]:
+    return _chaos_run("Empty backpack", streamer_chaos.empty_backpack_for_pc)
+
+
+def chaos_kill() -> dict[str, Any]:
+    return _chaos_run("Kill", streamer_chaos.kill_for_pc)
+
+
+def chaos_ffyl() -> dict[str, Any]:
+    return _chaos_run("FFYL", streamer_chaos.ffyl_for_pc)
+
+
+def chaos_invert_look(seconds: object = None) -> dict[str, Any]:
+    try:
+        secs = (
+            float(seconds)
+            if seconds is not None and str(seconds).strip() != ""
+            else streamer_chaos._DEFAULT_INVERT_SECS
+        )
+    except Exception:
+        secs = streamer_chaos._DEFAULT_INVERT_SECS
+    return _chaos_run("Invert look", streamer_chaos.invert_look_for_pc, secs)
+
+
+def chaos_lock_look(seconds: object = None) -> dict[str, Any]:
+    try:
+        secs = (
+            float(seconds)
+            if seconds is not None and str(seconds).strip() != ""
+            else streamer_chaos._DEFAULT_LOCK_SECS
+        )
+    except Exception:
+        secs = streamer_chaos._DEFAULT_LOCK_SECS
+    return _chaos_run("Lock look", streamer_chaos.lock_look_for_pc, secs)
+
+
+def chaos_lock_move(seconds: object = None) -> dict[str, Any]:
+    try:
+        secs = (
+            float(seconds)
+            if seconds is not None and str(seconds).strip() != ""
+            else streamer_chaos._DEFAULT_LOCK_SECS
+        )
+    except Exception:
+        secs = streamer_chaos._DEFAULT_LOCK_SECS
+    return _chaos_run("Lock move", streamer_chaos.lock_move_for_pc, secs)
+
+
+def chaos_lock_both(seconds: object = None) -> dict[str, Any]:
+    try:
+        secs = (
+            float(seconds)
+            if seconds is not None and str(seconds).strip() != ""
+            else streamer_chaos._DEFAULT_LOCK_SECS
+        )
+    except Exception:
+        secs = streamer_chaos._DEFAULT_LOCK_SECS
+    return _chaos_run("Lock both", streamer_chaos.lock_both_for_pc, secs)
+
+
+def chaos_unlock() -> dict[str, Any]:
+    return _chaos_run("Unlock", streamer_chaos.unlock_for_pc)
 
 
 def combat_tuning_reapply() -> dict[str, Any]:

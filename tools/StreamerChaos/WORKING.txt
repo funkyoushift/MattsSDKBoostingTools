@@ -1,0 +1,34 @@
+StreamerChaos — verified working effects (from TwitchInteractionProbe)
+
+Hotkeys (rebind in oak2 / SDK options UI):
+  NumPad5  Launch player (AddImpulse Z+5000)
+  NumPad6  Drop backpack to ground (SpillOut)
+  NumPad7  Delete backpack (EmptyContainer)
+  NumPad8  FFYL (StartDownState False)
+  NumPad9  Kill (StartDownState True)
+  NumPad4  Invert look (8s, then restore)
+  NumPad1  Lock look (5s)
+  NumPad2  Lock move (5s)
+  NumPad3  Lock look+move (5s)
+  NumPad0  Unlock look/move now
+
+Console:
+  sc_help
+  sc_launch [z]
+  sc_drop_backpack
+  sc_empty_backpack
+  sc_kill
+  sc_ffyl
+  sc_invert [seconds]
+  sc_lock_look [seconds]
+  sc_lock_move [seconds]
+  sc_lock_both [seconds]
+  sc_unlock
+
+Notes:
+  - Hotkeys always affect LOCAL player.
+  - This mod is the Vault Surge / streamer-app feed. MSBT does NOT need it
+    (same effects are built into MSBT streamer_chaos.py + chaos_* bridge actions).
+  - Drop = whole backpack SpillOut. Equipped-only drop is NOT included.
+  - Folder mods do not hot-reload — full game restart after install/edit.
+  - If StreamerChaos + MSBT are both loaded, NumPad defaults can double-fire.

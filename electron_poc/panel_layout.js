@@ -25,7 +25,8 @@
   const NAV_TABS_KEY = "msbt.navTabs.v1";
   /** Tabs kept out of normal View → Main tabs until Shift+click View unlocks them. */
   const WIP_NAV_TABS = new Set(["combat-vehicle"]);
-  const WIP_NAV_UNLOCK_KEY = "msbt.navTabs.wipUnlocked.v1";
+  /** Session-only unlock — never persist so WIP tabs stay secret across restarts. */
+  const wipUnlockedNavTabs = new Set();
   const TEXT_SCALE_MIN = 0.85;
   const TEXT_SCALE_MAX = 1.4;
   const TEXT_SCALE_STEP = 0.05;
@@ -1564,20 +1565,18 @@
   }
 
   function loadWipUnlockedNavTabs() {
-    try {
-      const raw = localStorage.getItem(WIP_NAV_UNLOCK_KEY);
-      if (!raw) return [];
-      const parsed = JSON.parse(raw);
-      return Array.isArray(parsed) ? parsed.filter((id) => WIP_NAV_TABS.has(id)) : [];
-    } catch (_err) {
-      return [];
-    }
+    return Array.from(wipUnlockedNavTabs);
   }
 
   function saveWipUnlockedNavTabs(ids) {
+    wipUnlockedNavTabs.clear();
+    (ids || []).forEach((id) => {
+      if (WIP_NAV_TABS.has(id)) wipUnlockedNavTabs.add(id);
+    });
+    // Also clear any legacy persisted unlock keys from earlier builds.
     try {
-      const next = Array.from(new Set((ids || []).filter((id) => WIP_NAV_TABS.has(id))));
-      localStorage.setItem(WIP_NAV_UNLOCK_KEY, JSON.stringify(next));
+      localStorage.removeItem("msbt.navTabs.wipUnlocked.v1");
+      localStorage.removeItem("msbt.navTabs.wipUnlocked.v2");
     } catch (_err) {
       /* ignore */
     }
@@ -1593,7 +1592,8 @@
     const unlocked = new Set(loadWipUnlockedNavTabs());
     WIP_NAV_TABS.forEach((id) => {
       if (!order.includes(id)) return;
-      if (!unlocked.has(id)) hidden.add(id);
+      if (unlocked.has(id)) hidden.delete(id);
+      else hidden.add(id);
     });
     return { order, hidden: Array.from(hidden) };
   }
@@ -2014,8 +2014,18 @@
   function initViewChrome() {
     applyTextScale(loadTextScale());
     ensureViewMenu();
+    // Never restore WIP unlock from disk — Dev Tools stays hidden unless Shift+View this session.
+    try {
+      localStorage.removeItem("msbt.navTabs.wipUnlocked.v1");
+      localStorage.removeItem("msbt.navTabs.wipUnlocked.v2");
+    } catch (_err) {
+      /* ignore */
+    }
+    wipUnlockedNavTabs.clear();
     const state = loadNavTabsState();
     applyNavTabsState(state);
+    // Persist enforced hidden list so old prefs can't resurrect WIP tabs in the bar.
+    saveNavTabsState(state);
     enableNavTabDragReorder();
     refreshViewMenu();
   }

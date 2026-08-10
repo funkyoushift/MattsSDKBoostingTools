@@ -1,0 +1,12 @@
+[project]
+name = "StreamerChaos"
+version = "0.1.0"
+authors = [{ name = "MSBT" }]
+description = "Working streamer-chaos hooks: launch, drop/empty backpack, kill/FFYL, invert, lock look/move."
+
+[tool.sdkmod]
+name = "StreamerChaos"
+license = { name = "MIT" }
+version = "0.1.0"
+coop_support = "ClientSide"
+supported_games = ["BL4"]

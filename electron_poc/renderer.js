@@ -2304,7 +2304,17 @@ const PLAYER_SCOPED_BOOST_ACTIONS = new Set([
   "max_eridium",
   "max_player_level",
   "max_spec_level",
-  "max_sdu"
+  "max_sdu",
+  "chaos_launch",
+  "chaos_drop_backpack",
+  "chaos_empty_backpack",
+  "chaos_kill",
+  "chaos_ffyl",
+  "chaos_invert_look",
+  "chaos_lock_look",
+  "chaos_lock_move",
+  "chaos_lock_both",
+  "chaos_unlock"
 ]);
 
 function boostScopeLabel(scope = state.boostTargetScope) {
