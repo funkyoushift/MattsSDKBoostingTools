@@ -330,6 +330,9 @@ const els = {
   boostMobileNotice: document.getElementById("boostMobileNotice"),
   targetSelect: document.getElementById("targetSelect"),
   targetSummary: document.getElementById("targetSummary"),
+  devTargetSelect: document.getElementById("devTargetSelect"),
+  devTargetSummary: document.getElementById("devTargetSummary"),
+  devBridgeSummary: document.getElementById("devBridgeSummary"),
   travelMapBtn: document.getElementById("travelMapBtn"),
   travelMapList: document.getElementById("travelMapList"),
   travelMapSearch: document.getElementById("travelMapSearch"),
@@ -2266,6 +2269,7 @@ function renderPlayers(status = {}) {
   };
 
   fillSelect(els.targetSelect, state.selectedTarget);
+  fillSelect(els.devTargetSelect, state.selectedTarget);
   fillSelect(els.bookmarkTargetSelect, state.selectedTarget);
   fillSelect(els.bl4TargetSelect, state.selectedTarget);
   fillSelect(els.movementTargetSelect, els.movementTargetSelect && els.movementTargetSelect.value);
@@ -2280,6 +2284,7 @@ function renderPlayers(status = {}) {
   }
 
   updateBoostTargetSummary();
+  updateDevTargetSummary();
   const selectedPlayer = state.players.find((player) => String(playerValue(player)) === String(state.selectedTarget));
   const text = `Selected target: ${selectedPlayer ? playerLabel(selectedPlayer) : state.selectedTarget || "none"}`;
   const kind = state.selectedTarget ? "ok" : "warning";
@@ -2356,6 +2361,31 @@ function updateBoostTargetSummary() {
   setLine(els.targetSummary, text, kind);
   document.querySelectorAll("[data-boost-scope]").forEach((button) => {
     button.classList.toggle("active-scope", button.dataset.boostScope === scope);
+  });
+  updateDevTargetSummary();
+}
+
+function updateDevTargetSummary() {
+  if (!els.devTargetSummary) return;
+  const selectedPlayer = state.players.find((player) => String(playerValue(player)) === String(state.selectedTarget));
+  const scope = state.boostTargetScope || "selected";
+  const scoped = playersForBoostScope(scope);
+  let text = `Dev scope: ${boostScopeLabel(scope)}`;
+  if (scope === "selected") {
+    text += ` | ${selectedPlayer ? playerLabel(selectedPlayer) : state.selectedTarget || "none"}`;
+  } else {
+    text += ` (${scoped.length} player${scoped.length === 1 ? "" : "s"})`;
+    if (selectedPlayer) text += ` | dropdown: ${playerLabel(selectedPlayer)}`;
+    if (scope === "nonhost" && (state.hostPlayerIndex === null || state.hostPlayerIndex === undefined)) {
+      text += " | host index unknown — using players after first as non-host fallback";
+    }
+  }
+  const kind = scope === "selected"
+    ? (state.selectedTarget ? "ok" : "warning")
+    : (scoped.length ? "ok" : "warning");
+  setLine(els.devTargetSummary, text, kind);
+  document.querySelectorAll("[data-dev-scope]").forEach((button) => {
+    button.classList.toggle("active-scope", button.dataset.devScope === scope);
   });
 }
 
@@ -2713,6 +2743,7 @@ function applyBridgeStatusResult(result, options = {}) {
     state.selectedTargetName = "";
     renderPlayers({});
     setLine(els.bridgeSummary, data.message || "Bridge offline.", "bad");
+    if (els.devBridgeSummary) setLine(els.devBridgeSummary, data.message || "Bridge offline.", "bad");
     updateSerialState();
     if (!options.quiet) appendActivity(data.message || "Bridge offline.");
     return data;
@@ -2725,6 +2756,9 @@ function applyBridgeStatusResult(result, options = {}) {
   const selected = data.selected_player || "none";
   const queue = data.queue || 0;
   setLine(els.bridgeSummary, `Bridge online | players: ${playerCount} | selected: ${selected} | queue: ${queue}`, "ok");
+  if (els.devBridgeSummary) {
+    setLine(els.devBridgeSummary, `Bridge online | players: ${playerCount} | selected: ${selected} | queue: ${queue}`, "ok");
+  }
   updateSerialDeliveryProgress(data.serial_delivery || {});
   updateSerialState();
   // Always pull rarity from the bridge so F7 live-apply moves Boosting sliders.
@@ -3106,7 +3140,10 @@ async function runChallengeCompleteAction(action, payload = {}) {
 }
 
 async function bridgeStatus(options = {}) {
-  if (!options.quiet) setLine(els.bridgeSummary, "Checking bridge...", "warning");
+  if (!options.quiet) {
+    setLine(els.bridgeSummary, "Checking bridge...", "warning");
+    if (els.devBridgeSummary) setLine(els.devBridgeSummary, "Checking bridge...", "warning");
+  }
   const result = await window.msbt.bridgeRequest({ method: "GET", path: "/status" });
   if (!options.quiet) setOutput(els.statusOutput, result);
   applyBridgeStatusResult(result, options);
@@ -3216,6 +3253,7 @@ async function setTarget(value, options = {}) {
     setLine(els.bookmarkTargetSummary, "Selected target: none", "warning");
     setLine(els.bl4TargetSummary, "Selected target: none", "warning");
     setLine(els.movementStatus, "Selected target: none", "warning");
+    setLine(els.devTargetSummary, "Selected target: none", "warning");
     if (els.invReading && !state.invEquipped.length && !state.invBackpack.length) {
       els.invReading.textContent = "Reading: none";
     }
@@ -3227,6 +3265,7 @@ async function setTarget(value, options = {}) {
   setLine(els.bookmarkTargetSummary, `Setting target ${target}...`, "warning");
   setLine(els.bl4TargetSummary, `Setting target ${target}...`, "warning");
   setLine(els.movementStatus, `Setting target ${target}...`, "warning");
+  if (els.devTargetSummary) setLine(els.devTargetSummary, `Setting target ${target}...`, "warning");
   if (els.invStatus) setLine(els.invStatus, `Setting target ${target}...`, "warning");
   const result = await bridgeAction("set_target_player", { target_player: target }, 10000);
   setOutput(els.statusOutput, result);
@@ -3242,6 +3281,7 @@ async function setTarget(value, options = {}) {
     setLine(els.bookmarkTargetSummary, message, "bad");
     setLine(els.bl4TargetSummary, message, "bad");
     setLine(els.movementStatus, message, "bad");
+    if (els.devTargetSummary) setLine(els.devTargetSummary, message, "bad");
     if (els.invStatus) setLine(els.invStatus, message, "bad");
     updateSerialState();
   }
@@ -3251,11 +3291,15 @@ async function setTarget(value, options = {}) {
 function firstPlayerTarget() {
   if (!state.players.length) {
     setLine(els.targetSummary, "Refresh status first; no players are loaded.", "warning");
+    if (els.devTargetSummary) {
+      setLine(els.devTargetSummary, "Refresh status first; no players are loaded.", "warning");
+    }
     return;
   }
   setBoostTargetScope("selected");
   const first = playerValue(state.players[0]);
   els.targetSelect.value = first;
+  if (els.devTargetSelect) els.devTargetSelect.value = first;
   setTarget(first);
 }
 
@@ -8540,6 +8584,14 @@ function wireEvents() {
   document.getElementById("targetNonHostBtn").addEventListener("click", () => setBoostTargetScope("nonhost"));
   document.getElementById("kickTargetBtn").addEventListener("click", () => runAction("kick_player", {}, els.boostOutput, 15000));
   els.targetSelect.addEventListener("change", () => setTarget(els.targetSelect.value));
+  if (els.devTargetSelect) {
+    els.devTargetSelect.addEventListener("change", () => setTarget(els.devTargetSelect.value));
+  }
+  const devFirstTargetBtn = document.getElementById("devFirstTargetBtn");
+  if (devFirstTargetBtn) devFirstTargetBtn.addEventListener("click", firstPlayerTarget);
+  document.querySelectorAll("[data-dev-scope]").forEach((button) => {
+    button.addEventListener("click", () => setBoostTargetScope(button.dataset.devScope || "selected"));
+  });
 
   document.querySelectorAll("[data-action]").forEach((button) => {
     button.addEventListener("click", () => runBoostActionButton(button));

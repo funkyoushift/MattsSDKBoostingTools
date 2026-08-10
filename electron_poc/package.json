@@ -1,6 +1,7 @@
 {
   "name": "matts-sdk-boosting-tools",
   "version": "2.3.7",
+  "msbtReleaseVersion": "2.3.7.1",
   "private": true,
   "description": "Desktop app for Matt's SDK Boosting Tools.",
   "author": "FunkYouSHiFT",

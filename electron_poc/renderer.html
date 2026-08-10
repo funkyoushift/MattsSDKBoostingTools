@@ -1565,9 +1565,28 @@
         <p>Hidden development surface (Shift+click View → Development tabs). Not for public builds until Squ1ggs conversation (combat resource tuning) and vehicle data/credits are cleared. Challenges complete-all is long-running (~thousands of grants).</p>
       </section>
 
+      <section class="panel cyan" data-msbt-panel="dev-target" data-msbt-span="12" data-msbt-title="Target Player" data-msbt-resize="1">
+        <h2>Target Player</h2>
+        <p>Party target for Streamer Chaos and other Dev Tools actions. Click <strong>Status</strong> (top bar) to refresh the player list. Host-only for remote players in co-op.</p>
+        <div id="devBridgeSummary" class="status-line warning">Checking bridge...</div>
+        <label for="devTargetSelect">Target Player</label>
+        <div class="target-row">
+          <select id="devTargetSelect">
+            <option value="">No players loaded — click Status</option>
+          </select>
+          <button id="devFirstTargetBtn" type="button">Use First Player</button>
+        </div>
+        <div class="button-row wrap">
+          <button id="devTargetAllBtn" type="button" data-dev-scope="all">Target All Players</button>
+          <button id="devTargetNonHostBtn" type="button" data-dev-scope="nonhost">Target Non-Host</button>
+          <button id="devTargetSelectedBtn" type="button" data-dev-scope="selected">Target Selected Only</button>
+        </div>
+        <div id="devTargetSummary" class="status-line warning">Selected target: none</div>
+      </section>
+
       <section class="panel gold" data-msbt-panel="streamer-chaos" data-msbt-span="12" data-msbt-title="Streamer Chaos" data-msbt-resize="1">
         <h2>Streamer Chaos</h2>
-        <p>Verified hooks (launch, drop/empty backpack, kill/FFYL, invert, lock look/move). Uses the <strong>Target Player</strong> on the Boosting tab (host or other). Scope All / Non-Host applies when those Boost buttons are active. Whole-backpack drop only — not equipped-only.</p>
+        <p>Verified hooks (launch, drop/empty backpack, kill/FFYL, invert, lock look/move). Uses <strong>Target Player</strong> above (host or party member). <strong>Target All</strong> / <strong>Non-Host</strong> run the effect on each matching player. Whole-backpack drop only — not equipped-only.</p>
         <div class="button-grid wrap">
           <button data-action="chaos_launch">Launch</button>
           <button data-action="chaos_drop_backpack">Drop Backpack</button>

@@ -21,16 +21,35 @@ function Write-Utf8NoBom {
     [System.IO.File]::WriteAllText($Path, $Text, $utf8NoBom)
 }
 
-function Get-ElectronPackageVersion {
+function Get-ElectronSemverVersion {
     if (-not (Test-Path $ElectronPackageJson)) {
         throw "Electron package.json not found: $ElectronPackageJson"
     }
     $pkg = Get-Content -Raw $ElectronPackageJson | ConvertFrom-Json
     $version = [string]$pkg.version
     if (-not ($version -match '^\d+\.\d+\.\d+(-(?:alpha|beta)\.\d+)?$')) {
-        throw "Electron package version must use public SemVer format, got: $version"
+        throw "Electron package version must use npm SemVer (MAJOR.MINOR.PATCH), got: $version"
     }
     return $version
+}
+
+function Get-PublicReleaseVersion {
+    if (-not (Test-Path $ElectronPackageJson)) {
+        throw "Electron package.json not found: $ElectronPackageJson"
+    }
+    $pkg = Get-Content -Raw $ElectronPackageJson | ConvertFrom-Json
+    $releaseVersion = [string]$pkg.msbtReleaseVersion
+    if (-not $releaseVersion) {
+        $releaseVersion = [string]$pkg.version
+    }
+    if (-not ($releaseVersion -match '^\d+\.\d+\.\d+(\.\d+)?(-(?:alpha|beta)\.\d+)?$')) {
+        throw "Public release version (msbtReleaseVersion) must use MSBT format, got: $releaseVersion"
+    }
+    return $releaseVersion
+}
+
+function Get-ElectronPackageVersion {
+    return Get-PublicReleaseVersion
 }
 
 function Get-ReleaseTitle {
@@ -55,7 +74,8 @@ if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
     throw "GitHub CLI 'gh' was not found. Install it and run 'gh auth login', then rerun this script."
 }
 
-$PackageVersion = Get-ElectronPackageVersion
+$PackageVersion = Get-PublicReleaseVersion
+$ElectronSemver = Get-ElectronSemverVersion
 $ExpectedTagName = "v$PackageVersion"
 $Prerelease = Test-PrereleaseVersion $PackageVersion
 $ElectronInstallerName = "MSBT-Installer-v$PackageVersion.exe"
@@ -83,8 +103,8 @@ if (-not (Test-Path $latestYml)) {
     throw "Electron updater manifest not found: $latestYml"
 }
 $latestYmlText = Get-Content -Raw $latestYml
-if ($latestYmlText -notmatch "(?m)^version:\s*$([regex]::Escape($PackageVersion))\s*$") {
-    throw "latest.yml version does not match package version $PackageVersion."
+if ($latestYmlText -notmatch "(?m)^version:\s*$([regex]::Escape($ElectronSemver))\s*$") {
+    throw "latest.yml version does not match npm package version $ElectronSemver."
 }
 if (-not (Test-Path $ManifestPath)) {
     throw "Release update manifest not found: $ManifestPath."

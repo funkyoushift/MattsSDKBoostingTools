@@ -500,14 +500,15 @@ function normalizeVersion(value) {
 
 function parsePublicVersion(value) {
   const text = normalizeVersion(value);
-  const match = text.match(/^(\d+)\.(\d+)\.(\d+)(?:-(alpha|beta)\.(\d+))?$/i);
+  const match = text.match(/^(\d+)\.(\d+)\.(\d+)(?:\.(\d+))?(?:-(alpha|beta)\.(\d+))?$/i);
   if (!match) return null;
   return {
     major: Number(match[1]),
     minor: Number(match[2]),
     patch: Number(match[3]),
-    prerelease: match[4] ? String(match[4]).toLowerCase() : "",
-    prereleaseNumber: match[5] ? Number(match[5]) : 0
+    build: match[4] ? Number(match[4]) : 0,
+    prerelease: match[5] ? String(match[5]).toLowerCase() : "",
+    prereleaseNumber: match[6] ? Number(match[6]) : 0
   };
 }
 
@@ -515,7 +516,7 @@ function comparePublicVersions(left, right) {
   const a = parsePublicVersion(left);
   const b = parsePublicVersion(right);
   if (!a || !b) return normalizeVersion(left).localeCompare(normalizeVersion(right));
-  for (const key of ["major", "minor", "patch"]) {
+  for (const key of ["major", "minor", "patch", "build"]) {
     if (a[key] !== b[key]) return a[key] > b[key] ? 1 : -1;
   }
   if (a.prerelease !== b.prerelease) {

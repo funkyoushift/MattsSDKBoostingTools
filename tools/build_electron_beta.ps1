@@ -40,13 +40,29 @@ function Remove-RepoTreeLongPath {
     [System.IO.Directory]::Delete("\\?\$resolved", $true)
 }
 
-function Get-ElectronPackageVersion {
+function Get-ElectronSemverVersion {
     $pkg = Get-Content -Raw $ElectronPackageJson | ConvertFrom-Json
     $version = [string]$pkg.version
     if (-not ($version -match '^\d+\.\d+\.\d+(-(?:alpha|beta)\.\d+)?$')) {
-        throw "Electron package version must use public SemVer format, got: $version"
+        throw "Electron package version must use npm SemVer (MAJOR.MINOR.PATCH), got: $version"
     }
     return $version
+}
+
+function Get-PublicReleaseVersion {
+    $pkg = Get-Content -Raw $ElectronPackageJson | ConvertFrom-Json
+    $releaseVersion = [string]$pkg.msbtReleaseVersion
+    if (-not $releaseVersion) {
+        $releaseVersion = [string]$pkg.version
+    }
+    if (-not ($releaseVersion -match '^\d+\.\d+\.\d+(\.\d+)?(-(?:alpha|beta)\.\d+)?$')) {
+        throw "Public release version (msbtReleaseVersion) must use MSBT format, got: $releaseVersion"
+    }
+    return $releaseVersion
+}
+
+function Get-ElectronPackageVersion {
+    return Get-PublicReleaseVersion
 }
 
 function Assert-ReleaseManifestVersion {
@@ -114,7 +130,8 @@ if (-not (Test-Path $PrepareElectronPython)) {
     throw "Portable Python prep script is missing: $PrepareElectronPython"
 }
 
-$ElectronVersion = Get-ElectronPackageVersion
+$ElectronSemver = Get-ElectronSemverVersion
+$ElectronVersion = Get-PublicReleaseVersion
 Assert-ReleaseManifestVersion $ElectronVersion
 Assert-GzoCatalogImages -CatalogPath $SourceGzoCatalog -Label "Source GZO catalog"
 
@@ -149,8 +166,26 @@ try {
 }
 
 if ($Installer) {
+    $BuiltInstallerPath = Join-Path $OutputRoot "MSBT-Installer-v$ElectronSemver.exe"
     $InstallerPath = Join-Path $OutputRoot "MSBT-Installer-v$ElectronVersion.exe"
     $LatestYml = Join-Path $OutputRoot "latest.yml"
+    if (-not (Test-Path $BuiltInstallerPath)) {
+        throw "Expected installer was not produced: $BuiltInstallerPath"
+    }
+    if ($BuiltInstallerPath -ne $InstallerPath) {
+        if (Test-Path $InstallerPath) {
+            Remove-Item -LiteralPath $InstallerPath -Force
+        }
+        Rename-Item -LiteralPath $BuiltInstallerPath -NewName (Split-Path -Leaf $InstallerPath)
+        $builtBlockMap = "$BuiltInstallerPath.blockmap"
+        $releaseBlockMap = "$InstallerPath.blockmap"
+        if (Test-Path $builtBlockMap) {
+            if (Test-Path $releaseBlockMap) {
+                Remove-Item -LiteralPath $releaseBlockMap -Force
+            }
+            Rename-Item -LiteralPath $builtBlockMap -NewName (Split-Path -Leaf $releaseBlockMap)
+        }
+    }
     if (-not (Test-Path $InstallerPath)) {
         throw "Expected installer was not produced: $InstallerPath"
     }
@@ -158,8 +193,8 @@ if ($Installer) {
         throw "Expected Electron update manifest was not produced: $LatestYml"
     }
     $LatestText = Get-Content -Raw $LatestYml
-    if ($LatestText -notmatch "(?m)^version:\s*$([regex]::Escape($ElectronVersion))\s*$") {
-        throw "latest.yml version does not match package version $ElectronVersion."
+    if ($LatestText -notmatch "(?m)^version:\s*$([regex]::Escape($ElectronSemver))\s*$") {
+        throw "latest.yml version does not match npm package version $ElectronSemver."
     }
 }
 
@@ -206,6 +241,7 @@ try {
 }
 
 Write-Host "Electron build complete."
-Write-Host "Electron version: $ElectronVersion"
+Write-Host "Electron semver: $ElectronSemver"
+Write-Host "Public release version: $ElectronVersion"
 Write-Host "Output folder: $OutputRoot"
 Write-Host "Portable zip: $PortableZipPath"

@@ -1,8 +1,8 @@
 {
-  "package_version": "2.3.7",
-  "app_version": "2.3.7",
-  "sdkmod_version": "2.3.7",
-  "resources_version": "2.3.7",
+  "package_version": "2.3.7.1",
+  "app_version": "2.3.7.1",
+  "sdkmod_version": "2.3.7.1",
+  "resources_version": "2.3.7.1",
   "git_commit": "",
   "built_at_utc": "",
   "sdk_required": "oak2-mod-manager v0.3",
