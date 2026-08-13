@@ -119,6 +119,28 @@ const els = {
   devFavoriteStrip: document.getElementById("devFavoriteStrip"),
   devResultFold: document.querySelector("#tab-dev-spawner .dev-result-fold"),
   devSpawnerWalkthroughBtn: document.getElementById("devSpawnerWalkthroughBtn"),
+  devSpawnerHoardBuilderBtn: document.getElementById("devSpawnerHoardBuilderBtn"),
+  hoardWaveList: document.getElementById("hoardWaveList"),
+  hoardAddWaveBtn: document.getElementById("hoardAddWaveBtn"),
+  hoardRemoveWaveBtn: document.getElementById("hoardRemoveWaveBtn"),
+  hoardMoveUpBtn: document.getElementById("hoardMoveUpBtn"),
+  hoardMoveDownBtn: document.getElementById("hoardMoveDownBtn"),
+  hoardActorSearch: document.getElementById("hoardActorSearch"),
+  hoardWaveCount: document.getElementById("hoardWaveCount"),
+  hoardActorSummary: document.getElementById("hoardActorSummary"),
+  hoardActorList: document.getElementById("hoardActorList"),
+  hoardActorPicker: document.getElementById("hoardActorPicker"),
+  hoardApplyActorBtn: document.getElementById("hoardApplyActorBtn"),
+  hoardAddAsNewWaveBtn: document.getElementById("hoardAddAsNewWaveBtn"),
+  hoardWaveSpacing: document.getElementById("hoardWaveSpacing"),
+  hoardWaveScale: document.getElementById("hoardWaveScale"),
+  hoardWaveAggro: document.getElementById("hoardWaveAggro"),
+  hoardApplyOptionsBtn: document.getElementById("hoardApplyOptionsBtn"),
+  hoardStartBtn: document.getElementById("hoardStartBtn"),
+  hoardStopBtn: document.getElementById("hoardStopBtn"),
+  hoardClearBtn: document.getElementById("hoardClearBtn"),
+  hoardStatusLine: document.getElementById("hoardStatusLine"),
+  hoardOutput: document.getElementById("hoardOutput"),
   devAggroMode: document.getElementById("devAggroMode"),
   devSpawnAnchor: document.getElementById("devSpawnAnchor"),
   electronAppCurrent: document.getElementById("electronAppCurrent"),
@@ -468,6 +490,11 @@ const state = {
   devSpawnerMyFavorites: { version: 1, favorites: {} },
   devSpawnerSelectedActor: "",
   devSpawnerWarningAccepted: false,
+  hoardWaves: [],
+  hoardSelectedIndex: 0,
+  hoardFilteredActors: [],
+  hoardRunning: false,
+  hoardStatusPollTimer: null,
   devperkToggles: { "5": false, "6": false },
   editorLoadInFlight: false,
   editorLoaded: false,
@@ -2325,7 +2352,8 @@ const PLAYER_SCOPED_BOOST_ACTIONS = new Set([
   "chaos_lock_look",
   "chaos_lock_move",
   "chaos_lock_both",
-  "chaos_unlock"
+  "chaos_unlock",
+  "reset_skills"
 ]);
 
 function boostScopeLabel(scope = state.boostTargetScope) {
@@ -8572,6 +8600,561 @@ function wireInventoryEvents() {
   if (els.invOpenEditorBtn) els.invOpenEditorBtn.addEventListener("click", invOpenInMattEditor);
 }
 
+const HOARD_PLAN_KEY = "msbt.hoardBuilder.plan.v2";
+const HOARD_PLAN_KEY_LEGACY = "msbt.hoardBuilder.plan.v1";
+let hoardActorSearchTimer = null;
+let hoardHighlightedActor = "";
+
+function defaultHoardEntry(overrides = {}) {
+  return {
+    actor_id: String(overrides.actor_id || "").trim(),
+    count: Math.max(1, Math.min(12, Number(overrides.count) || 1))
+  };
+}
+
+function defaultHoardWave(overrides = {}) {
+  const entriesRaw = Array.isArray(overrides.entries) ? overrides.entries : null;
+  let entries = entriesRaw
+    ? entriesRaw.map((row) => defaultHoardEntry(row || {})).filter((row) => row.actor_id)
+    : [];
+  if (!entries.length && overrides.actor_id) {
+    entries = [defaultHoardEntry({ actor_id: overrides.actor_id, count: overrides.count })];
+  }
+  return {
+    entries,
+    spacing: Number.isFinite(Number(overrides.spacing)) ? Number(overrides.spacing) : 125,
+    scale: Number.isFinite(Number(overrides.scale)) ? Number(overrides.scale) : 1,
+    aggro: String(overrides.aggro || "passive").trim() || "passive"
+  };
+}
+
+function hoardWaveEntries(wave) {
+  if (!wave) return [];
+  if (Array.isArray(wave.entries) && wave.entries.length) {
+    return wave.entries.filter((row) => row && String(row.actor_id || "").trim());
+  }
+  if (wave.actor_id) return [defaultHoardEntry(wave)];
+  return [];
+}
+
+function hoardWaveTotalCount(wave) {
+  return hoardWaveEntries(wave).reduce((sum, row) => sum + Math.max(1, Number(row.count) || 1), 0);
+}
+
+function hoardWaveLabel(wave) {
+  const entries = hoardWaveEntries(wave);
+  if (!entries.length) return "(click actors to add)";
+  return entries
+    .map((row) => {
+      const label = typeof devActorLabel === "function" ? devActorLabel(row.actor_id) : row.actor_id;
+      return `${label} × ${row.count}`;
+    })
+    .join(" + ");
+}
+
+function loadHoardPlanFromStorage() {
+  try {
+    let raw = localStorage.getItem(HOARD_PLAN_KEY);
+    if (!raw) raw = localStorage.getItem(HOARD_PLAN_KEY_LEGACY);
+    if (!raw) {
+      state.hoardWaves = [defaultHoardWave()];
+      state.hoardSelectedIndex = 0;
+      return;
+    }
+    const parsed = JSON.parse(raw);
+    const waves = Array.isArray(parsed && parsed.waves) ? parsed.waves : [];
+    state.hoardWaves = waves.length
+      ? waves.map((wave) => defaultHoardWave(wave || {}))
+      : [defaultHoardWave()];
+    state.hoardSelectedIndex = Math.max(
+      0,
+      Math.min(state.hoardWaves.length - 1, Number(parsed && parsed.selected_index) || 0)
+    );
+  } catch (_error) {
+    state.hoardWaves = [defaultHoardWave()];
+    state.hoardSelectedIndex = 0;
+  }
+}
+
+function saveHoardPlanToStorage() {
+  try {
+    localStorage.setItem(
+      HOARD_PLAN_KEY,
+      JSON.stringify({
+        version: 2,
+        selected_index: state.hoardSelectedIndex,
+        waves: state.hoardWaves
+      })
+    );
+  } catch (_error) {
+    /* ignore quota / private mode */
+  }
+}
+
+function selectedHoardWave() {
+  if (!state.hoardWaves.length) return null;
+  const idx = Math.max(0, Math.min(state.hoardWaves.length - 1, state.hoardSelectedIndex || 0));
+  state.hoardSelectedIndex = idx;
+  return state.hoardWaves[idx];
+}
+
+function addActorToHoardWave(wave, actorId, count) {
+  if (!wave || !actorId) return false;
+  if (!Array.isArray(wave.entries)) wave.entries = hoardWaveEntries(wave);
+  const addCount = Math.max(1, Math.min(12, Number(count) || 1));
+  const existing = wave.entries.find((row) => row.actor_id === actorId);
+  if (existing) {
+    existing.count = Math.max(1, Math.min(12, Number(existing.count || 0) + addCount));
+  } else {
+    wave.entries.push(defaultHoardEntry({ actor_id: actorId, count: addCount }));
+  }
+  return true;
+}
+
+function removeActorFromHoardWave(wave, actorId) {
+  if (!wave) return;
+  wave.entries = hoardWaveEntries(wave).filter((row) => row.actor_id !== actorId);
+}
+
+function bumpHoardEntryCount(wave, actorId, delta) {
+  if (!wave || !actorId) return;
+  const entries = hoardWaveEntries(wave);
+  const row = entries.find((item) => item.actor_id === actorId);
+  if (!row) return;
+  row.count = Math.max(1, Math.min(12, Number(row.count || 1) + delta));
+  wave.entries = entries;
+}
+
+function renderHoardWaveList() {
+  if (!els.hoardWaveList) return;
+  els.hoardWaveList.innerHTML = "";
+  if (!state.hoardWaves.length) {
+    const empty = document.createElement("div");
+    empty.className = "dev-empty-row";
+    empty.textContent = "No waves yet. Click an actor (or Add Empty Wave).";
+    els.hoardWaveList.appendChild(empty);
+    return;
+  }
+  state.hoardWaves.forEach((wave, index) => {
+    const row = document.createElement("div");
+    row.className = `hoard-wave-row${index === state.hoardSelectedIndex ? " selected" : ""}`;
+    row.setAttribute("role", "button");
+    row.tabIndex = 0;
+
+    const head = document.createElement("div");
+    head.className = "hoard-wave-row-head";
+    const title = document.createElement("strong");
+    title.textContent = `Wave ${index + 1}`;
+    const meta = document.createElement("span");
+    meta.className = "muted-line";
+    const entries = hoardWaveEntries(wave);
+    meta.textContent = entries.length
+      ? `${entries.length} type(s) · ${hoardWaveTotalCount(wave)} total`
+      : "empty — click actors below";
+    head.appendChild(title);
+    head.appendChild(meta);
+    row.appendChild(head);
+
+    const chips = document.createElement("div");
+    chips.className = "hoard-wave-chips";
+    if (!entries.length) {
+      const hint = document.createElement("span");
+      hint.className = "hoard-wave-empty";
+      hint.textContent = "(pick actors)";
+      chips.appendChild(hint);
+    } else {
+      entries.forEach((entry) => {
+        const chip = document.createElement("div");
+        chip.className = "hoard-entry-chip";
+        const name = document.createElement("span");
+        name.className = "hoard-entry-name";
+        name.textContent = typeof devActorLabel === "function" ? devActorLabel(entry.actor_id) : entry.actor_id;
+        name.title = entry.actor_id;
+
+        const minus = document.createElement("button");
+        minus.type = "button";
+        minus.className = "hoard-entry-step";
+        minus.textContent = "−";
+        minus.title = "Fewer";
+        minus.addEventListener("click", (event) => {
+          event.stopPropagation();
+          state.hoardSelectedIndex = index;
+          if (Number(entry.count) <= 1) removeActorFromHoardWave(wave, entry.actor_id);
+          else bumpHoardEntryCount(wave, entry.actor_id, -1);
+          renderHoardWaveList();
+          saveHoardPlanToStorage();
+        });
+
+        const count = document.createElement("span");
+        count.className = "hoard-entry-count";
+        count.textContent = `×${entry.count}`;
+
+        const plus = document.createElement("button");
+        plus.type = "button";
+        plus.className = "hoard-entry-step";
+        plus.textContent = "+";
+        plus.title = "More";
+        plus.addEventListener("click", (event) => {
+          event.stopPropagation();
+          state.hoardSelectedIndex = index;
+          bumpHoardEntryCount(wave, entry.actor_id, 1);
+          renderHoardWaveList();
+          saveHoardPlanToStorage();
+        });
+
+        const remove = document.createElement("button");
+        remove.type = "button";
+        remove.className = "hoard-entry-remove";
+        remove.textContent = "×";
+        remove.title = "Remove from wave";
+        remove.addEventListener("click", (event) => {
+          event.stopPropagation();
+          state.hoardSelectedIndex = index;
+          removeActorFromHoardWave(wave, entry.actor_id);
+          renderHoardWaveList();
+          saveHoardPlanToStorage();
+        });
+
+        chip.appendChild(name);
+        chip.appendChild(minus);
+        chip.appendChild(count);
+        chip.appendChild(plus);
+        chip.appendChild(remove);
+        chips.appendChild(chip);
+      });
+    }
+    row.appendChild(chips);
+
+    const selectWave = () => {
+      state.hoardSelectedIndex = index;
+      syncHoardEditFieldsFromSelected();
+      renderHoardWaveList();
+      saveHoardPlanToStorage();
+    };
+    row.addEventListener("click", selectWave);
+    row.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        selectWave();
+      }
+    });
+    els.hoardWaveList.appendChild(row);
+  });
+}
+
+function syncHoardEditFieldsFromSelected() {
+  const wave = selectedHoardWave();
+  if (!wave) return;
+  if (els.hoardWaveSpacing) els.hoardWaveSpacing.value = String(wave.spacing ?? 125);
+  if (els.hoardWaveScale) els.hoardWaveScale.value = String(wave.scale ?? 1);
+  if (els.hoardWaveAggro) els.hoardWaveAggro.value = wave.aggro || "passive";
+}
+
+function renderHoardActorSearch() {
+  if (!els.hoardActorPicker && !els.hoardActorList) return;
+  const query = getValue(els.hoardActorSearch).toLowerCase();
+  const all = typeof devAllKnownActors === "function" ? devAllKnownActors() : [];
+  state.hoardFilteredActors = all.filter((actorName) => {
+    if (!query) return true;
+    const label = typeof devActorLabel === "function" ? devActorLabel(actorName) : actorName;
+    return String(actorName).toLowerCase().includes(query) || String(label).toLowerCase().includes(query);
+  }).slice(0, 200);
+
+  if (els.hoardActorList) {
+    els.hoardActorList.innerHTML = "";
+    state.hoardFilteredActors.forEach((actorName) => {
+      const opt = document.createElement("option");
+      opt.value = actorName;
+      opt.textContent = typeof devActorLabel === "function" ? devActorLabel(actorName) : actorName;
+      if (actorName === hoardHighlightedActor) opt.selected = true;
+      els.hoardActorList.appendChild(opt);
+    });
+  }
+
+  if (els.hoardActorPicker) {
+    els.hoardActorPicker.innerHTML = "";
+    if (!state.hoardFilteredActors.length) {
+      const empty = document.createElement("div");
+      empty.className = "dev-empty-row";
+      empty.textContent = all.length ? "No actors match that search." : "Dev Spawner catalog not loaded yet.";
+      els.hoardActorPicker.appendChild(empty);
+    } else {
+      state.hoardFilteredActors.forEach((actorName) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = `hoard-actor-pick${actorName === hoardHighlightedActor ? " selected" : ""}`;
+        btn.textContent = typeof devActorLabel === "function" ? devActorLabel(actorName) : actorName;
+        btn.title = `${actorName} — click: add to wave · Shift+click: new wave`;
+        btn.addEventListener("click", (event) => {
+          hoardHighlightedActor = actorName;
+          if (event.shiftKey) addHighlightedActorAsNewWave();
+          else addHighlightedActorToSelectedWave();
+        });
+        els.hoardActorPicker.appendChild(btn);
+      });
+    }
+  }
+
+  const total = all.length;
+  const shown = state.hoardFilteredActors.length;
+  setLine(
+    els.hoardActorSummary,
+    total
+      ? `${shown} shown / ${total} actors${query ? ` matching “${query}”` : ""}${shown === 200 ? " (capped)" : ""} · click to add`
+      : "Dev Spawner catalog not loaded yet.",
+    total ? "ok" : "warning"
+  );
+}
+
+function addHighlightedActorToSelectedWave() {
+  const actorId = hoardHighlightedActor || getValue(els.hoardActorList);
+  if (!actorId) {
+    setLine(els.hoardStatusLine, "Pick an actor from the list first.", "warning");
+    return;
+  }
+  let wave = selectedHoardWave();
+  if (!wave) {
+    state.hoardWaves = [defaultHoardWave()];
+    state.hoardSelectedIndex = 0;
+    wave = selectedHoardWave();
+  }
+  const count = getInt(els.hoardWaveCount, 1, 12, 1);
+  addActorToHoardWave(wave, actorId, count);
+  renderHoardWaveList();
+  renderHoardActorSearch();
+  saveHoardPlanToStorage();
+  const label = typeof devActorLabel === "function" ? devActorLabel(actorId) : actorId;
+  setLine(els.hoardStatusLine, `Wave ${state.hoardSelectedIndex + 1} + ${label} × ${count}`, "ok");
+}
+
+function addHighlightedActorAsNewWave() {
+  const actorId = hoardHighlightedActor || getValue(els.hoardActorList);
+  if (!actorId) {
+    setLine(els.hoardStatusLine, "Pick an actor from the list first.", "warning");
+    return;
+  }
+  const template = selectedHoardWave() || defaultHoardWave();
+  const count = getInt(els.hoardWaveCount, 1, 12, 1);
+  const wave = defaultHoardWave({
+    entries: [{ actor_id: actorId, count }],
+    spacing: template.spacing,
+    scale: template.scale,
+    aggro: template.aggro
+  });
+  state.hoardWaves.push(wave);
+  state.hoardSelectedIndex = state.hoardWaves.length - 1;
+  syncHoardEditFieldsFromSelected();
+  renderHoardWaveList();
+  renderHoardActorSearch();
+  saveHoardPlanToStorage();
+  const label = typeof devActorLabel === "function" ? devActorLabel(actorId) : actorId;
+  setLine(els.hoardStatusLine, `New wave ${state.hoardSelectedIndex + 1}: ${label} × ${count}`, "ok");
+}
+
+async function ensureHoardCatalog() {
+  if (state.devSpawnerCatalog && Number(state.devSpawnerCatalog.actor_count || 0) > 0) {
+    return state.devSpawnerCatalog;
+  }
+  if (typeof loadDevSpawnerCatalog === "function") {
+    await loadDevSpawnerCatalog();
+  }
+  return state.devSpawnerCatalog;
+}
+
+function hoardPlanPayload() {
+  return {
+    waves: state.hoardWaves.map((wave) => ({
+      entries: hoardWaveEntries(wave).map((row) => ({
+        actor_id: String(row.actor_id || "").trim(),
+        count: Math.max(1, Math.min(12, Number(row.count) || 1))
+      })),
+      spacing: Number(wave.spacing) || 125,
+      scale: Number(wave.scale) || 1,
+      aggro: String(wave.aggro || "passive")
+    }))
+  };
+}
+
+async function pushHoardPlanToBridge({ quiet = false } = {}) {
+  const payload = hoardPlanPayload();
+  const result = await runAction("hoard_set_plan", payload, els.hoardOutput, 15000);
+  if (!quiet) {
+    setLine(els.hoardStatusLine, resultMessage(result), actionSucceeded(result) ? "ok" : "warning");
+  }
+  return result;
+}
+
+function applyHoardStatusPayload(data) {
+  if (!data || typeof data !== "object") return;
+  state.hoardRunning = Boolean(data.running);
+  const msg = String(data.message || "").trim() || (data.complete ? "Complete" : "Idle");
+  const kind = data.running ? "warning" : (data.complete ? "ok" : "");
+  setLine(els.hoardStatusLine, msg, kind);
+}
+
+function stopHoardStatusPoll() {
+  if (state.hoardStatusPollTimer) {
+    clearInterval(state.hoardStatusPollTimer);
+    state.hoardStatusPollTimer = null;
+  }
+}
+
+function syncHoardStatusPoll() {
+  const tabActive = Boolean(document.getElementById("tab-hoard-builder")?.classList.contains("active"));
+  if (tabActive || state.hoardRunning) {
+    if (state.hoardStatusPollTimer) return;
+    state.hoardStatusPollTimer = window.setInterval(() => {
+      void refreshHoardStatus({ quiet: true }).then(() => {
+        const stillActive = Boolean(document.getElementById("tab-hoard-builder")?.classList.contains("active"));
+        if (!stillActive && !state.hoardRunning) stopHoardStatusPoll();
+      });
+    }, 1500);
+  } else {
+    stopHoardStatusPoll();
+  }
+}
+
+async function refreshHoardStatus(options = {}) {
+  const quiet = Boolean(options.quiet);
+  const result = await bridgeAction("hoard_status", {}, 10000);
+  const data = result && result.data !== undefined ? result.data : result;
+  applyHoardStatusPayload(data);
+  if (!quiet && els.hoardOutput) setOutput(els.hoardOutput, data);
+  syncHoardStatusPoll();
+  return result;
+}
+
+function openHoardBuilderTab() {
+  if (typeof switchTab === "function") switchTab("hoard-builder");
+}
+
+function wireHoardBuilder() {
+  if (!els.hoardWaveList) return;
+  loadHoardPlanFromStorage();
+  syncHoardEditFieldsFromSelected();
+  renderHoardWaveList();
+  renderHoardActorSearch();
+
+  if (els.hoardAddWaveBtn) {
+    els.hoardAddWaveBtn.addEventListener("click", () => {
+      const template = selectedHoardWave() || defaultHoardWave();
+      state.hoardWaves.push(defaultHoardWave({
+        spacing: template.spacing,
+        scale: template.scale,
+        aggro: template.aggro
+      }));
+      state.hoardSelectedIndex = state.hoardWaves.length - 1;
+      syncHoardEditFieldsFromSelected();
+      renderHoardWaveList();
+      saveHoardPlanToStorage();
+    });
+  }
+  if (els.hoardRemoveWaveBtn) {
+    els.hoardRemoveWaveBtn.addEventListener("click", () => {
+      if (state.hoardWaves.length <= 1) {
+        state.hoardWaves = [defaultHoardWave()];
+        state.hoardSelectedIndex = 0;
+      } else {
+        state.hoardWaves.splice(state.hoardSelectedIndex, 1);
+        state.hoardSelectedIndex = Math.max(0, Math.min(state.hoardWaves.length - 1, state.hoardSelectedIndex));
+      }
+      syncHoardEditFieldsFromSelected();
+      renderHoardWaveList();
+      saveHoardPlanToStorage();
+    });
+  }
+  if (els.hoardMoveUpBtn) {
+    els.hoardMoveUpBtn.addEventListener("click", () => {
+      const idx = state.hoardSelectedIndex;
+      if (idx <= 0) return;
+      const tmp = state.hoardWaves[idx - 1];
+      state.hoardWaves[idx - 1] = state.hoardWaves[idx];
+      state.hoardWaves[idx] = tmp;
+      state.hoardSelectedIndex = idx - 1;
+      renderHoardWaveList();
+      saveHoardPlanToStorage();
+    });
+  }
+  if (els.hoardMoveDownBtn) {
+    els.hoardMoveDownBtn.addEventListener("click", () => {
+      const idx = state.hoardSelectedIndex;
+      if (idx >= state.hoardWaves.length - 1) return;
+      const tmp = state.hoardWaves[idx + 1];
+      state.hoardWaves[idx + 1] = state.hoardWaves[idx];
+      state.hoardWaves[idx] = tmp;
+      state.hoardSelectedIndex = idx + 1;
+      renderHoardWaveList();
+      saveHoardPlanToStorage();
+    });
+  }
+  if (els.hoardActorSearch) {
+    els.hoardActorSearch.addEventListener("input", () => {
+      if (hoardActorSearchTimer) clearTimeout(hoardActorSearchTimer);
+      hoardActorSearchTimer = setTimeout(() => renderHoardActorSearch(), 120);
+    });
+  }
+  if (els.hoardApplyActorBtn) {
+    els.hoardApplyActorBtn.addEventListener("click", () => addHighlightedActorToSelectedWave());
+  }
+  if (els.hoardAddAsNewWaveBtn) {
+    els.hoardAddAsNewWaveBtn.addEventListener("click", () => addHighlightedActorAsNewWave());
+  }
+  if (els.hoardApplyOptionsBtn) {
+    els.hoardApplyOptionsBtn.addEventListener("click", () => {
+      const wave = selectedHoardWave();
+      if (!wave) return;
+      wave.spacing = getFloat(els.hoardWaveSpacing, 1, 5000, wave.spacing || 125);
+      wave.scale = getFloat(els.hoardWaveScale, 0.05, 20, wave.scale || 1);
+      wave.aggro = getValue(els.hoardWaveAggro) || "passive";
+      renderHoardWaveList();
+      saveHoardPlanToStorage();
+      setLine(els.hoardStatusLine, `Wave ${state.hoardSelectedIndex + 1} options updated.`, "ok");
+    });
+  }
+  if (els.hoardStartBtn) {
+    els.hoardStartBtn.addEventListener("click", async () => {
+      const missing = state.hoardWaves.findIndex((wave) => !hoardWaveEntries(wave).length);
+      if (missing >= 0) {
+        setLine(els.hoardStatusLine, `Wave ${missing + 1} needs at least one actor before Start.`, "warning");
+        return;
+      }
+      setLine(els.hoardStatusLine, "Pushing plan…", "warning");
+      const planResult = await pushHoardPlanToBridge({ quiet: true });
+      if (!actionSucceeded(planResult)) {
+        setLine(els.hoardStatusLine, resultMessage(planResult), "bad");
+        return;
+      }
+      const result = await runAction("hoard_start", {}, els.hoardOutput, 45000);
+      applyHoardStatusPayload(result && result.data !== undefined ? result.data : result);
+      if (!String(els.hoardStatusLine?.textContent || "").trim()) {
+        setLine(els.hoardStatusLine, resultMessage(result), actionSucceeded(result) ? "warning" : "bad");
+      }
+      state.hoardRunning = Boolean((result && result.data && result.data.running) || actionSucceeded(result));
+      syncHoardStatusPoll();
+    });
+  }
+  if (els.hoardStopBtn) {
+    els.hoardStopBtn.addEventListener("click", async () => {
+      const result = await runAction("hoard_stop", {}, els.hoardOutput, 15000);
+      applyHoardStatusPayload(result && result.data !== undefined ? result.data : result);
+      syncHoardStatusPoll();
+    });
+  }
+  if (els.hoardClearBtn) {
+    els.hoardClearBtn.addEventListener("click", async () => {
+      const result = await runAction("hoard_clear", {}, els.hoardOutput, 30000);
+      applyHoardStatusPayload(result && result.data !== undefined ? result.data : result);
+      syncHoardStatusPoll();
+    });
+  }
+  if (els.devSpawnerHoardBuilderBtn) {
+    els.devSpawnerHoardBuilderBtn.addEventListener("click", openHoardBuilderTab);
+  }
+  document.querySelectorAll("[data-hoard-builder-open]").forEach((btn) => {
+    btn.addEventListener("click", openHoardBuilderTab);
+  });
+}
+
 function switchTab(tabId) {
   document.querySelectorAll(".tab-bar [data-tab]").forEach((button) => {
     button.classList.toggle("active", button.dataset.tab === tabId);
@@ -8595,7 +9178,7 @@ function switchTab(tabId) {
         "warning"
       );
     }
-  } else if (tabId === "serial-tools" || tabId === "bl4-codes" || tabId === "boosting" || tabId === "player-movement" || tabId === "item-pool" || tabId === "dev-spawner") {
+  } else if (tabId === "serial-tools" || tabId === "bl4-codes" || tabId === "boosting" || tabId === "player-movement" || tabId === "item-pool" || tabId === "dev-spawner" || tabId === "hoard-builder") {
     if (state.quickMenuSnapshot) {
       installQuickMenuAddButtons();
     } else {
@@ -8605,12 +9188,24 @@ function switchTab(tabId) {
     void refreshMobileGatewayInfo();
   }
 
+  if (tabId === "hoard-builder") {
+    void ensureHoardCatalog().then(() => {
+      renderHoardActorSearch();
+      renderHoardWaveList();
+    });
+    void refreshHoardStatus({ quiet: true });
+    syncHoardStatusPoll();
+  } else {
+    syncHoardStatusPoll();
+  }
+
   if (
     tabId === "boosting" ||
     tabId === "combat-vehicle" ||
     tabId === "player-movement" ||
     tabId === "item-pool" ||
     tabId === "dev-spawner" ||
+    tabId === "hoard-builder" ||
     tabId === "map-travel" ||
     tabId === "inventory"
   ) {
@@ -9279,6 +9874,7 @@ const MAIN_TAB_CHOICES = [
   { id: "matt-editor", label: "Matt Editor" },
   { id: "item-pool", label: "Item Pool" },
   { id: "dev-spawner", label: "Dev Spawner" },
+  { id: "hoard-builder", label: "Hoard Builder" },
   { id: "map-travel", label: "Map Travel" },
   { id: "player-movement", label: "Player Movement" },
   { id: "activity", label: "Activity Log" },
@@ -9329,6 +9925,12 @@ const TUTORIAL_TOURS = {
       body: "Paste a @U or decoded serial → Convert to decode parts and rebuild @U (works offline). Validate serials, save keepers as Bookmarks (named groups), then Deliver Selected / All / Non-Host when the bridge is connected.",
       tab: "serial-tools",
       targetSel: "#tab-serial-tools [data-msbt-panel='serial-tools-main']"
+    },
+    {
+      title: "Hoard Builder",
+      body: "Build sequenced ASD enemy waves: click actors to fill each wave, press Start Hoard, then clear the board — the next wave starts automatically. Stop pauses advance; Clear Spawns wipes ASD. Same actor catalog as Dev Spawner.",
+      tab: "hoard-builder",
+      targetSel: "#tab-hoard-builder [data-msbt-panel='hoard-builder-main']"
     },
     {
       title: "Map Travel",
@@ -9740,6 +10342,38 @@ const TAB_TUTORIALS = {
       body: "Header toggle Compact | Panels restores the multi-card dock layout (Search / Boss / Favorites / Characters / Details). Choice is saved locally. Compact has no dock toolbar.",
       tab: "dev-spawner",
       targetSel: "#tab-dev-spawner .dev-layout-toggle"
+    }
+  ],
+  "hoard-builder": [
+    {
+      title: "Build waves",
+      body: "Each card is one wave. Select a wave, then click actors in the picker to add them (same actor stacks count). Use + / − / × on chips to tweak. Add Empty Wave / Move Up/Down reorder the plan. Plans save locally in this app.",
+      tab: "hoard-builder",
+      targetSel: "#hoardWaveList"
+    },
+    {
+      title: "Click to add enemies",
+      body: "Search the Dev Spawner catalog, set Count per click, then click an actor to add it to the selected wave. Shift+click (or Add as New Wave) starts a fresh wave with that actor. Open Dev Spawner once if the catalog looks empty.",
+      tab: "hoard-builder",
+      targetSel: "#hoardActorPicker"
+    },
+    {
+      title: "Start → clear → next",
+      body: "Start Hoard spawns wave 1 via ASD. When every tracked enemy for that wave is dead, wave 2 starts automatically — no Next button. Stop freezes advance (mobs stay). Clear Spawns runs ASD clear and stops the run.",
+      tab: "hoard-builder",
+      target: "hoardStartBtn"
+    },
+    {
+      title: "Status line",
+      body: "Watch Idle / Wave N/M — X alive — next on clear / Complete here. Bridge must be connected (header Refresh Status). Host-run ASD — same limits as Dev Spawner.",
+      tab: "hoard-builder",
+      target: "hoardStatusLine"
+    },
+    {
+      title: "Quick Menu",
+      body: "Pin Hoard Start / Stop / Clear on the in-game Quick Menu (F7) after the plan is set in Electron. Plan edits stay on this tab.",
+      tab: "hoard-builder",
+      target: "hoardStartBtn"
     }
   ],
   "map-travel": [
@@ -10889,6 +11523,7 @@ async function init() {
     console.warn("[MSBT] Dev Spawner layout mode bootstrap failed:", error);
   }
   wireEvents();
+  wireHoardBuilder();
   try {
     if (window.MsbtPanelLayout && typeof window.MsbtPanelLayout.initViewChrome === "function") {
       window.MsbtPanelLayout.initViewChrome();

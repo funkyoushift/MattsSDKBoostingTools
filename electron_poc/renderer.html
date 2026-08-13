@@ -54,6 +54,7 @@
     <button data-tab="matt-editor">Matt Editor</button>
     <button data-tab="item-pool">Item Pool Spawning</button>
     <button data-tab="dev-spawner">Dev Spawner</button>
+    <button data-tab="hoard-builder">Hoard Builder</button>
     <button data-tab="map-travel">Map Travel</button>
     <button data-tab="player-movement">Player Movement</button>
     <button data-tab="combat-vehicle" data-msbt-wip-nav="1" hidden>Dev Tools</button>
@@ -1049,6 +1050,7 @@
               <span data-dev-host="spawn-ai-btn-side"></span>
               <span data-dev-host="reaggro-btn"></span>
               <button data-dev-spawner-action="dev_spawner_clear">Clear ASD Spawns</button>
+              <button type="button" id="devSpawnerHoardBuilderBtn" class="secondary" title="Open Hoard Builder wave runner">Hoard Builder</button>
               <button type="button" data-msbt-bridge-refresh class="secondary">Refresh Status</button>
               <span data-dev-host="refresh-log"></span>
             </div>
@@ -1088,6 +1090,7 @@
             <span data-dev-host="spawn-ai-btn-side"></span>
             <span data-dev-host="reaggro-btn"></span>
             <button data-dev-spawner-action="dev_spawner_clear">Clear ASD Spawns</button>
+            <button type="button" class="secondary" data-hoard-builder-open title="Open Hoard Builder wave runner">Hoard Builder</button>
             <button type="button" data-msbt-bridge-refresh class="secondary">Refresh Status</button>
             <span data-dev-host="refresh-log"></span>
           </div>
@@ -1335,6 +1338,98 @@
           </div>
         </div>
       </div>
+    </section>
+
+
+    <section id="tab-hoard-builder" class="tab-panel" data-msbt-layout-tab="hoard-builder">
+      <section class="panel cyan" data-msbt-panel="hoard-builder-main" data-msbt-span="12" data-msbt-title="Hoard Builder" data-msbt-resize="1">
+        <h2>Hoard Builder</h2>
+        <p>Build an ordered wave list, press <strong>Start Hoard</strong>, then clear each wave to auto-advance. Same ASD actors as Dev Spawner.</p>
+
+        <div class="section-heading">
+          <div>
+            <h3>Build</h3>
+            <p class="muted-line">Select a wave, then click actors below to add them. One click adds (or stacks) that enemy on the selected wave.</p>
+          </div>
+        </div>
+        <div id="hoardWaveList" class="hoard-wave-list" aria-label="Hoard wave list"></div>
+        <div class="button-row wrap compact-actions">
+          <button type="button" id="hoardAddWaveBtn">Add Empty Wave</button>
+          <button type="button" id="hoardRemoveWaveBtn" class="secondary">Remove Selected Wave</button>
+          <button type="button" id="hoardMoveUpBtn" class="secondary">Move Up</button>
+          <button type="button" id="hoardMoveDownBtn" class="secondary">Move Down</button>
+        </div>
+
+        <div class="section-heading" style="margin-top:1rem;">
+          <div>
+            <h3>Add enemies</h3>
+            <p class="muted-line">Click an actor to add it to the selected wave. Use count for how many per click. “New wave” starts a fresh wave with that actor.</p>
+          </div>
+        </div>
+        <div class="grid two compact">
+          <label>
+            Actor search
+            <input id="hoardActorSearch" type="search" placeholder="bandit, spider, boss…" autocomplete="off">
+          </label>
+          <label>
+            Count per click
+            <input id="hoardWaveCount" type="number" min="1" max="12" value="1">
+          </label>
+        </div>
+        <div id="hoardActorSummary" class="status-line">Load Dev Spawner catalog (or open that tab once) to search actors.</div>
+        <div id="hoardActorPicker" class="hoard-actor-picker" role="listbox" aria-label="Actor picker"></div>
+        <select id="hoardActorList" class="hidden" aria-hidden="true" tabindex="-1"></select>
+        <div class="button-row wrap compact-actions">
+          <button type="button" id="hoardApplyActorBtn" class="secondary" title="Add selected catalog row to the current wave">Add to Selected Wave</button>
+          <button type="button" id="hoardAddAsNewWaveBtn" class="secondary" title="Create a new wave with the selected actor">Add as New Wave</button>
+        </div>
+
+        <details class="dev-fold" id="hoardWaveOptionsFold">
+          <summary>Wave options</summary>
+          <div class="grid three compact">
+            <label>
+              Spacing
+              <input id="hoardWaveSpacing" type="number" min="1" max="5000" value="125">
+            </label>
+            <label>
+              Scale
+              <input id="hoardWaveScale" type="number" min="0.05" max="20" step="0.05" value="1">
+            </label>
+            <label>
+              Aggro
+              <select id="hoardWaveAggro">
+                <option value="passive" selected>Passive</option>
+                <option value="attack_me">Attack Me</option>
+                <option value="attack_party">Attack Party</option>
+                <option value="free_for_all">Free For All</option>
+              </select>
+            </label>
+          </div>
+          <div class="button-row wrap compact-actions">
+            <button type="button" id="hoardApplyOptionsBtn" class="secondary">Apply Options to Selected Wave</button>
+          </div>
+        </details>
+
+        <div class="section-heading" style="margin-top:1rem;">
+          <div>
+            <h3>Run</h3>
+            <p class="muted-line">Manual start only. Between waves advances when the current wave is clear.</p>
+          </div>
+        </div>
+        <div class="button-row wrap">
+          <button type="button" id="hoardStartBtn">Start Hoard</button>
+          <button type="button" id="hoardStopBtn" class="secondary">Stop</button>
+          <button type="button" id="hoardClearBtn" class="secondary">Clear Spawns</button>
+        </div>
+
+        <div class="section-heading" style="margin-top:1rem;">
+          <div>
+            <h3>Status</h3>
+          </div>
+        </div>
+        <div id="hoardStatusLine" class="status-line">Idle</div>
+        <pre id="hoardOutput" class="hidden" aria-hidden="true">No hoard action yet.</pre>
+      </section>
     </section>
 
     <section id="tab-map-travel" class="tab-panel" data-msbt-layout-tab="map-travel">
@@ -1595,7 +1690,7 @@
 
       <section class="panel cyan" data-msbt-panel="dev-target" data-msbt-span="6" data-msbt-title="Target Player" data-msbt-resize="1">
         <h2>Target Player</h2>
-        <p>Party target for Streamer Chaos and other Dev Tools actions. Use <strong>Refresh Status</strong> to reload the player list. Host-only for remote players in co-op.</p>
+        <p>Party target for Streamer Chaos, skill reset, and other Dev Tools actions. Use <strong>Refresh Status</strong> to reload the player list. Host-only for remote players in co-op.</p>
         <div id="devBridgeSummary" class="status-line warning">Checking bridge...</div>
         <label for="devTargetSelect">Target Player</label>
         <div class="target-row">
@@ -1611,6 +1706,15 @@
           <button id="devTargetSelectedBtn" type="button" data-dev-scope="selected">Target Selected Only</button>
         </div>
         <div id="devTargetSummary" class="status-line warning">Selected target: none</div>
+        <div class="section-heading" style="margin-top:0.75rem;">
+          <div>
+            <h3>Skills</h3>
+            <p class="muted-line">Refunds regular skill-tree points for the current Dev target scope. Does not reset Specializations.</p>
+          </div>
+        </div>
+        <div class="button-row wrap">
+          <button type="button" data-action="reset_skills" class="danger">Reset Skill Tree</button>
+        </div>
       </section>
 
       <section class="panel gold" data-msbt-panel="streamer-chaos" data-msbt-span="6" data-msbt-title="Streamer Chaos" data-msbt-resize="1">

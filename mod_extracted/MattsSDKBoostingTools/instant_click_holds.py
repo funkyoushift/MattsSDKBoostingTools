@@ -17,8 +17,8 @@ from mods_base import EInputEvent, hook, keybind
 from unrealsdk import find_all, find_object, logging
 from unrealsdk.hooks import Type
 
-__version__ = "0.1.4"
-__version_info__ = (0, 1, 4)
+__version__ = "0.1.5"
+__version_info__ = (0, 1, 5)
 
 _PREFIX = "[Matts SDK Boosting Tools | ICH]"
 
@@ -151,7 +151,47 @@ def _reset_held_duration(obj: Any) -> bool:
 
 
 def _is_drop_path(path: str) -> bool:
-    return "action_ui_drop_item" in path.lower()
+    lower = path.lower()
+    return (
+        "action_ui_drop_item" in lower
+        or "equip.dropitem" in lower
+        or "dropitem" in lower and "action_ui_" in lower
+    )
+
+
+def _outer_chain_text(obj: Any, *, depth: int = 6) -> str:
+    """Concatenate Outer / OuterMost path hints for drop-action detection."""
+    bits: list[str] = []
+    cur = obj
+    for _ in range(max(1, depth)):
+        if cur is None:
+            break
+        try:
+            bits.append(str(cur))
+        except Exception:
+            pass
+        nxt = None
+        for attr in ("Outer", "outer", "Owner", "owner"):
+            try:
+                nxt = getattr(cur, attr, None)
+            except Exception:
+                nxt = None
+            if nxt is not None and nxt is not cur:
+                break
+        if nxt is None or nxt is cur:
+            break
+        cur = nxt
+    return " ".join(bits)
+
+
+def _is_drop_trigger(obj: Any) -> bool:
+    """True if this InputTriggerHold belongs to the UI drop-item action."""
+    if obj is None:
+        return False
+    path = _obj_key(obj)
+    if _is_drop_path(path):
+        return True
+    return _is_drop_path(_outer_chain_text(obj))
 
 
 def _path_allowed(path: str) -> bool:
@@ -290,6 +330,21 @@ def _iter_drop_triggers() -> list[Any]:
                 obj = None
         _add(obj)
 
+    # Fallback: scan live hold triggers whose Outer chain mentions drop-item.
+    # Needed when UI recreates the trigger under a new instance path.
+    if not found:
+        for class_name in ("InputTriggerHold", "InputTriggerHoldAndRelease"):
+            for obj in _find_all_class(class_name, include_default=True):
+                if _is_drop_trigger(obj):
+                    _add(obj)
+
+    # Always include the engine CDO so reinherited UI holds start at 0.
+    for class_name in ("InputTriggerHold", "InputTriggerHoldAndRelease"):
+        for obj in _find_all_class(class_name, include_default=True):
+            path = _obj_key(obj).lower()
+            if "default__" in path and "inputtriggerhold" in path:
+                _add(obj)
+
     return found
 
 
@@ -299,10 +354,12 @@ def _patch_one_trigger(
     target: float,
     force_ui_oneshot_off: bool,
     reset_held: bool,
+    allow_drop_bypass: bool = False,
 ) -> str:
     """Patch a single trigger. Returns 'patched' | 'rewritten' | 'skipped'."""
     path = _obj_key(trigger)
-    if not _path_allowed(path):
+    # Drop triggers resolved via Outer may look like engine subobjects; still allow.
+    if not _path_allowed(path) and not (allow_drop_bypass and _is_drop_trigger(trigger)):
         return "skipped"
     current = _read_threshold(trigger)
     if current is None:
@@ -316,7 +373,7 @@ def _patch_one_trigger(
             return "skipped"
         rewritten = True
 
-    if force_ui_oneshot_off and _is_ui_path(path):
+    if force_ui_oneshot_off and (_is_ui_path(path) or _is_drop_trigger(trigger)):
         oneshot = _read_oneshot(trigger)
         if oneshot is not None:
             if path not in _ORIGINAL_ONESHOT:
@@ -362,6 +419,7 @@ def apply_holds(
             target=float(target),
             force_ui_oneshot_off=bool(_include_ui),
             reset_held=reset_held,
+            allow_drop_bypass=bool(fast_only or _is_drop_trigger(trigger)),
         )
         if result == "skipped":
             skipped += 1
@@ -667,10 +725,10 @@ def holds_status_message() -> str:
 
 def _on_drop_key_pressed() -> None:
     if _drops_enabled:
-        _maintain_holds(reason="drop-key", fast_only=True, reset_held=False)
+        # reset_held: inventory recreates/resets holds between presses
+        _maintain_holds(reason="drop-key", fast_only=True, reset_held=True)
     elif _holds_enabled:
-        # Holds-only: cheap drop fast-path still helps if drop is in the UI set.
-        _maintain_holds(reason="drop-key", fast_only=True, reset_held=False)
+        _maintain_holds(reason="drop-key", fast_only=True, reset_held=True)
 
 
 kb_maintain_r = keybind(
@@ -704,10 +762,17 @@ kb_maintain_gamepad = keybind(
 def _before_trigger_update(obj: Any, *_args: Any, **_kwargs: Any) -> None:
     if not _should_maintain():
         return
-    path = _obj_key(obj)
+    # Instant Drops only: patch this trigger if it belongs to drop-item (Outer-aware).
+    # Instant Holds: patch any allowed hold.
     if _holds_enabled:
-        pass  # patch any allowed hold
-    elif _drops_enabled and not _is_drop_path(path):
+        allow = True
+        drop_bypass = False
+    elif _drops_enabled:
+        allow = _is_drop_trigger(obj)
+        drop_bypass = True
+    else:
+        return
+    if not allow:
         return
     target = float(_threshold)
     _patch_one_trigger(
@@ -715,6 +780,7 @@ def _before_trigger_update(obj: Any, *_args: Any, **_kwargs: Any) -> None:
         target=target,
         force_ui_oneshot_off=bool(_include_ui),
         reset_held=False,
+        allow_drop_bypass=drop_bypass,
     )
 
 

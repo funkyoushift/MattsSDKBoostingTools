@@ -101,6 +101,8 @@ _QUEUE_PRESERVING_ACTIONS = frozenset({
     "instant_drops_status",
     "instant_holds_status",
     "fog_of_war_status",
+    # Hoard Builder status poll must not cancel an in-flight Start/Clear.
+    "hoard_status",
 })
 
 _QUICK_MENU_LAYOUT_MUTATIONS = frozenset({
@@ -628,6 +630,16 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
         return backend_actions.uvh_boost_cancel()
     if action == "uvh_boost_status":
         return backend_actions.uvh_boost_status()
+    if action == "hoard_set_plan":
+        return backend_actions.hoard_set_plan(payload)
+    if action == "hoard_status":
+        return backend_actions.hoard_status()
+    if action == "hoard_start":
+        return backend_actions.hoard_start()
+    if action == "hoard_stop":
+        return backend_actions.hoard_stop()
+    if action == "hoard_clear":
+        return backend_actions.hoard_clear()
     if action == "complete_challenges_all":
         return backend_actions.complete_challenges_all(payload)
     if action == "complete_challenges":
@@ -910,6 +922,10 @@ def _process_pending_actions(*_args: Any, **_kwargs: Any) -> None:
         _last_error = repr(exc)
     try:
         backend_actions.complete_challenges_tick()
+    except Exception as exc:
+        _last_error = repr(exc)
+    try:
+        backend_actions.hoard_tick()
     except Exception as exc:
         _last_error = repr(exc)
     for _ in range(8):

@@ -801,3 +801,80 @@ def teleport_pawn_to_debug_cam(player_index: int | None = None) -> str:
                     pawn.bActorEnableCollision = collision_was_enabled
             except Exception:
                 pass
+
+
+def _pawn_from_pc(pc: Any) -> Any:
+    if pc is None:
+        return None
+    for attr in ("OakCharacter", "Pawn", "AcknowledgedPawn", "ControlledPawn", "Character"):
+        try:
+            obj = getattr(pc, attr, None)
+        except Exception:
+            obj = None
+        if obj is not None:
+            return obj
+    return None
+
+
+def reset_skills_for_pc(pc: Any) -> str:
+    """Refund regular skill-tree points for a player controller.
+
+    Calls ``Server_ResetSpentPoints`` on live ``GbxProgressGraph`` objects owned
+    by that pawn whose defs are ``CharacterProgressPoints`` / ProgressPoints.
+    Does **not** reset Specializations.
+    """
+    from unrealsdk import find_all
+
+    pawn = _pawn_from_pc(pc)
+    if pawn is None:
+        return "reset skills: no pawn"
+
+    try:
+        pawn_path = str(pawn).split("'", 2)[1]
+    except Exception:
+        pawn_path = str(pawn)
+    if not pawn_path:
+        return "reset skills: could not resolve pawn path"
+
+    targets: list[tuple[Any, str]] = []
+    try:
+        for graph in list(find_all("GbxProgressGraph", False) or []):
+            if pawn_path not in str(graph):
+                continue
+            definition = str(getattr(graph, "ProgressGraphDef", None))
+            if "GraphType: <EGbxProgressGraphType.ProgressPoints: 0>" not in definition:
+                continue
+            if "FGbxDefPtr('CharacterProgressPoints', 'GbxProgressPointPoolDef'" not in definition:
+                continue
+            try:
+                definition_name = definition.split("'", 2)[1]
+            except Exception:
+                definition_name = definition[:160]
+            targets.append((graph, definition_name))
+    except Exception as exc:
+        return f"reset skills: graph discovery failed: {exc!r}"
+
+    if not targets:
+        return "reset skills: no CharacterProgressPoints graphs found for pawn"
+
+    reset_names: list[str] = []
+    failures: list[str] = []
+    for graph, definition_name in targets:
+        try:
+            graph.Server_ResetSpentPoints()
+            reset_names.append(definition_name)
+        except Exception as exc:
+            failures.append(f"{definition_name}: {exc!r}")
+
+    if not reset_names:
+        detail = "; ".join(failures[:3]) if failures else "unknown"
+        return f"reset skills: every RPC failed ({detail})"
+
+    msg = (
+        f"reset skills OK — {len(reset_names)} graph(s) "
+        f"({', '.join(reset_names)}); Specializations untouched"
+    )
+    if failures:
+        msg += f" | partial fails: {len(failures)}"
+    _log(msg)
+    return msg

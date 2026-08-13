@@ -29,6 +29,7 @@ from .inventory_capacity import (
     set_inventory_sizes_for_party_index,
 )
 from .dev_tools import activate_devperk as _activate_devperk
+from .dev_tools import reset_skills_for_pc as _reset_skills_for_pc
 from .dev_tools import teleport_pawn_to_debug_cam as _teleport_pawn_to_debug_cam
 from .dev_tools import toggle_debug_cam as _toggle_debug_cam
 from .item_pool_spawning import spawn_item_pool
@@ -80,6 +81,7 @@ from .combat_tuning import (
     reset_combat_tuning as _reset_combat_tuning,
 )
 from . import streamer_chaos
+from . import hoard_runner
 from .spawn_helpers import (
     apply_aggro_to_tracked as _apply_aggro_to_tracked,
     get_aggro_mode as _get_aggro_mode,
@@ -1829,6 +1831,9 @@ def run_quick_menu_action(
     elif key == "chaos_unlock":
         result = chaos_unlock()
         needs_player = True
+    elif key == "reset_skills":
+        result = reset_skills()
+        needs_player = True
     elif key == "cxp_on":
         result = cxp_set_enabled(True, payload.get("multiplier") or payload.get("cxp_multiplier"))
     elif key == "cxp_off":
@@ -1866,6 +1871,16 @@ def run_quick_menu_action(
         result = fog_of_war_toggle()
     elif key == "fog_of_war_status":
         result = fog_of_war_status()
+    elif key == "hoard_set_plan":
+        result = hoard_set_plan(payload)
+    elif key == "hoard_start":
+        result = hoard_start()
+    elif key == "hoard_stop":
+        result = hoard_stop()
+    elif key == "hoard_clear":
+        result = hoard_clear()
+    elif key == "hoard_status":
+        result = hoard_status()
     elif key == "unlock_cosmetics":
         result = unlock_cosmetics()
         needs_player = True
@@ -2514,6 +2529,30 @@ def fog_of_war_status() -> dict[str, Any]:
         "message": _nfow.status_message(),
         "fog_of_war": _nfow.get_status_dict(),
     }
+
+
+def hoard_set_plan(payload: dict[str, Any] | None = None) -> dict[str, Any]:
+    return hoard_runner.set_plan(payload)
+
+
+def hoard_start() -> dict[str, Any]:
+    return hoard_runner.start()
+
+
+def hoard_stop() -> dict[str, Any]:
+    return hoard_runner.stop()
+
+
+def hoard_clear() -> dict[str, Any]:
+    return hoard_runner.clear()
+
+
+def hoard_status() -> dict[str, Any]:
+    return hoard_runner.status()
+
+
+def hoard_tick() -> None:
+    hoard_runner.tick()
 
 
 def fog_of_war_clear(target: object = None) -> dict[str, Any]:
@@ -4030,6 +4069,19 @@ def _chaos_run(effect_name: str, runner: Any, *args: Any) -> dict[str, Any]:
         return {"ok": False, "message": f"{effect_name} failed for {label}: {exc!r}"}
     ok = streamer_chaos.result_ok(str(msg))
     return {"ok": ok, "message": f"{effect_name} → {label}: {msg}"}
+
+
+def reset_skills() -> dict[str, Any]:
+    """Refund regular skill points for the Dev Tools / party selected player."""
+    pc, label = _chaos_selected_pc()
+    if pc is None:
+        return {"ok": False, "message": label}
+    try:
+        msg = _reset_skills_for_pc(pc)
+    except Exception as exc:
+        return {"ok": False, "message": f"Reset skills failed for {label}: {exc!r}"}
+    ok = str(msg).lower().startswith("reset skills ok")
+    return {"ok": ok, "message": f"Reset skills → {label}: {msg}"}
 
 
 def chaos_launch(z: object = None) -> dict[str, Any]:

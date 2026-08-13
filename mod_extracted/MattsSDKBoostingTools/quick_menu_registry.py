@@ -234,6 +234,9 @@ ACTION_CATALOG: dict[str, dict[str, Any]] = {
     "dev_spawner_activate_last": {"basic": "Activate Last Spawn", "aliases": ["ASD Activate"]},
     "dev_spawner_clear": {"basic": "Clear ASD Spawns", "aliases": ["ASD Clear"]},
     "dev_spawner_reaggro": {"basic": "Re-Aggro Spawns", "aliases": ["Reaggro"]},
+    "hoard_start": {"basic": "Hoard Start", "aliases": ["Start Hoard", "Hoard"]},
+    "hoard_stop": {"basic": "Hoard Stop", "aliases": ["Stop Hoard"]},
+    "hoard_clear": {"basic": "Hoard Clear", "aliases": ["Clear Hoard"]},
     "movement_apply_all": {"basic": "Apply Movement", "aliases": ["Move Apply"]},
     "movement_reset_all": {"basic": "Reset Movement", "aliases": ["Move Reset"]},
     "movement_preset_fast": {"basic": "Fast Movement", "aliases": ["Fast"]},
@@ -306,6 +309,7 @@ ACTION_CATALOG: dict[str, dict[str, Any]] = {
     "chaos_lock_move": {"basic": "Chaos Lock Move", "aliases": ["No Move"]},
     "chaos_lock_both": {"basic": "Chaos Lock Both", "aliases": ["Freeze"]},
     "chaos_unlock": {"basic": "Chaos Unlock", "aliases": ["Unlock Input"]},
+    "reset_skills": {"basic": "Reset Skill Tree", "aliases": ["Respec", "Reset Skills", "Skill Reset"]},
 }
 
 for _tier in range(1, 8):
@@ -383,6 +387,7 @@ NEEDS_PLAYER_ACTIONS = frozenset({
     "kick_player",
     "set_backpack_bank_selected",
     "fog_of_war_clear",
+    "reset_skills",
     "devperk_0",
     "devperk_1",
     "devperk_2",
