@@ -1461,6 +1461,54 @@ button.gzo-submit-cta:hover {
   overflow: hidden;
 }
 
+/* Compact (fixed) layout: actor list + controls need real scrollbars */
+#tab-dev-spawner[data-msbt-dev-layout="fixed"] .dev-spawner-primary > [data-dev-host="browser-toolbar"],
+#tab-dev-spawner[data-msbt-dev-layout="fixed"] .dev-spawner-primary > [data-dev-host="browser-hiddens"],
+#tab-dev-spawner[data-msbt-dev-layout="fixed"] .dev-spawner-primary > .dev-list-toolbar,
+#tab-dev-spawner[data-msbt-dev-layout="fixed"] .dev-spawner-primary > .dev-selection-row,
+#tab-dev-spawner[data-msbt-dev-layout="fixed"] .dev-spawner-primary > .dev-fold {
+  flex: 0 0 auto;
+}
+
+#tab-dev-spawner[data-msbt-dev-layout="fixed"] .dev-spawner-primary > [data-dev-host="actor-rows"] {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+#tab-dev-spawner[data-msbt-dev-layout="fixed"] .dev-spawner-primary > [data-dev-host="actor-rows"] > .dev-row-list {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+}
+
+#tab-dev-spawner[data-msbt-dev-layout="fixed"] .dev-spawner-controls {
+  overflow-x: hidden;
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+}
+
+#tab-dev-spawner[data-msbt-dev-layout="fixed"] .dev-spawner-primary > [data-dev-host="actor-rows"] > .dev-row-list::-webkit-scrollbar,
+#tab-dev-spawner[data-msbt-dev-layout="fixed"] .dev-spawner-controls::-webkit-scrollbar {
+  width: 10px;
+}
+
+#tab-dev-spawner[data-msbt-dev-layout="fixed"] .dev-spawner-primary > [data-dev-host="actor-rows"] > .dev-row-list::-webkit-scrollbar-thumb,
+#tab-dev-spawner[data-msbt-dev-layout="fixed"] .dev-spawner-controls::-webkit-scrollbar-thumb {
+  background: #3d5475;
+  border-radius: 6px;
+}
+
+#tab-dev-spawner[data-msbt-dev-layout="fixed"] .dev-spawner-primary > [data-dev-host="actor-rows"] > .dev-row-list::-webkit-scrollbar-track,
+#tab-dev-spawner[data-msbt-dev-layout="fixed"] .dev-spawner-controls::-webkit-scrollbar-track {
+  background: #0d1320;
+}
+
 .dev-list-toolbar {
   align-items: center;
   display: flex;

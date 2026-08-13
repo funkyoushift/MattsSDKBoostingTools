@@ -217,7 +217,18 @@
             <button data-action="max_player_level">Max Player 60</button>
             <button data-action="max_spec_level">Max Spec 701</button>
             <button data-action="max_sdu">Max SDU</button>
+            <button data-action="fog_of_war_clear">Clear Fog</button>
+            <button id="instantDropsToggleBtn" type="button">Instant Drops [OFF]</button>
+            <button id="instantHoldsToggleBtn" type="button">Instant Holds [OFF]</button>
+            <button id="cxpToggleBtn" type="button">Combat XP Mult (All) [OFF]</button>
           </div>
+          <div class="inline-fields" style="margin-top:0.5rem;">
+            <label>
+              Combat XP Multiplier
+              <input id="cxpMultiplier" type="number" min="1" max="1000000" step="1" value="1000">
+            </label>
+          </div>
+          <div id="liveModsStatus" class="status-line compact-note">Combat XP / Instant Drops / Instant Holds idle.</div>
         </section>
       </div>
 

@@ -95,7 +95,11 @@ from .vehicle_tuning import (
     list_vehicle_catalog as _list_vehicle_catalog,
     list_vehicle_presets as _list_vehicle_presets,
     spawn_personal_vehicle as _spawn_personal_vehicle,
+    unlock_all_vehicles_for_pc as _unlock_all_vehicles_for_pc,
 )
+from . import extreme_combat_xp as _cxp
+from . import instant_click_holds as _ich
+from . import no_fog_of_war as _nfow
 
 CURRENCY_KINDS = ["cash", "eridium", "vaultcard1", "vaultcard2", "vaultcard3", "vaultcard4"]
 EXP_TRACKS = [
@@ -1825,6 +1829,49 @@ def run_quick_menu_action(
     elif key == "chaos_unlock":
         result = chaos_unlock()
         needs_player = True
+    elif key == "cxp_on":
+        result = cxp_set_enabled(True, payload.get("multiplier") or payload.get("cxp_multiplier"))
+    elif key == "cxp_off":
+        result = cxp_set_enabled(False)
+    elif key == "cxp_toggle":
+        result = cxp_toggle(payload.get("multiplier") or payload.get("cxp_multiplier"))
+    elif key == "cxp_set_mult":
+        result = cxp_set_multiplier(payload.get("multiplier") or payload.get("cxp_multiplier"))
+    elif key == "cxp_status":
+        result = cxp_status()
+    elif key == "instant_drops_on":
+        result = instant_drops_set_enabled(True)
+    elif key == "instant_drops_off":
+        result = instant_drops_set_enabled(False)
+    elif key == "instant_drops_toggle":
+        result = instant_drops_toggle()
+    elif key == "instant_drops_status":
+        result = instant_drops_status()
+    elif key == "instant_holds_on":
+        result = instant_holds_set_enabled(True)
+    elif key == "instant_holds_off":
+        result = instant_holds_set_enabled(False)
+    elif key == "instant_holds_toggle":
+        result = instant_holds_toggle()
+    elif key == "instant_holds_status":
+        result = instant_holds_status()
+    elif key == "fog_of_war_clear":
+        result = fog_of_war_clear(payload.get("target_player") or payload.get("name"))
+        needs_player = True
+    elif key == "fog_of_war_on":
+        result = fog_of_war_set_enabled(True)
+    elif key == "fog_of_war_off":
+        result = fog_of_war_set_enabled(False)
+    elif key == "fog_of_war_toggle":
+        result = fog_of_war_toggle()
+    elif key == "fog_of_war_status":
+        result = fog_of_war_status()
+    elif key == "unlock_cosmetics":
+        result = unlock_cosmetics()
+        needs_player = True
+    elif key == "unlock_vehicles":
+        result = unlock_vehicles()
+        needs_player = True
     else:
         return {"ok": False, "message": f"Unknown quick menu action: {key}"}
 
@@ -1881,6 +1928,10 @@ def get_status() -> dict[str, Any]:
         "location_bookmarks": _list_location_bookmarks(),
         "vehicle_presets": _list_vehicle_presets(),
         "vehicle_catalog": _list_vehicle_catalog(),
+        "cxp": _cxp.get_status_dict(),
+        "instant_drops": _ich.get_status_dict(),
+        "instant_holds": _ich.get_holds_status_dict(),
+        "fog_of_war": _nfow.get_status_dict(),
         "challenge_confirm_pending": bool(
             _challenge_confirm_until > 0.0 and time.monotonic() <= float(_challenge_confirm_until)
         ),
@@ -2240,6 +2291,44 @@ def _max_all_for_player_controller(pc: Any) -> tuple[bool, str]:
     except Exception as exc:
         fail_bits.append(f"vault cards failed: {exc!r}")
 
+    # Cosmetics / hover drives via ServerActivateDevPerk(4)
+    try:
+        perk_fn = getattr(pc, "ServerActivateDevPerk", None)
+        if callable(perk_fn):
+            perk_fn(4)
+            ok_bits.append("cosmetics+hovers (devperk 4)")
+        else:
+            fail_bits.append("cosmetics (no ServerActivateDevPerk)")
+    except Exception as exc:
+        fail_bits.append(f"cosmetics failed: {exc!r}")
+
+    # Personal vehicles unlock
+    try:
+        cars_ok, cars_detail = _unlock_all_vehicles_for_pc(pc)
+        if cars_ok:
+            ok_bits.append(f"cars: {cars_detail}")
+        else:
+            fail_bits.append(f"cars partial: {cars_detail}")
+    except Exception as exc:
+        fail_bits.append(f"cars failed: {exc!r}")
+
+    # UVH 1-7 queued for this controller (accumulates across scoped Max All runs)
+    try:
+        uvh_ok, uvh_detail = _uvh_queue_for_pc(pc, list(range(len(UVH_RANKS))))
+        if uvh_ok:
+            ok_bits.append(f"UVH 1-7: {uvh_detail}")
+        else:
+            fail_bits.append(f"UVH: {uvh_detail}")
+    except Exception as exc:
+        fail_bits.append(f"UVH failed: {exc!r}")
+
+    # Fog of war (client-local material hide; still run during Max All)
+    try:
+        fog_msg = _nfow.clear_fog()
+        ok_bits.append(f"fog: {fog_msg}")
+    except Exception as exc:
+        fail_bits.append(f"fog failed: {exc!r}")
+
     detail = "; ".join(ok_bits)
     if fail_bits:
         if detail:
@@ -2294,6 +2383,227 @@ def max_all() -> dict[str, Any]:
         }
     except Exception as exc:
         return {"ok": False, "message": f"Max All failed: {exc!r}"}
+
+
+def cxp_set_enabled(enabled: bool, multiplier: object = None) -> dict[str, Any]:
+    try:
+        if multiplier is not None and str(multiplier).strip() != "":
+            msg_m = _cxp.set_multiplier(float(multiplier))
+            if "must be" in msg_m:
+                return {"ok": False, "message": msg_m}
+        msg = _cxp.set_enabled(bool(enabled))
+        return {"ok": True, "message": msg, "cxp": _cxp.get_status_dict()}
+    except Exception as exc:
+        return {"ok": False, "message": f"CXP toggle failed: {exc!r}"}
+
+
+def cxp_toggle(multiplier: object = None) -> dict[str, Any]:
+    try:
+        if multiplier is not None and str(multiplier).strip() != "":
+            msg_m = _cxp.set_multiplier(float(multiplier))
+            if "must be" in msg_m:
+                return {"ok": False, "message": msg_m}
+        msg = _cxp.toggle_enabled()
+        return {"ok": True, "message": msg, "cxp": _cxp.get_status_dict()}
+    except Exception as exc:
+        return {"ok": False, "message": f"CXP toggle failed: {exc!r}"}
+
+
+def cxp_set_multiplier(multiplier: object) -> dict[str, Any]:
+    try:
+        msg = _cxp.set_multiplier(float(multiplier))
+        ok = "must be" not in msg
+        return {"ok": ok, "message": msg, "cxp": _cxp.get_status_dict()}
+    except Exception as exc:
+        return {"ok": False, "message": f"CXP multiplier failed: {exc!r}"}
+
+
+def cxp_status() -> dict[str, Any]:
+    return {"ok": True, "message": _cxp.status_message(), "cxp": _cxp.get_status_dict()}
+
+
+def instant_drops_set_enabled(enabled: bool) -> dict[str, Any]:
+    try:
+        msg = _ich.set_enabled(bool(enabled))
+        return {
+            "ok": True,
+            "message": msg,
+            "instant_drops": _ich.get_status_dict(),
+            "instant_holds": _ich.get_holds_status_dict(),
+        }
+    except Exception as exc:
+        return {"ok": False, "message": f"Instant drops failed: {exc!r}"}
+
+
+def instant_drops_toggle() -> dict[str, Any]:
+    try:
+        msg = _ich.toggle_enabled()
+        return {
+            "ok": True,
+            "message": msg,
+            "instant_drops": _ich.get_status_dict(),
+            "instant_holds": _ich.get_holds_status_dict(),
+        }
+    except Exception as exc:
+        return {"ok": False, "message": f"Instant drops failed: {exc!r}"}
+
+
+def instant_drops_status() -> dict[str, Any]:
+    return {
+        "ok": True,
+        "message": _ich.status_message(),
+        "instant_drops": _ich.get_status_dict(),
+        "instant_holds": _ich.get_holds_status_dict(),
+    }
+
+
+def instant_holds_set_enabled(enabled: bool) -> dict[str, Any]:
+    try:
+        msg = _ich.set_holds_enabled(bool(enabled))
+        return {
+            "ok": True,
+            "message": msg,
+            "instant_drops": _ich.get_status_dict(),
+            "instant_holds": _ich.get_holds_status_dict(),
+        }
+    except Exception as exc:
+        return {"ok": False, "message": f"Instant holds failed: {exc!r}"}
+
+
+def instant_holds_toggle() -> dict[str, Any]:
+    try:
+        msg = _ich.toggle_holds_enabled()
+        return {
+            "ok": True,
+            "message": msg,
+            "instant_drops": _ich.get_status_dict(),
+            "instant_holds": _ich.get_holds_status_dict(),
+        }
+    except Exception as exc:
+        return {"ok": False, "message": f"Instant holds failed: {exc!r}"}
+
+
+def instant_holds_status() -> dict[str, Any]:
+    return {
+        "ok": True,
+        "message": _ich.holds_status_message(),
+        "instant_drops": _ich.get_status_dict(),
+        "instant_holds": _ich.get_holds_status_dict(),
+    }
+
+
+def fog_of_war_set_enabled(enabled: bool) -> dict[str, Any]:
+    try:
+        msg = _nfow.set_enabled(bool(enabled))
+        return {"ok": True, "message": msg, "fog_of_war": _nfow.get_status_dict()}
+    except Exception as exc:
+        return {"ok": False, "message": f"Fog of war failed: {exc!r}"}
+
+
+def fog_of_war_toggle() -> dict[str, Any]:
+    try:
+        msg = _nfow.toggle_enabled()
+        return {"ok": True, "message": msg, "fog_of_war": _nfow.get_status_dict()}
+    except Exception as exc:
+        return {"ok": False, "message": f"Fog of war failed: {exc!r}"}
+
+
+def fog_of_war_status() -> dict[str, Any]:
+    return {
+        "ok": True,
+        "message": _nfow.status_message(),
+        "fog_of_war": _nfow.get_status_dict(),
+    }
+
+
+def fog_of_war_clear(target: object = None) -> dict[str, Any]:
+    """Targeted fog clear: resolve party player (selected / name), then apply local fog hide."""
+    refresh_players()
+    label = _selected_player_label(_selected_player_index, _selected_player_name)
+    if target is not None and str(target).strip():
+        sel = set_target_player(target)
+        if not sel.get("ok"):
+            return sel
+        label = _selected_player_label(_selected_player_index, _selected_player_name)
+    if _selected_player_index is None and not _selected_player_name:
+        return {"ok": False, "message": "No party player selected for fog_of_war_clear."}
+    try:
+        pc = _party_controller_for_index(_selected_player_index)
+        if pc is None:
+            return {
+                "ok": False,
+                "message": f"Fog clear could not resolve controller for {label}.",
+            }
+        msg = _nfow.clear_fog()
+        return {
+            "ok": True,
+            "message": (
+                f"Fog clear for target {label}: {msg}. "
+                "Map fog materials are client-local; guests need their own clear for their map."
+            ),
+            "fog_of_war": _nfow.get_status_dict(),
+        }
+    except Exception as exc:
+        return {"ok": False, "message": f"Fog clear failed: {exc!r}"}
+
+
+def unlock_cosmetics() -> dict[str, Any]:
+    idx = get_selected_player_index()
+    name = get_selected_player_name()
+    if idx is None and not name:
+        return {"ok": False, "message": "No party player selected."}
+    try:
+        label = _activate_devperk(4, idx)
+        return {
+            "ok": True,
+            "message": f"Cosmetics unlock requested for {_selected_player_label(idx, name)}: {label}.",
+        }
+    except Exception as exc:
+        return {"ok": False, "message": f"Cosmetics unlock failed: {exc!r}"}
+
+
+def unlock_vehicles() -> dict[str, Any]:
+    idx = get_selected_player_index()
+    name = get_selected_player_name()
+    if idx is None and not name:
+        return {"ok": False, "message": "No party player selected."}
+    try:
+        pc = _party_controller_for_index(idx)
+        label = _selected_player_label(idx, name)
+        if pc is None:
+            return {"ok": False, "message": f"Could not resolve controller for {label}."}
+        ok, detail = _unlock_all_vehicles_for_pc(pc)
+        return {
+            "ok": ok,
+            "message": f"Vehicle unlock for {label}: {detail}.",
+        }
+    except Exception as exc:
+        return {"ok": False, "message": f"Vehicle unlock failed: {exc!r}"}
+
+
+@command("msbt_fog", description="Clear map fog for a targeted player: msbt_fog name <substring>")
+def _cmd_msbt_fog(args: argparse.Namespace) -> None:
+    from unrealsdk import logging as _sdk_logging
+
+    parts = [str(p) for p in (getattr(args, "parts", None) or [])]
+    if not parts:
+        _sdk_logging.info("[MSBT Fog] Usage: msbt_fog name <substring>")
+        return
+    _head, name_sub = player_economy._parse_name_suffix(parts)
+    if not name_sub and parts:
+        name_sub = " ".join(parts)
+    if not name_sub:
+        _sdk_logging.info("[MSBT Fog] Usage: msbt_fog name <substring>")
+        return
+    result = fog_of_war_clear(name_sub)
+    _sdk_logging.info(f"[MSBT Fog] {result.get('message')}")
+
+
+_cmd_msbt_fog.add_argument(
+    "parts",
+    nargs="+",
+    help="name <substring>",
+)
 
 
 def _uvh_live(obj: Any) -> bool:
@@ -2425,6 +2735,28 @@ def _uvh_start(indices: list[int]) -> dict[str, Any]:
     names = ", ".join(UVH_RANKS[i][0] for i in indices)
     _uvh_set_status(f"UVH boost queued for {len(targets)} player(s): {names}; {len(plan)} challenge step(s).")
     return {"ok": True, "message": _uvh_last_status, "steps": len(plan), "players": len(targets)}
+
+
+def _uvh_queue_for_pc(pc: Any, indices: list[int]) -> tuple[bool, str]:
+    """Queue UVH steps for one controller; accumulate targets across Max All scope runs."""
+    global _uvh_queue, _uvh_targets, _uvh_next_at, _uvh_running
+    if pc is None or not _uvh_live(pc):
+        return False, "no live controller"
+    plan = _uvh_build_plan(indices)
+    if not plan:
+        return False, "empty UVH plan"
+    addr = _uvh_obj_addr(pc)
+    if not _uvh_running or not _uvh_queue:
+        _uvh_queue = plan
+        _uvh_targets = [pc]
+        _uvh_next_at = time.monotonic()
+        _uvh_running = True
+        return True, f"queued {len(plan)} step(s)"
+    # Already running — ensure this PC receives remaining steps.
+    if not any(_uvh_obj_addr(t) == addr for t in _uvh_targets if t is not None):
+        _uvh_targets.append(pc)
+        return True, f"added to active UVH run ({len(_uvh_queue)} step(s) left)"
+    return True, f"already in active UVH run ({len(_uvh_queue)} step(s) left)"
 
 
 def uvh_boost_tier(tier: object) -> dict[str, Any]:

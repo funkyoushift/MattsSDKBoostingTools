@@ -441,6 +441,52 @@ def _try_unlock_vehicle_for_spawn(pc: Any, def_id: str, entry: dict[str, Any] | 
     return _try_unlock_unlockable(pc, token)
 
 
+def unlock_all_vehicles_for_pc(pc: Any) -> tuple[bool, str]:
+    """Best-effort unlock of every catalog vehicle + known Unlockable_Vehicles tokens."""
+    if pc is None:
+        return False, "no PlayerController"
+    ok = 0
+    fail = 0
+    seen: set[str] = set()
+    for row in _load_vehicle_catalog_rows():
+        def_id = str(row.get("id") or "").strip()
+        token = _unlock_token_for_vehicle(def_id, row)
+        if not token or token in seen:
+            continue
+        seen.add(token)
+        success, _how = _try_unlock_unlockable(pc, token)
+        if success:
+            ok += 1
+        else:
+            fail += 1
+    # Also hit common personal-vehicle unlock stems even if catalog missed them.
+    for stem in (
+        "Grazer",
+        "Borg",
+        "Base",
+        "ShatterlandV1",
+        "City",
+        "CityOrder",
+        "Mountain",
+        "DarkSiren",
+        "ExoSoldier",
+        "Gravitar",
+        "Paladin",
+    ):
+        token = f"Unlockable_Vehicles.{stem}"
+        if token in seen:
+            continue
+        seen.add(token)
+        success, _how = _try_unlock_unlockable(pc, token)
+        if success:
+            ok += 1
+        else:
+            fail += 1
+    detail = f"unlocked={ok} failed={fail} tokens={len(seen)}"
+    _log(f"unlock_all_vehicles: {detail}")
+    return ok > 0, detail
+
+
 def spawn_personal_vehicle(def_id_or_alias: str, *, scope: str = "local") -> str:
     """Best-effort personal vehicle summon via OakPlayerController RPCs."""
     global _last_vehicle_spawn_at

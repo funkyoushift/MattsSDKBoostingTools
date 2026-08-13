@@ -35,6 +35,8 @@ _results: dict[str, dict[str, Any]] = {}
 # may still run if the game later ticks with an empty new-command stream, but a
 # *new* /action must drop them so stale serials/spawns cannot re-fire mid-flight.
 _abandoned_rids: set[str] = set()
+# RID currently executing on the game tick (popped from queue, result not written yet).
+_executing_rid: str | None = None
 _last_action: str = ""
 _last_error: str = ""
 _tick_registered = False
@@ -94,6 +96,11 @@ _QUEUE_PRESERVING_ACTIONS = frozenset({
     "read_inventory",
     "copy_read_serial",
     "copy_all_read_serials",
+    # Live Boost Mods status polls must not cancel a pending enable/disable.
+    "cxp_status",
+    "instant_drops_status",
+    "instant_holds_status",
+    "fog_of_war_status",
 })
 
 _QUICK_MENU_LAYOUT_MUTATIONS = frozenset({
@@ -109,6 +116,24 @@ _SERIAL_DELIVERY_ACTIONS = frozenset({
     "give_serial_selected",
     "give_serial_all",
     "give_serial_nonhost",
+})
+
+# Flag-only / menu-safe live mods: run on the HTTP thread so title-menu toggles
+# work before GbxUIUMGTickWidget is ticking in-world.
+_IMMEDIATE_LIVE_MOD_ACTIONS = frozenset({
+    "cxp_on",
+    "cxp_off",
+    "cxp_toggle",
+    "cxp_set_mult",
+    "cxp_status",
+    "instant_drops_on",
+    "instant_drops_off",
+    "instant_drops_toggle",
+    "instant_drops_status",
+    "instant_holds_on",
+    "instant_holds_off",
+    "instant_holds_toggle",
+    "instant_holds_status",
 })
 
 
@@ -168,6 +193,8 @@ def _request_was_superseded_locked(rid: str) -> bool:
     if not rid or rid not in _abandoned_rids:
         return False
     if rid in _results:
+        return False
+    if _executing_rid == rid:
         return False
     for item in _queue:
         if str(item.get("id") or "") == rid:
@@ -865,6 +892,10 @@ def _status() -> dict[str, Any]:
         "read_serials": backend_status.get("read_serials") or {},
         "rarity_weights": backend_status.get("rarity_weights") or {},
         "rarity_revision": int(backend_status.get("rarity_revision") or 0),
+        "cxp": backend_status.get("cxp") or {},
+        "instant_drops": backend_status.get("instant_drops") or {},
+        "instant_holds": backend_status.get("instant_holds") or {},
+        "fog_of_war": backend_status.get("fog_of_war") or {},
         "diagnostics": diagnostics,
         "last_action": _last_action,
         "last_error": last_error,
@@ -872,7 +903,7 @@ def _status() -> dict[str, Any]:
 
 
 def _process_pending_actions(*_args: Any, **_kwargs: Any) -> None:
-    global _last_error
+    global _last_error, _executing_rid
     try:
         backend_actions.uvh_boost_tick()
     except Exception as exc:
@@ -892,6 +923,7 @@ def _process_pending_actions(*_args: Any, **_kwargs: Any) -> None:
             # cancelled when a newer /action prunes the queue.
             if rid:
                 _abandoned_rids.discard(rid)
+                _executing_rid = rid
         action = item.get("action")
         payload = item.get("payload") or {}
         try:
@@ -902,6 +934,8 @@ def _process_pending_actions(*_args: Any, **_kwargs: Any) -> None:
             result = {"ok": False, "message": message}
         with _lock:
             _results[rid or uuid.uuid4().hex] = result
+            if _executing_rid == rid:
+                _executing_rid = None
     return None
 
 
@@ -998,6 +1032,15 @@ class _Handler(BaseHTTPRequestHandler):
             if not action:
                 self._send(400, {"ok": False, "message": "Missing action"})
                 return
+            # Title/main menu often has no UMG bridge tick — arm live mods immediately.
+            if action in _IMMEDIATE_LIVE_MOD_ACTIONS:
+                try:
+                    result = _handle_action(action, payload)
+                except Exception as exc:
+                    message = _format_action_exception(exc)
+                    result = {"ok": False, "message": message}
+                self._send(200, result)
+                return
             rid = uuid.uuid4().hex
             wait_timeout = float(data.get("timeout", 5.0) or 5.0)
             if wait_timeout < 1.0:
@@ -1037,6 +1080,19 @@ class _Handler(BaseHTTPRequestHandler):
             with _lock:
                 still_queued = any(str(item.get("id") or "") == rid for item in _queue)
                 already_done = rid in _results
+                in_flight = _executing_rid == rid
+                if in_flight:
+                    # Still running on the game tick — do not false-cancel.
+                    _abandoned_rids.add(rid)
+                    self._send(202, {
+                        "ok": True,
+                        "queued": True,
+                        "message": (
+                            "Action is still running in-game. Keep the game unpaused; "
+                            "result will apply when the SDK tick finishes."
+                        ),
+                    })
+                    return
                 if not still_queued and not already_done:
                     _abandoned_rids.discard(rid)
                     self._send(409, {

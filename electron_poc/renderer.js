@@ -196,6 +196,11 @@ const els = {
   rarityRememberPreset: document.getElementById("rarityRememberPreset"),
   raritySavePresetBtn: document.getElementById("raritySavePresetBtn"),
   rarityStatus: document.getElementById("rarityStatus"),
+  cxpMultiplier: document.getElementById("cxpMultiplier"),
+  cxpToggleBtn: document.getElementById("cxpToggleBtn"),
+  instantDropsToggleBtn: document.getElementById("instantDropsToggleBtn"),
+  instantHoldsToggleBtn: document.getElementById("instantHoldsToggleBtn"),
+  liveModsStatus: document.getElementById("liveModsStatus"),
   rarityUncommonPercent: document.getElementById("rarityUncommonPercent"),
   rarityUncommonValue: document.getElementById("rarityUncommonValue"),
   reportActual: document.getElementById("reportActual"),
@@ -2310,6 +2315,7 @@ const PLAYER_SCOPED_BOOST_ACTIONS = new Set([
   "max_player_level",
   "max_spec_level",
   "max_sdu",
+  "fog_of_war_clear",
   "chaos_launch",
   "chaos_drop_backpack",
   "chaos_empty_backpack",
@@ -2763,11 +2769,69 @@ function applyBridgeStatusResult(result, options = {}) {
   updateSerialState();
   // Always pull rarity from the bridge so F7 live-apply moves Boosting sliders.
   syncBoostingRaritySlidersFromBridge(data);
+  syncLiveModsFromStatus(data);
   updateAsdAutoclearTimer(data);
   updateLocationBookmarksFromStatus(data);
   updateVehicleCatalogFromStatus(data);
   if (!options.quiet) appendActivity(`Bridge online | players: ${playerCount} | selected: ${selected} | queue: ${queue}`);
   return data;
+}
+
+function updateLiveModToggleButtons(cxpEnabled, dropsEnabled, holdsEnabled) {
+  if (els.cxpToggleBtn) {
+    const on = Boolean(cxpEnabled);
+    els.cxpToggleBtn.textContent = `Combat XP Mult (All) [${on ? "ON" : "OFF"}]`;
+    els.cxpToggleBtn.classList.toggle("is-on", on);
+    els.cxpToggleBtn.classList.toggle("danger", on);
+  }
+  if (els.instantDropsToggleBtn) {
+    const on = Boolean(dropsEnabled);
+    els.instantDropsToggleBtn.textContent = `Instant Drops [${on ? "ON" : "OFF"}]`;
+    els.instantDropsToggleBtn.classList.toggle("is-on", on);
+    els.instantDropsToggleBtn.classList.toggle("danger", on);
+  }
+  if (els.instantHoldsToggleBtn) {
+    const on = Boolean(holdsEnabled);
+    els.instantHoldsToggleBtn.textContent = `Instant Holds [${on ? "ON" : "OFF"}]`;
+    els.instantHoldsToggleBtn.classList.toggle("is-on", on);
+    els.instantHoldsToggleBtn.classList.toggle("danger", on);
+  }
+}
+
+function syncLiveModsFromStatus(data) {
+  if (!els.liveModsStatus && !els.cxpToggleBtn && !els.instantDropsToggleBtn && !els.instantHoldsToggleBtn) return;
+  const cxp = data && data.cxp && typeof data.cxp === "object" ? data.cxp : null;
+  const drops = data && data.instant_drops && typeof data.instant_drops === "object" ? data.instant_drops : null;
+  const holds = data && data.instant_holds && typeof data.instant_holds === "object" ? data.instant_holds : null;
+  const fog = data && data.fog_of_war && typeof data.fog_of_war === "object" ? data.fog_of_war : null;
+  if (cxp && els.cxpMultiplier && Number.isFinite(Number(cxp.multiplier))) {
+    const mult = Number(cxp.multiplier);
+    if (document.activeElement !== els.cxpMultiplier) {
+      els.cxpMultiplier.value = String(Math.round(mult));
+    }
+  }
+  updateLiveModToggleButtons(cxp && cxp.enabled, drops && drops.enabled, holds && holds.enabled);
+  if (!els.liveModsStatus) return;
+  const bits = [];
+  if (cxp) bits.push(`Combat XP ${cxp.enabled ? "ON" : "OFF"} x${cxp.multiplier ?? "?"}`);
+  if (drops) bits.push(`Drops ${drops.enabled ? "ON" : "OFF"}`);
+  if (holds) bits.push(`Holds ${holds.enabled ? "ON" : "OFF"}`);
+  if (fog) bits.push(`Fog ${fog.enabled ? "ON" : "OFF"} mats=${fog.materials ?? "?"}`);
+  setLine(els.liveModsStatus, bits.length ? bits.join(" | ") : "Combat XP / Instant Drops / Instant Holds idle.", "ok");
+}
+
+async function runLiveModAction(action, payload = {}) {
+  setLine(els.liveModsStatus, `Sending ${action}...`, "warning");
+  const result = await runAction(action, payload, els.boostOutput, 20000);
+  const data = result && typeof result === "object" ? result : {};
+  syncLiveModsFromStatus({
+    cxp: data.cxp,
+    instant_drops: data.instant_drops,
+    instant_holds: data.instant_holds,
+    fog_of_war: data.fog_of_war
+  });
+  setLine(els.liveModsStatus, resultMessage(result), actionSucceeded(result) ? "ok" : "warning");
+  return result;
 }
 
 function updateAsdAutoclearTimer(data) {
@@ -8608,6 +8672,17 @@ function wireEvents() {
   document.querySelectorAll("[data-action]").forEach((button) => {
     button.addEventListener("click", () => runBoostActionButton(button));
   });
+  if (els.cxpToggleBtn) {
+    els.cxpToggleBtn.addEventListener("click", () => void runLiveModAction("cxp_toggle", {
+      multiplier: getFloat(els.cxpMultiplier, 1, 1000000, 1000)
+    }));
+  }
+  if (els.instantDropsToggleBtn) {
+    els.instantDropsToggleBtn.addEventListener("click", () => void runLiveModAction("instant_drops_toggle", {}));
+  }
+  if (els.instantHoldsToggleBtn) {
+    els.instantHoldsToggleBtn.addEventListener("click", () => void runLiveModAction("instant_holds_toggle", {}));
+  }
   document.querySelectorAll("[data-boost-serial-mode]").forEach((button) => {
     button.addEventListener("click", () => sendBoostSerial(button.dataset.boostSerialMode));
   });

@@ -8,10 +8,11 @@
 
   const STORAGE_PREFIX = "msbt.panelLayout.v2.";
   /** Bump when panel ids / default tiles change incompatibly (forces stale saves to reset). */
-  const LAYOUT_REVISION = 6;
+  const LAYOUT_REVISION = 7;
   /** Force a clean default when a tab's out-of-box layout was previously unusable. */
   const TAB_LAYOUT_MIN_REVISION = {
-    "combat-vehicle": 6
+    "combat-vehicle": 6,
+    boosting: 7
   };
   /** Preferred restore order when tearing down Dev Spawner docked GridStack. */
   const DEV_SPAWNER_PANEL_ORDER = [

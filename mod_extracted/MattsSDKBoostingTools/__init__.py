@@ -5,6 +5,7 @@ from __future__ import annotations
 from mods_base import CoopSupport, Game, build_mod
 
 from .golden_chest_keybinds import CLOSE_GOLDEN_CHEST_KEY, OPEN_GOLDEN_CHEST_KEY
+from .instant_click_holds import ICH_KEYBINDS
 from .player_economy import _cmd_givecurrency, _cmd_giveexperience
 from .serial_rewards import _cmd_give_serial
 from .inventory_capacity import start_auto_inventory_worker
@@ -13,6 +14,7 @@ from .external_app_launcher import _cmd_msbt_external_app
 from .backend_actions import (
     _cmd_msbt_complete_challenges,
     _cmd_msbt_complete_challenges_cancel,
+    _cmd_msbt_fog,
     _cmd_msbt_probe_challenge_apis,
     challenge_api_probe_enabled,
 )
@@ -27,8 +29,8 @@ from .quick_menu import (
     start_quick_menu,
 )
 
-__version__: str = "2.3.9"
-__version_info__: tuple[int, int, int] = (2, 3, 9)
+__version__: str = "2.4.0"
+__version_info__: tuple[int, int, int] = (2, 4, 0)
 
 _panel_keybinds = []
 _panel_commands = []
@@ -73,6 +75,7 @@ _extra_commands = [
     _cmd_msbt_quick_menu_unstuck,
     _cmd_msbt_complete_challenges,
     _cmd_msbt_complete_challenges_cancel,
+    _cmd_msbt_fog,
     _cmd_give_serial,
     _cmd_givecurrency,
     _cmd_giveexperience,
@@ -96,6 +99,7 @@ build_mod(
         quick_menu_unstuck_key,
         OPEN_GOLDEN_CHEST_KEY,
         CLOSE_GOLDEN_CHEST_KEY,
+        *ICH_KEYBINDS,
     ],
     commands=_panel_commands + _extra_commands,
 )
