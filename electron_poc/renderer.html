@@ -417,6 +417,7 @@
           <div class="button-row wrap">
             <button id="setInventorySelectedBtn">Set Selected</button>
             <button id="setInventoryAllBtn">Apply to All Party</button>
+            <button data-action="chaos_drop_backpack">Drop All (Backpack)</button>
           </div>
           <div id="inventoryStatus" class="status-line warning">Manual apply only. Enable auto to keep applying sizes while players load in.</div>
         </section>
@@ -1769,10 +1770,9 @@
 
       <section class="panel gold" data-msbt-panel="streamer-chaos" data-msbt-span="6" data-msbt-title="Streamer Chaos" data-msbt-resize="1">
         <h2>Streamer Chaos</h2>
-        <p>Verified hooks (launch, drop/empty backpack, kill/FFYL, invert, lock look/move). Uses <strong>Target Player</strong> (host or party member). <strong>Target All</strong> / <strong>Non-Host</strong> run the effect on each matching player. Whole-backpack drop only — not equipped-only.</p>
+        <p>Verified hooks (launch, empty backpack, kill/FFYL, invert, lock look/move). Uses <strong>Target Player</strong> (host or party member). <strong>Target All</strong> / <strong>Non-Host</strong> run the effect on each matching player.</p>
         <div class="button-grid wrap">
           <button data-action="chaos_launch">Launch</button>
-          <button data-action="chaos_drop_backpack">Drop Backpack</button>
           <button data-action="chaos_empty_backpack" class="danger">Empty Backpack</button>
           <button data-action="chaos_ffyl">FFYL</button>
           <button data-action="chaos_kill" class="danger">Kill</button>
