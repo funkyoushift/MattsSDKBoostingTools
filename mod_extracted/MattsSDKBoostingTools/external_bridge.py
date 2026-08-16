@@ -12,11 +12,11 @@ import threading
 import time
 import uuid
 import pkgutil
-from collections import deque
+from collections import OrderedDict, deque
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any, Callable
 
-from . import backend_actions, quick_menu_registry
+from . import backend_actions, perf_profile, quick_menu_registry
 
 try:
     from mods_base import hook
@@ -25,12 +25,21 @@ except Exception:  # pragma: no cover - only available in-game
 
 _HOST = "127.0.0.1"
 _PORT = 49774
+MAX_QUEUE_DEPTH = 64
+MAX_RESULTS = 128
+RESULT_TTL_SECONDS = 60.0
+MAX_BODY_BYTES = 2 * 1024 * 1024
+MAX_CLIENT_TIMEOUT_SECONDS = 30.0
+MIN_CLIENT_TIMEOUT_SECONDS = 1.0
+STATUS_REFRESH_SECONDS = 0.5
+STOP_JOIN_TIMEOUT_SECONDS = 3.0
 _server: ThreadingHTTPServer | None = None
 _thread: threading.Thread | None = None
 _started = False
 _lock = threading.RLock()
 _queue: deque[dict[str, Any]] = deque()
-_results: dict[str, dict[str, Any]] = {}
+_results: OrderedDict[str, dict[str, Any]] = OrderedDict()
+_waiters: dict[str, threading.Event] = {}
 # Request IDs whose HTTP waiters already timed out / disconnected.  Those actions
 # may still run if the game later ticks with an empty new-command stream, but a
 # *new* /action must drop them so stale serials/spawns cannot re-fire mid-flight.
@@ -40,6 +49,10 @@ _executing_rid: str | None = None
 _last_action: str = ""
 _last_error: str = ""
 _tick_registered = False
+_tick_registration: Any = None
+_generation = 0
+_status_snapshot: dict[str, Any] | None = None
+_status_snapshot_at = 0.0
 
 
 _OPTIONAL_UI_MODULE = "bl" + "imgui"
@@ -64,6 +77,57 @@ def _now() -> float:
         return time.monotonic()
     except Exception:
         return time.time()
+
+
+def _record_sizes_locked() -> None:
+    perf_profile.record_bridge_sizes(len(_queue), len(_results))
+
+
+def _prune_results_locked(now: float | None = None) -> int:
+    """Expire old results and enforce the bounded result cache."""
+    current = _now() if now is None else float(now)
+    removed = 0
+    for rid, entry in list(_results.items()):
+        completed_at = float(entry.get("completed_at", current))
+        if current - completed_at <= RESULT_TTL_SECONDS:
+            continue
+        _results.pop(rid, None)
+        removed += 1
+    while len(_results) > MAX_RESULTS:
+        _results.popitem(last=False)
+        removed += 1
+    _record_sizes_locked()
+    return removed
+
+
+def _store_result_locked(rid: str, result: dict[str, Any], now: float | None = None) -> bool:
+    """Store a completed result unless its HTTP waiter has abandoned it."""
+    if not rid or rid in _abandoned_rids:
+        return False
+    _results[rid] = {
+        "result": result,
+        "completed_at": _now() if now is None else float(now),
+    }
+    _results.move_to_end(rid)
+    _prune_results_locked(now)
+    return True
+
+
+def _pop_result_locked(rid: str, now: float | None = None) -> dict[str, Any] | None:
+    _prune_results_locked(now)
+    entry = _results.pop(rid, None)
+    _record_sizes_locked()
+    if entry is None:
+        return None
+    # Tolerate direct legacy/test insertion of a raw result mapping.
+    value = entry.get("result") if "result" in entry else entry
+    return value if isinstance(value, dict) else None
+
+
+def _signal_waiter_locked(rid: str) -> None:
+    waiter = _waiters.get(rid)
+    if waiter is not None:
+        waiter.set()
 
 
 def _copy_payload(payload: Any) -> dict[str, Any]:
@@ -149,12 +213,14 @@ def _clear_pending_matching_locked(should_drop: Callable[[dict[str, Any]], bool]
             rid = str(item.get("id") or "")
             if rid:
                 _abandoned_rids.add(rid)
+                _signal_waiter_locked(rid)
             dropped += 1
             continue
         kept.append(item)
     _queue.extend(kept)
     if len(_abandoned_rids) > 256:
         _abandoned_rids.clear()
+    _record_sizes_locked()
     return dropped
 
 
@@ -639,7 +705,7 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
     if action == "hoard_stop":
         return backend_actions.hoard_stop()
     if action == "hoard_clear":
-        return backend_actions.hoard_clear()
+        return backend_actions.hoard_clear(payload)
     if action == "complete_challenges_all":
         return backend_actions.complete_challenges_all(payload)
     if action == "complete_challenges":
@@ -727,11 +793,11 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
     if action == "movement_pull_ground_loot":
         return backend_actions.movement_pull_ground_loot()
     if action == "movement_super_dash":
-        return backend_actions.movement_super_dash(body.get("dash_strength"))
+        return backend_actions.movement_super_dash(payload.get("dash_strength"))
     if action == "movement_super_dash_toggle":
         return backend_actions.movement_super_dash_toggle()
     if action == "movement_azzy_super_dash":
-        return backend_actions.movement_azzy_super_dash(body.get("dash_strength"))
+        return backend_actions.movement_azzy_super_dash(payload.get("dash_strength"))
     if action == "movement_azzy_super_dash_toggle":
         return backend_actions.movement_azzy_super_dash_toggle()
     if action == "movement_zero_vault":
@@ -914,8 +980,59 @@ def _status() -> dict[str, Any]:
     }
 
 
-def _process_pending_actions(*_args: Any, **_kwargs: Any) -> None:
+def _safe_status_stub() -> dict[str, Any]:
+    return {
+        "ok": True,
+        "name": "MattsSDKBoostingTools external bridge",
+        "host": _HOST,
+        "port": _PORT,
+        "started": _started,
+        "queue": len(_queue),
+        "players": [],
+        "selected_player": "",
+        "serial_delivery": {},
+        "diagnostics": {"external_bridge_started": _started},
+        "last_action": _last_action,
+        "last_error": _last_error,
+        "snapshot_ready": False,
+    }
+
+
+def _get_status_snapshot() -> dict[str, Any]:
+    with _lock:
+        snapshot = _status_snapshot
+        if snapshot is None:
+            return _safe_status_stub()
+        result = _copy_payload(snapshot)
+        result["started"] = _started
+        result["queue"] = len(_queue)
+        return result
+
+
+def _refresh_status_snapshot(*, force: bool = False) -> None:
+    global _status_snapshot, _status_snapshot_at, _last_error
+    now = _now()
+    if not force and now - _status_snapshot_at < STATUS_REFRESH_SECONDS:
+        return
+    try:
+        snapshot = _status()
+        snapshot["snapshot_ready"] = True
+        with _lock:
+            _status_snapshot = snapshot
+            _status_snapshot_at = now
+    except Exception as exc:
+        _last_error = repr(exc)
+
+
+def _process_pending_actions(
+    *_args: Any,
+    _callback_generation: int | None = None,
+    **_kwargs: Any,
+) -> None:
     global _last_error, _executing_rid
+    started_at = _now()
+    if _callback_generation is not None and _callback_generation != _generation:
+        return
     try:
         backend_actions.uvh_boost_tick()
     except Exception as exc:
@@ -928,47 +1045,87 @@ def _process_pending_actions(*_args: Any, **_kwargs: Any) -> None:
         backend_actions.hoard_tick()
     except Exception as exc:
         _last_error = repr(exc)
+    if _callback_generation is not None and _callback_generation != _generation:
+        return
+    _refresh_status_snapshot()
     for _ in range(8):
+        if _callback_generation is not None and _callback_generation != _generation:
+            break
         with _lock:
+            _prune_results_locked()
             if not _queue:
-                return None
+                break
             item = _queue.popleft()
             rid = str(item.get("id") or "")
             # Do not skip abandoned ids here: a timed-out waiter still wants the
             # action to run on the next idle game tick.  Abandoned ids are only
             # cancelled when a newer /action prunes the queue.
             if rid:
-                _abandoned_rids.discard(rid)
                 _executing_rid = rid
+            _record_sizes_locked()
         action = item.get("action")
         payload = item.get("payload") or {}
+        action_started_at = _now()
         try:
             result = _handle_action(str(action), _copy_payload(payload))
         except Exception as exc:
             message = _format_action_exception(exc)
             _last_error = "" if _is_optional_ui_dependency_error(repr(exc)) else repr(exc)
             result = {"ok": False, "message": message}
+        perf_profile.record_call(f"bridge.action.{action}", (_now() - action_started_at) * 1000.0)
         with _lock:
-            _results[rid or uuid.uuid4().hex] = result
+            if _callback_generation is None or _callback_generation == _generation:
+                _store_result_locked(rid, result)
+                _signal_waiter_locked(rid)
             if _executing_rid == rid:
                 _executing_rid = None
+            _record_sizes_locked()
+    perf_profile.record_call("bridge.tick", (_now() - started_at) * 1000.0)
     return None
 
 
 def _register_tick_hook() -> None:
-    global _tick_registered
+    global _tick_registered, _tick_registration
     if _tick_registered or hook is None:
         return
     try:
-        hook(
+        token = _generation
+
+        def _generation_tick(*args: Any, **kwargs: Any) -> None:
+            _process_pending_actions(*args, _callback_generation=token, **kwargs)
+
+        _tick_registration = hook(
             "/Script/GbxUIUMG.GbxUIUMGTickWidget:BP_TickWidget",
             immediately_enable=True,
             hook_identifier="matts_sdk_boosting_tools_external_bridge_tick_v1",
-        )(_process_pending_actions)
+        )(_generation_tick)
         _tick_registered = True
     except Exception as exc:
         global _last_error
         _last_error = f"bridge tick hook failed: {exc!r}"
+
+
+def _unregister_tick_hook() -> None:
+    """Best-effort unregister across mods_base hook API versions."""
+    global _tick_registered, _tick_registration
+    registration = _tick_registration
+    for target in (registration, hook):
+        if target is None:
+            continue
+        for name in ("disable", "unregister", "remove"):
+            method = getattr(target, name, None)
+            if not callable(method):
+                continue
+            try:
+                if target is hook:
+                    method("matts_sdk_boosting_tools_external_bridge_tick_v1")
+                else:
+                    method()
+                break
+            except Exception:
+                continue
+    _tick_registration = None
+    _tick_registered = False
 
 
 _RESOURCE_FILES = {
@@ -1001,7 +1158,12 @@ class _Handler(BaseHTTPRequestHandler):
         return
 
     def _send(self, status: int, data: Any) -> None:
-        body = json.dumps(data, indent=2).encode("utf-8")
+        pretty = "?pretty=1" in self.path or "&pretty=1" in self.path
+        body = json.dumps(
+            data,
+            indent=2 if pretty else None,
+            separators=None if pretty else (",", ":"),
+        ).encode("utf-8")
         try:
             self.send_response(status)
             self.send_header("Content-Type", "application/json; charset=utf-8")
@@ -1022,7 +1184,7 @@ class _Handler(BaseHTTPRequestHandler):
 
     def do_GET(self) -> None:
         if self.path.startswith("/status"):
-            self._send(200, _status())
+            self._send(200, _get_status_snapshot())
         elif self.path.startswith("/quick_menu"):
             data = backend_actions.get_quick_menu_layout()
             self._send(200 if data.get("ok") else 500, data)
@@ -1041,6 +1203,12 @@ class _Handler(BaseHTTPRequestHandler):
             return
         try:
             length = int(self.headers.get("Content-Length", "0") or "0")
+            if length < 0 or length > MAX_BODY_BYTES:
+                self._send(413, {
+                    "ok": False,
+                    "message": f"Request body exceeds {MAX_BODY_BYTES} byte limit.",
+                })
+                return
             raw = self.rfile.read(length).decode("utf-8") if length else "{}"
             data = json.loads(raw or "{}")
             action = str(data.get("action") or "")
@@ -1058,12 +1226,21 @@ class _Handler(BaseHTTPRequestHandler):
                 self._send(200, result)
                 return
             rid = uuid.uuid4().hex
-            wait_timeout = float(data.get("timeout", 5.0) or 5.0)
-            if wait_timeout < 1.0:
-                wait_timeout = 1.0
+            wait_timeout = max(
+                MIN_CLIENT_TIMEOUT_SECONDS,
+                min(MAX_CLIENT_TIMEOUT_SECONDS, float(data.get("timeout", 5.0) or 5.0)),
+            )
             enqueued_at = _now()
+            waiter = threading.Event()
             with _lock:
                 dropped = _prepare_queue_for_enqueue_locked(action)
+                if len(_queue) >= MAX_QUEUE_DEPTH:
+                    self._send(429, {
+                        "ok": False,
+                        "message": f"Bridge queue is full ({MAX_QUEUE_DEPTH} actions).",
+                    })
+                    return
+                _waiters[rid] = waiter
                 _queue.append({
                     "id": rid,
                     "action": action,
@@ -1071,10 +1248,12 @@ class _Handler(BaseHTTPRequestHandler):
                     "enqueued_at": enqueued_at,
                     "waiter_deadline": enqueued_at + wait_timeout,
                 })
+                _record_sizes_locked()
             if dropped:
                 _log(f"Cleared {dropped} pending bridge action(s) before enqueueing {action}.")
             deadline = enqueued_at + wait_timeout
-            while _now() < deadline:
+            try:
+                waiter.wait(wait_timeout)
                 with _lock:
                     if _request_was_superseded_locked(rid):
                         _abandoned_rids.discard(rid)
@@ -1084,88 +1263,113 @@ class _Handler(BaseHTTPRequestHandler):
                             "message": "Action was cancelled because a newer bridge command replaced the pending queue.",
                         })
                         return
-                    result = _results.pop(rid, None)
+                    result = _pop_result_locked(rid)
                 if result is not None:
                     # Handled action failures are still useful JSON responses for
                     # the external app. Reserve HTTP 500 for bridge/server errors.
                     self._send(200, result)
                     return
-                time.sleep(0.05)
-            # Waiter gave up. Keep the item queued for an idle in-game tick, but
-            # mark it abandoned so a *later* user command can cancel this backlog.
-            with _lock:
-                still_queued = any(str(item.get("id") or "") == rid for item in _queue)
-                already_done = rid in _results
-                in_flight = _executing_rid == rid
-                if in_flight:
-                    # Still running on the game tick — do not false-cancel.
-                    _abandoned_rids.add(rid)
-                    self._send(202, {
-                        "ok": True,
-                        "queued": True,
-                        "message": (
-                            "Action is still running in-game. Keep the game unpaused; "
-                            "result will apply when the SDK tick finishes."
-                        ),
-                    })
-                    return
-                if not still_queued and not already_done:
-                    _abandoned_rids.discard(rid)
-                    self._send(409, {
-                        "ok": False,
-                        "cancelled": True,
-                        "message": "Action was cancelled because a newer bridge command replaced the pending queue.",
-                    })
-                    return
-                if already_done:
-                    result = _results.pop(rid, None)
+                # Waiter gave up. Keep the item queued for an idle in-game tick,
+                # but discard any eventual result because no client can consume it.
+                with _lock:
+                    still_queued = any(str(item.get("id") or "") == rid for item in _queue)
+                    result = _pop_result_locked(rid)
+                    in_flight = _executing_rid == rid
                     if result is not None:
                         self._send(200, result)
                         return
-                _abandoned_rids.add(rid)
-            self._send(202, {
-                "ok": True,
-                "queued": True,
-                "message": (
-                    "Action queued but not processed yet. Make sure the game is loaded "
-                    "and unpaused so the SDK tick can run it. A newer Give_Serial or spawn "
-                    "command can cancel a waiting same-kind action to avoid stale serials/"
-                    "spawns; other live commands do not cancel an in-progress chunked "
-                    "serial delivery."
-                ),
-            })
+                    if not still_queued and not in_flight:
+                        _abandoned_rids.discard(rid)
+                        self._send(409, {
+                            "ok": False,
+                            "cancelled": True,
+                            "message": "Action was cancelled because a newer bridge command replaced the pending queue.",
+                        })
+                        return
+                    _abandoned_rids.add(rid)
+                self._send(202, {
+                    "ok": True,
+                    "queued": True,
+                    "message": (
+                        "Action is queued or still running in-game. Keep the game unpaused; "
+                        "it will apply when the SDK tick finishes."
+                    ),
+                })
+            finally:
+                with _lock:
+                    _waiters.pop(rid, None)
         except Exception as exc:
             self._send(500, {"ok": False, "message": repr(exc)})
 
 
 def start_bridge() -> None:
-    global _server, _thread, _started, _last_error
+    global _server, _thread, _started, _last_error, _generation
     if _started:
         return
+    _generation += 1
     _register_tick_hook()
     try:
         _server = ThreadingHTTPServer((_HOST, _PORT), _Handler)
         _thread = threading.Thread(target=_server.serve_forever, name="MSBTExternalBridge", daemon=True)
         _thread.start()
         _started = True
+        _refresh_status_snapshot(force=True)
         _log(f"external bridge listening on http://{_HOST}:{_PORT}")
     except OSError as exc:
         # Port already open usually means another copy/reload already started it.
         _last_error = repr(exc)
         _started = False
+        _unregister_tick_hook()
+        if _server is not None:
+            try:
+                _server.server_close()
+            except Exception:
+                pass
+        _server = None
+        _thread = None
     except Exception as exc:
         _last_error = repr(exc)
         _started = False
+        _unregister_tick_hook()
+        if _server is not None:
+            try:
+                _server.server_close()
+            except Exception:
+                pass
+        _server = None
+        _thread = None
 
 
 def stop_bridge() -> None:
-    global _server, _thread, _started
+    global _server, _thread, _started, _executing_rid, _generation
+    global _status_snapshot, _status_snapshot_at
+    server = _server
+    thread = _thread
+    _generation += 1
+    _started = False
     try:
-        if _server is not None:
-            _server.shutdown()
-            _server.server_close()
+        if server is not None:
+            if thread is not None and thread.is_alive():
+                server.shutdown()
+            server.server_close()
     except Exception:
         pass
+    if thread is not None and thread is not threading.current_thread():
+        try:
+            thread.join(STOP_JOIN_TIMEOUT_SECONDS)
+        except Exception:
+            pass
+    _unregister_tick_hook()
+    with _lock:
+        for waiter in _waiters.values():
+            waiter.set()
+        _queue.clear()
+        _results.clear()
+        _abandoned_rids.clear()
+        _waiters.clear()
+        _executing_rid = None
+        _status_snapshot = None
+        _status_snapshot_at = 0.0
+        _record_sizes_locked()
     _server = None
     _thread = None
-    _started = False

@@ -2,16 +2,17 @@
 
 from __future__ import annotations
 
-import threading
+import time
 from typing import Any, Optional
 
-from mods_base import get_pc, keybind
+from mods_base import get_pc, hook, keybind
 from unrealsdk import find_all, find_object, logging
 from unrealsdk.unreal import WrappedStruct
 
 _PREFIX = "[Matts SDK Boosting Tools | GoldenChest]"
 _STATE_KEY_PATH = "/Script/GbxEngine.GbxActorStateMachineStateKey"
 _CLOSE_AFTER_DETACH_DELAY_S = 0.75
+_pending_close: tuple[float, Any] | None = None
 
 
 def _log(msg: str, *args: Any) -> None:
@@ -116,6 +117,7 @@ def _open_golden_chest() -> None:
 
 
 def _close_golden_chest() -> None:
+    global _pending_close
     script = _find_golden_chest_script()
     if script is None:
         return
@@ -125,20 +127,39 @@ def _close_golden_chest() -> None:
     except Exception as e:
         _log_err("DetachUnclaimedLoot failed; continuing close: %s", e)
 
-    def _finish_close() -> None:
-        try:
-            script.SetScriptStateEnabled("Open", False)
-            script.SetScriptStateEnabled("Idle", True)
-            _log("Called Open=false + Idle=true on %s", script)
-        except Exception as close_e:
-            _log_err("Close failed: %s", close_e)
+    _pending_close = (time.monotonic() + _CLOSE_AFTER_DETACH_DELAY_S, script)
+    _log("Scheduled close in %.2fs after detach.", _CLOSE_AFTER_DETACH_DELAY_S)
 
+
+def _tick_pending_close(*_args: Any, **_kwargs: Any) -> None:
+    global _pending_close
+    pending = _pending_close
+    if pending is None or time.monotonic() < pending[0]:
+        return
+    _pending_close = None
+    script = pending[1]
     try:
-        threading.Timer(_CLOSE_AFTER_DETACH_DELAY_S, _finish_close).start()
-        _log("Scheduled close in %.2fs after detach.", _CLOSE_AFTER_DETACH_DELAY_S)
-    except Exception as e:
-        _log_err("Could not schedule delayed close; closing now: %s", e)
-        _finish_close()
+        script.SetScriptStateEnabled("Open", False)
+        script.SetScriptStateEnabled("Idle", True)
+        _log("Called Open=false + Idle=true on %s", script)
+    except Exception as exc:
+        _log_err("Close failed: %s", exc)
+
+
+def clear_pending_closes() -> None:
+    """Drop travel-unsafe script wrappers without touching the new world."""
+    global _pending_close
+    _pending_close = None
+
+
+try:
+    hook(
+        "/Script/Engine.CameraModifier:BlueprintModifyCamera",
+        immediately_enable=True,
+        hook_identifier="msbt_golden_chest_close_tick_v1",
+    )(_tick_pending_close)
+except Exception as exc:
+    _log_err("Could not register delayed-close tick: %s", exc)
 
 
 OPEN_GOLDEN_CHEST_KEY = keybind(

@@ -43,6 +43,8 @@ from .serial_rewards import (
     _serial_delivery_chunks,
     _serial_delivery_chunk_stats,
     _strip_wrapping_markdown_backticks,
+    needs_async_serial_resolution,
+    queue_serial_resolution,
     serial_delivery_status,
     serial_delivery_progress,
     serial_delivery_timing,
@@ -226,6 +228,25 @@ def _hud_forget_viewport_pill_overlay(cancel_timer: bool = True) -> None:
     _hud_pill_last_accent = ""
     _hud_pill_last_progress = -1.0
     _hud_pill_next_update = 0.0
+
+
+def clear_travel_caches() -> None:
+    """Release BLImGui-side UObject wrappers without requiring BLImGui to load."""
+    global _movement_host_cache_value, _movement_host_cache_until
+    global _movement_infinite_jump_context_cache, _movement_infinite_jump_context_cache_time
+    global _movement_live_context_cache, _movement_live_context_cache_time, _movement_live_context_cache_signature
+    global _rarity_cached_gamestate, _rarity_cached_state, _rarity_cached_state_key
+    _hud_forget_viewport_pill_overlay()
+    _movement_host_cache_value = False
+    _movement_host_cache_until = 0.0
+    _movement_infinite_jump_context_cache = []
+    _movement_infinite_jump_context_cache_time = 0.0
+    _movement_live_context_cache = []
+    _movement_live_context_cache_time = 0.0
+    _movement_live_context_cache_signature = None
+    _rarity_cached_gamestate = None
+    _rarity_cached_state = None
+    _rarity_cached_state_key = ""
 
 
 def _hud_suppress_native(seconds: float = 15.0) -> None:
@@ -3669,18 +3690,27 @@ def _give_serial_selected(mode: str = "selected") -> None:
         _log("Paste at least one Base85 serial first.")
         return
     expanded = _parse_serial_text(raw)
-    serials = _resolve_give_serial_strings(expanded)
-    if not serials:
-        _log("No valid serials after parsing/resolving.")
-        return
-    serials, changed, error = _serials_with_level_override(serials, _serial_delivery_override_level, _serial_delivery_level)
-    if error:
-        _log(error)
-        return
-    status = _deliver_serials_with_target(serials, mode, "Boosting Menu")
-    if changed:
-        status += f" Level override: {changed} serial(s) set to level {_clamp_int(_serial_delivery_level, 1, 60)}."
-    _log(status)
+
+    def _resolved(serials, error) -> None:
+        if error is not None or not serials:
+            _log(f"No valid serials after parsing/resolving: {error!r}" if error else "No valid serials after parsing/resolving.")
+            return
+        final, changed, override_error = _serials_with_level_override(
+            serials, _serial_delivery_override_level, _serial_delivery_level
+        )
+        if override_error:
+            _log(override_error)
+            return
+        status = _deliver_serials_with_target(final, mode, "Boosting Menu")
+        if changed:
+            status += f" Level override: {changed} serial(s) set to level {_clamp_int(_serial_delivery_level, 1, 60)}."
+        _log(status)
+
+    if needs_async_serial_resolution(expanded):
+        _log("Serial conversion queued in background.")
+        queue_serial_resolution(expanded, _resolved)
+    else:
+        _resolved(_resolve_give_serial_strings(expanded), None)
 
 
 
@@ -4707,9 +4737,9 @@ def _movement_camera_infinite_jump_hook(*args, **kwargs):
     jump counters (avoids every-frame zeroing jitter). Local-first: skip party
     walks and writes when JumpCurrentCount is idle and JumpMaxCount is open.
     """
+    if not _movement_infinite_jump_indices:
+        return None
     try:
-        if not _movement_infinite_jump_indices:
-            return None
         now = time.monotonic()
         last = float(getattr(_movement_camera_infinite_jump_hook, "_last", 0.0) or 0.0)
         if now - last < 0.1:
@@ -4776,6 +4806,11 @@ def _movement_camera_infinite_jump_hook(*args, **kwargs):
 
 
 def _movement_jump_pre_hook(*args, **kwargs):
+    # CanJumpInternal/CanJump fire every frame. Resolving the pawn costs several
+    # UObject path-name conversions plus a party walk, so bail before any of that
+    # when no slot has Infinite Jump enabled.
+    if not _movement_infinite_jump_indices:
+        return None
     try:
         for obj in list(args) + list(kwargs.values()):
             pawn = _movement_hook_arg_to_pawn(obj)
@@ -4788,6 +4823,15 @@ def _movement_jump_pre_hook(*args, **kwargs):
 
 
 def _movement_register_infinite_jump_hooks() -> None:
+    # movement_adjustments already owns the camera hook plus all nine jump-gate
+    # targets. Registering them again here doubled the Python callbacks on
+    # BlueprintModifyCamera / CanJumpInternal, which are per-frame functions, so
+    # this panel now delegates and only keeps the helpers for its own buttons.
+    _log("Infinite Jump hooks delegated to backend movement_adjustments (no duplicate hooks).")
+    return
+
+
+def _movement_register_infinite_jump_hooks_legacy_unused() -> None:
     # Primary path: proven camera hook. It is cheap-idle when no Infinite Jump
     # slots are enabled and does not depend on HUD/menu/GameState polling.
     try:
@@ -5392,17 +5436,24 @@ def _serial_store_deliver_selected(mode: str = "selected") -> None:
     raw_serials: list[str] = []
     for e in entries:
         raw_serials.extend(_parse_serial_text(str(e.get("serial", ""))))
-    serials = _resolve_give_serial_strings(raw_serials)
-    if not serials:
-        _serial_store_status = "Selected entries did not resolve to any deliverable serials."
-        _log("Serial Bookmarks: selected entries did not resolve to any serials.")
-        return
     names = ", ".join(str(e.get("name", "Serial")) for e in entries[:4])
     if len(entries) > 4:
         names += f", +{len(entries) - 4} more"
-    _serial_store_status = _deliver_serials_with_target(serials, mode, "Serial Bookmarks")
-    _log(f"Serial Bookmarks delivered {len(serials)} serial(s) from {names}: {_serial_store_status}")
-    _log(f"Serial Bookmarks delivered {len(serials)} serial(s) ({names}) to all party players.")
+
+    def _resolved(serials, error) -> None:
+        global _serial_store_status
+        if error is not None or not serials:
+            _serial_store_status = "Selected entries did not resolve to any deliverable serials."
+            _log(f"Serial Bookmarks resolve failed: {error!r}" if error else _serial_store_status)
+            return
+        _serial_store_status = _deliver_serials_with_target(serials, mode, "Serial Bookmarks")
+        _log(f"Serial Bookmarks delivered {len(serials)} serial(s) from {names}: {_serial_store_status}")
+
+    if needs_async_serial_resolution(raw_serials):
+        _serial_store_status = "Converting selected serials in background…"
+        queue_serial_resolution(raw_serials, _resolved)
+    else:
+        _resolved(_resolve_give_serial_strings(raw_serials), None)
 
 
 

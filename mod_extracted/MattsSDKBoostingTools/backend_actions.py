@@ -14,6 +14,7 @@ import pkgutil
 import re
 import sys
 import time
+from collections import deque
 from typing import Any
 
 from mods_base import ENGINE, command, get_pc
@@ -300,7 +301,7 @@ UVH_RANKS: tuple[tuple[str, tuple[str, ...]], ...] = (
 _UVH_NORMAL_STEP_DELAY_SECONDS = 0.30
 _UVH_PRE_FINAL_DELAY_SECONDS = 0.30
 _UVH_TIER_ACTIVATION_DELAY_SECONDS = 0.30
-_uvh_queue: list[tuple[str, str, float]] = []
+_uvh_queue: deque[tuple[str, str, float]] = deque()
 _uvh_targets: list[Any] = []
 _uvh_next_at = 0.0
 _uvh_running = False
@@ -323,12 +324,16 @@ _ASD_COMMAND_ATTRS = {
     "ASD_logo_options": "_cmd_logo_options",
     "ASD_spawnerdiag": "_cmd_spawnerdiag",
 }
-# ASD auto-clear uses fixed batch windows (not an extending idle timer):
-# - First spawn opens a batch; spawns for the next BATCH_WINDOW_S stay in it.
-# - At batch end we ASD_clear (clears that wave; ASD has no per-age clear API).
-# - Spawns after the window clear the prior wave and open a new batch timer.
-# Set batch window to 0 to disable.
-_ASD_BATCH_WINDOW_S = 60.0
+# ASD auto-clear used fixed batch windows: first spawn opened a batch, and at the
+# end of the window we fired ASD_clear.
+#
+# That is off now (0 disables it). ASD_clear walks _CREATED_SPAWNERS and calls
+# GetSpawnerComponent / SetActive / ResetSpawner / K2_DestroyActor on every entry
+# with no "is this actor still alive" pre-check, so it happily reaches into
+# spawners that are already gone. Firing that on a timer, unattended, minutes into
+# a hoard, is exactly the kind of unsupervised destruction that has now crashed
+# the game three times. Clearing is the user's Clear button only.
+_ASD_BATCH_WINDOW_S = 0.0
 _asd_batch_start = 0.0
 _asd_batch_clear_due = 0.0
 _asd_batch_armed = False
@@ -346,6 +351,12 @@ def _asd_note_spawn_for_autoclear() -> None:
         return
     # Still inside the current collection window — leave the clear time alone.
     if now <= float(_asd_batch_clear_due):
+        return
+    if _asd_autoclear_should_wait():
+        # A hoard wave owns these actors; wiping them here would both delete the
+        # fight in progress and destroy actors the engine is still finishing.
+        _asd_batch_start = now
+        _asd_batch_clear_due = now + float(_ASD_BATCH_WINDOW_S)
         return
     # Past the window: clear the prior wave now, then open a new batch for this spawn.
     try:
@@ -373,13 +384,34 @@ def _asd_disarm_autoclear() -> None:
     _asd_batch_start = 0.0
 
 
+def _asd_autoclear_should_wait() -> bool:
+    """Hold the batch clear while the hoard runner still owns live actors.
+
+    ASD_clear destroys every tracked spawner and actor. Firing that mid-wave —
+    or in the frame a wave just died — races the engine's own death handling.
+    """
+    try:
+        if hoard_runner._spawn_in_flight or hoard_runner._spawn_phase:
+            return True
+        if hoard_runner._running:
+            return True
+        if hoard_runner.cleanup_pending():
+            return True
+    except Exception:
+        return False
+    return False
+
+
 def tick_asd_autoclear() -> None:
     """Clear one ASD spawn batch when its window ends."""
-    global _asd_batch_armed
+    global _asd_batch_armed, _asd_batch_clear_due
     if not _asd_batch_armed or float(_ASD_BATCH_WINDOW_S) <= 0.0:
         return
     now = time.monotonic()
     if now < float(_asd_batch_clear_due):
+        return
+    if _asd_autoclear_should_wait():
+        _asd_batch_clear_due = now + 2.0
         return
     ok = False
     msg = "ASD auto-clear skipped"
@@ -866,7 +898,71 @@ def _install_asd_spawn_runtime_patches(asd: Any) -> tuple[bool, str]:
     return True, "; ".join(messages)
 
 
-def _capture_asd_logs(asd: Any, callback: Any) -> tuple[list[tuple[str, str]], Exception | None]:
+_ASD_LOG_WINDOW_S = 10.0
+_ASD_LOG_MAX_INFO_PER_WINDOW = 10
+_ASD_LOG_MAX_PROBLEM_PER_WINDOW = 30
+_ASD_LOG_DUPLICATE_WINDOW_S = 5.0
+_ASD_LOG_DIGITS = re.compile(r"(0x)?[0-9a-fA-F]{3,}|\d+")
+_asd_log_window_start = 0.0
+_asd_log_forwarded: dict[str, int] = {"info": 0, "problem": 0}
+_asd_log_suppressed = 0
+_asd_log_signatures: dict[str, float] = {}
+
+
+def _asd_log_signature(text: str) -> str:
+    """Collapse actor names/addresses/counters so repeats share one signature."""
+    return _ASD_LOG_DIGITS.sub("#", str(text))[:160]
+
+
+def _asd_log_should_forward(level: str, text: str) -> bool:
+    """Rate limit ActorScriptDeployer chatter without silencing real problems.
+
+    ASD emitted ~835 lines/minute during a paced hoard. Warnings and errors still
+    get through (that is how spawn failures stay diagnosable); only repeats and
+    routine info lines are dropped.
+    """
+    global _asd_log_window_start, _asd_log_suppressed
+    now = time.monotonic()
+    if now - _asd_log_window_start > _ASD_LOG_WINDOW_S:
+        dropped = _asd_log_suppressed
+        _asd_log_window_start = now
+        _asd_log_forwarded["info"] = 0
+        _asd_log_forwarded["problem"] = 0
+        _asd_log_suppressed = 0
+        _asd_log_signatures.clear()
+        if dropped > 0:
+            try:
+                from unrealsdk import logging as _ulog
+
+                _ulog.info(
+                    f"[Matts SDK Boosting Tools | ASD] throttled {dropped} repeated "
+                    "ActorScriptDeployer log line(s)."
+                )
+            except Exception:
+                pass
+
+    bucket = "info" if level == "info" else "problem"
+    signature = f"{bucket}:{_asd_log_signature(text)}"
+    seen_at = _asd_log_signatures.get(signature)
+    if seen_at is not None and now - seen_at < _ASD_LOG_DUPLICATE_WINDOW_S:
+        _asd_log_suppressed += 1
+        return False
+    cap = _ASD_LOG_MAX_INFO_PER_WINDOW if bucket == "info" else _ASD_LOG_MAX_PROBLEM_PER_WINDOW
+    if _asd_log_forwarded[bucket] >= cap:
+        _asd_log_suppressed += 1
+        return False
+    _asd_log_signatures[signature] = now
+    _asd_log_forwarded[bucket] += 1
+    return True
+
+
+def _capture_asd_logs(
+    asd: Any,
+    callback: Any,
+    *,
+    forward: bool = True,
+    throttle: bool = False,
+) -> tuple[list[tuple[str, str]], Exception | None]:
     logs: list[tuple[str, str]] = []
     originals = {
         "_log_info": getattr(asd, "_log_info", None),
@@ -878,8 +974,11 @@ def _capture_asd_logs(asd: Any, callback: Any) -> tuple[list[tuple[str, str]], E
         def _logger(message: str) -> None:
             text = str(message)
             logs.append((level, text))
-            if callable(original):
-                original(message)
+            if not forward or not callable(original):
+                return
+            if throttle and not _asd_log_should_forward(level, text):
+                return
+            original(message)
 
         return _logger
 
@@ -1030,8 +1129,16 @@ def _run_actor_script_deployer_spawnai_like_debug_menu(
     z_offset: float,
     extra_loads: list[str],
     direct_only: bool,
+    angle_degrees: float = 0.0,
 ) -> dict[str, Any]:
-    """Run ActorScriptDeployer's native AI spawn command for standard row spawns."""
+    """Run ActorScriptDeployer's native AI spawn command for standard row spawns.
+
+    `angle_degrees` is accepted for call-site compatibility and ignored. Honouring
+    it required replacing ActorScriptDeployer's `_spawn_transform_for_index` for
+    the duration of the call, i.e. mutating a third-party module while its native
+    spawn and deferred-actor code ran on a tick that can re-enter us. ASD has no
+    bearing argument, so directional placement is gone rather than patched.
+    """
     try:
         asd = importlib.import_module("ActorScriptDeployer")
     except Exception as exc:
@@ -1065,7 +1172,7 @@ def _run_actor_script_deployer_spawnai_like_debug_menu(
             )
         )
 
-    logs, error = _capture_asd_logs(asd, _spawn_first)
+    logs, error = _capture_asd_logs(asd, _spawn_first, throttle=True)
     result = _parse_asd_spawnai_result(
         name=name,
         requested_count=count,
@@ -1100,13 +1207,26 @@ def _module_version(name: str) -> str:
     return ""
 
 
-def _sdk_diagnostics() -> dict[str, Any]:
+_SDK_DIAGNOSTICS_TTL_SECONDS = 30.0
+_sdk_diagnostics_cache: dict[str, Any] | None = None
+_sdk_diagnostics_cached_at = 0.0
+
+
+def _sdk_diagnostics(refresh: bool = False) -> dict[str, Any]:
     """Lightweight SDK/runtime status for the external bridge.
 
     Keep this best-effort only: diagnostics should never block startup or action
     processing if an optional module is missing or an SDK build hides version
     metadata.
     """
+    global _sdk_diagnostics_cache, _sdk_diagnostics_cached_at
+    now = time.monotonic()
+    if (
+        not refresh
+        and _sdk_diagnostics_cache is not None
+        and now - _sdk_diagnostics_cached_at < _SDK_DIAGNOSTICS_TTL_SECONDS
+    ):
+        return dict(_sdk_diagnostics_cache)
     try:
         py_version = sys.version.split()[0]
     except Exception:
@@ -1115,7 +1235,7 @@ def _sdk_diagnostics() -> dict[str, Any]:
         from . import __version__ as msbt_mod_version
     except Exception:
         msbt_mod_version = ""
-    return {
+    result = {
         "msbt_loaded": True,
         "msbt_mod_version": str(msbt_mod_version or ""),
         "python_version": py_version,
@@ -1125,6 +1245,15 @@ def _sdk_diagnostics() -> dict[str, Any]:
         "blimgui_available": _module_available("blimgui"),
         "actor_script_deployer_available": _module_available("ActorScriptDeployer"),
     }
+    _sdk_diagnostics_cache = result
+    _sdk_diagnostics_cached_at = now
+    return dict(result)
+
+
+def clear_uobject_caches() -> None:
+    """Release cached UObject controller references before travel/unload."""
+    _uvh_targets.clear()
+    _challenge_targets.clear()
 
 
 def _max_level_for_track(track: object) -> int:
@@ -1878,7 +2007,7 @@ def run_quick_menu_action(
     elif key == "hoard_stop":
         result = hoard_stop()
     elif key == "hoard_clear":
-        result = hoard_clear()
+        result = hoard_clear(payload)
     elif key == "hoard_status":
         result = hoard_status()
     elif key == "unlock_cosmetics":
@@ -2543,8 +2672,8 @@ def hoard_stop() -> dict[str, Any]:
     return hoard_runner.stop()
 
 
-def hoard_clear() -> dict[str, Any]:
-    return hoard_runner.clear()
+def hoard_clear(payload: dict[str, Any] | None = None) -> dict[str, Any]:
+    return hoard_runner.clear(payload)
 
 
 def hoard_status() -> dict[str, Any]:
@@ -2767,7 +2896,7 @@ def _uvh_start(indices: list[int]) -> dict[str, Any]:
     if not plan:
         _uvh_set_status("Cannot start UVH boost: no UVH tier steps were selected.")
         return {"ok": False, "message": _uvh_last_status}
-    _uvh_queue = plan
+    _uvh_queue = deque(plan)
     _uvh_targets = targets
     _uvh_next_at = time.monotonic()
     _uvh_running = True
@@ -2786,7 +2915,7 @@ def _uvh_queue_for_pc(pc: Any, indices: list[int]) -> tuple[bool, str]:
         return False, "empty UVH plan"
     addr = _uvh_obj_addr(pc)
     if not _uvh_running or not _uvh_queue:
-        _uvh_queue = plan
+        _uvh_queue = deque(plan)
         _uvh_targets = [pc]
         _uvh_next_at = time.monotonic()
         _uvh_running = True
@@ -2815,7 +2944,7 @@ def uvh_boost_all() -> dict[str, Any]:
 def uvh_boost_cancel() -> dict[str, Any]:
     global _uvh_queue, _uvh_targets, _uvh_running
     active = _uvh_running or bool(_uvh_queue)
-    _uvh_queue = []
+    _uvh_queue = deque()
     _uvh_targets = []
     _uvh_running = False
     _uvh_set_status("UVH boost cancelled." if active else "No UVH boost is active.")
@@ -2838,7 +2967,7 @@ def uvh_boost_tick() -> None:
         return
     if get_pc() is None:
         return
-    label, challenge, delay = _uvh_queue.pop(0)
+    label, challenge, delay = _uvh_queue.popleft()
     live_targets = [controller for controller in _uvh_targets if _uvh_live(controller)]
     sent = 0
     for controller in live_targets:
@@ -2852,6 +2981,7 @@ def uvh_boost_tick() -> None:
         _uvh_set_status(f"{label}: sent {challenge} to {sent}/{len(live_targets)} player(s); {len(_uvh_queue)} step(s) left.")
     else:
         _uvh_running = False
+        _uvh_targets.clear()
         _uvh_set_status(f"UVH boost complete. Final step sent to {sent}/{len(live_targets)} player(s).")
 
 
@@ -2863,7 +2993,7 @@ _CHALLENGE_LARGE_AMOUNT_THRESHOLD = 100
 _CHALLENGE_MAX_AMOUNT_PER_GRANT = 250
 _CHALLENGE_STATUS_EVERY = 100
 _challenge_catalog_cache: list[tuple[str, int]] | None = None
-_challenge_queue: list[tuple[str, int]] = []
+_challenge_queue: deque[tuple[str, int]] = deque()
 _challenge_targets: list[Any] = []
 _challenge_next_at = 0.0
 _challenge_running = False
@@ -3077,7 +3207,7 @@ def _challenge_queue_start(rows: list[tuple[str, int]], *, label: str = "Challen
     if not rows:
         _challenge_set_status(f"Cannot start: no challenges matched for {label}.")
         return {"ok": False, "message": _challenge_last_status}
-    _challenge_queue = list(rows)
+    _challenge_queue = deque(rows)
     _challenge_targets = targets
     _challenge_total_steps = len(rows)
     _challenge_capped_grants = 0
@@ -3155,7 +3285,7 @@ def complete_challenges_cancel() -> dict[str, Any]:
     global _challenge_queue, _challenge_targets, _challenge_running
     active = _challenge_running or bool(_challenge_queue)
     remaining = len(_challenge_queue)
-    _challenge_queue = []
+    _challenge_queue = deque()
     _challenge_targets = []
     _challenge_running = False
     _challenge_set_status(
@@ -3204,7 +3334,7 @@ def complete_challenges_tick() -> None:
     for _ in range(max(1, int(_CHALLENGE_BATCH_SIZE))):
         if not _challenge_queue:
             break
-        challenge, amount = _challenge_queue.pop(0)
+        challenge, amount = _challenge_queue.popleft()
         grant_amount = _challenge_grant_amount(amount)
         if grant_amount < int(amount):
             _challenge_capped_grants += 1
@@ -3236,6 +3366,7 @@ def complete_challenges_tick() -> None:
             )
     else:
         _challenge_running = False
+        _challenge_targets.clear()
         capped = f" Capped {_challenge_capped_grants} oversized grant(s)." if _challenge_capped_grants else ""
         _challenge_set_status(
             f"Challenges finished. Final step {last_challenge} sent to "
@@ -5024,16 +5155,15 @@ def _deliver_serials_with_target(serials: list[str], mode: str, parsed_count: in
         return {"ok": False, "message": f"Serial delivery failed: {exc!r}"}
 
 
-def give_serials(text: object, mode: str = "selected", override_level: object = False, level: object = 60) -> dict[str, Any]:
-    global serial_text
-    serial_text = str(text or "")
-    if not serial_text.strip():
-        return {"ok": False, "message": "Paste at least one Base85 serial first."}
-    expanded = _parse_serial_text(serial_text)
-    try:
-        serials = serial_rewards._resolve_give_serial_strings(expanded)
-    except Exception as exc:
-        return {"ok": False, "message": f"Serial resolve failed: {exc!r}"}
+def _finish_give_serials(
+    serials: list[str] | None,
+    *,
+    expanded: list[str],
+    mode: str,
+    override_level: object,
+    level: object,
+    source_text: str,
+) -> dict[str, Any]:
     if serials is None:
         return {
             "ok": False,
@@ -5088,7 +5218,7 @@ def give_serials(text: object, mode: str = "selected", override_level: object = 
                 "give_serial_nonhost": "Give Serial Non-Host",
             }.get(action, "Give Serial"),
             payload={
-                "serial_text": serial_text,
+                "serial_text": source_text,
                 "serial_override_level": bool(override_enabled),
                 "serial_level": int(level_i),
             },
@@ -5096,6 +5226,45 @@ def give_serials(text: object, mode: str = "selected", override_level: object = 
             needs_player=(action == "give_serial_selected"),
         )
     return result
+
+
+def give_serials(text: object, mode: str = "selected", override_level: object = False, level: object = 60) -> dict[str, Any]:
+    global serial_text
+    serial_text = str(text or "")
+    if not serial_text.strip():
+        return {"ok": False, "message": "Paste at least one Base85 serial first."}
+    source_text = serial_text
+    expanded = _parse_serial_text(source_text)
+    if serial_rewards.needs_async_serial_resolution(expanded):
+        def _resolved(serials: list[str] | None, error: Exception | None) -> None:
+            if error is not None:
+                serial_rewards._log_error(f"Serial resolve failed: {error!r}")
+                return
+            result = _finish_give_serials(
+                serials,
+                expanded=expanded,
+                mode=mode,
+                override_level=override_level,
+                level=level,
+                source_text=source_text,
+            )
+            if not result.get("ok"):
+                serial_rewards._log_error(str(result.get("message") or "Serial delivery failed."))
+
+        serial_rewards.queue_serial_resolution(expanded, _resolved)
+        return {"ok": True, "message": "Serial conversion queued in background; delivery will start when ready."}
+    try:
+        serials = serial_rewards._resolve_give_serial_strings(expanded)
+    except Exception as exc:
+        return {"ok": False, "message": f"Serial resolve failed: {exc!r}"}
+    return _finish_give_serials(
+        serials,
+        expanded=expanded,
+        mode=mode,
+        override_level=override_level,
+        level=level,
+        source_text=source_text,
+    )
 
 
 def serial_convert(text: object) -> dict[str, Any]:

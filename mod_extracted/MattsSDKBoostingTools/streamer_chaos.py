@@ -5,7 +5,7 @@ Verified hooks from TwitchInteractionProbe / StreamerChaos. No equipped-only Spi
 
 from __future__ import annotations
 
-import threading
+import time
 from typing import Any
 
 import unrealsdk
@@ -18,9 +18,8 @@ _DEFAULT_INVERT_SECS = 8.0
 _SPAWN_PATTERN_TYPE = 49152
 _SPAWN_PATTERN_NAME = "spawnpattern_default_loot"
 
-_lock = threading.Lock()
-_unlock_timers: dict[int, threading.Timer] = {}
-_invert_timers: dict[int, threading.Timer] = {}
+_unlock_deadlines: dict[int, tuple[float, Any]] = {}
+_invert_deadlines: dict[int, float] = {}
 _invert_backups: dict[int, dict[str, tuple[Any, str, Any]]] = {}
 _pending_launch: dict[int, float] = {}
 
@@ -104,26 +103,7 @@ def unlock_for_pc(pc: Any) -> str:
 
 def _schedule_unlock(pc: Any, seconds: float) -> None:
     key = _pc_key(pc)
-
-    def _fire() -> None:
-        try:
-            unlock_for_pc(pc)
-        except Exception:
-            pass
-        with _lock:
-            _unlock_timers.pop(key, None)
-
-    with _lock:
-        old = _unlock_timers.pop(key, None)
-        if old is not None:
-            try:
-                old.cancel()
-            except Exception:
-                pass
-        timer = threading.Timer(max(0.5, float(seconds)), _fire)
-        timer.daemon = True
-        _unlock_timers[key] = timer
-        timer.start()
+    _unlock_deadlines[key] = (time.monotonic() + max(0.5, float(seconds)), pc)
 
 
 def lock_look_for_pc(pc: Any, seconds: float = _DEFAULT_LOCK_SECS) -> str:
@@ -167,6 +147,7 @@ def invert_look_for_pc(pc: Any, seconds: float = _DEFAULT_INVERT_SECS) -> str:
         if obj is not None:
             targets.append((attr, obj))
 
+    _restore_invert(key)
     backup: dict[str, tuple[Any, str, Any]] = {}
     flipped: list[str] = []
     for label, obj in targets:
@@ -184,29 +165,8 @@ def invert_look_for_pc(pc: Any, seconds: float = _DEFAULT_INVERT_SECS) -> str:
             except Exception:
                 continue
 
-    def _restore() -> None:
-        for _k, triple in list(backup.items()):
-            obj, name, cur = triple
-            try:
-                setattr(obj, name, cur)
-            except Exception:
-                pass
-        with _lock:
-            _invert_backups.pop(key, None)
-            _invert_timers.pop(key, None)
-
-    with _lock:
-        old = _invert_timers.pop(key, None)
-        if old is not None:
-            try:
-                old.cancel()
-            except Exception:
-                pass
-        _invert_backups[key] = backup
-        timer = threading.Timer(max(0.5, float(seconds)), _restore)
-        timer.daemon = True
-        _invert_timers[key] = timer
-        timer.start()
+    _invert_backups[key] = backup
+    _invert_deadlines[key] = time.monotonic() + max(0.5, float(seconds))
 
     if not flipped:
         return "invert: nothing flipped"
@@ -344,6 +304,16 @@ def launch_for_pc(pc: Any, z_boost: float = _DEFAULT_LAUNCH_Z) -> str:
 
 
 def _tick_pending_launch_hook(*_args: Any, **_kwargs: Any) -> None:
+    if not _pending_launch and not _unlock_deadlines and not _invert_deadlines:
+        return
+    now = time.monotonic()
+    for key, (deadline, pc) in list(_unlock_deadlines.items()):
+        if now >= deadline:
+            _unlock_deadlines.pop(key, None)
+            unlock_for_pc(pc)
+    for key, deadline in list(_invert_deadlines.items()):
+        if now >= deadline:
+            _restore_invert(key)
     if not _pending_launch:
         return
     # Flush all pending by resolving local get_pc first, then leave others for next tick.
@@ -371,6 +341,29 @@ except Exception:
 def tick_pending_launches() -> None:
     """Call from a game tick if queued launches remain (optional)."""
     _tick_pending_launch_hook()
+
+
+def _restore_invert(key: int) -> None:
+    backup = _invert_backups.pop(key, {})
+    _invert_deadlines.pop(key, None)
+    for obj, name, value in backup.values():
+        try:
+            setattr(obj, name, value)
+        except Exception:
+            pass
+
+
+def clear_runtime_state(*, restore: bool = False) -> None:
+    """Drop travel-unsafe UObject references; optionally restore before disable."""
+    if restore:
+        for _deadline, pc in list(_unlock_deadlines.values()):
+            unlock_for_pc(pc)
+        for key in list(_invert_backups):
+            _restore_invert(key)
+    _unlock_deadlines.clear()
+    _invert_deadlines.clear()
+    _invert_backups.clear()
+    _pending_launch.clear()
 
 
 def result_ok(msg: str) -> bool:

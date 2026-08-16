@@ -6,7 +6,7 @@ import sys
 import types
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 PKG = ROOT / "mod_extracted" / "MattsSDKBoostingTools"
 
 
@@ -24,6 +24,12 @@ def _load_bridge():
     ba.get_status = lambda: {"players": [], "selected_player": "", "serial_delivery": {}}
     ba._sdk_diagnostics = lambda: {}
     sys.modules["MattsSDKBoostingTools.backend_actions"] = ba
+    quick_menu_registry = types.ModuleType("MattsSDKBoostingTools.quick_menu_registry")
+    quick_menu_registry.ASSIGNABLE_ACTIONS = frozenset({
+        "repeat_last_drop",
+        "max_all",
+    })
+    sys.modules["MattsSDKBoostingTools.quick_menu_registry"] = quick_menu_registry
 
     spec = importlib.util.spec_from_file_location(
         "MattsSDKBoostingTools.external_bridge", PKG / "external_bridge.py"

@@ -7,6 +7,7 @@ fog hide on this machine. Guests still need their own client apply for their map
 
 from __future__ import annotations
 
+import time
 from typing import Any
 
 from mods_base import get_pc, hook
@@ -31,6 +32,9 @@ _OPACITY_PARAMS = (
 _ORIGINAL: dict[str, dict[str, float]] = {}
 _TICK = 0
 _LAST_TOUCH_LOG = 0
+_LAST_MATERIAL_COUNT = 0
+_LAST_MAINTAIN_AT = 0.0
+_MAINTAIN_INTERVAL_S = 10.0
 
 _enabled = False
 
@@ -40,6 +44,17 @@ def _log(msg: str) -> None:
         logging.info(f"{_PREFIX} {msg}")
     except Exception:
         print(f"{_PREFIX} {msg}")
+
+
+_hot_error_last_at: dict[str, float] = {}
+
+
+def _log_hot_error(msg: str) -> None:
+    now = time.monotonic()
+    if now - _hot_error_last_at.get(msg, 0.0) < 5.0:
+        return
+    _hot_error_last_at[msg] = now
+    _log(msg)
 
 
 def _obj_key(obj: Any) -> str:
@@ -203,8 +218,10 @@ def _set_scalar(mat: Any, name: str, value: float) -> bool:
     return ok
 
 
-def apply_no_fog() -> tuple[int, int, list[str]]:
+def apply_no_fog(*, force: bool = True) -> tuple[int, int, list[str]]:
+    global _LAST_MATERIAL_COUNT
     mats = _iter_fog_materials()
+    _LAST_MATERIAL_COUNT = len(mats)
     touched = 0
     params = 0
     details: list[str] = []
@@ -215,6 +232,9 @@ def apply_no_fog() -> tuple[int, int, list[str]]:
             _ORIGINAL[key] = dict(current)
 
         targets = [n for n in _OPACITY_PARAMS if n in current]
+        if not force and targets and all(abs(float(current[n])) < 1e-6 for n in targets):
+            # Already hidden. Avoid setter calls and render cache/recompile work.
+            continue
         if not targets:
             targets = list(_OPACITY_PARAMS)
 
@@ -242,7 +262,9 @@ def apply_no_fog() -> tuple[int, int, list[str]]:
 
 
 def restore_fog() -> tuple[int, int]:
+    global _LAST_MATERIAL_COUNT
     live = {_obj_key(m): m for m in _iter_fog_materials()}
+    _LAST_MATERIAL_COUNT = len(live)
     restored = 0
     params = 0
     for key, original in list(_ORIGINAL.items()):
@@ -263,9 +285,10 @@ def restore_fog() -> tuple[int, int]:
 
 
 def on_enable() -> None:
-    global _enabled
+    global _enabled, _LAST_MAINTAIN_AT
     _enabled = True
     touched, params, details = apply_no_fog()
+    _LAST_MAINTAIN_AT = time.monotonic()
     _log(f"enabled v{__version__} touched={touched} params={params}")
     for d in details[:8]:
         _log(f"  mat {d}")
@@ -294,9 +317,10 @@ def toggle_enabled() -> str:
 
 def clear_fog(*, force: bool = True) -> str:
     """Apply fog hide once (used by Max All / targeted clear). Enables maintain mode."""
-    global _enabled, _LAST_TOUCH_LOG
+    global _enabled, _LAST_TOUCH_LOG, _LAST_MAINTAIN_AT
     _enabled = True
-    touched, params, details = apply_no_fog()
+    touched, params, details = apply_no_fog(force=force)
+    _LAST_MAINTAIN_AT = time.monotonic()
     _LAST_TOUCH_LOG = _TICK
     msg = f"Fog clear touched={touched} params={params}"
     if touched == 0:
@@ -308,15 +332,23 @@ def clear_fog(*, force: bool = True) -> str:
 
 
 def get_status_dict() -> dict[str, Any]:
-    mats = _iter_fog_materials()
     return {
         "enabled": bool(_enabled),
-        "materials": len(mats),
+        # Status is polled by Electron; never run global material scans here.
+        "materials": int(_LAST_MATERIAL_COUNT),
         "backups": len(_ORIGINAL),
         "ticks": int(_TICK),
         "scope": "client_local",
         "caveat": "Big-map fog materials are client-local; guests need their own clear for their map view.",
     }
+
+
+def clear_travel_backups() -> None:
+    """Forget material wrappers and originals belonging to the unloaded world."""
+    global _LAST_MATERIAL_COUNT, _LAST_MAINTAIN_AT
+    _ORIGINAL.clear()
+    _LAST_MATERIAL_COUNT = 0
+    _LAST_MAINTAIN_AT = 0.0
 
 
 def status_message() -> str:
@@ -340,11 +372,12 @@ def status_message() -> str:
     hook_identifier="msbt_nfow_ptick_engine_v1",
 )
 def _tick(_obj: UObject, _args: WrappedStruct, _ret: Any, _func: BoundFunction) -> None:
-    global _TICK, _LAST_TOUCH_LOG
+    global _TICK, _LAST_TOUCH_LOG, _LAST_MAINTAIN_AT
     if not bool(_enabled):
         return
     _TICK += 1
-    if _TICK % 120 != 0:
+    now = time.monotonic()
+    if now - _LAST_MAINTAIN_AT < _MAINTAIN_INTERVAL_S:
         return
     try:
         local = get_pc()
@@ -352,7 +385,12 @@ def _tick(_obj: UObject, _args: WrappedStruct, _ret: Any, _func: BoundFunction) 
             return
     except Exception:
         pass
-    touched, params, _details = apply_no_fog()
+    _LAST_MAINTAIN_AT = now
+    try:
+        touched, params, _details = apply_no_fog(force=False)
+    except Exception as exc:
+        _log_hot_error(f"periodic re-apply failed: {exc!r}")
+        return
     if touched and _TICK - _LAST_TOUCH_LOG > 600:
         _LAST_TOUCH_LOG = _TICK
         _log(f"periodic re-apply touched={touched} params={params}")
@@ -372,8 +410,11 @@ def _tick(_obj: UObject, _args: WrappedStruct, _ret: Any, _func: BoundFunction) 
 )
 def _travel(*_args: Any, **_kwargs: Any) -> None:
     if bool(_enabled):
-        touched, params, _details = apply_no_fog()
-        _log(f"travel re-apply touched={touched} params={params}")
+        try:
+            touched, params, _details = apply_no_fog()
+            _log(f"travel re-apply touched={touched} params={params}")
+        except Exception as exc:
+            _log_hot_error(f"travel re-apply failed: {exc!r}")
 
 
 _log(f"loaded v{__version__} (MSBT helper, starts OFF)")

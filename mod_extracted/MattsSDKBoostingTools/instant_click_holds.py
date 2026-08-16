@@ -11,6 +11,7 @@ Two independent toggles:
 
 from __future__ import annotations
 
+import time
 from typing import Any
 
 from mods_base import EInputEvent, hook, keybind
@@ -34,8 +35,13 @@ _LAST_PATCHED = 0
 _LAST_SKIPPED = 0
 _LAST_MAINTAIN_REASON = ""
 
-# Full find_all + write every N ticks while Instant Click is ON.
-_REAPPLY_EVERY_N_TICKS = 1
+# Tick hooks have overlapping path aliases and can fire more than once per
+# frame. Use wall-clock gates so alias/player/viewport frequency cannot turn
+# maintenance into repeated global UObject scans.
+_FAST_MAINTAIN_INTERVAL_S = 0.5
+_FULL_MAINTAIN_INTERVAL_S = 2.0
+_LAST_FAST_MAINTAIN_AT = 0.0
+_LAST_FULL_MAINTAIN_AT = 0.0
 
 # Known UI drop action — patched first on every maintain (no full scan needed).
 _DROP_ACTION_PATHS = (
@@ -57,6 +63,17 @@ def _log(msg: str) -> None:
         logging.info(f"{_PREFIX} {msg}")
     except Exception:
         print(f"{_PREFIX} {msg}")
+
+
+_hot_error_last_at: dict[str, float] = {}
+
+
+def _log_hot_error(msg: str) -> None:
+    now = time.monotonic()
+    if now - _hot_error_last_at.get(msg, 0.0) < 5.0:
+        return
+    _hot_error_last_at[msg] = now
+    _log(msg)
 
 
 def _obj_key(obj: Any) -> str:
@@ -529,25 +546,35 @@ def _maintain_holds(
 
 
 def _bump_tick_and_maintain(reason: str, *, prefer_full: bool = False) -> None:
-    global _TICK
+    global _TICK, _LAST_FAST_MAINTAIN_AT, _LAST_FULL_MAINTAIN_AT
     if not _should_maintain():
         return
     _TICK += 1
-    if (_TICK % _REAPPLY_EVERY_N_TICKS) != 0:
-        return
+    now = time.monotonic()
 
     if _holds_enabled:
-        # Full world find_all is expensive — only every ~2s; otherwise drop fast-path
-        # (if Instant Drops is also ON) so UI drop stays responsive between full scans.
-        do_full = bool(prefer_full) or (_TICK % 120) == 0
-        if do_full:
-            _maintain_holds(reason=reason, fast_only=False)
-        elif _drops_enabled:
-            _maintain_holds(reason=reason, fast_only=True)
+        # PlayerTick requests full coverage, but it must not bypass the wall-clock
+        # gate. UpdateState and explicit key/menu hooks handle immediate changes.
+        if prefer_full and now - _LAST_FULL_MAINTAIN_AT >= _FULL_MAINTAIN_INTERVAL_S:
+            _LAST_FULL_MAINTAIN_AT = now
+            try:
+                _maintain_holds(reason=reason, fast_only=False)
+            except Exception as exc:
+                _log_hot_error(f"{reason} full maintain failed: {exc!r}")
+        elif _drops_enabled and now - _LAST_FAST_MAINTAIN_AT >= _FAST_MAINTAIN_INTERVAL_S:
+            _LAST_FAST_MAINTAIN_AT = now
+            try:
+                _maintain_holds(reason=reason, fast_only=True)
+            except Exception as exc:
+                _log_hot_error(f"{reason} fast maintain failed: {exc!r}")
         return
 
-    if _drops_enabled:
-        _maintain_holds(reason=reason, fast_only=True)
+    if _drops_enabled and now - _LAST_FAST_MAINTAIN_AT >= _FAST_MAINTAIN_INTERVAL_S:
+        _LAST_FAST_MAINTAIN_AT = now
+        try:
+            _maintain_holds(reason=reason, fast_only=True)
+        except Exception as exc:
+            _log_hot_error(f"{reason} fast maintain failed: {exc!r}")
 
 
 # ---------------------------------------------------------------------------
@@ -556,10 +583,11 @@ def _bump_tick_and_maintain(reason: str, *, prefer_full: bool = False) -> None:
 
 def on_enable() -> None:
     """Enable Instant Drops (drop-item only). Leaves Instant Holds alone."""
-    global _drops_enabled, _TICK, _LAST_REAPPLY_LOG_TICK
+    global _drops_enabled, _TICK, _LAST_REAPPLY_LOG_TICK, _LAST_FAST_MAINTAIN_AT
     _drops_enabled = True
     _TICK = 0
     _LAST_REAPPLY_LOG_TICK = 0
+    _LAST_FAST_MAINTAIN_AT = time.monotonic()
     patched = 0
     skipped = 0
     try:
@@ -632,6 +660,12 @@ def get_status_dict() -> dict[str, Any]:
     }
 
 
+def clear_travel_backups() -> None:
+    """Forget originals belonging to the unloaded world."""
+    _ORIGINAL.clear()
+    _ORIGINAL_ONESHOT.clear()
+
+
 def status_message() -> str:
     st = get_status_dict()
     return (
@@ -654,10 +688,11 @@ def reapply() -> str:
 
 def on_holds_enable() -> None:
     """Enable Instant Holds (all allowed hold triggers). Leaves Instant Drops alone."""
-    global _holds_enabled, _TICK, _LAST_REAPPLY_LOG_TICK
+    global _holds_enabled, _TICK, _LAST_REAPPLY_LOG_TICK, _LAST_FULL_MAINTAIN_AT
     _holds_enabled = True
     _TICK = 0
     _LAST_REAPPLY_LOG_TICK = 0
+    _LAST_FULL_MAINTAIN_AT = time.monotonic()
     patched = 0
     skipped = 0
     try:

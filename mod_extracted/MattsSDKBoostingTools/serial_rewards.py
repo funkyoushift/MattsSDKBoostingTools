@@ -6,10 +6,12 @@ import argparse
 import json
 import os
 import re
+import threading
 import time
 import urllib.error
 import urllib.request
-from typing import Any, List, Optional, Tuple
+from collections import deque
+from typing import Any, Callable, List, Optional, Tuple
 
 import unrealsdk
 from mods_base import command, get_pc, hook
@@ -294,6 +296,53 @@ def _resolve_give_serial_strings(raw_serials: List[str]) -> Optional[List[str]]:
     if rejected and not out:
         return None
     return out
+
+
+_serial_resolution_results: deque[
+    tuple[int, Callable[[Optional[List[str]], Optional[Exception]], None], Optional[List[str]], Optional[Exception]]
+] = deque()
+_serial_resolution_lock = threading.Lock()
+_serial_resolution_generation = 0
+
+
+def needs_async_serial_resolution(raw_serials: List[str]) -> bool:
+    """Return whether resolving these rows may perform network I/O."""
+    return any(_looks_like_deserialized_human(_strip_wrapping_markdown_backticks(str(row).strip())) for row in raw_serials)
+
+
+def queue_serial_resolution(
+    raw_serials: List[str],
+    callback: Callable[[Optional[List[str]], Optional[Exception]], None],
+) -> None:
+    """Resolve serial text off-thread; invoke callback later on the Unreal tick."""
+    rows = list(raw_serials)
+    generation = _serial_resolution_generation
+
+    def _worker() -> None:
+        result: Optional[List[str]] = None
+        error: Optional[Exception] = None
+        try:
+            result = _resolve_give_serial_strings(rows)
+        except Exception as exc:
+            error = exc
+        with _serial_resolution_lock:
+            _serial_resolution_results.append((generation, callback, result, error))
+
+    threading.Thread(target=_worker, name="MSBT-SerialResolve", daemon=True).start()
+
+
+def _process_serial_resolution_results() -> None:
+    while True:
+        with _serial_resolution_lock:
+            if not _serial_resolution_results:
+                return
+            generation, callback, result, error = _serial_resolution_results.popleft()
+        if generation != _serial_resolution_generation:
+            continue
+        try:
+            callback(result, error)
+        except Exception as exc:
+            _log_warning(f"Serial resolution handoff failed: {exc!r}")
 
 
 def _log_info(message: str) -> None:
@@ -1231,9 +1280,10 @@ def _process_pending_serial_patch_jobs() -> None:
 
 def _tick_cb(*_args: Any, **_kwargs: Any) -> None:
     # Idle path must be free: this hook fires from the game HUD tick.
-    if not _pending_serial_patch_jobs and not _pending_serial_delivery_sequences:
+    if not _pending_serial_patch_jobs and not _pending_serial_delivery_sequences and not _serial_resolution_results:
         return
     try:
+        _process_serial_resolution_results()
         _process_pending_serial_patch_jobs()
         _process_pending_serial_delivery_sequences()
     except Exception as exc:
@@ -1274,6 +1324,22 @@ _active_serial_delivery_progress: dict[str, Any] = {
     "last_message": "",
     "last_error": "",
 }
+
+
+def clear_delivery_state() -> None:
+    """Cancel old-world delivery mutations while leaving worker results harmless."""
+    global _serial_resolution_generation
+    _serial_resolution_generation += 1
+    with _serial_resolution_lock:
+        _serial_resolution_results.clear()
+    _pending_serial_patch_jobs.clear()
+    _pending_serial_delivery_sequences.clear()
+    _set_active_serial_delivery_progress(
+        active=False,
+        stage="travel",
+        message="Serial delivery cancelled for world travel.",
+        last_error="",
+    )
 
 
 def _set_active_serial_delivery_progress(**updates: Any) -> dict[str, Any]:
@@ -1885,7 +1951,8 @@ def _do_give_serial_to_player_indices(
                 )
                 break
             if attempt + 1 < max_attempts:
-                time.sleep(_SERIAL_DELIVERY_VERIFY_DELAY_SEC)
+                # Legacy synchronous path is unreachable; delivery uses tick waits above.
+                pass
 
         if patched <= 0:
             _log_warning(
@@ -1918,7 +1985,7 @@ def _do_give_serial_to_player_indices(
                     f"opening in {pre_open_delay:.2f}s"
                 ),
             )
-            time.sleep(pre_open_delay)
+            # Legacy synchronous path is unreachable; delivery uses wait_until above.
 
         _set_serial_delivery_status(
             f"Serial delivery {chunk_index}/{len(chunks)}: force-opening reward packages",
@@ -1968,7 +2035,7 @@ def _do_give_serial_to_player_indices(
                     hold_sec=30.0,
                     log=True,
                 )
-                time.sleep(gap)
+                # Legacy synchronous path is unreachable; delivery uses wait_until above.
         else:
             _set_active_serial_delivery_progress(
                 active=True,
@@ -2046,20 +2113,8 @@ def _do_give_serial(
         if indices:
             _do_give_serial_to_player_indices(serials, indices, scope_label="all party players", mode="all")
             return
-    # Local fallback keeps old behavior, but still opens live packages after each chunk.
-    chunks = _chunk_serials_for_delivery(serials)
-    if not chunks:
-        _log_error("No serial strings after parsing/chunking.")
-        return
-    if len(chunks) > 1:
-        _log_info(
-            f"Splitting {len(serials)} serial(s) for local player: {_serial_delivery_chunks_desc(chunks)}."
-        )
-    for i, chunk in enumerate(chunks):
-        if len(chunks) > 1:
-            _log_info(f"Starting local serial delivery chunk {i + 1}/{len(chunks)} ({len(chunk)} serials).")
-        _do_give_serial_chunk(chunk, all_players, serial_only_player_index=serial_only_player_index)
-        _open_all_live_reward_packages()
+    # Local fallback uses the same tick-driven state machine; index 0 is local.
+    _do_give_serial_to_player_indices(serials, [0], scope_label="local player", mode="selected")
 
 
 def _do_give_serial_chunk(
@@ -2068,6 +2123,19 @@ def _do_give_serial_chunk(
     *,
     serial_only_player_index: Optional[int] = None,
 ) -> None:
+    targets = (
+        [int(serial_only_player_index)]
+        if serial_only_player_index is not None
+        else (_all_party_player_indices_for_serial_delivery() if all_players else [0])
+    )
+    _do_give_serial_to_player_indices(
+        serials,
+        targets or [0],
+        scope_label="all players" if all_players else "local player",
+        mode="all" if all_players else "selected",
+    )
+    return
+
     global _loyalty_rotation_index
     if not serials:
         _log_error("No serial strings after parsing (comma-separated non-empty segments).")
@@ -2114,7 +2182,8 @@ def _do_give_serial_chunk(
                 )
             return
         if attempt + 1 < _PATCH_RETRY_ATTEMPTS:
-            time.sleep(_PATCH_RETRY_DELAY_SEC)
+            # Legacy synchronous path is unreachable; verification runs on tick.
+            pass
 
     _log_warning(
         "Serial override pending: no SerialNumbers were written on the target package(s). "
@@ -2186,13 +2255,20 @@ def _cmd_give_serial(args: argparse.Namespace) -> None:
     if not expanded:
         _log_error("No serial strings after parsing (use commas between Base85 serials or quoted human lines).")
         return
-    serials = _resolve_give_serial_strings(expanded)
-    if serials is None:
+    def _resolved(serials: Optional[List[str]], error: Optional[Exception]) -> None:
+        if error is not None:
+            _log_error(f"Give_Serial: serialize failed: {error}")
+            return
+        if not serials:
+            _log_error("No serial strings after resolving (empty list).")
+            return
+        _do_give_serial(serials, all_players, serial_only_player_index=serial_only_index)
+
+    if needs_async_serial_resolution(expanded):
+        _set_serial_delivery_status("Serial conversion queued in background.", hold_sec=30.0, log=True)
+        queue_serial_resolution(expanded, _resolved)
         return
-    if not serials:
-        _log_error("No serial strings after resolving (empty list).")
-        return
-    _do_give_serial(serials, all_players, serial_only_player_index=serial_only_index)
+    _resolved(_resolve_give_serial_strings(expanded), None)
 
 
 _cmd_give_serial.add_argument(

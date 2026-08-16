@@ -59,6 +59,7 @@ const {
   generatePairingCode
 } = require("./mobile_gateway");
 const oak2Install = require("./oak2_install");
+const { MAX_OUTPUT_BYTES, PersistentPythonWorker } = require("./python_worker");
 
 function reportFatalStartupError(kind, error) {
   const message = error && error.stack ? error.stack : String(error);
@@ -283,6 +284,7 @@ function bl4SdkModsCandidates() {
 
 let mattHostProcess = null;
 let mattHostUrl = "";
+let pythonHelperWorker = null;
 let autoUpdater = null;
 let autoUpdaterConfigured = false;
 let latestUpdateState = {
@@ -451,7 +453,9 @@ function bindWindowState(win) {
 function updateState(patch) {
   latestUpdateState = { ...latestUpdateState, ...patch };
   for (const win of BrowserWindow.getAllWindows()) {
-    win.webContents.send("app:updateState", latestUpdateState);
+    if (!win.isDestroyed() && win.webContents && !win.webContents.isDestroyed()) {
+      win.webContents.send("app:updateState", latestUpdateState);
+    }
   }
 }
 
@@ -1716,6 +1720,32 @@ function pythonCandidates() {
   return Array.from(new Set(out.filter(Boolean)));
 }
 
+function killProcessTree(pid) {
+  if (!pid) return;
+  if (process.platform === "win32") {
+    execFile("taskkill", ["/PID", String(pid), "/T", "/F"], { windowsHide: true }, () => {});
+    return;
+  }
+  try {
+    process.kill(pid, "SIGTERM");
+  } catch {
+    // Process already exited.
+  }
+}
+
+function externalPythonWorker() {
+  if (!pythonHelperWorker) {
+    pythonHelperWorker = new PersistentPythonWorker({
+      candidates: pythonCandidates(),
+      cwd: EXTERNAL_APP_DIR,
+      pythonPath: EXTERNAL_APP_DIR,
+      idleMs: 5 * 60 * 1000,
+      killTree: killProcessTree
+    });
+  }
+  return pythonHelperWorker;
+}
+
 function runPythonSnippet(pythonExe, code, inputText = "", timeoutMs = 15000) {
   const bootstrappedCode = [
     "import sys",
@@ -1732,16 +1762,22 @@ function runPythonSnippet(pythonExe, code, inputText = "", timeoutMs = 15000) {
   return new Promise((resolve, reject) => {
     let stdout = "";
     let stderr = "";
+    let outputExceeded = false;
     const timer = setTimeout(() => {
-      child.kill();
+      killProcessTree(child.pid);
       reject(new Error(`Timed out running helper with ${pythonExe}. ${stderr.trim()}`.trim()));
     }, timeoutMs);
 
     child.stdout.on("data", (chunk) => {
+      if (outputExceeded) return;
       stdout += chunk.toString();
+      if (Buffer.byteLength(stdout) > MAX_OUTPUT_BYTES) {
+        outputExceeded = true;
+        killProcessTree(child.pid);
+      }
     });
     child.stderr.on("data", (chunk) => {
-      stderr += chunk.toString();
+      stderr = (stderr + chunk.toString()).slice(-MAX_OUTPUT_BYTES);
     });
     child.on("error", (error) => {
       clearTimeout(timer);
@@ -1749,7 +1785,9 @@ function runPythonSnippet(pythonExe, code, inputText = "", timeoutMs = 15000) {
     });
     child.on("exit", (codeNumber) => {
       clearTimeout(timer);
-      if (codeNumber === 0) {
+      if (outputExceeded) {
+        reject(new Error("Python helper stdout exceeded its 8MB cap."));
+      } else if (codeNumber === 0) {
         resolve(stdout.trim());
       } else {
         reject(new Error(stderr.trim() || `Helper exited with code ${codeNumber}`));
@@ -1762,6 +1800,12 @@ function runPythonSnippet(pythonExe, code, inputText = "", timeoutMs = 15000) {
 
 async function runExternalPythonJson(code, inputText = "", timeoutMs = 15000) {
   const errors = [];
+  try {
+    const stdout = await externalPythonWorker().run(code, inputText, timeoutMs);
+    return JSON.parse(stdout || "{}");
+  } catch (error) {
+    errors.push(`persistent worker: ${error && error.message ? error.message : error}`);
+  }
   for (const candidate of pythonCandidates()) {
     try {
       const stdout = await runPythonSnippet(candidate, code, inputText, timeoutMs);
@@ -1808,12 +1852,12 @@ function startHostWithPython(pythonExe) {
     let stdout = "";
     let stderr = "";
     const timer = setTimeout(() => {
-      child.kill();
+      killProcessTree(child.pid);
       reject(new Error(`Timed out starting Matt editor host with ${pythonExe}. ${stderr.trim()}`.trim()));
     }, MATT_HOST_START_TIMEOUT_MS);
 
     child.stdout.on("data", (chunk) => {
-      stdout += chunk.toString();
+      stdout = (stdout + chunk.toString()).slice(-MAX_OUTPUT_BYTES);
       const match = stdout.match(/https?:\/\/127\.0\.0\.1:\d+\/?/);
       if (!match) return;
       clearTimeout(timer);
@@ -1823,7 +1867,7 @@ function startHostWithPython(pythonExe) {
     });
 
     child.stderr.on("data", (chunk) => {
-      stderr += chunk.toString();
+      stderr = (stderr + chunk.toString()).slice(-MAX_OUTPUT_BYTES);
     });
 
     child.on("error", (error) => {
@@ -2030,19 +2074,6 @@ app.whenReady().then(() => {
   }
 
   configureAutoUpdater();
-  startMobileGateway()
-    .then((info) => {
-      if (info && info.enabled) {
-        console.log(
-          `[MSBT Mobile Gateway] listening on 0.0.0.0:${info.port} pairing=${info.pairingCode} lans=${(info.lanAddresses || []).join(",")}`
-        );
-      } else {
-        console.warn(`[MSBT Mobile Gateway] failed to start: ${info && info.lastError ? info.lastError : "unknown"}`);
-      }
-    })
-    .catch((error) => {
-      console.warn(`[MSBT Mobile Gateway] failed to start: ${error && error.message ? error.message : error}`);
-    });
   createWindow();
   // Quiet startup auto-check: never blocks UI; offline keeps last-good cache.
   softRefreshDataCatalogs({ quiet: true })
@@ -2069,7 +2100,8 @@ app.on("window-all-closed", () => {
 
 app.on("before-quit", () => {
   mobileGateway.stop().catch(() => {});
+  if (pythonHelperWorker) pythonHelperWorker.stop();
   if (hostProcessIsAlive()) {
-    mattHostProcess.kill();
+    killProcessTree(mattHostProcess.pid);
   }
 });

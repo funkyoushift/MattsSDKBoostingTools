@@ -132,10 +132,22 @@ const els = {
   hoardActorPicker: document.getElementById("hoardActorPicker"),
   hoardApplyActorBtn: document.getElementById("hoardApplyActorBtn"),
   hoardAddAsNewWaveBtn: document.getElementById("hoardAddAsNewWaveBtn"),
+  hoardWaveDistance: document.getElementById("hoardWaveDistance"),
   hoardWaveSpacing: document.getElementById("hoardWaveSpacing"),
   hoardWaveScale: document.getElementById("hoardWaveScale"),
   hoardWaveAggro: document.getElementById("hoardWaveAggro"),
+  hoardSpawnPoints: document.getElementById("hoardSpawnPoints"),
+  hoardBurstSize: document.getElementById("hoardBurstSize"),
+  hoardStagger: document.getElementById("hoardStagger"),
+  hoardAutoCleanup: document.getElementById("hoardAutoCleanup"),
   hoardApplyOptionsBtn: document.getElementById("hoardApplyOptionsBtn"),
+  hoardFavoriteName: document.getElementById("hoardFavoriteName"),
+  hoardFavoriteSelect: document.getElementById("hoardFavoriteSelect"),
+  hoardFavoriteSavePlanBtn: document.getElementById("hoardFavoriteSavePlanBtn"),
+  hoardFavoriteSaveWaveBtn: document.getElementById("hoardFavoriteSaveWaveBtn"),
+  hoardFavoriteLoadBtn: document.getElementById("hoardFavoriteLoadBtn"),
+  hoardFavoriteDeleteBtn: document.getElementById("hoardFavoriteDeleteBtn"),
+  hoardFavoriteSummary: document.getElementById("hoardFavoriteSummary"),
   hoardStartBtn: document.getElementById("hoardStartBtn"),
   hoardStopBtn: document.getElementById("hoardStopBtn"),
   hoardClearBtn: document.getElementById("hoardClearBtn"),
@@ -439,12 +451,15 @@ const els = {
 };
 
 const state = {
+  activeTab: "",
   activity: [],
   autoInventoryInFlight: false,
   autoInventoryLastMessage: "",
   autoInventoryTimer: null,
   bl4ActiveId: "",
   bl4CatalogWarnings: [],
+  bl4CatalogLoaded: false,
+  bl4CatalogLoadPromise: null,
   bl4ConfirmedId: "",
   bl4ConfirmedSerial: "",
   bl4Entries: [],
@@ -453,8 +468,11 @@ const state = {
   bl4SelectedIds: new Set(),
   bridgeDiagnostics: {},
   bridgeOnline: false,
+  bridgeFingerprints: {},
   bridgeStatusPollInFlight: false,
   bridgeStatusPollTimer: null,
+  bridgeStatusSubscribersBusy: false,
+  bridgeVisibilityBound: false,
   boostTargetScope: "selected",
   hostPlayerIndex: null,
   invEquipped: [],
@@ -483,6 +501,7 @@ const state = {
   devActorPage: 0,
   devActiveCategory: "",
   devSpawnerCatalog: null,
+  devSpawnerCatalogLoadPromise: null,
   devSpawnerFilteredActors: [],
   devSpawnerFilteredBossPicks: [],
   devSpawnerFilteredMyFavorites: [],
@@ -494,7 +513,7 @@ const state = {
   hoardSelectedIndex: 0,
   hoardFilteredActors: [],
   hoardRunning: false,
-  hoardStatusPollTimer: null,
+  hoardStatusWatch: false,
   devperkToggles: { "5": false, "6": false },
   editorLoadInFlight: false,
   editorLoaded: false,
@@ -522,7 +541,7 @@ const state = {
   reportPreviewText: "",
   serialDeliveryIdlePolls: 0,
   serialDeliveryLastMessage: "",
-  serialDeliveryTimer: null,
+  serialDeliveryWatch: false,
   serialToolsAutoTimer: null,
   serialToolsRunId: 0,
   selectedItemPool: "",
@@ -984,13 +1003,15 @@ function formatQuickMenuCommandLine(command, emptyText) {
   return `${label} (${command.action})${payloadText}`;
 }
 
-async function refreshQuickMenuPinPanel({ quiet = false } = {}) {
+async function refreshQuickMenuPinPanel({ quiet = false, statusData = null } = {}) {
   const lastCommandNode = quickMenuNode("quickMenuLastCommand");
   const lastDropNode = quickMenuNode("quickMenuLastDrop");
   const lockNode = quickMenuNode("quickMenuLockStatus");
   if (!lastCommandNode || !lastDropNode || !lockNode) return null;
   try {
-    const result = await window.msbt.bridgeRequest({ method: "GET", path: "/status", timeoutMs: 8000 });
+    const result = statusData
+      ? { ok: statusData.ok !== false, data: statusData }
+      : await window.msbt.bridgeRequest({ method: "GET", path: "/status", timeoutMs: 8000 });
     const data = result && result.data && typeof result.data === "object" ? result.data : result;
     if (!data || data.ok === false) {
       if (!quiet) setQuickMenuStatus(resultMessage(result) || "Could not refresh last command.", "warning");
@@ -2627,13 +2648,13 @@ async function renderMobileGatewayQr(info, preferredHost = "") {
   }
 }
 
-async function refreshMobileGatewayInfo() {
+async function refreshMobileGatewayInfo({ startIfNeeded = false } = {}) {
   if (!window.msbt || typeof window.msbt.mobileGatewayGetInfo !== "function") {
     setLine(els.mobileGatewaySummary, "Mobile gateway API unavailable in this build.", "warning");
     return null;
   }
   let info = await window.msbt.mobileGatewayGetInfo();
-  if (!info || !info.enabled) {
+  if (startIfNeeded && (!info || !info.enabled)) {
     info = await window.msbt.mobileGatewayStart();
   }
   fillMobileGatewayHostSelect(info);
@@ -2755,7 +2776,6 @@ function openMobileGatewayPanel() {
     const btn = document.querySelector('[data-tab="mobile-gateway"]');
     if (btn) btn.click();
   }
-  void refreshMobileGatewayInfo();
 }
 
 function openMobileInstallPage() {
@@ -2769,13 +2789,20 @@ function openMobileInstallPage() {
 
 function applyBridgeStatusResult(result, options = {}) {
   const data = result && result.data ? result.data : {};
+  const fingerprints = state.bridgeFingerprints;
+  const fingerprint = (value) => window.MsbtPollCoordinator
+    ? window.MsbtPollCoordinator.stableFingerprint(value)
+    : JSON.stringify(value);
   if (!result.ok || !data.ok) {
     state.bridgeOnline = false;
     state.bridgeDiagnostics = {};
     state.players = [];
     state.selectedTarget = "";
     state.selectedTargetName = "";
-    renderPlayers({});
+    if (fingerprints.players !== "offline") {
+      fingerprints.players = "offline";
+      renderPlayers({});
+    }
     setLine(els.bridgeSummary, data.message || "Bridge offline.", "bad");
     if (els.devBridgeSummary) setLine(els.devBridgeSummary, data.message || "Bridge offline.", "bad");
     updateSerialState();
@@ -2785,7 +2812,16 @@ function applyBridgeStatusResult(result, options = {}) {
 
   state.bridgeOnline = true;
   state.bridgeDiagnostics = data.diagnostics && typeof data.diagnostics === "object" ? data.diagnostics : {};
-  renderPlayers(data);
+  const playersFingerprint = fingerprint({
+    players: data.players || [],
+    host_player_index: data.host_player_index,
+    selected_player: data.selected_player,
+    selected_player_index: data.selected_player_index
+  });
+  if (fingerprints.players !== playersFingerprint) {
+    fingerprints.players = playersFingerprint;
+    renderPlayers(data);
+  }
   const playerCount = Array.isArray(data.players) ? data.players.length : 0;
   const selected = data.selected_player || "none";
   const queue = data.queue || 0;
@@ -2793,14 +2829,31 @@ function applyBridgeStatusResult(result, options = {}) {
   if (els.devBridgeSummary) {
     setLine(els.devBridgeSummary, `Bridge online | players: ${playerCount} | selected: ${selected} | queue: ${queue}`, "ok");
   }
-  updateSerialDeliveryProgress(data.serial_delivery || {});
+  const serialFingerprint = window.MsbtPollCoordinator
+    ? window.MsbtPollCoordinator.serialDeliveryFingerprint(data.serial_delivery)
+    : fingerprint(data.serial_delivery || {});
+  if (fingerprints.serialDelivery !== serialFingerprint) {
+    fingerprints.serialDelivery = serialFingerprint;
+    updateSerialDeliveryProgress(data.serial_delivery || {});
+  }
   updateSerialState();
   // Always pull rarity from the bridge so F7 live-apply moves Boosting sliders.
   syncBoostingRaritySlidersFromBridge(data);
   syncLiveModsFromStatus(data);
   updateAsdAutoclearTimer(data);
-  updateLocationBookmarksFromStatus(data);
-  updateVehicleCatalogFromStatus(data);
+  const bookmarksFingerprint = fingerprint(data.location_bookmarks || []);
+  if (fingerprints.locationBookmarks !== bookmarksFingerprint) {
+    fingerprints.locationBookmarks = bookmarksFingerprint;
+    updateLocationBookmarksFromStatus(data);
+  }
+  const vehiclesFingerprint = fingerprint({
+    catalog: data.vehicle_catalog || [],
+    presets: data.vehicle_presets || []
+  });
+  if (fingerprints.vehicles !== vehiclesFingerprint) {
+    fingerprints.vehicles = vehiclesFingerprint;
+    updateVehicleCatalogFromStatus(data);
+  }
   if (!options.quiet) appendActivity(`Bridge online | players: ${playerCount} | selected: ${selected} | queue: ${queue}`);
   return data;
 }
@@ -3128,7 +3181,7 @@ async function runVehicleAction(action, payload = {}) {
 }
 
 let challengeListDebounceTimer = null;
-let challengeStatusPollTimer = null;
+let challengeStatusWatch = false;
 
 function challengeListPayload() {
   return {
@@ -3186,20 +3239,12 @@ function scheduleChallengeCatalogRefresh() {
 }
 
 function stopChallengeStatusPoll() {
-  if (challengeStatusPollTimer) {
-    clearInterval(challengeStatusPollTimer);
-    challengeStatusPollTimer = null;
-  }
+  challengeStatusWatch = false;
 }
 
 function startChallengeStatusPoll() {
-  stopChallengeStatusPoll();
-  challengeStatusPollTimer = setInterval(() => {
-    void refreshChallengeRunStatus({ quiet: true }).then((result) => {
-      const data = result && result.data ? result.data : result;
-      if (!data || !data.active) stopChallengeStatusPoll();
-    });
-  }, 1500);
+  challengeStatusWatch = true;
+  scheduleNextBridgeStatusPoll(0);
 }
 
 async function refreshChallengeRunStatus(options = {}) {
@@ -3211,7 +3256,7 @@ async function refreshChallengeRunStatus(options = {}) {
   const active = Boolean(data && data.active);
   setLine(els.challengeStatus, msg, active ? "warning" : (actionSucceeded(result) ? "ok" : "warning"));
   if (active) startChallengeStatusPoll();
-  else if (!quiet) stopChallengeStatusPoll();
+  else stopChallengeStatusPoll();
   return result;
 }
 
@@ -3238,13 +3283,13 @@ async function bridgeStatus(options = {}) {
   }
   const result = await window.msbt.bridgeRequest({ method: "GET", path: "/status" });
   if (!options.quiet) setOutput(els.statusOutput, result);
-  applyBridgeStatusResult(result, options);
+  const statusData = applyBridgeStatusResult(result, options);
   await autoApplySavedMovementPresetIfNeeded();
   const quickPanel = quickMenuNode("tab-quick-menu");
   if (quickPanel && quickPanel.classList.contains("active")) {
     // Pin/lock status only on quiet polls. Full layout refresh preserves the
     // editor page + in-progress custom label (bridge layout.page is often 0).
-    await refreshQuickMenuPinPanel({ quiet: true });
+    await refreshQuickMenuPinPanel({ quiet: true, statusData });
     if (!options.quiet) {
       await loadQuickMenuLayout({ quiet: false, preserveSelection: true });
     } else {
@@ -3285,51 +3330,78 @@ async function bridgeStatus(options = {}) {
 }
 
 function startBridgeStatusPolling() {
-  if (state.bridgeStatusPollTimer) return;
-  state.bridgeStatusPollTimer = window.setInterval(async () => {
-    if (state.bridgeStatusPollInFlight) return;
-    state.bridgeStatusPollInFlight = true;
-    try {
-      await bridgeStatus({ quiet: true });
-    } finally {
-      state.bridgeStatusPollInFlight = false;
-    }
-  }, 1500);
-}
-
-function scheduleSerialDeliveryPoll() {
-  if (state.serialDeliveryTimer) return;
-  state.serialDeliveryTimer = window.setTimeout(pollSerialDeliveryProgress, 750);
-}
-
-async function pollSerialDeliveryProgress() {
-  state.serialDeliveryTimer = null;
-  let keepPolling = false;
-  try {
-    const result = await window.msbt.bridgeRequest({ method: "GET", path: "/status" });
-    const data = applyBridgeStatusResult(result, { quiet: true });
-    const progress = data && data.serial_delivery ? data.serial_delivery : {};
-    const active = Boolean(progress && progress.active);
-    const hasMessage = Boolean(serialDeliveryMessage(progress));
-    if (active) {
-      state.serialDeliveryIdlePolls = 0;
-      keepPolling = true;
-    } else if (hasMessage && state.serialDeliveryIdlePolls < 8) {
-      state.serialDeliveryIdlePolls += 1;
-      keepPolling = true;
-    } else {
-      state.serialDeliveryIdlePolls = 0;
-    }
-  } catch (error) {
-    state.serialDeliveryIdlePolls += 1;
-    keepPolling = state.serialDeliveryIdlePolls < 4;
+  if (!state.bridgeVisibilityBound) {
+    document.addEventListener("visibilitychange", () => {
+      scheduleNextBridgeStatusPoll(document.hidden ? null : 0);
+    });
+    state.bridgeVisibilityBound = true;
   }
-  if (keepPolling) scheduleSerialDeliveryPoll();
+  if (state.bridgeStatusPollTimer || state.bridgeStatusPollInFlight) return;
+  scheduleNextBridgeStatusPoll(0);
+}
+
+function bridgeProgressIsActive() {
+  return Boolean(state.serialDeliveryWatch || challengeStatusWatch || state.hoardRunning);
+}
+
+function scheduleNextBridgeStatusPoll(delayMs = null) {
+  if (state.bridgeStatusPollTimer) window.clearTimeout(state.bridgeStatusPollTimer);
+  const active = bridgeProgressIsActive();
+  const delay = delayMs === null
+    ? window.MsbtPollCoordinator.pollDelay({ hidden: document.hidden, active })
+    : Math.max(0, Number(delayMs) || 0);
+  state.bridgeStatusPollTimer = window.setTimeout(runBridgeStatusPoll, delay);
+}
+
+async function runBridgeProgressSubscribers() {
+  if (state.bridgeStatusSubscribersBusy || document.hidden) return;
+  state.bridgeStatusSubscribersBusy = true;
+  try {
+    if (challengeStatusWatch) {
+      await refreshChallengeRunStatus({ quiet: true });
+    }
+    if (state.hoardStatusWatch) {
+      await refreshHoardStatus({ quiet: true });
+    }
+  } finally {
+    state.bridgeStatusSubscribersBusy = false;
+  }
+}
+
+async function runBridgeStatusPoll() {
+  state.bridgeStatusPollTimer = null;
+  if (state.bridgeStatusPollInFlight) {
+    scheduleNextBridgeStatusPoll();
+    return;
+  }
+  state.bridgeStatusPollInFlight = true;
+  try {
+    const result = await bridgeStatus({ quiet: true });
+    const data = result && result.data ? result.data : {};
+    const progress = data && data.serial_delivery ? data.serial_delivery : {};
+    if (state.serialDeliveryWatch) {
+      const active = Boolean(progress.active);
+      const hasMessage = Boolean(serialDeliveryMessage(progress));
+      if (active) {
+        state.serialDeliveryIdlePolls = 0;
+      } else if (hasMessage && state.serialDeliveryIdlePolls < 3) {
+        state.serialDeliveryIdlePolls += 1;
+      } else {
+        state.serialDeliveryWatch = false;
+        state.serialDeliveryIdlePolls = 0;
+      }
+    }
+    await runBridgeProgressSubscribers();
+  } finally {
+    state.bridgeStatusPollInFlight = false;
+    scheduleNextBridgeStatusPoll();
+  }
 }
 
 function startSerialDeliveryProgressWatch() {
   state.serialDeliveryIdlePolls = 0;
-  scheduleSerialDeliveryPoll();
+  state.serialDeliveryWatch = true;
+  scheduleNextBridgeStatusPoll(0);
 }
 
 async function setTarget(value, options = {}) {
@@ -5054,24 +5126,34 @@ function acceptBl4CatalogResult(result) {
 }
 
 async function loadBl4Catalog() {
+  if (state.bl4CatalogLoaded) return;
+  if (state.bl4CatalogLoadPromise) return state.bl4CatalogLoadPromise;
   if (!window.msbt || typeof window.msbt.loadBl4Catalog !== "function") {
     setBl4Status("BL4 catalog loader is not available in this Electron build.", "bad");
     return;
   }
-  setBl4Status("Loading BL4 Codes catalog from local resources and cached GZO data...", "warning");
-  const result = await window.msbt.loadBl4Catalog();
-  if (!result || !result.ok) {
-    state.bl4Entries = [];
-    renderBl4Codes();
-    setBl4Status(result && result.message ? result.message : "BL4 Codes catalog could not be loaded.", "bad");
-    return;
+  state.bl4CatalogLoadPromise = (async () => {
+    setBl4Status("Loading BL4 Codes catalog from local resources and cached GZO data...", "warning");
+    const result = await window.msbt.loadBl4Catalog();
+    if (!result || !result.ok) {
+      state.bl4Entries = [];
+      renderBl4Codes();
+      setBl4Status(result && result.message ? result.message : "BL4 Codes catalog could not be loaded.", "bad");
+      return;
+    }
+    const counts = acceptBl4CatalogResult(result);
+    state.bl4CatalogLoaded = true;
+    const warnings = state.bl4CatalogWarnings.length ? ` ${state.bl4CatalogWarnings.join(" ")}` : "";
+    setBl4Status(
+      `Loaded ${counts.merged || state.bl4Entries.length} local BL4 code(s): ${counts.lootlemon || 0} Lootlemon, ${counts.custom || 0} Custom Static, ${counts.gzo || 0} GZO.${warnings}`,
+      state.bl4CatalogWarnings.length ? "warning" : "ok"
+    );
+  })();
+  try {
+    return await state.bl4CatalogLoadPromise;
+  } finally {
+    state.bl4CatalogLoadPromise = null;
   }
-  const counts = acceptBl4CatalogResult(result);
-  const warnings = state.bl4CatalogWarnings.length ? ` ${state.bl4CatalogWarnings.join(" ")}` : "";
-  setBl4Status(
-    `Loaded ${counts.merged || state.bl4Entries.length} local BL4 code(s): ${counts.lootlemon || 0} Lootlemon, ${counts.custom || 0} Custom Static, ${counts.gzo || 0} GZO.${warnings}`,
-    state.bl4CatalogWarnings.length ? "warning" : "ok"
-  );
 }
 
 async function refreshBl4GzoCatalog() {
@@ -7344,18 +7426,29 @@ function renderDevActors() {
 }
 
 async function loadDevSpawnerCatalog() {
-  try {
-    const result = await window.msbt.readDevSpawnerCatalog();
-    if (!result || !result.ok) {
-      throw new Error(result && result.message ? result.message : "Dev Spawner catalog failed to load.");
+  if (state.devSpawnerCatalog) return state.devSpawnerCatalog;
+  if (state.devSpawnerCatalogLoadPromise) return state.devSpawnerCatalogLoadPromise;
+  state.devSpawnerCatalogLoadPromise = (async () => {
+    try {
+      const result = await window.msbt.readDevSpawnerCatalog();
+      if (!result || !result.ok) {
+        throw new Error(result && result.message ? result.message : "Dev Spawner catalog failed to load.");
+      }
+      state.devSpawnerCatalog = result.data || {};
+      populateDevSpawnerCatalog();
+      const count = Number(state.devSpawnerCatalog.actor_count || 0);
+      setLine(els.devSpawnerWarning, `Loaded SDK Debug Menu source catalog: ${count} actors.`, "ok");
+      return state.devSpawnerCatalog;
+    } catch (error) {
+      setLine(els.devSpawnerWarning, `Dev Spawner catalog failed to load: ${error.message || error}`, "bad");
+      setLine(els.devActorSummary, "Actor catalog unavailable.", "bad");
+      return null;
     }
-    state.devSpawnerCatalog = result.data || {};
-    populateDevSpawnerCatalog();
-    const count = Number(state.devSpawnerCatalog.actor_count || 0);
-    setLine(els.devSpawnerWarning, `Loaded SDK Debug Menu source catalog: ${count} actors.`, "ok");
-  } catch (error) {
-    setLine(els.devSpawnerWarning, `Dev Spawner catalog failed to load: ${error.message || error}`, "bad");
-    setLine(els.devActorSummary, "Actor catalog unavailable.", "bad");
+  })();
+  try {
+    return await state.devSpawnerCatalogLoadPromise;
+  } finally {
+    state.devSpawnerCatalogLoadPromise = null;
   }
 }
 
@@ -8602,13 +8695,181 @@ function wireInventoryEvents() {
 
 const HOARD_PLAN_KEY = "msbt.hoardBuilder.plan.v2";
 const HOARD_PLAN_KEY_LEGACY = "msbt.hoardBuilder.plan.v1";
+const HOARD_FAVORITES_KEY = "msbt.hoardBuilder.favorites.v1";
+const HOARD_MAX_FAVORITES = 40;
+// Mirrors hoard_runner.py: pacing keeps frames alive, not tiny caps.
+const HOARD_MAX_WAVE_TOTAL = 60;
+const HOARD_MAX_WAVE_TYPES = 12;
+const HOARD_SPAWN_POINTS_DEFAULT = 6;
+const HOARD_BURST_DEFAULT = 2;
+const HOARD_STAGGER_DEFAULT = 0.45;
+// Mirrors hoard_runner.py: 600 is the floor because closer than that drops
+// enemies on top of the player once node jitter is applied.
+const HOARD_DISTANCE_MIN = 600;
+const HOARD_DISTANCE_MAX = 4000;
+const HOARD_DISTANCE_DEFAULT = 900;
 let hoardActorSearchTimer = null;
 let hoardHighlightedActor = "";
+let hoardFavorites = [];
+
+function cloneHoardWave(wave) {
+  return defaultHoardWave(wave || {});
+}
+
+function normalizeHoardFavoriteName(name) {
+  return String(name || "").trim().replace(/\s+/g, " ").slice(0, 64);
+}
+
+function loadHoardFavoritesFromStorage() {
+  try {
+    const raw = localStorage.getItem(HOARD_FAVORITES_KEY);
+    if (!raw) {
+      hoardFavorites = [];
+      return;
+    }
+    const parsed = JSON.parse(raw);
+    const list = Array.isArray(parsed && parsed.favorites) ? parsed.favorites : [];
+    hoardFavorites = list
+      .map((row) => {
+        const name = normalizeHoardFavoriteName(row && row.name);
+        const wavesRaw = Array.isArray(row && row.waves) ? row.waves : [];
+        const waves = wavesRaw.map((wave) => cloneHoardWave(wave)).filter((wave) => hoardWaveEntries(wave).length);
+        if (!name || !waves.length) return null;
+        return {
+          id: String(row.id || `fav_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`),
+          name,
+          kind: waves.length === 1 ? "wave" : "plan",
+          waves,
+          saved_at: String(row.saved_at || "")
+        };
+      })
+      .filter(Boolean)
+      .slice(0, HOARD_MAX_FAVORITES);
+  } catch (_error) {
+    hoardFavorites = [];
+  }
+}
+
+function saveHoardFavoritesToStorage() {
+  try {
+    localStorage.setItem(
+      HOARD_FAVORITES_KEY,
+      JSON.stringify({
+        version: 1,
+        favorites: hoardFavorites
+      })
+    );
+  } catch (_error) {
+    /* ignore quota / private mode */
+  }
+}
+
+function renderHoardFavorites() {
+  if (!els.hoardFavoriteSelect) return;
+  const previous = getValue(els.hoardFavoriteSelect);
+  els.hoardFavoriteSelect.innerHTML = "";
+  if (!hoardFavorites.length) {
+    const empty = document.createElement("option");
+    empty.value = "";
+    empty.textContent = "(none saved)";
+    els.hoardFavoriteSelect.appendChild(empty);
+  } else {
+    hoardFavorites.forEach((fav) => {
+      const opt = document.createElement("option");
+      opt.value = fav.id;
+      const enemyCount = fav.waves.reduce((sum, wave) => sum + hoardWaveTotalCount(wave), 0);
+      opt.textContent = `${fav.name} · ${fav.waves.length} wave(s) · ${enemyCount} enemies`;
+      els.hoardFavoriteSelect.appendChild(opt);
+    });
+    if (previous && hoardFavorites.some((fav) => fav.id === previous)) {
+      els.hoardFavoriteSelect.value = previous;
+    }
+  }
+  setLine(
+    els.hoardFavoriteSummary,
+    hoardFavorites.length
+      ? `${hoardFavorites.length} favorite(s) saved · Load replaces the current plan`
+      : "No favorites yet · Save Full Plan or Save Selected Wave",
+    hoardFavorites.length ? "ok" : ""
+  );
+}
+
+function upsertHoardFavorite({ name, waves, kind }) {
+  const cleanName = normalizeHoardFavoriteName(name);
+  if (!cleanName) {
+    setLine(els.hoardStatusLine, "Enter a favorite name first.", "warning");
+    return false;
+  }
+  const cleanWaves = (Array.isArray(waves) ? waves : [])
+    .map((wave) => cloneHoardWave(wave))
+    .filter((wave) => hoardWaveEntries(wave).length);
+  if (!cleanWaves.length) {
+    setLine(els.hoardStatusLine, "Nothing to save — add actors first.", "warning");
+    return false;
+  }
+  const existingIndex = hoardFavorites.findIndex(
+    (fav) => fav.name.toLowerCase() === cleanName.toLowerCase()
+  );
+  const entry = {
+    id: existingIndex >= 0 ? hoardFavorites[existingIndex].id : `fav_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+    name: cleanName,
+    kind: kind || (cleanWaves.length === 1 ? "wave" : "plan"),
+    waves: cleanWaves,
+    saved_at: new Date().toISOString()
+  };
+  if (existingIndex >= 0) hoardFavorites[existingIndex] = entry;
+  else hoardFavorites.unshift(entry);
+  hoardFavorites = hoardFavorites.slice(0, HOARD_MAX_FAVORITES);
+  saveHoardFavoritesToStorage();
+  renderHoardFavorites();
+  if (els.hoardFavoriteSelect) els.hoardFavoriteSelect.value = entry.id;
+  if (els.hoardFavoriteName) els.hoardFavoriteName.value = cleanName;
+  setLine(
+    els.hoardStatusLine,
+    `${existingIndex >= 0 ? "Updated" : "Saved"} favorite “${cleanName}” (${cleanWaves.length} wave(s)).`,
+    "ok"
+  );
+  return true;
+}
+
+function selectedHoardFavorite() {
+  const id = getValue(els.hoardFavoriteSelect);
+  if (!id) return null;
+  return hoardFavorites.find((fav) => fav.id === id) || null;
+}
+
+function loadSelectedHoardFavorite() {
+  const fav = selectedHoardFavorite();
+  if (!fav) {
+    setLine(els.hoardStatusLine, "Pick a favorite in the selector first.", "warning");
+    return;
+  }
+  state.hoardWaves = fav.waves.map((wave) => cloneHoardWave(wave));
+  if (!state.hoardWaves.length) state.hoardWaves = [defaultHoardWave()];
+  state.hoardSelectedIndex = 0;
+  syncHoardEditFieldsFromSelected();
+  renderHoardWaveList();
+  saveHoardPlanToStorage();
+  if (els.hoardFavoriteName) els.hoardFavoriteName.value = fav.name;
+  setLine(els.hoardStatusLine, `Loaded favorite “${fav.name}”.`, "ok");
+}
+
+function deleteSelectedHoardFavorite() {
+  const fav = selectedHoardFavorite();
+  if (!fav) {
+    setLine(els.hoardStatusLine, "Pick a favorite to delete.", "warning");
+    return;
+  }
+  hoardFavorites = hoardFavorites.filter((row) => row.id !== fav.id);
+  saveHoardFavoritesToStorage();
+  renderHoardFavorites();
+  setLine(els.hoardStatusLine, `Deleted favorite “${fav.name}”.`, "ok");
+}
 
 function defaultHoardEntry(overrides = {}) {
   return {
     actor_id: String(overrides.actor_id || "").trim(),
-    count: Math.max(1, Math.min(12, Number(overrides.count) || 1))
+    count: Math.max(1, Math.min(HOARD_MAX_WAVE_TOTAL, Number(overrides.count) || 1))
   };
 }
 
@@ -8622,10 +8883,28 @@ function defaultHoardWave(overrides = {}) {
   }
   return {
     entries,
+    distance: clampHoardNumber(
+      overrides.distance,
+      HOARD_DISTANCE_MIN,
+      HOARD_DISTANCE_MAX,
+      HOARD_DISTANCE_DEFAULT
+    ),
     spacing: Number.isFinite(Number(overrides.spacing)) ? Number(overrides.spacing) : 125,
     scale: Number.isFinite(Number(overrides.scale)) ? Number(overrides.scale) : 1,
-    aggro: String(overrides.aggro || "passive").trim() || "passive"
+    aggro: String(overrides.aggro || "passive").trim() || "passive",
+    spawn_points: clampHoardNumber(overrides.spawn_points, 1, 12, HOARD_SPAWN_POINTS_DEFAULT),
+    burst: clampHoardNumber(overrides.burst, 1, 6, HOARD_BURST_DEFAULT),
+    stagger: clampHoardNumber(overrides.stagger, 0.15, 5, HOARD_STAGGER_DEFAULT),
+    // Older saved plans stored cleanup_loot: true; the between-wave loot pass is
+    // now opt-in because it crashed the game at wave transitions.
+    cleanup_loot: overrides.cleanup_loot === true
   };
+}
+
+function clampHoardNumber(value, min, max, fallback) {
+  const num = Number(value);
+  if (!Number.isFinite(num)) return fallback;
+  return Math.max(min, Math.min(max, num));
 }
 
 function hoardWaveEntries(wave) {
@@ -8701,11 +8980,18 @@ function selectedHoardWave() {
 function addActorToHoardWave(wave, actorId, count) {
   if (!wave || !actorId) return false;
   if (!Array.isArray(wave.entries)) wave.entries = hoardWaveEntries(wave);
-  const addCount = Math.max(1, Math.min(12, Number(count) || 1));
+  const currentTotal = hoardWaveTotalCount(wave);
   const existing = wave.entries.find((row) => row.actor_id === actorId);
   if (existing) {
-    existing.count = Math.max(1, Math.min(12, Number(existing.count || 0) + addCount));
+    const otherTotal = currentTotal - Math.max(1, Number(existing.count) || 1);
+    if (otherTotal >= HOARD_MAX_WAVE_TOTAL) return false;
+    existing.count = Math.max(
+      1,
+      Math.min(HOARD_MAX_WAVE_TOTAL - otherTotal, Number(existing.count || 0) + Number(count || 1))
+    );
   } else {
+    if (wave.entries.length >= HOARD_MAX_WAVE_TYPES || currentTotal >= HOARD_MAX_WAVE_TOTAL) return false;
+    const addCount = Math.max(1, Math.min(HOARD_MAX_WAVE_TOTAL - currentTotal, Number(count) || 1));
     wave.entries.push(defaultHoardEntry({ actor_id: actorId, count: addCount }));
   }
   return true;
@@ -8721,7 +9007,11 @@ function bumpHoardEntryCount(wave, actorId, delta) {
   const entries = hoardWaveEntries(wave);
   const row = entries.find((item) => item.actor_id === actorId);
   if (!row) return;
-  row.count = Math.max(1, Math.min(12, Number(row.count || 1) + delta));
+  const otherTotal = hoardWaveTotalCount(wave) - Math.max(1, Number(row.count) || 1);
+  row.count = Math.max(
+    1,
+    Math.min(HOARD_MAX_WAVE_TOTAL - otherTotal, Number(row.count || 1) + delta)
+  );
   wave.entries = entries;
 }
 
@@ -8845,9 +9135,28 @@ function renderHoardWaveList() {
 function syncHoardEditFieldsFromSelected() {
   const wave = selectedHoardWave();
   if (!wave) return;
+  if (els.hoardWaveDistance) {
+    els.hoardWaveDistance.value = String(
+      clampHoardNumber(wave.distance, HOARD_DISTANCE_MIN, HOARD_DISTANCE_MAX, HOARD_DISTANCE_DEFAULT)
+    );
+  }
   if (els.hoardWaveSpacing) els.hoardWaveSpacing.value = String(wave.spacing ?? 125);
   if (els.hoardWaveScale) els.hoardWaveScale.value = String(wave.scale ?? 1);
   if (els.hoardWaveAggro) els.hoardWaveAggro.value = wave.aggro || "passive";
+  if (els.hoardSpawnPoints) {
+    els.hoardSpawnPoints.value = String(
+      clampHoardNumber(wave.spawn_points, 1, 12, HOARD_SPAWN_POINTS_DEFAULT)
+    );
+  }
+  if (els.hoardBurstSize) {
+    els.hoardBurstSize.value = String(clampHoardNumber(wave.burst, 1, 6, HOARD_BURST_DEFAULT));
+  }
+  if (els.hoardStagger) {
+    els.hoardStagger.value = String(
+      clampHoardNumber(wave.stagger, 0.15, 5, HOARD_STAGGER_DEFAULT)
+    );
+  }
+  if (els.hoardAutoCleanup) els.hoardAutoCleanup.checked = wave.cleanup_loot === true;
 }
 
 function renderHoardActorSearch() {
@@ -8918,8 +9227,15 @@ function addHighlightedActorToSelectedWave() {
     state.hoardSelectedIndex = 0;
     wave = selectedHoardWave();
   }
-  const count = getInt(els.hoardWaveCount, 1, 12, 1);
-  addActorToHoardWave(wave, actorId, count);
+  const count = getInt(els.hoardWaveCount, 1, HOARD_MAX_WAVE_TOTAL, 1);
+  if (!addActorToHoardWave(wave, actorId, count)) {
+    setLine(
+      els.hoardStatusLine,
+      `Wave limit: ${HOARD_MAX_WAVE_TOTAL} enemies and ${HOARD_MAX_WAVE_TYPES} types per wave.`,
+      "warning"
+    );
+    return;
+  }
   renderHoardWaveList();
   renderHoardActorSearch();
   saveHoardPlanToStorage();
@@ -8934,12 +9250,16 @@ function addHighlightedActorAsNewWave() {
     return;
   }
   const template = selectedHoardWave() || defaultHoardWave();
-  const count = getInt(els.hoardWaveCount, 1, 12, 1);
+  const count = getInt(els.hoardWaveCount, 1, HOARD_MAX_WAVE_TOTAL, 1);
   const wave = defaultHoardWave({
     entries: [{ actor_id: actorId, count }],
     spacing: template.spacing,
     scale: template.scale,
-    aggro: template.aggro
+    aggro: template.aggro,
+    spawn_points: template.spawn_points,
+    burst: template.burst,
+    stagger: template.stagger,
+    cleanup_loot: template.cleanup_loot
   });
   state.hoardWaves.push(wave);
   state.hoardSelectedIndex = state.hoardWaves.length - 1;
@@ -8964,13 +9284,27 @@ async function ensureHoardCatalog() {
 function hoardPlanPayload() {
   return {
     waves: state.hoardWaves.map((wave) => ({
-      entries: hoardWaveEntries(wave).map((row) => ({
-        actor_id: String(row.actor_id || "").trim(),
-        count: Math.max(1, Math.min(12, Number(row.count) || 1))
-      })),
+      entries: (() => {
+        let remaining = HOARD_MAX_WAVE_TOTAL;
+        return hoardWaveEntries(wave).slice(0, HOARD_MAX_WAVE_TYPES).map((row) => {
+          const count = Math.max(0, Math.min(remaining, Number(row.count) || 1));
+          remaining -= count;
+          return { actor_id: String(row.actor_id || "").trim(), count };
+        }).filter((row) => row.actor_id && row.count > 0);
+      })(),
+      distance: clampHoardNumber(
+        wave.distance,
+        HOARD_DISTANCE_MIN,
+        HOARD_DISTANCE_MAX,
+        HOARD_DISTANCE_DEFAULT
+      ),
       spacing: Number(wave.spacing) || 125,
       scale: Number(wave.scale) || 1,
-      aggro: String(wave.aggro || "passive")
+      aggro: String(wave.aggro || "passive"),
+      spawn_points: clampHoardNumber(wave.spawn_points, 1, 12, HOARD_SPAWN_POINTS_DEFAULT),
+      burst: clampHoardNumber(wave.burst, 1, 6, HOARD_BURST_DEFAULT),
+      stagger: clampHoardNumber(wave.stagger, 0.15, 5, HOARD_STAGGER_DEFAULT),
+      cleanup_loot: wave.cleanup_loot === true
     }))
   };
 }
@@ -8993,22 +9327,14 @@ function applyHoardStatusPayload(data) {
 }
 
 function stopHoardStatusPoll() {
-  if (state.hoardStatusPollTimer) {
-    clearInterval(state.hoardStatusPollTimer);
-    state.hoardStatusPollTimer = null;
-  }
+  state.hoardStatusWatch = false;
 }
 
 function syncHoardStatusPoll() {
   const tabActive = Boolean(document.getElementById("tab-hoard-builder")?.classList.contains("active"));
   if (tabActive || state.hoardRunning) {
-    if (state.hoardStatusPollTimer) return;
-    state.hoardStatusPollTimer = window.setInterval(() => {
-      void refreshHoardStatus({ quiet: true }).then(() => {
-        const stillActive = Boolean(document.getElementById("tab-hoard-builder")?.classList.contains("active"));
-        if (!stillActive && !state.hoardRunning) stopHoardStatusPoll();
-      });
-    }, 1500);
+    state.hoardStatusWatch = true;
+    scheduleNextBridgeStatusPoll(0);
   } else {
     stopHoardStatusPoll();
   }
@@ -9031,9 +9357,11 @@ function openHoardBuilderTab() {
 function wireHoardBuilder() {
   if (!els.hoardWaveList) return;
   loadHoardPlanFromStorage();
+  loadHoardFavoritesFromStorage();
   syncHoardEditFieldsFromSelected();
   renderHoardWaveList();
   renderHoardActorSearch();
+  renderHoardFavorites();
 
   if (els.hoardAddWaveBtn) {
     els.hoardAddWaveBtn.addEventListener("click", () => {
@@ -9041,7 +9369,11 @@ function wireHoardBuilder() {
       state.hoardWaves.push(defaultHoardWave({
         spacing: template.spacing,
         scale: template.scale,
-        aggro: template.aggro
+        aggro: template.aggro,
+        spawn_points: template.spawn_points,
+        burst: template.burst,
+        stagger: template.stagger,
+        cleanup_loot: template.cleanup_loot
       }));
       state.hoardSelectedIndex = state.hoardWaves.length - 1;
       syncHoardEditFieldsFromSelected();
@@ -9103,12 +9435,58 @@ function wireHoardBuilder() {
     els.hoardApplyOptionsBtn.addEventListener("click", () => {
       const wave = selectedHoardWave();
       if (!wave) return;
+      wave.distance = getFloat(
+        els.hoardWaveDistance,
+        HOARD_DISTANCE_MIN,
+        HOARD_DISTANCE_MAX,
+        wave.distance || HOARD_DISTANCE_DEFAULT
+      );
       wave.spacing = getFloat(els.hoardWaveSpacing, 1, 5000, wave.spacing || 125);
       wave.scale = getFloat(els.hoardWaveScale, 0.05, 20, wave.scale || 1);
       wave.aggro = getValue(els.hoardWaveAggro) || "passive";
+      wave.spawn_points = getInt(els.hoardSpawnPoints, 1, 12, wave.spawn_points || HOARD_SPAWN_POINTS_DEFAULT);
+      wave.burst = getInt(els.hoardBurstSize, 1, 6, wave.burst || HOARD_BURST_DEFAULT);
+      wave.stagger = getFloat(els.hoardStagger, 0.15, 5, wave.stagger || HOARD_STAGGER_DEFAULT);
+      wave.cleanup_loot = els.hoardAutoCleanup ? Boolean(els.hoardAutoCleanup.checked) : false;
       renderHoardWaveList();
       saveHoardPlanToStorage();
       setLine(els.hoardStatusLine, `Wave ${state.hoardSelectedIndex + 1} options updated.`, "ok");
+    });
+  }
+  if (els.hoardFavoriteSavePlanBtn) {
+    els.hoardFavoriteSavePlanBtn.addEventListener("click", () => {
+      upsertHoardFavorite({
+        name: getValue(els.hoardFavoriteName),
+        waves: state.hoardWaves,
+        kind: "plan"
+      });
+    });
+  }
+  if (els.hoardFavoriteSaveWaveBtn) {
+    els.hoardFavoriteSaveWaveBtn.addEventListener("click", () => {
+      const wave = selectedHoardWave();
+      if (!wave || !hoardWaveEntries(wave).length) {
+        setLine(els.hoardStatusLine, "Selected wave is empty — add actors first.", "warning");
+        return;
+      }
+      const fallback = `Wave ${state.hoardSelectedIndex + 1}`;
+      upsertHoardFavorite({
+        name: getValue(els.hoardFavoriteName) || fallback,
+        waves: [wave],
+        kind: "wave"
+      });
+    });
+  }
+  if (els.hoardFavoriteLoadBtn) {
+    els.hoardFavoriteLoadBtn.addEventListener("click", () => loadSelectedHoardFavorite());
+  }
+  if (els.hoardFavoriteDeleteBtn) {
+    els.hoardFavoriteDeleteBtn.addEventListener("click", () => deleteSelectedHoardFavorite());
+  }
+  if (els.hoardFavoriteSelect) {
+    els.hoardFavoriteSelect.addEventListener("change", () => {
+      const fav = selectedHoardFavorite();
+      if (fav && els.hoardFavoriteName) els.hoardFavoriteName.value = fav.name;
     });
   }
   if (els.hoardStartBtn) {
@@ -9142,6 +9520,8 @@ function wireHoardBuilder() {
   }
   if (els.hoardClearBtn) {
     els.hoardClearBtn.addEventListener("click", async () => {
+      // Deliberately no loot flag: the physics loot hide is what crashed the
+      // game when it ran alongside a wave clear. Clear Loot stays a separate press.
       const result = await runAction("hoard_clear", {}, els.hoardOutput, 30000);
       applyHoardStatusPayload(result && result.data !== undefined ? result.data : result);
       syncHoardStatusPoll();
@@ -9156,6 +9536,12 @@ function wireHoardBuilder() {
 }
 
 function switchTab(tabId) {
+  const previousTab = state.activeTab;
+  state.activeTab = tabId;
+  if (previousTab === "matt-editor" && tabId !== "matt-editor" && els.editorFrame) {
+    els.editorFrame.src = "about:blank";
+    state.editorLoaded = false;
+  }
   document.querySelectorAll(".tab-bar [data-tab]").forEach((button) => {
     button.classList.toggle("active", button.dataset.tab === tabId);
   });
@@ -9167,6 +9553,10 @@ function switchTab(tabId) {
   }
   if (tabId === "matt-editor") {
     void loadEditor();
+  } else if (tabId === "bl4-codes") {
+    void loadBl4Catalog();
+  } else if (tabId === "dev-spawner") {
+    void loadDevSpawnerCatalog();
   } else if (tabId === "quick-menu") {
     void loadQuickMenuLayout({ quiet: Boolean(state.quickMenuSnapshot) });
     void refreshQuickMenuPinPanel({ quiet: true });
@@ -9185,7 +9575,7 @@ function switchTab(tabId) {
       void loadQuickMenuLayout({ quiet: true }).then(() => installQuickMenuAddButtons());
     }
   } else if (tabId === "mobile-gateway") {
-    void refreshMobileGatewayInfo();
+    void refreshMobileGatewayInfo({ startIfNeeded: true });
   }
 
   if (tabId === "hoard-builder") {
@@ -11560,10 +11950,8 @@ async function init() {
     loadItemPools().catch((error) => console.warn("[MSBT] item pools load failed:", error)),
     loadTravelResources().catch((error) => console.warn("[MSBT] travel resources load failed:", error)),
     loadTravelFavorites().catch((error) => console.warn("[MSBT] travel favorites load failed:", error)),
-    loadDevSpawnerCatalog().catch((error) => console.warn("[MSBT] dev spawner catalog load failed:", error)),
     loadDevSpawnerFavorites().catch((error) => console.warn("[MSBT] dev spawner favorites load failed:", error)),
     loadSerialBookmarks().catch((error) => console.warn("[MSBT] serial bookmarks load failed:", error)),
-    loadBl4Catalog().catch((error) => console.warn("[MSBT] BL4 catalog load failed:", error)),
     loadMovementSettings().catch((error) => console.warn("[MSBT] movement settings load failed:", error)),
     loadRaritySettings().catch((error) => console.warn("[MSBT] rarity settings load failed:", error))
   ]);
@@ -11571,11 +11959,6 @@ async function init() {
     await bridgeStatus();
   } catch (error) {
     console.warn("[MSBT] bridge status failed:", error);
-  }
-  try {
-    await refreshMobileGatewayInfo();
-  } catch (error) {
-    console.warn("[MSBT] mobile gateway info failed:", error);
   }
   try {
     await loadQuickMenuLayout({ quiet: true });

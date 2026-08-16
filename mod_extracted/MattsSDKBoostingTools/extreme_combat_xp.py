@@ -69,6 +69,18 @@ def _log(msg: str) -> None:
         print(f"{_PREFIX} {msg}")
 
 
+_HOT_ERROR_INTERVAL_S = 5.0
+_hot_error_last_at: dict[str, float] = {}
+
+
+def _log_hot_error(msg: str) -> None:
+    now = time.monotonic()
+    if now - _hot_error_last_at.get(msg, 0.0) < _HOT_ERROR_INTERVAL_S:
+        return
+    _hot_error_last_at[msg] = now
+    _log(msg)
+
+
 def _mult() -> float:
     try:
         return float(_mult_value)
@@ -610,7 +622,7 @@ def _process_all() -> None:
         try:
             _process_player(ps)
         except Exception as exc:
-            _log(f"process err: {exc!r}")
+            _log_hot_error(f"process err: {exc!r}")
 
 
 def _try_set_combat_xp_attribute(mult: float) -> int:

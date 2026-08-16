@@ -207,7 +207,11 @@ def note_spawned_actors(actors: list[Any] | None = None) -> None:
 
 
 def _prune_tracked() -> list[Any]:
-    global _tracked_mobs
+    global _tracked_mobs, _tracked_at
+    if time.monotonic() - _tracked_at > _TRACK_TTL_S:
+        _tracked_mobs = []
+        _tracked_at = 0.0
+        return []
     live: list[Any] = []
     for mob in _tracked_mobs:
         if mob is None:
@@ -221,6 +225,13 @@ def _prune_tracked() -> list[Any]:
             continue
     _tracked_mobs = live[-48:]
     return list(_tracked_mobs)
+
+
+def clear_tracked() -> None:
+    """Release cached actor wrappers after travel or an explicit cleanup."""
+    global _tracked_mobs, _tracked_at
+    _tracked_mobs = []
+    _tracked_at = 0.0
 
 
 def _try_set_enemy(attacker: Any, target: Any) -> bool:

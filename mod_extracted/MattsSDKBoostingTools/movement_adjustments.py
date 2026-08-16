@@ -1838,9 +1838,9 @@ def _party_index_for_pawn(pawn: Any) -> int | None:
 
 def _camera_infinite_jump_hook(*args, **kwargs):
     global _INFINITE_JUMP_CAMERA_LAST_APPLY, _INFINITE_JUMP_WORLD_SIG, _INFINITE_JUMP_LOCAL_IDX
+    if not _INFINITE_JUMP_INDICES:
+        return None
     try:
-        if not _INFINITE_JUMP_INDICES:
-            return None
         now = time.monotonic()
         # Throttle: BlueprintModifyCamera can fire many times per frame.
         if now - float(_INFINITE_JUMP_CAMERA_LAST_APPLY) < float(_INFINITE_JUMP_CAMERA_INTERVAL_S):
@@ -1913,9 +1913,11 @@ def _camera_infinite_jump_hook(*args, **kwargs):
 
 
 def _jump_pre_hook(*args, **kwargs):
+    # CanJump/CanJumpInternal fire every frame; keep the disabled path free of
+    # exception-handler setup and argument list building.
+    if not _INFINITE_JUMP_INDICES:
+        return None
     try:
-        if not _INFINITE_JUMP_INDICES:
-            return None
         for obj in list(args) + list(kwargs.values()):
             pawn = _hook_arg_to_pawn(obj)
             if pawn is None or not _uobject_alive(pawn):
@@ -2122,9 +2124,14 @@ def hide_ground_loot() -> str:
     return "Clear Loot (Hide): no ground loot found."
 
 
-_LOOT_PER_RING = 8
-_LOOT_BASE_RADIUS = 120.0
-_LOOT_RING_SPACING = 90.0
+# Pulled gear lands on an Archimedean spiral growing away from the player.
+# Fixed-count rings put every ring's first item on the same bearing, which read
+# in-game as long lines shooting away from you.
+# Spacing is tuned to BL4 pickup footprints: turn growth stays above item
+# spacing so neighbouring loops never crowd tighter than neighbours on the arc.
+_LOOT_SPIRAL_START_RADIUS = 240.0
+_LOOT_SPIRAL_ITEM_SPACING = 155.0
+_LOOT_SPIRAL_TURN_GROWTH = 230.0
 _LOOT_PICKUP_MATERIALS = ("Ammo", "Cash", "Eridium", "Health", "Shield", "Grenade")
 _SUPER_DASH_MIN = 100
 _SUPER_DASH_MAX = 20000
@@ -2150,6 +2157,20 @@ _dash_cooldown_until = 0.0
 
 def _live_actor(obj: Any) -> bool:
     return _uobject_alive(obj)
+
+
+def _loot_spiral_offset(index: int) -> tuple[float, float]:
+    """Return (forward, right) offsets in cm for the index-th pulled item.
+
+    Archimedean spiral ``r = a + b*theta`` stepped by arc length, so neighbours
+    stay roughly _LOOT_SPIRAL_ITEM_SPACING apart while the radius keeps growing
+    away from the player.
+    """
+    growth = _LOOT_SPIRAL_TURN_GROWTH / (2.0 * math.pi)
+    arc = max(0, int(index)) * _LOOT_SPIRAL_ITEM_SPACING
+    radius = math.sqrt(_LOOT_SPIRAL_START_RADIUS ** 2 + 2.0 * growth * arc)
+    angle = (radius - _LOOT_SPIRAL_START_RADIUS) / growth
+    return math.cos(angle) * radius, math.sin(angle) * radius
 
 
 def _sorted_ground_loot() -> dict[str, list[Any]]:
@@ -2232,14 +2253,11 @@ def pull_ground_loot_here() -> str:
     right_x, right_y = -math.sin(yaw), math.cos(yaw)
     for index, inv in enumerate(loot["Gear"]):
         try:
-            ring, slot = index // _LOOT_PER_RING, index % _LOOT_PER_RING
-            angle = (2.0 * math.pi / _LOOT_PER_RING) * slot if slot else 0.0
-            radius = _LOOT_BASE_RADIUS + ring * _LOOT_RING_SPACING
-            cos_a, sin_a = math.cos(angle), math.sin(angle)
+            ahead, side = _loot_spiral_offset(index)
             spot = unrealsdk.make_struct(
                 "Vector",
-                X=float(where.X) + (forward_x * cos_a + right_x * sin_a) * radius,
-                Y=float(where.Y) + (forward_y * cos_a + right_y * sin_a) * radius,
+                X=float(where.X) + forward_x * ahead + right_x * side,
+                Y=float(where.Y) + forward_y * ahead + right_y * side,
                 Z=float(where.Z),
             )
             inv.K2_TeleportTo(spot, ignore)
@@ -2464,6 +2482,20 @@ def _tick_pending_super_dashes(now: float) -> None:
 
 def _super_dash_camera_hook(*_args: Any, **_kwargs: Any) -> None:
     global _super_dash_key_was_down, _azzy_super_dash_key_was_down
+    # BlueprintModifyCamera fires once per active CameraModifier, several times a
+    # frame. get_pc() plus two IsInputKeyDown calls is too much to pay when no
+    # dash feature is armed and nothing is queued, so bail before any SDK lookup.
+    if (
+        not _super_dash_enabled
+        and not _azzy_super_dash_enabled
+        and not _pending_msbt_super_dash
+        and not _pending_azzy_super_dash
+        and not _pending_dash_stop_jump_at
+    ):
+        _super_dash_key_was_down = False
+        _azzy_super_dash_key_was_down = False
+        return
+
     now = time.monotonic()
     _tick_pending_super_dashes(now)
 

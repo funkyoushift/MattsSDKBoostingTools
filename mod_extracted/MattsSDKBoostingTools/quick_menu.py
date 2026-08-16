@@ -20,6 +20,13 @@ from . import backend_actions, quick_menu_registry
 PREFIX = "[Matts SDK Boosting Tools | QuickMenu]"
 TICK_PATH = "/Script/Engine.CameraModifier:BlueprintModifyCamera"
 HOOK_ID = "matts_sdk_boosting_tools_quick_menu_tick_v1"
+# Wall-clock budget for the camera tick. Closed is the always-on cost, so it only
+# needs to be fast enough to catch a key press edge. 30 Hz still samples normal
+# human keypresses reliably while halving closed-menu polling; open stays higher.
+TICK_INTERVAL_CLOSED_S = 1.0 / 30.0
+TICK_INTERVAL_OPEN_S = 1.0 / 120.0
+_last_tick_at = 0.0
+_tick_error_last_at: dict[str, float] = {}
 DESIGN_W = 1920.0
 DESIGN_H = 1080.0
 VIEWPORT_Z = 999996
@@ -346,6 +353,8 @@ class QuickMenuState:
     hotkey_listen_started_at: float = 0.0
     hotkey_key_state: dict[str, bool] = field(default_factory=dict)
     slot_hotkey_was_down: dict[str, bool] = field(default_factory=dict)
+    slot_hotkey_cache_revision: int = -1
+    slot_hotkey_cache: list[tuple[str, str, dict[str, Any]]] = field(default_factory=list)
     # Inventory tab (MSBT browser mirror)
     inv_equipped: list[dict[str, Any]] = field(default_factory=list)
     inv_backpack: list[dict[str, Any]] = field(default_factory=list)
@@ -725,6 +734,7 @@ def load_layout() -> None:
     STATE.page = int(layout["page"])
     STATE.edit_mode = bool(layout["edit_mode"])
     STATE.layout_revision = quick_menu_registry.get_layout_revision()
+    STATE.slot_hotkey_cache_revision = -1
     _apply_chrome(layout.get("chrome"))
     lock = backend_actions.get_drop_player_lock()
     drop_lock = layout["drop_lock"]
@@ -768,6 +778,7 @@ def save_layout() -> None:
         STATE.pages = result["layout"]["pages"]
         _apply_chrome(result["layout"].get("chrome"))
         STATE.layout_revision = quick_menu_registry.get_layout_revision()
+        STATE.slot_hotkey_cache_revision = -1
     except Exception as exc:
         _log(f"Could not save Quick Menu layout: {exc!r}")
 
@@ -1732,7 +1743,7 @@ def finish_hotkey_bind(key_name: str) -> None:
     rebuild_ui()
 
 
-def poll_hotkey_listen() -> None:
+def poll_hotkey_listen(pc: Any = None) -> None:
     """Capture a key while Edit → slot Bind Hotkey is active (camera tick)."""
     if not STATE.hotkey_listen or not STATE.is_open:
         return
@@ -1741,11 +1752,9 @@ def poll_hotkey_listen() -> None:
         return
     # Ignore the click that opened listen for a short grace window.
     if time.monotonic() < float(STATE.hotkey_listen_started_at or 0.0) + 0.18:
-        pc = get_pc()
         for key in quick_menu_registry.HOTKEY_KEY_NAMES:
             STATE.hotkey_key_state[key] = _key_down(pc, key)
         return
-    pc = get_pc()
     if pc is None:
         return
     # Esc clears even though it is reserved for runtime hotkeys.
@@ -1764,17 +1773,11 @@ def poll_hotkey_listen() -> None:
             return
 
 
-def process_slot_hotkeys() -> None:
-    """Fire assigned slot hotkeys while Quick Menu is closed (camera tick)."""
-    if STATE.is_open or STATE.hotkey_listen:
-        STATE.slot_hotkey_was_down.clear()
-        return
-    if time.monotonic() < float(STATE.hotkey_ignore_until or 0.0):
-        return
-    pc = get_pc()
-    if pc is None:
-        STATE.slot_hotkey_was_down.clear()
-        return
+def _configured_slot_hotkeys() -> list[tuple[str, str, dict[str, Any]]]:
+    revision = int(STATE.layout_revision)
+    if STATE.slot_hotkey_cache_revision == revision:
+        return STATE.slot_hotkey_cache
+    cached: list[tuple[str, str, dict[str, Any]]] = []
     seen: set[str] = set()
     for page in STATE.pages:
         for slot in page:
@@ -1784,17 +1787,34 @@ def process_slot_hotkeys() -> None:
             if not key or key in seen:
                 continue
             seen.add(key)
-            down = _key_down(pc, key)
-            was = bool(STATE.slot_hotkey_was_down.get(key, False))
-            STATE.slot_hotkey_was_down[key] = down
-            if down and not was:
-                action = str(slot.get("action") or "")
-                payload = dict(slot.get("payload") or {})
-                try:
-                    _run_action(action, payload)
-                except Exception as exc:
-                    _log(f"Slot hotkey '{key}' failed: {exc!r}")
-                return
+            cached.append((key, str(slot.get("action") or ""), dict(slot.get("payload") or {})))
+    STATE.slot_hotkey_cache = cached
+    STATE.slot_hotkey_cache_revision = revision
+    return cached
+
+
+def process_slot_hotkeys(pc: Any = None) -> None:
+    """Fire assigned slot hotkeys while Quick Menu is closed (camera tick)."""
+    if STATE.is_open or STATE.hotkey_listen:
+        STATE.slot_hotkey_was_down.clear()
+        return
+    if time.monotonic() < float(STATE.hotkey_ignore_until or 0.0):
+        return
+    if pc is None:
+        STATE.slot_hotkey_was_down.clear()
+        return
+    seen: set[str] = set()
+    for key, action, payload in _configured_slot_hotkeys():
+        seen.add(key)
+        down = _key_down(pc, key)
+        was = bool(STATE.slot_hotkey_was_down.get(key, False))
+        STATE.slot_hotkey_was_down[key] = down
+        if down and not was:
+            try:
+                _run_action(action, dict(payload))
+            except Exception as exc:
+                _log(f"Slot hotkey '{key}' failed: {exc!r}")
+            return
     # Drop stale key edges no longer bound.
     stale = [k for k in STATE.slot_hotkey_was_down if k not in seen]
     for key in stale:
@@ -2997,8 +3017,7 @@ def _key_down(pc: Any, name: str) -> bool:
             return False
 
 
-def process_escape() -> None:
-    pc = get_pc()
+def process_escape(pc: Any = None) -> None:
     update_escape_close_block(pc)
     if not STATE.is_open:
         STATE.key_escape = False
@@ -3051,14 +3070,15 @@ def _bound_keybind_name(kb: Any) -> str | None:
     return name
 
 
-def process_hotkeys() -> None:
+def process_hotkeys(pc: Any = None) -> None:
     """Poll Quick Menu toggle/unstuck keys under GameAndUI capture.
 
     mods_base keybinds often do not fire while the Quick Menu owns UI input,
     which made F7 open-only from the player's point of view. The poller must
     still honor the live keybind assignment: unbound keys must not fire.
     """
-    pc = get_pc()
+    if pc is None:
+        pc = get_pc()
     if pc is None:
         STATE.key_f7 = False
         STATE.key_f6 = False
@@ -3117,6 +3137,15 @@ def _refresh_layout_if_changed() -> None:
 
 
 def tick(_obj: Any, _args: Any, _ret: Any, _func: Any) -> None:
+    global _last_tick_at
+    # BlueprintModifyCamera runs once per active CameraModifier, so this fires
+    # several times per frame. Everything below polls input or rebuilds widgets,
+    # which never needs to happen more than once per frame.
+    now_gate = time.monotonic()
+    interval = TICK_INTERVAL_OPEN_S if STATE.is_open else TICK_INTERVAL_CLOSED_S
+    if now_gate - _last_tick_at < interval:
+        return None
+    _last_tick_at = now_gate
     try:
         try:
             backend_actions.tick_asd_autoclear()
@@ -3124,11 +3153,17 @@ def tick(_obj: Any, _args: Any, _ret: Any, _func: Any) -> None:
             pass
         _poll_delivery_toasts()
         _expire_toast()
+        pc = get_pc()
         # Hotkeys first so F6 can recover even if overlay state is inconsistent.
-        process_hotkeys()
+        process_hotkeys(pc)
         if not STATE.is_open:
-            process_escape()
-            process_slot_hotkeys()
+            # Refresh the cached bindings only when another UI/bridge write
+            # advanced the persisted layout revision.
+            revision = quick_menu_registry.get_layout_revision()
+            if revision != STATE.layout_revision:
+                load_layout()
+            process_escape(pc)
+            process_slot_hotkeys(pc)
             return None
         if not live(STATE.overlay):
             STATE.is_open = False
@@ -3152,8 +3187,8 @@ def tick(_obj: Any, _args: Any, _ret: Any, _func: Any) -> None:
             _refresh_layout_if_changed()
             capture_input()
         # Escape before bind poll so listen-mode still owns Esc this frame.
-        process_escape()
-        poll_hotkey_listen()
+        process_escape(pc)
+        poll_hotkey_listen(pc)
         if poll_move_placement():
             # Follow/rebuild is handled inside poll_move_placement (throttled).
             return None
@@ -3163,7 +3198,11 @@ def tick(_obj: Any, _args: Any, _ret: Any, _func: Any) -> None:
         if STATE.is_open and STATE.ui_dirty:
             rebuild_ui()
     except Exception as exc:
-        _log(f"Tick failed: {exc}")
+        message = f"Tick failed: {exc}"
+        now = time.monotonic()
+        if now - _tick_error_last_at.get(message, 0.0) >= 5.0:
+            _tick_error_last_at[message] = now
+            _log(message)
     return None
 
 

@@ -8,6 +8,7 @@ from .golden_chest_keybinds import CLOSE_GOLDEN_CHEST_KEY, OPEN_GOLDEN_CHEST_KEY
 from .instant_click_holds import ICH_KEYBINDS
 from .player_economy import _cmd_givecurrency, _cmd_giveexperience
 from .serial_rewards import _cmd_give_serial
+from .runtime_cleanup import clear_travel_caches as _clear_travel_caches
 from .inventory_capacity import start_auto_inventory_worker
 from .external_bridge import start_bridge
 from .external_app_launcher import _cmd_msbt_external_app
@@ -29,8 +30,8 @@ from .quick_menu import (
     start_quick_menu,
 )
 
-__version__: str = "2.5.0"
-__version_info__: tuple[int, int, int] = (2, 5, 0)
+__version__: str = "2.6.0"
+__version_info__: tuple[int, int, int] = (2, 6, 0)
 
 _panel_keybinds = []
 _panel_commands = []

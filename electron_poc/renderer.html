@@ -1373,7 +1373,7 @@
           </label>
           <label>
             Count per click
-            <input id="hoardWaveCount" type="number" min="1" max="12" value="1">
+            <input id="hoardWaveCount" type="number" min="1" max="60" value="1">
           </label>
         </div>
         <div id="hoardActorSummary" class="status-line">Load Dev Spawner catalog (or open that tab once) to search actors.</div>
@@ -1388,6 +1388,10 @@
           <summary>Wave options</summary>
           <div class="grid three compact">
             <label>
+              Spawn distance
+              <input id="hoardWaveDistance" type="number" min="600" max="4000" step="50" value="900" title="How far from you the spawn nodes sit. 600 is the closest allowed so enemies cannot land on top of you.">
+            </label>
+            <label>
               Spacing
               <input id="hoardWaveSpacing" type="number" min="1" max="5000" value="125">
             </label>
@@ -1395,6 +1399,8 @@
               Scale
               <input id="hoardWaveScale" type="number" min="0.05" max="20" step="0.05" value="1">
             </label>
+          </div>
+          <div class="grid three compact">
             <label>
               Aggro
               <select id="hoardWaveAggro">
@@ -1404,22 +1410,66 @@
                 <option value="free_for_all">Free For All</option>
               </select>
             </label>
+            <label>
+              Spawn points
+              <input id="hoardSpawnPoints" type="number" min="1" max="12" value="6" title="Distinct spawn nodes placed around you at varied angles and distances">
+            </label>
+            <label>
+              Enemies per burst
+              <input id="hoardBurstSize" type="number" min="1" max="6" value="2" title="How many emerge from one spawn point per turn">
+            </label>
+          </div>
+          <div class="grid three compact">
+            <label>
+              Stagger (seconds)
+              <input id="hoardStagger" type="number" min="0.15" max="5" step="0.05" value="0.45" title="Delay between bursts — raise this if frames dip on big waves">
+            </label>
           </div>
           <div class="button-row wrap compact-actions">
+            <label class="inline-check">
+              <input id="hoardAutoCleanup" type="checkbox">
+              Hide dropped loot between waves (off by default — heavy)
+            </label>
             <button type="button" id="hoardApplyOptionsBtn" class="secondary">Apply Options to Selected Wave</button>
           </div>
         </details>
 
         <div class="section-heading" style="margin-top:1rem;">
           <div>
+            <h3>Favorites</h3>
+            <p class="muted-line">Save the current plan or selected wave, then reload from the selector anytime.</p>
+          </div>
+        </div>
+        <div class="grid two compact">
+          <label>
+            Favorite name
+            <input id="hoardFavoriteName" type="text" maxlength="64" placeholder="Boss ring, trash clear…" autocomplete="off">
+          </label>
+          <label>
+            Saved favorites
+            <select id="hoardFavoriteSelect">
+              <option value="">(none saved)</option>
+            </select>
+          </label>
+        </div>
+        <div class="button-row wrap compact-actions">
+          <button type="button" id="hoardFavoriteSavePlanBtn" class="secondary">Save Full Plan</button>
+          <button type="button" id="hoardFavoriteSaveWaveBtn" class="secondary">Save Selected Wave</button>
+          <button type="button" id="hoardFavoriteLoadBtn">Load Favorite</button>
+          <button type="button" id="hoardFavoriteDeleteBtn" class="secondary">Delete Favorite</button>
+        </div>
+        <div id="hoardFavoriteSummary" class="status-line muted-line">No favorites yet.</div>
+
+        <div class="section-heading" style="margin-top:1rem;">
+          <div>
             <h3>Run</h3>
-            <p class="muted-line">Manual start only. Between waves advances when the current wave is clear.</p>
+            <p class="muted-line">Up to 60 enemies / 12 types per wave and unlimited waves. Enemies trickle in 1–2 at a time from each spawn point; raise Stagger if frames dip. Advances when clear.</p>
           </div>
         </div>
         <div class="button-row wrap">
           <button type="button" id="hoardStartBtn">Start Hoard</button>
           <button type="button" id="hoardStopBtn" class="secondary">Stop</button>
-          <button type="button" id="hoardClearBtn" class="secondary">Clear Spawns</button>
+          <button type="button" id="hoardClearBtn" class="secondary" title="Stop the run, switch spawners off, then clear ASD spawns a beat later. Leaves ground loot alone — use Clear Loot for that.">Emergency Clear</button>
         </div>
 
         <div class="section-heading" style="margin-top:1rem;">
@@ -2124,6 +2174,7 @@
 
   <script src="vendor/gridstack/gridstack-all.js"></script>
   <script src="panel_layout.js"></script>
+  <script src="poll_coordinator.js"></script>
   <script src="renderer.js"></script>
 </body>
 </html>
