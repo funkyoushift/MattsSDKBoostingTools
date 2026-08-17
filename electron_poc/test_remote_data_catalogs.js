@@ -304,7 +304,7 @@ async function testTutorialCopyAsset() {
   const copy = JSON.parse(await fsp.readFile(copyPath, "utf8"));
   assert.strictEqual(copy.kind, "json_copy");
   const patches = (copy.tours && copy.tours.main) || [];
-  const expectedIndexes = [0, 2, 3, 7, 9];
+  const expectedIndexes = [0, 2, 3, 8, 10];
   for (const idx of expectedIndexes) {
     assert.ok(
       patches.some((row) => Number(row.index) === idx),
@@ -323,10 +323,12 @@ async function testTutorialCopyAsset() {
   }
   const welcome = patches.find((row) => Number(row.index) === 0);
   assert.ok(/sdk_mods|MattsSDKBoostingTools\.sdkmod/i.test(welcome.body), "Welcome should keep SDK install path accurate");
-  assert.ok(/Refresh Data Catalogs/i.test(welcome.body), "Welcome should mention data refresh");
-  const updates = patches.find((row) => Number(row.index) === 7);
-  assert.ok(/Refresh Data Catalogs/i.test(updates.body), "Updates should mention data refresh");
+  assert.ok(/Refresh Catalogs/i.test(welcome.body), "Welcome should mention the current data refresh label");
+  const updates = patches.find((row) => Number(row.index) === 8);
+  assert.ok(/Refresh Catalogs/i.test(updates.body), "Updates should mention the current data refresh label");
   assert.ok(/data channel|SemVer/i.test(updates.body), "Updates should clarify data vs app SemVer");
+  const allCopy = patches.map((row) => `${row.title}\n${row.body}`).join("\n");
+  assert.ok(!/Quick Max|Debug Panel|Refresh Status in (?:the )?header/i.test(allCopy), "overlay contains stale UI copy");
 
   const tours = {
     main: Array.from({ length: 11 }, (_, i) => ({ title: `Bundled ${i}`, body: `Bundled body ${i}` }))

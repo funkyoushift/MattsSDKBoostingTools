@@ -1934,6 +1934,10 @@ def run_quick_menu_action(
         needs_player = True
     elif key == "chaos_drop_backpack":
         result = chaos_drop_backpack()
+        needs_player = False
+        is_drop = True
+    elif key == "chaos_drop_backpack_targeted":
+        result = chaos_drop_backpack_targeted()
         needs_player = True
         is_drop = True
     elif key == "chaos_empty_backpack":
@@ -4228,6 +4232,23 @@ def chaos_launch(z: object = None) -> dict[str, Any]:
 
 
 def chaos_drop_backpack() -> dict[str, Any]:
+    """Public backpack drop-all action: always target the local host controller."""
+    try:
+        pc = get_pc()
+    except Exception as exc:
+        return {"ok": False, "message": f"Drop backpack host guard could not resolve host: {exc!r}"}
+    if pc is None:
+        return {"ok": False, "message": "Drop backpack host guard could not resolve the host controller."}
+    try:
+        msg = streamer_chaos.drop_backpack_for_pc(pc)
+    except Exception as exc:
+        return {"ok": False, "message": f"Drop backpack failed for host: {exc!r}"}
+    ok = streamer_chaos.result_ok(str(msg))
+    return {"ok": ok, "message": f"Drop backpack → host only: {msg}", "host_only": True}
+
+
+def chaos_drop_backpack_targeted() -> dict[str, Any]:
+    """Dev Tools backpack drop-all action: honor the selected party target."""
     return _chaos_run("Drop backpack", streamer_chaos.drop_backpack_for_pc)
 
 

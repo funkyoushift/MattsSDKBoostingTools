@@ -59,6 +59,9 @@ _inspect/
 _install_backups/
 _install_stage/
 _pack_stage_qm/
+_layout*_temp/
+hoard_beta_out/
+mobile_beta_out/
 _nexus_upload/
 _release_check/
 _loot_probe_dumps/
@@ -67,6 +70,8 @@ _explore_*/
 _lov_peek/
 _sdkmod_compare*/
 _msbt_archive/
+tools/*_out/
+tools/_tmp_*/
 .env
 .env.local
 *.log

@@ -8,11 +8,11 @@
 
   const STORAGE_PREFIX = "msbt.panelLayout.v2.";
   /** Bump when panel ids / default tiles change incompatibly (forces stale saves to reset). */
-  const LAYOUT_REVISION = 7;
+  const LAYOUT_REVISION = 12;
   /** Force a clean default when a tab's out-of-box layout was previously unusable. */
   const TAB_LAYOUT_MIN_REVISION = {
     "combat-vehicle": 6,
-    boosting: 7
+    boosting: 12
   };
   /** Preferred restore order when tearing down Dev Spawner docked GridStack. */
   const DEV_SPAWNER_PANEL_ORDER = [
@@ -27,28 +27,85 @@
     "dev-result"
   ];
   const TEXT_SCALE_KEY = "msbt.uiTextScale";
+  const DENSITY_KEY = "msbt.uiDensity.v1";
+  /** Per-tab "Fixed page" vs "Dockable panels" choice (Dev Spawner's toggle, generalised). */
+  const TAB_LAYOUT_MODE_KEY = "msbt.tabLayoutMode.v1";
+  /** Dev Spawner keeps its own key so its bespoke fixed shell stays in sync. */
+  const DEV_SPAWNER_LAYOUT_KEY = "msbt.devSpawner.layoutMode";
   const NAV_TABS_KEY = "msbt.navTabs.v1";
+  const WIP_NAV_UNLOCK_KEY = "msbt.navTabs.wipUnlocked.v3";
   /** Tabs kept out of normal View → Main tabs until Shift+click View unlocks them. */
   const WIP_NAV_TABS = new Set(["combat-vehicle"]);
-  /** Session-only unlock — never persist so WIP tabs stay secret across restarts. */
+  /** Persist only after deliberate discovery; fresh profiles remain hidden. */
   const wipUnlockedNavTabs = new Set();
   const TEXT_SCALE_MIN = 0.85;
   const TEXT_SCALE_MAX = 1.4;
   const TEXT_SCALE_STEP = 0.05;
-  const COLS = 12;
+  /**
+   * Panel geometry is authored in the original 12-column / 72px-row units, then
+   * multiplied by GRID_SCALE. Rendered size and position stay pixel-identical
+   * while drag/resize snap in 1/GRID_SCALE-of-a-cell steps.
+   * GridStack ships CSS for 12 and 1 columns only, so ensureColumnCss() must
+   * emit geometry for any other active column count.
+   */
+  const LEGACY_COLS = 12;
+  const LEGACY_CELL_HEIGHT = 72;
+  const GRID_SCALE = 4;
+  const COLS = LEGACY_COLS * GRID_SCALE;
+  const MIN_PANEL_COLS = 3 * GRID_SCALE;
   const STACK_ZONE = 0.45; // center fraction that triggers stack-on-drop
   const Z_BASE = 10;
-  const CELL_HEIGHT = 72;
+  const CELL_HEIGHT = LEGACY_CELL_HEIGHT / GRID_SCALE;
+  /** Collapsed panels keep the one-legacy-row height they had before scaling. */
+  const COLLAPSED_ROWS = GRID_SCALE;
+  const GRID_COLUMN_STYLE_ID = "msbtGridColumnGeometry";
+  /** Column counts already covered by the vendored GridStack stylesheet. */
+  const VENDOR_COLUMN_COUNTS = new Set([1, 12]);
+  const columnCssEmitted = new Set();
   /** Tabs whose single main panel should stretch to fill remaining viewport height. */
   const FILL_TABS = new Set(["matt-editor"]);
+  /** Long, single-panel workspaces grow with content so the tab owns scrolling. */
+  const CONTENT_SIZED_PANELS = new Set(["hoard-builder-main", "inv-main", "item-pool-main"]);
 
   /** @type {WeakMap<Element, any>} */
   const grids = new WeakMap();
   let hideRestoreHintShown = false;
   let zCounter = Z_BASE;
 
+  /**
+   * gridstack.min.css only carries width/left geometry for 12- and 1-column
+   * grids; any other count renders as shrink-to-fit boxes piled at left: 0.
+   * Emit the missing rules once per column count.
+   */
+  function ensureColumnCss(columns) {
+    const cols = Math.max(1, Math.round(Number(columns) || COLS));
+    if (VENDOR_COLUMN_COUNTS.has(cols) || columnCssEmitted.has(cols)) return;
+    columnCssEmitted.add(cols);
+    let style = document.getElementById(GRID_COLUMN_STYLE_ID);
+    if (!style) {
+      style = document.createElement("style");
+      style.id = GRID_COLUMN_STYLE_ID;
+      (document.head || document.documentElement).appendChild(style);
+    }
+    const pct = (n) => `${((n * 100) / cols).toFixed(4)}%`;
+    const rules = [`.grid-stack.gs-${cols} > .grid-stack-item { width: ${pct(1)}; }`];
+    for (let i = 1; i < cols; i += 1) {
+      rules.push(`.grid-stack.gs-${cols} > .grid-stack-item[gs-x="${i}"] { left: ${pct(i)}; }`);
+    }
+    for (let i = 2; i <= cols; i += 1) {
+      rules.push(`.grid-stack.gs-${cols} > .grid-stack-item[gs-w="${i}"] { width: ${pct(i)}; }`);
+    }
+    style.appendChild(document.createTextNode(rules.join("\n")));
+  }
+
+  ensureColumnCss(COLS);
+
+  function layoutViewportKey() {
+    return global.innerWidth <= 1180 ? "compact" : "wide";
+  }
+
   function storageKey(tabId) {
-    return STORAGE_PREFIX + String(tabId || "");
+    return `${STORAGE_PREFIX}${String(tabId || "")}.${layoutViewportKey()}`;
   }
 
   function loadState(tabId) {
@@ -56,10 +113,40 @@
       const raw = localStorage.getItem(storageKey(tabId));
       if (!raw) return null;
       const parsed = JSON.parse(raw);
-      return parsed && typeof parsed === "object" ? parsed : null;
+      return parsed && typeof parsed === "object" ? migrateSavedGridResolution(parsed) : null;
     } catch (_err) {
       return null;
     }
+  }
+
+  /**
+   * Layout v2 originally stored raw 12-column / 72px-row coordinates. Rescale
+   * saved tiles to whatever the current snap resolution is so a saved layout
+   * keeps its on-screen size and position. Resolution metadata makes this
+   * migration idempotent across future changes.
+   */
+  function migrateSavedGridResolution(state) {
+    const sourceCols = Math.max(1, Number(state.gridColumns) || LEGACY_COLS);
+    const sourceCellHeight = Math.max(1, Number(state.cellHeight) || LEGACY_CELL_HEIGHT);
+    if (sourceCols === COLS && sourceCellHeight === CELL_HEIGHT) return state;
+    const xScale = COLS / sourceCols;
+    const yScale = sourceCellHeight / CELL_HEIGHT;
+    const scale = (value, factor, floor = 0) => Math.max(floor, Math.round((Number(value) || 0) * factor));
+    return {
+      ...state,
+      gridColumns: COLS,
+      cellHeight: CELL_HEIGHT,
+      items: Array.isArray(state.items) ? state.items.map((item) => {
+        if (!item || typeof item !== "object") return item;
+        return {
+          ...item,
+          x: scale(item.x, xScale),
+          y: scale(item.y, yScale),
+          w: Math.min(COLS, scale(item.w, xScale, 1)),
+          h: item.collapsed ? COLLAPSED_ROWS : scale(item.h, yScale, 1)
+        };
+      }) : state.items
+    };
   }
 
   function saveState(tabId, state) {
@@ -95,7 +182,7 @@
   function defaultSize(panel) {
     const span = Number(panel.getAttribute("data-msbt-span") || 6) || 6;
     const id = panel.getAttribute("data-msbt-panel") || "";
-    const w = Math.min(COLS, Math.max(3, span));
+    const logicalW = Math.min(LEGACY_COLS, Math.max(3, span));
     let h = 5;
     let minH = 2;
     if (id === "matt-editor-main") {
@@ -130,6 +217,16 @@
     } else if (id === "qm-slots") {
       h = 10;
       minH = 5;
+    } else if (id === "boost-essentials") {
+      h = 9;
+      minH = 6;
+    } else if (id === "boost-cheats") {
+      h = 8;
+      minH = 5;
+    } else if (id === "boost-target"
+      || id === "boost-rarity" || id === "boost-serial" || id === "boost-inventory") {
+      h = 5;
+      minH = 3;
     } else if (id === "boost-result" || id === "dev-result" || id === "move-result") {
       h = 3;
       minH = 2;
@@ -148,20 +245,45 @@
     } else if (id === "dev-challenges") {
       h = 12;
       minH = 7;
-    } else if (w >= 12) {
+    } else if (logicalW >= 12) {
       h = panel.hasAttribute("data-msbt-resize") ? 8 : 4;
       minH = 3;
-    } else if (w <= 4) {
+    } else if (logicalW <= 4) {
       h = 5;
       minH = 3;
     }
-    return { w, h, minH };
+    return { w: logicalW * GRID_SCALE, h: h * GRID_SCALE, minH: minH * GRID_SCALE };
   }
+
+  /**
+   * Boosting ships a hand-tuned arrangement authored directly in the scaled
+   * grid units (COLS columns / CELL_HEIGHT rows) because several tiles land
+   * between the coarse legacy 12-column steps.
+   */
+  const BOOSTING_DEFAULT_TILES = {
+    "boost-essentials": { x: 0, y: 0, w: 32, h: 32 },
+    "boost-target": { x: 32, y: 0, w: 16, h: 20 },
+    "boost-inventory": { x: 32, y: 20, w: 16, h: 18 },
+    "boost-cheats": { x: 0, y: 32, w: 32, h: 22 },
+    "boost-serial": { x: 32, y: 38, w: 16, h: 26 },
+    "boost-rarity": { x: 0, y: 54, w: 32, h: 23 },
+    "boost-result": { x: 0, y: 77, w: 48, h: 12 }
+  };
 
   /** Explicit non-overlapping tiles for tabs that must stay usable out of the box. */
   function defaultPlacement(panel) {
     const id = panel.getAttribute("data-msbt-panel") || "";
     const size = defaultSize(panel);
+    const tuned = BOOSTING_DEFAULT_TILES[id];
+    if (tuned) {
+      return {
+        x: tuned.x,
+        y: tuned.y,
+        w: tuned.w,
+        h: tuned.h,
+        minH: Math.min(size.minH, tuned.h)
+      };
+    }
     const map = {
       "dev-spawn": { x: 0, y: 0 },
       "dev-setup": { x: 4, y: 0 },
@@ -181,7 +303,13 @@
     };
     const pos = map[id];
     if (!pos) return { w: size.w, h: size.h, minH: size.minH };
-    return { x: pos.x, y: pos.y, w: size.w, h: size.h, minH: size.minH };
+    return {
+      x: pos.x * GRID_SCALE,
+      y: pos.y * GRID_SCALE,
+      w: size.w,
+      h: size.h,
+      minH: size.minH
+    };
   }
 
   function clearStaleFixedTabLayout(tabId) {
@@ -304,8 +432,8 @@
     const minH = opts && opts.minH != null ? opts.minH : defaults.minH;
     item.setAttribute("gs-w", String(w));
     item.setAttribute("gs-h", String(h));
-    item.setAttribute("gs-min-w", "3");
-    item.setAttribute("gs-min-h", String(Math.max(2, minH || 2)));
+    item.setAttribute("gs-min-w", String(MIN_PANEL_COLS));
+    item.setAttribute("gs-min-h", String(Math.max(2 * GRID_SCALE, minH || (2 * GRID_SCALE))));
     const x = opts && opts.x != null ? opts.x : defaults.x;
     const y = opts && opts.y != null ? opts.y : defaults.y;
     if (x != null) item.setAttribute("gs-x", String(x));
@@ -422,6 +550,7 @@
     root.className = "msbt-layout-root grid-stack";
     root.setAttribute("data-msbt-layout-root", "");
 
+    stampPanelOrder(tab);
     const panels = Array.from(tab.querySelectorAll("[data-msbt-panel]"));
     panels.sort((a, b) => {
       const pos = a.compareDocumentPosition(b);
@@ -488,20 +617,44 @@
     const bar = document.createElement("div");
     bar.className = "msbt-layout-toolbar";
     bar.innerHTML = [
-      '<span class="msbt-layout-hint">Drag freely (panels may overlap) · drop on a panel <strong>center</strong> to stack as tabs · drag a <strong>tab name</strong> to detach · resize edges · <strong>Compact</strong> packs and clears overlaps.</span>',
+      `<span class="msbt-layout-hint" title="Drag panel titles to move · drop in a panel center to stack · resize edges">${PANELS_MODE_HINT}</span>`,
       '<div class="msbt-layout-toolbar-actions">',
+      '<div class="msbt-mode-switch">',
+      '<span class="msbt-mode-switch-label">Layout</span>',
+      '<div class="dev-layout-toggle" role="group" aria-label="Tab layout mode">',
+      '<button type="button" class="dev-layout-toggle-btn" data-msbt-layout-mode="fixed" aria-pressed="false" title="Fixed page — panels sit in a set arrangement, nothing to drag">Fixed</button>',
+      '<button type="button" class="dev-layout-toggle-btn" data-msbt-layout-mode="panels" aria-pressed="true" title="Dockable panels — drag, resize, stack, and save your own layout">Panels</button>',
+      "</div>",
+      "</div>",
+      '<div class="msbt-mode-switch">',
+      '<span class="msbt-mode-switch-label">Spacing</span>',
+      '<div class="dev-layout-toggle msbt-density-switch" role="group" aria-label="Panel spacing">',
+      '<button type="button" class="dev-layout-toggle-btn" data-msbt-density-mode="comfortable" aria-pressed="true">Comfortable</button>',
+      '<button type="button" class="dev-layout-toggle-btn" data-msbt-density-mode="compact" aria-pressed="false">Compact</button>',
+      "</div>",
+      "</div>",
       '<details class="msbt-panels-menu">',
       "<summary>Panels</summary>",
       '<div class="msbt-panels-menu-body" data-msbt-panels-menu></div>',
       "</details>",
       '<button type="button" class="secondary msbt-layout-walkthrough" title="Short tips for this tab">Walkthrough</button>',
-      '<button type="button" class="secondary msbt-layout-compact" title="Pack panels, fill gaps, and clear overlaps">Compact</button>',
+      '<button type="button" class="secondary msbt-layout-compact" title="Compact panels, fill gaps, and clear overlaps">Compact</button>',
       '<button type="button" class="secondary msbt-layout-reset" title="Restore default layout">Reset layout</button>',
       "</div>"
     ].join("");
     host.appendChild(bar);
     const tabId = tab.getAttribute("data-msbt-layout-tab");
     bar.querySelector(".msbt-layout-reset").addEventListener("click", () => resetTab(tabId));
+    bar.querySelectorAll("[data-msbt-density-mode]").forEach((button) => {
+      button.addEventListener("click", () => {
+        applyCompactDensity(button.getAttribute("data-msbt-density-mode") === "compact");
+      });
+    });
+    bar.querySelectorAll("[data-msbt-layout-mode]").forEach((button) => {
+      button.addEventListener("click", () => {
+        setTabLayoutMode(tabId, button.getAttribute("data-msbt-layout-mode"));
+      });
+    });
     bar.querySelector(".msbt-layout-compact").addEventListener("click", () => {
       const grid = grids.get(tab.querySelector("[data-msbt-layout-root]"));
       if (grid) {
@@ -600,6 +753,18 @@
       || tab.querySelector(`[data-msbt-panel="${cssEscape(panelId)}"]`);
     if (!panel) return;
     panel.classList.remove("msbt-panel-hidden");
+    if (isStaticTab(tab)) {
+      const staticRoot = ensureStaticRoot(tab);
+      const order = Number(panel.dataset.msbtOrder || 0);
+      const before = Array.from(staticRoot.children).find((node) => {
+        return Number(node.dataset && node.dataset.msbtOrder != null ? node.dataset.msbtOrder : 0) > order;
+      });
+      ensureChrome(panel);
+      wirePanelActions(tab, panel);
+      staticRoot.insertBefore(panel, before || null);
+      refreshPanelsMenu(tab);
+      return;
+    }
     const root = tab.querySelector("[data-msbt-layout-root]");
     const grid = grids.get(root);
     if (!grid) return;
@@ -629,11 +794,15 @@
         collapseBtn.textContent = collapsed ? "▸" : "▾";
         if (item && grid) {
           if (collapsed) {
-            item.dataset.msbtPrevH = String(item.gridstackNode && item.gridstackNode.h || item.getAttribute("gs-h") || 4);
-            grid.update(item, { h: 1 });
+            item.dataset.msbtPrevH = String(
+              item.gridstackNode && item.gridstackNode.h
+              || item.getAttribute("gs-h")
+              || 4 * GRID_SCALE
+            );
+            grid.update(item, { h: COLLAPSED_ROWS });
           } else {
-            const prev = Number(item.dataset.msbtPrevH || 5);
-            grid.update(item, { h: Math.max(2, prev) });
+            const prev = Number(item.dataset.msbtPrevH || 5 * GRID_SCALE);
+            grid.update(item, { h: Math.max(2 * GRID_SCALE, prev) });
           }
         }
         persist(tab);
@@ -766,20 +935,20 @@
     removePanelFromStack(tab, panel, { keepInDom: true, skipCompact: true });
     ensureChrome(panel);
     const defaults = defaultSize(panel);
-    let x = node ? Math.min(COLS - 3, (node.x || 0) + 1) : undefined;
+    let x = node ? Math.min(COLS - MIN_PANEL_COLS, (node.x || 0) + GRID_SCALE) : undefined;
     let y = node ? (node.y || 0) : undefined;
     if (pointer && root) {
       const rect = root.getBoundingClientRect();
       const cellW = rect.width / COLS;
-      const cellH = 72;
+      const cellH = CELL_HEIGHT;
       if (cellW > 0) {
         x = Math.max(0, Math.min(COLS - defaults.w, Math.floor((pointer.clientX - rect.left) / cellW)));
         y = Math.max(0, Math.floor((pointer.clientY - rect.top) / cellH));
       }
     }
     const item = wrapAsGridItem(panel, {
-      w: node ? Math.min(COLS, Math.max(3, node.w)) : defaults.w,
-      h: node ? Math.max(3, node.h) : defaults.h,
+      w: node ? Math.min(COLS, Math.max(MIN_PANEL_COLS, node.w)) : defaults.w,
+      h: node ? Math.max(3 * GRID_SCALE, node.h) : defaults.h,
       x,
       y
     });
@@ -985,7 +1154,15 @@
     getStash(tab).querySelectorAll("[data-msbt-panel]").forEach((p) => {
       hidden.push(p.getAttribute("data-msbt-panel"));
     });
-    if (!root) return { version: 2, revision: LAYOUT_REVISION, panelIds: panelIdFingerprint(tab), items, hidden };
+    if (!root) return {
+      version: 2,
+      revision: LAYOUT_REVISION,
+      gridColumns: COLS,
+      cellHeight: CELL_HEIGHT,
+      panelIds: panelIdFingerprint(tab),
+      items,
+      hidden
+    };
     root.querySelectorAll(":scope > .grid-stack-item").forEach((item) => {
       if (!item.gridstackNode) return;
       const node = item.gridstackNode || {};
@@ -1020,12 +1197,25 @@
         });
       }
     });
-    return { version: 2, revision: LAYOUT_REVISION, panelIds: panelIdFingerprint(tab), items, hidden };
+    return {
+      version: 2,
+      revision: LAYOUT_REVISION,
+      gridColumns: COLS,
+      cellHeight: CELL_HEIGHT,
+      panelIds: panelIdFingerprint(tab),
+      items,
+      hidden
+    };
   }
 
   function persist(tab) {
     const tabId = tab.getAttribute("data-msbt-layout-tab");
     if (!tabId) return;
+    // Fixed mode has no grid to read; saving here would wipe the docked layout.
+    if (isStaticTab(tab)) {
+      refreshPanelsMenu(tab);
+      return;
+    }
     saveState(tabId, collectState(tab));
     refreshPanelsMenu(tab);
   }
@@ -1081,7 +1271,12 @@
     }
     const ids = panelIdFingerprint(tab);
     if (saved.panelIds) {
-      if (saved.panelIds !== ids) return false;
+      if (saved.panelIds !== ids) {
+        const tabId = tab.getAttribute("data-msbt-layout-tab") || "";
+        const savedIds = new Set(String(saved.panelIds).split(",").filter(Boolean));
+        const currentIds = new Set(ids.split(",").filter(Boolean));
+        return false;
+      }
     } else {
       // Pre-fingerprint saves: reject if any current panel is missing (e.g. Actor Browser split).
       const known = new Set();
@@ -1150,8 +1345,8 @@
         const item = document.createElement("div");
         item.className = "grid-stack-item";
         item.setAttribute("data-msbt-item", "1");
-        item.setAttribute("gs-min-w", "3");
-        item.setAttribute("gs-min-h", "4");
+        item.setAttribute("gs-min-w", String(MIN_PANEL_COLS));
+        item.setAttribute("gs-min-h", String(4 * GRID_SCALE));
         if (spec.z != null) {
           item.style.zIndex = String(spec.z);
           zCounter = Math.max(zCounter, Number(spec.z) || Z_BASE);
@@ -1160,7 +1355,12 @@
         content.className = "grid-stack-item-content msbt-gs-content";
         content.appendChild(stack);
         item.appendChild(content);
-        grid.addWidget(item, { x: spec.x, y: spec.y, w: spec.w || 6, h: Math.max(4, spec.h || 6) });
+        grid.addWidget(item, {
+          x: spec.x,
+          y: spec.y,
+          w: spec.w || 6 * GRID_SCALE,
+          h: Math.max(4 * GRID_SCALE, spec.h || 6 * GRID_SCALE)
+        });
         refreshItemDrag(grid, item);
       } else if (spec.type === "panel" && spec.id && panelMap[spec.id]) {
         if ((saved.hidden || []).includes(spec.id)) return;
@@ -1174,11 +1374,13 @@
           if (btn) btn.textContent = "▸";
         }
         const defaults = defaultSize(panel);
-        const restoredH = spec.collapsed ? 1 : Math.max(defaults.minH || 2, Number(spec.h) || defaults.h);
+        const restoredH = spec.collapsed
+          ? COLLAPSED_ROWS
+          : Math.max(defaults.minH || 2 * GRID_SCALE, Number(spec.h) || defaults.h);
         const item = wrapAsGridItem(panel, {
           x: spec.x,
           y: spec.y,
-          w: Math.max(3, Number(spec.w) || defaults.w),
+          w: Math.max(MIN_PANEL_COLS, Number(spec.w) || defaults.w),
           h: restoredH,
           minH: defaults.minH,
           z: spec.z
@@ -1227,11 +1429,32 @@
       resizable: { handles: "e,se,s" },
       alwaysShowResizeHandle: true,
       minRow: 1,
-      disableOneColumnMode: true
+      columnOpts: {
+        // columnMax defaults to 12 and wins whenever no breakpoint matches,
+        // which would silently drop the grid back to the coarse resolution.
+        columnMax: COLS,
+        breakpoints: [{ w: 720, c: 1, layout: "list" }],
+        layout: "moveScale"
+      }
     }, root);
 
     enableOverlapDrag(grid);
     grids.set(root, grid);
+
+    function syncColumnCss() {
+      const columns = Number(typeof grid.getColumn === "function" ? grid.getColumn() : COLS) || COLS;
+      ensureColumnCss(columns);
+      root.style.setProperty("--msbt-grid-columns", String(columns));
+      root.style.setProperty("--msbt-grid-cell-height", `${CELL_HEIGHT}px`);
+      // Major lines keep the original coarse cell as a reference behind the fine snap cells.
+      root.style.setProperty("--msbt-grid-major-columns", String(Math.min(LEGACY_COLS, columns)));
+      root.style.setProperty("--msbt-grid-major-cell-height", `${LEGACY_CELL_HEIGHT}px`);
+    }
+    syncColumnCss();
+
+    function setGridSnapVisible(visible) {
+      root.classList.toggle("msbt-grid-snap-visible", Boolean(visible));
+    }
 
     let pendingStack = null;
 
@@ -1255,8 +1478,11 @@
 
     grid.on("dragstart", (_ev, el) => {
       clearStackHighlight();
+      setGridSnapVisible(true);
       if (el) bringItemToFront(el);
     });
+
+    grid.on("resizestart", () => setGridSnapVisible(true));
 
     grid.on("drag", (ev, el) => {
       const pt = eventPointer(ev);
@@ -1274,6 +1500,7 @@
       lastPointer = pt;
       const hit = resolveStackTarget(el, pt) || pendingStack;
       clearStackHighlight();
+      setGridSnapVisible(false);
 
       if (hit && hit.panel) {
         const sourcePanel = el.querySelector("[data-msbt-panel].msbt-stack-active")
@@ -1286,8 +1513,12 @@
       persist(tab);
     });
 
-    grid.on("resizestop", () => persist(tab));
+    grid.on("resizestop", () => {
+      setGridSnapVisible(false);
+      persist(tab);
+    });
     grid.on("change", () => {
+      syncColumnCss();
       /* dragstop/resizestop persist; avoid thrash */
     });
 
@@ -1296,9 +1527,21 @@
 
   function initTab(tab) {
     if (!tab || !tab.getAttribute("data-msbt-layout-tab")) return;
+    const layoutTabId = tab.getAttribute("data-msbt-layout-tab");
+    if (layoutTabId !== "dev-spawner" && getTabLayoutMode(layoutTabId) === "fixed") {
+      if (tab.dataset.msbtLayoutReady === "static") {
+        refreshPanelsMenu(tab);
+        syncLayoutModeToggles(tab);
+        return;
+      }
+      if (tab.querySelector("[data-msbt-layout-root]")) destroyTab(layoutTabId);
+      applyStaticLayout(tab);
+      return;
+    }
     try {
       if (tab.dataset.msbtLayoutReady === "2") {
         refreshPanelsMenu(tab);
+        syncLayoutModeToggles(tab);
         const root = tab.querySelector("[data-msbt-layout-root]");
         const grid = grids.get(root);
         if (grid) {
@@ -1318,6 +1561,11 @@
       }
       const root = flattenIntoRoot(tab);
       root.classList.add("grid-stack");
+      const panelIds = allPanelsInTab(tab).map((panel) => panel.getAttribute("data-msbt-panel") || "");
+      tab.classList.toggle(
+        "msbt-flow-layout",
+        panelIds.length === 1 && CONTENT_SIZED_PANELS.has(panelIds[0])
+      );
       allPanelsInTab(tab).forEach((panel) => {
         ensureChrome(panel);
         wirePanelActions(tab, panel);
@@ -1366,7 +1614,9 @@
       if (!isFillTab) captureDefaults(tab, true);
 
       refreshPanelsMenu(tab);
+      tab.dataset.msbtLayoutMode = "panels";
       tab.dataset.msbtLayoutReady = "2";
+      syncLayoutModeToggles(tab);
       scheduleFillSync(tab);
       if (isFillTab && !tab.dataset.msbtDefaultLayoutV2) {
         requestAnimationFrame(() => {
@@ -1433,12 +1683,16 @@
     }
 
     if (root && root.parentElement) root.remove();
+    const staticRoot = tab.querySelector("[data-msbt-static-root]");
+    if (staticRoot) staticRoot.remove();
     const toolbar = tab.querySelector("[data-msbt-layout-toolbar-host]");
     if (toolbar) toolbar.remove();
     if (stash) stash.remove();
 
     delete tab.dataset.msbtLayoutReady;
     delete tab.dataset.msbtDefaultLayoutV2;
+    delete tab.dataset.msbtLayoutMode;
+    tab.classList.remove("msbt-static-tab");
   }
 
   function enableFixedLayout(tabId, enabled) {
@@ -1484,6 +1738,181 @@
       if (tab.classList.contains("active") || opts.forceInit) {
         initTab(tab);
       }
+    }
+  }
+
+  /* ---------- Fixed page vs dockable panels (Dev Spawner's toggle, for every paneled tab) ---------- */
+
+  const PANELS_MODE_HINT = "Arrange panels · drag titles, resize edges, or stack by dropping in the center.";
+  const FIXED_MODE_HINT = "Fixed page · panels sit in a set arrangement. Switch to Panels to drag, resize, or stack.";
+
+  function loadTabLayoutModes() {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(TAB_LAYOUT_MODE_KEY) || "null");
+      return parsed && typeof parsed === "object" ? parsed : {};
+    } catch (_err) {
+      return {};
+    }
+  }
+
+  function devSpawnerLayoutMode() {
+    try {
+      return localStorage.getItem(DEV_SPAWNER_LAYOUT_KEY) === "docked" ? "panels" : "fixed";
+    } catch (_err) {
+      return "fixed";
+    }
+  }
+
+  function getTabLayoutMode(tabId) {
+    const id = String(tabId || "");
+    if (!id) return "panels";
+    if (id === "dev-spawner") return devSpawnerLayoutMode();
+    return loadTabLayoutModes()[id] === "fixed" ? "fixed" : "panels";
+  }
+
+  function saveTabLayoutMode(tabId, mode) {
+    const next = mode === "fixed" ? "fixed" : "panels";
+    const all = loadTabLayoutModes();
+    all[String(tabId || "")] = next;
+    try {
+      localStorage.setItem(TAB_LAYOUT_MODE_KEY, JSON.stringify(all));
+    } catch (_err) {
+      /* ignore */
+    }
+    return next;
+  }
+
+  /** Remember authored order once so Fixed mode can rebuild it after any dragging. */
+  function stampPanelOrder(tab) {
+    let next = 0;
+    allPanelsInTab(tab).forEach((panel) => {
+      const stamped = Number(panel.dataset.msbtOrder);
+      if (Number.isFinite(stamped) && panel.dataset.msbtOrder !== "") {
+        next = Math.max(next, stamped + 1);
+      }
+    });
+    allPanelsInTab(tab).forEach((panel) => {
+      if (panel.dataset.msbtOrder == null || panel.dataset.msbtOrder === "") {
+        panel.dataset.msbtOrder = String(next);
+        next += 1;
+      }
+    });
+  }
+
+  function panelsInStampOrder(tab) {
+    return allPanelsInTab(tab)
+      .filter((panel) => !panel.closest(".msbt-panel-stash"))
+      .sort((a, b) => Number(a.dataset.msbtOrder || 0) - Number(b.dataset.msbtOrder || 0));
+  }
+
+  function removeEmptyAuthoredShells(tab) {
+    tab.querySelectorAll(":scope > .grid").forEach((grid) => {
+      if (!grid.children.length) grid.remove();
+    });
+    tab.querySelectorAll(":scope > .bl4-layout, :scope > .quick-menu-editor-shell").forEach((shell) => {
+      if (!shell.children.length) shell.remove();
+    });
+  }
+
+  function isStaticTab(tab) {
+    return Boolean(tab) && tab.dataset.msbtLayoutMode === "fixed";
+  }
+
+  function syncLayoutModeToggles(tab) {
+    if (!tab) return;
+    const mode = isStaticTab(tab) ? "fixed" : "panels";
+    const bar = tab.querySelector(".msbt-layout-toolbar");
+    if (bar) {
+      bar.dataset.msbtMode = mode;
+      const hint = bar.querySelector(".msbt-layout-hint");
+      if (hint) hint.textContent = mode === "fixed" ? FIXED_MODE_HINT : PANELS_MODE_HINT;
+    }
+    tab.querySelectorAll("[data-msbt-layout-mode]").forEach((button) => {
+      const pressed = button.getAttribute("data-msbt-layout-mode") === mode;
+      button.setAttribute("aria-pressed", pressed ? "true" : "false");
+      button.classList.toggle("active", pressed);
+    });
+  }
+
+  function ensureStaticRoot(tab) {
+    let root = tab.querySelector(":scope > [data-msbt-static-root]");
+    if (root) return root;
+    root = document.createElement("div");
+    root.className = "msbt-static-root";
+    root.setAttribute("data-msbt-static-root", "");
+    tab.appendChild(root);
+    return root;
+  }
+
+  function applyStaticLayout(tab) {
+    if (!tab || !tab.getAttribute("data-msbt-layout-tab")) return;
+    stampPanelOrder(tab);
+    tab.dataset.msbtLayoutMode = "fixed";
+    tab.classList.add("msbt-static-tab");
+    tab.classList.remove("msbt-flow-layout");
+
+    ensureToolbar(tab);
+    const root = ensureStaticRoot(tab);
+    const host = tab.querySelector("[data-msbt-layout-toolbar-host]");
+    if (host && host.nextElementSibling !== root) tab.insertBefore(host, root);
+
+    panelsInStampOrder(tab).forEach((panel) => {
+      ensureChrome(panel);
+      wirePanelActions(tab, panel);
+      panel.classList.remove("msbt-dock-panel", "msbt-stack-active", "msbt-panel-hidden");
+      if (panel.parentElement !== root) root.appendChild(panel);
+    });
+
+    removeEmptyAuthoredShells(tab);
+    tab.dataset.msbtLayoutReady = "static";
+    refreshPanelsMenu(tab);
+    syncLayoutModeToggles(tab);
+  }
+
+  function teardownStaticLayout(tab) {
+    const root = tab.querySelector(":scope > [data-msbt-static-root]");
+    if (root) {
+      panelsInStampOrder(tab).forEach((panel) => tab.insertBefore(panel, root));
+      root.remove();
+    }
+    const host = tab.querySelector("[data-msbt-layout-toolbar-host]");
+    if (host) host.remove();
+    tab.classList.remove("msbt-static-tab");
+    delete tab.dataset.msbtLayoutMode;
+    delete tab.dataset.msbtLayoutReady;
+  }
+
+  function findLayoutTab(tabId) {
+    return document.getElementById(`tab-${tabId}`)
+      || document.querySelector(`[data-msbt-layout-tab="${cssEscape(tabId)}"]`);
+  }
+
+  function setTabLayoutMode(tabId, mode, opts) {
+    opts = opts || {};
+    const id = String(tabId || "");
+    if (!id) return;
+    if (id === "dev-spawner") {
+      // Dev Spawner owns a hand-built fixed shell; renderer.js remounts its parts.
+      if (typeof global.msbtSetDevSpawnerLayoutMode === "function") {
+        global.msbtSetDevSpawnerLayoutMode(mode === "fixed" ? "fixed" : "docked");
+      } else {
+        setDevSpawnerLayoutMode(mode === "fixed" ? "fixed" : "docked", { forceInit: true });
+      }
+      return;
+    }
+    const tab = findLayoutTab(id);
+    if (!tab || !tab.getAttribute("data-msbt-layout-tab")) return;
+    const next = saveTabLayoutMode(id, mode);
+    if (!opts.force && (isStaticTab(tab) ? "fixed" : "panels") === next && tab.dataset.msbtLayoutReady) {
+      syncLayoutModeToggles(tab);
+      return;
+    }
+    if (next === "fixed") {
+      if (tab.querySelector("[data-msbt-layout-root]")) destroyTab(id);
+      applyStaticLayout(tab);
+    } else {
+      teardownStaticLayout(tab);
+      initTab(tab);
     }
   }
 
@@ -1588,11 +2017,54 @@
     return applyTextScale(loadTextScale() + delta);
   }
 
+  function loadCompactDensity() {
+    try {
+      return localStorage.getItem(DENSITY_KEY) === "compact";
+    } catch (_err) {
+      return false;
+    }
+  }
+
+  function applyCompactDensity(compact) {
+    const enabled = Boolean(compact);
+    document.body.classList.toggle("msbt-density-compact", enabled);
+    try {
+      localStorage.setItem(DENSITY_KEY, enabled ? "compact" : "comfortable");
+    } catch (_err) {
+      /* ignore */
+    }
+    document.querySelectorAll("[data-msbt-density-toggle]").forEach((button) => {
+      button.textContent = enabled ? "Compact spacing: On" : "Compact spacing: Off";
+      button.setAttribute("aria-pressed", enabled ? "true" : "false");
+      button.title = enabled
+        ? "Use comfortable panel and control spacing"
+        : "Tighten panel, page, and control spacing";
+    });
+    document.querySelectorAll("[data-msbt-density-mode]").forEach((button) => {
+      const pressed = (button.getAttribute("data-msbt-density-mode") === "compact") === enabled;
+      button.setAttribute("aria-pressed", pressed ? "true" : "false");
+      button.classList.toggle("active", pressed);
+    });
+    return enabled;
+  }
+
   function defaultNavTabIds() {
     return Array.from(document.querySelectorAll(".tab-bar [data-tab]")).map((btn) => btn.dataset.tab);
   }
 
   function loadWipUnlockedNavTabs() {
+    if (!wipUnlockedNavTabs.size) {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(WIP_NAV_UNLOCK_KEY) || "[]");
+        if (Array.isArray(parsed)) {
+          parsed.forEach((id) => {
+            if (WIP_NAV_TABS.has(id)) wipUnlockedNavTabs.add(id);
+          });
+        }
+      } catch (_err) {
+        /* ignore */
+      }
+    }
     return Array.from(wipUnlockedNavTabs);
   }
 
@@ -1601,8 +2073,8 @@
     (ids || []).forEach((id) => {
       if (WIP_NAV_TABS.has(id)) wipUnlockedNavTabs.add(id);
     });
-    // Also clear any legacy persisted unlock keys from earlier builds.
     try {
+      localStorage.setItem(WIP_NAV_UNLOCK_KEY, JSON.stringify(Array.from(wipUnlockedNavTabs)));
       localStorage.removeItem("msbt.navTabs.wipUnlocked.v1");
       localStorage.removeItem("msbt.navTabs.wipUnlocked.v2");
     } catch (_err) {
@@ -1786,6 +2258,20 @@
     slider.addEventListener("input", () => {
       applyTextScale(Number(slider.value) / 100);
     });
+
+    const densityBlock = document.createElement("div");
+    densityBlock.className = "msbt-view-menu-section";
+    densityBlock.innerHTML = [
+      '<div class="msbt-view-menu-heading">Panel spacing</div>',
+      '<div class="msbt-view-menu-hint">Comfortable vs Compact padding — separate from Layout Fixed/Panels.</div>',
+      '<button type="button" class="secondary" data-msbt-density-toggle aria-pressed="false">Compact spacing: Off</button>'
+    ].join("");
+    const densityToggle = densityBlock.querySelector("[data-msbt-density-toggle]");
+    densityToggle.addEventListener("click", () => {
+      applyCompactDensity(!loadCompactDensity());
+    });
+    body.appendChild(densityBlock);
+    applyCompactDensity(loadCompactDensity());
 
     const menu = document.querySelector("[data-msbt-view-menu]");
     const showWipTabs = Boolean(menu && menu.dataset.msbtViewWip === "1");
@@ -2041,18 +2527,12 @@
 
   function initViewChrome() {
     applyTextScale(loadTextScale());
+    applyCompactDensity(loadCompactDensity());
     ensureViewMenu();
-    // Never restore WIP unlock from disk — Dev Tools stays hidden unless Shift+View this session.
-    try {
-      localStorage.removeItem("msbt.navTabs.wipUnlocked.v1");
-      localStorage.removeItem("msbt.navTabs.wipUnlocked.v2");
-    } catch (_err) {
-      /* ignore */
-    }
-    wipUnlockedNavTabs.clear();
+    loadWipUnlockedNavTabs();
     const state = loadNavTabsState();
     applyNavTabsState(state);
-    // Persist enforced hidden list so old prefs can't resurrect WIP tabs in the bar.
+    // Persist the hidden state while retaining a deliberate Dev Tools unlock.
     saveNavTabsState(state);
     enableNavTabDragReorder();
     refreshViewMenu();
@@ -2072,11 +2552,14 @@
     resetTab,
     enableFixedLayout,
     setDevSpawnerLayoutMode,
+    setTabLayoutMode,
+    getTabLayoutMode,
     onTabShown: onTabShownWrapped,
     persist,
     initViewChrome,
     applyTextScale,
     bumpTextScale,
+    applyCompactDensity,
     showPanel,
     hidePanel
   };

@@ -59,10 +59,13 @@
   --ui-output-medium-height: 128px;
   --ui-output-large-height: 240px;
 
-  /* BL4 Codes image cards */
-  --ui-bl4-card-min-width: 300px;
-  --ui-bl4-card-min-height: 440px;
-  --ui-bl4-card-gap: 10px;
+  /* BL4 Codes image cards.
+     Card art is a thumbnail: --ui-bl4-card-image-height caps it so tall
+     portrait loot cards cannot stretch a card into a poster. */
+  --ui-bl4-card-min-width: 216px;
+  --ui-bl4-card-min-height: 0px;
+  --ui-bl4-card-image-height: 150px;
+  --ui-bl4-card-gap: 8px;
   --ui-bl4-card-padding: 8px;
   --ui-bl4-card-browser-height: 720px;
 
@@ -74,25 +77,8 @@
   --ui-large-screen-max-content-width: none;
 }
 
-/* Boosting tab: UVH + Rarity side by side */
-#tab-boosting .boost-dual-row {
-  align-items: stretch;
-}
-
-#tab-boosting .boost-dual-row .panel {
-  padding: 8px;
-}
-
-#tab-boosting .boost-dual-row .uvh-panel {
-  display: flex;
-  flex-direction: column;
-  min-height: 100%;
-}
-
-#tab-boosting .boost-dual-row .uvh-panel p {
-  font-size: var(--ui-body-size, 12px);
-  line-height: 1.35;
-  margin-top: 4px;
+#tab-boosting .boost-combat-fields {
+  margin-top: var(--ui-section-gap, 8px);
 }
 
 #tab-boosting .boost-dual-row .uvh-panel .compact-buttons {
@@ -167,7 +153,7 @@
   - To make the whole app tighter, lower --ui-panel-padding and --ui-grid-gap.
   - To make buttons easier to click, raise --ui-button-height.
   - To make BL4 image cards bigger, raise --ui-bl4-card-min-width and
-    --ui-bl4-card-min-height.
+    --ui-bl4-card-image-height (the art is capped to that height).
   - To move fixed buttons/text, edit electron_poc/renderer.html.
   - To move generated lists/cards, edit the matching render function in
     electron_poc/renderer.js.

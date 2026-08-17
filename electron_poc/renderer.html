@@ -97,8 +97,8 @@
         If the SDK mod updates, close and restart Borderlands 4 before testing live actions.
       </p>
       <div class="button-row wrap">
-        <button id="startupUpdateDownloadBtn">Download Electron Update</button>
-        <button id="startupUpdateInstallBtn">Restart / Install Now</button>
+        <button id="startupUpdateDownloadBtn">Download Desktop App Update</button>
+        <button id="startupUpdateInstallBtn">Restart and Install</button>
         <button id="startupUpdateInstallerBtn">Open Installer Download</button>
         <button id="startupUpdateUpdatesTabBtn">Open Updates Tab</button>
         <button id="startupUpdateDismissBtn" class="secondary">Not Now</button>
@@ -171,8 +171,8 @@
           <p id="boostUpdateMessage">A newer MSBT build is available.</p>
         </div>
         <div class="button-row wrap">
-          <button id="boostUpdateDownloadBtn">Download Electron Update</button>
-          <button id="boostUpdateInstallBtn">Restart / Install Now</button>
+          <button id="boostUpdateDownloadBtn">Download Desktop App Update</button>
+          <button id="boostUpdateInstallBtn">Restart and Install</button>
           <button id="boostUpdateOpenInstallerBtn">Open Installer Download</button>
           <button id="boostUpdateOpenUpdatesBtn">Open Updates Tab</button>
         </div>
@@ -190,10 +190,68 @@
       </section>
 
       <div class="grid two">
-        <section class="panel cyan" data-msbt-panel="boost-target" data-msbt-span="6" data-msbt-title="Target Player">
+        <section class="panel gold boost-essentials-panel" data-msbt-panel="boost-essentials" data-msbt-span="8" data-msbt-title="Essentials">
+          <h2>Essentials</h2>
+          <div class="boost-essentials-layout">
+            <div class="boost-essentials-main">
+              <div class="button-grid">
+                <button data-action="max_all">Max All</button>
+                <button data-action="chaos_drop_backpack" data-host-only="1" title="Safety: always drops the host backpack, regardless of Target Player scope.">Drop All Backpack (Host)</button>
+                <button data-action="drop_all_shinies">Shinies: Drop</button>
+                <button id="shinyDeliverBtn" type="button">Shinies: Deliver</button>
+                <button data-action="devperk_4">All Customs + Hovers</button>
+                <button data-action="open_golden_chest">Open Golden Chest</button>
+                <button data-action="close_golden_chest">Close Golden Chest</button>
+                <button data-movement-action="movement_pull_ground_loot">Pull Loot Here</button>
+                <button data-movement-action="movement_super_dash">Super Dash</button>
+                <button data-movement-action="movement_super_dash_toggle">Super Dash Toggle</button>
+              </div>
+              <div class="boost-essentials-section">
+                <h3>UVH 1–7</h3>
+                <p class="muted-line">UVH N runs tiers 1 through N for the live lobby.</p>
+                <div class="button-grid compact-buttons">
+                  <button data-action="uvh_boost_tier_1">UVH 1</button>
+                  <button data-action="uvh_boost_tier_2">UVH 2</button>
+                  <button data-action="uvh_boost_tier_3">UVH 3</button>
+                  <button data-action="uvh_boost_tier_4">UVH 4</button>
+                  <button data-action="uvh_boost_tier_5">UVH 5</button>
+                  <button data-action="uvh_boost_tier_6">UVH 6</button>
+                  <button data-action="uvh_boost_tier_7">UVH 7</button>
+                  <button data-action="uvh_boost_all">Run All 1–7</button>
+                  <button data-action="uvh_boost_status">Status</button>
+                  <button data-action="uvh_boost_cancel" class="danger">Cancel</button>
+                </div>
+              </div>
+              <div class="boost-essentials-section">
+                <h3>Combat XP Multiplier</h3>
+                <div class="inline-fields boost-combat-fields">
+                  <label>
+                    Multiplier
+                    <input id="cxpMultiplier" type="number" min="1" max="1000000" step="1" value="1000">
+                  </label>
+                  <button id="cxpToggleBtn" type="button">Combat XP Multiplier: Off</button>
+                </div>
+              </div>
+            </div>
+            <aside class="boost-live-column" aria-label="Instant interaction toggles">
+              <h3>Instant Actions</h3>
+              <button id="instantDropsToggleBtn" type="button">Instant Drops: Off</button>
+              <button id="instantHoldsToggleBtn" type="button">Instant Holds: Off</button>
+              <div id="liveModsStatus" class="status-line compact-note">Combat XP / Instant Drops / Instant Holds idle.</div>
+              <div class="boost-live-debug">
+                <h4>Debug Camera</h4>
+                <button data-action="toggle_debug_cam">Toggle Debug Cam</button>
+                <button data-action="teleport_debug_cam">Teleport to Debug Cam</button>
+              </div>
+              <p class="muted-line">Shinies Deliver follows Target Player: Selected, All Players, or Other Players. Shinies Drop remains a ground drop.</p>
+            </aside>
+          </div>
+        </section>
+
+        <section class="panel cyan" data-msbt-panel="boost-target" data-msbt-span="4" data-msbt-title="Target Player">
           <h2>Target Player</h2>
-          <p>Choose one player, or set Boost scope to All / Non-Host for Quick Max, XP, Currency, and Set Selected inventory. Serial Rewards still use their own Give Selected / All / Non-Host buttons.</p>
-          <div id="bridgeSummary" class="status-line warning">Checking bridge...</div>
+          <p>Choose one player, all players, or everyone except the host for boosts, XP, currency, inventory changes, and Shinies Deliver. Drop All Backpack is always host-only.</p>
+          <div id="bridgeSummary" class="status-line warning">Checking game connection...</div>
           <label for="targetSelect">Target Player</label>
           <select id="targetSelect">
             <option value="">No players loaded</option>
@@ -202,59 +260,90 @@
             <button id="setTargetBtn" class="hidden">Set Target</button>
             <button id="firstTargetBtn" data-boost-scope="selected">Use First Player</button>
             <button id="targetAllPlayersBtn" data-boost-scope="all">Target All Players</button>
-            <button id="targetNonHostBtn" data-boost-scope="nonhost">Target Non-Host</button>
+            <button id="targetNonHostBtn" data-boost-scope="nonhost">Target Other Players</button>
             <button type="button" data-msbt-bridge-refresh class="secondary">Refresh Status</button>
             <button id="kickTargetBtn" class="danger">Kick Player</button>
           </div>
           <div id="targetSummary" class="status-line">Selected target: none</div>
         </section>
+      </div>
 
-        <section class="panel gold" data-msbt-panel="boost-quick-max" data-msbt-span="6" data-msbt-title="Quick Max">
-          <h2>Quick Max</h2>
+      <div class="grid">
+        <section class="panel pink" data-msbt-panel="boost-cheats" data-msbt-span="12" data-msbt-title="Combat & Cheats">
+          <h2>Combat & Cheats</h2>
           <div class="button-grid">
-            <button data-action="max_all">Max All</button>
+            <button data-action="devperk_3">Kill All Enemies</button>
+            <button data-action="devperk_0">Give Experience</button>
+            <button data-action="devperk_1">Give 1 Million Cash</button>
+            <button data-action="devperk_2">Give 100k Eridium</button>
+            <button data-action="devperk_5" data-devperk-toggle="5" data-devperk-name="Infinite Ammo">Infinite Ammo: Off</button>
+            <button data-action="devperk_6" data-devperk-toggle="6" data-devperk-name="Demigod">Demigod: Off</button>
+            <button data-action="devperk_7">Spawn Legendary/Epic Loot</button>
             <button data-action="max_currency">Max Cash</button>
             <button data-action="max_eridium">Max Eridium</button>
             <button data-action="max_player_level">Max Player 60</button>
             <button data-action="max_spec_level">Max Spec 701</button>
             <button data-action="max_sdu">Max SDU</button>
-            <button data-action="fog_of_war_clear">Clear Fog</button>
-            <button id="instantDropsToggleBtn" type="button">Instant Drops [OFF]</button>
-            <button id="instantHoldsToggleBtn" type="button">Instant Holds [OFF]</button>
-            <button id="cxpToggleBtn" type="button">Combat XP Mult (All) [OFF]</button>
           </div>
-          <div class="inline-fields" style="margin-top:0.5rem;">
-            <label>
-              Combat XP Multiplier
-              <input id="cxpMultiplier" type="number" min="1" max="1000000" step="1" value="1000">
-            </label>
+          <div class="boost-cheat-knobs">
+            <section class="boost-knob-group">
+              <h3>Experience</h3>
+              <div class="inline-fields">
+                <label>
+                  XP Track
+                  <select id="xpTrack">
+                    <option value="player">Player Level</option>
+                    <option value="specialization">Specialization</option>
+                    <option value="vaultcard_xp_1">Vault Card 1</option>
+                    <option value="vaultcard_xp_2">Vault Card 2</option>
+                    <option value="vaultcard_xp_3">Vault Card 3</option>
+                    <option value="vaultcard_xp_4">Vault Card 4</option>
+                  </select>
+                </label>
+                <label>
+                  Target Level
+                  <input id="xpLevel" type="number" min="1" max="9999999" value="60">
+                </label>
+              </div>
+              <div class="button-row wrap">
+                <button id="setLevelBtn">Set Level</button>
+                <button data-action="max_player_level">Max Player Level</button>
+                <button data-action="max_spec_level">Set Spec 701</button>
+              </div>
+            </section>
+            <section class="boost-knob-group">
+              <h3>Currency</h3>
+              <div class="inline-fields">
+                <label>
+                  Currency Kind
+                  <select id="currencyKind">
+                    <option value="cash">Cash</option>
+                    <option value="eridium">Eridium</option>
+                    <option value="vaultcard1">Vault Card 1</option>
+                    <option value="vaultcard2">Vault Card 2</option>
+                    <option value="vaultcard3">Vault Card 3</option>
+                    <option value="vaultcard4">Vault Card 4</option>
+                  </select>
+                </label>
+                <label>
+                  Amount
+                  <input id="currencyAmount" type="number" value="1000000">
+                </label>
+              </div>
+              <div class="button-row wrap">
+                <button id="giveCurrencyBtn">Give Currency</button>
+                <button data-action="max_currency">Max Cash</button>
+                <button data-action="max_eridium">Max Eridium</button>
+              </div>
+            </section>
           </div>
-          <div id="liveModsStatus" class="status-line compact-note">Combat XP / Instant Drops / Instant Holds idle.</div>
         </section>
       </div>
 
-      <div class="grid two boost-dual-row">
-        <section class="panel purple uvh-panel" data-msbt-panel="boost-uvh" data-msbt-span="6" data-msbt-title="UVH Booster">
-          <h2>UVH Booster</h2>
-          <p>Runs UVH rank-up challenge tiers for the whole live lobby. Pressing UVH N runs tiers 1 through N; Run All queues tiers 1-7.</p>
-          <div class="button-grid compact-buttons">
-            <button data-action="uvh_boost_tier_1">UVH 1</button>
-            <button data-action="uvh_boost_tier_2">UVH 2</button>
-            <button data-action="uvh_boost_tier_3">UVH 3</button>
-            <button data-action="uvh_boost_tier_4">UVH 4</button>
-            <button data-action="uvh_boost_tier_5">UVH 5</button>
-            <button data-action="uvh_boost_tier_6">UVH 6</button>
-            <button data-action="uvh_boost_tier_7">UVH 7</button>
-            <button data-action="uvh_boost_all">Run All UVH 1-7</button>
-            <button data-action="uvh_boost_status">UVH Status</button>
-            <button data-action="uvh_boost_cancel" class="danger">Cancel UVH Run</button>
-          </div>
-          <div class="status-line compact-note">Credit: UVH workflow adapted from Azzy UVH Booster by Azalea Asvail. Source credits Pyrex for UVH6/UVH7 challenge paths.</div>
-        </section>
-
+      <div class="grid">
         <section class="panel purple" data-msbt-panel="boost-rarity" data-msbt-span="6" data-msbt-title="Rarity Drop Weights">
           <h2>Rarity Drop Weights</h2>
-          <p>Control drop-weight multipliers from GameState.RarityState. 100% is vanilla weight, 50% is half weight, and 0% removes that rarity from the drop pool.</p>
+          <p>Adjust how often each rarity drops. 100% is the normal rate, 50% is half rate, and 0% removes that rarity from drops.</p>
           <div class="rarity-grid compact-rarity">
             <label>
               Common Weight
@@ -315,28 +404,18 @@
         </section>
       </div>
 
-      <section class="panel gold" data-msbt-panel="boost-helpers" data-msbt-span="12" data-msbt-title="Quick Helpers">
-        <h2>Quick Helpers</h2>
-        <p>Pull ground loot to you and Super Dash helpers (Azzy-style). Use the gold <strong>+ QM</strong> buttons to pin them onto the in-game Quick Menu.</p>
-        <div class="button-grid">
-          <button data-movement-action="movement_pull_ground_loot">Pull Loot Here</button>
-          <button data-movement-action="movement_super_dash">Super Dash</button>
-          <button data-movement-action="movement_super_dash_toggle">Super Dash Toggle</button>
-        </div>
-      </section>
-
       <div class="grid two">
         <section class="panel purple" data-msbt-panel="boost-serial" data-msbt-span="6" data-msbt-title="Serial Rewards">
           <h2>Serial Rewards</h2>
-          <p>Paste one or more serials. Delivery still uses the SDK bridge and the selected target.</p>
+          <p>Paste one or more serials, then choose who receives them. The game must be connected for delivery.</p>
           <label for="boostSerialText">Serial Input</label>
           <textarea id="boostSerialText" spellcheck="false" placeholder="@U..."></textarea>
           <div class="inline-fields">
             <label>
               Override Level
               <select id="boostSerialOverride">
-                <option value="false">false</option>
-                <option value="true">true</option>
+                <option value="false">No</option>
+                <option value="true">Yes</option>
               </select>
             </label>
             <label>
@@ -349,61 +428,16 @@
             </label>
           </div>
           <div class="button-row wrap">
-            <button data-boost-serial-mode="selected">Give Selected</button>
-            <button data-boost-serial-mode="all">Give All</button>
-            <button data-boost-serial-mode="nonhost">Give Non-Host</button>
+            <button data-boost-serial-mode="selected">Give to Selected Player</button>
+            <button data-boost-serial-mode="all">Give to All Players</button>
+            <button data-boost-serial-mode="nonhost">Give to Other Players</button>
             <button id="boostClearSerialsBtn" class="danger">Clear Serials</button>
           </div>
         </section>
 
-        <section class="panel cyan" data-msbt-panel="boost-xp" data-msbt-span="6" data-msbt-title="Experience">
-          <h2>Experience</h2>
-          <div class="inline-fields">
-            <label>
-              XP Track
-              <select id="xpTrack">
-                <option value="player">player</option>
-                <option value="specialization">specialization</option>
-                <option value="vaultcard_xp_1">vaultcard_xp_1</option>
-                <option value="vaultcard_xp_2">vaultcard_xp_2</option>
-                <option value="vaultcard_xp_3">vaultcard_xp_3</option>
-                <option value="vaultcard_xp_4">vaultcard_xp_4</option>
-              </select>
-            </label>
-            <label>
-              Target Level
-              <input id="xpLevel" type="number" min="1" max="9999999" value="60">
-            </label>
-          </div>
-          <div class="button-row wrap">
-            <button id="setLevelBtn">Set Level</button>
-            <button data-action="max_player_level">Max Player Level</button>
-            <button data-action="max_spec_level">Set Spec 701</button>
-          </div>
-        </section>
       </div>
 
-      <div class="grid three">
-        <section class="panel green" data-msbt-panel="boost-currency" data-msbt-span="4" data-msbt-title="Currency">
-          <h2>Currency</h2>
-          <label for="currencyKind">Currency Kind</label>
-          <select id="currencyKind">
-            <option value="cash">cash</option>
-            <option value="eridium">eridium</option>
-            <option value="vaultcard1">vaultcard1</option>
-            <option value="vaultcard2">vaultcard2</option>
-            <option value="vaultcard3">vaultcard3</option>
-            <option value="vaultcard4">vaultcard4</option>
-          </select>
-          <label for="currencyAmount">Currency Amount</label>
-          <input id="currencyAmount" type="number" value="1000000">
-          <div class="button-row wrap">
-            <button id="giveCurrencyBtn">Give Currency</button>
-            <button data-action="max_currency">Max Currency</button>
-            <button data-action="max_eridium">Max Eridium</button>
-          </div>
-        </section>
-
+      <div class="grid two">
         <section class="panel cyan" data-msbt-panel="boost-inventory" data-msbt-span="4" data-msbt-title="Backpack / Bank Size">
           <h2>Backpack / Bank Size</h2>
           <label for="backpackSize">Backpack Size</label>
@@ -417,32 +451,8 @@
           <div class="button-row wrap">
             <button id="setInventorySelectedBtn">Set Selected</button>
             <button id="setInventoryAllBtn">Apply to All Party</button>
-            <button data-action="chaos_drop_backpack">Drop All (Backpack)</button>
           </div>
           <div id="inventoryStatus" class="status-line warning">Manual apply only. Enable auto to keep applying sizes while players load in.</div>
-        </section>
-
-        <section class="panel pink" data-msbt-panel="boost-cheats" data-msbt-span="4" data-msbt-title="Cheats / Chests / Shinies">
-          <h2>Cheats / Chests / Shinies</h2>
-          <div class="button-grid">
-            <button data-action="devperk_0">Give Experience</button>
-            <button data-action="devperk_1">Give 1 Million Cash</button>
-            <button data-action="devperk_2">Give 100k Eridium</button>
-            <button data-action="devperk_3">Kill All Enemies</button>
-            <button data-action="devperk_4">All Customs + Hovers</button>
-            <button data-action="devperk_5" data-devperk-toggle="5" data-devperk-name="Infinite Ammo">Infinite Ammo [OFF]</button>
-            <button data-action="devperk_6" data-devperk-toggle="6" data-devperk-name="Demigod">Demigod [OFF]</button>
-            <button data-action="devperk_7">Spawn Legendary/Epic Loot</button>
-            <button data-action="open_bank">Open Bank Anywhere</button>
-            <button data-action="toggle_debug_cam">Toggle Debug Cam</button>
-            <button data-action="teleport_debug_cam">Teleport to Debug Cam</button>
-            <button data-action="open_golden_chest">Open Golden Chest</button>
-            <button data-action="close_golden_chest">Close Golden Chest</button>
-            <button data-action="drop_all_shinies">Drop All Shinies</button>
-            <button data-action="shiny_selected">Shiny Selected</button>
-            <button data-action="shiny_all">Shiny All</button>
-            <button data-action="shiny_nonhost">Shiny Non-Host</button>
-          </div>
         </section>
       </div>
 
@@ -465,24 +475,24 @@
           <button id="walkthroughReplayBtn" class="secondary">App Walkthrough</button>
         </div>
       </div>
-      <div id="quickMenuStatus" class="status-line warning">Connect to the in-game bridge to load the Quick Menu layout.</div>
+      <div id="quickMenuStatus" class="status-line warning">Connect to the game to load the Quick Menu layout.</div>
       <section class="panel purple" data-msbt-panel="qm-modules" data-msbt-span="6" data-msbt-title="F7 Panel Modules">
         <h2>F7 Panel Modules</h2>
-        <p class="muted-line">Optional panels (like rarity sliders) for the in-game menu. Off keeps the action grid compact.</p>
+        <p class="muted-line">Add optional controls, such as rarity sliders, to the in-game menu. Leave them off for more room.</p>
         <label class="checkbox-row">
           <input id="quickMenuRarityPanelEquip" type="checkbox">
-          Equip rarity weight sliders on F7 (Apply / Reset / Leg Only / Pearl Only)
+          Show rarity sliders in the F7 menu
         </label>
         <div id="quickMenuModulesStatus" class="status-line compact-note">Rarity panel: unequipped</div>
       </section>
       <section class="panel gold quick-menu-pin-panel" data-msbt-panel="qm-pin" data-msbt-span="6" data-msbt-title="Pin / Repeat From MSBT">
-        <h2>Pin / Repeat From MSBT</h2>
+        <h2>Pin and Repeat Commands</h2>
         <p class="muted-line">Use the gold or small <strong>+ QM</strong> buttons on other tabs (Boosting, Player Movement, Serial Tools, …) to pin actions here with their current values.</p>
         <div id="quickMenuLastCommand" class="status-line">No last command recorded yet.</div>
         <div id="quickMenuLastDrop" class="muted-line">No last drop recorded yet.</div>
         <div id="quickMenuLockStatus" class="muted-line">Lock Player: off</div>
         <div class="button-row wrap">
-          <button id="quickMenuPinLastBtn">Pin Last Command To Selected Slot</button>
+          <button id="quickMenuPinLastBtn">Pin Last Command to Selected Slot</button>
           <button id="quickMenuRepeatDropBtn">Repeat Last Drop</button>
           <button id="quickMenuLockToggleBtn" class="secondary">Toggle Lock Player</button>
           <button id="quickMenuRefreshPinBtn" class="secondary">Refresh Last Command</button>
@@ -522,7 +532,7 @@
         <textarea id="serialToolsInput" spellcheck="false" placeholder="@U... or decoded human serial"></textarea>
         <div class="button-row wrap">
           <button id="serialToolsConvertBtn">Convert</button>
-          <button id="serialToolsClearBtn" class="danger">Clear</button>
+          <button id="serialToolsClearBtn" class="danger">Clear Input</button>
           <button type="button" data-msbt-bridge-refresh class="secondary">Refresh Status</button>
         </div>
         <div id="serialToolsStatus" class="status-line warning">Paste a @U serial or deserialized serial text above.</div>
@@ -581,7 +591,7 @@
             <div id="bookmarkCount" class="status-line">0 shown / 0 saved</div>
             <div class="button-row wrap">
               <button id="bookmarkSelectAllBtn">Select All</button>
-              <button id="bookmarkClearSelectedBtn" class="danger">Clear</button>
+            <button id="bookmarkClearSelectedBtn" class="danger">Clear Selection</button>
               <button id="bookmarkCopySelectedBtn">Copy Selected Serials</button>
             </div>
             <div id="bookmarkRows" class="bookmark-list">
@@ -620,14 +630,14 @@
             <input id="bookmarkSerialCopies" type="number" min="1" max="50" value="1" title="How many copies of each selected bookmark serial to deliver">
             <div class="status-line warning">Delivery sends checked bookmark rows. If nothing is checked, the active row is used.</div>
             <div class="button-row wrap">
-              <button data-bookmark-send-mode="selected">Deliver Selected</button>
-              <button data-bookmark-send-mode="all">Deliver All</button>
-              <button data-bookmark-send-mode="nonhost">Deliver Non-Host</button>
+              <button data-bookmark-send-mode="selected">Deliver to Selected Player</button>
+              <button data-bookmark-send-mode="all">Deliver to All Players</button>
+              <button data-bookmark-send-mode="nonhost">Deliver to Other Players</button>
             </div>
             <div class="button-row wrap qm-serial-pin-row">
               <button id="bookmarkQmSelectedBtn" type="button" class="qm-pin-button" data-qm-serial-source="bookmark" data-qm-serial-mode="selected">+ QM Selected</button>
               <button id="bookmarkQmAllBtn" type="button" class="qm-pin-button" data-qm-serial-source="bookmark" data-qm-serial-mode="all">+ QM All</button>
-              <button id="bookmarkQmNonhostBtn" type="button" class="qm-pin-button" data-qm-serial-source="bookmark" data-qm-serial-mode="nonhost">+ QM Non-Host</button>
+              <button id="bookmarkQmNonhostBtn" type="button" class="qm-pin-button" data-qm-serial-source="bookmark" data-qm-serial-mode="nonhost">+ QM Other Players</button>
             </div>
             <p class="muted-line">Use the gold <strong>+ QM</strong> buttons to pin the currently checked bookmark serial(s) into the Quick Menu.</p>
             <pre id="bookmarkOutput">No bookmark delivery sent yet.</pre>
@@ -644,7 +654,7 @@
             <textarea id="validatorBasicInput" class="output-box small" spellcheck="false" placeholder="@U... or decoded human serial"></textarea>
             <div class="button-row wrap">
               <button id="validatorBasicBtn">Validate Basic</button>
-              <button id="validatorClearBtn" class="danger">Clear Validator</button>
+            <button id="validatorClearBtn" class="danger">Clear Validation Input</button>
             </div>
           </div>
           <div>
@@ -655,27 +665,27 @@
             </div>
           </div>
         </div>
-        <div id="validatorStatus" class="status-line warning">Idle</div>
+        <div id="validatorStatus" class="status-line warning">Ready to validate.</div>
         <label for="validatorOutput">Validation result</label>
         <textarea id="validatorOutput" class="output-box large" spellcheck="false" readonly></textarea>
       </section>
     </section>
 
-    <section id="tab-inventory" class="tab-panel" data-msbt-layout-tab="inventory">
-      <section class="panel cyan inv-root" data-msbt-panel="inv-main" data-msbt-span="12" data-msbt-title="Inventory" data-msbt-resize="1">
+    <section id="tab-inventory" class="tab-panel fixed-page-tab">
+      <section class="inv-root fixed-workspace">
         <div class="section-heading">
           <div>
             <h2>Inventory</h2>
             <p>
-              Live equipped + backpack serials for a party player (P1–P4 / Boosting target).
-              Live equipped + backpack serials for a party player. Names from the GZO parts list when available.
-              Select an item to Send to Game with a multiplier and a Give-to player separate from viewing.
+              View equipped and backpack items for any party player. Item names come from the GZO parts list when available.
+              Select an item to copy it, open it in another tool, or give copies to a different player.
             </p>
           </div>
           <div class="button-row wrap">
             <button id="invRefreshBtn">Refresh Inventory</button>
             <button type="button" data-msbt-bridge-refresh class="secondary">Refresh Status</button>
             <button id="invCopyAllBtn" class="secondary">Copy Visible Serials</button>
+            <button data-action="open_bank">Open Bank Anywhere</button>
           </div>
         </div>
         <div class="inv-player-row">
@@ -746,7 +756,7 @@
         <div class="inv-count-row">
           <div id="invBackpackCount" class="status-line">0 backpack / 0 equipped</div>
           <div class="button-row wrap">
-            <button id="invPrevPageBtn" class="secondary">Prev</button>
+            <button id="invPrevPageBtn" class="secondary">Previous</button>
             <span id="invPageLabel" class="muted-line">Page 1</span>
             <button id="invNextPageBtn" class="secondary">Next</button>
           </div>
@@ -786,13 +796,14 @@
       </section>
     </section>
 
-    <section id="tab-bl4-codes" class="tab-panel" data-msbt-layout-tab="bl4-codes">
+    <section id="tab-bl4-codes" class="tab-panel fixed-page-tab">
       <div class="bl4-layout">
-        <section class="panel gold bl4-main-pane" data-msbt-panel="bl4-main" data-msbt-span="8" data-msbt-title="BL4 Codes" data-msbt-resize="1">
+        <section class="bl4-main-pane bl4-catalog-canvas">
           <div class="section-heading">
             <div>
-              <h2>BL4 Codes</h2>
-              <p>Local BL4 code browser (Lootlemon, GZO, custom). Search and validate offline; delivery needs the game bridge.</p>
+              <p class="page-eyebrow">Works offline after first load</p>
+              <h2>Browse BL4 Codes</h2>
+              <p>Search Lootlemon, GZO, and custom codes. Catalog browsing is the main workspace; delivery stays within reach.</p>
             </div>
             <div class="button-row wrap">
               <button id="bl4SubmitGzoBtn" class="gzo-submit-cta">Submit Your Code to GZO</button>
@@ -800,15 +811,18 @@
               <button id="bl4RefreshCatalogsBtn">Refresh Catalogs</button>
               <button id="bl4RefreshGzoBtn">Refresh GZO</button>
               <button type="button" data-msbt-bridge-refresh class="secondary">Refresh Status</button>
-              <button id="bl4ValidateBtn">Validate / Confirm Active</button>
-              <button id="bl4ImportSelectedBtn">Import Selected To Bookmarks</button>
+              <button id="bl4ValidateBtn">Validate Selected Code</button>
+              <button id="bl4ImportSelectedBtn">Save Selected to Bookmarks</button>
             </div>
           </div>
           <div id="bl4Status" class="status-line warning">Loading BL4 Codes catalog...</div>
           <div id="bl4DataCatalogStatus" class="version-detail">Data catalogs: not checked yet.</div>
 
-          <div class="filter-panel">
-            <h3>Filters</h3>
+          <details class="filter-panel bl4-filter-panel" open>
+            <summary>
+              <strong>Catalog filters</strong>
+              <span>Search, manufacturer, rarity, type, creator</span>
+            </summary>
             <div class="grid two compact">
               <label>
                 Search
@@ -842,44 +856,48 @@
                 <select id="bl4MattmabFilter"></select>
               </label>
             </div>
-          </div>
+          </details>
 
-          <div id="bl4Count" class="status-line">0 shown / 0 merged | 0 selected</div>
-          <div class="button-row wrap">
-            <button id="bl4SelectAllBtn">Select All</button>
-            <button id="bl4ClearSelectionBtn" class="danger">Clear</button>
-            <button id="bl4CopySelectedBtn">Copy Selected Serials</button>
-          </div>
-
-          <section class="bl4-card-pane">
-            <div class="mini-heading">
-              <h3>Image Browser</h3>
-              <span id="bl4CardSummary">GZO images load directly from save-editor.be when available.</span>
-            </div>
-            <div id="bl4Cards" class="bl4-card-grid">
-              <div class="dev-empty-row">No BL4 code cards loaded.</div>
-            </div>
-          </section>
-
-          <section class="bl4-detail-pane">
-            <h3>Details</h3>
-            <pre id="bl4Detail" class="detail-pre">Select a BL4 code.</pre>
-            <label for="bl4Serial">Serial</label>
-            <textarea id="bl4Serial" class="output-box small" spellcheck="false" readonly></textarea>
-            <label for="bl4Breakdown">Parts Breakdown</label>
-            <textarea id="bl4Breakdown" class="output-box medium" spellcheck="false" readonly></textarea>
+          <div class="bl4-selection-bar">
+            <div id="bl4Count" class="status-line">0 shown / 0 merged | 0 selected</div>
             <div class="button-row wrap">
-              <button id="bl4CopyBreakdownBtn">Copy Parts Breakdown</button>
-              <button id="bl4CopySerialBtn">Copy Serial</button>
-              <button id="bl4BookmarkBtn">Bookmark This</button>
-              <button id="bl4OpenLootlemonBtn">Open Lootlemon</button>
+              <button id="bl4SelectAllBtn">Select All</button>
+            <button id="bl4ClearSelectionBtn" class="danger">Clear Selection</button>
+              <button id="bl4CopySelectedBtn">Copy Selected Serials</button>
             </div>
-          </section>
+          </div>
+
+          <div class="bl4-browser-workspace">
+            <section class="bl4-card-pane">
+              <div class="mini-heading">
+                <h3>Catalog</h3>
+                <span id="bl4CardSummary">GZO images load directly from save-editor.be when available.</span>
+              </div>
+              <div id="bl4Cards" class="bl4-card-grid">
+                <div class="dev-empty-row">No BL4 code cards loaded.</div>
+              </div>
+            </section>
+
+            <aside class="bl4-detail-pane">
+              <h3>Selected code</h3>
+              <pre id="bl4Detail" class="detail-pre">Select a BL4 code.</pre>
+              <label for="bl4Serial">Serial</label>
+              <textarea id="bl4Serial" class="output-box small" spellcheck="false" readonly></textarea>
+              <label for="bl4Breakdown">Parts Breakdown</label>
+              <textarea id="bl4Breakdown" class="output-box medium" spellcheck="false" readonly></textarea>
+              <div class="button-row wrap">
+                <button id="bl4CopyBreakdownBtn">Copy Parts Breakdown</button>
+                <button id="bl4CopySerialBtn">Copy Serial</button>
+                <button id="bl4BookmarkBtn">Bookmark This</button>
+                <button id="bl4OpenLootlemonBtn">Open Lootlemon</button>
+              </div>
+            </aside>
+          </div>
         </section>
 
-        <aside class="panel purple bl4-delivery-side" aria-label="BL4 Codes delivery" data-msbt-panel="bl4-delivery" data-msbt-span="4" data-msbt-title="Delivery">
+        <aside class="bl4-delivery-side" aria-label="BL4 Codes delivery">
           <h2>Delivery</h2>
-          <p class="muted-line">Stays visible while you scroll the catalog. Sends checked cards, or the active code if none are checked.</p>
+          <p class="muted-line">Sends checked cards, or the open code when none are checked.</p>
           <label for="bl4TargetSelect">Target</label>
           <div class="target-row">
             <select id="bl4TargetSelect">
@@ -893,8 +911,8 @@
             <label>
               Override level
               <select id="bl4OverrideLevel">
-                <option value="false">false</option>
-                <option value="true">true</option>
+                <option value="false">No</option>
+                <option value="true">Yes</option>
               </select>
             </label>
             <label>
@@ -908,14 +926,14 @@
           </div>
           <div id="bl4DeliveryStatus" class="status-line warning">Ready.</div>
           <div class="button-row wrap">
-            <button data-bl4-send-mode="selected">Deliver Selected</button>
-            <button data-bl4-send-mode="all">Deliver All</button>
-            <button data-bl4-send-mode="nonhost">Deliver Non-Host</button>
+            <button data-bl4-send-mode="selected">Deliver to Selected Player</button>
+            <button data-bl4-send-mode="all">Deliver to All Players</button>
+            <button data-bl4-send-mode="nonhost">Deliver to Other Players</button>
           </div>
           <div class="button-row wrap qm-serial-pin-row">
             <button id="bl4QmSelectedBtn" type="button" class="qm-pin-button" data-qm-serial-source="bl4" data-qm-serial-mode="selected">+ QM Selected</button>
             <button id="bl4QmAllBtn" type="button" class="qm-pin-button" data-qm-serial-source="bl4" data-qm-serial-mode="all">+ QM All</button>
-            <button id="bl4QmNonhostBtn" type="button" class="qm-pin-button" data-qm-serial-source="bl4" data-qm-serial-mode="nonhost">+ QM Non-Host</button>
+            <button id="bl4QmNonhostBtn" type="button" class="qm-pin-button" data-qm-serial-source="bl4" data-qm-serial-mode="nonhost">+ QM Other Players</button>
           </div>
           <p class="muted-line">Use the gold <strong>+ QM</strong> buttons to pin the currently selected BL4 code serial(s) into the Quick Menu.</p>
           <pre id="bl4Output" class="bl4-delivery-output">No BL4 Codes delivery sent yet.</pre>
@@ -923,13 +941,12 @@
       </div>
     </section>
 
-    <section id="tab-matt-editor" class="tab-panel" data-msbt-layout-tab="matt-editor">
-      <section class="panel editor-panel purple editor-panel-full" data-msbt-panel="matt-editor-main" data-msbt-span="12" data-msbt-title="Matt Editor" data-msbt-resize="1">
+    <section id="tab-matt-editor" class="tab-panel fixed-page-tab matt-editor-page">
+      <section class="editor-tab-content">
         <div class="section-heading">
           <div>
             <h2>Matt Editor</h2>
-            <p>Full save editor and item creator. Build or edit items and saves, then use the draggable MSBT Delivery panel to choose a target and send the final @U serial.</p>
-            <p class="muted-line">Drag the MSBT Delivery header to move that panel out of the way while you edit.</p>
+            <p>Full save editor and item creator. Build or edit items and saves, then use the editor's MSBT Delivery controls to send the final @U serial.</p>
           </div>
           <div class="button-row">
             <button id="loadEditorBtn">Load Editor</button>
@@ -941,8 +958,8 @@
       </section>
     </section>
 
-    <section id="tab-item-pool" class="tab-panel" data-msbt-layout-tab="item-pool">
-      <section class="panel gold" data-msbt-panel="item-pool-main" data-msbt-span="12" data-msbt-title="Item Pool Spawning" data-msbt-resize="1">
+    <section id="tab-item-pool" class="tab-panel fixed-page-tab">
+      <section class="fixed-workspace item-pool-page">
         <h2>Item Pool Spawning</h2>
         <p>Filter item pools, select one or more rows, then spawn the selected pool(s) near the local player.</p>
         <div class="grid three compact">
@@ -980,9 +997,12 @@
         <div class="dev-spawner-title-row">
           <h2>Dev Spawner</h2>
           <div class="dev-spawner-mode-actions">
-            <div class="dev-layout-toggle" role="group" aria-label="Dev Spawner layout mode">
-              <button type="button" class="dev-layout-toggle-btn" data-dev-layout-mode="fixed" aria-pressed="true">Compact</button>
-              <button type="button" class="dev-layout-toggle-btn" data-dev-layout-mode="docked" aria-pressed="false">Panels</button>
+            <div class="msbt-mode-switch">
+              <span class="msbt-mode-switch-label">Layout</span>
+              <div class="dev-layout-toggle" role="group" aria-label="Dev Spawner layout mode">
+                <button type="button" class="dev-layout-toggle-btn" data-dev-layout-mode="fixed" aria-pressed="true" title="Fixed page — panels sit in a set arrangement, nothing to drag">Fixed</button>
+                <button type="button" class="dev-layout-toggle-btn" data-dev-layout-mode="docked" aria-pressed="false" title="Dockable panels — drag, resize, stack, and save your own layout">Panels</button>
+              </div>
             </div>
             <button type="button" class="secondary" id="devSpawnerWalkthroughBtn" title="Short tips for this tab">Walkthrough</button>
           </div>
@@ -1050,7 +1070,7 @@
             <div class="button-row wrap compact-actions">
               <span data-dev-host="spawn-ai-btn-side"></span>
               <span data-dev-host="reaggro-btn"></span>
-              <button data-dev-spawner-action="dev_spawner_clear">Clear ASD Spawns</button>
+              <button data-dev-spawner-action="dev_spawner_clear">Clear Spawned Actors</button>
               <button type="button" id="devSpawnerHoardBuilderBtn" class="secondary" title="Open Hoard Builder wave runner">Hoard Builder</button>
               <button type="button" data-msbt-bridge-refresh class="secondary">Refresh Status</button>
               <span data-dev-host="refresh-log"></span>
@@ -1068,7 +1088,7 @@
             </details>
 
             <details class="dev-fold">
-              <summary>Advanced ASD actions</summary>
+              <summary>Advanced Spawner Actions</summary>
               <div data-dev-host="setup-advanced"></div>
             </details>
           </aside>
@@ -1090,7 +1110,7 @@
             <span data-dev-host="spawn-ai-btn"></span>
             <span data-dev-host="spawn-ai-btn-side"></span>
             <span data-dev-host="reaggro-btn"></span>
-            <button data-dev-spawner-action="dev_spawner_clear">Clear ASD Spawns</button>
+            <button data-dev-spawner-action="dev_spawner_clear">Clear Spawned Actors</button>
             <button type="button" class="secondary" data-hoard-builder-open title="Open Hoard Builder wave runner">Hoard Builder</button>
             <button type="button" data-msbt-bridge-refresh class="secondary">Refresh Status</button>
             <span data-dev-host="refresh-log"></span>
@@ -1162,8 +1182,8 @@
 
       <!-- Shared widgets (unique IDs). Reparented into active shell hosts. -->
       <div class="dev-spawner-parts" data-dev-parts-stash hidden aria-hidden="true">
-        <div id="devSpawnerWarning" class="status-line warning" data-dev-part="warning">No Dev Spawner action sent yet. After heavy spawning, use Clear ASD Spawns (destroys actors and disables leftover throwaway spawners).</div>
-        <div id="devSpawnerTimer" class="status-line" data-dev-part="timer">ASD autoclear: idle</div>
+        <div id="devSpawnerWarning" class="status-line warning" data-dev-part="warning">No Dev Spawner action sent yet. After heavy spawning, use Clear Spawned Actors to remove actors and leftover spawners.</div>
+        <div id="devSpawnerTimer" class="status-line" data-dev-part="timer">Automatic cleanup: idle</div>
         <pre id="devSpawnerOutput" class="dev-spawner-output" data-dev-part="output">No Dev Spawner action sent yet.</pre>
         <div id="devFavoriteStrip" class="dev-favorite-strip button-row wrap compact-actions" data-dev-part="favorite-strip" aria-label="Favorite spawn strip"></div>
 
@@ -1248,16 +1268,16 @@
             <input id="devActorTargetLimit" type="number" min="1" max="200" value="20">
           </label>
         </div>
-        <button id="devSpawnerReaggroBtn" data-dev-part="reaggro-btn" data-dev-spawner-action="dev_spawner_reaggro">Re-Aggro</button>
-        <button id="devRefreshLogBtn" type="button" data-dev-part="refresh-log">Refresh SDK Log</button>
+        <button id="devSpawnerReaggroBtn" data-dev-part="reaggro-btn" data-dev-spawner-action="dev_spawner_reaggro">Re-Aggro Spawned Actors</button>
+        <button id="devRefreshLogBtn" type="button" data-dev-part="refresh-log">Refresh Game Log</button>
 
         <div class="button-row wrap" data-dev-part="setup-main">
-          <button data-dev-spawner-action="dev_spawner_status">ASD Status</button>
-          <button data-dev-spawner-action="dev_spawner_cache_status">Cache Status</button>
-          <button data-dev-spawner-action="dev_spawner_spawnerdiag">Spawner Diagnostics</button>
+          <button data-dev-spawner-action="dev_spawner_status">Spawner Status</button>
+          <button data-dev-spawner-action="dev_spawner_cache_status">Actor Cache Status</button>
+          <button data-dev-spawner-action="dev_spawner_spawnerdiag">Check Spawner Health</button>
           <button data-dev-spawner-action="dev_spawner_targets">List Targets</button>
           <button data-dev-spawner-action="dev_spawner_probeai">Probe AI</button>
-          <button data-dev-spawner-action="dev_spawner_cache">Cache Live Actor</button>
+          <button data-dev-spawner-action="dev_spawner_cache">Save Nearby Actor Template</button>
         </div>
         <details class="dev-fold" data-dev-part="setup-template">
           <summary>Template Spawn Options</summary>
@@ -1294,7 +1314,7 @@
           <button data-dev-spawner-action="dev_spawner_activate_last">Activate Last</button>
           <button data-dev-spawner-action="dev_spawner_scriptdump">Script Dump Last</button>
           <button data-dev-spawner-action="dev_spawner_logo_options">Logo Options</button>
-          <button data-dev-spawner-action="dev_spawner_clear">Clear ASD Spawns</button>
+          <button data-dev-spawner-action="dev_spawner_clear">Clear Spawned Actors</button>
           <button type="button" data-msbt-bridge-refresh class="secondary">Refresh Status</button>
         </div>
 
@@ -1342,144 +1362,177 @@
     </section>
 
 
-    <section id="tab-hoard-builder" class="tab-panel" data-msbt-layout-tab="hoard-builder">
-      <section class="panel cyan" data-msbt-panel="hoard-builder-main" data-msbt-span="12" data-msbt-title="Hoard Builder" data-msbt-resize="1">
-        <h2>Hoard Builder</h2>
-        <p>Build an ordered wave list, press <strong>Start Hoard</strong>, then clear each wave to auto-advance. Same ASD actors as Dev Spawner.</p>
-
-        <div class="section-heading">
+    <section id="tab-hoard-builder" class="tab-panel fixed-page-tab">
+      <section class="hoard-builder-page">
+        <div class="hoard-hero">
           <div>
-            <h3>Build</h3>
-            <p class="muted-line">Select a wave, then click actors below to add them. One click adds (or stacks) that enemy on the selected wave.</p>
+            <p class="hoard-eyebrow">Custom enemy wave runner</p>
+            <h2>Hoard Builder</h2>
+            <h3>Build the fight, then run it</h3>
+            <p>Choose enemies, arrange waves, and start the run. Each cleared wave advances automatically.</p>
+          </div>
+          <div class="hoard-hero-actions">
+            <div id="hoardPlanSummary" class="hoard-plan-summary" aria-live="polite">1 empty wave</div>
+            <button type="button" id="hoardWalkthroughBtn" class="secondary">Walkthrough</button>
           </div>
         </div>
-        <div id="hoardWaveList" class="hoard-wave-list" aria-label="Hoard wave list"></div>
-        <div class="button-row wrap compact-actions">
-          <button type="button" id="hoardAddWaveBtn">Add Empty Wave</button>
-          <button type="button" id="hoardRemoveWaveBtn" class="secondary">Remove Selected Wave</button>
-          <button type="button" id="hoardMoveUpBtn" class="secondary">Move Up</button>
-          <button type="button" id="hoardMoveDownBtn" class="secondary">Move Down</button>
-        </div>
 
-        <div class="section-heading" style="margin-top:1rem;">
+        <section id="hoardFirstRunGuide" class="hoard-first-run-guide" aria-label="Hoard Builder quick guide">
           <div>
-            <h3>Add enemies</h3>
-            <p class="muted-line">Click an actor to add it to the selected wave. Use count for how many per click. “New wave” starts a fresh wave with that actor.</p>
+            <p class="hoard-eyebrow">First run</p>
+            <h3>Four steps to a safe hoard</h3>
           </div>
-        </div>
-        <div class="grid two compact">
-          <label>
-            Actor search
-            <input id="hoardActorSearch" type="search" placeholder="bandit, spider, boss…" autocomplete="off">
-          </label>
-          <label>
-            Count per click
-            <input id="hoardWaveCount" type="number" min="1" max="60" value="1">
-          </label>
-        </div>
-        <div id="hoardActorSummary" class="status-line">Load Dev Spawner catalog (or open that tab once) to search actors.</div>
-        <div id="hoardActorPicker" class="hoard-actor-picker" role="listbox" aria-label="Actor picker"></div>
-        <select id="hoardActorList" class="hidden" aria-hidden="true" tabindex="-1"></select>
-        <div class="button-row wrap compact-actions">
-          <button type="button" id="hoardApplyActorBtn" class="secondary" title="Add selected catalog row to the current wave">Add to Selected Wave</button>
-          <button type="button" id="hoardAddAsNewWaveBtn" class="secondary" title="Create a new wave with the selected actor">Add as New Wave</button>
-        </div>
+          <ol>
+            <li><strong>Build</strong><span>Add actors to one or more waves.</span></li>
+            <li><strong>Run</strong><span>Start the plan; clear waves advance automatically.</span></li>
+            <li><strong>Favorite</strong><span>Save a good wave or the full plan for reuse.</span></li>
+            <li><strong>Stop safely</strong><span>Stop pauses the run; Emergency Clear removes spawned actors.</span></li>
+          </ol>
+          <button type="button" id="hoardGuideDismissBtn" class="secondary">Got it</button>
+        </section>
 
-        <details class="dev-fold" id="hoardWaveOptionsFold">
-          <summary>Wave options</summary>
-          <div class="grid three compact">
-            <label>
-              Spawn distance
-              <input id="hoardWaveDistance" type="number" min="600" max="4000" step="50" value="900" title="How far from you the spawn nodes sit. 600 is the closest allowed so enemies cannot land on top of you.">
-            </label>
-            <label>
-              Spacing
-              <input id="hoardWaveSpacing" type="number" min="1" max="5000" value="125">
-            </label>
-            <label>
-              Scale
-              <input id="hoardWaveScale" type="number" min="0.05" max="20" step="0.05" value="1">
-            </label>
-          </div>
-          <div class="grid three compact">
-            <label>
-              Aggro
-              <select id="hoardWaveAggro">
-                <option value="passive" selected>Passive</option>
-                <option value="attack_me">Attack Me</option>
-                <option value="attack_party">Attack Party</option>
-                <option value="free_for_all">Free For All</option>
-              </select>
-            </label>
-            <label>
-              Spawn points
-              <input id="hoardSpawnPoints" type="number" min="1" max="12" value="6" title="Distinct spawn nodes placed around you at varied angles and distances">
-            </label>
-            <label>
-              Enemies per burst
-              <input id="hoardBurstSize" type="number" min="1" max="6" value="2" title="How many emerge from one spawn point per turn">
-            </label>
-          </div>
-          <div class="grid three compact">
-            <label>
-              Stagger (seconds)
-              <input id="hoardStagger" type="number" min="0.15" max="5" step="0.05" value="0.45" title="Delay between bursts — raise this if frames dip on big waves">
-            </label>
-          </div>
-          <div class="button-row wrap compact-actions">
-            <label class="inline-check">
-              <input id="hoardAutoCleanup" type="checkbox">
-              Hide dropped loot between waves (off by default — heavy)
-            </label>
-            <button type="button" id="hoardApplyOptionsBtn" class="secondary">Apply Options to Selected Wave</button>
-          </div>
-        </details>
+        <div class="hoard-workspace">
+          <div class="hoard-build-column">
+            <section class="hoard-section">
+              <div class="hoard-step-heading">
+                <span class="hoard-step-number">1</span>
+                <div>
+                  <h3>Plan the waves</h3>
+                  <p class="muted-line">Select a wave to edit it. Use the arrows to change the run order.</p>
+                </div>
+              </div>
+              <div id="hoardWaveList" class="hoard-wave-list" aria-label="Hoard wave list"></div>
+              <div class="button-row wrap compact-actions hoard-wave-actions">
+                <button type="button" id="hoardAddWaveBtn">+ Add Wave</button>
+                <button type="button" id="hoardMoveUpBtn" class="secondary" aria-label="Move selected wave earlier">↑ Earlier</button>
+                <button type="button" id="hoardMoveDownBtn" class="secondary" aria-label="Move selected wave later">↓ Later</button>
+                <button type="button" id="hoardRemoveWaveBtn" class="danger">Remove Wave</button>
+              </div>
+            </section>
 
-        <div class="section-heading" style="margin-top:1rem;">
-          <div>
-            <h3>Favorites</h3>
-            <p class="muted-line">Save the current plan or selected wave, then reload from the selector anytime.</p>
+            <section class="hoard-section">
+              <div class="hoard-step-heading">
+                <span class="hoard-step-number">2</span>
+                <div>
+                  <h3>Add enemies</h3>
+                  <p class="muted-line">Click an actor to add it to the selected wave. Shift+click starts a new wave.</p>
+                </div>
+              </div>
+              <div class="grid two compact hoard-search-controls">
+                <label>
+                  Search actor catalog
+                  <input id="hoardActorSearch" type="search" placeholder="Bandit, spider, boss…" autocomplete="off">
+                </label>
+                <label>
+                  Add this many
+                  <input id="hoardWaveCount" type="number" min="1" max="60" value="1">
+                </label>
+              </div>
+              <div id="hoardActorSummary" class="status-line">Loading the Dev Spawner actor catalog…</div>
+              <div id="hoardActorPicker" class="hoard-actor-picker" role="listbox" aria-label="Actor picker"></div>
+              <select id="hoardActorList" class="hidden" aria-hidden="true" tabindex="-1"></select>
+              <div class="button-row wrap compact-actions">
+                <button type="button" id="hoardApplyActorBtn" class="secondary" title="Add the highlighted catalog actor to the current wave">Add Highlighted</button>
+                <button type="button" id="hoardAddAsNewWaveBtn" class="secondary" title="Create a new wave with the highlighted actor">Add as New Wave</button>
+              </div>
+            </section>
           </div>
-        </div>
-        <div class="grid two compact">
-          <label>
-            Favorite name
-            <input id="hoardFavoriteName" type="text" maxlength="64" placeholder="Boss ring, trash clear…" autocomplete="off">
-          </label>
-          <label>
-            Saved favorites
-            <select id="hoardFavoriteSelect">
-              <option value="">(none saved)</option>
-            </select>
-          </label>
-        </div>
-        <div class="button-row wrap compact-actions">
-          <button type="button" id="hoardFavoriteSavePlanBtn" class="secondary">Save Full Plan</button>
-          <button type="button" id="hoardFavoriteSaveWaveBtn" class="secondary">Save Selected Wave</button>
-          <button type="button" id="hoardFavoriteLoadBtn">Load Favorite</button>
-          <button type="button" id="hoardFavoriteDeleteBtn" class="secondary">Delete Favorite</button>
-        </div>
-        <div id="hoardFavoriteSummary" class="status-line muted-line">No favorites yet.</div>
 
-        <div class="section-heading" style="margin-top:1rem;">
-          <div>
-            <h3>Run</h3>
-            <p class="muted-line">Up to 60 enemies / 12 types per wave and unlimited waves. Enemies trickle in 1–2 at a time from each spawn point; raise Stagger if frames dip. Advances when clear.</p>
-          </div>
-        </div>
-        <div class="button-row wrap">
-          <button type="button" id="hoardStartBtn">Start Hoard</button>
-          <button type="button" id="hoardStopBtn" class="secondary">Stop</button>
-          <button type="button" id="hoardClearBtn" class="secondary" title="Stop the run, switch spawners off, then clear ASD spawns a beat later. Leaves ground loot alone — use Clear Loot for that.">Emergency Clear</button>
-        </div>
+          <aside class="hoard-control-column">
+            <section class="hoard-run-card">
+              <p class="hoard-eyebrow">Ready when you are</p>
+              <h3>Run the current plan</h3>
+              <p class="muted-line">Up to 60 enemies and 12 actor types per wave. The next wave starts when the current one is clear.</p>
+              <button type="button" id="hoardStartBtn" class="primary hoard-start-button">▶ Start Hoard</button>
+              <div class="button-row hoard-stop-actions">
+                <button type="button" id="hoardStopBtn" class="secondary">Stop Run</button>
+                <button type="button" id="hoardClearBtn" class="danger" title="Stops the run, disables its spawners, and removes spawned actors. Ground loot is left alone.">Emergency Clear</button>
+              </div>
+              <div class="hoard-status-block">
+                <span>Status</span>
+                <div id="hoardStatusLine" class="status-line">Idle</div>
+              </div>
+              <pre id="hoardOutput" class="hidden" aria-hidden="true">No hoard action yet.</pre>
+            </section>
 
-        <div class="section-heading" style="margin-top:1rem;">
-          <div>
-            <h3>Status</h3>
-          </div>
+            <details class="hoard-fold" open>
+              <summary>Favorites <span>Save and reuse plans</span></summary>
+              <div class="hoard-fold-body">
+                <label>
+                  Saved favorites
+                  <select id="hoardFavoriteSelect">
+                    <option value="">(none saved)</option>
+                  </select>
+                </label>
+                <div class="button-row wrap compact-actions">
+                  <button type="button" id="hoardFavoriteLoadBtn" class="primary">Load (Replaces Plan)</button>
+                  <button type="button" id="hoardFavoriteDeleteBtn" class="danger">Delete</button>
+                </div>
+                <div class="hoard-save-favorite">
+                  <label>
+                    Save as
+                    <input id="hoardFavoriteName" type="text" maxlength="64" placeholder="Boss ring, trash clear…" autocomplete="off">
+                  </label>
+                  <div class="button-row wrap compact-actions">
+                    <button type="button" id="hoardFavoriteSavePlanBtn" class="secondary">Save Full Plan</button>
+                    <button type="button" id="hoardFavoriteSaveWaveBtn" class="secondary">Save Selected Wave</button>
+                  </div>
+                </div>
+                <div id="hoardFavoriteSummary" class="status-line muted-line">No favorites yet.</div>
+              </div>
+            </details>
+
+            <details class="hoard-fold" id="hoardWaveOptionsFold">
+              <summary>Advanced wave options <span>Selected wave only</span></summary>
+              <div class="hoard-fold-body">
+                <p class="muted-line">Defaults are tuned for a stable run. Change these only when the selected wave needs different pacing or behavior.</p>
+                <div class="grid two compact">
+                  <label>
+                    Spawn distance
+                    <input id="hoardWaveDistance" type="number" min="600" max="4000" step="50" value="900" title="How far from you the spawn nodes sit. 600 is the closest allowed so enemies cannot land on top of you.">
+                  </label>
+                  <label>
+                    Enemy spacing
+                    <input id="hoardWaveSpacing" type="number" min="1" max="5000" value="125">
+                  </label>
+                  <label>
+                    Enemy scale
+                    <input id="hoardWaveScale" type="number" min="0.05" max="20" step="0.05" value="1">
+                  </label>
+                  <label>
+                    Aggro behavior
+                    <select id="hoardWaveAggro">
+                      <option value="passive" selected>Passive</option>
+                      <option value="attack_me">Attack Me</option>
+                      <option value="attack_party">Attack Party</option>
+                      <option value="free_for_all">Free For All</option>
+                    </select>
+                  </label>
+                  <label>
+                    Spawn points
+                    <input id="hoardSpawnPoints" type="number" min="1" max="12" value="6" title="Distinct spawn nodes placed around you at varied angles and distances">
+                  </label>
+                  <label>
+                    Enemies per burst
+                    <input id="hoardBurstSize" type="number" min="1" max="6" value="2" title="How many emerge from one spawn point per turn">
+                  </label>
+                  <label>
+                    Stagger (seconds)
+                    <input id="hoardStagger" type="number" min="0.15" max="5" step="0.05" value="0.45" title="Delay between bursts — raise this if frames dip on big waves">
+                  </label>
+                </div>
+                <div class="hoard-safety-option">
+                  <label class="inline-check">
+                    <input id="hoardAutoCleanup" type="checkbox">
+                    Hide dropped loot between waves
+                  </label>
+                  <p>Off by default. This is a heavier cleanup path and may hurt stability during wave transitions.</p>
+                </div>
+                <button type="button" id="hoardApplyOptionsBtn" class="secondary">Apply to Selected Wave</button>
+              </div>
+            </details>
+          </aside>
         </div>
-        <div id="hoardStatusLine" class="status-line">Idle</div>
-        <pre id="hoardOutput" class="hidden" aria-hidden="true">No hoard action yet.</pre>
       </section>
     </section>
 
@@ -1489,6 +1542,7 @@
         <p>Select a map first, then choose a travel station on that map. Favorites can hold maps or stations in one list.</p>
         <div class="button-row wrap">
           <button type="button" data-msbt-bridge-refresh class="secondary">Refresh Status</button>
+          <button data-action="fog_of_war_clear">Clear Fog of War</button>
         </div>
         <div class="grid two">
           <div>
@@ -1561,7 +1615,7 @@
     <section id="tab-player-movement" class="tab-panel" data-msbt-layout-tab="player-movement">
       <section class="panel green" data-msbt-panel="move-presets" data-msbt-span="12" data-msbt-title="Presets / Save / Apply">
         <h2>Presets / Save / Apply</h2>
-        <p>UI-only controls. Apply Now sends the visible movement values through the SDK bridge.</p>
+        <p>Adjust movement here, then choose Apply Now to send the visible values to the game.</p>
         <div class="button-row wrap">
           <button data-movement-action="movement_apply_all">Apply Now</button>
           <button id="movementSavePresetBtn">Save Preset</button>
@@ -1582,10 +1636,10 @@
         </select>
         <label class="checkbox-row">
           <input id="movementAutoApplySaved" type="checkbox">
-          Auto apply saved preset when the bridge connects
+          Apply saved preset when the game connects
         </label>
         <div id="movementSavedSummary" class="status-line">No saved movement preset loaded yet.</div>
-        <div id="movementStatus" class="status-line warning">Movement actions use the SDK bridge. Apply Now uses the values below.</div>
+        <div id="movementStatus" class="status-line warning">Connect to the game, adjust the values below, then choose Apply Now.</div>
       </section>
 
       <div class="grid three">
@@ -1628,19 +1682,19 @@
 
         <section class="panel green" data-msbt-panel="move-infjump" data-msbt-span="4" data-msbt-title="Infinite Jump">
           <h2>Infinite Jump</h2>
-          <p>Enable per player. All ON applies to every current party player.</p>
+          <p>Enable this per player, or change it for the whole party at once.</p>
           <div class="button-row wrap">
-            <button data-movement-action="movement_infinite_jump_all_on">All ON</button>
-            <button data-movement-action="movement_infinite_jump_all_off" class="danger">All OFF</button>
+            <button data-movement-action="movement_infinite_jump_all_on">Turn On for All</button>
+            <button data-movement-action="movement_infinite_jump_all_off" class="danger">Turn Off for All</button>
           </div>
           <label for="movementTargetSelect">Player</label>
           <select id="movementTargetSelect">
             <option value="">No players loaded</option>
           </select>
           <div class="button-row wrap">
-            <button data-movement-action="movement_infinite_jump_selected_on">Selected ON</button>
-            <button data-movement-action="movement_infinite_jump_selected_off" class="danger">Selected OFF</button>
-            <button data-movement-action="movement_infinite_jump_toggle_selected">Toggle Selected</button>
+            <button data-movement-action="movement_infinite_jump_selected_on">Turn On for Selected</button>
+            <button data-movement-action="movement_infinite_jump_selected_off" class="danger">Turn Off for Selected</button>
+            <button data-movement-action="movement_infinite_jump_toggle_selected">Toggle Selected Player</button>
           </div>
         </section>
       </div>
@@ -1710,7 +1764,7 @@
 
       <section class="panel cyan" data-msbt-panel="move-teleport" data-msbt-span="12" data-msbt-title="Teleport Selected Player">
         <h2>Teleport Selected Player</h2>
-        <p>Slot buttons move the Boosting target to that party slot. P2P buttons use local host as “me”.</p>
+        <p>Slot buttons move the Boosting target to that party slot. The buttons below move players between you and the selected player.</p>
         <div class="button-row wrap">
           <button data-movement-teleport-slot="0">To P1</button>
           <button data-movement-teleport-slot="1">To P2</button>
@@ -1731,9 +1785,9 @@
     </section>
 
     <section id="tab-combat-vehicle" class="tab-panel" data-msbt-layout-tab="combat-vehicle">
-      <section class="panel" data-msbt-panel="dev-tools-intro" data-msbt-span="12" data-msbt-title="Dev Tools (WIP)" data-msbt-resize="1">
+      <section class="dev-tools-intro-strip">
         <h2>Dev Tools (WIP)</h2>
-        <p>Hidden development surface (Shift+click View → Development tabs). Drag panels to rearrange — layout is saved for this session and across restarts while the tab stays unlocked this session.</p>
+        <p>Hidden on fresh profiles: Shift+click View → Development tabs to reveal it the first time. Once enabled, this tab stays visible across app restarts.</p>
         <div class="button-row wrap">
           <button type="button" data-msbt-bridge-refresh>Refresh Status</button>
         </div>
@@ -1742,7 +1796,7 @@
       <section class="panel cyan" data-msbt-panel="dev-target" data-msbt-span="6" data-msbt-title="Target Player" data-msbt-resize="1">
         <h2>Target Player</h2>
         <p>Party target for Streamer Chaos, skill reset, and other Dev Tools actions. Use <strong>Refresh Status</strong> to reload the player list. Host-only for remote players in co-op.</p>
-        <div id="devBridgeSummary" class="status-line warning">Checking bridge...</div>
+        <div id="devBridgeSummary" class="status-line warning">Checking game connection...</div>
         <label for="devTargetSelect">Target Player</label>
         <div class="target-row">
           <select id="devTargetSelect">
@@ -1753,7 +1807,7 @@
         </div>
         <div class="button-row wrap">
           <button id="devTargetAllBtn" type="button" data-dev-scope="all">Target All Players</button>
-          <button id="devTargetNonHostBtn" type="button" data-dev-scope="nonhost">Target Non-Host</button>
+          <button id="devTargetNonHostBtn" type="button" data-dev-scope="nonhost">Target Other Players</button>
           <button id="devTargetSelectedBtn" type="button" data-dev-scope="selected">Target Selected Only</button>
         </div>
         <div id="devTargetSummary" class="status-line warning">Selected target: none</div>
@@ -1770,11 +1824,12 @@
 
       <section class="panel gold" data-msbt-panel="streamer-chaos" data-msbt-span="6" data-msbt-title="Streamer Chaos" data-msbt-resize="1">
         <h2>Streamer Chaos</h2>
-        <p>Verified hooks (launch, empty backpack, kill/FFYL, invert, lock look/move). Uses <strong>Target Player</strong> (host or party member). <strong>Target All</strong> / <strong>Non-Host</strong> run the effect on each matching player.</p>
+        <p>Launch, empty backpack, down, kill, invert controls, or lock movement and camera. Uses the selected player, all players, or everyone except the host.</p>
         <div class="button-grid wrap">
           <button data-action="chaos_launch">Launch</button>
+          <button data-action="chaos_drop_backpack_targeted" class="danger">Drop All Backpack (Target Scope)</button>
           <button data-action="chaos_empty_backpack" class="danger">Empty Backpack</button>
-          <button data-action="chaos_ffyl">FFYL</button>
+          <button data-action="chaos_ffyl">Down Player</button>
           <button data-action="chaos_kill" class="danger">Kill</button>
           <button data-action="chaos_invert_look">Invert Look</button>
           <button data-action="chaos_lock_look">Lock Look</button>
@@ -1787,7 +1842,7 @@
 
       <section class="panel purple" data-msbt-panel="combat-tuning" data-msbt-span="6" data-msbt-title="Combat / Resource Tuning" data-msbt-resize="1">
         <h2>Combat / Resource Tuning</h2>
-        <p>Oak damage / ammo / repair tuning inspired by Squ1ggs patterns. <strong>Ask Squ1ggs before publishing</strong> this module. Sticky is OFF by default — use Reapply after travel if values reset.</p>
+        <p>Adjust damage, ammo, and repair kits. Continuous reapply is off by default; use Reapply After Travel if values reset.</p>
         <div class="grid three compact">
           <label>
             Damage Dealt Mult
@@ -1820,7 +1875,7 @@
         </div>
         <label class="checkbox-row">
           <input id="combatSticky" type="checkbox">
-          Sticky re-apply (default OFF — leave unchecked)
+          Keep reapplying these values
         </label>
         <div class="button-row wrap">
           <button id="combatApplyBtn" type="button">Apply Once</button>
@@ -1838,12 +1893,12 @@
           <label>
             Preset
             <select id="vehiclePresetSelect">
-              <option value="boost">boost</option>
-              <option value="crawl">crawl</option>
-              <option value="floaty">floaty</option>
-              <option value="orbit">orbit</option>
-              <option value="heavy">heavy</option>
-              <option value="drift">drift</option>
+              <option value="boost">Boost</option>
+              <option value="crawl">Crawl</option>
+              <option value="floaty">Floaty</option>
+              <option value="orbit">Orbit</option>
+              <option value="heavy">Heavy</option>
+              <option value="drift">Drift</option>
             </select>
           </label>
           <label>
@@ -1898,19 +1953,19 @@
         <div class="button-row wrap">
           <button id="challengeCompleteSelectedBtn" type="button">Complete Selected</button>
           <button id="challengeCompleteCategoryBtn" type="button">Complete Category</button>
-          <button id="challengeCompleteAllBtn" type="button" class="danger">Complete ALL</button>
+          <button id="challengeCompleteAllBtn" type="button" class="danger">Complete All Challenges</button>
           <button id="challengeCancelBtn" type="button">Cancel</button>
           <button id="challengeStatusBtn" type="button">Refresh Status</button>
-          <button type="button" data-msbt-bridge-refresh class="secondary">Refresh Bridge</button>
+          <button type="button" data-msbt-bridge-refresh class="secondary">Refresh Game Connection</button>
         </div>
         <div id="challengeStatus" class="status-line">Challenges idle. First press arms confirm; second press within 10s starts.</div>
         <pre id="challengeOutput">No challenge action yet.</pre>
       </section>
     </section>
 
-    <section id="tab-activity" class="tab-panel" data-msbt-layout-tab="activity">
-      <div class="grid two">
-        <section class="panel purple" data-msbt-panel="activity-log" data-msbt-span="6" data-msbt-title="Activity Log" data-msbt-resize="1">
+    <section id="tab-activity" class="tab-panel fixed-page-tab">
+      <div class="activity-page grid two">
+        <section class="activity-card">
           <h2>Activity Log</h2>
           <div class="button-row wrap">
             <button id="refreshActivityBtn">Refresh Status</button>
@@ -1919,9 +1974,9 @@
           </div>
           <pre id="activityOutput">Activity starts here.</pre>
         </section>
-        <section class="panel cyan" data-msbt-panel="activity-bridge" data-msbt-span="6" data-msbt-title="Bridge Raw Status" data-msbt-resize="1">
-          <h2>Bridge Raw Status</h2>
-          <pre id="statusOutput">Click Refresh Status to check the SDK bridge.</pre>
+        <section class="activity-card">
+          <h2>Game Connection Details</h2>
+          <pre id="statusOutput">Click Refresh Status to check the game connection.</pre>
         </section>
       </div>
     </section>
@@ -1929,7 +1984,7 @@
     <section id="tab-mobile-gateway" class="tab-panel msbt-fixed-tab" data-msbt-fixed-layout="mobile-gateway">
       <div class="mobile-gateway-fixed">
         <h2>Mobile Gateway</h2>
-        <p class="muted-line">Phone controllers on the same Wi‑Fi connect here. The SDK bridge stays on localhost; Electron proxies approved requests. This tab is fixed (not dock-resizable) so the pairing QR stays fully visible.</p>
+        <p class="muted-line">Pair phones on the same Wi‑Fi here. Game actions stay on this PC, and only approved commands pass through. This page stays fixed so the pairing QR remains visible.</p>
         <div id="mobileGatewaySummary" class="status-line warning">Loading mobile gateway…</div>
         <div class="mobile-gateway-pair-grid">
           <div class="mobile-gateway-qr-block">
@@ -1952,13 +2007,13 @@
             </div>
           </div>
         </div>
-        <pre id="mobileGatewayDetails">Closed-beta pairing: scan the QR in MSBT Mobile, or enter the PC address, port 49775, and pairing code manually.</pre>
+        <pre id="mobileGatewayDetails">Scan the QR in MSBT Mobile, or enter the PC address, port 49775, and pairing code manually.</pre>
       </div>
     </section>
 
-    <section id="tab-report" class="tab-panel" data-msbt-layout-tab="report">
-      <div class="grid two">
-        <section class="panel purple" data-msbt-panel="report-form" data-msbt-span="6" data-msbt-title="Report an Issue" data-msbt-resize="1">
+    <section id="tab-report" class="tab-panel fixed-page-tab">
+      <section class="report-page">
+        <div class="report-form">
           <h2>Report an Issue to the Developer</h2>
           <p>Use this tab to send bugs or feature requests to the MSBT developer (FunkYouSHiFT) on GitHub. The app builds a clean report, opens a GitHub issue draft, then you can attach screenshots or logs before submitting.</p>
           <label for="reportKind">Report Type</label>
@@ -1986,7 +2041,7 @@
           <textarea id="reportNotes" class="output-box small" spellcheck="true"></textarea>
           <label class="check-line">
             <input id="reportIncludeDiagnostics" type="checkbox" checked>
-            Include redacted app and bridge diagnostics
+            Include redacted app and game connection details
           </label>
           <div class="button-row wrap">
             <button id="reportPreviewBtn">Refresh Preview</button>
@@ -1996,78 +2051,92 @@
             <button id="reportGithubBtn">Submit Issue to Developer on GitHub</button>
           </div>
           <div id="reportStatus" class="status-line">Issues go to the developer on github.com/funkyoushift/MattsSDKBoostingTools/issues.</div>
-        </section>
-        <section class="panel cyan" data-msbt-panel="report-preview" data-msbt-span="6" data-msbt-title="Preview" data-msbt-resize="1">
-          <h2>Preview</h2>
-          <pre id="reportPreview">Fill out the fields, then refresh the preview.</pre>
-        </section>
-      </div>
+          <details class="report-preview-fold">
+            <summary>Report preview</summary>
+            <pre id="reportPreview">Fill out the fields, then refresh the preview.</pre>
+          </details>
+        </div>
+      </section>
     </section>
 
-    <section id="tab-updates" class="tab-panel" data-msbt-layout-tab="updates">
-      <section class="panel purple" data-msbt-panel="updates-main" data-msbt-span="12" data-msbt-title="MSBT Updates" data-msbt-resize="1">
-        <h2>MSBT Updates</h2>
+    <section id="tab-updates" class="tab-panel fixed-page-tab">
+      <section class="updates-page">
+        <div class="updates-hero">
+          <div>
+            <p class="page-eyebrow">App, game tools, and catalogs</p>
+            <h2>Updates</h2>
+            <p>Update the Desktop App, Game SDK Stack, and Catalog Data here. Saved settings, backups, and downloaded cache controls are below.</p>
+          </div>
+          <button id="checkUpdatesBtn">Check for All Updates</button>
+        </div>
         <div id="versionSummary" class="status-line">Loading local version info...</div>
         <div id="updateSummary" class="status-line">No update check yet.</div>
-        <div class="update-card-grid">
-          <div class="update-card">
-            <h3>Electron App</h3>
+        <div class="update-lane-grid">
+          <section class="update-lane">
+            <span class="update-lane-number">1</span>
+            <h3>Desktop App</h3>
             <div id="electronAppCurrent" class="version-detail">Current: checking...</div>
             <div id="electronAppLatest" class="version-detail">Latest: not checked yet.</div>
             <div id="electronAppInstaller" class="version-detail">Installer updater: not checked yet.</div>
-          </div>
-          <div class="update-card">
-            <h3>Bundled SDK Mod</h3>
-            <div id="bundledSdkVersion" class="version-detail">Version: checking...</div>
+            <div class="button-row wrap">
+              <button id="updateDownloadBtn">Download Update</button>
+              <button id="updateInstallBtn">Restart and Install</button>
+              <button id="downloadBtn" class="secondary">Open Installer</button>
+              <button id="manualZipBtn" class="secondary">Download Portable ZIP</button>
+            </div>
+          </section>
+          <section class="update-lane">
+            <span class="update-lane-number">2</span>
+            <h3>Game SDK Stack</h3>
+            <div id="bundledSdkVersion" class="version-detail">Bundled mod version: checking...</div>
             <div id="bundledSdkStatus" class="version-detail">Bundled file: checking...</div>
-          </div>
-          <div class="update-card">
-            <h3>Installed SDK Mod</h3>
             <div id="installedSdkStatus" class="version-detail">Installed file: detecting...</div>
             <div id="installedSdkPath" class="version-detail">Path: not detected yet.</div>
+            <label for="sdkModsPath">Borderlands 4 sdk_mods folder</label>
+            <input id="sdkModsPath" type="text" placeholder="C:\Program Files (x86)\Steam\steamapps\common\Borderlands 4\sdk_mods">
+            <div id="oak2StatusSummary" class="status-line">oak2-mod-manager status not checked yet.</div>
+            <div id="oak2StatusDetail" class="version-detail">Detect or Re-check to verify Win64 Plugins + sdk_mods core files.</div>
+            <div class="button-row wrap">
+              <button id="detectSdkModsBtn">Detect Folder</button>
+              <button id="browseSdkModsBtn">Browse Folder</button>
+              <button id="recheckSdkStackBtn" class="secondary">Check Game SDK Stack</button>
+              <button id="installOak2Btn">Install SDK Manager</button>
+              <button id="installSdkModBtn">Install / Update SDK Mod</button>
+            </div>
+            <div id="sdkInstallSummary" class="status-line">No SDK mod install action has run yet.</div>
+          </section>
+          <section class="update-lane">
+            <span class="update-lane-number">3</span>
+            <h3>Catalog Data</h3>
+            <p class="muted-line">BL4 codes, travel, item pools, challenges, and tutorial copy update independently from the app.</p>
+            <div id="dataCatalogSummary" class="status-line">Data catalogs not checked yet.</div>
+            <div id="dataCatalogDetail" class="version-detail">Last data version / refresh time appear here after a check.</div>
+            <div class="button-row wrap">
+              <button id="refreshDataCatalogsBtn">Refresh Catalogs</button>
+              <button id="dataCacheOpenBtn" class="secondary">Open Cache Folder</button>
+              <button id="dataCacheClearBtn" class="danger">Clear Catalog Cache</button>
+            </div>
+            <div id="dataCacheSummary" class="version-detail">Downloaded catalog cache has not been inspected.</div>
+          </section>
+        </div>
+
+        <details class="updates-local-data">
+          <summary>Saved Settings and Backups <span>Bookmarks, favorites, presets, window settings</span></summary>
+          <div class="updates-local-data-body">
+            <p>Saved settings live outside the install folder and are not deleted by Clear Catalog Cache.</p>
+            <div id="savedDataSummary" class="status-line">Saved data folder not checked yet.</div>
+            <div class="button-row wrap">
+              <button id="savedDataRefreshBtn">View Saved Data</button>
+              <button id="savedDataOpenBtn">Open Saved Data Folder</button>
+              <button id="savedDataBackupBtn">Export Settings Backup</button>
+            </div>
+            <pre id="savedDataOutput">Export a backup before major changes if you want a manual copy.</pre>
           </div>
+        </details>
+        <div class="button-row wrap updates-footer-actions">
+          <button type="button" data-msbt-bridge-refresh class="secondary">Refresh Game Connection</button>
         </div>
-        <div class="button-row wrap">
-          <button id="checkUpdatesBtn">Check for Updates</button>
-          <button id="updateDownloadBtn">Download Electron Update</button>
-          <button id="updateInstallBtn">Restart / Install Downloaded Update</button>
-          <button id="downloadBtn">Open Electron Installer</button>
-          <button id="manualZipBtn">Open Manual ZIP</button>
-          <button id="refreshDataCatalogsBtn">Refresh Data Catalogs</button>
-          <button type="button" data-msbt-bridge-refresh class="secondary">Refresh Status</button>
-        </div>
-        <div id="dataCatalogSummary" class="status-line">Data catalogs not checked yet.</div>
-        <div id="dataCatalogDetail" class="version-detail">Last data version / refresh time appear here after a check.</div>
-        <pre id="updateOutput">Checks GitHub Releases metadata without changing files.</pre>
-      </section>
-
-      <section class="panel green" data-msbt-panel="updates-saved" data-msbt-span="6" data-msbt-title="Saved Data / Backups">
-        <h2>Saved Data / Backups</h2>
-        <p>Bookmarks, Dev Spawner favorites, Travel favorites, movement presets, rarity presets, and window size are stored outside the install folder so updates should not erase them.</p>
-        <div id="savedDataSummary" class="status-line">Saved data folder not checked yet.</div>
-        <div class="button-row wrap">
-          <button id="savedDataRefreshBtn">Refresh Saved Data</button>
-          <button id="savedDataOpenBtn">Open Saved Data Folder</button>
-          <button id="savedDataBackupBtn">Export Settings Backup</button>
-        </div>
-        <pre id="savedDataOutput">Use this before updating if you want a manual backup of saved Electron data.</pre>
-      </section>
-
-      <section class="panel cyan" data-msbt-panel="updates-sdk" data-msbt-span="6" data-msbt-title="SDK Mod Install / Update">
-        <h2>SDK Mod Install / Update</h2>
-        <p>Install oak2-mod-manager v0.3 (official LGPL-3.0 release), then MattsSDKBoostingTools.sdkmod + ActorScriptDeployer. Required mods are written enabled under <code>sdk_mods/settings</code>. Close Borderlands 4 first. Unrelated mods are left alone.</p>
-        <label for="sdkModsPath">Borderlands 4 sdk_mods folder</label>
-        <input id="sdkModsPath" type="text" placeholder="C:\Program Files (x86)\Steam\steamapps\common\Borderlands 4\sdk_mods">
-        <div id="oak2StatusSummary" class="status-line">oak2-mod-manager status not checked yet.</div>
-        <div id="oak2StatusDetail" class="version-detail">Detect or Re-check to verify Win64 Plugins + sdk_mods core files.</div>
-        <div class="button-row wrap">
-          <button id="detectSdkModsBtn">Detect Folder</button>
-          <button id="browseSdkModsBtn">Browse Folder</button>
-          <button id="recheckSdkStackBtn" class="secondary">Re-check SDK Stack</button>
-          <button id="installOak2Btn">Install SDK Manager</button>
-          <button id="installSdkModBtn">Install / Update SDK Mod</button>
-        </div>
-        <div id="sdkInstallSummary" class="status-line">No SDK mod install action has run yet.</div>
+        <pre id="updateOutput">Checks GitHub Releases for available updates without installing anything.</pre>
         <p class="version-detail">oak2 attribution: <a class="inline-link" href="https://github.com/bl-sdk/oak2-mod-manager" id="oak2RepoLink">bl-sdk/oak2-mod-manager</a> (LGPL-3.0). See docs/THIRD_PARTY_NOTICES.md.</p>
       </section>
     </section>
@@ -2077,7 +2146,7 @@
     <div class="modal-card gzo-submit-modal">
       <div class="section-heading">
         <div>
-          <h2 id="gzoSubmitTitle">Submit Code To GZO</h2>
+          <h2 id="gzoSubmitTitle">Submit Code to GZO</h2>
           <p>Submit a new code to GZO Pending from the Matt Editor or a pasted serial. Paste either @U Base85 or decoded text, then normalize before sending. A screenshot/image is required.</p>
         </div>
         <button id="gzoSubmitCloseBtn" type="button" class="secondary">Close</button>
@@ -2137,7 +2206,7 @@
         <div id="gzoSubmitStatus" class="status-line warning">Submissions go to GZO Pending for developer review. Attach an image before submitting.</div>
         <div class="button-row wrap">
           <button id="gzoSubmitCopyPayloadBtn" type="button">Copy Submission Preview</button>
-          <button id="gzoSubmitSendBtn" type="submit">Submit To GZO Pending</button>
+          <button id="gzoSubmitSendBtn" type="submit">Submit to GZO Pending</button>
         </div>
       </form>
     </div>

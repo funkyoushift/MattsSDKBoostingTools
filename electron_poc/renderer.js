@@ -153,6 +153,10 @@ const els = {
   hoardClearBtn: document.getElementById("hoardClearBtn"),
   hoardStatusLine: document.getElementById("hoardStatusLine"),
   hoardOutput: document.getElementById("hoardOutput"),
+  hoardPlanSummary: document.getElementById("hoardPlanSummary"),
+  hoardWalkthroughBtn: document.getElementById("hoardWalkthroughBtn"),
+  hoardFirstRunGuide: document.getElementById("hoardFirstRunGuide"),
+  hoardGuideDismissBtn: document.getElementById("hoardGuideDismissBtn"),
   devAggroMode: document.getElementById("devAggroMode"),
   devSpawnAnchor: document.getElementById("devSpawnAnchor"),
   electronAppCurrent: document.getElementById("electronAppCurrent"),
@@ -323,6 +327,9 @@ const els = {
   savedDataOutput: document.getElementById("savedDataOutput"),
   savedDataRefreshBtn: document.getElementById("savedDataRefreshBtn"),
   savedDataSummary: document.getElementById("savedDataSummary"),
+  dataCacheOpenBtn: document.getElementById("dataCacheOpenBtn"),
+  dataCacheClearBtn: document.getElementById("dataCacheClearBtn"),
+  dataCacheSummary: document.getElementById("dataCacheSummary"),
   serialDeliveryBar: document.getElementById("serialDeliveryBar"),
   serialDeliveryLabel: document.getElementById("serialDeliveryLabel"),
   serialDeliveryMessage: document.getElementById("serialDeliveryMessage"),
@@ -738,9 +745,33 @@ function bridgeAction(action, payload = {}, timeoutMs = 15000) {
   });
 }
 
+function humanActionLabel(action) {
+  const key = String(action || "").trim();
+  const catalog = state.quickMenuSnapshot && state.quickMenuSnapshot.catalog;
+  if (catalog && catalog[key] && catalog[key].basic) return String(catalog[key].basic);
+  const escaped = (typeof CSS !== "undefined" && CSS.escape) ? CSS.escape(key) : key.replace(/"/g, '\\"');
+  const button = document.querySelector(
+    `[data-action="${escaped}"], [data-movement-action="${escaped}"], `
+    + `[data-dev-spawner-action="${escaped}"], [data-rarity-action="${escaped}"]`
+  );
+  if (button) {
+    const label = String(button.textContent || "")
+      .replace(/\s*\[(?:ON|OFF)\]\s*$/i, "")
+      .replace(/\s*:\s*(?:On|Off)\s*$/i, "")
+      .trim();
+    if (label) return label;
+  }
+  return key
+    .split("_")
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
 async function runAction(action, payload = {}, outNode = els.boostOutput, timeoutMs = 30000) {
-  appendActivity(`Sending ${action}...`);
-  setOutput(outNode, `Sending ${action}...`);
+  const label = humanActionLabel(action);
+  appendActivity(`Sending ${label}...`);
+  setOutput(outNode, `Sending ${label}...`);
   const result = await bridgeAction(action, payload, timeoutMs);
   // Prefer the bridge action payload. The IPC wrapper is often `{ ok: true, data: { ok: false, ... } }`
   // when HTTP succeeded but the in-game handler rejected the command.
@@ -880,7 +911,7 @@ function renderQuickMenuEditor() {
 
 async function loadQuickMenuLayout({ quiet = false, preserveSelection = quiet } = {}) {
   if (!window.msbt || typeof window.msbt.bridgeRequest !== "function") return null;
-  if (!quiet) setQuickMenuStatus("Loading Quick Menu from the game bridge...");
+  if (!quiet) setQuickMenuStatus("Loading the Quick Menu from the game...");
   const result = await window.msbt.bridgeRequest({
     method: "GET",
     path: "/quick_menu",
@@ -888,7 +919,7 @@ async function loadQuickMenuLayout({ quiet = false, preserveSelection = quiet } 
   });
   const data = quickMenuData(result);
   if (!data || data.ok !== true || !data.layout) {
-    setQuickMenuStatus(resultMessage(result) || "Quick Menu bridge endpoint unavailable.", "warning");
+    setQuickMenuStatus(resultMessage(result) || "The game connection could not load the Quick Menu.", "warning");
     return null;
   }
 
@@ -964,7 +995,7 @@ function syncQuickMenuModulesPanel() {
 async function setQuickMenuRarityPanelEquipped(equipped) {
   const layout = quickMenuLayout();
   if (!layout) {
-    setQuickMenuStatus("Load the Quick Menu from the bridge first.", "warning");
+    setQuickMenuStatus("Connect to the game and load the Quick Menu first.", "warning");
     syncQuickMenuModulesPanel();
     return null;
   }
@@ -1258,7 +1289,7 @@ function quickMenuDevSpawnerActorName() {
 function quickMenuDevSpawnerLabel(action, payload = {}) {
   if (action === "dev_spawner_lostloot") return "Spawn Lost Loot";
   if (action === "dev_spawner_activate_last") return "Activate Last Spawn";
-  if (action === "dev_spawner_clear") return "Clear ASD Spawns";
+  if (action === "dev_spawner_clear") return "Clear Spawned Actors";
   const name = String(
     (payload && (payload.dev_ai_name || payload.dev_actor_name))
     || quickMenuDevSpawnerActorName()
@@ -1433,7 +1464,7 @@ function openQuickMenuAddModal(action, commandPayload = {}, label = "") {
     const custom = quickMenuNode("quickMenuAddLabel");
     const metadata = snapshot.catalog[action] || {};
     if (title) title.textContent = `Add ${label || metadata.basic || action}`;
-    if (description) description.textContent = `Pin ${action} with today's settings.`;
+    if (description) description.textContent = `Pin ${label || metadata.basic || humanActionLabel(action)} with the current settings.`;
     if (custom) custom.value = String(label || "").trim().slice(0, 48);
     setLine(quickMenuNode("quickMenuAddStatus"), "Choose a page and slot.", "");
     quickMenuNode("quickMenuAddModal").classList.remove("hidden");
@@ -1473,7 +1504,7 @@ async function confirmQuickMenuAdd() {
   const { maxPages, slotsPerPage } = quickMenuLimits();
   const page = getInt("quickMenuAddPage", 0, maxPages - 1, 0);
   const slot = getInt("quickMenuAddSlot", 0, slotsPerPage - 1, 0);
-  setLine(quickMenuNode("quickMenuAddStatus"), "Saving to the game bridge...");
+  setLine(quickMenuNode("quickMenuAddStatus"), "Saving to the in-game Quick Menu...");
   const result = await assignQuickMenuSlot({
     page,
     slot,
@@ -1691,7 +1722,7 @@ function updateDevperkToggleButtons() {
     const key = String(button.dataset.devperkToggle || "");
     const label = button.dataset.devperkName || button.textContent.replace(/\s+\[(?:ON|OFF)\]$/i, "");
     const isOn = Boolean(state.devperkToggles[key]);
-    button.textContent = `${label} [${isOn ? "ON" : "OFF"}]`;
+    button.textContent = `${label}: ${isOn ? "On" : "Off"}`;
     button.classList.toggle("is-on", isOn);
   });
 }
@@ -1894,12 +1925,12 @@ async function autoApplySavedMovementPresetIfNeeded() {
   if (!state.bridgeOnline || !state.movementAutoApplyOnStart || !state.movementSavedPreset) return;
   state.movementAutoAppliedThisSession = true;
   applyMovementPresetToControls(state.movementSavedPreset);
-  setLine(els.movementStatus, "Auto applying saved movement preset...", "warning");
+  setLine(els.movementStatus, "Applying the saved movement preset...", "warning");
   const result = await runMovementAction("movement_apply_all");
   setMovementSavedSummary(
     actionSucceeded(result)
-      ? "Auto-applied saved movement preset after bridge connection."
-      : "Saved movement preset auto-apply was attempted; check the movement result.",
+      ? "Applied the saved movement preset after the game connected."
+      : "Could not apply the saved movement preset. Check the movement result.",
     actionSucceeded(result) ? "ok" : "warning"
   );
 }
@@ -1939,7 +1970,7 @@ async function runMovementAction(action, extraPayload = {}) {
     resetMovementControlsToDefaults();
   }
   const payload = { ...movementPayload(), ...extraPayload };
-  setLine(els.movementStatus, `Sending ${action}...`, "warning");
+  setLine(els.movementStatus, `Sending ${humanActionLabel(action)}...`, "warning");
   const result = await runAction(action, payload, els.movementOutput, 30000);
   setLine(els.movementStatus, resultMessage(result), actionSucceeded(result) ? "ok" : "warning");
   return result;
@@ -2118,7 +2149,7 @@ async function runRarityAction(action) {
   }
 
   const payload = action === "rarity_apply" ? rarityPayload() : {};
-  setLine(els.rarityStatus, `Sending ${action}...`, "warning");
+  setLine(els.rarityStatus, `Sending ${humanActionLabel(action)}...`, "warning");
   const result = await runAction(action, payload, els.boostOutput, 30000);
   setLine(els.rarityStatus, resultMessage(result), actionSucceeded(result) ? "ok" : "warning");
   // Pull canonical backend weights so Boosting matches F7 / persisted state.
@@ -2365,7 +2396,7 @@ const PLAYER_SCOPED_BOOST_ACTIONS = new Set([
   "max_sdu",
   "fog_of_war_clear",
   "chaos_launch",
-  "chaos_drop_backpack",
+  "chaos_drop_backpack_targeted",
   "chaos_empty_backpack",
   "chaos_kill",
   "chaos_ffyl",
@@ -2449,6 +2480,20 @@ function setBoostTargetScope(scope) {
   state.boostTargetScope = next === "all" || next === "nonhost" ? next : "selected";
   updateBoostTargetSummary();
   appendActivity(`Boost target scope set to ${boostScopeLabel(state.boostTargetScope)}.`);
+}
+
+async function deliverShiniesToBoostScope() {
+  const scope = state.boostTargetScope || "selected";
+  const action = scope === "all"
+    ? "shiny_all"
+    : scope === "nonhost"
+      ? "shiny_nonhost"
+      : "shiny_selected";
+  if (scope === "selected") {
+    const ok = await ensureSelectedTarget(els.boostOutput);
+    if (!ok) return { ok: false, message: "No party player selected." };
+  }
+  return runAction(action, {}, els.boostOutput, 30000);
 }
 
 async function runScopedPlayerAction(action, payload = {}, outNode = els.boostOutput, timeoutMs = 30000) {
@@ -2588,8 +2633,8 @@ function formatMobileGatewayDetails(info, preferredHost = "") {
     "",
     "Easiest: open MSBT Mobile → More → Connection Settings → Scan QR to pair.",
     "Manual: enter address, port, and pairing code, then Save → Connect / Test.",
-    "Phone and PC must be on the same Wi‑Fi. Allow Windows Firewall for Node/Electron on port 49775 if prompted.",
-    "Keep Borderlands 4 running with the MSBT SDK mod so live actions can reach the game bridge.",
+    "Phone and PC must be on the same Wi‑Fi. Allow Windows Firewall for MSBT on port 49775 if prompted.",
+    "Keep Borderlands 4 running with the MSBT SDK mod so live actions can reach the game.",
     "",
     `QR payload: ${JSON.stringify(payload)}`
   ].filter(Boolean);
@@ -2825,9 +2870,9 @@ function applyBridgeStatusResult(result, options = {}) {
   const playerCount = Array.isArray(data.players) ? data.players.length : 0;
   const selected = data.selected_player || "none";
   const queue = data.queue || 0;
-  setLine(els.bridgeSummary, `Bridge online | players: ${playerCount} | selected: ${selected} | queue: ${queue}`, "ok");
+  setLine(els.bridgeSummary, `Game connected | Players: ${playerCount} | Selected: ${selected} | Waiting: ${queue}`, "ok");
   if (els.devBridgeSummary) {
-    setLine(els.devBridgeSummary, `Bridge online | players: ${playerCount} | selected: ${selected} | queue: ${queue}`, "ok");
+    setLine(els.devBridgeSummary, `Game connected | Players: ${playerCount} | Selected: ${selected} | Waiting: ${queue}`, "ok");
   }
   const serialFingerprint = window.MsbtPollCoordinator
     ? window.MsbtPollCoordinator.serialDeliveryFingerprint(data.serial_delivery)
@@ -2854,26 +2899,26 @@ function applyBridgeStatusResult(result, options = {}) {
     fingerprints.vehicles = vehiclesFingerprint;
     updateVehicleCatalogFromStatus(data);
   }
-  if (!options.quiet) appendActivity(`Bridge online | players: ${playerCount} | selected: ${selected} | queue: ${queue}`);
+  if (!options.quiet) appendActivity(`Game connected | Players: ${playerCount} | Selected: ${selected} | Waiting: ${queue}`);
   return data;
 }
 
 function updateLiveModToggleButtons(cxpEnabled, dropsEnabled, holdsEnabled) {
   if (els.cxpToggleBtn) {
     const on = Boolean(cxpEnabled);
-    els.cxpToggleBtn.textContent = `Combat XP Mult (All) [${on ? "ON" : "OFF"}]`;
+    els.cxpToggleBtn.textContent = `Combat XP Multiplier: ${on ? "On" : "Off"}`;
     els.cxpToggleBtn.classList.toggle("is-on", on);
     els.cxpToggleBtn.classList.toggle("danger", on);
   }
   if (els.instantDropsToggleBtn) {
     const on = Boolean(dropsEnabled);
-    els.instantDropsToggleBtn.textContent = `Instant Drops [${on ? "ON" : "OFF"}]`;
+    els.instantDropsToggleBtn.textContent = `Instant Drops: ${on ? "On" : "Off"}`;
     els.instantDropsToggleBtn.classList.toggle("is-on", on);
     els.instantDropsToggleBtn.classList.toggle("danger", on);
   }
   if (els.instantHoldsToggleBtn) {
     const on = Boolean(holdsEnabled);
-    els.instantHoldsToggleBtn.textContent = `Instant Holds [${on ? "ON" : "OFF"}]`;
+    els.instantHoldsToggleBtn.textContent = `Instant Holds: ${on ? "On" : "Off"}`;
     els.instantHoldsToggleBtn.classList.toggle("is-on", on);
     els.instantHoldsToggleBtn.classList.toggle("danger", on);
   }
@@ -2902,7 +2947,7 @@ function syncLiveModsFromStatus(data) {
 }
 
 async function runLiveModAction(action, payload = {}) {
-  setLine(els.liveModsStatus, `Sending ${action}...`, "warning");
+  setLine(els.liveModsStatus, `Sending ${humanActionLabel(action)}...`, "warning");
   const result = await runAction(action, payload, els.boostOutput, 20000);
   const data = result && typeof result === "object" ? result : {};
   syncLiveModsFromStatus({
@@ -2919,13 +2964,13 @@ function updateAsdAutoclearTimer(data) {
   if (!els.devSpawnerTimer) return;
   const ac = data && data.asd_autoclear && typeof data.asd_autoclear === "object" ? data.asd_autoclear : null;
   if (!ac || !ac.armed) {
-    setLine(els.devSpawnerTimer, "ASD autoclear: idle (non-blocking spawn poll is always on)", "ok");
+    setLine(els.devSpawnerTimer, "Automatic cleanup: idle. Spawn tracking stays on.", "ok");
     return;
   }
   const secs = Number(ac.seconds_remaining);
   const label = Number.isFinite(secs)
-    ? `ASD autoclear armed — clears in ~${secs.toFixed(1)}s`
-    : "ASD autoclear armed";
+    ? `Automatic cleanup armed — clears in about ${secs.toFixed(1)}s`
+    : "Automatic cleanup armed";
   setLine(els.devSpawnerTimer, label, secs <= 5 ? "warning" : "ok");
 }
 
@@ -3070,6 +3115,9 @@ function applyDevSpawnerLayoutMode(mode, opts = {}) {
   return next;
 }
 
+// Lets panel_layout.js route the shared Layout toggle through Dev Spawner's own shell swap.
+window.msbtSetDevSpawnerLayoutMode = (mode) => applyDevSpawnerLayoutMode(mode, { forceInit: true });
+
 function renderDevFavoriteStrip() {
   if (!els.devFavoriteStrip) return;
   const favorites = typeof devMyFavoritesMap === "function" ? devMyFavoritesMap() : {};
@@ -3160,14 +3208,14 @@ function combatPayload() {
 
 async function runCombatAction(action, extra = {}) {
   const payload = { ...combatPayload(), ...extra };
-  setLine(els.combatStatus, `Sending ${action}...`, "warning");
+  setLine(els.combatStatus, `Sending ${humanActionLabel(action)}...`, "warning");
   const result = await runAction(action, payload, els.combatOutput, 20000);
   setLine(els.combatStatus, resultMessage(result), actionSucceeded(result) ? "ok" : "warning");
   return result;
 }
 
 async function runVehicleAction(action, payload = {}) {
-  setLine(els.vehicleStatus, `Sending ${action}...`, "warning");
+  setLine(els.vehicleStatus, `Sending ${humanActionLabel(action)}...`, "warning");
   const result = await runAction(action, payload, els.vehicleOutput, 20000);
   setLine(els.vehicleStatus, resultMessage(result), actionSucceeded(result) ? "ok" : "warning");
   const data = result && result.data ? result.data : result;
@@ -3261,7 +3309,7 @@ async function refreshChallengeRunStatus(options = {}) {
 }
 
 async function runChallengeCompleteAction(action, payload = {}) {
-  setLine(els.challengeStatus, `Sending ${action}…`, "warning");
+  setLine(els.challengeStatus, `Sending ${humanActionLabel(action)}…`, "warning");
   const result = await runAction(action, payload, els.challengeOutput, 30000);
   const data = result && result.data ? result.data : result;
   const needsConfirm = Boolean(data && data.needs_confirm);
@@ -3278,8 +3326,8 @@ async function runChallengeCompleteAction(action, payload = {}) {
 
 async function bridgeStatus(options = {}) {
   if (!options.quiet) {
-    setLine(els.bridgeSummary, "Checking bridge...", "warning");
-    if (els.devBridgeSummary) setLine(els.devBridgeSummary, "Checking bridge...", "warning");
+    setLine(els.bridgeSummary, "Checking game connection...", "warning");
+    if (els.devBridgeSummary) setLine(els.devBridgeSummary, "Checking game connection...", "warning");
   }
   const result = await window.msbt.bridgeRequest({ method: "GET", path: "/status" });
   if (!options.quiet) setOutput(els.statusOutput, result);
@@ -3920,7 +3968,7 @@ async function persistSerialBookmarks(successMessage) {
 
 async function loadSerialBookmarks() {
   if (!window.msbt || typeof window.msbt.loadSerialBookmarks !== "function") {
-    setBookmarkStatus("Serial bookmark storage is not available in this Electron build.", "bad");
+    setBookmarkStatus("Serial bookmark storage is not available in this app build.", "bad");
     return;
   }
   const result = await window.msbt.loadSerialBookmarks();
@@ -4133,7 +4181,7 @@ async function sendBookmarkSerial(mode) {
 
   const copies = getInt(els.bookmarkSerialCopies, 1, 50, 1);
   const expanded = expandSerialTextCopies(serials.join("\n"), copies, "Serial Bookmarks");
-  const destination = mode === "selected" ? (state.selectedTarget || "selected target") : mode === "all" ? "all players" : "non-host players";
+  const destination = mode === "selected" ? (state.selectedTarget || "selected player") : mode === "all" ? "all players" : "other players";
   const label = entries.length === 1 ? `"${entries[0].name || "selected bookmark"}"` : `${entries.length} bookmark row(s)`;
   const copiesNote = copies > 1 ? ` (${copies} copies each → ${expanded.totalCount} total)` : "";
   if (!window.confirm(`Deliver ${serials.length} serial(s)${copiesNote} from ${label} to ${destination}?`)) {
@@ -4772,7 +4820,7 @@ async function handleGzoSubmit(event) {
   }
   const payload = gzoSubmitRequestPayload();
   if (!payload.imagePath) {
-    setLine(els.gzoSubmitStatus, "Electron could not access the selected image path. Choose the image again and retry.", "bad");
+    setLine(els.gzoSubmitStatus, "MSBT could not access the selected image. Choose it again and retry.", "bad");
     return;
   }
   if (els.gzoSubmitSendBtn) els.gzoSubmitSendBtn.disabled = true;
@@ -4816,7 +4864,7 @@ async function loadBl4Breakdown(row) {
   const activeId = bl4EntryId(row);
   setTextValue(els.bl4Breakdown, "Generating parts breakdown locally...");
   if (!window.msbt || typeof window.msbt.bl4PartsBreakdown !== "function") {
-    setTextValue(els.bl4Breakdown, "Parts breakdown helper is not available in this Electron build.");
+    setTextValue(els.bl4Breakdown, "Parts breakdown is not available in this app build.");
     return;
   }
   const result = await window.msbt.bl4PartsBreakdown(row.serial);
@@ -5071,7 +5119,7 @@ async function sendBl4Serial(mode) {
 
   const copies = getInt(els.bl4SerialCopies, 1, 50, 1);
   const expanded = expandSerialTextCopies(serialText, copies, "BL4 Codes");
-  const destination = mode === "selected" ? (state.selectedTarget || "selected target") : mode === "all" ? "all players" : "non-host players";
+  const destination = mode === "selected" ? (state.selectedTarget || "selected player") : mode === "all" ? "all players" : "other players";
   const label = deliveryRows.length === 1 ? `"${deliveryRows[0].name || "selected BL4 code"}"` : `${deliveryRows.length} selected BL4 codes`;
   const skipNote = skippedByOverride.length ? `\n\n${skippedByOverride.length} selected code(s) will be skipped because their level could not be changed.` : "";
   const copiesNote = copies > 1 ? `\nCopies: ${copies} each → ${expanded.totalCount} total serials.` : "";
@@ -5129,7 +5177,7 @@ async function loadBl4Catalog() {
   if (state.bl4CatalogLoaded) return;
   if (state.bl4CatalogLoadPromise) return state.bl4CatalogLoadPromise;
   if (!window.msbt || typeof window.msbt.loadBl4Catalog !== "function") {
-    setBl4Status("BL4 catalog loader is not available in this Electron build.", "bad");
+    setBl4Status("The BL4 catalog is not available in this app build.", "bad");
     return;
   }
   state.bl4CatalogLoadPromise = (async () => {
@@ -5158,7 +5206,7 @@ async function loadBl4Catalog() {
 
 async function refreshBl4GzoCatalog() {
   if (!window.msbt || typeof window.msbt.refreshGzoCatalog !== "function") {
-    setBl4Status("GZO refresh is not available in this Electron build.", "bad");
+    setBl4Status("GZO refresh is not available in this app build.", "bad");
     return;
   }
   if (els.bl4RefreshGzoBtn) els.bl4RefreshGzoBtn.disabled = true;
@@ -5260,7 +5308,7 @@ async function refreshMsbtDataCatalogs(options = {}) {
   const fromBl4 = Boolean(options.fromBl4);
   const quiet = Boolean(options.quiet);
   if (!window.msbt || typeof window.msbt.refreshDataCatalogs !== "function") {
-    const message = "Data catalog refresh is not available in this Electron build.";
+    const message = "Catalog refresh is not available in this app build.";
     if (fromBl4) setBl4Status(message, "bad");
     if (els.dataCatalogSummary) setLine(els.dataCatalogSummary, message, "bad");
     return;
@@ -5395,8 +5443,8 @@ function updateNoticeInfo(info) {
   if (updaterStatus === "downloaded") {
     return {
       kind: "downloaded",
-      title: "Electron Update Ready",
-      message: `The Electron app update has downloaded. Restart MSBT to install it. ${restartGameNote}`,
+      title: "Desktop App Update Ready",
+      message: `The desktop app update has downloaded. Restart MSBT to install it. ${restartGameNote}`,
       showDownload: false,
       showInstall: true,
       showInstaller: false,
@@ -5409,8 +5457,8 @@ function updateNoticeInfo(info) {
       : "";
     return {
       kind: "progress",
-      title: "Downloading Electron Update",
-      message: `The Electron app update is downloading.${progress}`,
+      title: "Downloading Desktop App Update",
+      message: `The desktop app update is downloading.${progress}`,
       showDownload: false,
       showInstall: false,
       showInstaller: false,
@@ -5420,8 +5468,8 @@ function updateNoticeInfo(info) {
   if (updaterStatus === "available") {
     return {
       kind: "app",
-      title: "Electron App Update Available",
-      message: `A newer Electron app is available: ${localAppVersion} -> ${remoteAppVersion}. Download it here, then restart/install when it is ready. ${restartGameNote}`,
+      title: "Desktop App Update Available",
+      message: `A newer desktop app is available: ${localAppVersion} → ${remoteAppVersion}. Download it here, then restart and install when it is ready. ${restartGameNote}`,
       showDownload: true,
       showInstall: false,
       showInstaller: true,
@@ -5431,8 +5479,8 @@ function updateNoticeInfo(info) {
   if (data.electronUpdateAvailable) {
     return {
       kind: "app",
-      title: "Electron App Update Available",
-      message: `A newer Electron app is available: ${localAppVersion} -> ${remoteAppVersion}. Open the installer download to update.`,
+      title: "Desktop App Update Available",
+      message: `A newer desktop app is available: ${localAppVersion} → ${remoteAppVersion}. Open the installer download to update.`,
       showDownload: false,
       showInstall: false,
       showInstaller: true,
@@ -5445,8 +5493,8 @@ function updateNoticeInfo(info) {
       kind: "package",
       title: "MSBT Package Update Available",
       message: sameVersionRebuild
-        ? `A newer rebuild of MSBT ${localPackageVersion} is available. Update the Electron app and bundled SDK mod together. ${restartGameNote}`
-        : `A newer MSBT package is available: ${localPackageVersion} -> ${remotePackageVersion}. Update the Electron app and bundled SDK mod together. ${restartGameNote}`,
+        ? `A newer rebuild of MSBT ${localPackageVersion} is available. Update the Desktop App and Game SDK Mod together. ${restartGameNote}`
+        : `A newer MSBT package is available: ${localPackageVersion} → ${remotePackageVersion}. Update the Desktop App and Game SDK Mod together. ${restartGameNote}`,
       showDownload: updaterStatus === "available",
       showInstall: updaterStatus === "downloaded",
       showInstaller: true,
@@ -5602,9 +5650,9 @@ function renderUpdateState(updateState) {
   }
 
   if (status === "available") {
-    setLine(els.updateSummary, `${message} Click Download Electron Update when ready.`, "warning");
+    setLine(els.updateSummary, `${message} Click Download Desktop App Update when ready.`, "warning");
   } else if (status === "downloaded") {
-    setLine(els.updateSummary, `${message} Click Restart / Install Downloaded Update when ready.`, "ok");
+    setLine(els.updateSummary, `${message} Click Restart and Install when ready.`, "ok");
   } else if (status === "error") {
     setLine(els.updateSummary, `${message}${error}`, "bad");
   } else if (status === "progress") {
@@ -5652,7 +5700,7 @@ async function checkUpdates(options = {}) {
       "warning"
     );
   } else {
-    setLine(els.updateSummary, `Current Electron app looks up to date: ${localAppVersion}`, "ok");
+    setLine(els.updateSummary, `The Desktop App is up to date: ${localAppVersion}`, "ok");
   }
 }
 
@@ -5891,6 +5939,58 @@ async function exportSavedDataBackup() {
     setLine(els.savedDataSummary, result && result.message ? result.message : "Backup export failed.", "bad");
   }
   setOutput(els.savedDataOutput, result);
+}
+
+function renderDataCacheInfo(result) {
+  if (!els.dataCacheSummary) return;
+  if (!result || !result.ok) {
+    setLine(els.dataCacheSummary, result && result.message ? result.message : "Catalog cache check failed.", "bad");
+    return;
+  }
+  const files = Number(result.fileCount || 0);
+  const bytes = Number(result.bytes || 0);
+  setLine(
+    els.dataCacheSummary,
+    files
+      ? `${files} downloaded cache file(s) · ${formatBytes(bytes)} · ${result.path}`
+      : `Catalog cache is empty. Bundled offline data remains available. · ${result.path}`,
+    files ? "ok" : ""
+  );
+}
+
+async function refreshDataCacheInfo() {
+  if (!window.msbt || typeof window.msbt.getDataCacheInfo !== "function") return null;
+  const result = await window.msbt.getDataCacheInfo();
+  renderDataCacheInfo(result);
+  return result;
+}
+
+async function openDataCacheFolder() {
+  if (!window.msbt || typeof window.msbt.openDataCacheFolder !== "function") return;
+  const result = await window.msbt.openDataCacheFolder();
+  renderDataCacheInfo(result);
+}
+
+async function clearDataCatalogCache() {
+  if (!window.msbt || typeof window.msbt.clearDataCatalogCache !== "function") return;
+  const confirmed = window.confirm(
+    "Clear downloaded BL4/catalog cache?\n\nSaved bookmarks, favorites, presets, and backups are not affected. Bundled offline catalogs remain available."
+  );
+  if (!confirmed) return;
+  if (els.dataCacheClearBtn) els.dataCacheClearBtn.disabled = true;
+  try {
+    const result = await window.msbt.clearDataCatalogCache();
+    renderDataCacheInfo(result);
+    setLine(
+      els.dataCatalogSummary,
+      result && result.ok
+        ? "Downloaded catalog cache cleared. Refresh Catalogs to download current data again."
+        : resultMessage(result),
+      result && result.ok ? "ok" : "bad"
+    );
+  } finally {
+    if (els.dataCacheClearBtn) els.dataCacheClearBtn.disabled = false;
+  }
 }
 
 function resetSerialToolsOutputs(status = "Paste a @U serial or deserialized serial text above.") {
@@ -7894,8 +7994,9 @@ async function runDevSpawnerAction(action) {
     return;
   }
 
-  appendActivity(`Sending ${action}...`);
-  setOutput(els.devSpawnerOutput, `Sending ${action}...`);
+  const actionLabel = humanActionLabel(action);
+  appendActivity(`Sending ${actionLabel}...`);
+  setOutput(els.devSpawnerOutput, `Sending ${actionLabel}...`);
   if (els.devResultFold) els.devResultFold.open = true;
   try {
     const payload = devSpawnerPayload();
@@ -8696,6 +8797,7 @@ function wireInventoryEvents() {
 const HOARD_PLAN_KEY = "msbt.hoardBuilder.plan.v2";
 const HOARD_PLAN_KEY_LEGACY = "msbt.hoardBuilder.plan.v1";
 const HOARD_FAVORITES_KEY = "msbt.hoardBuilder.favorites.v1";
+const HOARD_GUIDE_DISMISSED_KEY = "msbt.hoardBuilder.guideDismissed.v1";
 const HOARD_MAX_FAVORITES = 40;
 // Mirrors hoard_runner.py: pacing keeps frames alive, not tiny caps.
 const HOARD_MAX_WAVE_TOTAL = 60;
@@ -9018,6 +9120,19 @@ function bumpHoardEntryCount(wave, actorId, delta) {
 function renderHoardWaveList() {
   if (!els.hoardWaveList) return;
   els.hoardWaveList.innerHTML = "";
+  const waveCount = state.hoardWaves.length;
+  const enemyCount = state.hoardWaves.reduce((sum, wave) => sum + hoardWaveTotalCount(wave), 0);
+  const emptyCount = state.hoardWaves.filter((wave) => !hoardWaveEntries(wave).length).length;
+  if (els.hoardPlanSummary) {
+    els.hoardPlanSummary.textContent = waveCount
+      ? `${waveCount} wave${waveCount === 1 ? "" : "s"} · ${enemyCount} enem${enemyCount === 1 ? "y" : "ies"}${emptyCount ? ` · ${emptyCount} empty` : ""}`
+      : "No waves";
+  }
+  if (els.hoardMoveUpBtn) els.hoardMoveUpBtn.disabled = state.hoardSelectedIndex <= 0;
+  if (els.hoardMoveDownBtn) els.hoardMoveDownBtn.disabled = state.hoardSelectedIndex >= waveCount - 1;
+  if (els.hoardRemoveWaveBtn) {
+    els.hoardRemoveWaveBtn.textContent = waveCount <= 1 ? "Clear Wave" : "Remove Wave";
+  }
   if (!state.hoardWaves.length) {
     const empty = document.createElement("div");
     empty.className = "dev-empty-row";
@@ -9354,6 +9469,17 @@ function openHoardBuilderTab() {
   if (typeof switchTab === "function") switchTab("hoard-builder");
 }
 
+function syncHoardFirstRunGuide() {
+  if (!els.hoardFirstRunGuide) return;
+  let dismissed = false;
+  try {
+    dismissed = localStorage.getItem(HOARD_GUIDE_DISMISSED_KEY) === "1";
+  } catch (_error) {
+    dismissed = false;
+  }
+  els.hoardFirstRunGuide.classList.toggle("hidden", dismissed);
+}
+
 function wireHoardBuilder() {
   if (!els.hoardWaveList) return;
   loadHoardPlanFromStorage();
@@ -9362,6 +9488,24 @@ function wireHoardBuilder() {
   renderHoardWaveList();
   renderHoardActorSearch();
   renderHoardFavorites();
+  syncHoardFirstRunGuide();
+  if (els.hoardGuideDismissBtn) {
+    els.hoardGuideDismissBtn.addEventListener("click", () => {
+      try {
+        localStorage.setItem(HOARD_GUIDE_DISMISSED_KEY, "1");
+      } catch (_error) {
+        /* ignore */
+      }
+      syncHoardFirstRunGuide();
+    });
+  }
+  if (els.hoardWalkthroughBtn) {
+    els.hoardWalkthroughBtn.addEventListener("click", () => {
+      if (typeof window.msbtStartTabTutorial === "function") {
+        window.msbtStartTabTutorial("hoard-builder");
+      }
+    });
+  }
 
   if (els.hoardAddWaveBtn) {
     els.hoardAddWaveBtn.addEventListener("click", () => {
@@ -9542,9 +9686,16 @@ function switchTab(tabId) {
     els.editorFrame.src = "about:blank";
     state.editorLoaded = false;
   }
+  let activeTabButton = null;
   document.querySelectorAll(".tab-bar [data-tab]").forEach((button) => {
     button.classList.toggle("active", button.dataset.tab === tabId);
+    if (button.dataset.tab === tabId) activeTabButton = button;
   });
+  if (activeTabButton) {
+    requestAnimationFrame(() => {
+      activeTabButton.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" });
+    });
+  }
   document.querySelectorAll(".tab-panel").forEach((panel) => {
     panel.classList.toggle("active", panel.id === `tab-${tabId}`);
   });
@@ -9657,6 +9808,10 @@ function wireEvents() {
   document.querySelectorAll("[data-action]").forEach((button) => {
     button.addEventListener("click", () => runBoostActionButton(button));
   });
+  const shinyDeliverBtn = document.getElementById("shinyDeliverBtn");
+  if (shinyDeliverBtn) {
+    shinyDeliverBtn.addEventListener("click", () => void deliverShiniesToBoostScope());
+  }
   if (els.cxpToggleBtn) {
     els.cxpToggleBtn.addEventListener("click", () => void runLiveModAction("cxp_toggle", {
       multiplier: getFloat(els.cxpMultiplier, 1, 1000000, 1000)
@@ -9936,6 +10091,8 @@ function wireEvents() {
   if (els.savedDataRefreshBtn) els.savedDataRefreshBtn.addEventListener("click", refreshSavedDataInfo);
   if (els.savedDataOpenBtn) els.savedDataOpenBtn.addEventListener("click", openSavedDataFolder);
   if (els.savedDataBackupBtn) els.savedDataBackupBtn.addEventListener("click", exportSavedDataBackup);
+  if (els.dataCacheOpenBtn) els.dataCacheOpenBtn.addEventListener("click", openDataCacheFolder);
+  if (els.dataCacheClearBtn) els.dataCacheClearBtn.addEventListener("click", clearDataCatalogCache);
   if (els.appOpacity) {
     els.appOpacity.addEventListener("input", queueWindowOpacitySave);
     els.appOpacity.addEventListener("change", saveWindowOpacity);
@@ -10282,7 +10439,7 @@ const TUTORIAL_TOURS = {
   main: [
     {
       title: "Welcome to MSBT",
-      body: "You need Borderlands 4 + oak2-mod-manager v0.3 + the MSBT SDK mod (.sdkmod in sdk_mods) + this Electron app. Live actions also need a connected bridge — use header Refresh Status.\n\nOffline: serial convert/validate. Live (game + mod + bridge): boosting, spawns, travel, delivery.\n\nUse Updates → Install SDK Manager (oak2 v0.3) then Install / Update SDK Mod for MSBT + ActorScriptDeployer (auto-enabled).",
+      body: "Live actions need Borderlands 4, the SDK Manager, the MSBT Game SDK Mod, and this Desktop App. Use Refresh Status to check the game connection.\n\nSerial conversion and validation work offline. Boosting, spawning, travel, and delivery need the game connected.\n\nOpen Updates to install the SDK Manager and Game SDK Mod.",
       tab: "boosting",
       target: "statusBtn",
       sdk: true,
@@ -10299,20 +10456,20 @@ const TUTORIAL_TOURS = {
     },
     {
       title: "Bridge & status",
-      body: "Live actions need the SDK bridge. Click Refresh Status in the header — this line shows whether the bridge is up and which players are available. Offline tools (serial convert, catalogs) still work without it.",
+      body: "Live actions need the SDK bridge. Click Status in the header, or Refresh Status in Target Player — this line shows whether the bridge is up and which players are available. Offline tools (serial convert, catalogs) still work without it.",
       tab: "boosting",
       target: "bridgeSummary"
     },
     {
       title: "Boosting",
-      body: "This is the main live lobby tab. Pick a target player (or All / Non-Host), then use Quick Max, UVH, rarity weights, XP, currency, backpack/bank size, helpers, cheats, and serial rewards. Most buttons need the bridge.",
+      body: "This is the main live lobby tab. Pick one player, all players, or everyone except the host, then use Essentials, Combat & Cheats, rarity weights, backpack/bank size, and serial rewards. Drop All Backpack is always host-only. Most buttons need the game connected.",
       tab: "boosting",
       targetSel: "#tab-boosting [data-msbt-panel='boost-target']",
-      revealPanels: ["boost-target", "boost-quick-max"]
+      revealPanels: ["boost-target", "boost-essentials"]
     },
     {
       title: "Serial Tools",
-      body: "Paste a @U or decoded serial → Convert to decode parts and rebuild @U (works offline). Validate serials, save keepers as Bookmarks (named groups), then Deliver Selected / All / Non-Host when the bridge is connected.",
+      body: "Paste a @U or decoded serial, then Convert to decode parts and rebuild @U (works offline). Validate serials, save keepers as Bookmarks, then deliver to the selected player, all players, or everyone except the host when the game is connected.",
       tab: "serial-tools",
       targetSel: "#tab-serial-tools [data-msbt-panel='serial-tools-main']"
     },
@@ -10320,7 +10477,7 @@ const TUTORIAL_TOURS = {
       title: "Hoard Builder",
       body: "Build sequenced ASD enemy waves: click actors to fill each wave, press Start Hoard, then clear the board — the next wave starts automatically. Stop pauses advance; Clear Spawns wipes ASD. Same actor catalog as Dev Spawner.",
       tab: "hoard-builder",
-      targetSel: "#tab-hoard-builder [data-msbt-panel='hoard-builder-main']"
+      targetSel: "#tab-hoard-builder .hoard-builder-page"
     },
     {
       title: "Map Travel",
@@ -10342,16 +10499,16 @@ const TUTORIAL_TOURS = {
     },
     {
       title: "Updates",
-      body: "Check Electron app and SDK mod versions here. Download Electron updates, Install SDK Manager (oak2 v0.3), or Install / Update SDK Mod into your Borderlands 4 sdk_mods folder. Fully restart the game after any SDK change.",
+      body: "Check the Desktop App, Game SDK Stack, and Catalog Data here. You can also install the SDK Manager or Game SDK Mod. Fully restart the game after any SDK change.",
       tab: "updates",
-      targetSel: "#tab-updates [data-msbt-panel='updates-main']",
+      targetSel: "#tab-updates .updates-page",
       sdk: true
     },
     {
       title: "Activity Log",
       body: "Recent app and bridge messages appear here. If a button seems to do nothing, check this log first. Clear Local Log when it gets noisy; copy useful lines before opening Report.",
       tab: "activity",
-      targetSel: "#tab-activity [data-msbt-panel='activity-log']"
+      targetSel: "#tab-activity .activity-page"
     },
     {
       title: "Arrange your layout",
@@ -10371,7 +10528,7 @@ const TUTORIAL_TOURS = {
   layout: [
     {
       title: "Layout toolbar",
-      body: "Every main tab has a layout bar: Panels (show/hide), Compact, Reset layout, and Walkthrough. Arrangements save per tab in this profile.",
+      body: "Dockable tabs have a layout bar: Fixed / Panels mode, Comfortable / Compact spacing, Panels (show/hide), Compact packing, Reset layout, and Walkthrough. Arrangements save per tab in this profile.",
       tab: "boosting",
       targetSel: "#tab-boosting .msbt-layout-toolbar"
     },
@@ -10395,7 +10552,7 @@ const TUTORIAL_TOURS = {
     },
     {
       title: "Compact and Reset",
-      body: "Compact packs panels, fills gaps, and clears overlaps. Reset layout restores that tab's default arrangement.",
+      body: "The Compact button packs panels, fills gaps, and clears overlaps. Reset layout restores that tab's shipped default arrangement. The separate Comfortable / Compact switch changes control spacing only.",
       tab: "boosting",
       targetSel: "#tab-boosting .msbt-layout-toolbar-actions"
     },
@@ -10444,7 +10601,7 @@ const TUTORIAL_TOURS = {
       body: "On Boosting, Movement, Serial Tools, BL4, Item Pool, Travel, and more, gold + QM buttons capture the action with current values into a slot. Pin Last Command (on the Quick Menu tab) works after you run something once.",
       tab: "boosting",
       targetSel: "#tab-boosting .qm-add-button",
-      targetSelFallback: "#tab-boosting [data-msbt-panel='boost-helpers']"
+      targetSelFallback: "#tab-boosting [data-msbt-panel='boost-essentials']"
     },
     {
       title: "Modules & rarity",
@@ -10508,18 +10665,18 @@ async function applyRemoteTutorialCopy() {
 const TAB_TUTORIALS = {
   boosting: [
     {
-      title: "Target & bridge",
-      body: "Refresh Status (header) until the bridge is green. Choose a party player, or Target All / Non-Host for Quick Max, XP, Currency, and backpack/bank Set Selected. Kick uses the selected player.",
+      title: "Target and game connection",
+      body: "Use Status in the header or Refresh Status in this panel until the game connection is green. Choose a party player, all players, or everyone except the host for boosts, XP, currency, backpack/bank changes, and Shinies Deliver. Drop All Backpack remains host-only. Kick uses the selected player.",
       tab: "boosting",
       targetSel: "#tab-boosting [data-msbt-panel='boost-target']",
       revealPanels: ["boost-target"]
     },
     {
-      title: "Quick Max & UVH",
-      body: "Quick Max one-shots cash, eridium, level 60, spec 701, SDUs, or Max All. UVH Booster runs lobby challenge tiers 1–N (or Run All 1–7); Cancel stops a queued run.",
+      title: "Essentials & UVH",
+      body: "Essentials is the frequent-action home: Max All, host-only Drop All Backpack, Shinies Drop/targeted Deliver, UVH 1–7, Combat XP, instant actions, chest controls, Pull Loot, and Super Dash.",
       tab: "boosting",
-      targetSel: "#tab-boosting [data-msbt-panel='boost-quick-max']",
-      revealPanels: ["boost-quick-max", "boost-uvh"]
+      targetSel: "#tab-boosting [data-msbt-panel='boost-essentials']",
+      revealPanels: ["boost-essentials"]
     },
     {
       title: "Rarity drop weights",
@@ -10529,36 +10686,36 @@ const TAB_TUTORIALS = {
       revealPanels: ["boost-rarity"]
     },
     {
-      title: "Experience",
-      body: "Pick XP track + target level, then Set Level or Max Player Level / Spec 701. Needs bridge + target.",
+      title: "Combat, experience, and currency",
+      body: "Combat & Cheats groups enemy, ammo, Demigod, loot, XP, currency, and remaining single-player max actions. Experience and currency knobs share this panel.",
       tab: "boosting",
-      targetSel: "#tab-boosting [data-msbt-panel='boost-xp']",
-      revealPanels: ["boost-xp"]
+      targetSel: "#tab-boosting [data-msbt-panel='boost-cheats']",
+      revealPanels: ["boost-cheats"]
     },
     {
-      title: "Currency & backpack / bank",
-      body: "Currency: kind + amount, Give / Max. Backpack / Bank Size: set numbers, Set Selected or Apply to All Party; auto checkbox keeps re-applying as players load.",
+      title: "Backpack / Bank Size",
+      body: "This panel changes capacities only. Drop All Backpack lives in Essentials and always affects the host. Auto keeps sizes applied as players load.",
       tab: "boosting",
-      targetSel: "#tab-boosting [data-msbt-panel='boost-currency']",
-      revealPanels: ["boost-currency", "boost-inventory"]
+      targetSel: "#tab-boosting [data-msbt-panel='boost-inventory']",
+      revealPanels: ["boost-inventory"]
     },
     {
       title: "Serial Rewards",
-      body: "Paste @U serials, optional level override + copies, then Give Selected / All / Non-Host. Delivery needs the bridge; progress shows in the top Serial Delivery bar.",
+      body: "Paste @U serials, choose an optional level override and copy count, then deliver to the selected player, all players, or everyone except the host. Delivery progress appears at the top.",
       tab: "boosting",
       targetSel: "#tab-boosting [data-msbt-panel='boost-serial']",
       revealPanels: ["boost-serial"]
     },
     {
-      title: "Helpers, cheats, + QM",
-      body: "Quick Helpers: Pull Loot / Super Dash. Cheats panel covers ammo, demigod, chests, shinies, debug cam, etc. Gold + QM beside supported buttons pins that action into the in-game Quick Menu (F7) with current values.",
+      title: "Debug camera",
+      body: "Debug Camera sits in Essentials under Instant Actions. Gold + QM pins supported actions into F7.",
       tab: "boosting",
-      targetSel: "#tab-boosting [data-msbt-panel='boost-helpers']",
-      revealPanels: ["boost-helpers", "boost-cheats"]
+      targetSel: "#tab-boosting .boost-live-debug",
+      revealPanels: ["boost-essentials"]
     },
     {
       title: "Layout tip",
-      body: "Panels are rearrangeable — stack Target with Quick Max, Compact when messy. See View → Layout walkthrough for the full editor tour.",
+      body: "Panels are rearrangeable — stack Target with Essentials, then use Compact when the workspace gets messy. See View → Layout walkthrough for the full editor tour.",
       tab: "boosting",
       targetSel: "#tab-boosting .msbt-layout-toolbar"
     }
@@ -10572,7 +10729,7 @@ const TAB_TUTORIALS = {
     },
     {
       title: "Bookmarks",
-      body: "Save named serials in groups. Search/filter, check rows or whole folders, Copy Selected, then Deliver Selected / All / Non-Host (bridge + target required).",
+      body: "Save named serials in groups. Search or filter, check rows or whole folders, copy the selected serials, then choose who receives them. The game connection and a target are required.",
       tab: "serial-tools",
       targetSel: "#tab-serial-tools [data-msbt-panel='serial-bookmarks']"
     },
@@ -10584,7 +10741,7 @@ const TAB_TUTORIALS = {
     },
     {
       title: "Delivery & + QM",
-      body: "Set Serial Bookmarks Target and Copies before Deliver. + QM Selected/All/Non-Host pins checked serials into the in-game Quick Menu (F7). Watch the top Serial Delivery progress bar during live gives.",
+      body: "Set the bookmark target and copy count before delivery. The gold + QM buttons pin checked serials to the in-game Quick Menu (F7). Watch delivery progress at the top.",
       tab: "serial-tools",
       target: "bookmarkQmSelectedBtn"
     },
@@ -10624,9 +10781,9 @@ const TAB_TUTORIALS = {
     },
     {
       title: "Capacity note",
-      body: "Backpack/bank size lives on Boosting → Backpack / Bank Size (not this tab). The in-game Quick Menu (F7) also has an INV tab with the same live inventory idea.",
+      body: "Open Bank Anywhere is here with inventory browsing. Capacity changes live on Boosting → Backpack / Bank Size; host-only Drop All Backpack lives in Boosting → Essentials.",
       tab: "inventory",
-      targetSel: "#tab-inventory [data-msbt-panel='inv-main']"
+      targetSel: "#tab-inventory .inv-root"
     }
   ],
   "bl4-codes": [
@@ -10634,7 +10791,7 @@ const TAB_TUTORIALS = {
       title: "Browse offline",
       body: "Load Catalog / Refresh GZO, then filter by search, manufacturer, listing, rarity, type, creator, Mattmab result. Image cards load from GZO when available.",
       tab: "bl4-codes",
-      targetSel: "#tab-bl4-codes [data-msbt-panel='bl4-main']"
+      targetSel: "#tab-bl4-codes .bl4-catalog-canvas"
     },
     {
       title: "Select & inspect",
@@ -10644,9 +10801,9 @@ const TAB_TUTORIALS = {
     },
     {
       title: "Delivery panel",
-      body: "Right-side Delivery stays visible while you scroll. Set Target, optional level override + copies, then Deliver Selected / All / Non-Host (bridge required).",
+      body: "Delivery stays visible while you scroll. Set the target, optional level override, and copy count, then choose who receives the selected codes. The game must be connected.",
       tab: "bl4-codes",
-      targetSel: "#tab-bl4-codes [data-msbt-panel='bl4-delivery']"
+      targetSel: "#tab-bl4-codes .bl4-delivery-side"
     },
     {
       title: "+ QM & submit",
@@ -10696,10 +10853,10 @@ const TAB_TUTORIALS = {
       targetSelFallback: "#spawnItempoolBtn"
     },
     {
-      title: "Layout tip",
-      body: "Single-panel tab — Compact/Reset still help if you resize oddly. See Layout walkthrough for shared editor habits.",
+      title: "Focused workspace",
+      body: "Item Pool is a fixed single-workspace page: filters, selection, spawn controls, and result stay together without movable panel chrome.",
       tab: "item-pool",
-      targetSel: "#tab-item-pool .msbt-layout-toolbar"
+      targetSel: "#tab-item-pool .item-pool-page"
     }
   ],
   "dev-spawner": [
@@ -10711,13 +10868,13 @@ const TAB_TUTORIALS = {
     },
     {
       title: "Spawn settings",
-      body: "Right column: Aggro, Anchor, Distance, Count, Spacing, Scale. Spawn / Re-Aggro / Clear ASD Spawns sit beside the list. ASD_spawnai stays the backend — no Oak Char_* requirement.",
+      body: "The right column controls aggro, anchor, distance, count, spacing, and scale. Spawn, Re-Aggro Spawned Actors, and Clear Spawned Actors sit beside the list.",
       tab: "dev-spawner",
       targetSel: "#tab-dev-spawner .dev-spawner-controls"
     },
     {
       title: "Status & favorites",
-      body: "Top strip shows warning + ASD autoclear timer. Expand Last result for the full log. Favorite label/note folds under the selection row.",
+      body: "The top strip shows warnings and the automatic cleanup timer. Expand Last Result for the full log. Favorite labels and notes sit under the selection row.",
       tab: "dev-spawner",
       targetSel: "#tab-dev-spawner .dev-status-strip"
     },
@@ -10737,7 +10894,7 @@ const TAB_TUTORIALS = {
   "hoard-builder": [
     {
       title: "Build waves",
-      body: "Each card is one wave. Select a wave, then click actors in the picker to add them (same actor stacks count). Use + / − / × on chips to tweak. Add Empty Wave / Move Up/Down reorder the plan. Plans save locally in this app.",
+      body: "Each card is one wave. Select a wave, then click actors in the picker to add them. Use + / − / × on chips to tune counts; Add Wave and Earlier/Later set the run order.",
       tab: "hoard-builder",
       targetSel: "#hoardWaveList"
     },
@@ -10748,22 +10905,22 @@ const TAB_TUTORIALS = {
       targetSel: "#hoardActorPicker"
     },
     {
-      title: "Start → clear → next",
-      body: "Start Hoard spawns wave 1 via ASD. When every tracked enemy for that wave is dead, wave 2 starts automatically — no Next button. Stop freezes advance (mobs stay). Clear Spawns runs ASD clear and stops the run.",
+      title: "Run the plan",
+      body: "Start Hoard spawns wave 1 via ASD. When every tracked enemy is dead, the next wave starts automatically. Stop Run freezes advancement while current mobs remain.",
       tab: "hoard-builder",
-      target: "hoardStartBtn"
+      targetSel: "#tab-hoard-builder .hoard-run-card"
     },
     {
-      title: "Status line",
-      body: "Watch Idle / Wave N/M — X alive — next on clear / Complete here. Bridge must be connected (header Refresh Status). Host-run ASD — same limits as Dev Spawner.",
+      title: "Save favorites",
+      body: "Save Full Plan for the whole run or Save Selected Wave for a reusable building block. Loading a favorite replaces the current plan, so save first if needed.",
       tab: "hoard-builder",
-      target: "hoardStatusLine"
+      targetSel: "#tab-hoard-builder .hoard-fold"
     },
     {
-      title: "Quick Menu",
-      body: "Pin Hoard Start / Stop / Clear on the in-game Quick Menu (F7) after the plan is set in Electron. Plan edits stay on this tab.",
+      title: "Clear & safety",
+      body: "Emergency Clear stops the run, disables spawners, and removes ASD spawns; ground loot stays. Hide dropped loot between waves is heavier and remains off by default.",
       tab: "hoard-builder",
-      target: "hoardStartBtn"
+      target: "hoardClearBtn"
     }
   ],
   "map-travel": [
@@ -10841,13 +10998,13 @@ const TAB_TUTORIALS = {
       title: "Activity Log",
       body: "Chronological app messages (actions, tour starts, errors). Clear Local Log when noisy. Useful to copy context before Report.",
       tab: "activity",
-      targetSel: "#tab-activity [data-msbt-panel='activity-log']"
+      targetSel: "#tab-activity .activity-card:first-child"
     },
     {
       title: "Bridge raw status",
       body: "Refresh Status hits the SDK bridge and dumps raw status here. Clear Bridge Markers clears bridge-side log markers when supported.",
       tab: "activity",
-      targetSel: "#tab-activity [data-msbt-panel='activity-bridge']"
+      targetSel: "#tab-activity .activity-card:last-child"
     },
     {
       title: "When to use it",
@@ -10881,13 +11038,13 @@ const TAB_TUTORIALS = {
       title: "Fill the form",
       body: "Bug or Feature, Title, Description, Steps, Expected/Actual, optional Notes. Keep titles short; steps numbered.",
       tab: "report",
-      targetSel: "#tab-report [data-msbt-panel='report-form']"
+      targetSel: "#tab-report .report-form"
     },
     {
       title: "Diagnostics & preview",
       body: "Include redacted app/bridge diagnostics (on by default). Refresh Preview, then Copy or Save Report locally.",
       tab: "report",
-      targetSel: "#tab-report [data-msbt-panel='report-preview']"
+      targetSel: "#tab-report .report-preview-fold"
     },
     {
       title: "Submit on GitHub",
@@ -10899,15 +11056,15 @@ const TAB_TUTORIALS = {
   ],
   updates: [
     {
-      title: "Version cards",
-      body: "Shows Electron app current/latest, bundled SDK mod version, and detected installed .sdkmod path. Check Updates from the header anytime.",
+      title: "Three update lanes",
+      body: "Desktop App, Game SDK Stack, and Catalog Data are the three maintained parts. Check Everything updates status without changing files.",
       tab: "updates",
-      targetSel: "#tab-updates [data-msbt-panel='updates-main']",
+      targetSel: "#tab-updates .update-lane-grid",
       sdk: true
     },
     {
-      title: "Electron update",
-      body: "Download Electron Update, then Restart / Install, or open the installer / manual ZIP from GitHub Releases.",
+      title: "Desktop app update",
+      body: "Download the Desktop App Update, then choose Restart and Install. You can also open the installer or download the portable ZIP.",
       tab: "updates",
       target: "updateDownloadBtn"
     },
@@ -10915,13 +11072,13 @@ const TAB_TUTORIALS = {
       title: "SDK mod install",
       body: "Detect or browse your Borderlands 4 sdk_mods folder. Install SDK Manager for oak2 v0.3 if needed, then Install / Update SDK Mod (MSBT + ActorScriptDeployer, marked enabled). Fully restart the game afterward.",
       tab: "updates",
-      targetSel: "#tab-updates [data-msbt-panel='updates-sdk']"
+      targetSel: "#tab-updates .update-lane:nth-child(2)"
     },
     {
-      title: "Saved data / backups",
-      body: "Bookmarks, favorites, presets, and window size live outside the install folder. Export Settings Backup before major upgrades if you want an extra copy.",
+      title: "Cache vs saved settings",
+      body: "Clear Catalog Cache removes only downloaded catalogs; bundled offline seeds remain. Saved bookmarks, favorites, presets, and window settings are separate under Saved settings & backups.",
       tab: "updates",
-      targetSel: "#tab-updates [data-msbt-panel='updates-saved']"
+      targetSel: "#tab-updates .updates-local-data"
     }
   ]
 };
@@ -11944,6 +12101,11 @@ async function init() {
     await refreshSavedDataInfo();
   } catch (error) {
     console.warn("[MSBT] saved data info load failed:", error);
+  }
+  try {
+    await refreshDataCacheInfo();
+  } catch (error) {
+    console.warn("[MSBT] data cache info load failed:", error);
   }
   syncDevSpawnerAdvancedControls();
   await Promise.all([

@@ -7,6 +7,7 @@ const { execFile, spawn } = require("child_process");
 const { Blob } = require("buffer");
 const { pathToFileURL } = require("url");
 const { promisify } = require("util");
+const { bindWindowState } = require("./window_state_tracker");
 const {
   favoritesFilePath,
   readFavorites,
@@ -45,6 +46,7 @@ const {
   DEFAULT_MANIFEST_URLS,
   KNOWN_FILES,
   cachedFilePath,
+  dataCacheDir,
   defaultDocsDataDir,
   getDataCatalogStatus,
   isElectronResourceFile,
@@ -419,15 +421,21 @@ function ensureWindowOnScreen(bounds) {
   };
 }
 
-function saveWindowState(win) {
+function saveWindowState(win, snapshot = {}) {
   if (!win || win.isDestroyed()) return;
   try {
+    const bounds = snapshot.bounds || (
+      win.isFullScreen() && typeof win.getNormalBounds === "function"
+        ? win.getNormalBounds()
+        : win.getBounds()
+    );
+    const maximized = snapshot.maximized == null ? win.isMaximized() : Boolean(snapshot.maximized);
     fsSync.mkdirSync(app.getPath("userData"), { recursive: true });
     fsSync.writeFileSync(
       windowStatePath(),
       JSON.stringify({
-        bounds: win.getBounds(),
-        maximized: win.isMaximized(),
+        bounds,
+        maximized,
         opacity: clampWindowOpacity(win.getOpacity())
       }, null, 2),
       "utf8"
@@ -435,19 +443,6 @@ function saveWindowState(win) {
   } catch (error) {
     console.warn(`[MSBT Electron] Could not save window state: ${error && error.message ? error.message : error}`);
   }
-}
-
-function bindWindowState(win) {
-  let saveTimer = null;
-  const scheduleSave = () => {
-    if (saveTimer) clearTimeout(saveTimer);
-    saveTimer = setTimeout(() => saveWindowState(win), 500);
-  };
-  win.on("resize", scheduleSave);
-  win.on("move", scheduleSave);
-  win.on("maximize", scheduleSave);
-  win.on("unmaximize", scheduleSave);
-  win.on("close", () => saveWindowState(win));
 }
 
 function updateState(patch) {
@@ -633,7 +628,7 @@ function createWindow() {
       }, 2800);
     }
   });
-  bindWindowState(win);
+  bindWindowState(win, (snapshot) => saveWindowState(win, snapshot));
   win.loadFile(path.join(__dirname, "renderer.html"));
 }
 
@@ -811,6 +806,44 @@ async function getUserDataInfo() {
     path: userDataPath,
     files,
     message: "Saved Electron user data is stored outside the install folder and should survive app updates."
+  };
+}
+
+async function getDataCacheInfo() {
+  const userDataPath = app.getPath("userData");
+  const cachePath = dataCacheDir(userDataPath);
+  const liveGzoPath = bl4GzoCacheFilePath();
+  await fs.mkdir(cachePath, { recursive: true });
+  let fileCount = 0;
+  let bytes = 0;
+  const entries = await fs.readdir(cachePath, { withFileTypes: true });
+  for (const entry of entries) {
+    if (!entry.isFile()) continue;
+    try {
+      const stat = await fs.stat(path.join(cachePath, entry.name));
+      fileCount += 1;
+      bytes += stat.size;
+    } catch {
+      /* file changed while inspecting */
+    }
+  }
+  if (await fileExists(liveGzoPath)) {
+    try {
+      const stat = await fs.stat(liveGzoPath);
+      fileCount += 1;
+      bytes += stat.size;
+    } catch {
+      /* file changed while inspecting */
+    }
+  }
+  return {
+    ok: true,
+    path: cachePath,
+    fileCount,
+    bytes,
+    message: fileCount
+      ? `${fileCount} downloaded catalog cache file(s) found.`
+      : "Downloaded catalog cache is empty; bundled offline data remains available."
   };
 }
 
@@ -1311,6 +1344,27 @@ ipcMain.handle("app:readDevSpawnerCatalog", async () => {
 });
 
 ipcMain.handle("app:getUserDataInfo", async () => getUserDataInfo());
+
+ipcMain.handle("app:getDataCacheInfo", async () => getDataCacheInfo());
+
+ipcMain.handle("app:openDataCacheFolder", async () => {
+  const info = await getDataCacheInfo();
+  const error = await shell.openPath(info.path);
+  if (error) return { ...info, ok: false, message: error };
+  return { ...info, message: "Opened downloaded catalog cache folder." };
+});
+
+ipcMain.handle("app:clearDataCatalogCache", async () => {
+  const userDataPath = app.getPath("userData");
+  const cachePath = dataCacheDir(userDataPath);
+  await fs.rm(cachePath, { recursive: true, force: true });
+  await fs.rm(bl4GzoCacheFilePath(), { force: true });
+  await fs.mkdir(cachePath, { recursive: true });
+  return {
+    ...(await getDataCacheInfo()),
+    message: "Downloaded catalog cache cleared. Saved settings were not changed."
+  };
+});
 
 ipcMain.handle("app:openUserDataFolder", async () => {
   const info = await getUserDataInfo();

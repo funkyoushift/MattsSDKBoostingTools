@@ -8,7 +8,7 @@ The tour overlay stays lightly dimmed so the highlighted control and active tab 
 
 Auto-opens when `localStorage` `msbt.lastSeenVersion` is missing or differs from the current app version. Finishing or skipping sets `msbt.lastSeenVersion` and `msbt.tutorial.mainSeen` to that version.
 
-**Content (first-run order):** Welcome (SDK + download) → Bridge & status → Boosting → Serial Tools → Map Travel → Player Movement → Quick Menu → Updates → Activity Log → Layout tip → deep-dive chooser. Each step highlights the control or panel it describes. Update notification banner / startup update modal stay suppressed while any tour is open, then restore when the tour closes.
+**Content (first-run order):** Welcome (SDK + download) → Bridge & status → Boosting → Serial Tools → Hoard Builder → Map Travel → Player Movement → Quick Menu → Updates → Activity Log → Layout tip → deep-dive chooser. Each step highlights the control or panel it describes. Update notification banner / startup update modal stay suppressed while any tour is open, then restore when the tour closes.
 
 Chooser options:
 
@@ -36,6 +36,10 @@ Each layout tab toolbar has **Walkthrough** — short steps on real controls/wor
 **★ Quick Menu** Walkthrough launches **Quick Menu setup** (same full tour), not a shorter duplicate.
 
 **Matt Editor** stays short: full save editor + item creator, plus a Ko-fi support link for Mattmab (`https://ko-fi.com/mattmab` via `openExternal`).
+
+**Hoard Builder** covers wave composition, actor picking, automatic advancement, reusable favorites, and Emergency Clear. Its inline first-run guide remains a separate, dismissible three-step workflow summary above the builder.
+
+Bundled remote-copy overlays in [`docs/data/tutorial_copy.json`](data/tutorial_copy.json) may replace only step titles and body text. Their numeric indices must be updated when the main-tour order changes; selectors, links, and actions always remain local.
 
 ## Force replay
 

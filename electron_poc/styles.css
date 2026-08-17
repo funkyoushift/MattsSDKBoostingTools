@@ -86,17 +86,20 @@ p {
 }
 
 button {
-  border: 0;
+  border: 1px solid rgba(0, 212, 255, .24);
+  border-radius: 6px;
   background: var(--ui-button-bg, #172033);
   color: var(--cyan);
   font-weight: 700;
   min-height: var(--ui-button-height, 30px);
   padding: var(--ui-button-padding-y, 6px) var(--ui-button-padding-x, 10px);
   cursor: pointer;
+  transition: background .15s ease, border-color .15s ease, color .15s ease;
 }
 
 button:hover {
   background: var(--ui-button-hover-bg, #20304d);
+  border-color: rgba(0, 212, 255, .58);
 }
 
 button:disabled {
@@ -105,7 +108,27 @@ button:disabled {
 }
 
 button.danger {
+  border-color: rgba(255, 97, 116, .38);
+  background: rgba(96, 24, 41, .28);
   color: var(--red);
+}
+
+button.danger:hover {
+  border-color: rgba(255, 97, 116, .75);
+  background: rgba(124, 29, 49, .45);
+}
+
+button.primary {
+  border-color: #66e8ff;
+  background: linear-gradient(180deg, #16cce8, #0795b3);
+  color: #031117;
+  box-shadow: 0 5px 16px rgba(0, 212, 255, .16);
+}
+
+button.primary:hover {
+  border-color: #b5f6ff;
+  background: linear-gradient(180deg, #4ce2f5, #10aac7);
+  color: #020b0e;
 }
 
 button.is-on {
@@ -317,11 +340,20 @@ iframe {
 }
 
 .support-links {
+  position: absolute;
+  top: calc(100% + 5px);
+  right: 0;
+  z-index: 80;
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
-  padding: 0 8px 8px;
+  padding: 8px;
   max-width: min(420px, 70vw);
+  min-width: 340px;
+  border: 1px solid rgba(255, 212, 71, .35);
+  border-radius: 8px;
+  background: #0b111d;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, .45);
 }
 
 .support-link {
@@ -434,6 +466,7 @@ iframe {
   border-bottom: 1px solid var(--line);
   background: var(--header-bg);
   overflow-x: auto;
+  scrollbar-gutter: stable;
 }
 
 .tab-bar button {
@@ -443,6 +476,8 @@ iframe {
   background: #0c5261;
   color: var(--text);
   padding: var(--ui-tab-button-padding-y, 6px) var(--ui-tab-button-padding-x, 8px);
+  border-radius: 7px 7px 0 0;
+  white-space: nowrap;
 }
 
 .tab-bar button.active {
@@ -819,7 +854,14 @@ button.qm-pin-button:hover {
 }
 
 button.secondary {
+  border-color: rgba(159, 179, 217, .22);
+  background: rgba(23, 32, 51, .72);
   color: var(--muted);
+}
+
+button.secondary:hover {
+  border-color: rgba(159, 179, 217, .5);
+  color: var(--text);
 }
 
 button.gzo-submit-cta {
@@ -867,6 +909,7 @@ button.gzo-submit-cta:hover {
   min-height: 0;
   padding: 8px;
   overflow: auto;
+  scrollbar-gutter: stable;
 }
 
 .tab-shell:has(#tab-dev-spawner.active.msbt-fixed-tab) {
@@ -877,6 +920,8 @@ button.gzo-submit-cta:hover {
 
 .tab-panel {
   display: none;
+  width: min(100%, 1680px);
+  margin-inline: auto;
 }
 
 .tab-panel.active {
@@ -1073,6 +1118,60 @@ button.gzo-submit-cta:hover {
   margin-top: 8px;
 }
 
+.boost-essentials-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(180px, 0.32fr);
+  gap: 12px;
+  align-items: start;
+}
+
+.boost-essentials-section,
+.boost-knob-group {
+  border-top: 1px solid color-mix(in srgb, var(--panel-accent) 35%, transparent);
+  margin-top: 12px;
+  padding-top: 10px;
+}
+
+.boost-essentials-section h3,
+.boost-live-column h3,
+.boost-knob-group h3 {
+  margin: 0 0 6px;
+}
+
+.boost-live-column {
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid color-mix(in srgb, var(--panel-accent) 42%, #26354a);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--panel-accent) 7%, transparent);
+}
+
+.boost-live-column .status-line {
+  margin-top: 0;
+}
+
+.boost-live-debug {
+  display: grid;
+  gap: 8px;
+  border-top: 1px solid color-mix(in srgb, var(--panel-accent) 35%, transparent);
+  padding-top: 8px;
+}
+
+.boost-live-debug h4 {
+  margin: 0;
+  font-size: var(--ui-small-size, 11px);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+.boost-cheat-knobs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
 .rarity-grid {
   display: grid;
   gap: 7px 12px;
@@ -1100,29 +1199,33 @@ button.gzo-submit-cta:hover {
 }
 
 .panel {
-  border: 1px solid var(--line);
-  background: var(--panel);
+  --panel-accent: var(--line);
+  border: 1px solid #26354a;
+  border-top: 2px solid var(--panel-accent);
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(18, 26, 42, .98), rgba(13, 20, 33, .98));
   padding: var(--ui-panel-padding, 10px);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, .12);
 }
 
 .panel.cyan {
-  border-color: var(--cyan);
+  --panel-accent: var(--cyan);
 }
 
 .panel.gold {
-  border-color: var(--gold);
+  --panel-accent: var(--gold);
 }
 
 .panel.green {
-  border-color: var(--green);
+  --panel-accent: var(--green);
 }
 
 .panel.pink {
-  border-color: var(--pink);
+  --panel-accent: var(--pink);
 }
 
 .panel.purple {
-  border-color: var(--purple);
+  --panel-accent: var(--purple);
 }
 
 .update-card-grid {
@@ -1906,8 +2009,8 @@ button.gzo-submit-cta:hover {
 .bl4-card-grid {
   display: grid;
   gap: var(--ui-bl4-card-gap, 8px);
-  grid-template-columns: repeat(auto-fill, minmax(var(--ui-bl4-card-min-width, 260px), 1fr));
-  max-height: var(--ui-bl4-card-browser-height, 680px);
+  grid-template-columns: repeat(auto-fill, minmax(var(--ui-bl4-card-min-width, 216px), 1fr));
+  max-height: min(var(--ui-bl4-card-browser-height, 680px), calc(100vh - 230px));
   overflow: auto;
   padding: 4px 2px 8px;
 }
@@ -1920,7 +2023,7 @@ button.gzo-submit-cta:hover {
   cursor: pointer;
   display: grid;
   gap: 5px;
-  min-height: var(--ui-bl4-card-min-height, 390px);
+  min-height: var(--ui-bl4-card-min-height, 0px);
   padding: var(--ui-bl4-card-padding, 7px);
   position: relative;
   text-align: left;
@@ -1946,22 +2049,27 @@ button.gzo-submit-cta:hover {
   width: auto;
 }
 
+/* Thumbnail, not a poster: tall portrait loot art is capped to a fixed height
+   so a single card cannot own the catalog pane. */
 .bl4-card-image {
   align-items: center;
-  aspect-ratio: 3 / 4;
   background: #151015;
   border: 1px solid rgba(255, 255, 255, .12);
   color: var(--muted);
   display: flex;
+  font-size: .8em;
+  height: var(--ui-bl4-card-image-height, 150px);
   justify-content: center;
   overflow: hidden;
+  text-align: center;
 }
 
 .bl4-card-image img {
   display: block;
-  height: 100%;
+  max-height: 100%;
+  max-width: 100%;
   object-fit: contain;
-  width: 100%;
+  width: auto;
 }
 
 .bl4-card-image.missing {
@@ -2191,24 +2299,27 @@ button.active-scope {
    1080p half (~960) stays dense; high-DPI half snaps clamp to minWidth 960. */
 @media (max-width: 1180px) {
   .app-header {
-    align-items: stretch;
-    flex-direction: column;
+    align-items: center;
+    flex-direction: row;
+    padding-block: 5px;
   }
 
   .header-actions {
-    align-items: stretch;
+    align-items: center;
+    flex-wrap: nowrap;
     max-width: none;
-    width: 100%;
-    justify-content: flex-start;
+    width: auto;
+    justify-content: flex-end;
   }
 
   .header-main-actions {
-    justify-content: flex-start;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
   }
 
   .opacity-control {
-    grid-template-columns: auto minmax(96px, 1fr) 40px;
-    width: min(100%, 280px);
+    grid-template-columns: auto 80px 36px;
+    width: auto;
   }
 
   .support-panel {
@@ -2217,7 +2328,7 @@ button.active-scope {
   }
 
   .support-links {
-    max-width: 100%;
+    max-width: min(420px, 90vw);
   }
 
   .mini-heading {
@@ -2247,6 +2358,52 @@ button.active-scope {
   }
 }
 
+@media (max-width: 1400px) {
+  .tab-bar {
+    flex-wrap: wrap;
+    overflow-x: hidden;
+    padding-bottom: 3px;
+  }
+
+  .tab-bar button {
+    flex: 1 0 108px;
+    min-width: 0;
+    border-bottom: 1px solid #7edfff;
+    border-radius: 6px;
+    padding-block: 5px;
+  }
+}
+
+@media (max-width: 1080px) {
+  .header-tagline,
+  .header-brand .muted-line,
+  .support-summary-hint {
+    display: none;
+  }
+
+  .header-brand {
+    flex: 0 0 auto;
+  }
+
+  .header-main-actions .header-btn,
+  .msbt-view-menu > summary {
+    padding-inline: 7px;
+  }
+
+  .msbt-layout-hint {
+    display: none;
+  }
+
+  .msbt-layout-toolbar {
+    justify-content: flex-end;
+    padding: 5px 7px;
+  }
+
+  .msbt-layout-toolbar-host {
+    margin-bottom: 6px;
+  }
+}
+
 /* Mid width: 3-col content → 2-col; keep 2-col grids. Covers ~960–980 half snaps. */
 @media (max-width: 980px) {
   .grid.three,
@@ -2257,6 +2414,11 @@ button.active-scope {
   .rarity-grid,
   .button-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .boost-essentials-layout,
+  .boost-cheat-knobs {
+    grid-template-columns: 1fr;
   }
 
   .dev-spawner-body {
@@ -2652,6 +2814,81 @@ button.active-scope {
   gap: 8px;
 }
 
+.msbt-density-switch {
+  flex: 0 0 auto;
+}
+
+/* Two segmented controls live side by side, so each is captioned:
+   Layout = fixed page vs dockable panels, Spacing = comfortable vs compact. */
+.msbt-mode-switch {
+  align-items: center;
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: 5px;
+}
+
+.msbt-mode-switch-label {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+/* Pack/Reset only mean something while GridStack owns the tab. */
+.msbt-layout-toolbar[data-msbt-mode="fixed"] .msbt-layout-compact,
+.msbt-layout-toolbar[data-msbt-mode="fixed"] .msbt-layout-reset {
+  display: none;
+}
+
+.msbt-static-root {
+  align-items: start;
+  display: grid;
+  gap: var(--ui-grid-gap, 8px);
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+}
+
+.msbt-static-root > [data-msbt-panel] {
+  grid-column: span 12;
+  margin: 0;
+  min-width: 0;
+}
+
+.msbt-static-root > [data-msbt-panel][data-msbt-span="4"] {
+  grid-column: span 4;
+}
+
+.msbt-static-root > [data-msbt-panel][data-msbt-span="6"] {
+  grid-column: span 6;
+}
+
+.msbt-static-root > [data-msbt-panel][data-msbt-span="8"] {
+  grid-column: span 8;
+}
+
+.msbt-static-root .msbt-panel-body {
+  overflow: visible;
+}
+
+.msbt-static-tab .msbt-panel-chrome > .msbt-panel-handle:first-child {
+  display: none;
+}
+
+.msbt-static-tab .msbt-panel-title {
+  cursor: default;
+}
+
+@media (max-width: 1180px) {
+  .msbt-static-root > [data-msbt-panel][data-msbt-span="4"] {
+    grid-column: span 6;
+  }
+
+  .msbt-static-root > [data-msbt-panel][data-msbt-span="6"],
+  .msbt-static-root > [data-msbt-panel][data-msbt-span="8"] {
+    grid-column: span 12;
+  }
+}
+
 .msbt-panels-menu {
   position: relative;
 }
@@ -2715,15 +2952,55 @@ button.active-scope {
   accent-color: #1a5fb4;
 }
 
+/* Major lines mark the original coarse cell; minor lines mark the finer
+   drag/resize snap step inside it. panel_layout.js feeds both sizes. */
 .msbt-layout-root.grid-stack {
+  --msbt-grid-line-major: rgba(26, 69, 82, 0.3);
+  --msbt-grid-line-minor: rgba(26, 69, 82, 0.14);
   min-height: 240px;
-  background:
-    linear-gradient(rgba(26, 69, 82, 0.25) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(26, 69, 82, 0.25) 1px, transparent 1px);
-  background-size: calc(100% / 12) 72px;
+  background-image:
+    linear-gradient(var(--msbt-grid-line-major) 1px, transparent 1px),
+    linear-gradient(90deg, var(--msbt-grid-line-major) 1px, transparent 1px),
+    linear-gradient(var(--msbt-grid-line-minor) 1px, transparent 1px),
+    linear-gradient(90deg, var(--msbt-grid-line-minor) 1px, transparent 1px);
+  background-size:
+    100% var(--msbt-grid-major-cell-height, 72px),
+    calc(100% / var(--msbt-grid-major-columns, 12)) 100%,
+    100% var(--msbt-grid-cell-height, 72px),
+    calc(100% / var(--msbt-grid-columns, 12)) 100%;
   border: 1px dashed rgba(42, 90, 104, 0.35);
   border-radius: 8px;
   padding: 4px;
+}
+
+/* While dragging or resizing, brighten the snap grid so the fine steps read. */
+.msbt-layout-root.grid-stack.msbt-grid-snap-visible {
+  --msbt-grid-line-major: rgba(74, 165, 190, 0.55);
+  --msbt-grid-line-minor: rgba(74, 165, 190, 0.28);
+}
+
+/* GridStack's base stylesheet only ships 12-column geometry. These rules
+   make the responsive 6/1-column modes visible instead of zero-width;
+   panel_layout.js emits the same geometry for the finer column count. */
+.grid-stack.gs-6 > .grid-stack-item {
+  width: 16.6667%;
+}
+
+.grid-stack.gs-6 > .grid-stack-item[gs-w="2"] { width: 33.3333%; }
+.grid-stack.gs-6 > .grid-stack-item[gs-w="3"] { width: 50%; }
+.grid-stack.gs-6 > .grid-stack-item[gs-w="4"] { width: 66.6667%; }
+.grid-stack.gs-6 > .grid-stack-item[gs-w="5"] { width: 83.3333%; }
+.grid-stack.gs-6 > .grid-stack-item[gs-w="6"] { width: 100%; }
+.grid-stack.gs-6 > .grid-stack-item[gs-x="1"] { left: 16.6667%; }
+.grid-stack.gs-6 > .grid-stack-item[gs-x="2"] { left: 33.3333%; }
+.grid-stack.gs-6 > .grid-stack-item[gs-x="3"] { left: 50%; }
+.grid-stack.gs-6 > .grid-stack-item[gs-x="4"] { left: 66.6667%; }
+.grid-stack.gs-6 > .grid-stack-item[gs-x="5"] { left: 83.3333%; }
+
+.grid-stack.gs-1 > .grid-stack-item,
+.grid-stack.gs-1 > .grid-stack-item[gs-w] {
+  left: 0;
+  width: 100%;
 }
 
 .msbt-layout-root > .grid-stack-item > .grid-stack-item-content {
@@ -2828,6 +3105,51 @@ button.active-scope {
   --ui-output-medium-height: calc(128px * var(--msbt-text-scale, 1));
   --ui-output-large-height: calc(240px * var(--msbt-text-scale, 1));
   font-size: var(--ui-body-size);
+}
+
+.tab-panel.msbt-flow-layout > .msbt-layout-toolbar-host {
+  display: none;
+}
+
+.tab-panel.msbt-flow-layout > .msbt-layout-root.grid-stack {
+  height: auto !important;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+.tab-panel.msbt-flow-layout > .msbt-layout-root > .grid-stack-item {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  width: 100% !important;
+  height: auto !important;
+  transform: none !important;
+}
+
+.tab-panel.msbt-flow-layout > .msbt-layout-root > .grid-stack-item > .grid-stack-item-content {
+  position: relative;
+  inset: auto;
+  height: auto;
+  overflow: visible;
+}
+
+.tab-panel.msbt-flow-layout .msbt-dock-panel.panel {
+  height: auto;
+}
+
+.tab-panel.msbt-flow-layout .msbt-panel-body {
+  overflow: visible;
+}
+
+.tab-panel.msbt-flow-layout .msbt-panel-chrome > .msbt-panel-handle:first-child,
+.tab-panel.msbt-flow-layout .msbt-panel-actions {
+  display: none;
+}
+
+.tab-panel.msbt-flow-layout .msbt-panel-title {
+  cursor: default;
 }
 
 .msbt-panel-collapsed .msbt-panel-body {
@@ -3204,13 +3526,107 @@ button.active-scope {
   margin: 0;
 }
 
+.hoard-builder-panel .msbt-panel-body {
+  font-size: 13px;
+}
+
+.hoard-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+  padding: 4px 2px 12px;
+  border-bottom: 1px solid rgba(159, 179, 217, .15);
+}
+
+.hoard-hero h3 {
+  margin: 2px 0 3px;
+  color: var(--text);
+  font-size: 19px;
+}
+
+.hoard-eyebrow {
+  margin: 0;
+  color: var(--cyan);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.hoard-plan-summary {
+  flex: 0 0 auto;
+  padding: 7px 10px;
+  border: 1px solid rgba(0, 212, 255, .28);
+  border-radius: 999px;
+  background: rgba(0, 212, 255, .07);
+  color: #bdefff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.hoard-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(300px, .85fr);
+  gap: 12px;
+  align-items: start;
+}
+
+.hoard-build-column,
+.hoard-control-column {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+
+.hoard-section,
+.hoard-run-card,
+.hoard-fold {
+  border: 1px solid rgba(159, 179, 217, .16);
+  border-radius: 9px;
+  background: rgba(7, 12, 22, .34);
+}
+
+.hoard-section,
+.hoard-run-card {
+  padding: 12px;
+}
+
+.hoard-step-heading {
+  display: flex;
+  gap: 9px;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.hoard-step-heading h3,
+.hoard-run-card h3 {
+  margin: 1px 0 2px;
+  font-size: 14px;
+}
+
+.hoard-step-number {
+  display: grid;
+  place-items: center;
+  flex: 0 0 24px;
+  width: 24px;
+  height: 24px;
+  border: 1px solid rgba(0, 212, 255, .55);
+  border-radius: 50%;
+  background: rgba(0, 212, 255, .1);
+  color: var(--cyan);
+  font-weight: 800;
+}
+
 .hoard-wave-list {
   display: flex;
   flex-direction: column;
   gap: 8px;
   margin: 0 0 8px;
-  max-height: 280px;
+  max-height: 320px;
   overflow: auto;
+  scrollbar-gutter: stable;
 }
 
 .hoard-wave-row {
@@ -3290,13 +3706,14 @@ button.active-scope {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 6px;
-  max-height: 240px;
+  max-height: 310px;
   overflow: auto;
   margin: 6px 0 8px;
   padding: 6px;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: #0d1320;
+  scrollbar-gutter: stable;
 }
 
 .hoard-actor-pick {
@@ -3321,8 +3738,537 @@ button.active-scope {
   background: #1e3a4f;
 }
 
+.hoard-search-controls label {
+  margin-top: 0;
+}
+
+.hoard-wave-actions .danger {
+  margin-left: auto;
+}
+
+.hoard-run-card {
+  border-color: rgba(0, 212, 255, .3);
+  background: linear-gradient(150deg, rgba(0, 93, 117, .16), rgba(7, 12, 22, .5));
+}
+
+.hoard-start-button {
+  width: 100%;
+  min-height: 42px;
+  margin: 12px 0 7px;
+  font-size: 14px;
+}
+
+.hoard-stop-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.hoard-status-block {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 8px;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.hoard-status-block > span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.hoard-status-block .status-line {
+  margin: 0;
+}
+
+.hoard-fold {
+  overflow: clip;
+}
+
+.hoard-fold > summary {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.hoard-fold > summary span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.hoard-fold[open] > summary {
+  border-bottom: 1px solid rgba(159, 179, 217, .14);
+  background: rgba(23, 32, 51, .55);
+}
+
+.hoard-fold-body {
+  display: grid;
+  gap: 8px;
+  padding: 10px 12px 12px;
+}
+
+.hoard-fold-body label {
+  margin-top: 0;
+}
+
+.hoard-save-favorite {
+  margin-top: 2px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(159, 179, 217, .12);
+}
+
+.hoard-safety-option {
+  padding: 8px 9px;
+  border: 1px solid rgba(255, 212, 71, .28);
+  border-radius: 7px;
+  background: rgba(255, 212, 71, .06);
+}
+
+.hoard-safety-option label {
+  color: var(--gold);
+  font-weight: 700;
+}
+
+.hoard-safety-option p {
+  margin: 3px 0 0 23px;
+  font-size: 11px;
+}
+
+@media (max-width: 1180px) {
+  .hoard-workspace {
+    grid-template-columns: minmax(0, 1.4fr) minmax(280px, .8fr);
+  }
+
+  .hoard-actor-picker {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+}
+
+@media (max-width: 980px) {
+  .hoard-workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .hoard-control-column {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .hoard-run-card {
+    grid-column: 1 / -1;
+  }
+}
+
 @media (max-width: 900px) {
   .mobile-gateway-pair-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+/* IA pass: fixed workspaces, simplified chrome, and global compact density. */
+body.msbt-density-compact {
+  --ui-page-padding: 5px;
+  --ui-panel-padding: 7px;
+  --ui-grid-gap: 6px;
+  --ui-section-gap: 4px;
+  --ui-button-height: 26px;
+  --ui-button-padding-y: 3px;
+  --ui-button-padding-x: 7px;
+  --ui-field-height: 27px;
+  --ui-field-padding-y: 3px;
+  --ui-field-padding-x: 5px;
+  --ui-textarea-height: 72px;
+  --ui-output-small-height: 54px;
+  --ui-output-large-height: 190px;
+  --ui-bl4-card-min-width: 186px;
+  --ui-bl4-card-image-height: 118px;
+  --ui-bl4-card-gap: 6px;
+  --ui-bl4-card-padding: 6px;
+}
+
+body.msbt-density-compact label {
+  margin-block: 5px 3px;
+}
+
+body.msbt-density-compact .panel,
+body.msbt-density-compact .fixed-workspace,
+body.msbt-density-compact .bl4-catalog-canvas,
+body.msbt-density-compact .bl4-delivery-side,
+body.msbt-density-compact .report-page,
+body.msbt-density-compact .updates-page,
+body.msbt-density-compact .activity-card {
+  padding: 7px;
+}
+
+.fixed-page-tab {
+  overflow: auto;
+}
+
+.fixed-workspace,
+.bl4-catalog-canvas,
+.bl4-delivery-side,
+.report-page,
+.updates-page,
+.activity-card,
+.dev-tools-intro-strip {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel);
+  padding: 12px;
+}
+
+.page-eyebrow {
+  color: var(--cyan);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+/* Support expands the header at narrower widths instead of covering navigation. */
+@media (max-width: 1180px) {
+  .app-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .header-actions {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .header-main-actions {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  .support-panel[open] {
+    width: 100%;
+  }
+
+  .support-panel[open] .support-links {
+    position: static;
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+    margin-top: 2px;
+    box-shadow: none;
+  }
+}
+
+/* BL4: catalog owns the canvas; delivery remains a sticky dock. */
+.bl4-catalog-canvas {
+  min-width: 0;
+  border-top: 2px solid var(--gold);
+}
+
+.bl4-filter-panel {
+  margin-top: 10px;
+  padding: 0;
+  overflow: clip;
+}
+
+.bl4-filter-panel > summary {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+
+.bl4-filter-panel > summary span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 400;
+}
+
+.bl4-filter-panel > .grid {
+  padding: 0 10px 10px;
+}
+
+.bl4-selection-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.bl4-selection-bar .status-line {
+  flex: 1 1 auto;
+  margin: 0;
+}
+
+.bl4-browser-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 340px);
+  align-items: start;
+  gap: 10px;
+}
+
+.bl4-detail-pane {
+  position: sticky;
+  top: 8px;
+  padding: 10px;
+  border: 1px solid rgba(179, 107, 255, .35);
+  border-radius: 8px;
+  background: var(--panel-soft);
+}
+
+.bl4-delivery-side {
+  border-top: 2px solid var(--purple);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .18);
+}
+
+/* Full-tab editor: no panel toolbar between the user and the iframe. */
+.matt-editor-page {
+  overflow: hidden;
+}
+
+.editor-tab-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.editor-tab-content > .section-heading {
+  flex: 0 0 auto;
+  padding: 4px 2px 8px;
+}
+
+.editor-tab-content iframe {
+  flex: 1 1 auto;
+  min-height: 0;
+  margin: 0;
+  border-radius: 8px;
+}
+
+/* Hoard is a structured page, with a first-run guide above the workflow. */
+.hoard-builder-page {
+  min-width: 0;
+}
+
+.hoard-hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hoard-first-run-guide {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  border: 1px solid rgba(0, 212, 255, .32);
+  border-radius: 10px;
+  background: linear-gradient(120deg, rgba(0, 212, 255, .09), rgba(179, 107, 255, .06));
+}
+
+.hoard-first-run-guide ol {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hoard-first-run-guide li {
+  display: grid;
+  gap: 2px;
+  padding-left: 8px;
+  border-left: 2px solid rgba(0, 212, 255, .35);
+}
+
+.hoard-first-run-guide li span {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+/* Report is one form; preview is a disclosure, not a second panel. */
+.report-page {
+  max-width: 1180px;
+  margin: 0 auto;
+  border-top: 2px solid var(--purple);
+}
+
+.report-form {
+  display: grid;
+  gap: 4px;
+}
+
+.report-preview-fold,
+.updates-local-data {
+  margin-top: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: clip;
+  background: rgba(21, 31, 51, .55);
+}
+
+.report-preview-fold > summary,
+.updates-local-data > summary {
+  padding: 9px 11px;
+  cursor: pointer;
+  color: var(--cyan);
+  font-weight: 800;
+}
+
+.report-preview-fold > pre {
+  margin: 0;
+  border: 0;
+  border-top: 1px solid var(--line);
+  border-radius: 0;
+}
+
+/* Updates: three lanes, then low-frequency local data controls. */
+.updates-page {
+  border-top: 2px solid var(--purple);
+}
+
+.updates-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 10px;
+}
+
+.update-lane-grid {
+  display: grid;
+  grid-template-columns: .9fr 1.25fr .9fr;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.update-lane {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid rgba(159, 179, 217, .2);
+  border-radius: 9px;
+  background: rgba(7, 12, 22, .38);
+}
+
+.update-lane-number {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 1px solid rgba(0, 212, 255, .35);
+  border-radius: 50%;
+  color: var(--cyan);
+  font-weight: 800;
+}
+
+.update-lane .button-row {
+  margin-top: auto;
+}
+
+.updates-local-data > summary {
+  display: flex;
+  justify-content: space-between;
+}
+
+.updates-local-data > summary span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 400;
+}
+
+.updates-local-data-body {
+  padding: 0 11px 11px;
+}
+
+.updates-footer-actions {
+  margin-top: 8px;
+}
+
+.activity-page {
+  align-items: stretch;
+}
+
+.activity-card {
+  min-width: 0;
+}
+
+.activity-card pre {
+  min-height: 440px;
+}
+
+.dev-tools-intro-strip {
+  margin-bottom: 8px;
+  border-color: rgba(255, 212, 71, .3);
+}
+
+@media (max-width: 1180px) {
+  .bl4-browser-workspace {
+    grid-template-columns: minmax(0, 1fr) minmax(250px, 300px);
+  }
+
+  .bl4-card-grid {
+    --ui-bl4-card-min-width: 172px;
+    --ui-bl4-card-gap: 6px;
+  }
+
+  .bl4-code-card {
+    --ui-bl4-card-image-height: 122px;
+    --ui-bl4-card-padding: 6px;
+  }
+
+  .update-lane-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .update-lane:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .hoard-first-run-guide {
+    grid-template-columns: 1fr auto;
+  }
+
+  .hoard-first-run-guide ol {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}
+
+@media (max-width: 780px) {
+  .bl4-browser-workspace,
+  .update-lane-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .bl4-detail-pane {
+    position: static;
+  }
+
+  .update-lane:last-child {
+    grid-column: auto;
+  }
+
+  .hoard-first-run-guide ol {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .bl4-selection-bar,
+  .updates-hero {
+    align-items: stretch;
+    flex-direction: column;
   }
 }

@@ -6,7 +6,7 @@ import sys
 import types
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 PKG = ROOT / "mod_extracted" / "MattsSDKBoostingTools"
 
 
@@ -16,6 +16,14 @@ def _load_backend_actions():
     mb = sys.modules["mods_base"]
     mb.ENGINE = None
     mb.get_pc = lambda: None
+
+    def _command(*_args, **_kwargs):
+        def decorate(func):
+            func.add_argument = lambda *_a, **_k: None
+            return func
+        return decorate
+
+    mb.command = _command
 
     pkg = types.ModuleType("MattsSDKBoostingTools")
     pkg.__path__ = [str(PKG)]
@@ -55,6 +63,7 @@ def _load_backend_actions():
         },
         "MattsSDKBoostingTools.dev_tools": {
             "activate_devperk": lambda *a, **k: "perk",
+            "reset_skills_for_pc": lambda *a, **k: "reset",
             "teleport_pawn_to_debug_cam": lambda *a, **k: "tp",
             "toggle_debug_cam": lambda *a, **k: "cam",
         },
@@ -64,17 +73,26 @@ def _load_backend_actions():
         "MattsSDKBoostingTools.movement_adjustments": {
             "apply_movement_advanced_to_all_players": lambda *a, **k: None,
             "delete_ground_items": lambda *a, **k: None,
+            "fire_super_dash": lambda *a, **k: None,
+            "get_azzy_super_dash_state": lambda *a, **k: {},
+            "get_super_dash_state": lambda *a, **k: {},
+            "hide_ground_loot": lambda *a, **k: None,
             "pawn_for_controller": lambda *a, **k: None,
+            "pull_ground_loot_here": lambda *a, **k: None,
             "refresh_jump_counts_all_players": lambda *a, **k: None,
+            "request_azzy_super_dash": lambda *a, **k: None,
             "reset_movement_advanced_all_players": lambda *a, **k: None,
             "set_infinite_jump_all": lambda *a, **k: None,
             "set_infinite_jump_for_index": lambda *a, **k: None,
             "set_no_target": lambda *a, **k: None,
             "set_noclip": lambda *a, **k: None,
+            "set_super_dash_strength": lambda *a, **k: None,
             "set_time_dilation": lambda *a, **k: None,
             "teleport_pawn_to_pawn": lambda *a, **k: None,
+            "toggle_azzy_super_dash": lambda *a, **k: None,
             "toggle_infinite_jump_for_index": lambda *a, **k: None,
             "toggle_players_only": lambda *a, **k: None,
+            "toggle_super_dash": lambda *a, **k: None,
             "zero_vault_power_costs_all_players": lambda *a, **k: None,
         },
         "MattsSDKBoostingTools.party_helpers": {
@@ -93,9 +111,40 @@ def _load_backend_actions():
         },
         "MattsSDKBoostingTools.travel": {
             "_exec_console": lambda *a, **k: None,
+            "delete_location_bookmark": lambda *a, **k: None,
+            "go_location_bookmark": lambda *a, **k: None,
+            "list_location_bookmarks": lambda *a, **k: [],
+            "save_location_bookmark": lambda *a, **k: None,
             "travel_to_map": lambda *a, **k: None,
             "travel_to_station": lambda *a, **k: None,
         },
+        "MattsSDKBoostingTools.combat_tuning": {
+            "apply_combat_tuning": lambda *a, **k: None,
+            "reapply_combat_tuning": lambda *a, **k: None,
+            "reset_combat_tuning": lambda *a, **k: None,
+        },
+        "MattsSDKBoostingTools.streamer_chaos": {},
+        "MattsSDKBoostingTools.hoard_runner": {},
+        "MattsSDKBoostingTools.spawn_helpers": {
+            "apply_aggro_to_tracked": lambda *a, **k: None,
+            "get_aggro_mode": lambda *a, **k: "all",
+            "get_spawn_anchor": lambda *a, **k: "player",
+            "note_spawned_actors": lambda *a, **k: None,
+            "reaggro_tracked": lambda *a, **k: None,
+            "resolve_spawn_anchor_actor": lambda *a, **k: None,
+            "set_aggro_mode": lambda *a, **k: None,
+            "set_spawn_anchor": lambda *a, **k: None,
+        },
+        "MattsSDKBoostingTools.vehicle_tuning": {
+            "apply_vehicle_preset": lambda *a, **k: None,
+            "list_vehicle_catalog": lambda *a, **k: [],
+            "list_vehicle_presets": lambda *a, **k: [],
+            "spawn_personal_vehicle": lambda *a, **k: None,
+            "unlock_all_vehicles_for_pc": lambda *a, **k: None,
+        },
+        "MattsSDKBoostingTools.extreme_combat_xp": {},
+        "MattsSDKBoostingTools.instant_click_holds": {},
+        "MattsSDKBoostingTools.no_fog_of_war": {},
     }
     for mod_name, attrs in stubs.items():
         mod = types.ModuleType(mod_name)
