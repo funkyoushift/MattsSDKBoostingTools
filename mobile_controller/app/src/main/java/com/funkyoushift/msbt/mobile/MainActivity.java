@@ -58,6 +58,8 @@ public class MainActivity extends Activity {
             "https://api.github.com/repos/funkyoushift/MattsSDKBoostingTools/releases/tags/mobile-beta";
     private static final String FALLBACK_APK_URL =
             "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/mobile-beta/MSBT-Mobile-Controller.apk";
+    private static final String INSTALL_PAGE_URL =
+            "https://www.funkyoushift.com/MattsSDKBoostingTools/mobile-install.html";
     private static final Pattern VERSION_PATTERN =
             Pattern.compile("(\\d+)\\.(\\d+)\\.(\\d+)(?:-beta\\.(\\d+))?", Pattern.CASE_INSENSITIVE);
     private static final String DATA_CACHE_DIR = "msbt_data";
@@ -644,6 +646,7 @@ public class MainActivity extends Activity {
                 int remoteCode = remote.optInt("versionCode", 0);
                 String apkUrl = remote.optString("apkUrl", FALLBACK_APK_URL);
                 String versionedUrl = remote.optString("apkVersionedUrl", "");
+                String installUrl = remote.optString("installUrl", INSTALL_PAGE_URL);
                 boolean newer = isNewer(remoteName, remoteCode, localName, localCode);
                 JSONObject out = new JSONObject();
                 out.put("ok", true);
@@ -653,6 +656,7 @@ public class MainActivity extends Activity {
                 out.put("availableVersion", remoteName);
                 out.put("availableVersionCode", remoteCode);
                 out.put("apkUrl", apkUrl);
+                out.put("installUrl", installUrl);
                 if (!versionedUrl.isEmpty()) {
                     out.put("apkVersionedUrl", versionedUrl);
                 }

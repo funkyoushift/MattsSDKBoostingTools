@@ -100,9 +100,12 @@ Check boxes as you go. Test **portrait** and **landscape** where it matters. Pre
 ## K. Control → XYZ Bookmarks / Hoard
 
 - [ ] Save / refresh / go / delete XYZ bookmarks
-- [ ] Hoard Refresh shows a desktop-authored plan before Start
-- [ ] Start / Stop status is current; **Emergency Clear** confirms
-- [ ] Add phone waves, favorite an actor, Send Plan, then Start
+- [ ] Hoard enemy picker defaults to enemies only; search, multi-select, and paging work
+- [ ] Add multiple enemy types to one wave; edit counts without exceeding 60
+- [ ] Add / duplicate / remove / reorder multiple waves
+- [ ] Distance / spawn points / burst / stagger tuning persists per wave
+- [ ] Save a full-plan favorite, reload it after relaunch, Send Plan, then Start
+- [ ] Start / Stop status stays current; **Emergency Clear (ASD)** confirms
 
 ## L. Control → Item Pools
 
@@ -124,6 +127,8 @@ Check boxes as you go. Test **portrait** and **landscape** where it matters. Pre
 - [ ] Activity Log shows recent actions
 - [ ] Feedback template copy works
 - [ ] About version matches installed beta
+- [ ] Manual Check for updates reports the current build when already current
+- [ ] When a newer rolling beta exists, the top banner shows its version and opens the install page in the browser
 
 ---
 

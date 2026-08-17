@@ -129,6 +129,21 @@ main{
 .plan-row span{min-width:0;display:grid;gap:3px}
 .plan-row small{color:var(--muted);overflow-wrap:anywhere}
 .plan-row button{min-height:38px;padding:7px 10px;flex:0 0 auto}
+.hoard-status-card{display:grid;gap:11px;padding:13px;margin:10px 0 14px;border:1px solid #31506a;border-radius:15px;background:rgba(7,18,31,.72)}
+.hoard-status-card .title-row{align-items:flex-start}
+.hoard-status-card .title-row small{flex:1 1 180px}
+.hoard-wave-list{max-height:260px;overflow:auto}
+.hoard-wave-row{display:grid;gap:5px;width:100%;text-align:left;min-height:62px}
+.hoard-wave-row small,.hoard-actor-list button small,.hoard-entry-row small{display:block;color:var(--muted);overflow-wrap:anywhere;font-weight:500}
+.hoard-actor-list{max-height:min(44vh,390px)}
+.hoard-actor-list button{display:grid;gap:4px;text-align:left;width:calc(100% - 12px);margin:6px;min-height:58px}
+.hoard-entry-list{margin-top:12px}
+.hoard-entry-row{display:grid;grid-template-columns:minmax(0,1fr) 76px auto;gap:8px;align-items:center;padding:9px;border-bottom:1px solid #253550}
+.hoard-entry-row input{padding:10px;text-align:center}
+.hoard-entry-row button{min-height:42px;padding:8px}
+.danger-check{color:#ffc3ca}
+.hoard-plan-actions{position:sticky;bottom:calc(var(--chrome-bottom) + 8px);z-index:9;display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:12px;margin:14px -7px -7px;border:1px solid #4d3a6f;border-radius:16px;background:rgba(13,19,33,.98);box-shadow:0 -10px 24px rgba(0,0,0,.3)}
+.hoard-plan-actions .danger{grid-column:1 / -1}
 .quick-grid button.empty{opacity:.55;border-style:dashed}
 button,input,textarea,select{font:inherit}
 button{
@@ -331,6 +346,8 @@ button.ghost{min-height:36px;padding:6px 10px;font-size:12px;background:#152033;
   .update-banner{flex-direction:column}
   .update-banner-actions{flex-direction:row;width:100%;min-width:0}
   .update-banner-actions button{flex:1}
+  .hoard-entry-row{grid-template-columns:minmax(0,1fr) 68px}
+  .hoard-entry-row button{grid-column:1 / -1}
   .bottom-nav button{flex-basis:46px;min-width:46px;max-width:78px;font-size:9px}
   .quick-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
   .quick-grid button{min-height:54px;font-size:11px}

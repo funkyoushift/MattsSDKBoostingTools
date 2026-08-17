@@ -2,8 +2,8 @@ const $=(id)=>document.getElementById(id);
 const $$=(selector)=>[...document.querySelectorAll(selector)];
 const STORE={connection:'msbt.mobile.connection.v1',bookmarks:'msbt.mobile.bookmarks.v1',movement:'msbt.mobile.movement.v1',quick:'msbt.mobile.quick.v1',activity:'msbt.mobile.activity.v1',target:'msbt.mobile.target.v1',updateDismiss:'msbt.mobile.updateDismiss.v1',hoard:'msbt.mobile.hoard.v1'};
 const PLAYER_SCOPED=new Set(['max_all','max_currency','max_eridium','max_player_level','max_spec_level','max_sdu','give_currency','set_level','give_serial_selected','set_backpack_bank_selected','shiny_selected','reset_skills','movement_infinite_jump_selected_on','movement_infinite_jump_selected_off','movement_infinite_jump_toggle_selected','movement_teleport_to_slot','movement_teleport_selected_to_me','movement_teleport_me_to_selected','read_inventory','read_equipped_serials','read_backpack_serials']);
-const FALLBACK_APP_VERSION='0.1.0-beta.16';
-const state={online:false,bridgeOnline:false,codes:[],filteredCodes:[],selectedCodes:new Set(),activeQuickPage:0,quick:null,bookmarks:[],selectedBookmarks:new Set(),movementPicks:new Set(),connection:{},activity:[],players:[],selectedTarget:'',pollTimer:null,busy:false,inventory:{equipped:[],backpack:[],selected:null,selectedIds:new Set()},travel:{maps:[],stations:[],selectedMap:null,selectedStation:null,showAllStations:false},locations:{rows:[],selected:''},hoard:{waves:[],favorites:[],running:false,planLoaded:false},pools:{rows:[],selected:null},dev:{categories:{},actors:[],filtered:[],category:'All',selected:'',page:0,pageSize:80,warningAccepted:false},update:{currentVersion:FALLBACK_APP_VERSION,availableVersion:'',apkUrl:'',updateAvailable:false,checking:false,lastMessage:''}};
+const FALLBACK_APP_VERSION='0.1.0-beta.17';
+const state={online:false,bridgeOnline:false,codes:[],filteredCodes:[],selectedCodes:new Set(),activeQuickPage:0,quick:null,bookmarks:[],selectedBookmarks:new Set(),movementPicks:new Set(),connection:{},activity:[],players:[],selectedTarget:'',pollTimer:null,busy:false,inventory:{equipped:[],backpack:[],selected:null,selectedIds:new Set()},travel:{maps:[],stations:[],selectedMap:null,selectedStation:null,showAllStations:false},locations:{rows:[],selected:''},hoard:{waves:[],favorites:[],running:false,planLoaded:false,selectedWave:0,selectedActors:new Set(),filteredActors:[],actorPage:0,actorPageSize:50},pools:{rows:[],selected:null},dev:{categories:{},characterSet:new Set(),displayNames:{},actorMetadata:{},actors:[],filtered:[],category:'All',selected:'',page:0,pageSize:80,warningAccepted:false},update:{currentVersion:FALLBACK_APP_VERSION,availableVersion:'',apkUrl:'',installUrl:'',updateAvailable:false,checking:false,lastMessage:''}};
 const DEV_NEED_ACTOR=new Set(['dev_spawner_spawnai','dev_spawner_probeai','dev_spawner_cache','dev_spawner_spawn','dev_spawner_targets']);
 const read=(key,fallback)=>{try{return JSON.parse(localStorage.getItem(key))??fallback}catch{return fallback}};
 const write=(key,value)=>localStorage.setItem(key,JSON.stringify(value));
@@ -939,7 +939,11 @@ function buildActionPayload(action,button){
   if(action==='cxp_toggle')return{multiplier:Math.max(1,floatValue($('cxpMultiplier')&&$('cxpMultiplier').value,1000))};
   if(action==='location_bookmark_save')return{bookmark_name:text($('locationBookmarkName')&&$('locationBookmarkName').value)};
   if(action==='location_bookmark_go'||action==='location_bookmark_delete')return{bookmark_name:state.locations.selected};
-  if(action==='hoard_set_plan')return{waves:state.hoard.waves.map((wave)=>({...wave,entries:(wave.entries||[]).map((entry)=>({...entry}))}))};
+  if(action==='hoard_set_plan'){
+    if(!state.hoard.waves.length)throw new Error('Add at least one Hoard wave first.');
+    if(state.hoard.waves.some((wave)=>!Array.isArray(wave.entries)||!wave.entries.length))throw new Error('Every Hoard wave needs at least one enemy.');
+    return{waves:cloneHoardWaves(state.hoard.waves)};
+  }
   if(action==='set_backpack_bank_selected'||action==='set_backpack_bank_all')return{backpack_size:intValue($('boostBackpackSize').value,999),bank_size:intValue($('boostBankSize').value,1500)};
   if(action==='movement_apply_all')return movementPayload();
   if(action==='movement_set_time'){
@@ -1044,44 +1048,201 @@ function applyHoardStatus(data,{fromPoll=false}={}){
   if(!fromPoll&&Array.isArray(data.plan)&&data.plan.length)logActivity(`Hoard desktop plan loaded: ${data.plan.length} wave(s).`);
   setLiveEnabled();
 }
-function saveHoardLocal(){write(STORE.hoard,{waves:state.hoard.waves,favorites:state.hoard.favorites});renderHoardBuilder()}
-function renderHoardBuilder(){
-  const waves=$('hoardWaveRows');if(waves){
-    waves.innerHTML='';
-    state.hoard.waves.forEach((wave,index)=>{
-      const row=document.createElement('div');row.className='plan-row';
-      const first=(wave.entries||[])[0]||{};
-      row.innerHTML=`<span><strong>Wave ${index+1}</strong><small>${esc(first.actor_id||'No actor')} × ${Number(first.count||0)} · ${Number(wave.distance||900)}u</small></span>`;
-      const remove=document.createElement('button');remove.type='button';remove.className='danger';remove.textContent='Remove';remove.addEventListener('click',()=>{state.hoard.waves.splice(index,1);saveHoardLocal()});
-      row.appendChild(remove);waves.appendChild(row);
+function clampHoard(value,min,max,fallback){
+  const n=Number(value);
+  return Number.isFinite(n)?Math.max(min,Math.min(max,n)):fallback;
+}
+function defaultHoardWave(raw={}){
+  const entries=Array.isArray(raw.entries)?raw.entries.map((entry)=>({
+    actor_id:text(entry&&entry.actor_id),
+    count:Math.round(clampHoard(entry&&entry.count,1,60,1))
+  })).filter((entry)=>entry.actor_id):[];
+  return{
+    entries,
+    distance:clampHoard(raw.distance,600,4000,900),
+    spacing:clampHoard(raw.spacing,1,5000,125),
+    scale:clampHoard(raw.scale,.05,20,1),
+    z_offset:clampHoard(raw.z_offset,-5000,5000,0),
+    aggro:text(raw.aggro)||'passive',
+    spawn_points:Math.round(clampHoard(raw.spawn_points,1,12,6)),
+    burst:Math.round(clampHoard(raw.burst,1,6,2)),
+    stagger:clampHoard(raw.stagger,.15,5,.45),
+    cleanup_loot:raw.cleanup_loot===true
+  };
+}
+function cloneHoardWaves(waves){return(Array.isArray(waves)?waves:[]).map((wave)=>defaultHoardWave(wave))}
+function selectedHoardWave(){return state.hoard.waves[state.hoard.selectedWave]||null}
+function hoardWaveTotal(wave){return(wave&&Array.isArray(wave.entries)?wave.entries:[]).reduce((sum,entry)=>sum+Number(entry.count||0),0)}
+function hoardActorLabel(actor){
+  const display=text(state.dev.displayNames&&state.dev.displayNames[actor]);
+  return display&&display!==actor?`${display} · ${actor}`:actor;
+}
+function isHoardEnemy(actor){
+  const name=text(actor);
+  if(!name)return false;
+  const metadata=state.dev.actorMetadata&&state.dev.actorMetadata[name]||{};
+  const searchable=`${name} ${state.dev.displayNames&&state.dev.displayNames[name]||''} ${metadata.reference_display_name||''}`;
+  const nonEnemy=/(?:^|[_\s|.-])(?:audio|payload|gadget|turret|projectile|grenade|pickup|loot|door|switch|vehicle|mount|climb|grapple|deco|cinematic|vfx|fx|prop|placeable|damageable|interactive|travel|station|mission|quest|player|hologram|friendly|civilian|pet|companion|dummy|test)(?:$|[_\s|.-])/i;
+  if(/audio|payload|gadget|turret|hologram|friendly|civilian|companion/i.test(searchable)||nonEnemy.test(searchable))return false;
+  if(metadata.is_boss===true||metadata.is_true_boss===true)return true;
+  if(!state.dev.characterSet.has(name)||!/^(?:char|testchar|ai)_/i.test(name))return false;
+  return !/(?:^|_)char_npc(?:_|$)/i.test(name)&&!/^(?:char_ai|ai_ai|testchar)$/i.test(name);
+}
+function saveHoardLocal(){
+  write(STORE.hoard,{version:2,waves:state.hoard.waves,favorites:state.hoard.favorites,selectedWave:state.hoard.selectedWave});
+  renderHoardBuilder();
+}
+function renderHoardWaves(){
+  const waves=$('hoardWaveRows');if(!waves)return;
+  waves.innerHTML='';
+  state.hoard.waves.forEach((wave,index)=>{
+    const button=document.createElement('button');
+    button.type='button';
+    button.className=`hoard-wave-row${index===state.hoard.selectedWave?' selected':''}`;
+    const entries=(wave.entries||[]).map((entry)=>`${hoardActorLabel(entry.actor_id).split(' · ')[0]} × ${entry.count}`).join(' + ');
+    button.innerHTML=`<strong>Wave ${index+1}</strong><small>${esc(entries||'No enemies yet')} · ${hoardWaveTotal(wave)}/60 · ${Number(wave.distance)}u · ${Number(wave.spawn_points)} points</small>`;
+    button.addEventListener('click',()=>{state.hoard.selectedWave=index;state.hoard.selectedActors.clear();renderHoardBuilder();populateHoardTuning()});
+    waves.appendChild(button);
+  });
+  if(!waves.children.length)waves.innerHTML='<small class="muted">No waves. Tap Add Wave to begin.</small>';
+}
+function renderHoardEntries(){
+  const rows=$('hoardEntryRows');if(!rows)return;
+  rows.innerHTML='';
+  const wave=selectedHoardWave();
+  (wave&&wave.entries||[]).forEach((entry,index)=>{
+    const row=document.createElement('div');row.className='hoard-entry-row';
+    const copy=document.createElement('span');copy.innerHTML=`<strong>${esc(hoardActorLabel(entry.actor_id).split(' · ')[0])}</strong><small>${esc(entry.actor_id)}</small>`;
+    const count=document.createElement('input');count.type='number';count.min='1';count.max='60';count.inputMode='numeric';count.value=String(entry.count);count.setAttribute('aria-label',`Count for ${entry.actor_id}`);
+    count.addEventListener('change',()=>{
+      const other=(wave.entries||[]).reduce((sum,item,i)=>sum+(i===index?0:Number(item.count||0)),0);
+      entry.count=Math.round(clampHoard(count.value,1,Math.max(1,60-other),1));saveHoardLocal();
     });
-    if(!waves.children.length)waves.innerHTML='<small class="muted">No phone-authored waves yet. Refresh status to use the desktop plan, or add a wave.</small>';
-  }
-  const favorites=$('hoardFavoriteRows');if(favorites){
-    favorites.innerHTML='';
-    state.hoard.favorites.forEach((name)=>{const button=document.createElement('button');button.type='button';button.textContent=name;button.addEventListener('click',()=>{$('hoardActor').value=name});favorites.appendChild(button)});
-  }
+    const remove=document.createElement('button');remove.type='button';remove.className='danger';remove.textContent='Remove';remove.addEventListener('click',()=>{wave.entries.splice(index,1);saveHoardLocal()});
+    row.append(copy,count,remove);rows.appendChild(row);
+  });
+  if(!rows.children.length)rows.innerHTML='<small class="muted">Select enemies above, then add them to this wave.</small>';
+}
+function filterHoardActors({resetPage=true}={}){
+  const all=Array.isArray(state.dev.categories.All)?state.dev.categories.All:[...new Set(Object.values(state.dev.categories||{}).flat())];
+  const source=Boolean($('hoardShowAllActors')&&$('hoardShowAllActors').checked)?all:all.filter(isHoardEnemy);
+  const q=text($('hoardActorSearch')&&$('hoardActorSearch').value).toLowerCase();
+  state.hoard.filteredActors=source.filter((actor)=>!q||`${actor} ${state.dev.displayNames&&state.dev.displayNames[actor]||''}`.toLowerCase().includes(q));
+  if(resetPage)state.hoard.actorPage=0;
+  renderHoardActors();
+}
+function renderHoardActors(){
+  const rows=$('hoardActorRows');if(!rows)return;
+  const size=state.hoard.actorPageSize;
+  const pages=Math.max(1,Math.ceil(state.hoard.filteredActors.length/size));
+  state.hoard.actorPage=Math.max(0,Math.min(pages-1,state.hoard.actorPage));
+  const start=state.hoard.actorPage*size;
+  rows.innerHTML='';
+  state.hoard.filteredActors.slice(start,start+size).forEach((actor)=>{
+    const button=document.createElement('button');button.type='button';
+    const selected=state.hoard.selectedActors.has(actor);
+    button.className=selected?'selected':'';
+    button.innerHTML=`<strong>${selected?'✓ ':''}${esc((state.dev.displayNames&&state.dev.displayNames[actor])||actor)}</strong><small>${esc(actor)}</small>`;
+    button.addEventListener('click',()=>{if(selected)state.hoard.selectedActors.delete(actor);else state.hoard.selectedActors.add(actor);renderHoardActors()});
+    rows.appendChild(button);
+  });
+  if(!rows.children.length)rows.innerHTML='<small class="muted">No matching actors.</small>';
+  const advanced=Boolean($('hoardShowAllActors')&&$('hoardShowAllActors').checked);
+  if($('hoardActorSummary'))$('hoardActorSummary').textContent=`${state.hoard.filteredActors.length.toLocaleString()} ${advanced?'actors':'enemies'} · ${state.hoard.selectedActors.size} selected`;
+  if($('hoardActorPage'))$('hoardActorPage').textContent=`Page ${state.hoard.actorPage+1} / ${pages}`;
+  if($('hoardPrevActors'))$('hoardPrevActors').disabled=state.hoard.actorPage<=0;
+  if($('hoardNextActors'))$('hoardNextActors').disabled=state.hoard.actorPage>=pages-1;
+}
+function populateHoardTuning(){
+  const wave=selectedHoardWave();if(!wave)return;
+  const fields={hoardDistance:wave.distance,hoardSpawnPoints:wave.spawn_points,hoardBurst:wave.burst,hoardStagger:wave.stagger,hoardSpacing:wave.spacing,hoardScale:wave.scale,hoardZOffset:wave.z_offset,hoardAggro:wave.aggro};
+  Object.entries(fields).forEach(([id,value])=>{if($(id))$(id).value=String(value)});
+  if($('hoardCleanupLoot'))$('hoardCleanupLoot').checked=wave.cleanup_loot===true;
+}
+function renderHoardFavorites(){
+  const select=$('hoardFavoriteSelect');if(!select)return;
+  const previous=select.value;select.innerHTML='';
+  if(!state.hoard.favorites.length){
+    const option=document.createElement('option');option.value='';option.textContent='No saved plans';select.appendChild(option);
+  }else state.hoard.favorites.forEach((favorite)=>{
+    const option=document.createElement('option');option.value=favorite.id;option.textContent=`${favorite.name} · ${favorite.waves.length} wave(s)`;select.appendChild(option);
+  });
+  if(state.hoard.favorites.some((favorite)=>favorite.id===previous))select.value=previous;
+  if($('hoardFavoriteSummary'))$('hoardFavoriteSummary').textContent=state.hoard.favorites.length?`${state.hoard.favorites.length} favorite plan(s) saved on this phone.`:'No phone favorites saved.';
+}
+function renderHoardBuilder(){
+  if(state.hoard.waves.length)state.hoard.selectedWave=Math.max(0,Math.min(state.hoard.waves.length-1,state.hoard.selectedWave));
+  else state.hoard.selectedWave=0;
+  const enemyTotal=state.hoard.waves.reduce((sum,wave)=>sum+hoardWaveTotal(wave),0);
+  if($('hoardPlanSummary'))$('hoardPlanSummary').textContent=`${state.hoard.waves.length} wave(s) · ${enemyTotal} enemies`;
+  renderHoardWaves();renderHoardEntries();renderHoardFavorites();
 }
 function loadHoardLocal(){
   const saved=read(STORE.hoard,{});
-  state.hoard.waves=Array.isArray(saved.waves)?saved.waves:[];
-  state.hoard.favorites=Array.isArray(saved.favorites)?saved.favorites:[];
+  state.hoard.waves=cloneHoardWaves(saved.waves);
+  if(!state.hoard.waves.length)state.hoard.waves=[defaultHoardWave()];
+  state.hoard.selectedWave=Math.max(0,intValue(saved.selectedWave,0));
+  state.hoard.favorites=Array.isArray(saved.favorites)?saved.favorites.filter((favorite)=>favorite&&typeof favorite==='object'&&Array.isArray(favorite.waves)).map((favorite)=>({id:text(favorite.id)||`favorite_${Date.now()}_${Math.random()}`,name:text(favorite.name)||'Saved Hoard',waves:cloneHoardWaves(favorite.waves)})):[];
   renderHoardBuilder();
+  populateHoardTuning();
 }
 function addHoardWave(){
-  const actor=text($('hoardActor')&&$('hoardActor').value);
-  if(!actor){alert('Choose an actor first.');return}
-  state.hoard.waves.push({
-    entries:[{actor_id:actor,count:Math.max(1,Math.min(60,intValue($('hoardCount').value,5)))}],
-    distance:Math.max(600,Math.min(4000,floatValue($('hoardDistance').value,900))),
-    spacing:Math.max(1,Math.min(5000,floatValue($('hoardSpacing').value,125))),
-    scale:1,aggro:'passive',
-    spawn_points:Math.max(1,Math.min(12,intValue($('hoardSpawnPoints').value,6))),
-    burst:Math.max(1,Math.min(6,intValue($('hoardBurst').value,2))),
-    stagger:Math.max(.15,Math.min(5,floatValue($('hoardStagger').value,.45))),
-    cleanup_loot:Boolean($('hoardCleanupLoot').checked)
-  });
+  const source=selectedHoardWave();
+  state.hoard.waves.push(defaultHoardWave(source?{distance:source.distance,spacing:source.spacing,scale:source.scale,z_offset:source.z_offset,aggro:source.aggro,spawn_points:source.spawn_points,burst:source.burst,stagger:source.stagger}:{}));
+  state.hoard.selectedWave=state.hoard.waves.length-1;
+  state.hoard.selectedActors.clear();
   saveHoardLocal();
+  populateHoardTuning();
+}
+function addSelectedActors({newWave=false}={}){
+  if(!state.hoard.selectedActors.size){alert('Select at least one enemy first.');return}
+  const selected=[...state.hoard.selectedActors];
+  if(newWave||!selectedHoardWave())addHoardWave();
+  const wave=selectedHoardWave();
+  const count=Math.round(clampHoard($('hoardCount')&&$('hoardCount').value,1,60,5));
+  let remaining=60-hoardWaveTotal(wave);
+  for(const actor of selected){
+    if(remaining<=0)break;
+    const existing=wave.entries.find((entry)=>entry.actor_id===actor);
+    const take=Math.min(count,remaining);
+    if(existing)existing.count=Math.min(60,existing.count+take);else wave.entries.push({actor_id:actor,count:take});
+    remaining-=take;
+  }
+  if(remaining<=0&&selected.length*count>60)alert('Wave capped at 60 total enemies. Remaining selections were not added.');
+  state.hoard.selectedActors.clear();saveHoardLocal();renderHoardActors();
+}
+function moveHoardWave(delta){
+  const from=state.hoard.selectedWave,to=from+delta;
+  if(from<0||to<0||to>=state.hoard.waves.length)return;
+  [state.hoard.waves[from],state.hoard.waves[to]]=[state.hoard.waves[to],state.hoard.waves[from]];
+  state.hoard.selectedWave=to;saveHoardLocal();
+}
+function saveHoardFavorite(kind){
+  const name=text($('hoardFavoriteName')&&$('hoardFavoriteName').value);
+  if(!name){alert('Enter a favorite name first.');return}
+  const waves=kind==='wave'?(selectedHoardWave()?[selectedHoardWave()]:[]):state.hoard.waves;
+  if(!waves.length||waves.some((wave)=>!wave.entries.length)){alert('Every saved wave needs at least one enemy type.');return}
+  const existing=state.hoard.favorites.find((favorite)=>favorite.name.toLowerCase()===name.toLowerCase());
+  const favorite={id:existing?existing.id:`favorite_${Date.now()}`,name,waves:cloneHoardWaves(waves)};
+  if(existing)Object.assign(existing,favorite);else state.hoard.favorites.unshift(favorite);
+  saveHoardLocal();
+  if($('hoardFavoriteSelect'))$('hoardFavoriteSelect').value=favorite.id;
+}
+async function pushAndStartHoard(){
+  if(!state.online){alert('Connect to desktop MSBT first.');return}
+  if(state.hoard.waves.some((wave)=>!wave.entries.length)){alert('Every wave needs at least one enemy before sending.');return}
+  if(state.busy)return;
+  state.busy=true;setLiveEnabled();
+  try{
+    const pushed=await gatewayAction('hoard_set_plan',{waves:cloneHoardWaves(state.hoard.waves)},45000);
+    if(!pushed.ok)throw new Error(text(pushed.data&&pushed.data.message)||'Could not send Hoard plan.');
+    applyHoardStatus(pushed.data||{});
+    const started=await gatewayAction('hoard_start',{},45000);
+    const message=text(started.data&&started.data.message)||'Hoard start sent.';
+    logActivity(`hoard_start: ${message}`);applyHoardStatus(started.data||{});
+    if(!started.ok)alert(message);
+  }catch(error){const message=error&&error.message?error.message:String(error);logActivity(`Hoard Send & Start failed: ${message}`);alert(message)}
+  finally{state.busy=false;setLiveEnabled()}
 }
 function applyActionResult(action,data){
   if(action.startsWith('cxp_')||action.startsWith('instant_')){
@@ -1097,7 +1258,46 @@ function applyActionResult(action,data){
 }
 if($('locationDelete'))$('locationDelete').dataset.confirmMessage='Delete the selected XYZ bookmark?';
 if($('hoardAddWave'))$('hoardAddWave').addEventListener('click',addHoardWave);
-if($('hoardFavorite'))$('hoardFavorite').addEventListener('click',()=>{const actor=text($('hoardActor').value);if(actor&&!state.hoard.favorites.includes(actor)){state.hoard.favorites.push(actor);saveHoardLocal()}});
+if($('hoardDuplicateWave'))$('hoardDuplicateWave').addEventListener('click',()=>{const wave=selectedHoardWave();if(!wave)return;state.hoard.waves.splice(state.hoard.selectedWave+1,0,defaultHoardWave(wave));state.hoard.selectedWave+=1;saveHoardLocal();populateHoardTuning()});
+if($('hoardRemoveWave'))$('hoardRemoveWave').addEventListener('click',()=>{if(!selectedHoardWave())return;if(window.confirm(`Remove wave ${state.hoard.selectedWave+1} from the phone plan?`)){state.hoard.waves.splice(state.hoard.selectedWave,1);state.hoard.selectedWave=Math.max(0,state.hoard.selectedWave-1);saveHoardLocal();populateHoardTuning()}});
+if($('hoardMoveWaveUp'))$('hoardMoveWaveUp').addEventListener('click',()=>moveHoardWave(-1));
+if($('hoardMoveWaveDown'))$('hoardMoveWaveDown').addEventListener('click',()=>moveHoardWave(1));
+if($('hoardActorSearch'))$('hoardActorSearch').addEventListener('input',()=>filterHoardActors());
+if($('hoardShowAllActors'))$('hoardShowAllActors').addEventListener('change',()=>filterHoardActors());
+if($('hoardClearActorSelection'))$('hoardClearActorSelection').addEventListener('click',()=>{state.hoard.selectedActors.clear();renderHoardActors()});
+if($('hoardPrevActors'))$('hoardPrevActors').addEventListener('click',()=>{state.hoard.actorPage=Math.max(0,state.hoard.actorPage-1);renderHoardActors()});
+if($('hoardNextActors'))$('hoardNextActors').addEventListener('click',()=>{state.hoard.actorPage+=1;renderHoardActors()});
+if($('hoardAddActorsToWave'))$('hoardAddActorsToWave').addEventListener('click',()=>addSelectedActors());
+if($('hoardActorsAsWave'))$('hoardActorsAsWave').addEventListener('click',()=>addSelectedActors({newWave:true}));
+if($('hoardApplyTuning'))$('hoardApplyTuning').addEventListener('click',()=>{
+  const wave=selectedHoardWave();if(!wave){alert('Add or select a wave first.');return}
+  Object.assign(wave,{
+    distance:clampHoard($('hoardDistance').value,600,4000,900),
+    spawn_points:Math.round(clampHoard($('hoardSpawnPoints').value,1,12,6)),
+    burst:Math.round(clampHoard($('hoardBurst').value,1,6,2)),
+    stagger:clampHoard($('hoardStagger').value,.15,5,.45),
+    spacing:clampHoard($('hoardSpacing').value,1,5000,125),
+    scale:clampHoard($('hoardScale').value,.05,20,1),
+    z_offset:clampHoard($('hoardZOffset').value,-5000,5000,0),
+    aggro:text($('hoardAggro').value)||'passive',
+    cleanup_loot:Boolean($('hoardCleanupLoot').checked)
+  });
+  saveHoardLocal();populateHoardTuning();
+});
+if($('hoardSavePlanFavorite'))$('hoardSavePlanFavorite').addEventListener('click',()=>saveHoardFavorite('plan'));
+if($('hoardSaveWaveFavorite'))$('hoardSaveWaveFavorite').addEventListener('click',()=>saveHoardFavorite('wave'));
+if($('hoardLoadFavorite'))$('hoardLoadFavorite').addEventListener('click',()=>{
+  const favorite=state.hoard.favorites.find((row)=>row.id===$('hoardFavoriteSelect').value);
+  if(!favorite){alert('Choose a saved favorite first.');return}
+  if(state.hoard.waves.some((wave)=>wave.entries.length)&&!window.confirm(`Replace the current phone plan with “${favorite.name}”?`))return;
+  state.hoard.waves=cloneHoardWaves(favorite.waves);state.hoard.selectedWave=0;saveHoardLocal();populateHoardTuning();
+});
+if($('hoardDeleteFavorite'))$('hoardDeleteFavorite').addEventListener('click',()=>{
+  const id=$('hoardFavoriteSelect').value;
+  const favorite=state.hoard.favorites.find((row)=>row.id===id);if(!favorite)return;
+  if(window.confirm(`Delete favorite “${favorite.name}” from this phone?`)){state.hoard.favorites=state.hoard.favorites.filter((row)=>row.id!==id);saveHoardLocal()}
+});
+if($('hoardPushStart'))$('hoardPushStart').addEventListener('click',()=>void pushAndStartHoard());
 if($('hoardClearPlan'))$('hoardClearPlan').addEventListener('click',()=>{if(window.confirm('Clear the phone-authored plan? The desktop/game plan is unchanged until Send Plan is used.')){state.hoard.waves=[];saveHoardLocal()}});
 async function runLiveAction(button){
   const action=text(button&&button.dataset&&button.dataset.action);
@@ -1170,7 +1370,7 @@ function showUpdateBanner(show){
     $('updateBannerText').textContent=`Open beta ${state.update.availableVersion} is available (you have ${state.update.currentVersion}).`;
   }
   if($('updateBannerMeta')){
-    $('updateBannerMeta').textContent='Download installs over this app and keeps local pairing data.';
+    $('updateBannerMeta').textContent='Open the MSBT install page in your browser, download the APK, and install over this app to keep local data.';
   }
 }
 function renderUpdateUi({forceBanner=false}={}){
@@ -1205,17 +1405,13 @@ function requestUpdateCheck({quiet=true,reason='manual',forceBanner=false}={}){
   }
 }
 function startUpdateInstall(){
-  const url=text(state.update.apkUrl);
-  if(!(window.MSBTAssets&&typeof MSBTAssets.downloadAndInstallUpdate==='function')){
-    if(url&&window.MSBTAssets&&typeof MSBTAssets.openExternalUrl==='function'){
-      MSBTAssets.openExternalUrl(url);
-      return;
-    }
-    alert('In-app install is only available in the Android APK build.');
+  const url=text(state.update.installUrl)||'https://www.funkyoushift.com/MattsSDKBoostingTools/mobile-install.html';
+  if(!(window.MSBTAssets&&typeof MSBTAssets.openExternalUrl==='function')){
+    alert(`Open this install page in your browser:\n${url}`);
     return;
   }
-  setAboutUpdateStatus('Starting download…');
-  try{MSBTAssets.downloadAndInstallUpdate(url)}catch(error){
+  setAboutUpdateStatus(`Opening install page for ${state.update.availableVersion} in your browser…`);
+  try{MSBTAssets.openExternalUrl(url)}catch(error){
     setAboutUpdateStatus(error&&error.message?error.message:String(error));
   }
 }
@@ -1233,6 +1429,7 @@ window.__msbtUpdateCheck=(payload)=>{
   if(data.currentVersion)state.update.currentVersion=text(data.currentVersion);
   state.update.availableVersion=text(data.availableVersion);
   state.update.apkUrl=text(data.apkVersionedUrl)||text(data.apkUrl);
+  state.update.installUrl=text(data.installUrl)||'https://www.funkyoushift.com/MattsSDKBoostingTools/mobile-install.html';
   state.update.updateAvailable=Boolean(data.updateAvailable);
   syncAboutVersion();
   if(state.update.updateAvailable){
@@ -1618,11 +1815,10 @@ async function loadDevCatalog(){
     const raw=await readBundledAssetText('dev_spawner_catalog.json');
     const json=JSON.parse(raw);
     state.dev.categories=json.categories&&typeof json.categories==='object'?json.categories:{All:[]};
-    const hoardChoices=$('hoardActorChoices');
-    if(hoardChoices){
-      const actors=Array.isArray(state.dev.categories.All)?state.dev.categories.All:[...new Set(Object.values(state.dev.categories).flat())];
-      hoardChoices.innerHTML=actors.slice(0,5000).map((name)=>`<option value="${esc(name)}"></option>`).join('');
-    }
+    state.dev.characterSet=new Set(Array.isArray(state.dev.categories.Characters)?state.dev.categories.Characters:[]);
+    state.dev.displayNames=json.display_names&&typeof json.display_names==='object'?json.display_names:{};
+    state.dev.actorMetadata=json.actor_metadata&&typeof json.actor_metadata==='object'?json.actor_metadata:{};
+    filterHoardActors();
     const select=$('devActorCategory');
     if(select){
       const current=select.value||'All';

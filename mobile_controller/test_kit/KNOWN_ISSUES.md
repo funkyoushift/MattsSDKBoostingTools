@@ -1,6 +1,6 @@
 # Known limits (open beta)
 
-**Baseline build:** `0.1.0-beta.16` — current recommended open beta (mobile parity controls, in-app APK update check, live pairing + Boost/Codes/QM/Control/Spawn).
+**Baseline build:** `0.1.0-beta.17` — current recommended open beta (full phone Hoard Builder, visible update alerts, live pairing + Boost/Codes/QM/Control/Spawn).
 
 Do **not** treat these as surprise bugs unless they regressed.
 
@@ -13,7 +13,7 @@ Do **not** treat these as surprise bugs unless they regressed.
 - **Dev Spawner is experimental** — can crash the game / affect lobby players. Check **I understand the risk**, then **Enable** each session.
 - **Inventory reads** — best on listen host; clients often cannot see full remote inventories.
 - **Quick Menu upload** — Pull From PC + tap-to-fire works; full two-way push/conflict resolve may still be incomplete. Offline edits stay on the phone.
-- **In-app updates** — need network access to GitHub. First install may ask for “Install unknown apps” permission for this package. Quiet/no banner when offline.
+- **Update checks** — need network access to GitHub. The app shows a banner for newer betas and intentionally opens the browser install page; Android/Play Protect still controls the manual APK install.
 - **Not on mobile (by design)** — Matt Editor, save editing, Legit Builder, deep item construction, desktop installer admin.
 
 ## Layout notes (tested on Pixel 10 Pro XL + CSS viewport checks)
@@ -40,7 +40,7 @@ Do **not** treat these as surprise bugs unless they regressed.
 
 ## Reporting tips
 
-- Include app version from **More → About** (want `0.1.0-beta.16`+).
+- Include app version from **More → About** (want `0.1.0-beta.17`+).
 - Say whether desktop Gateway showed online.
 - Full-screen screenshots beat cropped button shots.
 - Never paste live pairing codes in public Discord.

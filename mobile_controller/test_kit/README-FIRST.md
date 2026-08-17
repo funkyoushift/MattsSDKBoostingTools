@@ -1,6 +1,6 @@
 # MSBT Mobile Controller — Open Beta Test Kit
 
-**Current recommended build: `0.1.0-beta.16`** (mobile parity beta with live pairing + core tabs).
+**Current recommended build: `0.1.0-beta.17`** (full phone Hoard Builder + visible update alerts).
 
 Welcome. This kit is for the **open Android beta**. It is separate from the public Windows MSBT stable installer (`v2.2.x`).
 
@@ -18,7 +18,7 @@ Welcome. This kit is for the **open Android beta**. It is separate from the publ
 **Always-current APK (bookmark on your phone):**  
 https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/mobile-beta/MSBT-Mobile-Controller.apk
 
-Confirm **More → About** shows **`0.1.0-beta.16`** (or newer). Install **over** older mobile betas so local data survives.
+Confirm **More → About** shows **`0.1.0-beta.17`** (or newer). Install **over** older mobile betas so local data survives.
 
 Prerelease page:  
 https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/mobile-beta

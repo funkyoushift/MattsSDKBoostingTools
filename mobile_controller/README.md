@@ -4,7 +4,7 @@ Android companion controller for Matt's SDK Boosting Tools.
 
 Package ID: `com.funkyoushift.msbt.mobile`
 
-Current beta: `0.1.0-beta.16` (recommended open beta)
+Current beta: `0.1.0-beta.17` (recommended open beta)
 
 ## Phone download (static link)
 
@@ -107,8 +107,8 @@ Open beta downloads are public GitHub Release links (APK + desktop Mobile Gatewa
 
 Build workflow outputs two separate artifacts:
 
-- `MSBT-Mobile-Controller-0.1.0-beta.16.apk`
-- `MSBT-Mobile-Beta-Test-Kit-0.1.0-beta.16.zip`
+- `MSBT-Mobile-Controller-0.1.0-beta.17.apk`
+- `MSBT-Mobile-Beta-Test-Kit-0.1.0-beta.17.zip`
 
 See `BETA_TESTING.md` and the `test_kit/` folder for tester instructions, checklist, and Discord DM feedback format.
 

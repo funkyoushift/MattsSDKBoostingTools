@@ -24,7 +24,7 @@
         <small id="updateBannerMeta" class="muted"></small>
       </div>
       <div class="update-banner-actions">
-        <button type="button" id="updateInstallBtn" class="primary">Update</button>
+        <button type="button" id="updateInstallBtn" class="primary">Open install page</button>
         <button type="button" id="updateLaterBtn" class="ghost">Later</button>
       </div>
     </div>
@@ -227,19 +227,61 @@
       </article>
 
       <article id="hoardPanel" class="card panel-shell hidden">
-        <div class="panel-head"><p class="eyebrow">HOARD SAFETY + PLAN</p><button type="button" class="ghost" data-collapse-panel="hoardPanel">Collapse</button></div>
-        <p class="muted">Refresh first to use a desktop-authored plan. Stop is non-destructive. Emergency Clear invokes the existing explicit ASD clear path only.</p>
-        <div class="button-grid"><button id="hoardRefresh" data-live data-action="hoard_status">Refresh Status</button><button id="hoardStart" data-live data-action="hoard_start">Start Loaded Plan</button><button id="hoardStop" data-live data-action="hoard_stop">Stop</button><button id="hoardClear" data-live data-action="hoard_clear" data-confirm-message="Emergency Clear uses the existing destructive ASD clear path. Continue?" class="danger">Emergency Clear</button></div>
-        <strong id="hoardState" class="state-pill">Unknown</strong>
-        <small id="hoardStatus" class="muted">No status loaded.</small>
-        <details class="fold"><summary>Phone Plan Builder</summary>
-          <p class="muted">One actor type per wave for phone clarity; plans remain compatible with the desktop multi-entry builder.</p>
-          <label>Actor<input id="hoardActor" list="hoardActorChoices" placeholder="Select an actor"></label><datalist id="hoardActorChoices"></datalist>
-          <div class="fields two"><label>Count (1–60)<input id="hoardCount" value="5" inputmode="numeric"></label><label>Distance (600–4000)<input id="hoardDistance" value="900" inputmode="numeric"></label><label>Spacing<input id="hoardSpacing" value="125" inputmode="numeric"></label><label>Spawn points<input id="hoardSpawnPoints" value="6" inputmode="numeric"></label><label>Burst<input id="hoardBurst" value="2" inputmode="numeric"></label><label>Stagger seconds<input id="hoardStagger" value="0.45" inputmode="decimal"></label></div>
-          <label class="check"><input type="checkbox" id="hoardCleanupLoot"> Cleanup loot between waves</label>
-          <div class="button-grid"><button id="hoardAddWave">Add Wave</button><button id="hoardFavorite">Favorite Actor</button><button id="hoardPushPlan" data-live data-action="hoard_set_plan">Send Plan to Game</button><button id="hoardClearPlan" class="danger">Clear Phone Plan</button></div>
-          <div id="hoardFavoriteRows" class="chip-row"></div><div id="hoardWaveRows" class="list compact"></div>
+        <div class="panel-head"><p class="eyebrow">HOARD BUILDER</p><button type="button" class="ghost" data-collapse-panel="hoardPanel">Collapse</button></div>
+        <p class="muted">Build and save complete multi-wave plans on this phone. Live game actions remain host-controlled by the existing SDK Hoard runner.</p>
+        <section class="hoard-status-card" aria-label="Hoard run controls">
+          <div class="title-row"><strong id="hoardState" class="state-pill">Unknown</strong><small id="hoardStatus" class="muted">No status loaded.</small></div>
+          <div class="button-grid"><button id="hoardRefresh" data-live data-action="hoard_status">Refresh Status</button><button id="hoardStart" data-live data-action="hoard_start">Start Loaded Plan</button><button id="hoardStop" data-live data-action="hoard_stop">Stop After Current State</button><button id="hoardClear" data-live data-action="hoard_clear" data-confirm-message="Emergency Clear stops the Hoard and invokes the existing destructive ASD clear path. It does not add a loot-cleanup path. Continue?" class="danger">Emergency Clear (ASD)</button></div>
+          <small class="muted">Stop is non-destructive and leaves live actors alone. Emergency Clear is the SDK's explicit delayed ASD clear.</small>
+        </section>
+
+        <details class="fold" open><summary>1 · Waves</summary>
+          <div class="selection-bar"><span id="hoardPlanSummary">0 waves · 0 enemies</span><button id="hoardAddWave">Add Wave</button><button id="hoardDuplicateWave">Duplicate</button></div>
+          <div id="hoardWaveRows" class="list compact hoard-wave-list"></div>
+          <div class="button-row-wrap"><button id="hoardMoveWaveUp">Move Up</button><button id="hoardMoveWaveDown">Move Down</button><button id="hoardRemoveWave" class="danger">Remove Selected</button></div>
         </details>
+
+        <details class="fold" open><summary>2 · Enemy Picker</summary>
+          <p class="muted">Search the bundled desktop actor catalog. Enemy-only filtering is on by default; results are paged for phone performance.</p>
+          <input id="hoardActorSearch" type="search" placeholder="Search enemy name or actor ID…">
+          <label class="check"><input type="checkbox" id="hoardShowAllActors"> Show all catalog actors (advanced)</label>
+          <div class="selection-bar"><span id="hoardActorSummary">Loading enemy catalog…</span><button id="hoardClearActorSelection">Clear</button></div>
+          <div id="hoardActorRows" class="list compact panel-scroll hoard-actor-list"></div>
+          <div class="row"><button id="hoardPrevActors">Previous</button><span id="hoardActorPage" class="muted">Page 1 / 1</span><button id="hoardNextActors">Next</button></div>
+          <div class="fields two"><label>Count for selected type(s)<input id="hoardCount" value="5" inputmode="numeric"></label><label>Wave total limit<strong class="state-pill">60 enemies</strong></label></div>
+          <div class="button-grid"><button id="hoardAddActorsToWave">Add Selected to Wave</button><button id="hoardActorsAsWave">Add as New Wave</button></div>
+          <div id="hoardEntryRows" class="list compact hoard-entry-list"></div>
+        </details>
+
+        <details class="fold" open><summary>3 · Selected Wave Tuning</summary>
+          <div class="fields two">
+            <label>Distance (600–4000)<input id="hoardDistance" value="900" inputmode="numeric"></label>
+            <label>Spawn points (1–12)<input id="hoardSpawnPoints" value="6" inputmode="numeric"></label>
+            <label>Burst size (1–6)<input id="hoardBurst" value="2" inputmode="numeric"></label>
+            <label>Stagger seconds (.15–5)<input id="hoardStagger" value="0.45" inputmode="decimal"></label>
+            <label>Spacing (1–5000)<input id="hoardSpacing" value="125" inputmode="numeric"></label>
+            <label>Scale (.05–20)<input id="hoardScale" value="1" inputmode="decimal"></label>
+            <label>Vertical offset<input id="hoardZOffset" value="0" inputmode="decimal"></label>
+            <label>Aggro mode<select id="hoardAggro"><option value="passive">Passive</option><option value="attack_me">Attack Me</option><option value="attack_party">Attack Party</option><option value="free_for_all">Free For All</option></select></label>
+          </div>
+          <label class="check danger-check"><input type="checkbox" id="hoardCleanupLoot"> Opt in to deferred loot hide between waves</label>
+          <small class="muted">Loot hide is off by default and rate-limited by the SDK. Emergency Clear never enables it.</small>
+          <button id="hoardApplyTuning">Apply Tuning to Selected Wave</button>
+        </details>
+
+        <details class="fold"><summary>4 · Saved Plans</summary>
+          <p class="muted">Favorites are stored on this phone and can be loaded offline, then sent through <code>hoard_set_plan</code>.</p>
+          <label>Favorite name<input id="hoardFavoriteName" placeholder="Raid warm-up"></label>
+          <select id="hoardFavoriteSelect"><option value="">No saved plans</option></select>
+          <div class="button-grid"><button id="hoardSavePlanFavorite">Save Full Plan</button><button id="hoardSaveWaveFavorite">Save Selected Wave</button><button id="hoardLoadFavorite">Load Favorite</button><button id="hoardDeleteFavorite" class="danger">Delete Favorite</button></div>
+          <small id="hoardFavoriteSummary" class="muted">No phone favorites saved.</small>
+        </details>
+
+        <div class="hoard-plan-actions">
+          <button id="hoardPushPlan" data-live data-action="hoard_set_plan" class="primary">Send Plan to Game</button>
+          <button id="hoardPushStart" data-live class="primary">Send &amp; Start</button>
+          <button id="hoardClearPlan" class="danger">Clear Phone Plan</button>
+        </div>
       </article>
 
       <article id="inventoryPanel" class="card panel-shell hidden">
@@ -441,12 +483,12 @@
       <article id="feedbackPanel" class="card hidden"><p class="eyebrow">BETA FEEDBACK</p><p>For this open beta, send feedback directly to FunkYouSHiFT in Discord DMs.</p><p class="muted">Please include phone make/model, Android version, what screen you were on, what you expected, what happened, and full-screen screenshots. For layout issues, capture the whole screen including navigation.</p><button id="copyFeedbackTemplate">Copy Feedback Template</button></article>
       <article id="aboutPanel" class="card hidden">
         <p class="eyebrow">ABOUT</p>
-        <p><strong>MSBT Mobile Controller</strong><br>Android beta <span id="aboutVersion">0.1.0-beta.16</span></p>
+        <p><strong>MSBT Mobile Controller</strong><br>Android beta <span id="aboutVersion">0.1.0-beta.17</span></p>
         <p class="muted">Companion controller for Matt's SDK Boosting Tools. Live game actions require desktop MSBT.</p>
         <p id="aboutUpdateStatus" class="muted">Update check idle.</p>
         <div class="button-row-wrap">
           <button type="button" id="checkUpdatesBtn">Check for updates</button>
-          <button type="button" id="aboutInstallUpdateBtn" class="primary hidden">Download &amp; install</button>
+          <button type="button" id="aboutInstallUpdateBtn" class="primary hidden">Open install page</button>
         </div>
       </article>
     </section>
