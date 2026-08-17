@@ -10798,7 +10798,7 @@ const TUTORIAL_TOURS = {
     },
     {
       title: "Arrange your layout",
-      body: "Every tab has a layout toolbar: drag panels by the title bar, stack by dropping center-on-center, Compact to tidy, Reset for defaults. Full editor tour is on the next screen — or View → Layout walkthrough anytime.",
+      body: "Every tab has a layout toolbar: drag panels by the title bar, stack by dropping center-on-center, Compact to tidy, Reset for defaults, Arrange → Locked to freeze the layout. Full editor tour is on the next screen — or View → Layout walkthrough anytime.",
       tab: "boosting",
       targetSel: "#tab-boosting .msbt-layout-toolbar"
     },
@@ -10814,7 +10814,7 @@ const TUTORIAL_TOURS = {
   layout: [
     {
       title: "Layout toolbar",
-      body: "Dockable tabs have a layout bar: Fixed / Panels mode, Comfortable / Compact spacing, Panels (show/hide), Compact packing, Reset layout, and Walkthrough. Arrangements save per tab in this profile.",
+      body: "Dockable tabs have a layout bar: Fixed / Panels mode, Comfortable / Compact spacing, Arrange Unlocked / Locked, Panels (show/hide), Compact packing, Reset layout, and Walkthrough. Arrangements save per tab in this profile and come back after you close the app.",
       tab: "boosting",
       targetSel: "#tab-boosting .msbt-layout-toolbar"
     },
@@ -10838,7 +10838,7 @@ const TUTORIAL_TOURS = {
     },
     {
       title: "Compact and Reset",
-      body: "The Compact button packs panels, fills gaps, and clears overlaps. Reset layout restores that tab's shipped default arrangement. The separate Comfortable / Compact switch changes control spacing only.",
+      body: "The Compact button packs panels, fills gaps, and clears overlaps. Reset layout restores that tab's shipped default arrangement. Arrange → Locked freezes drag and resize so your layout cannot be bumped; Unlock to move panels again. The separate Comfortable / Compact switch changes control spacing only.",
       tab: "boosting",
       targetSel: "#tab-boosting .msbt-layout-toolbar-actions"
     },

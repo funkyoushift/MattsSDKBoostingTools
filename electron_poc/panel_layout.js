@@ -7,12 +7,13 @@
   "use strict";
 
   const STORAGE_PREFIX = "msbt.panelLayout.v2.";
-  /** Bump when panel ids / default tiles change incompatibly (forces stale saves to reset). */
+  /** Per-tab drag/resize lock (independent of geometry so Reset can keep the lock). */
+  const LAYOUT_LOCK_KEY = "msbt.panelLayout.locked.v1";
+  /** Bump only when saved tiles cannot be migrated (panel ids / schema). */
   const LAYOUT_REVISION = 12;
-  /** Force a clean default when a tab's out-of-box layout was previously unusable. */
+  /** Structural breaks only — never bump this just to ship new built-in defaults. */
   const TAB_LAYOUT_MIN_REVISION = {
-    "combat-vehicle": 6,
-    boosting: 12
+    "combat-vehicle": 6
   };
   /** Preferred restore order when tearing down Dev Spawner docked GridStack. */
   const DEV_SPAWNER_PANEL_ORDER = [
@@ -98,25 +99,65 @@
     style.appendChild(document.createTextNode(rules.join("\n")));
   }
 
-  ensureColumnCss(COLS);
+  if (typeof document !== "undefined") ensureColumnCss(COLS);
 
-  function layoutViewportKey() {
-    return global.innerWidth <= 1180 ? "compact" : "wide";
+  function layoutViewportKey(width) {
+    const inner = Number(width != null ? width : global.innerWidth);
+    return inner <= 1180 ? "compact" : "wide";
   }
 
-  function storageKey(tabId) {
-    return `${STORAGE_PREFIX}${String(tabId || "")}.${layoutViewportKey()}`;
+  function storageKey(tabId, viewport) {
+    return `${STORAGE_PREFIX}${String(tabId || "")}.${viewport || layoutViewportKey()}`;
   }
 
-  function loadState(tabId) {
+  function readLayoutRaw(key) {
     try {
-      const raw = localStorage.getItem(storageKey(tabId));
+      const raw = localStorage.getItem(key);
       if (!raw) return null;
       const parsed = JSON.parse(raw);
-      return parsed && typeof parsed === "object" ? migrateSavedGridResolution(parsed) : null;
+      return parsed && typeof parsed === "object" ? parsed : null;
     } catch (_err) {
       return null;
     }
+  }
+
+  function loadState(tabId) {
+    const viewport = layoutViewportKey();
+    const primary = readLayoutRaw(storageKey(tabId, viewport));
+    if (primary) return migrateSavedGridResolution(primary);
+    // Window restore / half-snap can land on the other viewport key; don't drop the layout.
+    const other = viewport === "wide" ? "compact" : "wide";
+    const fallback = readLayoutRaw(storageKey(tabId, other));
+    if (fallback) return migrateSavedGridResolution(fallback);
+    const legacy = readLayoutRaw(STORAGE_PREFIX + String(tabId || ""));
+    return legacy ? migrateSavedGridResolution(legacy) : null;
+  }
+
+  function loadLayoutLocks() {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(LAYOUT_LOCK_KEY) || "null");
+      return parsed && typeof parsed === "object" ? parsed : {};
+    } catch (_err) {
+      return {};
+    }
+  }
+
+  function isLayoutLocked(tabId) {
+    return loadLayoutLocks()[String(tabId || "")] === true;
+  }
+
+  function setLayoutLocked(tabId, locked) {
+    const id = String(tabId || "");
+    if (!id) return false;
+    const all = loadLayoutLocks();
+    if (locked) all[id] = true;
+    else delete all[id];
+    try {
+      localStorage.setItem(LAYOUT_LOCK_KEY, JSON.stringify(all));
+    } catch (_err) {
+      /* ignore */
+    }
+    return Boolean(locked);
   }
 
   /**
@@ -346,57 +387,6 @@
       .join(",");
   }
 
-  /** True when two axis-aligned tiles overlap by more than a tiny edge kiss. */
-  function rectsOverlap(a, b) {
-    const ax2 = a.x + a.w;
-    const ay2 = a.y + a.h;
-    const bx2 = b.x + b.w;
-    const by2 = b.y + b.h;
-    const ow = Math.max(0, Math.min(ax2, bx2) - Math.max(a.x, b.x));
-    const oh = Math.max(0, Math.min(ay2, by2) - Math.max(a.y, b.y));
-    return ow * oh >= 2;
-  }
-
-  function savedLayoutHasHeavyOverlap(saved) {
-    if (!saved || !Array.isArray(saved.items)) return false;
-    const rects = saved.items
-      .filter((spec) => spec && (spec.type === "panel" || spec.type === "stack"))
-      .map((spec) => ({
-        x: Number(spec.x) || 0,
-        y: Number(spec.y) || 0,
-        w: Math.max(1, Number(spec.w) || 1),
-        h: Math.max(1, Number(spec.h) || 1)
-      }));
-    for (let i = 0; i < rects.length; i += 1) {
-      for (let j = i + 1; j < rects.length; j += 1) {
-        if (rectsOverlap(rects[i], rects[j])) return true;
-      }
-    }
-    return false;
-  }
-
-  function liveLayoutHasHeavyOverlap(tab) {
-    const root = tab && tab.querySelector("[data-msbt-layout-root]");
-    if (!root) return false;
-    const rects = [];
-    root.querySelectorAll(":scope > .grid-stack-item").forEach((item) => {
-      const node = item.gridstackNode;
-      if (!node) return;
-      rects.push({
-        x: Number(node.x) || 0,
-        y: Number(node.y) || 0,
-        w: Math.max(1, Number(node.w) || 1),
-        h: Math.max(1, Number(node.h) || 1)
-      });
-    });
-    for (let i = 0; i < rects.length; i += 1) {
-      for (let j = i + 1; j < rects.length; j += 1) {
-        if (rectsOverlap(rects[i], rects[j])) return true;
-      }
-    }
-    return false;
-  }
-
   function ensureChrome(panel) {
     if (panel.querySelector(":scope > .msbt-panel-chrome")) return;
     const title = panelTitle(panel);
@@ -453,7 +443,9 @@
   function refreshItemDrag(grid, item) {
     if (!grid || !item || typeof grid.prepareDragDrop !== "function") return;
     try {
-      grid.prepareDragDrop(item, true);
+      const tab = item.closest && item.closest("[data-msbt-layout-tab]");
+      const locked = Boolean(tab && isLayoutLocked(tab.getAttribute("data-msbt-layout-tab")));
+      grid.prepareDragDrop(item, !locked);
     } catch (_err) {
       /* ignore */
     }
@@ -633,6 +625,13 @@
       '<button type="button" class="dev-layout-toggle-btn" data-msbt-density-mode="compact" aria-pressed="false">Compact</button>',
       "</div>",
       "</div>",
+      '<div class="msbt-mode-switch msbt-layout-lock-switch">',
+      '<span class="msbt-mode-switch-label">Arrange</span>',
+      '<div class="dev-layout-toggle" role="group" aria-label="Lock panel positions">',
+      '<button type="button" class="dev-layout-toggle-btn" data-msbt-layout-lock="unlocked" aria-pressed="true" title="Drag and resize panels">Unlocked</button>',
+      '<button type="button" class="dev-layout-toggle-btn" data-msbt-layout-lock="locked" aria-pressed="false" title="Lock panels in place — they stay put until you unlock">Locked</button>',
+      "</div>",
+      "</div>",
       '<details class="msbt-panels-menu">',
       "<summary>Panels</summary>",
       '<div class="msbt-panels-menu-body" data-msbt-panels-menu></div>',
@@ -655,7 +654,14 @@
         setTabLayoutMode(tabId, button.getAttribute("data-msbt-layout-mode"));
       });
     });
+    bar.querySelectorAll("[data-msbt-layout-lock]").forEach((button) => {
+      button.addEventListener("click", () => {
+        setLayoutLocked(tabId, button.getAttribute("data-msbt-layout-lock") === "locked");
+        applyLayoutLock(tab);
+      });
+    });
     bar.querySelector(".msbt-layout-compact").addEventListener("click", () => {
+      if (isLayoutLocked(tabId)) return;
       const grid = grids.get(tab.querySelector("[data-msbt-layout-root]"));
       if (grid) {
         grid.compact();
@@ -1064,9 +1070,11 @@
 
   /** Shared pointer — must be document-scoped: drag helper uses appendTo:"body". */
   let lastPointer = { x: 0, y: 0 };
-  document.addEventListener("pointermove", (ev) => {
-    lastPointer = { x: ev.clientX, y: ev.clientY };
-  }, true);
+  if (typeof document !== "undefined" && document.addEventListener) {
+    document.addEventListener("pointermove", (ev) => {
+      lastPointer = { x: ev.clientX, y: ev.clientY };
+    }, true);
+  }
 
   function eventPointer(ev) {
     if (ev && typeof ev.clientX === "number" && typeof ev.clientY === "number") {
@@ -1220,6 +1228,63 @@
     refreshPanelsMenu(tab);
   }
 
+  function persistAllReadyTabs() {
+    if (typeof document === "undefined") return;
+    document.querySelectorAll("[data-msbt-layout-tab]").forEach((tab) => {
+      if (tab.dataset.msbtLayoutReady === "2") persist(tab);
+    });
+  }
+
+  function setGridInteraction(grid, enabled) {
+    if (!grid) return;
+    try {
+      if (typeof grid.setStatic === "function") {
+        grid.setStatic(!enabled);
+        return;
+      }
+    } catch (_err) {
+      /* fall through */
+    }
+    try {
+      if (typeof grid.enableMove === "function") grid.enableMove(enabled);
+    } catch (_err) {
+      /* ignore */
+    }
+    try {
+      if (typeof grid.enableResize === "function") grid.enableResize(enabled);
+    } catch (_err) {
+      /* ignore */
+    }
+  }
+
+  const LOCKED_MODE_HINT = "Layout locked · Unlock Arrange to drag or resize panels.";
+
+  function applyLayoutLock(tab) {
+    if (!tab || isStaticTab(tab)) return;
+    const tabId = tab.getAttribute("data-msbt-layout-tab");
+    const locked = isLayoutLocked(tabId);
+    const root = tab.querySelector("[data-msbt-layout-root]");
+    const grid = grids.get(root);
+    setGridInteraction(grid, !locked);
+    if (grid && root) {
+      root.querySelectorAll(":scope > .grid-stack-item").forEach((item) => refreshItemDrag(grid, item));
+    }
+    tab.classList.toggle("msbt-layout-locked", locked);
+    const bar = tab.querySelector(".msbt-layout-toolbar");
+    if (!bar) return;
+    bar.dataset.msbtLocked = locked ? "1" : "0";
+    bar.querySelectorAll("[data-msbt-layout-lock]").forEach((button) => {
+      const on = button.getAttribute("data-msbt-layout-lock") === "locked";
+      const pressed = on === locked;
+      button.setAttribute("aria-pressed", pressed ? "true" : "false");
+      button.classList.toggle("active", pressed);
+    });
+    const compact = bar.querySelector(".msbt-layout-compact");
+    if (compact) compact.disabled = locked;
+    const hint = bar.querySelector(".msbt-layout-hint");
+    if (hint) hint.textContent = locked ? LOCKED_MODE_HINT : PANELS_MODE_HINT;
+  }
+
   function captureDefaults(tab, force) {
     if (!force && tab.dataset.msbtDefaultLayoutV2) return;
     tab.dataset.msbtDefaultLayoutV2 = JSON.stringify(collectState(tab));
@@ -1261,25 +1326,12 @@
     return true;
   }
 
-  function savedLayoutIsUsable(tab, saved) {
-    if (!saved || saved.version !== 2 || !Array.isArray(saved.items) || !saved.items.length) return false;
-    if (savedLayoutHasHeavyOverlap(saved)) return false;
-    const tabId = tab.getAttribute("data-msbt-layout-tab") || "";
-    const minRevision = Number(TAB_LAYOUT_MIN_REVISION[tabId] || 0);
-    if (minRevision > 0 && (saved.revision == null || Number(saved.revision) < minRevision)) {
-      return false;
+  function savedPanelIds(saved) {
+    const known = new Set();
+    if (saved && saved.panelIds) {
+      String(saved.panelIds).split(",").filter(Boolean).forEach((id) => known.add(id));
     }
-    const ids = panelIdFingerprint(tab);
-    if (saved.panelIds) {
-      if (saved.panelIds !== ids) {
-        const tabId = tab.getAttribute("data-msbt-layout-tab") || "";
-        const savedIds = new Set(String(saved.panelIds).split(",").filter(Boolean));
-        const currentIds = new Set(ids.split(",").filter(Boolean));
-        return false;
-      }
-    } else {
-      // Pre-fingerprint saves: reject if any current panel is missing (e.g. Actor Browser split).
-      const known = new Set();
+    if (saved && Array.isArray(saved.items)) {
       saved.items.forEach((spec) => {
         if (!spec) return;
         if (spec.type === "panel" && spec.id) known.add(spec.id);
@@ -1287,12 +1339,25 @@
           spec.tabs.forEach((id) => known.add(id));
         }
       });
-      (saved.hidden || []).forEach((id) => known.add(id));
-      const needed = ids.split(",").filter(Boolean);
-      if (needed.some((id) => !known.has(id))) return false;
     }
+    if (saved && Array.isArray(saved.hidden)) {
+      saved.hidden.forEach((id) => known.add(id));
+    }
+    return known;
+  }
+
+  function savedLayoutIsUsable(tab, saved) {
+    if (!saved || saved.version !== 2 || !Array.isArray(saved.items) || !saved.items.length) return false;
     if (saved.revision != null && Number(saved.revision) > LAYOUT_REVISION) return false;
-    return true;
+    const tabId = (tab && typeof tab.getAttribute === "function" && tab.getAttribute("data-msbt-layout-tab")) || "";
+    const minRevision = Number(TAB_LAYOUT_MIN_REVISION[tabId] || 0);
+    if (minRevision > 0 && (saved.revision == null || Number(saved.revision) < minRevision)) {
+      return false;
+    }
+    const currentIds = panelIdFingerprint(tab).split(",").filter(Boolean);
+    if (!currentIds.length) return true;
+    const known = savedPanelIds(saved);
+    return currentIds.some((id) => known.has(id));
   }
 
   function applySavedLayout(tab, saved) {
@@ -1591,24 +1656,15 @@
           applySavedLayout(tab, saved);
           usedSaved = true;
         } catch (layoutErr) {
-          console.warn("[MSBT] clearing bad saved layout for", tabId, layoutErr && layoutErr.message);
-          try { localStorage.removeItem(storageKey(tabId)); } catch (_e) { /* ignore */ }
+          console.warn("[MSBT] could not apply saved layout for", tabId, layoutErr && layoutErr.message);
           usedSaved = false;
         }
       } else if (saved) {
-        console.warn("[MSBT] ignoring stale/overlapping layout for", tabId);
-        try { localStorage.removeItem(storageKey(tabId)); } catch (_e) { /* ignore */ }
+        console.warn("[MSBT] ignoring incompatible saved layout for", tabId);
       }
 
       if (!usedSaved) {
         applyBuiltInDefaults(tab);
-      } else if (liveLayoutHasHeavyOverlap(tab)) {
-        console.warn("[MSBT] auto-compacting overlapped layout for", tabId);
-        try {
-          grid.compact();
-        } catch (_err) {
-          applyBuiltInDefaults(tab);
-        }
       }
 
       if (!isFillTab) captureDefaults(tab, true);
@@ -1617,6 +1673,7 @@
       tab.dataset.msbtLayoutMode = "panels";
       tab.dataset.msbtLayoutReady = "2";
       syncLayoutModeToggles(tab);
+      applyLayoutLock(tab);
       scheduleFillSync(tab);
       if (isFillTab && !tab.dataset.msbtDefaultLayoutV2) {
         requestAnimationFrame(() => {
@@ -1624,7 +1681,9 @@
           captureDefaults(tab, true);
         });
       }
-      persist(tab);
+      // Re-stamp a successfully loaded (or fresh default) layout. Never overwrite
+      // an incompatible save we skipped — that would discard user geometry.
+      if (usedSaved || !saved) persist(tab);
     } catch (err) {
       console.error(
         "[MSBT] panel layout init failed for",
@@ -1825,13 +1884,19 @@
     if (bar) {
       bar.dataset.msbtMode = mode;
       const hint = bar.querySelector(".msbt-layout-hint");
-      if (hint) hint.textContent = mode === "fixed" ? FIXED_MODE_HINT : PANELS_MODE_HINT;
+      if (hint) {
+        if (mode === "fixed") hint.textContent = FIXED_MODE_HINT;
+        else if (isLayoutLocked(tab.getAttribute("data-msbt-layout-tab"))) hint.textContent = LOCKED_MODE_HINT;
+        else hint.textContent = PANELS_MODE_HINT;
+      }
     }
     tab.querySelectorAll("[data-msbt-layout-mode]").forEach((button) => {
       const pressed = button.getAttribute("data-msbt-layout-mode") === mode;
       button.setAttribute("aria-pressed", pressed ? "true" : "false");
       button.classList.toggle("active", pressed);
     });
+    if (mode === "panels") applyLayoutLock(tab);
+    else tab.classList.remove("msbt-layout-locked");
   }
 
   function ensureStaticRoot(tab) {
@@ -1921,6 +1986,9 @@
     if (!tab) return;
     try {
       localStorage.removeItem(storageKey(tabId));
+      localStorage.removeItem(storageKey(tabId, "wide"));
+      localStorage.removeItem(storageKey(tabId, "compact"));
+      localStorage.removeItem(STORAGE_PREFIX + tabId);
       localStorage.removeItem("msbt.panelLayout." + tabId);
     } catch (_err) {
       /* ignore */
@@ -1931,6 +1999,7 @@
       captureDefaults(tab, true);
       scheduleFillSync(tab);
       persist(tab);
+      applyLayoutLock(tab);
       refreshPanelsMenu(tab);
     } catch (err) {
       console.error("[MSBT] panel layout reset failed", err);
@@ -1980,7 +2049,11 @@
       syncFillTab(tab);
     }, 80);
   }
-  global.addEventListener("resize", onWindowResizeForFill);
+  if (typeof global.addEventListener === "function") {
+    global.addEventListener("resize", onWindowResizeForFill);
+    global.addEventListener("pagehide", persistAllReadyTabs);
+    global.addEventListener("beforeunload", persistAllReadyTabs);
+  }
 
   /* ---------- Text scale + main nav View menu ---------- */
 
@@ -2560,15 +2633,44 @@
     applyTextScale,
     bumpTextScale,
     applyCompactDensity,
+    applyLayoutLock,
+    isLayoutLocked,
+    setLayoutLocked,
     showPanel,
     hidePanel
   };
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", () => {
-      try { initViewChrome(); } catch (err) { console.warn("[MSBT] view chrome init failed", err); }
-    });
-  } else {
-    try { initViewChrome(); } catch (err) { console.warn("[MSBT] view chrome init failed", err); }
+  if (typeof module === "object" && module.exports) {
+    module.exports = {
+      STORAGE_PREFIX,
+      LAYOUT_LOCK_KEY,
+      LAYOUT_REVISION,
+      TAB_LAYOUT_MIN_REVISION,
+      GRID_SCALE,
+      COLS,
+      CELL_HEIGHT,
+      LEGACY_COLS,
+      LEGACY_CELL_HEIGHT,
+      layoutViewportKey,
+      storageKey,
+      migrateSavedGridResolution,
+      loadState,
+      saveState,
+      savedLayoutIsUsable,
+      savedPanelIds,
+      isLayoutLocked,
+      setLayoutLocked,
+      loadLayoutLocks
+    };
   }
-})(window);
+
+  if (typeof document !== "undefined") {
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", () => {
+        try { initViewChrome(); } catch (err) { console.warn("[MSBT] view chrome init failed", err); }
+      });
+    } else {
+      try { initViewChrome(); } catch (err) { console.warn("[MSBT] view chrome init failed", err); }
+    }
+  }
+})(typeof window !== "undefined" ? window : globalThis);

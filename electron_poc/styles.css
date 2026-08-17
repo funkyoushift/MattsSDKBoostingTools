@@ -2922,10 +2922,19 @@ button.active-scope {
   text-transform: uppercase;
 }
 
-/* Pack/Reset only mean something while GridStack owns the tab. */
+/* Pack/Reset/Lock only mean something while GridStack owns the tab. */
 .msbt-layout-toolbar[data-msbt-mode="fixed"] .msbt-layout-compact,
-.msbt-layout-toolbar[data-msbt-mode="fixed"] .msbt-layout-reset {
+.msbt-layout-toolbar[data-msbt-mode="fixed"] .msbt-layout-reset,
+.msbt-layout-toolbar[data-msbt-mode="fixed"] .msbt-layout-lock-switch {
   display: none;
+}
+
+.msbt-layout-locked .msbt-panel-handle {
+  cursor: default;
+}
+
+.msbt-layout-locked .grid-stack-item > .ui-resizable-handle {
+  display: none !important;
 }
 
 .msbt-static-root {

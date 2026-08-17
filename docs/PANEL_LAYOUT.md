@@ -9,10 +9,11 @@ Tabs marked with `data-msbt-layout-tab` use **GridStack** docking (every main co
 - **Stack as tabs** — drop a panel onto the **center** of another (dashed highlight). Use tab buttons to switch; **drag a tab name** to detach that panel; **⧉** also pops the active tab
 - **Compact** — packs panels, fills gaps, and clears overlaps
 - **Collapse / hide** from the panel chrome; restore from **Panels** (toolbar) or **View → Panels** (checkbox list). After hide, a one-time toast points you there.
+- **Lock layout** — Arrange → **Locked** on the tab toolbar freezes drag/resize. Unlock to rearrange. The lock is saved per tab.
 - **Reset layout** restores the default arrangement for that tab
 - **View** menu (header): text size (A− / A+ / slider, 85%–140%), show/hide/reorder main nav tabs
 
-Layouts persist in `localStorage` under `msbt.panelLayout.v2.<tabId>`. Text scale: `msbt.uiTextScale`. Nav tabs: `msbt.navTabs.v1`.
+Layouts persist in `localStorage` under `msbt.panelLayout.v2.<tabId>.wide` or `.compact` (viewport). Overlapping tiles are kept. Lock flags: `msbt.panelLayout.locked.v1`. Text scale: `msbt.uiTextScale`. Nav tabs: `msbt.navTabs.v1`.
 
 Post-update / first-run overview, layout editor tour, Quick Menu setup tour, and per-tab Walkthrough buttons: see [`TUTORIALS.md`](TUTORIALS.md).
 
