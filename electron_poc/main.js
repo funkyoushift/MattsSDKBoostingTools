@@ -344,14 +344,43 @@ function defaultWindowSizeForDisplay() {
   };
 }
 
-function sanitizeWindowSize(width, height, { maximized = false } = {}) {
-  const work = primaryWorkAreaSize();
+function displaySizeForBounds(bounds) {
+  // Snapped windows carry invisible resize borders that overhang the work area
+  // (a 1440p half-snap reports 1294x1399 against a 1392px work area), so the
+  // saved size is clamped against the full display it lives on, not the primary
+  // work area. Otherwise every restore shaves the window a few pixels.
+  try {
+    if (
+      bounds &&
+      Number.isFinite(bounds.x) &&
+      Number.isFinite(bounds.y) &&
+      Number.isFinite(bounds.width) &&
+      Number.isFinite(bounds.height)
+    ) {
+      const match = screen.getDisplayMatching({
+        x: bounds.x,
+        y: bounds.y,
+        width: bounds.width,
+        height: bounds.height
+      });
+      if (match && match.bounds) return { width: match.bounds.width, height: match.bounds.height };
+    }
+    const primary = screen.getPrimaryDisplay();
+    if (primary && primary.bounds) return { width: primary.bounds.width, height: primary.bounds.height };
+  } catch {
+    // Fall through to the work-area estimate below.
+  }
+  return primaryWorkAreaSize();
+}
+
+function sanitizeWindowSize(width, height, { maximized = false, x, y } = {}) {
+  const limit = displaySizeForBounds({ x, y, width, height });
   const defaults = defaultWindowSizeForDisplay();
   const rawWidth = Number.isFinite(width) ? width : defaults.width;
   const rawHeight = Number.isFinite(height) ? height : defaults.height;
 
-  let nextWidth = Math.max(DEFAULT_WINDOW_BOUNDS.minWidth, Math.min(rawWidth, work.width));
-  let nextHeight = Math.max(DEFAULT_WINDOW_BOUNDS.minHeight, Math.min(rawHeight, work.height));
+  let nextWidth = Math.max(DEFAULT_WINDOW_BOUNDS.minWidth, Math.min(rawWidth, limit.width));
+  let nextHeight = Math.max(DEFAULT_WINDOW_BOUNDS.minHeight, Math.min(rawHeight, limit.height));
 
   // Reject postage-stamp restores from older lower floors (e.g. minWidth 880) or bad snaps.
   // Maximized windows keep restored size; maximize() fills the display.
@@ -377,7 +406,11 @@ function readWindowState() {
     const parsed = JSON.parse(fsSync.readFileSync(windowStatePath(), "utf8"));
     const bounds = parsed && typeof parsed === "object" ? parsed.bounds || {} : {};
     const maximized = Boolean(parsed.maximized);
-    const sized = sanitizeWindowSize(bounds.width, bounds.height, { maximized });
+    const sized = sanitizeWindowSize(bounds.width, bounds.height, {
+      maximized,
+      x: bounds.x,
+      y: bounds.y
+    });
     const state = {
       width: sized.width,
       height: sized.height,
@@ -424,8 +457,11 @@ function ensureWindowOnScreen(bounds) {
 function saveWindowState(win, snapshot = {}) {
   if (!win || win.isDestroyed()) return;
   try {
+    // While fullscreen or maximized, getBounds() reports the screen-filling
+    // rect; persisting that would erase the user's windowed (often snapped)
+    // size and position.
     const bounds = snapshot.bounds || (
-      win.isFullScreen() && typeof win.getNormalBounds === "function"
+      (win.isFullScreen() || win.isMaximized()) && typeof win.getNormalBounds === "function"
         ? win.getNormalBounds()
         : win.getBounds()
     );
@@ -606,6 +642,16 @@ function createWindow() {
   }
   const win = new BrowserWindow(windowOptions);
 
+  if (Number.isFinite(savedBounds.x) && Number.isFinite(savedBounds.y)) {
+    // The constructor clamps to the work area, which shaves the invisible
+    // resize border off a restored Aero-Snap rect; setBounds applies it exactly.
+    win.setBounds({
+      x: savedBounds.x,
+      y: savedBounds.y,
+      width: savedBounds.width,
+      height: savedBounds.height
+    });
+  }
   if (savedBounds.maximized) {
     win.maximize();
   }
