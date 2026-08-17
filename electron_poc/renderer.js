@@ -120,6 +120,10 @@ const els = {
   devResultFold: document.querySelector("#tab-dev-spawner .dev-result-fold"),
   devSpawnerWalkthroughBtn: document.getElementById("devSpawnerWalkthroughBtn"),
   devSpawnerHoardBuilderBtn: document.getElementById("devSpawnerHoardBuilderBtn"),
+  devActorSelectAllBtn: document.getElementById("devActorSelectAllBtn"),
+  devActorClearSelectionBtn: document.getElementById("devActorClearSelectionBtn"),
+  devActorMultiSelectToggle: document.getElementById("devActorMultiSelectToggle"),
+  devActorSelectedCount: document.getElementById("devActorSelectedCount"),
   hoardWaveList: document.getElementById("hoardWaveList"),
   hoardAddWaveBtn: document.getElementById("hoardAddWaveBtn"),
   hoardRemoveWaveBtn: document.getElementById("hoardRemoveWaveBtn"),
@@ -130,6 +134,11 @@ const els = {
   hoardActorSummary: document.getElementById("hoardActorSummary"),
   hoardActorList: document.getElementById("hoardActorList"),
   hoardActorPicker: document.getElementById("hoardActorPicker"),
+  hoardShowAllActors: document.getElementById("hoardShowAllActors"),
+  hoardSelectAllBtn: document.getElementById("hoardSelectAllBtn"),
+  hoardClearSelectionBtn: document.getElementById("hoardClearSelectionBtn"),
+  hoardMultiSelectToggle: document.getElementById("hoardMultiSelectToggle"),
+  hoardSelectedCount: document.getElementById("hoardSelectedCount"),
   hoardApplyActorBtn: document.getElementById("hoardApplyActorBtn"),
   hoardAddAsNewWaveBtn: document.getElementById("hoardAddAsNewWaveBtn"),
   hoardWaveDistance: document.getElementById("hoardWaveDistance"),
@@ -272,6 +281,7 @@ const els = {
   bookmarkSaveBtn: document.getElementById("bookmarkSaveBtn"),
   bookmarkSearch: document.getElementById("bookmarkSearch"),
   bookmarkSelectAllBtn: document.getElementById("bookmarkSelectAllBtn"),
+  bookmarkMultiSelectToggle: document.getElementById("bookmarkMultiSelectToggle"),
   bookmarkSerialCopies: document.getElementById("bookmarkSerialCopies"),
   bookmarkSerial: document.getElementById("bookmarkSerial"),
   bookmarkSetTargetBtn: document.getElementById("bookmarkSetTargetBtn"),
@@ -309,6 +319,10 @@ const els = {
   invTypeFilter: document.getElementById("invTypeFilter"),
   invManufacturerFilter: document.getElementById("invManufacturerFilter"),
   invBackpackCount: document.getElementById("invBackpackCount"),
+  invSelectAllBtn: document.getElementById("invSelectAllBtn"),
+  invClearSelectionBtn: document.getElementById("invClearSelectionBtn"),
+  invMultiSelectToggle: document.getElementById("invMultiSelectToggle"),
+  invSelectedCount: document.getElementById("invSelectedCount"),
   invPrevPageBtn: document.getElementById("invPrevPageBtn"),
   invNextPageBtn: document.getElementById("invNextPageBtn"),
   invPageLabel: document.getElementById("invPageLabel"),
@@ -473,6 +487,7 @@ const state = {
   bl4FilteredEntries: [],
   bl4SearchQuery: "",
   bl4SelectedIds: new Set(),
+  bl4SelectionAnchor: "",
   bridgeDiagnostics: {},
   bridgeOnline: false,
   bridgeFingerprints: {},
@@ -491,12 +506,19 @@ const state = {
   invPage: 0,
   invPageSize: 72,
   invSelectedKey: "",
+  invSelectedKeys: new Set(),
+  invSelectionAnchor: "",
+  // "Select Multiple" modes are per-session on purpose: a fresh launch always
+  // starts in single-click mode so a stale sticky mode cannot surprise anyone.
+  invMultiSelect: false,
   invSelectedEntry: null,
   invReading: "",
   invTruncated: false,
   invGiveTarget: "",
   bookmarkActiveId: "",
   bookmarkCheckedIds: new Set(),
+  bookmarkSelectionAnchor: "",
+  bookmarkMultiSelect: false,
   bookmarkConfirmedId: "",
   bookmarkConfirmedSerial: "",
   bookmarkFilterGroup: "All",
@@ -515,10 +537,17 @@ const state = {
   devSpawnerFilteredQuickPicks: [],
   devSpawnerMyFavorites: { version: 1, favorites: {} },
   devSpawnerSelectedActor: "",
+  devSpawnerSelectedActors: new Set(),
+  devSpawnerSelectionAnchor: "",
+  devActorMultiSelect: false,
   devSpawnerWarningAccepted: false,
   hoardWaves: [],
   hoardSelectedIndex: 0,
   hoardFilteredActors: [],
+  hoardSelectedActors: new Set(),
+  hoardSelectionAnchor: "",
+  hoardMultiSelect: false,
+  hoardShowAllActors: false,
   hoardRunning: false,
   hoardStatusWatch: false,
   devperkToggles: { "5": false, "6": false },
@@ -567,6 +596,39 @@ const state = {
   travelMaps: [],
   travelStations: []
 };
+
+function listSelectionFlags(event = {}, multiSelect = false) {
+  const helper = window.MsbtListSelection && window.MsbtListSelection.selectionGestureFlags;
+  if (typeof helper !== "function") {
+    return { toggle: Boolean(multiSelect || event.ctrlKey || event.metaKey), shift: Boolean(event.shiftKey) };
+  }
+  return helper({
+    multiSelect,
+    ctrlKey: event.ctrlKey,
+    metaKey: event.metaKey,
+    shiftKey: event.shiftKey
+  });
+}
+
+function listSelectionGesture(selected, orderedKeys, key, anchor, event = {}, multiSelect = false) {
+  const flags = listSelectionFlags(event, multiSelect);
+  const helper = window.MsbtListSelection && window.MsbtListSelection.applySelectionGesture;
+  if (typeof helper !== "function") {
+    const next = new Set(Array.from(selected || []).map(String));
+    if (!flags.toggle) return { selected: new Set([String(key)]), anchor: String(key) };
+    if (next.has(String(key))) next.delete(String(key));
+    else next.add(String(key));
+    return { selected: next, anchor: String(key) };
+  }
+  return helper({
+    selected,
+    orderedKeys,
+    key,
+    anchor,
+    shift: flags.shift,
+    toggle: flags.toggle
+  });
+}
 
 function pretty(value) {
   return JSON.stringify(value, null, 2);
@@ -1560,6 +1622,8 @@ function decorateQuickMenuActionButton(button, action, payloadFactory = () => ({
 
 function installQuickMenuAddButtons() {
   if (!state.quickMenuSnapshot) return;
+  decorateQuickMenuActionButton(els.instantDropsToggleBtn, "instant_drops_toggle");
+  decorateQuickMenuActionButton(els.instantHoldsToggleBtn, "instant_holds_toggle");
   document.querySelectorAll("[data-action]").forEach((button) => {
     decorateQuickMenuActionButton(button, String(button.dataset.action || ""));
   });
@@ -3897,7 +3961,7 @@ function renderBookmarks() {
     button.type = "button";
     const checked = state.bookmarkCheckedIds.has(row.id);
     button.className = `bookmark-row${row.id === state.bookmarkActiveId ? " active" : ""}${checked ? " checked" : ""}`;
-    button.addEventListener("click", () => selectBookmark(row.id, { toggleChecked: true }));
+    button.addEventListener("click", (event) => selectBookmark(row.id, { selectionEvent: event }));
 
     const main = document.createElement("span");
     const title = document.createElement("span");
@@ -3932,12 +3996,17 @@ function selectBookmark(id, options = {}) {
     clearBookmarkForm();
     return;
   }
-  if (options.toggleChecked) {
-    if (state.bookmarkCheckedIds.has(row.id)) {
-      state.bookmarkCheckedIds.delete(row.id);
-    } else {
-      state.bookmarkCheckedIds.add(row.id);
-    }
+  if (options.selectionEvent) {
+    const next = listSelectionGesture(
+      state.bookmarkCheckedIds,
+      state.bookmarkVisibleRows.map((item) => item.id),
+      row.id,
+      state.bookmarkSelectionAnchor,
+      options.selectionEvent,
+      state.bookmarkMultiSelect
+    );
+    state.bookmarkCheckedIds = next.selected;
+    state.bookmarkSelectionAnchor = next.anchor;
   }
   state.bookmarkActiveId = row.id;
   setTextValue(els.bookmarkName, row.name || "");
@@ -4094,6 +4163,7 @@ function selectAllVisibleBookmarks() {
 
 function clearBookmarkSelection() {
   state.bookmarkCheckedIds.clear();
+  state.bookmarkSelectionAnchor = "";
   renderBookmarks();
   setBookmarkStatus("Cleared checked bookmark rows.", "ok");
 }
@@ -4486,7 +4556,7 @@ function renderBl4Cards() {
     const card = document.createElement("button");
     card.type = "button";
     card.className = `bl4-code-card${id === state.bl4ActiveId ? " active" : ""}${state.bl4SelectedIds.has(id) ? " checked" : ""}`;
-    card.addEventListener("click", () => selectBl4Entry(id));
+    card.addEventListener("click", (event) => selectBl4Entry(id, event));
 
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
@@ -4500,6 +4570,7 @@ function renderBl4Cards() {
       } else {
         state.bl4SelectedIds.delete(id);
       }
+      state.bl4SelectionAnchor = id;
       renderBl4Codes();
     });
 
@@ -4876,12 +4947,23 @@ async function loadBl4Breakdown(row) {
   }
 }
 
-function selectBl4Entry(id) {
+function selectBl4Entry(id, selectionEvent = null) {
   const row = state.bl4Entries.find((item) => bl4EntryId(item) === id);
   if (!row) {
     clearBl4Detail();
     renderBl4Codes();
     return;
+  }
+  if (selectionEvent) {
+    const next = listSelectionGesture(
+      state.bl4SelectedIds,
+      state.bl4FilteredEntries.map((item) => bl4EntryId(item)),
+      id,
+      state.bl4SelectionAnchor,
+      selectionEvent
+    );
+    state.bl4SelectedIds = next.selected;
+    state.bl4SelectionAnchor = next.anchor;
   }
   state.bl4ActiveId = id;
   state.bl4ConfirmedId = "";
@@ -4940,6 +5022,7 @@ function selectAllBl4Visible() {
 
 function clearBl4Selection() {
   state.bl4SelectedIds.clear();
+  state.bl4SelectionAnchor = "";
   renderBl4Codes();
   setBl4Status("Cleared selected BL4 code rows.", "ok");
 }
@@ -7168,7 +7251,7 @@ function makeDevActorRow(actorName, options = {}) {
   if (options.rowClass) {
     row.classList.add(options.rowClass);
   }
-  if (actorName === state.devSpawnerSelectedActor) {
+  if (state.devSpawnerSelectedActors.has(actorName)) {
     row.classList.add("selected");
   }
 
@@ -7221,7 +7304,17 @@ function makeDevActorRow(actorName, options = {}) {
   label.type = "button";
   label.className = "dev-actor-label";
   label.title = actorName;
-  label.addEventListener("click", () => {
+  label.addEventListener("click", (event) => {
+    const next = listSelectionGesture(
+      state.devSpawnerSelectedActors,
+      state.devSpawnerFilteredActors,
+      actorName,
+      state.devSpawnerSelectionAnchor,
+      event,
+      state.devActorMultiSelect
+    );
+    state.devSpawnerSelectedActors = next.selected;
+    state.devSpawnerSelectionAnchor = next.anchor;
     useDevActor(actorName);
     renderDevActors();
   });
@@ -7517,12 +7610,27 @@ function renderDevActors() {
 
   const range = shown.length ? `${start + 1}-${start + shown.length}` : "0";
   const searchNote = query ? ` | search: "${rawQuery}"` : "";
+  if (els.devActorSelectedCount) {
+    els.devActorSelectedCount.textContent = `${state.devSpawnerSelectedActors.size.toLocaleString()} selected`;
+  }
   setLine(
     els.devActorSummary,
-    `${range} of ${state.devSpawnerFilteredActors.length} shown / ${allNames.length} in ${category}${searchNote} | page ${state.devActorPage + 1}/${totalPages}`,
+    `${range} of ${state.devSpawnerFilteredActors.length} shown / ${allNames.length} in ${category}${searchNote} | ${state.devSpawnerSelectedActors.size} selected | page ${state.devActorPage + 1}/${totalPages}`,
     state.devSpawnerFilteredActors.length ? "ok" : "warning"
   );
   renderDevActorDetails();
+}
+
+function selectCurrentDevActorPage() {
+  const start = state.devActorPage * 36;
+  state.devSpawnerFilteredActors.slice(start, start + 36).forEach((name) => state.devSpawnerSelectedActors.add(name));
+  renderDevActors();
+}
+
+function clearDevActorMultiSelection() {
+  state.devSpawnerSelectedActors.clear();
+  state.devSpawnerSelectionAnchor = "";
+  renderDevActors();
 }
 
 async function loadDevSpawnerCatalog() {
@@ -8164,7 +8272,11 @@ const INV_RARITY_RANK = {
 
 function invEntryKey(entry, fallback = "") {
   if (!entry) return fallback;
-  return String(entry.serial || "") || `${entry.label || ""}:${entry.slot}:${fallback}`;
+  const serial = String(entry.serial || "").trim();
+  const position = entry.backpack_index ?? entry.slot ?? fallback;
+  return serial
+    ? `${serial}:${String(entry.origin || "")}:${String(position)}`
+    : `${entry.label || ""}:${String(position)}:${fallback}`;
 }
 
 function invRarityClass(rarity) {
@@ -8289,7 +8401,7 @@ function invMakeCard(entry, { slotLabel = "", empty = false, equipped = false } 
   card.type = "button";
   const rarityClass = empty ? "inv-rarity-unknown" : invRarityClass(entry && entry.rarity);
   card.className = `${equipped || empty ? "inv-slot-card" : "inv-item-card"} ${rarityClass}${empty ? " empty" : ""}`;
-  if (!empty && entry && invEntryKey(entry) === state.invSelectedKey) card.classList.add("selected");
+  if (!empty && entry && state.invSelectedKeys.has(invEntryKey(entry))) card.classList.add("selected");
   if (slotLabel) {
     const lab = document.createElement("div");
     lab.className = "inv-slot-label";
@@ -8318,7 +8430,7 @@ function invMakeCard(entry, { slotLabel = "", empty = false, equipped = false } 
   }
   card.appendChild(meta);
   if (!empty && entry) {
-    card.addEventListener("click", () => invSelectEntry(entry));
+    card.addEventListener("click", (event) => invSelectEntry(entry, event));
   }
   return card;
 }
@@ -8376,6 +8488,12 @@ function invRenderBackpack() {
     els.invBackpackCount.textContent =
       `${state.invFiltered.length.toLocaleString()} shown / ${state.invBackpack.length.toLocaleString()} backpack · ${state.invEquipped.length} equipped${trunc}`;
   }
+  if (els.invSelectedCount) {
+    els.invSelectedCount.textContent = `${state.invSelectedKeys.size.toLocaleString()} selected`;
+  }
+  if (els.invCopyAllBtn) {
+    els.invCopyAllBtn.textContent = state.invSelectedKeys.size ? "Copy Selected Serials" : "Copy Visible Serials";
+  }
 }
 
 function invRenderAll() {
@@ -8384,10 +8502,22 @@ function invRenderAll() {
   invRenderBackpack();
 }
 
-function invSelectEntry(entry) {
+function invSelectEntry(entry, event = {}) {
   if (!entry) return;
+  const key = invEntryKey(entry);
+  const orderedKeys = state.invFiltered.map((row) => invEntryKey(row));
+  const next = listSelectionGesture(
+    state.invSelectedKeys,
+    orderedKeys.includes(key) ? orderedKeys : [key],
+    key,
+    state.invSelectionAnchor,
+    event,
+    state.invMultiSelect
+  );
+  state.invSelectedKeys = next.selected;
+  state.invSelectionAnchor = next.anchor;
   state.invSelectedEntry = entry;
-  state.invSelectedKey = invEntryKey(entry);
+  state.invSelectedKey = key;
   if (els.invDetail) els.invDetail.classList.remove("hidden");
   if (els.invDetailTitle) els.invDetailTitle.textContent = invDisplayName(entry);
   if (els.invDetailMeta) {
@@ -8412,6 +8542,19 @@ function invClearDetail() {
   if (els.invDetail) els.invDetail.classList.add("hidden");
   if (els.invDetailSerial) els.invDetailSerial.value = "";
   invRenderAll();
+}
+
+function invSelectAllFiltered() {
+  state.invFiltered.forEach((entry) => state.invSelectedKeys.add(invEntryKey(entry)));
+  invRenderAll();
+  setLine(els.invStatus, `Selected ${state.invFiltered.length.toLocaleString()} filtered inventory item(s).`, "ok");
+}
+
+function invClearSelection() {
+  state.invSelectedKeys.clear();
+  state.invSelectionAnchor = "";
+  invClearDetail();
+  setLine(els.invStatus, "Cleared inventory selection.", "ok");
 }
 
 function invActionData(result) {
@@ -8565,6 +8708,8 @@ async function refreshInventory() {
   state.invPage = 0;
   state.invSelectedEntry = null;
   state.invSelectedKey = "";
+  state.invSelectedKeys.clear();
+  state.invSelectionAnchor = "";
   if (els.invDetail) els.invDetail.classList.add("hidden");
   if (els.invReading) {
     els.invReading.textContent = state.invReading || "Reading: none";
@@ -8592,14 +8737,17 @@ async function invCopySerial() {
 }
 
 async function invCopyVisibleSerials() {
-  const serials = state.invFiltered.map((e) => String(e.serial || "").trim()).filter((s) => s.startsWith("@U"));
+  const source = state.invSelectedKeys.size
+    ? [...state.invEquipped, ...state.invBackpack].filter((entry) => state.invSelectedKeys.has(invEntryKey(entry)))
+    : state.invFiltered;
+  const serials = source.map((e) => String(e.serial || "").trim()).filter((s) => s.startsWith("@U"));
   if (!serials.length) {
-    setLine(els.invStatus, "No visible serials to copy.", "warning");
+    setLine(els.invStatus, "No selected or visible serials to copy.", "warning");
     return;
   }
   try {
     await navigator.clipboard.writeText(serials.join("\n"));
-    setLine(els.invStatus, `Copied ${serials.length} visible serial(s).`, "ok");
+    setLine(els.invStatus, `Copied ${serials.length} ${state.invSelectedKeys.size ? "selected" : "visible"} serial(s).`, "ok");
   } catch (_err) {
     setLine(els.invStatus, "Clipboard write failed.", "bad");
   }
@@ -8729,6 +8877,21 @@ function wireInventoryEvents() {
     });
   }
   if (els.invCopyAllBtn) els.invCopyAllBtn.addEventListener("click", () => void invCopyVisibleSerials());
+  if (els.invSelectAllBtn) els.invSelectAllBtn.addEventListener("click", invSelectAllFiltered);
+  if (els.invClearSelectionBtn) els.invClearSelectionBtn.addEventListener("click", invClearSelection);
+  if (els.invMultiSelectToggle) {
+    els.invMultiSelectToggle.addEventListener("change", () => {
+      state.invMultiSelect = Boolean(els.invMultiSelectToggle.checked);
+      invRenderAll();
+      setLine(
+        els.invStatus,
+        state.invMultiSelect
+          ? "Select Multiple is on: each click adds or removes an item. Clear Selection empties the list."
+          : "Select Multiple is off: a click selects one item. Ctrl/Cmd+click and Shift+click still work.",
+        "ok"
+      );
+    });
+  }
   if (els.invPrevPageBtn) {
     els.invPrevPageBtn.addEventListener("click", () => {
       if (state.invPage > 0) {
@@ -9274,66 +9437,128 @@ function syncHoardEditFieldsFromSelected() {
   if (els.hoardAutoCleanup) els.hoardAutoCleanup.checked = wave.cleanup_loot === true;
 }
 
+const HOARD_ACTOR_ROW_HEIGHT = 58;
+
+function hoardEnemyActors(allActors) {
+  const filter = window.MsbtEnemyActorFilter && window.MsbtEnemyActorFilter.filterEnemyActors;
+  return typeof filter === "function"
+    ? filter(allActors, state.devSpawnerCatalog || {})
+    : allActors.filter(devActorLooksLikeCharacter);
+}
+
+function renderHoardVirtualRows() {
+  if (!els.hoardActorPicker) return;
+  const picker = els.hoardActorPicker;
+  const scrollTop = picker.scrollTop;
+  picker.innerHTML = "";
+  if (!state.hoardFilteredActors.length) {
+    const empty = document.createElement("div");
+    empty.className = "dev-empty-row";
+    empty.textContent = state.devSpawnerCatalog ? "No actors match that search." : "Dev Spawner catalog not loaded yet.";
+    picker.appendChild(empty);
+    return;
+  }
+
+  const viewportHeight = picker.clientHeight || 310;
+  const start = Math.max(0, Math.floor(scrollTop / HOARD_ACTOR_ROW_HEIGHT) - 3);
+  const end = Math.min(
+    state.hoardFilteredActors.length,
+    Math.ceil((scrollTop + viewportHeight) / HOARD_ACTOR_ROW_HEIGHT) + 3
+  );
+  const spacer = document.createElement("div");
+  spacer.className = "hoard-actor-virtual-space";
+  spacer.style.height = `${state.hoardFilteredActors.length * HOARD_ACTOR_ROW_HEIGHT}px`;
+
+  state.hoardFilteredActors.slice(start, end).forEach((actorName, offset) => {
+    const btn = document.createElement("button");
+    const selected = state.hoardSelectedActors.has(actorName);
+    btn.type = "button";
+    btn.className = `hoard-actor-pick${selected ? " selected" : ""}`;
+    btn.setAttribute("role", "option");
+    btn.setAttribute("aria-selected", selected ? "true" : "false");
+    btn.style.transform = `translateY(${(start + offset) * HOARD_ACTOR_ROW_HEIGHT}px)`;
+    btn.textContent = typeof devActorLabel === "function" ? devActorLabel(actorName) : actorName;
+    btn.title = state.hoardMultiSelect
+      ? `${actorName} — Select Multiple is on, click: add/remove · Shift+click: range · double-click: quick add`
+      : `${actorName} — click: select · Ctrl/Cmd+click: add/remove · Shift+click: range · double-click: quick add`;
+    btn.addEventListener("click", (event) => {
+      const next = listSelectionGesture(
+        state.hoardSelectedActors,
+        state.hoardFilteredActors,
+        actorName,
+        state.hoardSelectionAnchor,
+        event,
+        state.hoardMultiSelect
+      );
+      state.hoardSelectedActors = next.selected;
+      state.hoardSelectionAnchor = next.anchor;
+      hoardHighlightedActor = actorName;
+      if (els.hoardSelectedCount) {
+        els.hoardSelectedCount.textContent = `${state.hoardSelectedActors.size.toLocaleString()} selected`;
+      }
+      renderHoardVirtualRows();
+    });
+    btn.addEventListener("dblclick", () => addHighlightedActorToSelectedWave());
+    spacer.appendChild(btn);
+  });
+  picker.appendChild(spacer);
+  picker.scrollTop = scrollTop;
+}
+
 function renderHoardActorSearch() {
   if (!els.hoardActorPicker && !els.hoardActorList) return;
   const query = getValue(els.hoardActorSearch).toLowerCase();
   const all = typeof devAllKnownActors === "function" ? devAllKnownActors() : [];
-  state.hoardFilteredActors = all.filter((actorName) => {
+  const enemies = hoardEnemyActors(all);
+  const source = state.hoardShowAllActors ? all : enemies;
+  state.hoardFilteredActors = source.filter((actorName) => {
     if (!query) return true;
     const label = typeof devActorLabel === "function" ? devActorLabel(actorName) : actorName;
     return String(actorName).toLowerCase().includes(query) || String(label).toLowerCase().includes(query);
-  }).slice(0, 200);
+  });
 
-  if (els.hoardActorList) {
-    els.hoardActorList.innerHTML = "";
-    state.hoardFilteredActors.forEach((actorName) => {
-      const opt = document.createElement("option");
-      opt.value = actorName;
-      opt.textContent = typeof devActorLabel === "function" ? devActorLabel(actorName) : actorName;
-      if (actorName === hoardHighlightedActor) opt.selected = true;
-      els.hoardActorList.appendChild(opt);
-    });
+  if (els.hoardActorPicker) els.hoardActorPicker.scrollTop = 0;
+  renderHoardVirtualRows();
+  if (els.hoardSelectedCount) {
+    els.hoardSelectedCount.textContent = `${state.hoardSelectedActors.size.toLocaleString()} selected`;
   }
 
-  if (els.hoardActorPicker) {
-    els.hoardActorPicker.innerHTML = "";
-    if (!state.hoardFilteredActors.length) {
-      const empty = document.createElement("div");
-      empty.className = "dev-empty-row";
-      empty.textContent = all.length ? "No actors match that search." : "Dev Spawner catalog not loaded yet.";
-      els.hoardActorPicker.appendChild(empty);
-    } else {
-      state.hoardFilteredActors.forEach((actorName) => {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = `hoard-actor-pick${actorName === hoardHighlightedActor ? " selected" : ""}`;
-        btn.textContent = typeof devActorLabel === "function" ? devActorLabel(actorName) : actorName;
-        btn.title = `${actorName} — click: add to wave · Shift+click: new wave`;
-        btn.addEventListener("click", (event) => {
-          hoardHighlightedActor = actorName;
-          if (event.shiftKey) addHighlightedActorAsNewWave();
-          else addHighlightedActorToSelectedWave();
-        });
-        els.hoardActorPicker.appendChild(btn);
-      });
-    }
-  }
-
-  const total = all.length;
-  const shown = state.hoardFilteredActors.length;
+  const mode = state.hoardShowAllActors ? "all actors" : "enemy actors";
   setLine(
     els.hoardActorSummary,
-    total
-      ? `${shown} shown / ${total} actors${query ? ` matching “${query}”` : ""}${shown === 200 ? " (capped)" : ""} · click to add`
+    all.length
+      ? `${state.hoardFilteredActors.length.toLocaleString()} matching / ${source.length.toLocaleString()} ${mode} · ${enemies.length.toLocaleString()} enemies from ${all.length.toLocaleString()} catalog actors · virtualized full list`
       : "Dev Spawner catalog not loaded yet.",
-    total ? "ok" : "warning"
+    all.length ? "ok" : "warning"
   );
 }
 
+function selectedHoardActorIds() {
+  const selected = Array.from(state.hoardSelectedActors);
+  if (selected.length) return selected;
+  return hoardHighlightedActor ? [hoardHighlightedActor] : [];
+}
+
+function selectAllHoardActors() {
+  state.hoardFilteredActors.forEach((name) => state.hoardSelectedActors.add(name));
+  renderHoardVirtualRows();
+  if (els.hoardSelectedCount) {
+    els.hoardSelectedCount.textContent = `${state.hoardSelectedActors.size.toLocaleString()} selected`;
+  }
+}
+
+function clearHoardActorSelection() {
+  state.hoardSelectedActors.clear();
+  state.hoardSelectionAnchor = "";
+  hoardHighlightedActor = "";
+  renderHoardVirtualRows();
+  if (els.hoardSelectedCount) els.hoardSelectedCount.textContent = "0 selected";
+}
+
 function addHighlightedActorToSelectedWave() {
-  const actorId = hoardHighlightedActor || getValue(els.hoardActorList);
-  if (!actorId) {
-    setLine(els.hoardStatusLine, "Pick an actor from the list first.", "warning");
+  const actorIds = selectedHoardActorIds();
+  if (!actorIds.length) {
+    setLine(els.hoardStatusLine, "Select one or more actors from the list first.", "warning");
     return;
   }
   let wave = selectedHoardWave();
@@ -9343,7 +9568,11 @@ function addHighlightedActorToSelectedWave() {
     wave = selectedHoardWave();
   }
   const count = getInt(els.hoardWaveCount, 1, HOARD_MAX_WAVE_TOTAL, 1);
-  if (!addActorToHoardWave(wave, actorId, count)) {
+  let added = 0;
+  actorIds.forEach((actorId) => {
+    if (addActorToHoardWave(wave, actorId, count)) added += 1;
+  });
+  if (!added) {
     setLine(
       els.hoardStatusLine,
       `Wave limit: ${HOARD_MAX_WAVE_TOTAL} enemies and ${HOARD_MAX_WAVE_TYPES} types per wave.`,
@@ -9354,20 +9583,29 @@ function addHighlightedActorToSelectedWave() {
   renderHoardWaveList();
   renderHoardActorSearch();
   saveHoardPlanToStorage();
-  const label = typeof devActorLabel === "function" ? devActorLabel(actorId) : actorId;
-  setLine(els.hoardStatusLine, `Wave ${state.hoardSelectedIndex + 1} + ${label} × ${count}`, "ok");
+  setLine(
+    els.hoardStatusLine,
+    `Wave ${state.hoardSelectedIndex + 1}: added ${added} selected actor type(s) × ${count}${added < actorIds.length ? `; ${actorIds.length - added} skipped by wave limits` : ""}.`,
+    added < actorIds.length ? "warning" : "ok"
+  );
 }
 
 function addHighlightedActorAsNewWave() {
-  const actorId = hoardHighlightedActor || getValue(els.hoardActorList);
-  if (!actorId) {
-    setLine(els.hoardStatusLine, "Pick an actor from the list first.", "warning");
+  const actorIds = selectedHoardActorIds();
+  if (!actorIds.length) {
+    setLine(els.hoardStatusLine, "Select one or more actors from the list first.", "warning");
     return;
   }
   const template = selectedHoardWave() || defaultHoardWave();
   const count = getInt(els.hoardWaveCount, 1, HOARD_MAX_WAVE_TOTAL, 1);
+  let remaining = HOARD_MAX_WAVE_TOTAL;
+  const entries = actorIds.slice(0, HOARD_MAX_WAVE_TYPES).map((actorId) => {
+    const actorCount = Math.min(count, remaining);
+    remaining -= actorCount;
+    return { actor_id: actorId, count: actorCount };
+  }).filter((entry) => entry.count > 0);
   const wave = defaultHoardWave({
-    entries: [{ actor_id: actorId, count }],
+    entries,
     spacing: template.spacing,
     scale: template.scale,
     aggro: template.aggro,
@@ -9382,8 +9620,11 @@ function addHighlightedActorAsNewWave() {
   renderHoardWaveList();
   renderHoardActorSearch();
   saveHoardPlanToStorage();
-  const label = typeof devActorLabel === "function" ? devActorLabel(actorId) : actorId;
-  setLine(els.hoardStatusLine, `New wave ${state.hoardSelectedIndex + 1}: ${label} × ${count}`, "ok");
+  setLine(
+    els.hoardStatusLine,
+    `New wave ${state.hoardSelectedIndex + 1}: ${entries.length} selected actor type(s)${entries.length < actorIds.length ? `; ${actorIds.length - entries.length} skipped by wave limits` : ""}.`,
+    entries.length < actorIds.length ? "warning" : "ok"
+  );
 }
 
 async function ensureHoardCatalog() {
@@ -9567,6 +9808,27 @@ function wireHoardBuilder() {
     els.hoardActorSearch.addEventListener("input", () => {
       if (hoardActorSearchTimer) clearTimeout(hoardActorSearchTimer);
       hoardActorSearchTimer = setTimeout(() => renderHoardActorSearch(), 120);
+    });
+  }
+  if (els.hoardActorPicker) {
+    els.hoardActorPicker.addEventListener("scroll", renderHoardVirtualRows, { passive: true });
+  }
+  if (els.hoardShowAllActors) {
+    els.hoardShowAllActors.addEventListener("change", () => {
+      state.hoardShowAllActors = els.hoardShowAllActors.checked;
+      renderHoardActorSearch();
+    });
+  }
+  if (els.hoardSelectAllBtn) {
+    els.hoardSelectAllBtn.addEventListener("click", selectAllHoardActors);
+  }
+  if (els.hoardClearSelectionBtn) {
+    els.hoardClearSelectionBtn.addEventListener("click", clearHoardActorSelection);
+  }
+  if (els.hoardMultiSelectToggle) {
+    els.hoardMultiSelectToggle.addEventListener("change", () => {
+      state.hoardMultiSelect = Boolean(els.hoardMultiSelectToggle.checked);
+      renderHoardVirtualRows();
     });
   }
   if (els.hoardApplyActorBtn) {
@@ -9908,6 +10170,18 @@ function wireEvents() {
   els.bookmarkSaveBtn.addEventListener("click", saveBookmark);
   els.bookmarkDuplicateBtn.addEventListener("click", duplicateBookmark);
   els.bookmarkDeleteBtn.addEventListener("click", deleteBookmark);
+  if (els.bookmarkMultiSelectToggle) {
+    els.bookmarkMultiSelectToggle.addEventListener("change", () => {
+      state.bookmarkMultiSelect = Boolean(els.bookmarkMultiSelectToggle.checked);
+      renderBookmarks();
+      setBookmarkStatus(
+        state.bookmarkMultiSelect
+          ? "Select Multiple is on: each click adds or removes a bookmark."
+          : "Select Multiple is off: a click opens one bookmark. Ctrl/Cmd+click and Shift+click still work.",
+        "ok"
+      );
+    });
+  }
   els.bookmarkSelectAllBtn.addEventListener("click", selectAllVisibleBookmarks);
   els.bookmarkClearSelectedBtn.addEventListener("click", clearBookmarkSelection);
   els.bookmarkCopySelectedBtn.addEventListener("click", copySelectedBookmarkSerials);
@@ -10182,6 +10456,18 @@ function wireEvents() {
   if (els.devActorSearch) {
     els.devActorSearch.addEventListener("input", () => {
       state.devActorPage = 0;
+      renderDevActors();
+    });
+  }
+  if (els.devActorSelectAllBtn) {
+    els.devActorSelectAllBtn.addEventListener("click", selectCurrentDevActorPage);
+  }
+  if (els.devActorClearSelectionBtn) {
+    els.devActorClearSelectionBtn.addEventListener("click", clearDevActorMultiSelection);
+  }
+  if (els.devActorMultiSelectToggle) {
+    els.devActorMultiSelectToggle.addEventListener("change", () => {
+      state.devActorMultiSelect = Boolean(els.devActorMultiSelectToggle.checked);
       renderDevActors();
     });
   }
@@ -10564,7 +10850,7 @@ const TUTORIAL_TOURS = {
     },
     {
       title: "View — text size & tabs",
-      body: "Header View menu: content text size (A− / A+ / slider, 85%–140%), show/hide or reorder main nav tabs, and walkthrough shortcuts (Layout / Quick Menu setup / App overview).",
+      body: "Header View menu: content text size (A− / A+ / slider, 85%–140%) scales docked panels, Fixed pages, and Dev Spawner together. You can also show/hide or reorder main nav tabs and launch walkthroughs (Layout / Quick Menu setup / App overview).",
       tab: "boosting",
       targetSel: "[data-msbt-view-menu]"
     }
@@ -10673,7 +10959,7 @@ const TAB_TUTORIALS = {
     },
     {
       title: "Essentials & UVH",
-      body: "Essentials is the frequent-action home: Max All, host-only Drop All Backpack, Shinies Drop/targeted Deliver, UVH 1–7, Combat XP, instant actions, chest controls, Pull Loot, and Super Dash.",
+      body: "Essentials is the frequent-action home: Max All, host-only Drop All Backpack, Shinies Drop/targeted Deliver, UVH 1–7, Combat XP, Instant Drops / Instant Holds, chest controls, Pull Loot, and Super Dash. Instant Drops and Holds support direct oak2 hotkeys plus gold + QM pins for F7 slots and slot hotkeys.",
       tab: "boosting",
       targetSel: "#tab-boosting [data-msbt-panel='boost-essentials']",
       revealPanels: ["boost-essentials"]
@@ -10729,7 +11015,7 @@ const TAB_TUTORIALS = {
     },
     {
       title: "Bookmarks",
-      body: "Save named serials in groups. Search or filter, check rows or whole folders, copy the selected serials, then choose who receives them. The game connection and a target are required.",
+      body: "Save named serials in groups. Search or filter, then turn on Select Multiple so each plain click adds or removes a bookmark; selected rows turn red. Ctrl/Cmd+click and Shift+click still work. Copy or deliver the selection after choosing a target.",
       tab: "serial-tools",
       targetSel: "#tab-serial-tools [data-msbt-panel='serial-bookmarks']"
     },
@@ -10761,7 +11047,7 @@ const TAB_TUTORIALS = {
     },
     {
       title: "Browse & filter",
-      body: "Equipped strip on top; backpack grid below. Sort (Recent/Rarity/Type/Level/Manufacturer), category chips, and Filter (search, rarity, damage, type, manufacturer).",
+      body: "Equipped strip on top; backpack grid below. Sort (Recent/Rarity/Type/Level/Manufacturer), category chips, and Filter (search, rarity, damage, type, manufacturer). Turn on Select Multiple and every plain click adds or removes an item — picked cards turn red and the counter tracks them. Ctrl/Cmd+click and Shift+click still work.",
       tab: "inventory",
       targetSel: "#tab-inventory .inv-toolbar"
     },
@@ -10795,7 +11081,7 @@ const TAB_TUTORIALS = {
     },
     {
       title: "Select & inspect",
-      body: "Check cards or click one for Details (serial + parts). Copy, Bookmark This, Import Selected To Bookmarks, or Validate / Confirm Active.",
+      body: "Tick a card's checkbox to add it to the selection (checked cards turn red) or click one for Details (serial + parts). Copy, Bookmark This, Import Selected To Bookmarks, or Validate / Confirm Active.",
       tab: "bl4-codes",
       target: "bl4ValidateBtn"
     },
@@ -10862,7 +11148,7 @@ const TAB_TUTORIALS = {
   "dev-spawner": [
     {
       title: "Pick → spawn",
-      body: "Compact mode (default): search + category chips (Boss / ★ Favorites / All / …) filter a single actor list. Star rows (☆) or click the favorite strip to spawn instantly.",
+      body: "Compact mode (default): search + category chips (Boss / ★ Favorites / All / …) filter a single actor list. Star rows (☆) or click the favorite strip to spawn instantly. Select Multiple turns plain clicks into add/remove so you can build a red-highlighted batch without holding Ctrl.",
       tab: "dev-spawner",
       targetSel: "#tab-dev-spawner .dev-spawner-primary"
     },
@@ -10900,7 +11186,7 @@ const TAB_TUTORIALS = {
     },
     {
       title: "Click to add enemies",
-      body: "Search the Dev Spawner catalog, set Count per click, then click an actor to add it to the selected wave. Shift+click (or Add as New Wave) starts a fresh wave with that actor. Open Dev Spawner once if the catalog looks empty.",
+      body: "The virtualized full list starts in enemies-only mode. Search it, set Count per click, then click an enemy to add it to the selected wave. Turn on Select Multiple to gather several entries with plain clicks — picked rows turn red — then Add Selected. Use Show all actors only for objects and advanced catalog entries.",
       tab: "hoard-builder",
       targetSel: "#hoardActorPicker"
     },

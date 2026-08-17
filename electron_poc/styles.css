@@ -15,6 +15,11 @@
   --purple: var(--ui-purple, #b36bff);
   --red: var(--ui-red, #ff6174);
   --line: var(--ui-line, #344052);
+  /* Multi-select highlight. Saturated red so selected rows read at a glance;
+     kept separate from --red so danger buttons/status text stay distinct. */
+  --select: var(--ui-select, #ff2f45);
+  --select-fill: color-mix(in srgb, var(--select) 26%, transparent);
+  --select-fill-soft: color-mix(in srgb, var(--select) 16%, transparent);
 }
 
 * {
@@ -442,6 +447,44 @@ iframe {
   gap: 6px;
   align-items: center;
   margin: 8px 0 4px;
+}
+
+.selection-mode-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #121a28;
+  color: var(--muted);
+  cursor: pointer;
+  font-weight: 700;
+  min-height: var(--ui-button-height, 30px);
+  padding: var(--ui-button-padding-y, 6px) var(--ui-button-padding-x, 10px);
+  white-space: nowrap;
+}
+
+.selection-mode-toggle input[type="checkbox"] {
+  accent-color: var(--select);
+  width: auto;
+  min-height: 0;
+  margin: 0;
+}
+
+.selection-mode-toggle:has(input:checked) {
+  border-color: var(--select);
+  background: color-mix(in srgb, var(--select) 20%, #121a28);
+  color: var(--text);
+}
+
+.selection-mode-toggle:focus-within {
+  outline: 2px solid var(--select);
+  outline-offset: 1px;
+}
+
+.selection-mode-help {
+  margin: 2px 0 6px;
 }
 
 .checkbox-row input[type="checkbox"] {
@@ -1812,7 +1855,7 @@ button.gzo-submit-cta:hover {
 .dev-spawn-button,
 .dev-actor-label,
 .dev-row-actions button {
-  font-size: 11px;
+  font-size: var(--ui-body-size, 12px);
   font-weight: 600;
   line-height: 1.15;
   min-height: 20px;
@@ -1852,10 +1895,6 @@ button.gzo-submit-cta:hover {
   background: #172033;
 }
 
-.dev-actor-row.selected {
-  background: rgba(36, 68, 102, .42);
-}
-
 .dev-actor-row.quick-pick-row {
   border-left: 3px solid rgba(255, 211, 77, .55);
   padding-left: 5px;
@@ -1869,6 +1908,19 @@ button.gzo-submit-cta:hover {
 .dev-actor-row.my-favorite-row {
   border-left: 3px solid rgba(73, 224, 121, .65);
   padding-left: 5px;
+}
+
+/* Listed after the quick-pick/boss/favorite variants so a selected row keeps the
+   red band instead of its category stripe. */
+.dev-actor-row.selected {
+  background: var(--select-fill);
+  border-left: 4px solid var(--select);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--select) 55%, transparent);
+  padding-left: 5px;
+}
+
+.dev-actor-row.selected .dev-actor-title {
+  color: #fff;
 }
 
 .dev-actor-title,
@@ -1942,7 +1994,13 @@ button.gzo-submit-cta:hover {
 }
 
 .bookmark-row.checked {
-  border-left: 3px solid var(--green);
+  background: var(--select-fill);
+  border-left: 4px solid var(--select);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--select) 55%, transparent);
+}
+
+.bookmark-row.checked .bookmark-title {
+  color: #fff;
 }
 
 .bookmark-title,
@@ -2036,7 +2094,13 @@ button.gzo-submit-cta:hover {
 }
 
 .bl4-code-card.checked {
-  border-color: var(--gold);
+  border-color: var(--select);
+  background: var(--select-fill-soft);
+  box-shadow: 0 0 0 1px var(--select), 0 0 12px color-mix(in srgb, var(--select) 40%, transparent);
+}
+
+.bl4-code-card.checked .bl4-card-checkbox {
+  accent-color: var(--select);
 }
 
 .bl4-card-checkbox {
@@ -2556,13 +2620,36 @@ button.active-scope {
   border-style: dashed;
 }
 
+/* Selected loot reads as a red-banded card with a check badge so a multi-pick
+   is obvious without counting. Rarity gradient stays visible under the tint. */
 .inv-slot-card.selected,
 .inv-item-card.selected {
-  box-shadow: 0 0 0 2px var(--cyan);
+  border-color: var(--select);
+  background-image: linear-gradient(0deg, var(--select-fill), var(--select-fill));
+  box-shadow: 0 0 0 2px var(--select), 0 0 12px color-mix(in srgb, var(--select) 45%, transparent);
+}
+
+.inv-slot-card.selected::after,
+.inv-item-card.selected::after {
+  content: "✓";
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 1.5em;
+  height: 1.5em;
+  border-radius: 50%;
+  background: var(--select);
+  color: #14060a;
+  font-size: var(--ui-small-size, 10px);
+  font-weight: 900;
+  line-height: 1;
 }
 
 .inv-slot-label {
-  font-size: 10px;
+  font-size: var(--ui-small-size, 10px);
   color: #7ec8d8;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -2570,7 +2657,7 @@ button.active-scope {
 }
 
 .inv-item-name {
-  font-size: 12px;
+  font-size: var(--ui-body-size, 12px);
   font-weight: 650;
   line-height: 1.25;
   color: #e8f7ff;
@@ -2582,7 +2669,7 @@ button.active-scope {
 
 .inv-item-meta {
   margin-top: 6px;
-  font-size: 10px;
+  font-size: var(--ui-small-size, 10px);
   color: #8fb3c0;
 }
 
@@ -3095,7 +3182,17 @@ button.active-scope {
   flex: 1 1 auto;
   min-height: 0;
   overflow: auto;
-  /* Text size (View menu) scales content copy/controls here only — not chrome. */
+  font-size: var(--ui-body-size);
+}
+
+/* Text size (View menu) scales content copy/controls — not chrome, which resets
+   --msbt-text-scale further down. Dock panel bodies are only one content shell:
+   the Dev Spawner fixed page and the fixed-page tabs are authored in
+   renderer.html and render outside any .msbt-panel-body, so they need the same
+   scaled sizes or they keep the static :root values from ui-designer.css. */
+.msbt-panel-body,
+.dev-spawner-fixed,
+.fixed-page-tab {
   --ui-title-size: calc(20px * var(--msbt-text-scale, 1));
   --ui-section-title-size: calc(13px * var(--msbt-text-scale, 1));
   --ui-body-size: calc(12px * var(--msbt-text-scale, 1));
@@ -3104,7 +3201,6 @@ button.active-scope {
   --ui-output-small-height: calc(68px * var(--msbt-text-scale, 1));
   --ui-output-medium-height: calc(128px * var(--msbt-text-scale, 1));
   --ui-output-large-height: calc(240px * var(--msbt-text-scale, 1));
-  font-size: var(--ui-body-size);
 }
 
 .tab-panel.msbt-flow-layout > .msbt-layout-toolbar-host {
@@ -3703,10 +3799,10 @@ button.active-scope {
 }
 
 .hoard-actor-picker {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 6px;
+  display: block;
+  position: relative;
   max-height: 310px;
+  min-height: 310px;
   overflow: auto;
   margin: 6px 0 8px;
   padding: 6px;
@@ -3716,7 +3812,16 @@ button.active-scope {
   scrollbar-gutter: stable;
 }
 
+.hoard-actor-virtual-space {
+  position: relative;
+  width: 100%;
+}
+
 .hoard-actor-pick {
+  position: absolute;
+  inset: 0 0 auto 0;
+  width: 100%;
+  height: 52px;
   text-align: left;
   padding: 7px 9px;
   border-radius: 6px;
@@ -3724,9 +3829,9 @@ button.active-scope {
   background: #152033;
   color: inherit;
   cursor: pointer;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
 .hoard-actor-pick:hover {
@@ -3734,12 +3839,37 @@ button.active-scope {
 }
 
 .hoard-actor-pick.selected {
-  border-color: #4ec3ff;
-  background: #1e3a4f;
+  border: 2px solid var(--select);
+  background: color-mix(in srgb, var(--select) 24%, #152033);
+  color: #fff;
+  font-weight: 700;
+  padding-right: 2em;
+}
+
+.hoard-actor-pick.selected::after {
+  content: "✓";
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 1.4em;
+  height: 1.4em;
+  border-radius: 50%;
+  background: var(--select);
+  color: #14060a;
+  font-size: var(--ui-small-size, 10px);
+  font-weight: 900;
+  line-height: 1;
 }
 
 .hoard-search-controls label {
   margin-top: 0;
+}
+
+.hoard-show-all-toggle {
+  margin: 6px 0 2px;
 }
 
 .hoard-wave-actions .danger {

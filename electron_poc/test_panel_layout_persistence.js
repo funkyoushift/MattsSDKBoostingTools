@@ -34,4 +34,44 @@ assert.match(styles, /--msbt-grid-cell-height/);
 assert.match(styles, /--msbt-grid-major-cell-height/);
 assert.match(styles, /msbt-grid-snap-visible/);
 
+function cssRuleBody(selector) {
+  const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const matches = Array.from(styles.matchAll(new RegExp(`${escaped}\\s*\\{([^}]*)\\}`, "g")));
+  assert.ok(matches.length, `missing CSS rule for ${selector}`);
+  return matches[matches.length - 1][1];
+}
+
+// Dev Spawner's fixed page and the fixed-page tabs render outside .msbt-panel-body,
+// so they must share the scaled --ui-* sizes or View -> Text size skips them.
+const scalingScope = styles.match(
+  /\.msbt-panel-body,\s*\.dev-spawner-fixed,\s*\.fixed-page-tab\s*\{([^}]*)\}/
+);
+assert.ok(scalingScope, "content text-scale scope must cover fixed shells");
+assert.match(scalingScope[1], /--ui-body-size:\s*calc\(12px \* var\(--msbt-text-scale/);
+assert.match(scalingScope[1], /--ui-small-size:\s*calc\(10px \* var\(--msbt-text-scale/);
+
+assert.match(styles, /\.dev-spawn-button,\s*\.dev-actor-label,\s*\.dev-row-actions button\s*\{\s*font-size:\s*var\(--ui-body-size/);
+assert.match(cssRuleBody(".dev-actor-key"), /font-size:\s*\.86em/);
+assert.match(cssRuleBody(".dev-actor-meta"), /font-size:\s*\.82em/);
+assert.match(cssRuleBody(".inv-item-name"), /font-size:\s*var\(--ui-body-size/);
+assert.match(cssRuleBody(".inv-item-meta"), /font-size:\s*var\(--ui-small-size/);
+
+// Every multi-select list shares the loud --select highlight so a picked row is
+// obvious, and the token stays separate from --red used by destructive controls.
+assert.match(styles, /--select:\s*var\(--ui-select/);
+[
+  ".inv-item-card.selected",
+  ".dev-actor-row.selected",
+  ".bookmark-row.checked",
+  ".bl4-code-card.checked",
+  ".hoard-actor-pick.selected"
+].forEach((selector) => {
+  assert.match(cssRuleBody(selector), /var\(--select/, `${selector} must use the shared selection accent`);
+});
+// Check badges keep the selection readable when rows are dense.
+assert.match(cssRuleBody(".inv-item-card.selected::after"), /content:\s*"✓"/);
+assert.match(cssRuleBody(".hoard-actor-pick.selected::after"), /content:\s*"✓"/);
+// The Select Multiple pill lights up only while the mode is armed.
+assert.match(cssRuleBody(".selection-mode-toggle:has(input:checked)"), /border-color:\s*var\(--select\)/);
+
 console.log("panel layout persistence tests passed");

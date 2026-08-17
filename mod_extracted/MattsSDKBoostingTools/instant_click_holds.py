@@ -766,6 +766,33 @@ def _on_drop_key_pressed() -> None:
         _maintain_holds(reason="drop-key", fast_only=True, reset_held=True)
 
 
+def _toggle_drops_keybind() -> None:
+    _log(toggle_enabled())
+
+
+def _toggle_holds_keybind() -> None:
+    _log(toggle_holds_enabled())
+
+
+kb_toggle_drops = keybind(
+    "MSBT Toggle Instant Drops",
+    None,
+    callback=_toggle_drops_keybind,
+    display_name="MSBT Toggle Instant Drops",
+    description="Toggle the client-local Instant Drops fast path. Assign or clear this key in oak2's Mods keybind UI.",
+    event_filter=EInputEvent.IE_Pressed,
+)
+
+kb_toggle_holds = keybind(
+    "MSBT Toggle Instant Holds",
+    None,
+    callback=_toggle_holds_keybind,
+    display_name="MSBT Toggle Instant Holds",
+    description="Toggle client-local Instant Holds for UI, skill, and world interactions. Assign or clear this key in oak2's Mods keybind UI.",
+    event_filter=EInputEvent.IE_Pressed,
+)
+
+
 kb_maintain_r = keybind(
     "MSBT ICH maintain on R",
     "R",
@@ -868,6 +895,11 @@ def _after_open_inventory(*_args: Any, **_kwargs: Any) -> None:
         _maintain_holds(force_log=True, reason="inventory-open", fast_only=True, reset_held=True)
 
 
-ICH_KEYBINDS = (kb_maintain_r, kb_maintain_gamepad)
+ICH_KEYBINDS = (
+    kb_toggle_drops,
+    kb_toggle_holds,
+    kb_maintain_r,
+    kb_maintain_gamepad,
+)
 
 _log(f"loaded v{__version__} (MSBT helper, Instant Drops + Instant Holds start OFF; client-local)")

@@ -24,6 +24,8 @@
   --ui-purple: #b36bff;
   --ui-red: #ff6174;
   --ui-line: #344052;
+  /* Highlight for multi-selected rows/cards (Select Multiple). */
+  --ui-select: #ff2f45;
 
   /* App density */
   --ui-page-padding: 8px;

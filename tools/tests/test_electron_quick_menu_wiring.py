@@ -35,6 +35,32 @@ def test_editor_uses_bridge_registry_and_validated_mutations():
     assert 'document.querySelectorAll("[data-movement-action]")' in js
 
 
+def test_instant_actions_have_qm_pins_and_rebindable_sdk_hotkeys():
+    js = (ELECTRON / "renderer.js").read_text(encoding="utf-8")
+    assert 'decorateQuickMenuActionButton(els.instantDropsToggleBtn, "instant_drops_toggle")' in js
+    assert 'decorateQuickMenuActionButton(els.instantHoldsToggleBtn, "instant_holds_toggle")' in js
+
+    registry = (
+        ROOT
+        / "mod_extracted"
+        / "MattsSDKBoostingTools"
+        / "quick_menu_registry.py"
+    ).read_text(encoding="utf-8")
+    assert '"instant_drops_toggle": {"basic": "Instant Drops"' in registry
+    assert '"instant_holds_toggle": {"basic": "Instant Holds"' in registry
+
+    sdk = (
+        ROOT
+        / "mod_extracted"
+        / "MattsSDKBoostingTools"
+        / "instant_click_holds.py"
+    ).read_text(encoding="utf-8")
+    assert '"MSBT Toggle Instant Drops"' in sdk
+    assert '"MSBT Toggle Instant Holds"' in sdk
+    assert "kb_toggle_drops" in sdk
+    assert "kb_toggle_holds" in sdk
+
+
 def test_spawnables_and_travel_are_assignable_and_wired():
     registry = (
         ROOT

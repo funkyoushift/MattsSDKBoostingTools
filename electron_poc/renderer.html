@@ -237,6 +237,7 @@
               <h3>Instant Actions</h3>
               <button id="instantDropsToggleBtn" type="button">Instant Drops: Off</button>
               <button id="instantHoldsToggleBtn" type="button">Instant Holds: Off</button>
+              <p class="muted-line">Set or clear their direct hotkeys in oak2’s Mods keybind UI. Use <strong>+ QM</strong> to pin either toggle to F7, where the slot can also have its own hotkey.</p>
               <div id="liveModsStatus" class="status-line compact-note">Combat XP / Instant Drops / Instant Holds idle.</div>
               <div class="boost-live-debug">
                 <h4>Debug Camera</h4>
@@ -590,10 +591,15 @@
             </div>
             <div id="bookmarkCount" class="status-line">0 shown / 0 saved</div>
             <div class="button-row wrap">
+              <label class="selection-mode-toggle" title="When on, clicking a bookmark adds or removes it from the selection">
+                <input id="bookmarkMultiSelectToggle" type="checkbox">
+                <span>Select Multiple</span>
+              </label>
               <button id="bookmarkSelectAllBtn">Select All</button>
-            <button id="bookmarkClearSelectedBtn" class="danger">Clear Selection</button>
+              <button id="bookmarkClearSelectedBtn" class="danger">Clear Selection</button>
               <button id="bookmarkCopySelectedBtn">Copy Selected Serials</button>
             </div>
+            <p class="muted-line selection-mode-help">Select Multiple makes each normal click add or remove a bookmark. Ctrl/Cmd and Shift shortcuts still work.</p>
             <div id="bookmarkRows" class="bookmark-list">
               <div class="dev-empty-row">No saved bookmarks yet.</div>
             </div>
@@ -756,11 +762,19 @@
         <div class="inv-count-row">
           <div id="invBackpackCount" class="status-line">0 backpack / 0 equipped</div>
           <div class="button-row wrap">
+            <label class="selection-mode-toggle" title="When on, clicking an item adds or removes it from the selection">
+              <input id="invMultiSelectToggle" type="checkbox">
+              <span>Select Multiple</span>
+            </label>
+            <button id="invSelectAllBtn" class="secondary">Select All Filtered</button>
+            <button id="invClearSelectionBtn" class="secondary">Clear Selection</button>
+            <span id="invSelectedCount" class="muted-line">0 selected</span>
             <button id="invPrevPageBtn" class="secondary">Previous</button>
             <span id="invPageLabel" class="muted-line">Page 1</span>
             <button id="invNextPageBtn" class="secondary">Next</button>
           </div>
         </div>
+        <p class="muted-line selection-mode-help">Select Multiple makes each normal click add or remove an item. Ctrl/Cmd and Shift shortcuts still work.</p>
 
         <div id="invBackpackGrid" class="inv-item-grid" aria-label="Backpack items">
           <div class="dev-empty-row">No backpack items loaded yet.</div>
@@ -1196,6 +1210,16 @@
             <h3>Categories</h3>
             <div id="devActorCategoryButtons" class="category-buttons"></div>
           </div>
+          <div class="button-row wrap compact-actions">
+            <label class="selection-mode-toggle" title="When on, clicking an actor adds or removes it from the selection">
+              <input id="devActorMultiSelectToggle" type="checkbox">
+              <span>Select Multiple</span>
+            </label>
+            <button id="devActorSelectAllBtn" type="button" class="secondary">Select Page</button>
+            <button id="devActorClearSelectionBtn" type="button" class="secondary">Clear Selection</button>
+            <span id="devActorSelectedCount" class="muted-line">0 selected</span>
+          </div>
+          <p class="muted-line selection-mode-help">Select Multiple makes each normal click add or remove an actor. Ctrl/Cmd and Shift shortcuts still work.</p>
         </div>
         <div data-dev-part="browser-hiddens">
           <input id="devActorName" type="hidden">
@@ -1415,7 +1439,7 @@
                 <span class="hoard-step-number">2</span>
                 <div>
                   <h3>Add enemies</h3>
-                  <p class="muted-line">Click an actor to add it to the selected wave. Shift+click starts a new wave.</p>
+                  <p class="muted-line">Turn on Select Multiple to add or remove enemies with each click. Ctrl/Cmd and Shift shortcuts still work; double-click quick-adds.</p>
                 </div>
               </div>
               <div class="grid two compact hoard-search-controls">
@@ -1428,12 +1452,23 @@
                   <input id="hoardWaveCount" type="number" min="1" max="60" value="1">
                 </label>
               </div>
+              <label class="inline-check hoard-show-all-toggle">
+                <input id="hoardShowAllActors" type="checkbox">
+                Show all actors (includes objects and advanced entries)
+              </label>
               <div id="hoardActorSummary" class="status-line">Loading the Dev Spawner actor catalog…</div>
               <div id="hoardActorPicker" class="hoard-actor-picker" role="listbox" aria-label="Actor picker"></div>
               <select id="hoardActorList" class="hidden" aria-hidden="true" tabindex="-1"></select>
               <div class="button-row wrap compact-actions">
-                <button type="button" id="hoardApplyActorBtn" class="secondary" title="Add the highlighted catalog actor to the current wave">Add Highlighted</button>
-                <button type="button" id="hoardAddAsNewWaveBtn" class="secondary" title="Create a new wave with the highlighted actor">Add as New Wave</button>
+                <label class="selection-mode-toggle" title="When on, clicking an enemy adds or removes it from the selection">
+                  <input id="hoardMultiSelectToggle" type="checkbox">
+                  <span>Select Multiple</span>
+                </label>
+                <button type="button" id="hoardSelectAllBtn" class="secondary">Select All Matching</button>
+                <button type="button" id="hoardClearSelectionBtn" class="secondary">Clear Selection</button>
+                <span id="hoardSelectedCount" class="muted-line">0 selected</span>
+                <button type="button" id="hoardApplyActorBtn" class="secondary" title="Add selected catalog actors to the current wave">Add Selected</button>
+                <button type="button" id="hoardAddAsNewWaveBtn" class="secondary" title="Create one new wave containing the selected actors">Add as New Wave</button>
               </div>
             </section>
           </div>
@@ -2244,6 +2279,8 @@
   <script src="vendor/gridstack/gridstack-all.js"></script>
   <script src="panel_layout.js"></script>
   <script src="poll_coordinator.js"></script>
+  <script src="list_selection.js"></script>
+  <script src="enemy_actor_filter.js"></script>
   <script src="renderer.js"></script>
 </body>
 </html>

@@ -58,6 +58,21 @@ async function auditWalkthroughs() {
         debugPanel: /Debug Panel/i.test(allCopy),
         headerRefresh: /Refresh Status in (?:the )?header/i.test(allCopy)
       },
+      requiredCopy: {
+        selectMultiple: /Select Multiple/i.test(allCopy),
+        redSelection: /turn red|red-highlighted/i.test(allCopy),
+        hoardEnemyFilter: /enemies-only/i.test(allCopy),
+        hoardVirtualized: /virtualized full list/i.test(allCopy),
+        hoardShowAll: /Show all actors/i.test(allCopy),
+        instantDropsHolds: allCopy.includes("Instant Drops / Instant Holds"),
+        instantHotkeys: /direct oak2 hotkeys/i.test(allCopy),
+        quickMenuPins: allCopy.toLowerCase().includes("gold + qm pins"),
+        fixedPageTextScale: /scales docked panels, Fixed pages, and Dev Spawner/i.test(allCopy),
+        instantActionHomes:
+          /Essentials/i.test(allCopy) &&
+          /Combat & Cheats/i.test(allCopy) &&
+          /Debug Camera sits in Essentials under Instant Actions/i.test(allCopy)
+      },
       tourInventory: {
         structured: Object.fromEntries(Object.entries(TUTORIAL_TOURS).map(([id, steps]) => [id, steps.length])),
         tabs: Object.fromEntries(Object.entries(TAB_TUTORIALS).map(([id, steps]) => [id, steps.length]))
@@ -126,6 +141,22 @@ async function auditWalkthroughs() {
     result.staleCopy,
     { quickMax: false, debugPanel: false, headerRefresh: false },
     `stale walkthrough copy:\n${JSON.stringify(result.staleCopy, null, 2)}`
+  );
+  assert.deepStrictEqual(
+    result.requiredCopy,
+    {
+      selectMultiple: true,
+      redSelection: true,
+      hoardEnemyFilter: true,
+      hoardVirtualized: true,
+      hoardShowAll: true,
+      instantDropsHolds: true,
+      instantHotkeys: true,
+      quickMenuPins: true,
+      fixedPageTextScale: true,
+      instantActionHomes: true
+    },
+    `required walkthrough copy is incomplete:\n${JSON.stringify(result.requiredCopy, null, 2)}`
   );
   assert.deepStrictEqual(
     result.tourInventory.structured,
