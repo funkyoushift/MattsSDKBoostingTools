@@ -113,6 +113,11 @@ jobs:
 
             **Recommended build: `${{ env.VERSION_NAME }}`** (current open beta).
 
+            **Mobile parity update:**
+            - Host-only Drop All Backpack, Combat XP, Instant Drops/Holds, and authoritative cheat states
+            - Hoard safety controls + phone plan builder, explicit movement scope, peer teleports, and XYZ bookmarks
+            - Target-confirmed skill reset and verified remote catalog refresh with last-known-good fallback
+
             **Phone install page (recommended):**
             https://www.funkyoushift.com/MattsSDKBoostingTools/mobile-install.html
 

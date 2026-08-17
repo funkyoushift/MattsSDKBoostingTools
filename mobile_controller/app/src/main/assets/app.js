@@ -1,9 +1,9 @@
 const $=(id)=>document.getElementById(id);
 const $$=(selector)=>[...document.querySelectorAll(selector)];
-const STORE={connection:'msbt.mobile.connection.v1',bookmarks:'msbt.mobile.bookmarks.v1',movement:'msbt.mobile.movement.v1',quick:'msbt.mobile.quick.v1',activity:'msbt.mobile.activity.v1',target:'msbt.mobile.target.v1',updateDismiss:'msbt.mobile.updateDismiss.v1'};
-const PLAYER_SCOPED=new Set(['max_all','max_currency','max_eridium','max_player_level','max_spec_level','max_sdu','give_currency','set_level','give_serial_selected','set_backpack_bank_selected','shiny_selected','movement_apply_all','movement_infinite_jump_selected_on','movement_infinite_jump_selected_off','movement_infinite_jump_toggle_selected','movement_teleport_to_slot','read_inventory','read_equipped_serials','read_backpack_serials']);
-const FALLBACK_APP_VERSION='0.1.0-beta.15';
-const state={online:false,bridgeOnline:false,codes:[],filteredCodes:[],selectedCodes:new Set(),activeQuickPage:0,quick:null,bookmarks:[],selectedBookmarks:new Set(),movementPicks:new Set(),connection:{},activity:[],players:[],selectedTarget:'',pollTimer:null,busy:false,inventory:{equipped:[],backpack:[],selected:null,selectedIds:new Set()},travel:{maps:[],stations:[],selectedMap:null,selectedStation:null,showAllStations:false},pools:{rows:[],selected:null},dev:{categories:{},actors:[],filtered:[],category:'All',selected:'',page:0,pageSize:80,warningAccepted:false},update:{currentVersion:FALLBACK_APP_VERSION,availableVersion:'',apkUrl:'',updateAvailable:false,checking:false,lastMessage:''}};
+const STORE={connection:'msbt.mobile.connection.v1',bookmarks:'msbt.mobile.bookmarks.v1',movement:'msbt.mobile.movement.v1',quick:'msbt.mobile.quick.v1',activity:'msbt.mobile.activity.v1',target:'msbt.mobile.target.v1',updateDismiss:'msbt.mobile.updateDismiss.v1',hoard:'msbt.mobile.hoard.v1'};
+const PLAYER_SCOPED=new Set(['max_all','max_currency','max_eridium','max_player_level','max_spec_level','max_sdu','give_currency','set_level','give_serial_selected','set_backpack_bank_selected','shiny_selected','reset_skills','movement_infinite_jump_selected_on','movement_infinite_jump_selected_off','movement_infinite_jump_toggle_selected','movement_teleport_to_slot','movement_teleport_selected_to_me','movement_teleport_me_to_selected','read_inventory','read_equipped_serials','read_backpack_serials']);
+const FALLBACK_APP_VERSION='0.1.0-beta.16';
+const state={online:false,bridgeOnline:false,codes:[],filteredCodes:[],selectedCodes:new Set(),activeQuickPage:0,quick:null,bookmarks:[],selectedBookmarks:new Set(),movementPicks:new Set(),connection:{},activity:[],players:[],selectedTarget:'',pollTimer:null,busy:false,inventory:{equipped:[],backpack:[],selected:null,selectedIds:new Set()},travel:{maps:[],stations:[],selectedMap:null,selectedStation:null,showAllStations:false},locations:{rows:[],selected:''},hoard:{waves:[],favorites:[],running:false,planLoaded:false},pools:{rows:[],selected:null},dev:{categories:{},actors:[],filtered:[],category:'All',selected:'',page:0,pageSize:80,warningAccepted:false},update:{currentVersion:FALLBACK_APP_VERSION,availableVersion:'',apkUrl:'',updateAvailable:false,checking:false,lastMessage:''}};
 const DEV_NEED_ACTOR=new Set(['dev_spawner_spawnai','dev_spawner_probeai','dev_spawner_cache','dev_spawner_spawn','dev_spawner_targets']);
 const read=(key,fallback)=>{try{return JSON.parse(localStorage.getItem(key))??fallback}catch{return fallback}};
 const write=(key,value)=>localStorage.setItem(key,JSON.stringify(value));
@@ -31,6 +31,10 @@ function setLiveEnabled(){
   const poolSpawn=$('poolSpawn');if(poolSpawn)poolSpawn.disabled=!state.online||state.busy||!state.pools.selected;
   const invSend=$('invSendSelected');if(invSend)invSend.disabled=!state.online||state.busy||!state.inventory.selectedIds.size;
   const runMove=$('runSelectedMovement');if(runMove)runMove.disabled=!state.online||state.busy||!state.movementPicks.size;
+  const locationGo=$('locationGo');if(locationGo)locationGo.disabled=!state.online||state.busy||!state.locations.selected;
+  const locationDelete=$('locationDelete');if(locationDelete)locationDelete.disabled=!state.online||state.busy||!state.locations.selected;
+  const hoardStart=$('hoardStart');if(hoardStart)hoardStart.disabled=!state.online||state.busy||!state.hoard.planLoaded||state.hoard.running;
+  const hoardStop=$('hoardStop');if(hoardStop)hoardStop.disabled=!state.online||state.busy||!state.hoard.running;
   const riskCheck=$('devRiskCheck');
   if(riskCheck){
     riskCheck.disabled=state.dev.warningAccepted;
@@ -381,8 +385,8 @@ if($('bookmarkClearSelection'))$('bookmarkClearSelection').addEventListener('cli
 
 let boostConfirmed='';$('boostValidate').addEventListener('click',()=>{const serials=text($('boostSerialText').value).split(/\s+/).filter(Boolean);const ok=serials.length>0&&serials.every(validSerial);$('boostSerialStatus').textContent=ok?`${serials.length} valid @U serial(s).`:'Serial text contains an invalid value.'});$('boostConfirm').addEventListener('click',()=>{const value=text($('boostSerialText').value);const serials=value.split(/\s+/).filter(Boolean);if(!serials.length||!serials.every(validSerial)){alert('Validate the @U serials first.');return}boostConfirmed=value;$('boostSerialStatus').textContent='Confirmed for delivery. Editing the serials will invalidate confirmation.'});$('boostSerialText').addEventListener('input',()=>{if(boostConfirmed&&text($('boostSerialText').value)!==boostConfirmed){boostConfirmed='';$('boostSerialStatus').textContent='Serial changed; confirmation cleared.'}});
 
-const MOVEMENT_DEFAULT={speedScale:'1.00',walkSpeed:'600',jumpHeight:'198',gravityScale:'1.00',stepHeight:'45',floorAngle:'44.8',floorZ:'0.71',glideSpeed:'1200',glideBoost:'0',glideAirControl:'0.60',dashSpeed:'2500',timeDilation:'1.00',sprintJumpGoal:'198',doubleJumpGoal:'198',slideJumpGoal:'198',individualJumpGoals:false,zeroVaultOnApply:false};
-function loadMovement(){const preset={...MOVEMENT_DEFAULT,...read(STORE.movement,{})};$$('[data-movement]').forEach(el=>{const key=el.dataset.movement;if(el.type==='checkbox')el.checked=!!preset[key];else el.value=preset[key]??''});refreshMovementPicks()}
+const MOVEMENT_DEFAULT={speedScale:'1.00',walkSpeed:'600',jumpHeight:'198',gravityScale:'1.00',stepHeight:'45',floorAngle:'44.8',floorZ:'0.71',glideSpeed:'1200',glideBoost:'0',glideAirControl:'0.60',dashSpeed:'2500',timeDilation:'1.00',sprintJumpGoal:'198',doubleJumpGoal:'198',slideJumpGoal:'198',individualJumpGoals:false,zeroVaultOnApply:false,scope:'local'};
+function loadMovement(){const preset={...MOVEMENT_DEFAULT,...read(STORE.movement,{})};$$('[data-movement]').forEach(el=>{const key=el.dataset.movement;if(el.type==='checkbox')el.checked=!!preset[key];else el.value=preset[key]??''});if($('movementScope'))$('movementScope').value=['local','all','others'].includes(preset.scope)?preset.scope:'local';refreshMovementPicks()}
 function movementPickKey(button){return `${text(button.dataset.action)}|${text(button.dataset.slot)}`}
 function refreshMovementPicks(){
   $$('[data-movement-pick]').forEach((button)=>{
@@ -415,7 +419,7 @@ $$('[data-movement-pick]').forEach((button)=>{
     lastTap=nowTs;
   },true);
 });
-if($('saveMovement'))$('saveMovement').addEventListener('click',()=>{const preset={};$$('[data-movement]').forEach(el=>preset[el.dataset.movement]=el.type==='checkbox'?el.checked:text(el.value));write(STORE.movement,preset);$('movementStatus').textContent='Preset saved locally. It will remain available offline.';logActivity('Saved movement preset locally.')});
+if($('saveMovement'))$('saveMovement').addEventListener('click',()=>{const preset={scope:text($('movementScope')&&$('movementScope').value)||'local'};$$('[data-movement]').forEach(el=>preset[el.dataset.movement]=el.type==='checkbox'?el.checked:text(el.value));write(STORE.movement,preset);$('movementStatus').textContent='Preset and movement scope saved locally.';logActivity('Saved movement preset locally.')});
 if($('runSelectedMovement'))$('runSelectedMovement').addEventListener('click',async()=>{
   if(!state.movementPicks.size){alert('Double-tap actions to select them, then Run Selected.');return}
   const buttons=$$('[data-movement-pick]').filter((button)=>state.movementPicks.has(movementPickKey(button)));
@@ -573,6 +577,33 @@ async function gatewayAction(action,payload={},timeoutMs=30000){
   return result;
 }
 
+function enabledFromStatus(value){
+  if(value&&typeof value==='object')return Boolean(value.enabled);
+  return Boolean(value);
+}
+function paintState(id,enabled,known=true){
+  const el=$(id);if(!el)return;
+  el.textContent=known?(enabled?'ON':'OFF'):'Unknown';
+  el.className=`state-pill ${known?(enabled?'is-on':'is-off'):''}`;
+}
+function renderAuthoritativeStatus(data){
+  const cxp=data&&data.cxp;
+  const drops=data&&data.instant_drops;
+  const holds=data&&data.instant_holds;
+  paintState('cxpState',enabledFromStatus(cxp),Boolean(cxp&&typeof cxp==='object'));
+  paintState('instantDropsState',enabledFromStatus(drops),Boolean(drops&&typeof drops==='object'));
+  paintState('instantHoldsState',enabledFromStatus(holds),Boolean(holds&&typeof holds==='object'));
+  if(cxp&&cxp.multiplier!=null&&$('cxpMultiplier')&&document.activeElement!==$('cxpMultiplier'))$('cxpMultiplier').value=String(cxp.multiplier);
+  const toggles=data&&data.live_toggles;
+  if(toggles&&typeof toggles==='object'){
+    const ammo=Boolean(toggles.infinite_ammo),demigod=Boolean(toggles.demigod),dash=enabledFromStatus(toggles.super_dash);
+    if($('infiniteAmmoToggle'))$('infiniteAmmoToggle').textContent=`Infinite Ammo [${ammo?'ON':'OFF'}]`;
+    if($('demigodToggle'))$('demigodToggle').textContent=`Demigod [${demigod?'ON':'OFF'}]`;
+    $$('[data-action="movement_super_dash_toggle"]').forEach((button)=>button.textContent=`Super Dash Toggle [${dash?'ON':'OFF'}]`);
+  }
+  if(data&&data.hoard)applyHoardStatus(data.hoard,{fromPoll:true});
+  if(Array.isArray(data&&data.location_bookmarks))renderLocations(data.location_bookmarks);
+}
 function applyStatus(data){
   state.bridgeOnline=Boolean(data&&data.ok!==false&&(data.started||data.players||data.name));
   state.players=Array.isArray(data&&data.players)?data.players:[];
@@ -589,6 +620,7 @@ function applyStatus(data){
   if(!next)next=fromStatus;
   if(state.players.length)state.selectedTarget=next||'';
   else if(text(saved.target))state.selectedTarget=text(saved.target);
+  renderAuthoritativeStatus(data||{});
   fillPlayerSelects();
   updateConnectionChrome();
 }
@@ -892,6 +924,7 @@ function movementPayload(){
     movement_dash_speed:Number(preset.dashSpeed||2500),
     movement_zero_vault_on_apply:Boolean(preset.zeroVaultOnApply),
     movement_time_dilation:Number(preset.timeDilation||1),
+    movement_scope:text($('movementScope')&&$('movementScope').value)||'local',
     target_player:currentTarget(),
     infinite_jump_target:currentTarget()
   };
@@ -903,6 +936,10 @@ function buildActionPayload(action,button){
   }
   if(action==='give_currency')return{currency_kind:text($('boostCurrencyKind').value)||'cash',amount:intValue($('boostCurrencyAmount').value,1000000)};
   if(action==='set_level')return{xp_track:text($('boostXpTrack').value)||'player',level:intValue($('boostXpLevel').value,60)};
+  if(action==='cxp_toggle')return{multiplier:Math.max(1,floatValue($('cxpMultiplier')&&$('cxpMultiplier').value,1000))};
+  if(action==='location_bookmark_save')return{bookmark_name:text($('locationBookmarkName')&&$('locationBookmarkName').value)};
+  if(action==='location_bookmark_go'||action==='location_bookmark_delete')return{bookmark_name:state.locations.selected};
+  if(action==='hoard_set_plan')return{waves:state.hoard.waves.map((wave)=>({...wave,entries:(wave.entries||[]).map((entry)=>({...entry}))}))};
   if(action==='set_backpack_bank_selected'||action==='set_backpack_bank_all')return{backpack_size:intValue($('boostBackpackSize').value,999),bank_size:intValue($('boostBankSize').value,1500)};
   if(action==='movement_apply_all')return movementPayload();
   if(action==='movement_set_time'){
@@ -977,10 +1014,97 @@ function buttonHasDataAttr(button,name){
   const key=String(name||'').replace(/^data-/,'').replace(/-([a-z])/g,(_,c)=>c.toUpperCase());
   return button.dataset[key]!=null&&button.dataset[key]!==false&&button.dataset[key]!=='false';
 }
+function locationName(row){return text(row&&(row.name||row.label||row.bookmark_name))}
+function renderLocations(rows=state.locations.rows){
+  state.locations.rows=Array.isArray(rows)?rows:[];
+  if(state.locations.selected&&!state.locations.rows.some((row)=>locationName(row)===state.locations.selected))state.locations.selected='';
+  const list=$('locationRows');if(!list)return;
+  list.innerHTML='';
+  state.locations.rows.forEach((row)=>{
+    const name=locationName(row);if(!name)return;
+    const button=document.createElement('button');
+    const xyz=Array.isArray(row.xyz)?row.xyz:(Array.isArray(row.location)?row.location:[]);
+    button.textContent=`${state.locations.selected===name?'✓ ':''}${name}${xyz.length>=3?` · ${xyz.slice(0,3).map((v)=>Math.round(Number(v)||0)).join(', ')}`:''}`;
+    button.className=state.locations.selected===name?'selected':'';
+    button.addEventListener('click',()=>{state.locations.selected=name;$('locationBookmarkName').value=name;renderLocations();setLiveEnabled()});
+    list.appendChild(button);
+  });
+  if(!list.children.length)list.innerHTML='<small class="muted">No XYZ bookmarks saved.</small>';
+  setLiveEnabled();
+}
+function applyHoardStatus(data,{fromPoll=false}={}){
+  if(!data||typeof data!=='object')return;
+  state.hoard.running=Boolean(data.running);
+  state.hoard.planLoaded=Number(data.wave_total||0)>0||Array.isArray(data.plan)&&data.plan.length>0;
+  paintState('hoardState',state.hoard.running,true);
+  const waveTotal=Number(data.wave_total||0);
+  const waveIndex=Number(data.wave_index||0);
+  const summary=`${text(data.message)||(state.hoard.running?'Running':'Idle')} · wave ${Math.min(waveTotal,waveIndex+1)}/${waveTotal} · alive ${Number(data.alive||0)}`;
+  if($('hoardStatus'))$('hoardStatus').textContent=summary;
+  if(!fromPoll&&Array.isArray(data.plan)&&data.plan.length)logActivity(`Hoard desktop plan loaded: ${data.plan.length} wave(s).`);
+  setLiveEnabled();
+}
+function saveHoardLocal(){write(STORE.hoard,{waves:state.hoard.waves,favorites:state.hoard.favorites});renderHoardBuilder()}
+function renderHoardBuilder(){
+  const waves=$('hoardWaveRows');if(waves){
+    waves.innerHTML='';
+    state.hoard.waves.forEach((wave,index)=>{
+      const row=document.createElement('div');row.className='plan-row';
+      const first=(wave.entries||[])[0]||{};
+      row.innerHTML=`<span><strong>Wave ${index+1}</strong><small>${esc(first.actor_id||'No actor')} × ${Number(first.count||0)} · ${Number(wave.distance||900)}u</small></span>`;
+      const remove=document.createElement('button');remove.type='button';remove.className='danger';remove.textContent='Remove';remove.addEventListener('click',()=>{state.hoard.waves.splice(index,1);saveHoardLocal()});
+      row.appendChild(remove);waves.appendChild(row);
+    });
+    if(!waves.children.length)waves.innerHTML='<small class="muted">No phone-authored waves yet. Refresh status to use the desktop plan, or add a wave.</small>';
+  }
+  const favorites=$('hoardFavoriteRows');if(favorites){
+    favorites.innerHTML='';
+    state.hoard.favorites.forEach((name)=>{const button=document.createElement('button');button.type='button';button.textContent=name;button.addEventListener('click',()=>{$('hoardActor').value=name});favorites.appendChild(button)});
+  }
+}
+function loadHoardLocal(){
+  const saved=read(STORE.hoard,{});
+  state.hoard.waves=Array.isArray(saved.waves)?saved.waves:[];
+  state.hoard.favorites=Array.isArray(saved.favorites)?saved.favorites:[];
+  renderHoardBuilder();
+}
+function addHoardWave(){
+  const actor=text($('hoardActor')&&$('hoardActor').value);
+  if(!actor){alert('Choose an actor first.');return}
+  state.hoard.waves.push({
+    entries:[{actor_id:actor,count:Math.max(1,Math.min(60,intValue($('hoardCount').value,5)))}],
+    distance:Math.max(600,Math.min(4000,floatValue($('hoardDistance').value,900))),
+    spacing:Math.max(1,Math.min(5000,floatValue($('hoardSpacing').value,125))),
+    scale:1,aggro:'passive',
+    spawn_points:Math.max(1,Math.min(12,intValue($('hoardSpawnPoints').value,6))),
+    burst:Math.max(1,Math.min(6,intValue($('hoardBurst').value,2))),
+    stagger:Math.max(.15,Math.min(5,floatValue($('hoardStagger').value,.45))),
+    cleanup_loot:Boolean($('hoardCleanupLoot').checked)
+  });
+  saveHoardLocal();
+}
+function applyActionResult(action,data){
+  if(action.startsWith('cxp_')||action.startsWith('instant_')){
+    renderAuthoritativeStatus(data||{});
+    if($('liveModsStatus'))$('liveModsStatus').textContent=text(data&&data.message)||'Live mod state updated.';
+  }
+  if(action.startsWith('location_bookmark_')){
+    if(Array.isArray(data&&data.bookmarks))renderLocations(data.bookmarks);
+    if(action==='location_bookmark_delete'&&data&&data.ok!==false)state.locations.selected='';
+    if($('locationStatus'))$('locationStatus').textContent=text(data&&data.message)||'Location bookmark action complete.';
+  }
+  if(action.startsWith('hoard_'))applyHoardStatus(data||{});
+}
+if($('locationDelete'))$('locationDelete').dataset.confirmMessage='Delete the selected XYZ bookmark?';
+if($('hoardAddWave'))$('hoardAddWave').addEventListener('click',addHoardWave);
+if($('hoardFavorite'))$('hoardFavorite').addEventListener('click',()=>{const actor=text($('hoardActor').value);if(actor&&!state.hoard.favorites.includes(actor)){state.hoard.favorites.push(actor);saveHoardLocal()}});
+if($('hoardClearPlan'))$('hoardClearPlan').addEventListener('click',()=>{if(window.confirm('Clear the phone-authored plan? The desktop/game plan is unchanged until Send Plan is used.')){state.hoard.waves=[];saveHoardLocal()}});
 async function runLiveAction(button){
   const action=text(button&&button.dataset&&button.dataset.action);
   if(!action){alert('This control is not wired for live actions yet.');return}
   if(!state.online){alert('Connect to desktop MSBT first (More → Connection Settings).');return}
+  const confirmation=text(button&&button.dataset&&button.dataset.confirmMessage);
+  if(confirmation&&!window.confirm(confirmation))return;
   if(buttonHasDataAttr(button,'data-dev-risk')&&!state.dev.warningAccepted){
     alert('Enable Dev Spawner This Session first (Spawn tab).');
     return;
@@ -1003,9 +1127,10 @@ async function runLiveAction(button){
     const result=await gatewayAction(action,payload,45000);
     const message=(result.data&&(result.data.message||result.data.error))||(result.ok?`${action} sent.`:`${action} failed.`);
     logActivity(`${action}: ${message}`);
+    applyActionResult(action,result.data||{});
     if($('devSpawnerOutput')&&action.startsWith('dev_spawner_'))$('devSpawnerOutput').textContent=typeof result.data==='object'?JSON.stringify(result.data,null,2):message;
     if(!result.ok)alert(message);
-    else if(action==='refresh_players'||PLAYER_SCOPED.has(action)){
+    else if(action==='refresh_players'||PLAYER_SCOPED.has(action)||action==='chaos_drop_backpack'||action.startsWith('cxp_')||action.startsWith('instant_')||action==='hoard_start'||action==='hoard_stop'||action==='hoard_clear'||action==='hoard_set_plan'||action==='movement_super_dash_toggle'||action==='devperk_5'||action==='devperk_6'){
       try{const status=await gatewayFetch('/status',{timeoutMs:8000});applyStatus(status.data||{})}catch{/* keep prior status */}
     }
   }catch(error){
@@ -1493,6 +1618,11 @@ async function loadDevCatalog(){
     const raw=await readBundledAssetText('dev_spawner_catalog.json');
     const json=JSON.parse(raw);
     state.dev.categories=json.categories&&typeof json.categories==='object'?json.categories:{All:[]};
+    const hoardChoices=$('hoardActorChoices');
+    if(hoardChoices){
+      const actors=Array.isArray(state.dev.categories.All)?state.dev.categories.All:[...new Set(Object.values(state.dev.categories).flat())];
+      hoardChoices.innerHTML=actors.slice(0,5000).map((name)=>`<option value="${esc(name)}"></option>`).join('');
+    }
     const select=$('devActorCategory');
     if(select){
       const current=select.value||'All';
@@ -1561,7 +1691,7 @@ $$('[data-select-all]').forEach((button)=>{
 
 $$('[data-live]').forEach(button=>button.addEventListener('click',()=>void runLiveAction(button)));
 
-state.activity=read(STORE.activity,[]);setLiveEnabled();initBookmarks();loadMovement();loadQuick();loadConnection();renderActivity();loadCatalogs();loadTravelCatalog();loadPoolCatalog();loadDevCatalog();
+state.activity=read(STORE.activity,[]);loadHoardLocal();setLiveEnabled();initBookmarks();loadMovement();loadQuick();loadConnection();renderActivity();loadCatalogs();loadTravelCatalog();loadPoolCatalog();loadDevCatalog();
 syncAboutVersion();
 requestUpdateCheck({quiet:true,reason:'launch'});
 if(text(state.connection.address)&&text(state.connection.pairingCode))void connectGateway({quiet:true});

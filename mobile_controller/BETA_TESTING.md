@@ -1,6 +1,6 @@
 # MSBT Mobile Controller — Open Android Beta
 
-**Recommended build: `0.1.0-beta.15`** — current working open beta.
+**Recommended build: `0.1.0-beta.16`** — current working open beta.
 
 Open beta layout + **live LAN pairing**. Use desktop **MSBT v2.3.1+** ([Latest](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest)) for Mobile Gateway / QR.
 
@@ -12,8 +12,8 @@ Ship testers:
    https://www.funkyoushift.com/MattsSDKBoostingTools/mobile-install.html  
    Direct APK:  
    https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/mobile-beta/MSBT-Mobile-Controller.apk  
-   Testers should confirm **More → About** shows **`0.1.0-beta.15`** (or newer).
-2. **Test kit zip** — `MSBT-Mobile-Beta-Test-Kit-0.1.0-beta.15.zip` from the same [mobile-beta](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/mobile-beta) prerelease.
+   Testers should confirm **More → About** shows **`0.1.0-beta.16`** (or newer).
+2. **Test kit zip** — `MSBT-Mobile-Beta-Test-Kit-0.1.0-beta.16.zip` from the same [mobile-beta](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/mobile-beta) prerelease.
 
 Kit source lives in `mobile_controller/test_kit/`:
 

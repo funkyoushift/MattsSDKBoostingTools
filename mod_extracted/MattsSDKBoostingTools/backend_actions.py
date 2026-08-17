@@ -30,6 +30,7 @@ from .inventory_capacity import (
     set_inventory_sizes_for_party_index,
 )
 from .dev_tools import activate_devperk as _activate_devperk
+from .dev_tools import devperk_toggle_state as _devperk_toggle_state
 from .dev_tools import reset_skills_for_pc as _reset_skills_for_pc
 from .dev_tools import teleport_pawn_to_debug_cam as _teleport_pawn_to_debug_cam
 from .dev_tools import toggle_debug_cam as _toggle_debug_cam
@@ -2080,6 +2081,12 @@ def get_status() -> dict[str, Any]:
         "instant_drops": _ich.get_status_dict(),
         "instant_holds": _ich.get_holds_status_dict(),
         "fog_of_war": _nfow.get_status_dict(),
+        "hoard": hoard_runner.status_fields(),
+        "live_toggles": {
+            "infinite_ammo": bool(_devperk_toggle_state(5, _selected_player_index)),
+            "demigod": bool(_devperk_toggle_state(6, _selected_player_index)),
+            "super_dash": get_super_dash_state(),
+        },
         "challenge_confirm_pending": bool(
             _challenge_confirm_until > 0.0 and time.monotonic() <= float(_challenge_confirm_until)
         ),

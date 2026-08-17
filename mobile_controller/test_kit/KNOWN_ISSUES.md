@@ -1,6 +1,6 @@
 # Known limits (open beta)
 
-**Baseline build:** `0.1.0-beta.15` — current recommended open beta (in-app APK update check, bottom-nav clearance, live pairing + Boost/Codes/QM/Control/Spawn).
+**Baseline build:** `0.1.0-beta.16` — current recommended open beta (mobile parity controls, in-app APK update check, live pairing + Boost/Codes/QM/Control/Spawn).
 
 Do **not** treat these as surprise bugs unless they regressed.
 
@@ -40,7 +40,7 @@ Do **not** treat these as surprise bugs unless they regressed.
 
 ## Reporting tips
 
-- Include app version from **More → About** (want `0.1.0-beta.15`+).
+- Include app version from **More → About** (want `0.1.0-beta.16`+).
 - Say whether desktop Gateway showed online.
 - Full-screen screenshots beat cropped button shots.
 - Never paste live pairing codes in public Discord.

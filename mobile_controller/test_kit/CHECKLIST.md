@@ -45,6 +45,10 @@ Check boxes as you go. Test **portrait** and **landscape** where it matters. Pre
 - [ ] Serial Validate → Confirm → Send Selected works
 - [ ] Send Non-Host button fully visible (not cut off)
 - [ ] UVH buttons respond (status/cancel if you run a tier)
+- [ ] Drop All Backpack (Host) confirms and ignores the selected target
+- [ ] Combat XP multiplier + Instant Drops / Holds show live ON/OFF state
+- [ ] Infinite Ammo / Demigod labels follow `/status` after toggling
+- [ ] Reset Skill Tree refuses without a target and requires confirmation
 - [ ] Offline: live buttons disabled or refuse clearly
 
 ## E. BL4 Codes (offline OK)
@@ -89,14 +93,23 @@ Check boxes as you go. Test **portrait** and **landscape** where it matters. Pre
 
 - [ ] Panel scrolls; sections fold; Collapse works
 - [ ] Select All marks actions; **Run Selected Actions** works (or single-tap fires)
-- [ ] Apply to Target / presets / infinite jump / helpers respond when paired
+- [ ] Local / All / Others scope is explicit; Apply uses the selected scope
+- [ ] Presets / infinite jump / helpers respond when paired
+- [ ] Selected → Me / Me → Selected / All → Me peer teleports work
 
-## K. Control → Item Pools
+## K. Control → XYZ Bookmarks / Hoard
+
+- [ ] Save / refresh / go / delete XYZ bookmarks
+- [ ] Hoard Refresh shows a desktop-authored plan before Start
+- [ ] Start / Stop status is current; **Emergency Clear** confirms
+- [ ] Add phone waves, favorite an actor, Send Plan, then Start
+
+## L. Control → Item Pools
 
 - [ ] Pool list loads / search works
 - [ ] Spawn Selected Pool works while paired
 
-## L. Spawn (Dev Spawner)
+## M. Spawn (Dev Spawner)
 
 - [ ] Check **I understand the risk**, then **Enable Dev Spawner This Session**
 - [ ] Button label becomes **Dev Spawner Enabled**; spawn actions unlock
@@ -106,7 +119,7 @@ Check boxes as you go. Test **portrait** and **landscape** where it matters. Pre
 - [ ] Barrel Logo fields + Run respond
 - [ ] Clear ASD Spawns available after heavy spawn tests
 
-## M. More
+## N. More
 
 - [ ] Activity Log shows recent actions
 - [ ] Feedback template copy works

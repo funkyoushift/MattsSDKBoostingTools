@@ -60,10 +60,19 @@
       <article class="card"><p class="eyebrow">UVH BOOSTER</p><p class="muted">UVH N runs tiers 1 through N for the live lobby.</p><div class="button-grid"><button data-live data-action="uvh_boost_tier_1">UVH 1</button><button data-live data-action="uvh_boost_tier_2">UVH 2</button><button data-live data-action="uvh_boost_tier_3">UVH 3</button><button data-live data-action="uvh_boost_tier_4">UVH 4</button><button data-live data-action="uvh_boost_tier_5">UVH 5</button><button data-live data-action="uvh_boost_tier_6">UVH 6</button><button data-live data-action="uvh_boost_tier_7">UVH 7</button><button data-live data-action="uvh_boost_all">Run All 1-7</button><button data-live data-action="uvh_boost_status">UVH Status</button><button data-live data-action="uvh_boost_cancel" class="danger">Cancel UVH</button></div></article>
       <article class="card"><p class="eyebrow">CURRENCY / XP</p><div class="fields two"><label>Currency<select id="boostCurrencyKind"><option value="cash">Cash</option><option value="eridium">Eridium</option><option value="vaultcard1">Vault Card 1</option><option value="vaultcard2">Vault Card 2</option><option value="vaultcard3">Vault Card 3</option><option value="vaultcard4">Vault Card 4</option></select></label><label>Amount<input id="boostCurrencyAmount" value="1000000" inputmode="numeric"></label><label>XP Track<select id="boostXpTrack"><option value="player">Player</option><option value="specialization">Specialization</option><option value="vaultcard_xp_1">Vault Card XP 1</option><option value="vaultcard_xp_2">Vault Card XP 2</option><option value="vaultcard_xp_3">Vault Card XP 3</option><option value="vaultcard_xp_4">Vault Card XP 4</option></select></label><label>Level<input id="boostXpLevel" value="60" inputmode="numeric"></label></div><div class="button-grid"><button data-live data-action="give_currency">Give Currency</button><button data-live data-action="set_level">Set Level</button></div></article>
       <article class="card"><p class="eyebrow">BACKPACK / BANK</p><div class="fields two"><label>Backpack<input id="boostBackpackSize" value="999" inputmode="numeric"></label><label>Bank<input id="boostBankSize" value="1500" inputmode="numeric"></label></div><div class="button-grid"><button data-live data-action="set_backpack_bank_selected">Set Selected</button><button data-live data-action="set_backpack_bank_all">Apply All Party</button></div></article>
+      <article class="card danger-card"><p class="eyebrow">HOST BACKPACK</p><p class="muted"><strong>Host only.</strong> Drops every backpack item from the host. The selected mobile target is ignored.</p><button data-live data-action="chaos_drop_backpack" data-confirm-message="Drop every item in the HOST backpack? The selected target will be ignored." class="danger">Drop All Backpack (Host)</button></article>
+      <article class="card"><p class="eyebrow">LIVE BOOST MODS</p>
+        <div class="fields two"><label>Combat XP multiplier<input id="cxpMultiplier" value="1000" inputmode="decimal"></label><label>Combat XP state<strong id="cxpState" class="state-pill">Unknown</strong></label></div>
+        <div class="button-grid"><button data-live data-action="cxp_toggle">Toggle Combat XP</button><button data-live data-action="cxp_off" class="danger">Combat XP Off</button></div>
+        <div class="toggle-row"><span>Instant Drops</span><strong id="instantDropsState" class="state-pill">Unknown</strong><button data-live data-action="instant_drops_toggle">Toggle</button></div>
+        <div class="toggle-row"><span>Instant Holds</span><strong id="instantHoldsState" class="state-pill">Unknown</strong><button data-live data-action="instant_holds_toggle">Toggle</button></div>
+        <small id="liveModsStatus" class="muted">Authoritative state loads from the game bridge.</small>
+      </article>
       <article class="card"><p class="eyebrow">QUICK HELPERS</p><div class="button-grid"><button data-live data-action="movement_pull_ground_loot">Pull Loot Here</button><button data-live data-action="movement_super_dash">Super Dash</button><button data-live data-action="movement_super_dash_toggle">Super Dash Toggle</button></div></article>
       <article class="card"><p class="eyebrow">SERIAL SENDER</p><textarea id="boostSerialText" placeholder="Paste one or more @U serials"></textarea><div class="fields two"><label>Copies<input id="boostCopies" value="1" inputmode="numeric"></label><label>Override Level<select id="boostOverride"><option value="no">No</option><option value="yes">Yes</option></select></label><label>Level<input id="boostSerialLevel" value="60" inputmode="numeric"></label></div><div class="row"><button id="boostValidate">Validate</button><button id="boostConfirm">Confirm</button></div><div class="button-row-wrap"><button data-live data-action="give_serial_selected">Send Selected</button><button data-live data-action="give_serial_all">Send All</button><button data-live data-action="give_serial_nonhost">Send Non-Host</button></div><small id="boostSerialStatus" class="muted">Not confirmed.</small></article>
       <article class="card"><p class="eyebrow">RARITY PRESETS</p><div class="button-grid"><button data-live data-action="rarity_only_legendary">Only Legendary</button><button data-live data-action="rarity_only_pearlescent">Only Pearlescent</button><button data-live data-action="rarity_reset">Reset Weights</button><button data-live data-action="rarity_apply">Apply Saved</button></div></article>
-      <article class="card"><p class="eyebrow">CHEATS / CHESTS / SHINIES</p><div class="button-grid"><button data-live data-action="devperk_0">Give Experience</button><button data-live data-action="devperk_1">Give 1M Cash</button><button data-live data-action="devperk_2">Give 100k Eridium</button><button data-live data-action="devperk_3">Kill All Enemies</button><button data-live data-action="devperk_4">Customs + Hovers</button><button data-live data-action="devperk_5">Infinite Ammo</button><button data-live data-action="devperk_6">Demigod</button><button data-live data-action="devperk_7">Spawn Leg/Epic Loot</button><button data-live data-action="open_bank">Open Bank</button><button data-live data-action="toggle_debug_cam">Debug Cam</button><button data-live data-action="teleport_debug_cam">TP Debug Cam</button><button data-live data-action="open_golden_chest">Open Golden Chest</button><button data-live data-action="close_golden_chest">Close Golden Chest</button><button data-live data-action="drop_all_shinies">Drop All Shinies</button><button data-live data-action="shiny_selected">Shiny Selected</button><button data-live data-action="shiny_all">Shiny All</button><button data-live data-action="shiny_nonhost">Shiny Non-Host</button></div></article>
+      <article class="card"><p class="eyebrow">CHEATS / CHESTS / SHINIES</p><div class="button-grid"><button data-live data-action="devperk_0">Give Experience</button><button data-live data-action="devperk_1">Give 1M Cash</button><button data-live data-action="devperk_2">Give 100k Eridium</button><button data-live data-action="devperk_3">Kill All Enemies</button><button data-live data-action="devperk_4">Customs + Hovers</button><button id="infiniteAmmoToggle" data-live data-action="devperk_5">Infinite Ammo [UNKNOWN]</button><button id="demigodToggle" data-live data-action="devperk_6">Demigod [UNKNOWN]</button><button data-live data-action="devperk_7">Spawn Leg/Epic Loot</button><button data-live data-action="open_bank">Open Bank</button><button data-live data-action="toggle_debug_cam">Debug Cam</button><button data-live data-action="teleport_debug_cam">TP Debug Cam</button><button data-live data-action="open_golden_chest">Open Golden Chest</button><button data-live data-action="close_golden_chest">Close Golden Chest</button><button data-live data-action="drop_all_shinies">Drop All Shinies</button><button data-live data-action="shiny_selected">Shiny Selected</button><button data-live data-action="shiny_all">Shiny All</button><button data-live data-action="shiny_nonhost">Shiny Non-Host</button></div></article>
+      <article class="card danger-card"><p class="eyebrow">DESTRUCTIVE PLAYER ACTION</p><p class="muted">Requires a selected target and confirmation. Resets regular skill-tree points, not Specializations.</p><button data-live data-action="reset_skills" data-confirm-message="Reset the selected player's regular skill tree? This cannot be undone automatically." class="danger">Reset Skill Tree (Selected)</button></article>
     </section>
 
     <section data-screen="codes" class="screen">
@@ -112,6 +121,8 @@
         <button data-open-panel="bookmarkPanel">Bookmarks</button>
         <button data-open-panel="travelPanel">Map Travel</button>
         <button data-open-panel="movementPanel">Movement</button>
+        <button data-open-panel="locationPanel">XYZ Bookmarks</button>
+        <button data-open-panel="hoardPanel">Hoard</button>
         <button data-open-panel="poolPanel">Item Pools</button>
       </div>
 
@@ -124,7 +135,8 @@
           </div>
         </div>
         <label>Target<select id="movementTarget" class="player-target" disabled><option value="">No connection</option></select></label>
-        <p class="muted">Applies to the selected target. Fields stay local until Apply / Set Time.</p>
+        <label>Apply scope<select id="movementScope"><option value="local">Local</option><option value="all">All</option><option value="others">Others</option></select></label>
+        <p class="muted">Scope is explicit and defaults to Local. Fields stay local until Apply / Set Time.</p>
         <div class="panel-scroll" id="movementScroll">
           <details class="fold" open><summary>Presets</summary>
             <div class="button-grid movement-select-grid">
@@ -156,7 +168,7 @@
             </div>
             <label class="check"><input type="checkbox" data-movement="individualJumpGoals"> Individual jump goals</label>
             <label class="check"><input type="checkbox" data-movement="zeroVaultOnApply"> Zero vault on apply</label>
-            <div class="row"><button id="saveMovement">Save Preset</button><button data-live data-action="movement_apply_all">Apply to Target</button></div>
+            <div class="row"><button id="saveMovement">Save Preset</button><button data-live data-action="movement_apply_all">Apply Selected Scope</button></div>
           </details>
           <details class="fold" open><summary>Infinite Jump</summary>
             <div class="button-grid movement-select-grid">
@@ -192,9 +204,42 @@
               <button data-live data-action="movement_teleport_to_slot" data-slot="3" data-movement-pick>To P4</button>
             </div>
           </details>
+          <details class="fold" open><summary>Peer Teleports</summary>
+            <div class="button-grid movement-select-grid">
+              <button data-live data-action="movement_teleport_selected_to_me" data-movement-pick>Selected → Me</button>
+              <button data-live data-action="movement_teleport_me_to_selected" data-movement-pick>Me → Selected</button>
+              <button data-live data-action="movement_teleport_all_to_me" data-movement-pick>All → Me</button>
+            </div>
+          </details>
           <div class="row"><button id="runSelectedMovement" data-live>Run Selected Actions</button></div>
         </div>
         <small id="movementStatus" class="muted">Preset can be edited and saved offline.</small>
+      </article>
+
+      <article id="locationPanel" class="card panel-shell hidden">
+        <div class="panel-head"><p class="eyebrow">XYZ LOCATION BOOKMARKS</p><button type="button" class="ghost" data-collapse-panel="locationPanel">Collapse</button></div>
+        <p class="muted">Bookmarks are stored by the desktop/game mod and teleport the local host pawn within the current map.</p>
+        <label>Bookmark name<input id="locationBookmarkName" placeholder="Boss arena"></label>
+        <div class="button-grid"><button id="locationSave" data-live data-action="location_bookmark_save">Save Current XYZ</button><button id="locationRefresh" data-live data-action="location_bookmark_list">Refresh List</button></div>
+        <div id="locationRows" class="list compact panel-scroll"><small class="muted">Connect and refresh bookmarks.</small></div>
+        <div class="button-grid"><button id="locationGo" data-live data-action="location_bookmark_go" disabled>Go to Selected</button><button id="locationDelete" data-live data-action="location_bookmark_delete" class="danger" disabled>Delete Selected</button></div>
+        <small id="locationStatus" class="muted">No bookmark selected.</small>
+      </article>
+
+      <article id="hoardPanel" class="card panel-shell hidden">
+        <div class="panel-head"><p class="eyebrow">HOARD SAFETY + PLAN</p><button type="button" class="ghost" data-collapse-panel="hoardPanel">Collapse</button></div>
+        <p class="muted">Refresh first to use a desktop-authored plan. Stop is non-destructive. Emergency Clear invokes the existing explicit ASD clear path only.</p>
+        <div class="button-grid"><button id="hoardRefresh" data-live data-action="hoard_status">Refresh Status</button><button id="hoardStart" data-live data-action="hoard_start">Start Loaded Plan</button><button id="hoardStop" data-live data-action="hoard_stop">Stop</button><button id="hoardClear" data-live data-action="hoard_clear" data-confirm-message="Emergency Clear uses the existing destructive ASD clear path. Continue?" class="danger">Emergency Clear</button></div>
+        <strong id="hoardState" class="state-pill">Unknown</strong>
+        <small id="hoardStatus" class="muted">No status loaded.</small>
+        <details class="fold"><summary>Phone Plan Builder</summary>
+          <p class="muted">One actor type per wave for phone clarity; plans remain compatible with the desktop multi-entry builder.</p>
+          <label>Actor<input id="hoardActor" list="hoardActorChoices" placeholder="Select an actor"></label><datalist id="hoardActorChoices"></datalist>
+          <div class="fields two"><label>Count (1–60)<input id="hoardCount" value="5" inputmode="numeric"></label><label>Distance (600–4000)<input id="hoardDistance" value="900" inputmode="numeric"></label><label>Spacing<input id="hoardSpacing" value="125" inputmode="numeric"></label><label>Spawn points<input id="hoardSpawnPoints" value="6" inputmode="numeric"></label><label>Burst<input id="hoardBurst" value="2" inputmode="numeric"></label><label>Stagger seconds<input id="hoardStagger" value="0.45" inputmode="decimal"></label></div>
+          <label class="check"><input type="checkbox" id="hoardCleanupLoot"> Cleanup loot between waves</label>
+          <div class="button-grid"><button id="hoardAddWave">Add Wave</button><button id="hoardFavorite">Favorite Actor</button><button id="hoardPushPlan" data-live data-action="hoard_set_plan">Send Plan to Game</button><button id="hoardClearPlan" class="danger">Clear Phone Plan</button></div>
+          <div id="hoardFavoriteRows" class="chip-row"></div><div id="hoardWaveRows" class="list compact"></div>
+        </details>
       </article>
 
       <article id="inventoryPanel" class="card panel-shell hidden">
@@ -396,7 +441,7 @@
       <article id="feedbackPanel" class="card hidden"><p class="eyebrow">BETA FEEDBACK</p><p>For this open beta, send feedback directly to FunkYouSHiFT in Discord DMs.</p><p class="muted">Please include phone make/model, Android version, what screen you were on, what you expected, what happened, and full-screen screenshots. For layout issues, capture the whole screen including navigation.</p><button id="copyFeedbackTemplate">Copy Feedback Template</button></article>
       <article id="aboutPanel" class="card hidden">
         <p class="eyebrow">ABOUT</p>
-        <p><strong>MSBT Mobile Controller</strong><br>Android beta <span id="aboutVersion">0.1.0-beta.15</span></p>
+        <p><strong>MSBT Mobile Controller</strong><br>Android beta <span id="aboutVersion">0.1.0-beta.16</span></p>
         <p class="muted">Companion controller for Matt's SDK Boosting Tools. Live game actions require desktop MSBT.</p>
         <p id="aboutUpdateStatus" class="muted">Update check idle.</p>
         <div class="button-row-wrap">

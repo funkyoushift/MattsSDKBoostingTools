@@ -101,6 +101,7 @@ main{
   box-shadow:0 16px 38px rgba(0,0,0,.22);
 }
 .notice{border-color:#65532b;background:linear-gradient(160deg,rgba(43,37,24,.96),rgba(20,18,15,.96))}
+.danger-card{border-color:#713240;background:linear-gradient(160deg,rgba(55,24,33,.96),rgba(24,15,21,.96))}
 .hero{border-color:#275a6a}
 .hero h1{font-size:clamp(24px,7vw,29px);margin:4px 0 10px}
 .hero p{color:var(--muted);line-height:1.5}
@@ -117,6 +118,17 @@ main{
 .button-row-wrap{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
 .button-row-wrap button{flex:1 1 140px;min-width:0}
 .danger{border-color:#7a3140;background:#3a1820;color:#ffd0d6}
+.state-pill{display:inline-flex;align-items:center;justify-content:center;min-height:32px;padding:5px 10px;border:1px solid #46536a;border-radius:999px;color:var(--muted);background:#111a29}
+.state-pill.is-on{color:#caffea;border-color:#2d8b67;background:#143a2b}
+.state-pill.is-off{color:#ffd7db;border-color:#793345;background:#421d27}
+.toggle-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:10px;align-items:center;margin-top:12px;padding-top:12px;border-top:1px solid #293750}
+.toggle-row button{min-height:42px}
+.chip-row{display:flex;gap:7px;overflow:auto;margin:10px 0}
+.chip-row button{min-height:38px;flex:0 0 auto;padding:7px 10px;font-size:11px}
+.plan-row{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:9px;border-bottom:1px solid #253550}
+.plan-row span{min-width:0;display:grid;gap:3px}
+.plan-row small{color:var(--muted);overflow-wrap:anywhere}
+.plan-row button{min-height:38px;padding:7px 10px;flex:0 0 auto}
 .quick-grid button.empty{opacity:.55;border-style:dashed}
 button,input,textarea,select{font:inherit}
 button{
