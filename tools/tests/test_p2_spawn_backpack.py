@@ -40,6 +40,17 @@ def test_backend_itempool_and_challenge_payloads():
     assert "elif key in (\"chaos_undo_empty_backpack\", \"backpack_undo_delete\"):" in source
     assert "elif key in (\"chaos_clear_empty_backpack_memory\", \"backpack_clear_deleted_memory\"):" in source
     assert "def _zipimport_reload_hint" in source
+    assert "_WORLD_BM_PATH" in source
+    assert "/Game/Maps/WorldLevels/World_P.World_P:PersistentLevel.IO_VendingMachine_BlackMarket" in source
+    assert "from unrealsdk import find_object" in source
+    assert "def _duplicate_world_black_market" in source
+    assert "def _copy_bm_script_data" in source
+    assert 'list(snapshot.get("equipped") or []) + list(snapshot.get("backpack") or [])' in source
+    assert "camera_tick.register(\"black_market\"" in source
+    assert "from Squ1ggsBoostingTools.bridge_actions_extended import black_market" in source
+    assert "oak_dual IO_VendingMachine_BlackMarket" in source
+    assert "_backpack_delete_memory.pop(key, None)" in source
+    assert "_backpack_delete_memory.pop(int(idx), None)" in source
 
 
 def test_quick_menu_registry_has_undo_and_pool_knobs():
@@ -70,5 +81,7 @@ def test_electron_ui_wires_p2_controls():
     assert "async function runEmptyBackpackWithCapture" in js
     assert "async function runUndoEmptyBackpack" in js
     assert "async function captureBackpackSerialsForCurrentTarget" in js
+    assert "backpackSerialsFromRows([...(state.invEquipped || []), ...(state.invBackpack || [])])" in js
     assert '"chaos_undo_empty_backpack"' in js
     assert "Interactive Objects" in js
+    assert 'Runs Squiggs\' oak_dual IO_VendingMachine_BlackMarket spawn twice' in html

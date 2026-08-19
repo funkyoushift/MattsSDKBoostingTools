@@ -2133,8 +2133,69 @@ _BM_COOLDOWN_ATTRS = (
     "CooldownRemaining",
     "PurchaseLockoutSeconds",
     "BlackMarketPurchaseCooldown",
+    "BlackMarketCooldownTimestamp",
     "bPurchaseOnCooldown",
 )
+_WORLD_BM_PATH = (
+    "/Game/Maps/WorldLevels/World_P.World_P:PersistentLevel.IO_VendingMachine_BlackMarket"
+)
+_BM_SPAWNAI_NAME = "io_VendingMachine_BlackMarket"
+_BM_WORLD_NAME = "IO_VendingMachine_BlackMarket"
+_BM_LOAD_PACKAGES = (
+    "/Game/InteractiveObjects/GameSystemMachines/VendingMachines/Scripts/Script_VendingMachine",
+    "/Game/InteractiveObjects/GameSystemMachines/VendingMachines/Scripts/Script_VendingMachine_BlackMarket",
+    "/Game/InteractiveObjects/GameSystemMachines/VendingMachines/BlackMarket/Script_VendingMachine_BlackMarket",
+    "/Game/InteractiveObjects/GameSystemMachines/VendingMachines/IO_VendingMachine_BlackMarket",
+)
+_BM_FIND_CLASSES = (
+    "OakVendingMachine",
+    "OakInteractiveObject",
+    "InteractiveObject",
+    "Actor",
+)
+_BM_PLACE_DISTANCE = 350.0
+_BM_PLACE_Z_OFFSET = -100.0
+_BM_ALREADY_HERE_DIST = 700.0
+_BM_RETRY_WINDOW_S = 4.0
+_BM_RETRY_GAP_S = 0.15
+_bm_pending_until = 0.0
+_bm_pending_last_try = 0.0
+_bm_tick_registered = False
+
+
+def _bm_log(msg: str) -> None:
+    try:
+        from unrealsdk import logging as _ulog
+
+        _ulog.info(f"[Matts SDK Boosting Tools | BlackMarket] {msg}")
+    except Exception:
+        pass
+
+
+def _bm_obj_path(obj: Any) -> str:
+    for getter_name in ("_path_name", "get_path_name"):
+        getter = getattr(obj, getter_name, None)
+        if callable(getter):
+            try:
+                text = str(getter())
+                if text:
+                    return text
+            except Exception:
+                pass
+    try:
+        return str(obj)
+    except Exception:
+        return ""
+
+
+def _bm_is_default(obj: Any) -> bool:
+    return "default__" in _bm_obj_path(obj).lower()
+
+
+def _bm_is_shop_text(obj: Any) -> bool:
+    name = str(getattr(obj, "Name", "") or "")
+    low = f"{_bm_obj_path(obj)} {name}".lower()
+    return "blackmarket" in low or "bmvm" in low
 
 
 def _live_black_market_objects() -> list[Any]:
@@ -2144,9 +2205,27 @@ def _live_black_market_objects() -> list[Any]:
         import unrealsdk
     except Exception:
         return found
+
+    def _add(obj: Any) -> None:
+        if obj is None or _bm_is_default(obj) or not _bm_is_shop_text(obj):
+            return
+        oid = id(obj)
+        if oid in seen:
+            return
+        seen.add(oid)
+        found.append(obj)
+
+    for cls in ("OakVendingMachine", "OakInteractiveObject"):
+        for name in (_WORLD_BM_PATH, _BM_WORLD_NAME):
+            try:
+                from unrealsdk import find_object as _find_object
+
+                _add(_find_object(cls, name))
+            except Exception:
+                pass
     for cls in (
-        "InteractiveObject",
         "OakVendingMachine",
+        "InteractiveObject",
         "VendingMachine",
         "LootableObject",
     ):
@@ -2155,116 +2234,454 @@ def _live_black_market_objects() -> list[Any]:
         except Exception:
             continue
         for obj in objs:
-            if obj is None:
-                continue
-            try:
-                text = str(obj)
-            except Exception:
-                continue
-            if "Default__" in text:
-                continue
-            low = text.lower()
-            if "blackmarket" not in low and "bmvm" not in low:
-                continue
-            oid = id(obj)
-            if oid in seen:
-                continue
-            seen.add(oid)
-            found.append(obj)
+            _add(obj)
     return found
 
 
-def spawn_black_market() -> dict[str, Any]:
-    """Spawn a black-market vending machine via ASD spawnai.
+def _load_bm_packages() -> int:
+    try:
+        import unrealsdk
+    except Exception:
+        return 0
+    loader = getattr(unrealsdk, "load_package", None)
+    if not callable(loader):
+        return 0
+    loaded = 0
+    for path in _BM_LOAD_PACKAGES:
+        try:
+            result = loader(path)
+            loaded += 1
+            _bm_log(f"load_package {path} -> {result}")
+        except Exception as exc:
+            _bm_log(f"load_package {path} failed: {exc!r}")
+    return loaded
 
-    Dev Spawner catalogs list both ``io_VendingMachine_BlackMarket`` (preset
-    command ``ssp_spawnai io_VendingMachine_BlackMarket``, "Black market step 1")
-    and ``IO_VendingMachine_BlackMarket``. The lowercase IO is the name that
-    actually resolves for spawnai; uppercase often returns queued_unverified
-    with nothing in the world. After a spawn, activate last IO.
+
+def _find_world_black_market() -> Any | None:
+    """PersistentLevel dump shop — same find_object call Squiggs logs as working."""
+    try:
+        from unrealsdk import find_object
+    except Exception as exc:
+        _bm_log(f"find_object import failed: {exc!r}")
+        return None
+    paths = (_WORLD_BM_PATH, f"PersistentLevel.{_BM_WORLD_NAME}", _BM_WORLD_NAME)
+    classes = (
+        "OakVendingMachine",
+        "OakInteractiveObject",
+        "OakLootable",
+        "OakLootableContainer",
+        "LootableObject",
+        "Actor",
+    )
+    for cls_name in classes:
+        for path in paths:
+            try:
+                obj = find_object(cls_name, path)
+            except Exception as exc:
+                _bm_log(f"find_object({cls_name!r}, {path!r}) exc={exc!r}")
+                obj = None
+            if obj is None:
+                continue
+            text = f"{obj!s} {_bm_obj_path(obj)}"
+            if "default__" in text.lower():
+                _bm_log(f"skip default {cls_name} {path} -> {text}")
+                continue
+            _bm_log(f"find_object template {cls_name!r}: {path} -> {text}")
+            return obj
+    for machine in _live_black_market_objects():
+        path = _bm_obj_path(machine)
+        _bm_log(f"find_all candidate -> {path}")
+        if "persistentlevel" in path.lower():
+            return machine
+    _bm_log("find_object/find_all found no Black Market template")
+    return None
+
+
+def _bm_pawn_and_pose() -> tuple[Any | None, Any | None, Any | None]:
+    pawn, _label = _resolve_spawn_anchor_actor()
+    loc = None
+    rot = None
+    if pawn is not None:
+        getter = getattr(pawn, "K2_GetActorLocation", None)
+        if callable(getter):
+            try:
+                loc = getter()
+            except Exception:
+                loc = None
+        rget = getattr(pawn, "K2_GetActorRotation", None)
+        if callable(rget):
+            try:
+                rot = rget()
+            except Exception:
+                rot = None
+    return pawn, loc, rot
+
+
+def _bm_already_at_player(actor: Any) -> bool:
+    pawn, loc, _rot = _bm_pawn_and_pose()
+    if pawn is None or loc is None or actor is None:
+        return False
+    getter = getattr(actor, "K2_GetActorLocation", None)
+    if not callable(getter):
+        return False
+    try:
+        here = getter()
+        dx = float(loc.X) - float(here.X)
+        dy = float(loc.Y) - float(here.Y)
+        dz = float(loc.Z) - float(here.Z)
+        return (dx * dx + dy * dy + dz * dz) <= (_BM_ALREADY_HERE_DIST * _BM_ALREADY_HERE_DIST)
+    except Exception:
+        return False
+
+
+def _teleport_black_market_to_player(actor: Any, distance: float = _BM_PLACE_DISTANCE) -> bool:
+    try:
+        import unrealsdk
+    except Exception:
+        return False
+    pawn, loc, rot = _bm_pawn_and_pose()
+    if pawn is None or loc is None or actor is None:
+        return False
+    fwd_x, fwd_y = 1.0, 0.0
+    fget = getattr(pawn, "GetActorForwardVector", None)
+    if callable(fget):
+        try:
+            fwd = fget()
+            fwd_x = float(getattr(fwd, "X", 1.0) or 1.0)
+            fwd_y = float(getattr(fwd, "Y", 0.0) or 0.0)
+        except Exception:
+            pass
+    dest = unrealsdk.make_struct(
+        "Vector",
+        X=float(loc.X) + fwd_x * distance,
+        Y=float(loc.Y) + fwd_y * distance,
+        Z=float(loc.Z) + _BM_PLACE_Z_OFFSET,
+    )
+    if rot is None:
+        rget = getattr(actor, "K2_GetActorRotation", None)
+        if callable(rget):
+            try:
+                rot = rget()
+            except Exception:
+                rot = None
+    tele = getattr(actor, "K2_TeleportTo", None) or getattr(actor, "TeleportTo", None)
+    if callable(tele) and rot is not None:
+        try:
+            if bool(tele(dest, rot)):
+                return True
+        except TypeError:
+            try:
+                if bool(tele(dest)):
+                    return True
+            except Exception:
+                pass
+        except Exception:
+            pass
+    fn = getattr(actor, "K2_SetActorLocation", None) or getattr(actor, "SetActorLocation", None)
+    if callable(fn):
+        try:
+            ok = fn(dest, False, None, False)
+        except TypeError:
+            try:
+                ok = fn(dest, False, None)
+            except TypeError:
+                ok = fn(dest)
+        except Exception:
+            ok = False
+        if rot is not None:
+            rfn = getattr(actor, "K2_SetActorRotation", None) or getattr(actor, "SetActorRotation", None)
+            if callable(rfn):
+                try:
+                    rfn(rot, False)
+                except TypeError:
+                    try:
+                        rfn(rot)
+                    except Exception:
+                        pass
+                except Exception:
+                    pass
+        if ok is None or bool(ok):
+            return True
+    root = getattr(actor, "RootComponent", None)
+    if root is not None:
+        try:
+            root.RelativeLocation = dest
+            return True
+        except Exception:
+            pass
+    return False
+
+
+def _wake_black_market(machine: Any) -> list[str]:
+    """Unhide actor + Root, then Active/Usable. Do not fire Anim_* / CooldownEnd."""
+    hits: list[str] = []
+    for name, args in (
+        ("SetActorHiddenInGame", (False,)),
+        ("SetActorEnableCollision", (True,)),
+        ("SetActorTickEnabled", (True,)),
+    ):
+        fn = getattr(machine, name, None)
+        if callable(fn):
+            try:
+                fn(*args)
+                hits.append(name)
+            except Exception:
+                pass
+    for attr, value in (("bIgnoreBMVMSchedule", True), ("bHidden", False)):
+        try:
+            setattr(machine, attr, value)
+            hits.append(attr)
+        except Exception:
+            pass
+    root = getattr(machine, "RootComponent", None) or getattr(machine, "Root", None)
+    if root is not None:
+        for name, args in (
+            ("SetHiddenInGame", (False, True)),
+            ("SetVisibility", (True, True)),
+            ("SetComponentTickEnabled", (True,)),
+        ):
+            fn = getattr(root, name, None)
+            if callable(fn):
+                try:
+                    fn(*args)
+                    hits.append(f"Root.{name}")
+                except TypeError:
+                    try:
+                        fn(args[0])
+                        hits.append(f"Root.{name}")
+                    except Exception:
+                        pass
+                except Exception:
+                    pass
+    mesh = getattr(machine, "BaseSkelMesh", None)
+    if mesh is not None:
+        hide = getattr(mesh, "SetHiddenInGame", None)
+        if callable(hide):
+            try:
+                hide(False)
+                hits.append("BaseSkelMesh")
+            except Exception:
+                pass
+    set_state = getattr(machine, "SetScriptStateEnabled", None)
+    if callable(set_state):
+        for state in ("IsInUse", "InUse_Anim", "Dispensing_Anim", "Disabled", "Inactive", "Locked"):
+            try:
+                set_state(state, False)
+            except Exception:
+                pass
+        for state in ("Active", "ActiveIdle", "ActiveIdle_Anim", "Enabled", "Usable", "Useable", "Idle"):
+            try:
+                set_state(state, True)
+                hits.append(state)
+            except Exception:
+                continue
+    try:
+        instances = getattr(getattr(machine, "ScriptData", None), "Instances", None)
+        if instances is not None:
+            for inst in list(instances):
+                update = getattr(inst, "UpdateAnimState", None)
+                if callable(update):
+                    try:
+                        update()
+                        hits.append("UpdateAnimState")
+                    except Exception:
+                        pass
+    except Exception:
+        pass
+    set_usable = getattr(machine, "SetUsable", None)
+    if callable(set_usable):
+        try:
+            set_usable()
+            hits.append("SetUsable")
+        except Exception:
+            pass
+    return hits
+
+
+def _copy_bm_script_data(source: Any, actor: Any) -> list[str]:
+    hits: list[str] = []
+    try:
+        src_sd = getattr(source, "ScriptData", None)
+        dst_sd = getattr(actor, "ScriptData", None)
+    except Exception:
+        return hits
+    if src_sd is None or dst_sd is None:
+        return hits
+    for field_name in ("Scripts", "Instances", "InstanceDataCache", "ReplicatedInstances"):
+        try:
+            setattr(dst_sd, field_name, getattr(src_sd, field_name))
+            hits.append(field_name)
+        except Exception:
+            continue
+    return hits
+
+
+def _duplicate_world_black_market() -> tuple[Any | None, str]:
+    """Clone PersistentLevel IO_VendingMachine_BlackMarket in front of the player."""
+    shop = _find_world_black_market()
+    if shop is None:
+        return None, "PersistentLevel template not loaded"
+    try:
+        asd = importlib.import_module("ActorScriptDeployer")
+    except Exception as exc:
+        return None, f"ActorScriptDeployer import failed: {exc!r}"
+    patch_ok, patch_msg = _install_asd_spawn_runtime_patches(asd)
+    if not patch_ok:
+        return None, patch_msg
+    spawn_ctx = getattr(asd, "_spawn_context", None)
+    spawn_xform = getattr(asd, "_spawn_transform", None)
+    spawn_fn = getattr(asd, "_spawn_actor_deferred", None)
+    if not callable(spawn_ctx) or not callable(spawn_xform) or not callable(spawn_fn):
+        return None, "ActorScriptDeployer deferred spawn helpers missing"
+    _pc, pawn, world, gs = spawn_ctx()
+    if pawn is None or world is None or gs is None:
+        return None, "no pawn/world for deferred spawn"
+    try:
+        transform = spawn_xform(
+            pawn,
+            distance=_BM_PLACE_DISTANCE,
+            z_offset=_BM_PLACE_Z_OFFSET,
+            scale=1.0,
+        )
+    except Exception as exc:
+        return None, f"spawn transform failed: {exc!r}"
+    cls = getattr(shop, "Class", None)
+    if cls is None:
+        return None, "template has no Class"
+    try:
+        actor = spawn_fn(
+            gs,
+            world,
+            cls,
+            transform,
+            class_name="OakVendingMachine",
+            source=shop,
+            collision_handling=1,
+        )
+    except Exception as exc:
+        return None, f"deferred spawn failed: {exc!r}"
+    if actor is None:
+        return None, "deferred spawn returned none"
+    copied = _copy_bm_script_data(shop, actor)
+    wake = _wake_black_market(actor)
+    path = _bm_obj_path(actor) or _BM_WORLD_NAME
+    _bm_log(
+        f"duplicated template {_bm_obj_path(shop)} -> {path} "
+        f"scriptdata={','.join(copied) or 'none'} wake={','.join(wake) or 'none'}"
+    )
+    return actor, f"duplicated {path}"
+
+
+def _place_world_black_market() -> tuple[bool, str]:
+    actor, detail = _duplicate_world_black_market()
+    if actor is not None:
+        return True, detail
+    shop = _find_world_black_market()
+    if shop is None:
+        return False, detail
+    path = _bm_obj_path(shop) or _BM_WORLD_NAME
+    if _bm_already_at_player(shop):
+        wake = _wake_black_market(shop)
+        return True, f"already at player {path} wake={','.join(wake) or 'none'}"
+    moved = _teleport_black_market_to_player(shop)
+    wake = _wake_black_market(shop)
+    if not moved:
+        return False, f"{detail}; teleport of {path} also failed"
+    return True, f"relocated dump {path} after duplicate miss ({detail})"
+
+
+def _bm_camera_tick(_obj: Any, _args: Any, _ret: Any, _func: Any) -> None:
+    global _bm_pending_until, _bm_pending_last_try
+    if _bm_pending_until <= 0.0:
+        return
+    now = time.monotonic()
+    if now > _bm_pending_until:
+        _bm_log("retry window expired without placing PersistentLevel shop")
+        _bm_pending_until = 0.0
+        return
+    if now - _bm_pending_last_try < _BM_RETRY_GAP_S:
+        return
+    _bm_pending_last_try = now
+    ok, detail = _place_world_black_market()
+    if ok:
+        _bm_log(detail)
+        _bm_pending_until = 0.0
+        return
+
+
+def _ensure_bm_tick() -> None:
+    global _bm_tick_registered
+    if _bm_tick_registered:
+        return
+    from . import camera_tick
+
+    camera_tick.register("black_market", _bm_camera_tick, priority=80)
+    _bm_tick_registered = True
+
+
+def spawn_black_market() -> dict[str, Any]:
+    """Call Squiggs' real Spawn Black Market button when that SDK is installed.
+
+    Their EXE action is ``black_market(action=spawn)``: clear purchase cooldown,
+    then ``spawn_io`` twice with ``oak_dual IO_VendingMachine_BlackMarket``.
+    Direct find_object of the PersistentLevel dump fails until oak_spawnai has
+    streamed that template, which is why MSBT-only duplicate never appeared.
     """
+    global _bm_pending_until, _bm_pending_last_try
     host_ok, host_msg = _challenge_is_host()
     if not host_ok:
         return {"ok": False, "message": "Spawn Black Market is host / listen only."}
 
-    candidates = (
-        "io_VendingMachine_BlackMarket",
-        "IO_VendingMachine_BlackMarket",
-    )
-    last: dict[str, Any] = {}
-    used = ""
-    for name in candidates:
-        last = run_dev_spawner_action(
-            "dev_spawner_spawnai",
-            {"dev_ai_name": name, "dev_ai_count": 1, "dev_ai_distance": 200},
-        )
-        used = name
-        if _black_market_spawn_looks_real(last):
-            break
+    idx = get_selected_player_index()
+    try:
+        from Squ1ggsBoostingTools.bridge_actions_extended import black_market as _sq_black_market
+    except Exception as exc:
+        _bm_log(f"Squiggs black_market unavailable: {exc!r}")
+        _sq_black_market = None
 
-    activate = run_dev_spawner_action("dev_spawner_activate_last", {})
-    machines = _live_black_market_objects()
-    if machines or _black_market_spawn_looks_real(last):
-        spawn_msg = str(last.get("message") or "").strip()
-        activate_msg = str(activate.get("message") or "").strip()
-        extra = " ".join(part for part in (spawn_msg, activate_msg) if part)
+    if callable(_sq_black_market):
+        spawn_payload = {"action": "spawn"}
+        if idx is not None:
+            spawn_payload["player_index"] = int(idx)
+        try:
+            spawned = _sq_black_market(spawn_payload)
+        except Exception as exc:
+            spawned = {"ok": False, "message": repr(exc)}
+        msg = str((spawned or {}).get("message") or spawned)
+        _bm_log(f"squiggs black_market spawn: {msg}")
+        if isinstance(spawned, dict) and spawned.get("ok"):
+            return {
+                "ok": True,
+                "message": f"Spawn Black Market {msg}",
+                "actor": _BM_WORLD_NAME,
+            }
+        _bm_log("squiggs spawn failed; falling back to MSBT duplicate")
+
+    _ensure_bm_tick()
+    ok, detail = _place_world_black_market()
+    if ok:
+        _bm_pending_until = 0.0
+        _bm_log(detail)
         return {
             "ok": True,
-            "message": (
-                f"Spawn Black Market via {used} "
-                f"({len(machines)} live machine(s)). {extra}"
-            ).strip(),
-            "actor": used,
-            "machines": len(machines),
+            "message": f"Spawn Black Market {detail}.",
+            "actor": _BM_WORLD_NAME,
+            "machines": 1,
         }
 
-    fallback = run_dev_spawner_action(
-        "dev_spawner_spawn",
-        {
-            "dev_actor_name": "io_VendingMachine_BlackMarket",
-            "dev_actor_count": 1,
-            "dev_actor_distance": 200,
-        },
-    )
-    run_dev_spawner_action("dev_spawner_activate_last", {})
-    machines = _live_black_market_objects()
-    if machines or fallback.get("ok"):
-        return {
-            "ok": True,
-            "message": (
-                f"Spawn Black Market via ASD_spawn io_VendingMachine_BlackMarket "
-                f"({len(machines)} live). {fallback.get('message') or ''}"
-            ).strip(),
-            "actor": "io_VendingMachine_BlackMarket",
-            "machines": len(machines),
-        }
-
-    detail = str((last or {}).get("message") or (fallback or {}).get("message") or "no spawn verified")
+    _bm_pending_until = time.monotonic() + _BM_RETRY_WINDOW_S
+    _bm_pending_last_try = 0.0
+    _bm_log(f"queued PersistentLevel duplicate ({detail})")
     return {
-        "ok": False,
+        "ok": True,
         "message": (
-            "Spawn Black Market did not place a live machine. "
-            f"Tried {', '.join(candidates)} then ASD_spawn. Last: {detail}"
+            "Spawn Black Market is placing Maurice's shop. "
+            "It should appear in front of you in a second."
         ),
-        "actor": used,
+        "actor": _BM_WORLD_NAME,
         "machines": 0,
+        "pending": True,
     }
-
-
-def _black_market_spawn_looks_real(result: dict[str, Any] | None) -> bool:
-    if not isinstance(result, dict):
-        return False
-    if result.get("spawn_verified") is True:
-        return True
-    if result.get("resolved") is True and int(result.get("alive_count") or 0) > 0:
-        return True
-    names = result.get("actor_names") or []
-    if isinstance(names, list) and any(str(name).strip() for name in names):
-        return True
-    status = str(result.get("verification_status") or "").strip().lower()
-    if status in ("verified", "spawned"):
-        return True
-    return False
 
 
 def black_market_clear_cooldown() -> dict[str, Any]:
@@ -4912,13 +5329,14 @@ def chaos_empty_backpack(payload: dict[str, Any] | None = None) -> dict[str, Any
         }
     ok = streamer_chaos.result_ok(str(msg))
     captured = 0
+    extra = ""
     if ok:
         captured = _store_deleted_backpack_snapshot(snapshot)
         extra = (
-        f" captured {captured} serial(s) for undo"
-        if captured
-        else " (nothing captured for undo — inventory read failed or backpack was empty)"
-    )
+            f" captured {captured} serial(s) for undo (backpack + equipped)"
+            if captured
+            else " (nothing captured for undo — inventory read failed or backpack was empty)"
+        )
     read_err = str(snapshot.get("read_error") or "").strip()
     if read_err and not captured:
         extra += f" Read failed: {read_err}"
@@ -4979,36 +5397,49 @@ def _serials_from_payload(payload: dict[str, Any] | None) -> list[str]:
 
 
 def _capture_deleted_backpack_snapshot(payload: dict[str, Any] | None = None) -> dict[str, Any]:
-    """Refresh live inventory for the selected player, then copy backpack serials."""
+    """Read live equipped+backpack serials for the selected player.
+
+    Live inventory is the snapshot of what EmptyContainer will actually wipe.
+    Electron payload serials are a fallback only if that read fails, so a stale
+    panel list cannot accumulate across empties and restore extra items.
+    """
+    payload = payload or {}
     refresh_players()
     idx = get_selected_player_index()
     name = get_selected_player_name() or ""
-    serials = _serials_from_payload(payload)
+    serials: list[str] = []
     read_error = ""
     if idx is None:
-        return {"index": None, "name": name, "serials": serials, "count": len(serials), "read_error": "No party player selected."}
-    if not serials:
-        try:
-            from . import item_serial_reader
+        return {
+            "index": None,
+            "name": name,
+            "serials": _serials_from_payload(payload),
+            "count": 0,
+            "read_error": "No party player selected.",
+        }
+    try:
+        from . import item_serial_reader
 
-            snapshot = item_serial_reader.read_inventory_for_party_index(
-                idx,
-                player_name=name or f"Player {idx}",
-                backpack_limit=max(_BACKPACK_DELETE_CAP, 2000),
-            )
-            rows = list(snapshot.get("backpack") or [])
-            seen: set[str] = set()
-            for entry in rows:
-                serial = str((entry or {}).get("serial") or "").strip()
-                if not serial.startswith("@U") or serial in seen:
-                    continue
-                seen.add(serial)
-                serials.append(serial)
-                if len(serials) >= _BACKPACK_DELETE_CAP:
-                    break
-        except Exception as exc:
-            read_error = f"{type(exc).__name__}: {exc}"
-            serials = []
+        snapshot = item_serial_reader.read_inventory_for_party_index(
+            idx,
+            player_name=name or f"Player {idx}",
+            backpack_limit=max(_BACKPACK_DELETE_CAP, 2000),
+        )
+        rows = list(snapshot.get("equipped") or []) + list(snapshot.get("backpack") or [])
+        seen: set[str] = set()
+        for entry in rows:
+            serial = str((entry or {}).get("serial") or "").strip()
+            if not serial.startswith("@U") or serial in seen:
+                continue
+            seen.add(serial)
+            serials.append(serial)
+            if len(serials) >= _BACKPACK_DELETE_CAP:
+                break
+    except Exception as exc:
+        read_error = f"{type(exc).__name__}: {exc}"
+        serials = []
+    if not serials:
+        serials = _serials_from_payload(payload)
     return {
         "index": int(idx),
         "name": name or f"P{int(idx) + 1}",
@@ -5022,12 +5453,16 @@ def _store_deleted_backpack_snapshot(snapshot: dict[str, Any] | None) -> int:
     if not snapshot:
         return 0
     idx = snapshot.get("index")
-    serials = [str(item).strip() for item in (snapshot.get("serials") or []) if str(item).strip()]
-    if idx is None or not serials:
+    if idx is None:
         return 0
-    _backpack_delete_memory[int(idx)] = {
-        "index": int(idx),
-        "name": str(snapshot.get("name") or f"P{int(idx) + 1}"),
+    serials = [str(item).strip() for item in (snapshot.get("serials") or []) if str(item).strip()]
+    key = int(idx)
+    if not serials:
+        _backpack_delete_memory.pop(key, None)
+        return 0
+    _backpack_delete_memory[key] = {
+        "index": key,
+        "name": str(snapshot.get("name") or f"P{key + 1}"),
         "serials": serials,
         "count": len(serials),
     }
@@ -5040,14 +5475,12 @@ def chaos_undo_empty_backpack(payload: dict[str, Any] | None = None) -> dict[str
     pc, label = _chaos_selected_pc()
     if pc is None:
         return {"ok": False, "message": label, "deleted_backpack": _deleted_backpack_status()}
-    serials = _serials_from_payload(payload)
+    idx = get_selected_player_index()
+    serials: list[str] = []
+    if idx is not None and int(idx) in _backpack_delete_memory:
+        serials = list(_backpack_delete_memory[int(idx)].get("serials") or [])
     if not serials:
-        idx = get_selected_player_index()
-        if idx is not None and int(idx) in _backpack_delete_memory:
-            serials = list(_backpack_delete_memory[int(idx)].get("serials") or [])
-        elif _backpack_delete_memory:
-            last_key = sorted(_backpack_delete_memory)[-1]
-            serials = list(_backpack_delete_memory[last_key].get("serials") or [])
+        serials = _serials_from_payload(payload)
     serials = [str(item).strip() for item in serials if str(item).strip().startswith("@U")]
     if not serials:
         return {
@@ -5056,6 +5489,8 @@ def chaos_undo_empty_backpack(payload: dict[str, Any] | None = None) -> dict[str
             "deleted_backpack": _deleted_backpack_status(),
         }
     result = _deliver_serials_with_target(serials, "selected")
+    if result.get("ok") and idx is not None:
+        _backpack_delete_memory.pop(int(idx), None)
     result["deleted_backpack"] = _deleted_backpack_status()
     if result.get("ok"):
         result["message"] = (

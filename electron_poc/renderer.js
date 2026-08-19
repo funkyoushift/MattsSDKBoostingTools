@@ -1866,7 +1866,11 @@ async function runBoostActionButton(button) {
   const action = button.dataset.action;
   if (action === "chaos_empty_backpack") {
     const result = await runEmptyBackpackWithCapture();
-    applyDeletedBackpackFromStatus(unwrapActionData(result));
+    const data = unwrapActionData(result);
+    applyDeletedBackpackFromStatus(data);
+    if (actionSucceeded(result) && Array.isArray(data && data.serials)) {
+      state.deletedBackpackSerials = data.serials.slice();
+    }
     if (actionSucceeded(result)) {
       try {
         await refreshInventory();
@@ -1916,7 +1920,7 @@ async function captureBackpackSerialsForCurrentTarget() {
     els.invTargetSelect.value = String(state.selectedTarget);
   }
   await refreshInventory();
-  const serials = backpackSerialsFromRows(state.invBackpack);
+  const serials = backpackSerialsFromRows([...(state.invEquipped || []), ...(state.invBackpack || [])]);
   state.deletedBackpackSerials = serials;
   return { serials };
 }
@@ -1935,15 +1939,17 @@ async function runEmptyBackpackWithCapture() {
 }
 
 async function runUndoEmptyBackpack() {
-  return runScopedPlayerAction(
+  const result = await runScopedPlayerAction(
     "chaos_undo_empty_backpack",
-    () => ({
-      serials: Array.isArray(state.deletedBackpackSerials) ? state.deletedBackpackSerials.slice() : []
-    }),
+    {},
     els.boostOutput,
     60000,
     "dev"
   );
+  if (actionSucceeded(result)) {
+    state.deletedBackpackSerials = [];
+  }
+  return result;
 }
 
 function getValue(nodeOrId) {
@@ -3431,6 +3437,7 @@ function applyDeletedBackpackFromStatus(data) {
   const players = Number(memory.player_count || (memory.players || []).length || 0);
   const items = Number(memory.item_count || 0);
   if (!players) {
+    state.deletedBackpackSerials = [];
     setLine(els.deletedBackpackStatus, "Deleted backpack memory empty.", "ok");
     return;
   }
