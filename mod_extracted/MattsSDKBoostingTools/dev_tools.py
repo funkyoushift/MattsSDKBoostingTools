@@ -15,7 +15,11 @@ _PREFIX = "[Matts SDK Boosting Tools | Dev]"
 _MIN_DEBUG_SPEED = 0.05
 _MAX_DEBUG_SPEED = 50.0
 _DEFAULT_DEBUG_SPEED = 1.0
+_MIN_DEBUG_DISTANCE = 0.0
+_MAX_DEBUG_DISTANCE = 20000.0
+_DEFAULT_DEBUG_DISTANCE = 0.0
 _debug_speed_value: float = _DEFAULT_DEBUG_SPEED
+_debug_distance_value: float = _DEFAULT_DEBUG_DISTANCE
 _live_dcc_cache: Any | None = None
 _live_dcc_cache_until: float = 0.0
 _debug_cam_enabled_hint: bool | None = None
@@ -43,6 +47,14 @@ def clamp_debug_speed(value: float) -> float:
     except Exception:
         v = _DEFAULT_DEBUG_SPEED
     return max(_MIN_DEBUG_SPEED, min(v, _MAX_DEBUG_SPEED))
+
+
+def clamp_debug_distance(value: float) -> float:
+    try:
+        v = float(value)
+    except Exception:
+        v = _DEFAULT_DEBUG_DISTANCE
+    return max(_MIN_DEBUG_DISTANCE, min(v, _MAX_DEBUG_DISTANCE))
 
 
 def devperk_label(index: int) -> str:
@@ -559,6 +571,10 @@ def toggle_debug_cam(player_index: int | None = None) -> str:
             _apply_debug_speed_to_controller(dcc, _debug_speed_value)
         except Exception:
             pass
+        try:
+            _apply_debug_distance_to_controller(dcc, _debug_distance_value)
+        except Exception:
+            pass
     try:
         _log(
             "Debug camera "
@@ -575,6 +591,54 @@ def toggle_debug_cam(player_index: int | None = None) -> str:
     return "Debug camera disabled locally." if active_before else "Debug camera enabled locally."
 
 
+def disable_debug_cam(player_index: int | None = None) -> str:
+    """Force debug cam off. Use this when Toggle leaves the camera stuck on."""
+    global _live_dcc_cache, _live_dcc_cache_until, _debug_cam_enabled_hint
+    raw_pc = _raw_live_pc()
+    pc = _unwrap_debug_camera_controller(raw_pc)
+    if pc is None or _is_debug_camera_controller(pc):
+        pc = _live_pc()
+    if pc is None or _is_debug_camera_controller(pc):
+        pc = _original_player_controller_for_debugcam()
+    if pc is None or _is_debug_camera_controller(pc):
+        raise RuntimeError("No local OakPlayerController found.")
+    cm = getattr(pc, "CheatManager", None)
+    if cm is None:
+        cheat_class = getattr(pc, "CheatClass", None)
+        if cheat_class is None:
+            raise RuntimeError("Local PlayerController has no CheatClass.")
+        cm = unrealsdk.construct_object(cheat_class, pc, "OakCheatManager_SDK")
+        pc.CheatManager = cm
+    if not _debug_cam_looks_active(raw_pc, cm) and not _debug_cam_actual_active(raw_pc):
+        _debug_cam_enabled_hint = False
+        return "Debug camera already off."
+    action = getattr(cm, "DisableDebugCamera", None)
+    used = "DisableDebugCamera"
+    if not callable(action):
+        action = getattr(cm, "ToggleDebugCamera", None)
+        used = "ToggleDebugCamera"
+    if not callable(action):
+        raise RuntimeError("Local CheatManager does not expose DisableDebugCamera or ToggleDebugCamera.")
+    _live_dcc_cache = None
+    _live_dcc_cache_until = 0.0
+    action()
+    _debug_cam_enabled_hint = False
+    raw_after = _raw_live_pc()
+    fallback_used = ""
+    if _debug_cam_actual_active(raw_after):
+        fallback_used = _try_force_debug_cam_exit(raw_after, pc, cm) or "none available"
+        raw_after = _raw_live_pc()
+    active_after = _debug_cam_actual_active(raw_after)
+    _debug_cam_enabled_hint = bool(active_after)
+    if active_after:
+        _log_debug_cam_diagnostics(raw_after, pc, cm)
+        return (
+            "Debug camera disable requested, but the game still reports debug cam active"
+            + (f" (fallback {fallback_used})." if fallback_used else ".")
+        )
+    return "Debug camera disabled locally."
+
+
 def _apply_debug_speed_to_controller(dcc: Any, speed: float) -> None:
     try:
         dcc.SetPawnMovementSpeedScale(float(speed))
@@ -586,6 +650,46 @@ def _apply_debug_speed_to_controller(dcc: Any, speed: float) -> None:
         return
     except Exception as exc:
         raise RuntimeError(f"Speed set failed: {exc!r}")
+
+
+_DEBUG_DISTANCE_FIELDS = (
+    "CameraDistance",
+    "DefaultCameraDistance",
+    "FreeCamDistance",
+    "MaxCameraDistance",
+    "CurrentCameraDistance",
+)
+
+
+def _apply_debug_distance_to_controller(dcc: Any, distance: float) -> int:
+    """Best-effort write of spectator boom length. 0 leaves the game default."""
+    if dcc is None or float(distance) <= 1e-6:
+        return 0
+    wrote = 0
+    value = float(distance)
+    targets = [dcc]
+    try:
+        sp = getattr(dcc, "SpectatorPawn", None)
+        if sp is not None:
+            targets.append(sp)
+    except Exception:
+        pass
+    for target in targets:
+        for field in _DEBUG_DISTANCE_FIELDS:
+            try:
+                if hasattr(target, field):
+                    setattr(target, field, value)
+                    wrote += 1
+            except Exception:
+                continue
+        try:
+            arm = getattr(target, "SpringArm", None) or getattr(target, "CameraBoom", None)
+            if arm is not None and hasattr(arm, "TargetArmLength"):
+                arm.TargetArmLength = value
+                wrote += 1
+        except Exception:
+            pass
+    return wrote
 
 
 def _debug_cam_for_pc(pc: Any | None) -> Any | None:
@@ -615,6 +719,83 @@ def set_debug_cam_speed(value: float, player_index: int | None = None) -> str:
 
 def get_debug_cam_speed() -> float:
     return float(_debug_speed_value)
+
+
+def set_debug_cam_distance(value: float, player_index: int | None = None) -> str:
+    global _debug_distance_value
+    _debug_distance_value = clamp_debug_distance(value)
+    if _debug_distance_value <= 1e-6:
+        return "Debug cam distance cleared (game default)."
+    pc = _live_pc()
+    dcc = _debug_cam_for_pc(pc)
+    if dcc is None:
+        return f"Debug cam distance stored as {_debug_distance_value:.1f}; no live local debug cam."
+    wrote = _apply_debug_distance_to_controller(dcc, _debug_distance_value)
+    if wrote:
+        return f"Debug cam distance set to {_debug_distance_value:.1f} ({wrote} field(s))."
+    return (
+        f"Debug cam distance stored as {_debug_distance_value:.1f}; "
+        "live cam had no known distance field."
+    )
+
+
+def get_debug_cam_distance() -> float:
+    return float(_debug_distance_value)
+
+
+def debug_cam_status() -> dict[str, Any]:
+    return {
+        "speed": get_debug_cam_speed(),
+        "distance": get_debug_cam_distance(),
+        "active": bool(_debug_cam_actual_active(_raw_live_pc())),
+    }
+
+
+def _vector_xyz(loc: Any) -> tuple[float, float, float] | None:
+    if loc is None:
+        return None
+    try:
+        return float(loc.X), float(loc.Y), float(loc.Z)
+    except Exception:
+        pass
+    try:
+        return float(loc[0]), float(loc[1]), float(loc[2])
+    except Exception:
+        return None
+
+
+def copy_debug_cam_location() -> dict[str, Any]:
+    """Return the live debug-cam (or pawn) XYZ for clipboard copy."""
+    dcc = _debug_cam_for_pc(_live_pc())
+    loc = None
+    source = "pawn"
+    if dcc is not None:
+        try:
+            sp = getattr(dcc, "SpectatorPawn", None)
+        except Exception:
+            sp = None
+        loc = _actor_location(sp) if sp is not None else None
+        if loc is None:
+            loc = _actor_location(dcc)
+        if loc is not None:
+            source = "debug cam"
+    if loc is None:
+        _pc, pawn = _player_pawn_from_original_pc()
+        loc = _actor_location(pawn)
+        source = "pawn"
+    xyz = _vector_xyz(loc)
+    if xyz is None:
+        raise RuntimeError("Could not read a camera or pawn location.")
+    text = f"{xyz[0]:.2f}, {xyz[1]:.2f}, {xyz[2]:.2f}"
+    return {
+        "ok": True,
+        "message": f"Copied {source} location {text}",
+        "x": xyz[0],
+        "y": xyz[1],
+        "z": xyz[2],
+        "text": text,
+        "source": source,
+    }
 
 def _actor_location(actor: Any | None) -> Any | None:
     if actor is None:
@@ -801,6 +982,47 @@ def teleport_pawn_to_debug_cam(player_index: int | None = None) -> str:
                     pawn.bActorEnableCollision = collision_was_enabled
             except Exception:
                 pass
+
+
+def teleport_debug_cam_to_pawn(player_index: int | None = None) -> str:
+    """Move the local debug camera to the selected (or local) pawn."""
+    dcc = _debug_cam_for_pc(_live_pc())
+    if dcc is None:
+        raise RuntimeError("No live DebugCameraController. Toggle debug cam first.")
+    target_pc, err = _pc_for_party_index(player_index)
+    pawn = _pawn_for_pc(target_pc) if target_pc is not None else None
+    if pawn is None:
+        _pc, pawn = _player_pawn_from_original_pc()
+    if pawn is None:
+        raise RuntimeError(err or "Could not find a pawn to pull the camera to.")
+    loc = _actor_location(pawn)
+    if loc is None:
+        raise RuntimeError("Could not read target pawn location.")
+    try:
+        rot = pawn.K2_GetActorRotation()
+    except Exception:
+        rot = None
+    dest = None
+    try:
+        dest = getattr(dcc, "SpectatorPawn", None)
+    except Exception:
+        dest = None
+    if dest is None:
+        dest = dcc
+    ok = False
+    try:
+        ok = bool(dest.K2_TeleportTo(loc, rot))
+    except Exception:
+        try:
+            ok = bool(dest.K2_SetActorLocation(loc, False, None, False))
+            if rot is not None:
+                try:
+                    dest.K2_SetActorRotation(rot, False)
+                except Exception:
+                    pass
+        except Exception as exc:
+            raise RuntimeError(f"Camera teleport failed: {exc!r}")
+    return f"Pulled debug cam to target; ok={ok}."
 
 
 def _pawn_from_pc(pc: Any) -> Any:

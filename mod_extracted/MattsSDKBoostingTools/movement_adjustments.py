@@ -14,6 +14,14 @@ from mods_base import ENGINE, get_pc, hook
 import unrealsdk
 from unrealsdk import logging
 
+try:
+    from unrealsdk.hooks import Block as _UnrealHookBlock
+except Exception:  # pragma: no cover - oak2 hook Block is optional
+    try:
+        from unrealsdk import Block as _UnrealHookBlock
+    except Exception:
+        _UnrealHookBlock = None
+
 _PREFIX = "[Matts SDK Boosting Tools | Movement]"
 
 # Captured live BL4 player-movement defaults. CDO defaults are not reliable for these.
@@ -115,8 +123,18 @@ def _uobject_addr(obj: Any) -> int:
 
 
 def _uobject_alive(obj: Any) -> bool:
-    """True only if the wrapper still resolves to a live UObject address."""
-    return _uobject_addr(obj) != 0
+    """True if the wrapper still looks usable.
+
+    Prefer a live native address. If this SDK build has no ``_get_address``,
+    do not treat every pawn as dead — that skipped Infinite Jump and Pull Loot.
+    """
+    if obj is None:
+        return False
+    addr = _uobject_addr(obj)
+    if addr:
+        return True
+    get_addr = getattr(obj, "_get_address", None)
+    return not callable(get_addr)
 
 
 def _is_listen_host_safe() -> bool:
@@ -266,7 +284,7 @@ def filter_pawns_by_scope(pawns: list[Any], scope: str = "all") -> list[Any]:
                 pass
         if key == "local" and is_local:
             out.append(pawn)
-        elif key in ("others", "other", "remote") and not is_local:
+        elif key in ("others", "other", "remote", "nonhost") and not is_local:
             out.append(pawn)
     return out
 
@@ -1332,6 +1350,12 @@ def apply_movement_advanced_to_all_players(
         f"Writes: {writes}; jump writes: {jump_writes}."
     )
     _log(msg)
+    if _INFINITE_JUMP_INDICES:
+        try:
+            reapply_infinite_jump_on_enabled()
+            msg += " Infinite Jump re-applied."
+        except Exception:
+            pass
     return msg
 
 
@@ -1454,44 +1478,56 @@ def _infinite_jump_move_for_pawn(pawn: Any) -> Any | None:
 
 
 def _set_if_needed(obj: Any, attr: str, value: Any) -> bool:
+    """Write an int/bool jump field. Do not require hasattr — unrealsdk wrappers lie."""
+    if obj is None:
+        return False
     try:
-        if obj is None or not hasattr(obj, attr):
+        current = getattr(obj, attr, None)
+        if current == value:
             return False
-        try:
-            if getattr(obj, attr) == value:
-                return False
-        except Exception:
-            pass
+    except Exception:
+        current = None
+    try:
         setattr(obj, attr, value)
         return True
     except Exception:
         return False
 
 
-def _infinite_jump_needs_light_refresh(pawn: Any) -> bool:
-    """Cheapest spend/threshold check — read before any move resolve or writes."""
-    if pawn is None or not _uobject_alive(pawn):
+def _jump_counters_spent(obj: Any) -> bool:
+    """True when jump spend/max on this object still blocks another jump."""
+    if obj is None:
         return False
+    for attr in (
+        "JumpCurrentCount",
+        "JumpCurrentCountPreJump",
+        "JumpedCount",
+        "CurrentJumpCount",
+        "CurrentJumpCountPreJump",
+    ):
+        try:
+            cur = getattr(obj, attr, None)
+            if cur is not None and int(cur) > 0:
+                return True
+        except Exception:
+            continue
     try:
-        cur = getattr(pawn, "JumpCurrentCount", None)
-        if cur is not None and int(cur) > 0:
-            return True
-    except Exception:
-        pass
-    try:
-        max_c = getattr(pawn, "JumpMaxCount", None)
+        max_c = getattr(obj, "JumpMaxCount", None)
         if max_c is None or int(max_c) < 999:
             return True
     except Exception:
-        # Missing / unreadable JumpMaxCount — still try a light open once.
         return True
-    try:
-        pre = getattr(pawn, "JumpCurrentCountPreJump", None)
-        if pre is not None and int(pre) > 0:
-            return True
-    except Exception:
-        pass
     return False
+
+
+def _infinite_jump_needs_light_refresh(pawn: Any) -> bool:
+    """Spend/threshold check on pawn AND movement component (BL4 spends on CharMoveComp)."""
+    if pawn is None or not _uobject_alive(pawn):
+        return False
+    if _jump_counters_spent(pawn):
+        return True
+    move = _infinite_jump_move_for_pawn(pawn)
+    return bool(move is not None and _jump_counters_spent(move))
 
 
 def _force_infinite_jump_ready(pawn: Any, move: Any | None = None, *, light: bool = False) -> bool:
@@ -1770,9 +1806,33 @@ def _infinite_jump_contexts(now: float | None = None) -> list[tuple[int, str, An
 
 
 def _enabled_infinite_jump_names() -> str:
-    contexts = _infinite_jump_contexts()
-    names = [name for idx, name, _pawn, _move in contexts if int(idx) in _INFINITE_JUMP_INDICES]
-    return ", ".join(names) if names else "none"
+    if not _INFINITE_JUMP_INDICES:
+        return "none"
+    names: list[str] = []
+    for idx in sorted(int(i) for i in _INFINITE_JUMP_INDICES):
+        names.append(_INFINITE_JUMP_LABEL_CACHE.get(idx) or f"P{idx + 1}")
+    return ", ".join(names)
+
+
+def _infinite_jump_verify_bits(pawn: Any) -> str:
+    bits: list[str] = []
+    if pawn is None:
+        return "pawn=none"
+    try:
+        bits.append(f"pawn.JumpMaxCount={getattr(pawn, 'JumpMaxCount', '?')}")
+        bits.append(f"pawn.JumpCurrentCount={getattr(pawn, 'JumpCurrentCount', '?')}")
+    except Exception:
+        bits.append("pawn=unreadable")
+    move = _infinite_jump_move_for_pawn(pawn)
+    if move is not None:
+        try:
+            bits.append(f"move.JumpMaxCount={getattr(move, 'JumpMaxCount', '?')}")
+            bits.append(f"move.JumpCurrentCount={getattr(move, 'JumpCurrentCount', '?')}")
+        except Exception:
+            bits.append("move=unreadable")
+    else:
+        bits.append("move=none")
+    return " ".join(bits)
 
 
 def _hook_arg_to_pawn(obj: Any) -> Any | None:
@@ -1876,8 +1936,10 @@ def _camera_infinite_jump_hook(*args, **kwargs):
         )
         party_needed = due_heavy or any(int(i) != int(local_idx) for i in _INFINITE_JUMP_INDICES)
 
-        # Solo / local-enabled idle path: read jump counters and bail with zero writes.
-        if int(local_idx) in _INFINITE_JUMP_INDICES and _infinite_jump_needs_light_refresh(pawn):
+        # Always re-open local pawn+move when IJ is enabled. Skipping when the
+        # pawn looks "open" missed CharMoveComp JumpCurrentCount spend — IJ
+        # reported ON but the next jump was still consumed.
+        if int(local_idx) in _INFINITE_JUMP_INDICES:
             _force_infinite_jump_ready(pawn, None, light=True)
 
         if not party_needed:
@@ -1905,18 +1967,16 @@ def _camera_infinite_jump_hook(*args, **kwargs):
             if key in touched:
                 continue
             touched.add(key)
-            if _infinite_jump_needs_light_refresh(ctx_pawn):
-                _force_infinite_jump_ready(ctx_pawn, None, light=True)
+            _force_infinite_jump_ready(ctx_pawn, None, light=True)
     except Exception:
         pass
     return None
 
 
-def _jump_pre_hook(*args, **kwargs):
-    # CanJump/CanJumpInternal fire every frame; keep the disabled path free of
-    # exception-handler setup and argument list building.
+def _infinite_jump_prep_from_hook(*args, **kwargs) -> bool:
+    """Reset jump counters for an enabled pawn. True when a live IJ pawn matched."""
     if not _INFINITE_JUMP_INDICES:
-        return None
+        return False
     try:
         for obj in list(args) + list(kwargs.values()):
             pawn = _hook_arg_to_pawn(obj)
@@ -1925,42 +1985,96 @@ def _jump_pre_hook(*args, **kwargs):
             idx = _party_index_for_pawn(pawn)
             if idx is not None and int(idx) in _INFINITE_JUMP_INDICES:
                 _force_infinite_jump_ready(pawn, None)
-                break
+                return True
     except Exception:
         pass
+    return False
+
+
+def _jump_gate_hook(*args, **kwargs):
+    # CanJump / CanJumpInternal: force True so BL4 allows another jump.
+    # Do not use this on Character.Jump — Block there swallows the jump.
+    if not _INFINITE_JUMP_INDICES:
+        return None
+    matched = _infinite_jump_prep_from_hook(*args, **kwargs)
+    if matched and _UnrealHookBlock is not None:
+        try:
+            return _UnrealHookBlock, True
+        except Exception:
+            return None
+    return None
+
+
+def _jump_start_hook(*args, **kwargs):
+    # Character.Jump must run. Only refresh counters, then let the original through.
+    if not _INFINITE_JUMP_INDICES:
+        return None
+    _infinite_jump_prep_from_hook(*args, **kwargs)
     return None
 
 
 def _register_infinite_jump_hooks() -> None:
     try:
-        hook(
-            "/Script/Engine.CameraModifier:BlueprintModifyCamera",
-            immediately_enable=True,
-            hook_identifier="matts_sdk_boosting_tools_backend_infinite_jump_camera_v1",
-        )(_camera_infinite_jump_hook)
+        from . import camera_tick
+
+        camera_tick.register("infinite_jump", _camera_infinite_jump_hook, priority=30)
         _log("Backend Infinite Jump camera hook installed.")
     except Exception as exc:
         _log(f"Backend Infinite Jump camera hook skipped: {exc!r}")
-    targets = (
+    canjump_targets = (
         "/Script/Engine.Character:CanJumpInternal",
         "/Script/Engine.Character:CanJump",
-        "/Script/Engine.Character:Jump",
         "/Script/GbxGame.OakCharacter:CanJumpInternal",
         "/Script/GbxGame.OakCharacter:CanJump",
-        "/Script/GbxGame.OakCharacter:Jump",
         "/Script/OakGame.OakCharacter:CanJumpInternal",
         "/Script/OakGame.OakCharacter:CanJump",
+    )
+    jump_targets = (
+        "/Script/Engine.Character:Jump",
+        "/Script/GbxGame.OakCharacter:Jump",
         "/Script/OakGame.OakCharacter:Jump",
     )
-    for i, target in enumerate(targets):
+    for i, target in enumerate(canjump_targets):
         try:
             hook(
                 target,
                 immediately_enable=True,
-                hook_identifier=f"matts_sdk_boosting_tools_backend_infinite_jump_gate_v1_{i}",
-            )(_jump_pre_hook)
+                hook_identifier=f"matts_sdk_boosting_tools_backend_infinite_jump_canjump_v2_{i}",
+            )(_jump_gate_hook)
         except Exception as exc:
-            _log(f"Backend Infinite Jump hook skipped {target}: {exc!r}")
+            _log(f"Backend Infinite Jump CanJump hook skipped {target}: {exc!r}")
+    for i, target in enumerate(jump_targets):
+        try:
+            hook(
+                target,
+                immediately_enable=True,
+                hook_identifier=f"matts_sdk_boosting_tools_backend_infinite_jump_jump_v2_{i}",
+            )(_jump_start_hook)
+        except Exception as exc:
+            _log(f"Backend Infinite Jump Jump hook skipped {target}: {exc!r}")
+
+
+def _restore_normal_jump(pawn: Any) -> None:
+    """Put JumpMaxCount back to a normal double-jump so Off actually disables IJ."""
+    if pawn is None:
+        return
+    try:
+        move = _infinite_jump_move_for_pawn(pawn)
+    except Exception:
+        move = None
+    pairs = (
+        ("JumpMaxCount", 2),
+        ("JumpCurrentCount", 0),
+        ("JumpCurrentCountPreJump", 0),
+    )
+    for obj in (pawn, move):
+        if obj is None:
+            continue
+        for attr, value in pairs:
+            try:
+                _set_if_needed(obj, attr, value)
+            except Exception:
+                pass
 
 
 def set_infinite_jump_all(enabled: bool) -> str:
@@ -1974,10 +2088,19 @@ def set_infinite_jump_all(enabled: bool) -> str:
                 _INFINITE_JUMP_INDICES.add(int(idx))
                 _force_infinite_jump_ready(pawn, None)
     else:
+        for _idx, _name, pawn, _move in contexts:
+            _restore_normal_jump(pawn)
         _INFINITE_JUMP_INDICES.clear()
         _clear_infinite_jump_runtime_caches()
     _INFINITE_JUMP_CAMERA_LAST_APPLY = 0.0
-    msg = f"Infinite Jump enabled for: {_enabled_infinite_jump_names()}."
+    verify = ""
+    try:
+        local_pawn = pawn_for_controller(get_pc())
+        if local_pawn is not None:
+            verify = " " + _infinite_jump_verify_bits(local_pawn)
+    except Exception:
+        verify = ""
+    msg = f"Infinite Jump enabled for: {_enabled_infinite_jump_names()}.{verify}"
     _log(msg)
     return msg
 
@@ -1993,11 +2116,20 @@ def set_infinite_jump_for_index(idx: int, enabled: bool) -> str:
             _clear_infinite_jump_runtime_caches()
     _INFINITE_JUMP_LAST_HEAVY_SCAN = 0.0
     _INFINITE_JUMP_CAMERA_LAST_APPLY = 0.0
+    verify = ""
     for ctx_idx, _name, pawn, _move in _infinite_jump_contexts():
-        if int(ctx_idx) == idx and enabled:
+        if int(ctx_idx) != idx:
+            continue
+        if enabled:
             _force_infinite_jump_ready(pawn, None)
-            break
-    msg = f"Infinite Jump enabled for: {_enabled_infinite_jump_names()}."
+        else:
+            _restore_normal_jump(pawn)
+        try:
+            verify = " " + _infinite_jump_verify_bits(pawn)
+        except Exception:
+            verify = ""
+        break
+    msg = f"Infinite Jump enabled for: {_enabled_infinite_jump_names()}.{verify}"
     _log(msg)
     return msg
 
@@ -2005,6 +2137,70 @@ def set_infinite_jump_for_index(idx: int, enabled: bool) -> str:
 def toggle_infinite_jump_for_index(idx: int) -> str:
     idx = int(idx)
     return set_infinite_jump_for_index(idx, idx not in _INFINITE_JUMP_INDICES)
+
+
+def toggle_infinite_jump_for_scope(scope: str = "all") -> tuple[str, bool]:
+    """Toggle Infinite Jump for Local / All / Others. Returns (message, enabled)."""
+    global _INFINITE_JUMP_LAST_HEAVY_SCAN
+    contexts = _infinite_jump_contexts()
+    live = [int(idx) for idx, _name, pawn, _move in contexts if pawn is not None]
+    if not live:
+        _INFINITE_JUMP_LAST_HEAVY_SCAN = 0.0
+        try:
+            contexts = _infinite_jump_contexts_heavy(time.monotonic())
+        except Exception:
+            contexts = _infinite_jump_contexts()
+        live = [int(idx) for idx, _name, pawn, _move in contexts if pawn is not None]
+    local_idx = _INFINITE_JUMP_LOCAL_IDX
+    if local_idx is None:
+        local_idx = 0
+    key = str(scope or "all").strip().lower() or "all"
+    if key in ("local", "me"):
+        target = [i for i in live if i == int(local_idx)]
+        if not target and live:
+            target = [int(local_idx)]
+        if not target:
+            target = [int(local_idx)]
+    elif key in ("others", "other", "remote", "nonhost"):
+        target = [i for i in live if i != int(local_idx)]
+    else:
+        target = list(live)
+        if not target:
+            target = [int(local_idx)]
+    if not target:
+        return (f"Infinite Jump skipped: no pawns for scope={key}.", False)
+    currently_on = bool(target) and all(i in _INFINITE_JUMP_INDICES for i in target)
+    enable = not currently_on
+    for idx in target:
+        set_infinite_jump_for_index(int(idx), enable)
+    state = "On" if enable else "Off"
+    msg = (
+        f"Infinite Jump {state} for {len(target)} player(s) (scope={key}). "
+        f"Enabled: {_enabled_infinite_jump_names()}."
+    )
+    _log(msg)
+    return msg, enable
+
+
+def infinite_jump_status() -> dict[str, Any]:
+    local_idx = _INFINITE_JUMP_LOCAL_IDX
+    indices = sorted(int(i) for i in _INFINITE_JUMP_INDICES)
+    enabled_local = local_idx is not None and int(local_idx) in _INFINITE_JUMP_INDICES
+    return {
+        "enabled": bool(enabled_local if local_idx is not None else bool(indices)),
+        "enabled_local": bool(enabled_local),
+        "count": len(indices),
+        "names": _enabled_infinite_jump_names(),
+    }
+
+
+def reapply_infinite_jump_on_enabled() -> None:
+    """Movement apply writes JumpMaxCount=2; re-open IJ on still-enabled pawns."""
+    if not _INFINITE_JUMP_INDICES:
+        return
+    for idx, _name, pawn, _move in _infinite_jump_contexts():
+        if int(idx) in _INFINITE_JUMP_INDICES:
+            _force_infinite_jump_ready(pawn, None)
 
 
 _register_infinite_jump_hooks()
@@ -2181,36 +2377,41 @@ def _sorted_ground_loot() -> dict[str, list[Any]]:
         return loot
     for inv in pickups:
         try:
-            if not inv or inv == inv.Class.ClassDefaultObject:
-                continue
-            root = getattr(inv, "RootPrimitiveComponent", None)
-            if not root:
+            if not inv:
                 continue
             try:
-                root.SetSimulatePhysics(True)
+                if inv == inv.Class.ClassDefaultObject:
+                    continue
             except Exception:
                 pass
+            root = getattr(inv, "RootPrimitiveComponent", None) or getattr(inv, "RootComponent", None)
+            if root is not None:
+                try:
+                    root.SetSimulatePhysics(True)
+                except Exception:
+                    pass
             body = str(getattr(inv, "BodyData", "") or "")
             if "Pickups" in body:
                 loot["Pickups"].append(inv)
                 continue
             if not getattr(inv, "BodyData", None):
                 usable = False
-                try:
-                    count = int(root.GetNumMaterials())
-                except Exception:
-                    count = 0
-                for index in range(count):
+                if root is not None:
                     try:
-                        material = root.GetMaterial(index)
+                        count = int(root.GetNumMaterials())
                     except Exception:
-                        material = None
-                    if not material:
-                        continue
-                    name = str(getattr(material, "Name", "") or "")
-                    if any(tag in name for tag in _LOOT_PICKUP_MATERIALS):
-                        usable = True
-                        break
+                        count = 0
+                    for index in range(count):
+                        try:
+                            material = root.GetMaterial(index)
+                        except Exception:
+                            material = None
+                        if not material:
+                            continue
+                        name = str(getattr(material, "Name", "") or "")
+                        if any(tag in name for tag in _LOOT_PICKUP_MATERIALS):
+                            usable = True
+                            break
                 if usable:
                     loot["Pickups"].append(inv)
                 else:
@@ -2224,9 +2425,21 @@ def _sorted_ground_loot() -> dict[str, list[Any]]:
 
 def pull_ground_loot_here() -> str:
     """Teleport nearby ground loot to the local player (Azzy-style Pull Loot)."""
+    return _teleport_ground_loot_layout()
+
+
+def _teleport_ground_loot_layout(*, verb: str = "Pull Loot") -> str:
+    """Teleport ground loot onto an Archimedean spiral around the local pawn."""
     pc = get_pc()
-    pawn = pawn_for_controller(pc) or getattr(pc, "OakCharacter", None) or getattr(pc, "Pawn", None) if pc else None
-    if not _live_actor(pawn):
+    pawn = None
+    if pc is not None:
+        pawn = pawn_for_controller(pc)
+        if pawn is None:
+            try:
+                pawn = getattr(pc, "OakCharacter", None) or getattr(pc, "Pawn", None)
+            except Exception:
+                pawn = None
+    if pawn is None:
         return "Pull Loot: load into a character first."
     try:
         where = pawn.K2_GetActorLocation()
@@ -2254,19 +2467,26 @@ def pull_ground_loot_here() -> str:
     for index, inv in enumerate(loot["Gear"]):
         try:
             ahead, side = _loot_spiral_offset(index)
-            spot = unrealsdk.make_struct(
-                "Vector",
-                X=float(where.X) + forward_x * ahead + right_x * side,
-                Y=float(where.Y) + forward_y * ahead + right_y * side,
-                Z=float(where.Z),
-            )
+            x = float(where.X) + forward_x * ahead + right_x * side
+            y = float(where.Y) + forward_y * ahead + right_y * side
+            z = float(where.Z)
+            spot = None
+            try:
+                spot = unrealsdk.make_struct("Vector", X=x, Y=y, Z=z)
+            except Exception:
+                spot = None
+            if spot is None:
+                spot = pawn.K2_GetActorLocation()
+                spot.X = x
+                spot.Y = y
+                spot.Z = z
             inv.K2_TeleportTo(spot, ignore)
             moved += 1
         except Exception:
             continue
     if moved:
-        return f"Pull Loot: moved {moved} item(s) to you."
-    return "Pull Loot: no ground loot found."
+        return f"{verb}: moved {moved} item(s)."
+    return f"{verb}: no ground loot found."
 
 
 def set_super_dash_strength(value: int) -> int:
@@ -2519,11 +2739,9 @@ def _super_dash_camera_hook(*_args: Any, **_kwargs: Any) -> None:
 
 def _register_super_dash_hook() -> None:
     try:
-        hook(
-            "/Script/Engine.CameraModifier:BlueprintModifyCamera",
-            immediately_enable=True,
-            hook_identifier="matts_sdk_boosting_tools_super_dash_camera_v2",
-        )(_super_dash_camera_hook)
+        from . import camera_tick
+
+        camera_tick.register("super_dash", _super_dash_camera_hook, priority=20)
     except Exception as exc:
         _log(f"Super Dash camera hook skipped: {exc!r}")
 
@@ -2531,38 +2749,101 @@ def _register_super_dash_hook() -> None:
 _register_super_dash_hook()
 
 
-def set_noclip(enabled: bool) -> str:
-    try:
-        pc = get_pc()
-        pawn = pawn_for_controller(pc) or getattr(pc, "OakCharacter", None) or getattr(pc, "Pawn", None)
-        move = None
-        if pawn is not None:
-            for obj in _movement_objects_for_pawn(pawn):
-                if "Movement" in type(obj).__name__ or "Movement" in str(obj):
-                    move = obj; break
-        if pawn is None or move is None:
-            return "Noclip failed: no pawn/movement component found."
-        if enabled:
-            try: setattr(pawn, "bCanBeDamaged", False)
-            except Exception: pass
-            try: setattr(pawn, "bActorEnableCollision", False)
-            except Exception: pass
+_DEFAULT_FLY_SPEED = 2400.0
+
+
+def _move_comp_for_pawn(pawn: Any) -> Any | None:
+    if pawn is None:
+        return None
+    for obj in _movement_objects_for_pawn(pawn):
+        try:
+            name = type(obj).__name__
+        except Exception:
+            name = ""
+        try:
+            text = str(obj)
+        except Exception:
+            text = ""
+        if "Movement" in name or "Movement" in text:
+            return obj
+    return None
+
+
+def _apply_flight_to_pawn(
+    pawn: Any,
+    *,
+    flying: bool,
+    noclip: bool,
+    fly_speed: float | None = None,
+) -> bool:
+    move = _move_comp_for_pawn(pawn)
+    if pawn is None or move is None:
+        return False
+    if flying:
+        if noclip:
             try:
-                move.SetMovementMode(5, 0)  # MOVE_Flying
+                setattr(pawn, "bCanBeDamaged", False)
             except Exception:
                 pass
-            return "Noclip On."
-        try: setattr(pawn, "bActorEnableCollision", True)
-        except Exception: pass
+            try:
+                setattr(pawn, "bActorEnableCollision", False)
+            except Exception:
+                pass
+        else:
+            try:
+                setattr(pawn, "bActorEnableCollision", True)
+            except Exception:
+                pass
         try:
-            move.SetMovementMode(1, 0)  # MOVE_Walking
+            move.SetMovementMode(5, 0)  # MOVE_Flying
         except Exception:
             pass
-        try: setattr(pawn, "bCanBeDamaged", True)
-        except Exception: pass
-        return "Noclip Off."
-    except Exception as exc:
-        return f"Noclip failed: {exc!r}"
+        if fly_speed is not None:
+            speed = max(100.0, min(20000.0, float(fly_speed)))
+            for attr in ("MaxFlySpeed", "MaxFlyingSpeed", "FlySpeed"):
+                _set_attr(pawn, attr, speed)
+                _set_attr(move, attr, speed)
+        return True
+    try:
+        setattr(pawn, "bActorEnableCollision", True)
+    except Exception:
+        pass
+    try:
+        move.SetMovementMode(1, 0)  # MOVE_Walking
+    except Exception:
+        pass
+    try:
+        setattr(pawn, "bCanBeDamaged", True)
+    except Exception:
+        pass
+    return True
+
+
+def set_noclip(enabled: bool, scope: str = "all") -> str:
+    """Toggle flying + no-collision for Local / All / Others."""
+    pawns = filter_pawns_by_scope(live_player_pawns(), scope)
+    if not pawns:
+        return f"Noclip skipped: no pawns for scope={scope}."
+    ok = 0
+    for pawn in pawns:
+        if _apply_flight_to_pawn(pawn, flying=bool(enabled), noclip=True):
+            ok += 1
+    state = "On" if enabled else "Off"
+    return f"Noclip {state} for {ok}/{len(pawns)} pawn(s) (scope={scope})."
+
+
+def set_force_fly(enabled: bool, scope: str = "all", fly_speed: float | None = None) -> str:
+    """Toggle flying with collision left on (fun fly, not ghost). Honors movement scope."""
+    speed = _DEFAULT_FLY_SPEED if fly_speed is None else float(fly_speed)
+    pawns = filter_pawns_by_scope(live_player_pawns(), scope)
+    if not pawns:
+        return f"Force fly skipped: no pawns for scope={scope}."
+    ok = 0
+    for pawn in pawns:
+        if _apply_flight_to_pawn(pawn, flying=bool(enabled), noclip=False, fly_speed=speed):
+            ok += 1
+    state = "On" if enabled else "Off"
+    return f"Force fly {state} for {ok}/{len(pawns)} pawn(s) (scope={scope}, speed={speed:.0f})."
 
 
 def _actor_location(actor: Any) -> Any | None:

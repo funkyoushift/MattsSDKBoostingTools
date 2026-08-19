@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import math
 import re
+import time
 from typing import Any
 
 from mods_base import get_pc, hook
@@ -795,12 +796,9 @@ def _camera_tick(
 
 
 try:
-    hook(
-        "/Script/Engine.CameraModifier:BlueprintModifyCamera",
-        Type.PRE,
-        immediately_enable=True,
-        hook_identifier="msbt_cxp_camera_tick_v1",
-    )(_camera_tick)
+    from . import camera_tick
+
+    camera_tick.register("cxp", _camera_tick, priority=60)
     _log("camera tick hook registered")
 except Exception as exc:
     _log(f"camera tick hook FAILED: {exc!r}")

@@ -53,6 +53,10 @@ _tick_registration: Any = None
 _generation = 0
 _status_snapshot: dict[str, Any] | None = None
 _status_snapshot_at = 0.0
+# GbxUIUMGTickWidget:BP_TickWidget fires once per widget, many times a frame.
+_BRIDGE_TICK_MIN_INTERVAL_S = 1.0 / 60.0
+_bridge_tick_last_at = 0.0
+_bridge_tick_in_flight = False
 
 
 _OPTIONAL_UI_MODULE = "bl" + "imgui"
@@ -341,12 +345,16 @@ UI_LAYOUT: dict[str, Any] = {
                 {"id":"devperk_5","label":"Infinite Ammo [OFF]","accent":"cyan"},
                 {"id":"open_bank","label":"Open Bank Anywhere","accent":"cyan"},
                 {"id":"toggle_debug_cam","label":"Toggle Debug Cam","accent":"gold"},
-                {"id":"teleport_debug_cam","label":"Teleport Pawn to Debug Cam","accent":"cyan"}
+                {"id":"disable_debug_cam","label":"Disable Debug Cam","accent":"red"},
+                {"id":"teleport_debug_cam","label":"Teleport Pawn to Debug Cam","accent":"cyan"},
+                {"id":"debug_cam_to_target","label":"Pull Cam to Target","accent":"gold"},
+                {"id":"debug_cam_copy_location","label":"Copy Cam Location","accent":"purple"}
             ]},
             {"id":"sdu_shinies","label":"SDU / GOLDEN CHEST / SHINIES","accent":"gold","actions":[
                 {"id":"max_sdu","label":"Max SDU for Selected","accent":"cyan"},
                 {"id":"open_golden_chest","label":"Open Golden Chest","accent":"gold"},
                 {"id":"close_golden_chest","label":"Close Golden Chest","accent":"red"},
+                {"id":"spawn_golden_chest","label":"Spawn Golden Chest","accent":"gold"},
                 {"id":"drop_all_shinies","label":"Drop All Shinies","accent":"gold"},
                 {"id":"shiny_selected","label":"Shiny Selected","accent":"purple"},
                 {"id":"shiny_all","label":"Shiny All","accent":"gold"},
@@ -652,6 +660,16 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
         return backend_actions.open_golden_chest()
     if action == "close_golden_chest":
         return backend_actions.close_golden_chest()
+    if action == "spawn_golden_chest":
+        return backend_actions.spawn_golden_chest()
+    if action == "spawn_black_market":
+        return backend_actions.spawn_black_market()
+    if action == "black_market_clear_cooldown":
+        return backend_actions.black_market_clear_cooldown()
+    if action == "black_market_status":
+        return backend_actions.black_market_status()
+    if action == "rewards_open_everyone":
+        return backend_actions.rewards_open_everyone()
     if action == "drop_all_shinies":
         return backend_actions.drop_all_shinies_selected()
     if action == "shiny_selected":
@@ -694,6 +712,8 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
         return backend_actions.uvh_boost_all()
     if action == "uvh_boost_cancel":
         return backend_actions.uvh_boost_cancel()
+    if action == "uvh_boost_resume":
+        return backend_actions.uvh_boost_resume()
     if action == "uvh_boost_status":
         return backend_actions.uvh_boost_status()
     if action == "hoard_set_plan":
@@ -748,6 +768,12 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
             payload.get("itempool_count") or 1,
             payload.get("itempool_level") or 60,
         )
+    if action == "spawn_itempool_all":
+        return backend_actions.spawn_itempool_all(payload)
+    if action == "spawn_itempool_cancel":
+        return backend_actions.spawn_itempool_cancel()
+    if action == "spawn_itempool_status":
+        return backend_actions.spawn_itempool_status()
     if action.startswith("dev_spawner_"):
         return backend_actions.run_dev_spawner_action(action, payload)
     if action == "travel_to_map":
@@ -809,7 +835,9 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
     if action == "movement_toggle_no_target":
         return backend_actions.movement_toggle_no_target()
     if action == "movement_toggle_noclip":
-        return backend_actions.movement_toggle_noclip()
+        return backend_actions.movement_toggle_noclip(payload)
+    if action == "movement_toggle_force_fly":
+        return backend_actions.movement_toggle_force_fly(payload)
     if action == "movement_set_time":
         return backend_actions.movement_set_time(
             payload.get("movement_time_dilation") or payload.get("time_dilation") or payload.get("time") or 1.0
@@ -834,6 +862,8 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
         return backend_actions.movement_infinite_jump_all(True)
     if action == "movement_infinite_jump_all_off":
         return backend_actions.movement_infinite_jump_all(False)
+    if action == "movement_infinite_jump_toggle":
+        return backend_actions.movement_infinite_jump_toggle(payload)
     if action == "movement_infinite_jump_toggle_selected":
         return backend_actions.movement_infinite_jump_selected(
             payload.get("infinite_jump_target") or payload.get("target_player")
@@ -966,6 +996,9 @@ def _status() -> dict[str, Any]:
         "last_drop": backend_status.get("last_drop"),
         "drop_player_lock": backend_status.get("drop_player_lock") or {"enabled": False},
         "serial_delivery": backend_status.get("serial_delivery", {}),
+        "challenge_bulk": backend_status.get("challenge_bulk") or {},
+        "itempool_bulk": backend_status.get("itempool_bulk") or {},
+        "uvh_boost": backend_status.get("uvh_boost") or {},
         "serial_text": backend_status.get("serial_text") or "",
         "read_serials": backend_status.get("read_serials") or {},
         "rarity_weights": backend_status.get("rarity_weights") or {},
@@ -1042,6 +1075,10 @@ def _process_pending_actions(
     except Exception as exc:
         _last_error = repr(exc)
     try:
+        backend_actions.spawn_itempool_tick()
+    except Exception as exc:
+        _last_error = repr(exc)
+    try:
         backend_actions.hoard_tick()
     except Exception as exc:
         _last_error = repr(exc)
@@ -1092,7 +1129,19 @@ def _register_tick_hook() -> None:
         token = _generation
 
         def _generation_tick(*args: Any, **kwargs: Any) -> None:
-            _process_pending_actions(*args, _callback_generation=token, **kwargs)
+            global _bridge_tick_last_at, _bridge_tick_in_flight
+            if _bridge_tick_in_flight:
+                return None
+            now = _now()
+            if now - _bridge_tick_last_at < _BRIDGE_TICK_MIN_INTERVAL_S:
+                return None
+            _bridge_tick_last_at = now
+            _bridge_tick_in_flight = True
+            try:
+                _process_pending_actions(*args, _callback_generation=token, **kwargs)
+            finally:
+                _bridge_tick_in_flight = False
+            return None
 
         _tick_registration = hook(
             "/Script/GbxUIUMG.GbxUIUMGTickWidget:BP_TickWidget",

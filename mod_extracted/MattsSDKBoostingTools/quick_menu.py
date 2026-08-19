@@ -3207,11 +3207,13 @@ def tick(_obj: Any, _args: Any, _ret: Any, _func: Any) -> None:
 
 
 def install_hook() -> None:
+    from . import camera_tick
+
+    camera_tick.register("quick_menu", tick, priority=10)
     try:
         unrealsdk.hooks.remove_hook(TICK_PATH, Type.POST, HOOK_ID)
     except Exception:
         pass
-    unrealsdk.hooks.add_hook(TICK_PATH, Type.POST, HOOK_ID, tick)
 
 
 def start_quick_menu() -> None:

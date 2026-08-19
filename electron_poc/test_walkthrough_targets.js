@@ -15,7 +15,7 @@ async function auditWalkthroughs() {
       sandbox: false
     }
   });
-  await win.loadFile(path.join(__dirname, "renderer.html"));
+  await win.loadFile(path.join(__dirname, "renderer.html"), { query: { nosplash: "1" } });
   await new Promise((resolve) => setTimeout(resolve, 750));
 
   const result = await win.webContents.executeJavaScript(`(() => {
@@ -71,7 +71,7 @@ async function auditWalkthroughs() {
         instantActionHomes:
           /Essentials/i.test(allCopy) &&
           /Combat & Cheats/i.test(allCopy) &&
-          /Debug Camera sits in Essentials under Instant Actions/i.test(allCopy)
+          /Debug Camera sits in its own Boosting panel/i.test(allCopy)
       },
       tourInventory: {
         structured: Object.fromEntries(Object.entries(TUTORIAL_TOURS).map(([id, steps]) => [id, steps.length])),

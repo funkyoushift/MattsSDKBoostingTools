@@ -327,13 +327,9 @@ def _tick_pending_launch_hook(*_args: Any, **_kwargs: Any) -> None:
 
 
 try:
-    from mods_base import hook as _hook
+    from . import camera_tick
 
-    _hook(
-        "/Script/Engine.CameraModifier:BlueprintModifyCamera",
-        immediately_enable=True,
-        hook_identifier="msbt_streamer_chaos_launch_v1",
-    )(_tick_pending_launch_hook)
+    camera_tick.register("streamer_chaos", _tick_pending_launch_hook, priority=40)
 except Exception:
     pass
 

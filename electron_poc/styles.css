@@ -214,10 +214,136 @@ iframe {
   background: var(--header-bg);
 }
 
+.header-brand-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+}
+
 .header-brand h1 {
   margin: 0;
   font-size: clamp(1.05rem, 1.4vw, 1.35rem);
   line-height: 1.15;
+}
+
+.funk-powered-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  padding: 2px 8px 2px 2px;
+  border: 1px solid rgba(232, 112, 32, 0.45);
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.35);
+  color: #f3b06a;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.funk-powered-mark img {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #000;
+}
+
+.funk-powered-mark:hover,
+.funk-powered-mark:focus-visible {
+  border-color: #e87020;
+  color: #ffd7a8;
+}
+
+.msbt-boot-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 4000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  background: #050608;
+}
+
+.msbt-boot-splash.is-done {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.28s ease;
+}
+
+.msbt-boot-splash-card {
+  width: min(420px, calc(100% - 32px));
+  margin: 16px;
+  padding: 28px 24px 20px;
+  border: 1px solid rgba(232, 112, 32, 0.38);
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(18, 12, 8, 0.96), rgba(6, 8, 14, 0.96));
+  text-align: center;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.45);
+}
+
+.msbt-boot-logo {
+  width: 128px;
+  height: 128px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #000;
+}
+
+.msbt-boot-title {
+  margin: 14px 0 8px;
+  color: #eef6ff;
+  font-size: clamp(1.35rem, 3.4vw, 2.05rem);
+  line-height: 1.15;
+}
+
+.msbt-boot-body {
+  margin: 0 0 16px;
+  color: #c5d0e0;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.msbt-boot-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.msbt-boot-actions {
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.msbt-boot-dont-show {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin: 14px 0 4px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.2;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.msbt-boot-dont-show input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  min-height: 16px;
+  margin: 0;
+  padding: 0;
+  flex: 0 0 16px;
+  accent-color: var(--cyan);
 }
 
 .header-tagline {
@@ -548,6 +674,9 @@ iframe {
   border: 1px solid var(--gold);
   background: #0d1320;
   padding: 8px 10px;
+  position: sticky;
+  top: 0;
+  z-index: 30;
 }
 
 .serial-delivery-panel.hidden {
@@ -1161,11 +1290,21 @@ button.gzo-submit-cta:hover {
   margin-top: 8px;
 }
 
-.boost-essentials-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(180px, 0.32fr);
-  gap: 12px;
-  align-items: start;
+.boost-essentials-instant {
+  margin-top: 8px;
+}
+
+.ground-loot-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ui-section-gap, 6px);
+  margin-top: 6px;
+}
+
+.ground-loot-actions > .qm-action-wrap,
+.ground-loot-actions > button {
+  flex: 1 1 132px;
+  min-width: 132px;
 }
 
 .boost-essentials-section,
@@ -1195,18 +1334,9 @@ button.gzo-submit-cta:hover {
 }
 
 .boost-live-debug {
-  display: grid;
-  gap: 8px;
-  border-top: 1px solid color-mix(in srgb, var(--panel-accent) 35%, transparent);
-  padding-top: 8px;
-}
-
-.boost-live-debug h4 {
-  margin: 0;
-  font-size: var(--ui-small-size, 11px);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  opacity: 0.85;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ui-section-gap, 6px);
 }
 
 .boost-cheat-knobs {
@@ -2449,6 +2579,10 @@ button.active-scope {
     flex: 0 0 auto;
   }
 
+  .funk-powered-mark span {
+    display: none;
+  }
+
   .header-main-actions .header-btn,
   .msbt-view-menu > summary {
     padding-inline: 7px;
@@ -2480,7 +2614,6 @@ button.active-scope {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .boost-essentials-layout,
   .boost-cheat-knobs {
     grid-template-columns: 1fr;
   }

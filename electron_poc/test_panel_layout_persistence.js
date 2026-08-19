@@ -142,6 +142,42 @@ assert.ok(
   !Object.prototype.hasOwnProperty.call(store.TAB_LAYOUT_MIN_REVISION, "boosting"),
   "Boosting must not wipe user layouts via a min-revision bump"
 );
+assert.deepStrictEqual(
+  store.BOOSTING_SPLIT_PANEL_IDS,
+  ["boost-ground-loot", "boost-farm", "boost-uvh", "boost-combat-xp", "boost-debug"]
+);
+assert.ok(store.BOOSTING_DEFAULT_TILES["boost-essentials"].h <= 20, "Essentials default tile must stay compact");
+assert.ok(store.BOOSTING_DEFAULT_TILES["boost-ground-loot"], "Ground Loot must have a default tile");
+assert.ok(store.BOOSTING_DEFAULT_TILES["boost-farm"], "Chests & Vendors must have a default tile");
+
+const oldBoostingLayout = {
+  version: 2,
+  revision: 12,
+  items: [
+    { type: "panel", id: "boost-essentials", x: 0, y: 0, w: 32, h: 32 },
+    { type: "panel", id: "boost-target", x: 32, y: 0, w: 16, h: 26 }
+  ],
+  hidden: []
+};
+store.migrateBoostingSavedLayout(oldBoostingLayout);
+const migratedIds = oldBoostingLayout.items.map((spec) => spec.id);
+store.BOOSTING_SPLIT_PANEL_IDS.forEach((id) => {
+  assert.ok(migratedIds.includes(id), `vanilla Boosting save must gain ${id} without Reset`);
+});
+assert.strictEqual(oldBoostingLayout.items.find((spec) => spec.id === "boost-essentials").h, 20);
+
+const customBoostingLayout = {
+  version: 2,
+  revision: 12,
+  items: [
+    { type: "panel", id: "boost-essentials", x: 4, y: 2, w: 28, h: 18 },
+    { type: "panel", id: "boost-target", x: 0, y: 0, w: 16, h: 16 }
+  ],
+  hidden: []
+};
+store.migrateBoostingSavedLayout(customBoostingLayout);
+assert.strictEqual(customBoostingLayout.items[0].x, 4, "custom Essentials geometry must be kept");
+assert.ok(customBoostingLayout.items.some((spec) => spec.id === "boost-ground-loot" && spec.y >= 18));
 
 store.saveState("boosting", overlappingLayout);
 const restored = store.loadState("boosting");
@@ -175,5 +211,31 @@ const lockRaw = JSON.parse(global.localStorage.getItem(store.LAYOUT_LOCK_KEY));
 assert.strictEqual(lockRaw.boosting, true);
 store.setLayoutLocked("boosting", false);
 assert.strictEqual(store.isLayoutLocked("boosting"), false);
+
+const html = fs.readFileSync(path.join(__dirname, "renderer.html"), "utf8");
+assert.match(html, /id="funkPoweredMark"/);
+assert.match(html, /id="msbtBootSplash"/);
+assert.match(html, /branding\/fu-logo\.png/);
+assert.match(html, /id="bootWelcomeDontShow"/);
+assert.match(html, /Join the Discord for support/);
+assert.match(html, /Leave a tip/);
+assert.doesNotMatch(html, /branding\/msbt-together-splash\.png/);
+assert.match(html, /Powered by Funk/);
+[
+  "boost-essentials",
+  "boost-ground-loot",
+  "boost-farm",
+  "boost-uvh",
+  "boost-combat-xp",
+  "boost-debug",
+  "boost-target",
+  "boost-challenges"
+].forEach((id) => {
+  assert.match(html, new RegExp(`data-msbt-panel="${id}"`), `Boosting is missing panel ${id}`);
+});
+assert.doesNotMatch(html, /boost-essentials-layout/, "Essentials mega-layout wrapper should be gone");
+assert.ok(fs.existsSync(path.join(__dirname, "branding", "fu-logo.png")));
+assert.ok(fs.existsSync(path.join(__dirname, "branding", "msbt-together-splash.png")));
+assert.match(fs.readFileSync(path.join(__dirname, "renderer.js"), "utf8"), /function runBootSplash\(/);
 
 console.log("panel layout persistence tests passed");

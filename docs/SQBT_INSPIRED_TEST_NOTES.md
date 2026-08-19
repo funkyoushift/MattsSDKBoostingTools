@@ -90,14 +90,17 @@ Unlock gate:
 - [ ] Catalog option text shows unlock / unreleased flags
 - [ ] Spawn Selected Vehicle best-effort unlocks then summons (host/solo most reliable)
 
-#### Challenges (moved here from Boosting)
+#### Challenges (Boosting Essentials, under UVH — Phase 1)
 
-- [ ] Boosting Result no longer has the **do not click** button
+- [ ] Challenges live on **Boosting** next to UVH 1–7 (not Dev Tools, no “(WIP)”)
 - [ ] Category select + search filters the list (`challenge_catalog_list`)
-- [ ] **Complete Selected** / **Complete Category** / **Complete ALL** arm confirm on first press; second press within 10s starts
-- [ ] Status line shows `needs_confirm` message; **Refresh Status** / light poll while active
+- [ ] **Complete All / Category / Selected** show an explicit confirm dialog (save warning). No 10s double-press.
+- [ ] Progress strip `#challengeBulkPanel` shows `done/total`, ok, fail while the queue runs
 - [ ] **Cancel** stops a running queue
-- [ ] Complete ALL still queues all non-parent catalog rows; category **All non-UVHM** excludes `uvh` tokens
+- [ ] Complete All grants full catalog amounts (chunk 250 only if the native RPC rejects the full value)
+- [ ] After the queue, challenge UI state is maxed for **granted** tokens (not UVHM)
+- [ ] Join client is refused with a host/listen error
+- [ ] F7 Quick Menu can pin **Complete All Challenges** / **Cancel Challenges**
 
 ## Partial / skipped
 

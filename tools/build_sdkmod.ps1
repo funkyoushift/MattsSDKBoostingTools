@@ -33,8 +33,13 @@ Get-ChildItem -Recurse -File $PackageDir -Include "*.pyc", "*.pyo" | Remove-Item
 
 Remove-Item -Force $Output -ErrorAction SilentlyContinue
 
-Add-Type -AssemblyName System.IO.Compression.FileSystem
-[System.IO.Compression.ZipFile]::CreateFromDirectory($StageRoot, $Output)
+# Pack with CPython zipfile. .NET ZipFile.CreateFromDirectory can produce archives
+# that oak2 zipimport rejects with ZipImportError("bad local file header").
+$packer = Join-Path $RepoRoot "tools\pack_sdkmod_zip.py"
+& python $packer $StageRoot $Output
+if ($LASTEXITCODE -ne 0 -or -not (Test-Path -LiteralPath $Output)) {
+    throw "Python zip pack failed for $Output"
+}
 
 Write-Host "Built SDK mod package:"
 Write-Host $Output

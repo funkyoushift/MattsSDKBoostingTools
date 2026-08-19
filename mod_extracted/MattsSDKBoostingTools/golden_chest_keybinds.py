@@ -5,7 +5,7 @@ from __future__ import annotations
 import time
 from typing import Any, Optional
 
-from mods_base import get_pc, hook, keybind
+from mods_base import get_pc, keybind
 from unrealsdk import find_all, find_object, logging
 from unrealsdk.unreal import WrappedStruct
 
@@ -153,11 +153,9 @@ def clear_pending_closes() -> None:
 
 
 try:
-    hook(
-        "/Script/Engine.CameraModifier:BlueprintModifyCamera",
-        immediately_enable=True,
-        hook_identifier="msbt_golden_chest_close_tick_v1",
-    )(_tick_pending_close)
+    from . import camera_tick
+
+    camera_tick.register("golden_chest", _tick_pending_close, priority=50)
 except Exception as exc:
     _log_err("Could not register delayed-close tick: %s", exc)
 

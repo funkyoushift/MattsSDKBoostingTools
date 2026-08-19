@@ -42,6 +42,12 @@ def _load_movement():
     return movement
 
 
+def teardown_module(_module=None):
+    for name in list(sys.modules):
+        if name == "unrealsdk" or name == "mods_base" or name.startswith("MattsSDKBoostingTools"):
+            sys.modules.pop(name, None)
+
+
 def test_spiral_starts_clear_of_the_player_and_grows_smoothly():
     movement = _load_movement()
     # First item must not land on top of the player, and loops must stay wider

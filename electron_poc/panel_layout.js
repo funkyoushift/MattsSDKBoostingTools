@@ -259,8 +259,23 @@
       h = 10;
       minH = 5;
     } else if (id === "boost-essentials") {
-      h = 9;
-      minH = 6;
+      h = 5;
+      minH = 4;
+    } else if (id === "boost-ground-loot" || id === "boost-farm") {
+      h = 3;
+      minH = 2;
+    } else if (id === "boost-uvh") {
+      h = 4;
+      minH = 3;
+    } else if (id === "boost-combat-xp") {
+      h = 3;
+      minH = 2;
+    } else if (id === "boost-debug") {
+      h = 6;
+      minH = 4;
+    } else if (id === "boost-challenges") {
+      h = 8;
+      minH = 5;
     } else if (id === "boost-cheats") {
       h = 8;
       minH = 5;
@@ -283,9 +298,6 @@
     } else if (id === "combat-tuning" || id === "vehicle-tuning") {
       h = 10;
       minH = 6;
-    } else if (id === "dev-challenges") {
-      h = 12;
-      minH = 7;
     } else if (logicalW >= 12) {
       h = panel.hasAttribute("data-msbt-resize") ? 8 : 4;
       minH = 3;
@@ -302,14 +314,98 @@
    * between the coarse legacy 12-column steps.
    */
   const BOOSTING_DEFAULT_TILES = {
-    "boost-essentials": { x: 0, y: 0, w: 32, h: 32 },
+    "boost-essentials": { x: 0, y: 0, w: 32, h: 20 },
     "boost-target": { x: 32, y: 0, w: 16, h: 20 },
-    "boost-inventory": { x: 32, y: 20, w: 16, h: 18 },
-    "boost-cheats": { x: 0, y: 32, w: 32, h: 22 },
-    "boost-serial": { x: 32, y: 38, w: 16, h: 26 },
-    "boost-rarity": { x: 0, y: 54, w: 32, h: 23 },
-    "boost-result": { x: 0, y: 77, w: 48, h: 12 }
+    "boost-ground-loot": { x: 0, y: 20, w: 24, h: 12 },
+    "boost-farm": { x: 24, y: 20, w: 24, h: 12 },
+    "boost-uvh": { x: 0, y: 32, w: 32, h: 16 },
+    "boost-combat-xp": { x: 32, y: 32, w: 16, h: 16 },
+    "boost-challenges": { x: 0, y: 48, w: 32, h: 22 },
+    "boost-debug": { x: 32, y: 48, w: 16, h: 22 },
+    "boost-inventory": { x: 32, y: 70, w: 16, h: 16 },
+    "boost-cheats": { x: 0, y: 70, w: 32, h: 22 },
+    "boost-serial": { x: 32, y: 86, w: 16, h: 28 },
+    "boost-rarity": { x: 0, y: 92, w: 32, h: 22 },
+    "boost-result": { x: 0, y: 114, w: 48, h: 12 }
   };
+  const BOOSTING_SPLIT_PANEL_IDS = [
+    "boost-ground-loot",
+    "boost-farm",
+    "boost-uvh",
+    "boost-combat-xp",
+    "boost-debug"
+  ];
+
+  function findSavedPanelSpec(saved, panelId) {
+    if (!saved || !Array.isArray(saved.items)) return null;
+    return saved.items.find((spec) => spec && spec.type === "panel" && spec.id === panelId) || null;
+  }
+
+  /**
+   * Pre-split Boosting saves only knew the mega Essentials tile. Inject the new
+   * focused panels so they appear without Reset. Vanilla P1 geometry is restamped
+   * to the new defaults; custom arrangements get the new tiles packed below.
+   */
+  function migrateBoostingSavedLayout(saved) {
+    if (!saved || !Array.isArray(saved.items) || !saved.items.length) return saved;
+    const known = savedPanelIds(saved);
+    const missing = BOOSTING_SPLIT_PANEL_IDS.filter((id) => !known.has(id));
+    if (!missing.length) return saved;
+
+    const essentials = findSavedPanelSpec(saved, "boost-essentials");
+    const target = findSavedPanelSpec(saved, "boost-target");
+    const vanillaMega = Boolean(
+      essentials
+      && target
+      && Number(essentials.x) === 0
+      && Number(essentials.y) === 0
+      && Number(essentials.w) === 32
+      && Number(essentials.h) >= 28
+      && Number(target.x) === 32
+      && Number(target.y) === 0
+      && Number(target.w) === 16
+    );
+
+    if (vanillaMega) {
+      saved.items.forEach((spec) => {
+        if (!spec || spec.type !== "panel") return;
+        const tuned = BOOSTING_DEFAULT_TILES[spec.id];
+        if (!tuned) return;
+        spec.x = tuned.x;
+        spec.y = tuned.y;
+        spec.w = tuned.w;
+        spec.h = tuned.h;
+      });
+      missing.forEach((id) => {
+        const tuned = BOOSTING_DEFAULT_TILES[id];
+        if (!tuned) return;
+        saved.items.push({ type: "panel", id, x: tuned.x, y: tuned.y, w: tuned.w, h: tuned.h });
+      });
+      return saved;
+    }
+
+    let maxY = 0;
+    saved.items.forEach((spec) => {
+      if (!spec) return;
+      const bottom = (Number(spec.y) || 0) + (Number(spec.h) || 0);
+      if (bottom > maxY) maxY = bottom;
+    });
+    let x = 0;
+    let rowH = 0;
+    missing.forEach((id) => {
+      const tuned = BOOSTING_DEFAULT_TILES[id];
+      if (!tuned) return;
+      if (x > 0 && x + tuned.w > COLS) {
+        x = 0;
+        maxY += rowH;
+        rowH = 0;
+      }
+      saved.items.push({ type: "panel", id, x, y: maxY, w: tuned.w, h: tuned.h });
+      x += tuned.w;
+      rowH = Math.max(rowH, tuned.h);
+    });
+    return saved;
+  }
 
   /** Explicit non-overlapping tiles for tabs that must stay usable out of the box. */
   function defaultPlacement(panel) {
@@ -339,8 +435,7 @@
       "dev-target": { x: 0, y: 3 },
       "streamer-chaos": { x: 6, y: 3 },
       "combat-tuning": { x: 0, y: 11 },
-      "vehicle-tuning": { x: 6, y: 11 },
-      "dev-challenges": { x: 0, y: 21 }
+      "vehicle-tuning": { x: 6, y: 11 }
     };
     const pos = map[id];
     if (!pos) return { w: size.w, h: size.h, minH: size.minH };
@@ -1362,6 +1457,9 @@
 
   function applySavedLayout(tab, saved) {
     if (!saved || !Array.isArray(saved.items) || !saved.items.length) return false;
+    if ((tab.getAttribute("data-msbt-layout-tab") || "") === "boosting") {
+      migrateBoostingSavedLayout(saved);
+    }
     const root = tab.querySelector("[data-msbt-layout-root]");
     const grid = grids.get(root);
     if (!grid) return false;
@@ -2658,6 +2756,9 @@
       saveState,
       savedLayoutIsUsable,
       savedPanelIds,
+      migrateBoostingSavedLayout,
+      BOOSTING_DEFAULT_TILES,
+      BOOSTING_SPLIT_PANEL_IDS,
       isLayoutLocked,
       setLayoutLocked,
       loadLayoutLocks

@@ -17,7 +17,7 @@ from .movement_adjustments import live_player_controllers, pawn_for_controller
 _PREFIX = "[Matts SDK Boosting Tools | SpawnHelpers]"
 
 AGGRO_MODES = ("passive", "attack_me", "attack_party", "free_for_all")
-SPAWN_ANCHORS = ("local", "party", "npc_nearest")
+SPAWN_ANCHORS = ("local", "selected", "party", "npc_nearest")
 
 _tracked_mobs: list[Any] = []
 _tracked_at: float = 0.0
@@ -86,6 +86,18 @@ def _local_pawn() -> Any | None:
         return None
 
 
+def _selected_pawn() -> Any | None:
+    """Named party target from the live selected-player index (lazy import)."""
+    try:
+        from . import backend_actions as ba
+        idx = ba.get_selected_player_index()
+        if idx is None:
+            return None
+        return ba._pawn_for_party_index(idx)
+    except Exception:
+        return None
+
+
 def _party_pawns() -> list[Any]:
     out: list[Any] = []
     seen: set[int] = set()
@@ -143,6 +155,11 @@ def resolve_spawn_anchor_actor() -> tuple[Any | None, str]:
     mode = _current_spawn_anchor
     if mode == "local":
         return local, "local"
+    if mode == "selected":
+        pawn = _selected_pawn()
+        if pawn is not None:
+            return pawn, "selected"
+        return local, "local(fallback-no-selected)"
     if mode == "party":
         party = _party_pawns()
         if not party:

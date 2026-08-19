@@ -168,6 +168,11 @@ const els = {
   hoardGuideDismissBtn: document.getElementById("hoardGuideDismissBtn"),
   devAggroMode: document.getElementById("devAggroMode"),
   devSpawnAnchor: document.getElementById("devSpawnAnchor"),
+  boostSpawnAnchor: document.getElementById("boostSpawnAnchor"),
+  deletedBackpackStatus: document.getElementById("deletedBackpackStatus"),
+  itempoolDelay: document.getElementById("itempoolDelay"),
+  itempoolItemsPerTick: document.getElementById("itempoolItemsPerTick"),
+  itempoolSpit: document.getElementById("itempoolSpit"),
   electronAppCurrent: document.getElementById("electronAppCurrent"),
   electronAppInstaller: document.getElementById("electronAppInstaller"),
   electronAppLatest: document.getElementById("electronAppLatest"),
@@ -226,6 +231,7 @@ const els = {
   movementStepHeight: document.getElementById("movementStepHeight"),
   movementTargetSelect: document.getElementById("movementTargetSelect"),
   movementTimeDilation: document.getElementById("movementTimeDilation"),
+  movementFlySpeed: document.getElementById("movementFlySpeed"),
   movementWalkSpeed: document.getElementById("movementWalkSpeed"),
   movementZeroVaultOnApply: document.getElementById("movementZeroVaultOnApply"),
   movementScope: document.getElementById("movementScope"),
@@ -248,6 +254,8 @@ const els = {
   instantDropsToggleBtn: document.getElementById("instantDropsToggleBtn"),
   instantHoldsToggleBtn: document.getElementById("instantHoldsToggleBtn"),
   liveModsStatus: document.getElementById("liveModsStatus"),
+  debugCamSpeed: document.getElementById("debugCamSpeed"),
+  debugCamDistance: document.getElementById("debugCamDistance"),
   rarityUncommonPercent: document.getElementById("rarityUncommonPercent"),
   rarityUncommonValue: document.getElementById("rarityUncommonValue"),
   reportActual: document.getElementById("reportActual"),
@@ -344,11 +352,17 @@ const els = {
   dataCacheOpenBtn: document.getElementById("dataCacheOpenBtn"),
   dataCacheClearBtn: document.getElementById("dataCacheClearBtn"),
   dataCacheSummary: document.getElementById("dataCacheSummary"),
-  serialDeliveryBar: document.getElementById("serialDeliveryBar"),
-  serialDeliveryLabel: document.getElementById("serialDeliveryLabel"),
-  serialDeliveryMessage: document.getElementById("serialDeliveryMessage"),
-  serialDeliveryMeta: document.getElementById("serialDeliveryMeta"),
-  serialDeliveryPanel: document.getElementById("serialDeliveryPanel"),
+  serialDeliveryBar: document.getElementById("msbtBulkBar"),
+  serialDeliveryLabel: document.getElementById("msbtBulkLabel"),
+  serialDeliveryMessage: document.getElementById("msbtBulkMessage"),
+  serialDeliveryMeta: document.getElementById("msbtBulkMeta"),
+  serialDeliveryPanel: document.getElementById("msbtBulkProgress"),
+  msbtBulkTitle: document.getElementById("msbtBulkTitle"),
+  msbtBulkBar: document.getElementById("msbtBulkBar"),
+  msbtBulkLabel: document.getElementById("msbtBulkLabel"),
+  msbtBulkMessage: document.getElementById("msbtBulkMessage"),
+  msbtBulkMeta: document.getElementById("msbtBulkMeta"),
+  msbtBulkPanel: document.getElementById("msbtBulkProgress"),
   startupUpdateDismissBtn: document.getElementById("startupUpdateDismissBtn"),
   startupUpdateDownloadBtn: document.getElementById("startupUpdateDownloadBtn"),
   startupUpdateInstallBtn: document.getElementById("startupUpdateInstallBtn"),
@@ -496,6 +510,7 @@ const state = {
   bridgeStatusSubscribersBusy: false,
   bridgeVisibilityBound: false,
   boostTargetScope: "selected",
+  publicBoostScope: "local",
   hostPlayerIndex: null,
   invEquipped: [],
   invBackpack: [],
@@ -527,6 +542,7 @@ const state = {
   bookmarks: [],
   bookmarkVisibleRows: [],
   confirmedSerial: "",
+  deletedBackpackSerials: [],
   devActorPage: 0,
   devActiveCategory: "",
   devSpawnerCatalog: null,
@@ -578,6 +594,7 @@ const state = {
   serialDeliveryIdlePolls: 0,
   serialDeliveryLastMessage: "",
   serialDeliveryWatch: false,
+  bulkProgress: { serial: {}, challenge: {}, itempool: {} },
   serialToolsAutoTimer: null,
   serialToolsRunId: 0,
   selectedItemPool: "",
@@ -1309,12 +1326,21 @@ function quickMenuBl4SerialLabel() {
   return `${rows.length} BL4 Codes`.slice(0, 48);
 }
 
+function itemPoolKnobPayload() {
+  return {
+    itempool_delay: getFloat(els.itempoolDelay, 0, 5, 0),
+    itempool_items_per_tick: getInt(els.itempoolItemsPerTick, 1, 25, 1),
+    itempool_spit: getValue(els.itempoolSpit) || "forward"
+  };
+}
+
 function quickMenuItemPoolPayload() {
   const names = selectedItemPoolNames();
   return {
     itempool_name: names[0] || getValue(els.itempoolList) || "",
     itempool_count: getInt(els.itempoolCount, 1, 100, 1),
-    itempool_level: getInt(els.itempoolLevel, 1, 60, 60)
+    itempool_level: getInt(els.itempoolLevel, 1, 60, 60),
+    ...itemPoolKnobPayload()
   };
 }
 
@@ -1435,6 +1461,9 @@ function quickMenuPayloadFromCurrentControls(action) {
     return {
       movement_time_dilation: getFloat(els.movementTimeDilation, 0.01, 64, 1)
     };
+  }
+  if (action === "movement_infinite_jump_toggle") {
+    return { movement_scope: getValue(els.movementScope) || "all" };
   }
   if (
     action === "movement_infinite_jump_selected_on"
@@ -1627,6 +1656,30 @@ function installQuickMenuAddButtons() {
   document.querySelectorAll("[data-action]").forEach((button) => {
     decorateQuickMenuActionButton(button, String(button.dataset.action || ""));
   });
+  const debugCamSpeedApplyBtn = document.getElementById("debugCamSpeedApplyBtn");
+  if (debugCamSpeedApplyBtn) {
+    decorateQuickMenuActionButton(debugCamSpeedApplyBtn, "debug_cam_set_speed", () => debugCamSpeedPayload());
+  }
+  const debugCamDistanceApplyBtn = document.getElementById("debugCamDistanceApplyBtn");
+  if (debugCamDistanceApplyBtn) {
+    decorateQuickMenuActionButton(debugCamDistanceApplyBtn, "debug_cam_set_distance", () => debugCamDistancePayload());
+  }
+  const debugCamCopyLocBtn = document.getElementById("debugCamCopyLocBtn");
+  if (debugCamCopyLocBtn) {
+    decorateQuickMenuActionButton(debugCamCopyLocBtn, "debug_cam_copy_location");
+  }
+  const debugCamSpeed1xBtn = document.getElementById("debugCamSpeed1xBtn");
+  if (debugCamSpeed1xBtn) {
+    decorateQuickMenuActionButton(debugCamSpeed1xBtn, "debug_cam_set_speed", () => ({ debug_cam_speed: 1 }));
+  }
+  const debugCamSpeed5xBtn = document.getElementById("debugCamSpeed5xBtn");
+  if (debugCamSpeed5xBtn) {
+    decorateQuickMenuActionButton(debugCamSpeed5xBtn, "debug_cam_set_speed", () => ({ debug_cam_speed: 5 }));
+  }
+  const debugCamSpeed10xBtn = document.getElementById("debugCamSpeed10xBtn");
+  if (debugCamSpeed10xBtn) {
+    decorateQuickMenuActionButton(debugCamSpeed10xBtn, "debug_cam_set_speed", () => ({ debug_cam_speed: 10 }));
+  }
   document.querySelectorAll("[data-movement-action]").forEach((button) => {
     const action = String(button.dataset.movementAction || "");
     if (action === "movement_apply_all") {
@@ -1636,6 +1689,12 @@ function installQuickMenuAddButtons() {
     if (action === "movement_set_time") {
       decorateQuickMenuActionButton(button, action, () => ({
         movement_time_dilation: getFloat(els.movementTimeDilation, 0.01, 64, 1)
+      }));
+      return;
+    }
+    if (action === "movement_infinite_jump_toggle") {
+      decorateQuickMenuActionButton(button, action, () => ({
+        movement_scope: getValue(els.movementScope) || "all"
       }));
       return;
     }
@@ -1727,11 +1786,23 @@ function installQuickMenuAddButtons() {
     () => inventoryPayload(true)
   );
   decorateQuickMenuActionButton(quickMenuNode("kickTargetBtn"), "kick_player");
+  decorateQuickMenuActionButton(quickMenuNode("devKickTargetBtn"), "kick_player");
   decorateQuickMenuActionButton(
     document.getElementById("spawnItempoolBtn"),
     "spawn_itempool",
     () => quickMenuItemPoolPayload(),
     (payload) => itemPoolDisplayName(payload.itempool_name)
+  );
+  decorateQuickMenuActionButton(
+    document.getElementById("spawnItempoolAllBtn"),
+    "spawn_itempool_all",
+    () => ({
+      itempool_names: filteredItemPoolNames(),
+      itempool_count: getInt(els.itempoolCount, 1, 100, 1),
+      itempool_level: getInt(els.itempoolLevel, 1, 60, 60),
+      ...itemPoolKnobPayload()
+    }),
+    () => `All filtered (${filteredItemPoolNames().length})`
   );
   decorateQuickMenuActionButton(
     document.getElementById("travelMapBtn"),
@@ -1793,15 +1864,86 @@ function updateDevperkToggleButtons() {
 
 async function runBoostActionButton(button) {
   const action = button.dataset.action;
-  const result = PLAYER_SCOPED_BOOST_ACTIONS.has(action)
-    ? await runScopedPlayerAction(action, {}, els.boostOutput, 30000)
-    : await runAction(action, {}, els.boostOutput, 30000);
+  if (action === "chaos_empty_backpack") {
+    const result = await runEmptyBackpackWithCapture();
+    applyDeletedBackpackFromStatus(unwrapActionData(result));
+    if (actionSucceeded(result)) {
+      try {
+        await refreshInventory();
+      } catch (_err) {}
+    }
+    return result;
+  }
+  if (action === "chaos_undo_empty_backpack") {
+    const result = await runUndoEmptyBackpack();
+    applyDeletedBackpackFromStatus(unwrapActionData(result));
+    if (actionSucceeded(result)) {
+      try {
+        await refreshInventory();
+      } catch (_err) {}
+    }
+    return result;
+  }
+  const result = DEV_SCOPED_BOOST_ACTIONS.has(action)
+    ? await runScopedPlayerAction(action, {}, els.boostOutput, 30000, "dev")
+    : PUBLIC_SCOPED_BOOST_ACTIONS.has(action)
+      ? await runScopedPlayerAction(action, {}, els.boostOutput, 30000, "public")
+      : await runAction(action, {}, els.boostOutput, 30000);
+  applyDebugCamFromStatus(unwrapActionData(result));
+  applyDeletedBackpackFromStatus(unwrapActionData(result));
   const toggleKey = button.dataset.devperkToggle;
   if (toggleKey && actionSucceeded(result)) {
     state.devperkToggles[toggleKey] = inferToggleStateFromMessage(resultMessage(result), state.devperkToggles[toggleKey]);
     updateDevperkToggleButtons();
   }
   return result;
+}
+
+function backpackSerialsFromRows(rows) {
+  const out = [];
+  const seen = new Set();
+  (Array.isArray(rows) ? rows : []).forEach((entry) => {
+    const serial = String((entry && entry.serial) || "").trim();
+    if (!serial.startsWith("@U") || seen.has(serial)) return;
+    seen.add(serial);
+    out.push(serial);
+  });
+  return out;
+}
+
+async function captureBackpackSerialsForCurrentTarget() {
+  if (els.invTargetSelect && state.selectedTarget) {
+    els.invTargetSelect.value = String(state.selectedTarget);
+  }
+  await refreshInventory();
+  const serials = backpackSerialsFromRows(state.invBackpack);
+  state.deletedBackpackSerials = serials;
+  return { serials };
+}
+
+async function runEmptyBackpackWithCapture() {
+  return runScopedPlayerAction(
+    "chaos_empty_backpack",
+    async () => {
+      const captured = await captureBackpackSerialsForCurrentTarget();
+      return { serials: captured.serials };
+    },
+    els.boostOutput,
+    60000,
+    "dev"
+  );
+}
+
+async function runUndoEmptyBackpack() {
+  return runScopedPlayerAction(
+    "chaos_undo_empty_backpack",
+    () => ({
+      serials: Array.isArray(state.deletedBackpackSerials) ? state.deletedBackpackSerials.slice() : []
+    }),
+    els.boostOutput,
+    60000,
+    "dev"
+  );
 }
 
 function getValue(nodeOrId) {
@@ -2024,20 +2166,86 @@ function movementPayload() {
     movement_zero_vault_on_apply: Boolean(els.movementZeroVaultOnApply && els.movementZeroVaultOnApply.checked),
     movement_time_dilation: getFloat(els.movementTimeDilation, 0.01, 64, 1),
     movement_scope: getValue(els.movementScope) || "all",
+    fly_speed: getFloat(els.movementFlySpeed, 100, 20000, 2400),
     target_player: selectedTarget,
     infinite_jump_target: selectedTarget
   };
+}
+
+function movementActionPayload(action, extraPayload = {}) {
+  const key = String(action || "");
+  if (key === "movement_apply_all" || key === "movement_reset_all" || key.startsWith("movement_preset_")) {
+    return { ...movementPayload(), ...extraPayload };
+  }
+  if (key === "movement_infinite_jump_toggle") {
+    return { movement_scope: getValue(els.movementScope) || "all", ...extraPayload };
+  }
+  if (key === "movement_set_time") {
+    return {
+      movement_time_dilation: getFloat(els.movementTimeDilation, 0.01, 64, 1),
+      ...extraPayload
+    };
+  }
+  if (key === "movement_toggle_noclip" || key === "movement_toggle_force_fly") {
+    return {
+      movement_scope: getValue(els.movementScope) || "all",
+      fly_speed: getFloat(els.movementFlySpeed, 100, 20000, 2400),
+      ...extraPayload
+    };
+  }
+  return { ...extraPayload };
 }
 
 async function runMovementAction(action, extraPayload = {}) {
   if (action === "movement_reset_all") {
     resetMovementControlsToDefaults();
   }
-  const payload = { ...movementPayload(), ...extraPayload };
+  const payload = movementActionPayload(action, extraPayload);
   setLine(els.movementStatus, `Sending ${humanActionLabel(action)}...`, "warning");
   const result = await runAction(action, payload, els.movementOutput, 30000);
   setLine(els.movementStatus, resultMessage(result), actionSucceeded(result) ? "ok" : "warning");
+  if (action === "movement_infinite_jump_toggle" && actionSucceeded(result)) {
+    updateInfiniteJumpToggleButton(result);
+  }
   return result;
+}
+
+function unwrapActionData(result) {
+  if (!result || typeof result !== "object") return result;
+  if (result.data && typeof result.data === "object") return result.data;
+  return result;
+}
+
+function updateInfiniteJumpToggleButton(result) {
+  const button = document.getElementById("infiniteJumpToggleBtn");
+  if (!button) return;
+  const data = unwrapActionData(result);
+  let enabled = null;
+  if (data && typeof data.enabled === "boolean") {
+    enabled = data.enabled;
+  } else if (data && data.infinite_jump && typeof data.infinite_jump.enabled === "boolean") {
+    enabled = data.infinite_jump.enabled;
+  } else {
+    const message = resultMessage(result).toLowerCase();
+    if (/\binfinite jump off\b|\bskipped:/.test(message)) enabled = false;
+    else if (/\binfinite jump on\b/.test(message)) enabled = true;
+  }
+  if (enabled === null) return;
+  button.textContent = `Infinite Jump: ${enabled ? "On" : "Off"}`;
+  button.classList.toggle("is-on", Boolean(enabled));
+  button.classList.toggle("danger", Boolean(enabled));
+}
+
+function syncInfiniteJumpFromStatus(data) {
+  const ij = data && data.infinite_jump && typeof data.infinite_jump === "object"
+    ? data.infinite_jump
+    : null;
+  if (!ij) return;
+  const scope = getValue(els.movementScope) || "all";
+  let enabled;
+  if (scope === "local" || scope === "me") enabled = Boolean(ij.enabled_local);
+  else enabled = Number(ij.count) > 0;
+  updateInfiniteJumpToggleButton({ enabled });
 }
 
 function rarityControls() {
@@ -2451,31 +2659,50 @@ function renderPlayers(status = {}) {
   }
 }
 
-const PLAYER_SCOPED_BOOST_ACTIONS = new Set([
+const PUBLIC_SCOPED_BOOST_ACTIONS = new Set([
   "max_all",
   "max_currency",
   "max_eridium",
   "max_player_level",
   "max_spec_level",
   "max_sdu",
-  "fog_of_war_clear",
+  "fog_of_war_clear"
+]);
+
+const DEV_SCOPED_BOOST_ACTIONS = new Set([
   "chaos_launch",
   "chaos_drop_backpack_targeted",
   "chaos_empty_backpack",
+  "chaos_undo_empty_backpack",
   "chaos_kill",
   "chaos_ffyl",
   "chaos_invert_look",
   "chaos_lock_look",
   "chaos_lock_move",
   "chaos_lock_both",
-  "chaos_unlock",
-  "reset_skills"
+  "chaos_unlock"
 ]);
+
+function publicBoostScopeLabel(scope = state.publicBoostScope) {
+  if (scope === "all") return "All players";
+  if (scope === "nonhost") return "Other players";
+  if (scope === "selected") return "Named player";
+  return "Local";
+}
 
 function boostScopeLabel(scope = state.boostTargetScope) {
   if (scope === "all") return "All players";
   if (scope === "nonhost") return "Non-host players";
   return "Selected player";
+}
+
+function hostPlayerFromList() {
+  const list = Array.isArray(state.players) ? state.players : [];
+  if (state.hostPlayerIndex !== null && state.hostPlayerIndex !== undefined) {
+    const found = list.find((player) => Number(player && player.index) === Number(state.hostPlayerIndex));
+    if (found) return found;
+  }
+  return list[0] || null;
 }
 
 function playersForBoostScope(scope = state.boostTargetScope) {
@@ -2487,27 +2714,34 @@ function playersForBoostScope(scope = state.boostTargetScope) {
     }
     return list.filter((player) => Number(player && player.index) !== Number(state.hostPlayerIndex));
   }
+  if (scope === "local") {
+    const host = hostPlayerFromList();
+    return host ? [host] : [];
+  }
   const selected = list.find((player) => String(playerValue(player)) === String(state.selectedTarget));
   return selected ? [selected] : [];
 }
 
 function updateBoostTargetSummary() {
-  const selectedPlayer = state.players.find((player) => String(playerValue(player)) === String(state.selectedTarget));
-  const scope = state.boostTargetScope || "selected";
+  const scope = state.publicBoostScope || "local";
   const scoped = playersForBoostScope(scope);
-  let text = `Boost scope: ${boostScopeLabel(scope)}`;
-  if (scope === "selected") {
+  let text = `Boost scope: ${publicBoostScopeLabel(scope)}`;
+  if (scope === "local") {
+    const host = hostPlayerFromList();
+    text += host ? ` | ${playerLabel(host)}` : " | local host pawn";
+  } else if (scope === "selected") {
+    const selectedPlayer = state.players.find((player) => String(playerValue(player)) === String(state.selectedTarget));
     text += ` | ${selectedPlayer ? playerLabel(selectedPlayer) : state.selectedTarget || "none"}`;
   } else {
     text += ` (${scoped.length} player${scoped.length === 1 ? "" : "s"})`;
-    if (selectedPlayer) text += ` | dropdown: ${playerLabel(selectedPlayer)}`;
     if (scope === "nonhost" && (state.hostPlayerIndex === null || state.hostPlayerIndex === undefined)) {
       text += " | host index unknown — using players after first as non-host fallback";
     }
   }
+  text += ` | spawn near: ${spawnAnchorLabel(currentSpawnAnchor())}`;
   const kind = scope === "selected"
     ? (state.selectedTarget ? "ok" : "warning")
-    : (scoped.length ? "ok" : "warning");
+    : (scope === "local" ? "ok" : (scoped.length ? "ok" : "warning"));
   setLine(els.targetSummary, text, kind);
   document.querySelectorAll("[data-boost-scope]").forEach((button) => {
     button.classList.toggle("active-scope", button.dataset.boostScope === scope);
@@ -2539,20 +2773,38 @@ function updateDevTargetSummary() {
   });
 }
 
+function setPublicBoostScope(scope) {
+  const next = String(scope || "local").toLowerCase();
+  state.publicBoostScope = next === "all" || next === "nonhost" || next === "selected" ? next : "local";
+  updateBoostTargetSummary();
+  appendActivity(`Boost scope set to ${publicBoostScopeLabel(state.publicBoostScope)}.`);
+}
+
 function setBoostTargetScope(scope) {
   const next = String(scope || "selected").toLowerCase();
   state.boostTargetScope = next === "all" || next === "nonhost" ? next : "selected";
-  updateBoostTargetSummary();
-  appendActivity(`Boost target scope set to ${boostScopeLabel(state.boostTargetScope)}.`);
+  updateDevTargetSummary();
+  appendActivity(`Dev target scope set to ${boostScopeLabel(state.boostTargetScope)}.`);
+}
+
+async function ensureLocalHostTarget(outNode) {
+  const host = hostPlayerFromList();
+  if (!host) return true;
+  const result = await setTarget(playerValue(host), { keepBoostScope: true });
+  return Boolean(result && result.data && result.data.ok);
 }
 
 async function deliverShiniesToBoostScope() {
-  const scope = state.boostTargetScope || "selected";
+  const scope = state.publicBoostScope || "local";
   const action = scope === "all"
     ? "shiny_all"
     : scope === "nonhost"
       ? "shiny_nonhost"
       : "shiny_selected";
+  if (scope === "local") {
+    const ok = await ensureLocalHostTarget(els.boostOutput);
+    if (!ok) return { ok: false, message: "Could not resolve local host player." };
+  }
   if (scope === "selected") {
     const ok = await ensureSelectedTarget(els.boostOutput);
     if (!ok) return { ok: false, message: "No party player selected." };
@@ -2560,12 +2812,24 @@ async function deliverShiniesToBoostScope() {
   return runAction(action, {}, els.boostOutput, 30000);
 }
 
-async function runScopedPlayerAction(action, payload = {}, outNode = els.boostOutput, timeoutMs = 30000) {
-  const scope = state.boostTargetScope || "selected";
+async function resolveActionPayload(payload) {
+  return typeof payload === "function" ? await payload() : payload;
+}
+
+async function runScopedPlayerAction(action, payload = {}, outNode = els.boostOutput, timeoutMs = 30000, scopeKind = "public") {
+  const scope = scopeKind === "dev"
+    ? (state.boostTargetScope || "selected")
+    : (state.publicBoostScope || "local");
+  const labelFor = scopeKind === "dev" ? boostScopeLabel : publicBoostScopeLabel;
+  if (scope === "local") {
+    const ok = await ensureLocalHostTarget(outNode);
+    if (!ok) return { ok: false, message: "Could not resolve local host player." };
+    return runAction(action, await resolveActionPayload(payload), outNode, timeoutMs);
+  }
   if (scope === "selected") {
     const ok = await ensureSelectedTarget(outNode);
     if (!ok) return { ok: false, message: "No party player selected." };
-    return runAction(action, payload, outNode, timeoutMs);
+    return runAction(action, await resolveActionPayload(payload), outNode, timeoutMs);
   }
 
   const targets = playersForBoostScope(scope);
@@ -2578,7 +2842,7 @@ async function runScopedPlayerAction(action, payload = {}, outNode = els.boostOu
     return { ok: false, message };
   }
 
-  const lines = [`Running ${action} for ${boostScopeLabel(scope)} (${targets.length})...`];
+  const lines = [`Running ${action} for ${labelFor(scope)} (${targets.length})...`];
   if (outNode) setOutput(outNode, lines.join("\n"));
   appendActivity(lines[0]);
 
@@ -2593,7 +2857,7 @@ async function runScopedPlayerAction(action, payload = {}, outNode = els.boostOu
       lines.push(`${label}: could not set target — ${resultMessage(setResult)}`);
       continue;
     }
-    const result = await runAction(action, payload, outNode, timeoutMs);
+    const result = await runAction(action, await resolveActionPayload(payload), outNode, timeoutMs);
     if (actionSucceeded(result)) {
       okCount += 1;
       lines.push(`${label}: ${resultMessage(result)}`);
@@ -2603,7 +2867,7 @@ async function runScopedPlayerAction(action, payload = {}, outNode = els.boostOu
     }
   }
 
-  const summary = `${action} finished for ${boostScopeLabel(scope)}: ${okCount} ok, ${failCount} failed.`;
+  const summary = `${action} finished for ${labelFor(scope)}: ${okCount} ok, ${failCount} failed.`;
   lines.push(summary);
   if (outNode) setOutput(outNode, lines.join("\n"));
   appendActivity(summary);
@@ -2617,22 +2881,17 @@ function serialDeliveryMessage(progress = {}) {
   return message || error;
 }
 
-function updateSerialDeliveryProgress(progress = {}) {
+function bulkJobVisible(progress = {}) {
+  if (!progress || typeof progress !== "object") return false;
+  if (progress.active) return true;
+  const message = String(progress.message || progress.last_message || progress.last_error || "").trim();
+  return Boolean(message);
+}
+
+function describeSerialBulk(progress = {}) {
   const message = serialDeliveryMessage(progress);
   const active = Boolean(progress && progress.active);
   const stage = String(progress && progress.stage ? progress.stage : active ? "active" : "idle");
-  const hasMessage = Boolean(message);
-  if (!els.serialDeliveryPanel) return;
-
-  if (!active && !hasMessage) {
-    els.serialDeliveryPanel.classList.add("hidden");
-    if (els.serialDeliveryBar) els.serialDeliveryBar.style.width = "0%";
-    if (els.serialDeliveryLabel) els.serialDeliveryLabel.textContent = "Idle";
-    if (els.serialDeliveryMessage) els.serialDeliveryMessage.textContent = "No active serial delivery.";
-    if (els.serialDeliveryMeta) els.serialDeliveryMeta.textContent = "";
-    return;
-  }
-
   const percent = Number.isFinite(Number(progress.percent))
     ? Math.max(0, Math.min(100, Number(progress.percent)))
     : Math.max(0, Math.min(100, Number(progress.fraction || 0) * 100));
@@ -2642,27 +2901,111 @@ function updateSerialDeliveryProgress(progress = {}) {
   const currentChunkSerials = Number(progress.current_chunk_serials || 0);
   const target = String(progress.target_label || progress.scope || "").trim();
   const delay = Number(progress.next_delay_seconds || progress.wait_remaining || 0);
-
   const metaParts = [];
   if (totalChunks > 0 && currentChunk > 0) metaParts.push(`package ${currentChunk}/${totalChunks}`);
   if (currentChunkSerials > 0) metaParts.push(`${currentChunkSerials} serial(s) in current package`);
   if (totalSerials > 0) metaParts.push(`${totalSerials} serial(s) total`);
   if (target) metaParts.push(target);
   if (delay > 0.05) metaParts.push(`next step in ${delay.toFixed(1)}s`);
+  return {
+    title: "Serial Delivery",
+    active,
+    percent,
+    label: progress.label || `${percent.toFixed(0)}%`,
+    message: message || (active ? "Serial delivery is running..." : "Serial delivery status updated."),
+    kind: progress.last_error ? "bad" : active ? "warning" : "ok",
+    meta: metaParts.length ? metaParts.join(" | ") : `stage: ${stage}`
+  };
+}
 
-  els.serialDeliveryPanel.classList.remove("hidden");
-  if (els.serialDeliveryBar) els.serialDeliveryBar.style.width = `${percent.toFixed(0)}%`;
-  if (els.serialDeliveryLabel) els.serialDeliveryLabel.textContent = progress.label || `${percent.toFixed(0)}%`;
-  if (els.serialDeliveryMessage) {
-    els.serialDeliveryMessage.textContent = message || (active ? "Serial delivery is running..." : "Serial delivery status updated.");
-    els.serialDeliveryMessage.className = `status-line ${progress.last_error ? "bad" : active ? "warning" : "ok"}`;
+function describeCountedBulk(progress = {}, title, idleVerb) {
+  const data = progress && typeof progress === "object" ? progress : {};
+  const active = Boolean(data.active);
+  const message = String(data.message || "").trim();
+  const total = Number(data.steps_total || data.total || 0);
+  const done = Number(data.steps_done != null ? data.steps_done : Math.max(0, total - Number(data.steps_remaining || 0)));
+  const percent = Number.isFinite(Number(data.percent))
+    ? Math.max(0, Math.min(100, Number(data.percent)))
+    : (total > 0 ? Math.max(0, Math.min(100, Math.round((done / total) * 100))) : 0);
+  const okCount = Number(data.ok_count || 0);
+  const failed = Number(data.failed_count || 0);
+  const metaParts = [];
+  if (total > 0) metaParts.push(`${done}/${total}`);
+  if (okCount || failed || title === "Challenges") {
+    metaParts.push(`ok ${okCount}`);
+    metaParts.push(`fail ${failed}`);
   }
-  if (els.serialDeliveryMeta) els.serialDeliveryMeta.textContent = metaParts.length ? metaParts.join(" | ") : `stage: ${stage}`;
+  if (Number(data.players || 0) > 0) metaParts.push(`${data.players} player(s)`);
+  return {
+    title,
+    active,
+    percent,
+    label: active ? `${percent.toFixed(0)}%` : "Done",
+    message: message || (active ? `${idleVerb} is running…` : `${idleVerb} status updated.`),
+    kind: failed && !active ? "warning" : active ? "warning" : "ok",
+    meta: metaParts.join(" | ")
+  };
+}
 
+function renderSharedBulkProgress() {
+  if (!state.bulkProgress) {
+    state.bulkProgress = { serial: {}, challenge: {}, itempool: {} };
+  }
+  const panel = els.msbtBulkPanel || els.serialDeliveryPanel;
+  if (!panel) return;
+  const jobs = [
+    { key: "serial", data: state.bulkProgress.serial, view: describeSerialBulk(state.bulkProgress.serial) },
+    { key: "challenge", data: state.bulkProgress.challenge, view: describeCountedBulk(state.bulkProgress.challenge, "Challenges", "Challenge bulk") },
+    { key: "itempool", data: state.bulkProgress.itempool, view: describeCountedBulk(state.bulkProgress.itempool, "Item Pools", "Item pool bulk") }
+  ];
+  const shown = jobs.find((job) => job.data && job.data.active) || jobs.find((job) => bulkJobVisible(job.data));
+  const titleNode = els.msbtBulkTitle;
+  const bar = els.msbtBulkBar || els.serialDeliveryBar;
+  const label = els.msbtBulkLabel || els.serialDeliveryLabel;
+  const message = els.msbtBulkMessage || els.serialDeliveryMessage;
+  const meta = els.msbtBulkMeta || els.serialDeliveryMeta;
+  if (!shown) {
+    panel.classList.add("hidden");
+    if (bar) bar.style.width = "0%";
+    if (label) label.textContent = "Idle";
+    if (titleNode) titleNode.textContent = "Bulk Progress";
+    if (message) {
+      message.textContent = "No bulk job active.";
+      message.className = "status-line";
+    }
+    if (meta) meta.textContent = "";
+    return;
+  }
+  const view = shown.view;
+  panel.classList.remove("hidden");
+  if (titleNode) titleNode.textContent = view.title;
+  if (bar) bar.style.width = `${Number(view.percent || 0).toFixed(0)}%`;
+  if (label) label.textContent = view.label || "Idle";
+  if (message) {
+    message.textContent = view.message;
+    message.className = `status-line ${view.kind || ""}`.trim();
+  }
+  if (meta) meta.textContent = view.meta || "";
+}
+
+function updateSerialDeliveryProgress(progress = {}) {
+  const message = serialDeliveryMessage(progress);
+  state.bulkProgress.serial = progress && typeof progress === "object" ? progress : {};
+  renderSharedBulkProgress();
   if (message && message !== state.serialDeliveryLastMessage) {
     state.serialDeliveryLastMessage = message;
     appendActivity(`SDK serial delivery: ${message}`);
   }
+}
+
+function updateChallengeBulkProgress(progress = {}) {
+  state.bulkProgress.challenge = progress && typeof progress === "object" ? progress : {};
+  renderSharedBulkProgress();
+}
+
+function updateItempoolBulkProgress(progress = {}) {
+  state.bulkProgress.itempool = progress && typeof progress === "object" ? progress : {};
+  renderSharedBulkProgress();
 }
 
 function buildMobilePairingPayload(info, preferredHost = "") {
@@ -2945,10 +3288,23 @@ function applyBridgeStatusResult(result, options = {}) {
     fingerprints.serialDelivery = serialFingerprint;
     updateSerialDeliveryProgress(data.serial_delivery || {});
   }
+  if (data.challenge_bulk) {
+    updateChallengeBulkProgress(data.challenge_bulk);
+    if (data.challenge_bulk.active) startChallengeStatusPoll();
+  }
+  if (data.itempool_bulk) {
+    updateItempoolBulkProgress(data.itempool_bulk);
+    if (data.itempool_bulk.active) startItempoolStatusWatch();
+    else stopItempoolStatusWatch();
+  }
   updateSerialState();
   // Always pull rarity from the bridge so F7 live-apply moves Boosting sliders.
   syncBoostingRaritySlidersFromBridge(data);
   syncLiveModsFromStatus(data);
+  applyDebugCamFromStatus(data);
+  applySpawnAnchorFromStatus(data);
+  applyDeletedBackpackFromStatus(data);
+  syncInfiniteJumpFromStatus(data);
   updateAsdAutoclearTimer(data);
   const bookmarksFingerprint = fingerprint(data.location_bookmarks || []);
   if (fingerprints.locationBookmarks !== bookmarksFingerprint) {
@@ -3008,6 +3364,108 @@ function syncLiveModsFromStatus(data) {
   if (holds) bits.push(`Holds ${holds.enabled ? "ON" : "OFF"}`);
   if (fog) bits.push(`Fog ${fog.enabled ? "ON" : "OFF"} mats=${fog.materials ?? "?"}`);
   setLine(els.liveModsStatus, bits.length ? bits.join(" | ") : "Combat XP / Instant Drops / Instant Holds idle.", "ok");
+}
+
+function applyDebugCamFromStatus(data) {
+  const cam = data && data.debug_cam && typeof data.debug_cam === "object" ? data.debug_cam : null;
+  if (!cam) return;
+  if (els.debugCamSpeed && document.activeElement !== els.debugCamSpeed && Number.isFinite(Number(cam.speed))) {
+    els.debugCamSpeed.value = String(cam.speed);
+  }
+  if (els.debugCamDistance && document.activeElement !== els.debugCamDistance && Number.isFinite(Number(cam.distance))) {
+    els.debugCamDistance.value = String(cam.distance);
+  }
+}
+
+function spawnAnchorLabel(anchor) {
+  const key = String(anchor || "local");
+  if (key === "selected") return "named player";
+  if (key === "party") return "other party member";
+  if (key === "npc_nearest") return "nearest NPC";
+  return "me";
+}
+
+function currentSpawnAnchor() {
+  return getValue(els.boostSpawnAnchor) || getValue(els.devSpawnAnchor) || "local";
+}
+
+function applySpawnAnchorToUi(anchor) {
+  const next = ["local", "selected", "party", "npc_nearest"].includes(String(anchor || ""))
+    ? String(anchor)
+    : "local";
+  if (els.boostSpawnAnchor && document.activeElement !== els.boostSpawnAnchor) {
+    els.boostSpawnAnchor.value = next;
+  }
+  if (els.devSpawnAnchor && document.activeElement !== els.devSpawnAnchor) {
+    els.devSpawnAnchor.value = next;
+  }
+  return next;
+}
+
+function applySpawnAnchorFromStatus(data) {
+  const anchor = data && data.spawn_anchor;
+  if (!anchor) return;
+  applySpawnAnchorToUi(anchor);
+  if (els.targetSummary) updateBoostTargetSummary();
+}
+
+async function setSpawnAnchor(anchor) {
+  const next = applySpawnAnchorToUi(anchor);
+  const result = await runAction(
+    "dev_spawner_set_anchor",
+    { spawn_anchor: next, anchor: next },
+    els.boostOutput,
+    15000
+  );
+  const data = unwrapActionData(result);
+  applySpawnAnchorToUi((data && data.spawn_anchor) || next);
+  updateBoostTargetSummary();
+  return result;
+}
+
+function applyDeletedBackpackFromStatus(data) {
+  const memory = data && data.deleted_backpack && typeof data.deleted_backpack === "object"
+    ? data.deleted_backpack
+    : null;
+  if (!els.deletedBackpackStatus || !memory) return;
+  const players = Number(memory.player_count || (memory.players || []).length || 0);
+  const items = Number(memory.item_count || 0);
+  if (!players) {
+    setLine(els.deletedBackpackStatus, "Deleted backpack memory empty.", "ok");
+    return;
+  }
+  const names = (memory.players || [])
+    .map((row) => `${row.name || `P${Number(row.index) + 1}`} (${row.count || 0})`)
+    .slice(0, 4)
+    .join(", ");
+  setLine(
+    els.deletedBackpackStatus,
+    `Deleted backpack memory: ${items} item(s) from ${players} player(s)${names ? ` — ${names}` : ""}.`,
+    "warning"
+  );
+}
+
+function debugCamSpeedPayload() {
+  return { debug_cam_speed: getFloat(els.debugCamSpeed, 0.05, 50, 1) };
+}
+
+function debugCamDistancePayload() {
+  return { debug_cam_distance: getFloat(els.debugCamDistance, 0, 20000, 0) };
+}
+
+async function runDebugCamAction(action, payload = {}) {
+  const result = await runAction(action, payload, els.boostOutput, 20000);
+  const data = unwrapActionData(result);
+  applyDebugCamFromStatus(data);
+  if (action === "debug_cam_copy_location" && actionSucceeded(result)) {
+    const text = data && data.text ? String(data.text) : "";
+    if (text) {
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch (_err) {}
+    }
+  }
+  return result;
 }
 
 async function runLiveModAction(action, payload = {}) {
@@ -3294,6 +3752,7 @@ async function runVehicleAction(action, payload = {}) {
 
 let challengeListDebounceTimer = null;
 let challengeStatusWatch = false;
+let itempoolStatusWatch = false;
 
 function challengeListPayload() {
   return {
@@ -3306,7 +3765,7 @@ function updateChallengeListFromResult(result) {
   if (!els.challengeListSelect) return;
   const data = result && result.data ? result.data : result;
   const entries = data && Array.isArray(data.entries) ? data.entries : [];
-  const selected = getValue(els.challengeListSelect);
+  const selected = selectedChallengeIds();
   els.challengeListSelect.innerHTML = "";
   entries.forEach((row) => {
     const id = String(row.id || "").trim();
@@ -3315,13 +3774,21 @@ function updateChallengeListFromResult(result) {
     opt.value = id;
     const amount = Number(row.amount || 1);
     opt.textContent = amount > 1 ? `${id}  (x${amount})` : id;
+    opt.selected = selected.includes(id);
     els.challengeListSelect.appendChild(opt);
   });
-  if (selected) els.challengeListSelect.value = selected;
   const count = Number(data && data.count != null ? data.count : entries.length);
   if (els.challengeStatus && !String(els.challengeStatus.textContent || "").includes("Confirm")) {
     setLine(els.challengeStatus, `${count} challenge(s) listed.`, count ? "ok" : "warning");
   }
+}
+
+function selectedChallengeIds() {
+  const el = els.challengeListSelect;
+  if (!el) return [];
+  return Array.from(el.selectedOptions || [])
+    .map((opt) => String(opt.value || "").trim())
+    .filter(Boolean);
 }
 
 async function refreshChallengeCatalogList(options = {}) {
@@ -3359,6 +3826,15 @@ function startChallengeStatusPoll() {
   scheduleNextBridgeStatusPoll(0);
 }
 
+function stopItempoolStatusWatch() {
+  itempoolStatusWatch = false;
+}
+
+function startItempoolStatusWatch() {
+  itempoolStatusWatch = true;
+  scheduleNextBridgeStatusPoll(0);
+}
+
 async function refreshChallengeRunStatus(options = {}) {
   const quiet = Boolean(options.quiet);
   if (!quiet) setLine(els.challengeStatus, "Refreshing challenge status…", "warning");
@@ -3366,6 +3842,7 @@ async function refreshChallengeRunStatus(options = {}) {
   const data = result && result.data ? result.data : result;
   const msg = resultMessage(result);
   const active = Boolean(data && data.active);
+  updateChallengeBulkProgress(data || {});
   setLine(els.challengeStatus, msg, active ? "warning" : (actionSucceeded(result) ? "ok" : "warning"));
   if (active) startChallengeStatusPoll();
   else stopChallengeStatusPoll();
@@ -3373,18 +3850,37 @@ async function refreshChallengeRunStatus(options = {}) {
 }
 
 async function runChallengeCompleteAction(action, payload = {}) {
+  const confirmMessages = {
+    complete_challenges_all:
+      "Complete every non-UVHM challenge for live players?\n\nThis writes save progress and cannot be undone. Backup first. Host / solo only.",
+    complete_challenges_category:
+      "Permanently complete this challenge category for live players? Backup your save first.",
+    complete_challenges_one:
+      "Permanently complete the selected challenge? Backup your save first.",
+    complete_challenges_many:
+      "Permanently complete the selected challenges? Backup your save first."
+  };
+  let confirmKey = "";
+  if (action === "complete_challenges_all") confirmKey = "complete_challenges_all";
+  else if (action === "complete_challenges" && payload.category && !payload.challenge_id && !(payload.challenge_ids || []).length) confirmKey = "complete_challenges_category";
+  else if (action === "complete_challenges" && Array.isArray(payload.challenge_ids) && payload.challenge_ids.length > 1) confirmKey = "complete_challenges_many";
+  else if (action === "complete_challenges") confirmKey = "complete_challenges_one";
+  if (confirmKey && !window.confirm(confirmMessages[confirmKey])) {
+    setLine(els.challengeStatus, "Cancelled.", "warning");
+    return { ok: false, message: "Cancelled." };
+  }
   setLine(els.challengeStatus, `Sending ${humanActionLabel(action)}…`, "warning");
   const result = await runAction(action, payload, els.challengeOutput, 30000);
   const data = result && result.data ? result.data : result;
-  const needsConfirm = Boolean(data && data.needs_confirm);
   const msg = resultMessage(result);
+  updateChallengeBulkProgress(data || {});
   setLine(
     els.challengeStatus,
-    needsConfirm ? `Confirm: ${msg}` : msg,
-    needsConfirm || !actionSucceeded(result) ? "warning" : "ok"
+    msg,
+    !actionSucceeded(result) ? "warning" : "ok"
   );
   appendActivity(`Challenges ${action}: ${msg}`);
-  if (actionSucceeded(result) && !needsConfirm) startChallengeStatusPoll();
+  if (actionSucceeded(result)) startChallengeStatusPoll();
   return result;
 }
 
@@ -3453,7 +3949,7 @@ function startBridgeStatusPolling() {
 }
 
 function bridgeProgressIsActive() {
-  return Boolean(state.serialDeliveryWatch || challengeStatusWatch || state.hoardRunning);
+  return Boolean(state.serialDeliveryWatch || challengeStatusWatch || itempoolStatusWatch || state.hoardRunning);
 }
 
 function scheduleNextBridgeStatusPoll(delayMs = null) {
@@ -3537,7 +4033,6 @@ async function setTarget(value, options = {}) {
     return null;
   }
 
-  setLine(els.targetSummary, `Setting target ${target}...`, "warning");
   setLine(els.bookmarkTargetSummary, `Setting target ${target}...`, "warning");
   setLine(els.bl4TargetSummary, `Setting target ${target}...`, "warning");
   setLine(els.movementStatus, `Setting target ${target}...`, "warning");
@@ -3553,7 +4048,7 @@ async function setTarget(value, options = {}) {
     await bridgeStatus({ quiet: true });
   } else {
     const message = resultMessage(result) || "Target update failed.";
-    setLine(els.targetSummary, message, "bad");
+    updateBoostTargetSummary();
     setLine(els.bookmarkTargetSummary, message, "bad");
     setLine(els.bl4TargetSummary, message, "bad");
     setLine(els.movementStatus, message, "bad");
@@ -3566,26 +4061,26 @@ async function setTarget(value, options = {}) {
 
 function firstPlayerTarget() {
   if (!state.players.length) {
-    setLine(els.targetSummary, "Refresh status first; no players are loaded.", "warning");
     if (els.devTargetSummary) {
       setLine(els.devTargetSummary, "Refresh status first; no players are loaded.", "warning");
     }
     return;
   }
   setBoostTargetScope("selected");
+  setPublicBoostScope("selected");
   const first = playerValue(state.players[0]);
-  els.targetSelect.value = first;
+  if (els.targetSelect) els.targetSelect.value = first;
   if (els.devTargetSelect) els.devTargetSelect.value = first;
   setTarget(first);
 }
 
 async function ensureSelectedTarget(outNode) {
   if (!state.selectedTarget) {
-    setOutput(outNode, "Set a target player before sending to selected.");
-    setLine(els.targetSummary, "Select a target player first.", "warning");
+    setOutput(outNode, "Set a named player on Boosting → Connection & Scope before sending to selected.");
+    if (els.devTargetSummary) setLine(els.devTargetSummary, "Select a target player first.", "warning");
     return false;
   }
-  const result = await setTarget(state.selectedTarget);
+  const result = await setTarget(state.selectedTarget, { keepBoostScope: true });
   return Boolean(result && result.data && result.data.ok);
 }
 
@@ -3773,13 +4268,16 @@ async function sendSerialPayload(mode, serialText, overrideLevel, level, outNode
   if (!sdkReady.ok) {
     return { ok: false, message: sdkReady.message };
   }
-  if (mode === "selected") {
-    const ok = await ensureSelectedTarget(outNode);
+  if (mode === "selected" || mode === "local") {
+    const ok = mode === "local"
+      ? await ensureLocalHostTarget(outNode)
+      : await ensureSelectedTarget(outNode);
     if (!ok) return;
   }
 
   const actionByMode = {
     selected: "give_serial_selected",
+    local: "give_serial_selected",
     all: "give_serial_all",
     nonhost: "give_serial_nonhost"
   };
@@ -6256,7 +6754,8 @@ async function spawnItemPool() {
     const result = await bridgeAction("spawn_itempool", {
       itempool_name: name,
       itempool_level: level,
-      itempool_count: count
+      itempool_count: count,
+      ...itemPoolKnobPayload()
     }, 30000);
     results.push({ itempool: name, result });
     appendActivity(`spawn_itempool ${name}: ${resultMessage(result)}`);
@@ -6266,6 +6765,40 @@ async function spawnItemPool() {
     message: `Finished ${results.length} item pool spawn request(s).`,
     results
   });
+}
+
+function filteredItemPoolNames() {
+  return (state.filteredItemPools || [])
+    .map((item) => String((item && item.itempool) || "").trim())
+    .filter(Boolean)
+    .slice(0, 200);
+}
+
+async function spawnAllFilteredItemPools() {
+  const names = filteredItemPoolNames();
+  if (!names.length) {
+    setOutput(els.itempoolOutput, "No filtered item pools to spawn.");
+    return;
+  }
+  const level = getInt(els.itempoolLevel, 1, 60, 60);
+  const count = getInt(els.itempoolCount, 1, 100, 1);
+  setOutput(els.itempoolOutput, `Queuing ${names.length} filtered item pool(s)...`);
+  appendActivity(`Sending spawn_itempool_all for ${names.length} pool(s)...`);
+  const result = await bridgeAction("spawn_itempool_all", {
+    itempool_names: names,
+    itempool_level: level,
+    itempool_count: count,
+    ...itemPoolKnobPayload()
+  }, 30000);
+  setOutput(els.itempoolOutput, result);
+  updateItempoolBulkProgress((result && result.data) || result || {});
+  if (actionSucceeded(result)) startItempoolStatusWatch();
+}
+
+async function cancelItemPoolBulk() {
+  const result = await bridgeAction("spawn_itempool_cancel", {}, 15000);
+  setOutput(els.itempoolOutput, result);
+  updateItempoolBulkProgress((result && result.data) || result || {});
 }
 
 function mapLabel(map) {
@@ -6363,6 +6896,13 @@ async function travelToSelectedStation() {
     setOutput(els.travelOutput, "Select a travel station first.");
     return;
   }
+  await runAction("travel_to_station", { travel_station: stationName }, els.travelOutput, 30000);
+}
+
+const TRAVEL_PRESET_TUBA_STATION = "Tuba_P.BossFightExit";
+const TRAVEL_PRESET_DEV_STATION = "Bespoke_VisionQuest.LT_DGN_VisionQuest_Start";
+
+async function travelToPresetStation(stationName) {
   await runAction("travel_to_station", { travel_station: stationName }, els.travelOutput, 30000);
 }
 
@@ -10052,12 +10592,37 @@ function wireEvents() {
   document.querySelectorAll("[data-msbt-bridge-refresh]").forEach((button) => {
     button.addEventListener("click", () => void bridgeStatus());
   });
-  document.getElementById("setTargetBtn").addEventListener("click", () => setTarget(els.targetSelect.value));
-  document.getElementById("firstTargetBtn").addEventListener("click", firstPlayerTarget);
-  document.getElementById("targetAllPlayersBtn").addEventListener("click", () => setBoostTargetScope("all"));
-  document.getElementById("targetNonHostBtn").addEventListener("click", () => setBoostTargetScope("nonhost"));
-  document.getElementById("kickTargetBtn").addEventListener("click", () => runAction("kick_player", {}, els.boostOutput, 15000));
-  els.targetSelect.addEventListener("change", () => setTarget(els.targetSelect.value));
+  const setTargetBtn = document.getElementById("setTargetBtn");
+  if (setTargetBtn && els.targetSelect) {
+    setTargetBtn.addEventListener("click", () => setTarget(els.targetSelect.value));
+  }
+  const firstTargetBtn = document.getElementById("firstTargetBtn");
+  if (firstTargetBtn) firstTargetBtn.addEventListener("click", firstPlayerTarget);
+  document.querySelectorAll("[data-boost-scope]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const scope = button.dataset.boostScope || "local";
+      setPublicBoostScope(scope);
+      if (scope === "selected" && els.targetSelect && els.targetSelect.value) {
+        setTarget(els.targetSelect.value);
+      }
+    });
+  });
+  updateBoostTargetSummary();
+  const kickTargetBtn = document.getElementById("kickTargetBtn");
+  if (kickTargetBtn) {
+    kickTargetBtn.addEventListener("click", () => runAction("kick_player", {}, els.boostOutput, 15000));
+  }
+  const devKickTargetBtn = document.getElementById("devKickTargetBtn");
+  if (devKickTargetBtn) {
+    devKickTargetBtn.addEventListener("click", () => runAction("kick_player", {}, els.boostOutput, 15000));
+  }
+  if (els.targetSelect) {
+    els.targetSelect.addEventListener("change", () => {
+      const value = els.targetSelect.value;
+      if (value) setPublicBoostScope("selected");
+      setTarget(value);
+    });
+  }
   if (els.devTargetSelect) {
     els.devTargetSelect.addEventListener("change", () => setTarget(els.devTargetSelect.value));
   }
@@ -10070,6 +10635,28 @@ function wireEvents() {
   document.querySelectorAll("[data-action]").forEach((button) => {
     button.addEventListener("click", () => runBoostActionButton(button));
   });
+  const debugCamCopyLocBtn = document.getElementById("debugCamCopyLocBtn");
+  if (debugCamCopyLocBtn) {
+    debugCamCopyLocBtn.addEventListener("click", () => void runDebugCamAction("debug_cam_copy_location"));
+  }
+  const debugCamSpeedApplyBtn = document.getElementById("debugCamSpeedApplyBtn");
+  if (debugCamSpeedApplyBtn) {
+    debugCamSpeedApplyBtn.addEventListener("click", () => void runDebugCamAction("debug_cam_set_speed", debugCamSpeedPayload()));
+  }
+  const debugCamDistanceApplyBtn = document.getElementById("debugCamDistanceApplyBtn");
+  if (debugCamDistanceApplyBtn) {
+    debugCamDistanceApplyBtn.addEventListener("click", () => void runDebugCamAction("debug_cam_set_distance", debugCamDistancePayload()));
+  }
+  const setDebugCamSpeedPreset = (value) => {
+    if (els.debugCamSpeed) els.debugCamSpeed.value = String(value);
+    void runDebugCamAction("debug_cam_set_speed", { debug_cam_speed: value });
+  };
+  const debugCamSpeed1xBtn = document.getElementById("debugCamSpeed1xBtn");
+  if (debugCamSpeed1xBtn) debugCamSpeed1xBtn.addEventListener("click", () => setDebugCamSpeedPreset(1));
+  const debugCamSpeed5xBtn = document.getElementById("debugCamSpeed5xBtn");
+  if (debugCamSpeed5xBtn) debugCamSpeed5xBtn.addEventListener("click", () => setDebugCamSpeedPreset(5));
+  const debugCamSpeed10xBtn = document.getElementById("debugCamSpeed10xBtn");
+  if (debugCamSpeed10xBtn) debugCamSpeed10xBtn.addEventListener("click", () => setDebugCamSpeedPreset(10));
   const shinyDeliverBtn = document.getElementById("shinyDeliverBtn");
   if (shinyDeliverBtn) {
     shinyDeliverBtn.addEventListener("click", () => void deliverShiniesToBoostScope());
@@ -10422,6 +11009,7 @@ function wireEvents() {
   [
     ["streamlabsBtn", "https://streamlabs.com/funkyoushift/tip"],
     ["mattmabKofiBtn", "https://ko-fi.com/mattmab"],
+    ["funkPoweredMark", "https://www.funkyoushift.com"],
     ["funkyoushiftSiteBtn", "https://www.funkyoushift.com"],
     ["gzoDiscordBtn", "https://discord.gg/4hGKAHdvp6"],
     ["gzoToolsBtn", "https://save-editor.be/GZO/"],
@@ -10452,6 +11040,17 @@ function wireEvents() {
     updateItemPoolSummary();
   });
   document.getElementById("spawnItempoolBtn").addEventListener("click", spawnItemPool);
+  const spawnItempoolAllBtn = document.getElementById("spawnItempoolAllBtn");
+  if (spawnItempoolAllBtn) spawnItempoolAllBtn.addEventListener("click", () => void spawnAllFilteredItemPools());
+  const spawnItempoolCancelBtn = document.getElementById("spawnItempoolCancelBtn");
+  if (spawnItempoolCancelBtn) spawnItempoolCancelBtn.addEventListener("click", () => void cancelItemPoolBulk());
+  const uvhBoostUpToBtn = document.getElementById("uvhBoostUpToBtn");
+  if (uvhBoostUpToBtn) {
+    uvhBoostUpToBtn.addEventListener("click", () => {
+      const rank = getInt("uvhBoostUpToRank", 1, 7, 7);
+      void runAction(`uvh_boost_tier_${rank}`, {}, els.boostOutput, 30000);
+    });
+  }
 
   if (els.devActorSearch) {
     els.devActorSearch.addEventListener("input", () => {
@@ -10531,6 +11130,18 @@ function wireEvents() {
   });
   els.travelMapBtn.addEventListener("click", travelToSelectedMap);
   els.travelStationBtn.addEventListener("click", travelToSelectedStation);
+  const travelPresetTubaBtn = document.getElementById("travelPresetTubaBtn");
+  if (travelPresetTubaBtn) {
+    travelPresetTubaBtn.addEventListener("click", () => {
+      void travelToPresetStation(TRAVEL_PRESET_TUBA_STATION);
+    });
+  }
+  const travelPresetDevMapBtn = document.getElementById("travelPresetDevMapBtn");
+  if (travelPresetDevMapBtn) {
+    travelPresetDevMapBtn.addEventListener("click", () => {
+      void travelToPresetStation(TRAVEL_PRESET_DEV_STATION);
+    });
+  }
   if (els.travelFavoriteAddMapBtn) {
     els.travelFavoriteAddMapBtn.addEventListener("click", () => addTravelFavorite("map"));
   }
@@ -10571,7 +11182,22 @@ function wireEvents() {
   }
   if (els.devSpawnAnchor) {
     els.devSpawnAnchor.addEventListener("change", () => {
-      void runDevSpawnerAction("dev_spawner_set_anchor");
+      void setSpawnAnchor(getValue(els.devSpawnAnchor) || "local");
+    });
+  }
+  if (els.boostSpawnAnchor) {
+    els.boostSpawnAnchor.addEventListener("change", () => {
+      void setSpawnAnchor(getValue(els.boostSpawnAnchor) || "local");
+    });
+  }
+  const devShowIoCategoryBtn = document.getElementById("devShowIoCategoryBtn");
+  if (devShowIoCategoryBtn) {
+    devShowIoCategoryBtn.addEventListener("click", () => {
+      state.devActiveCategory = "Interactive Objects";
+      state.devActorPage = 0;
+      if (els.devActorSearch) els.devActorSearch.value = "";
+      renderDevCategories();
+      renderDevActors();
     });
   }
   if (els.combatApplyBtn) {
@@ -10606,12 +11232,15 @@ function wireEvents() {
   }
   if (els.challengeCompleteSelectedBtn) {
     els.challengeCompleteSelectedBtn.addEventListener("click", () => {
-      const challengeId = getValue(els.challengeListSelect);
-      if (!challengeId) {
+      const challengeIds = selectedChallengeIds();
+      if (!challengeIds.length) {
         setLine(els.challengeStatus, "Select a challenge first.", "warning");
         return;
       }
-      void runChallengeCompleteAction("complete_challenges", { challenge_id: challengeId });
+      void runChallengeCompleteAction("complete_challenges", {
+        challenge_id: challengeIds[0],
+        challenge_ids: challengeIds
+      });
     });
   }
   if (els.challengeCompleteCategoryBtn) {
@@ -10630,6 +11259,8 @@ function wireEvents() {
     els.challengeCancelBtn.addEventListener("click", async () => {
       stopChallengeStatusPoll();
       const result = await runAction("complete_challenges_cancel", {}, els.challengeOutput, 15000);
+      const data = result && result.data ? result.data : result;
+      updateChallengeBulkProgress(data || {});
       setLine(els.challengeStatus, resultMessage(result), actionSucceeded(result) ? "ok" : "warning");
     });
   }
@@ -10742,13 +11373,13 @@ const TUTORIAL_TOURS = {
     },
     {
       title: "Bridge & status",
-      body: "Live actions need the SDK bridge. Click Status in the header, or Refresh Status in Target Player — this line shows whether the bridge is up and which players are available. Offline tools (serial convert, catalogs) still work without it.",
+      body: "Live actions need the SDK bridge. Click Status in the header, or Refresh Status in Connection & Scope — this line shows whether the bridge is up and which players are available. Offline tools (serial convert, catalogs) still work without it.",
       tab: "boosting",
       target: "bridgeSummary"
     },
     {
       title: "Boosting",
-      body: "This is the main live lobby tab. Pick one player, all players, or everyone except the host, then use Essentials, Combat & Cheats, rarity weights, backpack/bank size, and serial rewards. Drop All Backpack is always host-only. Most buttons need the game connected.",
+      body: "This is the main live lobby tab. Use Local / All / Other players, or pick a named party member, for public boosts, then Essentials, Ground Loot, Chests & Vendors, UVH, Combat & Cheats, Challenges, rarity weights, backpack/bank size, and serial rewards. Drop All Backpack and Reset Skill Tree are host-only. Kick lives next to the named roster. Most buttons need the game connected.",
       tab: "boosting",
       targetSel: "#tab-boosting [data-msbt-panel='boost-target']",
       revealPanels: ["boost-target", "boost-essentials"]
@@ -10767,7 +11398,7 @@ const TUTORIAL_TOURS = {
     },
     {
       title: "Map Travel",
-      body: "Jump to a map or travel station while the game is running. Select a map, then a station when you can — station travel is usually safer. Save places you reuse under Travel Favorites.",
+      body: "Jump to a map or travel station while the game is running. Tuba Boss Arena and Dev Testing Map are one-click presets. Clear Fog unlocks the map; Hide Fog is a session overlay on this client.",
       tab: "map-travel",
       targetSel: "#tab-map-travel [data-msbt-panel='travel-main']"
     },
@@ -10951,18 +11582,46 @@ async function applyRemoteTutorialCopy() {
 const TAB_TUTORIALS = {
   boosting: [
     {
-      title: "Target and game connection",
-      body: "Use Status in the header or Refresh Status in this panel until the game connection is green. Choose a party player, all players, or everyone except the host for boosts, XP, currency, backpack/bank changes, and Shinies Deliver. Drop All Backpack remains host-only. Kick uses the selected player.",
+      title: "Connection & scope",
+      body: "Use Status in the header or Refresh Status in this panel until the game connection is green. Local / All / Other players / Named Player apply to public boosts, XP, currency, backpack/bank changes, and Shinies Deliver. Pick a named party member for Kick and one-player targeting. Drop All Backpack and Reset Skill Tree remain host-only.",
       tab: "boosting",
       targetSel: "#tab-boosting [data-msbt-panel='boost-target']",
       revealPanels: ["boost-target"]
     },
     {
-      title: "Essentials & UVH",
-      body: "Essentials is the frequent-action home: Max All, host-only Drop All Backpack, Shinies Drop/targeted Deliver, UVH 1–7, Combat XP, Instant Drops / Instant Holds, chest controls, Pull Loot, and Super Dash. Instant Drops and Holds support direct oak2 hotkeys plus gold + QM pins for F7 slots and slot hotkeys.",
+      title: "Essentials",
+      body: "Essentials is the frequent-action home: Max All, host-only Drop All Backpack, Shinies Drop/targeted Deliver, All Customs, Super Dash, and Instant Drops / Instant Holds. Instant Drops and Holds support direct oak2 hotkeys plus gold + QM pins for F7 slots and slot hotkeys.",
       tab: "boosting",
       targetSel: "#tab-boosting [data-msbt-panel='boost-essentials']",
       revealPanels: ["boost-essentials"]
+    },
+    {
+      title: "Ground Loot",
+      body: "Ground Loot is its own Boosting panel next to Essentials: Pull Loot Here, Hide Ground Loot, and Delete Ground Items.",
+      tab: "boosting",
+      targetSel: "#tab-boosting [data-msbt-panel='boost-ground-loot']",
+      revealPanels: ["boost-ground-loot"]
+    },
+    {
+      title: "Chests & Vendors",
+      body: "Open/Close Golden Chest, Spawn Golden Chest, Spawn Black Market, Clear BM Cooldown, and Black Market Status live here. Chest and black-market spawns are host-only.",
+      tab: "boosting",
+      targetSel: "#tab-boosting [data-msbt-panel='boost-farm']",
+      revealPanels: ["boost-farm"]
+    },
+    {
+      title: "UVH 1–7",
+      body: "UVH 1–7 is its own Boosting panel: per-tier buttons, Run All, Status, Resume, Cancel, and Run 1–N. Challenges stay on their own panel.",
+      tab: "boosting",
+      targetSel: "#tab-boosting [data-msbt-panel='boost-uvh']",
+      revealPanels: ["boost-uvh"]
+    },
+    {
+      title: "Challenges",
+      body: "Challenges is its own Boosting panel — category, search, Complete Selected / Category / All. Complete All asks for confirm. Progress uses the same bulk strip as serial delivery and item-pool spawn-all. UVH 1–7 is its own Boosting panel.",
+      tab: "boosting",
+      targetSel: "#tab-boosting [data-msbt-panel='boost-challenges']",
+      revealPanels: ["boost-challenges"]
     },
     {
       title: "Rarity drop weights",
@@ -10973,10 +11632,17 @@ const TAB_TUTORIALS = {
     },
     {
       title: "Combat, experience, and currency",
-      body: "Combat & Cheats groups enemy, ammo, Demigod, loot, XP, currency, and remaining single-player max actions. Experience and currency knobs share this panel.",
+      body: "Combat & Cheats groups host-only Reset Skill Tree, enemy, ammo, Demigod, loot, XP, currency, and remaining single-player max actions. Experience and currency knobs share this panel.",
       tab: "boosting",
       targetSel: "#tab-boosting [data-msbt-panel='boost-cheats']",
       revealPanels: ["boost-cheats"]
+    },
+    {
+      title: "Combat XP",
+      body: "Combat XP is its own Boosting panel: set the multiplier, then toggle it on or off. Instant Drops / Instant Holds stay on Essentials.",
+      tab: "boosting",
+      targetSel: "#tab-boosting [data-msbt-panel='boost-combat-xp']",
+      revealPanels: ["boost-combat-xp"]
     },
     {
       title: "Backpack / Bank Size",
@@ -10987,17 +11653,17 @@ const TAB_TUTORIALS = {
     },
     {
       title: "Serial Rewards",
-      body: "Paste @U serials, choose an optional level override and copy count, then deliver to the selected player, all players, or everyone except the host. Delivery progress appears at the top.",
+      body: "Paste @U serials, choose an optional level override and copy count, then deliver to local, all players, or everyone except the host. Open Rewards Everyone opens pending Reward Center packages. Delivery progress appears at the top.",
       tab: "boosting",
       targetSel: "#tab-boosting [data-msbt-panel='boost-serial']",
       revealPanels: ["boost-serial"]
     },
     {
       title: "Debug camera",
-      body: "Debug Camera sits in Essentials under Instant Actions. Gold + QM pins supported actions into F7.",
+      body: "Debug Camera sits in its own Boosting panel: Toggle, Disable if stuck, Teleport Pawn to Cam, Pull Cam to Target, Copy Location, plus speed presets and distance. Gold + QM pins supported actions into F7.",
       tab: "boosting",
-      targetSel: "#tab-boosting .boost-live-debug",
-      revealPanels: ["boost-essentials"]
+      targetSel: "#tab-boosting [data-msbt-panel='boost-debug']",
+      revealPanels: ["boost-debug"]
     },
     {
       title: "Layout tip",
@@ -11127,7 +11793,7 @@ const TAB_TUTORIALS = {
     },
     {
       title: "Spawn near you",
-      body: "Spawn Selected Item Pool(s) drops loot near the local player through the bridge. Watch the result pre below the buttons.",
+      body: "Spawn Selected Item Pool(s) drops loot near the local player through the bridge. Spawn-all uses the same bulk progress strip as serial delivery (top of the app).",
       tab: "item-pool",
       target: "spawnItempoolBtn"
     },
@@ -11256,13 +11922,13 @@ const TAB_TUTORIALS = {
     },
     {
       title: "Infinite Jump",
-      body: "All ON/OFF for the party, or Selected ON/OFF/Toggle for one player. Needs bridge + player list. Useful with travel; leave OFF if you want vanilla jump.",
+      body: "One Toggle Infinite Jump for the current Apply Scope (Local / All / Others). The button shows On/Off after you press it. Needs bridge.",
       tab: "player-movement",
       targetSel: "#tab-player-movement [data-msbt-panel='move-infjump']"
     },
     {
       title: "Wall, glide, world",
-      body: "Wall/Step, Glide/Dash/Vault (optional zero vault costs), Time Dilation, Noclip, No Target, Pull Loot, Super Dash, Delete Ground Items. + QM pins supported helpers to the in-game Quick Menu (F7).",
+      body: "Wall/Step, Glide/Dash/Vault (optional zero vault costs), Time Dilation, Noclip, No Target, Super Dash. Ground loot Circle / Reapply / Hide / Delete live on Boosting → Ground Loot. + QM pins supported helpers to the in-game Quick Menu (F7).",
       tab: "player-movement",
       targetSel: "#tab-player-movement [data-msbt-panel='move-world']"
     },
@@ -12348,6 +13014,96 @@ async function maybeStartWalkthrough() {
   await startMainTutorial({ force: false });
 }
 
+const BOOT_WELCOME_DISMISS_KEY = "msbt.bootWelcome.dismissed.v2";
+const BOOT_WELCOME_DISCORD_URL = "https://discord.gg/4hGKAHdvp6";
+const BOOT_WELCOME_TIP_URL = "https://streamlabs.com/funkyoushift/tip";
+
+function isBootWelcomeDismissed() {
+  try {
+    return localStorage.getItem(BOOT_WELCOME_DISMISS_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function setBootWelcomeDismissed(dismissed) {
+  try {
+    if (dismissed) localStorage.setItem(BOOT_WELCOME_DISMISS_KEY, "1");
+    else localStorage.removeItem(BOOT_WELCOME_DISMISS_KEY);
+  } catch {
+    /* ignore */
+  }
+}
+
+function openBootWelcomeLink(url) {
+  if (window.msbt && typeof window.msbt.openExternal === "function") {
+    window.msbt.openExternal(url);
+    return;
+  }
+  window.open(url, "_blank", "noopener");
+}
+
+function runBootSplash() {
+  return new Promise((resolve) => {
+    const splash = document.getElementById("msbtBootSplash");
+    let finished = false;
+    const finish = () => {
+      if (finished) {
+        resolve();
+        return;
+      }
+      finished = true;
+      if (!splash) {
+        resolve();
+        return;
+      }
+      splash.classList.add("is-done");
+      window.setTimeout(() => {
+        splash.remove();
+        resolve();
+      }, 280);
+    };
+    if (!splash) {
+      resolve();
+      return;
+    }
+    const skipRequested =
+      (typeof window.location.search === "string" && /(?:\?|&)nosplash=1\b/.test(window.location.search)) ||
+      window.location.hash === "#nosplash";
+    if (skipRequested || isBootWelcomeDismissed()) {
+      finish();
+      return;
+    }
+    const dontShow = document.getElementById("bootWelcomeDontShow");
+    const closeAndMaybeRemember = () => {
+      if (dontShow && dontShow.checked) setBootWelcomeDismissed(true);
+      finish();
+    };
+    const discordBtn = document.getElementById("bootWelcomeDiscordBtn");
+    if (discordBtn) {
+      discordBtn.addEventListener("click", (event) => {
+        event.preventDefault();
+        openBootWelcomeLink(BOOT_WELCOME_DISCORD_URL);
+      });
+    }
+    const tipBtn = document.getElementById("bootWelcomeTipBtn");
+    if (tipBtn) {
+      tipBtn.addEventListener("click", (event) => {
+        event.preventDefault();
+        openBootWelcomeLink(BOOT_WELCOME_TIP_URL);
+      });
+    }
+    const closeBtn = document.getElementById("bootWelcomeCloseBtn");
+    if (closeBtn) closeBtn.addEventListener("click", closeAndMaybeRemember);
+    window.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeAndMaybeRemember();
+      }
+    }, { once: true });
+  });
+}
+
 async function init() {
   // Mount Dev Spawner widgets into the saved shell before wiring / panel layout.
   try {
@@ -12433,6 +13189,11 @@ async function init() {
     await checkOak2OnStartup();
   } catch (error) {
     console.warn("[MSBT] oak2 startup check failed:", error);
+  }
+  try {
+    await runBootSplash();
+  } catch (error) {
+    console.warn("[MSBT] boot splash failed:", error);
   }
   try {
     await maybeStartWalkthrough();

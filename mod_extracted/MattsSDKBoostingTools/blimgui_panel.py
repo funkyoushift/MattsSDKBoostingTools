@@ -56,7 +56,7 @@ try:
 except Exception:
     _legit_builder = None
 from .shinies import DEFAULT_ITEM_LEVEL as _SHINY_DEFAULT_LEVEL, drop_all_shinies
-from .dev_tools import activate_devperk, clamp_debug_speed, devperk_button_label, devperk_label, devperk_toggle_state, get_debug_cam_speed, set_debug_cam_speed, toggle_debug_cam, teleport_pawn_to_debug_cam
+from .dev_tools import activate_devperk, clamp_debug_distance, clamp_debug_speed, copy_debug_cam_location, disable_debug_cam, devperk_button_label, devperk_label, devperk_toggle_state, get_debug_cam_distance, get_debug_cam_speed, set_debug_cam_distance, set_debug_cam_speed, teleport_debug_cam_to_pawn, teleport_pawn_to_debug_cam, toggle_debug_cam
 from .movement_adjustments import (
     apply_movement_advanced_to_all_players,
     reset_movement_advanced_all_players,
@@ -433,6 +433,10 @@ _debug_cam_speed: float = get_debug_cam_speed()
 _debug_cam_speed_pending: bool = False
 _debug_cam_speed_due: float = 0.0
 _debug_cam_speed_apply_delay: float = 0.25
+_debug_cam_distance: float = get_debug_cam_distance()
+_debug_cam_distance_pending: bool = False
+_debug_cam_distance_due: float = 0.0
+_debug_cam_distance_apply_delay: float = 0.25
 _movement_speed_value: float = 1.25
 _movement_jump_goal_value: float = 900.0
 _movement_status: str = "Adjusts live movement fields on selected/all party pawns."
@@ -3404,6 +3408,55 @@ def _teleport_pawn_to_debug_cam_selected() -> None:
     _log(f"{message} Target: {name}.")
 
 
+def _disable_debug_cam_selected() -> None:
+    idx = _selected_player_index_value()
+    name = _selected_player_name() or "selected player"
+    message = disable_debug_cam(idx)
+    _log(f"{message} Target: {name}.")
+
+
+def _pull_debug_cam_to_target_selected() -> None:
+    idx = _selected_player_index_value()
+    name = _selected_player_name() or "selected player"
+    message = teleport_debug_cam_to_pawn(idx)
+    _log(f"{message} Target: {name}.")
+
+
+def _copy_debug_cam_location_selected() -> None:
+    result = copy_debug_cam_location()
+    message = result.get("message") if isinstance(result, dict) else str(result)
+    _log(str(message or "Copied debug cam location."))
+
+
+def _apply_debug_cam_distance(log_result: bool = True) -> None:
+    global _debug_cam_distance, _debug_cam_distance_pending, _debug_cam_distance_due
+    idx = _selected_player_index_value()
+    name = _selected_player_name() or "selected player"
+    _debug_cam_distance = clamp_debug_distance(_debug_cam_distance)
+    _debug_cam_distance_pending = False
+    _debug_cam_distance_due = 0.0
+    message = set_debug_cam_distance(_debug_cam_distance, idx)
+    if log_result:
+        _log(f"{message} Target: {name}.")
+
+
+def _schedule_debug_cam_distance_apply() -> None:
+    global _debug_cam_distance_pending, _debug_cam_distance_due
+    _debug_cam_distance_pending = True
+    _debug_cam_distance_due = time.monotonic() + float(_debug_cam_distance_apply_delay)
+
+
+def _apply_debug_cam_distance_if_due() -> None:
+    if not _debug_cam_distance_pending:
+        return
+    try:
+        if time.monotonic() < float(_debug_cam_distance_due or 0.0):
+            return
+    except Exception:
+        pass
+    _apply_debug_cam_distance(False)
+
+
 
 
 def _movement_clamp(value: float, minimum: float, maximum: float) -> float:
@@ -5155,14 +5208,14 @@ def _open_bank_anywhere() -> None:
 
 
 def _draw_dev_tools_card() -> None:
-    global _debug_cam_speed
+    global _debug_cam_speed, _debug_cam_distance
     imgui = _blimgui.imgui
-    opened = _begin_resizable_card("card_dev_tools", "Cheats / Debug Cam", "pink", 245, 215, 420) if _cyber else True
+    opened = _begin_resizable_card("card_dev_tools", "Cheats / Debug Cam", "pink", 245, 280, 520) if _cyber else True
     if opened:
         if _cyber:
-            _muted_wrapped("Cheats target the selected player on host. As a joined client, cheats run on your local PlayerController; Teleport Pawn to Debug Cam remains host-only.")
+            _muted_wrapped("Cheats target the selected player on host. As a joined client, cheats run on your local PlayerController; Teleport Pawn to Debug Cam remains host-only. Disable if Toggle leaves you stuck. Pull Cam to Target moves the local camera.")
         else:
-            imgui.text_wrapped("Cheats target the selected player on host. As a joined client, cheats run on your local PlayerController; Teleport Pawn to Debug Cam remains host-only.")
+            imgui.text_wrapped("Cheats target the selected player on host. As a joined client, cheats run on your local PlayerController; Teleport Pawn to Debug Cam remains host-only. Disable if Toggle leaves you stuck. Pull Cam to Target moves the local camera.")
         perks = [
             (0, "Give Experience", "cyan"),
             (1, "Give 1 Million Cash", "gold"),
@@ -5178,7 +5231,12 @@ def _draw_dev_tools_card() -> None:
         _card_button_row([
             ("Open Bank Anywhere", _open_bank_anywhere, "cyan", 200, 0),
             ("Toggle Debug Cam", _toggle_debug_cam_selected, "gold", 180, 0),
+            ("Disable Debug Cam", _disable_debug_cam_selected, "red", 180, 0),
+        ])
+        _card_button_row([
             ("Teleport Pawn to Debug Cam", _teleport_pawn_to_debug_cam_selected, "cyan", 230, 0),
+            ("Pull Cam to Target", _pull_debug_cam_to_target_selected, "gold", 180, 0),
+            ("Copy Cam Location", _copy_debug_cam_location_selected, "purple", 180, 0),
         ])
         _old_debug_cam_speed = float(_debug_cam_speed)
         _debug_cam_speed = clamp_debug_speed(_input_float_slider("Debug Cam Speed", _old_debug_cam_speed, 0.05, 50.0, "%.2fx"))
@@ -5192,10 +5250,19 @@ def _draw_dev_tools_card() -> None:
             ("10x", lambda: _set_debug_cam_speed_preset(10.0), "gold", 72, 0),
             ("Apply Debug Cam Speed", _apply_debug_cam_speed, "cyan", 190, 0),
         ])
-        if _cyber:
-            _muted_wrapped("Speed is clamped 0.05x to 50x. Presets update the slider and apply to the local debug cam.")
+        _old_debug_cam_distance = float(_debug_cam_distance)
+        _debug_cam_distance = clamp_debug_distance(_input_float_slider("Debug Cam Distance", _old_debug_cam_distance, 0.0, 20000.0, "%.0f"))
+        if abs(float(_debug_cam_distance) - _old_debug_cam_distance) > 0.0001:
+            _schedule_debug_cam_distance_apply()
         else:
-            imgui.text_wrapped("Speed is clamped 0.05x to 50x. Presets update the slider and apply to the local debug cam.")
+            _apply_debug_cam_distance_if_due()
+        _card_button_row([
+            ("Apply Debug Cam Distance", _apply_debug_cam_distance, "cyan", 220, 0),
+        ])
+        if _cyber:
+            _muted_wrapped("Speed is clamped 0.05x to 50x. Distance 0 keeps the game default. Copy Location logs XYZ (Electron also copies to clipboard).")
+        else:
+            imgui.text_wrapped("Speed is clamped 0.05x to 50x. Distance 0 keeps the game default. Copy Location logs XYZ (Electron also copies to clipboard).")
     if _cyber:
         _end_resizable_card()
 

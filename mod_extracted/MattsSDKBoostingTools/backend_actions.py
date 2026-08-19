@@ -31,9 +31,15 @@ from .inventory_capacity import (
 )
 from .dev_tools import activate_devperk as _activate_devperk
 from .dev_tools import reset_skills_for_pc as _reset_skills_for_pc
+from .dev_tools import copy_debug_cam_location as _copy_debug_cam_location
+from .dev_tools import debug_cam_status as _debug_cam_status
+from .dev_tools import disable_debug_cam as _disable_debug_cam
+from .dev_tools import set_debug_cam_distance as _set_debug_cam_distance
+from .dev_tools import set_debug_cam_speed as _set_debug_cam_speed
+from .dev_tools import teleport_debug_cam_to_pawn as _teleport_debug_cam_to_pawn
 from .dev_tools import teleport_pawn_to_debug_cam as _teleport_pawn_to_debug_cam
 from .dev_tools import toggle_debug_cam as _toggle_debug_cam
-from .item_pool_spawning import spawn_item_pool
+from .item_pool_spawning import _normalize_spit_direction, spawn_item_pool
 from .movement_adjustments import (
     apply_movement_advanced_to_all_players,
     delete_ground_items,
@@ -41,11 +47,13 @@ from .movement_adjustments import (
     get_azzy_super_dash_state,
     get_super_dash_state,
     hide_ground_loot,
+    infinite_jump_status,
     pawn_for_controller,
     pull_ground_loot_here,
     refresh_jump_counts_all_players,
     request_azzy_super_dash,
     reset_movement_advanced_all_players,
+    set_force_fly,
     set_infinite_jump_all,
     set_infinite_jump_for_index,
     set_no_target,
@@ -55,6 +63,7 @@ from .movement_adjustments import (
     teleport_pawn_to_pawn,
     toggle_azzy_super_dash,
     toggle_infinite_jump_for_index,
+    toggle_infinite_jump_for_scope,
     toggle_players_only,
     toggle_super_dash,
     zero_vault_power_costs_all_players,
@@ -149,6 +158,7 @@ _last_read_serials_clipboard: bool = False
 _last_read_serials_dump_paths: list[str] = []
 _movement_no_target_enabled = False
 _movement_noclip_enabled = False
+_movement_force_fly_enabled = False
 _rarity_baseline: dict[str, dict[str, float]] = {}
 
 # Research-only challenge introspection. Off by default in shipping builds.
@@ -160,70 +170,8 @@ ENABLE_CHALLENGE_API_PROBE = os.environ.get("MSBT_DEBUG_PROBES", "").strip().low
     "on",
 )
 
-# Double-confirm gate for complete_challenges_all (behavior only; no GPL imports).
-_CHALLENGE_CONFIRM_WINDOW_S = 10.0
-_challenge_confirm_until = 0.0
-_challenge_confirm_sig = ""
-
-
 def challenge_api_probe_enabled() -> bool:
     return bool(ENABLE_CHALLENGE_API_PROBE)
-
-
-def _challenge_roster_signature() -> str:
-    """Cancel pending confirm if lobby roster / target set changes."""
-    try:
-        players = _list_party_players()
-        roster = ",".join(f"{idx}:{name}" for idx, name in players)
-    except Exception:
-        roster = ""
-    return f"{roster}|sel={_selected_player_index}|{_selected_player_name}"
-
-
-def _challenge_confirm_arm() -> dict[str, Any]:
-    global _challenge_confirm_until, _challenge_confirm_sig
-    _challenge_confirm_until = time.monotonic() + float(_CHALLENGE_CONFIRM_WINDOW_S)
-    _challenge_confirm_sig = _challenge_roster_signature()
-    msg = (
-        f"Confirm required: press again within {int(_CHALLENGE_CONFIRM_WINDOW_S)}s to start. "
-        "Host authority recommended; progress changes can be permanent."
-    )
-    _challenge_set_status(msg)
-    return {
-        "ok": False,
-        "needs_confirm": True,
-        "message": msg,
-        "confirm_window_s": _CHALLENGE_CONFIRM_WINDOW_S,
-    }
-
-
-def _challenge_confirm_clear() -> None:
-    global _challenge_confirm_until, _challenge_confirm_sig
-    _challenge_confirm_until = 0.0
-    _challenge_confirm_sig = ""
-
-
-def _challenge_confirm_ready(*, force: bool = False) -> tuple[bool, dict[str, Any] | None]:
-    """Return (ready_to_run, early_response_or_None)."""
-    if force:
-        _challenge_confirm_clear()
-        return True, None
-    now = time.monotonic()
-    sig = _challenge_roster_signature()
-    if _challenge_confirm_until <= 0.0 or now > float(_challenge_confirm_until):
-        return False, _challenge_confirm_arm()
-    if sig != _challenge_confirm_sig:
-        _challenge_confirm_clear()
-        return False, {
-            "ok": False,
-            "needs_confirm": True,
-            "message": (
-                "Challenge confirm cancelled — party roster/target changed. "
-                "Press again twice to confirm."
-            ),
-        }
-    _challenge_confirm_clear()
-    return True, None
 
 
 def _load_rarity_weights_from_settings() -> dict[str, float]:
@@ -305,6 +253,8 @@ _uvh_queue: deque[tuple[str, str, float]] = deque()
 _uvh_targets: list[Any] = []
 _uvh_next_at = 0.0
 _uvh_running = False
+_uvh_paused_queue: deque[tuple[str, str, float]] = deque()
+_uvh_paused_targets: list[Any] = []
 _uvh_last_status = "Ready. UVH tier boosts are based on Azzy UVH Booster by Azalea Asvail."
 _DEV_SPAWNER_SAFE_TOKEN = re.compile(r"^[A-Za-z0-9_./:-]+$")
 _DEV_SPAWNER_SAFE_STATE_LIST = re.compile(r"^[A-Za-z0-9_,./:-]+$")
@@ -1716,6 +1666,16 @@ def run_quick_menu_action(
         result = open_golden_chest()
     elif key == "close_golden_chest":
         result = close_golden_chest()
+    elif key == "spawn_golden_chest":
+        result = spawn_golden_chest()
+    elif key == "spawn_black_market":
+        result = spawn_black_market()
+    elif key == "black_market_clear_cooldown":
+        result = black_market_clear_cooldown()
+    elif key == "black_market_status":
+        result = black_market_status()
+    elif key == "rewards_open_everyone":
+        result = rewards_open_everyone()
     elif key == "open_bank":
         result = open_bank_anywhere()
     elif key == "drop_all_shinies":
@@ -1737,8 +1697,16 @@ def run_quick_menu_action(
             payload.get("itempool_name") or payload.get("pool_name"),
             payload.get("itempool_count") or payload.get("count") or 1,
             payload.get("itempool_level") or payload.get("level") or 60,
+            payload,
         )
         is_drop = True
+    elif key == "spawn_itempool_all":
+        result = spawn_itempool_all(payload)
+        is_drop = True
+    elif key == "spawn_itempool_cancel":
+        result = spawn_itempool_cancel()
+    elif key == "spawn_itempool_status":
+        result = spawn_itempool_status()
     elif key == "give_serial_selected":
         result = give_serials(
             payload.get("serial_text") or "",
@@ -1785,10 +1753,24 @@ def run_quick_menu_action(
         result = uvh_boost_tier(key.rsplit("_", 1)[-1])
     elif key == "uvh_boost_cancel":
         result = uvh_boost_cancel()
+    elif key == "uvh_boost_resume":
+        result = uvh_boost_resume()
+    elif key == "uvh_boost_status":
+        result = uvh_boost_status()
     elif key == "toggle_debug_cam":
         result = toggle_debug_cam()
+    elif key == "disable_debug_cam":
+        result = disable_debug_cam()
     elif key == "teleport_debug_cam":
         result = teleport_debug_cam()
+    elif key == "debug_cam_to_target":
+        result = debug_cam_to_target()
+    elif key == "debug_cam_copy_location":
+        result = debug_cam_copy_location()
+    elif key == "debug_cam_set_speed":
+        result = debug_cam_set_speed(payload.get("debug_cam_speed") or payload.get("speed"))
+    elif key == "debug_cam_set_distance":
+        result = debug_cam_set_distance(payload.get("debug_cam_distance") or payload.get("distance"))
     elif key.startswith("devperk_"):
         result = activate_devperk(key.rsplit("_", 1)[-1])
         needs_player = True
@@ -1801,7 +1783,9 @@ def run_quick_menu_action(
     elif key == "movement_toggle_no_target":
         result = movement_toggle_no_target()
     elif key == "movement_toggle_noclip":
-        result = movement_toggle_noclip()
+        result = movement_toggle_noclip(payload)
+    elif key == "movement_toggle_force_fly":
+        result = movement_toggle_force_fly(payload)
     elif key == "movement_players_only":
         result = movement_toggle_players_only()
     elif key == "movement_delete_ground_items":
@@ -1833,6 +1817,8 @@ def run_quick_menu_action(
         result = movement_infinite_jump_all(True)
     elif key == "movement_infinite_jump_all_off":
         result = movement_infinite_jump_all(False)
+    elif key == "movement_infinite_jump_toggle":
+        result = movement_infinite_jump_toggle(payload)
     elif key == "movement_infinite_jump_selected_on":
         result = movement_infinite_jump_set_selected(
             payload.get("infinite_jump_target") or payload.get("target_player"),
@@ -1941,8 +1927,14 @@ def run_quick_menu_action(
         needs_player = True
         is_drop = True
     elif key == "chaos_empty_backpack":
-        result = chaos_empty_backpack()
+        result = chaos_empty_backpack(payload)
         needs_player = True
+    elif key in ("chaos_undo_empty_backpack", "backpack_undo_delete"):
+        result = chaos_undo_empty_backpack(payload)
+        is_drop = True
+        needs_player = True
+    elif key in ("chaos_clear_empty_backpack_memory", "backpack_clear_deleted_memory"):
+        result = chaos_clear_empty_backpack_memory()
     elif key == "chaos_kill":
         result = chaos_kill()
         needs_player = True
@@ -1966,7 +1958,6 @@ def run_quick_menu_action(
         needs_player = True
     elif key == "reset_skills":
         result = reset_skills()
-        needs_player = True
     elif key == "cxp_on":
         result = cxp_set_enabled(True, payload.get("multiplier") or payload.get("cxp_multiplier"))
     elif key == "cxp_off":
@@ -2035,6 +2026,13 @@ def run_quick_menu_action(
     return result
 
 
+def _infinite_jump_status_safe() -> dict[str, Any]:
+    try:
+        return infinite_jump_status()
+    except Exception:
+        return {"enabled": False, "enabled_local": False, "count": 0, "names": "none"}
+
+
 def get_status() -> dict[str, Any]:
     players = refresh_players()
     try:
@@ -2080,9 +2078,12 @@ def get_status() -> dict[str, Any]:
         "instant_drops": _ich.get_status_dict(),
         "instant_holds": _ich.get_holds_status_dict(),
         "fog_of_war": _nfow.get_status_dict(),
-        "challenge_confirm_pending": bool(
-            _challenge_confirm_until > 0.0 and time.monotonic() <= float(_challenge_confirm_until)
-        ),
+        "infinite_jump": _infinite_jump_status_safe(),
+        "challenge_bulk": _challenge_progress_payload(),
+        "itempool_bulk": _itempool_progress_payload(),
+        "uvh_boost": uvh_boost_status(),
+        "debug_cam": _debug_cam_status(),
+        "deleted_backpack": _deleted_backpack_status(),
     }
 
 
@@ -2111,6 +2112,214 @@ def close_golden_chest() -> dict[str, Any]:
         return {"ok": True, "message": "Close Golden Chest requested."}
     except Exception as exc:
         return {"ok": False, "message": f"Close Golden Chest failed: {exc!r}"}
+
+
+def spawn_golden_chest() -> dict[str, Any]:
+    """Host-safe IO spawn next to Open/Close Golden Chest (ASD spawnai)."""
+    host_ok, host_msg = _challenge_is_host()
+    if not host_ok:
+        return {"ok": False, "message": "Spawn Golden Chest is host / listen only."}
+    return run_dev_spawner_action(
+        "dev_spawner_spawnai",
+        {"dev_ai_name": "Lootable_GoldenChest", "dev_ai_count": 1},
+    )
+
+
+_BM_COOLDOWN_ATTRS = (
+    "PurchaseCooldown",
+    "LastPurchaseTime",
+    "TimeUntilNextPurchase",
+    "NextPurchaseTime",
+    "CooldownRemaining",
+    "PurchaseLockoutSeconds",
+    "BlackMarketPurchaseCooldown",
+    "bPurchaseOnCooldown",
+)
+
+
+def _live_black_market_objects() -> list[Any]:
+    found: list[Any] = []
+    seen: set[int] = set()
+    try:
+        import unrealsdk
+    except Exception:
+        return found
+    for cls in (
+        "InteractiveObject",
+        "OakVendingMachine",
+        "VendingMachine",
+        "LootableObject",
+    ):
+        try:
+            objs = unrealsdk.find_all(cls, False) or []
+        except Exception:
+            continue
+        for obj in objs:
+            if obj is None:
+                continue
+            try:
+                text = str(obj)
+            except Exception:
+                continue
+            if "Default__" in text:
+                continue
+            low = text.lower()
+            if "blackmarket" not in low and "bmvm" not in low:
+                continue
+            oid = id(obj)
+            if oid in seen:
+                continue
+            seen.add(oid)
+            found.append(obj)
+    return found
+
+
+def spawn_black_market() -> dict[str, Any]:
+    """Spawn a black-market vending machine via ASD spawnai.
+
+    Dev Spawner catalogs list both ``io_VendingMachine_BlackMarket`` (preset
+    command ``ssp_spawnai io_VendingMachine_BlackMarket``, "Black market step 1")
+    and ``IO_VendingMachine_BlackMarket``. The lowercase IO is the name that
+    actually resolves for spawnai; uppercase often returns queued_unverified
+    with nothing in the world. After a spawn, activate last IO.
+    """
+    host_ok, host_msg = _challenge_is_host()
+    if not host_ok:
+        return {"ok": False, "message": "Spawn Black Market is host / listen only."}
+
+    candidates = (
+        "io_VendingMachine_BlackMarket",
+        "IO_VendingMachine_BlackMarket",
+    )
+    last: dict[str, Any] = {}
+    used = ""
+    for name in candidates:
+        last = run_dev_spawner_action(
+            "dev_spawner_spawnai",
+            {"dev_ai_name": name, "dev_ai_count": 1, "dev_ai_distance": 200},
+        )
+        used = name
+        if _black_market_spawn_looks_real(last):
+            break
+
+    activate = run_dev_spawner_action("dev_spawner_activate_last", {})
+    machines = _live_black_market_objects()
+    if machines or _black_market_spawn_looks_real(last):
+        spawn_msg = str(last.get("message") or "").strip()
+        activate_msg = str(activate.get("message") or "").strip()
+        extra = " ".join(part for part in (spawn_msg, activate_msg) if part)
+        return {
+            "ok": True,
+            "message": (
+                f"Spawn Black Market via {used} "
+                f"({len(machines)} live machine(s)). {extra}"
+            ).strip(),
+            "actor": used,
+            "machines": len(machines),
+        }
+
+    fallback = run_dev_spawner_action(
+        "dev_spawner_spawn",
+        {
+            "dev_actor_name": "io_VendingMachine_BlackMarket",
+            "dev_actor_count": 1,
+            "dev_actor_distance": 200,
+        },
+    )
+    run_dev_spawner_action("dev_spawner_activate_last", {})
+    machines = _live_black_market_objects()
+    if machines or fallback.get("ok"):
+        return {
+            "ok": True,
+            "message": (
+                f"Spawn Black Market via ASD_spawn io_VendingMachine_BlackMarket "
+                f"({len(machines)} live). {fallback.get('message') or ''}"
+            ).strip(),
+            "actor": "io_VendingMachine_BlackMarket",
+            "machines": len(machines),
+        }
+
+    detail = str((last or {}).get("message") or (fallback or {}).get("message") or "no spawn verified")
+    return {
+        "ok": False,
+        "message": (
+            "Spawn Black Market did not place a live machine. "
+            f"Tried {', '.join(candidates)} then ASD_spawn. Last: {detail}"
+        ),
+        "actor": used,
+        "machines": 0,
+    }
+
+
+def _black_market_spawn_looks_real(result: dict[str, Any] | None) -> bool:
+    if not isinstance(result, dict):
+        return False
+    if result.get("spawn_verified") is True:
+        return True
+    if result.get("resolved") is True and int(result.get("alive_count") or 0) > 0:
+        return True
+    names = result.get("actor_names") or []
+    if isinstance(names, list) and any(str(name).strip() for name in names):
+        return True
+    status = str(result.get("verification_status") or "").strip().lower()
+    if status in ("verified", "spawned"):
+        return True
+    return False
+
+
+def black_market_clear_cooldown() -> dict[str, Any]:
+    """Best-effort clear of purchase-cooldown fields on live BMVM objects."""
+    machines = _live_black_market_objects()
+    cleared = 0
+    for obj in machines:
+        for attr in _BM_COOLDOWN_ATTRS:
+            try:
+                current = getattr(obj, attr, None)
+            except Exception:
+                continue
+            if current is None:
+                continue
+            try:
+                if isinstance(current, bool):
+                    setattr(obj, attr, False)
+                else:
+                    setattr(obj, attr, 0)
+                cleared += 1
+            except Exception:
+                continue
+    return {
+        "ok": True,
+        "message": (
+            f"Black market cooldown: found {len(machines)} live machine(s), "
+            f"cleared {cleared} field(s)."
+            if machines
+            else "Black market cooldown: no live BMVM found. Spawn one first, or stand near a machine."
+        ),
+        "machines": len(machines),
+        "cleared": cleared,
+    }
+
+
+def black_market_status() -> dict[str, Any]:
+    machines = _live_black_market_objects()
+    return {
+        "ok": True,
+        "message": f"Black market: {len(machines)} live machine(s) in world.",
+        "machines": len(machines),
+    }
+
+
+def rewards_open_everyone() -> dict[str, Any]:
+    """Open pending Reward Center packages on every live player manager."""
+    try:
+        opened = int(serial_rewards._open_all_live_reward_packages() or 0)
+    except Exception as exc:
+        return {"ok": False, "message": f"Open rewards everyone failed: {exc!r}"}
+    return {
+        "ok": True,
+        "message": f"Opened pending Reward Center packages on {opened} player manager(s).",
+        "opened": opened,
+    }
 
 
 def drop_all_shinies_selected() -> dict[str, Any]:
@@ -2888,7 +3097,7 @@ def _uvh_set_status(message: str) -> None:
 
 
 def _uvh_start(indices: list[int]) -> dict[str, Any]:
-    global _uvh_queue, _uvh_targets, _uvh_next_at, _uvh_running
+    global _uvh_queue, _uvh_targets, _uvh_next_at, _uvh_running, _uvh_paused_queue, _uvh_paused_targets
     if get_pc() is None:
         _uvh_set_status("Cannot start UVH boost: load into a character first.")
         return {"ok": False, "message": _uvh_last_status}
@@ -2902,6 +3111,8 @@ def _uvh_start(indices: list[int]) -> dict[str, Any]:
         return {"ok": False, "message": _uvh_last_status}
     _uvh_queue = deque(plan)
     _uvh_targets = targets
+    _uvh_paused_queue = deque()
+    _uvh_paused_targets = []
     _uvh_next_at = time.monotonic()
     _uvh_running = True
     names = ", ".join(UVH_RANKS[i][0] for i in indices)
@@ -2946,13 +3157,42 @@ def uvh_boost_all() -> dict[str, Any]:
 
 
 def uvh_boost_cancel() -> dict[str, Any]:
-    global _uvh_queue, _uvh_targets, _uvh_running
+    global _uvh_queue, _uvh_targets, _uvh_running, _uvh_paused_queue, _uvh_paused_targets
     active = _uvh_running or bool(_uvh_queue)
+    _uvh_paused_queue = deque(_uvh_queue)
+    _uvh_paused_targets = list(_uvh_targets)
+    remaining = len(_uvh_paused_queue)
     _uvh_queue = deque()
     _uvh_targets = []
     _uvh_running = False
-    _uvh_set_status("UVH boost cancelled." if active else "No UVH boost is active.")
-    return {"ok": True, "message": _uvh_last_status}
+    if active:
+        _uvh_set_status(f"UVH boost paused ({remaining} step(s) left). Resume to continue.")
+    else:
+        _uvh_set_status("No UVH boost is active.")
+    return {"ok": True, "message": _uvh_last_status, "paused_steps": remaining}
+
+
+def uvh_boost_resume() -> dict[str, Any]:
+    global _uvh_queue, _uvh_targets, _uvh_next_at, _uvh_running, _uvh_paused_queue, _uvh_paused_targets
+    if _uvh_running or _uvh_queue:
+        return {"ok": True, "message": f"UVH boost already running ({len(_uvh_queue)} step(s) left)."}
+    if not _uvh_paused_queue:
+        _uvh_set_status("Nothing to resume. Start UVH 1–7 (or Up to rank N) first.")
+        return {"ok": False, "message": _uvh_last_status}
+    live = [controller for controller in _uvh_paused_targets if _uvh_live(controller)]
+    if not live:
+        live = _uvh_discover_controllers()
+    if not live:
+        _uvh_set_status("Cannot resume UVH boost: no live players found.")
+        return {"ok": False, "message": _uvh_last_status}
+    _uvh_queue = deque(_uvh_paused_queue)
+    _uvh_targets = live
+    _uvh_paused_queue = deque()
+    _uvh_paused_targets = []
+    _uvh_next_at = time.monotonic()
+    _uvh_running = True
+    _uvh_set_status(f"UVH boost resumed for {len(live)} player(s); {len(_uvh_queue)} step(s) left.")
+    return {"ok": True, "message": _uvh_last_status, "steps_remaining": len(_uvh_queue), "players": len(live)}
 
 
 def uvh_boost_status() -> dict[str, Any]:
@@ -2961,7 +3201,8 @@ def uvh_boost_status() -> dict[str, Any]:
         "message": _uvh_last_status,
         "active": _uvh_running,
         "steps_remaining": len(_uvh_queue),
-        "players": len(_uvh_targets),
+        "paused_steps": len(_uvh_paused_queue),
+        "players": len(_uvh_targets) or len(_uvh_paused_targets),
     }
 
 
@@ -2989,13 +3230,12 @@ def uvh_boost_tick() -> None:
         _uvh_set_status(f"UVH boost complete. Final step sent to {sent}/{len(live_targets)} player(s).")
 
 
-# Crash experiment pacing: drain ~2539 grants in roughly 30-60s depending on
-# UMG tick rate. Double-start is still blocked; million-scale amounts stay capped.
+# Drain catalog grants on the UMG tick. Large amounts are sent in one RPC;
+# if that RPC fails we retry in 250-sized chunks so the SUM still reaches the goal.
 _CHALLENGE_STEP_DELAY_SECONDS = 0.0
 _CHALLENGE_BATCH_SIZE = 64
-_CHALLENGE_LARGE_AMOUNT_THRESHOLD = 100
-_CHALLENGE_MAX_AMOUNT_PER_GRANT = 250
-_CHALLENGE_STATUS_EVERY = 100
+_CHALLENGE_CHUNK_AMOUNT = 250
+_CHALLENGE_STATUS_EVERY = 50
 _challenge_catalog_cache: list[tuple[str, int]] | None = None
 _challenge_queue: deque[tuple[str, int]] = deque()
 _challenge_targets: list[Any] = []
@@ -3003,7 +3243,9 @@ _challenge_next_at = 0.0
 _challenge_running = False
 _challenge_last_status = "Ready."
 _challenge_total_steps = 0
-_challenge_capped_grants = 0
+_challenge_ok = 0
+_challenge_failed = 0
+_challenge_granted: set[str] = set()
 
 # MIT-reimplemented category filters (behavior inspired by SQBT; no GPL imports).
 _CHALLENGE_CATEGORY_LABELS: tuple[str, ...] = (
@@ -3109,18 +3351,78 @@ def _challenge_normalize_key(challenge_id: str) -> str:
 
 
 def _challenge_grant_amount(amount: int) -> int:
-    """Clamp huge catalog totals (cash/heal can be millions) to a safer grant size."""
+    """Keep the catalog goal; never clamp completeness down to a stub grant."""
     try:
         value = int(amount)
     except Exception:
         value = 1
-    return max(1, min(value, _CHALLENGE_MAX_AMOUNT_PER_GRANT))
+    return max(1, value)
 
 
 def _challenge_delay_for_amount(amount: int) -> float:
-    if amount > _CHALLENGE_LARGE_AMOUNT_THRESHOLD:
+    if amount > 100:
         return 0.02
     return _CHALLENGE_STEP_DELAY_SECONDS
+
+
+def _challenge_is_host() -> tuple[bool, str]:
+    """Allow standalone + listen host; refuse join clients. Fail open if NetMode is ambiguous."""
+    try:
+        from .party_helpers import _gbc_session_world_and_gamestate
+
+        pc = get_pc()
+        if pc is not None:
+            try:
+                if not bool(pc.HasAuthority()):
+                    return False, "Complete challenges on the host / listen session, not as a join client."
+            except Exception:
+                pass
+        world, _gs = _gbc_session_world_and_gamestate()
+        if world is None:
+            return True, ""
+        try:
+            from unrealsdk.unreal import ENetMode
+
+            mode = world.GetNetMode()
+            if mode in (ENetMode.NM_ListenServer, ENetMode.NM_Standalone):
+                return True, ""
+        except Exception:
+            pass
+        try:
+            mode_i = int(world.GetNetMode())
+            if mode_i in (0, 2):
+                return True, ""
+            if mode_i == 3:
+                return False, "Complete challenges on the host / listen session, not as a join client."
+        except Exception:
+            return True, ""
+        return True, ""
+    except Exception:
+        return True, ""
+
+
+def _challenge_increment_one(controller: Any, challenge: str, amount: int) -> None:
+    """Grant the full catalog amount; chunk only if the native RPC rejects the full value."""
+    fn = getattr(controller, "ServerIncrementChallengeForPlayer", None)
+    if not callable(fn):
+        raise RuntimeError("ServerIncrementChallengeForPlayer unavailable")
+    grant = _challenge_grant_amount(amount)
+    try:
+        fn(challenge, int(grant))
+        return
+    except Exception:
+        leftover = int(grant)
+        last_exc: Exception | None = None
+        while leftover > 0:
+            step = min(_CHALLENGE_CHUNK_AMOUNT, leftover)
+            try:
+                fn(challenge, int(step))
+                leftover -= step
+            except Exception as exc:
+                last_exc = exc
+                break
+        if leftover > 0:
+            raise last_exc or RuntimeError(f"{challenge} increment failed")
 
 
 def _load_challenge_catalog() -> list[tuple[str, int]]:
@@ -3174,7 +3476,7 @@ def _challenge_rows_for_category(category: str, search: str = "") -> list[tuple[
 
 
 def challenge_catalog_list(payload: dict[str, Any] | None = None) -> dict[str, Any]:
-    """Read-only filtered challenge catalog for Dev Tools UI."""
+    """Read-only filtered challenge catalog for the Boosting Challenges panel."""
     payload = payload or {}
     category = str(payload.get("category") or "All non-UVHM").strip() or "All non-UVHM"
     search = str(payload.get("search") or payload.get("q") or "").strip()
@@ -3193,7 +3495,7 @@ def challenge_catalog_list(payload: dict[str, Any] | None = None) -> dict[str, A
 def _challenge_queue_start(rows: list[tuple[str, int]], *, label: str = "Challenges") -> dict[str, Any]:
     """Shared queue start used by complete-all / selected / category."""
     global _challenge_queue, _challenge_targets, _challenge_next_at, _challenge_running, _challenge_total_steps
-    global _challenge_capped_grants
+    global _challenge_ok, _challenge_failed, _challenge_granted
     if _challenge_running or _challenge_queue:
         remaining = len(_challenge_queue)
         _challenge_set_status(
@@ -3201,6 +3503,10 @@ def _challenge_queue_start(rows: list[tuple[str, int]], *, label: str = "Challen
             "Use complete_challenges_cancel first."
         )
         return {"ok": False, "message": _challenge_last_status, "active": True, "steps_remaining": remaining}
+    host_ok, host_msg = _challenge_is_host()
+    if not host_ok:
+        _challenge_set_status(host_msg)
+        return {"ok": False, "message": host_msg, "host_required": True}
     if get_pc() is None:
         _challenge_set_status("Cannot start: load into a character first.")
         return {"ok": False, "message": _challenge_last_status}
@@ -3214,7 +3520,9 @@ def _challenge_queue_start(rows: list[tuple[str, int]], *, label: str = "Challen
     _challenge_queue = deque(rows)
     _challenge_targets = targets
     _challenge_total_steps = len(rows)
-    _challenge_capped_grants = 0
+    _challenge_ok = 0
+    _challenge_failed = 0
+    _challenge_granted = set()
     _challenge_next_at = time.monotonic()
     _challenge_running = True
     _challenge_set_status(
@@ -3226,54 +3534,80 @@ def _challenge_queue_start(rows: list[tuple[str, int]], *, label: str = "Challen
         "message": _challenge_last_status,
         "steps": _challenge_total_steps,
         "players": len(targets),
+        "active": True,
+        "steps_remaining": _challenge_total_steps,
+        "steps_done": 0,
+        "ok_count": 0,
+        "failed_count": 0,
+        "percent": 0,
     }
 
 
 def complete_challenges_all(payload: dict[str, Any] | None = None) -> dict[str, Any]:
-    """Queue every catalog challenge grant for live players (hidden / console tool).
+    """Queue every non-UVHM catalog challenge for live players.
 
-    Requires a double-confirm within 10s unless payload.confirm / force is set
-    (console path can pass force=True after an intentional second command).
-    Complete ALL uses all non-parent catalog rows (may include UVHM tokens).
+    Electron shows a confirm dialog before calling. Console/QM run immediately.
+    Complete ALL matches Squ1ggs: All non-UVHM, skip parent tokens. UVHM stays on the UVH buttons.
     """
     payload = payload or {}
-    force = bool(payload.get("confirm") or payload.get("force") or payload.get("confirmed"))
-    ready, early = _challenge_confirm_ready(force=force)
-    if not ready:
-        return early or {"ok": False, "message": "Challenge confirm required.", "needs_confirm": True}
-    catalog = _load_challenge_catalog()
-    if not catalog:
+    rows = _challenge_rows_for_category("All non-UVHM", "")
+    if not rows:
         _challenge_set_status("Cannot start: challenge catalog is empty or missing.")
         return {"ok": False, "message": _challenge_last_status}
-    return _challenge_queue_start(catalog, label="Complete ALL challenges")
+    return _challenge_queue_start(rows, label="Complete ALL challenges")
+
+
+def _challenge_ids_from_payload(payload: dict[str, Any]) -> list[str]:
+    raw_ids = payload.get("challenge_ids") or payload.get("ids") or payload.get("tokens")
+    ids: list[str] = []
+    if isinstance(raw_ids, str):
+        ids.extend(part.strip() for part in raw_ids.split(",") if part.strip())
+    elif isinstance(raw_ids, (list, tuple)):
+        ids.extend(str(item).strip() for item in raw_ids if str(item).strip())
+    single = str(
+        payload.get("challenge_id") or payload.get("id") or payload.get("token") or ""
+    ).strip()
+    if single:
+        ids.insert(0, single)
+    seen: set[str] = set()
+    ordered: list[str] = []
+    for item in ids:
+        key = item.casefold()
+        if key in seen:
+            continue
+        seen.add(key)
+        ordered.append(item)
+    return ordered
+
+
+def _challenge_rows_for_ids(ids: list[str], fallback_amount: int = 1) -> list[tuple[str, int]]:
+    catalog = _load_challenge_catalog()
+    by_lower = {cid.casefold(): (cid, amt) for cid, amt in catalog}
+    rows: list[tuple[str, int]] = []
+    for raw in ids:
+        match = by_lower.get(raw.casefold())
+        if match is not None:
+            rows.append(match)
+        else:
+            rows.append((raw, max(1, int(fallback_amount))))
+    return rows
 
 
 def complete_challenges(payload: dict[str, Any] | None = None) -> dict[str, Any]:
-    """Queue one challenge id or a filtered category (double-confirm unless force)."""
+    """Queue one or more challenge ids, or a filtered category."""
     payload = payload or {}
-    force = bool(payload.get("confirm") or payload.get("force") or payload.get("confirmed"))
-    ready, early = _challenge_confirm_ready(force=force)
-    if not ready:
-        return early or {"ok": False, "message": "Challenge confirm required.", "needs_confirm": True}
-
-    challenge_id = str(
-        payload.get("challenge_id") or payload.get("id") or payload.get("token") or ""
-    ).strip()
+    ids = _challenge_ids_from_payload(payload)
     category = str(payload.get("category") or "").strip()
 
-    if challenge_id:
-        rows = [
-            (cid, amt)
-            for cid, amt in _load_challenge_catalog()
-            if cid.casefold() == challenge_id.casefold()
-        ]
-        if not rows:
-            try:
-                amount = max(1, int(payload.get("amount") or 1))
-            except Exception:
-                amount = 1
-            rows = [(challenge_id, amount)]
-        return _challenge_queue_start(rows, label=f"Challenge {rows[0][0]}")
+    if ids:
+        try:
+            amount = max(1, int(payload.get("amount") or 1))
+        except Exception:
+            amount = 1
+        rows = _challenge_rows_for_ids(ids, fallback_amount=amount)
+        if len(rows) == 1:
+            return _challenge_queue_start(rows, label=f"Challenge {rows[0][0]}")
+        return _challenge_queue_start(rows, label=f"{len(rows)} selected challenges")
 
     if category:
         rows = _challenge_rows_for_category(category, "")
@@ -3281,7 +3615,7 @@ def complete_challenges(payload: dict[str, Any] | None = None) -> dict[str, Any]
 
     return {
         "ok": False,
-        "message": "Provide challenge_id or category (or use complete_challenges_all).",
+        "message": "Provide challenge_id, challenge_ids, or category (or use complete_challenges_all).",
     }
 
 
@@ -3297,23 +3631,49 @@ def complete_challenges_cancel() -> dict[str, Any]:
         if active
         else "No challenge run is active."
     )
-    return {"ok": True, "message": _challenge_last_status}
+    return complete_challenges_status()
 
 
-def complete_challenges_status() -> dict[str, Any]:
+def _challenge_progress_payload() -> dict[str, Any]:
+    remaining = len(_challenge_queue)
+    done = max(0, int(_challenge_total_steps) - remaining) if _challenge_total_steps else 0
+    percent = 0
+    if _challenge_total_steps:
+        percent = int(round(100.0 * done / float(_challenge_total_steps)))
     return {
         "ok": True,
         "message": _challenge_last_status,
         "active": _challenge_running,
-        "steps_remaining": len(_challenge_queue),
+        "steps_remaining": remaining,
         "steps_total": _challenge_total_steps,
+        "steps_done": done,
+        "ok_count": _challenge_ok,
+        "failed_count": _challenge_failed,
+        "percent": percent,
         "players": len(_challenge_targets),
-        "capped_grants": _challenge_capped_grants,
     }
 
 
+def complete_challenges_status() -> dict[str, Any]:
+    return _challenge_progress_payload()
+
+
+def _challenge_finish_reconcile(live_targets: list[Any]) -> str:
+    notes: list[str] = []
+    try:
+        from .challenge_objective_complete import reconcile_after_bulk
+    except Exception as exc:
+        return f"objective reconcile skipped: {exc!r}"
+    for controller in live_targets:
+        try:
+            notes.append(reconcile_after_bulk(controller, _challenge_granted))
+        except Exception as exc:
+            notes.append(f"reconcile failed: {exc!r}")
+    return "; ".join(notes) if notes else ""
+
+
 def complete_challenges_tick() -> None:
-    global _challenge_next_at, _challenge_running, _challenge_capped_grants
+    global _challenge_next_at, _challenge_running, _challenge_ok, _challenge_failed
     if not _challenge_queue or time.monotonic() < _challenge_next_at:
         return
     if get_pc() is None:
@@ -3332,7 +3692,6 @@ def complete_challenges_tick() -> None:
 
     last_challenge = ""
     last_grant_amount = 1
-    last_raw_amount = 1
     last_sent = 0
     batch_delay = _CHALLENGE_STEP_DELAY_SECONDS
     for _ in range(max(1, int(_CHALLENGE_BATCH_SIZE))):
@@ -3340,51 +3699,67 @@ def complete_challenges_tick() -> None:
             break
         challenge, amount = _challenge_queue.popleft()
         grant_amount = _challenge_grant_amount(amount)
-        if grant_amount < int(amount):
-            _challenge_capped_grants += 1
         sent = 0
+        last_error = ""
         for controller in live_targets:
             try:
-                controller.ServerIncrementChallengeForPlayer(challenge, int(grant_amount))
+                _challenge_increment_one(controller, challenge, grant_amount)
                 sent += 1
             except Exception as exc:
-                _challenge_set_status(f"{challenge} failed for one player: {exc!r}")
+                last_error = f"{type(exc).__name__}: {exc}"
         last_challenge = challenge
         last_grant_amount = grant_amount
-        last_raw_amount = int(amount)
         last_sent = sent
+        if sent:
+            _challenge_ok += 1
+            _challenge_granted.add(challenge)
+        else:
+            _challenge_failed += 1
+            _challenge_set_status(
+                f"Skipped rejected {challenge}"
+                + (f" ({last_error})" if last_error else "")
+                + f"; continuing ({_challenge_failed} skipped)."
+            )
         batch_delay = max(batch_delay, _challenge_delay_for_amount(grant_amount))
 
     _challenge_next_at = time.monotonic() + batch_delay
     done = _challenge_total_steps - len(_challenge_queue)
     if _challenge_queue:
         if done == 1 or done % _CHALLENGE_STATUS_EVERY == 0:
-            cap_note = (
-                f" x{last_grant_amount} (capped from {last_raw_amount})"
-                if last_grant_amount < last_raw_amount
-                else f" x{last_grant_amount}"
-            )
             _challenge_set_status(
-                f"Challenges: {done}/{_challenge_total_steps} sent "
-                f"({last_challenge}{cap_note} -> {last_sent}/{len(live_targets)} player(s))."
+                f"Challenges: {done}/{_challenge_total_steps} "
+                f"(ok {_challenge_ok}, fail {_challenge_failed}) "
+                f"{last_challenge} x{last_grant_amount} -> {last_sent}/{len(live_targets)} player(s)."
             )
-    else:
-        _challenge_running = False
-        _challenge_targets.clear()
-        capped = f" Capped {_challenge_capped_grants} oversized grant(s)." if _challenge_capped_grants else ""
-        _challenge_set_status(
-            f"Challenges finished. Final step {last_challenge} sent to "
-            f"{last_sent}/{len(live_targets)} player(s).{capped}"
-        )
+        return
+
+    reconcile_note = _challenge_finish_reconcile(live_targets)
+    _challenge_running = False
+    _challenge_targets.clear()
+    extra = f" {reconcile_note}" if reconcile_note else ""
+    _challenge_set_status(
+        f"Challenges finished. {done}/{_challenge_total_steps} "
+        f"(ok {_challenge_ok}, fail {_challenge_failed}). "
+        f"Final {last_challenge} -> {last_sent}/{len(live_targets)} player(s).{extra}"
+    )
 
 
 def toggle_debug_cam() -> dict[str, Any]:
     idx = get_selected_player_index()
     try:
         message = _toggle_debug_cam(idx)
-        return {"ok": True, "message": message}
-    except Exception as exc:
-        return {"ok": False, "message": f"Toggle Debug Cam failed: {exc!r}"}
+        return {"ok": True, "message": message, "debug_cam": _debug_cam_status()}
+    except Exception as extra:
+        return {"ok": False, "message": f"Toggle Debug Cam failed: {extra!r}"}
+
+
+def disable_debug_cam() -> dict[str, Any]:
+    idx = get_selected_player_index()
+    try:
+        message = _disable_debug_cam(idx)
+        return {"ok": True, "message": message, "debug_cam": _debug_cam_status()}
+    except Exception as extra:
+        return {"ok": False, "message": f"Disable Debug Cam failed: {extra!r}"}
 
 
 def teleport_debug_cam() -> dict[str, Any]:
@@ -3392,8 +3767,40 @@ def teleport_debug_cam() -> dict[str, Any]:
     try:
         message = _teleport_pawn_to_debug_cam(idx)
         return {"ok": True, "message": message}
-    except Exception as exc:
-        return {"ok": False, "message": f"Teleport Pawn to Debug Cam failed: {exc!r}"}
+    except Exception as extra:
+        return {"ok": False, "message": f"Teleport Pawn to Debug Cam failed: {extra!r}"}
+
+
+def debug_cam_to_target() -> dict[str, Any]:
+    idx = get_selected_player_index()
+    try:
+        message = _teleport_debug_cam_to_pawn(idx)
+        return {"ok": True, "message": message}
+    except Exception as extra:
+        return {"ok": False, "message": f"Pull cam to target failed: {extra!r}"}
+
+
+def debug_cam_copy_location() -> dict[str, Any]:
+    try:
+        return _copy_debug_cam_location()
+    except Exception as extra:
+        return {"ok": False, "message": f"Copy debug cam location failed: {extra!r}"}
+
+
+def debug_cam_set_speed(speed: object = None) -> dict[str, Any]:
+    try:
+        message = _set_debug_cam_speed(float(speed if speed is not None else 1.0))
+        return {"ok": True, "message": message, "debug_cam": _debug_cam_status()}
+    except Exception as extra:
+        return {"ok": False, "message": f"Set debug cam speed failed: {extra!r}"}
+
+
+def debug_cam_set_distance(distance: object = None) -> dict[str, Any]:
+    try:
+        message = _set_debug_cam_distance(float(distance if distance is not None else 0.0))
+        return {"ok": True, "message": message, "debug_cam": _debug_cam_status()}
+    except Exception as extra:
+        return {"ok": False, "message": f"Set debug cam distance failed: {extra!r}"}
 
 
 def activate_devperk(perk: object) -> dict[str, Any]:
@@ -3405,23 +3812,233 @@ def activate_devperk(perk: object) -> dict[str, Any]:
         return {"ok": False, "message": f"Dev perk failed: {exc!r}"}
 
 
-def spawn_itempool(pool_name: object, count: object, level: object) -> dict[str, Any]:
+_ITEMPOOL_BULK_MAX = 200
+_itempool_queue: deque[tuple[str, int, int, int]] = deque()
+_itempool_running = False
+_itempool_next_at = 0.0
+_itempool_total = 0
+_itempool_ok = 0
+_itempool_failed = 0
+_itempool_last_status = "Item pool bulk idle."
+_itempool_delay_s = 0.0
+_itempool_items_per_tick = 1
+_itempool_spit = "forward"
+
+
+def _itempool_knobs_from_payload(payload: dict[str, Any] | None = None) -> tuple[float, int, str]:
+    payload = payload or {}
+    delay = _clamp_float(
+        payload.get("itempool_delay") if payload.get("itempool_delay") not in (None, "") else payload.get("delay", _itempool_delay_s),
+        0.0,
+        5.0,
+        _itempool_delay_s,
+    )
+    per_tick = _clamp_int(
+        payload.get("itempool_items_per_tick") or payload.get("items_per_tick") or _itempool_items_per_tick,
+        1,
+        25,
+    )
+    spit = _normalize_spit_direction(
+        str(payload.get("itempool_spit") or payload.get("spit") or _itempool_spit)
+    )
+    return delay, per_tick, spit
+
+
+def _apply_itempool_knobs(payload: dict[str, Any] | None = None) -> tuple[float, int, str]:
+    global _itempool_delay_s, _itempool_items_per_tick, _itempool_spit
+    delay, per_tick, spit = _itempool_knobs_from_payload(payload)
+    _itempool_delay_s = delay
+    _itempool_items_per_tick = per_tick
+    _itempool_spit = spit
+    return delay, per_tick, spit
+
+
+def spawn_itempool(
+    pool_name: object,
+    count: object,
+    level: object,
+    extra: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    global _itempool_queue, _itempool_running, _itempool_next_at
+    global _itempool_total, _itempool_ok, _itempool_failed
     name = str(pool_name or "").strip()
     if not name:
         return {"ok": False, "message": "No item pool selected."}
+    delay, per_tick, spit = _apply_itempool_knobs(extra)
     try:
-        spawned = spawn_item_pool(name, int(level), int(count))
-        result = {"ok": True, "message": f"Spawned item pool {name} x{spawned} at level {int(level)}."}
+        qty = max(1, int(count))
+        lvl = int(level)
+        if delay > 0.0 and qty > per_tick:
+            if not _itempool_running:
+                _itempool_total = 0
+                _itempool_ok = 0
+                _itempool_failed = 0
+            _itempool_queue.append((name, lvl, qty, qty))
+            _itempool_total += 1
+            _itempool_next_at = time.monotonic()
+            _itempool_running = True
+            _itempool_set_status(
+                f"Queued {name} x{qty} (delay {delay:.2f}s, {per_tick}/tick, spit={spit})."
+            )
+            result = _itempool_progress_payload()
+            result["message"] = _itempool_last_status
+            note_last_command(
+                "spawn_itempool",
+                label=f"Spawn {name}",
+                payload={
+                    "itempool_name": name,
+                    "itempool_count": qty,
+                    "itempool_level": lvl,
+                    "itempool_delay": delay,
+                    "itempool_items_per_tick": per_tick,
+                    "itempool_spit": spit,
+                },
+                is_drop=True,
+                needs_player=False,
+            )
+            return result
+        spawned = spawn_item_pool(name, lvl, qty, direction=spit)
+        result = {
+            "ok": True,
+            "message": f"Spawned item pool {name} x{spawned} at level {lvl} spit={spit}.",
+        }
         note_last_command(
             "spawn_itempool",
             label=f"Spawn {name}",
-            payload={"itempool_name": name, "itempool_count": int(count), "itempool_level": int(level)},
+            payload={
+                "itempool_name": name,
+                "itempool_count": qty,
+                "itempool_level": lvl,
+                "itempool_delay": delay,
+                "itempool_items_per_tick": per_tick,
+                "itempool_spit": spit,
+            },
             is_drop=True,
             needs_player=False,
         )
         return result
     except Exception as exc:
         return {"ok": False, "message": f"Spawn item pool failed: {exc!r}"}
+
+
+def _itempool_set_status(message: str) -> None:
+    global _itempool_last_status
+    _itempool_last_status = message
+
+
+def _itempool_progress_payload() -> dict[str, Any]:
+    remaining = len(_itempool_queue)
+    done = max(0, int(_itempool_total) - remaining) if _itempool_total else 0
+    percent = 0
+    if _itempool_total:
+        percent = int(round(100.0 * done / float(_itempool_total)))
+    return {
+        "ok": True,
+        "message": _itempool_last_status,
+        "active": _itempool_running,
+        "steps_remaining": remaining,
+        "steps_total": _itempool_total,
+        "steps_done": done,
+        "ok_count": _itempool_ok,
+        "failed_count": _itempool_failed,
+        "percent": percent,
+        "itempool_delay": _itempool_delay_s,
+        "itempool_items_per_tick": _itempool_items_per_tick,
+        "itempool_spit": _itempool_spit,
+    }
+
+
+def spawn_itempool_all(payload: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Queue every named pool (Electron sends the current filtered list)."""
+    global _itempool_queue, _itempool_running, _itempool_next_at
+    global _itempool_total, _itempool_ok, _itempool_failed
+    payload = payload or {}
+    raw_names = payload.get("itempool_names") or payload.get("names") or []
+    if isinstance(raw_names, str):
+        names = [part.strip() for part in raw_names.split(",") if part.strip()]
+    elif isinstance(raw_names, (list, tuple)):
+        names = [str(item).strip() for item in raw_names if str(item).strip()]
+    else:
+        names = []
+    if not names:
+        return {"ok": False, "message": "No filtered item pools to spawn."}
+    if len(names) > _ITEMPOOL_BULK_MAX:
+        names = names[:_ITEMPOOL_BULK_MAX]
+    level = _clamp_int(payload.get("itempool_level") or payload.get("level") or 60, 1, 60)
+    count = _clamp_int(payload.get("itempool_count") or payload.get("count") or 1, 1, 100)
+    delay, per_tick, spit = _apply_itempool_knobs(payload)
+    _itempool_queue = deque((name, int(level), int(count), int(count)) for name in names)
+    _itempool_total = len(_itempool_queue)
+    _itempool_ok = 0
+    _itempool_failed = 0
+    _itempool_next_at = time.monotonic()
+    _itempool_running = True
+    _itempool_set_status(
+        f"Queued {_itempool_total} filtered item pool(s) at level {level} x{count} "
+        f"(delay {delay:.2f}s, {per_tick}/tick, spit={spit})."
+    )
+    return _itempool_progress_payload()
+
+
+def spawn_itempool_cancel() -> dict[str, Any]:
+    global _itempool_queue, _itempool_running
+    remaining = len(_itempool_queue)
+    active = _itempool_running or remaining > 0
+    _itempool_queue = deque()
+    _itempool_running = False
+    _itempool_set_status(
+        f"Item pool bulk cancelled ({remaining} left)." if active else "No item pool bulk is active."
+    )
+    return _itempool_progress_payload()
+
+
+def spawn_itempool_status() -> dict[str, Any]:
+    return _itempool_progress_payload()
+
+
+def spawn_itempool_tick() -> None:
+    global _itempool_next_at, _itempool_running, _itempool_ok, _itempool_failed
+    if not _itempool_queue or time.monotonic() < _itempool_next_at:
+        return
+    row = _itempool_queue.popleft()
+    if len(row) >= 4:
+        name, level, remaining, original = row[0], row[1], row[2], row[3]
+    else:
+        name, level, remaining = row[0], row[1], row[2]
+        original = remaining
+    batch = max(1, min(int(_itempool_items_per_tick), int(remaining)))
+    start_index = max(0, int(original) - int(remaining))
+    try:
+        spawned = spawn_item_pool(
+            name,
+            int(level),
+            int(batch),
+            direction=_itempool_spit,
+            start_index=start_index,
+        )
+        leftover = int(remaining) - int(spawned)
+        if leftover > 0:
+            _itempool_queue.appendleft((name, int(level), leftover, int(original)))
+            _itempool_set_status(
+                f"Spawning {name} ({int(original) - leftover}/{original}; "
+                f"{len(_itempool_queue)} pool(s) left)."
+            )
+        else:
+            _itempool_ok += 1
+            _itempool_set_status(
+                f"Spawned {name} x{original} ({_itempool_ok + _itempool_failed}/{_itempool_total}; "
+                f"{len(_itempool_queue)} left)."
+            )
+    except Exception as exc:
+        _itempool_failed += 1
+        _itempool_set_status(f"{name} failed: {exc!r} ({len(_itempool_queue)} left).")
+    _itempool_next_at = time.monotonic() + max(0.0, float(_itempool_delay_s))
+    if not _itempool_queue:
+        _itempool_running = False
+        _itempool_set_status(
+            f"Item pool bulk finished. {_itempool_ok} ok, {_itempool_failed} fail "
+            f"of {_itempool_total}."
+        )
 
 
 def run_dev_spawner_action(action: str, payload: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -3818,11 +4435,11 @@ def movement_hide_ground_loot() -> dict[str, Any]:
 def movement_pull_ground_loot() -> dict[str, Any]:
     try:
         msg = pull_ground_loot_here()
-        ok = not str(msg).lower().startswith("pull loot failed") and "load into" not in str(msg).lower()
-        # treat "no ground loot" as ok success with informative message
-        if "failed" in str(msg).lower() and "no ground" not in str(msg).lower():
-            ok = False
-        return {"ok": ok or "no ground loot" in str(msg).lower() or "moved" in str(msg).lower(), "message": msg}
+        low = str(msg).lower()
+        ok = "failed" not in low and "load into" not in low
+        if "no ground loot" in low or "moved" in low:
+            ok = True
+        return {"ok": ok, "message": msg}
     except Exception as exc:
         return {"ok": False, "message": f"Pull loot failed: {exc!r}"}
 
@@ -4025,15 +4642,35 @@ def movement_toggle_no_target() -> dict[str, Any]:
         return {"ok": False, "message": f"Toggle no target failed: {exc!r}"}
 
 
-def movement_toggle_noclip() -> dict[str, Any]:
+def movement_toggle_noclip(payload: dict[str, Any] | None = None) -> dict[str, Any]:
     global _movement_noclip_enabled
+    payload = payload or {}
+    scope = str(payload.get("movement_scope") or payload.get("scope") or "all").strip().lower() or "all"
     _movement_noclip_enabled = not _movement_noclip_enabled
     try:
-        msg = set_noclip(_movement_noclip_enabled)
-        return {"ok": True, "message": msg}
+        msg = set_noclip(_movement_noclip_enabled, scope=scope)
+        return {"ok": True, "message": msg, "enabled": _movement_noclip_enabled, "scope": scope}
     except Exception as exc:
         _movement_noclip_enabled = not _movement_noclip_enabled
         return {"ok": False, "message": f"Toggle noclip failed: {exc!r}"}
+
+
+def movement_toggle_force_fly(payload: dict[str, Any] | None = None) -> dict[str, Any]:
+    global _movement_force_fly_enabled
+    payload = payload or {}
+    scope = str(payload.get("movement_scope") or payload.get("scope") or "all").strip().lower() or "all"
+    speed_raw = payload.get("fly_speed") or payload.get("movement_fly_speed")
+    try:
+        fly_speed = float(speed_raw) if speed_raw not in (None, "") else None
+    except Exception:
+        fly_speed = None
+    _movement_force_fly_enabled = not _movement_force_fly_enabled
+    try:
+        msg = set_force_fly(_movement_force_fly_enabled, scope=scope, fly_speed=fly_speed)
+        return {"ok": True, "message": msg, "enabled": _movement_force_fly_enabled, "scope": scope}
+    except Exception as exc:
+        _movement_force_fly_enabled = not _movement_force_fly_enabled
+        return {"ok": False, "message": f"Toggle force fly failed: {exc!r}"}
 
 
 def movement_set_time(value: object) -> dict[str, Any]:
@@ -4207,16 +4844,22 @@ def _chaos_run(effect_name: str, runner: Any, *args: Any) -> dict[str, Any]:
 
 
 def reset_skills() -> dict[str, Any]:
-    """Refund regular skill points for the Dev Tools / party selected player."""
-    pc, label = _chaos_selected_pc()
+    """Refund regular skill points for the local host pawn only. No party target."""
+    host_ok, host_msg = _challenge_is_host()
+    if not host_ok:
+        return {"ok": False, "message": "Reset Skill Tree is host / listen only — do not run as a join client."}
+    try:
+        pc = get_pc()
+    except Exception as exc:
+        return {"ok": False, "message": f"Reset skills host guard could not resolve host: {exc!r}"}
     if pc is None:
-        return {"ok": False, "message": label}
+        return {"ok": False, "message": "Reset skills: load into a character first."}
     try:
         msg = _reset_skills_for_pc(pc)
     except Exception as exc:
-        return {"ok": False, "message": f"Reset skills failed for {label}: {exc!r}"}
+        return {"ok": False, "message": f"Reset skills failed for host: {exc!r}"}
     ok = str(msg).lower().startswith("reset skills ok")
-    return {"ok": ok, "message": f"Reset skills → {label}: {msg}"}
+    return {"ok": ok, "message": f"Reset skills → host only: {msg}", "host_only": True}
 
 
 def chaos_launch(z: object = None) -> dict[str, Any]:
@@ -4252,8 +4895,192 @@ def chaos_drop_backpack_targeted() -> dict[str, Any]:
     return _chaos_run("Drop backpack", streamer_chaos.drop_backpack_for_pc)
 
 
-def chaos_empty_backpack() -> dict[str, Any]:
-    return _chaos_run("Empty backpack", streamer_chaos.empty_backpack_for_pc)
+def chaos_empty_backpack(payload: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Refresh the target's inventory, snapshot backpack @U serials, then EmptyContainer."""
+    payload = payload or {}
+    pc, label = _chaos_selected_pc()
+    if pc is None:
+        return {"ok": False, "message": label}
+    snapshot = _capture_deleted_backpack_snapshot(payload)
+    try:
+        msg = streamer_chaos.empty_backpack_for_pc(pc)
+    except Exception as exc:
+        return {
+            "ok": False,
+            "message": f"Empty backpack failed for {label}: {exc!r}",
+            "deleted_backpack": _deleted_backpack_status(),
+        }
+    ok = streamer_chaos.result_ok(str(msg))
+    captured = 0
+    if ok:
+        captured = _store_deleted_backpack_snapshot(snapshot)
+        extra = (
+        f" captured {captured} serial(s) for undo"
+        if captured
+        else " (nothing captured for undo — inventory read failed or backpack was empty)"
+    )
+    read_err = str(snapshot.get("read_error") or "").strip()
+    if read_err and not captured:
+        extra += f" Read failed: {read_err}"
+        if "ZipImportError" in read_err or "bad local file header" in read_err:
+            extra += " Quit Borderlands 4 fully, then recopy MattsSDKBoostingTools.sdkmod while the game is closed."
+    return {
+        "ok": ok,
+        "message": f"Empty backpack → {label}: {msg}{extra}",
+        "deleted_backpack": _deleted_backpack_status(),
+        "captured_count": captured,
+        "serials": list(snapshot.get("serials") or []) if captured else [],
+    }
+
+
+_BACKPACK_DELETE_CAP = 2000
+_backpack_delete_memory: dict[int, dict[str, Any]] = {}
+
+
+def _deleted_backpack_status() -> dict[str, Any]:
+    players = []
+    items = 0
+    for idx in sorted(_backpack_delete_memory):
+        entry = _backpack_delete_memory[idx]
+        count = int(entry.get("count") or len(entry.get("serials") or []))
+        items += count
+        players.append({
+            "index": int(idx),
+            "name": str(entry.get("name") or f"P{int(idx) + 1}"),
+            "count": count,
+        })
+    return {
+        "players": players,
+        "player_count": len(players),
+        "item_count": items,
+    }
+
+
+def _serials_from_payload(payload: dict[str, Any] | None) -> list[str]:
+    payload = payload or {}
+    raw = payload.get("serials") or payload.get("serial_text") or payload.get("serials_text") or ""
+    values: list[str] = []
+    if isinstance(raw, str):
+        values.extend(part.strip() for part in raw.replace("\r", "\n").split("\n") if part.strip())
+        if len(values) == 1 and "," in values[0]:
+            values = [part.strip() for part in values[0].split(",") if part.strip()]
+    elif isinstance(raw, (list, tuple)):
+        values.extend(str(item).strip() for item in raw if str(item).strip())
+    out: list[str] = []
+    seen: set[str] = set()
+    for item in values:
+        if not item.startswith("@U") or item in seen:
+            continue
+        seen.add(item)
+        out.append(item)
+        if len(out) >= _BACKPACK_DELETE_CAP:
+            break
+    return out
+
+
+def _capture_deleted_backpack_snapshot(payload: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Refresh live inventory for the selected player, then copy backpack serials."""
+    refresh_players()
+    idx = get_selected_player_index()
+    name = get_selected_player_name() or ""
+    serials = _serials_from_payload(payload)
+    read_error = ""
+    if idx is None:
+        return {"index": None, "name": name, "serials": serials, "count": len(serials), "read_error": "No party player selected."}
+    if not serials:
+        try:
+            from . import item_serial_reader
+
+            snapshot = item_serial_reader.read_inventory_for_party_index(
+                idx,
+                player_name=name or f"Player {idx}",
+                backpack_limit=max(_BACKPACK_DELETE_CAP, 2000),
+            )
+            rows = list(snapshot.get("backpack") or [])
+            seen: set[str] = set()
+            for entry in rows:
+                serial = str((entry or {}).get("serial") or "").strip()
+                if not serial.startswith("@U") or serial in seen:
+                    continue
+                seen.add(serial)
+                serials.append(serial)
+                if len(serials) >= _BACKPACK_DELETE_CAP:
+                    break
+        except Exception as exc:
+            read_error = f"{type(exc).__name__}: {exc}"
+            serials = []
+    return {
+        "index": int(idx),
+        "name": name or f"P{int(idx) + 1}",
+        "serials": serials,
+        "count": len(serials),
+        "read_error": read_error,
+    }
+
+
+def _store_deleted_backpack_snapshot(snapshot: dict[str, Any] | None) -> int:
+    if not snapshot:
+        return 0
+    idx = snapshot.get("index")
+    serials = [str(item).strip() for item in (snapshot.get("serials") or []) if str(item).strip()]
+    if idx is None or not serials:
+        return 0
+    _backpack_delete_memory[int(idx)] = {
+        "index": int(idx),
+        "name": str(snapshot.get("name") or f"P{int(idx) + 1}"),
+        "serials": serials,
+        "count": len(serials),
+    }
+    return len(serials)
+
+
+def chaos_undo_empty_backpack(payload: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Give stored deleted-backpack serials to the current target player."""
+    payload = payload or {}
+    pc, label = _chaos_selected_pc()
+    if pc is None:
+        return {"ok": False, "message": label, "deleted_backpack": _deleted_backpack_status()}
+    serials = _serials_from_payload(payload)
+    if not serials:
+        idx = get_selected_player_index()
+        if idx is not None and int(idx) in _backpack_delete_memory:
+            serials = list(_backpack_delete_memory[int(idx)].get("serials") or [])
+        elif _backpack_delete_memory:
+            last_key = sorted(_backpack_delete_memory)[-1]
+            serials = list(_backpack_delete_memory[last_key].get("serials") or [])
+    serials = [str(item).strip() for item in serials if str(item).strip().startswith("@U")]
+    if not serials:
+        return {
+            "ok": False,
+            "message": "No deleted backpack memory to restore. Empty Backpack first after inventory refresh.",
+            "deleted_backpack": _deleted_backpack_status(),
+        }
+    result = _deliver_serials_with_target(serials, "selected")
+    result["deleted_backpack"] = _deleted_backpack_status()
+    if result.get("ok"):
+        result["message"] = (
+            f"Undo empty backpack → {label}: queued {len(serials)} serial(s). "
+            f"{result.get('message') or ''}"
+        ).strip()
+    return result
+
+
+def chaos_clear_empty_backpack_memory() -> dict[str, Any]:
+    status = _deleted_backpack_status()
+    _backpack_delete_memory.clear()
+    players = int(status.get("player_count") or 0)
+    items = int(status.get("item_count") or 0)
+    if not players:
+        return {
+            "ok": True,
+            "message": "Deleted backpack memory was already empty.",
+            "deleted_backpack": _deleted_backpack_status(),
+        }
+    return {
+        "ok": True,
+        "message": f"Cleared deleted backpack memory ({players} player(s), {items} item(s)).",
+        "deleted_backpack": _deleted_backpack_status(),
+    }
 
 
 def chaos_kill() -> dict[str, Any]:
@@ -4375,9 +5202,19 @@ def movement_infinite_jump_refresh() -> dict[str, Any]:
 def movement_infinite_jump_all(enabled: bool) -> dict[str, Any]:
     try:
         msg = set_infinite_jump_all(bool(enabled))
-        return {"ok": True, "message": msg}
+        return {"ok": True, "message": msg, "enabled": bool(enabled)}
     except Exception as exc:
         return {"ok": False, "message": f"Infinite jump all toggle failed: {exc!r}"}
+
+
+def movement_infinite_jump_toggle(payload: dict[str, Any] | None = None) -> dict[str, Any]:
+    payload = payload or {}
+    scope = str(payload.get("movement_scope") or payload.get("scope") or "all").strip().lower() or "all"
+    try:
+        msg, enabled = toggle_infinite_jump_for_scope(scope)
+        return {"ok": True, "message": msg, "enabled": bool(enabled), "scope": scope}
+    except Exception as exc:
+        return {"ok": False, "message": f"Infinite jump toggle failed: {exc!r}"}
 
 
 def movement_infinite_jump_selected(index_or_name: object | None = None) -> dict[str, Any]:
@@ -4777,6 +5614,17 @@ def _ensure_inventory_read_target(target_player: object | None = None) -> dict[s
     return ensure_selected_player(prefer_host=True)
 
 
+def _zipimport_reload_hint(exc: BaseException) -> str:
+    name = type(exc).__name__
+    detail = str(exc)
+    if name != "ZipImportError" and "bad local file header" not in detail:
+        return ""
+    return (
+        " The .sdkmod zip was replaced while Borderlands 4 still had it mapped. "
+        "Fully quit the game, copy MattsSDKBoostingTools.sdkmod into sdk_mods while closed, then relaunch."
+    )
+
+
 def read_equipped_serials(target_player: object | None = None) -> dict[str, Any]:
     """Read equipped-slot @U serials for the selected party player (P1–P4 target)."""
     ensured = _ensure_inventory_read_target(target_player)
@@ -4803,7 +5651,7 @@ def read_equipped_serials(target_player: object | None = None) -> dict[str, Any]
                 mode="equipped",
             )
     except Exception as exc:
-        return {"ok": False, "message": f"{reading} — Read equipped serials failed: {exc!r}"}
+        return {"ok": False, "message": f"{reading} — Read equipped serials failed: {exc!r}{_zipimport_reload_hint(exc)}"}
     title = f"{reading} — Equipped"
     result = _store_read_serials(entries, title=title, empty_detail=empty_detail)
     note = _serial_read_host_note(idx)
@@ -4844,7 +5692,7 @@ def read_backpack_serials(target_player: object | None = None) -> dict[str, Any]
                 mode="backpack",
             )
     except Exception as exc:
-        return {"ok": False, "message": f"{reading} — Read backpack serials failed: {exc!r}"}
+        return {"ok": False, "message": f"{reading} — Read backpack serials failed: {exc!r}{_zipimport_reload_hint(exc)}"}
     title = f"{reading} — Backpack"
     result = _store_read_serials(entries, title=title, empty_detail=empty_detail)
     note = _serial_read_host_note(idx)
@@ -4876,7 +5724,7 @@ def read_inventory(target_player: object | None = None) -> dict[str, Any]:
             player_name=name or f"Player {idx}",
         )
     except Exception as exc:
-        return {"ok": False, "message": f"{reading} — Read inventory failed: {exc!r}"}
+        return {"ok": False, "message": f"{reading} — Read inventory failed: {exc!r}{_zipimport_reload_hint(exc)}"}
 
     equipped = list(snapshot.get("equipped") or [])
     backpack = list(snapshot.get("backpack") or [])

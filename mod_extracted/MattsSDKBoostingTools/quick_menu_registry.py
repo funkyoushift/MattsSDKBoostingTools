@@ -198,12 +198,20 @@ ACTION_CATALOG: dict[str, dict[str, Any]] = {
     "set_level": {"basic": "Set Level", "aliases": ["Level"]},
     "open_golden_chest": {"basic": "Open Chest", "aliases": ["OpenGC", "Chest"]},
     "close_golden_chest": {"basic": "Close Chest", "aliases": ["CloseGC"]},
+    "spawn_golden_chest": {"basic": "Spawn Golden Chest", "aliases": ["SpawnGC"]},
+    "spawn_black_market": {"basic": "Spawn Black Market", "aliases": ["SpawnBM", "BMVM"]},
+    "black_market_clear_cooldown": {"basic": "Clear BM Cooldown", "aliases": ["BM Cooldown"]},
+    "black_market_status": {"basic": "Black Market Status", "aliases": ["BM Status"]},
+    "rewards_open_everyone": {"basic": "Open Rewards Everyone", "aliases": ["Rewards All", "Open Rewards"]},
     "open_bank": {"basic": "Open Bank", "aliases": ["Bank"]},
     "drop_all_shinies": {"basic": "Drop Shinies", "aliases": ["Shinies", "DropAll"]},
     "shiny_selected": {"basic": "Shinies: Selected Player", "aliases": ["Shiny Sel"]},
     "shiny_all": {"basic": "Shinies: All Players", "aliases": ["Shiny All"]},
     "shiny_nonhost": {"basic": "Shinies: Other Players", "aliases": ["Shiny NH"]},
     "spawn_itempool": {"basic": "Spawn Item Pool", "aliases": ["Spawn Pool", "ItemPool"]},
+    "spawn_itempool_all": {"basic": "Spawn All Filtered Pools", "aliases": ["Spawn All Pools"]},
+    "spawn_itempool_cancel": {"basic": "Cancel Item Pool Bulk", "aliases": ["Pool Cancel"]},
+    "spawn_itempool_status": {"basic": "Item Pool Bulk Status", "aliases": ["Pool Status"]},
     "give_serial_selected": {"basic": "Give Serials: Selected Player", "aliases": ["Serial Sel"]},
     "give_serial_all": {"basic": "Give Serials: All Players", "aliases": ["Serial All"]},
     "give_serial_nonhost": {"basic": "Give Serials: Other Players", "aliases": ["Serial NH"]},
@@ -218,8 +226,15 @@ ACTION_CATALOG: dict[str, dict[str, Any]] = {
     "location_bookmark_list": {"basic": "List XYZ Bookmarks", "aliases": ["List Loc"]},
     "uvh_boost_all": {"basic": "UVH Boost All", "aliases": ["UVH"]},
     "uvh_boost_cancel": {"basic": "Cancel UVH", "aliases": ["UVH Cancel"]},
+    "uvh_boost_resume": {"basic": "Resume UVH", "aliases": ["UVH Resume"]},
+    "uvh_boost_status": {"basic": "UVH Status", "aliases": ["UVH Status"]},
     "toggle_debug_cam": {"basic": "Toggle Debug Cam", "aliases": ["Debug Cam"]},
-    "teleport_debug_cam": {"basic": "Teleport Debug Cam", "aliases": ["Cam Teleport"]},
+    "disable_debug_cam": {"basic": "Disable Debug Cam", "aliases": ["Cam Off", "Freecam Off"]},
+    "teleport_debug_cam": {"basic": "Teleport to Debug Cam", "aliases": ["Cam Teleport"]},
+    "debug_cam_to_target": {"basic": "Pull Cam to Target", "aliases": ["Cam To Target"]},
+    "debug_cam_copy_location": {"basic": "Copy Cam Location", "aliases": ["Copy Cam XYZ"]},
+    "debug_cam_set_speed": {"basic": "Set Debug Cam Speed", "aliases": ["Cam Speed"]},
+    "debug_cam_set_distance": {"basic": "Set Debug Cam Distance", "aliases": ["Cam Distance"]},
     "devperk_0": {"basic": "Give Experience", "aliases": ["XP"]},
     "devperk_1": {"basic": "Give 1M Cash", "aliases": ["1M Cash"]},
     "devperk_2": {"basic": "Give 100k Eridium", "aliases": ["100k E"]},
@@ -246,6 +261,7 @@ ACTION_CATALOG: dict[str, dict[str, Any]] = {
     "movement_preset_fastglide": {"basic": "Fast Glide", "aliases": ["Glide"]},
     "movement_toggle_no_target": {"basic": "Toggle No Target", "aliases": ["No Target"]},
     "movement_toggle_noclip": {"basic": "Toggle Noclip", "aliases": ["Noclip"]},
+    "movement_toggle_force_fly": {"basic": "Toggle Force Fly", "aliases": ["Force Fly", "Fly"]},
     "movement_players_only": {"basic": "Players Only", "aliases": ["Players"]},
     "movement_delete_ground_items": {"basic": "Clear Ground Loot", "aliases": ["Destroy Junk", "Hard Clear"]},
     "movement_hide_ground_loot": {"basic": "Clear Loot (Hide)", "aliases": ["Soft Clear", "Hide Loot"]},
@@ -259,9 +275,10 @@ ACTION_CATALOG: dict[str, dict[str, Any]] = {
     "movement_reset_time": {"basic": "Reset Time", "aliases": ["Time 1x"]},
     "movement_infinite_jump_all_on": {"basic": "Infinite Jump: All On", "aliases": ["IJ All On"]},
     "movement_infinite_jump_all_off": {"basic": "Infinite Jump: All Off", "aliases": ["IJ All Off"]},
+    "movement_infinite_jump_toggle": {"basic": "Toggle Infinite Jump", "aliases": ["IJ Toggle", "Infinite Jump"]},
     "movement_infinite_jump_selected_on": {"basic": "Infinite Jump: Selected On", "aliases": ["IJ Sel On"]},
     "movement_infinite_jump_selected_off": {"basic": "Infinite Jump: Selected Off", "aliases": ["IJ Sel Off"]},
-    "movement_infinite_jump_toggle_selected": {"basic": "Toggle Infinite Jump", "aliases": ["IJ Toggle"]},
+    "movement_infinite_jump_toggle_selected": {"basic": "Toggle Infinite Jump (Named)", "aliases": ["IJ Named"]},
     "movement_teleport_to_slot": {"basic": "Teleport to Slot", "aliases": ["TP Slot"]},
     "movement_teleport_selected_to_me": {"basic": "Teleport Selected to Me", "aliases": ["TP To Me"]},
     "movement_teleport_me_to_selected": {"basic": "Teleport Me to Selected", "aliases": ["TP To Them"]},
@@ -272,6 +289,7 @@ ACTION_CATALOG: dict[str, dict[str, Any]] = {
     "vehicle_preset_apply": {"basic": "Vehicle Preset", "aliases": ["Veh Preset"]},
     "vehicle_spawn": {"basic": "Spawn Vehicle", "aliases": ["Veh Spawn"]},
     "vehicle_catalog": {"basic": "Vehicle Catalog", "aliases": ["Veh List"]},
+    "complete_challenges_all": {"basic": "Complete All Challenges", "aliases": ["Chal All", "Complete Challenges"]},
     "complete_challenges_cancel": {"basic": "Cancel Challenges", "aliases": ["Chal Cancel"]},
     "complete_challenges_status": {"basic": "Challenge Status", "aliases": ["Chal Status"]},
     "rarity_apply": {"basic": "Apply Rarity", "aliases": ["Rarity"]},
@@ -302,6 +320,8 @@ ACTION_CATALOG: dict[str, dict[str, Any]] = {
     "chaos_launch": {"basic": "Chaos Launch", "aliases": ["Launch", "Yeet"]},
     "chaos_drop_backpack": {"basic": "Drop All Backpack", "aliases": ["Drop All", "Drop Bag", "Drop Backpack", "Spill Bag"]},
     "chaos_empty_backpack": {"basic": "Chaos Empty Bag", "aliases": ["Empty Bag", "Delete Bag"]},
+    "chaos_undo_empty_backpack": {"basic": "Undo Empty Backpack", "aliases": ["Undo Delete Bag", "Restore Bag"]},
+    "chaos_clear_empty_backpack_memory": {"basic": "Clear Deleted Bag Memory", "aliases": ["Clear Bag Memory"]},
     "chaos_kill": {"basic": "Chaos Kill", "aliases": ["Kill"]},
     "chaos_ffyl": {"basic": "Chaos FFYL", "aliases": ["FFYL", "Down"]},
     "chaos_invert_look": {"basic": "Chaos Invert Look", "aliases": ["Invert"]},
@@ -331,6 +351,11 @@ NATIVE_PICKER_ACTIONS: tuple[str, ...] = (
     "max_spec_level",
     "open_golden_chest",
     "close_golden_chest",
+    "spawn_golden_chest",
+    "spawn_black_market",
+    "rewards_open_everyone",
+    "reset_skills",
+    "uvh_boost_resume",
     "open_bank",
     "drop_all_shinies",
     "shiny_selected",
@@ -341,18 +366,21 @@ NATIVE_PICKER_ACTIONS: tuple[str, ...] = (
     "read_backpack_serials",
     "read_inventory",
     "uvh_boost_all",
+    "complete_challenges_all",
+    "complete_challenges_cancel",
     "movement_preset_fast",
     "movement_preset_veryfast",
     "movement_delete_ground_items",
     "movement_hide_ground_loot",
     "movement_pull_ground_loot",
+    "movement_toggle_force_fly",
+    "movement_toggle_noclip",
     "movement_super_dash",
     "movement_super_dash_toggle",
     "movement_azzy_super_dash",
     "movement_azzy_super_dash_toggle",
     "movement_zero_vault",
-    "movement_infinite_jump_all_on",
-    "movement_infinite_jump_all_off",
+    "movement_infinite_jump_toggle",
     "rarity_only_legendary",
     "rarity_only_pearlescent",
     "cxp_toggle",
@@ -362,6 +390,11 @@ NATIVE_PICKER_ACTIONS: tuple[str, ...] = (
     "instant_holds_toggle",
     "instant_holds_off",
     "fog_of_war_clear",
+    "fog_of_war_toggle",
+    "toggle_debug_cam",
+    "disable_debug_cam",
+    "debug_cam_to_target",
+    "debug_cam_copy_location",
     "devperk_3",
     "devperk_7",
     "set_backpack_bank_selected",
@@ -387,7 +420,7 @@ NEEDS_PLAYER_ACTIONS = frozenset({
     "kick_player",
     "set_backpack_bank_selected",
     "fog_of_war_clear",
-    "reset_skills",
+    "fog_of_war_toggle",
     "devperk_0",
     "devperk_1",
     "devperk_2",
@@ -472,7 +505,18 @@ ALLOWED_PAYLOAD_KEYS: dict[str, frozenset[str]] = {
     "set_level": frozenset({"xp_track", "level"}),
     "set_backpack_bank_selected": frozenset({"backpack_size", "bank_size"}),
     "set_backpack_bank_all": frozenset({"backpack_size", "bank_size"}),
-    "spawn_itempool": frozenset({"itempool_name", "itempool_count", "itempool_level"}),
+    "spawn_itempool": frozenset({
+        "itempool_name", "itempool_count", "itempool_level",
+        "itempool_delay", "itempool_items_per_tick", "itempool_spit",
+        "delay", "items_per_tick", "spit",
+    }),
+    "spawn_itempool_all": frozenset({
+        "itempool_names", "itempool_count", "itempool_level",
+        "itempool_delay", "itempool_items_per_tick", "itempool_spit",
+        "delay", "items_per_tick", "spit",
+    }),
+    "movement_toggle_noclip": frozenset({"movement_scope", "scope"}),
+    "movement_toggle_force_fly": frozenset({"movement_scope", "scope", "fly_speed", "movement_fly_speed"}),
     "give_serial_selected": _SERIAL_PAYLOAD_KEYS,
     "give_serial_all": _SERIAL_PAYLOAD_KEYS,
     "give_serial_nonhost": _SERIAL_PAYLOAD_KEYS,
@@ -483,6 +527,7 @@ ALLOWED_PAYLOAD_KEYS: dict[str, frozenset[str]] = {
     "location_bookmark_delete": frozenset({"bookmark_name", "name"}),
     "movement_apply_all": _MOVEMENT_APPLY_KEYS,
     "movement_set_time": frozenset({"movement_time_dilation"}),
+    "movement_infinite_jump_toggle": frozenset({"movement_scope", "scope"}),
     "movement_infinite_jump_selected_on": frozenset({"target_player", "infinite_jump_target"}),
     "movement_infinite_jump_selected_off": frozenset({"target_player", "infinite_jump_target"}),
     "movement_infinite_jump_toggle_selected": frozenset({"target_player", "infinite_jump_target"}),
@@ -507,6 +552,8 @@ ALLOWED_PAYLOAD_KEYS: dict[str, frozenset[str]] = {
     "cxp_toggle": frozenset({"multiplier", "cxp_multiplier"}),
     "cxp_set_mult": frozenset({"multiplier", "cxp_multiplier"}),
     "fog_of_war_clear": frozenset({"target_player", "name"}),
+    "debug_cam_set_speed": frozenset({"debug_cam_speed", "speed"}),
+    "debug_cam_set_distance": frozenset({"debug_cam_distance", "distance"}),
 }
 
 MAX_SERIAL_TEXT_LEN = 250_000
@@ -596,6 +643,20 @@ def sanitize_payload(action: str, raw: object) -> dict[str, Any]:
             result[key] = max(1, min(100, _safe_int(source[key], 1)))
         elif key == "itempool_level":
             result[key] = max(1, min(60, _safe_int(source[key], 60)))
+        elif key == "itempool_names":
+            raw_names = source[key]
+            if isinstance(raw_names, str):
+                names = [part.strip()[:MAX_ITEMPOOL_NAME_LEN] for part in raw_names.split(",") if part.strip()]
+            elif isinstance(raw_names, (list, tuple)):
+                names = [str(item).strip()[:MAX_ITEMPOOL_NAME_LEN] for item in raw_names if str(item).strip()]
+            else:
+                names = []
+            result[key] = names[:200]
+        elif key in ("movement_scope", "scope"):
+            value = str(source[key] or "all").strip().lower()
+            result[key] = value if value in {"local", "all", "others", "other", "nonhost"} else "all"
+        elif key in ("fly_speed", "movement_fly_speed"):
+            result[key] = max(100.0, min(20000.0, _safe_float(source[key], 2400.0)))
         elif key in ("travel_map", "travel_station"):
             result[key] = str(source[key] or "").strip()[:MAX_DESTINATION_LEN]
         elif key == "serial_text":

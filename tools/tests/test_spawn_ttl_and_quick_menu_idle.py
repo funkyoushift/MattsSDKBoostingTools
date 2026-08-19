@@ -41,6 +41,27 @@ def test_quick_menu_closed_tick_is_30hz_or_slower():
     source = (PKG / "quick_menu.py").read_text(encoding="utf-8")
     assert "TICK_INTERVAL_CLOSED_S = 1.0 / 30.0" in source
     assert "TICK_INTERVAL_OPEN_S = 1.0 / 120.0" in source
+    assert "camera_tick.register(\"quick_menu\"" in source
+
+
+def test_camera_tick_is_a_single_shared_hook():
+    camera = (PKG / "camera_tick.py").read_text(encoding="utf-8")
+    movement = (PKG / "movement_adjustments.py").read_text(encoding="utf-8")
+    gold = (PKG / "golden_chest_keybinds.py").read_text(encoding="utf-8")
+    chaos = (PKG / "streamer_chaos.py").read_text(encoding="utf-8")
+    cxp = (PKG / "extreme_combat_xp.py").read_text(encoding="utf-8")
+    assert 'HOOK_ID = "msbt_shared_camera_tick_v1"' in camera
+    assert "MIN_INTERVAL_S = 1.0 / 120.0" in camera
+    assert "hook_identifier=\"matts_sdk_boosting_tools_backend_infinite_jump_camera_v1\"" not in movement
+    assert "hook_identifier=\"matts_sdk_boosting_tools_super_dash_camera_v2\"" not in movement
+    assert "msbt_golden_chest_close_tick_v1" not in gold
+    assert "msbt_streamer_chaos_launch_v1" not in chaos
+    assert "msbt_cxp_camera_tick_v1" not in cxp
+    assert 'camera_tick.register("infinite_jump"' in movement
+    assert 'camera_tick.register("super_dash"' in movement
+    assert 'camera_tick.register("golden_chest"' in gold
+    assert 'camera_tick.register("streamer_chaos"' in chaos
+    assert 'camera_tick.register("cxp"' in cxp
 
 
 def test_spawn_prune_enforces_ttl_on_read():

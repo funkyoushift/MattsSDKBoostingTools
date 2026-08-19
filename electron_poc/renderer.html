@@ -9,9 +9,33 @@
   <link rel="stylesheet" href="vendor/gridstack/gridstack.min.css">
 </head>
 <body>
+  <div id="msbtBootSplash" class="msbt-boot-splash" role="dialog" aria-modal="true" aria-labelledby="msbtBootSplashTitle">
+    <div class="msbt-boot-splash-card">
+      <img class="msbt-boot-logo" src="branding/fu-logo.png" alt="FunkYouSHiFT">
+      <p id="msbtBootSplashTitle" class="msbt-boot-title">Welcome</p>
+      <p class="msbt-boot-body">No ads. No store. No paycheck. Just people who like helping Vault Hunters.</p>
+      <div class="msbt-boot-links">
+        <button id="bootWelcomeDiscordBtn" type="button">Join the Discord for support</button>
+        <button id="bootWelcomeTipBtn" type="button">Leave a tip</button>
+      </div>
+      <label class="msbt-boot-dont-show" for="bootWelcomeDontShow">
+        <input id="bootWelcomeDontShow" type="checkbox">
+        Don't show this next time
+      </label>
+      <div class="button-row wrap msbt-boot-actions">
+        <button id="bootWelcomeCloseBtn" type="button">Close</button>
+      </div>
+    </div>
+  </div>
   <header class="app-header">
     <div class="header-brand">
-      <h1>Matt's SDK Boosting Tools</h1>
+      <div class="header-brand-row">
+        <h1>Matt's SDK Boosting Tools</h1>
+        <button id="funkPoweredMark" class="funk-powered-mark" type="button" title="FunkYouSHiFT">
+          <img src="branding/fu-logo.png" alt="">
+          <span>Powered by Funk</span>
+        </button>
+      </div>
       <p class="header-tagline">Desktop control panel · offline serial tools · live actions need the SDK mod</p>
       <p id="appVersionLine" class="muted-line">Loading version info...</p>
     </div>
@@ -64,16 +88,16 @@
     <button data-tab="updates">Updates</button>
   </nav>
 
-  <section id="serialDeliveryPanel" class="serial-delivery-panel hidden" aria-live="polite">
+  <section id="msbtBulkProgress" class="serial-delivery-panel hidden" aria-live="polite">
     <div class="serial-delivery-heading">
-      <strong>Serial Delivery</strong>
-      <span id="serialDeliveryLabel">Idle</span>
+      <strong id="msbtBulkTitle">Bulk Progress</strong>
+      <span id="msbtBulkLabel">Idle</span>
     </div>
     <div class="progress-track">
-      <div id="serialDeliveryBar" class="progress-bar" style="width: 0%"></div>
+      <div id="msbtBulkBar" class="progress-bar" style="width: 0%"></div>
     </div>
-    <div id="serialDeliveryMessage" class="status-line">No active serial delivery.</div>
-    <div id="serialDeliveryMeta" class="muted-line"></div>
+    <div id="msbtBulkMessage" class="status-line">No bulk job active.</div>
+    <div id="msbtBulkMeta" class="muted-line"></div>
   </section>
 
   <section id="startupOak2Modal" class="modal-shell hidden" role="dialog" aria-modal="true" aria-labelledby="startupOak2Title">
@@ -192,87 +216,198 @@
       <div class="grid two">
         <section class="panel gold boost-essentials-panel" data-msbt-panel="boost-essentials" data-msbt-span="8" data-msbt-title="Essentials">
           <h2>Essentials</h2>
-          <div class="boost-essentials-layout">
-            <div class="boost-essentials-main">
-              <div class="button-grid">
-                <button data-action="max_all">Max All</button>
-                <button data-action="chaos_drop_backpack" data-host-only="1" title="Safety: always drops the host backpack, regardless of Target Player scope.">Drop All Backpack (Host)</button>
-                <button data-action="drop_all_shinies">Shinies: Drop</button>
-                <button id="shinyDeliverBtn" type="button">Shinies: Deliver</button>
-                <button data-action="devperk_4">All Customs + Hovers</button>
-                <button data-action="open_golden_chest">Open Golden Chest</button>
-                <button data-action="close_golden_chest">Close Golden Chest</button>
-                <button data-movement-action="movement_pull_ground_loot">Pull Loot Here</button>
-                <button data-movement-action="movement_super_dash">Super Dash</button>
-                <button data-movement-action="movement_super_dash_toggle">Super Dash Toggle</button>
-              </div>
-              <div class="boost-essentials-section">
-                <h3>UVH 1–7</h3>
-                <p class="muted-line">UVH N runs tiers 1 through N for the live lobby.</p>
-                <div class="button-grid compact-buttons">
-                  <button data-action="uvh_boost_tier_1">UVH 1</button>
-                  <button data-action="uvh_boost_tier_2">UVH 2</button>
-                  <button data-action="uvh_boost_tier_3">UVH 3</button>
-                  <button data-action="uvh_boost_tier_4">UVH 4</button>
-                  <button data-action="uvh_boost_tier_5">UVH 5</button>
-                  <button data-action="uvh_boost_tier_6">UVH 6</button>
-                  <button data-action="uvh_boost_tier_7">UVH 7</button>
-                  <button data-action="uvh_boost_all">Run All 1–7</button>
-                  <button data-action="uvh_boost_status">Status</button>
-                  <button data-action="uvh_boost_cancel" class="danger">Cancel</button>
-                </div>
-              </div>
-              <div class="boost-essentials-section">
-                <h3>Combat XP Multiplier</h3>
-                <div class="inline-fields boost-combat-fields">
-                  <label>
-                    Multiplier
-                    <input id="cxpMultiplier" type="number" min="1" max="1000000" step="1" value="1000">
-                  </label>
-                  <button id="cxpToggleBtn" type="button">Combat XP Multiplier: Off</button>
-                </div>
-              </div>
+          <p class="muted-line">Daily lobby verbs. Shinies Deliver follows Connection &amp; Scope; Drop stays a ground drop. Drop All Backpack is host-only.</p>
+          <div class="button-grid">
+            <button data-action="max_all">Max All</button>
+            <button data-action="chaos_drop_backpack" data-host-only="1" title="Safety: always drops the host backpack, regardless of Connection & Scope.">Drop All Backpack (Host)</button>
+            <button data-action="drop_all_shinies">Shinies: Drop</button>
+            <button id="shinyDeliverBtn" type="button">Shinies: Deliver</button>
+            <button data-action="devperk_4">All Customs + Hovers</button>
+            <button data-movement-action="movement_super_dash">Super Dash</button>
+            <button data-movement-action="movement_super_dash_toggle">Super Dash Toggle</button>
+          </div>
+          <div class="button-row wrap boost-essentials-instant">
+            <button id="instantDropsToggleBtn" type="button">Instant Drops: Off</button>
+            <button id="instantHoldsToggleBtn" type="button">Instant Holds: Off</button>
+          </div>
+          <p class="muted-line">Set or clear Instant Drops / Instant Holds hotkeys in oak2’s Mods keybind UI. Use <strong>+ QM</strong> to pin either toggle to F7.</p>
+          <div id="liveModsStatus" class="status-line compact-note">Combat XP / Instant Drops / Instant Holds idle.</div>
+        </section>
+
+        <section class="panel cyan" data-msbt-panel="boost-target" data-msbt-span="4" data-msbt-title="Connection & Scope">
+          <h2>Connection &amp; Scope</h2>
+          <p>Public Boosting cheats use Local, All, Other players, or a named party member. Kick uses the named roster. Drop All Backpack, Reset Skill Tree, and chest/black-market spawns are host-only.</p>
+          <div id="bridgeSummary" class="status-line warning">Checking game connection...</div>
+          <div class="button-row wrap" role="group" aria-label="Boost scope">
+            <button type="button" data-boost-scope="local">Local</button>
+            <button type="button" data-boost-scope="all">All Players</button>
+            <button type="button" data-boost-scope="nonhost">Other Players</button>
+            <button type="button" data-boost-scope="selected">Named Player</button>
+            <button type="button" data-msbt-bridge-refresh class="secondary">Refresh Status</button>
+          </div>
+            <label for="targetSelect">Named player</label>
+          <div class="target-row">
+            <select id="targetSelect">
+              <option value="">No players loaded — click Refresh Status</option>
+            </select>
+            <button id="firstTargetBtn" type="button">Use First Player</button>
+          </div>
+          <label for="boostSpawnAnchor">Spawn near</label>
+          <select id="boostSpawnAnchor">
+            <option value="local" selected>Me</option>
+            <option value="selected">Named player</option>
+            <option value="party">Other party member</option>
+            <option value="npc_nearest">Nearest NPC</option>
+          </select>
+          <p class="muted-line">Spawn Near is session-wide for item pools and Dev Spawner. Named player uses the roster above.</p>
+          <div class="button-row wrap">
+            <button id="kickTargetBtn" type="button" class="danger">Kick Player</button>
+          </div>
+          <div id="targetSummary" class="status-line">Boost scope: Local</div>
+        </section>
+      </div>
+
+      <div class="grid two">
+        <section class="panel cyan" data-msbt-panel="boost-ground-loot" data-msbt-span="6" data-msbt-title="Ground Loot">
+          <h2>Ground Loot</h2>
+          <div class="button-row wrap ground-loot-actions">
+            <button data-movement-action="movement_pull_ground_loot">Pull Loot Here</button>
+            <button data-movement-action="movement_hide_ground_loot">Hide Ground Loot</button>
+            <button data-movement-action="movement_delete_ground_items" class="danger">Delete Ground Items</button>
+          </div>
+          <p class="muted-line">Acts on ground loot near you. Pull Loot Here teleports gear onto a spiral so it does not stack.</p>
+        </section>
+
+        <section class="panel purple" data-msbt-panel="boost-farm" data-msbt-span="6" data-msbt-title="Chests & Vendors">
+          <h2>Chests &amp; Vendors</h2>
+          <div class="button-grid">
+            <button data-action="open_golden_chest">Open Golden Chest</button>
+            <button data-action="close_golden_chest">Close Golden Chest</button>
+            <button data-action="spawn_golden_chest" data-host-only="1" title="Host / listen only. Spawns a golden chest IO near you.">Spawn Golden Chest</button>
+            <button data-action="spawn_black_market" data-host-only="1" title="Host / listen only. Spawns io_VendingMachine_BlackMarket via ASD spawnai, then activates it.">Spawn Black Market</button>
+            <button data-action="black_market_clear_cooldown" data-host-only="1" title="Best-effort wipe of purchase-cooldown fields on live BMVM objects.">Clear BM Cooldown</button>
+            <button data-action="black_market_status">Black Market Status</button>
+          </div>
+          <p class="muted-line">Chest and black-market spawns are host-only. Status can be read by anyone.</p>
+        </section>
+      </div>
+
+      <div class="grid two">
+        <section class="panel gold" data-msbt-panel="boost-uvh" data-msbt-span="8" data-msbt-title="UVH 1–7">
+          <h2>UVH 1–7</h2>
+          <p class="muted-line">UVH N runs tiers 1 through N for the live lobby. Cancel pauses remaining steps; Resume continues them.</p>
+          <div class="button-grid compact-buttons">
+            <button data-action="uvh_boost_tier_1">UVH 1</button>
+            <button data-action="uvh_boost_tier_2">UVH 2</button>
+            <button data-action="uvh_boost_tier_3">UVH 3</button>
+            <button data-action="uvh_boost_tier_4">UVH 4</button>
+            <button data-action="uvh_boost_tier_5">UVH 5</button>
+            <button data-action="uvh_boost_tier_6">UVH 6</button>
+            <button data-action="uvh_boost_tier_7">UVH 7</button>
+            <button data-action="uvh_boost_all">Run All 1–7</button>
+            <button data-action="uvh_boost_status">Status</button>
+            <button data-action="uvh_boost_resume">Resume</button>
+            <button data-action="uvh_boost_cancel" class="danger">Cancel</button>
+          </div>
+          <div class="inline-fields" style="margin-top:0.5rem;">
+            <label>
+              Up to rank
+              <input id="uvhBoostUpToRank" type="number" min="1" max="7" value="7">
+            </label>
+            <div class="button-row wrap">
+              <button id="uvhBoostUpToBtn" type="button">Run 1–N</button>
             </div>
-            <aside class="boost-live-column" aria-label="Instant interaction toggles">
-              <h3>Instant Actions</h3>
-              <button id="instantDropsToggleBtn" type="button">Instant Drops: Off</button>
-              <button id="instantHoldsToggleBtn" type="button">Instant Holds: Off</button>
-              <p class="muted-line">Set or clear their direct hotkeys in oak2’s Mods keybind UI. Use <strong>+ QM</strong> to pin either toggle to F7, where the slot can also have its own hotkey.</p>
-              <div id="liveModsStatus" class="status-line compact-note">Combat XP / Instant Drops / Instant Holds idle.</div>
-              <div class="boost-live-debug">
-                <h4>Debug Camera</h4>
-                <button data-action="toggle_debug_cam">Toggle Debug Cam</button>
-                <button data-action="teleport_debug_cam">Teleport to Debug Cam</button>
-              </div>
-              <p class="muted-line">Shinies Deliver follows Target Player: Selected, All Players, or Other Players. Shinies Drop remains a ground drop.</p>
-            </aside>
           </div>
         </section>
 
-        <section class="panel cyan" data-msbt-panel="boost-target" data-msbt-span="4" data-msbt-title="Target Player">
-          <h2>Target Player</h2>
-          <p>Choose one player, all players, or everyone except the host for boosts, XP, currency, inventory changes, and Shinies Deliver. Drop All Backpack is always host-only.</p>
-          <div id="bridgeSummary" class="status-line warning">Checking game connection...</div>
-          <label for="targetSelect">Target Player</label>
-          <select id="targetSelect">
-            <option value="">No players loaded</option>
-          </select>
-          <div class="button-row wrap">
-            <button id="setTargetBtn" class="hidden">Set Target</button>
-            <button id="firstTargetBtn" data-boost-scope="selected">Use First Player</button>
-            <button id="targetAllPlayersBtn" data-boost-scope="all">Target All Players</button>
-            <button id="targetNonHostBtn" data-boost-scope="nonhost">Target Other Players</button>
-            <button type="button" data-msbt-bridge-refresh class="secondary">Refresh Status</button>
-            <button id="kickTargetBtn" class="danger">Kick Player</button>
+        <section class="panel pink" data-msbt-panel="boost-combat-xp" data-msbt-span="4" data-msbt-title="Combat XP">
+          <h2>Combat XP</h2>
+          <div class="inline-fields boost-combat-fields">
+            <label>
+              Multiplier
+              <input id="cxpMultiplier" type="number" min="1" max="1000000" step="1" value="1000">
+            </label>
+            <button id="cxpToggleBtn" type="button">Combat XP Multiplier: Off</button>
           </div>
-          <div id="targetSummary" class="status-line">Selected target: none</div>
         </section>
       </div>
+
+      <section class="panel cyan" data-msbt-panel="boost-debug" data-msbt-span="8" data-msbt-title="Debug Camera">
+        <h2>Debug Camera</h2>
+        <div class="button-row wrap boost-live-debug">
+          <button data-action="toggle_debug_cam">Toggle Debug Cam</button>
+          <button data-action="disable_debug_cam">Disable Debug Cam</button>
+          <button data-action="teleport_debug_cam">Teleport Pawn to Cam</button>
+          <button data-action="debug_cam_to_target">Pull Cam to Target</button>
+          <button id="debugCamCopyLocBtn" type="button">Copy Location</button>
+        </div>
+        <div class="inline-fields" style="margin-top:0.5rem;">
+          <label>
+            Speed
+            <input id="debugCamSpeed" type="number" min="0.05" max="50" step="0.05" value="1">
+          </label>
+          <div class="button-row wrap">
+            <button id="debugCamSpeed1xBtn" type="button">1x</button>
+            <button id="debugCamSpeed5xBtn" type="button">5x</button>
+            <button id="debugCamSpeed10xBtn" type="button">10x</button>
+            <button id="debugCamSpeedApplyBtn" type="button">Apply Speed</button>
+          </div>
+        </div>
+        <div class="inline-fields">
+          <label>
+            Distance
+            <input id="debugCamDistance" type="number" min="0" max="20000" step="50" value="0">
+          </label>
+          <div class="button-row wrap">
+            <button id="debugCamDistanceApplyBtn" type="button">Apply Distance</button>
+          </div>
+        </div>
+        <p class="muted-line">Local camera. Disable is for when Toggle leaves you stuck. Teleport Pawn to Cam is host-only. Pull Cam to Target moves the camera to the Boosting target. Distance 0 keeps the game default.</p>
+      </section>
+
+      <section class="panel gold" data-msbt-panel="boost-challenges" data-msbt-span="12" data-msbt-title="Challenges">
+        <h2>Challenges</h2>
+        <p class="muted-line">Writes permanent challenge progress. Host / solo only. Backup your save. Complete All is every non-UVHM catalog row (UVH 1–7 is its own Boosting panel).</p>
+        <div class="grid two compact">
+          <label>
+            Category
+            <select id="challengeCategorySelect">
+              <option value="All non-UVHM" selected>All non-UVHM</option>
+              <option value="Story challenge flags">Story challenge flags</option>
+              <option value="Activities">Activities</option>
+              <option value="Collectibles">Collectibles</option>
+              <option value="Loot">Loot</option>
+              <option value="Combat">Combat</option>
+              <option value="Enemies">Enemies</option>
+              <option value="Elemental">Elemental</option>
+              <option value="Economy">Economy</option>
+              <option value="Character">Character</option>
+            </select>
+          </label>
+          <label>
+            Search
+            <input id="challengeSearchInput" type="search" autocomplete="off" placeholder="Filter by id…">
+          </label>
+        </div>
+        <label for="challengeListSelect">Challenges</label>
+        <select id="challengeListSelect" class="list-select" size="8" multiple></select>
+        <p class="muted-line">Ctrl/Cmd-click or Shift-click to select several. Complete Selected queues them as one bulk run.</p>
+        <div class="button-row wrap">
+          <button id="challengeCompleteSelectedBtn" type="button">Complete Selected</button>
+          <button id="challengeCompleteCategoryBtn" type="button">Complete Category</button>
+          <button id="challengeCompleteAllBtn" type="button" class="danger">Complete All Challenges</button>
+          <button id="challengeCancelBtn" type="button">Cancel</button>
+          <button id="challengeStatusBtn" type="button">Refresh Status</button>
+        </div>
+        <div id="challengeStatus" class="status-line">Challenges idle. Complete All asks for confirm, then runs.</div>
+        <pre id="challengeOutput">No challenge action yet.</pre>
+      </section>
 
       <div class="grid">
         <section class="panel pink" data-msbt-panel="boost-cheats" data-msbt-span="12" data-msbt-title="Combat & Cheats">
           <h2>Combat & Cheats</h2>
           <div class="button-grid">
+            <button data-action="reset_skills" data-host-only="1" class="danger" title="Host / listen only. Refunds regular skill-tree points for the local host pawn. Does not reset Specializations or apply to a party target.">Reset Skill Tree (Host)</button>
             <button data-action="devperk_3">Kill All Enemies</button>
             <button data-action="devperk_0">Give Experience</button>
             <button data-action="devperk_1">Give 1 Million Cash</button>
@@ -429,9 +564,10 @@
             </label>
           </div>
           <div class="button-row wrap">
-            <button data-boost-serial-mode="selected">Give to Selected Player</button>
+            <button data-boost-serial-mode="local">Give to Local</button>
             <button data-boost-serial-mode="all">Give to All Players</button>
             <button data-boost-serial-mode="nonhost">Give to Other Players</button>
+            <button data-action="rewards_open_everyone">Open Rewards Everyone</button>
             <button id="boostClearSerialsBtn" class="danger">Clear Serials</button>
           </div>
         </section>
@@ -450,7 +586,7 @@
             Automatic Backpack and Bank Size for Party
           </label>
           <div class="button-row wrap">
-            <button id="setInventorySelectedBtn">Set Selected</button>
+            <button id="setInventorySelectedBtn">Set for Scope</button>
             <button id="setInventoryAllBtn">Apply to All Party</button>
           </div>
           <div id="inventoryStatus" class="status-line warning">Manual apply only. Enable auto to keep applying sizes while players load in.</div>
@@ -975,7 +1111,7 @@
     <section id="tab-item-pool" class="tab-panel fixed-page-tab">
       <section class="fixed-workspace item-pool-page">
         <h2>Item Pool Spawning</h2>
-        <p>Filter item pools, select one or more rows, then spawn the selected pool(s) near the local player.</p>
+        <p>Filter item pools, select one or more rows, then spawn near the current Spawn Near target (Boosting Connection &amp; Scope).</p>
         <div class="grid three compact">
           <label>
             Search Item Pools
@@ -996,10 +1132,32 @@
             </label>
           </div>
         </div>
+        <div class="grid three compact">
+          <label>
+            Delay (s)
+            <input id="itempoolDelay" type="number" min="0" max="5" step="0.05" value="0">
+          </label>
+          <label>
+            Items / tick
+            <input id="itempoolItemsPerTick" type="number" min="1" max="25" value="1">
+          </label>
+          <label>
+            Spit
+            <select id="itempoolSpit">
+              <option value="forward" selected>Forward</option>
+              <option value="left">Left</option>
+              <option value="right">Right</option>
+              <option value="back">Back</option>
+              <option value="around">Around</option>
+            </select>
+          </label>
+        </div>
         <div id="itempoolSummary" class="status-line">Loading item pools...</div>
         <select id="itempoolList" class="list-select" size="18" multiple></select>
         <div class="button-row wrap">
           <button id="spawnItempoolBtn">Spawn Selected Item Pool(s)</button>
+          <button id="spawnItempoolAllBtn" type="button">Spawn All Filtered</button>
+          <button id="spawnItempoolCancelBtn" type="button" class="danger">Cancel Bulk Spawn</button>
           <button type="button" data-msbt-bridge-refresh class="secondary">Refresh Status</button>
         </div>
         <pre id="itempoolOutput">No item pool action sent yet.</pre>
@@ -1094,6 +1252,7 @@
               <summary>Setup / Inspect</summary>
               <div data-dev-host="setup-main"></div>
               <div data-dev-host="setup-template"></div>
+              <div data-dev-host="setup-io"></div>
             </details>
 
             <details class="dev-fold">
@@ -1135,6 +1294,7 @@
           <h2>Setup / Inspect</h2>
           <div data-dev-host="setup-main"></div>
           <div data-dev-host="setup-template"></div>
+          <div data-dev-host="setup-io"></div>
           <div data-dev-host="setup-advanced"></div>
         </section>
 
@@ -1262,8 +1422,9 @@
           <label>
             Spawn Anchor
             <select id="devSpawnAnchor">
-              <option value="local" selected>Local</option>
-              <option value="party">Party</option>
+              <option value="local" selected>Me / Local</option>
+              <option value="selected">Named player</option>
+              <option value="party">Other party member</option>
               <option value="npc_nearest">Nearest NPC</option>
             </select>
           </label>
@@ -1331,6 +1492,15 @@
             <input id="devActorNoActivate" type="checkbox">
             Spawn only, do not activate script states
           </label>
+        </details>
+        <details class="dev-fold" data-dev-part="setup-io">
+          <summary>Interactive Objects</summary>
+          <p class="muted-line">Filter the actor list to IOs, spawn Lost Loot, or activate the last spawned IO. Golden chest spawn stays on Boosting.</p>
+          <div class="button-row wrap compact-actions">
+            <button type="button" id="devShowIoCategoryBtn">Show Interactive Objects</button>
+            <button data-dev-spawner-action="dev_spawner_lostloot">Spawn Lost Loot</button>
+            <button data-dev-spawner-action="dev_spawner_activate_last">Activate Last IO</button>
+          </div>
         </details>
         <div class="button-row wrap" data-dev-part="setup-advanced">
           <button data-dev-spawner-action="dev_spawner_spawn">Spawn Template</button>
@@ -1574,10 +1744,15 @@
     <section id="tab-map-travel" class="tab-panel" data-msbt-layout-tab="map-travel">
       <section class="panel pink" data-msbt-panel="travel-main" data-msbt-span="12" data-msbt-title="Map Travel" data-msbt-resize="1">
         <h2>Map Travel</h2>
-        <p>Select a map first, then choose a travel station on that map. Favorites can hold maps or stations in one list.</p>
+        <p>Select a map first, then choose a travel station on that map. Favorites can hold maps or stations in one list. Clear Fog unlocks the map; Hide Fog is a session overlay on this client.</p>
         <div class="button-row wrap">
           <button type="button" data-msbt-bridge-refresh class="secondary">Refresh Status</button>
+          <button id="travelPresetTubaBtn" type="button">Tuba Boss Arena</button>
+          <button id="travelPresetDevMapBtn" type="button">Dev Testing Map</button>
           <button data-action="fog_of_war_clear">Clear Fog of War</button>
+          <button data-action="fog_of_war_on">Hide Fog</button>
+          <button data-action="fog_of_war_off">Show Fog</button>
+          <button data-action="fog_of_war_toggle">Toggle Fog Hide</button>
         </div>
         <div class="grid two">
           <div>
@@ -1717,19 +1892,9 @@
 
         <section class="panel green" data-msbt-panel="move-infjump" data-msbt-span="4" data-msbt-title="Infinite Jump">
           <h2>Infinite Jump</h2>
-          <p>Enable this per player, or change it for the whole party at once.</p>
+          <p>One toggle for the current Apply Scope (Local / All / Others) above. Pin this to F7 if you want it in-game.</p>
           <div class="button-row wrap">
-            <button data-movement-action="movement_infinite_jump_all_on">Turn On for All</button>
-            <button data-movement-action="movement_infinite_jump_all_off" class="danger">Turn Off for All</button>
-          </div>
-          <label for="movementTargetSelect">Player</label>
-          <select id="movementTargetSelect">
-            <option value="">No players loaded</option>
-          </select>
-          <div class="button-row wrap">
-            <button data-movement-action="movement_infinite_jump_selected_on">Turn On for Selected</button>
-            <button data-movement-action="movement_infinite_jump_selected_off" class="danger">Turn Off for Selected</button>
-            <button data-movement-action="movement_infinite_jump_toggle_selected">Toggle Selected Player</button>
+            <button id="infiniteJumpToggleBtn" type="button" data-movement-action="movement_infinite_jump_toggle">Infinite Jump: Off</button>
           </div>
         </section>
       </div>
@@ -1788,12 +1953,15 @@
             <button data-movement-action="movement_players_only">Players Only</button>
             <button data-movement-action="movement_toggle_no_target">Toggle No Target</button>
             <button data-movement-action="movement_toggle_noclip">Toggle Noclip</button>
-            <button data-movement-action="movement_delete_ground_items" class="danger">Delete Ground Items</button>
-            <button data-movement-action="movement_pull_ground_loot">Pull Loot Here</button>
+            <button data-movement-action="movement_toggle_force_fly">Toggle Force Fly</button>
+          </div>
+          <label for="movementFlySpeed">Force Fly Speed</label>
+          <input id="movementFlySpeed" type="number" min="100" max="20000" step="50" value="2400">
+          <p class="muted-line">Noclip and Force Fly honor Apply Scope (Local / All / Others) above. Ground loot helpers live on Boosting → Ground Loot.</p>
+          <div class="button-grid">
             <button data-movement-action="movement_super_dash">Super Dash</button>
             <button data-movement-action="movement_super_dash_toggle">Super Dash Toggle</button>
           </div>
-          <p class="muted-line">Use <strong>+ QM</strong> next to these to pin Pull Loot / Super Dash onto a Quick Menu slot.</p>
         </section>
       </div>
 
@@ -1830,7 +1998,7 @@
 
       <section class="panel cyan" data-msbt-panel="dev-target" data-msbt-span="6" data-msbt-title="Target Player" data-msbt-resize="1">
         <h2>Target Player</h2>
-        <p>Party target for Streamer Chaos, skill reset, and other Dev Tools actions. Use <strong>Refresh Status</strong> to reload the player list. Host-only for remote players in co-op.</p>
+        <p>Party target for Streamer Chaos and other Dev Tools actions. Named roster and Kick also live on Boosting → Connection &amp; Scope. Use <strong>Refresh Status</strong> to reload the player list. Host-only for remote players in co-op.</p>
         <div id="devBridgeSummary" class="status-line warning">Checking game connection...</div>
         <label for="devTargetSelect">Target Player</label>
         <div class="target-row">
@@ -1844,26 +2012,20 @@
           <button id="devTargetAllBtn" type="button" data-dev-scope="all">Target All Players</button>
           <button id="devTargetNonHostBtn" type="button" data-dev-scope="nonhost">Target Other Players</button>
           <button id="devTargetSelectedBtn" type="button" data-dev-scope="selected">Target Selected Only</button>
+          <button id="devKickTargetBtn" type="button" class="danger">Kick Player</button>
         </div>
         <div id="devTargetSummary" class="status-line warning">Selected target: none</div>
-        <div class="section-heading" style="margin-top:0.75rem;">
-          <div>
-            <h3>Skills</h3>
-            <p class="muted-line">Refunds regular skill-tree points for the current Dev target scope. Does not reset Specializations.</p>
-          </div>
-        </div>
-        <div class="button-row wrap">
-          <button type="button" data-action="reset_skills" class="danger">Reset Skill Tree</button>
-        </div>
       </section>
 
       <section class="panel gold" data-msbt-panel="streamer-chaos" data-msbt-span="6" data-msbt-title="Streamer Chaos" data-msbt-resize="1">
         <h2>Streamer Chaos</h2>
-        <p>Launch, empty backpack, down, kill, invert controls, or lock movement and camera. Uses the selected player, all players, or everyone except the host.</p>
+        <p>Launch, empty backpack, down, kill, invert controls, or lock movement and camera. Uses the selected player, all players, or everyone except the host. Empty Backpack deletes items (not drop). Undo gives captured serials back to the player they were deleted from.</p>
         <div class="button-grid wrap">
           <button data-action="chaos_launch">Launch</button>
           <button data-action="chaos_drop_backpack_targeted" class="danger">Drop All Backpack (Target Scope)</button>
           <button data-action="chaos_empty_backpack" class="danger">Empty Backpack</button>
+          <button data-action="chaos_undo_empty_backpack">Undo Empty Backpack</button>
+          <button data-action="chaos_clear_empty_backpack_memory" class="secondary">Clear Deleted Backpack Memory</button>
           <button data-action="chaos_ffyl">Down Player</button>
           <button data-action="chaos_kill" class="danger">Kill</button>
           <button data-action="chaos_invert_look">Invert Look</button>
@@ -1872,6 +2034,7 @@
           <button data-action="chaos_lock_both">Lock Both</button>
           <button data-action="chaos_unlock">Unlock</button>
         </div>
+        <div id="deletedBackpackStatus" class="status-line compact-note">Deleted backpack memory empty.</div>
         <div class="status-line compact-note">Standalone StreamerChaos SDK mod also provides NumPad hotkeys for the local player (rebind in oak2).</div>
       </section>
 
@@ -1957,44 +2120,6 @@
         </div>
         <div id="vehicleStatus" class="status-line">Vehicle controls idle.</div>
         <pre id="vehicleOutput">No vehicle action yet.</pre>
-      </section>
-
-      <section class="panel purple" data-msbt-panel="dev-challenges" data-msbt-span="12" data-msbt-title="Challenges (WIP)" data-msbt-resize="1">
-        <h2>Challenges (WIP)</h2>
-        <p class="muted-line">Warning: challenge grants write permanent progress. Prefer host / solo, and backup your save. Complete ALL queues thousands of grants and can take a long time — use Cancel to stop.</p>
-        <div class="grid two compact">
-          <label>
-            Category
-            <select id="challengeCategorySelect">
-              <option value="All non-UVHM" selected>All non-UVHM</option>
-              <option value="Story challenge flags">Story challenge flags</option>
-              <option value="Activities">Activities</option>
-              <option value="Collectibles">Collectibles</option>
-              <option value="Loot">Loot</option>
-              <option value="Combat">Combat</option>
-              <option value="Enemies">Enemies</option>
-              <option value="Elemental">Elemental</option>
-              <option value="Economy">Economy</option>
-              <option value="Character">Character</option>
-            </select>
-          </label>
-          <label>
-            Search
-            <input id="challengeSearchInput" type="search" autocomplete="off" placeholder="Filter by id…">
-          </label>
-        </div>
-        <label for="challengeListSelect">Challenges</label>
-        <select id="challengeListSelect" class="list-select" size="12"></select>
-        <div class="button-row wrap">
-          <button id="challengeCompleteSelectedBtn" type="button">Complete Selected</button>
-          <button id="challengeCompleteCategoryBtn" type="button">Complete Category</button>
-          <button id="challengeCompleteAllBtn" type="button" class="danger">Complete All Challenges</button>
-          <button id="challengeCancelBtn" type="button">Cancel</button>
-          <button id="challengeStatusBtn" type="button">Refresh Status</button>
-          <button type="button" data-msbt-bridge-refresh class="secondary">Refresh Game Connection</button>
-        </div>
-        <div id="challengeStatus" class="status-line">Challenges idle. First press arms confirm; second press within 10s starts.</div>
-        <pre id="challengeOutput">No challenge action yet.</pre>
       </section>
     </section>
 
