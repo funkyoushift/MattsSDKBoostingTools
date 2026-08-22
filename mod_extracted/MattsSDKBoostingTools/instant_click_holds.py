@@ -525,7 +525,7 @@ def _should_maintain() -> bool:
     if not bool(_drops_enabled or _holds_enabled):
         return False
     try:
-        from .runtime_cleanup import is_travel_quiet
+        from .travel_gate import is_travel_quiet
 
         if is_travel_quiet():
             return False

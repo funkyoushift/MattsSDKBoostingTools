@@ -3142,7 +3142,7 @@ def tick(_obj: Any, _args: Any, _ret: Any, _func: Any) -> None:
     # several times per frame. Everything below polls input or rebuilds widgets,
     # which never needs to happen more than once per frame.
     try:
-        from .runtime_cleanup import is_travel_quiet
+        from .travel_gate import is_travel_quiet
 
         if is_travel_quiet():
             return None

@@ -9,6 +9,8 @@ from __future__ import annotations
 import time
 from typing import Any, Callable
 
+from . import travel_gate
+
 TickFn = Callable[..., Any]
 
 TICK_PATH = "/Script/Engine.CameraModifier:BlueprintModifyCamera"
@@ -44,13 +46,15 @@ def _pump(_obj: Any, _args: Any, _ret: Any, _func: Any) -> None:
     global _last_at, _in_flight
     if _in_flight:
         return None
-    try:
-        from .runtime_cleanup import is_travel_quiet
+    if travel_gate.is_travel_quiet():
+        return None
+    if travel_gate.consume_pending_clear():
+        try:
+            from .runtime_cleanup import clear_travel_caches
 
-        if is_travel_quiet():
-            return None
-    except Exception:
-        pass
+            clear_travel_caches()
+        except Exception:
+            pass
     now = time.monotonic()
     if now - _last_at < MIN_INTERVAL_S:
         return None

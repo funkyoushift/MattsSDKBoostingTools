@@ -376,7 +376,7 @@ def _tick(_obj: UObject, _args: WrappedStruct, _ret: Any, _func: BoundFunction) 
     if not bool(_enabled):
         return
     try:
-        from .runtime_cleanup import is_travel_quiet
+        from .travel_gate import is_travel_quiet
 
         if is_travel_quiet():
             return
