@@ -1879,6 +1879,13 @@ def _hud_ensure_pill(message: str, accent: str) -> None:
 def _tick_hud_pill(_obj=None, _args=None, _ret=None, _func=None):
     global _hud_pill_next_update, _background_next_rarity_tick, _background_next_movement_tick
     try:
+        from .travel_gate import is_travel_quiet
+
+        if is_travel_quiet():
+            return None
+    except Exception:
+        return None
+    try:
         now = time.monotonic()
     except Exception:
         now = 0.0
@@ -1957,6 +1964,13 @@ def _rarity_travel_event_hook(_obj=None, _args=None, _ret=None, _func=None):
     is already valid.  Apply immediately from that path; if the hook fires a bit
     early, arm a short retry burst.  No find_all and no stale get_pc world path.
     """
+    try:
+        from .travel_gate import is_travel_quiet
+
+        if is_travel_quiet():
+            return None
+    except Exception:
+        return None
     try:
         if not _rarity_auto_reapply or not _rarity_any_custom():
             return None

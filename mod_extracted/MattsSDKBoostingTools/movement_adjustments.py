@@ -1994,6 +1994,13 @@ def _infinite_jump_prep_from_hook(*args, **kwargs) -> bool:
 def _jump_gate_hook(*args, **kwargs):
     # CanJump / CanJumpInternal: force True so BL4 allows another jump.
     # Do not use this on Character.Jump — Block there swallows the jump.
+    try:
+        from .travel_gate import is_travel_quiet
+
+        if is_travel_quiet():
+            return None
+    except Exception:
+        return None
     if not _INFINITE_JUMP_INDICES:
         return None
     matched = _infinite_jump_prep_from_hook(*args, **kwargs)
@@ -2007,6 +2014,13 @@ def _jump_gate_hook(*args, **kwargs):
 
 def _jump_start_hook(*args, **kwargs):
     # Character.Jump must run. Only refresh counters, then let the original through.
+    try:
+        from .travel_gate import is_travel_quiet
+
+        if is_travel_quiet():
+            return None
+    except Exception:
+        return None
     if not _INFINITE_JUMP_INDICES:
         return None
     _infinite_jump_prep_from_hook(*args, **kwargs)

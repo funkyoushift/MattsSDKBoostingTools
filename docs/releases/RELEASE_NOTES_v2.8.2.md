@@ -2,9 +2,9 @@
 
 **v2.8.2**
 
-- **Join / travel crash fix** — joining another player's session no longer scans or writes Unreal objects while the world is unloading
-- Fog hide, Instant Holds/Drops, and Combat XP stay quiet during `ClientTravel`; they re-apply after the new map is up
-- Quick Menu and camera-tick work skip that window
+- **Join / travel crash fix** — MSBT stays fully quiet from boot through the join dialog and only wakes after a real world load
+- Fog hide, Instant Holds/Drops, and Combat XP stay quiet during travel; they re-apply after the new map is up
+- Quick Menu, camera ticks, HUD pills, and jump hooks skip title/join
 - BLImGui join-safe pause is armed again when party membership or travel happens
 
 ### Download: pick ONE

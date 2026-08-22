@@ -9,7 +9,7 @@ from mods_base import hook
 from unrealsdk import logging
 from unrealsdk.hooks import Type
 
-from .travel_gate import mark_travel
+from .travel_gate import mark_travel, schedule_in_world
 
 _PREFIX = "[Matts SDK Boosting Tools | Cleanup]"
 _last_error_at: dict[str, float] = {}
@@ -69,3 +69,28 @@ def _after_travel(*_args: Any, **_kwargs: Any) -> None:
     # Only flip the quiet gate here. Cache wipes import other MSBT modules and
     # must not run while the world is unloading or while this package is loading.
     mark_travel()
+    try:
+        logging.info(f"{_PREFIX} quiet on (ClientTravel)")
+    except Exception:
+        pass
+
+
+@hook(
+    "OakGame.OakPlayerController:ServerNotifyLoadedWorld",
+    Type.POST,
+    immediately_enable=True,
+    hook_identifier="msbt_runtime_cleanup_loaded_oak_v1",
+)
+@hook(
+    "Engine.PlayerController:ServerNotifyLoadedWorld",
+    Type.POST,
+    immediately_enable=True,
+    hook_identifier="msbt_runtime_cleanup_loaded_engine_v1",
+)
+def _after_loaded_world(*_args: Any, **_kwargs: Any) -> None:
+    # Title boot does not count. Only a world load that followed ClientTravel.
+    schedule_in_world(8.0)
+    try:
+        logging.info(f"{_PREFIX} in-world release armed")
+    except Exception:
+        pass

@@ -1,39 +1,55 @@
 """Tiny travel/join gate. No hooks and no other MSBT imports.
 
-Hot paths (camera tick, Instant Holds, fog, Quick Menu) must import this
-module only. Importing runtime_cleanup from a live hook deadlocks oak2 while
-MattsSDKBoostingTools is still loading.
+Hot paths must import this module only. Default is quiet from boot: title,
+join dialog, and ClientTravel all happen before a stable in-world pawn exists.
+Quiet lifts only after a real world-load event that followed a ClientTravel.
 """
 from __future__ import annotations
 
 import time
 
-_QUIET_SECONDS = 20.0
-_QUIET_UNTIL = 0.0
 _PENDING_CLEAR = False
+_SAW_TRAVEL = False
+# 0 = stay quiet. >0 = release after this monotonic timestamp.
+_RELEASE_AT = 0.0
 
 
-def mark_travel(seconds: float = _QUIET_SECONDS) -> None:
-    """Silence UObject scans/writes while the world is tearing down or joining."""
-    global _QUIET_UNTIL, _PENDING_CLEAR
-    try:
-        hold = max(1.0, float(seconds))
-    except Exception:
-        hold = _QUIET_SECONDS
-    _QUIET_UNTIL = max(float(_QUIET_UNTIL or 0.0), time.monotonic() + hold)
+def mark_travel(seconds: float = 20.0) -> None:
+    """Force quiet through title/join/teardown. Does not touch Unreal objects."""
+    global _RELEASE_AT, _PENDING_CLEAR, _SAW_TRAVEL
+    _SAW_TRAVEL = True
+    _RELEASE_AT = 0.0
     _PENDING_CLEAR = True
 
 
-def is_travel_quiet() -> bool:
-    """True during ClientTravel / join. Hot paths must not find_all or write UObjects."""
+def schedule_in_world(delay: float = 8.0) -> None:
+    """Allow hot paths after a world-load event that followed ClientTravel."""
+    global _RELEASE_AT
+    if not _SAW_TRAVEL:
+        return
     try:
-        return time.monotonic() < float(_QUIET_UNTIL or 0.0)
+        wait = max(2.0, float(delay))
     except Exception:
-        return False
+        wait = 8.0
+    when = time.monotonic() + wait
+    if _RELEASE_AT <= 0.0:
+        _RELEASE_AT = when
+    else:
+        _RELEASE_AT = max(float(_RELEASE_AT), when)
+
+
+def is_travel_quiet() -> bool:
+    """True from boot until an in-world release, and again after ClientTravel."""
+    try:
+        if _RELEASE_AT <= 0.0:
+            return True
+        return time.monotonic() < float(_RELEASE_AT)
+    except Exception:
+        return True
 
 
 def consume_pending_clear() -> bool:
-    """True once after travel quiet expires, so caches can drop old-world wrappers."""
+    """True once after quiet ends, so caches can drop old-world wrappers."""
     global _PENDING_CLEAR
     if not _PENDING_CLEAR or is_travel_quiet():
         return False
