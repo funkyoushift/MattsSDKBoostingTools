@@ -11,6 +11,26 @@ from unrealsdk.hooks import Type
 
 _PREFIX = "[Matts SDK Boosting Tools | Cleanup]"
 _last_error_at: dict[str, float] = {}
+_TRAVEL_QUIET_UNTIL = 0.0
+_TRAVEL_QUIET_SECONDS = 12.0
+
+
+def mark_travel(seconds: float = _TRAVEL_QUIET_SECONDS) -> None:
+    """Silence UObject scans/writes while the world is tearing down or joining."""
+    global _TRAVEL_QUIET_UNTIL
+    try:
+        hold = max(1.0, float(seconds))
+    except Exception:
+        hold = _TRAVEL_QUIET_SECONDS
+    _TRAVEL_QUIET_UNTIL = max(float(_TRAVEL_QUIET_UNTIL or 0.0), time.monotonic() + hold)
+
+
+def is_travel_quiet() -> bool:
+    """True during ClientTravel / join. Hot paths must not find_all or write UObjects."""
+    try:
+        return time.monotonic() < float(_TRAVEL_QUIET_UNTIL or 0.0)
+    except Exception:
+        return False
 
 
 def _warn_limited(message: str) -> None:
@@ -64,4 +84,5 @@ def clear_travel_caches() -> None:
     hook_identifier="msbt_runtime_cleanup_travel_engine_v1",
 )
 def _after_travel(*_args: Any, **_kwargs: Any) -> None:
+    mark_travel()
     clear_travel_caches()

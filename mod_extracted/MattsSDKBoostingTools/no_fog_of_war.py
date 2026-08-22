@@ -375,6 +375,13 @@ def _tick(_obj: UObject, _args: WrappedStruct, _ret: Any, _func: BoundFunction) 
     global _TICK, _LAST_TOUCH_LOG, _LAST_MAINTAIN_AT
     if not bool(_enabled):
         return
+    try:
+        from .runtime_cleanup import is_travel_quiet
+
+        if is_travel_quiet():
+            return
+    except Exception:
+        pass
     _TICK += 1
     now = time.monotonic()
     if now - _LAST_MAINTAIN_AT < _MAINTAIN_INTERVAL_S:
@@ -409,12 +416,8 @@ def _tick(_obj: UObject, _args: WrappedStruct, _ret: Any, _func: BoundFunction) 
     hook_identifier="msbt_nfow_travel_engine_v1",
 )
 def _travel(*_args: Any, **_kwargs: Any) -> None:
-    if bool(_enabled):
-        try:
-            touched, params, _details = apply_no_fog()
-            _log(f"travel re-apply touched={touched} params={params}")
-        except Exception as exc:
-            _log_hot_error(f"travel re-apply failed: {exc!r}")
+    # ClientTravel is world teardown. Never find_all / write materials here.
+    clear_travel_backups()
 
 
 _log(f"loaded v{__version__} (MSBT helper, starts OFF)")

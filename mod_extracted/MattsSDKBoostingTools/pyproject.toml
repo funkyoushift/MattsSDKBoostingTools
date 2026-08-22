@@ -1,11 +1,11 @@
 [project]
 name = "MattsSDKBoostingTools"
-version = "2.8.1"
+version = "2.8.2"
 authors = [{ name = "Matt" }]
 description = "Boosting-focused SDK mod with native Quick Menu, external bridge, and optional BLImGui fallback."
 
 [tool.sdkmod]
 name = "MattsSDKBoostingTools"
 license = { name = "GPL3", url = "https://choosealicense.com/licenses/gpl-3.0/" }
-version = "2.8.1"
+version = "2.8.2"
 coop_support = "Unknown"

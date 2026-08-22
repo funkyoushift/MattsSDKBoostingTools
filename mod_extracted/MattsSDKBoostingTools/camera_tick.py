@@ -44,6 +44,13 @@ def _pump(_obj: Any, _args: Any, _ret: Any, _func: Any) -> None:
     global _last_at, _in_flight
     if _in_flight:
         return None
+    try:
+        from .runtime_cleanup import is_travel_quiet
+
+        if is_travel_quiet():
+            return None
+    except Exception:
+        pass
     now = time.monotonic()
     if now - _last_at < MIN_INTERVAL_S:
         return None

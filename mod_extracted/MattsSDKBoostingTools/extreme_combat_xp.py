@@ -829,8 +829,7 @@ def _on_rep_experience(obj: UObject, _args: WrappedStruct, _ret: Any, _func: Bou
 )
 def _travel(*_args: Any, **_kwargs: Any) -> None:
     _disarm_all("travel")
-    if bool(_enabled):
-        _refresh_attrs()
+    # Do not write combat-XP attributes during ClientTravel / join.
 
 
 _log(f"loaded v{__version__} (MSBT helper, starts OFF)")

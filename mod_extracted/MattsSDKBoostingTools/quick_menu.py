@@ -3141,6 +3141,13 @@ def tick(_obj: Any, _args: Any, _ret: Any, _func: Any) -> None:
     # BlueprintModifyCamera runs once per active CameraModifier, so this fires
     # several times per frame. Everything below polls input or rebuilds widgets,
     # which never needs to happen more than once per frame.
+    try:
+        from .runtime_cleanup import is_travel_quiet
+
+        if is_travel_quiet():
+            return None
+    except Exception:
+        pass
     now_gate = time.monotonic()
     interval = TICK_INTERVAL_OPEN_S if STATE.is_open else TICK_INTERVAL_CLOSED_S
     if now_gate - _last_tick_at < interval:

@@ -236,6 +236,19 @@ def clear_travel_caches() -> None:
     global _movement_infinite_jump_context_cache, _movement_infinite_jump_context_cache_time
     global _movement_live_context_cache, _movement_live_context_cache_time, _movement_live_context_cache_signature
     global _rarity_cached_gamestate, _rarity_cached_state, _rarity_cached_state_key
+    global _blimgui_draw_paused_until
+    try:
+        if _blimgui_join_safe_mode:
+            _blimgui_draw_paused_until = max(
+                float(_blimgui_draw_paused_until or 0.0),
+                time.monotonic() + 12.0,
+            )
+    except Exception:
+        pass
+    try:
+        _hud_suppress_native(15.0)
+    except Exception:
+        pass
     _hud_forget_viewport_pill_overlay()
     _movement_host_cache_value = False
     _movement_host_cache_until = 0.0
@@ -4362,6 +4375,13 @@ def _blimgui_note_party_signature_from_hud_tick(now: float) -> None:
         return
     if sig != _blimgui_last_party_signature:
         _blimgui_last_party_signature = sig
+        try:
+            _blimgui_draw_paused_until = max(
+                float(_blimgui_draw_paused_until or 0.0),
+                float(now) + 8.0,
+            )
+        except Exception:
+            pass
         return
 
 def _movement_background_tick() -> None:

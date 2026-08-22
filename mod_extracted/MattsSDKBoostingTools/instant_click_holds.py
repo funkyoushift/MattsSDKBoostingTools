@@ -522,7 +522,16 @@ def _restore_non_drop_holds(*, also_restore_drops: bool) -> tuple[int, int]:
 
 
 def _should_maintain() -> bool:
-    return bool(_drops_enabled or _holds_enabled)
+    if not bool(_drops_enabled or _holds_enabled):
+        return False
+    try:
+        from .runtime_cleanup import is_travel_quiet
+
+        if is_travel_quiet():
+            return False
+    except Exception:
+        pass
+    return True
 
 
 def _maintain_holds(
@@ -857,16 +866,8 @@ def _viewport_tick(*_args: Any, **_kwargs: Any) -> None:
 @hook("OakGame.OakPlayerController:ClientTravel", Type.POST, immediately_enable=True, hook_identifier="msbt_ich_travel_oak_v1")
 @hook("Engine.PlayerController:ClientTravel", Type.POST, immediately_enable=True, hook_identifier="msbt_ich_travel_engine_v1")
 def _after_travel(*_args: Any, **_kwargs: Any) -> None:
-    if not _should_maintain():
-        return
-    try:
-        if _holds_enabled:
-            patched, skipped = apply_holds(fast_only=False)
-        else:
-            patched, skipped = apply_holds(fast_only=True)
-        _log(f"travel re-apply — patched={patched} skipped={skipped}")
-    except Exception as exc:
-        _log(f"travel re-apply deferred: {exc!r}")
+    # ClientTravel is world teardown. Forget old wrappers; do not find_all here.
+    clear_travel_backups()
 
 
 @hook("OakGame.OakPlayerController:PlayerTick", Type.POST, immediately_enable=True, hook_identifier="msbt_ich_ptick_oak_v1")
