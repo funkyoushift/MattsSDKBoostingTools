@@ -46,11 +46,15 @@ def register(name: str, callback: TickFn, *, priority: int = 100) -> None:
 
 
 def set_needed(name: str, needed: bool) -> None:
-    """Keep the shared camera hook installed only while something needs it."""
+    """Keep the shared camera hook installed only while something needs it.
+
+    Quick Menu must poll clicks as soon as F7 opens, even if travel-quiet is
+    stuck. Other features still wait for the in-world release.
+    """
     key = str(name or "unnamed")
     if needed:
         _needed.add(key)
-        if not travel_gate.is_travel_quiet():
+        if key.startswith("quick_menu") or not travel_gate.is_travel_quiet():
             _ensure_hook()
         return
     _needed.discard(key)
@@ -87,7 +91,7 @@ def _pump(_obj: Any, _args: Any, _ret: Any, _func: Any) -> None:
     global _last_at, _in_flight
     if _in_flight:
         return None
-    if travel_gate.is_travel_quiet():
+    if travel_gate.is_travel_quiet() and "quick_menu" not in _needed and "quick_menu_hotkeys" not in _needed:
         return None
     if travel_gate.consume_pending_clear():
         try:
@@ -102,7 +106,10 @@ def _pump(_obj: Any, _args: Any, _ret: Any, _func: Any) -> None:
     _last_at = now
     _in_flight = True
     try:
+        quiet = travel_gate.is_travel_quiet()
         for _prio, _name, fn in _callbacks:
+            if quiet and _name not in ("quick_menu", "quick_menu_hotkeys"):
+                continue
             try:
                 fn(_obj, _args, _ret, _func)
             except Exception:

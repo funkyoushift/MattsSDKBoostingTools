@@ -270,12 +270,28 @@
       <div class="grid two">
         <section class="panel cyan" data-msbt-panel="boost-ground-loot" data-msbt-span="6" data-msbt-title="Ground Loot">
           <h2>Ground Loot</h2>
+          <label for="lootPullRadius">Distance from chosen players
+            <div class="range-row">
+              <input id="lootPullRadius" type="range" min="10" max="500" step="10" value="150">
+              <output id="lootPullRadiusValue">150 m</output>
+            </div>
+          </label>
+          <label class="inline-check">
+            <input id="lootPullUnlimited" type="checkbox">
+            All loaded loot (ignore distance)
+          </label>
+          <div class="button-row wrap" role="group" aria-label="Ground loot around">
+            <button type="button" data-loot-scope="local">Local</button>
+            <button type="button" data-loot-scope="selected">Named Player</button>
+            <button type="button" data-loot-scope="all">All Players</button>
+            <button type="button" data-loot-scope="nonhost">Other Players</button>
+          </div>
           <div class="button-row wrap ground-loot-actions">
             <button data-movement-action="movement_pull_ground_loot">Pull Loot Here</button>
             <button data-movement-action="movement_hide_ground_loot">Hide Ground Loot</button>
             <button data-movement-action="movement_delete_ground_items" class="danger">Delete Ground Items</button>
           </div>
-          <p class="muted-line">Acts on ground loot near you. Pull Loot Here teleports gear onto a spiral so it does not stack.</p>
+          <p class="muted-line">Distance is how far from Local / Named / All / Other players loot is collected. Pull still drops the pile at your feet. Hide teleports loot off-map. Delete destroys it.</p>
         </section>
 
         <section class="panel purple" data-msbt-panel="boost-farm" data-msbt-span="6" data-msbt-title="Chests & Vendors">
@@ -543,9 +559,9 @@
       <div class="grid two">
         <section class="panel purple" data-msbt-panel="boost-serial" data-msbt-span="6" data-msbt-title="Serial Rewards">
           <h2>Serial Rewards</h2>
-          <p>Paste one or more serials, then choose who receives them. The game must be connected for delivery.</p>
+          <p>Paste one or more @U or deserialized serials, then choose who receives them. The game must be connected for delivery.</p>
           <label for="boostSerialText">Serial Input</label>
-          <textarea id="boostSerialText" spellcheck="false" placeholder="@U..."></textarea>
+          <textarea id="boostSerialText" spellcheck="false" placeholder="@U... or 7, 0, 1, 70| deserialized text"></textarea>
           <div class="inline-fields">
             <label>
               Override Level
@@ -563,10 +579,17 @@
               <input id="boostSerialCopies" type="number" min="1" max="50" value="1" title="How many copies of each pasted serial to deliver">
             </label>
           </div>
+          <label for="boostSerialTargetSelect">Named player</label>
+          <div class="target-row">
+            <select id="boostSerialTargetSelect">
+              <option value="">No players loaded — click Refresh Status</option>
+            </select>
+          </div>
           <div class="button-row wrap">
-            <button data-boost-serial-mode="local">Give to Local</button>
-            <button data-boost-serial-mode="all">Give to All Players</button>
-            <button data-boost-serial-mode="nonhost">Give to Other Players</button>
+            <button data-boost-serial-mode="local">Local</button>
+            <button data-boost-serial-mode="selected">Named Player</button>
+            <button data-boost-serial-mode="all">All Players</button>
+            <button data-boost-serial-mode="nonhost">Other Players</button>
             <button data-action="rewards_open_everyone">Open Rewards Everyone</button>
             <button id="boostClearSerialsBtn" class="danger">Clear Serials</button>
           </div>
@@ -759,7 +782,7 @@
               <button id="bookmarkValidateBtn">Validate / Confirm Active</button>
             </div>
             <div id="bookmarkValidationStatus" class="status-line warning">No confirmed serial yet.</div>
-            <label for="bookmarkTargetSelect">Serial Bookmarks Target</label>
+            <label for="bookmarkTargetSelect">Named player</label>
             <div class="target-row">
               <select id="bookmarkTargetSelect">
                 <option value="">No players loaded</option>
@@ -767,17 +790,19 @@
               <button id="bookmarkRefreshPlayersBtn" class="hidden">Refresh Players</button>
               <button id="bookmarkSetTargetBtn" class="hidden">Set Target</button>
             </div>
-            <div id="bookmarkTargetSummary" class="status-line warning">Selected target: none</div>
+            <div id="bookmarkTargetSummary" class="status-line warning">Named player: none</div>
             <label for="bookmarkSerialCopies">Copies</label>
             <input id="bookmarkSerialCopies" type="number" min="1" max="50" value="1" title="How many copies of each selected bookmark serial to deliver">
             <div class="status-line warning">Delivery sends checked bookmark rows. If nothing is checked, the active row is used.</div>
             <div class="button-row wrap">
-              <button data-bookmark-send-mode="selected">Deliver to Selected Player</button>
-              <button data-bookmark-send-mode="all">Deliver to All Players</button>
-              <button data-bookmark-send-mode="nonhost">Deliver to Other Players</button>
+              <button data-bookmark-send-mode="local">Local</button>
+              <button data-bookmark-send-mode="selected">Named Player</button>
+              <button data-bookmark-send-mode="all">All Players</button>
+              <button data-bookmark-send-mode="nonhost">Other Players</button>
             </div>
             <div class="button-row wrap qm-serial-pin-row">
-              <button id="bookmarkQmSelectedBtn" type="button" class="qm-pin-button" data-qm-serial-source="bookmark" data-qm-serial-mode="selected">+ QM Selected</button>
+              <button id="bookmarkQmLocalBtn" type="button" class="qm-pin-button" data-qm-serial-source="bookmark" data-qm-serial-mode="local">+ QM Local</button>
+              <button id="bookmarkQmSelectedBtn" type="button" class="qm-pin-button" data-qm-serial-source="bookmark" data-qm-serial-mode="selected">+ QM Named Player</button>
               <button id="bookmarkQmAllBtn" type="button" class="qm-pin-button" data-qm-serial-source="bookmark" data-qm-serial-mode="all">+ QM All</button>
               <button id="bookmarkQmNonhostBtn" type="button" class="qm-pin-button" data-qm-serial-source="bookmark" data-qm-serial-mode="nonhost">+ QM Other Players</button>
             </div>
@@ -925,7 +950,7 @@
           <textarea id="invDetailSerial" class="output-box small" spellcheck="false" readonly></textarea>
           <div class="inv-give-row">
             <label for="invGiveTargetSelect">
-              Give to
+              Named player
               <select id="invGiveTargetSelect">
                 <option value="">No players loaded — Refresh Status on Boosting</option>
               </select>
@@ -1048,7 +1073,7 @@
         <aside class="bl4-delivery-side" aria-label="BL4 Codes delivery">
           <h2>Delivery</h2>
           <p class="muted-line">Sends checked cards, or the open code when none are checked.</p>
-          <label for="bl4TargetSelect">Target</label>
+          <label for="bl4TargetSelect">Named player</label>
           <div class="target-row">
             <select id="bl4TargetSelect">
               <option value="">No players loaded</option>
@@ -1056,7 +1081,7 @@
             <button id="bl4SetTargetBtn" class="hidden">Set Target</button>
             <button id="bl4RefreshPlayersBtn" class="hidden">Refresh Players</button>
           </div>
-          <div id="bl4TargetSummary" class="status-line warning">Selected target: none</div>
+          <div id="bl4TargetSummary" class="status-line warning">Named player: none</div>
           <div class="inline-fields bl4-delivery-fields">
             <label>
               Override level
@@ -1076,12 +1101,14 @@
           </div>
           <div id="bl4DeliveryStatus" class="status-line warning">Ready.</div>
           <div class="button-row wrap">
-            <button data-bl4-send-mode="selected">Deliver to Selected Player</button>
-            <button data-bl4-send-mode="all">Deliver to All Players</button>
-            <button data-bl4-send-mode="nonhost">Deliver to Other Players</button>
+            <button data-bl4-send-mode="local">Local</button>
+            <button data-bl4-send-mode="selected">Named Player</button>
+            <button data-bl4-send-mode="all">All Players</button>
+            <button data-bl4-send-mode="nonhost">Other Players</button>
           </div>
           <div class="button-row wrap qm-serial-pin-row">
-            <button id="bl4QmSelectedBtn" type="button" class="qm-pin-button" data-qm-serial-source="bl4" data-qm-serial-mode="selected">+ QM Selected</button>
+            <button id="bl4QmLocalBtn" type="button" class="qm-pin-button" data-qm-serial-source="bl4" data-qm-serial-mode="local">+ QM Local</button>
+            <button id="bl4QmSelectedBtn" type="button" class="qm-pin-button" data-qm-serial-source="bl4" data-qm-serial-mode="selected">+ QM Named Player</button>
             <button id="bl4QmAllBtn" type="button" class="qm-pin-button" data-qm-serial-source="bl4" data-qm-serial-mode="all">+ QM All</button>
             <button id="bl4QmNonhostBtn" type="button" class="qm-pin-button" data-qm-serial-source="bl4" data-qm-serial-mode="nonhost">+ QM Other Players</button>
           </div>
@@ -1992,7 +2019,7 @@
         <h2>Target Player</h2>
         <p>Party target for Streamer Chaos and related actions. Named roster and Kick also live on Boosting → Connection &amp; Scope. Use <strong>Refresh Status</strong> to reload the player list. Host-only for remote players in co-op.</p>
         <div id="devBridgeSummary" class="status-line warning">Checking game connection...</div>
-        <label for="devTargetSelect">Target Player</label>
+          <label for="devTargetSelect">Named player</label>
         <div class="target-row">
           <select id="devTargetSelect">
             <option value="">No players loaded — click Refresh Status</option>
@@ -2003,15 +2030,15 @@
         <div class="button-row wrap">
           <button id="devTargetAllBtn" type="button" data-dev-scope="all">Target All Players</button>
           <button id="devTargetNonHostBtn" type="button" data-dev-scope="nonhost">Target Other Players</button>
-          <button id="devTargetSelectedBtn" type="button" data-dev-scope="selected">Target Selected Only</button>
+          <button id="devTargetSelectedBtn" type="button" data-dev-scope="selected">Named Player</button>
           <button id="devKickTargetBtn" type="button" class="danger">Kick Player</button>
         </div>
-        <div id="devTargetSummary" class="status-line warning">Selected target: none</div>
+          <div id="devTargetSummary" class="status-line warning">Named player: none</div>
       </section>
 
       <section class="panel gold" data-msbt-panel="streamer-chaos" data-msbt-span="6" data-msbt-title="Streamer Chaos" data-msbt-resize="1">
         <h2>Streamer Chaos</h2>
-        <p>Launch, empty backpack, down, kill, invert controls, or lock movement and camera. Uses the selected player, all players, or everyone except the host. Empty Backpack deletes items (not drop). Undo gives captured serials back to the player they were deleted from.</p>
+        <p>Launch, empty backpack, down, kill, invert controls, or lock movement and camera. Uses the named player, all players, or everyone except the host. Empty Backpack deletes items (not drop). Undo gives captured serials back to the player they were deleted from.</p>
         <div class="button-grid wrap">
           <button data-action="chaos_launch">Launch</button>
           <button data-action="chaos_drop_backpack_targeted" class="danger">Drop All Backpack (Target Scope)</button>

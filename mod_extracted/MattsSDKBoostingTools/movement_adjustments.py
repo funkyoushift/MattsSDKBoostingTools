@@ -2296,47 +2296,270 @@ def set_no_target(enabled: bool) -> str:
         return f"No Target failed: {exc!r}"
 
 
-def delete_ground_items() -> str:
+_LOOT_RADIUS_MIN_M = 10
+_LOOT_RADIUS_MAX_M = 500
+_LOOT_RADIUS_DEFAULT_M = 150
+# Far XY pocket at the item's own Z. The old Z=-1e9 dump left falling physics
+# bodies that Pull/Hide would keep rediscovering.
+_LOOT_HIDE_POCKET_XY = (2500000.0, 2500000.0)
+_LOOT_HIDE_AWAY = (_LOOT_HIDE_POCKET_XY[0], _LOOT_HIDE_POCKET_XY[1], 0.0)
+_LOOT_HIDE_VOID_Z = -100000000.0
+
+
+def _loot_xyz(actor: Any) -> tuple[float, float, float] | None:
+    loc = _actor_location(actor)
+    if loc is None:
+        return None
+    try:
+        return (float(loc.X), float(loc.Y), float(loc.Z))
+    except Exception:
+        return None
+
+
+def _clamp_loot_radius_m(value: object) -> float:
+    try:
+        radius = float(value)
+    except Exception:
+        return 0.0
+    if radius <= 0:
+        return 0.0
+    return max(float(_LOOT_RADIUS_MIN_M), min(float(_LOOT_RADIUS_MAX_M), radius))
+
+
+def loot_scope_origins(scope: str = "local", selected_pawn: Any = None) -> list[tuple[float, float, float]]:
+    """World positions used to decide which ground loot is in range."""
+    key = str(scope or "local").strip().lower()
+    if key in ("selected", "named"):
+        xyz = _loot_xyz(selected_pawn)
+        if xyz is not None:
+            return [xyz]
+        key = "local"
+    pawns = live_player_pawns()
+    if key in ("all", "everyone", "party"):
+        out = [xyz for pawn in pawns if (xyz := _loot_xyz(pawn)) is not None]
+        return out or loot_scope_origins("local")
+    if key in ("nonhost", "others", "other", "remote"):
+        return [xyz for pawn in filter_pawns_by_scope(pawns, "others") if (xyz := _loot_xyz(pawn)) is not None]
+    pawn = None
+    try:
+        pawn = pawn_for_controller(get_pc())
+    except Exception:
+        pawn = None
+    xyz = _loot_xyz(pawn)
+    return [xyz] if xyz is not None else []
+
+
+def filter_loot_by_origins(
+    items: list[Any],
+    origins: list[tuple[float, float, float]],
+    radius_m: object,
+) -> list[Any]:
+    """Keep pickups within radius_m of any origin. radius_m <= 0 means no limit."""
+    rows = [item for item in (items or []) if item]
+    if not rows:
+        return []
+    radius = _clamp_loot_radius_m(radius_m)
+    if radius <= 0:
+        return rows
+    if not origins:
+        return []
+    radius_cm = radius * 100.0
+    out: list[Any] = []
+    for inv in rows:
+        xyz = _loot_xyz(inv)
+        if xyz is None:
+            continue
+        if any(math.dist(xyz, origin) <= radius_cm for origin in origins):
+            out.append(inv)
+    return out
+
+
+def _is_hidden_away(xyz: tuple[float, float, float] | None) -> bool:
+    if xyz is None:
+        return False
+    if xyz[2] <= _LOOT_HIDE_VOID_Z:
+        return True
+    return math.hypot(xyz[0] - _LOOT_HIDE_POCKET_XY[0], xyz[1] - _LOOT_HIDE_POCKET_XY[1]) < 80000.0
+
+
+def _loot_vector(x: float, y: float, z: float) -> Any:
+    try:
+        vec = unrealsdk.make_struct("Vector", X=float(x), Y=float(y), Z=float(z))
+        if vec is not None:
+            return vec
+    except Exception:
+        pass
+    return type("LootVec", (), {"X": float(x), "Y": float(y), "Z": float(z)})()
+
+
+def _set_pickup_physics(inv: Any, enabled: bool) -> None:
+    for name in ("RootPrimitiveComponent", "RootComponent"):
+        root = getattr(inv, name, None)
+        if root is None:
+            continue
+        fn = getattr(root, "SetSimulatePhysics", None)
+        if callable(fn):
+            try:
+                fn(bool(enabled))
+            except Exception:
+                pass
+        if enabled:
+            continue
+        zero = _loot_vector(0.0, 0.0, 0.0)
+        for vel_name in ("SetPhysicsLinearVelocity", "SetAllPhysicsLinearVelocity"):
+            vel = getattr(root, vel_name, None)
+            if not callable(vel):
+                continue
+            try:
+                vel(zero, False)
+            except TypeError:
+                try:
+                    vel(zero)
+                except Exception:
+                    pass
+            except Exception:
+                pass
+
+
+def _pickup_near(inv: Any, x: float, y: float, z: float, slack: float = 400.0) -> bool:
+    xyz = _loot_xyz(inv)
+    if xyz is None:
+        return False
+    return math.dist(xyz, (float(x), float(y), float(z))) <= slack
+
+
+def _move_pickup(inv: Any, x: float, y: float, z: float) -> bool:
+    """Move a pickup with physics off. Teleport-while-simulating is a no-op in BL4."""
+    _set_pickup_physics(inv, False)
+    dest = _loot_vector(x, y, z)
+    ignore = _loot_ignore_rotator()
+    tele = getattr(inv, "K2_TeleportTo", None) or getattr(inv, "TeleportTo", None)
+    if callable(tele):
+        try:
+            tele(dest, ignore)
+        except TypeError:
+            try:
+                tele(dest)
+            except Exception:
+                pass
+        except Exception:
+            pass
+        if _pickup_near(inv, x, y, z):
+            return True
+    setter = getattr(inv, "K2_SetActorLocation", None) or getattr(inv, "SetActorLocation", None)
+    if callable(setter):
+        for args in ((dest, False, None, True), (dest, False, None), (dest, False), (dest,)):
+            try:
+                setter(*args)
+                break
+            except TypeError:
+                continue
+            except Exception:
+                break
+        if _pickup_near(inv, x, y, z):
+            return True
+    return _pickup_near(inv, x, y, z)
+
+
+def _iter_ground_loot(scope: str, radius_m: object, selected_pawn: Any = None) -> list[Any]:
+    loot = _sorted_ground_loot(wake_physics=False)
+    items = list(loot.get("Pickups") or []) + list(loot.get("Gear") or [])
+    origins = loot_scope_origins(scope, selected_pawn)
+    return filter_loot_by_origins(items, origins, radius_m)
+
+
+def _loot_ignore_rotator() -> Any:
+    try:
+        return unrealsdk.make_struct("Rotator")
+    except Exception:
+        return None
+
+
+def _destroy_pickup(inv: Any) -> bool:
+    for name in ("K2_DestroyActor", "Destroy"):
+        try:
+            fn = getattr(inv, name, None)
+            if callable(fn):
+                fn()
+                return True
+        except Exception:
+            continue
+    return False
+
+
+def _destroy_junk_around(origins: list[tuple[float, float, float]], radius_m: object) -> int:
     try:
         jsfl = unrealsdk.find_class("JunkSystemFunctionLibrary").ClassDefaultObject
-        box = unrealsdk.make_struct(
-            "Box",
-            MIN=unrealsdk.make_struct("Vector", X=-1000000.0, Y=-1000000.0, Z=-1000000.0),
-            MAX=unrealsdk.make_struct("Vector", X=1000000.0, Y=1000000.0, Z=1000000.0),
-        )
-        jsfl.DestroyJunkWithinBounds(get_pc(), box)
-        return "Ground items deleted."
-    except Exception as exc:
-        return f"Delete ground items failed: {exc!r}"
+    except Exception:
+        return 0
+    radius = _clamp_loot_radius_m(radius_m)
+    half = 1000000.0 if radius <= 0 else max(800.0, radius * 100.0)
+    boxes = origins or [(0.0, 0.0, 0.0)]
+    cleared = 0
+    for ox, oy, oz in boxes:
+        try:
+            box = unrealsdk.make_struct(
+                "Box",
+                MIN=unrealsdk.make_struct("Vector", X=ox - half, Y=oy - half, Z=oz - half),
+                MAX=unrealsdk.make_struct("Vector", X=ox + half, Y=oy + half, Z=oz + half),
+            )
+        except Exception:
+            continue
+        controllers = live_player_controllers() or [get_pc()]
+        for pc in controllers:
+            if pc is None:
+                continue
+            try:
+                jsfl.DestroyJunkWithinBounds(pc, box)
+                cleared += 1
+            except Exception:
+                continue
+    return cleared
 
 
-def hide_ground_loot() -> str:
-    """Azzy-style soft clear: teleport loot far away (does not DestroyJunk)."""
+def delete_ground_items(
+    radius_m: object = 0,
+    scope: str = "all",
+    selected_pawn: Any = None,
+) -> str:
+    """Destroy ground loot near the scoped players. Host-only junk wipe is not enough in co-op."""
+    origins = loot_scope_origins(scope, selected_pawn)
+    if not origins and str(scope or "").strip().lower() in ("selected", "named"):
+        return "Delete Ground Items: choose a named player first."
+    junk_calls = _destroy_junk_around(origins, radius_m)
+    removed = 0
+    for inv in _iter_ground_loot(scope, radius_m, selected_pawn):
+        if _destroy_pickup(inv):
+            removed += 1
+    if removed:
+        return f"Ground items deleted: {removed} pickup(s) around {scope}."
+    if junk_calls:
+        return f"Ground items deleted (junk wipe around {scope})."
+    return "Delete Ground Items: no ground loot found."
+
+
+def hide_ground_loot(
+    radius_m: object = 0,
+    scope: str = "local",
+    selected_pawn: Any = None,
+) -> str:
+    """One-way soft clear: park loot in a far XY pocket. Not reversible."""
     pc = get_pc()
     if pc is None:
         return "Clear Loot (Hide): load into a character first."
-    try:
-        away = unrealsdk.make_struct("Vector", X=100000.0, Y=100000.0, Z=-1000000000.0)
-    except Exception as exc:
-        return f"Clear Loot (Hide) failed: {exc!r}"
-    try:
-        ignore = unrealsdk.make_struct("Rotator")
-    except Exception:
-        ignore = None
-    loot = _sorted_ground_loot()
+    if str(scope or "").strip().lower() in ("selected", "named") and selected_pawn is None:
+        return "Clear Loot (Hide): choose a named player first."
     removed = 0
-    for inv in loot["Pickups"] + loot["Gear"]:
-        try:
-            root = getattr(inv, "RootPrimitiveComponent", None)
-            if root is not None:
-                try:
-                    root.SetSimulatePhysics(True)
-                except Exception:
-                    pass
-            inv.K2_TeleportTo(away, ignore)
-            removed += 1
-        except Exception:
+    for inv in _iter_ground_loot(scope, radius_m, selected_pawn):
+        xyz = _loot_xyz(inv)
+        if xyz is None or _is_hidden_away(xyz):
             continue
+        spread = removed % 32
+        away_x = _LOOT_HIDE_POCKET_XY[0] + (spread % 8) * 120.0
+        away_y = _LOOT_HIDE_POCKET_XY[1] + (spread // 8) * 120.0
+        if not _move_pickup(inv, away_x, away_y, xyz[2]):
+            continue
+        removed += 1
     if removed:
         return f"Clear Loot (Hide): moved {removed} item(s) out of play."
     return "Clear Loot (Hide): no ground loot found."
@@ -2391,23 +2614,30 @@ def _loot_spiral_offset(index: int) -> tuple[float, float]:
     return math.cos(angle) * radius, math.sin(angle) * radius
 
 
-def _sorted_ground_loot() -> dict[str, list[Any]]:
-    loot: dict[str, list[Any]] = {"Pickups": [], "Gear": []}
+def _iter_all_pickups() -> list[Any]:
     try:
         pickups = unrealsdk.find_all("InventoryPickup", False) or []
     except Exception:
-        return loot
+        return []
+    out: list[Any] = []
     for inv in pickups:
+        if not inv:
+            continue
         try:
-            if not inv:
+            if inv == inv.Class.ClassDefaultObject:
                 continue
-            try:
-                if inv == inv.Class.ClassDefaultObject:
-                    continue
-            except Exception:
-                pass
+        except Exception:
+            pass
+        out.append(inv)
+    return out
+
+
+def _sorted_ground_loot(*, wake_physics: bool = True) -> dict[str, list[Any]]:
+    loot: dict[str, list[Any]] = {"Pickups": [], "Gear": []}
+    for inv in _iter_all_pickups():
+        try:
             root = getattr(inv, "RootPrimitiveComponent", None) or getattr(inv, "RootComponent", None)
-            if root is not None:
+            if wake_physics and root is not None:
                 try:
                     root.SetSimulatePhysics(True)
                 except Exception:
@@ -2445,12 +2675,22 @@ def _sorted_ground_loot() -> dict[str, list[Any]]:
     return loot
 
 
-def pull_ground_loot_here() -> str:
+def pull_ground_loot_here(
+    radius_m: object = 0,
+    scope: str = "local",
+    selected_pawn: Any = None,
+) -> str:
     """Teleport nearby ground loot to the local player (Azzy-style Pull Loot)."""
-    return _teleport_ground_loot_layout()
+    return _teleport_ground_loot_layout(radius_m=radius_m, scope=scope, selected_pawn=selected_pawn)
 
 
-def _teleport_ground_loot_layout(*, verb: str = "Pull Loot") -> str:
+def _teleport_ground_loot_layout(
+    *,
+    verb: str = "Pull Loot",
+    radius_m: object = 0,
+    scope: str = "local",
+    selected_pawn: Any = None,
+) -> str:
     """Teleport ground loot onto an Archimedean spiral around the local pawn."""
     pc = get_pc()
     pawn = None
@@ -2463,18 +2703,26 @@ def _teleport_ground_loot_layout(*, verb: str = "Pull Loot") -> str:
                 pawn = None
     if pawn is None:
         return "Pull Loot: load into a character first."
+    if str(scope or "").strip().lower() in ("selected", "named") and selected_pawn is None:
+        return "Pull Loot: choose a named player first."
     try:
         where = pawn.K2_GetActorLocation()
         where.Z -= 40
     except Exception as exc:
         return f"Pull Loot failed: {exc!r}"
-    try:
-        ignore = unrealsdk.make_struct("Rotator")
-    except Exception:
-        ignore = None
+    ignore = _loot_ignore_rotator()
     loot = _sorted_ground_loot()
+    origins = loot_scope_origins(scope, selected_pawn)
+    pickups = [
+        inv for inv in filter_loot_by_origins(list(loot.get("Pickups") or []), origins, radius_m)
+        if not _is_hidden_away(_loot_xyz(inv))
+    ]
+    gear = [
+        inv for inv in filter_loot_by_origins(list(loot.get("Gear") or []), origins, radius_m)
+        if not _is_hidden_away(_loot_xyz(inv))
+    ]
     moved = 0
-    for inv in loot["Pickups"]:
+    for inv in pickups:
         try:
             inv.K2_TeleportTo(where, ignore)
             moved += 1
@@ -2486,7 +2734,7 @@ def _teleport_ground_loot_layout(*, verb: str = "Pull Loot") -> str:
         yaw = 0.0
     forward_x, forward_y = math.cos(yaw), math.sin(yaw)
     right_x, right_y = -math.sin(yaw), math.cos(yaw)
-    for index, inv in enumerate(loot["Gear"]):
+    for index, inv in enumerate(gear):
         try:
             ahead, side = _loot_spiral_offset(index)
             x = float(where.X) + forward_x * ahead + right_x * side
@@ -2507,7 +2755,8 @@ def _teleport_ground_loot_layout(*, verb: str = "Pull Loot") -> str:
         except Exception:
             continue
     if moved:
-        return f"{verb}: moved {moved} item(s)."
+        limit = "all loaded" if _clamp_loot_radius_m(radius_m) <= 0 else f"{int(_clamp_loot_radius_m(radius_m))}m"
+        return f"{verb}: moved {moved} item(s) from {scope} ({limit})."
     return f"{verb}: no ground loot found."
 
 

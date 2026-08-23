@@ -50,6 +50,7 @@ const els = {
   boostSerialLevel: document.getElementById("boostSerialLevel"),
   boostSerialOverride: document.getElementById("boostSerialOverride"),
   boostSerialText: document.getElementById("boostSerialText"),
+  boostSerialTargetSelect: document.getElementById("boostSerialTargetSelect"),
   boostUpdateDownloadBtn: document.getElementById("boostUpdateDownloadBtn"),
   boostUpdateInstallBtn: document.getElementById("boostUpdateInstallBtn"),
   boostUpdateMessage: document.getElementById("boostUpdateMessage"),
@@ -249,6 +250,9 @@ const els = {
   rarityRememberPreset: document.getElementById("rarityRememberPreset"),
   raritySavePresetBtn: document.getElementById("raritySavePresetBtn"),
   rarityStatus: document.getElementById("rarityStatus"),
+  lootPullRadius: document.getElementById("lootPullRadius"),
+  lootPullRadiusValue: document.getElementById("lootPullRadiusValue"),
+  lootPullUnlimited: document.getElementById("lootPullUnlimited"),
   cxpMultiplier: document.getElementById("cxpMultiplier"),
   cxpToggleBtn: document.getElementById("cxpToggleBtn"),
   instantDropsToggleBtn: document.getElementById("instantDropsToggleBtn"),
@@ -512,6 +516,7 @@ const state = {
   bridgeVisibilityBound: false,
   boostTargetScope: "selected",
   publicBoostScope: "local",
+  lootScope: "local",
   hostPlayerIndex: null,
   invEquipped: [],
   invBackpack: [],
@@ -1565,6 +1570,7 @@ function openQuickMenuAddModal(action, commandPayload = {}, label = "") {
 
 function openSerialQuickMenuPin(source, mode) {
   const actionByMode = {
+    local: "give_serial_selected",
     selected: "give_serial_selected",
     all: "give_serial_all",
     nonhost: "give_serial_nonhost"
@@ -1700,6 +1706,14 @@ function installQuickMenuAddButtons() {
       return;
     }
     if (
+      action === "movement_pull_ground_loot"
+      || action === "movement_hide_ground_loot"
+      || action === "movement_delete_ground_items"
+    ) {
+      decorateQuickMenuActionButton(button, action, () => groundLootPayload());
+      return;
+    }
+    if (
       action === "movement_infinite_jump_selected_on"
       || action === "movement_infinite_jump_selected_off"
       || action === "movement_infinite_jump_toggle_selected"
@@ -1723,6 +1737,7 @@ function installQuickMenuAddButtons() {
   document.querySelectorAll("[data-boost-serial-mode]").forEach((button) => {
     const mode = String(button.dataset.boostSerialMode || "selected");
     const action = {
+      local: "give_serial_selected",
       selected: "give_serial_selected",
       all: "give_serial_all",
       nonhost: "give_serial_nonhost"
@@ -1733,6 +1748,7 @@ function installQuickMenuAddButtons() {
   document.querySelectorAll("[data-bookmark-send-mode]").forEach((button) => {
     const mode = String(button.dataset.bookmarkSendMode || "selected");
     const action = {
+      local: "give_serial_selected",
       selected: "give_serial_selected",
       all: "give_serial_all",
       nonhost: "give_serial_nonhost"
@@ -1748,6 +1764,7 @@ function installQuickMenuAddButtons() {
   document.querySelectorAll("[data-bl4-send-mode]").forEach((button) => {
     const mode = String(button.dataset.bl4SendMode || "selected");
     const action = {
+      local: "give_serial_selected",
       selected: "give_serial_selected",
       all: "give_serial_all",
       nonhost: "give_serial_nonhost"
@@ -2180,6 +2197,65 @@ function movementPayload() {
   };
 }
 
+const LOOT_HELPER_STORE_KEY = "msbt.groundLoot.helpers";
+
+function groundLootPayload() {
+  const unlimited = Boolean(els.lootPullUnlimited && els.lootPullUnlimited.checked);
+  const radius = getInt(els.lootPullRadius, 10, 500, 150);
+  return {
+    loot_radius_m: unlimited ? 0 : radius,
+    loot_unlimited: unlimited,
+    loot_scope: state.lootScope || "local",
+    target_player: state.selectedTarget || ""
+  };
+}
+
+function formatLootRadiusLabel(meters, unlimited) {
+  return unlimited ? "All" : `${meters} m`;
+}
+
+function updateLootHelperChrome() {
+  const unlimited = Boolean(els.lootPullUnlimited && els.lootPullUnlimited.checked);
+  const radius = getInt(els.lootPullRadius, 10, 500, 150);
+  if (els.lootPullRadius) els.lootPullRadius.disabled = unlimited;
+  if (els.lootPullRadiusValue) {
+    els.lootPullRadiusValue.textContent = formatLootRadiusLabel(radius, unlimited);
+  }
+  document.querySelectorAll("[data-loot-scope]").forEach((button) => {
+    button.classList.toggle("active-scope", button.dataset.lootScope === (state.lootScope || "local"));
+  });
+}
+
+function persistLootHelperSettings() {
+  try {
+    localStorage.setItem(LOOT_HELPER_STORE_KEY, JSON.stringify({
+      radius: getInt(els.lootPullRadius, 10, 500, 150),
+      unlimited: Boolean(els.lootPullUnlimited && els.lootPullUnlimited.checked),
+      scope: state.lootScope || "local"
+    }));
+  } catch (_error) {
+    // Ignore quota / private-mode failures.
+  }
+}
+
+function loadLootHelperSettings() {
+  let saved = null;
+  try {
+    saved = JSON.parse(localStorage.getItem(LOOT_HELPER_STORE_KEY) || "null");
+  } catch (_error) {
+    saved = null;
+  }
+  if (saved && typeof saved === "object") {
+    if (els.lootPullRadius && Number.isFinite(Number(saved.radius))) {
+      els.lootPullRadius.value = String(Math.max(10, Math.min(500, Math.round(Number(saved.radius)))));
+    }
+    if (els.lootPullUnlimited) els.lootPullUnlimited.checked = Boolean(saved.unlimited);
+    const scope = String(saved.scope || "local").toLowerCase();
+    if (["local", "selected", "all", "nonhost"].includes(scope)) state.lootScope = scope;
+  }
+  updateLootHelperChrome();
+}
+
 function movementActionPayload(action, extraPayload = {}) {
   const key = String(action || "");
   if (key === "movement_apply_all" || key === "movement_reset_all" || key.startsWith("movement_preset_")) {
@@ -2200,6 +2276,13 @@ function movementActionPayload(action, extraPayload = {}) {
       fly_speed: getFloat(els.movementFlySpeed, 100, 20000, 2400),
       ...extraPayload
     };
+  }
+  if (
+    key === "movement_pull_ground_loot"
+    || key === "movement_hide_ground_loot"
+    || key === "movement_delete_ground_items"
+  ) {
+    return { ...groundLootPayload(), ...extraPayload };
   }
   return { ...extraPayload };
 }
@@ -2633,6 +2716,7 @@ function renderPlayers(status = {}) {
   };
 
   fillSelect(els.targetSelect, state.selectedTarget);
+  fillSelect(els.boostSerialTargetSelect, state.selectedTarget);
   fillSelect(els.devTargetSelect, state.selectedTarget);
   fillSelect(els.bookmarkTargetSelect, state.selectedTarget);
   fillSelect(els.bl4TargetSelect, state.selectedTarget);
@@ -2650,7 +2734,7 @@ function renderPlayers(status = {}) {
   updateBoostTargetSummary();
   updateDevTargetSummary();
   const selectedPlayer = state.players.find((player) => String(playerValue(player)) === String(state.selectedTarget));
-  const text = `Selected target: ${selectedPlayer ? playerLabel(selectedPlayer) : state.selectedTarget || "none"}`;
+  const text = `Named player: ${selectedPlayer ? playerLabel(selectedPlayer) : state.selectedTarget || "none"}`;
   const kind = state.selectedTarget ? "ok" : "warning";
   setLine(els.bookmarkTargetSummary, text, kind);
   setLine(els.bl4TargetSummary, text, kind);
@@ -2700,8 +2784,15 @@ function publicBoostScopeLabel(scope = state.publicBoostScope) {
 
 function boostScopeLabel(scope = state.boostTargetScope) {
   if (scope === "all") return "All players";
-  if (scope === "nonhost") return "Non-host players";
-  return "Selected player";
+  if (scope === "nonhost") return "Other players";
+  return "Named player";
+}
+
+function deliveryWhoLabel(mode) {
+  if (mode === "local") return "local";
+  if (mode === "all") return "all players";
+  if (mode === "nonhost") return "other players";
+  return state.selectedTarget || "named player";
 }
 
 function hostPlayerFromList() {
@@ -4033,10 +4124,10 @@ async function setTarget(value, options = {}) {
     state.selectedTarget = "";
     state.selectedTargetName = "";
     updateBoostTargetSummary();
-    setLine(els.bookmarkTargetSummary, "Selected target: none", "warning");
-    setLine(els.bl4TargetSummary, "Selected target: none", "warning");
-    setLine(els.movementStatus, "Selected target: none", "warning");
-    setLine(els.devTargetSummary, "Selected target: none", "warning");
+    setLine(els.bookmarkTargetSummary, "Named player: none", "warning");
+    setLine(els.bl4TargetSummary, "Named player: none", "warning");
+    setLine(els.movementStatus, "Named player: none", "warning");
+    setLine(els.devTargetSummary, "Named player: none", "warning");
     if (els.invReading && !state.invEquipped.length && !state.invBackpack.length) {
       els.invReading.textContent = "Reading: none";
     }
@@ -4087,7 +4178,7 @@ function firstPlayerTarget() {
 
 async function ensureSelectedTarget(outNode) {
   if (!state.selectedTarget) {
-    setOutput(outNode, "Set a named player on Boosting → Connection & Scope before sending to selected.");
+    setOutput(outNode, "Choose a named player before sending to Named Player.");
     if (els.devTargetSummary) setLine(els.devTargetSummary, "Select a target player first.", "warning");
     return false;
   }
@@ -4752,7 +4843,7 @@ async function sendBookmarkSerial(mode) {
     return;
   }
   if (mode === "selected" && !state.selectedTarget) {
-    const message = "Select and set a Serial Bookmarks target before Send Selected.";
+    const message = "Choose a named player before sending to Named Player.";
     setOutput(els.bookmarkOutput, message);
     setLine(els.bookmarkTargetSummary, message, "warning");
     return;
@@ -4760,7 +4851,7 @@ async function sendBookmarkSerial(mode) {
 
   const copies = getInt(els.bookmarkSerialCopies, 1, 50, 1);
   const expanded = expandSerialTextCopies(serials.join("\n"), copies, "Serial Bookmarks");
-  const destination = mode === "selected" ? (state.selectedTarget || "selected player") : mode === "all" ? "all players" : "other players";
+  const destination = deliveryWhoLabel(mode);
   const label = entries.length === 1 ? `"${entries[0].name || "selected bookmark"}"` : `${entries.length} bookmark row(s)`;
   const copiesNote = copies > 1 ? ` (${copies} copies each → ${expanded.totalCount} total)` : "";
   if (!window.confirm(`Deliver ${serials.length} serial(s)${copiesNote} from ${label} to ${destination}?`)) {
@@ -5711,7 +5802,7 @@ async function sendBl4Serial(mode) {
 
   const copies = getInt(els.bl4SerialCopies, 1, 50, 1);
   const expanded = expandSerialTextCopies(serialText, copies, "BL4 Codes");
-  const destination = mode === "selected" ? (state.selectedTarget || "selected player") : mode === "all" ? "all players" : "other players";
+  const destination = deliveryWhoLabel(mode);
   const label = deliveryRows.length === 1 ? `"${deliveryRows[0].name || "selected BL4 code"}"` : `${deliveryRows.length} selected BL4 codes`;
   const skipNote = skippedByOverride.length ? `\n\n${skippedByOverride.length} selected code(s) will be skipped because their level could not be changed.` : "";
   const copiesNote = copies > 1 ? `\nCopies: ${copies} each → ${expanded.totalCount} total serials.` : "";
@@ -5722,6 +5813,7 @@ async function sendBl4Serial(mode) {
   }
 
   const actionByMode = {
+    local: "give_serial_selected",
     selected: "give_serial_selected",
     all: "give_serial_all",
     nonhost: "give_serial_nonhost"
@@ -10634,6 +10726,11 @@ function wireEvents() {
       setTarget(value);
     });
   }
+  if (els.boostSerialTargetSelect) {
+    els.boostSerialTargetSelect.addEventListener("change", () => {
+      setTarget(els.boostSerialTargetSelect.value, { keepBoostScope: true });
+    });
+  }
   if (els.devTargetSelect) {
     els.devTargetSelect.addEventListener("change", () => setTarget(els.devTargetSelect.value));
   }
@@ -10727,6 +10824,26 @@ function wireEvents() {
   document.querySelectorAll("[data-movement-action]").forEach((button) => {
     button.addEventListener("click", () => runMovementAction(button.dataset.movementAction));
   });
+  document.querySelectorAll("[data-loot-scope]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.lootScope = button.dataset.lootScope || "local";
+      updateLootHelperChrome();
+      persistLootHelperSettings();
+    });
+  });
+  if (els.lootPullRadius) {
+    els.lootPullRadius.addEventListener("input", () => {
+      updateLootHelperChrome();
+      persistLootHelperSettings();
+    });
+  }
+  if (els.lootPullUnlimited) {
+    els.lootPullUnlimited.addEventListener("change", () => {
+      updateLootHelperChrome();
+      persistLootHelperSettings();
+    });
+  }
+  loadLootHelperSettings();
   document.querySelectorAll("[data-movement-teleport-slot]").forEach((button) => {
     button.addEventListener("click", () => runMovementAction("movement_teleport_to_slot", {
       slot: Math.max(0, Math.min(3, parseInt(button.dataset.movementTeleportSlot, 10) || 0))
@@ -11397,7 +11514,7 @@ const TUTORIAL_TOURS = {
     },
     {
       title: "Serial Tools",
-      body: "Paste a @U or decoded serial, then Convert to decode parts and rebuild @U (works offline). Validate serials, save keepers as Bookmarks, then deliver to the selected player, all players, or everyone except the host when the game is connected.",
+      body: "Paste a @U or decoded serial, then Convert to decode parts and rebuild @U (works offline). Validate serials, save keepers as Bookmarks, then deliver to Local, a named player, all players, or other players when the game is connected.",
       tab: "serial-tools",
       targetSel: "#tab-serial-tools [data-msbt-panel='serial-tools-main']"
     },
@@ -11608,7 +11725,7 @@ const TAB_TUTORIALS = {
     },
     {
       title: "Ground Loot",
-      body: "Ground Loot is its own Boosting panel next to Essentials: Pull Loot Here, Hide Ground Loot, and Delete Ground Items.",
+      body: "Ground Loot is its own Boosting panel: set pull/clear distance, choose Local / Named / All / Other players, then Pull Loot Here, Hide, or Delete. Hide is a one-way clear; Delete destroys loot.",
       tab: "boosting",
       targetSel: "#tab-boosting [data-msbt-panel='boost-ground-loot']",
       revealPanels: ["boost-ground-loot"]
@@ -11664,7 +11781,7 @@ const TAB_TUTORIALS = {
     },
     {
       title: "Serial Rewards",
-      body: "Paste @U serials, choose an optional level override and copy count, then deliver to local, all players, or everyone except the host. Open Rewards Everyone opens pending Reward Center packages. Delivery progress appears at the top.",
+      body: "Paste @U or deserialized serials, pick a named player if needed, then deliver to Local, Named Player, All Players, or Other Players. Open Rewards Everyone opens pending Reward Center packages. Delivery progress appears at the top.",
       tab: "boosting",
       targetSel: "#tab-boosting [data-msbt-panel='boost-serial']",
       revealPanels: ["boost-serial"]
@@ -11692,7 +11809,7 @@ const TAB_TUTORIALS = {
     },
     {
       title: "Bookmarks",
-      body: "Save named serials in groups. Search or filter, then turn on Select Multiple so each plain click adds or removes a bookmark; selected rows turn red. Ctrl/Cmd+click and Shift+click still work. Copy or deliver the selection after choosing a target.",
+      body: "Save named serials in groups. Search or filter, then turn on Select Multiple so each plain click adds or removes a bookmark; selected rows turn red. Ctrl/Cmd+click and Shift+click still work. Copy or deliver with Local, Named Player, All Players, or Other Players.",
       tab: "serial-tools",
       targetSel: "#tab-serial-tools [data-msbt-panel='serial-bookmarks']"
     },
@@ -11730,7 +11847,7 @@ const TAB_TUTORIALS = {
     },
     {
       title: "Item detail & give",
-      body: "Click an equipped or backpack item to open this detail strip (serial + meta). Give to is separate from the viewing player — set recipient + Multiplier, then Send to Game.",
+      body: "Click an equipped or backpack item to open this detail strip (serial + meta). Named player is separate from the viewing player — set recipient + Multiplier, then Send to Game.",
       tab: "inventory",
       targetSel: "#invDetail .inv-give-row",
       revealInvDetail: true

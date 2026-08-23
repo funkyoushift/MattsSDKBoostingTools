@@ -3147,7 +3147,8 @@ def tick(_obj: Any, _args: Any, _ret: Any, _func: Any) -> None:
     try:
         from .travel_gate import is_travel_quiet
 
-        if is_travel_quiet():
+        # F7 can open while travel-quiet is still latched. Keep polling clicks.
+        if is_travel_quiet() and not STATE.is_open:
             return None
     except Exception:
         pass

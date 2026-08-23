@@ -89,11 +89,14 @@ def request_arm_when_pawn_ready(delay: float = 5.0) -> None:
 
 
 def try_arm_from_controller(obj: Any) -> None:
-    """Game-thread only. Arm after ClientRestart once this controller has a pawn."""
+    """Game-thread only. Arm after ClientRestart once this controller has a pawn.
+
+    Do not wait out ``_PENDING_AFTER`` when a pawn is already present. ServerNotify
+    can arm the pending flag after ClientRestart has already fired; waiting then
+    left the camera tick off so F7 opened but slot clicks never polled.
+    """
     global _PENDING_ARM
     if _ENABLED or not _PENDING_ARM:
-        return
-    if time.monotonic() < float(_PENDING_AFTER):
         return
     if obj is None:
         return

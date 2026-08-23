@@ -472,6 +472,18 @@ _RARITY_PERCENT_KEYS = frozenset({
 })
 
 _SERIAL_PAYLOAD_KEYS = frozenset({"serial_text", "serial_override_level", "serial_level"})
+_LOOT_HELPER_PAYLOAD_KEYS = frozenset({
+    "loot_radius_m",
+    "radius_m",
+    "loot_pull_radius",
+    "loot_unlimited",
+    "unlimited",
+    "loot_all_loaded",
+    "loot_scope",
+    "scope",
+    "target_player",
+    "loot_target",
+})
 
 _DEV_SPAWNER_AI_KEYS = frozenset({
     "dev_ai_name",
@@ -532,6 +544,9 @@ ALLOWED_PAYLOAD_KEYS: dict[str, frozenset[str]] = {
     "movement_infinite_jump_selected_off": frozenset({"target_player", "infinite_jump_target"}),
     "movement_infinite_jump_toggle_selected": frozenset({"target_player", "infinite_jump_target"}),
     "movement_teleport_to_slot": frozenset({"slot"}),
+    "movement_pull_ground_loot": _LOOT_HELPER_PAYLOAD_KEYS,
+    "movement_hide_ground_loot": _LOOT_HELPER_PAYLOAD_KEYS,
+    "movement_delete_ground_items": _LOOT_HELPER_PAYLOAD_KEYS,
     "movement_super_dash": frozenset({"dash_strength"}),
     "combat_tuning_apply": frozenset({
         "damage_dealt", "damage_taken", "repair_kit_max", "repair_kit_cooldown",

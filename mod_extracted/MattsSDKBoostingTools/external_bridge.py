@@ -815,11 +815,11 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
     if action == "movement_teleport_all_to_me":
         return backend_actions.movement_teleport_all_to_me()
     if action == "movement_delete_ground_items":
-        return backend_actions.movement_delete_ground_items()
+        return backend_actions.movement_delete_ground_items(payload)
     if action == "movement_hide_ground_loot":
-        return backend_actions.movement_hide_ground_loot()
+        return backend_actions.movement_hide_ground_loot(payload)
     if action == "movement_pull_ground_loot":
-        return backend_actions.movement_pull_ground_loot()
+        return backend_actions.movement_pull_ground_loot(payload)
     if action == "movement_super_dash":
         return backend_actions.movement_super_dash(payload.get("dash_strength"))
     if action == "movement_super_dash_toggle":

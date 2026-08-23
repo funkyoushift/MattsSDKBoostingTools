@@ -6,7 +6,7 @@ import sys
 import types
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 PKG = ROOT / "mod_extracted" / "MattsSDKBoostingTools"
 sys.path.insert(0, str(PKG))
 
@@ -141,6 +141,76 @@ def test_expand_token_preserves_mid_at_u():
     assert sr._expand_serial_token(SAMPLE) == [SAMPLE]
 
 
+def _sample_human() -> str:
+    return sc.serial_to_human(SAMPLE)
+
+
+def _space_header(human: str) -> str:
+    match = __import__("re").match(
+        r"^\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\|",
+        human,
+    )
+    assert match, human[:80]
+    return f"{match.group(1)} {match.group(2)} {match.group(3)} {match.group(4)}|{human[match.end():]}"
+
+
+def test_human_comma_encodes_locally_without_http():
+    human = _sample_human()
+    assert sr._looks_like_deserialized_human(human)
+    original = sr._serialize_deserialized_to_b85
+    sr._serialize_deserialized_to_b85 = lambda *_a, **_k: (_ for _ in ()).throw(
+        AssertionError("HTTP serialize should not run when local encode works")
+    )
+    try:
+        out = sr._resolve_give_serial_strings([human])
+    finally:
+        sr._serialize_deserialized_to_b85 = original
+    assert out and len(out) == 1
+    assert out[0].startswith("@U")
+    assert sr.needs_async_serial_resolution([human]) is False
+
+
+def test_human_space_head_encodes_locally():
+    spaced = _space_header(_sample_human())
+    assert sr._looks_like_deserialized_human(spaced)
+    assert "," not in spaced.split("|", 1)[0]
+    original = sr._serialize_deserialized_to_b85
+    sr._serialize_deserialized_to_b85 = lambda *_a, **_k: (_ for _ in ()).throw(
+        AssertionError("HTTP serialize should not run when local encode works")
+    )
+    try:
+        out = sr._resolve_give_serial_strings([spaced])
+    finally:
+        sr._serialize_deserialized_to_b85 = original
+    assert out and out[0].startswith("@U")
+
+
+def test_bad_human_keeps_good_base85():
+    import os
+
+    os.environ["GENIE_SERIALIZE_ENABLED"] = "0"
+    try:
+        out = sr._resolve_give_serial_strings(["7, 0, 1, 60| {{{broken", SAMPLE])
+    finally:
+        os.environ.pop("GENIE_SERIALIZE_ENABLED", None)
+    assert out == [SAMPLE]
+
+
+def test_needs_async_when_local_fails_and_genie_on():
+    import os
+
+    os.environ["GENIE_SERIALIZE_ENABLED"] = "1"
+    try:
+        assert sr.needs_async_serial_resolution(["7, 0, 1, 60| {{{broken"]) is True
+    finally:
+        os.environ.pop("GENIE_SERIALIZE_ENABLED", None)
+    os.environ["GENIE_SERIALIZE_ENABLED"] = "0"
+    try:
+        assert sr.needs_async_serial_resolution(["7, 0, 1, 60| {{{broken"]) is False
+    finally:
+        os.environ.pop("GENIE_SERIALIZE_ENABLED", None)
+
+
 if __name__ == "__main__":
     test_spawn_input_preserves_backtick_and_mid_at_u()
     test_no_o_to_0_substitution()
@@ -149,4 +219,8 @@ if __name__ == "__main__":
     test_whitespace_separated_serials_still_split()
     test_outer_markdown_backticks_only()
     test_expand_token_preserves_mid_at_u()
+    test_human_comma_encodes_locally_without_http()
+    test_human_space_head_encodes_locally()
+    test_bad_human_keeps_good_base85()
+    test_needs_async_when_local_fails_and_genie_on()
     print("ALL TESTS PASSED")

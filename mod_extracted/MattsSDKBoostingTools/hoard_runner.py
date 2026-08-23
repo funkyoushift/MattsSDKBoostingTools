@@ -54,9 +54,9 @@ _NODE_DISTANCE_MIN = 600.0
 _NODE_DISTANCE_MAX = 4000.0
 _WAVE_DISTANCE_DEFAULT = 900.0
 
-# hide_ground_loot() enables physics on every InventoryPickup and teleports it to
-# Z=-1e9. Running that automatically at every wave transition crashed the game,
-# so it is opt-in and rate limited.
+# hide_ground_loot() parks every InventoryPickup in a far XY pocket. Running that
+# automatically at every wave transition used to crash the game, so it is opt-in
+# and rate limited.
 _LOOT_CLEANUP_MIN_INTERVAL_S = 20.0
 
 # Three crashes in a row all landed in the same window: this module reaching into
@@ -1001,11 +1001,10 @@ def _hide_ground_loot_now() -> str:
 def _should_cleanup_ground_loot(wave: dict[str, Any]) -> bool:
     """Opt-in ground-loot hide, rate limited.
 
-    hide_ground_loot() turns on physics for every InventoryPickup in the level and
-    teleports it to Z=-1e9. Pickups are never destroyed, so each pass re-launches a
-    larger set of falling physics bodies — running it at every wave transition is
-    what took the game down. Keep it off by default, never back-to-back, and only
-    ever from the deferred pass so it cannot land in a death frame.
+    hide_ground_loot() walks every InventoryPickup and parks it off-map. Running
+    that at every wave transition is what took the game down. Keep it off by
+    default, never back-to-back, and only ever from the deferred pass so it
+    cannot land in a death frame.
     """
     global _loot_cleanup_last_at
     if not bool(wave.get("cleanup_loot", False)):

@@ -30,8 +30,8 @@ from .quick_menu import (
     start_quick_menu,
 )
 
-__version__: str = "2.8.2"
-__version_info__: tuple[int, int, int] = (2, 8, 2)
+__version__: str = "2.8.3"
+__version_info__: tuple[int, int, int] = (2, 8, 3)
 
 _panel_keybinds = []
 _panel_commands = []

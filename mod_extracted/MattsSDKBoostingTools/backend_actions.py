@@ -1794,11 +1794,11 @@ def run_quick_menu_action(
     elif key == "movement_players_only":
         result = movement_toggle_players_only()
     elif key == "movement_delete_ground_items":
-        result = movement_delete_ground_items()
+        result = movement_delete_ground_items(payload)
     elif key == "movement_hide_ground_loot":
-        result = movement_hide_ground_loot()
+        result = movement_hide_ground_loot(payload)
     elif key == "movement_pull_ground_loot":
-        result = movement_pull_ground_loot()
+        result = movement_pull_ground_loot(payload)
     elif key == "movement_super_dash":
         result = movement_super_dash(payload.get("dash_strength"))
     elif key == "movement_super_dash_toggle":
@@ -4847,34 +4847,91 @@ def _asd_autoclear_status() -> dict[str, Any]:
     }
 
 
-def movement_delete_ground_items() -> dict[str, Any]:
+def _loot_radius_from_payload(payload: dict[str, Any] | None) -> float:
+    data = payload if isinstance(payload, dict) else {}
+    if _truthy(data.get("loot_unlimited") or data.get("unlimited") or data.get("loot_all_loaded")):
+        return 0.0
+    raw = data.get("loot_radius_m")
+    if raw is None:
+        raw = data.get("radius_m")
+    if raw is None:
+        raw = data.get("loot_pull_radius")
     try:
-        msg = delete_ground_items()
-        return {"ok": True, "message": msg}
+        return float(raw)
+    except Exception:
+        return 0.0
+
+
+def _loot_scope_from_payload(payload: dict[str, Any] | None, default: str = "local") -> str:
+    data = payload if isinstance(payload, dict) else {}
+    raw = str(data.get("loot_scope") or data.get("scope") or default).strip().lower()
+    if raw in ("local", "me", "host"):
+        return "local"
+    if raw in ("selected", "named", "named_player"):
+        return "selected"
+    if raw in ("all", "everyone", "party"):
+        return "all"
+    if raw in ("nonhost", "others", "other", "remote"):
+        return "nonhost"
+    return default
+
+
+def _loot_selected_pawn(payload: dict[str, Any] | None) -> Any | None:
+    data = payload if isinstance(payload, dict) else {}
+    raw = data.get("target_player") or data.get("loot_target")
+    if raw is None or str(raw).strip() == "":
+        if _selected_player_index is not None:
+            return _pawn_for_party_index(_selected_player_index)
+        return None
+    text = str(raw).strip()
+    index_text = text.split("|", 1)[0].strip() if "|" in text else text
+    if index_text.isdigit():
+        return _pawn_for_party_index(int(index_text))
+    return None
+
+
+def _loot_action_ok(msg: str) -> bool:
+    low = str(msg).lower()
+    if "failed" in low or "load into" in low or "choose a named player" in low:
+        return False
+    return True
+
+
+def movement_delete_ground_items(payload: dict[str, Any] | None = None) -> dict[str, Any]:
+    try:
+        scope = _loot_scope_from_payload(payload, "all")
+        msg = delete_ground_items(
+            radius_m=_loot_radius_from_payload(payload),
+            scope=scope,
+            selected_pawn=_loot_selected_pawn(payload) if scope == "selected" else None,
+        )
+        return {"ok": _loot_action_ok(msg), "message": msg}
     except Exception as exc:
         return {"ok": False, "message": f"Delete ground items failed: {exc!r}"}
 
 
-def movement_hide_ground_loot() -> dict[str, Any]:
+def movement_hide_ground_loot(payload: dict[str, Any] | None = None) -> dict[str, Any]:
     try:
-        msg = hide_ground_loot()
-        low = str(msg).lower()
-        ok = "failed" not in low and "load into" not in low
-        if "no ground loot" in low or "moved" in low:
-            ok = True
-        return {"ok": ok, "message": msg}
+        scope = _loot_scope_from_payload(payload, "local")
+        msg = hide_ground_loot(
+            radius_m=_loot_radius_from_payload(payload),
+            scope=scope,
+            selected_pawn=_loot_selected_pawn(payload) if scope == "selected" else None,
+        )
+        return {"ok": _loot_action_ok(msg), "message": msg}
     except Exception as exc:
         return {"ok": False, "message": f"Clear Loot (Hide) failed: {exc!r}"}
 
 
-def movement_pull_ground_loot() -> dict[str, Any]:
+def movement_pull_ground_loot(payload: dict[str, Any] | None = None) -> dict[str, Any]:
     try:
-        msg = pull_ground_loot_here()
-        low = str(msg).lower()
-        ok = "failed" not in low and "load into" not in low
-        if "no ground loot" in low or "moved" in low:
-            ok = True
-        return {"ok": ok, "message": msg}
+        scope = _loot_scope_from_payload(payload, "local")
+        msg = pull_ground_loot_here(
+            radius_m=_loot_radius_from_payload(payload),
+            scope=scope,
+            selected_pawn=_loot_selected_pawn(payload) if scope == "selected" else None,
+        )
+        return {"ok": _loot_action_ok(msg), "message": msg}
     except Exception as exc:
         return {"ok": False, "message": f"Pull loot failed: {exc!r}"}
 

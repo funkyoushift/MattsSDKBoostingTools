@@ -25,6 +25,7 @@ from .party_helpers import (
     _gbc_session_world_and_gamestate,
 )
 from .serial_converter import base85_decode as _base85_decode
+from .serial_converter import human_to_serial as _human_to_serial
 from unrealsdk.unreal import FGbxDefPtr, UObject
 from unrealsdk import logging
 
@@ -127,8 +128,11 @@ def _serial_delivery_post_open_delay(mode: str | None = None) -> float:
 
 # Same contract as Legit Builder SERIAL_API_URL (POST JSON {"deserialized": "…"} → {"serial_b85": "…"}).
 _DEFAULT_GENIE_SERIALIZE_API_URL = "https://save-editor.be/nicnl/api.php"
-# BL4-style deserialized human line: leading root tuple then first pipe (e.g. "7, 0, 1, 60| …").
-_DESERIALIZED_HUMAN_HEAD_RE = re.compile(r"^\s*\d+\s*,\s*\d+\s*,\s*\d+\s*,\s*\d+\s*\|")
+# BL4-style deserialized human line: four leading integers then first pipe.
+# Accept comma or whitespace separators: "7, 0, 1, 60| …" or "7 0 1 60| …".
+_DESERIALIZED_HUMAN_HEAD_RE = re.compile(
+    r"^\s*(\d+)(?:\s*,\s*|\s+)(\d+)(?:\s*,\s*|\s+)(\d+)(?:\s*,\s*|\s+)(\d+)\s*\|"
+)
 
 
 def _genie_serialize_api_url() -> str:
@@ -157,6 +161,32 @@ def _looks_like_deserialized_human(s: str) -> bool:
     if "|" not in t:
         return False
     return bool(_DESERIALIZED_HUMAN_HEAD_RE.match(t))
+
+
+def _canonical_human_serial(s: str) -> str:
+    """Rewrite a space-separated header to comma form so local encode stays valid."""
+    t = (s or "").strip()
+    match = _DESERIALIZED_HUMAN_HEAD_RE.match(t)
+    if not match:
+        return t
+    a, b, c, d = match.group(1), match.group(2), match.group(3), match.group(4)
+    return f"{a}, {b}, {c}, {d}|{t[match.end():]}"
+
+
+def _try_local_human_to_b85(deserialized: str) -> Optional[str]:
+    """Encode a human line with the local converter. None if the payload cannot be built."""
+    try:
+        raw = _human_to_serial(_canonical_human_serial(deserialized))
+    except Exception:
+        return None
+    b85 = _normalize_serial_b85(str(raw or ""))
+    if not _looks_like_base85(b85):
+        return None
+    try:
+        _validate_base85_decodable(b85)
+    except Exception:
+        return None
+    return b85
 
 
 def _normalize_serial_b85(b85: str) -> str:
@@ -256,7 +286,7 @@ def _validate_base85_decodable(b85: str) -> None:
 
 
 def _resolve_give_serial_strings(raw_serials: List[str]) -> Optional[List[str]]:
-    """Convert deserialized human lines to Base85 via HTTP; skip undecodable Base85 rows."""
+    """Convert deserialized human lines to Base85; skip rows that cannot be encoded."""
     out: List[str] = []
     rejected = 0
     for idx, s in enumerate(raw_serials):
@@ -279,17 +309,28 @@ def _resolve_give_serial_strings(raw_serials: List[str]) -> Optional[List[str]]:
             out.append(t)
             continue
         if _looks_like_deserialized_human(t):
+            local = _try_local_human_to_b85(t)
+            if local:
+                out.append(local)
+                continue
             if not _genie_serialize_enabled():
+                rejected += 1
+                preview = t if len(t) <= 64 else f"{t[:61]}..."
                 _log_error(
-                    "Give_Serial: deserialized human serial detected but GENIE_SERIALIZE_ENABLED is off "
-                    "(unset or set to 1/true to allow HTTP serialize)."
+                    f"Give_Serial: deserialized human serial #{idx + 1} failed local encode "
+                    "and GENIE_SERIALIZE_ENABLED is off. Skipping this serial. "
+                    f"Preview: {preview}"
                 )
-                return None
+                continue
             try:
-                b85 = _serialize_deserialized_to_b85(t)
+                b85 = _serialize_deserialized_to_b85(_canonical_human_serial(t))
             except Exception as e:
-                _log_error(f"Give_Serial: serialize failed for serial #{idx + 1}: {e}")
-                return None
+                rejected += 1
+                _log_error(
+                    f"Give_Serial: serialize failed for serial #{idx + 1}: {e}. "
+                    "Skipping this serial."
+                )
+                continue
             out.append(b85)
             continue
         out.append(t)
@@ -306,8 +347,21 @@ _serial_resolution_generation = 0
 
 
 def needs_async_serial_resolution(raw_serials: List[str]) -> bool:
-    """Return whether resolving these rows may perform network I/O."""
-    return any(_looks_like_deserialized_human(_strip_wrapping_markdown_backticks(str(row).strip())) for row in raw_serials)
+    """Return whether resolving these rows may perform network I/O.
+
+    Local ``human_to_serial`` stays on-thread. HTTP Genie is only queued when a
+    human line still fails local encode and serialize is enabled.
+    """
+    if not _genie_serialize_enabled():
+        return False
+    for row in raw_serials:
+        text = _strip_wrapping_markdown_backticks(str(row).strip())
+        if not _looks_like_deserialized_human(text):
+            continue
+        if _try_local_human_to_b85(text):
+            continue
+        return True
+    return False
 
 
 def queue_serial_resolution(
@@ -2224,7 +2278,8 @@ def _do_give_serial_chunk(
         "Grant the next generic loyalty reward package (rotates Daedalus→Jakobs→…→Vladof; Ripper uses Borg id), "
         "then set serial(s) on the newest reward package (each GbxRewardsManager, or one player with index/name). "
         "Base85 @U… tokens may be separate args or whitespace-separated. Deserialized human lines (digits, 0,1,60|…) "
-        "must be one double-quoted token each; they are converted to Base85 via HTTP (GENIE_SERIALIZE_API_URL). "
+        "must be one double-quoted token each; they are converted to Base85 locally, with HTTP "
+        "(GENIE_SERIALIZE_API_URL) only if local encode fails. "
         "Usage: Give_Serial serial … [all] | Give_Serial … index N all | Give_Serial … name <substring> all "
         "(unique match on gbc_players display name). Contiguous Base85 payloads are preserved literally "
         "(including mid-payload `@U` and backtick characters)."

@@ -156,13 +156,19 @@ def _after_loaded_world(*args: Any, **kwargs: Any) -> None:
         except Exception:
             pass
         return
+    try:
+        from .hook_gate import hooks_enabled
+        if hooks_enabled():
+            return
+    except Exception:
+        pass
     mark_travel()
     try:
         disable_join_hooks()
     except Exception:
         pass
     try:
-        request_arm_when_pawn_ready(5.0)
+        request_arm_when_pawn_ready(1.0)
     except Exception as exc:
         try:
             logging.warning(f"{_PREFIX} pawn wait failed: {exc!r}")
