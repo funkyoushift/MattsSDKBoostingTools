@@ -291,13 +291,13 @@ UI_LAYOUT: dict[str, Any] = {
                 {"id":"max_all","label":"MAX ALL","accent":"gold"},
                 {"id":"max_currency","label":"MAX CASH","accent":"green"},
                 {"id":"max_eridium","label":"MAX ERIDIUM","accent":"purple"},
-                {"id":"max_player_level","label":"MAX PLAYER 60","accent":"cyan"},
+                {"id":"max_player_level","label":"MAX PLAYER 70","accent":"cyan"},
                 {"id":"max_spec_level","label":"MAX SPEC 701","accent":"purple"}
             ]},
             {"id":"serial_rewards","label":"SERIAL REWARDS","accent":"purple","text":"Paste one or more serials below, or Read Equipped / Backpack from the selected party target (P1–P4). Host can read a guest's equipped gear. Rewards use GiveRewardAllPlayers then patch serials onto target packages. Ground/dropped serials are not supported.","fields":[
                 {"id":"serial_text","label":"Serial Input","type":"multiline","default":""},
                 {"id":"serial_override_level","label":"Override delivery level?","type":"choice","choices":["false","true"],"default":"false"},
-                {"id":"serial_level","label":"Level","type":"int","default":60}
+                {"id":"serial_level","label":"Level","type":"int","default":70}
             ],"actions":[
                 {"id":"read_equipped_serials","label":"Read Equipped","accent":"cyan"},
                 {"id":"read_backpack_serials","label":"Read Backpack","accent":"cyan"},
@@ -308,7 +308,7 @@ UI_LAYOUT: dict[str, Any] = {
             ]},
             {"id":"experience","label":"EXPERIENCE","accent":"cyan","fields":[
                 {"id":"xp_track","label":"XP Track","type":"choice","choices":["player","specialization"],"default":"player"},
-                {"id":"level","label":"Target Level","type":"int","default":60}
+                {"id":"level","label":"Target Level","type":"int","default":70}
             ],"actions":[
                 {"id":"set_level","label":"Set Player Level","accent":"cyan","uses_fields":["xp_track","level"]},
                 {"id":"max_player_level","label":"Max Player Level","accent":"cyan"},
@@ -393,16 +393,17 @@ UI_LAYOUT: dict[str, Any] = {
             {"id":"bl4_codes_catalog","label":"BL4 CODES","accent":"gold","text":"Merged BL4 codes catalog. The external app can use the local Lootlemon/cache JSON without the game; delivery still goes through the bridge.","fields":[
                 {"id":"code_search","label":"Search","type":"text","default":""},
                 {"id":"code_serial","label":"Serial","type":"multiline","default":""},
-                {"id":"code_delivery_level","label":"Delivery Level","type":"int","default":60}
+                {"id":"serial_override_level","label":"Override delivery level?","type":"choice","choices":["false","true"],"default":"false"},
+                {"id":"code_delivery_level","label":"Delivery Level","type":"int","default":70}
             ],"actions":[
                 {"id":"codes_load_cache","label":"Load Cache","accent":"cyan"},
                 {"id":"codes_refresh_gzo","label":"Refresh GZO","accent":"gold"},
                 {"id":"codes_reload_lootlemon","label":"Reload Lootlemon Cache","accent":"gold"},
                 {"id":"codes_mattmab_validation","label":"Mattmab Validation","accent":"green"},
                 {"id":"codes_import_bookmarks","label":"Import Selected To Bookmarks","accent":"purple"},
-                {"id":"give_serial_selected","label":"Deliver Selected","accent":"purple","uses_fields":["code_serial","code_delivery_level"]},
-                {"id":"give_serial_all","label":"Deliver All","accent":"gold","uses_fields":["code_serial","code_delivery_level"]},
-                {"id":"give_serial_nonhost","label":"Deliver Non-Host","accent":"cyan","uses_fields":["code_serial","code_delivery_level"]}
+                {"id":"give_serial_selected","label":"Deliver Selected","accent":"purple","uses_fields":["code_serial","serial_override_level","code_delivery_level"]},
+                {"id":"give_serial_all","label":"Deliver All","accent":"gold","uses_fields":["code_serial","serial_override_level","code_delivery_level"]},
+                {"id":"give_serial_nonhost","label":"Deliver Non-Host","accent":"cyan","uses_fields":["code_serial","serial_override_level","code_delivery_level"]}
             ]}
         ]},
         {"id":"legit_builder","label":"Legit Builder","cards":[
@@ -434,7 +435,7 @@ UI_LAYOUT: dict[str, Any] = {
         {"id":"item_pool_spawning","label":"Item Pool Spawning","cards":[
             {"id":"item_pool_main","label":"ITEM POOL SPAWNING","accent":"gold","text":"Filter item pools, then spawn the selected pool near the local player. Turrets, terminals, and cosmetics are intentionally excluded.","fields":[
                 {"id":"itempool_search","label":"Search Item Pools","type":"text","default":""},
-                {"id":"itempool_level","label":"Level","type":"int","default":60},
+                {"id":"itempool_level","label":"Level","type":"int","default":70},
                 {"id":"itempool_count","label":"Quantity","type":"int","default":1},
                 {"id":"itempool_name","label":"Selected / exact pool name","type":"text","default":""}
             ],"actions":[
@@ -521,13 +522,14 @@ def _v4_patch_layout() -> None:
                     {"id":"code_entry","label":"Code / Item","type":"resource_choice","source":"lootlemon_codes","default":"","sets":{"code_serial":"serial"}},
                     {"id":"code_search","label":"Search","type":"text","default":""},
                     {"id":"code_serial","label":"Serial","type":"multiline","default":""},
-                    {"id":"code_delivery_level","label":"Delivery Level","type":"int","default":60},
+                    {"id":"serial_override_level","label":"Override delivery level?","type":"choice","choices":["false","true"],"default":"false"},
+                    {"id":"code_delivery_level","label":"Delivery Level","type":"int","default":70},
                 ]
             elif tid == "item_pool_spawning" and cid == "item_pool_main":
                 card["fields"] = [
                     {"id":"itempool_name","label":"Selected Item Pool","type":"resource_choice","source":"item_pools","default":""},
                     {"id":"itempool_search","label":"Search Item Pools","type":"text","default":""},
-                    {"id":"itempool_level","label":"Level","type":"int","default":60},
+                    {"id":"itempool_level","label":"Level","type":"int","default":70},
                     {"id":"itempool_count","label":"Quantity","type":"int","default":1},
                 ]
             elif tid == "map_travel" and cid == "map_travel_main":
@@ -766,7 +768,7 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
         return backend_actions.spawn_itempool(
             payload.get("itempool_name"),
             payload.get("itempool_count") or 1,
-            payload.get("itempool_level") or 60,
+            payload.get("itempool_level") or 70,
         )
     if action == "spawn_itempool_all":
         return backend_actions.spawn_itempool_all(payload)
@@ -928,7 +930,7 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
             _payload_serial_text(payload),
             "all" if action.endswith("all") else "selected",
             override_level,
-            payload.get("serial_level") or payload.get("code_delivery_level") or 60,
+            payload.get("serial_level") or payload.get("code_delivery_level") or 70,
         )
     if action == "give_serial_nonhost":
         override_level = str(payload.get("serial_override_level") or "false").lower() in ("1", "true", "yes", "on")
@@ -936,7 +938,7 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
             _payload_serial_text(payload),
             "nonhost",
             override_level,
-            payload.get("serial_level") or payload.get("code_delivery_level") or 60,
+            payload.get("serial_level") or payload.get("code_delivery_level") or 70,
         )
     if action == "read_equipped_serials":
         return backend_actions.read_equipped_serials(payload.get("target_player"))

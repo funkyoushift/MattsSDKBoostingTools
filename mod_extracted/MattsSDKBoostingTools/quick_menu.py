@@ -750,6 +750,7 @@ def load_layout() -> None:
         backend_actions.set_drop_player_lock(True, lock_target)
     elif lock.get("enabled"):
         backend_actions.set_drop_player_lock(False)
+    _sync_camera_need()
 
 
 def save_layout() -> None:
@@ -2844,6 +2845,7 @@ def open_panel() -> None:
     _sync_rarity_weights_from_backend()
     rebuild_ui()
     capture_input()
+    _sync_camera_need()
     _log(
         f"Quick Menu opened (viewport={int(STATE.viewport_w)}x{int(STATE.viewport_h)} "
         f"dpi={STATE.dpi_scale:.3f} layout={int(STATE.layout_w)}x{int(STATE.layout_h)})"
@@ -2874,6 +2876,7 @@ def close_panel(defer_ui_state_pop: bool = False) -> None:
     # Prevent same-frame keybind + poller from reopening immediately.
     STATE.hotkey_ignore_until = time.monotonic() + 0.35
     restore_input()
+    _sync_camera_need()
     _log("Quick Menu closed")
 
 
@@ -3213,6 +3216,21 @@ def tick(_obj: Any, _args: Any, _ret: Any, _func: Any) -> None:
     return None
 
 
+def _sync_camera_need() -> None:
+    try:
+        from . import camera_tick
+    except Exception:
+        return
+    camera_tick.set_needed("quick_menu", bool(STATE.is_open))
+    has_hotkeys = False
+    if not STATE.is_open:
+        try:
+            has_hotkeys = bool(_configured_slot_hotkeys())
+        except Exception:
+            has_hotkeys = False
+    camera_tick.set_needed("quick_menu_hotkeys", has_hotkeys)
+
+
 def install_hook() -> None:
     from . import camera_tick
 
@@ -3221,15 +3239,20 @@ def install_hook() -> None:
         unrealsdk.hooks.remove_hook(TICK_PATH, Type.POST, HOOK_ID)
     except Exception:
         pass
+    _sync_camera_need()
 
 
 def start_quick_menu() -> None:
     if STATE.started:
         return
     try:
+        try:
+            load_layout()
+        except Exception:
+            pass
         install_hook()
         STATE.started = True
-        _log("Quick Menu tick installed")
+        _log("Quick Menu tick registered (camera hook stays off until needed)")
     except Exception as exc:
         _log(f"Quick Menu tick not installed yet: {exc!r}")
 

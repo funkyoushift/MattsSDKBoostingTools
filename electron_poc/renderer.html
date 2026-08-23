@@ -417,7 +417,7 @@
             <button data-action="devperk_7">Spawn Legendary/Epic Loot</button>
             <button data-action="max_currency">Max Cash</button>
             <button data-action="max_eridium">Max Eridium</button>
-            <button data-action="max_player_level">Max Player 60</button>
+            <button data-action="max_player_level">Max Player 70</button>
             <button data-action="max_spec_level">Max Spec 701</button>
             <button data-action="max_sdu">Max SDU</button>
           </div>
@@ -438,7 +438,7 @@
                 </label>
                 <label>
                   Target Level
-                  <input id="xpLevel" type="number" min="1" max="9999999" value="60">
+                  <input id="xpLevel" type="number" min="1" max="9999999" value="70">
                 </label>
               </div>
               <div class="button-row wrap">
@@ -556,7 +556,7 @@
             </label>
             <label>
               Level
-              <input id="boostSerialLevel" type="number" min="1" max="60" value="60">
+              <input id="boostSerialLevel" type="number" min="1" max="70" value="70">
             </label>
             <label>
               Copies
@@ -1067,7 +1067,7 @@
             </label>
             <label>
               Level
-              <input id="bl4DeliveryLevel" type="number" min="1" max="60" value="60">
+              <input id="bl4DeliveryLevel" type="number" min="1" max="70" value="70">
             </label>
             <label>
               Copies
@@ -1124,7 +1124,7 @@
           <div class="inline-fields">
             <label>
               Level
-              <input id="itempoolLevel" type="number" min="1" max="60" value="60">
+              <input id="itempoolLevel" type="number" min="1" max="70" value="70">
             </label>
             <label>
               Quantity
@@ -1988,17 +1988,9 @@
     </section>
 
     <section id="tab-combat-vehicle" class="tab-panel" data-msbt-layout-tab="combat-vehicle">
-      <section class="dev-tools-intro-strip">
-        <h2>Dev Tools (WIP)</h2>
-        <p>Hidden on fresh profiles: Shift+click View → Development tabs to reveal it the first time. Once enabled, this tab stays visible across app restarts.</p>
-        <div class="button-row wrap">
-          <button type="button" data-msbt-bridge-refresh>Refresh Status</button>
-        </div>
-      </section>
-
       <section class="panel cyan" data-msbt-panel="dev-target" data-msbt-span="6" data-msbt-title="Target Player" data-msbt-resize="1">
         <h2>Target Player</h2>
-        <p>Party target for Streamer Chaos and other Dev Tools actions. Named roster and Kick also live on Boosting → Connection &amp; Scope. Use <strong>Refresh Status</strong> to reload the player list. Host-only for remote players in co-op.</p>
+        <p>Party target for Streamer Chaos and related actions. Named roster and Kick also live on Boosting → Connection &amp; Scope. Use <strong>Refresh Status</strong> to reload the player list. Host-only for remote players in co-op.</p>
         <div id="devBridgeSummary" class="status-line warning">Checking game connection...</div>
         <label for="devTargetSelect">Target Player</label>
         <div class="target-row">

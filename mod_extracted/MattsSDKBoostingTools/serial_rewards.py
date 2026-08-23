@@ -1278,9 +1278,31 @@ def _process_pending_serial_patch_jobs() -> None:
     _pending_serial_patch_jobs[:] = remaining
 
 
+_SERIAL_TICK_HOOK = None
+
+
+def _serial_delivery_busy() -> bool:
+    return bool(_pending_serial_patch_jobs or _pending_serial_delivery_sequences or _serial_resolution_results)
+
+
+def _set_serial_delivery_tick(enabled: bool) -> None:
+    """HUD tick is expensive; keep it on only while a delivery is queued."""
+    hook_obj = _SERIAL_TICK_HOOK
+    if hook_obj is None:
+        return
+    try:
+        if enabled:
+            hook_obj.enable()
+        else:
+            hook_obj.disable()
+    except Exception:
+        pass
+
+
 def _tick_cb(*_args: Any, **_kwargs: Any) -> None:
     # Idle path must be free: this hook fires from the game HUD tick.
-    if not _pending_serial_patch_jobs and not _pending_serial_delivery_sequences and not _serial_resolution_results:
+    if not _serial_delivery_busy():
+        _set_serial_delivery_tick(False)
         return
     try:
         _process_serial_resolution_results()
@@ -1288,12 +1310,14 @@ def _tick_cb(*_args: Any, **_kwargs: Any) -> None:
         _process_pending_serial_delivery_sequences()
     except Exception as exc:
         _log_warning(f"Serial delivery tick failed: {exc!r}")
+    if not _serial_delivery_busy():
+        _set_serial_delivery_tick(False)
 
 
 try:
-    hook(
+    _SERIAL_TICK_HOOK = hook(
         "/Script/GbxUIUMG.GbxUIUMGTickWidget:BP_TickWidget",
-        immediately_enable=True,
+        immediately_enable=False,
         hook_identifier="matts_sdk_boosting_tools_serial_delivery_tick_v1",
     )(_tick_cb)
 except Exception as exc:
@@ -1334,6 +1358,7 @@ def clear_delivery_state() -> None:
         _serial_resolution_results.clear()
     _pending_serial_patch_jobs.clear()
     _pending_serial_delivery_sequences.clear()
+    _set_serial_delivery_tick(False)
     _set_active_serial_delivery_progress(
         active=False,
         stage="travel",
@@ -1610,6 +1635,8 @@ def _queue_serial_delivery_sequence(serials: List[str], player_indices: List[int
         "mode": mode_key,
         "post_open_delay": post_open_delay,
     })
+    # Join-gate may still have this HUD hook off. Arm it only for the queued send.
+    _set_serial_delivery_tick(True)
     # Let the game tick hook advance the sequence.  Processing immediately from a
     # button/HTTP action can stall the host and starve remote clients.
 

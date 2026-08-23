@@ -9,7 +9,8 @@ from mods_base import hook
 from unrealsdk import logging
 from unrealsdk.hooks import Type
 
-from .travel_gate import mark_travel, schedule_in_world
+from .hook_gate import disable_join_hooks, request_arm_when_pawn_ready, try_arm_from_controller
+from .travel_gate import mark_menu, mark_travel
 
 _PREFIX = "[Matts SDK Boosting Tools | Cleanup]"
 _last_error_at: dict[str, float] = {}
@@ -53,24 +54,67 @@ def clear_travel_caches() -> None:
         _call("BLImGui", getattr(panel, "clear_travel_caches", None))
 
 
+def _world_package_name(*hook_args: Any, **hook_kwargs: Any) -> str:
+    """Read only the FName argument. Do not stringify the player controller."""
+    args = hook_args[1] if len(hook_args) > 1 else hook_kwargs.get("args")
+    if args is None:
+        return ""
+    for attr in ("WorldPackageName", "WorldName"):
+        try:
+            value = getattr(args, attr, None)
+        except Exception:
+            value = None
+        if value is None:
+            continue
+        try:
+            text = str(value)
+        except Exception:
+            continue
+        if text:
+            return text.lower()
+    return ""
+
+
+def _looks_like_menu(text: str) -> bool:
+    name = (text or "").lower().replace("\\", "/")
+    return any(
+        marker in name
+        for marker in ("mainmenu", "title_screen", "titlescreen", "frontendmap", "/frontend")
+    )
+
+
+def _looks_like_gameplay(text: str) -> bool:
+    if _looks_like_menu(text):
+        return False
+    name = (text or "").lower()
+    if any(marker in name for marker in ("world_p", "fortress_", "vault_", "cityvault", "raid_")):
+        return True
+    # Banjo_P is also the title menu (Banjo_P.MainMenu). Only treat DLC loads.
+    return any(marker in name for marker in ("ft_banjo", "lt_banjo", "dlc/banjo", "banjo_p.banjo_p"))
+
+
 @hook(
     "OakGame.OakPlayerController:ClientTravel",
-    Type.POST,
-    immediately_enable=True,
+    Type.PRE,
+    immediately_enable=False,
     hook_identifier="msbt_runtime_cleanup_travel_oak_v1",
 )
 @hook(
     "Engine.PlayerController:ClientTravel",
-    Type.POST,
-    immediately_enable=True,
+    Type.PRE,
+    immediately_enable=False,
     hook_identifier="msbt_runtime_cleanup_travel_engine_v1",
 )
 def _after_travel(*_args: Any, **_kwargs: Any) -> None:
-    # Only flip the quiet gate here. Cache wipes import other MSBT modules and
-    # must not run while the world is unloading or while this package is loading.
+    # Travel and return-to-menu both tear the world down. Drop join-unsafe hooks
+    # immediately; do not touch other MSBT modules here.
     mark_travel()
     try:
-        logging.info(f"{_PREFIX} quiet on (ClientTravel)")
+        disable_join_hooks()
+    except Exception:
+        pass
+    try:
+        logging.info(f"{_PREFIX} quiet on (ClientTravel); hooks off")
     except Exception:
         pass
 
@@ -87,10 +131,65 @@ def _after_travel(*_args: Any, **_kwargs: Any) -> None:
     immediately_enable=True,
     hook_identifier="msbt_runtime_cleanup_loaded_engine_v1",
 )
-def _after_loaded_world(*_args: Any, **_kwargs: Any) -> None:
-    # Title boot does not count. Only a world load that followed ClientTravel.
-    schedule_in_world(8.0)
+def _after_loaded_world(*args: Any, **kwargs: Any) -> None:
+    # Host may already be in World_P while this client still has no pawn.
+    # Never inspect the controller here; never arm hooks on world name alone.
+    world = _world_package_name(*args, **kwargs)
+    if _looks_like_menu(world):
+        mark_menu()
+        try:
+            disable_join_hooks()
+        except Exception:
+            pass
+        try:
+            logging.info(f"{_PREFIX} menu world; hooks off ({world[:80]})")
+        except Exception:
+            pass
+        return
+    if not _looks_like_gameplay(world):
+        try:
+            disable_join_hooks()
+        except Exception:
+            pass
+        try:
+            logging.info(f"{_PREFIX} not gameplay yet; hooks stay off ({world[:80]})")
+        except Exception:
+            pass
+        return
+    mark_travel()
     try:
-        logging.info(f"{_PREFIX} in-world release armed")
+        disable_join_hooks()
+    except Exception:
+        pass
+    try:
+        request_arm_when_pawn_ready(5.0)
+    except Exception as exc:
+        try:
+            logging.warning(f"{_PREFIX} pawn wait failed: {exc!r}")
+        except Exception:
+            pass
+    try:
+        logging.info(f"{_PREFIX} gameplay map; waiting for live pawn ({world[:80]})")
+    except Exception:
+        pass
+
+
+@hook(
+    "OakGame.OakPlayerController:ClientRestart",
+    Type.POST,
+    immediately_enable=True,
+    hook_identifier="msbt_runtime_cleanup_restart_oak_v1",
+)
+@hook(
+    "Engine.PlayerController:ClientRestart",
+    Type.POST,
+    immediately_enable=True,
+    hook_identifier="msbt_runtime_cleanup_restart_engine_v1",
+)
+def _after_client_restart(obj: Any, *_args: Any, **_kwargs: Any) -> None:
+    # Guest join fires this while the pawn is still missing. Leave hooks off
+    # until OakCharacter/Pawn is actually on this controller.
+    try:
+        try_arm_from_controller(obj)
     except Exception:
         pass

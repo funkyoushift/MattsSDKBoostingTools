@@ -50,7 +50,11 @@ from .serial_rewards import (
     serial_delivery_timing,
     set_serial_delivery_timing,
 )
-from .serial_converter import human_to_serial as _human_to_serial, serial_to_human as _serial_to_human
+from .serial_converter import (
+    human_to_serial as _human_to_serial,
+    rewrite_item_level as _rewrite_item_level,
+    serial_to_human as _serial_to_human,
+)
 try:
     from . import legit_builder_core as _legit_builder
 except Exception:
@@ -334,7 +338,7 @@ def _hud_native_allowed() -> bool:
 _selected_player_index: int = 0
 _serial_text: str = ""
 _serial_delivery_override_level: bool = False
-_serial_delivery_level: int = 60
+_serial_delivery_level: int = 70
 _last_serial_delivery_status_seen: str = ""
 _serial_delivery_advanced_timing: bool = False
 _serial_delivery_pre_open_delay: float = 1.00
@@ -393,9 +397,9 @@ _lootlemon_filter_cache_result: list[dict[str, str]] = []
 _lootlemon_active_cache_id: str = ""
 _lootlemon_active_cache_entry: dict[str, str] | None = None
 _lootlemon_delivery_override_level: bool = False
-_lootlemon_delivery_level: int = 60
+_lootlemon_delivery_level: int = 70
 _gzo_delivery_override_level: bool = False
-_gzo_delivery_level: int = 60
+_gzo_delivery_level: int = 70
 _serial_level_override_cache: dict[tuple[bool, int, int, int], tuple[list[str], int, str | None]] = {}
 _serial_parts_cache_serial: str = ""
 _serial_parts_cache_text: str = ""
@@ -415,7 +419,7 @@ _gzo_active_cache_entry: dict[str, str] | None = None
 _serial_store_search: str = ""
 _currency_amount: int = 1000000
 _currency_kind_index: int = 0
-_exp_level: int = 60
+_exp_level: int = 70
 _exp_track_index: int = 0
 _inventory_settings = load_inventory_settings()
 _custom_game_title: str = str(_inventory_settings.get("custom_game_title", "") or "")
@@ -589,7 +593,7 @@ _legit_unlock_rules: bool = False
 _ui_hscroll_offsets: dict[int, int] = {}
 _boosting_column_scroll: int = 0
 _legit_selected_parts_text: str = ""
-_legit_level: int = 60
+_legit_level: int = 70
 _legit_seed: int = 2
 _legit_signature_value: int = int(_inventory_settings.get("legit_signature_value", 1) or 1)
 _legit_status: str = "Select a root, add part keys/serials one per line, then Validate or Build."
@@ -675,7 +679,8 @@ _EXP_TRACKS = [
     "vaultcard_xp_4",
 ]
 _MAX_WALLET_AMOUNT = 2_147_483_647
-_MAX_PLAYER_LEVEL = 60
+_MAX_PLAYER_LEVEL = 70
+_MAX_ITEM_LEVEL = 70
 _MAX_SPEC_LEVEL = 701
 _MAX_VAULT_CARD_LEVEL = 9_999_999
 
@@ -2443,14 +2448,20 @@ def _parse_serial_text(raw: str) -> list[str]:
 
 
 
+_HUMAN_ITEM_LEVEL_RE = re.compile(
+    r"^(\s*\d+\s*(?:,\s*|\s+)\d+\s*(?:,\s*|\s+)\d+\s*(?:,\s*|\s+))\d+"
+)
+
+
 def _serial_with_level_override(serial: str, level: int) -> str:
-    """Return a Base85 serial with its decoded item level replaced."""
+    """Return a Base85 serial with its header item level replaced."""
     raw = str(serial or "").strip()
     if not raw:
         return raw
-    level_i = _clamp_int(level, 1, 60)
-    human = _serial_to_human(raw) if raw.startswith("@U") else raw
-    new_human, count = re.subn(r"^(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*,\s*)\d+", rf"\g<1>{level_i}", human, count=1)
+    level_i = _clamp_int(level, 1, _MAX_ITEM_LEVEL)
+    if raw.startswith("@U"):
+        return _rewrite_item_level(raw, level_i)
+    new_human, count = _HUMAN_ITEM_LEVEL_RE.subn(rf"\g<1>{level_i}", raw, count=1)
     if count <= 0:
         raise ValueError("could not find leading item level in serial")
     return _human_to_serial(new_human)
@@ -2465,7 +2476,7 @@ def _serials_with_level_override(serials: list[str], enabled: bool, level: int) 
     """
     if not enabled:
         return list(serials), 0, None
-    level_i = _clamp_int(level, 1, 60)
+    level_i = _clamp_int(level, 1, _MAX_ITEM_LEVEL)
     cleaned = tuple(str(s or "").strip() for s in serials if str(s or "").strip())
     key = (True, level_i, len(cleaned), hash(cleaned))
     cached = _serial_level_override_cache.get(key)
@@ -2493,7 +2504,7 @@ def _draw_catalog_level_override(prefix: str, enabled: bool, level: int) -> tupl
     imgui = _blimgui.imgui
     new_enabled = _checkbox(f"Override delivery level###msbt_{prefix}_override_level", bool(enabled))
     imgui.same_line()
-    new_level = _input_int_clamped(f"Level###msbt_{prefix}_delivery_level", int(level), 1, 60)
+    new_level = _input_int_clamped(f"Level###msbt_{prefix}_delivery_level", int(level), 1, _MAX_ITEM_LEVEL)
     if new_enabled:
         _muted_wrapped(f"Deliver buttons will deserialize selected serials, set level to {new_level}, reserialize, then deliver.")
     else:
@@ -3244,8 +3255,8 @@ def _max_player_level_selected() -> None:
     if not name:
         _log("No party player selected.")
         return
-    _do_give_experience("player", 60, name)
-    _log(f"Requested player level 60 for {name}.")
+    _do_give_experience("player", _MAX_PLAYER_LEVEL, name)
+    _log(f"Requested player level {_MAX_PLAYER_LEVEL} for {name}.")
 
 
 def _max_spec_level_selected() -> None:
@@ -3282,7 +3293,7 @@ def _max_all_selected() -> None:
     if not name:
         _log("No party player selected.")
         return
-    _do_give_experience("player", 60, name)
+    _do_give_experience("player", _MAX_PLAYER_LEVEL, name)
     _do_give_experience("specialization", 701, name)
     _do_give_currency("cash", _MAX_WALLET_AMOUNT, name)
     _do_give_currency("eridium", _MAX_WALLET_AMOUNT, name)
@@ -3293,7 +3304,7 @@ def _max_all_selected() -> None:
 
         vc_ok, vc_msg = max_all_vault_cards_for_pc(pc, log=_log)
         _log(
-            f"Max All for {name}: player 60, spec 701, cash/eridium {_MAX_WALLET_AMOUNT:,}, "
+            f"Max All for {name}: player {_MAX_PLAYER_LEVEL}, spec 701, cash/eridium {_MAX_WALLET_AMOUNT:,}, "
             f"max SDU, vault cards 1–4 ({'OK' if vc_ok else 'partial'}: {vc_msg[:120]}).",
         )
     else:
@@ -3302,7 +3313,7 @@ def _max_all_selected() -> None:
         for vc_xp in ("vaultcard_xp_1", "vaultcard_xp_2", "vaultcard_xp_3", "vaultcard_xp_4"):
             _do_give_experience(vc_xp, _MAX_VAULT_CARD_LEVEL, name)
         _log(
-            f"Max All for {name}: player 60, spec 701, cash/eridium {_MAX_WALLET_AMOUNT:,}, "
+            f"Max All for {name}: player {_MAX_PLAYER_LEVEL}, spec 701, cash/eridium {_MAX_WALLET_AMOUNT:,}, "
             "max SDU, vault cards (economy fallback — no PC for ULM path).",
         )
 
@@ -3783,7 +3794,7 @@ def _give_serial_selected(mode: str = "selected") -> None:
             return
         status = _deliver_serials_with_target(final, mode, "Boosting Menu")
         if changed:
-            status += f" Level override: {changed} serial(s) set to level {_clamp_int(_serial_delivery_level, 1, 60)}."
+            status += f" Level override: {changed} serial(s) set to level {_clamp_int(_serial_delivery_level, 1, _MAX_ITEM_LEVEL)}."
         _log(status)
 
     if needs_async_serial_resolution(expanded):
@@ -3839,10 +3850,10 @@ def _draw_quick_max() -> None:
             ("MAX ALL", _max_all_selected, "gold", 74, 0),
             ("MAX CASH", _max_currency_selected, "green", 88, 0),
             ("MAX ERIDIUM", _max_eridium_selected, "purple", 110, 0),
-            ("MAX PLAYER 60", _max_player_level_selected, "cyan", 130, 0),
+            ("MAX PLAYER 70", _max_player_level_selected, "cyan", 130, 0),
             ("MAX SPEC 701", _max_spec_level_selected, "purple", 120, 0),
         ])
-        _muted_wrapped("Caps: cash/eridium 2,147,483,647 | player 60 | spec 701")
+        _muted_wrapped("Caps: cash/eridium 2,147,483,647 | player 70 | spec 701")
     else:
         imgui.separator(); imgui.text("QUICK MAX")
         _button("Max All", _max_all_selected); imgui.same_line(); _button("Max Currency", _max_currency_selected); imgui.same_line(); _button("Max Eridium", _max_eridium_selected)
@@ -3920,7 +3931,7 @@ def _draw_experience_card() -> None:
             ("Set Spec 701", _max_spec_level_selected, "purple", 112, 0),
         ])
         if _cyber:
-            _muted_wrapped(f"Allowed target range for {_EXP_TRACKS[_exp_track_index]}: 0 to {max_track_level:,}. Defaults: player 60, spec 701.")
+            _muted_wrapped(f"Allowed target range for {_EXP_TRACKS[_exp_track_index]}: 0 to {max_track_level:,}. Defaults: player {_MAX_PLAYER_LEVEL}, spec 701.")
         else:
             imgui.text_wrapped(f"Allowed target range for {_EXP_TRACKS[_exp_track_index]}: 0 to {max_track_level:,}.")
     if _cyber:
@@ -6575,7 +6586,7 @@ def _lootlemon_deliver_selected(mode: str = "selected") -> None:
         return
     _lootlemon_status = _deliver_serials_with_target(serials, mode, "Lootlemon Codes")
     if changed:
-        _lootlemon_status += f" Level override: {changed} serial(s) set to level {_clamp_int(_lootlemon_delivery_level, 1, 60)}."
+        _lootlemon_status += f" Level override: {changed} serial(s) set to level {_clamp_int(_lootlemon_delivery_level, 1, _MAX_ITEM_LEVEL)}."
     _log(f"Lootlemon Codes delivered {len(serials)} serial(s): {_lootlemon_status}")
 
 
@@ -7733,7 +7744,7 @@ def _gzo_deliver_selected(mode: str = "selected") -> None:
         return
     _gzo_status = _deliver_serials_with_target(serials, mode, "BL4 Codes")
     if changed:
-        _gzo_status += f" Level override: {changed} serial(s) set to level {_clamp_int(_gzo_delivery_level, 1, 60)}."
+        _gzo_status += f" Level override: {changed} serial(s) set to level {_clamp_int(_gzo_delivery_level, 1, _MAX_ITEM_LEVEL)}."
     _log(f"BL4 Codes delivered {len(serials)} serial(s): {_gzo_status}")
 
 def _draw_gzo_codes_tab() -> None:
@@ -10039,7 +10050,7 @@ def _draw_legit_builder_tab() -> None:
             imgui.push_item_width(90)
         except Exception:
             pass
-        _legit_level = _clamped_int_input("Level###legit_level", _legit_level, 1, 60)
+        _legit_level = _clamped_int_input("Level###legit_level", _legit_level, 1, _MAX_ITEM_LEVEL)
         imgui.same_line()
         old_sig = int(_legit_signature_value)
         _legit_signature_value = _clamped_int_input("Signature###legit_signature", _legit_signature_value, 1, 4095)
@@ -10085,7 +10096,7 @@ def _draw_item_pool_tab() -> None:
             imgui.push_item_width(120)
         except Exception:
             pass
-        _itempool_level = _input_int_clamped("Level", _itempool_level, 1, 60)
+        _itempool_level = _input_int_clamped("Level", _itempool_level, 1, _MAX_ITEM_LEVEL)
         imgui.same_line()
         _itempool_count = _input_int_clamped("Quantity", _itempool_count, 1, 100)
         try:

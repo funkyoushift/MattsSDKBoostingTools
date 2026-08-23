@@ -2,10 +2,9 @@
 
 **v2.8.2**
 
-- **Join / travel crash fix** — MSBT stays fully quiet from boot through the join dialog and only wakes after a real world load
-- Fog hide, Instant Holds/Drops, and Combat XP stay quiet during travel; they re-apply after the new map is up
-- Quick Menu, camera ticks, HUD pills, and jump hooks skip title/join
-- BLImGui join-safe pause is armed again when party membership or travel happens
+- **Level 70 support** for the September 10th Borderlands 4 cap raise
+- Player level, item pools, shinies, Combat XP, and serial / BL4 code **Override level** now go to 70
+- Specialization stays at 701
 
 ### Download: pick ONE
 

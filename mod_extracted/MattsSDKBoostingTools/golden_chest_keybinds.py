@@ -128,6 +128,12 @@ def _close_golden_chest() -> None:
         _log_err("DetachUnclaimedLoot failed; continuing close: %s", e)
 
     _pending_close = (time.monotonic() + _CLOSE_AFTER_DETACH_DELAY_S, script)
+    try:
+        from . import camera_tick
+
+        camera_tick.set_needed("golden_chest", True)
+    except Exception:
+        pass
     _log("Scheduled close in %.2fs after detach.", _CLOSE_AFTER_DETACH_DELAY_S)
 
 
@@ -137,6 +143,12 @@ def _tick_pending_close(*_args: Any, **_kwargs: Any) -> None:
     if pending is None or time.monotonic() < pending[0]:
         return
     _pending_close = None
+    try:
+        from . import camera_tick
+
+        camera_tick.set_needed("golden_chest", False)
+    except Exception:
+        pass
     script = pending[1]
     try:
         script.SetScriptStateEnabled("Open", False)
@@ -150,6 +162,12 @@ def clear_pending_closes() -> None:
     """Drop travel-unsafe script wrappers without touching the new world."""
     global _pending_close
     _pending_close = None
+    try:
+        from . import camera_tick
+
+        camera_tick.set_needed("golden_chest", False)
+    except Exception:
+        pass
 
 
 try:

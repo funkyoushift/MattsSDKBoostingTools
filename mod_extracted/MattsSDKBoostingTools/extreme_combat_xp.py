@@ -26,7 +26,7 @@ _PREFIX = "[Matts SDK Boosting Tools | CXP]"
 _DEFAULT_MULT = 1000.0
 _INT32_MAX = 2_147_483_647
 _MAX_LEVEL_BY_TRACK = {
-    0: 60,  # Character
+    0: 70,  # Character
     1: 701,  # Specialization
     2: 9_999_999,  # Vault cards
     3: 9_999_999,
@@ -342,7 +342,7 @@ def _max_level(track: int) -> int:
         return _MAX_LEVEL_BY_TRACK[track]
     if track >= 2:
         return 9_999_999
-    return 60
+    return 70
 
 
 def _set_experience_level(ps: Any, track: int, level: int) -> bool:
@@ -691,6 +691,12 @@ def _refresh_attrs() -> None:
 def on_enable() -> None:
     global _enabled
     _enabled = True
+    try:
+        from . import camera_tick
+
+        camera_tick.set_needed("cxp", True)
+    except Exception:
+        pass
     _disarm_all("enable")
     try:
         _refresh_attrs()
@@ -706,6 +712,12 @@ def on_enable() -> None:
 def on_disable() -> None:
     global _enabled
     _enabled = False
+    try:
+        from . import camera_tick
+
+        camera_tick.set_needed("cxp", False)
+    except Exception:
+        pass
     _disarm_all("disable")
     try:
         _try_set_combat_xp_attribute(1.0)
@@ -807,7 +819,7 @@ except Exception as exc:
 @hook(
     "OakGame.OakPlayerState:OnRep_ExperienceState",
     Type.POST,
-    immediately_enable=True,
+    immediately_enable=False,
     hook_identifier="msbt_cxp_onrep_xp_v1",
 )
 def _on_rep_experience(obj: UObject, _args: WrappedStruct, _ret: Any, _func: BoundFunction) -> None:
@@ -818,13 +830,13 @@ def _on_rep_experience(obj: UObject, _args: WrappedStruct, _ret: Any, _func: Bou
 @hook(
     "OakGame.OakPlayerController:ClientTravel",
     Type.POST,
-    immediately_enable=True,
+    immediately_enable=False,
     hook_identifier="msbt_cxp_travel_oak_v1",
 )
 @hook(
     "Engine.PlayerController:ClientTravel",
     Type.POST,
-    immediately_enable=True,
+    immediately_enable=False,
     hook_identifier="msbt_cxp_travel_engine_v1",
 )
 def _travel(*_args: Any, **_kwargs: Any) -> None:

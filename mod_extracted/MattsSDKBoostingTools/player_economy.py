@@ -57,7 +57,7 @@ _CURRENCY_KIND_ALIASES: Dict[str, str] = {
 # SDK 03 FGbxDefPtr(name, type) to /Script/GbxGame.GbxExperienceDef. This is much
 # safer than writing ExperienceState fields directly, because the engine updates
 # related level/XP state itself.
-_MAX_PLAYER_LEVEL_ENGINE = 60
+_MAX_PLAYER_LEVEL_ENGINE = 70
 _MAX_SPEC_LEVEL_ENGINE = 701
 _MAX_VAULT_XP_LEVEL_ENGINE = 9_999_999
 

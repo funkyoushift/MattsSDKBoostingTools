@@ -825,11 +825,11 @@ kb_maintain_gamepad = keybind(
 )
 
 
-@hook("/Script/EnhancedInput.InputTriggerHold:UpdateState", Type.PRE, immediately_enable=True, hook_identifier="msbt_ich_hold_update_v1")
-@hook("/Script/EnhancedInput.InputTriggerHoldAndRelease:UpdateState", Type.PRE, immediately_enable=True, hook_identifier="msbt_ich_holdrel_update_v1")
-@hook("EnhancedInput.InputTriggerHold:UpdateState", Type.PRE, immediately_enable=True, hook_identifier="msbt_ich_hold_update_alt_v1")
-@hook("EnhancedInput.InputTriggerHoldAndRelease:UpdateState", Type.PRE, immediately_enable=True, hook_identifier="msbt_ich_holdrel_update_alt_v1")
-@hook("/Script/EnhancedInput.InputTrigger:UpdateState", Type.PRE, immediately_enable=True, hook_identifier="msbt_ich_trigger_update_v1")
+@hook("/Script/EnhancedInput.InputTriggerHold:UpdateState", Type.PRE, immediately_enable=False, hook_identifier="msbt_ich_hold_update_v1")
+@hook("/Script/EnhancedInput.InputTriggerHoldAndRelease:UpdateState", Type.PRE, immediately_enable=False, hook_identifier="msbt_ich_holdrel_update_v1")
+@hook("EnhancedInput.InputTriggerHold:UpdateState", Type.PRE, immediately_enable=False, hook_identifier="msbt_ich_hold_update_alt_v1")
+@hook("EnhancedInput.InputTriggerHoldAndRelease:UpdateState", Type.PRE, immediately_enable=False, hook_identifier="msbt_ich_holdrel_update_alt_v1")
+@hook("/Script/EnhancedInput.InputTrigger:UpdateState", Type.PRE, immediately_enable=False, hook_identifier="msbt_ich_trigger_update_v1")
 def _before_trigger_update(obj: Any, *_args: Any, **_kwargs: Any) -> None:
     if not _should_maintain():
         return
@@ -855,40 +855,40 @@ def _before_trigger_update(obj: Any, *_args: Any, **_kwargs: Any) -> None:
     )
 
 
-@hook("/Script/Engine.GameViewportClient:Tick", Type.POST, immediately_enable=True, hook_identifier="msbt_ich_viewport_v1")
-@hook("/Script/OakGame.OakGameViewportClient:Tick", Type.POST, immediately_enable=True, hook_identifier="msbt_ich_viewport_oak_v1")
-@hook("Engine.GameViewportClient:Tick", Type.POST, immediately_enable=True, hook_identifier="msbt_ich_viewport_alt_v1")
-@hook("OakGame.OakGameViewportClient:Tick", Type.POST, immediately_enable=True, hook_identifier="msbt_ich_viewport_oak_alt_v1")
+@hook("/Script/Engine.GameViewportClient:Tick", Type.POST, immediately_enable=False, hook_identifier="msbt_ich_viewport_v1")
+@hook("/Script/OakGame.OakGameViewportClient:Tick", Type.POST, immediately_enable=False, hook_identifier="msbt_ich_viewport_oak_v1")
+@hook("Engine.GameViewportClient:Tick", Type.POST, immediately_enable=False, hook_identifier="msbt_ich_viewport_alt_v1")
+@hook("OakGame.OakGameViewportClient:Tick", Type.POST, immediately_enable=False, hook_identifier="msbt_ich_viewport_oak_alt_v1")
 def _viewport_tick(*_args: Any, **_kwargs: Any) -> None:
     _bump_tick_and_maintain("viewport", prefer_full=False)
 
 
-@hook("OakGame.OakPlayerController:ClientTravel", Type.POST, immediately_enable=True, hook_identifier="msbt_ich_travel_oak_v1")
-@hook("Engine.PlayerController:ClientTravel", Type.POST, immediately_enable=True, hook_identifier="msbt_ich_travel_engine_v1")
+@hook("OakGame.OakPlayerController:ClientTravel", Type.POST, immediately_enable=False, hook_identifier="msbt_ich_travel_oak_v1")
+@hook("Engine.PlayerController:ClientTravel", Type.POST, immediately_enable=False, hook_identifier="msbt_ich_travel_engine_v1")
 def _after_travel(*_args: Any, **_kwargs: Any) -> None:
     # ClientTravel is world teardown. Forget old wrappers; do not find_all here.
     clear_travel_backups()
 
 
-@hook("OakGame.OakPlayerController:PlayerTick", Type.POST, immediately_enable=True, hook_identifier="msbt_ich_ptick_oak_v1")
-@hook("Engine.PlayerController:PlayerTick", Type.POST, immediately_enable=True, hook_identifier="msbt_ich_ptick_engine_v1")
+@hook("OakGame.OakPlayerController:PlayerTick", Type.POST, immediately_enable=False, hook_identifier="msbt_ich_ptick_oak_v1")
+@hook("Engine.PlayerController:PlayerTick", Type.POST, immediately_enable=False, hook_identifier="msbt_ich_ptick_engine_v1")
 def _player_tick(*_args: Any, **_kwargs: Any) -> None:
     _bump_tick_and_maintain("player", prefer_full=True)
 
 
-@hook("/Game/UI/Scripts/ui_script_backpack.ui_script_backpack_C:DropItem", Type.PRE, immediately_enable=True, hook_identifier="msbt_ich_drop_bp_pre_v1")
-@hook("/Game/UI/Scripts/ui_script_backpack.ui_script_backpack_C:DropItem", Type.POST, immediately_enable=True, hook_identifier="msbt_ich_drop_bp_post_v1")
-@hook("/Script/OakGame.OakUIScript_Backpack:DropItem", Type.PRE, immediately_enable=True, hook_identifier="msbt_ich_drop_oak_pre_v1")
-@hook("/Script/OakGame.OakUIScript_Backpack:DropItem", Type.POST, immediately_enable=True, hook_identifier="msbt_ich_drop_oak_post_v1")
-@hook("OakGame.OakUIScript_Backpack:DropItem", Type.PRE, immediately_enable=True, hook_identifier="msbt_ich_drop_oak2_pre_v1")
-@hook("OakGame.OakUIScript_Backpack:DropItem", Type.POST, immediately_enable=True, hook_identifier="msbt_ich_drop_oak2_post_v1")
+@hook("/Game/UI/Scripts/ui_script_backpack.ui_script_backpack_C:DropItem", Type.PRE, immediately_enable=False, hook_identifier="msbt_ich_drop_bp_pre_v1")
+@hook("/Game/UI/Scripts/ui_script_backpack.ui_script_backpack_C:DropItem", Type.POST, immediately_enable=False, hook_identifier="msbt_ich_drop_bp_post_v1")
+@hook("/Script/OakGame.OakUIScript_Backpack:DropItem", Type.PRE, immediately_enable=False, hook_identifier="msbt_ich_drop_oak_pre_v1")
+@hook("/Script/OakGame.OakUIScript_Backpack:DropItem", Type.POST, immediately_enable=False, hook_identifier="msbt_ich_drop_oak_post_v1")
+@hook("OakGame.OakUIScript_Backpack:DropItem", Type.PRE, immediately_enable=False, hook_identifier="msbt_ich_drop_oak2_pre_v1")
+@hook("OakGame.OakUIScript_Backpack:DropItem", Type.POST, immediately_enable=False, hook_identifier="msbt_ich_drop_oak2_post_v1")
 def _around_backpack_drop(*_args: Any, **_kwargs: Any) -> None:
     if _drops_enabled or _holds_enabled:
         _maintain_holds(reason="drop", fast_only=True, reset_held=True)
 
 
-@hook("OakGame.OakPlayerController:OpenInventoryMenu", Type.POST, immediately_enable=True, hook_identifier="msbt_ich_inv_oak_v1")
-@hook("Engine.PlayerController:OpenInventoryMenu", Type.POST, immediately_enable=True, hook_identifier="msbt_ich_inv_engine_v1")
+@hook("OakGame.OakPlayerController:OpenInventoryMenu", Type.POST, immediately_enable=False, hook_identifier="msbt_ich_inv_oak_v1")
+@hook("Engine.PlayerController:OpenInventoryMenu", Type.POST, immediately_enable=False, hook_identifier="msbt_ich_inv_engine_v1")
 def _after_open_inventory(*_args: Any, **_kwargs: Any) -> None:
     if _holds_enabled:
         _maintain_holds(force_log=True, reason="inventory-open", fast_only=False, reset_held=True)

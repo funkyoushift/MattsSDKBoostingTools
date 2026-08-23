@@ -12,7 +12,7 @@ from unrealsdk import logging
 from unrealsdk.unreal import UObject
 
 MAX_ITEM_LEVEL = 999999
-DEFAULT_ITEM_LEVEL = 60
+DEFAULT_ITEM_LEVEL = 70
 SPAWN_FORWARD_OFFSET = 90.0
 SPAWN_HEIGHT_OFFSET = 45.0
 SPAWN_GRID_COLUMNS = 10

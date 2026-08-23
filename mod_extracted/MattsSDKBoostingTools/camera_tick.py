@@ -3,6 +3,9 @@
 Oak calls that function once per active CameraModifier, several times a frame.
 Each extra Python hook multiplies that cost and is the usual FPS leak. Camera-tick
 work should register here so the engine only crosses into Python through one hook.
+
+The hook stays off until a feature actually needs it (Quick Menu open, slot
+hotkeys, Infinite Jump, Super Dash, Combat XP, pending chest/chaos/market).
 """
 from __future__ import annotations
 
@@ -30,16 +33,54 @@ _last_at = 0.0
 _in_flight = False
 _installed = False
 _callbacks: list[tuple[int, str, TickFn]] = []
+_needed: set[str] = set()
 
 
 def register(name: str, callback: TickFn, *, priority: int = 100) -> None:
-    """Register a camera-tick callback. Replaces an existing name."""
+    """Register a camera-tick callback. Does not install the engine hook."""
     global _callbacks
     key = str(name or "unnamed")
     _callbacks = [(prio, existing, fn) for prio, existing, fn in _callbacks if existing != key]
     _callbacks.append((int(priority), key, callback))
     _callbacks.sort(key=lambda row: (row[0], row[1]))
-    _ensure_hook()
+
+
+def set_needed(name: str, needed: bool) -> None:
+    """Keep the shared camera hook installed only while something needs it."""
+    key = str(name or "unnamed")
+    if needed:
+        _needed.add(key)
+        if not travel_gate.is_travel_quiet():
+            _ensure_hook()
+        return
+    _needed.discard(key)
+    if not _needed:
+        disable_shared_hook()
+
+
+def enable_shared_hook() -> None:
+    if _needed:
+        _ensure_hook()
+
+
+def disable_shared_hook() -> None:
+    global _installed
+    if not _installed:
+        return
+    try:
+        import unrealsdk
+        from unrealsdk.hooks import Type
+
+        unrealsdk.hooks.remove_hook(TICK_PATH, Type.POST, HOOK_ID)
+    except Exception:
+        pass
+    _installed = False
+    try:
+        from unrealsdk import logging
+
+        logging.info("[Matts SDK Boosting Tools] camera hook off")
+    except Exception:
+        pass
 
 
 def _pump(_obj: Any, _args: Any, _ret: Any, _func: Any) -> None:
@@ -81,11 +122,11 @@ def _ensure_hook() -> None:
 
         for legacy_id in _LEGACY_HOOK_IDS:
             try:
-                unrealsdk.hooks.remove_hook(TICK_PATH, Type.POST, legacy_id)
+                unrealsdk.hooks.remove_hook(TICK_PATH, Type.PRE, legacy_id)
             except Exception:
                 pass
             try:
-                unrealsdk.hooks.remove_hook(TICK_PATH, Type.PRE, legacy_id)
+                unrealsdk.hooks.remove_hook(TICK_PATH, Type.POST, legacy_id)
             except Exception:
                 pass
         try:
@@ -94,13 +135,23 @@ def _ensure_hook() -> None:
             pass
         unrealsdk.hooks.add_hook(TICK_PATH, Type.POST, HOOK_ID, _pump)
         _installed = True
+        try:
+            from unrealsdk import logging
+
+            logging.info(
+                "[Matts SDK Boosting Tools] camera hook on ("
+                + ",".join(sorted(_needed))
+                + ")"
+            )
+        except Exception:
+            pass
         return
     except Exception:
         pass
     try:
         from mods_base import hook
 
-        hook(TICK_PATH, immediately_enable=True, hook_identifier=HOOK_ID)(_pump)
+        hook(TICK_PATH, immediately_enable=False, hook_identifier=HOOK_ID)(_pump)
         _installed = True
     except Exception:
         _installed = False

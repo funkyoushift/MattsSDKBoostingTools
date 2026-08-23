@@ -116,7 +116,7 @@ def _load_backend_actions():
             "serial_to_human": lambda *a, **k: "",
         },
         "MattsSDKBoostingTools.shinies": {
-            "DEFAULT_ITEM_LEVEL": 60,
+            "DEFAULT_ITEM_LEVEL": 70,
             "drop_all_shinies": lambda level: 3,
         },
         "MattsSDKBoostingTools.travel": {

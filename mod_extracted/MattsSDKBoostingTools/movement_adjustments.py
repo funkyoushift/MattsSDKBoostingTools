@@ -2048,22 +2048,28 @@ def _register_infinite_jump_hooks() -> None:
         "/Script/GbxGame.OakCharacter:Jump",
         "/Script/OakGame.OakCharacter:Jump",
     )
+    from .hook_gate import track
+
     for i, target in enumerate(canjump_targets):
         try:
-            hook(
-                target,
-                immediately_enable=True,
-                hook_identifier=f"matts_sdk_boosting_tools_backend_infinite_jump_canjump_v2_{i}",
-            )(_jump_gate_hook)
+            track(
+                hook(
+                    target,
+                    immediately_enable=False,
+                    hook_identifier=f"matts_sdk_boosting_tools_backend_infinite_jump_canjump_v2_{i}",
+                )(_jump_gate_hook)
+            )
         except Exception as exc:
             _log(f"Backend Infinite Jump CanJump hook skipped {target}: {exc!r}")
     for i, target in enumerate(jump_targets):
         try:
-            hook(
-                target,
-                immediately_enable=True,
-                hook_identifier=f"matts_sdk_boosting_tools_backend_infinite_jump_jump_v2_{i}",
-            )(_jump_start_hook)
+            track(
+                hook(
+                    target,
+                    immediately_enable=False,
+                    hook_identifier=f"matts_sdk_boosting_tools_backend_infinite_jump_jump_v2_{i}",
+                )(_jump_start_hook)
+            )
         except Exception as exc:
             _log(f"Backend Infinite Jump Jump hook skipped {target}: {exc!r}")
 
@@ -2116,6 +2122,7 @@ def set_infinite_jump_all(enabled: bool) -> str:
         verify = ""
     msg = f"Infinite Jump enabled for: {_enabled_infinite_jump_names()}.{verify}"
     _log(msg)
+    _sync_movement_camera_need()
     return msg
 
 
@@ -2145,6 +2152,7 @@ def set_infinite_jump_for_index(idx: int, enabled: bool) -> str:
         break
     msg = f"Infinite Jump enabled for: {_enabled_infinite_jump_names()}.{verify}"
     _log(msg)
+    _sync_movement_camera_need()
     return msg
 
 
@@ -2528,6 +2536,7 @@ def toggle_super_dash(enabled: bool | None = None) -> str:
     else:
         _super_dash_enabled = bool(enabled)
     state = "ON" if _super_dash_enabled else "OFF"
+    _sync_movement_camera_need()
     return (
         f"Super Dash (MSBT) {state} (strength {_super_dash_strength}). "
         f"Press {_MSBT_SUPER_DASH_KEY} while enabled (camera tick)."
@@ -2645,6 +2654,7 @@ def fire_super_dash(strength: int | None = None) -> str:
     if get_pc() is None:
         return "Super Dash (MSBT): load into a character first."
     _pending_msbt_super_dash = True
+    _sync_movement_camera_need()
     return f"Super Dash (MSBT) queued ({_super_dash_strength})."
 
 
@@ -2673,6 +2683,7 @@ def toggle_azzy_super_dash(enabled: bool | None = None) -> str:
     else:
         _azzy_super_dash_enabled = bool(enabled)
     state = "ON" if _azzy_super_dash_enabled else "OFF"
+    _sync_movement_camera_need()
     return (
         f"Super Dash (Azzy) {state} (strength {_azzy_super_dash_strength}). "
         f"Press {_AZZY_SUPER_DASH_KEY} while enabled (camera tick)."
@@ -2687,6 +2698,7 @@ def request_azzy_super_dash(strength: int | None = None) -> str:
     if strength is not None:
         set_azzy_super_dash_strength(int(strength))
     _pending_azzy_super_dash = True
+    _sync_movement_camera_need()
     return f"Super Dash (Azzy) queued ({_azzy_super_dash_strength})."
 
 
@@ -2728,6 +2740,7 @@ def _super_dash_camera_hook(*_args: Any, **_kwargs: Any) -> None:
     ):
         _super_dash_key_was_down = False
         _azzy_super_dash_key_was_down = False
+        _sync_movement_camera_need()
         return
 
     now = time.monotonic()
@@ -2749,6 +2762,24 @@ def _super_dash_camera_hook(*_args: Any, **_kwargs: Any) -> None:
         _azzy_super_dash_key_was_down = down
     else:
         _azzy_super_dash_key_was_down = False
+
+
+def _sync_movement_camera_need() -> None:
+    try:
+        from . import camera_tick
+    except Exception:
+        return
+    camera_tick.set_needed("infinite_jump", bool(_INFINITE_JUMP_INDICES))
+    camera_tick.set_needed(
+        "super_dash",
+        bool(
+            _super_dash_enabled
+            or _azzy_super_dash_enabled
+            or _pending_msbt_super_dash
+            or _pending_azzy_super_dash
+            or _pending_dash_stop_jump_at
+        ),
+    )
 
 
 def _register_super_dash_hook() -> None:

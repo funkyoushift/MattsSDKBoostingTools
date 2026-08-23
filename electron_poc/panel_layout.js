@@ -34,7 +34,7 @@
   /** Dev Spawner keeps its own key so its bespoke fixed shell stays in sync. */
   const DEV_SPAWNER_LAYOUT_KEY = "msbt.devSpawner.layoutMode";
   const NAV_TABS_KEY = "msbt.navTabs.v1";
-  const WIP_NAV_UNLOCK_KEY = "msbt.navTabs.wipUnlocked.v3";
+  const WIP_NAV_UNLOCK_KEY = "msbt.navTabs.wipUnlocked.v4";
   /** Tabs kept out of normal View → Main tabs until Shift+click View unlocks them. */
   const WIP_NAV_TABS = new Set(["combat-vehicle"]);
   /** Persist only after deliberate discovery; fresh profiles remain hidden. */
@@ -2248,6 +2248,7 @@
       localStorage.setItem(WIP_NAV_UNLOCK_KEY, JSON.stringify(Array.from(wipUnlockedNavTabs)));
       localStorage.removeItem("msbt.navTabs.wipUnlocked.v1");
       localStorage.removeItem("msbt.navTabs.wipUnlocked.v2");
+      localStorage.removeItem("msbt.navTabs.wipUnlocked.v3");
     } catch (_err) {
       /* ignore */
     }
@@ -2462,12 +2463,12 @@
       const check = document.createElement("input");
       check.type = "checkbox";
       check.checked = !(state.hidden || []).includes(id);
-      check.title = opts.wipOnly ? "Show development tab in the main bar" : "Show / hide tab";
+      check.title = "Show / hide tab";
       check.addEventListener("change", () => setNavTabHidden(id, !check.checked));
 
       const name = document.createElement("span");
       name.className = "msbt-view-tab-name";
-      name.textContent = opts.wipOnly ? `${navTabLabel(id)} (WIP)` : navTabLabel(id);
+      name.textContent = navTabLabel(id);
 
       row.appendChild(check);
       row.appendChild(name);
@@ -2542,10 +2543,7 @@
     if (showWipTabs && WIP_NAV_TABS.size) {
       const wipBlock = document.createElement("div");
       wipBlock.className = "msbt-view-menu-section";
-      wipBlock.innerHTML = [
-        '<div class="msbt-view-menu-heading">Development tabs</div>',
-        '<div class="msbt-view-menu-hint">Hidden by default. Dev Tools (Combat, Vehicle, Challenges) stays off for public builds until Squ1ggs / data issues are cleared.</div>'
-      ].join("");
+      wipBlock.innerHTML = "";
       const wipList = document.createElement("div");
       wipList.className = "msbt-view-tabs-list";
       Array.from(WIP_NAV_TABS).forEach((id) => {
@@ -2618,7 +2616,7 @@
     menu.className = "msbt-view-menu";
     menu.setAttribute("data-msbt-view-menu", "");
     menu.innerHTML = [
-      '<summary title="Shift+click to show development tabs">View</summary>',
+      '<summary>View</summary>',
       '<div class="msbt-view-menu-body" data-msbt-view-menu-body></div>'
     ].join("");
     const opacity = headerActions.querySelector(".opacity-control");

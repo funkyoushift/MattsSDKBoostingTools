@@ -902,7 +902,7 @@ function buildActionPayload(action,button){
     return{...button._quickPayload};
   }
   if(action==='give_currency')return{currency_kind:text($('boostCurrencyKind').value)||'cash',amount:intValue($('boostCurrencyAmount').value,1000000)};
-  if(action==='set_level')return{xp_track:text($('boostXpTrack').value)||'player',level:intValue($('boostXpLevel').value,60)};
+  if(action==='set_level')return{xp_track:text($('boostXpTrack').value)||'player',level:intValue($('boostXpLevel').value,70)};
   if(action==='set_backpack_bank_selected'||action==='set_backpack_bank_all')return{backpack_size:intValue($('boostBackpackSize').value,999),bank_size:intValue($('boostBankSize').value,1500)};
   if(action==='movement_apply_all')return movementPayload();
   if(action==='movement_set_time'){
@@ -929,7 +929,7 @@ function buildActionPayload(action,button){
   if(action==='spawn_itempool'){
     const name=state.pools.selected&&(state.pools.selected.itempool||state.pools.selected.name);
     if(!name)throw new Error('Select an item pool first.');
-    return{itempool_name:name,level:intValue($('poolLevel').value,60),count:intValue($('poolCount').value,1),target_player:currentTarget()};
+    return{itempool_name:name,level:intValue($('poolLevel').value,70),count:intValue($('poolCount').value,1),target_player:currentTarget()};
   }
   if(action&&action.startsWith('dev_spawner_'))return buildDevSpawnerPayload(action);
   if(action==='give_serial_selected'||action==='give_serial_all'||action==='give_serial_nonhost'){
@@ -964,7 +964,7 @@ function buildActionPayload(action,button){
     return{
       serial_text:expandSerialText(serialText,copies),
       serial_override_level:text($('boostOverride').value)==='yes',
-      serial_level:intValue($('boostSerialLevel').value,60),
+      serial_level:intValue($('boostSerialLevel').value,70),
       target_player:currentTarget()
     };
   }

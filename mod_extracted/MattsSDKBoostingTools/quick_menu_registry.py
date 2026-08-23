@@ -192,7 +192,7 @@ ACTION_CATALOG: dict[str, dict[str, Any]] = {
     "max_currency": {"basic": "Max Currency", "aliases": ["Cash", "MaxCash"]},
     "max_eridium": {"basic": "Max Eridium", "aliases": ["Eridium", "MaxE"]},
     "max_sdu": {"basic": "Max SDU", "aliases": ["SDU"]},
-    "max_player_level": {"basic": "Max Level", "aliases": ["Lvl60", "Level"]},
+    "max_player_level": {"basic": "Max Level", "aliases": ["Lvl70", "Level"]},
     "max_spec_level": {"basic": "Max Spec", "aliases": ["Spec"]},
     "give_currency": {"basic": "Give Currency", "aliases": ["Currency"]},
     "set_level": {"basic": "Set Level", "aliases": ["Level"]},
@@ -642,7 +642,7 @@ def sanitize_payload(action: str, raw: object) -> dict[str, Any]:
         elif key == "itempool_count":
             result[key] = max(1, min(100, _safe_int(source[key], 1)))
         elif key == "itempool_level":
-            result[key] = max(1, min(60, _safe_int(source[key], 60)))
+            result[key] = max(1, min(70, _safe_int(source[key], 70)))
         elif key == "itempool_names":
             raw_names = source[key]
             if isinstance(raw_names, str):
@@ -664,7 +664,7 @@ def sanitize_payload(action: str, raw: object) -> dict[str, Any]:
         elif key == "serial_override_level":
             result[key] = _truthy_payload(source[key])
         elif key == "serial_level":
-            result[key] = max(1, min(60, _safe_int(source[key], 60)))
+            result[key] = max(1, min(70, _safe_int(source[key], 70)))
         elif key in ("movement_individual_jump_goals", "movement_zero_vault_on_apply"):
             result[key] = _truthy_payload(source[key])
         elif key == "movement_jump_count":

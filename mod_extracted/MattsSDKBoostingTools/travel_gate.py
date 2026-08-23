@@ -22,6 +22,17 @@ def mark_travel(seconds: float = 20.0) -> None:
     _PENDING_CLEAR = True
 
 
+def mark_menu() -> None:
+    """Stay quiet on the title/main menu. Next gameplay load can wake hooks."""
+    global _RELEASE_AT, _SAW_TRAVEL
+    _SAW_TRAVEL = False
+    _RELEASE_AT = 0.0
+
+
+def saw_travel() -> bool:
+    return bool(_SAW_TRAVEL)
+
+
 def schedule_in_world(delay: float = 8.0) -> None:
     """Allow hot paths after a world-load event that followed ClientTravel."""
     global _RELEASE_AT

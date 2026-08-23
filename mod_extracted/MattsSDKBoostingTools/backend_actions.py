@@ -74,7 +74,11 @@ from .party_helpers import (
     _kick_party_player_by_index,
     _list_party_players,
 )
-from .serial_converter import human_to_serial as _human_to_serial, serial_to_human as _serial_to_human
+from .serial_converter import (
+    human_to_serial as _human_to_serial,
+    rewrite_item_level as _rewrite_item_level,
+    serial_to_human as _serial_to_human,
+)
 from .shinies import DEFAULT_ITEM_LEVEL as _SHINY_DEFAULT_LEVEL, drop_all_shinies
 from .travel import (
     _exec_console,
@@ -123,7 +127,8 @@ EXP_TRACKS = [
     "vaultcard_xp_4",
 ]
 MAX_WALLET_AMOUNT = 2147483647
-MAX_PLAYER_LEVEL = 60
+MAX_PLAYER_LEVEL = 70
+MAX_ITEM_LEVEL = 70
 MAX_SPEC_LEVEL = 701
 MAX_VAULT_CARD_LEVEL = 9999999
 RARITY_ROWS: tuple[tuple[str, str, tuple[str, ...]], ...] = (
@@ -1660,7 +1665,7 @@ def run_quick_menu_action(
         result = give_currency(payload.get("currency_kind", "cash"), payload.get("amount", 0))
         needs_player = True
     elif key == "set_level":
-        result = give_experience(payload.get("xp_track", "player"), payload.get("level", 60))
+        result = give_experience(payload.get("xp_track", "player"), payload.get("level", MAX_PLAYER_LEVEL))
         needs_player = True
     elif key == "open_golden_chest":
         result = open_golden_chest()
@@ -1696,7 +1701,7 @@ def run_quick_menu_action(
         result = spawn_itempool(
             payload.get("itempool_name") or payload.get("pool_name"),
             payload.get("itempool_count") or payload.get("count") or 1,
-            payload.get("itempool_level") or payload.get("level") or 60,
+            payload.get("itempool_level") or payload.get("level") or MAX_ITEM_LEVEL,
             payload,
         )
         is_drop = True
@@ -1711,8 +1716,8 @@ def run_quick_menu_action(
         result = give_serials(
             payload.get("serial_text") or "",
             "selected",
-            payload.get("serial_override_level") or payload.get("override_level") or False,
-            payload.get("serial_level") or payload.get("level") or 60,
+            _truthy(payload.get("serial_override_level") or payload.get("override_level")),
+            payload.get("serial_level") or payload.get("level") or MAX_ITEM_LEVEL,
         )
         is_drop = True
         needs_player = True
@@ -1720,16 +1725,16 @@ def run_quick_menu_action(
         result = give_serials(
             payload.get("serial_text") or "",
             "all",
-            payload.get("serial_override_level") or payload.get("override_level") or False,
-            payload.get("serial_level") or payload.get("level") or 60,
+            _truthy(payload.get("serial_override_level") or payload.get("override_level")),
+            payload.get("serial_level") or payload.get("level") or MAX_ITEM_LEVEL,
         )
         is_drop = True
     elif key == "give_serial_nonhost":
         result = give_serials(
             payload.get("serial_text") or "",
             "nonhost",
-            payload.get("serial_override_level") or payload.get("override_level") or False,
-            payload.get("serial_level") or payload.get("level") or 60,
+            _truthy(payload.get("serial_override_level") or payload.get("override_level")),
+            payload.get("serial_level") or payload.get("level") or MAX_ITEM_LEVEL,
         )
         is_drop = True
     elif key == "travel_to_map":
@@ -2598,6 +2603,7 @@ def _bm_camera_tick(_obj: Any, _args: Any, _ret: Any, _func: Any) -> None:
     if now > _bm_pending_until:
         _bm_log("retry window expired without placing PersistentLevel shop")
         _bm_pending_until = 0.0
+        _sync_bm_camera_need()
         return
     if now - _bm_pending_last_try < _BM_RETRY_GAP_S:
         return
@@ -2606,6 +2612,7 @@ def _bm_camera_tick(_obj: Any, _args: Any, _ret: Any, _func: Any) -> None:
     if ok:
         _bm_log(detail)
         _bm_pending_until = 0.0
+        _sync_bm_camera_need()
         return
 
 
@@ -2617,6 +2624,15 @@ def _ensure_bm_tick() -> None:
 
     camera_tick.register("black_market", _bm_camera_tick, priority=80)
     _bm_tick_registered = True
+
+
+def _sync_bm_camera_need() -> None:
+    try:
+        from . import camera_tick
+
+        camera_tick.set_needed("black_market", float(_bm_pending_until or 0.0) > 0.0)
+    except Exception:
+        pass
 
 
 def spawn_black_market() -> dict[str, Any]:
@@ -2661,6 +2677,7 @@ def spawn_black_market() -> dict[str, Any]:
     ok, detail = _place_world_black_market()
     if ok:
         _bm_pending_until = 0.0
+        _sync_bm_camera_need()
         _bm_log(detail)
         return {
             "ok": True,
@@ -2671,6 +2688,7 @@ def spawn_black_market() -> dict[str, Any]:
 
     _bm_pending_until = time.monotonic() + _BM_RETRY_WINDOW_S
     _bm_pending_last_try = 0.0
+    _sync_bm_camera_need()
     _bm_log(f"queued PersistentLevel duplicate ({detail})")
     return {
         "ok": True,
@@ -4381,7 +4399,7 @@ def spawn_itempool_all(payload: dict[str, Any] | None = None) -> dict[str, Any]:
         return {"ok": False, "message": "No filtered item pools to spawn."}
     if len(names) > _ITEMPOOL_BULK_MAX:
         names = names[:_ITEMPOOL_BULK_MAX]
-    level = _clamp_int(payload.get("itempool_level") or payload.get("level") or 60, 1, 60)
+    level = _clamp_int(payload.get("itempool_level") or payload.get("level") or MAX_ITEM_LEVEL, 1, MAX_ITEM_LEVEL)
     count = _clamp_int(payload.get("itempool_count") or payload.get("count") or 1, 1, 100)
     delay, per_tick, spit = _apply_itempool_knobs(payload)
     _itempool_queue = deque((name, int(level), int(count), int(count)) for name in names)
@@ -6320,13 +6338,19 @@ def _parse_serial_text(raw: object) -> list[str]:
     return tokens
 
 
+_HUMAN_ITEM_LEVEL_RE = re.compile(
+    r"^(\s*\d+\s*(?:,\s*|\s+)\d+\s*(?:,\s*|\s+)\d+\s*(?:,\s*|\s+))\d+"
+)
+
+
 def _serial_with_level_override(serial: str, level: int) -> str:
     raw = str(serial or "").strip()
     if not raw:
         return raw
-    level_i = _clamp_int(level, 1, 60)
-    human = _serial_to_human(raw) if raw.startswith("@U") else raw
-    new_human, count = re.subn(r"^(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*,\s*)\d+", rf"\g<1>{level_i}", human, count=1)
+    level_i = _clamp_int(level, 1, MAX_ITEM_LEVEL)
+    if raw.startswith("@U"):
+        return _rewrite_item_level(raw, level_i)
+    new_human, count = _HUMAN_ITEM_LEVEL_RE.subn(rf"\g<1>{level_i}", raw, count=1)
     if count <= 0:
         raise ValueError("could not find leading item level in serial")
     return _human_to_serial(new_human)
@@ -6335,7 +6359,7 @@ def _serial_with_level_override(serial: str, level: int) -> str:
 def _serials_with_level_override(serials: list[str], enabled: bool, level: int) -> tuple[list[str], int, list[str]]:
     if not enabled:
         return list(serials), 0, []
-    level_i = _clamp_int(level, 1, 60)
+    level_i = _clamp_int(level, 1, MAX_ITEM_LEVEL)
     out: list[str] = []
     changed = 0
     failures: list[str] = []
@@ -6481,10 +6505,10 @@ def _finish_give_serials(
     if not serials:
         return {"ok": False, "message": "No valid serials after parsing/resolving."}
     try:
-        level_i = _clamp_int(level, 1, 60)
+        level_i = _clamp_int(level, 1, MAX_ITEM_LEVEL)
     except Exception:
-        level_i = 60
-    override_enabled = bool(override_level)
+        level_i = MAX_ITEM_LEVEL
+    override_enabled = _truthy(override_level)
     original_count = len(serials)
     serials, changed, override_failures = _serials_with_level_override(serials, override_enabled, level_i)
     if override_enabled and not serials:
@@ -6532,7 +6556,7 @@ def _finish_give_serials(
     return result
 
 
-def give_serials(text: object, mode: str = "selected", override_level: object = False, level: object = 60) -> dict[str, Any]:
+def give_serials(text: object, mode: str = "selected", override_level: object = False, level: object = MAX_ITEM_LEVEL) -> dict[str, Any]:
     global serial_text
     serial_text = str(text or "")
     if not serial_text.strip():

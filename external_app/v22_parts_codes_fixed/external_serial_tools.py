@@ -453,6 +453,51 @@ def human_to_serial(text):
     return base85_encode(blocks_to_bytes(blocks))
 
 
+def _read_header_numbers(serial):
+    """Read the four leading header integers and leftover bits after the first `|`."""
+    br = BitReader(base85_decode(serial))
+    br.expect([0, 0, 1, 0, 0, 0, 0])
+    numbers = []
+    for i in range(4):
+        tok = read_token(br)
+        if tok not in (TOK_VARINT, TOK_VARBIT):
+            raise ValueError("could not find leading item level in serial")
+        numbers.append(read_varint(br) if tok == TOK_VARINT else read_varbit(br))
+        sep = read_token(br)
+        expected = TOK_SEP2 if i < 3 else TOK_SEP1
+        if sep != expected:
+            raise ValueError("could not find leading item level in serial")
+    leftover = []
+    while True:
+        try:
+            leftover.append(br.read())
+        except EOFError:
+            break
+    return numbers, leftover
+
+
+def rewrite_item_level(serial, level):
+    """Replace the 4th header integer (item level) without parsing item parts."""
+    raw = str(serial or "").strip()
+    if not raw:
+        return raw
+    level_i = int(level)
+    if not raw.startswith("@U"):
+        raise ValueError("serial must start with @U")
+    numbers, leftover = _read_header_numbers(raw)
+    numbers[3] = level_i
+    bw = BitWriter()
+    bw.write_bits(0, 0, 1, 0, 0, 0, 0)
+    for i, value in enumerate(numbers):
+        tok = best_numeric_token(value)
+        write_token(bw, tok)
+        (write_varbit if tok == TOK_VARBIT else write_varint)(bw, value)
+        write_token(bw, TOK_SEP2 if i < 3 else TOK_SEP1)
+    for bit in leftover:
+        bw.write_bit(bit)
+    return base85_encode(bw.data())
+
+
 def _gzo_load_parts_map() -> tuple[dict[str, dict[str, str]], str]:
     global _GZO_PARTS_MAP, _GZO_TYPE_ID_INDEX
     if _GZO_PARTS_MAP is not None:

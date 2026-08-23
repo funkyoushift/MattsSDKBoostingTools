@@ -504,6 +504,7 @@ const state = {
   bl4SelectionAnchor: "",
   bridgeDiagnostics: {},
   bridgeOnline: false,
+  snapshotReady: false,
   bridgeFingerprints: {},
   bridgeStatusPollInFlight: false,
   bridgeStatusPollTimer: null,
@@ -1278,7 +1279,7 @@ function quickMenuSerialPayload() {
   return {
     serial_text: getValue(els.boostSerialText),
     serial_override_level: boolFromSelect(els.boostSerialOverride),
-    serial_level: getInt(els.boostSerialLevel, 1, 60, 60)
+    serial_level: getInt(els.boostSerialLevel, 1, 70, 70)
   };
 }
 
@@ -1292,7 +1293,7 @@ function quickMenuBookmarkSerialPayload() {
   return {
     serial_text: expanded.text || "",
     serial_override_level: false,
-    serial_level: 60
+    serial_level: 70
   };
 }
 
@@ -1313,7 +1314,7 @@ function quickMenuBl4SerialPayload() {
   return {
     serial_text: expanded.text || "",
     serial_override_level: boolFromSelect(els.bl4OverrideLevel),
-    serial_level: getInt(els.bl4DeliveryLevel, 1, 60, 60)
+    serial_level: getInt(els.bl4DeliveryLevel, 1, 70, 70)
   };
 }
 
@@ -1339,7 +1340,7 @@ function quickMenuItemPoolPayload() {
   return {
     itempool_name: names[0] || getValue(els.itempoolList) || "",
     itempool_count: getInt(els.itempoolCount, 1, 100, 1),
-    itempool_level: getInt(els.itempoolLevel, 1, 60, 60),
+    itempool_level: getInt(els.itempoolLevel, 1, 70, 70),
     ...itemPoolKnobPayload()
   };
 }
@@ -1432,7 +1433,7 @@ function quickMenuPayloadFromCurrentControls(action) {
   if (action === "set_level") {
     return {
       xp_track: getValue(els.xpTrack),
-      level: getInt(els.xpLevel, 1, 9999999, 60)
+      level: getInt(els.xpLevel, 1, 9999999, 70)
     };
   }
   if (action === "set_backpack_bank_selected" || action === "set_backpack_bank_all") {
@@ -1772,7 +1773,7 @@ function installQuickMenuAddButtons() {
     "set_level",
     () => ({
       xp_track: getValue(els.xpTrack),
-      level: getInt(els.xpLevel, 1, 9999999, 60)
+      level: getInt(els.xpLevel, 1, 9999999, 70)
     })
   );
   decorateQuickMenuActionButton(
@@ -1799,7 +1800,7 @@ function installQuickMenuAddButtons() {
     () => ({
       itempool_names: filteredItemPoolNames(),
       itempool_count: getInt(els.itempoolCount, 1, 100, 1),
-      itempool_level: getInt(els.itempoolLevel, 1, 60, 60),
+      itempool_level: getInt(els.itempoolLevel, 1, 70, 70),
       ...itemPoolKnobPayload()
     }),
     () => `All filtered (${filteredItemPoolNames().length})`
@@ -2134,7 +2135,8 @@ async function loadSavedMovementPresetIntoControls() {
 
 async function autoApplySavedMovementPresetIfNeeded() {
   if (state.movementAutoAppliedThisSession) return;
-  if (!state.bridgeOnline || !state.movementAutoApplyOnStart || !state.movementSavedPreset) return;
+  if (!state.bridgeOnline || state.snapshotReady === false) return;
+  if (!state.movementAutoApplyOnStart || !state.movementSavedPreset) return;
   state.movementAutoAppliedThisSession = true;
   applyMovementPresetToControls(state.movementSavedPreset);
   setLine(els.movementStatus, "Applying the saved movement preset...", "warning");
@@ -3253,6 +3255,7 @@ function applyBridgeStatusResult(result, options = {}) {
     : JSON.stringify(value);
   if (!result.ok || !data.ok) {
     state.bridgeOnline = false;
+    state.snapshotReady = false;
     state.bridgeDiagnostics = {};
     state.players = [];
     state.selectedTarget = "";
@@ -3268,6 +3271,7 @@ function applyBridgeStatusResult(result, options = {}) {
     return data;
   }
 
+  state.snapshotReady = data.snapshot_ready !== false;
   state.bridgeOnline = true;
   state.bridgeDiagnostics = data.diagnostics && typeof data.diagnostics === "object" ? data.diagnostics : {};
   const playersFingerprint = fingerprint({
@@ -4249,7 +4253,7 @@ async function sendEditorSerial(mode) {
     setOutput(els.deliveryOutput, "No single @U serial is ready to send. Build an item or paste one serial first.");
     return;
   }
-  await sendSerialPayload(mode, serial, false, 60, els.deliveryOutput, getInt(els.editorSerialCopies, 1, 50, 1), "Matt Editor");
+  await sendSerialPayload(mode, serial, false, 70, els.deliveryOutput, getInt(els.editorSerialCopies, 1, 50, 1), "Matt Editor");
 }
 
 async function sendBoostSerial(mode) {
@@ -4262,7 +4266,7 @@ async function sendBoostSerial(mode) {
     mode,
     serialText,
     boolFromSelect(els.boostSerialOverride),
-    getInt(els.boostSerialLevel, 1, 60, 60),
+    getInt(els.boostSerialLevel, 1, 70, 70),
     els.boostOutput,
     getInt(els.boostSerialCopies, 1, 50, 1),
     "Serial Rewards"
@@ -4769,7 +4773,7 @@ async function sendBookmarkSerial(mode) {
     els.bookmarkOutput,
     `Sending Serial Bookmarks delivery:\nDestination: ${destination}\nBookmark rows: ${entries.length}\nUnique serials: ${serials.length}\nCopies: ${copies}\nTotal delivered: ${expanded.totalCount || serials.length}\n${entries.map((row) => `${row.name || "Untitled Serial"} | ${row.group || "Default"}`).join("\n")}`
   );
-  const result = await sendSerialPayload(mode, expanded.text, false, 60, els.bookmarkOutput, 1, "Serial Bookmarks");
+  const result = await sendSerialPayload(mode, expanded.text, false, 70, els.bookmarkOutput, 1, "Serial Bookmarks");
   if (!result) return;
   const message = actionSucceeded(result)
     ? resultMessage(result)
@@ -5691,7 +5695,7 @@ async function sendBl4Serial(mode) {
   let deliveryRows = rows;
   let serialText = rows.map((row) => String(row.serial || "").trim()).join("\n");
   const overrideLevel = boolFromSelect(els.bl4OverrideLevel);
-  const deliveryLevel = getInt(els.bl4DeliveryLevel, 1, 60, 60);
+  const deliveryLevel = getInt(els.bl4DeliveryLevel, 1, 70, 70);
   let skippedByOverride = [];
   if (overrideLevel) {
     const preflight = await preflightBl4LevelOverride(rows, serialText, deliveryLevel);
@@ -6751,7 +6755,7 @@ async function spawnItemPool() {
     setOutput(els.itempoolOutput, "Select an item pool first.");
     return;
   }
-  const level = getInt(els.itempoolLevel, 1, 60, 60);
+  const level = getInt(els.itempoolLevel, 1, 70, 70);
   const count = getInt(els.itempoolCount, 1, 100, 1);
   setOutput(els.itempoolOutput, `Spawning ${names.length} item pool(s)...`);
 
@@ -6787,7 +6791,7 @@ async function spawnAllFilteredItemPools() {
     setOutput(els.itempoolOutput, "No filtered item pools to spawn.");
     return;
   }
-  const level = getInt(els.itempoolLevel, 1, 60, 60);
+  const level = getInt(els.itempoolLevel, 1, 70, 70);
   const count = getInt(els.itempoolCount, 1, 100, 1);
   setOutput(els.itempoolOutput, `Queuing ${names.length} filtered item pool(s)...`);
   appendActivity(`Sending spawn_itempool_all for ${names.length} pool(s)...`);
@@ -10689,7 +10693,7 @@ function wireEvents() {
   });
   document.getElementById("setLevelBtn").addEventListener("click", () => runScopedPlayerAction("set_level", {
     xp_track: getValue(els.xpTrack),
-    level: getInt(els.xpLevel, 1, 9999999, 60)
+    level: getInt(els.xpLevel, 1, 9999999, 70)
   }, els.boostOutput, 30000));
   document.getElementById("giveCurrencyBtn").addEventListener("click", () => runScopedPlayerAction("give_currency", {
     currency_kind: getValue(els.currencyKind),
@@ -11794,7 +11798,7 @@ const TAB_TUTORIALS = {
   "item-pool": [
     {
       title: "Find pools",
-      body: "Search and Category filter the list. Multi-select rows (Ctrl/Shift click). Set Level (1–60) and Quantity.",
+      body: "Search and Category filter the list. Multi-select rows (Ctrl/Shift click). Set Level (1–70) and Quantity.",
       tab: "item-pool",
       target: "itempoolSearch"
     },

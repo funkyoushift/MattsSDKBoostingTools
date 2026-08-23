@@ -300,6 +300,7 @@ def launch_for_pc(pc: Any, z_boost: float = _DEFAULT_LAUNCH_Z) -> str:
         return msg
     if pc is not None:
         _pending_launch[_pc_key(pc)] = float(z_boost)
+        _sync_camera_need()
     return f"{msg}; queued tick retry"
 
 
@@ -324,6 +325,19 @@ def _tick_pending_launch_hook(*_args: Any, **_kwargs: Any) -> None:
     z = _pending_launch.pop(key, None)
     if z is not None:
         _fire_launch(local, z)
+    _sync_camera_need()
+
+
+def _sync_camera_need() -> None:
+    try:
+        from . import camera_tick
+
+        camera_tick.set_needed(
+            "streamer_chaos",
+            bool(_pending_launch or _unlock_deadlines or _invert_deadlines),
+        )
+    except Exception:
+        pass
 
 
 try:
@@ -360,6 +374,7 @@ def clear_runtime_state(*, restore: bool = False) -> None:
     _invert_deadlines.clear()
     _invert_backups.clear()
     _pending_launch.clear()
+    _sync_camera_need()
 
 
 def result_ok(msg: str) -> bool:

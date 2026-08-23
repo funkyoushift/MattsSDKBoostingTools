@@ -4,7 +4,7 @@ const path = require("path");
 
 const source = fs.readFileSync(path.join(__dirname, "panel_layout.js"), "utf8");
 
-assert.match(source, /const WIP_NAV_UNLOCK_KEY = "msbt\.navTabs\.wipUnlocked\.v3"/);
+assert.match(source, /const WIP_NAV_UNLOCK_KEY = "msbt\.navTabs\.wipUnlocked\.v4"/);
 assert.match(source, /localStorage\.getItem\(WIP_NAV_UNLOCK_KEY\)/);
 assert.match(source, /localStorage\.setItem\(WIP_NAV_UNLOCK_KEY/);
 assert.doesNotMatch(source, /localStorage\.removeItem\(WIP_NAV_UNLOCK_KEY\)/);

@@ -362,13 +362,13 @@ def status_message() -> str:
 @hook(
     "OakGame.OakPlayerController:PlayerTick",
     Type.POST,
-    immediately_enable=True,
+    immediately_enable=False,
     hook_identifier="msbt_nfow_ptick_oak_v1",
 )
 @hook(
     "Engine.PlayerController:PlayerTick",
     Type.POST,
-    immediately_enable=True,
+    immediately_enable=False,
     hook_identifier="msbt_nfow_ptick_engine_v1",
 )
 def _tick(_obj: UObject, _args: WrappedStruct, _ret: Any, _func: BoundFunction) -> None:
@@ -406,13 +406,13 @@ def _tick(_obj: UObject, _args: WrappedStruct, _ret: Any, _func: BoundFunction) 
 @hook(
     "OakGame.OakPlayerController:ClientTravel",
     Type.POST,
-    immediately_enable=True,
+    immediately_enable=False,
     hook_identifier="msbt_nfow_travel_oak_v1",
 )
 @hook(
     "Engine.PlayerController:ClientTravel",
     Type.POST,
-    immediately_enable=True,
+    immediately_enable=False,
     hook_identifier="msbt_nfow_travel_engine_v1",
 )
 def _travel(*_args: Any, **_kwargs: Any) -> None:
