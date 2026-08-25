@@ -1096,8 +1096,9 @@ button.gzo-submit-cta:hover {
   scrollbar-gutter: stable;
 }
 
-.tab-shell:has(#tab-dev-spawner.active.msbt-fixed-tab),
-.tab-shell:has(#tab-inventory.active) {
+/* Dev Spawner Compact fills the tab-shell. Do not add other tabs to this
+   :has() — sharing it with Inventory collapsed Matt Editor and Dev Spawner. */
+.tab-shell:has(#tab-dev-spawner.active.msbt-fixed-tab) {
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -2702,10 +2703,10 @@ button.active-scope {
 }
 
 /* —— Inventory tab (BL teal / cyan, rarity borders) —— */
+/* Keep this isolated to #tab-inventory. Do not change .tab-shell here. */
 #tab-inventory.tab-panel.active {
   display: flex;
   flex-direction: column;
-  flex: 1 1 auto;
   min-height: 0;
   height: 100%;
   overflow: hidden;
@@ -4366,7 +4367,7 @@ body.msbt-density-compact .activity-card {
 
 .editor-tab-content iframe {
   flex: 1 1 auto;
-  min-height: 0;
+  min-height: 280px;
   margin: 0;
   border-radius: 8px;
 }
