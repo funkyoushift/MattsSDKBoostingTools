@@ -9233,6 +9233,42 @@ function invRenderAll() {
   invRenderBackpack();
 }
 
+function invEntryMetaLine(entry) {
+  if (!entry) return "";
+  return [
+    entry.label,
+    entry.category,
+    entry.item_type || entry.character_class,
+    entry.manufacturer,
+    entry.rarity,
+    entry.damage_type,
+    Number(entry.level) >= 0 ? `L${entry.level}` : ""
+  ].filter(Boolean).join(" · ");
+}
+
+function invFillDetail(entry) {
+  if (!entry) {
+    if (els.invDetail) els.invDetail.classList.add("hidden");
+    if (els.invDetailSerial) els.invDetailSerial.value = "";
+    return;
+  }
+  const selectedCount = Math.max(1, state.invSelectedKeys.size || 1);
+  state.invSelectedEntry = entry;
+  state.invSelectedKey = invEntryKey(entry);
+  if (els.invDetail) els.invDetail.classList.remove("hidden");
+  if (els.invDetailTitle) {
+    els.invDetailTitle.textContent = selectedCount > 1
+      ? `${selectedCount.toLocaleString()} items selected`
+      : invDisplayName(entry);
+  }
+  if (els.invDetailMeta) {
+    els.invDetailMeta.textContent = selectedCount > 1
+      ? `Send uses every selected @U serial. Preview: ${invDisplayName(entry)}`
+      : invEntryMetaLine(entry);
+  }
+  if (els.invDetailSerial) els.invDetailSerial.value = String(entry.serial || "");
+}
+
 function invSelectEntry(entry, event = {}) {
   if (!entry) return;
   const key = invEntryKey(entry);
@@ -9247,23 +9283,7 @@ function invSelectEntry(entry, event = {}) {
   );
   state.invSelectedKeys = next.selected;
   state.invSelectionAnchor = next.anchor;
-  state.invSelectedEntry = entry;
-  state.invSelectedKey = key;
-  if (els.invDetail) els.invDetail.classList.remove("hidden");
-  if (els.invDetailTitle) els.invDetailTitle.textContent = invDisplayName(entry);
-  if (els.invDetailMeta) {
-    const bits = [
-      entry.label,
-      entry.category,
-      entry.item_type || entry.character_class,
-      entry.manufacturer,
-      entry.rarity,
-      entry.damage_type,
-      Number(entry.level) >= 0 ? `L${entry.level}` : ""
-    ].filter(Boolean);
-    els.invDetailMeta.textContent = bits.join(" · ");
-  }
-  if (els.invDetailSerial) els.invDetailSerial.value = String(entry.serial || "");
+  invFillDetail(entry);
   invRenderAll();
 }
 
@@ -9277,6 +9297,9 @@ function invClearDetail() {
 
 function invSelectAllFiltered() {
   state.invFiltered.forEach((entry) => state.invSelectedKeys.add(invEntryKey(entry)));
+  const preview = state.invFiltered.find((row) => invEntryKey(row) === invEntryKey(state.invSelectedEntry))
+    || state.invFiltered[state.invFiltered.length - 1];
+  if (preview) invFillDetail(preview);
   invRenderAll();
   setLine(els.invStatus, `Selected ${state.invFiltered.length.toLocaleString()} filtered inventory item(s).`, "ok");
 }

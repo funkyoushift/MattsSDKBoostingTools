@@ -1096,7 +1096,8 @@ button.gzo-submit-cta:hover {
   scrollbar-gutter: stable;
 }
 
-.tab-shell:has(#tab-dev-spawner.active.msbt-fixed-tab) {
+.tab-shell:has(#tab-dev-spawner.active.msbt-fixed-tab),
+.tab-shell:has(#tab-inventory.active) {
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -2701,7 +2702,29 @@ button.active-scope {
 }
 
 /* —— Inventory tab (BL teal / cyan, rarity borders) —— */
+#tab-inventory.tab-panel.active {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
 .inv-root {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+  gap: 12px;
+}
+
+.inv-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -2993,27 +3016,28 @@ button.active-scope {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
   gap: 8px;
-  max-height: min(58vh, 640px);
-  overflow: auto;
+  overflow: visible;
   padding: 4px 2px 12px;
 }
 
 .inv-detail {
+  flex: 0 0 auto;
   border-top: 1px solid #1a4552;
   padding-top: 10px;
   display: flex;
   flex-direction: column;
   gap: 8px;
+  background: var(--panel);
+}
+
+#invDetailSerial {
+  max-height: 4.5rem;
+  overflow: auto;
+  resize: none;
 }
 
 .inv-detail.hidden {
   display: none;
-}
-
-@media (max-width: 720px) {
-  .inv-item-grid {
-    max-height: 48vh;
-  }
 }
 
 /* --- Rearrangeable / dockable panel layout (GridStack) --- */
