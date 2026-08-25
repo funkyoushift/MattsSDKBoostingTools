@@ -25,6 +25,16 @@ from unrealsdk import logging
 from .inventory_capacity import get_player_state_by_party_index
 
 _LOG = "[MSBT SerialRead]"
+_SERIAL_META_WARNED = False
+
+try:
+    from . import serial_item_meta as _serial_item_meta
+except Exception as exc:
+    _serial_item_meta = None
+    try:
+        logging.warning(f"{_LOG} serial_item_meta import failed: {exc!r}")
+    except Exception:
+        pass
 
 ITEM_SERIAL_POINTER_OFFSET = 0xA0
 ITEM_SERIAL_LENGTH_OFFSET = 0xB0
@@ -440,10 +450,14 @@ def _entry_from_source(
         "backpack_index": int(backpack_index) if backpack_index is not None else -1,
     }
     try:
-        from . import serial_item_meta
-
-        serial_item_meta.enrich_entry(entry)
-    except Exception:
+        if _serial_item_meta is None:
+            raise RuntimeError("serial_item_meta was not imported")
+        _serial_item_meta.enrich_entry(entry)
+    except Exception as exc:
+        global _SERIAL_META_WARNED
+        if not _SERIAL_META_WARNED:
+            _SERIAL_META_WARNED = True
+            _log(f"item name enrich failed: {exc!r}")
         entry.setdefault("display_name", label)
         entry.setdefault("category", "Other")
         entry.setdefault("rarity", "")

@@ -39,6 +39,7 @@ def test_instant_actions_have_qm_pins_and_rebindable_sdk_hotkeys():
     js = (ELECTRON / "renderer.js").read_text(encoding="utf-8")
     assert 'decorateQuickMenuActionButton(els.instantDropsToggleBtn, "instant_drops_toggle")' in js
     assert 'decorateQuickMenuActionButton(els.instantHoldsToggleBtn, "instant_holds_toggle")' in js
+    assert 'decorateQuickMenuActionButton(els.thirdPersonToggleBtn, "third_person_toggle")' in js
 
     registry = (
         ROOT
@@ -48,6 +49,7 @@ def test_instant_actions_have_qm_pins_and_rebindable_sdk_hotkeys():
     ).read_text(encoding="utf-8")
     assert '"instant_drops_toggle": {"basic": "Instant Drops"' in registry
     assert '"instant_holds_toggle": {"basic": "Instant Holds"' in registry
+    assert '"third_person_toggle": {"basic": "Third Person"' in registry
 
     sdk = (
         ROOT
@@ -59,6 +61,16 @@ def test_instant_actions_have_qm_pins_and_rebindable_sdk_hotkeys():
     assert '"MSBT Toggle Instant Holds"' in sdk
     assert "kb_toggle_drops" in sdk
     assert "kb_toggle_holds" in sdk
+
+    tpc = (
+        ROOT
+        / "mod_extracted"
+        / "MattsSDKBoostingTools"
+        / "third_person_camera.py"
+    ).read_text(encoding="utf-8")
+    assert '"MSBT Toggle Third Person"' in tpc
+    assert "kb_toggle_third_person" in tpc
+    assert "bl4_tpc.controller" in tpc
 
 
 def test_spawnables_and_travel_are_assignable_and_wired():

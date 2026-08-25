@@ -2965,6 +2965,10 @@ button.active-scope {
   width: 5.5rem;
 }
 
+.inv-give-row .inv-give-compact select {
+  min-width: 5.5rem;
+}
+
 .inv-filters {
   border: 1px solid #1a4552;
   border-radius: 4px;

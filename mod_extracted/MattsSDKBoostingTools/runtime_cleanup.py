@@ -37,6 +37,7 @@ def clear_travel_caches() -> None:
     """Release old-world wrappers without importing the optional BLImGui panel."""
     from . import backend_actions, golden_chest_keybinds, hoard_runner
     from . import instant_click_holds, movement_adjustments, no_fog_of_war
+    from . import third_person_camera
     from . import serial_rewards, spawn_helpers, streamer_chaos
 
     _call("backend", backend_actions.clear_uobject_caches)
@@ -48,6 +49,7 @@ def clear_travel_caches() -> None:
     _call("movement", movement_adjustments._clear_infinite_jump_runtime_caches)
     _call("instant holds", instant_click_holds.clear_travel_backups)
     _call("fog", no_fog_of_war.clear_travel_backups)
+    _call("third person", third_person_camera.clear_travel_backups)
 
     panel = sys.modules.get(f"{__package__}.blimgui_panel")
     if panel is not None:

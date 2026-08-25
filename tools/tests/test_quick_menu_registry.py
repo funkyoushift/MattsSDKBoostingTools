@@ -199,6 +199,7 @@ def test_native_picker_actions_exist_in_catalog():
     assert "location_bookmark_go" not in registry.NATIVE_PICKER_ACTIONS
     assert "location_bookmark_save" in registry.NATIVE_PICKER_ACTIONS
     assert "hoard_start" in registry.NATIVE_PICKER_ACTIONS
+    assert "third_person_toggle" in registry.NATIVE_PICKER_ACTIONS
 
 
 def test_uvh_label_and_targeted_backpack_catalog():

@@ -6,6 +6,7 @@ from mods_base import CoopSupport, Game, build_mod
 
 from .golden_chest_keybinds import CLOSE_GOLDEN_CHEST_KEY, OPEN_GOLDEN_CHEST_KEY
 from .instant_click_holds import ICH_KEYBINDS
+from .third_person_camera import TPC_KEYBINDS
 from .player_economy import _cmd_givecurrency, _cmd_giveexperience
 from .serial_rewards import _cmd_give_serial
 from .runtime_cleanup import clear_travel_caches as _clear_travel_caches
@@ -30,8 +31,8 @@ from .quick_menu import (
     start_quick_menu,
 )
 
-__version__: str = "2.8.7"
-__version_info__: tuple[int, int, int] = (2, 8, 7)
+__version__: str = "2.8.8"
+__version_info__: tuple[int, int, int] = (2, 8, 8)
 
 _panel_keybinds = []
 _panel_commands = []
@@ -101,6 +102,7 @@ build_mod(
         OPEN_GOLDEN_CHEST_KEY,
         CLOSE_GOLDEN_CHEST_KEY,
         *ICH_KEYBINDS,
+        *TPC_KEYBINDS,
     ],
     commands=_panel_commands + _extra_commands,
 )

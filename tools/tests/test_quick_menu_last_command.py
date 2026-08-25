@@ -91,6 +91,7 @@ def _load_backend_actions():
             "request_azzy_super_dash": lambda *a, **k: None,
             "reset_movement_advanced_all_players": lambda *a, **k: None,
             "set_force_fly": lambda *a, **k: None,
+            "set_fly_speed": lambda *a, **k: None,
             "set_infinite_jump_all": lambda *a, **k: None,
             "set_infinite_jump_for_index": lambda *a, **k: None,
             "set_no_target": lambda *a, **k: None,
@@ -156,6 +157,12 @@ def _load_backend_actions():
         "MattsSDKBoostingTools.extreme_combat_xp": {},
         "MattsSDKBoostingTools.instant_click_holds": {},
         "MattsSDKBoostingTools.no_fog_of_war": {},
+        "MattsSDKBoostingTools.third_person_camera": {
+            "get_status_dict": lambda: {"enabled": False, "hooks": False, "source": "msbt"},
+            "set_enabled": lambda enabled: "Third Person stub",
+            "toggle_enabled": lambda: "Third Person stub",
+            "status_message": lambda: "Third Person stub",
+        },
     }
     for mod_name, attrs in stubs.items():
         mod = types.ModuleType(mod_name)

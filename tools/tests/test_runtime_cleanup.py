@@ -52,6 +52,7 @@ def test_clear_travel_caches_calls_known_cleaners():
     )
     _mod("instant_click_holds", {"clear_travel_backups": lambda: called.append("holds")})
     _mod("no_fog_of_war", {"clear_travel_backups": lambda: called.append("fog")})
+    _mod("third_person_camera", {"clear_travel_backups": lambda: called.append("tpc")})
 
     sys.modules.pop("MattsSDKBoostingTools.runtime_cleanup", None)
     spec = importlib.util.spec_from_file_location(
@@ -74,4 +75,5 @@ def test_clear_travel_caches_calls_known_cleaners():
         "movement",
         "holds",
         "fog",
+        "tpc",
     ]

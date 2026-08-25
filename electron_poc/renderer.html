@@ -229,9 +229,10 @@
           <div class="button-row wrap boost-essentials-instant">
             <button id="instantDropsToggleBtn" type="button">Instant Drops: Off</button>
             <button id="instantHoldsToggleBtn" type="button">Instant Holds: Off</button>
+            <button id="thirdPersonToggleBtn" type="button">Third Person: Off</button>
           </div>
-          <p class="muted-line">Set or clear Instant Drops / Instant Holds hotkeys in oak2’s Mods keybind UI. Use <strong>+ QM</strong> to pin either toggle to F7.</p>
-          <div id="liveModsStatus" class="status-line compact-note">Combat XP / Instant Drops / Instant Holds idle.</div>
+          <p class="muted-line">Set or clear Instant Drops / Instant Holds / Third Person hotkeys in oak2’s Mods keybind UI. Use <strong>+ QM</strong> to pin a toggle to F7. Third Person is client-local (Renil / Epilow). Disable the standalone Third Person zip while this is on — double hooks can crash.</p>
+          <div id="liveModsStatus" class="status-line compact-note">Combat XP / Instant Drops / Instant Holds / Third Person idle.</div>
         </section>
 
         <section class="panel cyan" data-msbt-panel="boost-target" data-msbt-span="4" data-msbt-title="Connection & Scope">
@@ -847,6 +848,7 @@
             <p>
               View equipped and backpack items for any party player. Item names come from the GZO parts list when available.
               Select an item to copy it, open it in another tool, or give copies to a different player.
+              Send to Game can keep the item's level or override it (same rewrite as Serial Rewards).
             </p>
           </div>
           <div class="button-row wrap">
@@ -956,6 +958,17 @@
               <select id="invGiveTargetSelect">
                 <option value="">No players loaded — Refresh Status on Boosting</option>
               </select>
+            </label>
+            <label for="invSerialOverride" class="inv-give-compact">
+              Override level
+              <select id="invSerialOverride" title="Rewrite @U header level before delivery">
+                <option value="false">No</option>
+                <option value="true">Yes</option>
+              </select>
+            </label>
+            <label for="invSerialLevel" class="inv-give-compact">
+              Level
+              <input id="invSerialLevel" type="number" min="1" max="70" value="70" title="Used when Override level is Yes">
             </label>
             <label for="invSerialCopies">
               Multiplier
@@ -1986,7 +1999,10 @@
           </div>
           <label for="movementFlySpeed">Force Fly Speed</label>
           <input id="movementFlySpeed" type="number" min="100" max="20000" step="50" value="2400">
-          <p class="muted-line">Noclip and Force Fly honor Apply Scope (Local / All / Others) above. Ground loot helpers live on Boosting → Ground Loot.</p>
+          <div class="button-row wrap">
+            <button data-movement-action="movement_apply_fly_speed">Apply Fly Speed</button>
+          </div>
+          <p class="muted-line">BL4 ignores MaxFlySpeed. Apply Fly Speed uses the same walk/accel fields as Apply Movement, so flying actually gets faster. Landing restores your previous walk speed. Works while already flying (MSBT or Bonk noclip).</p>
           <div class="button-grid">
             <button data-movement-action="movement_super_dash">Super Dash</button>
             <button data-movement-action="movement_super_dash_toggle">Super Dash Toggle</button>

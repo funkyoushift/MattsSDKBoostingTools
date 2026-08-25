@@ -48,7 +48,6 @@ _SPEED_FLOAT_FIELDS = (
     "MaxGroundSpeedBase",
     "MaxWalkSpeedCrouched",
     "MaxCustomMovementSpeed",
-    "MaxFlySpeed",
     "MaxSwimSpeed",
     # Older BLImGui movement tuning wrote these names directly.  Keep them in
     # the shared backend so Reset Defaults clears speed boosts on every build.
@@ -64,6 +63,12 @@ _SPEED_ATTRIBUTE_FIELDS = (
     "MoveSpeedScale",
     "GroundSpeedScale",
     "SpeedScale",
+)
+_FLY_SPEED_FIELDS = (
+    "MaxFlySpeed",
+    "MaxFlyingSpeed",
+    "FlySpeed",
+    "MaxCustomMovementSpeed",
 )
 _ACCEL_FIELDS = (
     "MaxAcceleration",
@@ -1620,6 +1625,10 @@ def _clear_infinite_jump_runtime_caches() -> None:
     _INFINITE_JUMP_LOCAL_IDX = None
     _JUMP_REFRESH_OBJECT_CACHE = []
     _JUMP_REFRESH_CACHE_TIME = 0.0
+    try:
+        _disarm_fly_speed_override()
+    except Exception:
+        pass
 
 
 def _world_from_pc(pc: Any) -> Any | None:
@@ -3013,6 +3022,13 @@ def _super_dash_camera_hook(*_args: Any, **_kwargs: Any) -> None:
         _azzy_super_dash_key_was_down = False
 
 
+# Fly speed is applied on the button click only. Do not hook GetMaxSpeed /
+# PhysFlying / camera tick to "hold" it — those run every frame and hitch BL4.
+_DEFAULT_FLY_SPEED = 2400.0
+_MSBT_FLYING = False
+_saved_ground_speed: dict[int, float] = {}
+
+
 def _sync_movement_camera_need() -> None:
     try:
         from . import camera_tick
@@ -3043,7 +3059,55 @@ def _register_super_dash_hook() -> None:
 _register_super_dash_hook()
 
 
-_DEFAULT_FLY_SPEED = 2400.0
+def _pawn_addr_key(pawn: Any) -> int:
+    try:
+        return int(pawn._get_address())
+    except Exception:
+        return id(pawn)
+
+
+def _read_numeric_attr(obj: Any, name: str) -> float | None:
+    try:
+        if not hasattr(obj, name):
+            return None
+        current = getattr(obj, name, None)
+        if current is None:
+            return None
+        for field in ("Value", "BaseValue", "CurrentValue"):
+            try:
+                val = getattr(current, field, None)
+                if val is not None:
+                    return float(val)
+            except Exception:
+                pass
+        return float(current)
+    except Exception:
+        return None
+
+
+def _current_ground_speed(pawn: Any) -> float:
+    for obj in _movement_objects_for_pawn(pawn):
+        for attr in ("MinAnalogWalkSpeed", "MaxWalkSpeed", "MaxGroundSpeed"):
+            val = _read_numeric_attr(obj, attr)
+            if val is not None and val > 1.0:
+                return val
+    return 600.0
+
+
+def _remember_ground_speed(pawn: Any) -> None:
+    key = _pawn_addr_key(pawn)
+    if key not in _saved_ground_speed:
+        _saved_ground_speed[key] = _current_ground_speed(pawn)
+
+
+def _restore_ground_speed(pawn: Any) -> int:
+    saved = _saved_ground_speed.pop(_pawn_addr_key(pawn), None)
+    if saved is None:
+        return 0
+    wrote = 0
+    for obj in _movement_objects_for_pawn(pawn):
+        wrote += _apply_speed_to_obj(obj, 1.0, saved)
+    return wrote
 
 
 def _move_comp_for_pawn(pawn: Any) -> Any | None:
@@ -3063,6 +3127,124 @@ def _move_comp_for_pawn(pawn: Any) -> Any | None:
     return None
 
 
+def _clamp_fly_speed(speed: float | None) -> float:
+    raw = _DEFAULT_FLY_SPEED if speed is None else float(speed)
+    return max(100.0, min(20000.0, raw))
+
+
+def _write_fly_numeric(obj: Any, name: str, value: float) -> bool:
+    """One-shot Gbx/float write. Never used from a tick hook."""
+    try:
+        if not hasattr(obj, name):
+            return False
+        current = getattr(obj, name, None)
+    except Exception:
+        return False
+    wrote = False
+    if current is not None:
+        for field in (
+            "Value",
+            "BaseValue",
+            "CurrentValue",
+            "Base",
+            "Current",
+            "BaseValueConstant",
+        ):
+            try:
+                setattr(current, field, float(value))
+                wrote = True
+            except Exception:
+                pass
+        for field in ("BaseValueScale", "ValueScale", "Scale"):
+            try:
+                setattr(current, field, 1.0)
+                wrote = True
+            except Exception:
+                pass
+        for method_name in ("SetValue", "SetBaseValue", "SetCurrentValue"):
+            try:
+                method = getattr(current, method_name, None)
+                if callable(method):
+                    method(float(value))
+                    wrote = True
+            except Exception:
+                pass
+    if wrote:
+        return True
+    try:
+        setattr(obj, name, float(value))
+        return True
+    except Exception:
+        return False
+
+
+def _dump_fly_move(pawn: Any) -> None:
+    move = _move_comp_for_pawn(pawn)
+    if move is None:
+        _log("fly dump: no movement component")
+        return
+    bits: list[str] = []
+    try:
+        bits.append(f"cls={type(move).__name__}")
+    except Exception:
+        bits.append("cls=?")
+    try:
+        bits.append(f"mode={int(move.MovementMode)}")
+    except Exception:
+        bits.append("mode=?")
+    for name in (
+        "MaxFlySpeed",
+        "MaxFlyingSpeed",
+        "FlySpeed",
+        "MaxWalkSpeed",
+        "MinAnalogWalkSpeed",
+        "MaxCustomMovementSpeed",
+        "MaxAcceleration",
+        "BrakingDecelerationFlying",
+        "AirControl",
+        "GravityScale",
+    ):
+        val = _read_numeric_attr(move, name)
+        if val is not None:
+            bits.append(f"{name}={val:.1f}")
+    try:
+        fn = getattr(move, "GetMaxSpeed", None)
+        if callable(fn):
+            bits.append(f"GetMaxSpeed()={float(fn()):.1f}")
+    except Exception:
+        bits.append("GetMaxSpeed=err")
+    try:
+        bits.append(f"IsFlying={bool(move.IsFlying())}")
+    except Exception:
+        pass
+    _log("fly dump: " + " ".join(bits))
+
+
+def _disarm_fly_speed_override() -> None:
+    global _MSBT_FLYING
+    _MSBT_FLYING = False
+
+
+def _write_fly_speed_to_pawn(pawn: Any, speed: float) -> int:
+    """Write fly/walk/accel fields once. Do not re-apply from a frame hook."""
+    target = _clamp_fly_speed(speed)
+    wrote = 0
+    for obj in _movement_objects_for_pawn(pawn):
+        wrote += _apply_speed_to_obj(obj, 1.0, target)
+        for attr in _FLY_SPEED_FIELDS:
+            if _write_fly_numeric(obj, attr, target):
+                wrote += 1
+        for meth in ("SetMaxFlySpeed", "SetMaxFlyingSpeed", "SetMaxCustomMovementSpeed"):
+            if _call_setter(obj, meth, target):
+                wrote += 1
+        if _write_fly_numeric(obj, "AirControl", 1.0):
+            wrote += 1
+        if _write_fly_numeric(obj, "AirControlBoostMultiplier", 4.0):
+            wrote += 1
+    _dump_fly_move(pawn)
+    return wrote
+
+
 def _apply_flight_to_pawn(
     pawn: Any,
     *,
@@ -3071,8 +3253,12 @@ def _apply_flight_to_pawn(
     fly_speed: float | None = None,
 ) -> bool:
     move = _move_comp_for_pawn(pawn)
-    if pawn is None or move is None:
+    if pawn is None:
         return False
+    wrote_speed = 0
+    if flying and fly_speed is not None:
+        _remember_ground_speed(pawn)
+        wrote_speed = _write_fly_speed_to_pawn(pawn, fly_speed)
     if flying:
         if noclip:
             try:
@@ -3089,55 +3275,93 @@ def _apply_flight_to_pawn(
             except Exception:
                 pass
         try:
-            move.SetMovementMode(5, 0)  # MOVE_Flying
+            setattr(pawn, "bCheatFlying", True)
         except Exception:
             pass
-        if fly_speed is not None:
-            speed = max(100.0, min(20000.0, float(fly_speed)))
-            for attr in ("MaxFlySpeed", "MaxFlyingSpeed", "FlySpeed"):
-                _set_attr(pawn, attr, speed)
-                _set_attr(move, attr, speed)
-        return True
+        if move is not None:
+            try:
+                move.SetMovementMode(5, 0)  # MOVE_Flying
+            except Exception:
+                pass
+        return move is not None or wrote_speed > 0
     try:
         setattr(pawn, "bActorEnableCollision", True)
     except Exception:
         pass
     try:
-        move.SetMovementMode(1, 0)  # MOVE_Walking
+        setattr(pawn, "bCheatFlying", False)
     except Exception:
         pass
+    if move is not None:
+        try:
+            move.SetMovementMode(1, 0)  # MOVE_Walking
+        except Exception:
+            pass
     try:
         setattr(pawn, "bCanBeDamaged", True)
     except Exception:
         pass
+    _restore_ground_speed(pawn)
     return True
 
 
-def set_noclip(enabled: bool, scope: str = "all") -> str:
+def set_noclip(enabled: bool, scope: str = "all", fly_speed: float | None = None) -> str:
     """Toggle flying + no-collision for Local / All / Others."""
+    global _MSBT_FLYING
+    speed = _clamp_fly_speed(fly_speed)
     pawns = filter_pawns_by_scope(live_player_pawns(), scope)
     if not pawns:
         return f"Noclip skipped: no pawns for scope={scope}."
     ok = 0
+    writes = 0
     for pawn in pawns:
-        if _apply_flight_to_pawn(pawn, flying=bool(enabled), noclip=True):
+        if _apply_flight_to_pawn(pawn, flying=bool(enabled), noclip=True, fly_speed=speed):
             ok += 1
+            writes += _write_fly_speed_to_pawn(pawn, speed) if enabled else 0
+    _MSBT_FLYING = bool(enabled)
     state = "On" if enabled else "Off"
-    return f"Noclip {state} for {ok}/{len(pawns)} pawn(s) (scope={scope})."
+    msg = f"Noclip {state} for {ok}/{len(pawns)} pawn(s) (scope={scope}, speed={speed:.0f}, writes={writes})."
+    _log(msg)
+    return msg
 
 
 def set_force_fly(enabled: bool, scope: str = "all", fly_speed: float | None = None) -> str:
     """Toggle flying with collision left on (fun fly, not ghost). Honors movement scope."""
-    speed = _DEFAULT_FLY_SPEED if fly_speed is None else float(fly_speed)
+    global _MSBT_FLYING
+    speed = _clamp_fly_speed(fly_speed)
     pawns = filter_pawns_by_scope(live_player_pawns(), scope)
     if not pawns:
         return f"Force fly skipped: no pawns for scope={scope}."
     ok = 0
+    writes = 0
     for pawn in pawns:
         if _apply_flight_to_pawn(pawn, flying=bool(enabled), noclip=False, fly_speed=speed):
             ok += 1
+            writes += _write_fly_speed_to_pawn(pawn, speed) if enabled else 0
+    _MSBT_FLYING = bool(enabled)
     state = "On" if enabled else "Off"
-    return f"Force fly {state} for {ok}/{len(pawns)} pawn(s) (scope={scope}, speed={speed:.0f})."
+    msg = f"Force fly {state} for {ok}/{len(pawns)} pawn(s) (scope={scope}, speed={speed:.0f}, writes={writes})."
+    _log(msg)
+    return msg
+
+
+def set_fly_speed(scope: str = "all", fly_speed: float | None = None) -> str:
+    """Write fly speed once. Works while already flying (MSBT or Bonk noclip)."""
+    speed = _clamp_fly_speed(fly_speed)
+    pawns = filter_pawns_by_scope(live_player_pawns(), scope)
+    if not pawns:
+        return f"Fly speed skipped: no pawns for scope={scope}."
+    ok = 0
+    writes = 0
+    for pawn in pawns:
+        _remember_ground_speed(pawn)
+        n = _write_fly_speed_to_pawn(pawn, speed)
+        writes += n
+        if n:
+            ok += 1
+    msg = f"Fly speed {speed:.0f} written for {ok}/{len(pawns)} pawn(s) (scope={scope}, writes={writes})."
+    _log(msg)
+    return msg
 
 
 def _actor_location(actor: Any) -> Any | None:

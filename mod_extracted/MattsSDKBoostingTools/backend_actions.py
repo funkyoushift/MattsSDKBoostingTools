@@ -54,6 +54,7 @@ from .movement_adjustments import (
     request_azzy_super_dash,
     reset_movement_advanced_all_players,
     set_force_fly,
+    set_fly_speed,
     set_infinite_jump_all,
     set_infinite_jump_for_index,
     set_no_target,
@@ -116,6 +117,7 @@ from .vehicle_tuning import (
 from . import extreme_combat_xp as _cxp
 from . import instant_click_holds as _ich
 from . import no_fog_of_war as _nfow
+from . import third_person_camera as _tpc
 
 CURRENCY_KINDS = ["cash", "eridium", "vaultcard1", "vaultcard2", "vaultcard3", "vaultcard4"]
 EXP_TRACKS = [
@@ -1799,6 +1801,8 @@ def run_quick_menu_action(
         result = movement_toggle_noclip(payload)
     elif key == "movement_toggle_force_fly":
         result = movement_toggle_force_fly(payload)
+    elif key == "movement_apply_fly_speed":
+        result = movement_apply_fly_speed(payload)
     elif key == "movement_players_only":
         result = movement_toggle_players_only()
     elif key == "movement_delete_ground_items":
@@ -1997,6 +2001,14 @@ def run_quick_menu_action(
         result = instant_holds_toggle()
     elif key == "instant_holds_status":
         result = instant_holds_status()
+    elif key == "third_person_on":
+        result = third_person_set_enabled(True)
+    elif key == "third_person_off":
+        result = third_person_set_enabled(False)
+    elif key == "third_person_toggle":
+        result = third_person_toggle()
+    elif key == "third_person_status":
+        result = third_person_status()
     elif key == "fog_of_war_clear":
         result = fog_of_war_clear(payload.get("target_player") or payload.get("name"))
         needs_player = True
@@ -2091,6 +2103,7 @@ def get_status() -> dict[str, Any]:
         "instant_drops": _ich.get_status_dict(),
         "instant_holds": _ich.get_holds_status_dict(),
         "fog_of_war": _nfow.get_status_dict(),
+        "third_person": _tpc.get_status_dict(),
         "infinite_jump": _infinite_jump_status_safe(),
         "challenge_bulk": _challenge_progress_payload(),
         "itempool_bulk": _itempool_progress_payload(),
@@ -3289,6 +3302,30 @@ def instant_holds_status() -> dict[str, Any]:
         "message": _ich.holds_status_message(),
         "instant_drops": _ich.get_status_dict(),
         "instant_holds": _ich.get_holds_status_dict(),
+    }
+
+
+def third_person_set_enabled(enabled: bool) -> dict[str, Any]:
+    try:
+        msg = _tpc.set_enabled(bool(enabled))
+        return {"ok": True, "message": msg, "third_person": _tpc.get_status_dict()}
+    except Exception as exc:
+        return {"ok": False, "message": f"Third Person failed: {exc!r}"}
+
+
+def third_person_toggle() -> dict[str, Any]:
+    try:
+        msg = _tpc.toggle_enabled()
+        return {"ok": True, "message": msg, "third_person": _tpc.get_status_dict()}
+    except Exception as exc:
+        return {"ok": False, "message": f"Third Person failed: {exc!r}"}
+
+
+def third_person_status() -> dict[str, Any]:
+    return {
+        "ok": True,
+        "message": _tpc.status_message(),
+        "third_person": _tpc.get_status_dict(),
     }
 
 
@@ -5149,9 +5186,14 @@ def movement_toggle_noclip(payload: dict[str, Any] | None = None) -> dict[str, A
     global _movement_noclip_enabled
     payload = payload or {}
     scope = str(payload.get("movement_scope") or payload.get("scope") or "all").strip().lower() or "all"
+    speed_raw = payload.get("fly_speed") or payload.get("movement_fly_speed")
+    try:
+        fly_speed = float(speed_raw) if speed_raw not in (None, "") else None
+    except Exception:
+        fly_speed = None
     _movement_noclip_enabled = not _movement_noclip_enabled
     try:
-        msg = set_noclip(_movement_noclip_enabled, scope=scope)
+        msg = set_noclip(_movement_noclip_enabled, scope=scope, fly_speed=fly_speed)
         return {"ok": True, "message": msg, "enabled": _movement_noclip_enabled, "scope": scope}
     except Exception as exc:
         _movement_noclip_enabled = not _movement_noclip_enabled
@@ -5174,6 +5216,21 @@ def movement_toggle_force_fly(payload: dict[str, Any] | None = None) -> dict[str
     except Exception as exc:
         _movement_force_fly_enabled = not _movement_force_fly_enabled
         return {"ok": False, "message": f"Toggle force fly failed: {exc!r}"}
+
+
+def movement_apply_fly_speed(payload: dict[str, Any] | None = None) -> dict[str, Any]:
+    payload = payload or {}
+    scope = str(payload.get("movement_scope") or payload.get("scope") or "all").strip().lower() or "all"
+    speed_raw = payload.get("fly_speed") or payload.get("movement_fly_speed")
+    try:
+        fly_speed = float(speed_raw) if speed_raw not in (None, "") else None
+    except Exception:
+        fly_speed = None
+    try:
+        msg = set_fly_speed(scope=scope, fly_speed=fly_speed)
+        return {"ok": True, "message": msg, "scope": scope}
+    except Exception as exc:
+        return {"ok": False, "message": f"Apply fly speed failed: {exc!r}"}
 
 
 def movement_set_time(value: object) -> dict[str, Any]:

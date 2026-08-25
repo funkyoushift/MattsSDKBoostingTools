@@ -169,6 +169,7 @@ _QUEUE_PRESERVING_ACTIONS = frozenset({
     "instant_drops_status",
     "instant_holds_status",
     "fog_of_war_status",
+    "third_person_status",
     # Hoard Builder status poll must not cancel an in-flight Start/Clear.
     "hoard_status",
 })
@@ -205,6 +206,10 @@ _IMMEDIATE_LIVE_MOD_ACTIONS = frozenset({
     "instant_holds_off",
     "instant_holds_toggle",
     "instant_holds_status",
+    "third_person_on",
+    "third_person_off",
+    "third_person_toggle",
+    "third_person_status",
 })
 
 
@@ -1021,6 +1026,7 @@ def _status() -> dict[str, Any]:
         "instant_drops": backend_status.get("instant_drops") or {},
         "instant_holds": backend_status.get("instant_holds") or {},
         "fog_of_war": backend_status.get("fog_of_war") or {},
+        "third_person": backend_status.get("third_person") or {},
         "diagnostics": diagnostics,
         "last_action": _last_action,
         "last_error": last_error,

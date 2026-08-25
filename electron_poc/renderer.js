@@ -257,6 +257,7 @@ const els = {
   cxpToggleBtn: document.getElementById("cxpToggleBtn"),
   instantDropsToggleBtn: document.getElementById("instantDropsToggleBtn"),
   instantHoldsToggleBtn: document.getElementById("instantHoldsToggleBtn"),
+  thirdPersonToggleBtn: document.getElementById("thirdPersonToggleBtn"),
   liveModsStatus: document.getElementById("liveModsStatus"),
   debugCamSpeed: document.getElementById("debugCamSpeed"),
   debugCamDistance: document.getElementById("debugCamDistance"),
@@ -318,6 +319,8 @@ const els = {
   invCopyAllBtn: document.getElementById("invCopyAllBtn"),
   invTargetSelect: document.getElementById("invTargetSelect"),
   invGiveTargetSelect: document.getElementById("invGiveTargetSelect"),
+  invSerialOverride: document.getElementById("invSerialOverride"),
+  invSerialLevel: document.getElementById("invSerialLevel"),
   invSerialCopies: document.getElementById("invSerialCopies"),
   invGiveSerialBtn: document.getElementById("invGiveSerialBtn"),
   invSortDirBtn: document.getElementById("invSortDirBtn"),
@@ -1665,6 +1668,7 @@ function installQuickMenuAddButtons() {
   if (!state.quickMenuSnapshot) return;
   decorateQuickMenuActionButton(els.instantDropsToggleBtn, "instant_drops_toggle");
   decorateQuickMenuActionButton(els.instantHoldsToggleBtn, "instant_holds_toggle");
+  decorateQuickMenuActionButton(els.thirdPersonToggleBtn, "third_person_toggle");
   document.querySelectorAll("[data-action]").forEach((button) => {
     decorateQuickMenuActionButton(button, String(button.dataset.action || ""));
   });
@@ -2277,7 +2281,7 @@ function movementActionPayload(action, extraPayload = {}) {
       ...extraPayload
     };
   }
-  if (key === "movement_toggle_noclip" || key === "movement_toggle_force_fly") {
+  if (key === "movement_toggle_noclip" || key === "movement_toggle_force_fly" || key === "movement_apply_fly_speed") {
     return {
       movement_scope: getValue(els.movementScope) || "all",
       fly_speed: getFloat(els.movementFlySpeed, 100, 20000, 2400),
@@ -3431,7 +3435,7 @@ function applyBridgeStatusResult(result, options = {}) {
   return data;
 }
 
-function updateLiveModToggleButtons(cxpEnabled, dropsEnabled, holdsEnabled) {
+function updateLiveModToggleButtons(cxpEnabled, dropsEnabled, holdsEnabled, thirdPersonEnabled) {
   if (els.cxpToggleBtn) {
     const on = Boolean(cxpEnabled);
     els.cxpToggleBtn.textContent = `Combat XP Multiplier: ${on ? "On" : "Off"}`;
@@ -3450,28 +3454,41 @@ function updateLiveModToggleButtons(cxpEnabled, dropsEnabled, holdsEnabled) {
     els.instantHoldsToggleBtn.classList.toggle("is-on", on);
     els.instantHoldsToggleBtn.classList.toggle("danger", on);
   }
+  if (els.thirdPersonToggleBtn) {
+    const on = Boolean(thirdPersonEnabled);
+    els.thirdPersonToggleBtn.textContent = `Third Person: ${on ? "On" : "Off"}`;
+    els.thirdPersonToggleBtn.classList.toggle("is-on", on);
+    els.thirdPersonToggleBtn.classList.toggle("danger", on);
+  }
 }
 
 function syncLiveModsFromStatus(data) {
-  if (!els.liveModsStatus && !els.cxpToggleBtn && !els.instantDropsToggleBtn && !els.instantHoldsToggleBtn) return;
+  if (!els.liveModsStatus && !els.cxpToggleBtn && !els.instantDropsToggleBtn && !els.instantHoldsToggleBtn && !els.thirdPersonToggleBtn) return;
   const cxp = data && data.cxp && typeof data.cxp === "object" ? data.cxp : null;
   const drops = data && data.instant_drops && typeof data.instant_drops === "object" ? data.instant_drops : null;
   const holds = data && data.instant_holds && typeof data.instant_holds === "object" ? data.instant_holds : null;
   const fog = data && data.fog_of_war && typeof data.fog_of_war === "object" ? data.fog_of_war : null;
+  const tpc = data && data.third_person && typeof data.third_person === "object" ? data.third_person : null;
   if (cxp && els.cxpMultiplier && Number.isFinite(Number(cxp.multiplier))) {
     const mult = Number(cxp.multiplier);
     if (document.activeElement !== els.cxpMultiplier) {
       els.cxpMultiplier.value = String(Math.round(mult));
     }
   }
-  updateLiveModToggleButtons(cxp && cxp.enabled, drops && drops.enabled, holds && holds.enabled);
+  updateLiveModToggleButtons(cxp && cxp.enabled, drops && drops.enabled, holds && holds.enabled, tpc && tpc.enabled);
   if (!els.liveModsStatus) return;
   const bits = [];
   if (cxp) bits.push(`Combat XP ${cxp.enabled ? "ON" : "OFF"} x${cxp.multiplier ?? "?"}`);
   if (drops) bits.push(`Drops ${drops.enabled ? "ON" : "OFF"}`);
   if (holds) bits.push(`Holds ${holds.enabled ? "ON" : "OFF"}`);
+  if (tpc) {
+    const tpcBit = tpc.enabled
+      ? (tpc.hooks ? "Third Person ON" : "Third Person ON (Unreal fallback)")
+      : "Third Person OFF";
+    bits.push(tpcBit);
+  }
   if (fog) bits.push(`Fog ${fog.enabled ? "ON" : "OFF"} mats=${fog.materials ?? "?"}`);
-  setLine(els.liveModsStatus, bits.length ? bits.join(" | ") : "Combat XP / Instant Drops / Instant Holds idle.", "ok");
+  setLine(els.liveModsStatus, bits.length ? bits.join(" | ") : "Combat XP / Instant Drops / Instant Holds / Third Person idle.", "ok");
 }
 
 function applyDebugCamFromStatus(data) {
@@ -3585,7 +3602,8 @@ async function runLiveModAction(action, payload = {}) {
     cxp: data.cxp,
     instant_drops: data.instant_drops,
     instant_holds: data.instant_holds,
-    fog_of_war: data.fog_of_war
+    fog_of_war: data.fog_of_war,
+    third_person: data.third_person
   });
   setLine(els.liveModsStatus, resultMessage(result), actionSucceeded(result) ? "ok" : "warning");
   return result;
@@ -9602,17 +9620,21 @@ async function invGiveSerialToGame() {
   state.invGiveTarget = giveTarget;
   const copies = getInt(els.invSerialCopies, 1, 50, 1);
   if (els.invSerialCopies) els.invSerialCopies.value = String(copies);
+  const overrideLevel = boolFromSelect(els.invSerialOverride);
+  const deliveryLevel = getInt(els.invSerialLevel, 1, 70, 70);
+  if (els.invSerialLevel) els.invSerialLevel.value = String(deliveryLevel);
   const giveLabel = invPlayerLabelForValue(giveTarget);
   const viewLabel = invPlayerLabelForValue(
     (els.invTargetSelect && els.invTargetSelect.value) || ""
   );
   const total = serials.length * copies;
+  const levelNote = overrideLevel ? ` at L${deliveryLevel}` : "";
   setLine(
     els.invStatus,
-    `Sending ${serials.length} serial(s)${copies > 1 ? ` × ${copies} (${total} total)` : ""} to ${giveLabel} (viewing ${viewLabel || "n/a"})...`,
+    `Sending ${serials.length} serial(s)${copies > 1 ? ` × ${copies} (${total} total)` : ""}${levelNote} to ${giveLabel} (viewing ${viewLabel || "n/a"})...`,
     "warning"
   );
-  appendActivity(`Inventory: give ${serials.length} serial(s)${copies > 1 ? ` × ${copies}` : ""} to ${giveLabel} (view ${viewLabel || "n/a"}).`);
+  appendActivity(`Inventory: give ${serials.length} serial(s)${copies > 1 ? ` × ${copies}` : ""}${levelNote} to ${giveLabel} (view ${viewLabel || "n/a"}).`);
 
   const setResult = await setTarget(giveTarget, { keepBoostScope: true });
   if (!(setResult && setResult.data && setResult.data.ok)) {
@@ -9624,8 +9646,8 @@ async function invGiveSerialToGame() {
   const result = await sendSerialPayload(
     "selected",
     serialText,
-    false,
-    60,
+    overrideLevel,
+    deliveryLevel,
     els.boostOutput,
     copies,
     "Inventory"
@@ -10920,6 +10942,9 @@ function wireEvents() {
   if (els.instantHoldsToggleBtn) {
     els.instantHoldsToggleBtn.addEventListener("click", () => void runLiveModAction("instant_holds_toggle", {}));
   }
+  if (els.thirdPersonToggleBtn) {
+    els.thirdPersonToggleBtn.addEventListener("click", () => void runLiveModAction("third_person_toggle", {}));
+  }
   document.querySelectorAll("[data-boost-serial-mode]").forEach((button) => {
     button.addEventListener("click", () => sendBoostSerial(button.dataset.boostSerialMode));
   });
@@ -11865,7 +11890,7 @@ const TAB_TUTORIALS = {
     },
     {
       title: "Essentials",
-      body: "Essentials is the frequent-action home: Max All, host-only Drop All Backpack, Shinies Drop/targeted Deliver, All Customs, Super Dash, and Instant Drops / Instant Holds. Instant Drops and Holds support direct oak2 hotkeys plus gold + QM pins for F7 slots and slot hotkeys.",
+      body: "Essentials is the frequent-action home: Max All, host-only Drop All Backpack, Shinies Drop/targeted Deliver, All Customs, Super Dash, Instant Drops / Instant Holds, and Third Person camera. Instant Drops and Holds support direct oak2 hotkeys plus gold + QM pins for F7 slots and slot hotkeys.",
       tab: "boosting",
       targetSel: "#tab-boosting [data-msbt-panel='boost-essentials']",
       revealPanels: ["boost-essentials"]
@@ -11994,7 +12019,7 @@ const TAB_TUTORIALS = {
     },
     {
       title: "Item detail & give",
-      body: "Click an equipped or backpack item to open this detail strip (serial + meta). Named player is separate from the viewing player — set recipient + Multiplier, then Send to Game. With several cards selected (red), Send to Game delivers every selected @U serial.",
+      body: "Click an equipped or backpack item to open this detail strip (serial + meta). Named player is separate from the viewing player — set recipient, optional Override level, Multiplier, then Send to Game. With several cards selected (red), Send to Game delivers every selected @U serial.",
       tab: "inventory",
       targetSel: "#invDetail .inv-give-row",
       revealInvDetail: true
