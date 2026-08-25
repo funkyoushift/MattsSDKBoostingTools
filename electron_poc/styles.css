@@ -212,6 +212,17 @@ iframe {
   padding: var(--ui-header-padding-y, 6px) var(--ui-header-padding-x, 12px);
   border-bottom: 1px solid var(--line);
   background: var(--header-bg);
+  position: relative;
+  z-index: 5;
+  overflow: visible;
+}
+
+/* Docked GridStack panels use z-index 10+ (bring-to-front counters go much higher).
+   The View / Support menus are position:absolute children of the header, so they only
+   win if the header itself is a stacking context above those panels. */
+.app-header:has(.msbt-view-menu[open]),
+.app-header:has(.support-panel[open]) {
+  z-index: 2500;
 }
 
 .header-brand-row {
@@ -374,6 +385,7 @@ iframe {
   justify-content: flex-end;
   align-items: center;
   max-width: min(720px, 62vw);
+  overflow: visible;
 }
 
 .header-main-actions {
@@ -3010,6 +3022,8 @@ button.active-scope {
 }
 
 .msbt-layout-toolbar {
+  position: relative;
+  z-index: 4;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -3019,6 +3033,10 @@ button.active-scope {
   border: 1px solid #1a4552;
   border-radius: 8px;
   background: rgba(8, 24, 32, 0.72);
+}
+
+.msbt-layout-toolbar:has(.msbt-panels-menu[open]) {
+  z-index: 2500;
 }
 
 .msbt-layout-hint {
@@ -3142,7 +3160,7 @@ button.active-scope {
 .msbt-panels-menu-body {
   position: absolute;
   right: 0;
-  z-index: 40;
+  z-index: 2501;
   margin-top: 4px;
   min-width: 240px;
   max-height: 360px;
@@ -3508,6 +3526,11 @@ button.active-scope {
 /* View menu + text scale + restore toast */
 .msbt-view-menu {
   position: relative;
+  z-index: 2;
+}
+
+.msbt-view-menu[open] {
+  z-index: 3;
 }
 
 .msbt-view-menu > summary {
@@ -3531,7 +3554,7 @@ button.active-scope {
 .msbt-view-menu-body {
   position: absolute;
   right: 0;
-  z-index: 50;
+  z-index: 2501;
   margin-top: 4px;
   width: min(380px, 92vw);
   max-height: min(70vh, 560px);

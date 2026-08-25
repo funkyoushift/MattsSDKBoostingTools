@@ -1712,6 +1712,14 @@ def run_quick_menu_action(
         result = spawn_itempool_cancel()
     elif key == "spawn_itempool_status":
         result = spawn_itempool_status()
+    elif key == "give_serial_local":
+        result = give_serials(
+            payload.get("serial_text") or "",
+            "local",
+            _truthy(payload.get("serial_override_level") or payload.get("override_level")),
+            payload.get("serial_level") or payload.get("level") or MAX_ITEM_LEVEL,
+        )
+        is_drop = True
     elif key == "give_serial_selected":
         result = give_serials(
             payload.get("serial_text") or "",
@@ -4803,7 +4811,10 @@ def travel_to_station(station_name: object) -> dict[str, Any]:
 
 def location_bookmark_save(name: object) -> dict[str, Any]:
     try:
-        msg = _save_location_bookmark(str(name or "").strip())
+        label = str(name or "").strip()
+        if not label:
+            label = time.strftime("Here %Y-%m-%d %H-%M-%S")
+        msg = _save_location_bookmark(label)
         return {"ok": True, "message": msg, "bookmarks": _list_location_bookmarks()}
     except Exception as exc:
         return {"ok": False, "message": f"Save location bookmark failed: {exc!r}"}
@@ -6497,12 +6508,15 @@ def _deliver_serials_with_target(serials: list[str], mode: str, parsed_count: in
     mode_key = str(mode or "selected").lower().strip()
     if mode_key in ("non_host", "all_non_host"):
         mode_key = "nonhost"
-    if mode_key not in ("selected", "all", "nonhost"):
+    if mode_key in ("local", "me", "host"):
+        mode_key = "local"
+    if mode_key not in ("selected", "all", "nonhost", "local"):
         mode_key = "selected"
     total_serials = len(serials)
-    chunks = serial_rewards._serial_delivery_chunks(serials, mode_key)
-    max_per_chunk = serial_rewards._serial_delivery_max_serials_per_chunk(mode_key)
-    delay = serial_rewards._serial_delivery_post_open_delay(mode_key)
+    chunk_mode = "selected" if mode_key == "local" else mode_key
+    chunks = serial_rewards._serial_delivery_chunks(serials, chunk_mode)
+    max_per_chunk = serial_rewards._serial_delivery_max_serials_per_chunk(chunk_mode)
+    delay = serial_rewards._serial_delivery_post_open_delay(chunk_mode)
     estimated_wait = max(0.0, (len(chunks) - 1) * float(delay or 0.0)) if chunks else 0.0
     split_note = (
         f" Submitting {total_serials} serial(s) in {len(chunks)} chunk(s), "
@@ -6529,6 +6543,17 @@ def _deliver_serials_with_target(serials: list[str], mode: str, parsed_count: in
             return {
                 "ok": True,
                 "message": f"Requested {total_serials} serial(s) for all non-host players ({len(indices)} target(s)).{split_note}{count_note}",
+            }
+        if mode_key == "local":
+            idx = _local_party_index()
+            if idx is None:
+                return {"ok": False, "message": "Local player index unavailable."}
+            serial_rewards._do_give_serial_to_player_indices(
+                serials, [idx], scope_label="local player", mode="selected"
+            )
+            return {
+                "ok": True,
+                "message": f"Requested {total_serials} serial(s) for local player.{split_note}{count_note}",
             }
         idx = get_selected_player_index()
         name = get_selected_player_name() or "selected player"
@@ -6590,7 +6615,10 @@ def _finish_give_serials(
         mode_key = str(mode or "selected").lower().strip()
         if mode_key in ("non_host", "all_non_host"):
             mode_key = "nonhost"
+        if mode_key in ("local", "me", "host"):
+            mode_key = "local"
         action = {
+            "local": "give_serial_local",
             "selected": "give_serial_selected",
             "all": "give_serial_all",
             "nonhost": "give_serial_nonhost",
@@ -6598,7 +6626,8 @@ def _finish_give_serials(
         note_last_command(
             action,
             label={
-                "give_serial_selected": "Give Serial Selected",
+                "give_serial_local": "Give Serial Local",
+                "give_serial_selected": "Give Serial Named Player",
                 "give_serial_all": "Give Serial All",
                 "give_serial_nonhost": "Give Serial Non-Host",
             }.get(action, "Give Serial"),

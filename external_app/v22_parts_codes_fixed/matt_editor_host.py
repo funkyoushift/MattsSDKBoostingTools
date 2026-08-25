@@ -397,6 +397,7 @@ class _MattEditorHandler(BaseHTTPRequestHandler):
         self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
         self.send_header("Access-Control-Allow-Headers", "Content-Type")
         self.send_header("Content-Type", content_type)
+        self.send_header("Cache-Control", "no-store")
         self.send_header("Content-Length", str(len(body)))
         self.end_headers()
         self.wfile.write(body)
@@ -728,7 +729,10 @@ class MattEditorHost:
             return self.url
         if not (EDITOR_DIR / "index.html").exists():
             raise FileNotFoundError(f"Matt editor assets not found at {EDITOR_DIR}")
-        self._server = ThreadingHTTPServer(("127.0.0.1", 0), _MattEditorHandler)
+        try:
+            self._server = ThreadingHTTPServer(("127.0.0.1", 49775), _MattEditorHandler)
+        except OSError:
+            self._server = ThreadingHTTPServer(("127.0.0.1", 0), _MattEditorHandler)
         host, port = self._server.server_address[:2]
         self.url = f"http://{host}:{port}/"
         self._thread = threading.Thread(target=self._server.serve_forever, name="MSBTMattEditorHost", daemon=True)

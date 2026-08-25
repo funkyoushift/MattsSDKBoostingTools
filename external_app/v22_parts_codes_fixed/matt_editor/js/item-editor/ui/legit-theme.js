@@ -1048,14 +1048,19 @@
             
             let file = null;
             let fileHandle = null;
+
+            if (window.saveEditorState && window.saveEditorState.pendingNativeFile) {
+                file = window.saveEditorState.pendingNativeFile;
+                window.saveEditorState.originalFileName = file.name;
+            }
             
             // Check if file is already selected in the file input (from auto-decrypt)
-            if (fileInput && fileInput.files && fileInput.files.length > 0) {
+            if (!file && fileInput && fileInput.files && fileInput.files.length > 0) {
                 file = fileInput.files[0];
                 window.saveEditorState.originalFileName = file.name;
                 window.saveEditorState.originalFileHandle = null; // Regular input doesn't provide file handle
                 window.saveEditorState.originalDirectoryHandle = null;
-            } else {
+            } else if (!file) {
                 // No file selected yet - try to use File System Access API if available (when button is clicked manually)
                 if ('showOpenFilePicker' in window) {
                     try {
@@ -1122,6 +1127,17 @@
             let steamId = '';
             if (!isTextImport) {
                 steamId = steamIdInput ? steamIdInput.value.trim() : '';
+                if (!steamId && window.MsbtEditorPrefs && typeof window.MsbtEditorPrefs.steamIdFromSavePath === 'function') {
+                    steamId = window.MsbtEditorPrefs.steamIdFromSavePath(
+                        (file && file.path) || (window.saveEditorState && window.saveEditorState.originalFilePath) || ''
+                    );
+                    if (steamId) {
+                        if (steamIdInput) steamIdInput.value = steamId;
+                        if (typeof window.MsbtEditorPrefs.applyDetectedSteamId === 'function') {
+                            window.MsbtEditorPrefs.applyDetectedSteamId(steamId);
+                        }
+                    }
+                }
                 if (!steamId) {
                     showSaveStatus(
                         'save-decrypt-status',
@@ -1137,6 +1153,9 @@
                     localStorage.setItem('lastSteamEpicId', steamId);
                 } catch (e) {
                     console.warn('Failed to cache Steam/Epic ID:', e);
+                }
+                if (window.MsbtEditorPrefs && typeof window.MsbtEditorPrefs.savePrefs === 'function') {
+                    void window.MsbtEditorPrefs.savePrefs({ steamId: steamId });
                 }
             }
 
@@ -1381,6 +1400,7 @@
                 }
             }
         }
+        window.decryptSaveFile = decryptSaveFile;
 
         async function encryptSaveFile() {
             // Check if any process is running
@@ -1477,25 +1497,37 @@
                         bytes[i] = binaryString.charCodeAt(i);
                     }
                     const blob = new Blob([bytes], { type: 'application/octet-stream' });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    // Use original filename if available, otherwise use default
-                    // Always use .sav extension when encrypting
                     let fileName = window.saveEditorState.originalFileName || 'save_encrypted.sav';
-                    // Replace .yaml/.yml with .sav extension
                     if (fileName.toLowerCase().endsWith('.yaml') || fileName.toLowerCase().endsWith('.yml')) {
                         fileName = fileName.replace(/\.(yaml|yml)$/i, '.sav');
                     } else if (!fileName.toLowerCase().endsWith('.sav')) {
-                        // If no extension or different extension, add .sav
                         fileName = fileName.replace(/\.[^.]*$/, '') + '.sav';
                     }
-                    a.download = fileName;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(url);
-                    showSaveStatus('save-encrypt-status', `✅ Save file encrypted and downloaded as "${fileName}"!`, true);
+                    if (window.MsbtEditorPrefs && typeof window.MsbtEditorPrefs.writeSavBlob === 'function') {
+                        const result = await window.MsbtEditorPrefs.writeSavBlob(blob, {
+                            suggestedName: fileName,
+                            overwrite: false
+                        });
+                        if (result && result.canceled) {
+                            showSaveStatus('save-encrypt-status', 'Save cancelled.', false);
+                        } else if (result && result.ok && result.path) {
+                            window.saveEditorState.originalFilePath = result.path;
+                            window.saveEditorState.originalFileName = result.name || fileName;
+                            showSaveStatus('save-encrypt-status', `✅ Save file encrypted to "${result.path}"`, true);
+                        } else {
+                            throw new Error((result && result.message) || 'Failed to write encrypted save.');
+                        }
+                    } else {
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = fileName;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                        showSaveStatus('save-encrypt-status', `✅ Save file encrypted and downloaded as "${fileName}"!`, true);
+                    }
                 } else {
                     // Always log the response for debugging
                     console.error('Encrypt API failed. Full response:', data);
@@ -1632,7 +1664,18 @@
             const statusEl = document.getElementById('profile-decrypt-status');
             const yamlContent = document.getElementById('profile-yaml-content');
             
-            const steamId = steamIdInput.value.trim();
+            let steamId = steamIdInput.value.trim();
+            if (!steamId && window.MsbtEditorPrefs && typeof window.MsbtEditorPrefs.steamIdFromSavePath === 'function') {
+                steamId = window.MsbtEditorPrefs.steamIdFromSavePath(
+                    (window.saveEditorState && (window.saveEditorState.originalProfilePath || window.saveEditorState.originalFilePath)) || ''
+                );
+                if (steamId) {
+                    steamIdInput.value = steamId;
+                    if (typeof window.MsbtEditorPrefs.applyDetectedSteamId === 'function') {
+                        window.MsbtEditorPrefs.applyDetectedSteamId(steamId);
+                    }
+                }
+            }
             if (!steamId) {
                 showSaveStatus('profile-decrypt-status', '❌ Please enter your Steam ID or Epic ID first.', false);
                 return;
@@ -1644,13 +1687,20 @@
             } catch (e) {
                 console.warn('Failed to cache Steam/Epic ID:', e);
             }
+            if (window.MsbtEditorPrefs && typeof window.MsbtEditorPrefs.savePrefs === 'function') {
+                void window.MsbtEditorPrefs.savePrefs({ steamId: steamId });
+            }
             
             let file = null;
             
+            if (window.saveEditorState && window.saveEditorState.pendingProfileFile) {
+                file = window.saveEditorState.pendingProfileFile;
+            }
+            
             // Check if file is already selected
-            if (fileInput && fileInput.files && fileInput.files.length > 0) {
+            if (!file && fileInput && fileInput.files && fileInput.files.length > 0) {
                 file = fileInput.files[0];
-            } else {
+            } else if (!file) {
                 // No file selected - try to use File System Access API if available
                 if ('showOpenFilePicker' in window) {
                     try {
@@ -1816,6 +1866,7 @@
                 }
             }
         }
+        window.decryptProfileFile = decryptProfileFile;
 
         async function encryptProfileFile() {
             const steamIdInput = document.getElementById('profile-steamid');
@@ -5620,6 +5671,35 @@
                     
                     // Track if we've successfully written the file to prevent double writes
                     let fileWritten = false;
+
+                    if (window.MsbtEditorPrefs && typeof window.MsbtEditorPrefs.writeSavBlob === 'function' && !fileWritten) {
+                        try {
+                            let defaultPath = window.saveEditorState.originalFileName || 'save_encrypted.sav';
+                            if (defaultPath.toLowerCase().endsWith('.yaml') || defaultPath.toLowerCase().endsWith('.yml')) {
+                                defaultPath = defaultPath.replace(/\.(yaml|yml)$/i, '.sav');
+                            } else if (!defaultPath.toLowerCase().endsWith('.sav')) {
+                                defaultPath = defaultPath.replace(/\.[^.]*$/, '') + '.sav';
+                            }
+                            const overwritePath = window.saveEditorState.originalFilePath || '';
+                            const result = await window.MsbtEditorPrefs.writeSavBlob(blob, {
+                                suggestedName: defaultPath,
+                                overwritePath: overwritePath,
+                                overwrite: Boolean(overwritePath)
+                            });
+                            if (result && result.ok && result.path) {
+                                fileWritten = true;
+                                window.saveEditorState.originalFilePath = result.path;
+                                window.saveEditorState.originalFileName = result.name || defaultPath;
+                                showSaveStatus('save-encrypt-status', `✅ Overwrote ${result.path}`, true);
+                                return;
+                            } else if (result && result.canceled) {
+                                setSaveProcessingState(false);
+                                return;
+                            }
+                        } catch (error) {
+                            console.warn('MSBT save write failed, falling back:', error);
+                        }
+                    }
                     
                     // Check if we're in Electron - use native dialog instead of File System Access API
                     const isElectron = window.IS_ELECTRON_APP === true || (window.electronAPI && window.electronAPI.isElectron && window.electronAPI.isElectron());

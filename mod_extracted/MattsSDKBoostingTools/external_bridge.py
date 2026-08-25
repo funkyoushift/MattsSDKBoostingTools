@@ -183,6 +183,7 @@ _QUICK_MENU_LAYOUT_MUTATIONS = frozenset({
 # on the serial-rewards tick (outside this HTTP queue). Only a newer Give_Serial
 # should replace that in-flight chunk work — see serial_rewards.py.
 _SERIAL_DELIVERY_ACTIONS = frozenset({
+    "give_serial_local",
     "give_serial_selected",
     "give_serial_all",
     "give_serial_nonhost",
@@ -301,7 +302,8 @@ UI_LAYOUT: dict[str, Any] = {
             ],"actions":[
                 {"id":"read_equipped_serials","label":"Read Equipped","accent":"cyan"},
                 {"id":"read_backpack_serials","label":"Read Backpack","accent":"cyan"},
-                {"id":"give_serial_selected","label":"Give Selected","accent":"purple","uses_fields":["serial_text","serial_override_level","serial_level"]},
+                {"id":"give_serial_local","label":"Give Local","accent":"cyan","uses_fields":["serial_text","serial_override_level","serial_level"]},
+                {"id":"give_serial_selected","label":"Give Named Player","accent":"purple","uses_fields":["serial_text","serial_override_level","serial_level"]},
                 {"id":"give_serial_all","label":"Give All","accent":"gold","uses_fields":["serial_text","serial_override_level","serial_level"]},
                 {"id":"give_serial_nonhost","label":"Give Non-Host","accent":"cyan","uses_fields":["serial_text","serial_override_level","serial_level"]},
                 {"id":"clear_serials","label":"Clear Serials","accent":"red"}
@@ -384,7 +386,8 @@ UI_LAYOUT: dict[str, Any] = {
                 {"id":"serial_bookmark_duplicate","label":"Duplicate","accent":"purple"},
                 {"id":"serial_bookmark_delete","label":"Delete","accent":"red"},
                 {"id":"serial_bookmark_copy","label":"Copy","accent":"gold"},
-                {"id":"give_serial_selected","label":"Deliver Selected","accent":"purple","uses_fields":["bookmark_serial"]},
+                {"id":"give_serial_local","label":"Deliver Local","accent":"green","uses_fields":["bookmark_serial"]},
+                {"id":"give_serial_selected","label":"Deliver Named Player","accent":"purple","uses_fields":["bookmark_serial"]},
                 {"id":"give_serial_all","label":"Deliver All","accent":"gold","uses_fields":["bookmark_serial"]},
                 {"id":"give_serial_nonhost","label":"Deliver Non-Host","accent":"cyan","uses_fields":["bookmark_serial"]}
             ]}
@@ -401,7 +404,8 @@ UI_LAYOUT: dict[str, Any] = {
                 {"id":"codes_reload_lootlemon","label":"Reload Lootlemon Cache","accent":"gold"},
                 {"id":"codes_mattmab_validation","label":"Mattmab Validation","accent":"green"},
                 {"id":"codes_import_bookmarks","label":"Import Selected To Bookmarks","accent":"purple"},
-                {"id":"give_serial_selected","label":"Deliver Selected","accent":"purple","uses_fields":["code_serial","serial_override_level","code_delivery_level"]},
+                {"id":"give_serial_local","label":"Deliver Local","accent":"green","uses_fields":["code_serial","serial_override_level","code_delivery_level"]},
+                {"id":"give_serial_selected","label":"Deliver Named Player","accent":"purple","uses_fields":["code_serial","serial_override_level","code_delivery_level"]},
                 {"id":"give_serial_all","label":"Deliver All","accent":"gold","uses_fields":["code_serial","serial_override_level","code_delivery_level"]},
                 {"id":"give_serial_nonhost","label":"Deliver Non-Host","accent":"cyan","uses_fields":["code_serial","serial_override_level","code_delivery_level"]}
             ]}
@@ -907,7 +911,7 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
     if action in ("legit_give_selected", "legit_give_all", "legit_give_nonhost"):
         return {
             "ok": False,
-            "message": f"{action} should generate a serial locally, then call give_serial_selected/give_serial_all/give_serial_nonhost.",
+            "message": f"{action} should generate a serial locally, then call give_serial_local/give_serial_selected/give_serial_all/give_serial_nonhost.",
         }
     if action in ("toggle_itempool_favorite", "toggle_map_favorite", "toggle_station_favorite"):
         return {"ok": True, "message": f"{action} is local favorite state in the external app."}
@@ -924,6 +928,14 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
         return backend_actions.clear_serial_tools()
     if action == "serial_convert":
         return backend_actions.serial_convert(payload.get("serial_input") or "")
+    if action == "give_serial_local":
+        override_level = str(payload.get("serial_override_level") or "false").lower() in ("1", "true", "yes", "on")
+        return backend_actions.give_serials(
+            _payload_serial_text(payload),
+            "local",
+            override_level,
+            payload.get("serial_level") or payload.get("code_delivery_level") or 70,
+        )
     if action in ("give_serial_selected", "give_serial_all"):
         override_level = str(payload.get("serial_override_level") or "false").lower() in ("1", "true", "yes", "on")
         return backend_actions.give_serials(

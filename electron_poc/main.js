@@ -39,6 +39,15 @@ const {
   writeWalkthroughSettings
 } = require("./walkthrough_store");
 const {
+  prefsFilePath: mattEditorPrefsFilePath,
+  readPrefs: readMattEditorPrefs,
+  writePrefs: writeMattEditorPrefs,
+  normalizePathValue,
+  allowedSaveExtension,
+  folderFromFile,
+  steamIdFromSavePath
+} = require("./matt_editor_prefs_store");
+const {
   loadBl4Catalog,
   refreshGzoCatalog
 } = require("./bl4_codes_catalog");
@@ -176,6 +185,7 @@ const USER_DATA_FILE_DEFINITIONS = [
   { key: "movementSettings", label: "Movement Presets", fileName: "movement_settings.json" },
   { key: "raritySettings", label: "Rarity Presets", fileName: "rarity_settings.json" },
   { key: "walkthroughSettings", label: "Walkthrough Prefs", fileName: "walkthrough_settings.json" },
+  { key: "mattEditorPrefs", label: "Matt Editor Steam ID / Folders", fileName: "matt_editor_prefs.json" },
   { key: "windowState", label: "Window Size / Position / Opacity", fileName: "window-state.json" }
 ];
 
@@ -1176,8 +1186,11 @@ ipcMain.handle("app:detectSdkMods", async () => {
 });
 
 ipcMain.handle("app:browseSdkMods", async () => {
+  const prefs = await loadMattEditorPrefsData();
+  const remembered = prefs && prefs.data ? prefs.data.sdkModsPath : "";
   const result = await dialog.showOpenDialog({
     title: "Choose the Borderlands 4 sdk_mods folder",
+    defaultPath: remembered || undefined,
     properties: ["openDirectory"]
   });
   if (result.canceled || !result.filePaths.length) {
@@ -1522,6 +1535,206 @@ ipcMain.handle("app:saveWalkthroughSettings", async (_event, payload) => {
   } catch (error) {
     return { ok: false, message: String(error && error.message ? error.message : error) };
   }
+});
+
+const MATT_EDITOR_SAVE_MAX_BYTES = 48 * 1024 * 1024;
+
+function mattEditorPrefsPath() {
+  return mattEditorPrefsFilePath(app.getPath("userData"));
+}
+
+async function loadMattEditorPrefsData() {
+  return readMattEditorPrefs(mattEditorPrefsPath());
+}
+
+async function rememberMattEditorPrefs(partial) {
+  return writeMattEditorPrefs(mattEditorPrefsPath(), partial);
+}
+
+async function firstExistingPath(candidates) {
+  for (const candidate of candidates) {
+    const resolved = normalizePathValue(candidate);
+    if (!resolved) continue;
+    try {
+      await fs.access(resolved);
+      return resolved;
+    } catch {
+      // try next
+    }
+  }
+  return "";
+}
+
+function bl4ClientSaveFolderCandidates(steamId) {
+  const names = ["My Games", "My games"];
+  const folders = [];
+  for (const name of names) {
+    const root = path.join(os.homedir(), "Documents", name, "Bl4", "Saved", "SaveGames");
+    if (steamId) folders.push(path.join(root, steamId, "Profiles", "client"));
+    folders.push(root);
+  }
+  return folders;
+}
+
+async function readSaveFilePayload(filePath) {
+  const resolved = normalizePathValue(filePath);
+  if (!resolved) return { ok: false, message: "No file path." };
+  if (!allowedSaveExtension(resolved)) {
+    return { ok: false, message: "Choose a .sav, .yaml, .yml, or .txt file." };
+  }
+  try {
+    const stat = await fs.stat(resolved);
+    if (!stat.isFile()) return { ok: false, message: "That path is not a file." };
+    if (stat.size > MATT_EDITOR_SAVE_MAX_BYTES) {
+      return { ok: false, message: "That save file is larger than the 48 MB editor limit." };
+    }
+    const buffer = await fs.readFile(resolved);
+    return {
+      ok: true,
+      path: resolved,
+      folder: path.dirname(resolved),
+      name: path.basename(resolved),
+      base64: buffer.toString("base64")
+    };
+  } catch (error) {
+    return { ok: false, message: `Could not read file: ${error && error.message ? error.message : error}` };
+  }
+}
+
+function withDetectedSteamId(payload, currentSteamId) {
+  if (!payload || !payload.ok) return payload;
+  const detected = steamIdFromSavePath(payload.path);
+  return {
+    ...payload,
+    steamId: detected || String(currentSteamId || "").trim()
+  };
+}
+
+ipcMain.handle("app:loadMattEditorPrefs", async () => {
+  return loadMattEditorPrefsData();
+});
+
+ipcMain.handle("app:saveMattEditorPrefs", async (_event, payload) => {
+  try {
+    return await rememberMattEditorPrefs(payload || {});
+  } catch (error) {
+    return { ok: false, message: String(error && error.message ? error.message : error) };
+  }
+});
+
+ipcMain.handle("app:mattEditorOpenFile", async (_event, kind) => {
+  const prefs = await loadMattEditorPrefsData();
+  const data = prefs.data || {};
+  const isProfile = String(kind || "save") === "profile";
+  const rememberedFile = isProfile ? data.lastProfileFile : data.lastSaveFile;
+  const rememberedFolder = isProfile ? data.lastProfileFolder : data.lastSaveFolder;
+  const guessed = await firstExistingPath([
+    rememberedFolder,
+    folderFromFile(rememberedFile),
+    ...bl4ClientSaveFolderCandidates(data.steamId)
+  ]);
+  const result = await dialog.showOpenDialog({
+    title: isProfile ? "Open BL4 profile.sav" : "Open BL4 save file",
+    defaultPath: guessed || rememberedFile || undefined,
+    properties: ["openFile"],
+    filters: [
+      {
+        name: isProfile ? "Profile / YAML" : "Save / YAML / Text",
+        extensions: isProfile ? ["sav", "yaml", "yml"] : ["sav", "yaml", "yml", "txt"]
+      },
+      { name: "All files", extensions: ["*"] }
+    ]
+  });
+  if (result.canceled || !result.filePaths.length) {
+    return { ok: false, canceled: true, message: "No file selected." };
+  }
+  const payload = withDetectedSteamId(await readSaveFilePayload(result.filePaths[0]), data.steamId);
+  if (!payload.ok) return payload;
+  const patch = isProfile
+    ? { lastProfileFile: payload.path, lastProfileFolder: payload.folder }
+    : { lastSaveFile: payload.path, lastSaveFolder: payload.folder };
+  if (payload.steamId) patch.steamId = payload.steamId;
+  const saved = await rememberMattEditorPrefs(patch);
+  return { ...payload, prefs: saved.data };
+});
+
+ipcMain.handle("app:mattEditorReopenFile", async (_event, kind) => {
+  const prefs = await loadMattEditorPrefsData();
+  const data = prefs.data || {};
+  const isProfile = String(kind || "save") === "profile";
+  const filePath = isProfile ? data.lastProfileFile : data.lastSaveFile;
+  if (!filePath) {
+    return { ok: false, message: isProfile ? "No remembered profile file yet." : "No remembered save file yet." };
+  }
+  const payload = withDetectedSteamId(await readSaveFilePayload(filePath), data.steamId);
+  if (!payload.ok) return payload;
+  if (payload.steamId && payload.steamId !== data.steamId) {
+    const saved = await rememberMattEditorPrefs({ steamId: payload.steamId });
+    return { ...payload, prefs: saved.data };
+  }
+  return payload;
+});
+
+ipcMain.handle("app:mattEditorSaveFile", async (_event, payload) => {
+  const body = payload && typeof payload === "object" ? payload : {};
+  const overwritePath = normalizePathValue(body.overwritePath || "");
+  const suggestedName = String(body.suggestedName || "save_encrypted.sav").trim() || "save_encrypted.sav";
+  const prefs = await loadMattEditorPrefsData();
+  const data = prefs.data || {};
+  let target = "";
+  if (body.overwrite && overwritePath) {
+    target = overwritePath;
+  } else {
+    const defaultDir = await firstExistingPath([
+      data.lastExportFolder,
+      data.lastSaveFolder,
+      folderFromFile(data.lastSaveFile),
+      ...bl4ClientSaveFolderCandidates(data.steamId)
+    ]);
+    const defaultPath = path.join(defaultDir || "", path.basename(suggestedName));
+    const result = await dialog.showSaveDialog({
+      title: "Save encrypted BL4 file",
+      defaultPath,
+      filters: [{ name: "BL4 Save", extensions: ["sav"] }]
+    });
+    if (result.canceled || !result.filePath) {
+      return { ok: false, canceled: true, message: "Save cancelled." };
+    }
+    target = normalizePathValue(result.filePath);
+  }
+  if (!target) return { ok: false, message: "No save path." };
+  const raw = String(body.base64 || "");
+  if (!raw) return { ok: false, message: "No file data to write." };
+  let buffer;
+  try {
+    buffer = Buffer.from(raw, "base64");
+  } catch (error) {
+    return { ok: false, message: `Could not decode file data: ${error && error.message ? error.message : error}` };
+  }
+  if (!buffer.length) return { ok: false, message: "Encrypted data is empty." };
+  if (buffer.length > MATT_EDITOR_SAVE_MAX_BYTES) {
+    return { ok: false, message: "Encrypted file is larger than the 48 MB editor limit." };
+  }
+  try {
+    await fs.mkdir(path.dirname(target), { recursive: true });
+    await fs.writeFile(target, buffer);
+  } catch (error) {
+    return { ok: false, message: `Could not write file: ${error && error.message ? error.message : error}` };
+  }
+  const detectedSteamId = steamIdFromSavePath(target);
+  const saved = await rememberMattEditorPrefs({
+    lastSaveFile: target,
+    lastSaveFolder: path.dirname(target),
+    lastExportFolder: path.dirname(target),
+    ...(detectedSteamId ? { steamId: detectedSteamId } : {})
+  });
+  return {
+    ok: true,
+    path: target,
+    name: path.basename(target),
+    folder: path.dirname(target),
+    prefs: saved.data
+  };
 });
 
 ipcMain.handle("app:loadBl4Catalog", async () => {

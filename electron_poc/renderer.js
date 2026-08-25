@@ -1448,7 +1448,8 @@ function quickMenuPayloadFromCurrentControls(action) {
     return quickMenuItemPoolPayload();
   }
   if (
-    action === "give_serial_selected"
+    action === "give_serial_local"
+    || action === "give_serial_selected"
     || action === "give_serial_all"
     || action === "give_serial_nonhost"
   ) {
@@ -1568,14 +1569,17 @@ function openQuickMenuAddModal(action, commandPayload = {}, label = "") {
   })();
 }
 
-function openSerialQuickMenuPin(source, mode) {
-  const actionByMode = {
-    local: "give_serial_selected",
+function serialActionByMode(mode) {
+  return {
+    local: "give_serial_local",
     selected: "give_serial_selected",
     all: "give_serial_all",
     nonhost: "give_serial_nonhost"
-  };
-  const action = actionByMode[String(mode || "selected")];
+  }[String(mode || "selected")] || "give_serial_selected";
+}
+
+function openSerialQuickMenuPin(source, mode) {
+  const action = serialActionByMode(mode);
   if (!action) return;
   if (source === "bookmark") {
     const payload = quickMenuBookmarkSerialPayload();
@@ -1736,23 +1740,13 @@ function installQuickMenuAddButtons() {
   });
   document.querySelectorAll("[data-boost-serial-mode]").forEach((button) => {
     const mode = String(button.dataset.boostSerialMode || "selected");
-    const action = {
-      local: "give_serial_selected",
-      selected: "give_serial_selected",
-      all: "give_serial_all",
-      nonhost: "give_serial_nonhost"
-    }[mode];
+    const action = serialActionByMode(mode);
     if (!action) return;
     decorateQuickMenuActionButton(button, action, () => quickMenuSerialPayload());
   });
   document.querySelectorAll("[data-bookmark-send-mode]").forEach((button) => {
     const mode = String(button.dataset.bookmarkSendMode || "selected");
-    const action = {
-      local: "give_serial_selected",
-      selected: "give_serial_selected",
-      all: "give_serial_all",
-      nonhost: "give_serial_nonhost"
-    }[mode];
+    const action = serialActionByMode(mode);
     if (!action) return;
     decorateQuickMenuActionButton(
       button,
@@ -1763,12 +1757,7 @@ function installQuickMenuAddButtons() {
   });
   document.querySelectorAll("[data-bl4-send-mode]").forEach((button) => {
     const mode = String(button.dataset.bl4SendMode || "selected");
-    const action = {
-      local: "give_serial_selected",
-      selected: "give_serial_selected",
-      all: "give_serial_all",
-      nonhost: "give_serial_nonhost"
-    }[mode];
+    const action = serialActionByMode(mode);
     if (!action) return;
     decorateQuickMenuActionButton(
       button,
@@ -1861,6 +1850,23 @@ function installQuickMenuAddButtons() {
       (payload) => quickMenuDevSpawnerLabel(action, payload)
     );
   });
+  decorateQuickMenuActionButton(els.hoardStartBtn, "hoard_start");
+  decorateQuickMenuActionButton(els.hoardStopBtn, "hoard_stop");
+  decorateQuickMenuActionButton(els.hoardClearBtn, "hoard_clear");
+  decorateQuickMenuActionButton(
+    els.locationBookmarkSaveBtn,
+    "location_bookmark_save",
+    () => ({
+      bookmark_name: getValue(els.locationBookmarkName) || getValue(els.locationBookmarkList)
+    })
+  );
+  decorateQuickMenuActionButton(
+    els.locationBookmarkGoBtn,
+    "location_bookmark_go",
+    () => ({
+      bookmark_name: getValue(els.locationBookmarkList) || getValue(els.locationBookmarkName)
+    })
+  );
 }
 
 function inferToggleStateFromMessage(message, previousValue) {
@@ -4268,12 +4274,93 @@ async function copyConfirmedSerial() {
   setLine(els.serialSummary, "Confirmed serial copied.", "ok");
 }
 
+function rememberUserPaths(partial) {
+  if (!window.msbt || typeof window.msbt.saveMattEditorPrefs !== "function") return Promise.resolve();
+  return window.msbt.saveMattEditorPrefs(partial || {}).catch((error) => {
+    console.warn("[MSBT] remember paths failed:", error);
+  });
+}
+
+async function restoreRememberedUserPaths() {
+  if (!window.msbt || typeof window.msbt.loadMattEditorPrefs !== "function") return null;
+  try {
+    const result = await window.msbt.loadMattEditorPrefs();
+    const data = result && result.data ? result.data : null;
+    if (data && data.sdkModsPath && els.sdkModsPath && !getValue(els.sdkModsPath)) {
+      setTextValue(els.sdkModsPath, data.sdkModsPath);
+    }
+    return data;
+  } catch (error) {
+    console.warn("[MSBT] remembered paths load failed:", error);
+    return null;
+  }
+}
+
+function installMattEditorPrefsBridge() {
+  if (window.__msbtEditorPrefsBridge) return;
+  window.__msbtEditorPrefsBridge = true;
+  window.addEventListener("message", async (event) => {
+    const data = event && event.data;
+    if (!data || !data.msbtEditorRequest || !data.id) return;
+    if (!els.editorFrame || event.source !== els.editorFrame.contentWindow) return;
+    const reply = (ok, result, message) => {
+      try {
+        event.source.postMessage({
+          msbtEditorReply: data.id,
+          ok,
+          result: result || null,
+          message: message || ""
+        }, "*");
+      } catch (error) {
+        console.warn("[MSBT] editor prefs reply failed:", error);
+      }
+    };
+    try {
+      const type = String(data.msbtEditorRequest || "");
+      const payload = data.payload && typeof data.payload === "object" ? data.payload : {};
+      if (!window.msbt) {
+        reply(false, null, "Desktop app bridge is unavailable.");
+        return;
+      }
+      if (type === "loadPrefs") {
+        const result = await window.msbt.loadMattEditorPrefs();
+        reply(Boolean(result && result.ok !== false), result, result && result.message);
+        return;
+      }
+      if (type === "savePrefs") {
+        const result = await window.msbt.saveMattEditorPrefs(payload);
+        reply(Boolean(result && result.ok !== false), result, result && result.message);
+        return;
+      }
+      if (type === "openFile") {
+        const result = await window.msbt.mattEditorOpenFile(payload.kind || "save");
+        reply(Boolean(result && result.ok), result, result && result.message);
+        return;
+      }
+      if (type === "reopenFile") {
+        const result = await window.msbt.mattEditorReopenFile(payload.kind || "save");
+        reply(Boolean(result && result.ok), result, result && result.message);
+        return;
+      }
+      if (type === "saveFile") {
+        const result = await window.msbt.mattEditorSaveFile(payload);
+        reply(Boolean(result && result.ok), result, result && result.message);
+        return;
+      }
+      reply(false, null, `Unknown editor request: ${type}`);
+    } catch (error) {
+      reply(false, null, error && error.message ? error.message : String(error));
+    }
+  });
+}
+
 async function loadEditor(options = {}) {
   if (!els.editorFrame) return;
   if (state.editorLoadInFlight) return;
   if (state.editorLoaded && !options.force) return;
 
   state.editorLoadInFlight = true;
+  installMattEditorPrefsBridge();
   setOutput(els.deliveryOutput, "Starting bundled Matt editor...");
   try {
     const result = await window.msbt.mattEditorUrl();
@@ -4370,20 +4457,12 @@ async function sendSerialPayload(mode, serialText, overrideLevel, level, outNode
   if (!sdkReady.ok) {
     return { ok: false, message: sdkReady.message };
   }
-  if (mode === "selected" || mode === "local") {
-    const ok = mode === "local"
-      ? await ensureLocalHostTarget(outNode)
-      : await ensureSelectedTarget(outNode);
+  if (mode === "selected") {
+    const ok = await ensureSelectedTarget(outNode);
     if (!ok) return;
   }
 
-  const actionByMode = {
-    selected: "give_serial_selected",
-    local: "give_serial_selected",
-    all: "give_serial_all",
-    nonhost: "give_serial_nonhost"
-  };
-  const action = actionByMode[mode];
+  const action = serialActionByMode(mode);
   const result = await runAction(action, {
     serial_text: expanded.text,
     serial_override_level: Boolean(overrideLevel),
@@ -5812,16 +5891,11 @@ async function sendBl4Serial(mode) {
     return;
   }
 
-  const actionByMode = {
-    local: "give_serial_selected",
-    selected: "give_serial_selected",
-    all: "give_serial_all",
-    nonhost: "give_serial_nonhost"
-  };
+  const action = serialActionByMode(mode);
   setBl4DeliveryStatus(`Sending ${expanded.totalCount || deliveryRows.length} BL4 serial(s) to ${destination}...`, "warning");
   setOutput(
     els.bl4Output,
-    `Sending BL4 code delivery:\nAction: ${actionByMode[mode] || mode}\nDestination: ${destination}\nSelected codes: ${deliveryRows.length}\nCopies: ${copies}\nTotal delivered: ${expanded.totalCount || deliveryRows.length}\n${deliveryRows.map((row) => row.name || "Selected BL4 code").join("\n")}${skippedByOverride.length ? `\n\nSkipped by level override: ${skippedByOverride.length}` : ""}`
+    `Sending BL4 code delivery:\nAction: ${action}\nDestination: ${destination}\nSelected codes: ${deliveryRows.length}\nCopies: ${copies}\nTotal delivered: ${expanded.totalCount || deliveryRows.length}\n${deliveryRows.map((row) => row.name || "Selected BL4 code").join("\n")}${skippedByOverride.length ? `\n\nSkipped by level override: ${skippedByOverride.length}` : ""}`
   );
   appendActivity(`BL4 delivery: sending ${deliveryRows.length} code(s) × ${copies} via ${mode}${skippedByOverride.length ? `; skipped ${skippedByOverride.length}` : ""}.`);
 
@@ -6407,7 +6481,10 @@ async function installDownloadedElectronUpdate() {
 async function detectSdkModsFolder() {
   setLine(els.sdkInstallSummary, "Detecting Borderlands 4 sdk_mods folder...", "warning");
   const result = await window.msbt.detectSdkMods();
-  if (result && result.path) setTextValue(els.sdkModsPath, result.path);
+  if (result && result.path) {
+    setTextValue(els.sdkModsPath, result.path);
+    void rememberUserPaths({ sdkModsPath: result.path });
+  }
   setOutput(els.updateOutput, result);
   if (result && result.installedSdkmod) {
     renderVersionInfo({ ...(state.versionInfo || {}), installedSdkmod: { ...result.installedSdkmod, sdkModsPath: result.path } });
@@ -6419,7 +6496,10 @@ async function detectSdkModsFolder() {
 async function browseSdkModsFolder() {
   setLine(els.sdkInstallSummary, "Choose the Borderlands 4 sdk_mods folder...", "warning");
   const result = await window.msbt.browseSdkMods();
-  if (result && result.path) setTextValue(els.sdkModsPath, result.path);
+  if (result && result.path) {
+    setTextValue(els.sdkModsPath, result.path);
+    void rememberUserPaths({ sdkModsPath: result.path });
+  }
   setOutput(els.updateOutput, result);
   if (result && result.installedSdkmod) {
     renderVersionInfo({ ...(state.versionInfo || {}), installedSdkmod: { ...result.installedSdkmod, sdkModsPath: result.path } });
@@ -6475,7 +6555,10 @@ async function recheckSdkStack() {
   const result = window.msbt && typeof window.msbt.recheckSdkStack === "function"
     ? await window.msbt.recheckSdkStack(getValue(els.sdkModsPath))
     : await window.msbt.detectOak2(getValue(els.sdkModsPath));
-  if (result && result.path) setTextValue(els.sdkModsPath, result.path);
+  if (result && result.path) {
+    setTextValue(els.sdkModsPath, result.path);
+    void rememberUserPaths({ sdkModsPath: result.path });
+  }
   setOutput(els.updateOutput, result);
   renderOak2Status(result);
   if (result && result.installedSdkmod) {
@@ -6504,6 +6587,7 @@ async function installOak2SdkManagerFromUi(options = {}) {
   setOutput(els.updateOutput, result);
   if (result && result.detection && result.detection.path) {
     setTextValue(els.sdkModsPath, result.detection.path);
+    void rememberUserPaths({ sdkModsPath: result.detection.path });
   }
   renderOak2Status(result && result.detection ? result.detection : result);
   setLine(els.sdkInstallSummary, result.message || "oak2 install finished.", result.ok ? "ok" : "bad");
@@ -6545,7 +6629,10 @@ async function checkOak2OnStartup() {
   if (!window.msbt || typeof window.msbt.detectOak2 !== "function") return null;
   try {
     const result = await window.msbt.detectOak2(getValue(els.sdkModsPath));
-    if (result && result.path) setTextValue(els.sdkModsPath, result.path);
+    if (result && result.path) {
+      setTextValue(els.sdkModsPath, result.path);
+      void rememberUserPaths({ sdkModsPath: result.path });
+    }
     renderOak2Status(result);
     maybeShowStartupOak2Modal(result);
     return result;
@@ -10585,12 +10672,7 @@ function wireHoardBuilder() {
 }
 
 function switchTab(tabId) {
-  const previousTab = state.activeTab;
   state.activeTab = tabId;
-  if (previousTab === "matt-editor" && tabId !== "matt-editor" && els.editorFrame) {
-    els.editorFrame.src = "about:blank";
-    state.editorLoaded = false;
-  }
   let activeTabButton = null;
   document.querySelectorAll(".tab-bar [data-tab]").forEach((button) => {
     button.classList.toggle("active", button.dataset.tab === tabId);
@@ -11103,6 +11185,12 @@ function wireEvents() {
   if (detectSdkModsBtn) detectSdkModsBtn.addEventListener("click", detectSdkModsFolder);
   const browseSdkModsBtn = document.getElementById("browseSdkModsBtn");
   if (browseSdkModsBtn) browseSdkModsBtn.addEventListener("click", browseSdkModsFolder);
+  if (els.sdkModsPath) {
+    els.sdkModsPath.addEventListener("change", () => {
+      const sdkModsPath = getValue(els.sdkModsPath);
+      if (sdkModsPath) void rememberUserPaths({ sdkModsPath });
+    });
+  }
   const installSdkModBtn = document.getElementById("installSdkModBtn");
   if (installSdkModBtn) installSdkModBtn.addEventListener("click", installBundledSdkMod);
   if (els.recheckSdkStackBtn) els.recheckSdkStackBtn.addEventListener("click", () => void recheckSdkStack());
@@ -11150,6 +11238,7 @@ function wireEvents() {
 
   const loadEditorBtn = document.getElementById("loadEditorBtn");
   if (loadEditorBtn) loadEditorBtn.addEventListener("click", () => loadEditor({ force: true }));
+  installMattEditorPrefsBridge();
   const reloadEditorBtn = document.getElementById("reloadEditorBtn");
   if (reloadEditorBtn) {
     reloadEditorBtn.addEventListener("click", () => {
@@ -13261,6 +13350,11 @@ async function init() {
     await loadWindowSettings();
   } catch (error) {
     console.warn("[MSBT] window settings load failed:", error);
+  }
+  try {
+    await restoreRememberedUserPaths();
+  } catch (error) {
+    console.warn("[MSBT] remembered paths restore failed:", error);
   }
   try {
     await refreshVersionInfo();

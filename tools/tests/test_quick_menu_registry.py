@@ -10,11 +10,11 @@ def _registry():
     return backend.quick_menu_registry
 
 
-def test_default_layout_is_five_pages_by_twelve_slots():
+def test_default_layout_matches_registry_grid():
     registry = _registry()
     pages = registry.default_pages()
-    assert len(pages) == 5
-    assert all(len(page) == 12 for page in pages)
+    assert len(pages) == registry.MAX_PAGES
+    assert all(len(page) == registry.SLOTS_PER_PAGE for page in pages)
     assert pages[0][0]["action"] == "max_all"
 
 
@@ -144,7 +144,8 @@ def test_snapshot_exposes_catalog_limits_and_layout():
     registry = _registry()
     snapshot = registry.get_quick_menu_snapshot()
     assert snapshot["ok"] is True
-    assert snapshot["limits"] == {"max_pages": 5, "slots_per_page": 12}
+    assert snapshot["limits"]["max_pages"] == registry.MAX_PAGES
+    assert snapshot["limits"]["slots_per_page"] == registry.SLOTS_PER_PAGE
     assert snapshot["catalog"]["max_all"]["assignable"] is True
     assert snapshot["catalog"]["max_all"]["needs_player"] is True
     assert snapshot["catalog"]["uvh_boost_tier_7"]["assignable"] is True
@@ -152,3 +153,56 @@ def test_snapshot_exposes_catalog_limits_and_layout():
     assert snapshot["catalog"]["travel_to_map"]["assignable"] is True
     assert snapshot["catalog"]["devperk_7"]["assignable"] is True
     assert "itempool_name" in snapshot["catalog"]["spawn_itempool"]["payload_keys"]
+
+
+def test_give_serial_local_is_assignable_without_player():
+    registry = _registry()
+    assert "give_serial_local" in registry.ACTION_CATALOG
+    assert "give_serial_local" not in registry.NEEDS_PLAYER_ACTIONS
+    assert "give_serial_local" in registry.ALLOWED_PAYLOAD_KEYS
+    snapshot = registry.get_quick_menu_snapshot()
+    local = snapshot["catalog"]["give_serial_local"]
+    named = snapshot["catalog"]["give_serial_selected"]
+    assert local["assignable"] is True
+    assert local["needs_player"] is False
+    assert local["basic"] == "Give Serials: Local"
+    assert named["basic"] == "Give Serials: Named Player"
+    assert named["needs_player"] is True
+    pin = registry.assign_quick_menu_slot({
+        "page": 0,
+        "slot": 12,
+        "action": "give_serial_local",
+        "command_payload": {
+            "serial_text": "@Uabc",
+            "serial_override_level": True,
+            "serial_level": 50,
+            "danger": "drop",
+        },
+    })
+    assert pin["ok"] is True
+    assert pin["slot"]["payload"] == {
+        "serial_text": "@Uabc",
+        "serial_override_level": True,
+        "serial_level": 50,
+    }
+
+
+def test_native_picker_actions_exist_in_catalog():
+    registry = _registry()
+    missing = [
+        action
+        for action in registry.NATIVE_PICKER_ACTIONS
+        if action not in registry.ACTION_CATALOG
+    ]
+    assert missing == []
+    assert "give_serial_local" not in registry.NATIVE_PICKER_ACTIONS
+    assert "location_bookmark_go" not in registry.NATIVE_PICKER_ACTIONS
+    assert "location_bookmark_save" in registry.NATIVE_PICKER_ACTIONS
+    assert "hoard_start" in registry.NATIVE_PICKER_ACTIONS
+
+
+def test_uvh_label_and_targeted_backpack_catalog():
+    registry = _registry()
+    assert registry.ACTION_CATALOG["uvh_boost_tier_7"]["basic"] == "UVH 7"
+    assert "chaos_drop_backpack_targeted" in registry.ACTION_CATALOG
+    assert "chaos_drop_backpack_targeted" in registry.NEEDS_PLAYER_ACTIONS

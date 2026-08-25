@@ -113,6 +113,7 @@ def _load_backend_actions():
         },
         "MattsSDKBoostingTools.serial_converter": {
             "human_to_serial": lambda *a, **k: "",
+            "rewrite_item_level": lambda serial, level: serial,
             "serial_to_human": lambda *a, **k: "",
         },
         "MattsSDKBoostingTools.shinies": {

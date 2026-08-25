@@ -56,6 +56,8 @@
   const MIN_PANEL_COLS = 3 * GRID_SCALE;
   const STACK_ZONE = 0.45; // center fraction that triggers stack-on-drop
   const Z_BASE = 10;
+  /** Keep docked panels below modals (1000) and the open View/Support menus (2500). */
+  const Z_MAX = 900;
   const CELL_HEIGHT = LEGACY_CELL_HEIGHT / GRID_SCALE;
   /** Collapsed panels keep the one-legacy-row height they had before scaling. */
   const COLLAPSED_ROWS = GRID_SCALE;
@@ -524,8 +526,9 @@
     if (x != null) item.setAttribute("gs-x", String(x));
     if (y != null) item.setAttribute("gs-y", String(y));
     if (opts && opts.z != null) {
-      item.style.zIndex = String(opts.z);
-      zCounter = Math.max(zCounter, Number(opts.z) || Z_BASE);
+      const z = Math.max(Z_BASE, Math.min(Z_MAX, Number(opts.z) || Z_BASE));
+      item.style.zIndex = String(z);
+      zCounter = Math.max(zCounter, z);
     }
     const content = document.createElement("div");
     content.className = "grid-stack-item-content msbt-gs-content";
@@ -578,7 +581,7 @@
 
   function bringItemToFront(item) {
     if (!item || !item.classList.contains("grid-stack-item")) return;
-    zCounter += 1;
+    zCounter = Math.min(Z_MAX, zCounter + 1);
     item.style.zIndex = String(zCounter);
   }
 
@@ -1511,8 +1514,9 @@
         item.setAttribute("gs-min-w", String(MIN_PANEL_COLS));
         item.setAttribute("gs-min-h", String(4 * GRID_SCALE));
         if (spec.z != null) {
-          item.style.zIndex = String(spec.z);
-          zCounter = Math.max(zCounter, Number(spec.z) || Z_BASE);
+          const z = Math.max(Z_BASE, Math.min(Z_MAX, Number(spec.z) || Z_BASE));
+          item.style.zIndex = String(z);
+          zCounter = Math.max(zCounter, z);
         }
         const content = document.createElement("div");
         content.className = "grid-stack-item-content msbt-gs-content";
