@@ -536,6 +536,7 @@ const state = {
   invReading: "",
   invTruncated: false,
   invGiveTarget: "",
+  invRefreshInFlight: false,
   bookmarkActiveId: "",
   bookmarkCheckedIds: new Set(),
   bookmarkSelectionAnchor: "",
@@ -9385,71 +9386,89 @@ async function refreshInventoryFallback(targetPayload = {}) {
 }
 
 async function refreshInventory() {
-  const targetPayload = invInventoryTargetPayload();
-  const target = String(targetPayload.target_player || "").trim();
-  if (target) {
-    const setResult = await setTarget(target, { keepBoostScope: true });
-    if (setResult && setResult.data && setResult.data.ok === false) {
-      setLine(els.invStatus, resultMessage(setResult) || "Could not set inventory target.", "warning");
-      return setResult;
-    }
-  } else if (!state.players.length) {
-    setLine(els.invStatus, "Refresh Status on Boosting first, then pick a party player.", "warning");
-    if (els.invReading) els.invReading.textContent = "Reading: none";
+  if (state.invRefreshInFlight) {
+    setLine(els.invStatus, "Inventory refresh already running…", "warning");
     return null;
   }
+  state.invRefreshInFlight = true;
+  try {
+    const targetPayload = invInventoryTargetPayload();
+    const target = String(targetPayload.target_player || "").trim();
+    if (!target && !state.players.length) {
+      setLine(els.invStatus, "Refresh Status on Boosting first, then pick a party player.", "warning");
+      if (els.invReading) els.invReading.textContent = "Reading: none";
+      return null;
+    }
 
-  setLine(els.invStatus, "Reading inventory from bridge...", "warning");
-  if (els.invReading) {
-    const selectedPlayer = state.players.find(
-      (player) => String(playerValue(player)) === String(state.selectedTarget || target)
-    );
-    els.invReading.textContent = selectedPlayer
-      ? `Reading: ${playerLabel(selectedPlayer)}…`
-      : "Reading: …";
-  }
-  appendActivity("Inventory: refreshing...");
-  let result = await bridgeAction("read_inventory", targetPayload, 60000);
-  let data = invActionData(result);
-  if (data && data.queued) {
-    setLine(
-      els.invStatus,
-      resultMessage(result) ||
-        "Inventory read still queued — unpause in-game, then press Refresh Inventory again.",
-      "warning"
-    );
-    appendActivity("Inventory: queued (retry after unpause).");
+    setLine(els.invStatus, "Reading inventory from bridge...", "warning");
+    if (els.invReading) {
+      const selectedPlayer = state.players.find(
+        (player) => String(playerValue(player)) === String(target || state.selectedTarget || "")
+      );
+      els.invReading.textContent = selectedPlayer
+        ? `Reading: ${playerLabel(selectedPlayer)}…`
+        : "Reading: …";
+    }
+    appendActivity("Inventory: refreshing...");
+    // read_inventory already honors target_player. Do not call setTarget first —
+    // that extra round-trip hangs behind in-flight serial delivery and overwrites
+    // the Inventory status line with "Setting target...".
+    let result = await bridgeAction("read_inventory", targetPayload, 60000);
+    let data = invActionData(result);
+    if (data && data.queued) {
+      setLine(
+        els.invStatus,
+        resultMessage(result) ||
+          "Inventory read still queued — wait for serial delivery to finish, unpause in-game, then press Refresh Inventory again.",
+        "warning"
+      );
+      appendActivity("Inventory: queued (retry after unpause / delivery).");
+      return result;
+    }
+    let inventory = data && data.inventory ? invNormalizeInventoryBlob(data.inventory) : null;
+    const unknown = invMessageLooksUnknown(data && data.message);
+    const missingShape = !inventory || (!inventory.equipped.length && !inventory.backpack.length && !actionSucceeded(result));
+    if (unknown || missingShape || !(data && data.inventory)) {
+      appendActivity("Inventory: falling back to read_equipped + read_backpack...");
+      result = await refreshInventoryFallback(targetPayload);
+      data = invActionData(result);
+      inventory = data && data.inventory ? invNormalizeInventoryBlob(data.inventory) : { equipped: [], backpack: [], truncated: false };
+    }
+    const hasRows = Boolean(inventory && (inventory.equipped.length + inventory.backpack.length) > 0);
+    const ok = Boolean(data && data.ok !== false) && (actionSucceeded(result) || hasRows);
+    if (!ok && !hasRows) {
+      const message = resultMessage(result) || "Inventory refresh failed.";
+      setLine(els.invStatus, message, "warning");
+      appendActivity(`Inventory: ${message}`);
+      return result;
+    }
+    state.invEquipped = inventory.equipped;
+    state.invBackpack = inventory.backpack;
+    state.invTruncated = Boolean(inventory.truncated);
+    state.invReading = String((data && data.reading) || "");
+    state.invPage = 0;
+    state.invSelectedEntry = null;
+    state.invSelectedKey = "";
+    state.invSelectedKeys = new Set();
+    state.invSelectionAnchor = "";
+    if (els.invDetail) els.invDetail.classList.add("hidden");
+    if (els.invReading) {
+      els.invReading.textContent = state.invReading || "Reading: none";
+    }
+    invRefreshFilterOptions();
+    invRenderAll();
+    const message = resultMessage(result) || (ok ? "Inventory refreshed." : "Inventory refresh failed.");
+    setLine(els.invStatus, message, ok ? "ok" : "warning");
+    appendActivity(`Inventory: ${message}`);
     return result;
+  } catch (error) {
+    const message = `Inventory refresh failed: ${error && error.message ? error.message : error}`;
+    setLine(els.invStatus, message, "bad");
+    appendActivity(`Inventory: ${message}`);
+    return null;
+  } finally {
+    state.invRefreshInFlight = false;
   }
-  let inventory = data && data.inventory ? invNormalizeInventoryBlob(data.inventory) : null;
-  const unknown = invMessageLooksUnknown(data && data.message);
-  const missingShape = !inventory || (!inventory.equipped.length && !inventory.backpack.length && !actionSucceeded(result));
-  if (unknown || missingShape || !(data && data.inventory)) {
-    appendActivity("Inventory: falling back to read_equipped + read_backpack...");
-    result = await refreshInventoryFallback(targetPayload);
-    data = invActionData(result);
-    inventory = data && data.inventory ? invNormalizeInventoryBlob(data.inventory) : { equipped: [], backpack: [], truncated: false };
-  }
-  const ok = Boolean(data && data.ok !== false) && (actionSucceeded(result) || (inventory.equipped.length + inventory.backpack.length) > 0);
-  state.invEquipped = inventory.equipped;
-  state.invBackpack = inventory.backpack;
-  state.invTruncated = Boolean(inventory.truncated);
-  state.invReading = String((data && data.reading) || "");
-  state.invPage = 0;
-  state.invSelectedEntry = null;
-  state.invSelectedKey = "";
-  state.invSelectedKeys.clear();
-  state.invSelectionAnchor = "";
-  if (els.invDetail) els.invDetail.classList.add("hidden");
-  if (els.invReading) {
-    els.invReading.textContent = state.invReading || "Reading: none";
-  }
-  invRefreshFilterOptions();
-  invRenderAll();
-  const message = resultMessage(result) || (ok ? "Inventory refreshed." : "Inventory refresh failed.");
-  setLine(els.invStatus, message, ok ? "ok" : "warning");
-  appendActivity(`Inventory: ${message}`);
-  return result;
 }
 
 async function invCopySerial() {
@@ -9466,10 +9485,24 @@ async function invCopySerial() {
   }
 }
 
+function invSelectedEntries() {
+  if (state.invSelectedKeys.size) {
+    return [...state.invEquipped, ...state.invBackpack].filter((entry) =>
+      state.invSelectedKeys.has(invEntryKey(entry))
+    );
+  }
+  if (state.invSelectedEntry) return [state.invSelectedEntry];
+  return [];
+}
+
+function invSelectedSerials() {
+  return invSelectedEntries()
+    .map((entry) => String(entry.serial || "").trim())
+    .filter((serial) => serial.startsWith("@U"));
+}
+
 async function invCopyVisibleSerials() {
-  const source = state.invSelectedKeys.size
-    ? [...state.invEquipped, ...state.invBackpack].filter((entry) => state.invSelectedKeys.has(invEntryKey(entry)))
-    : state.invFiltered;
+  const source = state.invSelectedKeys.size ? invSelectedEntries() : state.invFiltered;
   const serials = source.map((e) => String(e.serial || "").trim()).filter((s) => s.startsWith("@U"));
   if (!serials.length) {
     setLine(els.invStatus, "No selected or visible serials to copy.", "warning");
@@ -9484,15 +9517,15 @@ async function invCopyVisibleSerials() {
 }
 
 function invSendToSerialRewards() {
-  const serial = String((state.invSelectedEntry && state.invSelectedEntry.serial) || "").trim();
-  if (!serial) {
+  const serials = invSelectedSerials();
+  if (!serials.length) {
     setLine(els.invStatus, "Select an item first.", "warning");
     return;
   }
-  if (els.boostSerialText) els.boostSerialText.value = serial;
+  if (els.boostSerialText) els.boostSerialText.value = serials.join("\n");
   switchTab("boosting");
-  setLine(els.invStatus, "Serial pasted into Serial Rewards on Boosting.", "ok");
-  appendActivity("Inventory: sent serial to Serial Rewards.");
+  setLine(els.invStatus, `Pasted ${serials.length} serial(s) into Serial Rewards on Boosting.`, "ok");
+  appendActivity(`Inventory: sent ${serials.length} serial(s) to Serial Rewards.`);
 }
 
 function invOpenInSerialTools() {
@@ -9528,15 +9561,16 @@ function invPlayerLabelForValue(value) {
 }
 
 async function invGiveSerialToGame() {
-  const serial = String(
-    (state.invSelectedEntry && state.invSelectedEntry.serial)
-    || (els.invDetailSerial && els.invDetailSerial.value)
-    || ""
-  ).trim();
-  if (!serial || !serial.startsWith("@U")) {
+  let serials = invSelectedSerials();
+  if (!serials.length) {
+    const fallback = String((els.invDetailSerial && els.invDetailSerial.value) || "").trim();
+    if (fallback.startsWith("@U")) serials = [fallback];
+  }
+  if (!serials.length) {
     setLine(els.invStatus, "Select an item with a valid @U serial first.", "warning");
     return;
   }
+  const serialText = serials.join("\n");
   const giveTarget = String((els.invGiveTargetSelect && els.invGiveTargetSelect.value) || state.invGiveTarget || "").trim();
   if (!giveTarget) {
     setLine(els.invStatus, "Pick a Give-to player (separate from Party player / viewing).", "warning");
@@ -9549,12 +9583,13 @@ async function invGiveSerialToGame() {
   const viewLabel = invPlayerLabelForValue(
     (els.invTargetSelect && els.invTargetSelect.value) || ""
   );
+  const total = serials.length * copies;
   setLine(
     els.invStatus,
-    `Sending ${copies}× to ${giveLabel} (viewing ${viewLabel || "n/a"})...`,
+    `Sending ${serials.length} serial(s)${copies > 1 ? ` × ${copies} (${total} total)` : ""} to ${giveLabel} (viewing ${viewLabel || "n/a"})...`,
     "warning"
   );
-  appendActivity(`Inventory: give ${copies}× serial to ${giveLabel} (view ${viewLabel || "n/a"}).`);
+  appendActivity(`Inventory: give ${serials.length} serial(s)${copies > 1 ? ` × ${copies}` : ""} to ${giveLabel} (view ${viewLabel || "n/a"}).`);
 
   const setResult = await setTarget(giveTarget, { keepBoostScope: true });
   if (!(setResult && setResult.data && setResult.data.ok)) {
@@ -9565,7 +9600,7 @@ async function invGiveSerialToGame() {
 
   const result = await sendSerialPayload(
     "selected",
-    serial,
+    serialText,
     false,
     60,
     els.boostOutput,
@@ -9575,8 +9610,8 @@ async function invGiveSerialToGame() {
   const ok = actionSucceeded(result);
   const message = resultMessage(result)
     || (ok
-      ? (copies > 1
-        ? `Queued/sent ${copies} copies to ${giveLabel}.`
+      ? (total > 1
+        ? `Queued/sent ${serials.length} serial(s)${copies > 1 ? ` × ${copies} (${total} total)` : ""} to ${giveLabel}.`
         : `Queued/sent to ${giveLabel}.`)
       : "Give serial failed.");
   setLine(els.invStatus, message, ok ? "ok" : "bad");
@@ -11936,7 +11971,7 @@ const TAB_TUTORIALS = {
     },
     {
       title: "Item detail & give",
-      body: "Click an equipped or backpack item to open this detail strip (serial + meta). Named player is separate from the viewing player — set recipient + Multiplier, then Send to Game.",
+      body: "Click an equipped or backpack item to open this detail strip (serial + meta). Named player is separate from the viewing player — set recipient + Multiplier, then Send to Game. With several cards selected (red), Send to Game delivers every selected @U serial.",
       tab: "inventory",
       targetSel: "#invDetail .inv-give-row",
       revealInvDetail: true
