@@ -45,11 +45,15 @@ def register(name: str, callback: TickFn, *, priority: int = 100) -> None:
     _callbacks.sort(key=lambda row: (row[0], row[1]))
 
 
+def _ui_needed() -> bool:
+    return any(name.startswith("quick_menu") for name in _needed)
+
+
 def set_needed(name: str, needed: bool) -> None:
     """Keep the shared camera hook installed only while something needs it.
 
-    Quick Menu must poll clicks as soon as F7 opens, even if travel-quiet is
-    stuck. Other features still wait for the in-world release.
+    Quick Menu and Phone Pairing must poll clicks as soon as they open, even if
+    travel-quiet is stuck. Other features still wait for the in-world release.
     """
     key = str(name or "unnamed")
     if needed:
@@ -91,7 +95,7 @@ def _pump(_obj: Any, _args: Any, _ret: Any, _func: Any) -> None:
     global _last_at, _in_flight
     if _in_flight:
         return None
-    if travel_gate.is_travel_quiet() and "quick_menu" not in _needed and "quick_menu_hotkeys" not in _needed:
+    if travel_gate.is_travel_quiet() and not _ui_needed():
         return None
     if travel_gate.consume_pending_clear():
         try:
@@ -108,7 +112,7 @@ def _pump(_obj: Any, _args: Any, _ret: Any, _func: Any) -> None:
     try:
         quiet = travel_gate.is_travel_quiet()
         for _prio, _name, fn in _callbacks:
-            if quiet and _name not in ("quick_menu", "quick_menu_hotkeys"):
+            if quiet and not _name.startswith("quick_menu"):
                 continue
             try:
                 fn(_obj, _args, _ret, _func)

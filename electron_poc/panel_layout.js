@@ -33,10 +33,14 @@
   const TAB_LAYOUT_MODE_KEY = "msbt.tabLayoutMode.v1";
   /** Dev Spawner keeps its own key so its bespoke fixed shell stays in sync. */
   const DEV_SPAWNER_LAYOUT_KEY = "msbt.devSpawner.layoutMode";
-  const NAV_TABS_KEY = "msbt.navTabs.v1";
+  const NAV_TABS_KEY = "msbt.navTabs.v2";
+  const NAV_TABS_LEGACY_KEY = "msbt.navTabs.v1";
+  const LAYOUT_TOOLBAR_VISIBLE_KEY = "msbt.layoutToolbar.visible.v1";
   const WIP_NAV_UNLOCK_KEY = "msbt.navTabs.wipUnlocked.v4";
   /** Tabs kept out of normal View → Main tabs until Shift+click View unlocks them. */
   const WIP_NAV_TABS = new Set(["combat-vehicle"]);
+  /** Extra tabs off the default bar. Find, header buttons, and View still reach them. */
+  const DEFAULT_HIDDEN_NAV_TABS = ["activity", "mobile-gateway", "report", "updates"];
   /** Persist only after deliberate discovery; fresh profiles remain hidden. */
   const wipUnlockedNavTabs = new Set();
   const TEXT_SCALE_MIN = 0.85;
@@ -2258,6 +2262,39 @@
     }
   }
 
+  function defaultHiddenNavTabSet() {
+    return new Set([...DEFAULT_HIDDEN_NAV_TABS, ...WIP_NAV_TABS]);
+  }
+
+  function loadLayoutToolbarVisible() {
+    try {
+      return localStorage.getItem(LAYOUT_TOOLBAR_VISIBLE_KEY) === "1";
+    } catch (_err) {
+      return false;
+    }
+  }
+
+  function saveLayoutToolbarVisible(visible) {
+    try {
+      localStorage.setItem(LAYOUT_TOOLBAR_VISIBLE_KEY, visible ? "1" : "0");
+    } catch (_err) {
+      /* ignore */
+    }
+  }
+
+  function applyLayoutToolbarVisible(visible) {
+    const on = Boolean(visible);
+    if (document.documentElement) {
+      document.documentElement.classList.toggle("msbt-show-layout-toolbar", on);
+    }
+    saveLayoutToolbarVisible(on);
+    document.querySelectorAll("[data-msbt-layout-toolbar-toggle]").forEach((button) => {
+      button.textContent = on ? "Layout toolbar: On" : "Layout toolbar: Off";
+      button.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+    return on;
+  }
+
   function isWipNavTab(tabId) {
     return WIP_NAV_TABS.has(String(tabId || ""));
   }
@@ -2276,22 +2313,34 @@
 
   function loadNavTabsState() {
     const defaults = defaultNavTabIds();
+    const freshHidden = () => enforceWipNavHidden({
+      order: defaults.slice(),
+      hidden: Array.from(defaultHiddenNavTabSet())
+    });
     try {
-      const raw = localStorage.getItem(NAV_TABS_KEY);
+      let raw = localStorage.getItem(NAV_TABS_KEY);
+      let migratingFromV1 = false;
       if (!raw) {
-        return enforceWipNavHidden({ order: defaults.slice(), hidden: Array.from(WIP_NAV_TABS) });
+        raw = localStorage.getItem(NAV_TABS_LEGACY_KEY);
+        migratingFromV1 = Boolean(raw);
       }
+      if (!raw) return freshHidden();
       const parsed = JSON.parse(raw);
       const order = Array.isArray(parsed.order) ? parsed.order.filter((id) => defaults.includes(id)) : [];
       defaults.forEach((id) => {
         if (!order.includes(id)) order.push(id);
       });
-      const hidden = Array.isArray(parsed.hidden)
-        ? parsed.hidden.filter((id) => defaults.includes(id) && id !== "boosting")
-        : [];
-      return enforceWipNavHidden({ order, hidden });
+      const hidden = new Set(
+        Array.isArray(parsed.hidden)
+          ? parsed.hidden.filter((id) => defaults.includes(id) && id !== "boosting")
+          : []
+      );
+      if (migratingFromV1) {
+        DEFAULT_HIDDEN_NAV_TABS.forEach((id) => hidden.add(id));
+      }
+      return enforceWipNavHidden({ order, hidden: Array.from(hidden) });
     } catch (_err) {
-      return enforceWipNavHidden({ order: defaults.slice(), hidden: Array.from(WIP_NAV_TABS) });
+      return freshHidden();
     }
   }
 
@@ -2321,16 +2370,6 @@
       btn.classList.toggle("msbt-nav-tab-hidden", hide);
       btn.hidden = hide;
     });
-
-    const activeBtn = bar.querySelector("[data-tab].active");
-    if (activeBtn && activeBtn.hidden) {
-      const first = bar.querySelector("[data-tab]:not([hidden])");
-      if (first && typeof global.switchTab === "function") {
-        global.switchTab(first.dataset.tab);
-      } else if (first) {
-        first.click();
-      }
-    }
   }
 
   function moveNavTab(tabId, direction) {
@@ -2364,6 +2403,15 @@
     state.hidden = Array.from(set);
     saveNavTabsState(state);
     applyNavTabsState(enforceWipNavHidden(state));
+    const active = document.querySelector(".tab-bar [data-tab].active");
+    if (hidden && active && active.dataset.tab === tabId) {
+      const first = document.querySelector(".tab-bar [data-tab]:not([hidden])");
+      if (first && typeof global.switchTab === "function") {
+        global.switchTab(first.dataset.tab);
+      } else if (first) {
+        first.click();
+      }
+    }
     refreshViewMenu();
   }
 
@@ -2387,7 +2435,10 @@
     helpActions.className = "msbt-view-text-scale";
     const helpButtons = [
       { label: "App overview", title: "Replay the main app tour", run: () => global.msbtStartMainTutorial && global.msbtStartMainTutorial({ force: true }) },
-      { label: "Layout walkthrough", title: "Full panel layout editor tour", run: () => global.msbtStartLayoutTutorial && global.msbtStartLayoutTutorial({ force: true }) },
+      { label: "Layout walkthrough", title: "Full panel layout editor tour", run: () => {
+        applyLayoutToolbarVisible(true);
+        if (global.msbtStartLayoutTutorial) global.msbtStartLayoutTutorial({ force: true });
+      } },
       { label: "Quick Menu setup", title: "Full Quick Menu setup (in-game dock + ★ Quick Menu tab)", run: () => global.msbtStartQuickMenuSetupTutorial && global.msbtStartQuickMenuSetupTutorial({ force: true }) }
     ];
     helpButtons.forEach((entry) => {
@@ -2448,6 +2499,47 @@
     });
     body.appendChild(densityBlock);
     applyCompactDensity(loadCompactDensity());
+
+    const opacityBlock = document.createElement("div");
+    opacityBlock.className = "msbt-view-menu-section";
+    opacityBlock.innerHTML = [
+      '<div class="msbt-view-menu-heading">Window opacity</div>',
+      '<div class="opacity-control">',
+      '<label for="viewAppOpacity">Opacity</label>',
+      '<input id="viewAppOpacity" type="range" min="35" max="100" value="100">',
+      '<output data-msbt-view-opacity-value>100%</output>',
+      "</div>"
+    ].join("");
+    const viewSlider = opacityBlock.querySelector("#viewAppOpacity");
+    const viewOut = opacityBlock.querySelector("[data-msbt-view-opacity-value]");
+    const srcOpacity = document.getElementById("appOpacity");
+    if (srcOpacity && viewSlider) {
+      viewSlider.value = srcOpacity.value;
+      if (viewOut) viewOut.textContent = `${srcOpacity.value}%`;
+      viewSlider.addEventListener("input", () => {
+        srcOpacity.value = viewSlider.value;
+        srcOpacity.dispatchEvent(new Event("input", { bubbles: true }));
+        if (viewOut) viewOut.textContent = `${viewSlider.value}%`;
+      });
+      viewSlider.addEventListener("change", () => {
+        srcOpacity.dispatchEvent(new Event("change", { bubbles: true }));
+      });
+    }
+    body.appendChild(opacityBlock);
+
+    const chromeBlock = document.createElement("div");
+    chromeBlock.className = "msbt-view-menu-section";
+    chromeBlock.innerHTML = [
+      '<div class="msbt-view-menu-heading">Layout toolbar</div>',
+      '<div class="msbt-view-menu-hint">Fixed / Panels / Arrange stays hidden until you turn this on.</div>',
+      '<button type="button" class="secondary" data-msbt-layout-toolbar-toggle aria-pressed="false">Layout toolbar: Off</button>'
+    ].join("");
+    const toolbarToggle = chromeBlock.querySelector("[data-msbt-layout-toolbar-toggle]");
+    toolbarToggle.addEventListener("click", () => {
+      applyLayoutToolbarVisible(!loadLayoutToolbarVisible());
+    });
+    body.appendChild(chromeBlock);
+    applyLayoutToolbarVisible(loadLayoutToolbarVisible());
 
     const menu = document.querySelector("[data-msbt-view-menu]");
     const showWipTabs = Boolean(menu && menu.dataset.msbtViewWip === "1");
@@ -2623,9 +2715,9 @@
       '<summary>View</summary>',
       '<div class="msbt-view-menu-body" data-msbt-view-menu-body></div>'
     ].join("");
-    const opacity = headerActions.querySelector(".opacity-control");
-    if (opacity) headerActions.insertBefore(menu, opacity.nextSibling);
-    else headerActions.insertBefore(menu, headerActions.firstChild);
+    const updateBtn = headerActions.querySelector("#updateBtn");
+    if (updateBtn) headerActions.insertBefore(menu, updateBtn.nextSibling);
+    else headerActions.appendChild(menu);
     const summary = menu.querySelector("summary");
     if (summary && !summary.dataset.msbtWipWired) {
       summary.dataset.msbtWipWired = "1";
@@ -2701,6 +2793,7 @@
   function initViewChrome() {
     applyTextScale(loadTextScale());
     applyCompactDensity(loadCompactDensity());
+    applyLayoutToolbarVisible(loadLayoutToolbarVisible());
     ensureViewMenu();
     loadWipUnlockedNavTabs();
     const state = loadNavTabsState();
@@ -2733,6 +2826,7 @@
     applyTextScale,
     bumpTextScale,
     applyCompactDensity,
+    applyLayoutToolbarVisible,
     applyLayoutLock,
     isLayoutLocked,
     setLayoutLocked,

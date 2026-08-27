@@ -1,4 +1,4 @@
-const { app, BrowserWindow, dialog, ipcMain, screen, shell } = require("electron");
+const { app, BrowserWindow, dialog, ipcMain, screen, shell, Menu } = require("electron");
 const fsSync = require("fs");
 const fs = require("fs/promises");
 const os = require("os");
@@ -637,6 +637,7 @@ function createWindow() {
     minWidth: DEFAULT_WINDOW_BOUNDS.minWidth,
     minHeight: DEFAULT_WINDOW_BOUNDS.minHeight,
     resizable: true,
+    autoHideMenuBar: true,
     backgroundColor: "#090d17",
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
@@ -651,6 +652,9 @@ function createWindow() {
     windowOptions.y = savedBounds.y;
   }
   const win = new BrowserWindow(windowOptions);
+  Menu.setApplicationMenu(null);
+  win.setMenuBarVisibility(false);
+  if (typeof win.setMenu === "function") win.setMenu(null);
 
   if (Number.isFinite(savedBounds.x) && Number.isFinite(savedBounds.y)) {
     // The constructor clamps to the work area, which shaves the invisible

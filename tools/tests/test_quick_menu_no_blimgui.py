@@ -13,6 +13,7 @@ _FORBIDDEN = ("blimgui", "blimgui_panel", "MattsSDKBoostingTools.blimgui_panel")
 
 
 def _install_base_stubs() -> types.ModuleType:
+    sys.modules.pop("MattsSDKBoostingTools.quick_menu_registry", None)
     for name in ("unrealsdk", "unrealsdk.unreal", "unrealsdk.hooks", "mods_base"):
         sys.modules.setdefault(name, types.ModuleType(name))
 

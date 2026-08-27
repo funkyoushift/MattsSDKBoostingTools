@@ -17,10 +17,14 @@
       <span><b>PC</b> <span id="pcSummary">Not paired</span></span>
       <span><b>Target</b> <span id="targetSummary">None</span></span>
     </div>
+    <div class="app-finder" role="search">
+      <input id="appFinderInput" type="search" placeholder="Find Boost, QM, XYZ, Hoard…" autocomplete="off" spellcheck="false">
+      <div id="appFinderResults" class="app-finder-results hidden" hidden role="listbox"></div>
+    </div>
     <div id="updateBanner" class="update-banner hidden" role="status" aria-live="polite">
       <div class="update-banner-copy">
         <p class="eyebrow">UPDATE AVAILABLE</p>
-        <p id="updateBannerText">A newer open-beta APK is ready.</p>
+        <p id="updateBannerText">A newer MSBT Mobile APK is ready.</p>
         <small id="updateBannerMeta" class="muted"></small>
       </div>
       <div class="update-banner-actions">
@@ -34,19 +38,34 @@
     <section data-screen="home" class="screen active">
       <div class="hero card">
         <p class="eyebrow">CONTROLLER STATUS</p>
-        <h1 id="homeStatusTitle">PC not paired</h1>
-        <p id="homeStatusText">Offline tools stay usable. Live actions unlock when MSBT on the PC is paired and reachable.</p>
+        <h1 id="homeStatusTitle">Game not paired</h1>
+        <p id="homeStatusText">Offline tools stay usable. Live actions unlock when this phone is paired to the in-game SDK bridge on the same Wi‑Fi. The desktop app is optional.</p>
         <div class="row">
-          <button class="primary" data-open-panel="connectionPanel">Set up PC connection</button>
+          <button class="primary" data-open-panel="connectionPanel">Set up connection</button>
           <button id="homeConnectBtn">Connect</button>
         </div>
       </div>
       <div class="grid two">
-        <article class="card"><span>Desktop MSBT</span><strong id="desktopStatus">Offline</strong></article>
+        <article class="card"><span>Desktop MSBT</span><strong id="desktopStatus">Optional</strong></article>
         <article class="card"><span>Game bridge</span><strong id="bridgeStatus">Offline</strong></article>
       </div>
       <article class="card"><p class="eyebrow">RECENT RESULT</p><p id="recentResult">No live actions yet.</p></article>
-      <article class="card notice"><p class="eyebrow">BETA FEEDBACK</p><p>Send feedback and full-screen screenshots directly to FunkYouSHiFT on Discord. Include phone make/model and Android version.</p></article>
+      <article class="card">
+        <p class="eyebrow">JUMP TO</p>
+        <div class="tool-grid home-jump">
+          <button type="button" data-goto-screen="boost">Boost</button>
+          <button type="button" data-goto-screen="quick">Quick Menu</button>
+          <button type="button" data-goto-screen="codes">BL4 Codes</button>
+          <button type="button" data-goto-screen="inventory">Inventory</button>
+          <button type="button" data-goto-screen="bookmarks">Serial Marks</button>
+          <button type="button" data-goto-screen="travel">Travel / XYZ</button>
+          <button type="button" data-goto-screen="movement">Movement</button>
+          <button type="button" data-goto-screen="pools">Item Pools</button>
+          <button type="button" data-goto-screen="hoard">Hoard</button>
+          <button type="button" data-goto-screen="spawn">Spawn</button>
+        </div>
+      </article>
+      <article class="card notice"><p class="eyebrow">FEEDBACK</p><p>Send feedback and full-screen screenshots to FunkYouSHiFT on Discord. Include phone make/model and Android version.</p></article>
     </section>
 
     <section data-screen="boost" class="screen">
@@ -54,13 +73,27 @@
       <article class="card target-card">
         <p class="eyebrow">TARGET PLAYER</p>
         <select id="boostTarget" class="select player-target" disabled><option value="">No connection</option></select>
-        <small class="muted">Selection is shared across Boost, Codes, QM, and Control.</small>
+        <small class="muted">Selection is shared across Boost, Codes, QM, Inventory, Travel, and Movement.</small>
       </article>
       <article class="card"><p class="eyebrow">QUICK MAX</p><div class="button-grid"><button data-live data-action="max_all">MAX ALL</button><button data-live data-action="max_currency">MAX CASH</button><button data-live data-action="max_eridium">MAX ERIDIUM</button><button data-live data-action="max_player_level">MAX PLAYER</button><button data-live data-action="max_spec_level">MAX SPEC</button><button data-live data-action="max_sdu">MAX SDU</button></div></article>
       <article class="card"><p class="eyebrow">UVH BOOSTER</p><p class="muted">UVH N runs tiers 1 through N for the live lobby.</p><div class="button-grid"><button data-live data-action="uvh_boost_tier_1">UVH 1</button><button data-live data-action="uvh_boost_tier_2">UVH 2</button><button data-live data-action="uvh_boost_tier_3">UVH 3</button><button data-live data-action="uvh_boost_tier_4">UVH 4</button><button data-live data-action="uvh_boost_tier_5">UVH 5</button><button data-live data-action="uvh_boost_tier_6">UVH 6</button><button data-live data-action="uvh_boost_tier_7">UVH 7</button><button data-live data-action="uvh_boost_all">Run All 1-7</button><button data-live data-action="uvh_boost_status">UVH Status</button><button data-live data-action="uvh_boost_cancel" class="danger">Cancel UVH</button></div></article>
       <article class="card"><p class="eyebrow">CURRENCY / XP</p><div class="fields two"><label>Currency<select id="boostCurrencyKind"><option value="cash">Cash</option><option value="eridium">Eridium</option><option value="vaultcard1">Vault Card 1</option><option value="vaultcard2">Vault Card 2</option><option value="vaultcard3">Vault Card 3</option><option value="vaultcard4">Vault Card 4</option></select></label><label>Amount<input id="boostCurrencyAmount" value="1000000" inputmode="numeric"></label><label>XP Track<select id="boostXpTrack"><option value="player">Player</option><option value="specialization">Specialization</option><option value="vaultcard_xp_1">Vault Card XP 1</option><option value="vaultcard_xp_2">Vault Card XP 2</option><option value="vaultcard_xp_3">Vault Card XP 3</option><option value="vaultcard_xp_4">Vault Card XP 4</option></select></label><label>Level<input id="boostXpLevel" value="70" inputmode="numeric"></label></div><div class="button-grid"><button data-live data-action="give_currency">Give Currency</button><button data-live data-action="set_level">Set Level</button></div></article>
       <article class="card"><p class="eyebrow">BACKPACK / BANK</p><div class="fields two"><label>Backpack<input id="boostBackpackSize" value="999" inputmode="numeric"></label><label>Bank<input id="boostBankSize" value="1500" inputmode="numeric"></label></div><div class="button-grid"><button data-live data-action="set_backpack_bank_selected">Set Selected</button><button data-live data-action="set_backpack_bank_all">Apply All Party</button></div></article>
       <article class="card"><p class="eyebrow">QUICK HELPERS</p><div class="button-grid"><button data-live data-action="movement_pull_ground_loot">Pull Loot Here</button><button data-live data-action="movement_super_dash">Super Dash</button><button data-live data-action="movement_super_dash_toggle">Super Dash Toggle</button></div></article>
+      <article class="card">
+        <p class="eyebrow">LIVE TOGGLES</p>
+        <small id="liveModsSummary" class="muted">Connect to see Instant Drops, Instant Holds, Third Person, and Combat XP.</small>
+        <div class="button-grid">
+          <button id="instantDropsToggleBtn" type="button" data-live data-action="instant_drops_toggle">Instant Drops</button>
+          <button id="instantHoldsToggleBtn" type="button" data-live data-action="instant_holds_toggle">Instant Holds</button>
+          <button id="thirdPersonToggleBtn" type="button" data-live data-action="third_person_toggle">Third Person</button>
+        </div>
+        <div class="fields two">
+          <label>Combat XP multiplier<input id="cxpMultiplier" value="1000" inputmode="numeric"></label>
+        </div>
+        <div class="row"><button id="cxpToggleBtn" type="button" data-live data-action="cxp_toggle">Combat XP</button></div>
+        <small class="muted">Same live mods as desktop Boosting. Third Person is client-local — disable the standalone Third Person zip while this is on.</small>
+      </article>
       <article class="card"><p class="eyebrow">SERIAL SENDER</p><textarea id="boostSerialText" placeholder="Paste one or more @U or deserialized serials"></textarea><div class="fields two"><label>Copies<input id="boostCopies" value="1" inputmode="numeric"></label><label>Override Level<select id="boostOverride"><option value="no">No</option><option value="yes">Yes</option></select></label><label>Level<input id="boostSerialLevel" value="70" inputmode="numeric"></label></div><div class="row"><button id="boostValidate">Validate</button><button id="boostConfirm">Confirm</button></div><div class="button-row-wrap"><button data-live data-action="give_serial_selected">Named Player</button><button data-live data-action="give_serial_all">All Players</button><button data-live data-action="give_serial_nonhost">Other Players</button></div><small id="boostSerialStatus" class="muted">Not confirmed.</small></article>
       <article class="card"><p class="eyebrow">RARITY PRESETS</p><div class="button-grid"><button data-live data-action="rarity_only_legendary">Only Legendary</button><button data-live data-action="rarity_only_pearlescent">Only Pearlescent</button><button data-live data-action="rarity_reset">Reset Weights</button><button data-live data-action="rarity_apply">Apply Saved</button></div></article>
       <article class="card"><p class="eyebrow">CHEATS / CHESTS / SHINIES</p><div class="button-grid"><button data-live data-action="devperk_0">Give Experience</button><button data-live data-action="devperk_1">Give 1M Cash</button><button data-live data-action="devperk_2">Give 100k Eridium</button><button data-live data-action="devperk_3">Kill All Enemies</button><button data-live data-action="devperk_4">Customs + Hovers</button><button data-live data-action="devperk_5">Infinite Ammo</button><button data-live data-action="devperk_6">Demigod</button><button data-live data-action="devperk_7">Spawn Leg/Epic Loot</button><button data-live data-action="open_bank">Open Bank</button><button data-live data-action="toggle_debug_cam">Debug Cam</button><button data-live data-action="teleport_debug_cam">TP Debug Cam</button><button data-live data-action="open_golden_chest">Open Golden Chest</button><button data-live data-action="close_golden_chest">Close Golden Chest</button><button data-live data-action="drop_all_shinies">Drop All Shinies</button><button data-live data-action="shiny_selected">Shiny Selected</button><button data-live data-action="shiny_all">Shiny All</button><button data-live data-action="shiny_nonhost">Shiny Non-Host</button></div></article>
@@ -96,31 +129,123 @@
       </article>
       <div class="page-tabs" id="quickPages"></div>
       <div class="quick-grid" id="quickGrid"></div>
-      <div class="row"><button id="quickPullPc" data-live-optional>Pull From PC</button><button id="quickResolve" disabled>Resolve Sync</button></div>
-      <small class="muted">Pull loads the live F7 Quick Menu from the game via desktop MSBT. Tap an assigned slot to fire it while connected.</small>
+      <div class="button-row-wrap">
+        <button id="quickEditMode" type="button">Edit Mode: Off</button>
+        <button id="quickPullPc" data-live-optional>Pull From Game</button>
+        <button id="quickResolve" disabled>Resolve Sync</button>
+      </div>
+      <small class="muted">Tap an assigned slot to fire it. Turn Edit Mode on to assign, rename, clear, or pin commands like desktop MSBT.</small>
+      <article class="card" id="quickEditorCard">
+        <p class="eyebrow">SELECTED SLOT</p>
+        <small id="quickSelectedSummary" class="muted">Select a slot in Edit Mode.</small>
+        <label>Search commands<input id="quickActionSearch" type="search" placeholder="max all, shiny, travel…"></label>
+        <label>Command<select id="quickActionSelect" class="select"><option value="">Pull from game to load commands</option></select></label>
+        <label>Custom label<input id="quickCustomLabel" maxlength="48" placeholder="Uses the basic label when blank"></label>
+        <div class="button-row-wrap">
+          <button id="quickSaveSlot" type="button" data-live-optional>Save Slot</button>
+          <button id="quickClearSlot" type="button" class="danger" data-live-optional>Clear Slot</button>
+          <button id="quickClearPage" type="button" class="danger" data-live-optional>Clear Page</button>
+        </div>
+        <label class="check"><input type="checkbox" id="quickRarityPanel"> Show rarity sliders on F7</label>
+        <div class="button-row-wrap">
+          <button id="quickPinLast" type="button" data-live-optional>Pin Last Command</button>
+          <button id="quickRepeatDrop" type="button" data-live data-action="repeat_last_drop">Repeat Last Drop</button>
+        </div>
+        <small id="quickLastCommand" class="muted">No last command yet.</small>
+      </article>
     </section>
 
-    <section data-screen="control" class="screen">
-      <h2>Control</h2>
-      <article class="card target-card">
-        <p class="eyebrow">TARGET PLAYER</p>
-        <select id="controlTarget" class="select player-target" disabled><option value="">No connection</option></select>
-        <small class="muted">Shared across Inventory, Bookmarks, Movement, Travel, and Item Pools.</small>
+    <section data-screen="inventory" class="screen">
+      <h2>Inventory</h2>
+      <article id="inventoryPanel" class="card panel-shell">
+        <div class="panel-head">
+          <p class="eyebrow">EQUIPPED / BACKPACK</p>
+          <div class="panel-head-actions">
+            <button type="button" class="ghost" data-select-all="inventory">Select All</button>
+          </div>
+        </div>
+        <label>Target<select id="invTarget" class="player-target" disabled><option value="">No connection</option></select></label>
+        <p class="muted">Reads equipped + backpack for the selected target. Best on listen host.</p>
+        <div class="button-grid">
+          <button id="invRefresh">Refresh Inventory</button>
+          <button id="invEquipped">Equipped Only</button>
+          <button id="invBackpack">Backpack Only</button>
+          <button data-live data-action="refresh_players">Refresh Players</button>
+        </div>
+        <input id="invSearch" type="search" placeholder="Filter inventory rows…">
+        <div class="selection-bar"><span id="invSelectionSummary">0 selected</span><button type="button" id="invClearSelection">Clear</button></div>
+        <div id="invRows" class="list compact panel-scroll"><small class="muted">Connect and tap Refresh Inventory.</small></div>
+        <div class="button-row-wrap">
+          <button id="invUseBoost" disabled>Use in Boost Sender</button>
+          <button id="invSaveBookmark" disabled>Bookmark</button>
+          <button id="invSendSelected" data-live data-action="give_serial_selected" data-serial-source="inventory" disabled>Named Player</button>
+        </div>
+        <small id="invStatus" class="muted">No inventory loaded.</small>
       </article>
-      <div class="tool-grid">
-        <button data-open-panel="inventoryPanel">Inventory</button>
-        <button data-open-panel="bookmarkPanel">Bookmarks</button>
-        <button data-open-panel="travelPanel">Map Travel</button>
-        <button data-open-panel="movementPanel">Movement</button>
-        <button data-open-panel="poolPanel">Item Pools</button>
-      </div>
+    </section>
 
-      <article id="movementPanel" class="card panel-shell hidden">
+    <section data-screen="bookmarks" class="screen">
+      <h2>Serial Bookmarks</h2>
+      <article id="bookmarkPanel" class="card panel-shell">
+        <div class="panel-head">
+          <p class="eyebrow">SAVED SERIALS</p>
+          <div class="panel-head-actions">
+            <button type="button" class="ghost" data-select-all="bookmarks">Select All</button>
+          </div>
+        </div>
+        <label>Target<select id="bookmarkTarget" class="player-target" disabled><option value="">No connection</option></select></label>
+        <div class="row"><button id="pullDesktopBookmarks" data-live-optional>Pull From MSBT</button><button id="saveBookmark">Save Local</button><button id="deleteBookmark">Delete</button></div>
+        <div class="fields two"><label>Name<input id="bookmarkName"></label><label>Group<input id="bookmarkGroup"></label></div>
+        <textarea id="bookmarkSerial" placeholder="@U serial"></textarea>
+        <div class="button-row-wrap"><button id="bookmarkUseBoost">Use in Boost Sender</button><button id="bookmarkSendSelected" data-live data-action="give_serial_selected" data-serial-source="bookmark">Named Player</button></div>
+        <input id="bookmarkSearch" type="search" placeholder="Search bookmarks">
+        <div class="selection-bar"><span id="bookmarkSelectionSummary">0 selected</span><button type="button" id="bookmarkClearSelection">Clear</button></div>
+        <div id="bookmarkRows" class="list compact panel-scroll"></div>
+        <small id="bookmarkStatus" class="muted">Pull loads desktop Serial Bookmarks over the Mobile Gateway.</small>
+      </article>
+    </section>
+
+    <section data-screen="travel" class="screen">
+      <h2>Map Travel</h2>
+      <article id="travelPanel" class="card panel-shell">
+        <div class="panel-head">
+          <p class="eyebrow">MAPS / STATIONS</p>
+        </div>
+        <label>Target<select id="travelTarget" class="player-target" disabled><option value="">No connection</option></select></label>
+        <p class="muted">Pick a map, then a travel station on that map — same flow as desktop MSBT.</p>
+        <label>Search maps<input id="travelMapSearch" type="search" placeholder="world, fortress, raid…"></label>
+        <div id="travelMapSummary" class="muted">Loading maps…</div>
+        <div id="travelMapRows" class="list compact panel-scroll"></div>
+        <div class="row"><button id="travelMapGo" data-live data-action="travel_to_map" disabled>Travel to Map</button></div>
+        <label class="check"><input type="checkbox" id="travelShowAllStations"> Show all travel stations</label>
+        <label>Search stations<input id="travelStationSearch" type="search" placeholder="boss, bunker, station…"></label>
+        <div id="travelStationSummary" class="muted">Select a map to filter stations.</div>
+        <div id="travelStationRows" class="list compact panel-scroll"></div>
+        <div class="row"><button id="travelStationGo" data-live data-action="travel_to_station" disabled>Travel to Station</button></div>
+        <small id="travelStatus" class="muted">Bundled travel maps/stations.</small>
+      </article>
+      <article class="card panel-shell" id="xyzBookmarkPanel">
+        <p class="eyebrow">XYZ LOCATION BOOKMARKS</p>
+        <p class="muted">Save your current in-map position and teleport back. Separate from map/station travel.</p>
+        <label>Bookmark name<input id="xyzBookmarkName" maxlength="80" placeholder="e.g. farm spot" autocomplete="off" spellcheck="false"></label>
+        <select id="xyzBookmarkList" class="select" size="6"></select>
+        <div class="button-row-wrap">
+          <button id="xyzBookmarkSave" type="button" data-live data-action="location_bookmark_save">Save Here</button>
+          <button id="xyzBookmarkGo" type="button" data-live data-action="location_bookmark_go">Go Selected</button>
+          <button id="xyzBookmarkDelete" type="button" class="danger" data-live data-action="location_bookmark_delete">Delete Selected</button>
+          <button id="xyzBookmarkRefresh" type="button" data-live-optional>Refresh List</button>
+        </div>
+        <small id="xyzBookmarkStatus" class="muted">Connect to load XYZ bookmarks from the game.</small>
+      </article>
+    </section>
+
+    <section data-screen="movement" class="screen">
+      <h2>Movement</h2>
+      <article id="movementPanel" class="card panel-shell">
         <div class="panel-head">
           <p class="eyebrow">PLAYER MOVEMENT</p>
           <div class="panel-head-actions">
             <button type="button" class="ghost" data-select-all="movement">Select All</button>
-            <button type="button" class="ghost" data-collapse-panel="movementPanel">Collapse</button>
           </div>
         </div>
         <label>Target<select id="movementTarget" class="player-target" disabled><option value="">No connection</option></select></label>
@@ -196,76 +321,13 @@
         </div>
         <small id="movementStatus" class="muted">Preset can be edited and saved offline.</small>
       </article>
+    </section>
 
-      <article id="inventoryPanel" class="card panel-shell hidden">
+    <section data-screen="pools" class="screen">
+      <h2>Item Pools</h2>
+      <article id="poolPanel" class="card panel-shell">
         <div class="panel-head">
-          <p class="eyebrow">INVENTORY</p>
-          <div class="panel-head-actions">
-            <button type="button" class="ghost" data-select-all="inventory">Select All</button>
-            <button type="button" class="ghost" data-collapse-panel="inventoryPanel">Collapse</button>
-          </div>
-        </div>
-        <label>Target<select id="invTarget" class="player-target" disabled><option value="">No connection</option></select></label>
-        <p class="muted">Reads equipped + backpack for the selected target. Best on listen host.</p>
-        <div class="button-grid">
-          <button id="invRefresh">Refresh Inventory</button>
-          <button id="invEquipped">Equipped Only</button>
-          <button id="invBackpack">Backpack Only</button>
-          <button data-live data-action="refresh_players">Refresh Players</button>
-        </div>
-        <input id="invSearch" type="search" placeholder="Filter inventory rows…">
-        <div class="selection-bar"><span id="invSelectionSummary">0 selected</span><button type="button" id="invClearSelection">Clear</button></div>
-        <div id="invRows" class="list compact panel-scroll"><small class="muted">Connect and tap Refresh Inventory.</small></div>
-        <div class="button-row-wrap">
-          <button id="invUseBoost" disabled>Use in Boost Sender</button>
-          <button id="invSaveBookmark" disabled>Bookmark</button>
-          <button id="invSendSelected" data-live data-action="give_serial_selected" data-serial-source="inventory" disabled>Named Player</button>
-        </div>
-        <small id="invStatus" class="muted">No inventory loaded.</small>
-      </article>
-
-      <article id="bookmarkPanel" class="card panel-shell hidden">
-        <div class="panel-head">
-          <p class="eyebrow">SERIAL BOOKMARKS</p>
-          <div class="panel-head-actions">
-            <button type="button" class="ghost" data-select-all="bookmarks">Select All</button>
-            <button type="button" class="ghost" data-collapse-panel="bookmarkPanel">Collapse</button>
-          </div>
-        </div>
-        <label>Target<select id="bookmarkTarget" class="player-target" disabled><option value="">No connection</option></select></label>
-        <div class="row"><button id="pullDesktopBookmarks" data-live-optional>Pull From MSBT</button><button id="saveBookmark">Save Local</button><button id="deleteBookmark">Delete</button></div>
-        <div class="fields two"><label>Name<input id="bookmarkName"></label><label>Group<input id="bookmarkGroup"></label></div>
-        <textarea id="bookmarkSerial" placeholder="@U serial"></textarea>
-        <div class="button-row-wrap"><button id="bookmarkUseBoost">Use in Boost Sender</button><button id="bookmarkSendSelected" data-live data-action="give_serial_selected" data-serial-source="bookmark">Named Player</button></div>
-        <input id="bookmarkSearch" type="search" placeholder="Search bookmarks">
-        <div class="selection-bar"><span id="bookmarkSelectionSummary">0 selected</span><button type="button" id="bookmarkClearSelection">Clear</button></div>
-        <div id="bookmarkRows" class="list compact panel-scroll"></div>
-        <small id="bookmarkStatus" class="muted">Pull loads desktop Serial Bookmarks over the Mobile Gateway.</small>
-      </article>
-
-      <article id="travelPanel" class="card panel-shell hidden">
-        <div class="panel-head">
-          <p class="eyebrow">MAP TRAVEL</p>
-          <button type="button" class="ghost" data-collapse-panel="travelPanel">Collapse</button>
-        </div>
-        <label>Target<select id="travelTarget" class="player-target" disabled><option value="">No connection</option></select></label>
-        <p class="muted">Pick a map, then a travel station on that map — same flow as desktop MSBT.</p>
-        <label>Search maps<input id="travelMapSearch" type="search" placeholder="world, fortress, raid…"></label>
-        <div id="travelMapSummary" class="muted">Loading maps…</div>
-        <div id="travelMapRows" class="list compact panel-scroll"></div>
-        <div class="row"><button id="travelMapGo" data-live data-action="travel_to_map" disabled>Travel to Map</button></div>
-        <label class="check"><input type="checkbox" id="travelShowAllStations"> Show all travel stations</label>
-        <label>Search stations<input id="travelStationSearch" type="search" placeholder="boss, bunker, station…"></label>
-        <div id="travelStationSummary" class="muted">Select a map to filter stations.</div>
-        <div id="travelStationRows" class="list compact panel-scroll"></div>
-        <div class="row"><button id="travelStationGo" data-live data-action="travel_to_station" disabled>Travel to Station</button></div>
-        <small id="travelStatus" class="muted">Bundled travel maps/stations.</small>
-      </article>
-
-      <article id="poolPanel" class="card panel-shell hidden">
-        <div class="panel-head">
-          <p class="eyebrow">ITEM POOLS</p>
-          <button type="button" class="ghost" data-collapse-panel="poolPanel">Collapse</button>
+          <p class="eyebrow">SPAWN FROM POOL</p>
         </div>
         <label>Target<select id="poolTarget" class="player-target" disabled><option value="">No connection</option></select></label>
         <div class="fields two">
@@ -276,6 +338,64 @@
         <div id="poolRows" class="list compact panel-scroll"><small class="muted">Loading item pools…</small></div>
         <div class="row"><button id="poolSpawn" data-live data-action="spawn_itempool" disabled>Spawn Selected Pool</button></div>
         <small id="poolStatus" class="muted">Bundled item_pools.json.</small>
+      </article>
+    </section>
+
+    <section data-screen="hoard" class="screen">
+      <h2>Hoard Builder</h2>
+      <article id="hoardPanel" class="card panel-shell">
+        <div class="panel-head">
+          <p class="eyebrow">WAVES / RUN</p>
+        </div>
+        <p class="muted">Build waves on this phone even while offline. Apply / Start talks to the game when you are paired. Same plan format as desktop MSBT.</p>
+        <small id="hoardPlanSummary" class="muted">1 empty wave</small>
+        <div class="row wrap hoard-wave-tabs" id="hoardWaveTabs"></div>
+        <div class="button-row-wrap">
+          <button type="button" id="hoardAddWave">+ Wave</button>
+          <button type="button" id="hoardDuplicateWave">Duplicate</button>
+          <button type="button" id="hoardMoveWaveEarlier">↑ Earlier</button>
+          <button type="button" id="hoardMoveWaveLater">↓ Later</button>
+          <button type="button" id="hoardRemoveWave" class="danger">Remove Wave</button>
+        </div>
+        <p class="eyebrow">THIS WAVE</p>
+        <div id="hoardEntryRows" class="list compact panel-scroll"><small class="muted">No enemies yet. Search and tap an actor to add it.</small></div>
+        <div class="fields two">
+          <label>Add count<input id="hoardAddCount" value="1" inputmode="numeric"></label>
+          <label>Search actors<input id="hoardActorSearch" type="search" placeholder="bandit, spider, boss…"></label>
+        </div>
+        <label class="check"><input type="checkbox" id="hoardShowAllActors"> Show all actors (objects + advanced)</label>
+        <div id="hoardActorSummary" class="muted">Loading actor catalog…</div>
+        <div id="hoardActorRows" class="list compact panel-scroll"></div>
+        <div class="row"><button type="button" id="hoardActorPrev">Prev Page</button><button type="button" id="hoardActorNext">Next Page</button></div>
+        <details class="fold"><summary>Wave settings</summary>
+          <div class="fields two">
+            <label>Distance<input id="hoardDistance" value="900" inputmode="numeric"></label>
+            <label>Spacing<input id="hoardSpacing" value="125" inputmode="numeric"></label>
+            <label>Scale<input id="hoardScale" value="1" inputmode="decimal"></label>
+            <label>Spawn points<input id="hoardSpawnPoints" value="6" inputmode="numeric"></label>
+            <label>Burst<input id="hoardBurst" value="2" inputmode="numeric"></label>
+            <label>Stagger<input id="hoardStagger" value="0.45" inputmode="decimal"></label>
+            <label>Aggro<select id="hoardAggro"><option value="passive">Passive</option><option value="aggressive">Aggressive</option></select></label>
+          </div>
+          <label class="check"><input type="checkbox" id="hoardCleanupLoot"> Cleanup loot between waves</label>
+        </details>
+        <details class="fold"><summary>Saved plans on this phone</summary>
+          <label>Name<input id="hoardFavoriteName" placeholder="Couch raid, boss dump…"></label>
+          <select id="hoardFavoriteSelect" class="select"><option value="">(none saved)</option></select>
+          <div class="button-row-wrap">
+            <button type="button" id="hoardFavoriteSave">Save Plan</button>
+            <button type="button" id="hoardFavoriteLoad">Load</button>
+            <button type="button" id="hoardFavoriteDelete" class="danger">Delete</button>
+          </div>
+        </details>
+        <div class="button-grid">
+          <button data-live data-action="hoard_set_plan">Apply Plan To Game</button>
+          <button data-live data-action="hoard_start">Start Hoard</button>
+          <button data-live data-action="hoard_stop">Stop Hoard</button>
+          <button data-live data-action="hoard_status">Hoard Status</button>
+          <button data-live data-action="hoard_clear" class="danger">Clear Hoard</button>
+        </div>
+        <small id="hoardStatus" class="muted">Plan is saved on this phone. Connect to apply or start.</small>
       </article>
     </section>
 
@@ -367,22 +487,29 @@
       <h2>More</h2>
       <div class="list menu">
         <button data-open-panel="connectionPanel">Connection Settings</button>
+        <button type="button" data-goto-screen="inventory">Inventory</button>
+        <button type="button" data-goto-screen="bookmarks">Serial Bookmarks</button>
+        <button type="button" data-goto-screen="travel">Travel / XYZ</button>
+        <button type="button" data-goto-screen="movement">Movement</button>
+        <button type="button" data-goto-screen="pools">Item Pools</button>
+        <button type="button" data-goto-screen="hoard">Hoard Builder</button>
+        <button type="button" data-goto-screen="spawn">Dev Spawner</button>
         <button data-open-panel="activityPanel">Activity Log</button>
         <button data-open-panel="feedbackPanel">Beta Feedback</button>
         <button data-open-panel="aboutPanel">About</button>
       </div>
 
       <article id="connectionPanel" class="card hidden">
-        <p class="eyebrow">PC CONNECTION</p>
-        <p class="muted">Same Wi‑Fi as the PC. Easiest: open desktop MSBT → Mobile Gateway tab and scan the QR.</p>
+        <p class="eyebrow">GAME CONNECTION</p>
+        <p class="muted">Same Wi‑Fi as the PC. Easiest: in Borderlands 4 open Phone Pairing (console <code>msbt_mobile_pair</code>) and scan the Pair QR. Desktop Mobile Gateway still works as a fallback.</p>
         <button id="scanPairingQr" class="primary">Scan QR to pair</button>
         <details class="fold" open>
           <summary>Manual setup</summary>
-          <p class="muted">Or enter the PC address, port, and 6-digit pairing code by hand.</p>
+          <p class="muted">Direct game port is 49774. Use 49775 only if you are pairing through the desktop app.</p>
           <label>PC name<input id="pcName" placeholder="Gaming PC"></label>
           <label>PC address<input id="pcAddress" placeholder="192.168.1.100"></label>
-          <label>Gateway port<input id="pcPort" value="49775" inputmode="numeric"></label>
-          <label>Pairing code<input id="pairingCode" placeholder="From desktop MSBT" inputmode="numeric"></label>
+          <label>Live port<input id="pcPort" value="49774" inputmode="numeric"></label>
+          <label>Desktop pairing code (optional)<input id="pairingCode" placeholder="Only for desktop gateway" inputmode="numeric"></label>
         </details>
         <div class="button-grid">
           <button id="saveConnection">Save Setup</button>
@@ -393,11 +520,11 @@
       </article>
 
       <article id="activityPanel" class="card hidden"><p class="eyebrow">ACTIVITY LOG</p><div id="activityRows" class="list compact"><small class="muted">No activity yet.</small></div></article>
-      <article id="feedbackPanel" class="card hidden"><p class="eyebrow">BETA FEEDBACK</p><p>For this open beta, send feedback directly to FunkYouSHiFT in Discord DMs.</p><p class="muted">Please include phone make/model, Android version, what screen you were on, what you expected, what happened, and full-screen screenshots. For layout issues, capture the whole screen including navigation.</p><button id="copyFeedbackTemplate">Copy Feedback Template</button></article>
+      <article id="feedbackPanel" class="card hidden"><p class="eyebrow">FEEDBACK</p><p>Send feedback to FunkYouSHiFT in Discord.</p><p class="muted">Please include phone make/model, Android version, what screen you were on, what you expected, what happened, and full-screen screenshots. For layout issues, capture the whole screen including navigation.</p><button id="copyFeedbackTemplate">Copy Feedback Template</button></article>
       <article id="aboutPanel" class="card hidden">
         <p class="eyebrow">ABOUT</p>
-        <p><strong>MSBT Mobile Controller</strong><br>Android beta <span id="aboutVersion">0.1.0-beta.15</span></p>
-        <p class="muted">Companion controller for Matt's SDK Boosting Tools. Live game actions require desktop MSBT.</p>
+        <p><strong>MSBT Mobile Controller</strong><br>Android <span id="aboutVersion">1.0.0</span></p>
+        <p class="muted">Companion controller for Matt's SDK Boosting Tools. Live game actions talk to the in-game SDK bridge. The desktop app is optional. Use the search bar to jump to Boost, Quick Menu, Inventory, XYZ bookmarks, Hoard, and more.</p>
         <p id="aboutUpdateStatus" class="muted">Update check idle.</p>
         <div class="button-row-wrap">
           <button type="button" id="checkUpdatesBtn">Check for updates</button>
@@ -419,10 +546,10 @@
     </form>
   </dialog>
 
-  <dialog id="qrScanDialog" class="qr-scan-dialog">
+  <div id="qrScanOverlay" class="qr-scan-overlay hidden" hidden>
     <div class="qr-scan-card">
       <p class="eyebrow">SCAN PAIRING QR</p>
-      <p class="muted">Point at the QR in desktop MSBT → Mobile Gateway tab.</p>
+      <p class="muted">Point at the in-game Pair QR (not the Install QR). The desktop app is optional.</p>
       <div class="qr-video-wrap">
         <video id="qrScanVideo" playsinline muted autoplay></video>
         <canvas id="qrScanCanvas" class="hidden"></canvas>
@@ -430,14 +557,19 @@
       <small id="qrScanStatus" class="muted">Starting camera…</small>
       <button id="qrScanCancel" type="button">Cancel</button>
     </div>
-  </dialog>
+  </div>
 
   <nav class="bottom-nav" aria-label="Main navigation">
     <button class="active" data-nav="home"><span class="nav-icon">⌂</span><span>Home</span></button>
     <button data-nav="boost"><span class="nav-icon">⚡</span><span>Boost</span></button>
-    <button data-nav="codes"><span class="nav-icon">⌕</span><span>Codes</span></button>
     <button data-nav="quick"><span class="nav-icon">★</span><span>QM</span></button>
-    <button data-nav="control"><span class="nav-icon">✦</span><span>Control</span></button>
+    <button data-nav="codes"><span class="nav-icon">⌕</span><span>Codes</span></button>
+    <button data-nav="inventory"><span class="nav-icon">▣</span><span>Inv</span></button>
+    <button data-nav="bookmarks"><span class="nav-icon">★</span><span>Marks</span></button>
+    <button data-nav="travel"><span class="nav-icon">➤</span><span>Travel</span></button>
+    <button data-nav="movement"><span class="nav-icon">↗</span><span>Move</span></button>
+    <button data-nav="pools"><span class="nav-icon">≡</span><span>Pools</span></button>
+    <button data-nav="hoard"><span class="nav-icon">⚔</span><span>Hoard</span></button>
     <button data-nav="spawn"><span class="nav-icon">◉</span><span>Spawn</span></button>
     <button data-nav="more"><span class="nav-icon">•••</span><span>More</span></button>
   </nav>

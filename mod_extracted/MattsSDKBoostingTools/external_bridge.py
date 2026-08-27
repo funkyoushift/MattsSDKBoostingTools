@@ -16,7 +16,7 @@ from collections import OrderedDict, deque
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any, Callable
 
-from . import backend_actions, perf_profile, quick_menu_registry
+from . import backend_actions, mobile_lan, perf_profile, quick_menu_registry
 
 try:
     from mods_base import hook
@@ -25,6 +25,8 @@ except Exception:  # pragma: no cover - only available in-game
 
 _HOST = "127.0.0.1"
 _PORT = 49774
+_LAN_ROUTES_DENIED = ("/layout", "/resource/")
+_DEVICE_HEADER = "x-msbt-device"
 MAX_QUEUE_DEPTH = 64
 MAX_RESULTS = 128
 RESULT_TTL_SECONDS = 60.0
@@ -36,6 +38,7 @@ STOP_JOIN_TIMEOUT_SECONDS = 3.0
 _server: ThreadingHTTPServer | None = None
 _thread: threading.Thread | None = None
 _started = False
+_http_lock = threading.Lock()
 _lock = threading.RLock()
 _queue: deque[dict[str, Any]] = deque()
 _results: OrderedDict[str, dict[str, Any]] = OrderedDict()
@@ -1027,6 +1030,7 @@ def _status() -> dict[str, Any]:
         "instant_holds": backend_status.get("instant_holds") or {},
         "fog_of_war": backend_status.get("fog_of_war") or {},
         "third_person": backend_status.get("third_person") or {},
+        "mobile_lan": mobile_lan.status_dict(),
         "diagnostics": diagnostics,
         "last_action": _last_action,
         "last_error": last_error,
@@ -1220,11 +1224,76 @@ def _load_resource(name: str) -> dict[str, Any]:
     except Exception as exc:
         return {"ok": False, "name": name, "message": repr(exc)}
 
+def _request_ip(handler: Any) -> str:
+    addr = getattr(handler, "client_address", None)
+    if not addr:
+        return "127.0.0.1"
+    try:
+        return str(addr[0] or "127.0.0.1")
+    except Exception:
+        return "127.0.0.1"
+
+
+def _request_path(handler: Any) -> str:
+    raw = str(getattr(handler, "path", "") or "/")
+    return raw.split("?", 1)[0]
+
+
+def _request_header(handler: Any, name: str) -> str:
+    headers = getattr(handler, "headers", None)
+    if headers is None:
+        return ""
+    try:
+        return str(headers.get(name) or "").strip()
+    except Exception:
+        return ""
+
+
+def _is_loopback_ip(ip: str) -> bool:
+    value = str(ip or "").strip().lower()
+    return value in {"127.0.0.1", "::1", "localhost", ""}
+
+
+def _lan_route_denied(path: str) -> bool:
+    route = str(path or "")
+    return any(route.startswith(prefix) for prefix in _LAN_ROUTES_DENIED)
+
+
+def _authorized_request(handler: Any) -> tuple[bool, str]:
+    ip = _request_ip(handler)
+    path = _request_path(handler)
+    if _is_loopback_ip(ip):
+        return True, ip
+    if path.startswith("/mobile/ping"):
+        return True, ip
+    if path.startswith("/mobile/enroll"):
+        if not mobile_lan.enroll_open():
+            return False, ip
+        return True, ip
+    if _lan_route_denied(path):
+        return False, ip
+    token = _request_header(handler, _DEVICE_HEADER)
+    if mobile_lan.is_allowed(ip, token):
+        if token:
+            try:
+                mobile_lan.remember_phone(ip=ip, token=token, name="")
+            except Exception:
+                pass
+        return True, ip
+    return False, ip
+
+
 class _Handler(BaseHTTPRequestHandler):
     server_version = "MSBTBridge/2.0"
 
     def log_message(self, _format: str, *_args: Any) -> None:
         return
+
+    def _cors_origin(self) -> str:
+        ip = _request_ip(self)
+        if _is_loopback_ip(ip):
+            return "http://127.0.0.1"
+        return "*"
 
     def _send(self, status: int, data: Any) -> None:
         pretty = "?pretty=1" in self.path or "&pretty=1" in self.path
@@ -1237,9 +1306,12 @@ class _Handler(BaseHTTPRequestHandler):
             self.send_response(status)
             self.send_header("Content-Type", "application/json; charset=utf-8")
             self.send_header("Content-Length", str(len(body)))
-            self.send_header("Access-Control-Allow-Origin", "http://127.0.0.1")
+            self.send_header("Access-Control-Allow-Origin", self._cors_origin())
             self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-            self.send_header("Access-Control-Allow-Headers", "Content-Type")
+            self.send_header(
+                "Access-Control-Allow-Headers",
+                "Content-Type, X-MSBT-Device, X-MSBT-Pairing-Code, X-MSBT-Enroll",
+            )
             self.end_headers()
             self.wfile.write(body)
         except OSError:
@@ -1252,23 +1324,97 @@ class _Handler(BaseHTTPRequestHandler):
         self._send(200, {"ok": True})
 
     def do_GET(self) -> None:
-        if self.path.startswith("/status"):
+        path = _request_path(self)
+        allowed, _ip = _authorized_request(self)
+        if path.startswith("/mobile/ping"):
+            self._send(200, {
+                "ok": True,
+                "name": "MattsSDKBoostingTools external bridge",
+                "port": _PORT,
+                "lan_enabled": mobile_lan.lan_enabled(),
+                "direct": True,
+            })
+            return
+        if not allowed:
+            if _lan_route_denied(path):
+                self._send(404, {"ok": False, "message": "Not found"})
+            else:
+                self._send(401, {
+                    "ok": False,
+                    "message": "Phone not paired. Open in-game Phone Pairing and scan the QR.",
+                })
+            return
+        if path.startswith("/status"):
             self._send(200, _get_status_snapshot())
-        elif self.path.startswith("/quick_menu"):
+        elif path.startswith("/quick_menu"):
             data = backend_actions.get_quick_menu_layout()
             self._send(200 if data.get("ok") else 500, data)
-        elif self.path.startswith("/layout"):
+        elif path.startswith("/layout"):
+            if not _is_loopback_ip(_request_ip(self)):
+                self._send(404, {"ok": False, "message": "Not found"})
+                return
             self._send(200, UI_LAYOUT)
-        elif self.path.startswith("/resource/"):
-            name = self.path.split("/resource/", 1)[1].split("?", 1)[0].strip("/")
+        elif path.startswith("/resource/"):
+            if not _is_loopback_ip(_request_ip(self)):
+                self._send(404, {"ok": False, "message": "Not found"})
+                return
+            name = path.split("/resource/", 1)[1].split("?", 1)[0].strip("/")
             data = _load_resource(name)
             self._send(200 if data.get("ok") else 404, data)
         else:
             self._send(404, {"ok": False, "message": "Not found"})
 
+    def _read_json_body(self) -> dict[str, Any]:
+        length = int(self.headers.get("Content-Length", "0") or "0")
+        if length < 0 or length > MAX_BODY_BYTES:
+            raise ValueError(f"Request body exceeds {MAX_BODY_BYTES} byte limit.")
+        raw = self.rfile.read(length).decode("utf-8") if length else "{}"
+        data = json.loads(raw or "{}")
+        return data if isinstance(data, dict) else {}
+
+    def _handle_enroll(self) -> None:
+        allowed, ip = _authorized_request(self)
+        if not allowed:
+            self._send(401, {
+                "ok": False,
+                "message": "Open the in-game Phone Pairing overlay to enroll this phone.",
+            })
+            return
+        try:
+            data = self._read_json_body()
+        except ValueError as exc:
+            self._send(413, {"ok": False, "message": str(exc)})
+            return
+        except Exception as exc:
+            self._send(400, {"ok": False, "message": repr(exc)})
+            return
+        token = str(data.get("device") or data.get("token") or _request_header(self, _DEVICE_HEADER) or "").strip()
+        if not token:
+            token = uuid.uuid4().hex
+        result = mobile_lan.enroll(
+            str(data.get("nonce") or data.get("n") or ""),
+            ip=ip,
+            token=token,
+            name=str(data.get("name") or "Phone"),
+        )
+        if result.get("ok"):
+            result["device"] = token
+        self._send(200 if result.get("ok") else 401, result)
+
     def do_POST(self) -> None:
-        if not self.path.startswith("/action"):
+        path = _request_path(self)
+        if path.startswith("/mobile/enroll"):
+            self._handle_enroll()
+            return
+        if not path.startswith("/action"):
             self._send(404, {"ok": False, "message": "Not found"})
+            return
+        allowed, _ip = _authorized_request(self)
+        if not allowed:
+            self._send(401, {
+                "ok": False,
+                "message": "Phone not paired. Open in-game Phone Pairing and scan the QR.",
+            })
             return
         try:
             length = int(self.headers.get("Content-Length", "0") or "0")
@@ -1371,50 +1517,17 @@ class _Handler(BaseHTTPRequestHandler):
             self._send(500, {"ok": False, "message": repr(exc)})
 
 
-def start_bridge() -> None:
-    global _server, _thread, _started, _last_error, _generation
-    if _started:
-        return
-    _generation += 1
-    _register_tick_hook()
+def _listen_host() -> str:
     try:
-        _server = ThreadingHTTPServer((_HOST, _PORT), _Handler)
-        _thread = threading.Thread(target=_server.serve_forever, name="MSBTExternalBridge", daemon=True)
-        _thread.start()
-        _started = True
-        _refresh_status_snapshot(force=True)
-        _log(f"external bridge listening on http://{_HOST}:{_PORT}")
-    except OSError as exc:
-        # Port already open usually means another copy/reload already started it.
-        _last_error = repr(exc)
-        _started = False
-        _unregister_tick_hook()
-        if _server is not None:
-            try:
-                _server.server_close()
-            except Exception:
-                pass
-        _server = None
-        _thread = None
-    except Exception as exc:
-        _last_error = repr(exc)
-        _started = False
-        _unregister_tick_hook()
-        if _server is not None:
-            try:
-                _server.server_close()
-            except Exception:
-                pass
-        _server = None
-        _thread = None
+        return mobile_lan.bind_host()
+    except Exception:
+        return "127.0.0.1"
 
 
-def stop_bridge() -> None:
-    global _server, _thread, _started, _executing_rid, _generation
-    global _status_snapshot, _status_snapshot_at
+def _stop_http_listen(*, join: bool = True) -> None:
+    global _server, _thread, _started
     server = _server
     thread = _thread
-    _generation += 1
     _started = False
     try:
         if server is not None:
@@ -1423,11 +1536,94 @@ def stop_bridge() -> None:
             server.server_close()
     except Exception:
         pass
-    if thread is not None and thread is not threading.current_thread():
+    if join and thread is not None and thread is not threading.current_thread():
         try:
             thread.join(STOP_JOIN_TIMEOUT_SECONDS)
         except Exception:
             pass
+    _server = None
+    _thread = None
+
+
+def _start_http_listen() -> None:
+    global _server, _thread, _started, _last_error, _HOST
+    host = _listen_host()
+    _HOST = host
+    server = ThreadingHTTPServer((host, _PORT), _Handler)
+    server.allow_reuse_address = True
+    thread = threading.Thread(target=server.serve_forever, name="MSBTExternalBridge", daemon=True)
+    thread.start()
+    _server = server
+    _thread = thread
+    _started = True
+    _log(f"external bridge listening on http://{host}:{_PORT}")
+    if host == "0.0.0.0":
+        _log(
+            "LAN listen on. Windows Firewall may prompt on first bind; "
+            "allow private networks for Borderlands 4."
+        )
+
+
+def rebind_http() -> None:
+    """Restart the HTTP socket if LAN bind host changed. Never called from tests on 0.0.0.0."""
+
+    def _run() -> None:
+        global _last_error
+        time.sleep(0.12)
+        with _http_lock:
+            want = _listen_host()
+            bound = str(_HOST or "")
+            if _started and bound == want:
+                return
+            try:
+                _stop_http_listen()
+                _start_http_listen()
+                _refresh_status_snapshot(force=True)
+            except Exception as exc:
+                _last_error = repr(exc)
+                _log(f"bridge rebind failed: {exc!r}")
+
+    threading.Thread(target=_run, daemon=True, name="MSBTBridgeRebind").start()
+
+
+def start_bridge() -> None:
+    global _last_error, _generation, _started
+    if _started:
+        return
+    try:
+        mobile_lan.load()
+        mobile_lan.set_rebind_callback(rebind_http)
+    except Exception:
+        pass
+    _generation += 1
+    _register_tick_hook()
+    try:
+        with _http_lock:
+            _start_http_listen()
+        _refresh_status_snapshot(force=True)
+    except OSError as exc:
+        # Port already open usually means another copy/reload already started it.
+        _last_error = repr(exc)
+        _started = False
+        _unregister_tick_hook()
+        _stop_http_listen()
+    except Exception as exc:
+        _last_error = repr(exc)
+        _started = False
+        _unregister_tick_hook()
+        _stop_http_listen()
+
+
+def stop_bridge() -> None:
+    global _executing_rid, _generation
+    global _status_snapshot, _status_snapshot_at
+    _generation += 1
+    try:
+        mobile_lan.set_rebind_callback(None)
+    except Exception:
+        pass
+    with _http_lock:
+        _stop_http_listen()
     _unregister_tick_hook()
     with _lock:
         for waiter in _waiters.values():
@@ -1440,5 +1636,3 @@ def stop_bridge() -> None:
         _status_snapshot = None
         _status_snapshot_at = 0.0
         _record_sizes_locked()
-    _server = None
-    _thread = None

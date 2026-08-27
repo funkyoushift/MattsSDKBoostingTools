@@ -4,17 +4,17 @@ Android companion controller for Matt's SDK Boosting Tools.
 
 Package ID: `com.funkyoushift.msbt.mobile`
 
-Current beta: `0.1.0-beta.15` (recommended open beta)
+Current release: `1.0.0` (public; install over older mobile betas to keep local data)
 
 ## Phone download (static link)
 
-Bookmark this on your phone — it always points at the latest open-beta APK from CI:
+Bookmark this on your phone — it always points at the latest APK on GitHub Releases:
 
-https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/mobile-beta/MSBT-Mobile-Controller.apk
+https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Mobile-Controller.apk
 
-Prerelease page: https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/mobile-beta
+Release page: https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest
 
-Install/update over the previous beta (same package ID + signing) so bookmarks / Quick Menu / connection settings survive.
+Install/update over the previous build (same package ID + signing) so bookmarks / Quick Menu / connection settings survive.
 
 The mobile app is a **live cheat/controller companion**, not a mobile save editor.
 
@@ -51,7 +51,7 @@ Useful without a PC connection:
 - Quick Menu edits persist locally;
 - PC connection settings persist locally.
 
-## Live pairing (open beta)
+## Live pairing
 
 Desktop MSBT on this branch starts a **Mobile Gateway** on LAN port `49775` that proxies to the localhost SDK bridge (`127.0.0.1:49774`). The in-game bridge is not opened to all interfaces.
 
@@ -103,17 +103,17 @@ Future refresh behavior:
 
 Do not bundle the Android APK inside the Windows MSBT installer.
 
-Open beta downloads are public GitHub Release links (APK + desktop Mobile Gateway build + test kit). Share those links freely; do not post live pairing codes.
+Public downloads are GitHub Release links (APK on Latest + desktop installer). Share those links freely; do not post live pairing codes.
 
-Build workflow outputs two separate artifacts:
+Shipped APK names:
 
-- `MSBT-Mobile-Controller-0.1.0-beta.15.apk`
-- `MSBT-Mobile-Beta-Test-Kit-0.1.0-beta.15.zip`
+- `MSBT-Mobile-Controller.apk` (rolling, always current)
+- `MSBT-Mobile-Controller-1.0.0.apk` (versioned)
 
-See `BETA_TESTING.md` and the `test_kit/` folder for tester instructions, checklist, and Discord DM feedback format.
+See `BETA_TESTING.md` and the `test_kit/` folder for older tester notes. New installs should use Latest.
 
 ## Build
 
-The GitHub Actions workflow `.github/workflows/mobile-beta-build.yml` builds the Android beta from the `mobile-controller-prototype` branch.
+The GitHub Actions workflow `.github/workflows/mobile-beta-build.yml` is a legacy beta pipeline. Public APKs ship on the main GitHub Release with desktop MSBT.
 
 The APK catalog assets are generated from the same checked-in resources used by desktop MSBT so the multi-megabyte source catalogs are not duplicated under `mobile_controller/`.

@@ -1,9 +1,9 @@
 const $=(id)=>document.getElementById(id);
 const $$=(selector)=>[...document.querySelectorAll(selector)];
-const STORE={connection:'msbt.mobile.connection.v1',bookmarks:'msbt.mobile.bookmarks.v1',movement:'msbt.mobile.movement.v1',quick:'msbt.mobile.quick.v1',activity:'msbt.mobile.activity.v1',target:'msbt.mobile.target.v1',updateDismiss:'msbt.mobile.updateDismiss.v1'};
+const STORE={connection:'msbt.mobile.connection.v1',bookmarks:'msbt.mobile.bookmarks.v1',movement:'msbt.mobile.movement.v1',quick:'msbt.mobile.quick.v1',activity:'msbt.mobile.activity.v1',target:'msbt.mobile.target.v1',updateDismiss:'msbt.mobile.updateDismiss.v1',hoard:'msbt.mobile.hoard.v1'};
 const PLAYER_SCOPED=new Set(['max_all','max_currency','max_eridium','max_player_level','max_spec_level','max_sdu','give_currency','set_level','give_serial_selected','set_backpack_bank_selected','shiny_selected','movement_apply_all','movement_infinite_jump_selected_on','movement_infinite_jump_selected_off','movement_infinite_jump_toggle_selected','movement_teleport_to_slot','read_inventory','read_equipped_serials','read_backpack_serials']);
-const FALLBACK_APP_VERSION='0.1.0-beta.15';
-const state={online:false,bridgeOnline:false,codes:[],filteredCodes:[],selectedCodes:new Set(),activeQuickPage:0,quick:null,bookmarks:[],selectedBookmarks:new Set(),movementPicks:new Set(),connection:{},activity:[],players:[],selectedTarget:'',pollTimer:null,busy:false,inventory:{equipped:[],backpack:[],selected:null,selectedIds:new Set()},travel:{maps:[],stations:[],selectedMap:null,selectedStation:null,showAllStations:false},pools:{rows:[],selected:null},dev:{categories:{},actors:[],filtered:[],category:'All',selected:'',page:0,pageSize:80,warningAccepted:false},update:{currentVersion:FALLBACK_APP_VERSION,availableVersion:'',apkUrl:'',updateAvailable:false,checking:false,lastMessage:''}};
+const FALLBACK_APP_VERSION='1.0.0';
+const state={online:false,bridgeOnline:false,codes:[],filteredCodes:[],selectedCodes:new Set(),activeQuickPage:0,quick:null,quickEdit:false,quickSelectedSlot:0,quickSnapshot:null,quickLastCommand:null,bookmarks:[],selectedBookmarks:new Set(),movementPicks:new Set(),connection:{},activity:[],players:[],selectedTarget:'',pollTimer:null,busy:false,inventory:{equipped:[],backpack:[],selected:null,selectedIds:new Set()},travel:{maps:[],stations:[],selectedMap:null,selectedStation:null,showAllStations:false},pools:{rows:[],selected:null},dev:{categories:{},actors:[],filtered:[],category:'All',selected:'',page:0,pageSize:80,warningAccepted:false},hoard:{waves:[],selectedIndex:0,favorites:[],actorQuery:'',actorPage:0,showAllActors:false},xyzBookmarks:[],update:{currentVersion:FALLBACK_APP_VERSION,availableVersion:'',apkUrl:'',updateAvailable:false,checking:false,lastMessage:''}};
 const DEV_NEED_ACTOR=new Set(['dev_spawner_spawnai','dev_spawner_probeai','dev_spawner_cache','dev_spawner_spawn','dev_spawner_targets']);
 const read=(key,fallback)=>{try{return JSON.parse(localStorage.getItem(key))??fallback}catch{return fallback}};
 const write=(key,value)=>localStorage.setItem(key,JSON.stringify(value));
@@ -44,7 +44,7 @@ function setLiveEnabled(){
   const riskStatus=$('devRiskStatus');
   if(riskStatus){
     if(!state.dev.warningAccepted)riskStatus.textContent='Check the box, then tap Enable. Spawn actions also need a live PC connection.';
-    else if(!state.online)riskStatus.textContent='Enabled. Connect to desktop MSBT to fire spawn actions (buttons are tappable).';
+    else if(!state.online)riskStatus.textContent='Enabled. Connect to the game (or desktop gateway) to fire spawn actions (buttons are tappable).';
     else riskStatus.textContent='Enabled and connected. Spawn actions are ready.';
   }
 }
@@ -72,26 +72,150 @@ function targetDisplay(value){
   return player?playerLabel(player):resolved;
 }
 function currentTarget(){
-  return text(state.selectedTarget)||text($('boostTarget')&&$('boostTarget').value)||text($('controlTarget')&&$('controlTarget').value)||'';
+  return text(state.selectedTarget)||text($('boostTarget')&&$('boostTarget').value)||text($('qmTarget')&&$('qmTarget').value)||'';
 }
-function gatewayBase(){const address=text(state.connection.address);const port=text(state.connection.port)||'49775';if(!address)return '';return `http://${address}:${port}`}
+function gatewayBase(){const address=text(state.connection.address);const port=text(state.connection.port)||'49774';if(!address)return '';return `http://${address}:${port}`}
+function ensureDeviceToken(){
+  let token=text(state.connection&&state.connection.deviceToken);
+  if(token)return token;
+  const bytes=new Uint8Array(16);
+  if(window.crypto&&crypto.getRandomValues)crypto.getRandomValues(bytes);
+  else for(let i=0;i<bytes.length;i+=1)bytes[i]=Math.floor(Math.random()*256);
+  token=[...bytes].map((b)=>b.toString(16).padStart(2,'0')).join('');
+  state.connection=state.connection||{};
+  state.connection.deviceToken=token;
+  write(STORE.connection,state.connection);
+  return token;
+}
+function hasSavedPairing(){
+  return Boolean(text(state.connection.address)&&(text(state.connection.deviceToken)||text(state.connection.pairingCode)||text(state.connection.enrollNonce)));
+}
 function updateConnectionChrome(){
   const badge=$('connectionBadge');
-  const paired=Boolean(text(state.connection.address)&&text(state.connection.pairingCode));
+  const paired=hasSavedPairing();
   badge.textContent=state.online?'ONLINE':(paired?'SAVED':'OFFLINE');
   badge.className=`badge ${state.online?'online':'offline'}`;
   $('pcSummary').textContent=state.connection.name||state.connection.address||'Not paired';
-  $('desktopStatus').textContent=state.online?'Gateway online':'Offline';
+  $('desktopStatus').textContent=state.online?(state.connection.viaGateway?'Desktop gateway':'Optional'):'Optional';
   $('bridgeStatus').textContent=state.bridgeOnline?'Online':(state.online?'Waiting for game':'Offline');
-  $('homeStatusTitle').textContent=state.online?(state.bridgeOnline?'Connected to game':'Gateway online — start Borderlands 4'):(paired?'PC saved — tap Connect':'PC not paired');
+  $('homeStatusTitle').textContent=state.online?(state.bridgeOnline?'Connected to game':(state.connection.viaGateway?'Gateway online — start Borderlands 4':'Game reachable — waiting for live status')):(paired?'Saved — tap Connect':'Game not paired');
   $('homeStatusText').textContent=state.online
-    ? (state.bridgeOnline?'Live actions are enabled for this paired session.':'Desktop MSBT gateway is reachable. Launch Borderlands 4 with the MSBT SDK mod for live game actions.')
-    : 'Offline tools stay usable. Live actions unlock when desktop MSBT Mobile Gateway is paired on the same Wi‑Fi.';
+    ? (state.bridgeOnline?'Live actions are enabled. The desktop app is optional.':'Reachable on this Wi‑Fi. Launch Borderlands 4 with the MSBT SDK mod for live game actions.')
+    : 'Offline tools stay usable. Scan the in-game Pair QR (msbt_mobile_pair) or the desktop Mobile Gateway QR.';
   $('targetSummary').textContent=targetDisplay(state.selectedTarget);
   setLiveEnabled();
 }
 
-$$('[data-nav]').forEach((button)=>button.addEventListener('click',()=>{ $$('[data-nav]').forEach(x=>x.classList.remove('active'));button.classList.add('active');$$('.screen').forEach(screen=>screen.classList.toggle('active',screen.dataset.screen===button.dataset.nav));window.scrollTo(0,0)}));
+$$('[data-nav]').forEach((button)=>button.addEventListener('click',()=>showScreen(button.dataset.nav)));
+function showScreen(name,{scroll=true}={}){
+  const screenName=text(name);
+  if(!screenName)return false;
+  const screen=document.querySelector(`.screen[data-screen="${screenName}"]`);
+  if(!screen)return false;
+  $$('[data-nav]').forEach((nav)=>nav.classList.toggle('active',nav.dataset.nav===screenName));
+  $$('.screen').forEach((node)=>node.classList.toggle('active',node===screen));
+  if(scroll)window.scrollTo(0,0);
+  const activeNav=document.querySelector(`[data-nav="${screenName}"]`);
+  if(activeNav)requestAnimationFrame(()=>{try{activeNav.scrollIntoView({inline:'nearest',block:'nearest',behavior:'smooth'})}catch{/* ignore */}});
+  if(screenName==='quick'){
+    renderQuick();
+    populateQuickActionSelect();
+    void refreshQuickLastCommand({quiet:true});
+    if(state.online&&!state.quickSnapshot)void pullQuickMenuFromPc({quiet:true});
+  }
+  if(screenName==='travel'&&state.online)void refreshXyzBookmarks({quiet:true});
+  if(screenName==='hoard')renderHoardPlan();
+  return true;
+}
+$$('[data-goto-screen]').forEach((button)=>button.addEventListener('click',()=>showScreen(button.dataset.gotoScreen)));
+const APP_FINDER=[
+  {title:'Home',hint:'Status and pairing',aliases:'status pair qr connect',screen:'home'},
+  {title:'Boost',hint:'Max, UVH, serials, rarity',aliases:'max all cash uvh serial rarity',screen:'boost'},
+  {title:'Instant Drops',hint:'Boost live toggle',aliases:'instant drops loot',screen:'boost',focus:'instantDropsToggleBtn'},
+  {title:'Instant Holds',hint:'Boost live toggle',aliases:'instant holds interact',screen:'boost',focus:'instantHoldsToggleBtn'},
+  {title:'Third Person',hint:'Client-local camera',aliases:'tpc third person camera',screen:'boost',focus:'thirdPersonToggleBtn'},
+  {title:'Combat XP',hint:'CXP multiplier',aliases:'cxp xp multiplier combat',screen:'boost',focus:'cxpToggleBtn'},
+  {title:'Quick Menu',hint:'F7 slots and editor',aliases:'qm f7 slots editor pin',screen:'quick'},
+  {title:'BL4 Codes',hint:'Catalog delivery',aliases:'codes lootlemon legit modded',screen:'codes'},
+  {title:'Inventory',hint:'Equipped and backpack',aliases:'backpack equipped serials',screen:'inventory'},
+  {title:'Serial Bookmarks',hint:'Saved @U serials',aliases:'bookmarks saved serials marks',screen:'bookmarks'},
+  {title:'Map Travel',hint:'Maps and stations',aliases:'maps stations teleport world',screen:'travel'},
+  {title:'XYZ Location Bookmarks',hint:'Save / go coords',aliases:'xyz coords location bookmark farm spot',screen:'travel',focus:'xyzBookmarkPanel'},
+  {title:'Movement',hint:'Speed, jump, fly, loot',aliases:'speed jump fly noclip dash',screen:'movement'},
+  {title:'Item Pools',hint:'Spawn from pool',aliases:'itempool spawn pool',screen:'pools'},
+  {title:'Hoard Builder',hint:'Enemy waves',aliases:'hoard waves enemies spawn raid',screen:'hoard'},
+  {title:'Dev Spawner',hint:'ASD actors',aliases:'spawn asd barrel logo actors',screen:'spawn'},
+  {title:'Connection Settings',hint:'Pair QR / Wi-Fi',aliases:'pair qr wifi port gateway connection',screen:'more',focus:'connectionPanel',openPanel:true},
+  {title:'Activity Log',hint:'Recent actions',aliases:'log history activity',screen:'more',focus:'activityPanel',openPanel:true},
+  {title:'About',hint:'Version and updates',aliases:'about version update',screen:'more',focus:'aboutPanel',openPanel:true}
+];
+function finderHaystack(entry){
+  return `${entry.title} ${entry.hint||''} ${entry.aliases||''} ${entry.screen||''}`.toLowerCase();
+}
+function renderAppFinder(query){
+  const box=$('appFinderResults');
+  if(!box)return;
+  const q=text(query).toLowerCase();
+  const hits=APP_FINDER.filter((entry)=>!q||finderHaystack(entry).includes(q)).slice(0,12);
+  if(!q||!hits.length){
+    box.innerHTML='';
+    box.classList.add('hidden');
+    box.hidden=true;
+    return;
+  }
+  box.hidden=false;
+  box.classList.remove('hidden');
+  box.innerHTML='';
+  hits.forEach((entry,index)=>{
+    const button=document.createElement('button');
+    button.type='button';
+    button.setAttribute('role','option');
+    if(index===0)button.classList.add('active');
+    button.innerHTML=`${esc(entry.title)}<small>${esc(entry.hint||entry.screen)}</small>`;
+    button.addEventListener('click',()=>jumpAppFinder(entry));
+    box.appendChild(button);
+  });
+}
+function jumpAppFinder(entry){
+  const input=$('appFinderInput');
+  if(input)input.blur();
+  const box=$('appFinderResults');
+  if(box){box.innerHTML='';box.classList.add('hidden');box.hidden=true}
+  showScreen(entry.screen);
+  if(entry.openPanel&&entry.focus)openPanel(entry.focus,{scroll:true});
+  else if(entry.focus){
+    const node=$(entry.focus);
+    if(node){
+      node.classList.remove('hidden');
+      requestAnimationFrame(()=>{
+        try{node.scrollIntoView({behavior:'smooth',block:'start'})}catch{node.scrollIntoView()}
+        node.classList.add('finder-flash');
+        window.setTimeout(()=>node.classList.remove('finder-flash'),1400);
+      });
+    }
+  }
+}
+(function wireAppFinder(){
+  const input=$('appFinderInput');
+  const box=$('appFinderResults');
+  if(!input||!box)return;
+  input.addEventListener('input',()=>renderAppFinder(input.value));
+  input.addEventListener('focus',()=>renderAppFinder(input.value));
+  input.addEventListener('keydown',(event)=>{
+    if(event.key==='Escape'){
+      box.innerHTML='';box.classList.add('hidden');box.hidden=true;input.blur();
+      return;
+    }
+    if(event.key==='Enter'){
+      const first=box.querySelector('button');
+      if(first){event.preventDefault();first.click()}
+    }
+  });
+  document.addEventListener('click',(event)=>{
+    if(event.target===input||box.contains(event.target))return;
+    box.classList.add('hidden');box.hidden=true;
+  });
+})();
 function openPanel(panelId,{scroll=true}={}){
   const panel=$(panelId);
   if(!panel)return false;
@@ -372,9 +496,7 @@ if(bookmarkUseBoostBtn)bookmarkUseBoostBtn.addEventListener('click',()=>{
   $('boostSerialText').value=serial;
   boostConfirmed='';
   $('boostSerialStatus').textContent='Loaded from bookmark — validate/confirm before send.';
-  $$('[data-nav]').forEach((nav)=>nav.classList.toggle('active',nav.dataset.nav==='boost'));
-  $$('.screen').forEach((node)=>node.classList.toggle('active',node.dataset.screen==='boost'));
-  window.scrollTo(0,0);
+  showScreen('boost');
   logActivity('Loaded bookmark serial into Boost sender.');
 });
 if($('bookmarkClearSelection'))$('bookmarkClearSelection').addEventListener('click',()=>{state.selectedBookmarks=new Set();renderBookmarks()});
@@ -459,8 +581,11 @@ async function pullQuickMenuFromPc({quiet=false}={}){
       return true;
     }
     state.quick=remote;
+    state.quickSnapshot=result.data||{};
     write(STORE.quick,state.quick);
     renderQuick();
+    populateQuickActionSelect();
+    syncQuickEditorFromSnapshot();
     $('quickSyncStatus').textContent=`Loaded live Quick Menu from PC (revision ${state.quick.baseRevision||'n/a'}).`;
     if(!quiet)logActivity('Pulled live Quick Menu layout from PC.');
     return true;
@@ -471,8 +596,97 @@ async function pullQuickMenuFromPc({quiet=false}={}){
     return false;
   }
 }
-function renderQuick(){const pages=$('quickPages');pages.innerHTML='';state.quick.pages.forEach((page,i)=>{const b=document.createElement('button');b.textContent=`${i+1}`;b.classList.toggle('active',i===state.activeQuickPage);b.addEventListener('click',()=>{state.activeQuickPage=i;renderQuick()});pages.appendChild(b)});$('quickPageLabel').textContent=`Page ${state.activeQuickPage+1} / ${state.quick.pages.length}`;const grid=$('quickGrid');grid.innerHTML='';state.quick.pages[state.activeQuickPage].slots.forEach(slot=>{const b=document.createElement('button');b.textContent=slot.label||`Slot ${slot.slot}`;if(slot.renamed)b.classList.add('dirty');if(!slot.commandId)b.classList.add('empty');b.addEventListener('click',()=>void activateQuickSlot(slot));grid.appendChild(b)})}
-async function activateQuickSlot(slot){
+function selectedQuickSlot(){
+  const page=state.quick&&state.quick.pages&&state.quick.pages[state.activeQuickPage];
+  const slots=page&&Array.isArray(page.slots)?page.slots:[];
+  return slots[state.quickSelectedSlot]||null;
+}
+function populateQuickActionSelect(){
+  const select=$('quickActionSelect');
+  if(!select)return;
+  const snapshot=state.quickSnapshot||{};
+  const catalog=snapshot.catalog&&typeof snapshot.catalog==='object'?snapshot.catalog:{};
+  const actions=Array.isArray(snapshot.assignable_actions)?snapshot.assignable_actions:Object.keys(catalog).filter((key)=>catalog[key]&&catalog[key].assignable);
+  const q=text($('quickActionSearch')&&$('quickActionSearch').value).toLowerCase();
+  const current=select.value;
+  const filtered=actions.filter((action)=>{
+    const meta=catalog[action]||{};
+    const hay=`${action} ${meta.basic||''} ${(meta.aliases||[]).join(' ')}`.toLowerCase();
+    return !q||hay.includes(q);
+  });
+  select.innerHTML='';
+  if(!filtered.length){
+    const opt=document.createElement('option');
+    opt.value='';
+    opt.textContent=actions.length?'No commands match':'Pull from game to load commands';
+    select.appendChild(opt);
+    return;
+  }
+  filtered.forEach((action)=>{
+    const meta=catalog[action]||{};
+    const opt=document.createElement('option');
+    opt.value=action;
+    opt.textContent=String(meta.basic||action);
+    select.appendChild(opt);
+  });
+  const slot=selectedQuickSlot();
+  const prefer=slot&&slot.commandId&&filtered.includes(slot.commandId)?slot.commandId:(filtered.includes(current)?current:filtered[0]);
+  select.value=prefer;
+}
+function syncQuickEditorFromSnapshot(){
+  const layout=state.quickSnapshot&&state.quickSnapshot.layout;
+  const chrome=layout&&layout.chrome&&typeof layout.chrome==='object'?layout.chrome:{};
+  const rarity=$('quickRarityPanel');
+  if(rarity&&document.activeElement!==rarity)rarity.checked=Boolean(chrome.rarity_panel_equipped);
+  const slot=selectedQuickSlot();
+  if($('quickSelectedSummary')){
+    if(!slot)$('quickSelectedSummary').textContent='Select a slot in Edit Mode.';
+    else if(slot.commandId)$('quickSelectedSummary').textContent=`Page ${state.activeQuickPage+1} · Slot ${slot.slot}: ${slot.label} (${slot.commandId})`;
+    else $('quickSelectedSummary').textContent=`Page ${state.activeQuickPage+1} · Slot ${slot.slot}: empty`;
+  }
+  if($('quickCustomLabel')&&document.activeElement!==$('quickCustomLabel'))$('quickCustomLabel').value=slot&&slot.renamed?text(slot.label):'';
+  if($('quickEditMode'))$('quickEditMode').textContent=state.quickEdit?'Edit Mode: On':'Edit Mode: Off';
+  if($('quickLastCommand')){
+    const cmd=state.quickLastCommand;
+    $('quickLastCommand').textContent=cmd&&cmd.action?`Last command: ${cmd.label||cmd.action}`:'No last command yet.';
+  }
+}
+function renderQuick(){
+  const pages=$('quickPages');
+  if(!pages||!state.quick)return;
+  pages.innerHTML='';
+  state.quick.pages.forEach((page,i)=>{
+    const b=document.createElement('button');
+    b.textContent=`${i+1}`;
+    b.classList.toggle('active',i===state.activeQuickPage);
+    b.addEventListener('click',()=>{state.activeQuickPage=i;state.quickSelectedSlot=0;renderQuick();populateQuickActionSelect();syncQuickEditorFromSnapshot()});
+    pages.appendChild(b);
+  });
+  $('quickPageLabel').textContent=`Page ${state.activeQuickPage+1} / ${state.quick.pages.length}`;
+  const grid=$('quickGrid');
+  grid.innerHTML='';
+  state.quick.pages[state.activeQuickPage].slots.forEach((slot,index)=>{
+    const b=document.createElement('button');
+    b.textContent=slot.label||`Slot ${slot.slot}`;
+    if(slot.renamed)b.classList.add('dirty');
+    if(!slot.commandId)b.classList.add('empty');
+    if(index===state.quickSelectedSlot)b.classList.add('selected');
+    b.addEventListener('click',()=>void activateQuickSlot(slot,index));
+    grid.appendChild(b);
+  });
+  syncQuickEditorFromSnapshot();
+}
+async function activateQuickSlot(slot,index){
+  if(typeof index==='number')state.quickSelectedSlot=index;
+  if(state.quickEdit){
+    const select=$('quickActionSelect');
+    if(select&&slot.commandId)select.value=slot.commandId;
+    if($('quickCustomLabel'))$('quickCustomLabel').value=slot.renamed?text(slot.label):'';
+    renderQuick();
+    populateQuickActionSelect();
+    syncQuickEditorFromSnapshot();
+    return;
+  }
   if(state.online&&slot.commandId){
     try{
       const fakeButton={dataset:{action:slot.commandId},_quickPayload:slot.payload&&typeof slot.payload==='object'?slot.payload:{}};
@@ -485,16 +699,128 @@ async function activateQuickSlot(slot){
     return;
   }
   if(!state.online&&slot.commandId){
-    alert('Connect to desktop MSBT first, then tap the Quick Menu slot to fire it.');
+    alert('Connect first, then tap the Quick Menu slot to fire it. Turn Edit Mode on to assign slots.');
     return;
   }
-  const label=prompt(slot.commandId?'Rename Quick Menu label':`Empty slot ${slot.slot}. Connect and Pull From PC to load the live F7 menu, or set a local label.`,slot.label||`Slot ${slot.slot}`);
-  if(label===null)return;
-  slot.label=text(label)||`Slot ${slot.slot}`;
-  slot.renamed=true;
-  saveQuick();
+  state.quickEdit=true;
   renderQuick();
+  syncQuickEditorFromSnapshot();
 }
+async function saveQuickMenuSlotToGame(){
+  const action=text($('quickActionSelect')&&$('quickActionSelect').value);
+  if(!action){alert('Choose a command first. Pull from game if the list is empty.');return}
+  if(!state.online){alert('Connect first to save Quick Menu slots to the game.');return}
+  const custom=text($('quickCustomLabel')&&$('quickCustomLabel').value);
+  const slot=selectedQuickSlot();
+  const payload=slot&&slot.payload&&typeof slot.payload==='object'?slot.payload:{};
+  const result=await gatewayAction('quick_menu_assign_slot',{
+    page:state.activeQuickPage,
+    slot:state.quickSelectedSlot,
+    action,
+    label_mode:custom?'custom':'basic',
+    custom_label:custom,
+    command_payload:payload
+  },20000);
+  if(!result.ok)throw new Error((result.data&&(result.data.message||result.data.error))||'Could not save slot.');
+  if(result.data&&result.data.layout){
+    state.quickSnapshot=Object.assign({},state.quickSnapshot||{},result.data);
+    state.quick=mapBridgeQuickMenu(state.quickSnapshot);
+    state.quick.dirty=false;
+    write(STORE.quick,state.quick);
+  }else{
+    await pullQuickMenuFromPc({quiet:true});
+  }
+  renderQuick();
+  populateQuickActionSelect();
+  $('quickSyncStatus').textContent=(result.data&&result.data.message)||`Saved page ${state.activeQuickPage+1}, slot ${state.quickSelectedSlot+1}.`;
+  logActivity(`Quick Menu slot saved: ${action}`);
+}
+async function clearQuickMenuSlotOnGame(){
+  if(!state.online){alert('Connect first to clear a live Quick Menu slot.');return}
+  const result=await gatewayAction('quick_menu_assign_slot',{page:state.activeQuickPage,slot:state.quickSelectedSlot,action:''},20000);
+  if(!result.ok)throw new Error((result.data&&(result.data.message||result.data.error))||'Could not clear slot.');
+  if(result.data&&result.data.layout){
+    state.quickSnapshot=Object.assign({},state.quickSnapshot||{},result.data);
+    state.quick=mapBridgeQuickMenu(state.quickSnapshot);
+    write(STORE.quick,state.quick);
+  }else await pullQuickMenuFromPc({quiet:true});
+  renderQuick();
+  $('quickSyncStatus').textContent=(result.data&&result.data.message)||'Slot cleared.';
+}
+async function clearQuickMenuPageOnGame(){
+  if(!state.online){alert('Connect first to clear this Quick Menu page.');return}
+  if(!window.confirm(`Clear all 21 slots on page ${state.activeQuickPage+1}?`))return;
+  const result=await gatewayAction('quick_menu_clear_page',{page:state.activeQuickPage},20000);
+  if(!result.ok)throw new Error((result.data&&(result.data.message||result.data.error))||'Could not clear page.');
+  await pullQuickMenuFromPc({quiet:true});
+  $('quickSyncStatus').textContent=(result.data&&result.data.message)||`Cleared page ${state.activeQuickPage+1}.`;
+}
+async function pinLastCommandToQuickSlot(){
+  const command=state.quickLastCommand;
+  if(!command||!command.action){alert('No last command to pin. Run a live action first.');return}
+  const catalog=state.quickSnapshot&&state.quickSnapshot.catalog;
+  if(catalog&&(!catalog[command.action]||!catalog[command.action].assignable)){
+    alert(`${command.action} is not assignable to Quick Menu.`);
+    return;
+  }
+  if($('quickActionSelect')){
+    populateQuickActionSelect();
+    $('quickActionSelect').value=command.action;
+  }
+  if($('quickCustomLabel'))$('quickCustomLabel').value=text(command.label);
+  const result=await gatewayAction('quick_menu_assign_slot',{
+    page:state.activeQuickPage,
+    slot:state.quickSelectedSlot,
+    action:command.action,
+    label_mode:text(command.label)?'custom':'basic',
+    custom_label:text(command.label),
+    command_payload:command.payload&&typeof command.payload==='object'?command.payload:{}
+  },20000);
+  if(!result.ok)throw new Error((result.data&&(result.data.message||result.data.error))||'Pin failed.');
+  await pullQuickMenuFromPc({quiet:true});
+  $('quickSyncStatus').textContent=`Pinned ${command.label||command.action} to slot ${state.quickSelectedSlot+1}.`;
+}
+async function setQuickRarityPanel(equipped){
+  if(!state.online){alert('Connect first to change F7 modules.');return}
+  const layout=(state.quickSnapshot&&state.quickSnapshot.layout)||{};
+  const chrome=Object.assign({},layout.chrome||{},{rarity_panel_equipped:Boolean(equipped)});
+  const result=await gatewayAction('quick_menu_set_layout',{
+    pages:layout.pages,
+    page:state.activeQuickPage,
+    edit_mode:layout.edit_mode,
+    drop_lock:layout.drop_lock,
+    chrome
+  },20000);
+  if(!result.ok)throw new Error((result.data&&(result.data.message||result.data.error))||'Could not update F7 modules.');
+  if(result.data&&result.data.layout){
+    state.quickSnapshot=Object.assign({},state.quickSnapshot||{},result.data);
+  }
+  syncQuickEditorFromSnapshot();
+  $('quickSyncStatus').textContent=equipped?'Rarity sliders equipped on F7.':'Rarity sliders removed from F7.';
+}
+async function refreshQuickLastCommand({quiet=true}={}){
+  if(!state.online)return;
+  try{
+    const status=await gatewayFetch('/status',{timeoutMs:8000});
+    if(status.data&&status.data.last_command)state.quickLastCommand=status.data.last_command;
+    syncQuickEditorFromSnapshot();
+  }catch(error){
+    if(!quiet)alert(error&&error.message?error.message:String(error));
+  }
+}
+if($('quickEditMode'))$('quickEditMode').addEventListener('click',()=>{
+  state.quickEdit=!state.quickEdit;
+  renderQuick();
+});
+if($('quickActionSearch'))$('quickActionSearch').addEventListener('input',populateQuickActionSelect);
+if($('quickSaveSlot'))$('quickSaveSlot').addEventListener('click',()=>void saveQuickMenuSlotToGame().catch((error)=>alert(error&&error.message?error.message:String(error))));
+if($('quickClearSlot'))$('quickClearSlot').addEventListener('click',()=>void clearQuickMenuSlotOnGame().catch((error)=>alert(error&&error.message?error.message:String(error))));
+if($('quickClearPage'))$('quickClearPage').addEventListener('click',()=>void clearQuickMenuPageOnGame().catch((error)=>alert(error&&error.message?error.message:String(error))));
+if($('quickPinLast'))$('quickPinLast').addEventListener('click',()=>void pinLastCommandToQuickSlot().catch((error)=>alert(error&&error.message?error.message:String(error))));
+if($('quickRarityPanel'))$('quickRarityPanel').addEventListener('change',()=>void setQuickRarityPanel(Boolean($('quickRarityPanel').checked)).catch((error)=>{
+  alert(error&&error.message?error.message:String(error));
+  syncQuickEditorFromSnapshot();
+}));
 const quickPullPcBtn=$('quickPullPc');
 if(quickPullPcBtn)quickPullPcBtn.addEventListener('click',()=>void pullQuickMenuFromPc());
 function mergeQuickLayouts(remote,local){const result=structuredClone(remote);const remoteByCommand=new Map();result.pages.forEach((p,pi)=>p.slots.forEach((s,si)=>{if(s.commandId)remoteByCommand.set(s.commandId,{p:pi,s:si})}));local.pages.forEach(page=>page.slots.forEach(localSlot=>{if(!localSlot.commandId&&!localSlot.renamed)return;const match=localSlot.commandId?remoteByCommand.get(localSlot.commandId):null;if(match){const target=result.pages[match.p].slots[match.s];if(localSlot.renamed)target.label=localSlot.label}else if(localSlot.commandId||localSlot.renamed){let page=result.pages[result.pages.length-1];let open=page.slots.find(s=>!s.commandId);if(!open&&result.pages.length<5){page={name:`Page ${result.pages.length+1}`,slots:Array.from({length:21},(_,i)=>({slot:i+1,commandId:'',label:`Slot ${i+1}`,payload:null,renamed:false}))};result.pages.push(page);open=page.slots[0]}if(open)Object.assign(open,structuredClone(localSlot))}}));result.dirty=false;result.baseRevision=remote.localRevision||remote.baseRevision||'';result.localRevision=now();return result}
@@ -551,19 +877,23 @@ async function gatewayFetch(route,{method='GET',payload=null,timeoutMs=15000,req
   const base=gatewayBase();
   if(!base)throw new Error('Enter a PC address first.');
   const pairingCode=text(state.connection.pairingCode);
-  if(requirePairing&&!pairingCode)throw new Error('Enter the pairing code from desktop MSBT → Mobile Gateway tab.');
+  const token=ensureDeviceToken();
+  if(requirePairing&&!pairingCode&&!token&&!text(state.connection.enrollNonce)){
+    throw new Error('Scan the in-game Pair QR, or enter a desktop pairing code.');
+  }
   const controller=new AbortController();
   const timer=setTimeout(()=>controller.abort(),timeoutMs);
   try{
     const headers={'Content-Type':'application/json',Accept:'application/json'};
-    if(requirePairing)headers['X-MSBT-Pairing-Code']=pairingCode;
+    if(token)headers['X-MSBT-Device']=token;
+    if(requirePairing&&pairingCode)headers['X-MSBT-Pairing-Code']=pairingCode;
     const response=await fetch(`${base}${route}`,{method,headers,body:payload==null?undefined:JSON.stringify(payload),signal:controller.signal});
     const raw=await response.text();
     let data={};
     try{data=raw?JSON.parse(raw):{}}catch{data={ok:response.ok,message:raw}}
     return {ok:response.ok&&data.ok!==false,status:response.status,data};
   }catch(error){
-    const message=error&&error.name==='AbortError'?'Connection timed out.':'Could not reach desktop MSBT gateway. Same Wi‑Fi? Firewall allowing port 49775? Desktop app open?';
+    const message=error&&error.name==='AbortError'?'Connection timed out.':'Could not reach the game on this Wi‑Fi. Firewall allowing port 49774? Overlay LAN listen on? Desktop gateway on 49775 is a fallback.';
     throw new Error(message);
   }finally{clearTimeout(timer)}
 }
@@ -573,6 +903,32 @@ async function gatewayAction(action,payload={},timeoutMs=30000){
   return result;
 }
 
+function applyLiveModsFromStatus(data){
+  const cxp=data&&data.cxp&&typeof data.cxp==='object'?data.cxp:null;
+  const drops=data&&data.instant_drops&&typeof data.instant_drops==='object'?data.instant_drops:null;
+  const holds=data&&data.instant_holds&&typeof data.instant_holds==='object'?data.instant_holds:null;
+  const tpc=data&&data.third_person&&typeof data.third_person==='object'?data.third_person:null;
+  const bits=[];
+  if(cxp)bits.push(`Combat XP ${cxp.enabled?'ON':'OFF'}`);
+  if(drops)bits.push(`Drops ${drops.enabled?'ON':'OFF'}`);
+  if(holds)bits.push(`Holds ${holds.enabled?'ON':'OFF'}`);
+  if(tpc)bits.push(`Third Person ${tpc.enabled?'ON':'OFF'}`);
+  const el=$('liveModsSummary');
+  if(el)el.textContent=bits.length?bits.join(' · '):'Connect to see Instant Drops, Instant Holds, Third Person, and Combat XP.';
+  const setToggle=(id,enabled,onLabel,offLabel)=>{
+    const btn=$(id);
+    if(!btn)return;
+    btn.textContent=enabled?onLabel:offLabel;
+    btn.classList.toggle('live-toggle-on',Boolean(enabled));
+  };
+  setToggle('instantDropsToggleBtn',drops&&drops.enabled,'Instant Drops: On','Instant Drops: Off');
+  setToggle('instantHoldsToggleBtn',holds&&holds.enabled,'Instant Holds: On','Instant Holds: Off');
+  setToggle('thirdPersonToggleBtn',tpc&&tpc.enabled,'Third Person: On','Third Person: Off');
+  setToggle('cxpToggleBtn',cxp&&cxp.enabled,'Combat XP: On','Combat XP: Off');
+  if(cxp&&cxp.multiplier!=null&&$('cxpMultiplier')&&document.activeElement!==$('cxpMultiplier')){
+    $('cxpMultiplier').value=String(cxp.multiplier);
+  }
+}
 function applyStatus(data){
   state.bridgeOnline=Boolean(data&&data.ok!==false&&(data.started||data.players||data.name));
   state.players=Array.isArray(data&&data.players)?data.players:[];
@@ -583,23 +939,39 @@ function applyStatus(data){
     : '';
   const fromStatus=resolveTargetValue(statusValue,state.players);
   const saved=read(STORE.target,{});
-  // Prefer the phone's current/saved pick so status polls do not wipe Boost/Control selection.
-  let next=resolveTargetValue(state.selectedTarget,state.players);
+  // Bridge is source of truth so phone and desktop stay aligned.
+  let next=fromStatus;
+  if(!next)next=resolveTargetValue(state.selectedTarget,state.players);
   if(!next)next=resolveTargetValue(saved.target,state.players);
-  if(!next)next=fromStatus;
   if(state.players.length)state.selectedTarget=next||'';
   else if(text(saved.target))state.selectedTarget=text(saved.target);
+  if(fromStatus)write(STORE.target,{target:fromStatus});
+  if(data&&data.last_command)state.quickLastCommand=data.last_command;
+  applyLiveModsFromStatus(data);
+  if(Array.isArray(data&&data.location_bookmarks))renderXyzBookmarks(data.location_bookmarks);
   fillPlayerSelects();
   updateConnectionChrome();
+  syncQuickEditorFromSnapshot();
 }
 
 async function connectGateway({quiet=false, hostCandidates=null}={}){
-  state.connection={name:text($('pcName').value)||state.connection.name||'',address:text($('pcAddress').value)||state.connection.address||'',port:text($('pcPort').value)||state.connection.port||'49775',pairingCode:text($('pairingCode').value)||state.connection.pairingCode||'',updated_at:now()};
+  ensureDeviceToken();
+  state.connection={
+    name:text($('pcName')&&$('pcName').value)||state.connection.name||'',
+    address:text($('pcAddress')&&$('pcAddress').value)||state.connection.address||'',
+    port:text($('pcPort')&&$('pcPort').value)||state.connection.port||'49774',
+    pairingCode:text($('pairingCode')&&$('pairingCode').value)||state.connection.pairingCode||'',
+    deviceToken:text(state.connection.deviceToken),
+    enrollNonce:text(state.connection.enrollNonce),
+    hosts:Array.isArray(state.connection.hosts)?state.connection.hosts:[],
+    viaGateway:Boolean(state.connection.viaGateway),
+    updated_at:now()
+  };
   write(STORE.connection,state.connection);
-  if(!text(state.connection.address)||!text(state.connection.pairingCode)){
+  if(!text(state.connection.address)){
     state.online=false;state.bridgeOnline=false;updateConnectionChrome();
-    const message='Save a PC address and pairing code first.';
-    $('connectionStatus').textContent=message;
+    const message='Save a PC address first, then scan the Pair QR.';
+    if($('connectionStatus'))$('connectionStatus').textContent=message;
     if(!quiet)alert(message);
     return false;
   }
@@ -608,44 +980,73 @@ async function connectGateway({quiet=false, hostCandidates=null}={}){
   if(Array.isArray(hostCandidates))hostCandidates.forEach(pushHost);
   pushHost(state.connection.address);
   if(Array.isArray(state.connection.hosts))state.connection.hosts.forEach(pushHost);
-  let lastError='Could not reach desktop MSBT gateway.';
+  const ports=[];
+  const pushPort=(value)=>{const port=text(value);if(port&&!ports.includes(port))ports.push(port)};
+  pushPort(state.connection.port||'49774');
+  pushPort('49774');
+  pushPort('49775');
+  let lastError='Could not reach the game bridge.';
   for(let i=0;i<hosts.length;i+=1){
     const host=hosts[i];
-    state.connection.address=host;
-    if($('pcAddress'))$('pcAddress').value=host;
-    write(STORE.connection,state.connection);
-    try{
-      const ping=await gatewayFetch('/mobile/ping',{requirePairing:false,timeoutMs:5000});
-      if(!ping.ok&&ping.status)throw new Error((ping.data&&ping.data.message)||'Gateway ping failed.');
-      const status=await gatewayFetch('/status',{timeoutMs:8000});
-      if(status.status===401)throw new Error('Invalid pairing code. Scan the QR again or copy the current code from desktop MSBT → Mobile Gateway tab.');
-      if(status.status===0)throw new Error((status.data&&status.data.message)||'Could not reach desktop MSBT gateway.');
-      // 502 means gateway is up but the in-game SDK bridge is offline — still a successful pair.
-      if(!status.ok&&status.status!==502)throw new Error((status.data&&status.data.message)||`Gateway returned HTTP ${status.status}.`);
-      state.online=true;
-      applyStatus(status.status===502?{ok:false}:status.data||{});
-      const message=state.bridgeOnline
-        ? `Connected to ${state.connection.address}:${state.connection.port||49775}. Game bridge online (${state.players.length} player(s)).`
-        : `Gateway reachable at ${state.connection.address}:${state.connection.port||49775}. Start Borderlands 4 with MSBT for live actions.`;
-      $('connectionStatus').textContent=message;
-      if(!quiet)logActivity(message);
-      startStatusPolling();
-      if(state.bridgeOnline){
-        void pullQuickMenuFromPc({quiet:true});
-        void pullDesktopBookmarks({quiet:true});
-      }
-      requestUpdateCheck({quiet:true,reason:'connect'});
-      return true;
-    }catch(error){
-      lastError=error&&error.message?error.message:String(error);
-      if(i<hosts.length-1){
-        $('connectionStatus').textContent=`Trying next PC address (${hosts[i+1]})…`;
-        continue;
+    for(let p=0;p<ports.length;p+=1){
+      const port=ports[p];
+      state.connection.address=host;
+      state.connection.port=port;
+      if($('pcAddress'))$('pcAddress').value=host;
+      if($('pcPort'))$('pcPort').value=port;
+      write(STORE.connection,state.connection);
+      try{
+        const ping=await gatewayFetch('/mobile/ping',{requirePairing:false,timeoutMs:5000});
+        if(!ping.ok&&ping.status)throw new Error((ping.data&&ping.data.message)||'Ping failed.');
+        const direct=Boolean(ping.data&&ping.data.direct)&&ping.data.service!=='msbt-mobile-gateway';
+        state.connection.viaGateway=!direct;
+        if(direct&&text(state.connection.enrollNonce)){
+          const enroll=await gatewayFetch('/mobile/enroll',{
+            method:'POST',
+            requirePairing:false,
+            timeoutMs:8000,
+            payload:{nonce:state.connection.enrollNonce,device:ensureDeviceToken(),name:state.connection.name||'Phone'}
+          });
+          if(enroll.ok&&enroll.data&&enroll.data.device){
+            state.connection.deviceToken=text(enroll.data.device);
+          }
+          if(!enroll.ok&&enroll.status===401){
+            // Overlay may already have enrolled this token; fall through to /status.
+          }else if(!enroll.ok&&enroll.status&&enroll.status!==401){
+            throw new Error((enroll.data&&enroll.data.message)||`Enroll returned HTTP ${enroll.status}.`);
+          }
+        }
+        const status=await gatewayFetch('/status',{timeoutMs:8000,requirePairing:!direct});
+        if(status.status===401)throw new Error(direct
+          ?'Phone not paired. Open in-game Phone Pairing and scan the Pair QR.'
+          :'Invalid pairing code. Scan the QR again or copy the current code from desktop MSBT → Mobile Gateway tab.');
+        if(status.status===0)throw new Error((status.data&&status.data.message)||'Could not reach the game.');
+        if(!status.ok&&status.status!==502)throw new Error((status.data&&status.data.message)||`HTTP ${status.status}.`);
+        state.online=true;
+        write(STORE.connection,state.connection);
+        applyStatus(status.status===502?{ok:false}:status.data||{});
+        const message=state.bridgeOnline
+          ? `Connected to game at ${state.connection.address}:${state.connection.port} (${state.players.length} player(s)). Desktop app optional.`
+          : (direct
+            ? `Game port reachable at ${state.connection.address}:${state.connection.port}. Waiting for live status.`
+            : `Desktop gateway reachable at ${state.connection.address}:${state.connection.port}. Start Borderlands 4 with MSBT for live actions.`);
+        if($('connectionStatus'))$('connectionStatus').textContent=message;
+        if(!quiet)logActivity(message);
+        startStatusPolling();
+        if(state.bridgeOnline){
+          void pullQuickMenuFromPc({quiet:true});
+          void pullDesktopBookmarks({quiet:true});
+        }
+        requestUpdateCheck({quiet:true,reason:'connect'});
+        return true;
+      }catch(error){
+        lastError=error&&error.message?error.message:String(error);
+        if($('connectionStatus'))$('connectionStatus').textContent=`Trying ${host}:${port}…`;
       }
     }
   }
   state.online=false;state.bridgeOnline=false;state.players=[];fillPlayerSelects();updateConnectionChrome();stopStatusPolling();
-  $('connectionStatus').textContent=lastError;
+  if($('connectionStatus'))$('connectionStatus').textContent=lastError;
   if(!quiet){logActivity(`Connect failed: ${lastError}`);alert(lastError)}
   return false;
 }
@@ -655,7 +1056,7 @@ function disconnectGateway(){
   state.online=false;state.bridgeOnline=false;state.players=[];
   fillPlayerSelects();updateConnectionChrome();
   $('connectionStatus').textContent='Disconnected. Saved setup kept on this phone.';
-  logActivity('Disconnected from desktop MSBT gateway.');
+  logActivity('Disconnected from game.');
 }
 
 function startStatusPolling(){
@@ -667,7 +1068,7 @@ function startStatusPolling(){
       applyStatus(status.data||{});
     }catch{
       state.online=false;state.bridgeOnline=false;updateConnectionChrome();
-      $('connectionStatus').textContent='Lost gateway connection. Tap Connect / Test to retry.';
+      $('connectionStatus').textContent='Lost connection. Tap Connect / Test to retry.';
       stopStatusPolling();
     }
   },5000);
@@ -676,24 +1077,29 @@ function stopStatusPolling(){if(state.pollTimer){window.clearInterval(state.poll
 
 function loadConnection(){
   state.connection=read(STORE.connection,{});
+  ensureDeviceToken();
   const savedTarget=read(STORE.target,{});
   state.selectedTarget=savedTarget.target||'';
-  $('pcName').value=state.connection.name||'';
-  $('pcAddress').value=state.connection.address||'';
-  $('pcPort').value=state.connection.port||'49775';
-  $('pairingCode').value=state.connection.pairingCode||'';
-  if(state.connection.address){
-    $('connectionStatus').textContent=`Saved: ${state.connection.name||state.connection.address} · ${state.connection.address}:${state.connection.port||49775}`;
+  if($('pcName'))$('pcName').value=state.connection.name||'';
+  if($('pcAddress'))$('pcAddress').value=state.connection.address||'';
+  if($('pcPort'))$('pcPort').value=state.connection.port||'49774';
+  if($('pairingCode'))$('pairingCode').value=state.connection.pairingCode||'';
+  if(state.connection.address&&$('connectionStatus')){
+    $('connectionStatus').textContent=`Saved: ${state.connection.name||state.connection.address} · ${state.connection.address}:${state.connection.port||49774}`;
   }
   updateConnectionChrome();
 }
 function saveConnectionFields(extra={}){
+  ensureDeviceToken();
   state.connection={
-    name:text($('pcName').value),
-    address:text($('pcAddress').value),
-    port:text($('pcPort').value)||'49775',
-    pairingCode:text($('pairingCode').value),
+    name:text($('pcName')&&$('pcName').value),
+    address:text($('pcAddress')&&$('pcAddress').value),
+    port:text($('pcPort')&&$('pcPort').value)||'49774',
+    pairingCode:text($('pairingCode')&&$('pairingCode').value),
+    deviceToken:text(state.connection.deviceToken),
+    enrollNonce:text(extra.enrollNonce||state.connection.enrollNonce),
     hosts:Array.isArray(extra.hosts)?extra.hosts:(Array.isArray(state.connection.hosts)?state.connection.hosts:[]),
+    viaGateway:Boolean(state.connection.viaGateway),
     updated_at:now()
   };
   write(STORE.connection,state.connection);
@@ -707,9 +1113,22 @@ $('saveConnection').addEventListener('click',()=>{
 $('testConnection').addEventListener('click',()=>void connectGateway({hostCandidates:state.connection.hosts}));
 $('disconnectConnection').addEventListener('click',disconnectGateway);
 
-const qrScanState={stream:null,raf:0,active:false};
+const qrScanState={stream:null,raf:0,active:false,detector:null};
 function setQrScanStatus(message){if($('qrScanStatus'))$('qrScanStatus').textContent=message}
-function stopQrScanner({closeDialog=true}={}){
+function qrScanOverlay(){return $('qrScanOverlay')}
+function showQrScanOverlay(){
+  const overlay=qrScanOverlay();
+  if(!overlay)return;
+  overlay.hidden=false;
+  overlay.classList.remove('hidden');
+}
+function hideQrScanOverlay(){
+  const overlay=qrScanOverlay();
+  if(!overlay)return;
+  overlay.hidden=true;
+  overlay.classList.add('hidden');
+}
+function stopQrScanner({closeOverlay=true}={}){
   qrScanState.active=false;
   if(qrScanState.raf){cancelAnimationFrame(qrScanState.raf);qrScanState.raf=0}
   const video=$('qrScanVideo');
@@ -718,15 +1137,16 @@ function stopQrScanner({closeDialog=true}={}){
     qrScanState.stream=null;
   }
   if(video)video.srcObject=null;
-  const dialog=$('qrScanDialog');
-  if(closeDialog&&dialog&&dialog.open)dialog.close();
+  if(closeOverlay)hideQrScanOverlay();
 }
 function parsePairingPayload(raw){
   const value=text(raw);
   if(!value)throw new Error('Empty QR code.');
+  if(/^https?:\/\//i.test(value)&&value.indexOf('{')<0){
+    throw new Error('That is the Install QR. Scan the Pair QR to connect this phone to the game.');
+  }
   let data=null;
   try{data=JSON.parse(value)}catch{
-    // Accept pasted JSON wrapped in extra text.
     const start=value.indexOf('{');
     const end=value.lastIndexOf('}');
     if(start>=0&&end>start){
@@ -734,63 +1154,123 @@ function parsePairingPayload(raw){
     }
   }
   if(!data||typeof data!=='object')throw new Error('QR is not an MSBT pairing code.');
-  if(Number(data.v)!==1)throw new Error('Unsupported pairing QR version. Update MSBT Mobile.');
+  const version=Number(data.v);
   const hosts=Array.isArray(data.hosts)
     ? data.hosts.map((host)=>text(host)).filter(Boolean)
     : [text(data.host||data.address)].filter(Boolean);
+  if(!hosts.length)throw new Error('Pairing QR is missing a PC address.');
+  if(version===2){
+    return{
+      v:2,
+      name:text(data.name)||'MSBT',
+      hosts,
+      port:text(data.port)||'49774',
+      nonce:text(data.n||data.nonce),
+      code:''
+    };
+  }
+  if(version!==1)throw new Error('Unsupported pairing QR version. Update MSBT Mobile.');
   const code=text(data.code||data.pairingCode);
   const port=text(data.port)||'49775';
-  if(!hosts.length)throw new Error('Pairing QR is missing a PC address.');
   if(!code)throw new Error('Pairing QR is missing the pairing code.');
   return{
     v:1,
     name:text(data.name)||'MSBT PC',
     hosts,
     port,
-    code
+    code,
+    nonce:''
   };
 }
 async function applyPairingPayload(payload){
   if($('pcName'))$('pcName').value=payload.name||'';
   if($('pcAddress'))$('pcAddress').value=payload.hosts[0]||'';
-  if($('pcPort'))$('pcPort').value=payload.port||'49775';
+  if($('pcPort'))$('pcPort').value=payload.port||(payload.v===2?'49774':'49775');
   if($('pairingCode'))$('pairingCode').value=payload.code||'';
-  saveConnectionFields({hosts:payload.hosts});
+  saveConnectionFields({hosts:payload.hosts,enrollNonce:payload.nonce||''});
+  state.connection.enrollNonce=payload.nonce||'';
+  write(STORE.connection,state.connection);
   $('connectionStatus').textContent=`QR paired setup for ${payload.hosts[0]}:${payload.port}. Connecting…`;
   logActivity(`QR pairing loaded for ${payload.name||payload.hosts[0]}.`);
   return connectGateway({quiet:false,hostCandidates:payload.hosts});
 }
-function scanQrFrame(){
+function qrScanSourceRect(width,height){
+  const side=Math.min(width,height);
+  return{
+    sx:Math.max(0,Math.floor((width-side)/2)),
+    sy:Math.max(0,Math.floor((height-side)/2)),
+    sw:side,
+    sh:side
+  };
+}
+function drawQrScanFrame(video,canvas){
+  const width=video.videoWidth||0;
+  const height=video.videoHeight||0;
+  if(!width||!height)return null;
+  const src=qrScanSourceRect(width,height);
+  const maxSide=720;
+  const out=src.sw>maxSide?maxSide:src.sw;
+  canvas.width=out;
+  canvas.height=out;
+  const ctx=canvas.getContext('2d',{willReadFrequently:true});
+  ctx.imageSmoothingEnabled=false;
+  ctx.drawImage(video,src.sx,src.sy,src.sw,src.sh,0,0,out,out);
+  return ctx.getImageData(0,0,out,out);
+}
+function finishQrScan(raw){
+  const payload=parsePairingPayload(raw);
+  stopQrScanner();
+  void applyPairingPayload(payload);
+}
+async function detectQrWithBarcodeDetector(video){
+  if(!qrScanState.detector)return '';
+  try{
+    const codes=await qrScanState.detector.detect(video);
+    if(codes&&codes.length&&codes[0].rawValue)return String(codes[0].rawValue);
+  }catch(_){/* keep trying jsQR */}
+  return '';
+}
+function decodeQrWithJsQR(image){
+  if(!image||typeof jsQR!=='function')return '';
+  const attempts=['attemptBoth','dontInvert','onlyInvert'];
+  for(let i=0;i<attempts.length;i+=1){
+    try{
+      const result=jsQR(image.data,image.width,image.height,{inversionAttempts:attempts[i]});
+      if(result&&result.data)return String(result.data);
+    }catch(_){/* try next inversion mode */}
+  }
+  return '';
+}
+async function scanQrFrame(){
   if(!qrScanState.active)return;
   const video=$('qrScanVideo');
   const canvas=$('qrScanCanvas');
-  if(!video||!canvas||typeof jsQR!=='function'){
-    setQrScanStatus('QR scanner library missing in this build.');
+  if(!video||!canvas){
+    setQrScanStatus('QR scanner UI missing in this build.');
     return;
   }
   if(video.readyState>=2){
-    const width=video.videoWidth||640;
-    const height=video.videoHeight||480;
-    if(width&&height){
-      canvas.width=width;
-      canvas.height=height;
-      const ctx=canvas.getContext('2d',{willReadFrequently:true});
-      ctx.drawImage(video,0,0,width,height);
-      const image=ctx.getImageData(0,0,width,height);
-      const result=jsQR(image.data,image.width,image.height,{inversionAttempts:'dontInvert'});
-      if(result&&result.data){
-        try{
-          const payload=parsePairingPayload(result.data);
-          stopQrScanner();
-          void applyPairingPayload(payload);
-          return;
-        }catch(error){
-          setQrScanStatus(error&&error.message?error.message:'Could not read pairing QR.');
-        }
+    try{
+      const nativeText=await detectQrWithBarcodeDetector(video);
+      if(nativeText){
+        finishQrScan(nativeText);
+        return;
+      }
+    }catch(error){
+      setQrScanStatus(error&&error.message?error.message:'Could not read pairing QR.');
+    }
+    const image=drawQrScanFrame(video,canvas);
+    const decoded=decodeQrWithJsQR(image);
+    if(decoded){
+      try{
+        finishQrScan(decoded);
+        return;
+      }catch(error){
+        setQrScanStatus(error&&error.message?error.message:'Could not read pairing QR.');
       }
     }
   }
-  qrScanState.raf=requestAnimationFrame(scanQrFrame);
+  qrScanState.raf=requestAnimationFrame(()=>{void scanQrFrame()});
 }
 function waitForCameraPermission(){
   return new Promise((resolve)=>{
@@ -812,40 +1292,76 @@ function waitForCameraPermission(){
       window.setTimeout(()=>finish(native.hasCameraPermission&&native.hasCameraPermission()),12000);
       return;
     }
-    // Browser/emulator fallback: getUserMedia will prompt itself.
     finish(true);
   });
 }
-async function startQrScanner(){
-  openPanel('connectionPanel');
-  const dialog=$('qrScanDialog');
-  if(!dialog){alert('QR scanner UI missing.');return}
-  if(typeof jsQR!=='function'){
-    alert('QR scanner library failed to load. Use manual setup or reinstall the beta.');
+async function openCameraStream(){
+  const constraints=[
+    {audio:false,video:{facingMode:{ideal:'environment'}}},
+    {audio:false,video:{facingMode:'environment'}},
+    {audio:false,video:true}
+  ];
+  let last=null;
+  for(let i=0;i<constraints.length;i+=1){
+    try{
+      return await navigator.mediaDevices.getUserMedia(constraints[i]);
+    }catch(error){
+      last=error;
+    }
+  }
+  throw last||new Error('Camera unavailable.');
+}
+window.__msbtNativeQr=function(result){
+  if(!result)return;
+  if(result.ok&&result.data){
+    try{
+      void applyPairingPayload(parsePairingPayload(result.data));
+    }catch(error){
+      const message=error&&error.message?error.message:'Could not read pairing QR.';
+      $('connectionStatus').textContent=message;
+      alert(message);
+    }
+    return;
+  }
+  if(result.denied){
+    $('connectionStatus').textContent='Camera permission denied. Enable Camera for MSBT Mobile, or enter pairing details manually.';
+    return;
+  }
+  if(result.cancelled){
+    $('connectionStatus').textContent='QR scan cancelled.';
+  }
+};
+async function startWebQrScanner(){
+  if(!qrScanOverlay()){alert('QR scanner UI missing.');return}
+  if(typeof jsQR!=='function'&&typeof BarcodeDetector!=='function'){
+    alert('QR scanner library failed to load. Use manual setup or reinstall the app.');
     return;
   }
   setQrScanStatus('Requesting camera permission…');
-  if(!dialog.open)dialog.showModal();
+  showQrScanOverlay();
   const allowed=await waitForCameraPermission();
   if(!allowed){
     setQrScanStatus('Camera permission denied. Enable Camera for MSBT Mobile, or enter pairing details manually.');
     return;
   }
   try{
-    stopQrScanner({closeDialog:false});
+    stopQrScanner({closeOverlay:false});
     qrScanState.active=true;
-    if(!dialog.open)dialog.showModal();
+    showQrScanOverlay();
     setQrScanStatus('Starting camera…');
-    const stream=await navigator.mediaDevices.getUserMedia({
-      audio:false,
-      video:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720}}
-    });
+    qrScanState.detector=null;
+    if(typeof BarcodeDetector==='function'){
+      try{qrScanState.detector=new BarcodeDetector({formats:['qr_code']})}catch(_){qrScanState.detector=null}
+    }
+    const stream=await openCameraStream();
     qrScanState.stream=stream;
     const video=$('qrScanVideo');
+    video.setAttribute('playsinline','true');
+    video.muted=true;
     video.srcObject=stream;
     await video.play();
-    setQrScanStatus('Point at the MSBT Mobile Gateway QR…');
-    qrScanState.raf=requestAnimationFrame(scanQrFrame);
+    setQrScanStatus('Point at the in-game Pair QR…');
+    qrScanState.raf=requestAnimationFrame(()=>{void scanQrFrame()});
   }catch(error){
     stopQrScanner();
     const message=error&&error.message?error.message:String(error);
@@ -853,9 +1369,18 @@ async function startQrScanner(){
     $('connectionStatus').textContent=`Camera unavailable: ${message}`;
   }
 }
+async function startQrScanner(){
+  openPanel('connectionPanel');
+  const native=window.MSBTAssets;
+  if(native&&typeof native.scanQrCode==='function'){
+    $('connectionStatus').textContent='Opening camera scanner…';
+    native.scanQrCode();
+    return;
+  }
+  return startWebQrScanner();
+}
 if($('scanPairingQr'))$('scanPairingQr').addEventListener('click',()=>void startQrScanner());
 if($('qrScanCancel'))$('qrScanCancel').addEventListener('click',()=>{stopQrScanner();$('connectionStatus').textContent='QR scan cancelled.'});
-if($('qrScanDialog'))$('qrScanDialog').addEventListener('close',()=>{if(qrScanState.active)stopQrScanner()});
 
 const homeConnectBtn=$('homeConnectBtn');
 if(homeConnectBtn)homeConnectBtn.addEventListener('click',()=>void connectGateway());
@@ -932,6 +1457,18 @@ function buildActionPayload(action,button){
     return{itempool_name:name,level:intValue($('poolLevel').value,70),count:intValue($('poolCount').value,1),target_player:currentTarget()};
   }
   if(action&&action.startsWith('dev_spawner_'))return buildDevSpawnerPayload(action);
+  if(action==='hoard_set_plan')return hoardPlanPayload();
+  if(action==='cxp_toggle')return{multiplier:intValue($('cxpMultiplier')&&$('cxpMultiplier').value,1000)};
+  if(action==='location_bookmark_save'){
+    const name=text($('xyzBookmarkName')&&$('xyzBookmarkName').value);
+    if(!name)throw new Error('Enter a bookmark name first.');
+    return{bookmark_name:name};
+  }
+  if(action==='location_bookmark_go'||action==='location_bookmark_delete'){
+    const name=text($('xyzBookmarkList')&&$('xyzBookmarkList').value)||text($('xyzBookmarkName')&&$('xyzBookmarkName').value);
+    if(!name)throw new Error('Select an XYZ bookmark first.');
+    return{bookmark_name:name};
+  }
   if(action==='give_serial_selected'||action==='give_serial_all'||action==='give_serial_nonhost'){
     const fromCodes=button&&button.dataset&&button.dataset.serialSource==='codes';
     const fromBookmark=button&&button.dataset&&button.dataset.serialSource==='bookmark';
@@ -980,7 +1517,7 @@ function buttonHasDataAttr(button,name){
 async function runLiveAction(button){
   const action=text(button&&button.dataset&&button.dataset.action);
   if(!action){alert('This control is not wired for live actions yet.');return}
-  if(!state.online){alert('Connect to desktop MSBT first (More → Connection Settings).');return}
+  if(!state.online){alert('Connect first (More → Connection Settings).');return}
   if(buttonHasDataAttr(button,'data-dev-risk')&&!state.dev.warningAccepted){
     alert('Enable Dev Spawner This Session first (Spawn tab).');
     return;
@@ -988,6 +1525,14 @@ async function runLiveAction(button){
   if(state.busy)return;
   state.busy=true;setLiveEnabled();
   try{
+    if(action==='hoard_start'||action==='hoard_set_plan'){
+      const empty=state.hoard.waves.findIndex((wave)=>!hoardWaveEntries(wave).length);
+      if(empty>=0)throw new Error(`Wave ${empty+1} needs at least one actor.`);
+    }
+    if(action==='hoard_start'){
+      const planResult=await gatewayAction('hoard_set_plan',hoardPlanPayload(),15000);
+      if(!planResult.ok)throw new Error((planResult.data&&(planResult.data.message||planResult.data.error))||'Could not apply hoard plan.');
+    }
     if(PLAYER_SCOPED.has(action)){
       const target=currentTarget();
       if(!target)throw new Error('Select a target player first. Tap Connect while in-game to load the party list.');
@@ -1005,8 +1550,23 @@ async function runLiveAction(button){
     logActivity(`${action}: ${message}`);
     if($('devSpawnerOutput')&&action.startsWith('dev_spawner_'))$('devSpawnerOutput').textContent=typeof result.data==='object'?JSON.stringify(result.data,null,2):message;
     if(!result.ok)alert(message);
-    else if(action==='refresh_players'||PLAYER_SCOPED.has(action)){
+    else if(action==='refresh_players'||PLAYER_SCOPED.has(action)||action==='cxp_toggle'||action==='instant_drops_toggle'||action==='instant_holds_toggle'||action==='third_person_toggle'){
       try{const status=await gatewayFetch('/status',{timeoutMs:8000});applyStatus(status.data||{})}catch{/* keep prior status */}
+    }
+    if(action.startsWith('location_bookmark_')){
+      const data=result.data||{};
+      if(Array.isArray(data.bookmarks))renderXyzBookmarks(data.bookmarks);
+      else void refreshXyzBookmarks({quiet:true});
+      if($('xyzBookmarkStatus'))$('xyzBookmarkStatus').textContent=data.message||message;
+    }
+    if(action.startsWith('hoard_')&&$('hoardStatus')){
+      const data=result.data||{};
+      const bits=[];
+      if(data.running)bits.push('running');
+      if(data.complete)bits.push('complete');
+      if(data.wave_total)bits.push(`wave ${Number(data.wave_index||0)+1}/${data.wave_total}`);
+      if(data.alive!=null)bits.push(`${data.alive} alive`);
+      $('hoardStatus').textContent=data.message||(bits.length?bits.join(' · '):message);
     }
   }catch(error){
     const message=error&&error.message?error.message:String(error);
@@ -1017,7 +1577,7 @@ async function runLiveAction(button){
 }
 
 function renderActivity(){const rows=$('activityRows');if(!rows)return;if(!state.activity.length){rows.innerHTML='<small class="muted">No activity yet.</small>';return}rows.innerHTML=state.activity.slice(0,30).map(item=>`<div><small class="muted">${esc(new Date(item.at).toLocaleString())}</small><br>${esc(item.message)}</div>`).join('')}
-$('copyFeedbackTemplate').addEventListener('click',async()=>{const template=`MSBT MOBILE BETA FEEDBACK\n\nPhone make/model:\nAndroid version:\nMSBT Mobile version: ${state.update.currentVersion||FALLBACK_APP_VERSION}\nDesktop MSBT version (if connected):\n\nScreen/feature:\nWhat I expected:\nWhat happened:\nSteps to reproduce:\nDoes it happen every time? Yes / No / Sometimes\n\nScreenshots attached: Yes / No\nAnything else:`;try{await navigator.clipboard.writeText(template);alert('Feedback template copied. Send it with screenshots directly to FunkYouSHiFT in Discord DMs.')}catch{prompt('Copy this feedback template:',template)}});
+$('copyFeedbackTemplate').addEventListener('click',async()=>{const template=`MSBT MOBILE FEEDBACK\n\nPhone make/model:\nAndroid version:\nMSBT Mobile version: ${state.update.currentVersion||FALLBACK_APP_VERSION}\nDesktop MSBT version (if connected):\n\nScreen/feature:\nWhat I expected:\nWhat happened:\nSteps to reproduce:\nDoes it happen every time? Yes / No / Sometimes\n\nScreenshots attached: Yes / No\nAnything else:`;try{await navigator.clipboard.writeText(template);alert('Feedback template copied. Send it with screenshots to FunkYouSHiFT in Discord.')}catch{prompt('Copy this feedback template:',template)}});
 
 function appVersionFromNative(){
   try{
@@ -1042,7 +1602,7 @@ function showUpdateBanner(show){
   banner.classList.toggle('hidden',!show);
   if(!show)return;
   if($('updateBannerText')){
-    $('updateBannerText').textContent=`Open beta ${state.update.availableVersion} is available (you have ${state.update.currentVersion}).`;
+    $('updateBannerText').textContent=`MSBT Mobile ${state.update.availableVersion} is available (you have ${state.update.currentVersion}).`;
   }
   if($('updateBannerMeta')){
     $('updateBannerMeta').textContent='Download installs over this app and keeps local pairing data.';
@@ -1116,7 +1676,7 @@ window.__msbtUpdateCheck=(payload)=>{
   }else{
     showUpdateBanner(false);
     if($('aboutInstallUpdateBtn'))$('aboutInstallUpdateBtn').classList.add('hidden');
-    setAboutUpdateStatus(`You are on the latest open beta (${state.update.currentVersion}).`);
+    setAboutUpdateStatus(`You are on the latest app (${state.update.currentVersion}).`);
   }
   state.update._forceBanner=false;
 };
@@ -1271,9 +1831,7 @@ if($('invUseBoost'))$('invUseBoost').addEventListener('click',()=>{
   if(!validSerial(serial))return;
   $('boostSerialText').value=serial;boostConfirmed='';
   $('boostSerialStatus').textContent='Loaded from inventory — validate/confirm before send.';
-  $$('[data-nav]').forEach((nav)=>nav.classList.toggle('active',nav.dataset.nav==='boost'));
-  $$('.screen').forEach((node)=>node.classList.toggle('active',node.dataset.screen==='boost'));
-  window.scrollTo(0,0);
+  showScreen('boost');
 });
 if($('invSaveBookmark'))$('invSaveBookmark').addEventListener('click',()=>{
   const entry=state.inventory.selected;const serial=text(entry&&entry.serial);
@@ -1367,9 +1925,58 @@ async function loadTravelCatalog(){
     renderTravelStations();
   }catch(error){
     if($('travelStatus'))$('travelStatus').textContent=`Travel catalog unavailable: ${error&&error.message?error.message:error}`;
-    if($('travelMapRows'))$('travelMapRows').innerHTML='<small class="muted">Travel catalog failed to load.</small>';
   }
 }
+function renderXyzBookmarks(rows){
+  const list=$('xyzBookmarkList');
+  if(!list)return;
+  const incoming=Array.isArray(rows)?rows:state.xyzBookmarks;
+  state.xyzBookmarks=incoming.map((row)=>{
+    if(typeof row==='string')return{name:row,xyz:''};
+    const name=text(row.name||row.label);
+    const xyz=[row.x,row.y,row.z].every((n)=>n!=null&&n!=='')?`${row.x}, ${row.y}, ${row.z}`:text(row.xyz||row.position);
+    return{name,xyz};
+  }).filter((row)=>row.name);
+  const previous=list.value;
+  list.innerHTML='';
+  if(!state.xyzBookmarks.length){
+    const opt=document.createElement('option');
+    opt.value='';
+    opt.textContent='(none saved)';
+    list.appendChild(opt);
+  }else{
+    state.xyzBookmarks.forEach((row)=>{
+      const opt=document.createElement('option');
+      opt.value=row.name;
+      opt.textContent=row.xyz?`${row.name}  (${row.xyz})`:row.name;
+      list.appendChild(opt);
+    });
+  }
+  if([...list.options].some((opt)=>opt.value===previous))list.value=previous;
+  else if(state.xyzBookmarks.length)list.value=state.xyzBookmarks[0].name;
+  if($('xyzBookmarkStatus'))$('xyzBookmarkStatus').textContent=state.xyzBookmarks.length?`${state.xyzBookmarks.length} XYZ bookmark(s)`:'No XYZ bookmarks loaded yet.';
+}
+async function refreshXyzBookmarks({quiet=false}={}){
+  if(!state.online){
+    if($('xyzBookmarkStatus'))$('xyzBookmarkStatus').textContent='Connect to load XYZ bookmarks from the game.';
+    return;
+  }
+  try{
+    const result=await gatewayAction('location_bookmark_list',{},12000);
+    const rows=(result.data&&(result.data.bookmarks||result.data.location_bookmarks))||[];
+    renderXyzBookmarks(Array.isArray(rows)?rows:[]);
+    if(!result.ok&&!quiet)throw new Error((result.data&&(result.data.message||result.data.error))||'Could not list XYZ bookmarks.');
+  }catch(error){
+    const message=error&&error.message?error.message:String(error);
+    if($('xyzBookmarkStatus'))$('xyzBookmarkStatus').textContent=message;
+    if(!quiet)alert(message);
+  }
+}
+if($('xyzBookmarkRefresh'))$('xyzBookmarkRefresh').addEventListener('click',()=>void refreshXyzBookmarks({quiet:false}));
+if($('xyzBookmarkList'))$('xyzBookmarkList').addEventListener('change',()=>{
+  const name=text($('xyzBookmarkList').value);
+  if(name&&$('xyzBookmarkName'))$('xyzBookmarkName').value=name;
+});
 if($('travelMapSearch'))$('travelMapSearch').addEventListener('input',renderTravelMaps);
 if($('travelStationSearch'))$('travelStationSearch').addEventListener('input',renderTravelStations);
 if($('travelShowAllStations'))$('travelShowAllStations').addEventListener('change',()=>{renderTravelStations();setLiveEnabled()});
@@ -1488,6 +2095,364 @@ function filterDevActors(){
   state.dev.page=0;
   renderDevActors();
 }
+const HOARD_MAX_WAVES=24;
+const HOARD_MAX_WAVE_TOTAL=60;
+const HOARD_MAX_WAVE_TYPES=12;
+const HOARD_MAX_FAVORITES=20;
+function clampHoardNumber(value,min,max,fallback){
+  const n=Number(value);
+  if(!Number.isFinite(n))return fallback;
+  return Math.max(min,Math.min(max,n));
+}
+function defaultHoardEntry(overrides){
+  const row=overrides||{};
+  return{
+    actor_id:text(row.actor_id),
+    count:Math.max(1,Math.min(HOARD_MAX_WAVE_TOTAL,Number(row.count)||1))
+  };
+}
+function defaultHoardWave(overrides){
+  const raw=overrides||{};
+  const entriesRaw=Array.isArray(raw.entries)?raw.entries:null;
+  let entries=entriesRaw?entriesRaw.map((row)=>defaultHoardEntry(row)).filter((row)=>row.actor_id):[];
+  if(!entries.length&&raw.actor_id)entries=[defaultHoardEntry(raw)];
+  return{
+    entries,
+    distance:clampHoardNumber(raw.distance,600,4000,900),
+    spacing:Number.isFinite(Number(raw.spacing))?Number(raw.spacing):125,
+    scale:Number.isFinite(Number(raw.scale))?Number(raw.scale):1,
+    aggro:text(raw.aggro)||'passive',
+    spawn_points:clampHoardNumber(raw.spawn_points,1,12,6),
+    burst:clampHoardNumber(raw.burst,1,6,2),
+    stagger:clampHoardNumber(raw.stagger,0.15,5,0.45),
+    cleanup_loot:raw.cleanup_loot===true
+  };
+}
+function hoardWaveEntries(wave){
+  return ((wave&&wave.entries)||[]).filter((row)=>row&&text(row.actor_id));
+}
+function hoardWaveTotal(wave){
+  return hoardWaveEntries(wave).reduce((sum,row)=>sum+(Number(row.count)||0),0);
+}
+function selectedHoardWave(){
+  if(!state.hoard.waves.length)state.hoard.waves=[defaultHoardWave()];
+  const idx=Math.max(0,Math.min(state.hoard.waves.length-1,state.hoard.selectedIndex||0));
+  state.hoard.selectedIndex=idx;
+  return state.hoard.waves[idx];
+}
+function persistHoard(){
+  write(STORE.hoard,{
+    waves:state.hoard.waves,
+    selectedIndex:state.hoard.selectedIndex,
+    favorites:state.hoard.favorites
+  });
+}
+function hoardPlanPayload(){
+  return{
+    waves:state.hoard.waves.map((wave)=>({
+      entries:(()=>{
+        let remaining=HOARD_MAX_WAVE_TOTAL;
+        return hoardWaveEntries(wave).slice(0,HOARD_MAX_WAVE_TYPES).map((row)=>{
+          const count=Math.max(0,Math.min(remaining,Number(row.count)||1));
+          remaining-=count;
+          return{actor_id:text(row.actor_id),count};
+        }).filter((row)=>row.actor_id&&row.count>0);
+      })(),
+      distance:clampHoardNumber(wave.distance,600,4000,900),
+      spacing:Number(wave.spacing)||125,
+      scale:Number(wave.scale)||1,
+      aggro:text(wave.aggro)||'passive',
+      spawn_points:clampHoardNumber(wave.spawn_points,1,12,6),
+      burst:clampHoardNumber(wave.burst,1,6,2),
+      stagger:clampHoardNumber(wave.stagger,0.15,5,0.45),
+      cleanup_loot:wave.cleanup_loot===true
+    }))
+  };
+}
+function addActorToHoardWave(actorId,count){
+  const id=text(actorId);
+  if(!id)return false;
+  const wave=selectedHoardWave();
+  const add=Math.max(1,Math.min(HOARD_MAX_WAVE_TOTAL,Number(count)||1));
+  const existing=wave.entries.find((row)=>row.actor_id===id);
+  const other=hoardWaveTotal(wave)-(existing?Number(existing.count)||0:0);
+  if(existing){
+    existing.count=Math.max(1,Math.min(HOARD_MAX_WAVE_TOTAL-other,Number(existing.count||0)+add));
+    return true;
+  }
+  if(wave.entries.length>=HOARD_MAX_WAVE_TYPES||other>=HOARD_MAX_WAVE_TOTAL)return false;
+  wave.entries.push(defaultHoardEntry({actor_id:id,count:Math.min(add,HOARD_MAX_WAVE_TOTAL-other)}));
+  return true;
+}
+function bumpHoardEntry(actorId,delta){
+  const wave=selectedHoardWave();
+  const row=wave.entries.find((item)=>item.actor_id===actorId);
+  if(!row)return;
+  const other=hoardWaveTotal(wave)-Number(row.count||0);
+  const next=Number(row.count||1)+delta;
+  if(next<=0){
+    wave.entries=wave.entries.filter((item)=>item.actor_id!==actorId);
+    return;
+  }
+  row.count=Math.max(1,Math.min(HOARD_MAX_WAVE_TOTAL-other,next));
+}
+function readHoardWaveFields(){
+  const wave=selectedHoardWave();
+  if($('hoardDistance'))wave.distance=clampHoardNumber($('hoardDistance').value,600,4000,900);
+  if($('hoardSpacing'))wave.spacing=Number($('hoardSpacing').value)||125;
+  if($('hoardScale'))wave.scale=Number($('hoardScale').value)||1;
+  if($('hoardSpawnPoints'))wave.spawn_points=clampHoardNumber($('hoardSpawnPoints').value,1,12,6);
+  if($('hoardBurst'))wave.burst=clampHoardNumber($('hoardBurst').value,1,6,2);
+  if($('hoardStagger'))wave.stagger=clampHoardNumber($('hoardStagger').value,0.15,5,0.45);
+  if($('hoardAggro'))wave.aggro=text($('hoardAggro').value)||'passive';
+  if($('hoardCleanupLoot'))wave.cleanup_loot=Boolean($('hoardCleanupLoot').checked);
+}
+function writeHoardWaveFields(){
+  const wave=selectedHoardWave();
+  if($('hoardDistance'))$('hoardDistance').value=String(wave.distance);
+  if($('hoardSpacing'))$('hoardSpacing').value=String(wave.spacing);
+  if($('hoardScale'))$('hoardScale').value=String(wave.scale);
+  if($('hoardSpawnPoints'))$('hoardSpawnPoints').value=String(wave.spawn_points);
+  if($('hoardBurst'))$('hoardBurst').value=String(wave.burst);
+  if($('hoardStagger'))$('hoardStagger').value=String(wave.stagger);
+  if($('hoardAggro'))$('hoardAggro').value=wave.aggro==='aggressive'?'aggressive':'passive';
+  if($('hoardCleanupLoot'))$('hoardCleanupLoot').checked=wave.cleanup_loot===true;
+}
+function renderHoardFavorites(){
+  const select=$('hoardFavoriteSelect');
+  if(!select)return;
+  const previous=select.value;
+  select.innerHTML='';
+  if(!state.hoard.favorites.length){
+    const empty=document.createElement('option');
+    empty.value='';
+    empty.textContent='(none saved)';
+    select.appendChild(empty);
+    return;
+  }
+  state.hoard.favorites.forEach((fav)=>{
+    const opt=document.createElement('option');
+    opt.value=fav.id;
+    const enemies=fav.waves.reduce((sum,wave)=>sum+hoardWaveTotal(wave),0);
+    opt.textContent=`${fav.name} · ${fav.waves.length} wave(s) · ${enemies} enemies`;
+    select.appendChild(opt);
+  });
+  if([...select.options].some((opt)=>opt.value===previous))select.value=previous;
+}
+function renderHoardPlan(){
+  const waves=state.hoard.waves;
+  const enemies=waves.reduce((sum,wave)=>sum+hoardWaveTotal(wave),0);
+  const empty=waves.filter((wave)=>!hoardWaveEntries(wave).length).length;
+  if($('hoardPlanSummary')){
+    $('hoardPlanSummary').textContent=`${waves.length} wave(s) · ${enemies} enemies${empty?` · ${empty} empty`:''} · saved on this phone`;
+  }
+  const tabs=$('hoardWaveTabs');
+  if(tabs){
+    tabs.innerHTML='';
+    waves.forEach((wave,index)=>{
+      const button=document.createElement('button');
+      button.type='button';
+      button.textContent=`Wave ${index+1} (${hoardWaveTotal(wave)})`;
+      if(index===state.hoard.selectedIndex)button.classList.add('picked');
+      button.addEventListener('click',()=>{
+        readHoardWaveFields();
+        state.hoard.selectedIndex=index;
+        persistHoard();
+        renderHoardPlan();
+      });
+      tabs.appendChild(button);
+    });
+  }
+  const wave=selectedHoardWave();
+  writeHoardWaveFields();
+  const entries=$('hoardEntryRows');
+  if(entries){
+    const rows=hoardWaveEntries(wave);
+    if(!rows.length){
+      entries.innerHTML='<small class="muted">No enemies yet. Search and tap an actor to add it.</small>';
+    }else{
+      entries.innerHTML='';
+      rows.forEach((row)=>{
+        const wrap=document.createElement('div');
+        wrap.className='hoard-entry-row';
+        wrap.innerHTML=`<span>${esc(row.actor_id)} × ${esc(row.count)}</span><span class="hoard-entry-actions"></span>`;
+        const actions=wrap.querySelector('.hoard-entry-actions');
+        [['−',-1],['+',1],['✕',0]].forEach(([label,delta])=>{
+          const btn=document.createElement('button');
+          btn.type='button';
+          btn.textContent=label;
+          if(delta===0)btn.classList.add('danger');
+          btn.addEventListener('click',()=>{
+            if(delta===0)selectedHoardWave().entries=hoardWaveEntries(selectedHoardWave()).filter((item)=>item.actor_id!==row.actor_id);
+            else bumpHoardEntry(row.actor_id,delta);
+            persistHoard();
+            renderHoardPlan();
+          });
+          actions.appendChild(btn);
+        });
+        entries.appendChild(wrap);
+      });
+    }
+  }
+  renderHoardActors();
+  renderHoardFavorites();
+}
+function hoardActorSource(){
+  const all=state.dev.categories&&Array.isArray(state.dev.categories.All)?state.dev.categories.All:[];
+  const characters=state.dev.categories&&Array.isArray(state.dev.categories.Characters)?state.dev.categories.Characters:null;
+  const base=state.hoard.showAllActors||!characters||!characters.length?all:characters;
+  const q=text(state.hoard.actorQuery).toLowerCase();
+  return base.filter((name)=>!q||String(name).toLowerCase().includes(q));
+}
+function renderHoardActors(){
+  const rows=$('hoardActorRows');
+  if(!rows)return;
+  const source=hoardActorSource();
+  const pageSize=40;
+  const maxPage=Math.max(0,Math.ceil(source.length/pageSize)-1);
+  if(state.hoard.actorPage>maxPage)state.hoard.actorPage=maxPage;
+  const start=state.hoard.actorPage*pageSize;
+  const slice=source.slice(start,start+pageSize);
+  rows.innerHTML='';
+  slice.forEach((name)=>{
+    const button=document.createElement('button');
+    button.type='button';
+    button.textContent=name;
+    button.addEventListener('click',()=>{
+      const ok=addActorToHoardWave(name,intValue($('hoardAddCount')&&$('hoardAddCount').value,1));
+      if(!ok){
+        if($('hoardStatus'))$('hoardStatus').textContent=`Wave limit: ${HOARD_MAX_WAVE_TOTAL} enemies and ${HOARD_MAX_WAVE_TYPES} types.`;
+        return;
+      }
+      persistHoard();
+      renderHoardPlan();
+    });
+    rows.appendChild(button);
+  });
+  if(!slice.length)rows.innerHTML='<small class="muted">No actors match.</small>';
+  if($('hoardActorSummary')){
+    const mode=state.hoard.showAllActors?'all actors':'enemy actors';
+    $('hoardActorSummary').textContent=source.length
+      ? `${source.length.toLocaleString()} ${mode} · page ${state.hoard.actorPage+1}/${Math.max(1,maxPage+1)} · tap to add to Wave ${state.hoard.selectedIndex+1}`
+      : 'Actor catalog not loaded yet.';
+  }
+}
+function initHoard(){
+  const saved=read(STORE.hoard,{});
+  const waves=Array.isArray(saved.waves)?saved.waves.map((wave)=>defaultHoardWave(wave)):[];
+  state.hoard.waves=waves.length?waves:[defaultHoardWave()];
+  state.hoard.selectedIndex=Math.max(0,Math.min(state.hoard.waves.length-1,Number(saved.selectedIndex)||0));
+  state.hoard.favorites=Array.isArray(saved.favorites)?saved.favorites.map((fav)=>({
+    id:text(fav&&fav.id)||`fav_${Date.now()}`,
+    name:text(fav&&fav.name)||'Untitled',
+    waves:Array.isArray(fav&&fav.waves)?fav.waves.map((wave)=>defaultHoardWave(wave)).filter((wave)=>hoardWaveEntries(wave).length):[]
+  })).filter((fav)=>fav.waves.length).slice(0,HOARD_MAX_FAVORITES):[];
+  renderHoardPlan();
+  if($('hoardAddWave'))$('hoardAddWave').addEventListener('click',()=>{
+    readHoardWaveFields();
+    if(state.hoard.waves.length>=HOARD_MAX_WAVES){
+      if($('hoardStatus'))$('hoardStatus').textContent=`Max ${HOARD_MAX_WAVES} waves on the phone editor.`;
+      return;
+    }
+    state.hoard.waves.push(defaultHoardWave());
+    state.hoard.selectedIndex=state.hoard.waves.length-1;
+    persistHoard();
+    renderHoardPlan();
+  });
+  if($('hoardRemoveWave'))$('hoardRemoveWave').addEventListener('click',()=>{
+    if(state.hoard.waves.length<=1){
+      state.hoard.waves=[defaultHoardWave()];
+      state.hoard.selectedIndex=0;
+    }else{
+      state.hoard.waves.splice(state.hoard.selectedIndex,1);
+      state.hoard.selectedIndex=Math.max(0,state.hoard.selectedIndex-1);
+    }
+    persistHoard();
+    renderHoardPlan();
+  });
+  if($('hoardDuplicateWave'))$('hoardDuplicateWave').addEventListener('click',()=>{
+    readHoardWaveFields();
+    if(state.hoard.waves.length>=HOARD_MAX_WAVES){
+      if($('hoardStatus'))$('hoardStatus').textContent=`Max ${HOARD_MAX_WAVES} waves on the phone editor.`;
+      return;
+    }
+    const copy=defaultHoardWave(selectedHoardWave());
+    state.hoard.waves.splice(state.hoard.selectedIndex+1,0,copy);
+    state.hoard.selectedIndex+=1;
+    persistHoard();
+    renderHoardPlan();
+  });
+  const moveHoardWave=(delta)=>{
+    readHoardWaveFields();
+    const from=state.hoard.selectedIndex;
+    const to=from+delta;
+    if(to<0||to>=state.hoard.waves.length)return;
+    const waves=state.hoard.waves;
+    const tmp=waves[from];
+    waves[from]=waves[to];
+    waves[to]=tmp;
+    state.hoard.selectedIndex=to;
+    persistHoard();
+    renderHoardPlan();
+  };
+  if($('hoardMoveWaveEarlier'))$('hoardMoveWaveEarlier').addEventListener('click',()=>moveHoardWave(-1));
+  if($('hoardMoveWaveLater'))$('hoardMoveWaveLater').addEventListener('click',()=>moveHoardWave(1));
+  if($('hoardShowAllActors'))$('hoardShowAllActors').addEventListener('change',()=>{
+    state.hoard.showAllActors=Boolean($('hoardShowAllActors').checked);
+    state.hoard.actorPage=0;
+    renderHoardActors();
+  });
+  if($('hoardActorPrev'))$('hoardActorPrev').addEventListener('click',()=>{
+    if(state.hoard.actorPage>0){state.hoard.actorPage-=1;renderHoardActors()}
+  });
+  if($('hoardActorNext'))$('hoardActorNext').addEventListener('click',()=>{
+    const source=hoardActorSource();
+    const max=Math.max(0,Math.ceil(source.length/40)-1);
+    if(state.hoard.actorPage<max){state.hoard.actorPage+=1;renderHoardActors()}
+  });
+  ['hoardDistance','hoardSpacing','hoardScale','hoardSpawnPoints','hoardBurst','hoardStagger','hoardAggro','hoardCleanupLoot'].forEach((id)=>{
+    const el=$(id);
+    if(!el)return;
+    el.addEventListener('change',()=>{readHoardWaveFields();persistHoard();renderHoardPlan();});
+  });
+  if($('hoardActorSearch'))$('hoardActorSearch').addEventListener('input',()=>{
+    state.hoard.actorQuery=text($('hoardActorSearch').value);
+    state.hoard.actorPage=0;
+    renderHoardActors();
+  });
+  if($('hoardFavoriteSave'))$('hoardFavoriteSave').addEventListener('click',()=>{
+    readHoardWaveFields();
+    const name=text($('hoardFavoriteName')&&$('hoardFavoriteName').value)||`Plan ${new Date().toLocaleString()}`;
+    const wavesToSave=state.hoard.waves.map((wave)=>defaultHoardWave(wave)).filter((wave)=>hoardWaveEntries(wave).length);
+    if(!wavesToSave.length){alert('Add at least one enemy before saving a plan.');return}
+    const record={id:`fav_${Date.now()}`,name,waves:wavesToSave};
+    state.hoard.favorites=[record,...state.hoard.favorites].slice(0,HOARD_MAX_FAVORITES);
+    persistHoard();
+    renderHoardFavorites();
+    if($('hoardFavoriteSelect'))$('hoardFavoriteSelect').value=record.id;
+    if($('hoardStatus'))$('hoardStatus').textContent=`Saved “${name}” on this phone.`;
+  });
+  if($('hoardFavoriteLoad'))$('hoardFavoriteLoad').addEventListener('click',()=>{
+    const id=text($('hoardFavoriteSelect')&&$('hoardFavoriteSelect').value);
+    const fav=state.hoard.favorites.find((row)=>row.id===id);
+    if(!fav){alert('Pick a saved plan first.');return}
+    state.hoard.waves=fav.waves.map((wave)=>defaultHoardWave(wave));
+    if(!state.hoard.waves.length)state.hoard.waves=[defaultHoardWave()];
+    state.hoard.selectedIndex=0;
+    persistHoard();
+    renderHoardPlan();
+    if($('hoardFavoriteName'))$('hoardFavoriteName').value=fav.name;
+    if($('hoardStatus'))$('hoardStatus').textContent=`Loaded “${fav.name}”.`;
+  });
+  if($('hoardFavoriteDelete'))$('hoardFavoriteDelete').addEventListener('click',()=>{
+    const id=text($('hoardFavoriteSelect')&&$('hoardFavoriteSelect').value);
+    if(!id)return;
+    state.hoard.favorites=state.hoard.favorites.filter((row)=>row.id!==id);
+    persistHoard();
+    renderHoardFavorites();
+  });
+}
+
 async function loadDevCatalog(){
   try{
     const raw=await readBundledAssetText('dev_spawner_catalog.json');
@@ -1506,6 +2471,7 @@ async function loadDevCatalog(){
       else select.value='All';
     }
     filterDevActors();
+    if(typeof renderHoardActors==='function')renderHoardActors();
   }catch(error){
     if($('devActorSummary'))$('devActorSummary').textContent=`Actor catalog unavailable: ${error&&error.message?error.message:error}`;
   }
@@ -1561,7 +2527,7 @@ $$('[data-select-all]').forEach((button)=>{
 
 $$('[data-live]').forEach(button=>button.addEventListener('click',()=>void runLiveAction(button)));
 
-state.activity=read(STORE.activity,[]);setLiveEnabled();initBookmarks();loadMovement();loadQuick();loadConnection();renderActivity();loadCatalogs();loadTravelCatalog();loadPoolCatalog();loadDevCatalog();
+state.activity=read(STORE.activity,[]);setLiveEnabled();initBookmarks();loadMovement();loadQuick();loadConnection();renderActivity();loadCatalogs();loadTravelCatalog();loadPoolCatalog();initHoard();loadDevCatalog();
 syncAboutVersion();
 requestUpdateCheck({quiet:true,reason:'launch'});
-if(text(state.connection.address)&&text(state.connection.pairingCode))void connectGateway({quiet:true});
+if(hasSavedPairing())void connectGateway({quiet:true});

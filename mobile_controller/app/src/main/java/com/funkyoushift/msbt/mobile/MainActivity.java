@@ -22,6 +22,9 @@ import android.webkit.WebViewClient;
 import androidx.core.content.FileProvider;
 import androidx.webkit.WebViewAssetLoader;
 
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -53,11 +56,13 @@ public class MainActivity extends Activity {
     private static final int REQ_CAMERA = 1001;
     private static final int REQ_INSTALL = 1002;
     private static final String VERSION_JSON_URL =
+            "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/mobile-version.json";
+    private static final String LEGACY_VERSION_JSON_URL =
             "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/mobile-beta/mobile-beta-version.json";
     private static final String RELEASE_API_URL =
-            "https://api.github.com/repos/funkyoushift/MattsSDKBoostingTools/releases/tags/mobile-beta";
+            "https://api.github.com/repos/funkyoushift/MattsSDKBoostingTools/releases/latest";
     private static final String FALLBACK_APK_URL =
-            "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/mobile-beta/MSBT-Mobile-Controller.apk";
+            "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Mobile-Controller.apk";
     private static final Pattern VERSION_PATTERN =
             Pattern.compile("(\\d+)\\.(\\d+)\\.(\\d+)(?:-beta\\.(\\d+))?", Pattern.CASE_INSENSITIVE);
     private static final String DATA_CACHE_DIR = "msbt_data";
@@ -80,6 +85,7 @@ public class MainActivity extends Activity {
 
     private WebView webView;
     private PermissionRequest pendingWebPermission;
+    private boolean pendingNativeQrScan;
     private final ExecutorService bg = Executors.newSingleThreadExecutor();
     private String pendingInstallApkUrl;
     private volatile boolean updateCheckRunning;
@@ -216,7 +222,7 @@ public class MainActivity extends Activity {
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                 } catch (Exception ignored) {
-                    // Quiet for closed beta — UI already shows download CTA.
+                    // Install CTA already shown in the in-app update UI.
                 }
             });
         }
@@ -236,6 +242,11 @@ public class MainActivity extends Activity {
                 }
                 MainActivity.this.requestPermissions(new String[]{Manifest.permission.CAMERA}, REQ_CAMERA);
             });
+        }
+
+        @JavascriptInterface
+        public void scanQrCode() {
+            MainActivity.this.runOnUiThread(MainActivity.this::startNativeQrScan);
         }
 
         private String errorJson(String message) {
@@ -582,6 +593,37 @@ public class MainActivity extends Activity {
         }
     }
 
+    private void startNativeQrScan() {
+        if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            pendingNativeQrScan = true;
+            requestPermissions(new String[]{Manifest.permission.CAMERA}, REQ_CAMERA);
+            return;
+        }
+        pendingNativeQrScan = false;
+        IntentIntegrator integrator = new IntentIntegrator(this);
+        integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE);
+        integrator.setPrompt("Point at the Pair QR on the game overlay");
+        integrator.setBeepEnabled(false);
+        integrator.setOrientationLocked(false);
+        integrator.setBarcodeImageEnabled(false);
+        integrator.initiateScan();
+    }
+
+    private void notifyNativeQr(JSONObject payload) {
+        notifyJs("__msbtNativeQr", payload == null ? "{}" : payload.toString());
+    }
+
+    private void notifyNativeQrCancelled() {
+        try {
+            JSONObject payload = new JSONObject();
+            payload.put("ok", false);
+            payload.put("cancelled", true);
+            notifyNativeQr(payload);
+        } catch (Exception ignored) {
+            notifyJs("__msbtNativeQr", "{\"ok\":false,\"cancelled\":true}");
+        }
+    }
+
     private void notifyCameraPermission(boolean granted) {
         if (webView == null) {
             return;
@@ -677,8 +719,16 @@ public class MainActivity extends Activity {
     }
 
     private JSONObject fetchVersionJson() {
+        JSONObject latest = fetchVersionJsonFrom(VERSION_JSON_URL, "version.json");
+        if (latest != null) {
+            return latest;
+        }
+        return fetchVersionJsonFrom(LEGACY_VERSION_JSON_URL, "legacy-version.json");
+    }
+
+    private JSONObject fetchVersionJsonFrom(String url, String source) {
         try {
-            String body = httpGet(VERSION_JSON_URL, 12000);
+            String body = httpGet(url, 12000);
             if (body == null || body.trim().isEmpty()) {
                 return null;
             }
@@ -689,7 +739,7 @@ public class MainActivity extends Activity {
             if (!json.has("apkUrl") || json.optString("apkUrl").isEmpty()) {
                 json.put("apkUrl", FALLBACK_APK_URL);
             }
-            json.put("source", "version.json");
+            json.put("source", source);
             return json;
         } catch (Exception ignored) {
             return null;
@@ -717,7 +767,8 @@ public class MainActivity extends Activity {
                     }
                     String name = asset.optString("name", "");
                     String url = asset.optString("browser_download_url", "");
-                    if ("mobile-beta-version.json".equals(name) && !url.isEmpty()) {
+                    if (("mobile-version.json".equals(name) || "mobile-beta-version.json".equals(name))
+                            && !url.isEmpty()) {
                         String nested = httpGet(url, 12000);
                         if (nested != null) {
                             try {
@@ -756,8 +807,7 @@ public class MainActivity extends Activity {
                 String found = "";
                 while (matcher.find()) {
                     String candidate = matcher.group(0);
-                    if (candidate.toLowerCase(Locale.US).contains("beta")
-                            || versionSortKey(candidate) > versionSortKey(found)) {
+                    if (versionSortKey(candidate) > versionSortKey(found)) {
                         found = candidate;
                     }
                 }
@@ -1030,7 +1080,7 @@ public class MainActivity extends Activity {
         settings.setDomStorageEnabled(true);
         settings.setAllowFileAccess(true);
         settings.setAllowContentAccess(false);
-        // Closed-beta LAN pairing talks to desktop MSBT over cleartext HTTP from
+        // LAN pairing talks to desktop / in-game MSBT over cleartext HTTP from
         // the https://appassets.androidplatform.net origin.
         settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         settings.setBuiltInZoomControls(false);
@@ -1053,15 +1103,46 @@ public class MainActivity extends Activity {
         notifyCameraPermission(granted);
         if (granted) {
             grantPendingWebPermissionIfAllowed();
+            if (pendingNativeQrScan) {
+                startNativeQrScan();
+            }
         } else if (pendingWebPermission != null) {
             pendingWebPermission.deny();
             pendingWebPermission = null;
+        }
+        if (!granted && pendingNativeQrScan) {
+            pendingNativeQrScan = false;
+            try {
+                JSONObject payload = new JSONObject();
+                payload.put("ok", false);
+                payload.put("denied", true);
+                notifyNativeQr(payload);
+            } catch (Exception ignored) {
+                notifyJs("__msbtNativeQr", "{\"ok\":false,\"denied\":true}");
+            }
         }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        IntentResult qrResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if (qrResult != null) {
+            String contents = qrResult.getContents();
+            if (contents == null || contents.trim().isEmpty()) {
+                notifyNativeQrCancelled();
+                return;
+            }
+            try {
+                JSONObject payload = new JSONObject();
+                payload.put("ok", true);
+                payload.put("data", contents);
+                notifyNativeQr(payload);
+            } catch (Exception error) {
+                notifyNativeQrCancelled();
+            }
+            return;
+        }
         if (requestCode != REQ_INSTALL) {
             return;
         }

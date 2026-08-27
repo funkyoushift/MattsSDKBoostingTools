@@ -2,13 +2,13 @@
 
 MSBT is a Borderlands 4 boosting and item toolkit: a standalone Windows app outside the game, plus a small SDK mod that talks to Borderlands 4 while you play. Use it for currency/XP/SDU helpers, serial delivery, BL4 code browsing, Mattmab’s save/profile/item editor, Dev Spawner, map travel, movement tools, and more.
 
-**Current release: [v2.8.8](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.8.8)** — Inventory Send to Game can override item level; fly speed apply; Third Person toggle.
+**Current release: [v2.9.0](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.9.0)** — MSBT Mobile Controller 1.0.0 (out of beta) plus desktop chrome cleanup.
 
 This project is **unofficial**. It is not affiliated with, endorsed by, or connected to Gearbox, 2K, or the Borderlands franchise owners.
 
 **Repo layout (developers):** see [`docs/PROJECT_MAP.md`](docs/PROJECT_MAP.md). On GitHub’s file list, the grey text next to a folder is the *last commit that touched it*, not a folder description — so a big multi-folder commit can make every line look the same.
 
-**Electron panels:** on Boosting, Map Travel, Player Movement, Serial Tools, Inventory, and Dev Spawner (Panels mode) you can drag panels onto empty space, resize, stack into tabs, compact to fill gaps, and lock the arrangement — see [`docs/PANEL_LAYOUT.md`](docs/PANEL_LAYOUT.md). Dev Spawner Compact mode and the Mobile Gateway tab use a fixed layout so key controls stay fully visible.
+**Electron panels:** on Boosting, Map Travel, Player Movement, Serial Tools, Inventory, and Dev Spawner (Panels mode) you can drag panels onto empty space, resize, stack into tabs, compact to fill gaps, and lock the arrangement — see [`docs/PANEL_LAYOUT.md`](docs/PANEL_LAYOUT.md). The layout toolbar is off by default (View → Layout toolbar). Dev Spawner Compact mode and the Mobile Gateway tab use a fixed layout so key controls stay fully visible.
 
 ---
 
@@ -16,29 +16,29 @@ This project is **unofficial**. It is not affiliated with, endorsed by, or conne
 
 **Recommended:** grab the latest Windows installer from GitHub Releases:
 
-[![Installer downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Installer-v2.8.8.exe?label=Installer%20downloads&color=2ea44f)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest)
-[![Portable downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Portable-v2.8.8-win-x64.zip?label=Portable%20downloads&color=0969da)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest)
-[![Android APK downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/mobile-beta/MSBT-Mobile-Controller.apk?label=Android%20APK%20downloads&color=e8a23a)](https://www.funkyoushift.com/MattsSDKBoostingTools/mobile-install.html)
+[![Installer downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Installer-v2.9.0.exe?label=Installer%20downloads&color=2ea44f)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest)
+[![Portable downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Portable-v2.9.0-win-x64.zip?label=Portable%20downloads&color=0969da)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest)
+[![Android APK downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Mobile-Controller.apk?label=Android%20APK%20downloads&color=e8a23a)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Mobile-Controller.apk)
 
 - [GitHub Releases — download page](https://github.com/funkyoushift/MattsSDKBoostingTools/releases)
-- Latest installer example: `MSBT-Installer-v2.8.8.exe`
+- Latest installer example: `MSBT-Installer-v2.9.0.exe`
 
 **Portable option:** if you do not want an installer, download the portable ZIP instead (`MSBT-Portable-v…-win-x64.zip`), extract it, and run the app from that folder.
 
-**Android open beta:** phone companion that drives MSBT over LAN (Boost / Codes / Quick Menu / Control / Spawn). Needs desktop **v2.3.1+** with Mobile Gateway on the same Wi‑Fi.
+**Android app:** phone companion that drives MSBT over LAN (Boost / Codes / Quick Menu / Control / Spawn). Needs desktop **v2.9.0+** with Mobile Gateway (or in-game Phone Pairing) on the same Wi‑Fi.
 
 - Install page (best on phone): [mobile-install.html](https://www.funkyoushift.com/MattsSDKBoostingTools/mobile-install.html)
-- Or desktop home → **Mobile App** QR → same install page
-- Pairing: PC **Mobile Gateway** tab QR (different from the install QR)
-- Direct APK: [`MSBT-Mobile-Controller.apk`](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/mobile-beta/MSBT-Mobile-Controller.apk) · [mobile-beta notes](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/mobile-beta)
+- Or desktop Support → **Mobile App** QR → same install page
+- Pairing: PC **Mobile Gateway** tab QR or in-game Phone Pairing (different from the install QR)
+- Direct APK: [`MSBT-Mobile-Controller.apk`](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Mobile-Controller.apk) on the [latest GitHub Release](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest)
 
-Counts above track **installer**, **portable ZIP**, and the rolling **Android APK** (`MSBT-Mobile-Controller.apk` on the `mobile-beta` tag) — not update-check files (`latest.json` / `latest.yml` / `.blockmap`). Opening the install page alone does not increment the APK counter; tapping **Download APK** (GitHub asset) does.
+Counts above track **installer**, **portable ZIP**, and the rolling **Android APK** (`MSBT-Mobile-Controller.apk` on Latest) — not update-check files (`latest.json` / `latest.yml` / `mobile-version.json` / `.blockmap`). Opening the install page alone does not increment the APK counter; tapping **Download APK** (GitHub asset) does.
 
 **Requirements**
 
 - Borderlands 4 on PC (Windows)
 - [oak2-mod-manager **v0.3**](https://github.com/bl-sdk/oak2-mod-manager/releases/tag/v0.3) (SDK 03)
-- Android open beta: Android 9+ phone on the same Wi‑Fi as the PC
+- Android companion: Android 9+ phone on the same Wi‑Fi as the PC
 
 Install / update the mod manager **before** you rely on MSBT live actions. Older SDK 02 setups are not the target for current builds.
 
@@ -67,8 +67,8 @@ In plain terms, the Electron app is the control panel. The SDK mod does the live
 - **Hoard Builder** — persistent multi-wave enemy groups with staggered multi-point spawning, favorites, adjustable caps/distance, and an explicit Emergency Clear safety path
 - **Pull Loot Here** — gathers loot into a roomy Archimedean spiral around the player instead of tight overlapping rings
 - **Map Travel / Player Movement** — expanded station/map catalog, renamable travel favorites, **XYZ location bookmarks**, movement scope (Local / All / Others), and peer teleports (Selected ↔ Me / All → Me)
-- **Activity Log / Mobile Gateway / Report / Updates** — see what ran, pair the Android controller (fixed pairing QR tab), file issues, check for new builds, install/update the bundled SDK mod
-- **Mobile Gateway / Android controller (open beta)** — pair a phone on the same Wi‑Fi and run Boost / Codes / Quick Menu / Control / Spawn from the Android app
+- **Activity Log / Mobile Gateway / Report / Updates** — hidden from the main tab bar by default; header **Updates**, Find, and View → Main tabs still open them. Pair the Android controller from Mobile Gateway (pairing QR) after installing from Support → Mobile App (install QR).
+- **Mobile Gateway / Android controller** — pair a phone on the same Wi‑Fi and run Boost / Codes / Quick Menu / Control / Spawn from the Android app. Install QR and pairing QR are different.
 
 <p align="center">
   <img src="docs/media/msbt-bl4-codes.jpg" alt="MSBT BL4 Codes catalog with sticky delivery panel and Copies" width="900">

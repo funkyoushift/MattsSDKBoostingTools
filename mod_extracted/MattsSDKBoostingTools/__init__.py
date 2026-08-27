@@ -30,9 +30,14 @@ from .quick_menu import (
     quick_menu_unstuck_key,
     start_quick_menu,
 )
+from .mobile_pairing import (
+    _cmd_msbt_mobile_pair,
+    mobile_pair_toggle,
+    start_mobile_pairing,
+)
 
-__version__: str = "2.8.8"
-__version_info__: tuple[int, int, int] = (2, 8, 8)
+__version__: str = "2.9.0"
+__version_info__: tuple[int, int, int] = (2, 9, 0)
 
 _panel_keybinds = []
 _panel_commands = []
@@ -67,6 +72,7 @@ except Exception as exc:
 start_auto_inventory_worker()
 start_bridge()
 start_quick_menu()
+start_mobile_pairing()
 
 _extra_commands = [
     _cmd_msbt_external_app,
@@ -75,6 +81,7 @@ _extra_commands = [
     _cmd_msbt_quick_menu_repeat,
     _cmd_msbt_quick_menu_lock,
     _cmd_msbt_quick_menu_unstuck,
+    _cmd_msbt_mobile_pair,
     _cmd_msbt_complete_challenges,
     _cmd_msbt_complete_challenges_cancel,
     _cmd_msbt_fog,
@@ -99,6 +106,7 @@ build_mod(
     keybinds=_panel_keybinds + [
         quick_menu_toggle,
         quick_menu_unstuck_key,
+        mobile_pair_toggle,
         OPEN_GOLDEN_CHEST_KEY,
         CLOSE_GOLDEN_CHEST_KEY,
         *ICH_KEYBINDS,

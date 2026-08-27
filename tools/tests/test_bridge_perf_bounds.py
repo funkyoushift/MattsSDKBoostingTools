@@ -34,6 +34,11 @@ def _load_bridge():
     bridge = importlib.util.module_from_spec(spec)
     sys.modules["MattsSDKBoostingTools.external_bridge"] = bridge
     spec.loader.exec_module(bridge)
+    try:
+        bridge.mobile_lan.reset_state()
+        bridge.mobile_lan.set_rebind_callback(None)
+    except Exception:
+        pass
     return bridge
 
 
@@ -116,6 +121,18 @@ def test_stop_bridge_clears_runtime_state():
     assert not bridge._results
     assert not bridge._abandoned_rids
     assert not bridge._waiters
+
+
+def test_start_bridge_can_read_started_flag():
+    bridge = _load_bridge()
+    bridge._register_tick_hook = lambda: None
+    bridge._refresh_status_snapshot = lambda **k: None
+    bridge._start_http_listen = lambda: None
+    bridge._unregister_tick_hook = lambda: None
+    bridge._stop_http_listen = lambda: None
+    bridge.start_bridge()
+    bridge._started = True
+    bridge.start_bridge()
 
 
 def test_bridge_request_limits_exist():

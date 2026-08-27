@@ -137,6 +137,16 @@ $ElectronUnpackedZip = Join-Path $ElectronDist $ElectronUnpackedZipName
 if (Test-Path $ElectronUnpackedZip) {
     $ElectronAssets += $ElectronUnpackedZip
 }
+$MobileVersionJson = Join-Path $RepoRoot "docs\releases\mobile-version.json"
+if (Test-Path $MobileVersionJson) {
+    $ElectronAssets += $MobileVersionJson
+}
+$MobileApkDir = Join-Path $RepoRoot "dist_mobile"
+if (Test-Path $MobileApkDir) {
+    Get-ChildItem -Path $MobileApkDir -Filter "MSBT-Mobile-Controller*.apk" | ForEach-Object {
+        $ElectronAssets += $_.FullName
+    }
+}
 
 $shortCommit = ""
 try {
@@ -152,8 +162,10 @@ if ($Manifest.package_version -and [string]$Manifest.package_version -ne $Packag
 
 $InstallerDownloadsBadge = "https://img.shields.io/github/downloads/$Repository/$TagName/$ElectronInstallerName`?label=Installer%20downloads&color=2ea44f"
 $PortableDownloadsBadge = "https://img.shields.io/github/downloads/$Repository/$TagName/$ElectronUnpackedZipName`?label=Portable%20downloads&color=0969da"
+$ApkDownloadsBadge = "https://img.shields.io/github/downloads/$Repository/$TagName/MSBT-Mobile-Controller.apk`?label=Android%20APK%20downloads&color=e8a23a"
 $InstallerDownloadUrl = "https://github.com/$Repository/releases/download/$TagName/$ElectronInstallerName"
 $PortableDownloadUrl = "https://github.com/$Repository/releases/download/$TagName/$ElectronUnpackedZipName"
+$ApkDownloadUrl = "https://github.com/$Repository/releases/download/$TagName/MSBT-Mobile-Controller.apk"
 
 $ReleaseNotesFile = Join-Path $RepoRoot "docs\releases\RELEASE_NOTES_v$PackageVersion.md"
 if (Test-Path $ReleaseNotesFile) {
@@ -188,8 +200,9 @@ $notesBody
 
 [![Installer downloads]($InstallerDownloadsBadge)]($InstallerDownloadUrl)
 [![Portable downloads]($PortableDownloadsBadge)]($PortableDownloadUrl)
+[![Android APK downloads]($ApkDownloadsBadge)]($ApkDownloadUrl)
 
-Counts track the installer and portable ZIP only (not update-check files).
+Counts track the installer, portable ZIP, and Android APK (not update-check files).
 
 ### Build information
 

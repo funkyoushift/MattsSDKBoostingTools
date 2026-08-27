@@ -4,7 +4,10 @@ const path = require("path");
 
 const source = fs.readFileSync(path.join(__dirname, "panel_layout.js"), "utf8");
 
-assert.match(source, /const WIP_NAV_UNLOCK_KEY = "msbt\.navTabs\.wipUnlocked\.v4"/);
+assert.match(source, /const NAV_TABS_KEY = "msbt\.navTabs\.v2"/);
+assert.match(source, /const NAV_TABS_LEGACY_KEY = "msbt\.navTabs\.v1"/);
+assert.match(source, /const DEFAULT_HIDDEN_NAV_TABS = \["activity", "mobile-gateway", "report", "updates"\]/);
+assert.match(source, /const LAYOUT_TOOLBAR_VISIBLE_KEY = "msbt\.layoutToolbar\.visible\.v1"/);
 assert.match(source, /localStorage\.getItem\(WIP_NAV_UNLOCK_KEY\)/);
 assert.match(source, /localStorage\.setItem\(WIP_NAV_UNLOCK_KEY/);
 assert.doesNotMatch(source, /localStorage\.removeItem\(WIP_NAV_UNLOCK_KEY\)/);
@@ -39,6 +42,7 @@ assert.match(source, /gs-\$\{cols\} > \.grid-stack-item\[gs-x="/);
 
 const styles = fs.readFileSync(path.join(__dirname, "styles.css"), "utf8");
 assert.match(styles, /\.msbt-layout-toolbar\[data-msbt-mode="fixed"\] \.msbt-layout-lock-switch/);
+assert.match(styles, /html:not\(\.msbt-show-layout-toolbar\) \.msbt-layout-toolbar-host/);
 assert.match(styles, /\.msbt-layout-locked \.msbt-panel-handle/);
 
 function cssRuleBody(selector) {

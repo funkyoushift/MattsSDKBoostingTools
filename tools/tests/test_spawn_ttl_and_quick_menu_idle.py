@@ -50,6 +50,7 @@ def test_camera_tick_is_a_single_shared_hook():
     gold = (PKG / "golden_chest_keybinds.py").read_text(encoding="utf-8")
     chaos = (PKG / "streamer_chaos.py").read_text(encoding="utf-8")
     cxp = (PKG / "extreme_combat_xp.py").read_text(encoding="utf-8")
+    pairing = (PKG / "mobile_pairing.py").read_text(encoding="utf-8")
     assert 'HOOK_ID = "msbt_shared_camera_tick_v1"' in camera
     assert "MIN_INTERVAL_S = 1.0 / 120.0" in camera
     assert "hook_identifier=\"matts_sdk_boosting_tools_backend_infinite_jump_camera_v1\"" not in movement
@@ -62,6 +63,7 @@ def test_camera_tick_is_a_single_shared_hook():
     assert 'camera_tick.register("golden_chest"' in gold
     assert 'camera_tick.register("streamer_chaos"' in chaos
     assert 'camera_tick.register("cxp"' in cxp
+    assert 'camera_tick.register("quick_menu_mobile_pair"' in pairing
 
 
 def test_spawn_prune_enforces_ttl_on_read():

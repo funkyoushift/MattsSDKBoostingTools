@@ -23,12 +23,12 @@
       {
         "index": 8,
         "title": "Updates",
-        "body": "Check Desktop App, Game SDK Stack, and Catalog Data here. Download desktop updates, or Install / Update SDK Mod into your Borderlands 4 sdk_mods folder. Fully restart the game after any SDK change.\n\nRefresh Catalogs updates high-churn JSON (codes, travel, pools, Dev Spawner, tutorial tips) from the MSBT data channel — separate from app SemVer. It soft-fails offline and keeps your last-good cache."
+        "body": "Header Updates opens this tab (hidden from the main bar by default — Find or View → Main tabs also reach it) and checks for a new desktop build. Check Desktop App, Game SDK Stack, and Catalog Data here. Download desktop updates, or Install / Update SDK Mod into your Borderlands 4 sdk_mods folder. Fully restart the game after any SDK change.\n\nRefresh Catalogs updates high-churn JSON (codes, travel, pools, Dev Spawner, tutorial tips) from the MSBT data channel — separate from app SemVer. It soft-fails offline and keeps your last-good cache."
       },
       {
         "index": 10,
         "title": "Arrange your layout",
-        "body": "Every dockable tab has a layout toolbar: switch between Fixed and Panels where offered, drag panels by the title bar, stack by dropping center-on-center, use Compact to tidy, and Reset for defaults.\n\nTips: stack Target with Essentials on Boosting; use Compact when panels overlap; Reset if a tab feels lost. Full editor tour is on the next screen — or View → Layout walkthrough anytime."
+        "body": "The layout toolbar is off by default. This tour turns it on so you can see it — later use View → Layout toolbar. Drag panels by the title bar, stack by dropping center-on-center, Compact to tidy, Reset for defaults, Arrange → Locked to freeze the layout.\n\nTips: stack Target with Essentials on Boosting; use Compact when panels overlap; Reset if a tab feels lost. Full editor tour is on the next screen — or View → Layout walkthrough anytime."
       }
     ]
   }

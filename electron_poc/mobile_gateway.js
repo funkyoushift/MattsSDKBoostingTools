@@ -1,5 +1,5 @@
 /**
- * Minimal LAN gateway for MSBT Mobile Controller closed beta.
+ * LAN gateway for MSBT Mobile Controller.
  * Proxies /status and /action to the local SDK bridge (127.0.0.1:49774)
  * so phones on the same Wi-Fi can fire live actions without opening the
  * in-game bridge beyond localhost.

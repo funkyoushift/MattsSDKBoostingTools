@@ -39,6 +39,7 @@ electron_poc/vendor/_python_extract/
 build/
 dist/
 dist_electron/
+dist_mobile/
 MSBT_External_Beta/
 MSBT_External_Beta*/
 MSBT_External_Beta.zip

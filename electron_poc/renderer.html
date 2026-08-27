@@ -35,26 +35,28 @@
           <img src="branding/fu-logo.png" alt="">
           <span>Powered by Funk</span>
         </button>
+        <p id="appVersionLine" class="muted-line header-version">…</p>
       </div>
-      <p class="header-tagline">Desktop control panel · offline serial tools · live actions need the SDK mod</p>
-      <p id="appVersionLine" class="muted-line">Loading version info...</p>
     </div>
     <div class="header-actions">
       <div class="header-main-actions">
-        <div class="opacity-control" aria-label="App opacity">
+        <label class="app-finder" for="appFinderInput">
+          <span class="app-finder-label">Find</span>
+          <input id="appFinderInput" type="search" placeholder="Find Instant Drops, XYZ, Hoard…" autocomplete="off" spellcheck="false">
+          <div id="appFinderResults" class="app-finder-results hidden" hidden role="listbox"></div>
+        </label>
+        <div class="opacity-control header-opacity-control" aria-label="App opacity">
           <label for="appOpacity">Opacity</label>
           <input id="appOpacity" type="range" min="35" max="100" value="100">
           <output id="appOpacityValue" for="appOpacity">100%</output>
         </div>
         <button id="statusBtn" class="header-btn">Status</button>
         <button id="updateBtn" class="header-btn">Updates</button>
-        <button id="repoBtn" class="header-btn">GitHub</button>
-        <button id="mobileAnnounceOpenBtn" class="header-btn">Mobile App</button>
       </div>
       <details class="support-panel" aria-label="Support and follow links">
         <summary class="support-copy">
           <strong>Support</strong>
-          <span class="support-summary-hint">Tip · Donate · Discord · Twitch</span>
+          <span class="support-summary-hint">Tip · Donate · Discord · GitHub · Mobile</span>
         </summary>
         <div class="support-links">
           <button id="streamlabsBtn" class="support-link featured">Tip FunkYouSHiFT</button>
@@ -64,6 +66,8 @@
           <button id="gzoToolsBtn" class="support-link">Other Tools</button>
           <button id="twitchBtn" class="support-link">Twitch</button>
           <button id="youtubeBtn" class="support-link">YouTube</button>
+          <button id="repoBtn" class="support-link">GitHub</button>
+          <button id="mobileAnnounceOpenBtn" class="support-link">Mobile App</button>
         </div>
       </details>
     </div>
@@ -132,7 +136,7 @@
 
   <section id="mobileAnnounceModal" class="modal-shell hidden" role="dialog" aria-modal="true" aria-labelledby="mobileAnnounceTitle">
     <div class="modal-card mobile-announce-modal">
-      <h2 id="mobileAnnounceTitle">MSBT Mobile Controller — Open Beta</h2>
+      <h2 id="mobileAnnounceTitle">MSBT Mobile Controller</h2>
       <p id="mobileAnnounceMessage">
         Control Boost, Codes, Quick Menu, and more from your phone on the same Wi‑Fi.
         This QR opens the <strong>install page</strong> (not pairing). After install, pair with a
@@ -141,7 +145,7 @@
       <div class="mobile-announce-grid">
         <img id="mobileAnnounceQr" class="mobile-announce-qr" alt="QR code to open the MSBT Mobile install page" width="220" height="220">
         <div class="mobile-announce-side">
-          <p class="muted-line">Android 9+ · install over previous betas to keep data</p>
+          <p class="muted-line">Android 9+ · install over a previous build to keep pairing data</p>
           <ol class="mobile-announce-steps">
             <li>Scan this QR → phone install page → <strong>Download APK</strong></li>
             <li>Open the finished download and allow install if prompted</li>
@@ -204,12 +208,13 @@
 
       <section id="boostMobileNotice" class="mobile-home-notice" aria-live="polite">
         <div class="mobile-home-notice-copy">
-          <h2>Mobile Controller open beta</h2>
-          <p>Pair your phone over LAN with QR. Same Wi‑Fi · open the <strong>Mobile Gateway</strong> tab.</p>
+          <h2>Mobile Controller</h2>
+          <p>Phone remote is in Support → Mobile App. Pairing lives under Mobile Gateway (Find or View → Main tabs).</p>
         </div>
         <div class="button-row wrap">
-          <button id="boostMobileAnnounceBtn">Show install QR</button>
-          <button id="boostMobileGatewayBtn" class="secondary">Mobile Gateway</button>
+          <button id="boostMobileAnnounceBtn">Install QR</button>
+          <button id="boostMobileGatewayBtn" class="secondary">Gateway</button>
+          <button id="boostMobileNoticeDismiss" class="secondary">Hide</button>
         </div>
       </section>
 

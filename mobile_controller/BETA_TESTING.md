@@ -1,6 +1,9 @@
 # MSBT Mobile Controller — Open Android Beta
 
-**Recommended build: `0.1.0-beta.15`** — current working open beta.
+# Historical tester notes. Current public APK is 1.0.0 on GitHub Latest:
+# https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Mobile-Controller.apk
+
+**Recommended build: `1.0.0`** on GitHub Latest. Older `0.1.0-beta.*` builds should install over with the public APK.
 
 Open beta layout + **live LAN pairing**. Use desktop **MSBT v2.3.1+** ([Latest](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest)) for Mobile Gateway / QR.
 

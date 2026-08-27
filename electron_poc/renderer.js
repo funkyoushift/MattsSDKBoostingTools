@@ -409,6 +409,7 @@ const els = {
   boostMobileAnnounceBtn: document.getElementById("boostMobileAnnounceBtn"),
   boostMobileGatewayBtn: document.getElementById("boostMobileGatewayBtn"),
   boostMobileNotice: document.getElementById("boostMobileNotice"),
+  boostMobileNoticeDismiss: document.getElementById("boostMobileNoticeDismiss"),
   targetSelect: document.getElementById("targetSelect"),
   targetSummary: document.getElementById("targetSummary"),
   devTargetSelect: document.getElementById("devTargetSelect"),
@@ -2992,10 +2993,9 @@ function serialDeliveryMessage(progress = {}) {
 }
 
 function bulkJobVisible(progress = {}) {
-  if (!progress || typeof progress !== "object") return false;
-  if (progress.active) return true;
-  const message = String(progress.message || progress.last_message || progress.last_error || "").trim();
-  return Boolean(message);
+  // Shared sticky bar covers serial delivery, challenge bulk, and item-pool bulk.
+  // Status polls leave idle messages ("Ready.") on all three; only `active` should show the bar.
+  return Boolean(progress && typeof progress === "object" && progress.active);
 }
 
 function describeSerialBulk(progress = {}) {
@@ -3068,7 +3068,7 @@ function renderSharedBulkProgress() {
     { key: "challenge", data: state.bulkProgress.challenge, view: describeCountedBulk(state.bulkProgress.challenge, "Challenges", "Challenge bulk") },
     { key: "itempool", data: state.bulkProgress.itempool, view: describeCountedBulk(state.bulkProgress.itempool, "Item Pools", "Item pool bulk") }
   ];
-  const shown = jobs.find((job) => job.data && job.data.active) || jobs.find((job) => bulkJobVisible(job.data));
+  const shown = jobs.find((job) => bulkJobVisible(job.data));
   const titleNode = els.msbtBulkTitle;
   const bar = els.msbtBulkBar || els.serialDeliveryBar;
   const label = els.msbtBulkLabel || els.serialDeliveryLabel;
@@ -3273,7 +3273,7 @@ async function copyMobileGatewayDetails() {
 /** Phone-friendly install page (not the raw APK). Pairing uses a different QR in Mobile Gateway. */
 const MOBILE_INSTALL_URL =
   "https://www.funkyoushift.com/MattsSDKBoostingTools/mobile-install.html";
-const MOBILE_ANNOUNCE_DISMISS_KEY = "msbt.mobileAnnounce.dismissed.v1";
+const MOBILE_ANNOUNCE_DISMISS_KEY = "msbt.mobileAnnounce.dismissed.v2";
 
 function isMobileAnnounceDismissed() {
   try {
@@ -3338,6 +3338,28 @@ function openMobileGatewayPanel() {
     const btn = document.querySelector('[data-tab="mobile-gateway"]');
     if (btn) btn.click();
   }
+}
+
+const BOOST_MOBILE_NOTICE_KEY = "msbt.boostMobileNotice.dismissed.v1";
+
+function applyBoostMobileNoticeVisibility() {
+  if (!els.boostMobileNotice) return;
+  let dismissed = false;
+  try {
+    dismissed = localStorage.getItem(BOOST_MOBILE_NOTICE_KEY) === "1";
+  } catch (_err) {
+    dismissed = false;
+  }
+  els.boostMobileNotice.classList.toggle("hidden", dismissed);
+}
+
+function dismissBoostMobileNotice() {
+  try {
+    localStorage.setItem(BOOST_MOBILE_NOTICE_KEY, "1");
+  } catch (_err) {
+    /* ignore */
+  }
+  applyBoostMobileNoticeVisibility();
 }
 
 function openMobileInstallPage() {
@@ -6393,7 +6415,9 @@ function renderVersionInfo(info) {
   const required = data.sdkRequired || DEFAULT_SDK_REQUIRED;
   const requiredUrl = data.sdkRequiredUrl || DEFAULT_SDK_REQUIRED_URL;
   const kind = data.bundledSdkmod && data.bundledSdkmod.available ? "ok" : "warning";
-  renderVersionLineWithSdkLink(els.appVersionLine, prefixText, required, requiredUrl);
+  if (els.appVersionLine) {
+    els.appVersionLine.textContent = `v${versionValue(data.appVersion)}`;
+  }
   renderVersionLineWithSdkLink(els.versionSummary, prefixText, required, requiredUrl, kind);
   renderUpdateCards(data);
   renderBoostUpdateNotice(data);
@@ -10758,7 +10782,7 @@ function switchTab(tabId) {
     button.classList.toggle("active", button.dataset.tab === tabId);
     if (button.dataset.tab === tabId) activeTabButton = button;
   });
-  if (activeTabButton) {
+  if (activeTabButton && !activeTabButton.hidden) {
     requestAnimationFrame(() => {
       activeTabButton.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" });
     });
@@ -10823,7 +10847,155 @@ function switchTab(tabId) {
 
 window.switchTab = switchTab;
 
+const APP_FINDER_ALIASES = {
+  boosting: ["boost", "max all", "uvh", "cash", "eridium"],
+  "quick-menu": ["qm", "f7", "quick menu editor", "slots"],
+  "boost-essentials": ["instant drops", "instant holds", "third person", "tpc"],
+  "boost-combat-xp": ["cxp", "combat xp", "xp multiplier"],
+  "travel-xyz": ["xyz", "location bookmark", "coords", "teleport save", "farm spot"],
+  "serial-bookmarks": ["serial bookmarks", "saved serials"],
+  "hoard-builder": ["hoard", "waves", "enemy waves", "raid"],
+  "map-travel": ["travel", "maps", "stations"],
+  "player-movement": ["movement", "noclip", "fly", "dash", "speed"],
+  "item-pool": ["item pool", "itempool", "pools"],
+  "dev-spawner": ["spawn", "asd", "barrel logo", "actors"],
+  "mobile-gateway": ["phone", "apk", "qr pair", "mobile"],
+  "matt-editor": ["matt editor", "parts", "gzo"],
+  "bl4-codes": ["codes", "lootlemon", "legit"],
+  inventory: ["backpack", "equipped", "serials"],
+  "serial-tools": ["serial tools", "decode", "validator"],
+  updates: ["update", "download", "version"],
+  activity: ["activity log", "history"],
+  report: ["report", "feedback"]
+};
+
+function collectAppFinderEntries() {
+  const entries = [];
+  document.querySelectorAll(".tab-bar [data-tab]").forEach((button) => {
+    const tab = String(button.dataset.tab || "");
+    if (!tab) return;
+    const hidden = button.hidden || button.classList.contains("msbt-nav-tab-hidden");
+    const title = String(button.textContent || tab).replace(/^\s*★\s*/, "").trim();
+    entries.push({
+      id: `tab:${tab}`,
+      title,
+      hint: hidden ? "Tab (hidden)" : "Tab",
+      tab,
+      aliases: APP_FINDER_ALIASES[tab] || []
+    });
+  });
+  document.querySelectorAll("[data-msbt-panel]").forEach((panel) => {
+    const tabPanel = panel.closest(".tab-panel");
+    const tab = tabPanel && tabPanel.id ? String(tabPanel.id).replace(/^tab-/, "") : "";
+    if (!tab) return;
+    const title = String(panel.dataset.msbtTitle || (panel.querySelector("h2") && panel.querySelector("h2").textContent) || panel.dataset.msbtPanel || "").trim();
+    if (!title) return;
+    entries.push({
+      id: `panel:${panel.dataset.msbtPanel}`,
+      title,
+      hint: tab.replace(/-/g, " "),
+      tab,
+      panel: panel.dataset.msbtPanel,
+      aliases: APP_FINDER_ALIASES[panel.dataset.msbtPanel] || []
+    });
+  });
+  return entries;
+}
+
+function appFinderHaystack(entry) {
+  return `${entry.title} ${entry.hint || ""} ${entry.tab || ""} ${(entry.aliases || []).join(" ")}`.toLowerCase();
+}
+
+function renderElectronAppFinder(query) {
+  const box = document.getElementById("appFinderResults");
+  if (!box) return;
+  const q = String(query || "").trim().toLowerCase();
+  const hits = collectAppFinderEntries()
+    .filter((entry) => !q || appFinderHaystack(entry).includes(q))
+    .slice(0, 14);
+  if (!q || !hits.length) {
+    box.innerHTML = "";
+    box.classList.add("hidden");
+    box.hidden = true;
+    return;
+  }
+  box.hidden = false;
+  box.classList.remove("hidden");
+  box.innerHTML = "";
+  hits.forEach((entry, index) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.setAttribute("role", "option");
+    if (index === 0) button.classList.add("active");
+    const hint = document.createElement("small");
+    hint.textContent = entry.hint || entry.tab;
+    button.append(entry.title, hint);
+    button.addEventListener("click", () => jumpElectronAppFinder(entry));
+    box.appendChild(button);
+  });
+}
+
+function jumpElectronAppFinder(entry) {
+  const input = document.getElementById("appFinderInput");
+  const box = document.getElementById("appFinderResults");
+  if (input) input.blur();
+  if (box) {
+    box.innerHTML = "";
+    box.classList.add("hidden");
+    box.hidden = true;
+  }
+  if (entry.tab && typeof switchTab === "function") switchTab(entry.tab);
+  window.setTimeout(() => {
+    const node = entry.panel
+      ? document.querySelector(`[data-msbt-panel="${entry.panel}"]`)
+      : document.getElementById(`tab-${entry.tab}`);
+    if (!node) return;
+    try { node.scrollIntoView({ behavior: "smooth", block: "start" }); } catch (_) { node.scrollIntoView(); }
+    node.classList.add("app-finder-flash");
+    window.setTimeout(() => node.classList.remove("app-finder-flash"), 1400);
+  }, 40);
+}
+
+function wireAppFinder() {
+  const input = document.getElementById("appFinderInput");
+  const box = document.getElementById("appFinderResults");
+  if (!input || !box) return;
+  input.addEventListener("input", () => renderElectronAppFinder(input.value));
+  input.addEventListener("focus", () => renderElectronAppFinder(input.value));
+  input.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      box.innerHTML = "";
+      box.classList.add("hidden");
+      box.hidden = true;
+      input.blur();
+      return;
+    }
+    if (event.key === "Enter") {
+      const first = box.querySelector("button");
+      if (first) {
+        event.preventDefault();
+        first.click();
+      }
+    }
+  });
+  document.addEventListener("click", (event) => {
+    if (event.target === input || box.contains(event.target) || (event.target && event.target.closest && event.target.closest(".app-finder"))) return;
+    box.classList.add("hidden");
+    box.hidden = true;
+  });
+  document.addEventListener("keydown", (event) => {
+    if (!(event.ctrlKey || event.metaKey) || String(event.key || "").toLowerCase() !== "k") return;
+    const tag = String((event.target && event.target.tagName) || "").toLowerCase();
+    if (tag === "input" || tag === "textarea" || tag === "select") return;
+    event.preventDefault();
+    input.focus();
+    input.select();
+    renderElectronAppFinder(input.value);
+  });
+}
+
 function wireEvents() {
+  wireAppFinder();
   document.querySelectorAll(".tab-bar [data-tab]").forEach((button) => {
     button.addEventListener("click", () => switchTab(button.dataset.tab));
   });
@@ -11174,7 +11346,10 @@ function wireEvents() {
   els.validatorBulkBtn.addEventListener("click", validateBulk);
   els.validatorClearBtn.addEventListener("click", clearValidator);
 
-  document.getElementById("updateBtn").addEventListener("click", checkUpdates);
+  document.getElementById("updateBtn").addEventListener("click", () => {
+    switchTab("updates");
+    void checkUpdates({ startup: false });
+  });
   const checkUpdatesBtn = document.getElementById("checkUpdatesBtn");
   if (checkUpdatesBtn) {
     checkUpdatesBtn.addEventListener("click", () => {
@@ -11614,6 +11789,10 @@ function wireEvents() {
   if (els.boostMobileGatewayBtn) {
     els.boostMobileGatewayBtn.addEventListener("click", openMobileGatewayPanel);
   }
+  if (els.boostMobileNoticeDismiss) {
+    els.boostMobileNoticeDismiss.addEventListener("click", dismissBoostMobileNotice);
+  }
+  applyBoostMobileNoticeVisibility();
 
   const walkthroughNextBtn = document.getElementById("walkthroughNextBtn");
   const walkthroughBackBtn = document.getElementById("walkthroughBackBtn");
@@ -11716,20 +11895,20 @@ const TUTORIAL_TOURS = {
     },
     {
       title: "Updates",
-      body: "Check the Desktop App, Game SDK Stack, and Catalog Data here. You can also install the SDK Manager or Game SDK Mod. Fully restart the game after any SDK change.",
+      body: "Header Updates opens this tab (hidden from the main bar by default — Find or View → Main tabs also reach it) and checks for a new desktop build. Check Desktop App, Game SDK Stack, and Catalog Data here. You can also install the SDK Manager or Game SDK Mod. Fully restart the game after any SDK change.",
       tab: "updates",
       targetSel: "#tab-updates .updates-page",
       sdk: true
     },
     {
       title: "Activity Log",
-      body: "Recent app and bridge messages appear here. If a button seems to do nothing, check this log first. Clear Local Log when it gets noisy; copy useful lines before opening Report.",
+      body: "Recent app and bridge messages appear here. This tab is hidden from the main bar by default — Find or View → Main tabs still open it. If a button seems to do nothing, check this log first. Clear Local Log when it gets noisy; copy useful lines before opening Report.",
       tab: "activity",
       targetSel: "#tab-activity .activity-page"
     },
     {
       title: "Arrange your layout",
-      body: "Every tab has a layout toolbar: drag panels by the title bar, stack by dropping center-on-center, Compact to tidy, Reset for defaults, Arrange → Locked to freeze the layout. Full editor tour is on the next screen — or View → Layout walkthrough anytime.",
+      body: "The layout toolbar is off by default. This tour turns it on so you can see it — later use View → Layout toolbar. Drag panels by the title bar, stack by dropping center-on-center, Compact to tidy, Reset for defaults, Arrange → Locked to freeze the layout. Full editor tour is on the next screen — or View → Layout walkthrough anytime.",
       tab: "boosting",
       targetSel: "#tab-boosting .msbt-layout-toolbar"
     },
@@ -11745,7 +11924,7 @@ const TUTORIAL_TOURS = {
   layout: [
     {
       title: "Layout toolbar",
-      body: "Dockable tabs have a layout bar: Fixed / Panels mode, Comfortable / Compact spacing, Arrange Unlocked / Locked, Panels (show/hide), Compact packing, Reset layout, and Walkthrough. Arrangements save per tab in this profile and come back after you close the app.",
+      body: "This tour turns the layout bar on (View → Layout toolbar also does). Dockable tabs then show Fixed / Panels mode, Comfortable / Compact spacing, Arrange Unlocked / Locked, Panels (show/hide), Compact packing, Reset layout, and Walkthrough. Arrangements save per tab in this profile and come back after you close the app.",
       tab: "boosting",
       targetSel: "#tab-boosting .msbt-layout-toolbar"
     },
@@ -11781,7 +11960,7 @@ const TUTORIAL_TOURS = {
     },
     {
       title: "View — text size & tabs",
-      body: "Header View menu: content text size (A− / A+ / slider, 85%–140%) scales docked panels, Fixed pages, and Dev Spawner together. You can also show/hide or reorder main nav tabs and launch walkthroughs (Layout / Quick Menu setup / App overview).",
+      body: "Header View menu: content text size (A− / A+ / slider, 85%–140%) scales docked panels, Fixed pages, and Dev Spawner together. You can show/hide the layout toolbar, show/hide or reorder main nav tabs (Updates, Activity, Report, and Mobile Gateway start hidden), and launch walkthroughs (Layout / Quick Menu setup / App overview).",
       tab: "boosting",
       targetSel: "[data-msbt-view-menu]"
     }
@@ -12268,7 +12447,7 @@ const TAB_TUTORIALS = {
   "mobile-gateway": [
     {
       title: "Pairing QR",
-      body: "This tab is fixed (not dock-resizable) so the pairing QR stays fully visible. Scan it from MSBT Mobile → More → Connection Settings → Scan QR to pair. Same Wi‑Fi as the PC.",
+      body: "This tab is the pairing QR (same Wi‑Fi as the PC) — not the install QR. Install the APK from Support → Mobile App or GitHub Releases first, then scan here from MSBT Mobile → More → Connection Settings → Scan QR to pair. The tab stays fixed so the pairing QR remains fully visible.",
       tab: "mobile-gateway",
       targetSel: "#tab-mobile-gateway .mobile-gateway-qr"
     },
@@ -12830,9 +13009,23 @@ function collectWalkthroughRevealPanelIds(step) {
   return ids;
 }
 
+function walkthroughNeedsLayoutToolbar(step) {
+  const hay = [
+    step && step.target,
+    step && step.targetSel,
+    step && step.targetSelFallback
+  ].filter(Boolean).join(" ");
+  return /msbt-layout-toolbar|msbt-layout-hint|msbt-panels-menu/.test(hay);
+}
+
 function prepareWalkthroughTarget(step) {
   if (!step) return;
   walkthroughState._didRevealPanels = false;
+  if (walkthroughNeedsLayoutToolbar(step)
+      && window.MsbtPanelLayout
+      && typeof window.MsbtPanelLayout.applyLayoutToolbarVisible === "function") {
+    window.MsbtPanelLayout.applyLayoutToolbarVisible(true);
+  }
   if (step.revealInvDetail) {
     const detail = document.getElementById("invDetail");
     if (detail) {
@@ -13246,6 +13439,9 @@ async function startMainTutorial({ force = false } = {}) {
 
 function startLayoutTutorial({ force = true, fromChooser = false } = {}) {
   if (!fromChooser) walkthroughState.chooserSession = false;
+  if (window.MsbtPanelLayout && typeof window.MsbtPanelLayout.applyLayoutToolbarVisible === "function") {
+    window.MsbtPanelLayout.applyLayoutToolbarVisible(true);
+  }
   beginNamedTour("layout", TUTORIAL_TOURS.layout, {
     force,
     activity: "Layout editor walkthrough started."

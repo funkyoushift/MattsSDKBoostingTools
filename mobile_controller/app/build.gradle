@@ -10,8 +10,8 @@ android {
         applicationId 'com.funkyoushift.msbt.mobile'
         minSdk 28
         targetSdk 35
-        versionCode 17
-        versionName '0.1.0-beta.15'
+        versionCode 23
+        versionName '1.0.0'
     }
 
     def betaKeystore = file('../debug-signing/msbt-mobile-debug.keystore')
@@ -47,6 +47,7 @@ android {
 dependencies {
     implementation 'androidx.webkit:webkit:1.12.1'
     implementation 'androidx.core:core:1.13.1'
+    implementation 'com.journeyapps:zxing-android-embedded:4.3.0'
 }
 
 // Keep the Android beta self-contained without duplicating multi-megabyte catalogs in git.

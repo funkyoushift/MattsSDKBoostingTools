@@ -1,10 +1,16 @@
-# MSBT Mobile Controller — Open Beta Release
+# MSBT Mobile Controller
 
-Open Android beta for **MSBT Mobile Controller**, paired with desktop **Matt's SDK Boosting Tools v2.3.1+** (Mobile Gateway + QR).
+Public Android companion for **MSBT Mobile Controller**. Current download is on the **Latest** GitHub Release (not this historical `mobile-beta` tag).
 
-[![Android APK downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/mobile-beta/MSBT-Mobile-Controller.apk?label=Android%20APK%20downloads&color=e8a23a)](https://www.funkyoushift.com/MattsSDKBoostingTools/mobile-install.html)
+**Use these links:**
 
-Desktop **v2.3.1** is the current GitHub **Latest** Windows release and includes Mobile Gateway plus a phone-friendly install page for the home QR.
+- APK: https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Mobile-Controller.apk
+- Install page: https://www.funkyoushift.com/MattsSDKBoostingTools/mobile-install.html
+- Desktop: https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest
+
+Install over a previous mobile beta to keep pairing data. Pairing still uses a different QR (Mobile Gateway / in-game Phone Pairing), not the install QR.
+
+This folder remains so old `mobile-beta` bookmarks do not 404. Do not treat it as the current download location.
 
 ## What you get
 

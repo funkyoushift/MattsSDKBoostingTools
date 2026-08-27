@@ -8,7 +8,7 @@ The tour overlay stays lightly dimmed so the highlighted control and active tab 
 
 Auto-opens when `localStorage` `msbt.lastSeenVersion` is missing or differs from the current app version. Finishing or skipping sets `msbt.lastSeenVersion` and `msbt.tutorial.mainSeen` to that version.
 
-**Content (first-run order):** Welcome (SDK + download) → Bridge & status → Boosting → Serial Tools → Hoard Builder → Map Travel → Player Movement → Quick Menu → Updates → Activity Log → Layout tip → deep-dive chooser. Each step highlights the control or panel it describes. Update notification banner / startup update modal stay suppressed while any tour is open, then restore when the tour closes.
+**Content (first-run order):** Welcome (SDK + download) → Bridge & status → Boosting → Serial Tools → Hoard Builder → Map Travel → Player Movement → Quick Menu → Updates (header Updates / Find; tab is hidden by default) → Activity Log → Layout tip (auto-enables the layout toolbar) → deep-dive chooser. Each step highlights the control or panel it describes. Update notification banner / startup update modal stay suppressed while any tour is open, then restore when the tour closes.
 
 Chooser options:
 
@@ -23,7 +23,7 @@ Replay: ★ Quick Menu → **App Walkthrough**, or **View → App overview**.
 
 ## Layout editor (full)
 
-Always reachable from the main chooser or **View → Layout walkthrough**. Covers drag/overlap/click-to-front, center-drop stack, detach, Compact, Reset, Panels restore, View text size + hide/reorder tabs.
+Always reachable from the main chooser or **View → Layout walkthrough**. The tour turns the layout toolbar on (it is hidden by default). Covers drag/overlap/click-to-front, center-drop stack, detach, Compact, Reset, Panels restore, View text size + hide/reorder tabs.
 
 ## Quick Menu setup (full)
 
