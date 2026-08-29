@@ -178,6 +178,7 @@ const els = {
   electronAppInstaller: document.getElementById("electronAppInstaller"),
   electronAppLatest: document.getElementById("electronAppLatest"),
   editorFrame: document.getElementById("editorFrame"),
+  editorTabStatus: document.getElementById("editorTabStatus"),
   gzoSubmitBase85: document.getElementById("gzoSubmitBase85"),
   gzoSubmitCategory: document.getElementById("gzoSubmitCategory"),
   gzoSubmitClearBtn: document.getElementById("gzoSubmitClearBtn"),
@@ -4395,6 +4396,11 @@ function installMattEditorPrefsBridge() {
   });
 }
 
+function setEditorTabStatus(message, kind = "") {
+  setLine(els.editorTabStatus, message, kind);
+  setOutput(els.deliveryOutput, message);
+}
+
 async function loadEditor(options = {}) {
   if (!els.editorFrame) return;
   if (state.editorLoadInFlight) return;
@@ -4402,15 +4408,24 @@ async function loadEditor(options = {}) {
 
   state.editorLoadInFlight = true;
   installMattEditorPrefsBridge();
-  setOutput(els.deliveryOutput, "Starting bundled Matt editor...");
+  setEditorTabStatus("Starting bundled Matt editor...", "warning");
   try {
     const result = await window.msbt.mattEditorUrl();
-    const url = typeof result === "string" ? result : result.url;
-    const hosted = typeof result === "string" ? false : Boolean(result.hosted);
-    const message = typeof result === "string" ? "Loaded raw editor file." : result.message;
+    const url = typeof result === "string" ? result : result && result.url;
+    const hosted = typeof result === "string" ? false : Boolean(result && result.hosted);
+    const message = typeof result === "string" ? "Loaded raw editor file." : result && result.message;
+    if (!url) {
+      throw new Error("Matt editor did not return a page URL.");
+    }
+    els.editorFrame.removeAttribute("hidden");
+    els.editorFrame.style.opacity = "1";
+    els.editorFrame.style.visibility = "visible";
     els.editorFrame.src = url;
     state.editorLoaded = true;
-    setOutput(els.deliveryOutput, message || (hosted ? "Bundled Matt editor loaded." : "Editor loaded."));
+    setEditorTabStatus(
+      message || (hosted ? "Bundled Matt editor loaded." : "Editor loaded."),
+      hosted ? "ok" : "warning"
+    );
     setLine(
       els.serialSummary,
       hosted
@@ -4421,7 +4436,7 @@ async function loadEditor(options = {}) {
   } catch (error) {
     state.editorLoaded = false;
     const message = error && error.message ? error.message : String(error);
-    setOutput(els.deliveryOutput, `Matt editor failed to load: ${message}`);
+    setEditorTabStatus(`Matt editor failed to load: ${message}`, "bad");
     setLine(els.serialSummary, "Matt editor failed to load.", "bad");
   } finally {
     state.editorLoadInFlight = false;
@@ -11501,6 +11516,7 @@ function wireEvents() {
   if (reloadEditorBtn) {
     reloadEditorBtn.addEventListener("click", () => {
       if (els.editorFrame && els.editorFrame.src) {
+        setEditorTabStatus("Reloading Matt editor…", "warning");
         els.editorFrame.src = els.editorFrame.src;
         return;
       }
@@ -12246,7 +12262,7 @@ const TAB_TUTORIALS = {
   "matt-editor": [
     {
       title: "Matt Editor",
-      body: "A full save editor and item creator. Press Load Editor to open it — build or edit items and saves here.",
+      body: "A full save editor and item creator. Press Load Editor to open it in this tab (not a JSON Pretty-print page). This desktop build keeps the editor on its own port so Mobile Gateway does not steal it.",
       tab: "matt-editor",
       target: "loadEditorBtn"
     },

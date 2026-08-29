@@ -20,6 +20,9 @@ from external_serial_tools import human_to_serial, serial_to_human
 
 EDITOR_DIR = BASE_DIR / "matt_editor"
 BRIDGE_URL = "http://127.0.0.1:49774"
+# 49775 is the Electron Mobile Gateway (JSON on GET /). Never share it.
+MOBILE_GATEWAY_PORT = 49775
+PREFERRED_PORT = 49776
 BLCRYPT_API_URL = "https://save-editor.be/blcrypt/api.php"
 BLCRYPT_HELPER = BASE_DIR / "matt_editor_blcrypt.js"
 
@@ -717,6 +720,34 @@ class _MattEditorHandler(BaseHTTPRequestHandler):
             self._send_json(200, {"ok": True, "message": str(result)})
 
 
+class _MattEditorHttpServer(ThreadingHTTPServer):
+    # HTTPServer defaults to True; on Windows that can bind 127.0.0.1:49775
+    # while Mobile Gateway already owns 0.0.0.0:49775, so the iframe gets JSON.
+    allow_reuse_address = False
+
+
+def _looks_like_editor_html(body: bytes, content_type: str) -> bool:
+    ct = (content_type or "").lower()
+    text = body.lstrip()
+    if "json" in ct:
+        return False
+    if text.startswith(b"{") or text.startswith(b"["):
+        return False
+    if "html" in ct:
+        return True
+    return text.startswith(b"<") or text[:15].upper().startswith(b"<!DOCTYPE")
+
+
+def _probe_editor_url(url: str) -> bool:
+    try:
+        with urlrequest.urlopen(url, timeout=2.0) as resp:
+            body = resp.read(2048)
+            content_type = resp.headers.get("Content-Type", "")
+            return _looks_like_editor_html(body, content_type)
+    except Exception:
+        return False
+
+
 class MattEditorHost:
     def __init__(self) -> None:
         self._server: ThreadingHTTPServer | None = None
@@ -729,15 +760,34 @@ class MattEditorHost:
             return self.url
         if not (EDITOR_DIR / "index.html").exists():
             raise FileNotFoundError(f"Matt editor assets not found at {EDITOR_DIR}")
-        try:
-            self._server = ThreadingHTTPServer(("127.0.0.1", 49775), _MattEditorHandler)
-        except OSError:
-            self._server = ThreadingHTTPServer(("127.0.0.1", 0), _MattEditorHandler)
-        host, port = self._server.server_address[:2]
-        self.url = f"http://{host}:{port}/"
-        self._thread = threading.Thread(target=self._server.serve_forever, name="MSBTMattEditorHost", daemon=True)
-        self._thread.start()
-        return self.url
+        last_error: Exception | None = None
+        for port in (PREFERRED_PORT, 0):
+            try:
+                server = _MattEditorHttpServer(("127.0.0.1", port), _MattEditorHandler)
+            except OSError as exc:
+                last_error = exc
+                continue
+            host, bound = server.server_address[:2]
+            if bound == MOBILE_GATEWAY_PORT:
+                server.server_close()
+                last_error = OSError(
+                    f"refusing to bind Matt editor on Mobile Gateway port {MOBILE_GATEWAY_PORT}"
+                )
+                continue
+            self._server = server
+            self.url = f"http://{host}:{bound}/"
+            self._thread = threading.Thread(
+                target=self._server.serve_forever,
+                name="MSBTMattEditorHost",
+                daemon=True,
+            )
+            self._thread.start()
+            if _probe_editor_url(self.url):
+                return self.url
+            probed = self.url
+            self.stop()
+            last_error = OSError(f"Matt editor host at {probed} did not serve the editor UI")
+        raise OSError(str(last_error) if last_error else "Could not start Matt editor host")
 
     def stop(self) -> None:
         if self._server:

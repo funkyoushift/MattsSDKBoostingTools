@@ -10,7 +10,7 @@ const os = require("os");
 const crypto = require("crypto");
 const { URL } = require("url");
 
-const DEFAULT_PORT = 49775;
+const DEFAULT_PORT = 49775; // Matt Editor host uses 49776 — do not share this port
 const DEFAULT_BRIDGE = "http://127.0.0.1:49774";
 const PAIRING_HEADER = "x-msbt-pairing-code";
 

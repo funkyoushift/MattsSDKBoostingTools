@@ -2,7 +2,7 @@
 
 MSBT is a Borderlands 4 boosting and item toolkit: a standalone Windows app outside the game, plus a small SDK mod that talks to Borderlands 4 while you play. Use it for currency/XP/SDU helpers, serial delivery, BL4 code browsing, Mattmab’s save/profile/item editor, Dev Spawner, map travel, movement tools, and more.
 
-**Current release: [v2.9.0](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.9.0)** — MSBT Mobile Controller 1.0.0 (out of beta) plus desktop chrome cleanup.
+**Current release: [v2.9.1](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.9.1)** — desktop patch: Matt Editor stays on port 49776 so Mobile Gateway no longer shows Chromium Pretty-print in that tab.
 
 This project is **unofficial**. It is not affiliated with, endorsed by, or connected to Gearbox, 2K, or the Borderlands franchise owners.
 
@@ -16,12 +16,12 @@ This project is **unofficial**. It is not affiliated with, endorsed by, or conne
 
 **Recommended:** grab the latest Windows installer from GitHub Releases:
 
-[![Installer downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Installer-v2.9.0.exe?label=Installer%20downloads&color=2ea44f)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest)
-[![Portable downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Portable-v2.9.0-win-x64.zip?label=Portable%20downloads&color=0969da)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest)
+[![Installer downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Installer-v2.9.1.exe?label=Installer%20downloads&color=2ea44f)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest)
+[![Portable downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Portable-v2.9.1-win-x64.zip?label=Portable%20downloads&color=0969da)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest)
 [![Android APK downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Mobile-Controller.apk?label=Android%20APK%20downloads&color=e8a23a)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Mobile-Controller.apk)
 
 - [GitHub Releases — download page](https://github.com/funkyoushift/MattsSDKBoostingTools/releases)
-- Latest installer example: `MSBT-Installer-v2.9.0.exe`
+- Latest installer example: `MSBT-Installer-v2.9.1.exe`
 
 **Portable option:** if you do not want an installer, download the portable ZIP instead (`MSBT-Portable-v…-win-x64.zip`), extract it, and run the app from that folder.
 

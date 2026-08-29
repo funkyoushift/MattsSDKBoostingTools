@@ -35,7 +35,7 @@ Each layout tab toolbar has **Walkthrough** — short steps on real controls/wor
 
 **★ Quick Menu** Walkthrough launches **Quick Menu setup** (same full tour), not a shorter duplicate.
 
-**Matt Editor** stays short: full save editor + item creator, plus a Ko-fi support link for Mattmab (`https://ko-fi.com/mattmab` via `openExternal`).
+**Matt Editor** stays short: full save editor + item creator (own host port, not Mobile Gateway), plus a Ko-fi support link for Mattmab (`https://ko-fi.com/mattmab` via `openExternal`).
 
 **Hoard Builder** covers wave composition, actor picking, automatic advancement, reusable favorites, and Emergency Clear. Its inline first-run guide remains a separate, dismissible three-step workflow summary above the builder.
 

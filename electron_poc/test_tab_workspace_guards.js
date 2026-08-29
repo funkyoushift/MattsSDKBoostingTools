@@ -35,6 +35,14 @@ function assertCssIsolation() {
     /\.tab-shell:has\(#tab-dev-spawner\.active\.msbt-fixed-tab\)\s*\{/,
     "Dev Spawner Compact still needs its dedicated tab-shell :has() rule"
   );
+  assert.match(
+    css,
+    /\.tab-shell:has\(#tab-matt-editor\.active\)\s*\{/,
+    "Matt Editor needs its own tab-shell :has() fill rule"
+  );
+  const mattShell = ruleBlocks.find((block) => /\.tab-shell:has\(#tab-matt-editor/.test(block));
+  assert.ok(mattShell, "Matt Editor tab-shell :has() block missing");
+  assert.ok(!/#tab-inventory/.test(mattShell), "Matt Editor tab-shell :has() must not include Inventory");
 }
 
 function assertHtmlTabSiblings() {
@@ -46,6 +54,15 @@ function assertHtmlTabSiblings() {
   assert.strictEqual(ids.length, new Set(ids).size, `duplicate tab ids: ${ids.join(", ")}`);
   assert.ok(html.includes('id="editorFrame"'), "Matt Editor iframe missing");
   assert.ok(html.includes('id="loadEditorBtn"'), "Matt Editor Load Editor button missing");
+  assert.ok(html.includes('id="editorTabStatus"'), "Matt Editor in-tab status line missing");
+  assert.ok(
+    /id="tab-matt-editor"[^>]*fixed-page-tab/.test(html),
+    "Matt Editor must stay a fixed-page tab so a saved GridStack layout cannot replace the iframe"
+  );
+  assert.ok(
+    !/id="tab-matt-editor"[^>]*data-msbt-layout-tab/.test(html),
+    "Matt Editor must not be a dockable layout tab"
+  );
   assert.ok(html.includes("data-dev-host=\"actor-rows\""), "Dev Spawner actor list host missing");
   assert.ok(html.includes("data-dev-host=\"spawn-ai-btn\""), "Dev Spawner spawn button host missing");
 }
@@ -114,6 +131,7 @@ async function auditWorkspaces() {
     const extra = {
       loadEditor: Boolean(document.getElementById("loadEditorBtn")),
       editorFrame: Boolean(document.getElementById("editorFrame")),
+      editorTabStatus: Boolean(document.getElementById("editorTabStatus")),
       spawnHost: Boolean(document.querySelector("#tab-dev-spawner [data-dev-host='spawn-ai-btn']")),
       actorHost: Boolean(document.querySelector("#tab-dev-spawner [data-dev-host='actor-rows']"))
     };
@@ -123,6 +141,7 @@ async function auditWorkspaces() {
   assert.strictEqual(result.nestedPanels, 0, "tab panels must not nest inside each other");
   assert.ok(result.extra.loadEditor, "Load Editor button missing at runtime");
   assert.ok(result.extra.editorFrame, "editorFrame missing at runtime");
+  assert.ok(result.extra.editorTabStatus, "editorTabStatus missing at runtime");
   assert.ok(result.extra.spawnHost, "Dev Spawner spawn host missing at runtime");
   assert.ok(result.extra.actorHost, "Dev Spawner actor host missing at runtime");
 
@@ -146,12 +165,32 @@ async function auditWorkspaces() {
   if (!devControlsAfter || devControlsAfter.height < 40) {
     failures.push(`Dev Spawner controls collapsed after Inventory (h=${devControlsAfter && devControlsAfter.height})`);
   }
-  if (mattAfter && mattAfter.shellOverflow === "hidden") {
-    failures.push("Matt Editor tab-shell overflow is hidden; Inventory CSS leaked into .tab-shell");
+  if (mattAfter && mattAfter.shellOverflow !== "hidden") {
+    failures.push("Matt Editor tab-shell should fill (overflow hidden) so the iframe can stretch");
   }
 
   assert.deepStrictEqual(failures, [], failures.join("\n"));
-  console.log(`tab workspace guards passed (${WORKSPACES.length} tabs; inventory→editor/spawner still sized)`);
+
+  win.setSize(1280, 720);
+  await new Promise((resolve) => setTimeout(resolve, 400));
+  const compact = await win.webContents.executeJavaScript(`(() => {
+    if (typeof switchTab === "function") switchTab("matt-editor");
+    const el = document.getElementById("editorFrame");
+    const tab = document.getElementById("tab-matt-editor");
+    const rect = el ? el.getBoundingClientRect() : null;
+    return {
+      found: Boolean(el),
+      tabActive: Boolean(tab && tab.classList.contains("active")),
+      height: rect ? Math.round(rect.height) : 0,
+      width: rect ? Math.round(rect.width) : 0
+    };
+  })()`);
+  assert.ok(compact.found, "compact window: editorFrame missing");
+  assert.ok(compact.tabActive, "compact window: Matt Editor tab did not activate");
+  assert.ok(compact.height >= 200, `compact 1280x720 Matt Editor iframe height ${compact.height} < 200`);
+  assert.ok(compact.width >= 400, `compact 1280x720 Matt Editor iframe width ${compact.width} < 400`);
+
+  console.log(`tab workspace guards passed (${WORKSPACES.length} tabs; inventory→editor/spawner still sized; compact iframe ${compact.width}x${compact.height})`);
   win.destroy();
 }
 

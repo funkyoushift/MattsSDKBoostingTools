@@ -47,6 +47,7 @@ const {
   folderFromFile,
   steamIdFromSavePath
 } = require("./matt_editor_prefs_store");
+const { looksLikeEditorHtml } = require("./matt_editor_page");
 const {
   loadBl4Catalog,
   refreshGzoCatalog
@@ -2208,13 +2209,45 @@ function startHostWithPython(pythonExe) {
   });
 }
 
+async function probeMattEditorUrl(url) {
+  try {
+    const response = await fetch(url, { headers: { Accept: "text/html" } });
+    const contentType = response.headers.get("content-type") || "";
+    const body = await response.text();
+    if (looksLikeEditorHtml(body, contentType)) return { ok: true };
+    return {
+      ok: false,
+      reason: "not-html",
+      detail: `content-type ${contentType || "unknown"}`
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      reason: "unreachable",
+      detail: error && error.message ? error.message : String(error)
+    };
+  }
+}
+
 async function startMattEditorHost() {
-  if (hostProcessIsAlive() && mattHostUrl) return mattHostUrl;
+  if (hostProcessIsAlive() && mattHostUrl) {
+    const probe = await probeMattEditorUrl(mattHostUrl);
+    if (probe.ok) return mattHostUrl;
+    killProcessTree(mattHostProcess && mattHostProcess.pid);
+    mattHostProcess = null;
+    mattHostUrl = "";
+  }
 
   const errors = [];
   for (const candidate of pythonCandidates()) {
     try {
-      return await startHostWithPython(candidate);
+      const url = await startHostWithPython(candidate);
+      const probe = await probeMattEditorUrl(url);
+      if (probe.ok) return url;
+      if (hostProcessIsAlive()) killProcessTree(mattHostProcess.pid);
+      mattHostProcess = null;
+      mattHostUrl = "";
+      errors.push(`${candidate}: host answered ${probe.reason || "not-html"} (${probe.detail || url})`);
     } catch (error) {
       errors.push(`${candidate}: ${error && error.message ? error.message : error}`);
     }
