@@ -287,6 +287,7 @@ def restore_fog() -> tuple[int, int]:
 def on_enable() -> None:
     global _enabled, _LAST_MAINTAIN_AT
     _enabled = True
+    sync_engine_hooks()
     touched, params, details = apply_no_fog()
     _LAST_MAINTAIN_AT = time.monotonic()
     _log(f"enabled v{__version__} touched={touched} params={params}")
@@ -299,6 +300,7 @@ def on_enable() -> None:
 def on_disable() -> None:
     global _enabled
     _enabled = False
+    sync_engine_hooks()
     restored, params = restore_fog()
     _log(f"disabled restored={restored} params={params}")
 
@@ -319,6 +321,7 @@ def clear_fog(*, force: bool = True) -> str:
     """Apply fog hide once (used by Max All / targeted clear). Enables maintain mode."""
     global _enabled, _LAST_TOUCH_LOG, _LAST_MAINTAIN_AT
     _enabled = True
+    sync_engine_hooks()
     touched, params, details = apply_no_fog(force=force)
     _LAST_MAINTAIN_AT = time.monotonic()
     _LAST_TOUCH_LOG = _TICK
@@ -418,6 +421,17 @@ def _tick(_obj: UObject, _args: WrappedStruct, _ret: Any, _func: BoundFunction) 
 def _travel(*_args: Any, **_kwargs: Any) -> None:
     # ClientTravel is world teardown. Never find_all / write materials here.
     clear_travel_backups()
+
+
+def sync_engine_hooks() -> None:
+    """Keep Fog PlayerTick registered only while On."""
+    want = bool(_enabled)
+    try:
+        fn = getattr(_tick, "enable" if want else "disable", None)
+        if callable(fn):
+            fn()
+    except Exception:
+        pass
 
 
 _log(f"loaded v{__version__} (MSBT helper, starts OFF)")

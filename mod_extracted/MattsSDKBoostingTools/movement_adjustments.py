@@ -10,17 +10,9 @@ import math
 import time
 from typing import Any
 
-from mods_base import ENGINE, get_pc, hook
+from mods_base import ENGINE, get_pc
 import unrealsdk
 from unrealsdk import logging
-
-try:
-    from unrealsdk.hooks import Block as _UnrealHookBlock
-except Exception:  # pragma: no cover - oak2 hook Block is optional
-    try:
-        from unrealsdk import Block as _UnrealHookBlock
-    except Exception:
-        _UnrealHookBlock = None
 
 _PREFIX = "[Matts SDK Boosting Tools | Movement]"
 
@@ -109,6 +101,8 @@ _INFINITE_JUMP_HEAVY_SCAN_INTERVAL_S: float = 3.0
 _INFINITE_JUMP_LAST_HEAVY_SCAN: float = 0.0
 _INFINITE_JUMP_WORLD_SIG: tuple[int, int, int, int] | None = None
 _INFINITE_JUMP_LOCAL_IDX: int | None = None
+_INFINITE_JUMP_MOVE_FINDALL_AT: float = 0.0
+_IJ_QUIET_LIFT_ARMED: bool = False
 
 
 def _uobject_addr(obj: Any) -> int:
@@ -191,7 +185,9 @@ def _is_default(obj: Any) -> bool:
         if "Default__" in str(obj):
             return True
     except Exception:
-        return True
+        # Alive but unreadable — do not skip. Treating these as CDOs made
+        # Infinite Jump All-ON and pawn resolve drop the live character.
+        return False
     return False
 
 
@@ -305,7 +301,10 @@ def _call0(obj: Any, name: str) -> Any | None:
 
 
 def pawn_for_controller(pc: Any) -> Any | None:
-    for attr in ("Pawn", "AcknowledgedPawn", "Character", "ControlledPawn"):
+    # OakCharacter first — Super Dash / hook_gate already use it. Pawn can be
+    # empty or a CDO on current BL4 builds, which made Infinite Jump's camera
+    # tick and CanJump match miss the live character while fly still worked.
+    for attr in ("OakCharacter", "Pawn", "AcknowledgedPawn", "Character", "ControlledPawn"):
         try:
             pawn = getattr(pc, attr, None)
             if pawn is not None and not _is_default(pawn):
@@ -1465,20 +1464,69 @@ def refresh_jump_counts_all_players() -> str:
     return f"Gentle jump refresh cleared counters on {len(objects)} movement object(s). Writes: {writes}."
 
 
+def _move_has_jump_field(move: Any, attr: str) -> bool:
+    if move is None:
+        return False
+    try:
+        return getattr(move, attr, None) is not None
+    except Exception:
+        return False
+
+
+def _pick_jump_move(candidates: list[Any]) -> Any | None:
+    """Prefer CharMoveComp (PreJump / JumpMaxCount), never a Movement-mode enum."""
+    for move in candidates:
+        if _move_has_jump_field(move, "JumpMaxCountPreJump"):
+            return move
+    for move in candidates:
+        if _move_has_jump_field(move, "JumpMaxCount"):
+            return move
+    return None
+
+
 def _infinite_jump_move_for_pawn(pawn: Any) -> Any | None:
+    global _INFINITE_JUMP_MOVE_FINDALL_AT
     if pawn is None:
         return None
-    for attr in ("OakCharacterMovement", "CharacterMovement", "GbxCharacterMovement", "MovementComponent", "PawnMovement", "Movement"):
+    found: list[Any] = []
+    for attr in (
+        "OakCharacterMovement",
+        "CharacterMovement",
+        "GbxCharacterMovement",
+        "MovementComponent",
+        "PawnMovement",
+        "Movement",
+    ):
         try:
             move = getattr(pawn, attr, None)
             if move is not None and not _is_default(move):
-                return move
+                found.append(move)
         except Exception:
             pass
     for meth in ("GetMovementComponent", "GetCharacterMovement"):
         move = _call0(pawn, meth)
-        if move is not None and not _is_default(move):
-            return move
+        if move is not None and not _is_default(move) and move not in found:
+            found.append(move)
+    picked = _pick_jump_move(found)
+    if picked is not None:
+        return picked
+    # Live log: attribute walk left move.JumpMaxCount=?. find_all is the
+    # same fallback _movement_objects_for_pawn already uses for speed writes.
+    now = time.monotonic()
+    if now - float(_INFINITE_JUMP_MOVE_FINDALL_AT or 0.0) < 3.0:
+        return None
+    _INFINITE_JUMP_MOVE_FINDALL_AT = now
+    extra: list[Any] = []
+    try:
+        for obj in _movement_objects_for_pawn(pawn):
+            if obj is pawn or obj is None:
+                continue
+            extra.append(obj)
+    except Exception:
+        extra = []
+    picked = _pick_jump_move(extra)
+    if picked is not None:
+        return picked
     return None
 
 
@@ -1522,6 +1570,12 @@ def _jump_counters_spent(obj: Any) -> bool:
             return True
     except Exception:
         return True
+    try:
+        pre = getattr(obj, "JumpMaxCountPreJump", None)
+        if pre is not None and int(pre) < 999:
+            return True
+    except Exception:
+        pass
     return False
 
 
@@ -1536,22 +1590,25 @@ def _infinite_jump_needs_light_refresh(pawn: Any) -> bool:
 
 
 def _force_infinite_jump_ready(pawn: Any, move: Any | None = None, *, light: bool = False) -> bool:
-    # Hot path: address-only liveness. Avoid str()/CDO probes every camera tick.
-    if pawn is None or not _uobject_alive(pawn):
-        return False
-    if light and not _infinite_jump_needs_light_refresh(pawn):
+    """Keep BL4's jump gate open. Copied from proven BLImGui ``_movement_force_infinite_jump_ready``.
+
+    Restores proven camera-hook behavior: reset spent jump counters and keep max
+    counts high. Do not call StopJumping(), do not force DefaultJump, and do not
+    write CurrentJump.JumpGoal here. light=True only writes when counters are spent.
+    """
+    if pawn is None or not _uobject_alive(pawn) or _is_default(pawn):
         return False
     try:
-        move = move if (move is not None and _uobject_alive(move)) else None
-        if move is None:
-            move = _infinite_jump_move_for_pawn(pawn)
-            if move is not None and not _uobject_alive(move):
-                move = None
+        if move is not None and (not _uobject_alive(move) or _is_default(move)):
+            move = None
+        move = move or _infinite_jump_move_for_pawn(pawn)
+        if move is not None and (not _uobject_alive(move) or _is_default(move)):
+            move = None
     except Exception:
         move = None
     changed = False
-    # light=True (camera tick): only open JumpMaxCount and clear spent counters.
-    # Full prep (Jump/CanJump) also zeros alternate counter names used by BL4 builds.
+    # Proven BLImGui field lists. light=True (camera tick) does NOT write
+    # JumpMaxCountPreJump — that belongs on the full CanJump/Jump prep.
     if light:
         pawn_attrs: tuple[tuple[str, Any], ...] = (
             ("JumpMaxCount", 999),
@@ -1561,19 +1618,22 @@ def _force_infinite_jump_ready(pawn: Any, move: Any | None = None, *, light: boo
         move_attrs = pawn_attrs
     else:
         pawn_attrs = (
-            ("JumpMaxCount", 999),
             ("JumpCurrentCount", 0),
             ("JumpCurrentCountPreJump", 0),
             ("JumpedCount", 0),
             ("CurrentJumpCount", 0),
             ("CurrentJumpCountPreJump", 0),
+            ("JumpMaxCount", 999),
+            ("JumpMaxCountPreJump", 999),
         )
         move_attrs = (
-            ("JumpMaxCount", 999),
+            ("JumpedCount", 0),
             ("JumpCurrentCount", 0),
             ("JumpCurrentCountPreJump", 0),
             ("CurrentJumpCount", 0),
             ("CurrentJumpCountPreJump", 0),
+            ("JumpMaxCount", 999),
+            ("JumpMaxCountPreJump", 999),
         )
 
     def _apply(obj: Any, pairs: tuple[tuple[str, Any], ...]) -> None:
@@ -1582,9 +1642,7 @@ def _force_infinite_jump_ready(pawn: Any, move: Any | None = None, *, light: boo
             if light and attr in ("JumpCurrentCount", "JumpCurrentCountPreJump", "CurrentJumpCount", "CurrentJumpCountPreJump", "JumpedCount"):
                 try:
                     cur = getattr(obj, attr, None)
-                    if cur is None:
-                        continue
-                    if int(cur) <= 0:
+                    if cur is None or int(cur) <= 0:
                         continue
                 except Exception:
                     continue
@@ -1594,7 +1652,7 @@ def _force_infinite_jump_ready(pawn: Any, move: Any | None = None, *, light: boo
     _apply(pawn, pawn_attrs)
     if move is not None:
         _apply(move, move_attrs)
-    return changed
+    return bool(changed)
 
 
 def _player_label_for_controller(idx: int, pc: Any | None) -> str:
@@ -1617,12 +1675,15 @@ def _clear_infinite_jump_runtime_caches() -> None:
     global _INFINITE_JUMP_LABEL_CACHE_TIME, _INFINITE_JUMP_CAMERA_LAST_APPLY
     global _INFINITE_JUMP_LAST_HEAVY_SCAN, _INFINITE_JUMP_WORLD_SIG, _INFINITE_JUMP_LOCAL_IDX
     global _JUMP_REFRESH_OBJECT_CACHE, _JUMP_REFRESH_CACHE_TIME
+    global _INFINITE_JUMP_MOVE_FINDALL_AT, _IJ_QUIET_LIFT_ARMED
     _INFINITE_JUMP_LABEL_CACHE.clear()
     _INFINITE_JUMP_LABEL_CACHE_TIME = 0.0
     _INFINITE_JUMP_CAMERA_LAST_APPLY = 0.0
     _INFINITE_JUMP_LAST_HEAVY_SCAN = 0.0
     _INFINITE_JUMP_WORLD_SIG = None
     _INFINITE_JUMP_LOCAL_IDX = None
+    _INFINITE_JUMP_MOVE_FINDALL_AT = 0.0
+    _IJ_QUIET_LIFT_ARMED = False
     _JUMP_REFRESH_OBJECT_CACHE = []
     _JUMP_REFRESH_CACHE_TIME = 0.0
     try:
@@ -1755,7 +1816,7 @@ def _infinite_jump_contexts_heavy(now: float) -> list[tuple[int, str, Any, Any |
     except Exception:
         local_pc = None
     local_pc_addr = _uobject_addr(local_pc)
-    for idx, pc in enumerate(controllers):
+    for pc in controllers:
         if pc is None or not _uobject_alive(pc):
             continue
         pawn = pawn_for_controller(pc)
@@ -1765,11 +1826,12 @@ def _infinite_jump_contexts_heavy(now: float) -> list[tuple[int, str, Any, Any |
         if addr in seen:
             continue
         seen.add(addr)
-        label = _player_label_for_controller(idx, pc)
-        _INFINITE_JUMP_LABEL_CACHE[int(idx)] = label
-        contexts.append((idx, label, pawn, None))
+        party_idx = int(_local_party_index(pc))
+        label = _player_label_for_controller(party_idx, pc)
+        _INFINITE_JUMP_LABEL_CACHE[int(party_idx)] = label
+        contexts.append((party_idx, label, pawn, None))
         if local_pc_addr and _uobject_addr(pc) == local_pc_addr:
-            _INFINITE_JUMP_LOCAL_IDX = int(idx)
+            _INFINITE_JUMP_LOCAL_IDX = int(party_idx)
     for pawn in live_player_pawns():
         if pawn is None or not _uobject_alive(pawn):
             continue
@@ -1829,13 +1891,16 @@ def _infinite_jump_verify_bits(pawn: Any) -> str:
         return "pawn=none"
     try:
         bits.append(f"pawn.JumpMaxCount={getattr(pawn, 'JumpMaxCount', '?')}")
+        bits.append(f"pawn.JumpMaxCountPreJump={getattr(pawn, 'JumpMaxCountPreJump', '?')}")
         bits.append(f"pawn.JumpCurrentCount={getattr(pawn, 'JumpCurrentCount', '?')}")
     except Exception:
         bits.append("pawn=unreadable")
     move = _infinite_jump_move_for_pawn(pawn)
     if move is not None:
         try:
+            bits.append(f"move={type(move).__name__}")
             bits.append(f"move.JumpMaxCount={getattr(move, 'JumpMaxCount', '?')}")
+            bits.append(f"move.JumpMaxCountPreJump={getattr(move, 'JumpMaxCountPreJump', '?')}")
             bits.append(f"move.JumpCurrentCount={getattr(move, 'JumpCurrentCount', '?')}")
         except Exception:
             bits.append("move=unreadable")
@@ -1845,8 +1910,17 @@ def _infinite_jump_verify_bits(pawn: Any) -> str:
 
 
 def _hook_arg_to_pawn(obj: Any) -> Any | None:
-    if obj is None or not _uobject_alive(obj):
+    """Resolve a hook payload to the live OakCharacter/Pawn.
+
+    Copied from proven BLImGui ``_movement_hook_arg_to_pawn``.
+    """
+    if obj is None or _is_default(obj):
         return None
+    try:
+        if hasattr(obj, "JumpCurrentCount") and hasattr(obj, "JumpMaxCount"):
+            return obj
+    except Exception:
+        pass
     for attr in ("Object", "object", "obj", "self", "This", "this", "Caller", "caller", "Context", "context"):
         try:
             inner = getattr(obj, attr, None)
@@ -1861,21 +1935,12 @@ def _hook_arg_to_pawn(obj: Any) -> Any | None:
             pawn = getattr(obj, attr, None)
         except Exception:
             pawn = None
-        if pawn is not None and _uobject_alive(pawn):
-            return pawn
-    # Cheap local match only — never find_all on the jump pre-hook hot path.
-    try:
-        local_pawn = pawn_for_controller(get_pc())
-        if local_pawn is not None and _uobject_addr(local_pawn) and _uobject_addr(obj) == _uobject_addr(local_pawn):
-            return obj
-    except Exception:
-        pass
-    # Character/pawn-shaped callers often expose JumpMaxCount directly.
-    try:
-        if getattr(obj, "JumpMaxCount", None) is not None:
-            return obj
-    except Exception:
-        pass
+        if pawn is not None and not _is_default(pawn):
+            try:
+                if hasattr(pawn, "JumpCurrentCount") and hasattr(pawn, "JumpMaxCount"):
+                    return pawn
+            except Exception:
+                return pawn
     return None
 
 
@@ -1945,22 +2010,21 @@ def _camera_infinite_jump_hook(*args, **kwargs):
         )
         party_needed = due_heavy or any(int(i) != int(local_idx) for i in _INFINITE_JUMP_INDICES)
 
-        # Always re-open local pawn+move when IJ is enabled. Skipping when the
-        # pawn looks "open" missed CharMoveComp JumpCurrentCount spend — IJ
-        # reported ON but the next jump was still consumed.
+        # Proven BLImGui camera path: write only when JumpCurrentCount is spent
+        # or JumpMaxCount is not open. Do not force-write every tick.
         if int(local_idx) in _INFINITE_JUMP_INDICES:
-            _force_infinite_jump_ready(pawn, None, light=True)
+            try:
+                cur = int(getattr(pawn, "JumpCurrentCount", 0) or 0)
+                max_c = int(getattr(pawn, "JumpMaxCount", 0) or 0)
+                if cur > 0 or max_c < 999:
+                    _force_infinite_jump_ready(pawn, None, light=True)
+            except Exception:
+                _force_infinite_jump_ready(pawn, None, light=True)
 
         if not party_needed:
             return None
 
         contexts = _infinite_jump_contexts_heavy(now) if due_heavy else _infinite_jump_contexts_light(pc, pawn)
-        live_idxs = {int(idx) for idx, _n, ctx_pawn, _m in contexts if ctx_pawn is not None}
-        # Drop party slots that no longer resolve (travel / disconnect) — only after heavy.
-        if due_heavy:
-            stale = [i for i in list(_INFINITE_JUMP_INDICES) if i not in live_idxs]
-            for i in stale:
-                _INFINITE_JUMP_INDICES.discard(i)
         if not _INFINITE_JUMP_INDICES:
             return None
         touched: set[int] = set()
@@ -1976,64 +2040,180 @@ def _camera_infinite_jump_hook(*args, **kwargs):
             if key in touched:
                 continue
             touched.add(key)
-            _force_infinite_jump_ready(ctx_pawn, None, light=True)
+            try:
+                cur = getattr(ctx_pawn, "JumpCurrentCount", 0)
+                max_c = getattr(ctx_pawn, "JumpMaxCount", 0)
+                if int(cur or 0) > 0 or int(max_c or 0) < 999:
+                    _force_infinite_jump_ready(ctx_pawn, None, light=True)
+            except Exception:
+                _force_infinite_jump_ready(ctx_pawn, None, light=True)
     except Exception:
         pass
     return None
 
 
-def _infinite_jump_prep_from_hook(*args, **kwargs) -> bool:
-    """Reset jump counters for an enabled pawn. True when a live IJ pawn matched."""
+def _remember_local_idx() -> int:
+    """PlayerArray index for this client — same numbering BLImGui All/Local uses."""
+    global _INFINITE_JUMP_LOCAL_IDX
+    try:
+        idx = int(_local_party_index(get_pc()))
+    except Exception:
+        idx = 0
+    _INFINITE_JUMP_LOCAL_IDX = idx
+    return idx
+
+
+def _fill_blimgui_local_indices() -> None:
+    """Electron Local/All must include the same slots BLImGui prepare checks.
+
+    BLImGui guests are always index 0. Hosts use GameState.PlayerArray. Heavy
+    controller-enumerate indices used to fill a different set, so CanJump
+    prepared nothing after Electron toggled On.
+    """
+    local_idx = _remember_local_idx()
+    _INFINITE_JUMP_INDICES.add(0)
+    _INFINITE_JUMP_INDICES.add(int(local_idx))
+
+
+def _prepare_infinite_jump_pawn(pawn: Any) -> bool:
+    """Clear the native BL4 jump gate immediately before validation.
+
+    Copied from proven BLImGui ``_movement_prepare_infinite_jump_pawn``.
+    The camera hook is the primary path; this keeps CanJump/Jump useful when they fire.
+    """
+    if pawn is None or _is_default(pawn):
+        return False
     if not _INFINITE_JUMP_INDICES:
         return False
+    idx = _party_index_for_pawn(pawn)
+    if idx is None:
+        try:
+            local_pawn = pawn_for_controller(get_pc())
+            if local_pawn is pawn or (
+                local_pawn is not None
+                and _uobject_addr(local_pawn)
+                and _uobject_addr(local_pawn) == _uobject_addr(pawn)
+            ):
+                idx = int(_INFINITE_JUMP_LOCAL_IDX if _INFINITE_JUMP_LOCAL_IDX is not None else 0)
+        except Exception:
+            idx = None
+    if idx is not None and int(idx) in _INFINITE_JUMP_INDICES:
+        return _force_infinite_jump_ready(pawn, _infinite_jump_move_for_pawn(pawn))
+    # CanJump often fires on CharMoveComp (has jump fields, no party index).
+    # If Electron enabled Local/All, still write — do not require the set hit.
     try:
-        for obj in list(args) + list(kwargs.values()):
-            pawn = _hook_arg_to_pawn(obj)
-            if pawn is None or not _uobject_alive(pawn):
-                continue
-            idx = _party_index_for_pawn(pawn)
-            if idx is not None and int(idx) in _INFINITE_JUMP_INDICES:
-                _force_infinite_jump_ready(pawn, None)
-                return True
+        local_idx = int(_INFINITE_JUMP_LOCAL_IDX if _INFINITE_JUMP_LOCAL_IDX is not None else 0)
+        if 0 in _INFINITE_JUMP_INDICES or local_idx in _INFINITE_JUMP_INDICES:
+            if getattr(pawn, "JumpMaxCount", None) is not None:
+                return _force_infinite_jump_ready(pawn, _infinite_jump_move_for_pawn(pawn))
     except Exception:
         pass
     return False
 
 
-def _jump_gate_hook(*args, **kwargs):
-    # CanJump / CanJumpInternal: force True so BL4 allows another jump.
-    # Do not use this on Character.Jump — Block there swallows the jump.
-    try:
-        from .travel_gate import is_travel_quiet
-
-        if is_travel_quiet():
-            return None
-    except Exception:
-        return None
+def _jump_pre_hook(*args, **kwargs):
+    # Prepare the enabled pawn (same fields as BLImGui). CanJump also force-True
+    # because the live log had hooks armed + pawn.JumpMaxCount=999 and still no
+    # air jump — native CanJump stays false when PreJump/CharMoveComp is missing.
     if not _INFINITE_JUMP_INDICES:
         return None
-    matched = _infinite_jump_prep_from_hook(*args, **kwargs)
-    if matched and _UnrealHookBlock is not None:
+    try:
+        for obj in list(args) + list(kwargs.values()):
+            pawn = _hook_arg_to_pawn(obj)
+            if pawn is not None:
+                _prepare_infinite_jump_pawn(pawn)
+                break
+    except Exception:
+        pass
+    return None
+
+
+def _canjump_pre_hook(*args, **kwargs):
+    _jump_pre_hook(*args, **kwargs)
+    if not _INFINITE_JUMP_INDICES:
+        return None
+    _lift_travel_quiet_for_ij()
+    try:
+        from unrealsdk.hooks import Block as _UnrealHookBlock
+
+        return (_UnrealHookBlock, True)
+    except Exception:
+        return None
+
+
+# Proven BLImGui CanJump/Jump list. Armed with unrealsdk.hooks.add_hook on IJ On
+# (same API as camera_tick). mods_base.hook(..., immediately_enable=False) on the
+# same function left .enable() as a no-op, so Electron On never actually hooked.
+_IJ_CANJUMP_TARGETS: tuple[tuple[str, str], ...] = (
+    ("/Script/Engine.Character:CanJumpInternal", "msbt_ij_canjumpint_eng_v1"),
+    ("/Script/Engine.Character:CanJump", "msbt_ij_canjump_eng_v1"),
+    ("/Script/GbxGame.OakCharacter:CanJumpInternal", "msbt_ij_canjumpint_gbx_v1"),
+    ("/Script/GbxGame.OakCharacter:CanJump", "msbt_ij_canjump_gbx_v1"),
+    ("/Script/OakGame.OakCharacter:CanJumpInternal", "msbt_ij_canjumpint_oak_v1"),
+    ("/Script/OakGame.OakCharacter:CanJump", "msbt_ij_canjump_oak_v1"),
+)
+_IJ_JUMP_TARGETS: tuple[tuple[str, str], ...] = (
+    ("/Script/Engine.Character:Jump", "msbt_ij_jump_eng_v1"),
+    ("/Script/GbxGame.OakCharacter:Jump", "msbt_ij_jump_gbx_v1"),
+    ("/Script/OakGame.OakCharacter:Jump", "msbt_ij_jump_oak_v1"),
+)
+_IJ_HOOK_TARGETS: tuple[tuple[str, str], ...] = _IJ_CANJUMP_TARGETS + _IJ_JUMP_TARGETS
+_IJ_HOOKS_ARMED = False
+
+
+def _set_ij_engine_hooks(enabled: bool) -> None:
+    global _IJ_HOOKS_ARMED
+    try:
+        from unrealsdk.hooks import Type as _HookType
+    except Exception:
+        _HookType = None
+    if enabled:
+        if _IJ_HOOKS_ARMED:
+            return
+        added = 0
+        for path, hid in _IJ_CANJUMP_TARGETS:
+            try:
+                if _HookType is not None:
+                    unrealsdk.hooks.add_hook(path, _HookType.PRE, hid, _canjump_pre_hook)
+                else:
+                    unrealsdk.hooks.add_hook(path, hid, _canjump_pre_hook)
+                added += 1
+            except Exception as exc:
+                _log(f"IJ hook add failed {path}: {exc!r}")
+        for path, hid in _IJ_JUMP_TARGETS:
+            try:
+                if _HookType is not None:
+                    unrealsdk.hooks.add_hook(path, _HookType.PRE, hid, _jump_pre_hook)
+                else:
+                    unrealsdk.hooks.add_hook(path, hid, _jump_pre_hook)
+                added += 1
+            except Exception as exc:
+                _log(f"IJ hook add failed {path}: {exc!r}")
+        _IJ_HOOKS_ARMED = True
+        _log(f"IJ engine hooks armed ({added}/{len(_IJ_HOOK_TARGETS)}) indices={sorted(int(i) for i in _INFINITE_JUMP_INDICES)}")
+        return
+    if not _IJ_HOOKS_ARMED:
+        return
+    for path, hid in _IJ_HOOK_TARGETS:
         try:
-            return _UnrealHookBlock, True
+            if _HookType is not None:
+                unrealsdk.hooks.remove_hook(path, _HookType.PRE, hid)
+            else:
+                unrealsdk.hooks.remove_hook(path, hid)
         except Exception:
-            return None
-    return None
+            pass
+    _IJ_HOOKS_ARMED = False
+    _log("IJ engine hooks disarmed")
 
 
-def _jump_start_hook(*args, **kwargs):
-    # Character.Jump must run. Only refresh counters, then let the original through.
-    try:
-        from .travel_gate import is_travel_quiet
+def _enable_infinite_jump_engine_hooks() -> None:
+    """Register CanJump/Jump PRE hooks whenever IJ is On. Do not wait for a pawn."""
+    _set_ij_engine_hooks(True)
 
-        if is_travel_quiet():
-            return None
-    except Exception:
-        return None
-    if not _INFINITE_JUMP_INDICES:
-        return None
-    _infinite_jump_prep_from_hook(*args, **kwargs)
-    return None
+
+def _disable_infinite_jump_engine_hooks() -> None:
+    """Unregister CanJump/Jump so they do not run every frame after Off."""
+    _set_ij_engine_hooks(False)
 
 
 def _register_infinite_jump_hooks() -> None:
@@ -2044,43 +2224,6 @@ def _register_infinite_jump_hooks() -> None:
         _log("Backend Infinite Jump camera hook installed.")
     except Exception as exc:
         _log(f"Backend Infinite Jump camera hook skipped: {exc!r}")
-    canjump_targets = (
-        "/Script/Engine.Character:CanJumpInternal",
-        "/Script/Engine.Character:CanJump",
-        "/Script/GbxGame.OakCharacter:CanJumpInternal",
-        "/Script/GbxGame.OakCharacter:CanJump",
-        "/Script/OakGame.OakCharacter:CanJumpInternal",
-        "/Script/OakGame.OakCharacter:CanJump",
-    )
-    jump_targets = (
-        "/Script/Engine.Character:Jump",
-        "/Script/GbxGame.OakCharacter:Jump",
-        "/Script/OakGame.OakCharacter:Jump",
-    )
-    from .hook_gate import track
-
-    for i, target in enumerate(canjump_targets):
-        try:
-            track(
-                hook(
-                    target,
-                    immediately_enable=False,
-                    hook_identifier=f"matts_sdk_boosting_tools_backend_infinite_jump_canjump_v2_{i}",
-                )(_jump_gate_hook)
-            )
-        except Exception as exc:
-            _log(f"Backend Infinite Jump CanJump hook skipped {target}: {exc!r}")
-    for i, target in enumerate(jump_targets):
-        try:
-            track(
-                hook(
-                    target,
-                    immediately_enable=False,
-                    hook_identifier=f"matts_sdk_boosting_tools_backend_infinite_jump_jump_v2_{i}",
-                )(_jump_start_hook)
-            )
-        except Exception as exc:
-            _log(f"Backend Infinite Jump Jump hook skipped {target}: {exc!r}")
 
 
 def _restore_normal_jump(pawn: Any) -> None:
@@ -2093,6 +2236,7 @@ def _restore_normal_jump(pawn: Any) -> None:
         move = None
     pairs = (
         ("JumpMaxCount", 2),
+        ("JumpMaxCountPreJump", 2),
         ("JumpCurrentCount", 0),
         ("JumpCurrentCountPreJump", 0),
     )
@@ -2108,7 +2252,9 @@ def _restore_normal_jump(pawn: Any) -> None:
 
 def set_infinite_jump_all(enabled: bool) -> str:
     global _INFINITE_JUMP_LAST_HEAVY_SCAN, _INFINITE_JUMP_CAMERA_LAST_APPLY
+    global _INFINITE_JUMP_MOVE_FINDALL_AT
     _INFINITE_JUMP_LAST_HEAVY_SCAN = 0.0  # force heavy party resolve on toggle
+    _INFINITE_JUMP_MOVE_FINDALL_AT = 0.0
     contexts = _infinite_jump_contexts()
     if enabled:
         _INFINITE_JUMP_INDICES.clear()
@@ -2116,6 +2262,7 @@ def set_infinite_jump_all(enabled: bool) -> str:
             if pawn is not None and _uobject_alive(pawn) and not _is_default(pawn):
                 _INFINITE_JUMP_INDICES.add(int(idx))
                 _force_infinite_jump_ready(pawn, None)
+        _fill_blimgui_local_indices()
     else:
         for _idx, _name, pawn, _move in contexts:
             _restore_normal_jump(pawn)
@@ -2137,11 +2284,20 @@ def set_infinite_jump_all(enabled: bool) -> str:
 
 def set_infinite_jump_for_index(idx: int, enabled: bool) -> str:
     global _INFINITE_JUMP_LAST_HEAVY_SCAN, _INFINITE_JUMP_CAMERA_LAST_APPLY
+    global _INFINITE_JUMP_MOVE_FINDALL_AT
     idx = int(idx)
+    _INFINITE_JUMP_MOVE_FINDALL_AT = 0.0
     if enabled:
         _INFINITE_JUMP_INDICES.add(idx)
+        local_idx = _remember_local_idx()
+        if idx in (0, int(local_idx)):
+            _fill_blimgui_local_indices()
     else:
         _INFINITE_JUMP_INDICES.discard(idx)
+        local_idx = int(_INFINITE_JUMP_LOCAL_IDX if _INFINITE_JUMP_LOCAL_IDX is not None else 0)
+        if idx in (0, local_idx):
+            _INFINITE_JUMP_INDICES.discard(0)
+            _INFINITE_JUMP_INDICES.discard(local_idx)
         if not _INFINITE_JUMP_INDICES:
             _clear_infinite_jump_runtime_caches()
     _INFINITE_JUMP_LAST_HEAVY_SCAN = 0.0
@@ -2159,6 +2315,17 @@ def set_infinite_jump_for_index(idx: int, enabled: bool) -> str:
         except Exception:
             verify = ""
         break
+    if not verify:
+        try:
+            local_pawn = pawn_for_controller(get_pc())
+            if local_pawn is not None:
+                if enabled:
+                    _force_infinite_jump_ready(local_pawn, None)
+                else:
+                    _restore_normal_jump(local_pawn)
+                verify = " " + _infinite_jump_verify_bits(local_pawn)
+        except Exception:
+            verify = ""
     msg = f"Infinite Jump enabled for: {_enabled_infinite_jump_names()}.{verify}"
     _log(msg)
     _sync_movement_camera_need()
@@ -2204,6 +2371,9 @@ def toggle_infinite_jump_for_scope(scope: str = "all") -> tuple[str, bool]:
     enable = not currently_on
     for idx in target:
         set_infinite_jump_for_index(int(idx), enable)
+    if enable and key in ("all", "local", "me"):
+        _fill_blimgui_local_indices()
+        _sync_movement_camera_need()
     state = "On" if enable else "Off"
     msg = (
         f"Infinite Jump {state} for {len(target)} player(s) (scope={key}). "
@@ -3029,12 +3199,62 @@ _MSBT_FLYING = False
 _saved_ground_speed: dict[int, float] = {}
 
 
+def _lift_travel_quiet_for_ij() -> None:
+    """Title/frontend writes do not stick; ClientTravel never fired this session.
+
+    Quiet stays true from boot until mark_travel + schedule_in_world. Camera
+    tick can stay quiet; this only lifts so the existing pump can re-apply IJ
+    on the in-world pawn. Call at most once while quiet is still true.
+    """
+    global _IJ_QUIET_LIFT_ARMED
+    if not _INFINITE_JUMP_INDICES:
+        return
+    try:
+        from . import travel_gate
+    except Exception:
+        return
+    try:
+        if not travel_gate.is_travel_quiet():
+            _IJ_QUIET_LIFT_ARMED = False
+            return
+        if _IJ_QUIET_LIFT_ARMED:
+            return
+        travel_gate.mark_travel()
+        travel_gate.schedule_in_world(2.0)
+        _IJ_QUIET_LIFT_ARMED = True
+        _log("IJ travel-quiet lift scheduled")
+    except Exception:
+        pass
+
+
 def _sync_movement_camera_need() -> None:
+    if _INFINITE_JUMP_INDICES:
+        _enable_infinite_jump_engine_hooks()
+        _lift_travel_quiet_for_ij()
+        try:
+            from . import travel_gate
+
+            quiet = bool(travel_gate.is_travel_quiet())
+        except Exception:
+            quiet = True
+        _log(
+            f"IJ sync on indices={sorted(int(i) for i in _INFINITE_JUMP_INDICES)} "
+            f"local={_INFINITE_JUMP_LOCAL_IDX} quiet={quiet} hooks={_IJ_HOOKS_ARMED}"
+        )
+    else:
+        _disable_infinite_jump_engine_hooks()
     try:
         from . import camera_tick
     except Exception:
         return
     camera_tick.set_needed("infinite_jump", bool(_INFINITE_JUMP_INDICES))
+    if _INFINITE_JUMP_INDICES:
+        # set_needed skips _ensure_hook while travel_quiet (true from boot until
+        # ClientTravel). Still install so the pump is ready after quiet lifts.
+        try:
+            camera_tick.enable_shared_hook()
+        except Exception:
+            pass
     camera_tick.set_needed(
         "super_dash",
         bool(

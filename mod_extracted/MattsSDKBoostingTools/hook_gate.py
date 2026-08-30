@@ -140,6 +140,40 @@ def enable_join_hooks() -> None:
         camera_tick.enable_shared_hook()
     except Exception:
         pass
+    _resync_feature_hooks()
+
+
+def _resync_feature_hooks() -> None:
+    """Join-arm enables every tracked hook. Re-disable features that are Off.
+
+    Instant Drops UpdateState / Infinite Jump CanJump / fog PlayerTick must not
+    stay registered after Off, or they run every frame with only a Python
+    early-out (the usual FPS leak).
+    """
+    try:
+        from .movement_adjustments import _sync_movement_camera_need
+
+        _sync_movement_camera_need()
+    except Exception:
+        pass
+    try:
+        from .instant_click_holds import sync_engine_hooks
+
+        sync_engine_hooks()
+    except Exception:
+        pass
+    try:
+        from .third_person_camera import sync_engine_hooks as _sync_tpc
+
+        _sync_tpc()
+    except Exception:
+        pass
+    try:
+        from .no_fog_of_war import sync_engine_hooks as _sync_fog
+
+        _sync_fog()
+    except Exception:
+        pass
 
 
 def enable_join_hooks_later(delay: float = 5.0) -> None:

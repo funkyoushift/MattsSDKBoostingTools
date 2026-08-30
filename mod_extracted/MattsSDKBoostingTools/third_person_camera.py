@@ -142,11 +142,13 @@ def set_enabled(enabled: bool) -> str:
             ctrl = _standalone_controller() or _local_controller
             if ctrl is not None:
                 _apply_off(ctrl)
+            sync_engine_hooks()
             msg = f"Third Person OFF ({source})"
             _log(msg)
             return msg
         ctrl = _controller()
         detail = _apply_on(ctrl)
+        sync_engine_hooks()
         msg = f"Third Person ON ({source}, {detail})"
         if source == "standalone":
             msg += " — disable the standalone TPC zip to avoid double hooks"
@@ -268,6 +270,17 @@ def _player_tick(*_args: Any, **_kwargs: Any) -> None:
         return
     if not _hooks_installed(ctrl):
         _request_third_person(ctrl)
+
+
+def sync_engine_hooks() -> None:
+    """Keep TPC PlayerTick registered only while On."""
+    want = bool(_want_enabled)
+    try:
+        fn = getattr(_player_tick, "enable" if want else "disable", None)
+        if callable(fn):
+            fn()
+    except Exception:
+        pass
 
 
 _log(f"loaded v{__version__} (MSBT helper, Third Person starts OFF; client-local)")

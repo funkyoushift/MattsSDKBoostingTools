@@ -597,6 +597,7 @@ def on_enable() -> None:
     _TICK = 0
     _LAST_REAPPLY_LOG_TICK = 0
     _LAST_FAST_MAINTAIN_AT = time.monotonic()
+    sync_engine_hooks()
     patched = 0
     skipped = 0
     try:
@@ -613,6 +614,7 @@ def on_disable() -> None:
     """Disable Instant Drops. Leaves Instant Holds alone."""
     global _drops_enabled
     _drops_enabled = False
+    sync_engine_hooks()
     if _holds_enabled:
         # Instant Holds still owns full scan (including drop UI); do not restore drops.
         _log("Instant Drops disabled — Instant Holds still ON; drop restore skipped")
@@ -702,6 +704,7 @@ def on_holds_enable() -> None:
     _TICK = 0
     _LAST_REAPPLY_LOG_TICK = 0
     _LAST_FULL_MAINTAIN_AT = time.monotonic()
+    sync_engine_hooks()
     patched = 0
     skipped = 0
     try:
@@ -718,6 +721,7 @@ def on_holds_disable() -> None:
     """Disable Instant Holds. Leaves Instant Drops alone."""
     global _holds_enabled
     _holds_enabled = False
+    sync_engine_hooks()
     also_drops = not bool(_drops_enabled)
     restored, missing = _restore_non_drop_holds(also_restore_drops=also_drops)
     _log(
@@ -894,6 +898,26 @@ def _after_open_inventory(*_args: Any, **_kwargs: Any) -> None:
         _maintain_holds(force_log=True, reason="inventory-open", fast_only=False, reset_held=True)
     elif _drops_enabled:
         _maintain_holds(force_log=True, reason="inventory-open", fast_only=True, reset_held=True)
+
+
+def _set_hot_hook(hook_obj: Any, enabled: bool) -> None:
+    try:
+        fn = getattr(hook_obj, "enable" if enabled else "disable", None)
+        if callable(fn):
+            fn()
+    except Exception:
+        pass
+
+
+def sync_engine_hooks() -> None:
+    """Keep UpdateState / viewport Tick / PlayerTick registered only while On.
+
+    Join-arm enables every tracked hook. A Python early-out on those paths
+    still drops frames, so Off must actually unregister them.
+    """
+    want = bool(_drops_enabled or _holds_enabled)
+    for hook_obj in (_before_trigger_update, _viewport_tick, _player_tick):
+        _set_hot_hook(hook_obj, want)
 
 
 ICH_KEYBINDS = (
