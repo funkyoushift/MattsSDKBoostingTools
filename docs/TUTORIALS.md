@@ -39,6 +39,12 @@ Each layout tab toolbar has **Walkthrough** — short steps on real controls/wor
 
 **Hoard Builder** covers wave composition, actor picking, automatic advancement, reusable favorites, and Emergency Clear. Its inline first-run guide remains a separate, dismissible three-step workflow summary above the builder.
 
+**Map Travel** covers map/station travel plus the three fog buttons: **Party Reveal Map** (guest FoD hop sweep, including console), **Host Clear Fog** (this machine’s tiles), and **Hide Fog** (this client’s overlay only).
+
+**Dev Spawner** covers hybrid live-pawn spawn (clone if a matching character is already in the world, otherwise OakSpawner + PushActorDef) and **Attack Me** after the pawn exists.
+
+**Boosting → Late Join Character** is documented as experimental host-picker only. Do not describe Player-2 persist as working.
+
 Bundled remote-copy overlays in [`docs/data/tutorial_copy.json`](data/tutorial_copy.json) may replace only step titles and body text. Their numeric indices must be updated when the main-tour order changes; selectors, links, and actions always remain local.
 
 ## Force replay

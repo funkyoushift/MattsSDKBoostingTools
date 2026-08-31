@@ -1919,6 +1919,32 @@ async function runBoostActionButton(button) {
     }
     return result;
   }
+  if (LATE_JOIN_CHARACTER_ACTIONS.has(action)) {
+    if (state.selectedTarget) {
+      const ok = await ensureSelectedTarget(els.boostOutput);
+      if (!ok) {
+        const message = "Could not apply the named party player.";
+        setOutput(els.boostOutput, message);
+        const hint = document.getElementById("lateJoinHint");
+        if (hint) setLine(hint, message, "warning");
+        return { ok: false, message };
+      }
+    }
+    const result = await runAction(
+      action,
+      { target_player: state.selectedTarget || undefined },
+      els.boostOutput,
+      30000
+    );
+    const msg = resultMessage(result);
+    const kind = actionSucceeded(result) ? "ok" : "warning";
+    const hint = document.getElementById("lateJoinHint");
+    if (hint) setLine(hint, msg, kind);
+    if (els.invStatus && button.closest(".section-heading, .inv-scroll")) {
+      setLine(els.invStatus, msg, kind);
+    }
+    return result;
+  }
   const result = DEV_SCOPED_BOOST_ACTIONS.has(action)
     ? await runScopedPlayerAction(action, {}, els.boostOutput, 30000, "dev")
     : PUBLIC_SCOPED_BOOST_ACTIONS.has(action)
@@ -2763,6 +2789,11 @@ function renderPlayers(status = {}) {
         : "Reading: none";
   }
 }
+
+const LATE_JOIN_CHARACTER_ACTIONS = new Set([
+  "load_character_late_join",
+  "select_character_late_join"
+]);
 
 const PUBLIC_SCOPED_BOOST_ACTIONS = new Set([
   "max_all",
@@ -10870,7 +10901,7 @@ const APP_FINDER_ALIASES = {
   "travel-xyz": ["xyz", "location bookmark", "coords", "teleport save", "farm spot"],
   "serial-bookmarks": ["serial bookmarks", "saved serials"],
   "hoard-builder": ["hoard", "waves", "enemy waves", "raid"],
-  "map-travel": ["travel", "maps", "stations"],
+  "map-travel": ["travel", "maps", "stations", "fog", "reveal"],
   "player-movement": ["movement", "noclip", "fly", "dash", "speed"],
   "item-pool": ["item pool", "itempool", "pools"],
   "dev-spawner": ["spawn", "asd", "barrel logo", "actors"],
@@ -11893,7 +11924,7 @@ const TUTORIAL_TOURS = {
     },
     {
       title: "Map Travel",
-      body: "Jump to a map or travel station while the game is running. Tuba Boss Arena and Dev Testing Map are one-click presets. Clear Fog unlocks the map; Hide Fog is a session overlay on this client.",
+      body: "Jump to a map or travel station while the game is running. Tuba Boss Arena and Dev Testing Map are one-click presets. Party Reveal Map uncovers guest fog (including console) via a station hop sweep. Host Clear Fog fills this machine's discovery tiles. Hide Fog only hides the overlay on this client.",
       tab: "map-travel",
       targetSel: "#tab-map-travel [data-msbt-panel='travel-main']"
     },
@@ -12161,6 +12192,13 @@ const TAB_TUTORIALS = {
       revealPanels: ["boost-debug"]
     },
     {
+      title: "Late Join Character",
+      body: "Experimental host picker: Load Character / Create Level 1 opens Gearbox’s late-join UI on this machine (990 pause path, no pak). Player-2 character swap and Azalea-style persist are not confirmed. Reset Gravity 1.0 after a swap if gravity zeros out.",
+      tab: "boosting",
+      targetSel: "#tab-boosting [data-msbt-panel='boost-late-join']",
+      revealPanels: ["boost-late-join"]
+    },
+    {
       title: "Layout tip",
       body: "Panels are rearrangeable — stack Target with Essentials, then use Compact when the workspace gets messy. See View → Layout walkthrough for the full editor tour.",
       tab: "boosting",
@@ -12315,7 +12353,7 @@ const TAB_TUTORIALS = {
     },
     {
       title: "Spawn settings",
-      body: "The right column controls aggro, anchor, distance, count, spacing, and scale. Spawn, Re-Aggro Spawned Actors, and Clear Spawned Actors sit beside the list.",
+      body: "The right column controls aggro, anchor, distance, count, spacing, and scale. Spawn uses hybrid live pawns (clone a matching character in-world, else OakSpawner + PushActorDef). Attack Me arms after the pawn exists. Re-Aggro Spawned Actors and Clear Spawned Actors sit beside the list.",
       tab: "dev-spawner",
       targetSel: "#tab-dev-spawner .dev-spawner-controls"
     },
@@ -12382,6 +12420,12 @@ const TAB_TUTORIALS = {
       body: "Travel to Selected Map / Station needs the bridge. Travel Favorites hold maps or stations in one list — Travel Favorite uses the saved type.",
       tab: "map-travel",
       target: "travelStationBtn"
+    },
+    {
+      title: "Fog buttons",
+      body: "Party Reveal Map runs a 663-hop sweep so guest maps (including console) uncover. Abort stops it. Host Clear Fog fills this machine's discovery tiles instantly and does not paint guests. Hide Fog only hides the overlay on this client — each player applies it locally.",
+      tab: "map-travel",
+      targetSel: "#tab-map-travel [data-action='party_reveal_start']"
     },
     {
       title: "Favorites workflow",

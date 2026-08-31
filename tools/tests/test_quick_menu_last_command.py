@@ -157,6 +157,19 @@ def _load_backend_actions():
         "MattsSDKBoostingTools.extreme_combat_xp": {},
         "MattsSDKBoostingTools.instant_click_holds": {},
         "MattsSDKBoostingTools.no_fog_of_war": {},
+        "MattsSDKBoostingTools.fod_reveal": {},
+        "MattsSDKBoostingTools.fod_party_reveal": {},
+        "MattsSDKBoostingTools.asd_hybrid": {
+            "spawn_live": lambda *a, **k: {
+                "ok": False,
+                "hybrid": True,
+                "message": "stub",
+                "verification_status": "no_live_source",
+            },
+            "despawn_tracked": lambda: {"ok": True, "hybrid": True, "despawned": 0, "message": "stub"},
+            "hide_tracked": lambda: {"ok": True, "hybrid": True, "hidden": 0, "message": "stub"},
+            "tracked_status": lambda: {"ok": True, "hybrid": True, "tracked": 0, "message": "stub"},
+        },
         "MattsSDKBoostingTools.third_person_camera": {
             "get_status_dict": lambda: {"enabled": False, "hooks": False, "source": "msbt"},
             "set_enabled": lambda enabled: "Third Person stub",

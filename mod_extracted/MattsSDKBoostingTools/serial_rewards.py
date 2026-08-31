@@ -79,7 +79,6 @@ _SERIAL_DELIVERY_PATCH_MAX_ATTEMPTS = 120
 _SERIAL_DELIVERY_PATCH_LOG_EVERY = 30
 _SERIAL_DELIVERY_TARGET_RETRY_DELAY_SEC = 0.50
 _SERIAL_DELIVERY_TARGET_WAIT_MAX_SEC = 90.00
-_SERIAL_DELIVERY_BACKPACK_HEADROOM = 100
 
 def _clamp_serial_delivery_delay(value: float) -> float:
     try:
@@ -954,42 +953,6 @@ def _open_all_live_reward_packages() -> int:
     return opened
 
 
-def _ensure_backpack_capacity_for_indices(player_indices: List[int], serial_count: int) -> int:
-    """Make sure targeted players have enough backpack space before opening reward mail."""
-    if not player_indices:
-        return 0
-    try:
-        from .inventory_capacity import (
-            clamp_container_size,
-            get_player_state_by_party_index,
-            set_backpack_size_for_player_state,
-        )
-    except Exception as exc:
-        _log_warning(f"Could not import inventory capacity helpers before serial delivery: {exc!r}")
-        return 0
-    target_size = clamp_container_size(int(serial_count or 0) + _SERIAL_DELIVERY_BACKPACK_HEADROOM, 9999)
-    changed = 0
-    for idx in player_indices:
-        try:
-            ps = get_player_state_by_party_index(int(idx))
-            if ps is None:
-                continue
-            cur = 0
-            try:
-                bp = getattr(getattr(ps, "BackpackContainer", None), "MaxSize", None)
-                cur = max(int(getattr(bp, "Value", 0) or 0), int(getattr(bp, "BaseValue", 0) or 0))
-            except Exception:
-                cur = 0
-            if cur < target_size:
-                set_backpack_size_for_player_state(ps, target_size)
-                changed += 1
-        except Exception as exc:
-            _log_warning(f"Backpack pre-size failed for player index {idx}: {exc!r}")
-    if changed:
-        _log_info(f"Prepared backpack capacity for {changed} target player(s), size >= {target_size}.")
-    return changed
-
-
 def _serial_delivery_char_count(serials: List[str]) -> int:
     return sum(len(str(s or "").strip()) for s in serials if str(s or "").strip())
 
@@ -1110,7 +1073,41 @@ def _verify_package_serials(package: Any, serials: List[str]) -> Tuple[bool, int
     return (not missing and len(got) >= len(want), len(got), len(missing))
 
 
+def _write_serial_numbers(serial_numbers: Any, serials: List[str]) -> bool:
+    if serial_numbers is None:
+        return False
+    try:
+        if hasattr(serial_numbers, "clear"):
+            serial_numbers.clear()
+        for text in serials:
+            if hasattr(serial_numbers, "append"):
+                serial_numbers.append(text)
+        return True
+    except Exception as exc:
+        _log_warning(f"SerialNumbers write failed: {exc!r}")
+        return False
+
+
+def _clear_serial_numbers(serial_numbers: Any) -> bool:
+    if serial_numbers is None:
+        return False
+    try:
+        if hasattr(serial_numbers, "clear"):
+            serial_numbers.clear()
+            return True
+    except Exception:
+        return False
+    return False
+
+
 def _apply_serials_to_package(package: Any, serials: List[str]) -> int:
+    """Write the full chunk onto the first content row and blank leftover rows.
+
+    Loyalty reward defs often have many content slots (around 50). The old
+    indexed write left unused rows with their default items, so opening a
+    40-serial package could spawn ~50 items and drop anything past n_contents.
+    Serial delivery must not resize the backpack to make room.
+    """
     if not serials:
         return 0
     contents = getattr(package, "contents", None)
@@ -1123,49 +1120,38 @@ def _apply_serials_to_package(package: Any, serials: List[str]) -> int:
     if n_contents == 0:
         return 0
 
-    if n_contents == 1:
-        entry = contents[0]
-        serial_numbers = getattr(entry, "SerialNumbers", None)
-        if serial_numbers is None:
-            return 0
-        try:
-            if hasattr(serial_numbers, "clear"):
-                serial_numbers.clear()
-            for s in serials:
-                if hasattr(serial_numbers, "append"):
-                    serial_numbers.append(s)
-            ok, got, missing = _verify_package_serials(package, serials)
-            if not ok:
-                _log_warning(f"Serial verify after write failed: package has {got}, missing {missing}.")
-                return 0
+    first = contents[0]
+    if _write_serial_numbers(getattr(first, "SerialNumbers", None), serials):
+        cleared = 0
+        for extra in list(contents)[1:]:
+            if _clear_serial_numbers(getattr(extra, "SerialNumbers", None)):
+                cleared += 1
+        ok, got, missing = _verify_package_serials(package, serials)
+        if ok:
+            if cleared:
+                _log_info(f"Cleared SerialNumbers on {cleared} leftover reward content row(s).")
             return 1
-        except Exception as e:
-            _log_warning(f"SerialNumbers write (single content row): {e}")
-            return 0
+        _log_warning(f"Serial verify after bulk write failed: package has {got}, missing {missing}.")
 
     applied = 0
     for content_entry in contents:
         ri = _safe_int(getattr(content_entry, "RewardsDataIndex", None))
         if ri is None or ri < 0 or ri >= len(serials):
+            if _clear_serial_numbers(getattr(content_entry, "SerialNumbers", None)):
+                continue
             continue
         text = serials[ri]
         if not text:
             continue
-        serial_numbers = getattr(content_entry, "SerialNumbers", None)
-        if serial_numbers is None:
-            continue
-        try:
-            if hasattr(serial_numbers, "clear"):
-                serial_numbers.clear()
-            if hasattr(serial_numbers, "append"):
-                serial_numbers.append(text)
-                applied += 1
-        except Exception as e:
-            _log_warning(f"SerialNumbers write (index {ri}): {e}")
+        if _write_serial_numbers(getattr(content_entry, "SerialNumbers", None), [text]):
+            applied += 1
     if applied > 0:
-        ok, got, missing = _verify_package_serials(package, serials[:applied] if applied < len(serials) else serials)
+        ok, got, missing = _verify_package_serials(package, serials)
         if not ok:
-            _log_warning(f"Serial verify after indexed write incomplete: package has {got}, missing {missing}.")
+            _log_warning(
+                f"Serial verify after indexed write incomplete: package has {got}, missing {missing}. "
+                "Later serials need another reward package."
+            )
     return applied
 
 
@@ -1636,7 +1622,6 @@ def _queue_serial_delivery_sequence(serials: List[str], player_indices: List[int
         return
     target_names = [name for name in (_player_name_for_index(i) for i in targets) if name]
 
-    _ensure_backpack_capacity_for_indices(targets, len(serials))
     _gbc_run_session_timer_from_give_serial()
     # A new Give_Serial must replace unfinished tick-driven work.  Appending let
     # the previous serial list (or its patch jobs) continue and look like the
@@ -1886,7 +1871,6 @@ def _do_give_serial_to_player_indices(
     except Exception:
         pass
 
-    _ensure_backpack_capacity_for_indices(targets, len(serials))
     _gbc_run_session_timer_from_give_serial()
     mode_label = "selected" if mode_key == "selected" else ("all non-host" if mode_key == "nonhost" else "all-player")
     _set_active_serial_delivery_progress(

@@ -5,7 +5,8 @@ Each extra Python hook multiplies that cost and is the usual FPS leak. Camera-ti
 work should register here so the engine only crosses into Python through one hook.
 
 The hook stays off until a feature actually needs it (Quick Menu open, slot
-hotkeys, Infinite Jump, Super Dash, Combat XP, pending chest/chaos/market).
+hotkeys, Infinite Jump, Super Dash, Combat XP, Party Reveal, pending
+chest/chaos/market).
 """
 from __future__ import annotations
 

@@ -264,7 +264,28 @@ def _try_set_enemy(attacker: Any, target: Any) -> bool:
             pass
     controllers.append(attacker)
     for obj in controllers:
-        for meth in ("SetEnemy", "SetFocus", "EngageTarget", "StartCombat", "SetTargetActor"):
+        for prep, pargs in (
+            ("SetPassive", (False,)),
+            ("SetHostile", (True,)),
+            ("SetIsHostile", (True,)),
+        ):
+            fn = getattr(obj, prep, None)
+            if not callable(fn):
+                continue
+            try:
+                fn(*pargs)
+            except Exception:
+                pass
+        for meth in (
+            "SetEnemy",
+            "SetFocus",
+            "EngageTarget",
+            "StartCombat",
+            "SetTargetActor",
+            "SetCombatTarget",
+            "SetHostile",
+            "NotifyEnemy",
+        ):
             fn = getattr(obj, meth, None)
             if not callable(fn):
                 continue

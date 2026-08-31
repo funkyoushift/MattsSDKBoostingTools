@@ -498,6 +498,18 @@
         </section>
       </div>
 
+      <section class="panel cyan" data-msbt-panel="boost-late-join" data-msbt-span="12" data-msbt-title="Late Join Character">
+        <h2>Late Join Character</h2>
+        <p><strong>Experimental.</strong> Opens Gearbox’s late-join picker <strong>on your screen</strong> via the 990 pause path (no pak). Pause may flash, then the picker. Pick a vault hunter on this machine. Player-2 character swap / Azalea-style persist is <strong>not confirmed</strong> in this build. Swap can set gravity to 0 — Reset Gravity after.</p>
+        <div class="button-row wrap">
+          <button data-action="load_character_late_join">Load Character (late join)</button>
+          <button data-action="select_character_late_join">Create Level 1 Character</button>
+          <button data-action="open_firmware_transfer">Firmware Transfer</button>
+          <button data-action="reset_gravity_default">Reset Gravity 1.0</button>
+        </div>
+        <div id="lateJoinHint" class="status-line compact-note">Host picker only this build. Load Character → picker on YOUR screen. Do not expect a guest’s save to change yet.</div>
+      </section>
+
       <div class="grid">
         <section class="panel purple" data-msbt-panel="boost-rarity" data-msbt-span="6" data-msbt-title="Rarity Drop Weights">
           <h2>Rarity Drop Weights</h2>
@@ -861,7 +873,12 @@
             <button type="button" data-msbt-bridge-refresh class="secondary">Refresh Status</button>
             <button id="invCopyAllBtn" class="secondary">Copy Visible Serials</button>
             <button data-action="open_bank">Open Bank Anywhere</button>
+            <button data-action="load_character_late_join">Load Character (late join)</button>
+            <button data-action="select_character_late_join">Create Level 1 Character</button>
+            <button data-action="open_firmware_transfer">Firmware Transfer</button>
+            <button data-action="reset_gravity_default">Reset Gravity 1.0</button>
           </div>
+            <p class="muted-line">Late-join picker opens on YOUR screen (990 pause path). Pick YOUR VH. Win: the named guest’s character changes, then their save on leave. Swap sets gravity to 0.</p>
         </div>
         <div class="inv-player-row">
           <label for="invTargetSelect">Party player</label>
@@ -1792,12 +1809,14 @@
     <section id="tab-map-travel" class="tab-panel" data-msbt-layout-tab="map-travel">
       <section class="panel pink" data-msbt-panel="travel-main" data-msbt-span="12" data-msbt-title="Map Travel" data-msbt-resize="1">
         <h2>Map Travel</h2>
-        <p>Select a map first, then choose a travel station on that map. Favorites can hold maps or stations in one list. Clear Fog unlocks the map; Hide Fog is a session overlay on this client.</p>
+        <p>Select a map first, then choose a travel station on that map. Favorites can hold maps or stations in one list. Party Reveal uncovers guest maps (including console). Host Clear Fog fills this machine's tiles. Hide Fog is overlay-only on this client.</p>
         <div class="button-row wrap">
           <button type="button" data-msbt-bridge-refresh class="secondary">Refresh Status</button>
           <button id="travelPresetTubaBtn" type="button">Tuba Boss Arena</button>
           <button id="travelPresetDevMapBtn" type="button">Dev Testing Map</button>
-          <button data-action="fog_of_war_clear">Clear Fog of War</button>
+          <button data-action="party_reveal_start">Party Reveal Map</button>
+          <button data-action="party_reveal_abort">Abort Party Reveal</button>
+          <button data-action="fog_of_war_clear">Host Clear Fog</button>
           <button data-action="fog_of_war_on">Hide Fog</button>
           <button data-action="fog_of_war_off">Show Fog</button>
           <button data-action="fog_of_war_toggle">Toggle Fog Hide</button>

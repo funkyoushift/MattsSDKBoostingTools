@@ -2,7 +2,7 @@
 
 MSBT is a Borderlands 4 boosting and item toolkit: a standalone Windows app outside the game, plus a small SDK mod that talks to Borderlands 4 while you play. Use it for currency/XP/SDU helpers, serial delivery, BL4 code browsing, Mattmab’s save/profile/item editor, Dev Spawner, map travel, movement tools, and more.
 
-**Current release: [v2.9.1](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.9.1)** — desktop patch: Matt Editor stays on port 49776 so Mobile Gateway no longer shows Chromium Pretty-print in that tab.
+**Current release: [v2.10.0](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.10.0)** — Party Reveal Map, Host Clear Fog, Hide Fog, hybrid Dev Spawner (live pawns + Attack Me), and experimental Late Join on the host.
 
 This project is **unofficial**. It is not affiliated with, endorsed by, or connected to Gearbox, 2K, or the Borderlands franchise owners.
 
@@ -16,12 +16,12 @@ This project is **unofficial**. It is not affiliated with, endorsed by, or conne
 
 **Recommended:** grab the latest Windows installer from GitHub Releases:
 
-[![Installer downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Installer-v2.9.1.exe?label=Installer%20downloads&color=2ea44f)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest)
-[![Portable downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Portable-v2.9.1-win-x64.zip?label=Portable%20downloads&color=0969da)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest)
+[![Installer downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Installer-v2.10.0.exe?label=Installer%20downloads&color=2ea44f)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest)
+[![Portable downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Portable-v2.10.0-win-x64.zip?label=Portable%20downloads&color=0969da)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest)
 [![Android APK downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Mobile-Controller.apk?label=Android%20APK%20downloads&color=e8a23a)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Mobile-Controller.apk)
 
 - [GitHub Releases — download page](https://github.com/funkyoushift/MattsSDKBoostingTools/releases)
-- Latest installer example: `MSBT-Installer-v2.9.1.exe`
+- Latest installer example: `MSBT-Installer-v2.10.0.exe`
 
 **Portable option:** if you do not want an installer, download the portable ZIP instead (`MSBT-Portable-v…-win-x64.zip`), extract it, and run the app from that folder.
 
@@ -58,15 +58,15 @@ In plain terms, the Electron app is the control panel. The SDK mod does the live
 
 - **Quick Menu** — native in-game F7 panel (no BLImGui required): pin/repeat/lock, optional rarity-weight strip, **INV inventory tab**, MOVE/THEME/resize, plus the Electron **★ Quick Menu** editor and gold `+ QM` pin buttons
 - **Inventory** — live equipped + backpack browser in the Electron app and on F7 **INV**; GZO names, sort/filter, party player picker, **Send to Game** with separate Give-to target and multiplier
-- **Boosting** — cash, Eridium, XP/spec, SDU, inventory size helpers, **Drop All (Backpack)**, rarity drop weights, lobby targeting (selected / all / non-host), and UVH booster controls
+- **Boosting** — cash, Eridium, XP/spec, SDU, inventory size helpers, **Drop All (Backpack)**, rarity drop weights, lobby targeting (selected / all / non-host), UVH booster controls, and **experimental Late Join Character** (host picker; P2 persist not confirmed)
 - **Serial tools** — paste, validate, bookmark, and deliver `@U` item serials
 - **BL4 Codes** — search/browse a merged local catalog (GZO image cards, Lootlemon references, custom/static codes), then deliver from a sticky delivery panel
 - **Matt Editor** — hosted Mattmab save/profile/item editor workflow with MSBT delivery buttons
 - **Item Pool Spawning** — browse and spawn from item pools through the bridge
-- **Dev Spawner** — actor/AI spawn helpers with Compact | Panels layout (needs the bundled ActorScriptDeployer support mod)
+- **Dev Spawner** — catalog-wide hybrid spawn of live pawns (clone if present, else OakSpawner + PushActorDef), Attack Me after spawn, Compact | Panels layout (needs the bundled ActorScriptDeployer support mod)
 - **Hoard Builder** — persistent multi-wave enemy groups with staggered multi-point spawning, favorites, adjustable caps/distance, and an explicit Emergency Clear safety path
 - **Pull Loot Here** — gathers loot into a roomy Archimedean spiral around the player instead of tight overlapping rings
-- **Map Travel / Player Movement** — expanded station/map catalog, renamable travel favorites, **XYZ location bookmarks**, movement scope (Local / All / Others), and peer teleports (Selected ↔ Me / All → Me)
+- **Map Travel / Player Movement** — expanded station/map catalog, renamable travel favorites, **XYZ location bookmarks**, **Party Reveal Map** (guest FoD sweep), **Host Clear Fog** (this machine’s tiles), **Hide Fog** (this client’s overlay), movement scope (Local / All / Others), and peer teleports (Selected ↔ Me / All → Me)
 - **Activity Log / Mobile Gateway / Report / Updates** — hidden from the main tab bar by default; header **Updates**, Find, and View → Main tabs still open them. Pair the Android controller from Mobile Gateway (pairing QR) after installing from Support → Mobile App (install QR).
 - **Mobile Gateway / Android controller** — pair a phone on the same Wi‑Fi and run Boost / Codes / Quick Menu / Control / Spawn from the Android app. Install QR and pairing QR are different.
 

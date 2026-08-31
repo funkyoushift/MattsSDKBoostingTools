@@ -260,6 +260,13 @@ def _exec_console(cmd: str) -> bool:
     pc = get_pc()
     if pc is None:
         raise RuntimeError("No PlayerController available.")
+    return exec_console_on_pc(cmd, pc)
+
+
+def exec_console_on_pc(cmd: str, pc: Any) -> bool:
+    """Run a console command in a specific PlayerController's context."""
+    if pc is None:
+        raise RuntimeError("No PlayerController available.")
     world = _world_context(pc)
     if _try_kismet_execute(cmd, world, pc):
         return True

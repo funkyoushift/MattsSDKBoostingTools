@@ -172,6 +172,7 @@ _QUEUE_PRESERVING_ACTIONS = frozenset({
     "instant_drops_status",
     "instant_holds_status",
     "fog_of_war_status",
+    "party_reveal_status",
     "third_person_status",
     # Hoard Builder status poll must not cancel an in-flight Start/Clear.
     "hoard_status",
@@ -213,6 +214,14 @@ _IMMEDIATE_LIVE_MOD_ACTIONS = frozenset({
     "third_person_off",
     "third_person_toggle",
     "third_person_status",
+    "fog_of_war_on",
+    "fog_of_war_off",
+    "fog_of_war_toggle",
+    "fog_of_war_clear",
+    "host_clear_fog",
+    "party_reveal_start",
+    "party_reveal_abort",
+    "party_reveal_status",
 })
 
 
@@ -354,6 +363,10 @@ UI_LAYOUT: dict[str, Any] = {
                 {"id":"devperk_4","label":"All Customs + Hovers","accent":"pink"},
                 {"id":"devperk_5","label":"Infinite Ammo [OFF]","accent":"cyan"},
                 {"id":"open_bank","label":"Open Bank Anywhere","accent":"cyan"},
+                {"id":"load_character_late_join","label":"Load Character (late join)","accent":"gold"},
+                {"id":"select_character_late_join","label":"Create Level 1 Character","accent":"purple"},
+                {"id":"open_firmware_transfer","label":"Firmware Transfer","accent":"cyan"},
+                {"id":"reset_gravity_default","label":"Reset Gravity 1.0","accent":"gold"},
                 {"id":"toggle_debug_cam","label":"Toggle Debug Cam","accent":"gold"},
                 {"id":"disable_debug_cam","label":"Disable Debug Cam","accent":"red"},
                 {"id":"teleport_debug_cam","label":"Teleport Pawn to Debug Cam","accent":"cyan"},

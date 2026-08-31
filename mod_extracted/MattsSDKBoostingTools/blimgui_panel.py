@@ -5252,6 +5252,49 @@ def _open_bank_anywhere() -> None:
         _log(f"Open bank failed: {exc!r}. Try console command manually: {cmd}")
 
 
+def _open_late_join_load() -> None:
+    try:
+        from . import backend_actions as ba
+        result = ba.load_character_late_join()
+        _log(str(result.get("message") or "Load Character requested."))
+    except Exception as exc:
+        _log(f"Load Character failed: {exc!r}")
+
+
+def _open_late_join_create() -> None:
+    try:
+        from . import backend_actions as ba
+        result = ba.select_character_late_join()
+        _log(str(result.get("message") or "Create Level 1 Character requested."))
+    except Exception as exc:
+        _log(f"Create Level 1 Character failed: {exc!r}")
+
+
+def _open_ui_view_state(tag: str, label: str) -> None:
+    cmd = f"gbx.ui.view.stateadd {tag}"
+    try:
+        _exec_console(cmd)
+        _log(f"{label} requested on YOUR screen.")
+    except Exception as exc:
+        _log(f"{label} failed: {exc!r}. Try console command manually: {cmd}")
+
+
+def _reset_gravity_default_ui() -> None:
+    try:
+        msg = apply_movement_advanced_to_all_players(
+            1.0, 600.0, 198.0, 840.0, 1.0, 45.0, 2, 0.5,
+            44.76508331298828, 0.7099999785423279,
+            198.0, 0.0, 1200.0, 0.0, 0.6000000238418579, 2500.0, None,
+            double_jump_goal=225.0,
+            slide_jump_goal=198.0,
+            sections={"gravity"},
+            scope="all",
+        )
+        _log(f"Gravity reset to 1.0. {msg}")
+    except Exception as exc:
+        _log(f"Gravity reset failed: {exc!r}")
+
+
 def _draw_dev_tools_card() -> None:
     global _debug_cam_speed, _debug_cam_distance
     imgui = _blimgui.imgui
@@ -5275,6 +5318,12 @@ def _draw_dev_tools_card() -> None:
         imgui.spacing()
         _card_button_row([
             ("Open Bank Anywhere", _open_bank_anywhere, "cyan", 200, 0),
+            ("Load Character", _open_late_join_load, "gold", 180, 0),
+            ("Create L1 Character", _open_late_join_create, "purple", 180, 0),
+        ])
+        _card_button_row([
+            ("Firmware Transfer", lambda: _open_ui_view_state("MENU_FIRMWARETRANSFER", "Firmware Transfer"), "cyan", 200, 0),
+            ("Reset Gravity 1.0", _reset_gravity_default_ui, "gold", 180, 0),
             ("Toggle Debug Cam", _toggle_debug_cam_selected, "gold", 180, 0),
             ("Disable Debug Cam", _disable_debug_cam_selected, "red", 180, 0),
         ])

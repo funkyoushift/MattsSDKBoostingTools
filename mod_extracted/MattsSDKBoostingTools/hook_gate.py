@@ -20,6 +20,9 @@ _KEEP_HOOK_MODULES = {
     f"{_PACKAGE}.travel_watch",
     f"{_PACKAGE}.hook_gate",
     f"{_PACKAGE}.travel_gate",
+    # Serial delivery tick self-disables when idle. Join-disable must not kill
+    # an in-progress multi-chunk Give_Serial or later packages never open.
+    f"{_PACKAGE}.serial_rewards",
 }
 
 

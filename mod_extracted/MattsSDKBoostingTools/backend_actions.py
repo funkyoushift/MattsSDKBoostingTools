@@ -117,7 +117,10 @@ from .vehicle_tuning import (
 from . import extreme_combat_xp as _cxp
 from . import instant_click_holds as _ich
 from . import no_fog_of_war as _nfow
+from . import fod_reveal as _fod
+from . import fod_party_reveal as _party_fod
 from . import third_person_camera as _tpc
+from . import asd_hybrid as _asd_hybrid
 
 CURRENCY_KINDS = ["cash", "eridium", "vaultcard1", "vaultcard2", "vaultcard3", "vaultcard4"]
 EXP_TRACKS = [
@@ -1088,56 +1091,22 @@ def _run_actor_script_deployer_spawnai_like_debug_menu(
     direct_only: bool,
     angle_degrees: float = 0.0,
 ) -> dict[str, Any]:
-    """Run ActorScriptDeployer's native AI spawn command for standard row spawns.
+    """Spawn a catalog actor via asd_hybrid.spawn_live.
 
-    `angle_degrees` is accepted for call-site compatibility and ignored. Honouring
-    it required replacing ActorScriptDeployer's `_spawn_transform_for_index` for
-    the duration of the call, i.e. mutating a third-party module while its native
-    spawn and deferred-actor code ran on a tick that can re-enter us. ASD has no
-    bearing argument, so directional placement is gone rather than patched.
+    Catalog name still comes from the existing picker/hoard wave. `direct_only`
+    and `angle_degrees` are accepted for call-site compatibility and ignored.
+    `extra_loads` is forwarded as package hints for thin-air class resolve.
     """
-    try:
-        asd = importlib.import_module("ActorScriptDeployer")
-    except Exception as exc:
-        return {"ok": False, "message": f"ActorScriptDeployer import failed: {exc!r}", "requested_count": count}
-
-    patch_ok, patch_message = _install_asd_spawn_runtime_patches(asd)
-    if not patch_ok:
-        return {"ok": False, "message": patch_message, "requested_count": count}
-
-    spawnai_fn = getattr(asd, "_cmd_spawnai", None)
-    if not callable(spawnai_fn):
-        return {
-            "ok": False,
-            "message": "ActorScriptDeployer command object '_cmd_spawnai' is unavailable.",
-            "requested_count": count,
-        }
-    message = f"ActorScriptDeployer direct command object; {patch_message}"
-
-    def _spawn_first() -> None:
-        spawnai_fn(
-            argparse.Namespace(
-                name=name,
-                distance=distance,
-                count=count,
-                spacing=spacing,
-                scale=scale,
-                z_offset=z_offset,
-                zoffset=z_offset,
-                load=list(extra_loads),
-                direct_only=direct_only,
-            )
-        )
-
-    logs, error = _capture_asd_logs(asd, _spawn_first, throttle=True)
-    result = _parse_asd_spawnai_result(
-        name=name,
-        requested_count=count,
-        mode=message,
-        logs=logs,
-        error=error,
+    del direct_only, angle_degrees
+    return _asd_hybrid.spawn_live(
+        name,
+        count=count,
+        distance=distance,
+        spacing=spacing,
+        scale=scale,
+        z_offset=z_offset,
+        extra_loads=tuple(extra_loads or ()),
     )
-    return result
 
 
 def _module_available(name: str) -> bool:
@@ -1685,6 +1654,16 @@ def run_quick_menu_action(
         result = rewards_open_everyone()
     elif key == "open_bank":
         result = open_bank_anywhere()
+    elif key == "load_character_late_join":
+        err = _apply_optional_target_player(payload)
+        result = err if err is not None else load_character_late_join()
+    elif key == "select_character_late_join":
+        err = _apply_optional_target_player(payload)
+        result = err if err is not None else select_character_late_join()
+    elif key == "open_firmware_transfer":
+        result = open_firmware_transfer()
+    elif key == "reset_gravity_default":
+        result = reset_gravity_default()
     elif key == "drop_all_shinies":
         result = drop_all_shinies_selected()
         is_drop = True
@@ -2011,7 +1990,14 @@ def run_quick_menu_action(
         result = third_person_status()
     elif key == "fog_of_war_clear":
         result = fog_of_war_clear(payload.get("target_player") or payload.get("name"))
-        needs_player = True
+    elif key == "host_clear_fog":
+        result = fog_of_war_clear(payload.get("target_player") or payload.get("name"))
+    elif key == "party_reveal_start":
+        result = party_reveal_start()
+    elif key == "party_reveal_abort":
+        result = party_reveal_abort()
+    elif key == "party_reveal_status":
+        result = party_reveal_status()
     elif key == "fog_of_war_on":
         result = fog_of_war_set_enabled(True)
     elif key == "fog_of_war_off":
@@ -2102,7 +2088,7 @@ def get_status() -> dict[str, Any]:
         "cxp": _cxp.get_status_dict(),
         "instant_drops": _ich.get_status_dict(),
         "instant_holds": _ich.get_holds_status_dict(),
-        "fog_of_war": _nfow.get_status_dict(),
+        "fog_of_war": _fog_status_dict(),
         "third_person": _tpc.get_status_dict(),
         "infinite_jump": _infinite_jump_status_safe(),
         "challenge_bulk": _challenge_progress_payload(),
@@ -2883,12 +2869,278 @@ def deliver_shinies(mode: str = "selected") -> dict[str, Any]:
         return {"ok": False, "message": f"Shiny reward delivery failed: {exc!r}"}
 
 
-def open_bank_anywhere() -> dict[str, Any]:
+def open_ui_view_state(state_tag: str, label: str) -> dict[str, Any]:
+    """Push a stock Gearbox Coherent UI view on this machine's local PC (Open Bank)."""
+    tag = str(state_tag or "").strip()
+    title = str(label or tag).strip() or tag
+    if not tag:
+        return {"ok": False, "message": f"{title} failed: missing UI state tag."}
     try:
-        _exec_console("gbx.ui.view.stateadd MENU_BANK")
-        return {"ok": True, "message": "Open Bank Anywhere requested."}
+        _exec_console(f"gbx.ui.view.stateadd {tag}")
+        return {"ok": True, "message": f"{title} requested on YOUR screen."}
     except Exception as exc:
-        return {"ok": False, "message": f"Open Bank Anywhere failed: {exc!r}"}
+        return {"ok": False, "message": f"{title} failed: {exc!r}"}
+
+
+def _apply_optional_target_player(payload: dict[str, Any]) -> dict[str, Any] | None:
+    raw = payload.get("target_player")
+    if raw is None or str(raw).strip() == "":
+        return None
+    result = set_target_player(raw)
+    if not result.get("ok"):
+        return result
+    return None
+
+
+def _late_join_log(message: str) -> None:
+    try:
+        from unrealsdk import logging as _ulog
+
+        _ulog.info(f"[MSBT LateJoin] {message}")
+    except Exception:
+        pass
+
+
+def _late_join_is_cdo(obj: Any) -> bool:
+    try:
+        text = str(getattr(obj, "Name", obj) or "")
+    except Exception:
+        text = str(obj)
+    return "Default__" in text
+
+
+def _late_join_console(cmd: str) -> bool:
+    try:
+        _exec_console(cmd)
+        _late_join_log(f"console ok: {cmd}")
+        return True
+    except Exception as exc:
+        _late_join_log(f"console fail: {cmd} {exc!r}")
+        return False
+
+
+def _late_join_iter_ui_objects() -> list[Any]:
+    try:
+        import unrealsdk
+    except Exception:
+        return []
+    out: list[Any] = []
+    for cls in (
+        "GbxUIWidget",
+        "GbxUIView",
+        "UGbxUIView",
+        "OakUIView",
+        "GbxUICoherentView",
+    ):
+        try:
+            objs = unrealsdk.find_all(cls, False) or []
+        except Exception:
+            continue
+        for obj in objs:
+            if obj is None or _late_join_is_cdo(obj):
+                continue
+            out.append(obj)
+    return out
+
+
+def _late_join_obj_looks_pause(obj: Any) -> bool:
+    try:
+        blob = f"{obj} {getattr(obj, 'Name', '')}".lower()
+    except Exception:
+        blob = str(obj).lower()
+    return "pause" in blob or "menu_pause" in blob
+
+
+def _late_join_call_attempt_action(obj: Any, action: str, tag: str) -> bool:
+    for name in ("Event_AttemptAction", "WidgetSpecificActionTriggerEvent", "ScriptEvent"):
+        fn = getattr(obj, name, None)
+        if not callable(fn):
+            continue
+        for args in ((action, tag), (action, tag, ""), (tag,), (action,)):
+            try:
+                fn(*args)
+                _late_join_log(f"{name} ok {obj} {args!r}")
+                return True
+            except TypeError:
+                continue
+            except Exception as exc:
+                _late_join_log(f"{name} fail {obj} {args!r} {exc!r}")
+                return False
+    return False
+
+
+def _late_join_try_pause_attempt_action(action: str, tag: str, repeats: int = 3) -> int:
+    """990 fires Event_AttemptAction from the pause widget, not a cold stateadd."""
+    objs = _late_join_iter_ui_objects()
+    pause_first = [o for o in objs if _late_join_obj_looks_pause(o)]
+    candidates = pause_first if pause_first else objs
+    hits = 0
+    for obj in candidates:
+        fired = 0
+        for _repeat in range(max(1, int(repeats))):
+            if not _late_join_call_attempt_action(obj, action, tag):
+                break
+            fired += 1
+            hits += 1
+        if fired:
+            _late_join_log(
+                f"AttemptAction {action!r} on pause-like={_late_join_obj_looks_pause(obj)} x{fired}"
+            )
+            break
+    _late_join_log(f"AttemptAction action={action!r} hits={hits} scanned={len(objs)}")
+    return hits
+
+
+def _late_join_set_widget_mode_flags() -> None:
+    """IsLateJoin / LoadCharacter_LateJoinMode live on OakWidgetData_LoadCharacterMenu."""
+    try:
+        import unrealsdk
+    except Exception:
+        return
+    for cls in (
+        "OakWidgetData_LoadCharacterMenu",
+        "OakUIData_LoadCharacterMenu",
+    ):
+        try:
+            objs = unrealsdk.find_all(cls, False) or []
+        except Exception:
+            continue
+        for obj in objs:
+            if obj is None or _late_join_is_cdo(obj):
+                continue
+            for flag in ("IsLateJoin", "bIsLateJoin", "IsLineup"):
+                try:
+                    if hasattr(obj, flag) and flag != "IsLineup":
+                        setattr(obj, flag, True)
+                        _late_join_log(f"set {flag}=True on {obj}")
+                except Exception as exc:
+                    _late_join_log(f"set {flag} fail {exc!r}")
+            for name in ("LoadCharacter_LateJoinMode", "OpenLoadCharacter", "SetCanAddSplitscreenPlayer"):
+                fn = getattr(obj, name, None)
+                if not callable(fn):
+                    continue
+                for args in ((), (True,), (1,)):
+                    try:
+                        fn(*args)
+                        _late_join_log(f"{name} ok on {obj} {args!r}")
+                        break
+                    except TypeError:
+                        continue
+                    except Exception as exc:
+                        _late_join_log(f"{name} fail {obj} {exc!r}")
+                        break
+
+
+def open_late_join_ui(state_tag: str, label: str) -> dict[str, Any]:
+    """Open Gearbox late-join picker on the HOST using 990 pause+AttemptAction parity.
+
+    Cold `gbx.ui.view.stateadd` does open def_menu_load_character_late_join (Azzy
+    MenuOpen) but can fail to bind the chosen save onto P2. 990 pause JS:
+    force Debug row, then Event_AttemptAction('state_add', TAG) x3 from the
+    pause widget, then close pause. Exe help: stateadd args are [State]
+    [Optional View Handle Index] — that index is a Coherent view, NOT a party
+    player. Do not pass the named-guest party index as a view handle.
+    """
+    tag = str(state_tag or "").strip()
+    title = str(label or tag).strip() or tag
+    if not tag:
+        return {"ok": False, "message": f"{title} failed: missing UI state tag."}
+
+    idx = get_selected_player_index()
+    name = get_selected_player_name()
+    who = _selected_player_label(idx, name)
+    host_idx = _host_player_index_value()
+    named_guest = bool(
+        name and idx is not None and (host_idx is None or int(idx) != int(host_idx))
+    )
+
+    _late_join_log(f"990-parity start tag={tag} bind_target={who} idx={idx}")
+    pause_ok = _late_join_console("gbx.ui.view.stateadd MENU_PAUSE")
+    attempt_hits = _late_join_try_pause_attempt_action("state_add", tag, repeats=3)
+    _late_join_try_pause_attempt_action("OpenLoadCharacter", "", repeats=1)
+    _late_join_set_widget_mode_flags()
+    pushed = False
+    for _repeat in range(3):
+        if _late_join_console(f"gbx.ui.view.stateadd {tag}"):
+            pushed = True
+    if pause_ok:
+        _late_join_console("gbx.ui.view.stateremove MENU_PAUSE")
+    if not pushed and attempt_hits <= 0:
+        return {
+            "ok": False,
+            "message": f"{title} failed: could not push {tag} or Event_AttemptAction.",
+            "selected_player": name,
+            "selected_player_index": idx,
+        }
+
+    if named_guest:
+        msg = (
+            f"{title} opened on YOUR screen (990 pause+late-join path) for {who}. "
+            "Pick YOUR VH. Success: THEIR pawn/name changes, then their save when "
+            "they leave. If only YOU change, the bind missed — do not have them "
+            "open the menu."
+        )
+    else:
+        msg = (
+            f"{title} opened on YOUR screen (990 pause+late-join path). Pick YOUR "
+            "VH. If a guest is in session, success is THEIR character changing."
+        )
+    _late_join_log(f"990-parity done tag={tag} attempt_hits={attempt_hits} pushed={pushed}")
+    return {
+        "ok": True,
+        "message": msg,
+        "target_kind": "host_picker_990",
+        "selected_player": name,
+        "selected_player_index": idx,
+        "attempt_action_hits": attempt_hits,
+    }
+
+
+def open_bank_anywhere() -> dict[str, Any]:
+    return open_ui_view_state("MENU_BANK", "Open Bank Anywhere")
+
+
+def load_character_late_join() -> dict[str, Any]:
+    return open_late_join_ui("MENU_LOAD_CHARACTER_LATE_JOIN", "Load Character (late join)")
+
+
+def select_character_late_join() -> dict[str, Any]:
+    return open_late_join_ui("MENU_SELECT_CHARACTER_LATE_JOIN", "Create Level 1 Character")
+
+
+def open_firmware_transfer() -> dict[str, Any]:
+    return open_ui_view_state("MENU_FIRMWARETRANSFER", "Firmware Transfer")
+
+
+def reset_gravity_default() -> dict[str, Any]:
+    """Gravity-only write to 1.0 after late-join character swap (990 sets 0)."""
+    try:
+        msg = apply_movement_advanced_to_all_players(
+            1.0,
+            600.0,
+            198.0,
+            840.0,
+            1.0,
+            45.0,
+            2,
+            0.5,
+            44.76508331298828,
+            0.7099999785423279,
+            198.0,
+            0.0,
+            1200.0,
+            0.0,
+            0.6000000238418579,
+            2500.0,
+            None,
+            double_jump_goal=225.0,
+            slide_jump_goal=198.0,
+            sections={"gravity"},
+            scope="all",
+        )
+        return {"ok": True, "message": f"Gravity reset to 1.0. {msg}"}
+    except Exception as exc:
+        return {"ok": False, "message": f"Gravity reset failed: {exc!r}"}
 
 
 def set_inventory_sizes_selected(backpack_size: object, bank_size: object) -> dict[str, Any]:
@@ -3135,10 +3387,11 @@ def _max_all_for_player_controller(pc: Any) -> tuple[bool, str]:
     except Exception as exc:
         fail_bits.append(f"UVH failed: {exc!r}")
 
-    # Fog of war (client-local material hide; still run during Max All)
+    # Overlay hide (this client) plus targeted discovery writes for this player.
     try:
         fog_msg = _nfow.clear_fog()
-        ok_bits.append(f"fog: {fog_msg}")
+        fod = _fod.reveal_live_map(pc)
+        ok_bits.append(f"fog: {fog_msg}; {fod.get('message')}")
     except Exception as exc:
         fail_bits.append(f"fog failed: {exc!r}")
 
@@ -3329,10 +3582,17 @@ def third_person_status() -> dict[str, Any]:
     }
 
 
+def _fog_status_dict() -> dict[str, Any]:
+    data = dict(_nfow.get_status_dict())
+    data["fod_reveal"] = _fod.last_status()
+    data["party_reveal"] = _party_fod.last_status()
+    return data
+
+
 def fog_of_war_set_enabled(enabled: bool) -> dict[str, Any]:
     try:
         msg = _nfow.set_enabled(bool(enabled))
-        return {"ok": True, "message": msg, "fog_of_war": _nfow.get_status_dict()}
+        return {"ok": True, "message": msg, "fog_of_war": _fog_status_dict()}
     except Exception as exc:
         return {"ok": False, "message": f"Fog of war failed: {exc!r}"}
 
@@ -3340,16 +3600,17 @@ def fog_of_war_set_enabled(enabled: bool) -> dict[str, Any]:
 def fog_of_war_toggle() -> dict[str, Any]:
     try:
         msg = _nfow.toggle_enabled()
-        return {"ok": True, "message": msg, "fog_of_war": _nfow.get_status_dict()}
+        return {"ok": True, "message": msg, "fog_of_war": _fog_status_dict()}
     except Exception as exc:
         return {"ok": False, "message": f"Fog of war failed: {exc!r}"}
 
 
 def fog_of_war_status() -> dict[str, Any]:
+    fod = _fod.last_status()
     return {
         "ok": True,
-        "message": _nfow.status_message(),
-        "fog_of_war": _nfow.get_status_dict(),
+        "message": f"{_nfow.status_message()} | {fod.get('message')}",
+        "fog_of_war": _fog_status_dict(),
     }
 
 
@@ -3378,34 +3639,49 @@ def hoard_tick() -> None:
 
 
 def fog_of_war_clear(target: object = None) -> dict[str, Any]:
-    """Targeted fog clear: resolve party player (selected / name), then apply local fog hide."""
-    refresh_players()
-    label = _selected_player_label(_selected_player_index, _selected_player_name)
-    if target is not None and str(target).strip():
-        sel = set_target_player(target)
-        if not sel.get("ok"):
-            return sel
-        label = _selected_player_label(_selected_player_index, _selected_player_name)
-    if _selected_player_index is None and not _selected_player_name:
-        return {"ok": False, "message": "No party player selected for fog_of_war_clear."}
+    """Host FoD tile fill. Does not hide the overlay. Does not sweep guests."""
+    _ = target
     try:
-        pc = _party_controller_for_index(_selected_player_index)
-        if pc is None:
-            return {
-                "ok": False,
-                "message": f"Fog clear could not resolve controller for {label}.",
-            }
-        msg = _nfow.clear_fog()
+        fod = _fod.reveal_live_map(get_pc())
         return {
             "ok": True,
             "message": (
-                f"Fog clear for target {label}: {msg}. "
-                "Map fog materials are client-local; guests need their own clear for their map."
+                f"Host Clear Fog: {fod.get('message')} "
+                "This fills host tiles only. Use Party Reveal for guests. "
+                "Use Hide Fog for this client's overlay."
             ),
-            "fog_of_war": _nfow.get_status_dict(),
+            "fog_of_war": _fog_status_dict(),
         }
     except Exception as exc:
-        return {"ok": False, "message": f"Fog clear failed: {exc!r}"}
+        return {"ok": False, "message": f"Host Clear Fog failed: {exc!r}"}
+
+
+def party_reveal_start() -> dict[str, Any]:
+    try:
+        result = dict(_party_fod.start())
+        result["fog_of_war"] = _fog_status_dict()
+        return result
+    except Exception as exc:
+        return {"ok": False, "message": f"Party Reveal failed: {exc!r}"}
+
+
+def party_reveal_abort() -> dict[str, Any]:
+    try:
+        result = dict(_party_fod.abort())
+        result["fog_of_war"] = _fog_status_dict()
+        return result
+    except Exception as exc:
+        return {"ok": False, "message": f"Party Reveal abort failed: {exc!r}"}
+
+
+def party_reveal_status() -> dict[str, Any]:
+    status = _party_fod.last_status()
+    return {
+        "ok": True,
+        "message": status.get("message") or "Party Reveal idle.",
+        "fog_of_war": _fog_status_dict(),
+        **status,
+    }
 
 
 def unlock_cosmetics() -> dict[str, Any]:
@@ -4759,6 +5035,15 @@ def run_dev_spawner_action(action: str, payload: dict[str, Any] | None = None) -
 
         if action == "dev_spawner_clear":
             _asd_disarm_autoclear()
+            try:
+                hybrid_clear = _asd_hybrid.despawn_tracked()
+                prev = str(result.get("message") or "")
+                extra = str(hybrid_clear.get("message") or "")
+                if extra:
+                    result["message"] = f"{prev} | {extra}".strip(" |")
+                result["hybrid_despawned"] = int(hybrid_clear.get("despawned") or 0)
+            except Exception:
+                pass
         elif action in (
             "dev_spawner_spawnai",
             "dev_spawner_spawn",
@@ -4768,8 +5053,14 @@ def run_dev_spawner_action(action: str, payload: dict[str, Any] | None = None) -
             _asd_note_spawn_for_autoclear()
             try:
                 _note_spawned_actors(None)
-                if _get_aggro_mode() not in ("passive", "none", "off"):
+                # Hybrid clones already move/have health; Passive must not skip Attack Me.
+                if action == "dev_spawner_spawnai" and result.get("hybrid"):
+                    aggro_msg = _apply_aggro_to_tracked(mode="attack_me")
+                elif _get_aggro_mode() not in ("passive", "none", "off"):
                     aggro_msg = _apply_aggro_to_tracked()
+                else:
+                    aggro_msg = ""
+                if aggro_msg:
                     prev = str(result.get("message") or "")
                     result["message"] = f"{prev} | {aggro_msg}".strip(" |")
             except Exception:
