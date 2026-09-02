@@ -172,7 +172,7 @@ async function auditWalkthroughs() {
     ],
     "per-tab walkthrough inventory changed; audit the new/removed tour"
   );
-  assert.deepStrictEqual(result.hoardGuide, { guide: true, dismiss: true, steps: 4 }, "Hoard first-run guide is incomplete");
+  assert.deepStrictEqual(result.hoardGuide, { guide: true, dismiss: true, steps: 5 }, "Hoard first-run guide is incomplete");
   assert.deepStrictEqual(result.duplicateIds, [], "renderer must not contain duplicate DOM ids");
   assert.deepStrictEqual(result.duplicatePanels, [], "renderer must not contain orphaned duplicate panel ids");
   assert.ok(result.grid, "boosting tab must expose a GridStack instance");
