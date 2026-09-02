@@ -2037,7 +2037,9 @@ ipcMain.handle("app:validatorBulk", async (_event, text) => {
 function pythonCandidates() {
   const out = [];
   if (process.env.MSBT_PYTHON) out.push(process.env.MSBT_PYTHON);
-  out.push(app.isPackaged ? BUNDLED_PYTHON : LOCAL_VENV_PYTHON, "python", "py");
+  const preferred = app.isPackaged ? BUNDLED_PYTHON : LOCAL_VENV_PYTHON;
+  if (preferred && fsSync.existsSync(preferred)) out.push(preferred);
+  out.push("python", "py");
   return Array.from(new Set(out.filter(Boolean)));
 }
 

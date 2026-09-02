@@ -43,6 +43,38 @@ def _load_hoard_runner(*, get_pc=None):
     spawn_helpers.set_aggro_mode = lambda _mode: None
     sys.modules["MattsSDKBoostingTools.spawn_helpers"] = spawn_helpers
 
+    asd_hybrid = types.ModuleType("MattsSDKBoostingTools.asd_hybrid")
+    asd_hybrid.count_alive = lambda **_k: 0
+    asd_hybrid.census_live = lambda **_k: {
+        "ok": True,
+        "alive": 0,
+        "spawners": 0,
+        "actors": [],
+        "actor_names": [],
+        "message": "census stub",
+    }
+    asd_hybrid.despawn_tracked = lambda **_k: {
+        "ok": True,
+        "despawned": 0,
+        "spawners_destroyed": 0,
+        "message": "stub",
+    }
+    asd_hybrid.clear_world = lambda **_k: {
+        "ok": True,
+        "despawned": 0,
+        "spawners_sealed": 0,
+        "alive_count": 0,
+        "message": "stub",
+    }
+    asd_hybrid.note_after_asd_spawn = lambda *_a, **_k: {
+        "ok": True,
+        "noted": 0,
+        "alive": 0,
+        "actor_names": [],
+        "message": "stub",
+    }
+    sys.modules["MattsSDKBoostingTools.asd_hybrid"] = asd_hybrid
+
     sys.modules.pop("MattsSDKBoostingTools.hoard_runner", None)
     spec = importlib.util.spec_from_file_location(
         "MattsSDKBoostingTools.hoard_runner", PKG / "hoard_runner.py"
@@ -463,3 +495,122 @@ def test_spawns_are_held_while_the_world_is_not_ready():
     assert calls == []
     assert hoard._running is True
     assert hoard._pending_spawn_jobs
+
+
+def test_count_alive_uses_hybrid_census(hoard):
+    sys.modules["MattsSDKBoostingTools.asd_hybrid"].count_alive = lambda **_k: 4
+    hoard._expected_count = 4
+    hoard._spawn_grace_until = 0.0
+    assert hoard.count_alive() == 4
+    assert hoard._wave_seen_alive is True
+    assert hoard._last_alive == 4
+
+
+def test_hybrid_census_keeps_the_wave_from_advancing(hoard):
+    """Leftover live pawns must not look like a cleared wave."""
+    sys.modules["MattsSDKBoostingTools.asd_hybrid"].count_alive = lambda **_k: 2
+    _install_fake_backend(hoard, [{"ok": True, "spawn_verified": True}])
+    hoard.set_plan({"waves": [{"entries": [{"actor_id": "Char_A", "count": 1}], "spawn_points": 1}]})
+    hoard.start()
+    hoard._spawn_next_at = 0.0
+    _tick_later(hoard)
+    hoard._spawn_grace_until = 0.0
+    hoard._wave_seen_alive = True
+    _tick_later(hoard)
+    assert hoard._running is True
+    assert hoard._complete is False
+    assert hoard.cleanup_pending() is False
+
+
+def test_hoard_count_alive_does_not_peek_spawner_components():
+    source = (PKG / "hoard_runner.py").read_text(encoding="utf-8")
+    body = source.split("def count_alive", 1)[1].split("def _disable_wave_spawners", 1)[0]
+    assert "asd_hybrid" in body
+    assert "GetNumAliveActors" not in body
+    assert "_count_spawner_alive" not in source or "def _count_spawner_alive" not in source
+
+
+def _fake_spawner(name: str, x: float, y: float, z: float, *, reset_calls=None):
+    loc = types.SimpleNamespace(X=x, Y=y, Z=z)
+    calls = reset_calls if reset_calls is not None else []
+
+    class _Spawner:
+        Name = name
+
+        def K2_GetActorLocation(self):
+            return loc
+
+        def ResetSpawner(self, *_a, **_k):
+            calls.append("reset")
+
+        def GetSpawnerComponent(self):
+            return types.SimpleNamespace(
+                ResetSpawner=lambda *_a, **_k: calls.append("comp_reset"),
+                SetSpawnerEnabled=lambda *_a, **_k: calls.append("enable"),
+            )
+
+        def __str__(self):
+            return name
+
+    return _Spawner()
+
+
+def test_harvest_reads_location_and_skips_protected(hoard):
+    reset_calls = []
+    spawners = [
+        _fake_spawner("OakSpawner_Combat_A", -192800.0, 308500.0, 5816.0, reset_calls=reset_calls),
+        _fake_spawner("OakSpawner_Combat_B", -192200.0, 309000.0, 5820.0, reset_calls=reset_calls),
+        _fake_spawner("OakSpawner_Combat_C", -193400.0, 307900.0, 5800.0, reset_calls=reset_calls),
+        _fake_spawner("OakSpawner_Combat_D", -191900.0, 308100.0, 5790.0, reset_calls=reset_calls),
+        _fake_spawner("OakSpawner_TravelStation", -192000.0, 308000.0, 5810.0, reset_calls=reset_calls),
+        _fake_spawner("Default__OakSpawner", 0.0, 0.0, 0.0, reset_calls=reset_calls),
+        _fake_spawner("OakSpawner_Mission_Boss", -190000.0, 310000.0, 6000.0, reset_calls=reset_calls),
+    ]
+    result = hoard.harvest({"spawners": spawners})
+    assert result["ok"], result
+    assert 4 <= result["harvested_count"] <= 8
+    names_ok = all("travel" not in str(p) and "mission" not in str(p) for p in result["harvested_points"])
+    assert names_ok
+    assert reset_calls == []
+    source = (PKG / "hoard_runner.py").read_text(encoding="utf-8")
+    harvest_body = source.split("def harvest(", 1)[1].split("def _local_pawn", 1)[0]
+    assert "ResetSpawner" not in harvest_body
+    assert "SetSpawnerEnabled" not in harvest_body
+
+
+def test_harvest_mocked_points_become_spawn_xyz(hoard):
+    hoard.set_plan(
+        {
+            "arena_station": "here",
+            "harvested_points": [
+                {"x": -192799.5, "y": 308498.4, "z": 5816.5},
+                {"x": -192200.0, "y": 309000.0, "z": 5820.0},
+                {"x": -193400.0, "y": 307900.0, "z": 5800.0},
+                {"x": -191900.0, "y": 308100.0, "z": 5790.0},
+            ],
+            "waves": [{"entries": [{"actor_id": "Char_A", "count": 4}], "spawn_points": 6}],
+        }
+    )
+    nodes = hoard.build_spawn_nodes(hoard._plan[0])
+    assert len(nodes) == 4
+    assert all(node.get("world_xyz") for node in nodes)
+    jobs = hoard.build_spawn_jobs(hoard._plan[0], hoard._plan[0]["entries"], nodes)
+    assert jobs
+    assert jobs[0]["world_xyz"] == (-192799.5, 308498.4, 5816.5)
+    calls = _install_fake_backend(hoard, [{"ok": True, "spawn_verified": True}])
+    assert hoard.start()["ok"]
+    hoard._spawn_next_at = 0.0
+    _tick_later(hoard)
+    assert calls
+    assert calls[0]["world_xyz"] == (-192799.5, 308498.4, 5816.5)
+
+
+def test_set_plan_keeps_abandoned_post_station(hoard):
+    result = hoard.set_plan(
+        {
+            "arena_station": "abandoned_post",
+            "waves": [{"entries": [{"actor_id": "Char_A", "count": 1}]}],
+        }
+    )
+    assert result["ok"]
+    assert result["arena_station"] == "World_P.FT_GRA_BeachTower"

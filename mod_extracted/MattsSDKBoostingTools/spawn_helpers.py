@@ -237,9 +237,11 @@ def _prune_tracked() -> list[Any]:
             name = str(getattr(mob, "Name", "") or "")
             if not name or name.startswith("Default__"):
                 continue
-            live.append(mob)
+            if bool(getattr(mob, "bActorIsBeingDestroyed", False)):
+                continue
         except Exception:
             continue
+        live.append(mob)
     _tracked_mobs = live[-48:]
     return list(_tracked_mobs)
 

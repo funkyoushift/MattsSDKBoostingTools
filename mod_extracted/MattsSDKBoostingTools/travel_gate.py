@@ -49,6 +49,26 @@ def schedule_in_world(delay: float = 8.0) -> None:
         _RELEASE_AT = max(float(_RELEASE_AT), when)
 
 
+def force_in_world() -> None:
+    """Lift boot-stuck quiet so an explicit in-world action can run.
+
+    Quiet stays true until mark_travel + schedule_in_world. A long session
+    that never got that pair (or never ClientTravel'd) leaves the camera pump
+    off. Party Reveal is a user click in a live world — release immediately.
+    Does not clear an in-progress ClientTravel (_PENDING_CLEAR still set).
+    """
+    global _RELEASE_AT, _SAW_TRAVEL
+    _SAW_TRAVEL = True
+    try:
+        now = time.monotonic()
+    except Exception:
+        now = 0.0
+    if _RELEASE_AT <= 0.0:
+        _RELEASE_AT = now
+    elif _RELEASE_AT > now:
+        _RELEASE_AT = now
+
+
 def is_travel_quiet() -> bool:
     """True from boot until an in-world release, and again after ClientTravel."""
     try:

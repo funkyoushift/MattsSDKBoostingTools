@@ -300,10 +300,13 @@ def _tick(_obj: Any, _args: Any, _ret: Any, _func: Any) -> None:
     try:
         from . import travel_gate
 
-        if travel_gate.is_travel_quiet():
-            _log("travel quiet — aborting sweep")
-            abort(pull=True)
-            return
+        if travel_gate.is_travel_quiet() and travel_gate.saw_travel():
+            # Real ClientTravel mid-sweep. Boot-stuck quiet (_RELEASE_AT==0,
+            # never saw travel) must not kill an armed sweep.
+            if getattr(travel_gate, "_RELEASE_AT", 1.0) <= 0.0:
+                _log("travel quiet — aborting sweep")
+                abort(pull=True)
+                return
     except Exception:
         pass
     now = time.monotonic()
@@ -391,7 +394,8 @@ def start() -> dict[str, Any]:
     pts = _load_pts()
     if not pts:
         return {"ok": False, "message": "Party Reveal hops file is missing.", **last_status()}
-    abort(pull=False)
+    _state["done"] = True
+    _set_needed(False)
     _ensure_registered()
     pc_local = get_pc()
     host_ps = getattr(pc_local, "PlayerState", None) if pc_local is not None else None
@@ -443,7 +447,19 @@ def start() -> dict[str, Any]:
     )
     if _guest_ready():
         _state["wait_alive"] = False
+    try:
+        from . import travel_gate
+
+        travel_gate.force_in_world()
+    except Exception:
+        pass
     _set_needed(True)
+    try:
+        from . import camera_tick
+
+        camera_tick.enable_shared_hook()
+    except Exception:
+        pass
     _log(f"armed hops={len(pts)} guests={len(pawns)} dwell={_DWELL_S}s")
     status = last_status()
     return {

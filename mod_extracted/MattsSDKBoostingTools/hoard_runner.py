@@ -73,6 +73,40 @@ _CLEANUP_RETRY_DELAY_S = 0.5
 # walking those actors for death, loot and score handling well past it.
 _DEATH_QUIET_S = 1.5
 
+# Harvested OakSpawner pads in the loaded cell. Read location only — never
+# Reset/enable map spawners. 4–8 discrete points, then cycle them.
+_HARVEST_MIN = 4
+_HARVEST_MAX = 8
+_HARVEST_DEDUP_UU = 400.0
+_ARENA_HERE = "here"
+_ARENA_ABANDONED_POST = "World_P.FT_GRA_BeachTower"
+_HARVEST_SKIP_TOKENS = (
+    "grapple",
+    "zipline",
+    "ladder",
+    "elevator",
+    "fasttravel",
+    "travelstation",
+    "checkpoint",
+    "savepoint",
+    "mission",
+    "quest",
+    "interact",
+    "io_",
+    "loot",
+    "pickup",
+    "chest",
+    "container",
+    "vehicle",
+    "vending",
+    "shop",
+    "menu",
+    "tutorial",
+    "cine",
+    "cinematic",
+    "msbt",
+)
+
 # The bridge tick hook is /Script/GbxUIUMG.GbxUIUMGTickWidget:BP_TickWidget, which
 # fires once per widget instance and so can run many times in a single frame.
 # Collapse that into at most one hoard operation per interval, globally.
@@ -118,6 +152,9 @@ _cleanup_in_flight: bool = False
 # When we last saw a wave die. Everything that touches the world stays clear of it.
 _last_death_at: float = 0.0
 _last_tick_at: float = 0.0
+_arena_station: str = ""
+_harvested_points: list[dict[str, Any]] = []
+_harvest_pending: bool = False
 
 
 def _log(msg: str) -> None:
@@ -252,12 +289,229 @@ def limits() -> dict[str, Any]:
         "burst": [_BURST_MIN, _BURST_MAX, _BURST_DEFAULT],
         "stagger": [_SPAWN_STEP_MIN_S, _SPAWN_STEP_MAX_S, _SPAWN_STEP_INTERVAL_S],
         "distance": [_NODE_DISTANCE_MIN, _NODE_DISTANCE_MAX, _WAVE_DISTANCE_DEFAULT],
+        "harvest_points": [_HARVEST_MIN, _HARVEST_MAX],
+        "abandoned_post_station": _ARENA_ABANDONED_POST,
     }
+
+
+def _normalize_arena_station(raw: object) -> str:
+    text = str(raw or "").strip()
+    if not text or text.lower() in ("here", "current", "current_cell", "harvest"):
+        return _ARENA_HERE
+    key = text.lower().replace(" ", "")
+    if key in (
+        "abandonedpost",
+        "abandoned_post",
+        "beachtower",
+        "ft_gra_beachtower",
+        "world_p.ft_gra_beachtower",
+    ):
+        return _ARENA_ABANDONED_POST
+    return text
+
+
+def _normalize_point(raw: object) -> dict[str, float] | None:
+    if not isinstance(raw, dict):
+        if isinstance(raw, (list, tuple)) and len(raw) >= 3:
+            raw = {"x": raw[0], "y": raw[1], "z": raw[2]}
+        else:
+            return None
+    try:
+        x = float(raw.get("x", raw.get("X")))
+        y = float(raw.get("y", raw.get("Y")))
+        z = float(raw.get("z", raw.get("Z")))
+    except Exception:
+        return None
+    if any(n != n for n in (x, y, z)):
+        return None
+    return {"x": x, "y": y, "z": z}
+
+
+def _normalize_harvested_points(raw: object) -> list[dict[str, float]]:
+    if not isinstance(raw, list):
+        return []
+    points: list[dict[str, float]] = []
+    seen: set[tuple[int, int, int]] = set()
+    for item in raw:
+        point = _normalize_point(item)
+        if point is None:
+            continue
+        key = (int(point["x"] / _HARVEST_DEDUP_UU), int(point["y"] / _HARVEST_DEDUP_UU), int(point["z"] / 200.0))
+        if key in seen:
+            continue
+        seen.add(key)
+        points.append(point)
+        if len(points) >= _HARVEST_MAX:
+            break
+    return points
+
+
+def _point_distance_sq(a: dict[str, float], b: dict[str, float]) -> float:
+    return (a["x"] - b["x"]) ** 2 + (a["y"] - b["y"]) ** 2 + (a["z"] - b["z"]) ** 2
+
+
+def _actor_xyz(actor: Any) -> dict[str, float] | None:
+    if actor is None:
+        return None
+    for name in ("K2_GetActorLocation", "GetActorLocation"):
+        fn = getattr(actor, name, None)
+        if not callable(fn):
+            continue
+        try:
+            loc = fn()
+        except Exception:
+            continue
+        try:
+            return {"x": float(loc.X), "y": float(loc.Y), "z": float(loc.Z)}
+        except Exception:
+            continue
+    return None
+
+
+def _spawner_label(obj: Any) -> str:
+    try:
+        return str(obj)
+    except Exception:
+        return str(getattr(obj, "Name", "") or "")
+
+
+def _is_harvest_skip(obj: Any) -> bool:
+    blob = f"{_spawner_label(obj)} {getattr(obj, 'Name', '')}".lower()
+    if "default__" in blob or "/script/" in blob:
+        return True
+    return any(token in blob for token in _HARVEST_SKIP_TOKENS)
+
+
+def _iter_oak_spawners() -> list[Any]:
+    try:
+        import unrealsdk
+
+        objects = unrealsdk.find_all("OakSpawner", False) or []
+    except TypeError:
+        try:
+            import unrealsdk
+
+            objects = unrealsdk.find_all("OakSpawner") or []
+        except Exception:
+            return []
+    except Exception:
+        return []
+    return [obj for obj in objects if obj is not None]
+
+
+def collect_harvest_candidates(spawners: list[Any] | None = None) -> list[dict[str, Any]]:
+    """Read-only OakSpawner XYZ. Never Reset/enable map spawners."""
+    found: list[dict[str, Any]] = []
+    seen: set[tuple[int, int, int]] = set()
+    for spawner in list(spawners if spawners is not None else _iter_oak_spawners()):
+        if _is_harvest_skip(spawner):
+            continue
+        point = _actor_xyz(spawner)
+        if point is None:
+            continue
+        key = (
+            int(point["x"] / _HARVEST_DEDUP_UU),
+            int(point["y"] / _HARVEST_DEDUP_UU),
+            int(point["z"] / 200.0),
+        )
+        if key in seen:
+            continue
+        seen.add(key)
+        found.append({**point, "name": _spawner_label(spawner)[:120]})
+    return found
+
+
+def pick_harvest_points(
+    candidates: list[dict[str, Any]],
+    *,
+    origin: dict[str, float] | None = None,
+    min_count: int = _HARVEST_MIN,
+    max_count: int = _HARVEST_MAX,
+) -> list[dict[str, float]]:
+    """Keep 4–8 discrete pads. Prefer spread around the player, never lerp."""
+    del min_count
+    if not candidates:
+        return []
+    rows = list(candidates)
+    if origin is not None:
+        rows.sort(key=lambda row: _point_distance_sq(row, origin))
+    picked: list[dict[str, float]] = []
+    for row in rows:
+        if any(_point_distance_sq(row, existing) < (_HARVEST_DEDUP_UU ** 2) for existing in picked):
+            continue
+        picked.append({"x": float(row["x"]), "y": float(row["y"]), "z": float(row["z"])})
+        if len(picked) >= max_count:
+            break
+    return picked
+
+
+def harvest(payload: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Freeze 4–8 live OakSpawner transforms in the loaded cell. Location only."""
+    global _harvested_points, _message
+    payload = dict(payload or {})
+    spawners = payload.get("spawners")
+    if spawners is not None and not isinstance(spawners, list):
+        spawners = None
+    origin = _normalize_point(payload.get("origin"))
+    if origin is None:
+        origin = _actor_xyz(_local_pawn())
+    candidates = collect_harvest_candidates(spawners)
+    points = pick_harvest_points(candidates, origin=origin)
+    if not points:
+        return {
+            "ok": False,
+            "message": (
+                "No harvestable OakSpawner pads in this loaded cell. "
+                "Stand in a combat area (or travel to Abandoned Post) and harvest again."
+            ),
+            **status_fields(),
+        }
+    _harvested_points = points
+    _message = (
+        f"Harvested {len(points)} OakSpawner pad(s) in the loaded cell "
+        f"(read location only; map spawners were not reset)."
+    )
+    _log(_message)
+    return {
+        "ok": True,
+        "message": _message,
+        "harvested_count": len(points),
+        "harvested_points": list(_harvested_points),
+        **status_fields(),
+    }
+
+
+def _local_pawn() -> Any | None:
+    try:
+        from mods_base import get_pc
+
+        pc = get_pc()
+    except Exception:
+        return None
+    if pc is None:
+        return None
+    for attr in ("OakCharacter", "Pawn", "AcknowledgedPawn"):
+        try:
+            pawn = getattr(pc, attr, None)
+        except Exception:
+            pawn = None
+        if pawn is not None:
+            return pawn
+    return None
+
+
+def _request_arena_travel(station: str) -> str:
+    try:
+        from .travel import travel_to_station
+
+        return str(travel_to_station(station) or "")
+    except Exception as exc:
+        return f"Travel to {station} failed: {exc!r}"
 
 
 def set_plan(payload: dict[str, Any] | None = None) -> dict[str, Any]:
     """Store the ordered wave list from Electron (or a prior session restore)."""
-    global _plan, _running, _complete, _wave_index, _message
+    global _plan, _running, _complete, _wave_index, _message, _arena_station, _harvested_points
     payload = dict(payload or {})
     waves_raw = payload.get("waves") if "waves" in payload else payload.get("plan")
     if waves_raw is None and isinstance(payload.get("wave"), dict):
@@ -273,6 +527,13 @@ def set_plan(payload: dict[str, Any] | None = None) -> dict[str, Any]:
             return {"ok": False, "message": f"Wave {idx + 1} needs at least one actor."}
         waves.append(wave)
     _plan = waves
+    if "arena_station" in payload or "arena" in payload:
+        _arena_station = _normalize_arena_station(payload.get("arena_station") or payload.get("arena"))
+    frozen = payload.get("harvested_points")
+    if frozen is None:
+        frozen = payload.get("arena_points")
+    if frozen is not None:
+        _harvested_points = _normalize_harvested_points(frozen)
     if _running:
         # Plan replace mid-run is allowed for UI edits, but does not restart.
         _message = f"Plan updated ({len(_plan)} wave(s)); run continues at wave {_wave_index + 1}."
@@ -280,6 +541,8 @@ def set_plan(payload: dict[str, Any] | None = None) -> dict[str, Any]:
         _complete = False
         _wave_index = 0
         _message = f"Plan ready: {len(_plan)} wave(s)." if _plan else "Idle"
+        if _harvested_points:
+            _message = f"{_message} {len(_harvested_points)} harvested pad(s)."
     return {
         "ok": True,
         "message": _message,
@@ -399,72 +662,49 @@ def _mark_wave_armed(*, reason: str = "") -> None:
     if reason:
         _log(f"wave {_wave_index + 1} armed ({reason})")
 
-def _count_spawner_alive(spawner: Any) -> int:
-    if spawner is None:
-        return 0
-    try:
-        comp = spawner.GetSpawnerComponent()
-    except Exception:
-        return 0
-    if comp is None:
-        return 0
-    asd = _asd()
-    alive_fn = getattr(asd, "_alive_actors_for_spawner_component", None) if asd else None
-    if callable(alive_fn):
-        try:
-            actors = alive_fn(comp) or []
-            return len(list(actors))
-        except Exception:
-            pass
-    for meth, args in (("GetNumAliveActors", (0,)), ("GetNumAliveActors", ())):
-        fn = getattr(comp, meth, None)
-        if not callable(fn):
-            continue
-        try:
-            return max(0, int(fn(*args)))
-        except Exception:
-            continue
-    return 0
-
-
-def count_alive() -> int:
-    """Best-effort alive count for the current wave."""
-    global _last_alive, _wave_seen_alive
-    asd = _asd()
-    find_live = getattr(asd, "_find_live_spawned_actor", None) if asd else None
-    live_keys: set[str] = set()
+def _count_wrapper_alive() -> int:
+    """Fallback when hybrid census is unavailable: live wave-item wrappers only."""
     alive = 0
-
+    seen: set[str] = set()
     for item in list(_wave_items):
-        actor = None
-        if callable(find_live):
-            try:
-                actor = find_live(item)
-            except Exception:
+        actor = getattr(item, "actor", None)
+        try:
+            name = str(getattr(actor, "Name", "") or "") if actor is not None else ""
+            if not name or name.startswith("Default__"):
                 actor = None
-        if actor is None:
-            actor = getattr(item, "actor", None)
-            try:
-                name = str(getattr(actor, "Name", "") or "") if actor is not None else ""
-                if not name or name.startswith("Default__"):
-                    actor = None
-                elif bool(getattr(actor, "bActorIsBeingDestroyed", False)):
-                    actor = None
-            except Exception:
+            elif bool(getattr(actor, "bActorIsBeingDestroyed", False)):
                 actor = None
+        except Exception:
+            actor = None
         if actor is None:
             continue
         key = _actor_key(item) or str(id(actor))
-        if key in live_keys:
+        if key in seen:
             continue
-        live_keys.add(key)
+        seen.add(key)
         alive += 1
+    return alive
 
-    # Spawner component counts catch async rows not yet mirrored into _SPAWNED.
-    for spawner in list(_wave_spawners):
-        n = _count_spawner_alive(spawner)
-        if n > alive:
-            alive = n
+
+def count_alive() -> int:
+    """Alive count for the current wave from the hybrid live-pawn census.
+
+    Does not peek GetAliveActors on a throwaway OakSpawner. That read on a dying
+    or already-empty spawner both missed delayed pawns and raced engine death.
+    """
+    global _last_alive, _wave_seen_alive
+    alive = 0
+    try:
+        from . import asd_hybrid as hybrid
+
+        census_fn = getattr(hybrid, "count_alive", None)
+        if callable(census_fn):
+            alive = int(census_fn() or 0)
+    except Exception:
+        alive = 0
+
+    if alive <= 0:
+        alive = _count_wrapper_alive()
 
     now = time.monotonic()
     if alive > 0:
@@ -613,6 +853,7 @@ def _clear_wave_tracking() -> None:
     _spawn_nodes = []
     _spawn_requested = 0
     _world_wait_since = 0.0
+    # Harvested pads stay frozen across waves; only travel / harvest() replaces them.
 
 
 def status_fields() -> dict[str, Any]:
@@ -630,6 +871,10 @@ def status_fields() -> dict[str, Any]:
         "spawned_requested": int(_spawn_requested),
         "expected_count": int(_expected_count),
         "cleanup_pending": cleanup_pending(),
+        "arena_station": str(_arena_station or _ARENA_HERE),
+        "harvested_count": len(_harvested_points),
+        "harvested_points": list(_harvested_points),
+        "harvest_pending": bool(_harvest_pending),
         "message": str(_message or "Idle"),
         "plan": list(_plan),
     }
@@ -666,18 +911,33 @@ def _apply_wave_aggro(wave: dict[str, Any]) -> None:
         apply_aggro_to_tracked()
 
 
+def _nodes_from_harvested(points: list[dict[str, float]] | None = None) -> list[dict[str, Any]]:
+    rows = list(points if points is not None else _harvested_points)
+    nodes: list[dict[str, Any]] = []
+    for index, point in enumerate(rows):
+        xyz = (float(point["x"]), float(point["y"]), float(point["z"]))
+        nodes.append(
+            {
+                "index": index,
+                "angle": 0.0,
+                "distance": 0.0,
+                "x": xyz[0],
+                "y": xyz[1],
+                "z": xyz[2],
+                "world_xyz": xyz,
+            }
+        )
+    return nodes
+
+
 def build_spawn_nodes(wave: dict[str, Any]) -> list[dict[str, Any]]:
-    """Spawn points around the player at varied angles and distances.
+    """Harvested OakSpawner pads when frozen; otherwise a jittered player ring.
 
-    Sectors are evenly divided so the nodes cover every side, then each node is
-    nudged inside its own sector and pushed nearer/further so the result does not
-    read as a perfect geometric ring.
-
-    The angle is advisory only. Aiming a spawn to a bearing meant swapping
-    ActorScriptDeployer's own transform helper out from under it while its native
-    spawn and deferred-actor code was running, so that patch is gone; ASD places
-    every burst along its own forward vector and only the distance varies.
+    Harvested points are discrete world XYZ — never interpolated. The player-ring
+    path is only a fallback when no pads were harvested.
     """
+    if _harvested_points:
+        return _nodes_from_harvested()
     points = _clamp_int(
         wave.get("spawn_points"), _SPAWN_POINTS_MIN, _SPAWN_POINTS_MAX, _SPAWN_POINTS_DEFAULT
     )
@@ -750,18 +1010,20 @@ def build_spawn_jobs(
                 continue
             count = sizes.pop(0)
             node = nodes[node_turn % len(nodes)]
-            jobs.append(
-                {
-                    "actor_id": actor_id,
-                    "count": int(count),
-                    "node": int(node["index"]),
-                    "angle": float(node["angle"]),
-                    "distance": float(node["distance"]),
-                    "spacing": spacing,
-                    "scale": scale,
-                    "z_offset": z_offset,
-                }
-            )
+            job: dict[str, Any] = {
+                "actor_id": actor_id,
+                "count": int(count),
+                "node": int(node["index"]),
+                "angle": float(node.get("angle") or 0.0),
+                "distance": float(node.get("distance") or 0.0),
+                "spacing": spacing,
+                "scale": scale,
+                "z_offset": z_offset,
+            }
+            world_xyz = node.get("world_xyz")
+            if world_xyz:
+                job["world_xyz"] = tuple(float(v) for v in world_xyz)
+            jobs.append(job)
             node_turn += 1
     return jobs
 
@@ -817,6 +1079,18 @@ def _spawn_current_wave() -> dict[str, Any]:
     _pre_spawn_spawner_ids = _snapshot_created_spawner_ids()
     _expected_count = sum(int(e.get("count") or 1) for e in entries)
     _spawn_grace_until = 0.0
+    if _harvest_pending and not _harvested_points:
+        _spawn_nodes = []
+        _spawn_phase = True
+        _spawn_next_at = max(time.monotonic(), _last_death_at + _DEATH_QUIET_S)
+        _message = (
+            f"Wave {_wave_index + 1}/{len(_plan)} — waiting for the loaded cell, "
+            "then harvesting OakSpawner pads"
+        )
+        out = {"ok": True, "message": _message}
+        out.update(status_fields())
+        _log(_message)
+        return out
     _spawn_nodes = build_spawn_nodes(wave)
     for job in build_spawn_jobs(wave, entries, _spawn_nodes):
         _pending_spawn_jobs.append(job)
@@ -828,9 +1102,10 @@ def _spawn_current_wave() -> dict[str, Any]:
     stagger = _clamp_float(
         wave.get("stagger"), _SPAWN_STEP_MIN_S, _SPAWN_STEP_MAX_S, _SPAWN_STEP_INTERVAL_S
     )
+    source = "harvested pads" if _harvested_points else "player-ring fallback"
     _message = (
         f"Wave {_wave_index + 1}/{len(_plan)} — {_expected_count} enemies "
-        f"({len(entries)} type(s)) emerging from {len(_spawn_nodes)} spawn point(s), "
+        f"({len(entries)} type(s)) emerging from {len(_spawn_nodes)} {source}, "
         f"{len(_pending_spawn_jobs)} burst(s) every {stagger:.2f}s"
     )
     out = {"ok": _spawn_phase, "message": _message}
@@ -852,9 +1127,12 @@ def _spawn_next_job() -> None:
     """Run at most one ASD spawn burst per scheduled step, never two at once."""
     global _spawn_phase, _spawn_next_at, _spawn_grace_until, _message, _running
     global _spawn_in_flight, _world_wait_since, _spawn_requested
+    global _harvest_pending, _spawn_nodes
     if _spawn_in_flight:
         return
-    if not _spawn_phase or not _pending_spawn_jobs:
+    if not _spawn_phase:
+        return
+    if not _pending_spawn_jobs and not (_harvest_pending and not _harvested_points):
         return
 
     stagger = _wave_stagger()
@@ -873,6 +1151,36 @@ def _spawn_next_job() -> None:
         return
     _world_wait_since = 0.0
 
+    if _harvest_pending and not _harvested_points:
+        harvested = harvest()
+        if not harvested.get("ok") or not _harvested_points:
+            _running = False
+            _spawn_phase = False
+            _message = str(harvested.get("message") or "Harvest failed; hoard stopped.")
+            _log(_message)
+            return
+        _harvest_pending = False
+        wave = _active_wave or (_plan[_wave_index] if _plan else {})
+        entries = list(wave.get("entries") or [])
+        _spawn_nodes = _nodes_from_harvested()
+        _pending_spawn_jobs.clear()
+        for staged in build_spawn_jobs(wave, entries, _spawn_nodes):
+            _pending_spawn_jobs.append(staged)
+        if not _pending_spawn_jobs:
+            _running = False
+            _spawn_phase = False
+            _message = "Harvested pads, but the current wave has no spawn jobs."
+            return
+        _message = (
+            f"Wave {_wave_index + 1}/{len(_plan)} — harvested {len(_spawn_nodes)} pads, "
+            f"spawning {_expected_count} enemies"
+        )
+        _log(_message)
+
+    if not _pending_spawn_jobs:
+        _spawn_phase = False
+        return
+
     job = _pending_spawn_jobs[0]
     # Advance the clock before the call so a reentrant tick cannot double-fire.
     _spawn_next_at = now + stagger
@@ -886,12 +1194,13 @@ def _spawn_next_job() -> None:
         result = _run_actor_script_deployer_spawnai_like_debug_menu(
             name=str(job["actor_id"]),
             count=int(job.get("count") or 1),
-            distance=float(job["distance"]),
+            distance=float(job.get("distance") or 0.0),
             spacing=float(job["spacing"]),
             scale=float(job["scale"]),
             z_offset=float(job["z_offset"]),
             extra_loads=[],
             direct_only=False,
+            world_xyz=job.get("world_xyz"),
         )
     except Exception as exc:
         result = {"ok": False, "message": f"spawn raised {exc!r}"}
@@ -946,13 +1255,30 @@ def _spawn_next_job() -> None:
 
 
 def start() -> dict[str, Any]:
-    global _running, _complete, _wave_index, _message
+    global _running, _complete, _wave_index, _message, _harvest_pending, _harvested_points
     if not _plan:
         return {"ok": False, "message": "No hoard plan set. Build waves in Hoard Builder first.", **status_fields()}
     if _running:
         return {"ok": False, "message": "Hoard already running.", **status_fields()}
     _complete = False
     _wave_index = 0
+    _harvest_pending = False
+    station = str(_arena_station or "").strip()
+    if station and station != _ARENA_HERE:
+        _harvested_points = []
+        travel_msg = _request_arena_travel(station)
+        _harvest_pending = True
+        _message = f"Traveling to {station}; will harvest pads after the cell loads. {travel_msg}"
+        _log(_message)
+    elif station == _ARENA_HERE and not _harvested_points:
+        # Current cell: harvest now if the world is up; otherwise wait on the first tick.
+        ready, _reason = _spawn_world_ready()
+        if ready:
+            harvested = harvest()
+            if not harvested.get("ok"):
+                return harvested
+        else:
+            _harvest_pending = True
     _running = True
     _message = f"Starting wave 1/{len(_plan)}…"
     result = _spawn_current_wave()
@@ -964,9 +1290,10 @@ def start() -> dict[str, Any]:
 
 def stop() -> dict[str, Any]:
     """Stop auto-advance, leave actors alive, and release cached wrappers."""
-    global _running, _message
+    global _running, _message, _harvest_pending
     was = _running
     _running = False
+    _harvest_pending = False
     alive = count_alive() if _wave_items else 0
     if _complete:
         _message = "Complete"
@@ -980,8 +1307,10 @@ def stop() -> dict[str, Any]:
 
 def clear_travel_state() -> None:
     """Stop the runner and release all world-bound actor/spawner wrappers."""
-    global _running, _message
+    global _running, _message, _harvest_pending, _harvested_points
     _running = False
+    _harvest_pending = False
+    _harvested_points = []
     _clear_wave_tracking()
     # Spawners from the old world must never be touched after travel.
     _drop_deferred_cleanup()
@@ -1025,8 +1354,9 @@ def clear(payload: dict[str, Any] | None = None) -> dict[str, Any]:
     destructive call left in the feature, and it only runs because the user asked
     for it. The physics loot hide never fires from here — it is a separate button.
     """
-    global _running, _complete, _message, _wave_index
+    global _running, _complete, _message, _wave_index, _harvest_pending
     wanted_loot = bool((payload or {}).get("cleanup_loot", False))
+    _harvest_pending = False
     force_loot = bool((payload or {}).get("force_loot_physics", False))
     _running = False
     spawners = list(_wave_spawners)

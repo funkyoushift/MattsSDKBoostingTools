@@ -82,6 +82,9 @@ const els = {
   devActorSummary: document.getElementById("devActorSummary"),
   devActorTargetLimit: document.getElementById("devActorTargetLimit"),
   devActorZOffset: document.getElementById("devActorZOffset"),
+  devActorWorldX: document.getElementById("devActorWorldX"),
+  devActorWorldY: document.getElementById("devActorWorldY"),
+  devActorWorldZ: document.getElementById("devActorWorldZ"),
   devBossPickRows: document.getElementById("devBossPickRows"),
   devBossPickSummary: document.getElementById("devBossPickSummary"),
   devAiClass: document.getElementById("devAiClass"),
@@ -167,6 +170,9 @@ const els = {
   hoardWalkthroughBtn: document.getElementById("hoardWalkthroughBtn"),
   hoardFirstRunGuide: document.getElementById("hoardFirstRunGuide"),
   hoardGuideDismissBtn: document.getElementById("hoardGuideDismissBtn"),
+  hoardArenaSelect: document.getElementById("hoardArenaSelect"),
+  hoardHarvestBtn: document.getElementById("hoardHarvestBtn"),
+  hoardHarvestStatus: document.getElementById("hoardHarvestStatus"),
   devAggroMode: document.getElementById("devAggroMode"),
   devSpawnAnchor: document.getElementById("devSpawnAnchor"),
   boostSpawnAnchor: document.getElementById("boostSpawnAnchor"),
@@ -578,6 +584,8 @@ const state = {
   hoardShowAllActors: false,
   hoardRunning: false,
   hoardStatusWatch: false,
+  hoardArena: "here",
+  hoardHarvestedPoints: [],
   devperkToggles: { "5": false, "6": false },
   editorLoadInFlight: false,
   editorLoaded: false,
@@ -1860,6 +1868,7 @@ function installQuickMenuAddButtons() {
   decorateQuickMenuActionButton(els.hoardStartBtn, "hoard_start");
   decorateQuickMenuActionButton(els.hoardStopBtn, "hoard_stop");
   decorateQuickMenuActionButton(els.hoardClearBtn, "hoard_clear");
+  decorateQuickMenuActionButton(els.hoardHarvestBtn, "hoard_harvest");
   decorateQuickMenuActionButton(
     els.locationBookmarkSaveBtn,
     "location_bookmark_save",
@@ -1944,6 +1953,29 @@ async function runBoostActionButton(button) {
       setLine(els.invStatus, msg, kind);
     }
     return result;
+  }
+  if (GUEST_GRID_DEV_ACTIONS.has(action)) {
+    if (action === "guest_grid_try" && !state.selectedTarget) {
+      const message = "Select P2–P4 in Named player, then Fill Guest Grid.";
+      setOutput(els.boostOutput, message);
+      appendActivity(message);
+      return { ok: false, message };
+    }
+    if (state.selectedTarget) {
+      const ok = await ensureSelectedTarget(els.boostOutput);
+      if (!ok) {
+        const message = "Could not apply the named party player.";
+        setOutput(els.boostOutput, message);
+        appendActivity(message);
+        return { ok: false, message };
+      }
+    }
+    return runAction(
+      action,
+      { target_player: state.selectedTarget || undefined },
+      els.boostOutput,
+      30000
+    );
   }
   const result = DEV_SCOPED_BOOST_ACTIONS.has(action)
     ? await runScopedPlayerAction(action, {}, els.boostOutput, 30000, "dev")
@@ -2793,6 +2825,11 @@ function renderPlayers(status = {}) {
 const LATE_JOIN_CHARACTER_ACTIONS = new Set([
   "load_character_late_join",
   "select_character_late_join"
+]);
+
+const GUEST_GRID_DEV_ACTIONS = new Set([
+  "guest_grid_dump",
+  "guest_grid_try"
 ]);
 
 const PUBLIC_SCOPED_BOOST_ACTIONS = new Set([
@@ -8690,11 +8727,24 @@ function devSpawnerConfirm() {
   return accepted;
 }
 
+function optionalDevWorldXyz() {
+  const rawX = getValue(els.devActorWorldX);
+  const rawY = getValue(els.devActorWorldY);
+  const rawZ = getValue(els.devActorWorldZ);
+  if (!rawX && !rawY && !rawZ) return null;
+  const x = Number(rawX);
+  const y = Number(rawY);
+  const z = Number(rawZ);
+  if (![x, y, z].every(Number.isFinite)) return null;
+  return { x, y, z };
+}
+
 function devSpawnerPayload() {
   const actorDistance = getFloat(els.devActorDistance, 0, 20000, 350);
   const actorSpacing = getFloat(els.devActorSpacing, 1, 5000, 125);
   const actorScale = getFloat(els.devActorScale, 0.05, 20, 1);
   const actorZOffset = getFloat(els.devActorZOffset, -5000, 5000, 0);
+  const worldXyz = optionalDevWorldXyz();
   return {
     dev_actor_name: getValue(els.devActorName),
     dev_actor_class: getValue(els.devActorClass),
@@ -8731,7 +8781,8 @@ function devSpawnerPayload() {
     aggro_mode: getValue(els.devAggroMode) || "passive",
     spawn_anchor: getValue(els.devSpawnAnchor) || "local",
     mode: getValue(els.devAggroMode) || "passive",
-    anchor: getValue(els.devSpawnAnchor) || "local"
+    anchor: getValue(els.devSpawnAnchor) || "local",
+    ...(worldXyz ? { world_xyz: worldXyz, xyz: worldXyz, x: worldXyz.x, y: worldXyz.y, z: worldXyz.z } : {})
   };
 }
 
@@ -10094,6 +10145,8 @@ function loadHoardPlanFromStorage() {
       0,
       Math.min(state.hoardWaves.length - 1, Number(parsed && parsed.selected_index) || 0)
     );
+    state.hoardArena = String((parsed && parsed.arena_station) || "here").trim() || "here";
+    state.hoardHarvestedPoints = normalizeHoardHarvestedPoints(parsed && parsed.harvested_points);
   } catch (_error) {
     state.hoardWaves = [defaultHoardWave()];
     state.hoardSelectedIndex = 0;
@@ -10107,7 +10160,9 @@ function saveHoardPlanToStorage() {
       JSON.stringify({
         version: 2,
         selected_index: state.hoardSelectedIndex,
-        waves: state.hoardWaves
+        waves: state.hoardWaves,
+        arena_station: state.hoardArena || "here",
+        harvested_points: Array.isArray(state.hoardHarvestedPoints) ? state.hoardHarvestedPoints : []
       })
     );
   } catch (_error) {
@@ -10517,8 +10572,56 @@ async function ensureHoardCatalog() {
   return state.devSpawnerCatalog;
 }
 
+function normalizeHoardHarvestedPoints(raw) {
+  if (!Array.isArray(raw)) return [];
+  const points = [];
+  for (const row of raw) {
+    if (!row || typeof row !== "object") continue;
+    const x = Number(row.x);
+    const y = Number(row.y);
+    const z = Number(row.z);
+    if (![x, y, z].every(Number.isFinite)) continue;
+    points.push({ x, y, z });
+    if (points.length >= 8) break;
+  }
+  return points;
+}
+
+function formatHoardHarvestStatus(points, message) {
+  const rows = normalizeHoardHarvestedPoints(points);
+  if (!rows.length) {
+    return message || "No harvested pads yet — Harvest here, or Start will harvest after the cell is ready.";
+  }
+  const preview = rows
+    .slice(0, 4)
+    .map((row) => `(${Math.round(row.x)}, ${Math.round(row.y)}, ${Math.round(row.z)})`)
+    .join(" · ");
+  const extra = rows.length > 4 ? ` +${rows.length - 4} more` : "";
+  return `${rows.length} harvested pad(s): ${preview}${extra}`;
+}
+
+function applyHoardHarvestToUi(points, message) {
+  state.hoardHarvestedPoints = normalizeHoardHarvestedPoints(points);
+  if (els.hoardHarvestStatus) {
+    els.hoardHarvestStatus.textContent = formatHoardHarvestStatus(state.hoardHarvestedPoints, message);
+  }
+}
+
+function syncHoardArenaSelect() {
+  if (!els.hoardArenaSelect) return;
+  const value = String(state.hoardArena || "here");
+  if (![...els.hoardArenaSelect.options].some((opt) => opt.value === value)) {
+    els.hoardArenaSelect.value = "here";
+    state.hoardArena = "here";
+    return;
+  }
+  els.hoardArenaSelect.value = value;
+}
+
 function hoardPlanPayload() {
   return {
+    arena_station: String(state.hoardArena || "here"),
+    harvested_points: normalizeHoardHarvestedPoints(state.hoardHarvestedPoints),
     waves: state.hoardWaves.map((wave) => ({
       entries: (() => {
         let remaining = HOARD_MAX_WAVE_TOTAL;
@@ -10557,6 +10660,11 @@ async function pushHoardPlanToBridge({ quiet = false } = {}) {
 function applyHoardStatusPayload(data) {
   if (!data || typeof data !== "object") return;
   state.hoardRunning = Boolean(data.running);
+  if (data.arena_station) state.hoardArena = String(data.arena_station);
+  if (Array.isArray(data.harvested_points)) {
+    applyHoardHarvestToUi(data.harvested_points, data.message);
+    syncHoardArenaSelect();
+  }
   const msg = String(data.message || "").trim() || (data.complete ? "Complete" : "Idle");
   const kind = data.running ? "warning" : (data.complete ? "ok" : "");
   setLine(els.hoardStatusLine, msg, kind);
@@ -10606,10 +10714,35 @@ function wireHoardBuilder() {
   loadHoardPlanFromStorage();
   loadHoardFavoritesFromStorage();
   syncHoardEditFieldsFromSelected();
+  syncHoardArenaSelect();
+  applyHoardHarvestToUi(state.hoardHarvestedPoints);
   renderHoardWaveList();
   renderHoardActorSearch();
   renderHoardFavorites();
   syncHoardFirstRunGuide();
+  if (els.hoardArenaSelect) {
+    els.hoardArenaSelect.addEventListener("change", () => {
+      state.hoardArena = getValue(els.hoardArenaSelect) || "here";
+      saveHoardPlanToStorage();
+    });
+  }
+  if (els.hoardHarvestBtn) {
+    els.hoardHarvestBtn.addEventListener("click", async () => {
+      const planResult = await pushHoardPlanToBridge({ quiet: true });
+      if (!actionSucceeded(planResult)) {
+        setLine(els.hoardStatusLine, resultMessage(planResult), "bad");
+        return;
+      }
+      const result = await runAction("hoard_harvest", {}, els.hoardOutput, 20000);
+      const data = result && result.data !== undefined ? result.data : result;
+      applyHoardStatusPayload(data);
+      applyHoardHarvestToUi(
+        (data && data.harvested_points) || state.hoardHarvestedPoints,
+        resultMessage(result)
+      );
+      saveHoardPlanToStorage();
+    });
+  }
   if (els.hoardGuideDismissBtn) {
     els.hoardGuideDismissBtn.addEventListener("click", () => {
       try {
@@ -12353,7 +12486,7 @@ const TAB_TUTORIALS = {
     },
     {
       title: "Spawn settings",
-      body: "The right column controls aggro, anchor, distance, count, spacing, and scale. Spawn uses hybrid live pawns (clone a matching character in-world, else OakSpawner + PushActorDef). Attack Me arms after the pawn exists. Re-Aggro Spawned Actors and Clear Spawned Actors sit beside the list.",
+      body: "The right column controls aggro, anchor, distance, count, spacing, and scale. Spawn Selected sends ActorScriptDeployer ASD_spawnai (OakSpawner + PushActorDef). Clear Spawned Actors uses the hybrid world census to despawn tracked pawns and seal throwaway spawners. Re-Aggro Spawned Actors sits beside the list.",
       tab: "dev-spawner",
       targetSel: "#tab-dev-spawner .dev-spawner-controls"
     },

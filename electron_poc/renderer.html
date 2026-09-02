@@ -1501,6 +1501,18 @@
             +Z
             <input id="devActorZOffset" type="number" min="-5000" max="5000" value="0">
           </label>
+          <label title="Optional world X. Leave blank to spawn in front of the spawn anchor.">
+            World X
+            <input id="devActorWorldX" type="number" step="1" placeholder="(pawn-forward)">
+          </label>
+          <label title="Optional world Y. Leave blank to spawn in front of the spawn anchor.">
+            World Y
+            <input id="devActorWorldY" type="number" step="1" placeholder="(pawn-forward)">
+          </label>
+          <label title="Optional world Z. Leave blank to spawn in front of the spawn anchor.">
+            World Z
+            <input id="devActorWorldZ" type="number" step="1" placeholder="(pawn-forward)">
+          </label>
           <label>
             Count
             <input id="devActorCount" type="number" min="1" max="12" value="1">
@@ -1639,11 +1651,12 @@
         <section id="hoardFirstRunGuide" class="hoard-first-run-guide" aria-label="Hoard Builder quick guide">
           <div>
             <p class="hoard-eyebrow">First run</p>
-            <h3>Four steps to a safe hoard</h3>
+            <h3>Five steps to a safe hoard</h3>
           </div>
           <ol>
             <li><strong>Build</strong><span>Add actors to one or more waves.</span></li>
-            <li><strong>Run</strong><span>Start the plan; clear waves advance automatically.</span></li>
+            <li><strong>Arena</strong><span>Harvest here, or travel to Abandoned Post, then freeze 4–8 OakSpawner pads.</span></li>
+            <li><strong>Run</strong><span>Start the plan; waves cycle those pads and advance when the census is clear.</span></li>
             <li><strong>Favorite</strong><span>Save a good wave or the full plan for reuse.</span></li>
             <li><strong>Stop safely</strong><span>Stop pauses the run; Emergency Clear removes spawned actors.</span></li>
           </ol>
@@ -1712,7 +1725,18 @@
             <section class="hoard-run-card">
               <p class="hoard-eyebrow">Ready when you are</p>
               <h3>Run the current plan</h3>
-              <p class="muted-line">Up to 60 enemies and 12 actor types per wave. The next wave starts when the current one is clear.</p>
+              <p class="muted-line">Waves spawn at harvested OakSpawner pads in the loaded cell — not a ring around you. Clear when the census hits zero.</p>
+              <label>
+                Arena
+                <select id="hoardArenaSelect">
+                  <option value="here" selected>Harvest here (current map cell)</option>
+                  <option value="World_P.FT_GRA_BeachTower">Abandoned Post (travel, then harvest)</option>
+                </select>
+              </label>
+              <div class="button-row wrap compact-actions">
+                <button type="button" id="hoardHarvestBtn" class="secondary" title="Read 4–8 live OakSpawner locations in this loaded cell. Does not reset map spawners.">Harvest Spawn Points</button>
+              </div>
+              <div id="hoardHarvestStatus" class="status-line muted-line">No harvested pads yet — Harvest here, or Start will harvest after the cell is ready.</div>
               <button type="button" id="hoardStartBtn" class="primary hoard-start-button">▶ Start Hoard</button>
               <div class="button-row hoard-stop-actions">
                 <button type="button" id="hoardStopBtn" class="secondary">Stop Run</button>
@@ -1820,6 +1844,11 @@
           <button data-action="fog_of_war_on">Hide Fog</button>
           <button data-action="fog_of_war_off">Show Fog</button>
           <button data-action="fog_of_war_toggle">Toggle Fog Hide</button>
+        </div>
+        <p class="muted-line">DEV guest-grid probe — does not replace Party Reveal. Named player P2–P4 only. Dump first, then fill. Needs the new SDK action (or <code>pyexec fodmem_guest_grid.py</code> while this BL4 session is already open).</p>
+        <div class="button-row wrap">
+          <button type="button" data-action="guest_grid_dump">Dump Guest Grid (dev)</button>
+          <button type="button" data-action="guest_grid_try">Fill Guest Grid (dev)</button>
         </div>
         <div class="grid two">
           <div>

@@ -747,6 +747,8 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
         return backend_actions.hoard_set_plan(payload)
     if action == "hoard_status":
         return backend_actions.hoard_status()
+    if action == "hoard_harvest":
+        return backend_actions.hoard_harvest(payload)
     if action == "hoard_start":
         return backend_actions.hoard_start()
     if action == "hoard_stop":
@@ -1006,6 +1008,10 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
         return backend_actions.assign_quick_menu_slot(_copy_payload(payload))
     if action == "quick_menu_clear_page":
         return backend_actions.clear_quick_menu_page(_copy_payload(payload))
+    if action == "guest_grid_dump":
+        return backend_actions.guest_grid_dump(payload.get("target_player") or payload.get("name"))
+    if action == "guest_grid_try":
+        return backend_actions.guest_grid_try(payload.get("target_player") or payload.get("name"))
     return {"ok": False, "message": f"Unknown action: {action}"}
 
 

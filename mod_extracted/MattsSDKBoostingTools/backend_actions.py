@@ -119,6 +119,7 @@ from . import instant_click_holds as _ich
 from . import no_fog_of_war as _nfow
 from . import fod_reveal as _fod
 from . import fod_party_reveal as _party_fod
+from . import fod_guest_grid as _guest_fod
 from . import third_person_camera as _tpc
 from . import asd_hybrid as _asd_hybrid
 
@@ -344,6 +345,53 @@ def _asd_disarm_autoclear() -> None:
     _asd_batch_start = 0.0
 
 
+def _clear_spawned_actors_hybrid(payload: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Default clear: destroy live pawns, seal leftover throwaways.
+
+    Does not destroy OakSpawner actors and does not run ASD_clear's
+    disable-and-destroy pass. Those left later ASD_spawnai with no Class
+    template. Sealed throwaways stay in-world so the next ASD spawn can
+    still find_all('OakSpawner').
+    """
+    payload = dict(payload or {})
+    _asd_disarm_autoclear()
+    include_hostiles = _dev_spawner_bool(
+        payload.get("include_hostiles") or payload.get("census_hostiles")
+    )
+    radius = _clamp_float(
+        payload.get("census_radius") or payload.get("radius") or 0.0,
+        0.0,
+        50000.0,
+        0.0,
+    )
+    try:
+        hybrid_clear = _asd_hybrid.clear_world(
+            include_hostiles=include_hostiles,
+            radius=(radius or None),
+        )
+    except Exception as exc:
+        hybrid_clear = {
+            "ok": False,
+            "hybrid": True,
+            "despawned": 0,
+            "spawners_destroyed": 0,
+            "spawners_sealed": 0,
+            "message": f"hybrid clear failed: {exc!r}",
+        }
+
+    return {
+        "ok": True,
+        "hybrid": True,
+        "message": str(hybrid_clear.get("message") or "Hybrid world clear finished."),
+        "hybrid_despawned": int(hybrid_clear.get("despawned") or 0),
+        "spawners_destroyed": 0,
+        "spawners_sealed": int(hybrid_clear.get("spawners_sealed") or 0),
+        "alive_count": int(hybrid_clear.get("alive_count") or 0),
+        "command": "hybrid_clear_world",
+        "mode": "asd_hybrid_world_clear",
+    }
+
+
 def _asd_autoclear_should_wait() -> bool:
     """Hold the batch clear while the hoard runner still owns live actors.
 
@@ -376,7 +424,9 @@ def tick_asd_autoclear() -> None:
     ok = False
     msg = "ASD auto-clear skipped"
     try:
-        ok, msg = _run_actor_script_deployer_command("ASD_clear")
+        result = _clear_spawned_actors_hybrid({})
+        ok = bool(result.get("ok"))
+        msg = str(result.get("message") or msg)
         try:
             note_last_command(
                 "dev_spawner_clear",
@@ -1079,6 +1129,21 @@ def _parse_asd_spawnai_result(
     return result
 
 
+def _parse_payload_world_xyz(payload: dict[str, Any] | None) -> Any:
+    """Read optional world XYZ from a Dev Spawner / hoard payload."""
+    payload = payload or {}
+    return _asd_hybrid.parse_world_xyz(
+        payload.get("world_xyz")
+        if payload.get("world_xyz") is not None
+        else payload.get("xyz")
+        if payload.get("xyz") is not None
+        else payload.get("dev_ai_xyz"),
+        x=payload.get("x", payload.get("dev_ai_x")),
+        y=payload.get("y", payload.get("dev_ai_y")),
+        z=payload.get("z", payload.get("dev_ai_z")),
+    )
+
+
 def _run_actor_script_deployer_spawnai_like_debug_menu(
     *,
     name: str,
@@ -1090,23 +1155,111 @@ def _run_actor_script_deployer_spawnai_like_debug_menu(
     extra_loads: list[str],
     direct_only: bool,
     angle_degrees: float = 0.0,
+    world_xyz: Any = None,
+    xyz: Any = None,
+    use_hybrid: bool = False,
 ) -> dict[str, Any]:
-    """Spawn a catalog actor via asd_hybrid.spawn_live.
+    """Run ActorScriptDeployer's native ASD_spawnai for standard row spawns.
 
-    Catalog name still comes from the existing picker/hoard wave. `direct_only`
-    and `angle_degrees` are accepted for call-site compatibility and ignored.
-    `extra_loads` is forwarded as package hints for thin-air class resolve.
+    Hybrid is opt-in only (`use_hybrid=True`). Default is the original ASD
+    console/Python path. queued_unverified is an accepted result — ASD often
+    queues the pawn and it appears a moment later. Do not fail-closed on an
+    empty GetAliveActors peek.
+    `angle_degrees` is accepted for call-site compatibility and ignored.
+    `world_xyz` / `xyz` are used only on the hybrid opt-in path.
     """
-    del direct_only, angle_degrees
-    return _asd_hybrid.spawn_live(
-        name,
-        count=count,
-        distance=distance,
-        spacing=spacing,
-        scale=scale,
-        z_offset=z_offset,
-        extra_loads=tuple(extra_loads or ()),
+    del angle_degrees
+    if use_hybrid:
+        return _asd_hybrid.spawn_live(
+            name,
+            count=count,
+            distance=distance,
+            spacing=spacing,
+            scale=scale,
+            z_offset=z_offset,
+            extra_loads=tuple(extra_loads or ()),
+            world_xyz=world_xyz if world_xyz is not None else xyz,
+        )
+
+    try:
+        asd = importlib.import_module("ActorScriptDeployer")
+    except Exception as exc:
+        return {
+            "ok": False,
+            "message": f"ActorScriptDeployer import failed: {exc!r}",
+            "requested_count": count,
+        }
+
+    patch_ok, patch_message = _install_asd_spawn_runtime_patches(asd)
+    if not patch_ok:
+        return {"ok": False, "message": patch_message, "requested_count": count}
+
+    spawnai_fn = getattr(asd, "_cmd_spawnai", None)
+    if not callable(spawnai_fn):
+        return {
+            "ok": False,
+            "message": "ActorScriptDeployer command object '_cmd_spawnai' is unavailable.",
+            "requested_count": count,
+        }
+    message = f"ActorScriptDeployer direct command object; {patch_message}"
+
+    def _spawn_first() -> None:
+        spawnai_fn(
+            argparse.Namespace(
+                name=name,
+                distance=distance,
+                count=count,
+                spacing=spacing,
+                scale=scale,
+                z_offset=z_offset,
+                zoffset=z_offset,
+                load=list(extra_loads or []),
+                direct_only=direct_only,
+            )
+        )
+
+    before_addrs: set[int] = set()
+    try:
+        before_addrs = _asd_hybrid.snapshot_world_addrs()
+    except Exception:
+        before_addrs = set()
+
+    logs, error = _capture_asd_logs(asd, _spawn_first)
+    result = _parse_asd_spawnai_result(
+        name=name,
+        requested_count=count,
+        mode=message,
+        logs=logs,
+        error=error,
     )
+    try:
+        note = _asd_hybrid.note_after_asd_spawn(
+            name,
+            before_addrs=before_addrs,
+            expected=count,
+        )
+        noted = int(note.get("noted") or 0)
+        result["hybrid_noted"] = noted
+        result["hybrid_note"] = str(note.get("message") or "")
+        if note.get("actor_names"):
+            result["actor_names"] = list(note.get("actor_names") or [])
+        if note.get("alive") is not None:
+            result["alive_count"] = int(note.get("alive") or 0)
+        if noted > 0 and result.get("verification_status") == "queued_unverified":
+            result["verification_status"] = "verified_spawned"
+            result["spawn_verified"] = True
+            result["message"] = (
+                f"ActorScriptDeployer spawned {name} "
+                f"(hybrid census noted {noted} world pawn(s))."
+            )
+        elif result.get("ok") and note.get("message"):
+            prev = str(result.get("message") or "").strip()
+            extra = str(note.get("message") or "").strip()
+            if extra and extra not in prev:
+                result["message"] = f"{prev} | {extra}".strip(" |")
+    except Exception:
+        pass
+    return result
 
 
 def _module_available(name: str) -> bool:
@@ -2006,6 +2159,10 @@ def run_quick_menu_action(
         result = fog_of_war_toggle()
     elif key == "fog_of_war_status":
         result = fog_of_war_status()
+    elif key == "guest_grid_dump":
+        result = guest_grid_dump(payload.get("target_player") or payload.get("name"))
+    elif key == "guest_grid_try":
+        result = guest_grid_try(payload.get("target_player") or payload.get("name"))
     elif key == "hoard_set_plan":
         result = hoard_set_plan(payload)
     elif key == "hoard_start":
@@ -2016,6 +2173,8 @@ def run_quick_menu_action(
         result = hoard_clear(payload)
     elif key == "hoard_status":
         result = hoard_status()
+    elif key == "hoard_harvest":
+        result = hoard_harvest(payload)
     elif key == "unlock_cosmetics":
         result = unlock_cosmetics()
         needs_player = True
@@ -3634,6 +3793,10 @@ def hoard_status() -> dict[str, Any]:
     return hoard_runner.status()
 
 
+def hoard_harvest(payload: dict[str, Any] | None = None) -> dict[str, Any]:
+    return hoard_runner.harvest(payload)
+
+
 def hoard_tick() -> None:
     hoard_runner.tick()
 
@@ -3682,6 +3845,52 @@ def party_reveal_status() -> dict[str, Any]:
         "fog_of_war": _fog_status_dict(),
         **status,
     }
+
+
+def _guest_grid_target(target: object = None) -> object:
+    raw = target
+    if raw is None or str(raw).strip() == "":
+        idx = get_selected_player_index()
+        name = get_selected_player_name()
+        if idx is not None:
+            return f"{idx}|{name}" if name else idx
+        return name or None
+    err = _apply_optional_target_player({"target_player": raw})
+    if err is not None:
+        return err
+    idx = get_selected_player_index()
+    name = get_selected_player_name()
+    if idx is not None:
+        return f"{idx}|{name}" if name else idx
+    return raw
+
+
+def guest_grid_dump(target: object = None) -> dict[str, Any]:
+    """DEV: dump host vs P2–P4 FoD slots. Does not fill. Does not replace Party Reveal."""
+    try:
+        resolved = _guest_grid_target(target)
+        if isinstance(resolved, dict) and resolved.get("ok") is False:
+            return resolved
+        result = dict(_guest_fod.try_for_target(resolved, write=False))
+        result["fog_of_war"] = _fog_status_dict()
+        result["guest_grid"] = _guest_fod.last_status()
+        return result
+    except Exception as exc:
+        return {"ok": False, "message": f"Guest grid dump failed: {exc!r}"}
+
+
+def guest_grid_try(target: object = None) -> dict[str, Any]:
+    """DEV: try +0xB0 / NHA +0x670 on the named P2–P4 player. Not Party Reveal Map."""
+    try:
+        resolved = _guest_grid_target(target)
+        if isinstance(resolved, dict) and resolved.get("ok") is False:
+            return resolved
+        result = dict(_guest_fod.try_for_target(resolved, write=True))
+        result["fog_of_war"] = _fog_status_dict()
+        result["guest_grid"] = _guest_fod.last_status()
+        return result
+    except Exception as exc:
+        return {"ok": False, "message": f"Guest grid try failed: {exc!r}"}
 
 
 def unlock_cosmetics() -> dict[str, Any]:
@@ -3740,6 +3949,32 @@ _cmd_msbt_fog.add_argument(
     "parts",
     nargs="+",
     help="name <substring>",
+)
+
+
+@command("msbt_guest_grid", description="DEV: dump or fill P2–P4 FoD grid candidates: msbt_guest_grid [dump|write] [index|name]")
+def _cmd_msbt_guest_grid(args: argparse.Namespace) -> None:
+    from unrealsdk import logging as _sdk_logging
+
+    parts = [str(p) for p in (getattr(args, "parts", None) or [])]
+    write = True
+    target: object = None
+    if parts and parts[0].lower() in ("dump", "inspect", "status"):
+        write = False
+        target = " ".join(parts[1:]).strip() or None
+    elif parts and parts[0].lower() in ("write", "fill", "try"):
+        write = True
+        target = " ".join(parts[1:]).strip() or None
+    elif parts:
+        target = " ".join(parts).strip()
+    result = guest_grid_try(target) if write else guest_grid_dump(target)
+    _sdk_logging.info(f"[MSBT GuestGrid] {result.get('message')}")
+
+
+_cmd_msbt_guest_grid.add_argument(
+    "parts",
+    nargs="*",
+    help="dump|write [index or name]",
 )
 
 
@@ -4823,13 +5058,13 @@ def run_dev_spawner_action(action: str, payload: dict[str, Any] | None = None) -
             "resolved": label,
             "actor": name,
         }
+    if action == "dev_spawner_clear":
+        return _clear_spawned_actors_hybrid(payload)
 
     direct_dev_spawner_result: dict[str, Any] | None = None
     try:
         if action == "dev_spawner_status":
             cmd = "ASD_status"
-        elif action == "dev_spawner_clear":
-            cmd = "ASD_clear"
         elif action == "dev_spawner_activate_last":
             cmd = "ASD_activate_last"
         elif action == "dev_spawner_scriptdump":
@@ -4969,6 +5204,10 @@ def run_dev_spawner_action(action: str, payload: dict[str, Any] | None = None) -
                     z_offset=z_offset,
                     extra_loads=extra_loads,
                     direct_only=direct_only,
+                    world_xyz=_parse_payload_world_xyz(payload),
+                    use_hybrid=_dev_spawner_bool(
+                        payload.get("use_hybrid") or payload.get("dev_ai_hybrid")
+                    ),
                 )
         elif action == "dev_spawner_cache":
             name = _dev_spawner_token(payload.get("dev_ai_name"), "AI actor-def/cache name", required=True)
@@ -5035,13 +5274,16 @@ def run_dev_spawner_action(action: str, payload: dict[str, Any] | None = None) -
 
         if action == "dev_spawner_clear":
             _asd_disarm_autoclear()
+        elif action == "dev_spawner_status":
             try:
-                hybrid_clear = _asd_hybrid.despawn_tracked()
-                prev = str(result.get("message") or "")
-                extra = str(hybrid_clear.get("message") or "")
+                census = _asd_hybrid.census_live()
+                result["alive_count"] = int(census.get("alive") or 0)
+                result["spawners"] = int(census.get("spawners") or 0)
+                result["actor_names"] = list(census.get("actor_names") or [])
+                extra = str(census.get("message") or "")
                 if extra:
+                    prev = str(result.get("message") or "")
                     result["message"] = f"{prev} | {extra}".strip(" |")
-                result["hybrid_despawned"] = int(hybrid_clear.get("despawned") or 0)
             except Exception:
                 pass
         elif action in (

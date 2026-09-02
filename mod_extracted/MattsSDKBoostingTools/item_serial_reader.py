@@ -10,6 +10,10 @@ Offset layout and identity discovery follow Oak2LiveObjectViewer (LOV) 0.10+:
 Focused on equipped slots and backpack/inventory rows on a **selected party
 player** (host can target guests via PlayerArray PlayerState). Ground / dropped
 / nearby pickups are intentionally unsupported.
+
+Live ItemName is an optional display overlay only. Inventory list / Refresh
+must keep reading InventoryIdentity serial bytes (``@U``) first. Never pointer-
+scan every backpack row for p_iinfo — that hangs the bridge/game thread.
 """
 from __future__ import annotations
 
@@ -41,6 +45,30 @@ ITEM_SERIAL_LENGTH_OFFSET = 0xB0
 ITEM_SERIAL_CAPACITY_OFFSET = 0xB8
 ITEM_LEVEL_OFFSET = 0xC4
 ITEM_SERIAL_MAX_CHARS = 131072
+
+# NHA INJECT_ItemEdit hover-dump (p_iinfo). Serial stays on InventoryIdentity
+# (p_item +0xA0 / +0xB0). Item-info is a separate object the item card uses.
+ITEM_INFO_PRICE_OFFSET = 0x34
+ITEM_INFO_LEVEL_OFFSET = 0x44
+ITEM_INFO_TYPE_OFFSET = 0x68
+ITEM_INFO_WEAPON_TYPE_OFFSET = 0x80
+ITEM_INFO_MFG_WEAPON_TYPE_OFFSET = 0x98
+ITEM_INFO_NAME_OFFSET = 0xB8
+ITEM_INFO_RARITY_OFFSET = 0x108
+ITEM_INFO_MANUFACTURER_OFFSET = 0x158
+ITEM_INFO_BULLET_TYPE_OFFSET = 0x190
+ITEM_INFO_PARTS_PTR_OFFSET = 0x228
+ITEM_INFO_PARTS_COUNT_OFFSET = 0x230
+ITEM_INFO_PARTS_MAX_OFFSET = 0x234
+ITEM_INFO_PART_INNER_NAME_OFFSET = 0x20
+ITEM_INFO_PART_TYPE_NAME_OFFSET = 0x40
+ITEM_INFO_PART_OBJECT_PTR_OFFSET = 0x68
+ITEM_INFO_UOBJECT_NAME_OFFSET = 0x18
+ITEM_INFO_FSTRING_MAX_CHARS = 256
+ITEM_INFO_PARTS_CAP = 32
+_ITEM_INFO_SCAN_SPAN = 0x280
+_ITEM_INFO_HIT_CACHE: dict[int, int] = {}
+_ITEM_INFO_HIT_CACHE_CAP = 512
 
 # LOV named slots + likely weapon indices for BL4's four guns.
 _EQUIP_SLOT_NAMES: dict[int, str] = {
@@ -144,6 +172,455 @@ def _read_native_u32(address: int) -> int | None:
 def _read_native_u64(address: int) -> int | None:
     raw = _read_native_memory(address, 8)
     return int.from_bytes(raw, "little") if raw is not None else None
+
+
+def _read_native_i32(address: int) -> int | None:
+    raw = _read_native_memory(address, 4)
+    return int.from_bytes(raw, "little", signed=True) if raw is not None else None
+
+
+def _canonical_ptr(address: int, *, align: int = 8) -> bool:
+    value = int(address)
+    if value < 0x10000 or value > 0x00007FFFFFFFFFFF:
+        return False
+    return (value & (int(align) - 1)) == 0
+
+
+def _object_address(value: Any) -> int:
+    if value is None:
+        return 0
+    try:
+        addr = int(value._get_address())
+    except Exception:
+        return 0
+    return addr if addr > 0 else 0
+
+
+def _read_fstring(address: int) -> str:
+    """Read a UE FString (TArray<TCHAR> / UTF-16) at ``address``."""
+    data_address = _read_native_u64(address)
+    num = _read_native_i32(address + 8)
+    maximum = _read_native_i32(address + 12)
+    if data_address is None or num is None:
+        return ""
+    if not _canonical_ptr(int(data_address), align=2):
+        return ""
+    if num < 2 or num > ITEM_INFO_FSTRING_MAX_CHARS:
+        return ""
+    if maximum is not None and (maximum < num or maximum > ITEM_INFO_FSTRING_MAX_CHARS * 2):
+        return ""
+    raw = _read_native_memory(int(data_address), int(num) * 2)
+    if not raw:
+        return ""
+    try:
+        text = raw.decode("utf-16-le", "replace").split("\x00", 1)[0].strip()
+    except Exception:
+        return ""
+    if not text or len(text) > ITEM_INFO_FSTRING_MAX_CHARS:
+        return ""
+    if any(ord(ch) < 32 and ch not in "\t " for ch in text):
+        return ""
+    return text
+
+
+def _fname_to_str(comparison_index: int, number: int = 0) -> str:
+    """Best-effort FName → string. Missing lookup still leaves ItemName intact."""
+    index = int(comparison_index or 0)
+    if index <= 0:
+        return ""
+    try:
+        from unrealsdk.unreal import FName
+    except Exception:
+        FName = None  # type: ignore[assignment]
+    if FName is not None:
+        name = None
+        for args in ((index, int(number or 0)), (index,)):
+            try:
+                name = FName(*args)
+                break
+            except Exception:
+                continue
+        if name is not None:
+            try:
+                text = str(name).strip()
+            except Exception:
+                text = ""
+            if text and text.lower() not in ("none", "none.none") and text != str(index):
+                return text
+    return ""
+
+
+def _part_object_name(address: int) -> str:
+    if not _canonical_ptr(address):
+        return ""
+    index = _read_native_i32(address + ITEM_INFO_UOBJECT_NAME_OFFSET)
+    if index is None:
+        return ""
+    number = _read_native_i32(address + ITEM_INFO_UOBJECT_NAME_OFFSET + 4)
+    return _fname_to_str(index, number or 0)
+
+
+def _read_item_info_parts(iinfo: int) -> list[str]:
+    parts_ptr = _read_native_u64(iinfo + ITEM_INFO_PARTS_PTR_OFFSET)
+    count = _read_native_i32(iinfo + ITEM_INFO_PARTS_COUNT_OFFSET)
+    maximum = _read_native_i32(iinfo + ITEM_INFO_PARTS_MAX_OFFSET)
+    if parts_ptr is None or count is None or not _canonical_ptr(int(parts_ptr)):
+        return []
+    if count < 0 or count > ITEM_INFO_PARTS_CAP:
+        return []
+    if maximum is not None and (maximum < count or maximum > ITEM_INFO_PARTS_CAP * 4):
+        return []
+    names: list[str] = []
+    for index in range(int(count)):
+        part = _read_native_u64(int(parts_ptr) + index * 8)
+        if part is None or not _canonical_ptr(int(part)):
+            continue
+        inner = _fname_to_str(_read_native_i32(int(part) + ITEM_INFO_PART_INNER_NAME_OFFSET) or 0)
+        part_type = _fname_to_str(_read_native_i32(int(part) + ITEM_INFO_PART_TYPE_NAME_OFFSET) or 0)
+        obj_ptr = _read_native_u64(int(part) + ITEM_INFO_PART_OBJECT_PTR_OFFSET)
+        part_name = _part_object_name(int(obj_ptr)) if obj_ptr else ""
+        if part_type and part_name:
+            names.append(f"{part_type}.{part_name}")
+        elif part_name:
+            names.append(part_name)
+        elif inner:
+            names.append(inner)
+        elif part_type:
+            names.append(part_type)
+    return names
+
+
+def _manufacturer_from_card(mfg: str, mfg_weapon_type: str) -> str:
+    text = str(mfg or "").strip()
+    if text:
+        return text.split("::")[-1].strip()
+    combo = str(mfg_weapon_type or "").strip()
+    if not combo:
+        return ""
+    # "Jakobs Shotgun" / "Maliwan SMG" → manufacturer token.
+    return combo.split()[0].strip() if " " in combo else combo
+
+
+def _item_type_from_card(weapon_type: str, type_name: str) -> str:
+    for candidate in (weapon_type, type_name):
+        text = str(candidate or "").strip()
+        if not text:
+            continue
+        text = text.split("::")[-1].replace("_", " ").strip()
+        if text and text.lower() not in ("weapon", "item", "gear", "none"):
+            return text
+    return str(weapon_type or type_name or "").strip()
+
+
+def read_item_info_at(address: int) -> dict[str, Any]:
+    """Read NHA p_iinfo fields from a live item-info object."""
+    iinfo = int(address or 0)
+    if not _canonical_ptr(iinfo):
+        return {}
+    name = _read_fstring(iinfo + ITEM_INFO_NAME_OFFSET)
+    if not name:
+        return {}
+    type_name = _read_fstring(iinfo + ITEM_INFO_TYPE_OFFSET)
+    weapon_type = _read_fstring(iinfo + ITEM_INFO_WEAPON_TYPE_OFFSET)
+    mfg_weapon_type = _read_fstring(iinfo + ITEM_INFO_MFG_WEAPON_TYPE_OFFSET)
+    rarity = _read_fstring(iinfo + ITEM_INFO_RARITY_OFFSET)
+    manufacturer = _read_fstring(iinfo + ITEM_INFO_MANUFACTURER_OFFSET)
+    bullet_type = _read_fstring(iinfo + ITEM_INFO_BULLET_TYPE_OFFSET)
+    level = _read_native_i32(iinfo + ITEM_INFO_LEVEL_OFFSET)
+    price = _read_native_i32(iinfo + ITEM_INFO_PRICE_OFFSET)
+    part_names = _read_item_info_parts(iinfo)
+    item_type = _item_type_from_card(weapon_type, type_name)
+    return {
+        "item_name": name,
+        "display_name": name,
+        "type": type_name,
+        "weapon_type": weapon_type,
+        "manufacturer_weapon_type": mfg_weapon_type,
+        "rarity": rarity,
+        "manufacturer": _manufacturer_from_card(manufacturer, mfg_weapon_type),
+        "bullet_type": bullet_type,
+        "damage_type": bullet_type,
+        "item_type": item_type,
+        "level": int(level) if level is not None else -1,
+        "price": int(price) if price is not None else None,
+        "part_names": part_names,
+        "iinfo_address": iinfo,
+        "meta_via": "iinfo",
+    }
+
+
+def looks_like_item_info(address: int) -> bool:
+    """True when ``address`` has a readable unicode ItemName at +0xB8."""
+    iinfo = int(address or 0)
+    if not _canonical_ptr(iinfo):
+        return False
+    name = _read_fstring(iinfo + ITEM_INFO_NAME_OFFSET)
+    if not name:
+        return False
+    extra = (
+        _read_fstring(iinfo + ITEM_INFO_RARITY_OFFSET)
+        or _read_fstring(iinfo + ITEM_INFO_TYPE_OFFSET)
+        or _read_fstring(iinfo + ITEM_INFO_WEAPON_TYPE_OFFSET)
+    )
+    return bool(extra) or len(name) >= 3
+
+
+def _cache_item_info_hit(source_addr: int, iinfo: int) -> None:
+    if source_addr <= 0 or iinfo <= 0:
+        return
+    if len(_ITEM_INFO_HIT_CACHE) >= _ITEM_INFO_HIT_CACHE_CAP:
+        _ITEM_INFO_HIT_CACHE.clear()
+    _ITEM_INFO_HIT_CACHE[source_addr] = iinfo
+
+
+def _scan_blob_for_item_info(base: int, size: int = _ITEM_INFO_SCAN_SPAN) -> dict[str, Any]:
+    if looks_like_item_info(base):
+        card = read_item_info_at(base)
+        if card:
+            return card
+    blob = None
+    for span in (int(size), 0x180, 0x100, 0x80):
+        if span <= 0:
+            continue
+        blob = _read_native_memory(int(base), span)
+        if blob:
+            break
+    if not blob:
+        return {}
+    seen: set[int] = set()
+    for offset in range(0, len(blob) - 7, 8):
+        ptr = int.from_bytes(blob[offset : offset + 8], "little")
+        if ptr in seen or not _canonical_ptr(ptr):
+            continue
+        seen.add(ptr)
+        if looks_like_item_info(ptr):
+            card = read_item_info_at(ptr)
+            if card:
+                return card
+    return {}
+
+
+_SDK_INFO_ATTRS = (
+    "ItemInfo",
+    "ItemCardInfo",
+    "InventoryItemInfo",
+    "GeneratedItemInfo",
+    "CachedItemInfo",
+    "InspectInfo",
+    "DisplayInfo",
+    "CardInfo",
+    "ItemCard",
+    "ItemData",
+    "InventoryData",
+    "ItemDetails",
+)
+_SDK_NAME_ATTRS = (
+    "ItemName",
+    "DisplayName",
+    "ItemDisplayName",
+    "InventoryDisplayName",
+    "ItemFriendlyName",
+    "FriendlyName",
+)
+_SDK_RARITY_ATTRS = (
+    "Rarity",
+    "ItemRarity",
+    "RarityName",
+    "RarityDisplayName",
+)
+_SDK_NAME_METHODS = (
+    "GetItemName",
+    "GetDisplayName",
+    "GetItemDisplayName",
+    "GetInventoryItemName",
+    "GetFriendlyName",
+)
+
+
+def _as_text(value: Any) -> str:
+    if value is None or isinstance(value, (bytes, bytearray)):
+        return ""
+    if isinstance(value, str):
+        text = value.strip()
+    else:
+        try:
+            text = str(value).strip()
+        except Exception:
+            return ""
+    if not text or text.startswith("<") or "object at 0x" in text.lower():
+        return ""
+    if "Default__" in text or text.endswith("_C") or "_C_" in text:
+        return ""
+    return text
+
+
+def _sdk_partial_card(source: Any) -> dict[str, Any]:
+    """Cheap field reads only. Do not call GetItemName / GetDisplayName here."""
+    if source is None:
+        return {}
+    name = ""
+    rarity = ""
+    for attr in _SDK_NAME_ATTRS:
+        try:
+            name = _as_text(getattr(source, attr, None))
+        except Exception:
+            name = ""
+        if name:
+            break
+    for attr in _SDK_RARITY_ATTRS:
+        try:
+            rarity = _as_text(getattr(source, attr, None))
+        except Exception:
+            rarity = ""
+        if rarity:
+            break
+    if not name:
+        return {}
+    return {
+        "item_name": name,
+        "display_name": name,
+        "rarity": rarity,
+        "part_names": [],
+        "meta_via": "sdk_attr",
+    }
+
+
+def _iter_card_roots(source: Any) -> list[Any]:
+    roots: list[Any] = []
+    seen: set[int] = set()
+
+    def _add(node: Any) -> None:
+        if node is None:
+            return
+        key = id(node)
+        if key in seen:
+            return
+        seen.add(key)
+        roots.append(node)
+
+    _add(source)
+    paths = (
+        ("ItemInfo",),
+        ("item",),
+        ("Item",),
+        ("data",),
+        ("Identity",),
+        ("item", "data"),
+        ("Item", "data"),
+        ("item", "data", "Identity"),
+        ("Item", "data", "Identity"),
+        ("InventoryItem",),
+        ("InventoryItem", "item"),
+        ("InventoryItem", "Item"),
+        ("InventoryItem", "item", "data"),
+        ("InventoryItem", "Item", "data"),
+        ("InventoryItem", "item", "data", "Identity"),
+        ("InventoryItem", "Item", "data", "Identity"),
+    )
+    for path in paths:
+        node = source
+        try:
+            for name in path:
+                node = getattr(node, name)
+        except Exception:
+            continue
+        _add(node)
+    if source is not None:
+        for attr in _SDK_INFO_ATTRS:
+            try:
+                node = getattr(source, attr, None)
+            except Exception:
+                node = None
+            _add(node)
+    return roots
+
+
+def _cheap_item_info_from_node(node: Any) -> dict[str, Any]:
+    """Read ItemName only when item-info is already an SDK field on ``node``."""
+    if node is None:
+        return {}
+    for attr in (
+        "ItemInfo",
+        "ItemCardInfo",
+        "InventoryItemInfo",
+        "GeneratedItemInfo",
+        "CachedItemInfo",
+        "InspectInfo",
+    ):
+        try:
+            child = getattr(node, attr, None)
+        except Exception:
+            child = None
+        if child is None:
+            continue
+        addr = _object_address(child)
+        if addr:
+            try:
+                card = read_item_info_at(addr)
+            except Exception:
+                card = {}
+            if card:
+                return card
+        try:
+            partial = _sdk_partial_card(child)
+        except Exception:
+            partial = {}
+        if partial:
+            return partial
+    try:
+        return _sdk_partial_card(node)
+    except Exception:
+        return {}
+
+
+def live_item_card_from_source(source: Any, *, scan: bool = False) -> dict[str, Any]:
+    """Optional live ItemName overlay. Missing item-info must never fail the row.
+
+    Default path: one cheap SDK field read on the backpack row / identity.
+    Do not pointer-scan InventoryIdentity (serial lives at +0xA0/+0xB0; +0xB8
+    is serial capacity, not ItemName). ``scan=True`` is for a single inspect,
+    never inventory Refresh.
+    """
+    if source is None:
+        return {}
+    try:
+        identity = item_identity_from_value(source)
+        identity_addr = _object_address(identity)
+        if identity_addr and identity_addr in _ITEM_INFO_HIT_CACHE:
+            cached = read_item_info_at(_ITEM_INFO_HIT_CACHE[identity_addr])
+            if cached:
+                return cached
+            _ITEM_INFO_HIT_CACHE.pop(identity_addr, None)
+
+        for node in (source, identity):
+            if node is None:
+                continue
+            card = _cheap_item_info_from_node(node)
+            if card:
+                hit = int(card.get("iinfo_address") or 0)
+                if identity_addr and hit:
+                    _cache_item_info_hit(identity_addr, hit)
+                return card
+
+        if not scan:
+            return {}
+
+        roots = _iter_card_roots(source)
+        if identity is not None:
+            roots = [identity, *roots]
+        for node in roots:
+            addr = _object_address(node)
+            if not addr:
+                continue
+            card = _scan_blob_for_item_info(addr)
+            if card:
+                hit = int(card.get("iinfo_address") or addr)
+                if identity_addr:
+                    _cache_item_info_hit(identity_addr, hit)
+                return card
+        return {}
+    except Exception:
+        return {}
 
 
 def _type_name(value: Any) -> str:
@@ -449,6 +926,12 @@ def _entry_from_source(
         "summary": f"{label}" + (f" L{level}" if level >= 0 else ""),
         "backpack_index": int(backpack_index) if backpack_index is not None else -1,
     }
+    try:
+        live_card = live_item_card_from_source(source)
+        if live_card:
+            entry["_live_card"] = live_card
+    except Exception:
+        pass
     try:
         if _serial_item_meta is None:
             raise RuntimeError("serial_item_meta was not imported")

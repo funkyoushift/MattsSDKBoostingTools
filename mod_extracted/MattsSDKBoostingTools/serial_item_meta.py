@@ -1,12 +1,14 @@
-"""Best-effort item labels from @U serials + bundled gzo_parts_map.json.
+"""Item labels for inventory serial reads (bridge / Quick Menu / Electron).
 
-Used by inventory serial reads (bridge / Quick Menu / Electron Inventory tab).
 Does not import blimgui.
 
-Display names prefer unique/legendary/pearl composition suffixes from the GZO
-parts map (e.g. PRISM, Silver Sliver). Falls back to manufacturer + type.
-Rarity is best-effort from composition keys / part-name keywords — not a
-pixel-perfect game rarity decode.
+Live path (preferred): NHA item-info ItemName / rarity / decoded parts, filled
+by the game when a backpack, equipped, or world item object exists. That is
+the same data the in-game item card title uses — not a GZO guess.
+
+Fallback: @U serial + bundled gzo_parts_map.json. Unique/legendary/pearl
+composition suffixes when they exist; otherwise manufacturer + type. Rarity
+from composition keys / part-name keywords. Explicitly not a pixel card.
 """
 from __future__ import annotations
 
@@ -572,8 +574,79 @@ def meta_from_serial(serial: str) -> dict[str, Any]:
     return out
 
 
+def normalize_live_rarity(text: str) -> str:
+    """Map live card rarity strings onto the same labels Electron / QM use."""
+    raw = str(text or "").strip()
+    if not raw:
+        return ""
+    hay = raw.lower().replace("::", "_").replace(" ", "_")
+    for needle, label in _RARITY_PATTERNS:
+        if needle in hay:
+            return label
+    return raw
+
+
+def apply_live_card_fields(entry: dict[str, Any], card: dict[str, Any] | None) -> dict[str, Any]:
+    """Overlay NHA item-info fields onto an inventory entry. GZO stays fallback.
+
+    Never overwrite ``serial`` / ``@U`` identity. Card strings are display only.
+    """
+    if not isinstance(entry, dict) or not isinstance(card, dict):
+        return entry
+    serial = entry.get("serial")
+    name = str(card.get("item_name") or card.get("display_name") or "").strip()
+    rarity = normalize_live_rarity(str(card.get("rarity") or ""))
+    manufacturer = str(card.get("manufacturer") or "").strip()
+    item_type = str(card.get("item_type") or card.get("weapon_type") or "").strip()
+    damage_type = str(card.get("damage_type") or card.get("bullet_type") or "").strip()
+    part_names = card.get("part_names")
+    price = card.get("price")
+    level = card.get("level")
+    if name:
+        entry["display_name"] = name
+        entry["unique_name"] = name
+        entry["card_name"] = name
+    if rarity:
+        entry["rarity"] = rarity
+    if manufacturer:
+        entry["manufacturer"] = manufacturer
+    if item_type:
+        entry["item_type"] = item_type
+        entry["type"] = item_type
+        entry["category"] = category_for_type(item_type)
+    if damage_type:
+        entry["damage_type"] = damage_type
+    if isinstance(part_names, list) and part_names:
+        entry["part_names"] = [str(p) for p in part_names if str(p).strip()][:24]
+    if price is not None:
+        try:
+            value = int(price)
+        except (TypeError, ValueError):
+            value = None
+        if value is not None and value >= 0:
+            entry["value"] = value
+    if level is not None:
+        try:
+            live_level = int(level)
+        except (TypeError, ValueError):
+            live_level = -1
+        if live_level >= 0 and int(entry.get("level") or -1) < 0:
+            entry["level"] = live_level
+    if name or rarity:
+        entry["meta_source"] = "live_card"
+        entry["meta_ok"] = True
+        entry["card_ok"] = True
+    if serial is not None:
+        entry["serial"] = serial
+    return entry
+
+
 def enrich_entry(entry: dict[str, Any]) -> dict[str, Any]:
-    """Mutate/return an inventory entry with decoded meta fields."""
+    """Mutate/return an inventory entry with decoded meta fields.
+
+    Prefers a live item-info overlay (``_live_card`` / ``live_card``) when the
+    backpack/world object exists. GZO manufacturer+type is fallback only.
+    """
     if not isinstance(entry, dict):
         return entry
     serial = str(entry.get("serial") or "")
@@ -587,7 +660,8 @@ def enrich_entry(entry: dict[str, Any]) -> dict[str, Any]:
     entry["category"] = meta.get("category") or "Other"
     entry["rarity"] = meta.get("rarity") or ""
     entry["damage_type"] = meta.get("damage_type") or ""
-    # DPS / vendor value are not encoded in @U / GZO parts — keep explicit nulls.
+    # DPS / vendor value are not encoded in @U / GZO parts — keep explicit nulls
+    # unless a live card overlay supplies vendor price.
     entry["dps"] = meta.get("dps")
     entry["value"] = meta.get("value")
     unique = str(meta.get("unique_name") or "").strip()
@@ -598,12 +672,22 @@ def enrich_entry(entry: dict[str, Any]) -> dict[str, Any]:
         entry["display_name"] = display
     else:
         entry["display_name"] = str(entry.get("label") or "Item")
+    entry["meta_ok"] = bool(meta.get("meta_ok"))
+    entry["meta_source"] = "gzo_guess" if entry["meta_ok"] else "none"
+    entry["card_ok"] = False
+    try:
+        live = entry.pop("_live_card", None)
+        if not isinstance(live, dict):
+            live = entry.get("live_card")
+        apply_live_card_fields(entry, live if isinstance(live, dict) else None)
+    except Exception:
+        entry["card_ok"] = False
+        entry.pop("_live_card", None)
     level = int(entry.get("level") or -1)
-    base = entry["display_name"]
-    # When we only have manufacturer+type, keep level in the summary line.
+    base = str(entry.get("display_name") or entry.get("label") or "Item").strip() or "Item"
+    entry["display_name"] = base
     if level >= 0:
         entry["summary"] = f"{base} L{level}"
     else:
         entry["summary"] = base
-    entry["meta_ok"] = bool(meta.get("meta_ok"))
     return entry

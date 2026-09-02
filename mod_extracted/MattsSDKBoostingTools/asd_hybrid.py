@@ -1,14 +1,19 @@
-"""ASD hybrid: spawn / despawn live pawns from any catalog name.
+"""ASD hybrid wrap: world census / track / clear. Not the default spawn engine.
 
-Python still owns the catalog/picker name. For every Dev Spawner and hoard
-pick this module clones a live match when one exists, otherwise it deferred-
-spawns from a resolved UClass. If no UClass is loaded, it uses the proven
-FGbxDefPtr + throwaway OakSpawner + PushActorDef path and waits until
-GetAliveActors is non-empty. It does not report an empty queue as success.
+Default spawn is original ActorScriptDeployer ASD_spawnai. This module's job
+after that is world truth: remember which OakCharacter/pawns exist, and clear
+them via memory without a world-wide Object scan. spawn_live stays as an explicit
+opt-in second engine for tests and later memory-edit work.
+
+Clear destroys live pawns and seals leftover throwaway OakSpawners so they
+cannot restock. It does not destroy those spawners — ASD_spawnai still needs
+a loaded OakSpawner Class template for the next spawn.
 """
 from __future__ import annotations
 
+import ctypes
 import re
+import struct
 import time
 from typing import Any
 
@@ -103,7 +108,6 @@ _CLASS_LOOKUP_TYPES = (
     "OakActorDef",
     "GbxCharacterDef",
     "OakCharacterDef",
-    "Object",
 )
 _SCAN_LOOKUP_TYPES = (
     "GbxActorDef",
@@ -130,7 +134,7 @@ _DEF_CLASS_ATTRS = (
 )
 _COOKED_PATH_RE = re.compile(r"(/Game/[A-Za-z0-9_./]+)")
 _GBX_ACTOR_DEF_STRUCT = "/Script/GbxSpawn.GbxActorDef"
-_TRACK_TTL_S = 300.0
+_TRACK_TTL_S = 1800.0
 _NAME_PREFIXES = (
     "Char_NPC_",
     "Char_AI_",
@@ -199,9 +203,37 @@ _HINT_NAME_KEYS = (
 
 _tracked: list[dict[str, Any]] = []
 _tracked_at = 0.0
+_spawn_watch_labels: dict[str, float] = {}
 _throwaway_spawners: list[Any] = []
+_last_spawned_spawner: Any = None
 _SPAWNER_POLL_TIMEOUT_S = 8.0
 _SPAWNER_POLL_INTERVAL_S = 0.05
+_CENSUS_WORLD_MIN_INTERVAL_S = 1.5
+_TRACK_MAX = 256
+_SPAWNER_MAX = 128
+_world_pawns_cache: list[Any] = []
+_world_pawns_cache_at = 0.0
+_oak_spawner_cls_cache: Any | None = None
+# NHA Borderlands4.CT Entitys/AActors team filter: actor+0x880.
+_TEAM_OFF = 0x880
+_CENSUS_RADIUS_DEFAULT = 14000.0
+_CENSUS_CLASSES = (
+    "OakCharacter",
+    "GbxCharacter",
+    "OakPawn",
+)
+_SPAWNER_SEAL_FIELDS = (
+    "bSpawnerEnabled",
+    "bSpawnPointEnabled",
+    "bEnabled",
+    "bActive",
+    "bCanSpawn",
+    "bAllowSpawn",
+    "bAllowRespawn",
+    "bRespawnEnabled",
+    "bInfinite",
+    "bUnlimitedSpawns",
+)
 
 
 def _log(msg: str) -> None:
@@ -275,6 +307,135 @@ def _obj_addr(obj: Any) -> int:
     except Exception:
         return 0
     return addr if addr > 0x10000 else 0
+
+
+def _read_u64(addr: int) -> int:
+    """Same style as FoD native reads. Bad addresses return 0, never raise."""
+    if addr < 0x10000:
+        return 0
+    try:
+        return int(struct.unpack("<Q", ctypes.string_at(addr, 8))[0])
+    except Exception:
+        return 0
+
+
+def team_addr(actor: Any) -> int:
+    """NHA Entitys team slot: *(actor + 0x880). 0 means unread/invalid."""
+    base = _obj_addr(actor)
+    if not base:
+        return 0
+    return _read_u64(base + _TEAM_OFF)
+
+
+def _actor_location(actor: Any) -> Any | None:
+    if actor is None:
+        return None
+    for name in ("K2_GetActorLocation", "GetActorLocation"):
+        fn = getattr(actor, name, None)
+        if callable(fn):
+            try:
+                return fn()
+            except Exception:
+                continue
+    return None
+
+
+def _distance_sq(a: Any, b: Any) -> float:
+    return (
+        (float(a.X) - float(b.X)) ** 2
+        + (float(a.Y) - float(b.Y)) ** 2
+        + (float(a.Z) - float(b.Z)) ** 2
+    )
+
+
+def _looks_like_character(actor: Any) -> bool:
+    cls = str(getattr(getattr(actor, "Class", None), "Name", "") or "").lower()
+    name = str(getattr(actor, "Name", "") or "").lower()
+    return any(token in f"{cls} {name}" for token in ("character", "pawn", "oakai"))
+
+
+def is_live_actor(actor: Any) -> bool:
+    """True when the wrapper still points at a world actor that is not dying."""
+    if actor is None or _is_default(actor) or _is_player_pawn(actor):
+        return False
+    try:
+        if bool(getattr(actor, "bActorIsBeingDestroyed", False)):
+            return False
+        name = str(getattr(actor, "Name", "") or "")
+    except Exception:
+        return False
+    if not name or name.startswith("Default__"):
+        return False
+    if _looks_like_character(actor):
+        for meth, dead_if in (("IsDead", True), ("IsAlive", False)):
+            fn = getattr(actor, meth, None)
+            if not callable(fn):
+                continue
+            try:
+                if bool(fn()) is dead_if:
+                    return False
+            except Exception:
+                continue
+        for attr in ("Health", "CurrentHealth"):
+            try:
+                hp = float(getattr(actor, attr))
+            except Exception:
+                continue
+            if hp <= 0.0:
+                return False
+            break
+    return True
+
+
+def _is_hostile_team(actor: Any, player: Any) -> bool:
+    """CE D+0x880 first; SDK team attrs as a fallback."""
+    actor_team = team_addr(actor)
+    player_team = team_addr(player)
+    if actor_team and player_team:
+        return actor_team != player_team
+    if is_clearly_friendly(_actor_def_name(actor) or _safe_str(actor)):
+        return False
+    actor_blob = " ".join(
+        str(getattr(actor, attr, "") or "").lower() for attr in ("Team", "TeamDef", "Allegiance")
+    )
+    if any(tok in actor_blob for tok in ("player", "friendly", "ally", "allied")):
+        return False
+    return bool(actor_team or actor_blob)
+
+
+def _iter_world_pawns(*, force: bool = False) -> list[Any]:
+    """find_all OakCharacter/GbxCharacter/OakPawn. Cached — never every 50–100ms."""
+    global _world_pawns_cache, _world_pawns_cache_at
+    now = time.monotonic()
+    if (
+        not force
+        and _world_pawns_cache_at
+        and now - _world_pawns_cache_at < _CENSUS_WORLD_MIN_INTERVAL_S
+    ):
+        return list(_world_pawns_cache)
+    found: list[Any] = []
+    seen: set[int] = set()
+    for class_name in _CENSUS_CLASSES:
+        try:
+            objects = unrealsdk.find_all(class_name, False) or []
+        except TypeError:
+            try:
+                objects = unrealsdk.find_all(class_name) or []
+            except Exception:
+                continue
+        except Exception:
+            continue
+        for actor in objects:
+            if actor is None or not is_live_actor(actor):
+                continue
+            key = _obj_addr(actor) or id(actor)
+            if key in seen:
+                continue
+            seen.add(key)
+            found.append(actor)
+    _world_pawns_cache = found
+    _world_pawns_cache_at = now
+    return found
 
 
 def _actor_def_name(actor: Any) -> str:
@@ -968,9 +1129,6 @@ def resolve_spawn_class(
         cls, how = _asset_registry_class(candidate)
         if cls is not None:
             return cls, how
-    cls = _scan_loaded_spawn_class(wanted)
-    if cls is not None:
-        return cls, f"loaded class scan {wanted}"
     for extra in extra_loads:
         _try_load_package(str(extra or "").strip())
     cls = _find_class_by_name(wanted)
@@ -1043,11 +1201,76 @@ def _make_struct(name: str, **fields: Any) -> Any:
     return fn(name, **fields)
 
 
-def _spawn_transform(pawn: Any, *, index: int, count: int, distance: float, spacing: float, z_offset: float, scale: float) -> Any:
-    loc = pawn.K2_GetActorLocation()
-    fwd = pawn.GetActorForwardVector()
+def parse_world_xyz(value: Any = None, **fields: Any) -> tuple[float, float, float] | None:
+    """Accept (x,y,z), [x,y,z], {x,y,z}, or payload keys world_xyz / xyz / x,y,z.
+
+    Empty / missing returns None so callers can fall back to pawn-forward.
+    """
+    if value is None:
+        value = fields.get("world_xyz")
+        if value is None:
+            value = fields.get("xyz")
+    if value is None and any(k in fields for k in ("x", "y", "z", "X", "Y", "Z")):
+        value = {
+            "x": fields.get("x", fields.get("X")),
+            "y": fields.get("y", fields.get("Y")),
+            "z": fields.get("z", fields.get("Z")),
+        }
+    if value is None:
+        return None
+    if isinstance(value, dict):
+        raw = (
+            value.get("x", value.get("X")),
+            value.get("y", value.get("Y")),
+            value.get("z", value.get("Z")),
+        )
+    elif isinstance(value, (list, tuple)) and len(value) >= 3:
+        raw = (value[0], value[1], value[2])
+    else:
+        return None
+    if any(part is None or part == "" for part in raw):
+        return None
+    try:
+        xyz = (float(raw[0]), float(raw[1]), float(raw[2]))
+    except (TypeError, ValueError):
+        return None
+    if any(n != n for n in xyz):  # NaN
+        return None
+    return xyz
+
+
+def _format_xyz(xyz: tuple[float, float, float]) -> str:
+    return f"({xyz[0]:.1f}, {xyz[1]:.1f}, {xyz[2]:.1f})"
+
+
+def _spawn_transform(
+    pawn: Any,
+    *,
+    index: int,
+    count: int,
+    distance: float,
+    spacing: float,
+    z_offset: float,
+    scale: float,
+    world_xyz: tuple[float, float, float] | None = None,
+) -> Any:
     total = max(1, int(count))
     offset = (float(index) - (float(total) - 1.0) / 2.0) * float(spacing)
+    if world_xyz is not None:
+        x, y, z = world_xyz
+        return _make_struct(
+            "Transform",
+            Rotation=_make_struct("Quat", X=0.0, Y=0.0, Z=0.0, W=1.0),
+            Translation=_make_struct(
+                "Vector",
+                X=float(x + offset),
+                Y=float(y),
+                Z=float(z + z_offset),
+            ),
+            Scale3D=_make_struct("Vector", X=float(scale), Y=float(scale), Z=float(scale)),
+        )
+    loc = pawn.K2_GetActorLocation()
+    fwd = pawn.GetActorForwardVector()
     return _make_struct(
         "Transform",
         Rotation=_make_struct("Quat", X=0.0, Y=0.0, Z=0.0, W=1.0),
@@ -1661,6 +1884,9 @@ def _spawn_from_class(cls: Any, gs: Any, world: Any, transform: Any) -> Any | No
 
 def _oak_spawner_class() -> Any | None:
     """Prefer Class from a live map OakSpawner (ASD's proven template), then find_class."""
+    global _oak_spawner_cls_cache
+    if _oak_spawner_cls_cache is not None:
+        return _oak_spawner_cls_cache
     try:
         objects = unrealsdk.find_all("OakSpawner", False) or []
     except TypeError:
@@ -1675,8 +1901,12 @@ def _oak_spawner_class() -> Any | None:
             continue
         cls = getattr(spawner, "Class", None)
         if cls is not None:
+            _oak_spawner_cls_cache = cls
             return cls
-    return _find_class_by_name("OakSpawner")
+    cls = _find_class_by_name("OakSpawner")
+    if cls is not None:
+        _oak_spawner_cls_cache = cls
+    return cls
 
 
 def _alive_actors_for_comp(comp: Any) -> list[Any]:
@@ -1700,7 +1930,7 @@ def _alive_actors_for_comp(comp: Any) -> list[Any]:
 
 
 def _poll_alive_actors(comp: Any, wanted: str = "") -> list[Any]:
-    """Wait until GetAliveActors is non-empty. Runs on the bridge thread, not a game tick."""
+    """Wait until GetAliveActors is non-empty. Cheap peeks only — no GObject walk."""
     deadline = time.monotonic() + _SPAWNER_POLL_TIMEOUT_S
     while True:
         actors = _alive_actors_for_comp(comp)
@@ -1713,41 +1943,88 @@ def _poll_alive_actors(comp: Any, wanted: str = "") -> list[Any]:
                     return actors
         except Exception:
             pass
-        if wanted:
-            found = find_live_sources(wanted)
-            if found:
-                _log(f"world scan found {wanted!r} while OakSpawner poll waited")
-                return found
         if time.monotonic() >= deadline:
             return []
         time.sleep(_SPAWNER_POLL_INTERVAL_S)
 
 
-def _disable_spawner(spawner: Any) -> None:
+def _seal_spawner(spawner: Any) -> list[str]:
+    """Stop restock without walking owned-actor lists or destroying the pawn.
+
+    Leaving throwaway OakSpawners enabled is what leaked surprise second waves.
+    Flag flips plus SetSpawnerEnabled(False) do not iterate GetAliveActors.
+    """
+    hits: list[str] = []
     if spawner is None:
-        return
+        return hits
+    comp = None
+    try:
+        if bool(getattr(spawner, "bActorIsBeingDestroyed", False)):
+            return hits
+    except Exception:
+        pass
     try:
         comp = spawner.GetSpawnerComponent()
     except Exception:
         comp = None
-    if comp is not None:
-        try:
-            comp.SetSpawnerEnabled(False)
-        except Exception:
-            pass
-    destroy_actor(spawner)
+    targets = [comp, spawner] if comp is not None else [spawner]
+    for obj in targets:
+        if obj is None:
+            continue
+        for fn_name, args in (
+            ("SetSpawnerEnabled", (False,)),
+            ("SetSpawnPointEnabled", (False,)),
+            ("SetActive", (False,)),
+        ):
+            if _call(obj, (fn_name,), *args):
+                hits.append(fn_name)
+        for field in _SPAWNER_SEAL_FIELDS:
+            try:
+                setattr(obj, field, False)
+                hits.append(field)
+            except Exception:
+                continue
+    return hits
+
+
+def _destroy_spawner(spawner: Any) -> bool:
+    """Seal, then destroy the throwaway OakSpawner. Does not walk GetAliveActors."""
+    if spawner is None:
+        return False
+    _seal_spawner(spawner)
+    try:
+        if bool(getattr(spawner, "bActorIsBeingDestroyed", False)):
+            return False
+    except Exception:
+        pass
+    return destroy_actor(spawner)
+
+
+def _forget_spawner(spawner: Any) -> None:
+    global _throwaway_spawners
+    _throwaway_spawners = [item for item in _throwaway_spawners if item is not spawner]
+
+
+def _disable_spawner(spawner: Any) -> None:
+    """Back-compat name: seal and destroy a remembered throwaway spawner."""
+    if spawner is None:
+        return
+    _destroy_spawner(spawner)
+    _forget_spawner(spawner)
 
 
 def _remember_spawner(spawner: Any) -> None:
     global _throwaway_spawners
     if spawner is None:
         return
+    if any(existing is spawner for existing in _throwaway_spawners):
+        return
     _throwaway_spawners.append(spawner)
-    if len(_throwaway_spawners) > 16:
-        extra = _throwaway_spawners[:-16]
-        _throwaway_spawners = _throwaway_spawners[-16:]
+    if len(_throwaway_spawners) > _SPAWNER_MAX:
+        extra = _throwaway_spawners[:-_SPAWNER_MAX]
+        _throwaway_spawners = _throwaway_spawners[-_SPAWNER_MAX:]
         for old in extra:
-            _disable_spawner(old)
+            _seal_spawner(old)
 
 
 def _spawn_from_actor_def(
@@ -1759,9 +2036,12 @@ def _spawn_from_actor_def(
 ) -> Any | None:
     """Proven thin-air path: FGbxDefPtr + throwaway OakSpawner + PushActorDef.
 
-    Success only when GetAliveActors returns a pawn. Does not report an empty
-    queue as ok.
+    Success only when a live pawn exists. Does not report an empty queue as ok.
+    The throwaway spawner is sealed as soon as the pawn is verified so it cannot
+    restock a second wave.
     """
+    global _last_spawned_spawner
+    _last_spawned_spawner = None
     _log(f"oak-spawner PushActorDef for {wanted!r}")
     for extra in extra_loads:
         extra = str(extra or "").strip()
@@ -1787,14 +2067,17 @@ def _spawn_from_actor_def(
     if spawner is None or _is_default(spawner):
         return None
     _remember_spawner(spawner)
+    _last_spawned_spawner = spawner
     try:
         comp = spawner.GetSpawnerComponent()
     except Exception as exc:
         _log(f"GetSpawnerComponent failed: {exc!r}")
+        _seal_spawner(spawner)
         return None
     d = _make_gbx_actor_def_ptr(wanted)
     if d is None:
         _log(f"FGbxDefPtr failed for {wanted!r}")
+        _seal_spawner(spawner)
         return None
     try:
         comp.SetSpawnerEnabled(True)
@@ -1808,6 +2091,7 @@ def _spawn_from_actor_def(
         comp.PushActorDef("MSBT", d, True)
     except Exception as exc:
         _log(f"PushActorDef failed for {wanted!r}: {exc!r}")
+        _seal_spawner(spawner)
         return None
     try:
         comp.ResetSpawner(True)
@@ -1816,77 +2100,479 @@ def _spawn_from_actor_def(
             comp.ResetSpawner()
         except Exception as exc:
             _log(f"ResetSpawner failed: {exc!r}")
+            _seal_spawner(spawner)
             return None
     except Exception as exc:
         _log(f"ResetSpawner failed: {exc!r}")
+        _seal_spawner(spawner)
         return None
     actors = _poll_alive_actors(comp, wanted)
     if not actors:
         actors = find_live_sources(wanted)
+    sealed = _seal_spawner(spawner)
     if not actors:
         _log(f"PushActorDef {wanted!r} produced no alive pawn after {_SPAWNER_POLL_TIMEOUT_S:.1f}s")
         return None
     actor = actors[0]
-    # Leave the throwaway spawner enabled. Disabling it here can despawn the pawn.
-    # despawn_tracked() disables/destroys remembered spawners.
-    _log(f"oak-spawner pawn {_safe_str(actor)[:120]}")
+    _log(
+        f"oak-spawner pawn {_safe_str(actor)[:120]} "
+        f"sealed={','.join(sealed) or 'flags'}"
+    )
     return actor
 
 
-def _remember(actor: Any, *, label: str, source: Any) -> None:
+def _remember(actor: Any, *, label: str, source: Any, spawner: Any = None) -> None:
     global _tracked, _tracked_at
+    if actor is None:
+        return
+    addr = _obj_addr(actor)
+    for row in _tracked:
+        if addr and int(row.get("addr") or 0) == addr:
+            row["actor"] = actor
+            row["name"] = str(getattr(actor, "Name", "") or "") or _safe_str(actor)
+            row["label"] = label
+            row["source"] = _safe_str(source)
+            row["at"] = time.monotonic()
+            if spawner is not None:
+                row["spawner"] = spawner
+            _tracked_at = time.monotonic()
+            return
+        if row.get("actor") is actor:
+            row["addr"] = addr
+            row["at"] = time.monotonic()
+            if spawner is not None:
+                row["spawner"] = spawner
+            _tracked_at = time.monotonic()
+            return
     _tracked.append(
         {
             "actor": actor,
-            "addr": _obj_addr(actor),
+            "addr": addr,
             "name": str(getattr(actor, "Name", "") or "") or _safe_str(actor),
             "label": label,
             "source": _safe_str(source),
+            "spawner": spawner,
             "at": time.monotonic(),
         }
     )
     _tracked_at = time.monotonic()
-    if len(_tracked) > 64:
-        _tracked = _tracked[-64:]
+    if len(_tracked) > _TRACK_MAX:
+        _tracked = _tracked[-_TRACK_MAX:]
 
 
 def _prune_tracked() -> list[dict[str, Any]]:
+    """Drop dead wrappers. Live pawns stay even past TTL so clear can still see them."""
     global _tracked, _tracked_at
-    if _tracked_at and time.monotonic() - _tracked_at > _TRACK_TTL_S:
-        _tracked = []
-        _tracked_at = 0.0
-        return []
+    now = time.monotonic()
     live: list[dict[str, Any]] = []
     for row in _tracked:
         actor = row.get("actor")
-        if actor is None or _is_default(actor):
+        if not is_live_actor(actor):
             continue
-        try:
-            name = str(getattr(actor, "Name", "") or "")
-        except Exception:
-            continue
-        if not name:
-            continue
+        if _tracked_at and now - float(row.get("at") or _tracked_at) > _TRACK_TTL_S:
+            # Stale row, but still alive in-world — keep it for census/clear.
+            row["at"] = now
         live.append(row)
     _tracked = live
+    if live:
+        _tracked_at = now
     return list(_tracked)
 
 
-def tracked_status() -> dict[str, Any]:
-    rows = _prune_tracked()
+def _tracked_addrs() -> set[int]:
+    addrs: set[int] = set()
+    for row in _tracked:
+        try:
+            addr = int(row.get("addr") or 0)
+        except Exception:
+            addr = 0
+        if addr:
+            addrs.add(addr)
+        actor = row.get("actor")
+        live_addr = _obj_addr(actor)
+        if live_addr:
+            addrs.add(live_addr)
+    return addrs
+
+
+def _tracked_labels() -> set[str]:
+    labels: set[str] = set()
+    for row in _tracked:
+        label = str(row.get("label") or "").strip()
+        if label:
+            labels.add(label)
+    return labels
+
+
+def census_live(
+    *,
+    include_hostiles: bool = False,
+    radius: float | None = None,
+) -> dict[str, Any]:
+    """Live actor census of MSBT-spawned pawns (optional nearby hostiles).
+
+    Pattern matches NHA Borderlands4.CT Entitys/AActors: iterate live characters,
+    skip players/defaults/corpses, optionally filter hostility via team at D+0x880.
+    Does not walk OakSpawner.GetAliveActors (that peek on a dying spawner is what
+    crashed hoard and missed delayed pawns).
+    """
+    _prune_tracked()
+    pawn, _anchor = _anchor_pawn()
+    origin = _actor_location(pawn)
+    max_radius = float(radius) if radius and float(radius) > 0 else _CENSUS_RADIUS_DEFAULT
+    max_r2 = max_radius * max_radius
+    known_addrs = _tracked_addrs()
+    known_labels = _tracked_labels()
+    actors: list[Any] = []
+    rows: list[dict[str, Any]] = []
+    seen: set[int] = set()
+
+    def _add(actor: Any, how: str, label: str = "") -> None:
+        if actor is None or not is_live_actor(actor):
+            return
+        key = _obj_addr(actor) or id(actor)
+        if key in seen:
+            return
+        seen.add(key)
+        actors.append(actor)
+        rows.append(
+            {
+                "name": str(getattr(actor, "Name", "") or "") or _safe_str(actor),
+                "addr": _obj_addr(actor),
+                "label": label,
+                "how": how,
+            }
+        )
+
+    for row in list(_tracked):
+        _add(row.get("actor"), "tracked", str(row.get("label") or ""))
+
+    watch_labels = _active_spawn_watch_labels()
+    if watch_labels:
+        for actor in _iter_world_pawns(force=True):
+            if actor is None or _is_player_pawn(actor) or not is_live_actor(actor):
+                continue
+            addr = _obj_addr(actor)
+            if addr and addr in known_addrs:
+                _add(actor, "world_addr")
+                continue
+            matched_label = ""
+            for label in watch_labels:
+                if _matches_wanted(actor, label):
+                    matched_label = label
+                    break
+            if matched_label:
+                _add(actor, "world_label", matched_label)
+
+    if include_hostiles:
+        for actor in _iter_world_pawns():
+            addr = _obj_addr(actor)
+            if addr and addr in known_addrs:
+                _add(actor, "world_addr")
+                continue
+            matched_label = ""
+            for label in known_labels:
+                if _matches_wanted(actor, label):
+                    matched_label = label
+                    break
+            if matched_label:
+                _add(actor, "world_label", matched_label)
+                continue
+            if pawn is None or origin is None:
+                continue
+            loc = _actor_location(actor)
+            if loc is None:
+                continue
+            try:
+                if _distance_sq(origin, loc) > max_r2:
+                    continue
+            except Exception:
+                continue
+            if not _is_hostile_team(actor, pawn):
+                continue
+            _add(actor, "hostile_radius")
+
+    live_spawners = 0
+    for spawner in list(_throwaway_spawners):
+        try:
+            if spawner is None or _is_default(spawner):
+                continue
+            if bool(getattr(spawner, "bActorIsBeingDestroyed", False)):
+                continue
+        except Exception:
+            continue
+        live_spawners += 1
+
+    names = [str(row.get("name") or "") for row in rows]
     return {
         "ok": True,
         "hybrid": True,
-        "tracked": len(rows),
-        "actors": [str(row.get("name") or "") for row in rows],
-        "message": f"ASD hybrid tracking {len(rows)} live clone(s).",
+        "alive": len(actors),
+        "spawners": live_spawners,
+        "actors": actors,
+        "rows": rows,
+        "actor_names": names,
+        "include_hostiles": bool(include_hostiles),
+        "message": (
+            f"Census: {len(actors)} live pawn(s), {live_spawners} throwaway spawner(s)"
+            + (" including nearby hostiles" if include_hostiles else "")
+            + "."
+        ),
+    }
+
+
+def count_alive(*, include_hostiles: bool = False, radius: float | None = None) -> int:
+    """Live pawn count for hoard / status. Tracked list only unless hunting hostiles."""
+    try:
+        if include_hostiles:
+            return int(census_live(include_hostiles=True, radius=radius).get("alive") or 0)
+        _prune_tracked()
+        n = 0
+        for row in list(_tracked):
+            if is_live_actor(row.get("actor")):
+                n += 1
+        return n
+    except Exception:
+        return 0
+
+
+def tracked_status() -> dict[str, Any]:
+    census = census_live()
+    return {
+        "ok": True,
+        "hybrid": True,
+        "tracked": int(census.get("alive") or 0),
+        "alive": int(census.get("alive") or 0),
+        "spawners": int(census.get("spawners") or 0),
+        "actors": list(census.get("actor_names") or []),
+        "message": str(census.get("message") or ""),
+    }
+
+
+def snapshot_world_addrs() -> set[int]:
+    """Addresses of live non-player pawns. Used to see what ASD just added."""
+    addrs: set[int] = set()
+    for actor in _iter_world_pawns(force=True):
+        addr = _obj_addr(actor)
+        if addr:
+            addrs.add(addr)
+    return addrs
+
+
+def _active_spawn_watch_labels() -> set[str]:
+    """Recent ASD_spawnai catalog names still eligible for world reconciliation."""
+    now = time.monotonic()
+    labels: set[str] = set()
+    for label, at in list(_spawn_watch_labels.items()):
+        if now - float(at or 0.0) > _TRACK_TTL_S:
+            _spawn_watch_labels.pop(label, None)
+            continue
+        labels.add(label)
+    for row in _tracked:
+        label = str(row.get("label") or "").strip()
+        if label:
+            labels.add(label)
+    return labels
+
+
+def _collect_spawn_delta_pawns(
+    before: set[int],
+    wanted: str,
+    *,
+    skip_addrs: set[int] | None = None,
+) -> list[Any]:
+    """Live non-player pawns that appeared since ``before`` or match ``wanted``."""
+    skip = set(skip_addrs or ())
+    found: list[Any] = []
+    for actor in _iter_world_pawns(force=True):
+        if actor is None or _is_player_pawn(actor) or not is_live_actor(actor):
+            continue
+        addr = _obj_addr(actor)
+        if addr and addr in skip:
+            continue
+        if before:
+            if not addr or addr in before:
+                continue
+        elif wanted:
+            if not _matches_wanted(actor, wanted):
+                continue
+        else:
+            continue
+        found.append(actor)
+    return found
+
+
+def _reconcile_spawned_labels() -> int:
+    """Refresh tracked rows from recent ASD spawn labels still alive in-world."""
+    labels = _active_spawn_watch_labels()
+    if not labels:
+        return 0
+    refreshed = 0
+    for actor in _iter_world_pawns(force=True):
+        if actor is None or _is_player_pawn(actor) or not is_live_actor(actor):
+            continue
+        matched = ""
+        for label in labels:
+            if _matches_wanted(actor, label):
+                matched = label
+                break
+        if not matched:
+            continue
+        _remember(actor, label=matched, source="asd_spawnai")
+        refreshed += 1
+    return refreshed
+
+
+def note_after_asd_spawn(
+    name: str,
+    *,
+    before_addrs: set[int] | None = None,
+    expected: int = 0,
+) -> dict[str, Any]:
+    """Remember live world pawns after an ASD_spawnai. Does not spawn.
+
+    With a before-snapshot, only new non-player pawns are tracked. Without one,
+    only pawns matching ``name`` are tracked. Never tracks the player.
+
+    ASD_spawnai is non-blocking, so this polls briefly for delayed pawns.
+    """
+    wanted = str(name or "").strip()
+    before = set(before_addrs or ())
+    if wanted:
+        _spawn_watch_labels[wanted] = time.monotonic()
+    noted_addrs: set[int] = set()
+    noted = 0
+    target = max(0, int(expected or 0))
+    deadline = time.monotonic() + _SPAWNER_POLL_TIMEOUT_S
+    while True:
+        for actor in _collect_spawn_delta_pawns(before, wanted, skip_addrs=noted_addrs):
+            addr = _obj_addr(actor)
+            if addr and addr in noted_addrs:
+                continue
+            _remember(actor, label=wanted or _safe_str(actor), source="asd_spawnai")
+            if addr:
+                noted_addrs.add(addr)
+            noted += 1
+        if noted_addrs and (target <= 0 or len(noted_addrs) >= target):
+            break
+        if time.monotonic() >= deadline:
+            break
+        time.sleep(_SPAWNER_POLL_INTERVAL_S)
+    if noted <= 0:
+        noted += _reconcile_spawned_labels()
+    census = census_live()
+    names = list(census.get("actor_names") or [])
+    return {
+        "ok": True,
+        "hybrid": True,
+        "mode": "asd_hybrid_world_note",
+        "noted": noted,
+        "alive": int(census.get("alive") or 0),
+        "actor_names": names,
+        "message": (
+            f"Noted {noted} world pawn(s) after ASD_spawnai {wanted!r} "
+            f"({int(census.get('alive') or 0)} tracked live)."
+        ),
+    }
+
+
+def seal_leftover_throwaways() -> dict[str, Any]:
+    """Disable leftover throwaway OakSpawners. Does not destroy them.
+
+    ASD_spawnai needs a loaded OakSpawner as a Class template. Destroying every
+    throwaway is what left later ASD runs with no template. Sealing stops
+    restock and leaves the Class in-world.
+    """
+    sealed = 0
+    seen: set[int] = set()
+
+    def _seal_one(spawner: Any) -> None:
+        nonlocal sealed
+        if spawner is None:
+            return
+        key = _obj_addr(spawner) or id(spawner)
+        if key in seen:
+            return
+        seen.add(key)
+        hits = _seal_spawner(spawner)
+        if hits:
+            sealed += 1
+
+    for spawner in list(_throwaway_spawners):
+        _seal_one(spawner)
+    try:
+        asd = __import__("ActorScriptDeployer", fromlist=["_CREATED_SPAWNERS"])
+        created = list(getattr(asd, "_CREATED_SPAWNERS", None) or [])
+    except Exception:
+        created = []
+    for spawner in created:
+        _seal_one(spawner)
+    return {
+        "ok": True,
+        "hybrid": True,
+        "sealed": sealed,
+        "message": f"Sealed {sealed} leftover throwaway OakSpawner(s) (left in-world for ASD templates).",
+    }
+
+
+def clear_world(
+    *,
+    include_hostiles: bool = False,
+    radius: float | None = None,
+) -> dict[str, Any]:
+    """Default clear: destroy live tracked pawns, seal leftover throwaways.
+
+    Does not destroy OakSpawner actors. Map/template spawners stay so the next
+    ASD_spawnai can still find_all('OakSpawner') for a Class.
+    """
+    global _tracked, _tracked_at, _spawn_watch_labels
+    _reconcile_spawned_labels()
+    census = census_live(include_hostiles=include_hostiles, radius=radius)
+    destroyed = 0
+    hidden = 0
+    for actor in list(census.get("actors") or []):
+        if destroy_actor(actor):
+            destroyed += 1
+            continue
+        if hide_actor(actor):
+            hidden += 1
+    seal = seal_leftover_throwaways()
+    _tracked = []
+    _tracked_at = 0.0
+    _spawn_watch_labels = {}
+    try:
+        from .spawn_helpers import clear_tracked
+
+        clear_tracked()
+    except Exception:
+        pass
+    leftover_alive = 0
+    for actor in list(census.get("actors") or []):
+        if is_live_actor(actor):
+            leftover_alive += 1
+    sealed = int(seal.get("sealed") or 0)
+    return {
+        "ok": True,
+        "hybrid": True,
+        "despawned": destroyed,
+        "hidden": hidden,
+        "spawners_destroyed": 0,
+        "spawners_sealed": sealed,
+        "alive_count": leftover_alive,
+        "message": (
+            f"Cleared {destroyed} live pawn(s), sealed {sealed} leftover throwaway OakSpawner(s)"
+            + (f", hid {hidden} more" if hidden else "")
+            + (f", {leftover_alive} still alive" if leftover_alive else "")
+            + "."
+        ),
     }
 
 
 def hide_tracked() -> dict[str, Any]:
     hidden = 0
-    for row in _prune_tracked():
-        if hide_actor(row.get("actor")):
+    census = census_live()
+    for actor in list(census.get("actors") or []):
+        if hide_actor(actor):
             hidden += 1
     return {
         "ok": True,
@@ -1896,23 +2582,28 @@ def hide_tracked() -> dict[str, Any]:
     }
 
 
-def despawn_tracked() -> dict[str, Any]:
-    """Destroy clones we spawned. World templates stay put."""
+def despawn_tracked(
+    *,
+    include_hostiles: bool = False,
+    radius: float | None = None,
+) -> dict[str, Any]:
+    """True clear: census live pawns, destroy them, then seal+destroy throwaway spawners."""
     global _tracked, _tracked_at, _throwaway_spawners
-    rows = _prune_tracked()
+    census = census_live(include_hostiles=include_hostiles, radius=radius)
     destroyed = 0
     hidden = 0
-    for row in rows:
-        actor = row.get("actor")
+    for actor in list(census.get("actors") or []):
         if destroy_actor(actor):
             destroyed += 1
             continue
         if hide_actor(actor):
             hidden += 1
+    spawners_destroyed = 0
+    for spawner in list(_throwaway_spawners):
+        if _destroy_spawner(spawner):
+            spawners_destroyed += 1
     _tracked = []
     _tracked_at = 0.0
-    for spawner in list(_throwaway_spawners):
-        _disable_spawner(spawner)
     _throwaway_spawners = []
     try:
         from .spawn_helpers import clear_tracked
@@ -1920,14 +2611,23 @@ def despawn_tracked() -> dict[str, Any]:
         clear_tracked()
     except Exception:
         pass
+    leftover_alive = 0
+    for actor in list(census.get("actors") or []):
+        if is_live_actor(actor):
+            leftover_alive += 1
     return {
         "ok": True,
         "hybrid": True,
         "despawned": destroyed,
         "hidden": hidden,
-        "message": f"Despawned {destroyed} ASD hybrid clone(s)"
-        + (f", hid {hidden} more" if hidden else "")
-        + ".",
+        "spawners_destroyed": spawners_destroyed,
+        "alive_count": leftover_alive,
+        "message": (
+            f"Despawned {destroyed} live pawn(s), destroyed {spawners_destroyed} throwaway OakSpawner(s)"
+            + (f", hid {hidden} more" if hidden else "")
+            + (f", {leftover_alive} still alive" if leftover_alive else "")
+            + "."
+        ),
     }
 
 
@@ -1941,16 +2641,20 @@ def spawn_live(
     z_offset: float = 0.0,
     extra_loads: tuple[str, ...] | list[str] = (),
     hints: dict[str, Any] | None = None,
+    world_xyz: Any = None,
+    xyz: Any = None,
 ) -> dict[str, Any]:
-    """Spawn a catalog actor in front of the spawn anchor.
+    """Spawn a catalog actor at world_xyz, or in front of the spawn anchor.
 
-    Clone a live match when one exists. Else deferred-spawn from a UClass.
-    If no UClass can be resolved, use the proven FGbxDefPtr + throwaway
-    OakSpawner + PushActorDef path and wait until GetAliveActors is non-empty.
+    `world_xyz` / `xyz` accept (x,y,z), [x,y,z], or {x,y,z}. When set, pawn-forward
+    is ignored. Clone a live match when one exists. Else deferred-spawn from a
+    UClass. If no UClass can be resolved, use FGbxDefPtr + throwaway OakSpawner
+    + PushActorDef and wait until GetAliveActors is non-empty.
     """
     wanted = str(name or "").strip()
     requested = max(1, int(count))
     extra = tuple(str(p).strip() for p in (extra_loads or ()) if str(p).strip())
+    placed_xyz = parse_world_xyz(world_xyz) or parse_world_xyz(xyz)
     result: dict[str, Any] = {
         "ok": False,
         "hybrid": True,
@@ -1962,6 +2666,7 @@ def spawn_live(
         "alive_count": 0,
         "actor_names": [],
         "source_path": "",
+        "world_xyz": list(placed_xyz) if placed_xyz else None,
         "combat": [],
         "message": "",
     }
@@ -1970,7 +2675,10 @@ def spawn_live(
         result["verification_status"] = "no_name"
         return result
 
-    _log(f"spawn_live {wanted!r} count={requested}")
+    _log(
+        f"spawn_live {wanted!r} count={requested}"
+        + (f" xyz={_format_xyz(placed_xyz)}" if placed_xyz else "")
+    )
     pawn, anchor_label = _anchor_pawn()
     pc = get_pc()
     world = _world_from_pc(pc)
@@ -1991,6 +2699,7 @@ def spawn_live(
     names: list[str] = []
     combat_hits: list[str] = []
     mode_label = "cloned"
+    spawners_before = len(_throwaway_spawners)
     result["source_path"] = _safe_str(source) if source is not None else ""
     for idx in range(requested):
         try:
@@ -2002,12 +2711,14 @@ def spawn_live(
                 spacing=float(spacing),
                 z_offset=float(z_offset),
                 scale=float(scale),
+                world_xyz=placed_xyz,
             )
         except Exception as exc:
             result["message"] = f"ASD hybrid spawn transform failed: {exc!r}"
             result["verification_status"] = "clone_failed"
             return result
         actor = None
+        used_spawner = None
         if source is not None:
             actor = _clone_live(source, gs, world, transform)
             mode_label = "cloned"
@@ -2022,6 +2733,7 @@ def spawn_live(
             if actor is not None:
                 mode_label = "oak-spawner"
                 result["source_path"] = f"PushActorDef:{wanted}"
+                used_spawner = _last_spawned_spawner
         if actor is None:
             continue
         place_actor(actor, transform, pawn)
@@ -2044,7 +2756,12 @@ def spawn_live(
                 )
             except Exception:
                 pass
-        _remember(actor, label=wanted, source=source if source is not None else spawn_cls or wanted)
+        _remember(
+            actor,
+            label=wanted,
+            source=source if source is not None else spawn_cls or wanted,
+            spawner=used_spawner,
+        )
         spawned.append(actor)
         names.append(str(getattr(actor, "Name", "") or "") or _safe_str(actor))
 
@@ -2062,6 +2779,7 @@ def spawn_live(
                     spacing=float(spacing),
                     z_offset=float(z_offset),
                     scale=float(scale),
+                    world_xyz=placed_xyz,
                 )
             except Exception:
                 transform = None
@@ -2071,13 +2789,28 @@ def spawn_live(
             combat_hits.extend(
                 arm_combat(actor, actor, pawn, gs, world, transform, wanted=wanted)
             )
-            _remember(actor, label=wanted, source=wanted)
+            for spawner in list(_throwaway_spawners[spawners_before:]):
+                _seal_spawner(spawner)
+            _remember(
+                actor,
+                label=wanted,
+                source=wanted,
+                spawner=_last_spawned_spawner,
+            )
             spawned.append(actor)
             names.append(str(getattr(actor, "Name", "") or "") or _safe_str(actor))
             mode_label = "oak-spawner"
             result["source_path"] = f"delayed:{wanted}"
 
+    spawned = [actor for actor in spawned if is_live_actor(actor)]
+    names = [
+        str(getattr(actor, "Name", "") or "") or _safe_str(actor) for actor in spawned
+    ]
+
     if not spawned:
+        for spawner in list(_throwaway_spawners[spawners_before:]):
+            _destroy_spawner(spawner)
+            _forget_spawner(spawner)
         result["verification_status"] = "no_pawn"
         result["message"] = (
             f"No live {wanted} pawn after clone/class/OakSpawner+PushActorDef "
@@ -2090,13 +2823,14 @@ def spawn_live(
     if attack_msg:
         combat_hits.append(attack_msg)
 
+    live_count = count_alive()
     result.update(
         {
             "ok": True,
             "verification_status": "verified_spawned",
             "spawn_verified": True,
             "spawned_count": len(spawned),
-            "alive_count": len(spawned),
+            "alive_count": live_count,
             "actor_names": names,
             "combat": combat_hits,
             "mode": (
@@ -2108,8 +2842,14 @@ def spawn_live(
             ),
             "message": (
                 f"ASD hybrid {mode_label} {len(spawned)} {wanted} "
-                f"at {anchor_label} from {result['source_path'][:80]}"
+                + (
+                    f"at {_format_xyz(placed_xyz)}"
+                    if placed_xyz
+                    else f"at {anchor_label}"
+                )
+                + f" from {result['source_path'][:80]}"
                 + (f" combat={','.join(combat_hits)}" if combat_hits else "")
+                + f" census={live_count}"
                 + "."
             ),
         }

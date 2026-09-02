@@ -59,7 +59,11 @@ def set_needed(name: str, needed: bool) -> None:
     key = str(name or "unnamed")
     if needed:
         _needed.add(key)
-        if key.startswith("quick_menu") or not travel_gate.is_travel_quiet():
+        if (
+            key.startswith("quick_menu")
+            or key == "party_reveal"
+            or not travel_gate.is_travel_quiet()
+        ):
             _ensure_hook()
         return
     _needed.discard(key)
@@ -113,7 +117,7 @@ def _pump(_obj: Any, _args: Any, _ret: Any, _func: Any) -> None:
     try:
         quiet = travel_gate.is_travel_quiet()
         for _prio, _name, fn in _callbacks:
-            if quiet and not _name.startswith("quick_menu"):
+            if quiet and not _name.startswith("quick_menu") and _name != "party_reveal":
                 continue
             try:
                 fn(_obj, _args, _ret, _func)

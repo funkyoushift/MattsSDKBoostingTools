@@ -159,6 +159,7 @@ def _load_backend_actions():
         "MattsSDKBoostingTools.no_fog_of_war": {},
         "MattsSDKBoostingTools.fod_reveal": {},
         "MattsSDKBoostingTools.fod_party_reveal": {},
+        "MattsSDKBoostingTools.fod_guest_grid": {},
         "MattsSDKBoostingTools.asd_hybrid": {
             "spawn_live": lambda *a, **k: {
                 "ok": False,
@@ -166,9 +167,15 @@ def _load_backend_actions():
                 "message": "stub",
                 "verification_status": "no_live_source",
             },
-            "despawn_tracked": lambda: {"ok": True, "hybrid": True, "despawned": 0, "message": "stub"},
-            "hide_tracked": lambda: {"ok": True, "hybrid": True, "hidden": 0, "message": "stub"},
-            "tracked_status": lambda: {"ok": True, "hybrid": True, "tracked": 0, "message": "stub"},
+            "despawn_tracked": lambda *a, **k: {"ok": True, "hybrid": True, "despawned": 0, "message": "stub"},
+            "clear_world": lambda *a, **k: {"ok": True, "hybrid": True, "despawned": 0, "spawners_sealed": 0, "alive_count": 0, "message": "stub"},
+            "hide_tracked": lambda *a, **k: {"ok": True, "hybrid": True, "hidden": 0, "message": "stub"},
+            "tracked_status": lambda *a, **k: {"ok": True, "hybrid": True, "tracked": 0, "message": "stub"},
+            "census_live": lambda *a, **k: {"ok": True, "alive": 0, "spawners": 0, "actors": [], "actor_names": [], "message": "stub"},
+            "count_alive": lambda *a, **k: 0,
+            "parse_world_xyz": lambda *a, **k: None,
+            "snapshot_world_addrs": lambda: set(),
+            "note_after_asd_spawn": lambda *a, **k: {"noted": 0, "alive": 0, "actor_names": [], "message": "stub"},
         },
         "MattsSDKBoostingTools.third_person_camera": {
             "get_status_dict": lambda: {"enabled": False, "hooks": False, "source": "msbt"},
