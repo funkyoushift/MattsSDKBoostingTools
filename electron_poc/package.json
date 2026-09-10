@@ -14,7 +14,8 @@
     "test:game-update": "node test_game_update_parameters.js && node test_catalog_game_build.js && node test_character_challenge_update.js",
     "test:oak2": "node test_oak2_install.js",
     "pack": "electron-builder --dir --publish never",
-    "dist:win": "electron-builder --win nsis --publish never"
+    "dist:win": "electron-builder --win nsis --publish never",
+    "test:editor-update": "node test_editor_browser_assets.js && node test_editor_native_lookups.js && node test_editor_save_update.js && node test_editor_page_update.js"
   },
   "build": {
     "appId": "com.funkyoushift.msbt",

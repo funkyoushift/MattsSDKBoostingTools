@@ -265,6 +265,13 @@
                             return specExp ? specExp.level : null;
                         }
                         return null;
+                    case 'characterXp':
+                    case 'specializationXp': {
+                        const type = fieldType === 'characterXp' ? 'Character' : 'Specialization';
+                        const entries = data.state && data.state.experience;
+                        const exp = Array.isArray(entries) ? entries.find(e => e.type === type) : null;
+                        return exp && exp.points != null ? exp.points : null;
+                    }
                     case 'cash':
                         return (data.state && data.state.currencies && data.state.currencies.cash) || null;
                     case 'eridium':
@@ -305,6 +312,8 @@
             const inputIds = [
                 'preset-input-character-level',
                 'preset-input-specialization-level',
+                'preset-input-character-xp',
+                'preset-input-specialization-xp',
                 'preset-input-cash',
                 'preset-input-eridium',
                 'preset-input-ammo-assaultrifle',
@@ -349,6 +358,8 @@
             const inputIds = [
                 'preset-input-character-level',
                 'preset-input-specialization-level',
+                'preset-input-character-xp',
+                'preset-input-specialization-xp',
                 'preset-input-cash',
                 'preset-input-eridium',
                 'preset-input-ammo-assaultrifle',
@@ -408,6 +419,12 @@
                 if (val !== null) specLevelInput.value = val;
             }
             
+            // Explicit XP point values
+            for (const [id, field] of [['character', 'characterXp'], ['specialization', 'specializationXp']]) {
+                const input = document.getElementById(`preset-input-${id}-xp`);
+                if (input) input.value = getCurrentValue(field) ?? '';
+            }
+
             // Cash
             const cashInput = document.getElementById('preset-input-cash');
             if (cashInput) {
@@ -535,7 +552,7 @@
             specLevelInput.id = 'preset-input-specialization-level';
             specLevelInput.name = 'preset-input-specialization-level';
             specLevelInput.min = '1';
-            specLevelInput.max = '701';
+            specLevelInput.max = String(PRESET_SPECIALIZATION_MAX_LEVEL);
             specLevelInput.style.padding = '4px 8px';
             specLevelInput.style.background = 'rgba(0, 0, 0, 0.3)';
             specLevelInput.style.border = '1px solid rgba(79, 195, 247, 0.4)';
@@ -552,9 +569,9 @@
                 const level = parseInt(this.value, 10);
                 this.style.borderColor = 'rgba(79, 195, 247, 0.4)';
                 if (this.value === '' || isNaN(level)) return;
-                if (level < 1 || level > 701) {
+                if (level < 1 || level > PRESET_SPECIALIZATION_MAX_LEVEL) {
                     this.style.borderColor = 'rgba(244, 67, 54, 0.8)';
-                    showSaveStatus('save-preset-status', `❌ Specialization level must be between 1 and 701.`, false);
+                    showSaveStatus('save-preset-status', `❌ Specialization level must be between 1 and ${PRESET_SPECIALIZATION_MAX_LEVEL}.`, false);
                     return;
                 }
                 specLevelTimeout = setTimeout(() => setSpecializationLevel(level), 500);
@@ -563,6 +580,36 @@
             specLevelContainer.appendChild(specLevelLabel);
             specLevelContainer.appendChild(specLevelInput);
             editValuesContainer.appendChild(specLevelContainer);
+
+            const xpHelp = document.createElement('p');
+            xpHelp.textContent = 'Changing a level preserves saved XP points. Edit XP separately below; exact level thresholds have not been verified.';
+            xpHelp.style.cssText = 'margin:4px 0;color:#81d4fa;font-size:0.85em;';
+            editValuesContainer.appendChild(xpHelp);
+            for (const [id, type, field] of [['character', 'Character', 'characterXp'], ['specialization', 'Specialization', 'specializationXp']]) {
+                const row = document.createElement('div');
+                row.style.cssText = 'display:flex;align-items:center;gap:8px;';
+                const label = document.createElement('label');
+                label.htmlFor = `preset-input-${id}-xp`;
+                label.textContent = `${type} XP Points:`;
+                label.style.cssText = 'color:#81d4fa;font-size:0.85em;min-width:140px;';
+                const input = document.createElement('input');
+                input.id = label.htmlFor;
+                input.name = input.id;
+                input.type = 'number';
+                input.min = '0';
+                input.max = String(Number.MAX_SAFE_INTEGER);
+                input.step = '1';
+                input.value = getCurrentValue(field) ?? '';
+                input.title = 'Saved exactly as entered; changing XP does not change the level.';
+                input.style.cssText = 'padding:4px 8px;background:rgba(0,0,0,0.3);border:1px solid rgba(79,195,247,0.4);border-radius:3px;color:#fff;font-size:0.85em;width:160px;';
+                input.addEventListener('change', function () {
+                    if (window.presetControlsLocked || this.value === '') return;
+                    setExperiencePoints(type, Number(this.value));
+                });
+                row.appendChild(label);
+                row.appendChild(input);
+                editValuesContainer.appendChild(row);
+            }
 
             // UVHM Highest Unlocked Level input
             const uvhmHighestContainer = document.createElement('div');
@@ -1047,108 +1094,56 @@
         const PRESET_CHARACTER_MAX_LEVEL = 70;
         /** Gear level cap after the September 10, 2026 game update. */
         const ITEM_MAX_LEVEL = 70;
+        const PRESET_SPECIALIZATION_MAX_LEVEL = 701;
         /** Max UVHM level for Edit Values dropdowns and unlockPostgame. */
         const PRESET_UVHM_MAX_LEVEL = 7;
         /** Max Mayhem level for Edit Values dropdowns (Table_Difficulty_Mayhem goes to Mayhem20). */
         const PRESET_MAYHEM_MAX_LEVEL = 20;
 
         /**
-         * Calculates total XP required to reach a specific character level.
-         * Uses hardcoded values for levels 1-10 and a curve-fitted cubic polynomial for 11+.
-         * Based on reference implementation from bl4-save-tools.
+         * Level and XP are separate save fields. Native xp_progression data gives
+         * exponential parameters, but not the engine evaluator's rounding and
+         * accumulation rules. Preserve saved XP rather than apply fitted curves.
          */
-        function calculateCharacterXp(level) {
-            // Hardcoded total XP for levels 1-10
-            const hardcoded = [0, 857, 1740, 3349, 5875, 9496, 14385, 20707, 28625, 38297];
-            if (level > 0 && level <= 10) {
-                return hardcoded[level - 1];
+        function setExperiencePoints(type, points) {
+            if (!['Character', 'Specialization'].includes(type) || !Number.isSafeInteger(points) || points < 0) {
+                showSaveStatus('save-preset-status', '❌ XP points must be a non-negative whole number within the editor\'s exact integer range.', false);
+                return;
             }
-
-            const base =
-                20.43597 * Math.pow(level, 3) +
-                445.42202 * Math.pow(level, 2) +
-                -5301.02934 * level +
-                27953.516161;
-            // Safety margin: 1.8%
-            return Math.round(base * 1.018);
-        }
-
-        /**
-         * Calculates total XP required to reach a specific specialization level.
-         * Uses segmented curve fitting with different polynomials for different level ranges.
-         * Based on reference implementation from bl4-save-tools.
-         */
-        function calculateSpecializationXp(level) {
-            // Hardcoded total XP for levels 1-10
-            const hardcoded = [
-                0, // Level 1
-                1143, // Level 2
-                2320, // Level 3
-                4466, // Level 4
-                7834, // Level 5
-                12662, // Level 6
-                19180, // Level 7
-                27609, // Level 8
-                38167, // Level 9
-                51062, // Level 10
-            ];
-            if (level > 0 && level <= 10) {
-                return hardcoded[level - 1];
+            const data = getYamlDataFromTextarea();
+            const experience = data && typeof data === 'object' && data.state && data.state.experience;
+            if (!Array.isArray(experience)) {
+                showSaveStatus('save-preset-status', '⚠️ Invalid save file structure: missing experience array.', false);
+                return;
             }
-
-            // Segment 1: levels 11–31
-            if (level >= 11 && level <= 31) {
-                const base =
-                    83.390778 * Math.pow(level, 3) +
-                    -2314.676389 * Math.pow(level, 2) +
-                    41061.771085 * level +
-                    -216525.913214;
-                // Safety margin: 1.8%
-                return Math.round(base * 1.018);
+            let entry = experience.find(exp => exp.type === type);
+            if (!entry) {
+                if (type === 'Character') {
+                    showSaveStatus('save-preset-status', '⚠️ Character experience entry not found in save data.', false);
+                    return;
+                }
+                entry = { type: type, level: 1, points: 0 };
+                experience.push(entry);
             }
-
-            // Segment 2: levels 32–200
-            if (level >= 32 && level <= 200) {
-                const base =
-                    20.903278 * Math.pow(level, 3) +
-                    1701.31766 * Math.pow(level, 2) +
-                    -74334.753724 * level +
-                    1403361.683375;
-                // Safety margin: 2.6%
-                return Math.round(base * 1.026);
-            }
-
-            // Segment 3: levels 201–499
-            if (level >= 201 && level <= 499) {
-                const base =
-                    16.708444 * Math.pow(level, 3) +
-                    4297.272805 * Math.pow(level, 2) +
-                    -645890.804295 * level +
-                    46158303.367444;
-                // Safety margin: 0.01%
-                return Math.round(base * 1.0001);
-            }
-
-            // Segment 4: levels 500+
-            if (level >= 500) {
-                const base =
-                    14.960904 * Math.pow(level, 3) +
-                    6708.446543 * Math.pow(level, 2) +
-                    -1773218.961259 * level +
-                    224787945.740717;
-                // Safety margin: 0.001%
-                return Math.round(base * 1.00001);
-            }
-
-            return 0;
+            entry.points = points;
+            setYamlDataToTextarea(data, {
+                showChanges: true,
+                searchText: `type: ${type}`,
+                message: `Updating ${type.toLowerCase()} XP points…`,
+                successMessage: `✅ ${type} XP points saved exactly as entered. Level preserved.`
+            });
         }
 
         /**
          * Sets the character level to a specified value.
-         * Also calculates and updates experience points accordingly.
+         * Preserves the XP points field; it can be edited separately.
          * @param {number} level - The target character level
          */
         function setCharacterLevel(level) {
+            if (!Number.isInteger(level) || level < 1 || level > PRESET_CHARACTER_MAX_LEVEL) {
+                showSaveStatus('save-preset-status', `❌ Character level must be between 1 and ${PRESET_CHARACTER_MAX_LEVEL}.`, false);
+                return;
+            }
             const data = getYamlDataFromTextarea();
             if (!data || typeof data === 'string') {
                 if (DEBUG) console.warn('[Preset] setCharacterLevel: This preset requires YAML parsing. Please ensure js-yaml is loaded.');
@@ -1176,10 +1171,7 @@
             }
 
             const oldLevel = data.state.experience[idx].level || 1;
-            const xp = calculateCharacterXp(level);
-
             data.state.experience[idx].level = level;
-            data.state.experience[idx].points = xp;
 
             if (!data.progression) data.progression = {};
             if (!data.progression.point_pools) data.progression.point_pools = {};
@@ -1195,10 +1187,10 @@
                 searchText: searchText,
                 fallbackSearchText: fallbackSearchText,
                 message: `Updating character level from ${oldLevel} to ${level}...`,
-                successMessage: `✅ Character level updated from ${oldLevel} to ${level} (XP: ${xp.toLocaleString()})`
+                successMessage: `✅ Character level updated from ${oldLevel} to ${level}. XP points preserved; edit them separately if needed.`
             });
             
-            if (DEBUG) console.debug(`[Preset] setCharacterLevel: Set character level from ${oldLevel} to ${level} (XP: ${xp})`);
+            if (DEBUG) console.debug(`[Preset] setCharacterLevel: Set level from ${oldLevel} to ${level}; XP points preserved.`);
         }
 
         /**
@@ -1306,12 +1298,12 @@
                 }
             }
 
-            const levelInput = prompt(`Enter specialization level (1-701):\n\nCurrent level: ${currentLevel}`, currentLevel);
+            const levelInput = prompt(`Enter specialization level (1-${PRESET_SPECIALIZATION_MAX_LEVEL}):\n\nCurrent level: ${currentLevel}`, currentLevel);
             if (levelInput === null) return; // User cancelled
 
             const level = parseInt(levelInput, 10);
-            if (isNaN(level) || level < 1 || level > 701) {
-                showSaveStatus('save-preset-status', '❌ Invalid level. Please enter a number between 1 and 701.', false);
+            if (isNaN(level) || level < 1 || level > PRESET_SPECIALIZATION_MAX_LEVEL) {
+                showSaveStatus('save-preset-status', `❌ Invalid level. Please enter a number between 1 and ${PRESET_SPECIALIZATION_MAX_LEVEL}.`, false);
                 return;
             }
 
@@ -1840,6 +1832,10 @@
          * Sets the specialization level to a specified value.
          */
         function setSpecializationLevel(level) {
+            if (!Number.isInteger(level) || level < 1 || level > PRESET_SPECIALIZATION_MAX_LEVEL) {
+                showSaveStatus('save-preset-status', `❌ Specialization level must be between 1 and ${PRESET_SPECIALIZATION_MAX_LEVEL}.`, false);
+                return;
+            }
             const data = getYamlDataFromTextarea();
             if (!data || typeof data === 'string') {
                 if (DEBUG) console.warn('[Preset] setSpecializationLevel: This preset requires YAML parsing.');
@@ -1860,15 +1856,13 @@
             }
             
             let specExp = data.state.experience.find((exp) => exp.type === 'Specialization');
+            const addedExperience = !specExp;
             const oldLevel = specExp ? (specExp.level || 1) : 1;
-            const xp = calculateSpecializationXp(level);
-
             if (!specExp) {
-                specExp = { type: 'Specialization', level: level, points: xp };
+                specExp = { type: 'Specialization', level: level, points: 0 };
                 data.state.experience.push(specExp);
             } else {
                 specExp.level = level;
-                specExp.points = xp;
             }
 
             // Update specialization token pool if needed
@@ -1882,10 +1876,10 @@
                 searchText: `level: ${level}`,
                 fallbackSearchText: 'type: Specialization',
                 message: `Updating specialization level from ${oldLevel} to ${level}...`,
-                successMessage: `✅ Specialization level updated from ${oldLevel} to ${level} (XP: ${xp.toLocaleString()})`
+                successMessage: `✅ Specialization level updated from ${oldLevel} to ${level}. XP points ${addedExperience ? 'initialized to 0' : 'preserved'}; edit them separately if needed.`
             });
             
-            if (DEBUG) console.debug(`[Preset] setSpecializationLevel: Set specialization level from ${oldLevel} to ${level} (XP: ${xp})`);
+            if (DEBUG) console.debug(`[Preset] setSpecializationLevel: Set level from ${oldLevel} to ${level}; XP points preserved.`);
         }
 
         /**
@@ -2041,13 +2035,12 @@
             let found = false;
             for (const exp of data.state.experience) {
                 if (exp.type === 'Specialization') {
-                    exp.level = 701;
-                    exp.points = 7431910510;
+                    exp.level = PRESET_SPECIALIZATION_MAX_LEVEL;
                     found = true;
                 }
             }
             if (!found) {
-                data.state.experience.push({ type: 'Specialization', level: 701, points: 7431910510 });
+                data.state.experience.push({ type: 'Specialization', level: PRESET_SPECIALIZATION_MAX_LEVEL, points: 0 });
             }
 
             if (!data.progression) data.progression = {};
@@ -2107,7 +2100,7 @@
                 searchText: 'ProgressGraph_Specializations',
                 fallbackSearchText: 'type: Specialization',
                 message: 'Unlocking all specializations and maxing them out...',
-                successMessage: '✅ All specializations unlocked and maxed out!'
+                successMessage: '✅ All specializations unlocked and maxed out. Existing XP points preserved; edit XP separately if needed.'
             });
 
             if (DEBUG) console.debug('[Preset] unlockAllSpecialization: All specializations unlocked');
@@ -3717,12 +3710,57 @@
                 s === 'missionset_main_cowbell_unlock' ||
                 s === 'missionset_side_cowbell' ||
                 s === 'missionset_micro_cowbell' ||
+                s === 'missionset_zoneactivity_dlc1_bunker' ||
+                s === 'missionset_zoneactivity_dlc1_fuelsiphon' ||
                 s === 'missionset_cowbell_activity_speakeasyportal'
             ) {
                 return true;
             }
             if (s.startsWith('missionset_dlc_') && s.indexOf('banjo') !== -1) return true;
             return s.indexOf('cowbell') !== -1;
+        }
+
+        /** DLC tokens and regions verified in bundled missionset/game_region/Resident tables. */
+        function missionSetDlcLocation(key) {
+            const s = String(key || '').toLowerCase();
+            if (!s.startsWith('missionset_')) return '';
+            if (missionSetKeyIsCowbellDlcContent(s)) return 'Cowbell';
+            if (/(?:^|_)harmonica(?:\d|_|$)/.test(s) || s === 'missionset_dlc2_npcmoments') return 'Providence';
+            if (s === 'missionset_dlc_viola') return 'Bounty Pack 5: Amara and the Vile Shadows';
+
+            // Use native mission regions when a set does not include the DLC name.
+            const manifest = typeof window !== 'undefined' && window.NEXUS_MISSION_MANIFEST;
+            const set = manifest && (manifest[key] || manifest[s]);
+            const missions = set && set.missions;
+            for (const mission of Object.values(missions || {})) {
+                const region = String(mission && mission.worldregion || '').replace(/^[^']*'/, '').replace(/'$/, '').toLowerCase();
+                if (region === 'harmonica' || region.startsWith('harmonica_')) return 'Providence';
+                if (region === 'viola' || region.startsWith('viola_')) return 'Bounty Pack 5: Amara and the Vile Shadows';
+            }
+            return '';
+        }
+
+        function missionSetKeyIsDlcContent(key) {
+            return String(key || '').toLowerCase().startsWith('missionset_dlc_') || Boolean(missionSetDlcLocation(key));
+        }
+
+        function missionSetGroupAndLocation(key) {
+            const s = String(key || '').toLowerCase();
+            const dlcLocation = missionSetDlcLocation(key);
+            if (dlcLocation) return { groupName: 'DLC Missions', location: dlcLocation };
+            const types = [
+                ['main', 'Main Missions'], ['side', 'Side Missions'], ['dlc', 'DLC Missions'],
+                ['micro', 'Micro Missions'], ['vault', 'Vault Missions'], ['zoneactivity', 'Zone Activity Missions']
+            ];
+            for (const [type, groupName] of types) {
+                const prefix = `missionset_${type}_`;
+                if (!s.startsWith(prefix)) continue;
+                const rest = s.slice(prefix.length);
+                if (type === 'zoneactivity') return { groupName, location: rest.charAt(0).toUpperCase() + rest.slice(1) };
+                const region = ['city', 'grasslands', 'mountains', 'shatteredlands', 'elpis'].find(value => rest.startsWith(value));
+                return { groupName, location: region ? region.charAt(0).toUpperCase() + region.slice(1) : 'Other' };
+            }
+            return { groupName: 'Other Missions', location: 'Other' };
         }
 
         function applyCowbellSpeakeasyPortalOpenworldStats(data) {
@@ -4087,6 +4125,8 @@
             const z = String(zoneId || '').toLowerCase();
             const keys = Array.isArray(allSetKeys) ? allSetKeys : [];
             return keys.filter((k) => {
+                if (z === 'harmonica' || z === 'providence') return missionSetDlcLocation(k) === 'Providence';
+                if (z === 'viola' || z === 'bp5') return missionSetDlcLocation(k) === 'Bounty Pack 5: Amara and the Vile Shadows';
                 const isMainSide = k.startsWith('missionset_main_') || k.startsWith('missionset_side_');
                 if (!isMainSide) return false;
                 const rest = k.replace(/^missionset_main_/, '').replace(/^missionset_side_/, '');
@@ -4557,14 +4597,9 @@
             }
             augmentMissionTemplatesWithNexusStubs(missionData);
             data = getYamlDataFromTextarea();
-            const mergedDlcKeys = mergeMissionsetsWithPrefix(data, 'missionset_dlc_', missionData);
-            const cowbellKeysFromTemplates = Object.keys(missionData).filter(missionSetKeyIsCowbellDlcContent);
-            let mergedCowbellSets = false;
-            if (cowbellKeysFromTemplates.length) {
-                mergeMissionsetsByKeyList(data, cowbellKeysFromTemplates, missionData);
-                mergedCowbellSets = true;
-            }
-            if (mergedSetKeysTouchCowbellOpenworld(mergedDlcKeys) || mergedCowbellSets) {
+            const mergedDlcKeys = Object.keys(missionData).filter(missionSetKeyIsDlcContent);
+            mergeMissionsetsByKeyList(data, mergedDlcKeys, missionData);
+            if (mergedSetKeysTouchCowbellOpenworld(mergedDlcKeys)) {
                 applyCowbellSpeakeasyPortalOpenworldStats(data);
             }
             applyNexusRememberedFinalsToLocalSets(data);
@@ -4619,7 +4654,7 @@
             if (pick.length === 0) {
                 showSaveStatus(
                     'save-preset-status',
-                    '⚠️ No main/side missionsets matched this zone in templates.',
+                    '⚠️ No mission sets matched this zone in templates.',
                     false
                 );
                 return;
@@ -4638,7 +4673,7 @@
 
         function resetDlcMissionsBulk() {
             return resetLocalSetsMatching(
-                (k) => k.startsWith('missionset_dlc_') || missionSetKeyIsCowbellDlcContent(k),
+                missionSetKeyIsDlcContent,
                 {
                     showChanges: true,
                     searchText: 'missions',
@@ -4669,7 +4704,7 @@
             if (zoneSet.size === 0) {
                 showSaveStatus(
                     'save-preset-status',
-                    '⚠️ No main/side mission sets in save matched this zone.',
+                    '⚠️ No mission sets in save matched this zone.',
                     false
                 );
                 return 0;
@@ -5981,7 +6016,7 @@
                 if (typeof setCharacterToMaxLevel === 'function') setCharacterToMaxLevel();
 
                 if (DEBUG) console.debug('[Preset] unlockMaxEverything: Successfully applied all presets');
-                showSaveStatus('save-preset-status', '✅ Unlock / Max Everything applied!', true);
+                showSaveStatus('save-preset-status', '✅ Unlock / Max Everything applied. Existing XP points preserved; edit XP separately if needed.', true);
             } catch (e) {
                 if (DEBUG) console.error('[Preset] unlockMaxEverything failed:', e);
                 showSaveStatus('save-preset-status', '❌ Failed to apply Unlock / Max Everything: ' + e.message, false);
@@ -13101,67 +13136,9 @@
             /** @type {Object.<string, { groupName: string, location: string }>} */
             const setKeyToGroupLoc = Object.create(null);
             
-            // Helper function to get location from missionset key
-            function getLocation(missionSetKey, prefix) {
-                const afterPrefix = missionSetKey.substring(prefix.length);
-                if (afterPrefix.startsWith('city')) return 'City';
-                if (afterPrefix.startsWith('grasslands')) return 'Grasslands';
-                if (afterPrefix.startsWith('mountains')) return 'Mountains';
-                if (afterPrefix.startsWith('shatteredlands')) return 'Shatteredlands';
-                return 'Other';
-            }
-            
-            // Helper function to get activity type from zoneactivity missionset key
-            function getZoneActivityType(missionSetKey) {
-                const afterPrefix = missionSetKey.substring('missionset_zoneactivity_'.length);
-                // Capitalize first letter and return
-                return afterPrefix.charAt(0).toUpperCase() + afterPrefix.slice(1);
-            }
-            
             missionSetKeys.forEach(missionSetKey => {
-                let groupName = null;
-                let prefix = null;
+                const { groupName, location } = missionSetGroupAndLocation(missionSetKey);
 
-                // Cowbell missionsets may be main/side/micro/cowbell_*; group all under DLC, not Main/Side/Micro/Other.
-                if (missionSetKeyIsCowbellDlcContent(missionSetKey)) {
-                    groupName = 'DLC Missions';
-                    prefix = 'missionset_dlc_';
-                } else if (missionSetKey.startsWith('missionset_main_')) {
-                    groupName = 'Main Missions';
-                    prefix = 'missionset_main_';
-                } else if (missionSetKey.startsWith('missionset_side_')) {
-                    groupName = 'Side Missions';
-                    prefix = 'missionset_side_';
-                } else if (missionSetKey.startsWith('missionset_dlc_')) {
-                    groupName = 'DLC Missions';
-                    prefix = 'missionset_dlc_';
-                } else if (missionSetKey.startsWith('missionset_micro_')) {
-                    groupName = 'Micro Missions';
-                    prefix = 'missionset_micro_';
-                } else if (missionSetKey.startsWith('missionset_vault_')) {
-                    groupName = 'Vault Missions';
-                    prefix = 'missionset_vault_';
-                } else if (missionSetKey.startsWith('missionset_zoneactivity_')) {
-                    groupName = 'Zone Activity Missions';
-                    prefix = 'missionset_zoneactivity_';
-                } else {
-                    groupName = 'Other Missions';
-                    prefix = '';
-                }
-                
-                // Get location/activity sub-group
-                let location = 'Other';
-                if (missionSetKeyIsCowbellDlcContent(missionSetKey)) {
-                    location = 'Cowbell';
-                } else if (groupName === 'Zone Activity Missions') {
-                    // For zone activity, group by activity type (safehouse, orderbunker, etc.)
-                    location = getZoneActivityType(missionSetKey);
-                } else if (groupName === 'Other Missions' || !prefix) {
-                    location = 'Other';
-                } else {
-                    location = getLocation(missionSetKey, prefix);
-                }
-                
                 if (!missionGroups[groupName][location]) {
                     missionGroups[groupName][location] = [];
                 }
@@ -13329,7 +13306,7 @@
                     subGroupOrder = Object.keys(groupSubGroups).sort();
                 } else if (groupName === 'DLC Missions') {
                     // Cowbell (and future DLC buckets) use location keys not in the vanilla region list — include them or they never render.
-                    const preferredDlc = ['Cowbell', 'City', 'Grasslands', 'Mountains', 'Shatteredlands', 'Other'];
+                    const preferredDlc = ['Providence', 'Bounty Pack 5: Amara and the Vile Shadows', 'Cowbell', 'City', 'Grasslands', 'Mountains', 'Shatteredlands', 'Other'];
                     const seenLoc = new Set();
                     subGroupOrder = [];
                     preferredDlc.forEach(function (loc) {
@@ -13351,7 +13328,7 @@
                             }
                         });
                 } else {
-                    subGroupOrder = ['City', 'Grasslands', 'Mountains', 'Shatteredlands', 'Other'];
+                    subGroupOrder = ['City', 'Grasslands', 'Mountains', 'Shatteredlands', 'Elpis', 'Other'];
                 }
                 subGroupOrder.forEach(location => {
                     if (!groupSubGroups[location] || groupSubGroups[location].length === 0) return;
@@ -13751,7 +13728,7 @@
         };
 
         window.missionEditorCompleteDlc = async function missionEditorCompleteDlc() {
-            if (!confirm('Complete / skip all DLC mission sets (missionset_dlc_*) from templates?')) return;
+            if (!confirm('Complete / skip all DLC mission sets from templates, including Providence and Bounty Pack 5?')) return;
             await completeDlcMissionsBulk();
             refreshMissionEditor();
         };
@@ -13766,9 +13743,9 @@
             const z = String(zoneId || '').toLowerCase();
             if (
                 !confirm(
-                    'Complete / skip main+side missions for zone "' +
+                    'Complete / skip missions for zone "' +
                         z +
-                        '" (heuristic key match)?'
+                        '"? DLC zones include their main, side, micro, and activity mission sets.'
                 )
             ) {
                 return;
@@ -13780,7 +13757,7 @@
         window.missionEditorResetDlc = function missionEditorResetDlc() {
             if (
                 !confirm(
-                    'Remove all DLC mission sets (missionset_dlc_*) and all Cowbell-related mission sets (main, unlock, side, micro, activity, and any missionset_*cowbell*) from this save?'
+                    'Remove all DLC mission sets from this save, including Cowbell, Providence, and Bounty Pack 5?'
                 )
             )
                 return;
@@ -13796,7 +13773,7 @@
 
         window.missionEditorResetZone = function missionEditorResetZone(zoneId) {
             const z = String(zoneId || '').toLowerCase();
-            if (!confirm('Remove main+side mission sets matching zone "' + z + '" from this save?')) return;
+            if (!confirm('Remove mission sets matching zone "' + z + '" from this save? DLC zones include main, side, micro, and activity sets.')) return;
             resetZoneMissionsBulk(z);
             refreshMissionEditor();
         };
@@ -18997,20 +18974,20 @@
 
         function profileDataParseBlackMarketRow(row) {
             if (!row || typeof row !== 'object') {
-                return { itemcomp: '', itemtype: '', gamestage: 60 };
+                return { itemcomp: '', itemtype: '', gamestage: ITEM_MAX_LEVEL };
             }
             const comp =
                 row.blackmarket_itemcomp != null ? String(row.blackmarket_itemcomp).trim() : '';
             let typ = row.blackmarket_itemtype != null ? String(row.blackmarket_itemtype).trim() : '';
             const gsRaw = row.blackmarket_gamestage;
-            const gs = gsRaw != null && gsRaw !== '' ? Number(gsRaw) : 60;
+            const gs = gsRaw != null && String(gsRaw).trim() !== '' ? Number(gsRaw) : ITEM_MAX_LEVEL;
             if (!typ && comp.indexOf('.') >= 0) {
                 typ = comp.split('.')[0];
             }
             return {
                 itemcomp: comp,
                 itemtype: typ,
-                gamestage: Number.isFinite(gs) ? gs : 60
+                gamestage: Number.isFinite(gs) ? gs : ITEM_MAX_LEVEL
             };
         }
 
@@ -19033,11 +19010,11 @@
                           ? String(r.itemtype).trim()
                           : '';
                 if (!itemtype) continue;
-                const gs = r.gamestage != null ? Number(r.gamestage) : 60;
+                const gs = r.gamestage != null && String(r.gamestage).trim() !== '' ? Number(r.gamestage) : ITEM_MAX_LEVEL;
                 list.push({
                     blackmarket_itemtype: itemtype,
                     blackmarket_itemcomp: comp,
-                    blackmarket_gamestage: Number.isFinite(gs) ? gs : 60
+                    blackmarket_gamestage: Number.isFinite(gs) ? gs : ITEM_MAX_LEVEL
                 });
             }
             shared.blackmarket_items = list;

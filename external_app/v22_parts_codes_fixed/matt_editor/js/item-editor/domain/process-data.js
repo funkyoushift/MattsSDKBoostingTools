@@ -5459,7 +5459,7 @@
             console.log(`  ✓ Added ${daedalusAmmoParts.length} Daedalus ammo parts (typeId 23)`);
 
             // Type IDs that have "NEW!" parts (derived from new serial IDs) - for manufacturer/type dropdown badges
-            const typeIdsWithNewParts = new Set([1, 3, 4, 6, 7, 9, 11, 12, 13, 14, 17, 18, 21, 22, 23, 25, 287, 298]);
+            const typeIdsWithNewParts = window.bl4ReleaseNewParts?.typeIds || new Set();
                 const msbtSupplementCount = mergeMsbtPartSupplements();
                 if (msbtSupplementCount > 0) {
                     console.log(`MSBT: MSBT part supplements loaded (${msbtSupplementCount} parts)`);

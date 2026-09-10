@@ -622,7 +622,7 @@
                             <div class="guideline-item" style="display: flex; flex-direction: column; padding: var(--input-pad-y) var(--input-pad-x); background: rgba(30, 30, 46, 0.6); border-radius: 6px; border: 1px solid rgba(79, 195, 247, 0.3); min-height: 48px;">
                                 <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
                                     <div data-checklist="rarity"                                     style="width: 24px; height: 24px; border: 2px solid rgba(79, 195, 247, 0.4); border-radius: 4px; background: rgba(30, 30, 46, 0.8); display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fff; font-size: 14px; flex-shrink: 0;"></div>
-                                    <span style="font-weight: 600; color: #b0d4fa; font-size: 14px;">Rarity <span style="color: #FF8C42; font-weight: 700;">NEW!</span></span>
+                                    <span style="font-weight: 600; color: #b0d4fa; font-size: 14px;">Rarity</span>
                                 </div>
                             </div>
                             <div class="guideline-item" style="display: flex; flex-direction: column; padding: var(--input-pad-y) var(--input-pad-x); background: rgba(30, 30, 46, 0.6); border-radius: 6px; border: 1px solid rgba(79, 195, 247, 0.3); min-height: 48px;">
@@ -640,7 +640,7 @@
                             <div class="guideline-item" style="display: flex; flex-direction: column; padding: var(--input-pad-y) var(--input-pad-x); background: rgba(30, 30, 46, 0.6); border-radius: 6px; border: 1px solid rgba(79, 195, 247, 0.3); min-height: 48px;">
                                 <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
                                     <div data-checklist="barrel"                                     style="width: 24px; height: 24px; border: 2px solid rgba(79, 195, 247, 0.4); border-radius: 4px; background: rgba(30, 30, 46, 0.8); display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fff; font-size: 14px; flex-shrink: 0;"></div>
-                                    <span style="font-weight: 600; color: #b0d4fa; font-size: 14px;">Barrel <span style="color: #FF8C42; font-weight: 700;">NEW!</span></span>
+                                    <span style="font-weight: 600; color: #b0d4fa; font-size: 14px;">Barrel</span>
                                 </div>
                             </div>
                             <div class="guideline-item" style="display: flex; flex-direction: column; padding: var(--input-pad-y) var(--input-pad-x); background: rgba(30, 30, 46, 0.6); border-radius: 6px; border: 1px solid rgba(79, 195, 247, 0.3); min-height: 48px;">
@@ -685,7 +685,7 @@
                             <div class="guideline-item" style="display: flex; flex-direction: column; padding: var(--input-pad-y) var(--input-pad-x); background: rgba(30, 30, 46, 0.6); border-radius: 6px; border: 1px solid rgba(79, 195, 247, 0.3); min-height: 48px;">
                                 <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
                                     <div data-checklist="underbarrel"                                     style="width: 24px; height: 24px; border: 2px solid rgba(79, 195, 247, 0.4); border-radius: 4px; background: rgba(30, 30, 46, 0.8); display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fff; font-size: 14px; flex-shrink: 0;"></div>
-                                    <span style="font-weight: 600; color: #b0d4fa; font-size: 14px;">Underbarrel <span style="color: #FF8C42; font-weight: 700;">NEW!</span></span>
+                                    <span style="font-weight: 600; color: #b0d4fa; font-size: 14px;">Underbarrel</span>
                                 </div>
                             </div>
                             <div id="daedalusAmmoGuideline" class="guideline-item" style="display: none; flex-direction: column; padding: 12px; background: #f9f9f9; border-radius: 6px; border: 2px solid #e0e0e0; min-height: 60px;">
@@ -727,13 +727,13 @@
                             <div class="guideline-item" style="display: flex; flex-direction: column; padding: var(--input-pad-y) var(--input-pad-x); background: rgba(30, 30, 46, 0.6); border-radius: 6px; border: 1px solid rgba(79, 195, 247, 0.3); min-height: 48px;">
                                 <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
                                     <div data-checklist="statModifier"                                     style="width: 24px; height: 24px; border: 2px solid rgba(79, 195, 247, 0.4); border-radius: 4px; background: rgba(30, 30, 46, 0.8); display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fff; font-size: 14px; flex-shrink: 0;"></div>
-                                    <span style="font-weight: 600; color: #b0d4fa; font-size: 14px;">Stat Modifier <span style="color: #FF8C42; font-weight: 700;">NEW!</span> (<span style="color: #00E5FF;">Pearlescent</span> Stat Bonuses)</span>
+                                    <span style="font-weight: 600; color: #b0d4fa; font-size: 14px;">Stat Modifier (<span style="color: #00E5FF;">Pearlescent</span> Stat Bonuses)</span>
                                 </div>
                             </div>
                             <div class="guideline-item" style="display: flex; flex-direction: column; padding: var(--input-pad-y) var(--input-pad-x); background: rgba(30, 30, 46, 0.6); border-radius: 6px; border: 1px solid rgba(79, 195, 247, 0.3); min-height: 48px;">
                                 <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
                                     <div data-checklist="element"                                     style="width: 24px; height: 24px; border: 2px solid rgba(79, 195, 247, 0.4); border-radius: 4px; background: rgba(30, 30, 46, 0.8); display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fff; font-size: 14px; flex-shrink: 0;"></div>
-                                    <span style="font-weight: 600; color: #b0d4fa; font-size: 14px;">Element <span style="color: #FF8C42; font-weight: 700;">NEW!</span> (<span style="color: #00E5FF;">Pearlescent</span> Element Overrides)</span>
+                                    <span style="font-weight: 600; color: #b0d4fa; font-size: 14px;">Element (<span style="color: #00E5FF;">Pearlescent</span> Element Overrides)</span>
                                 </div>
                             </div>
                         </div>
@@ -769,21 +769,8 @@
             }
             
             // Serials/parts that show "NEW!" badge (dropdowns, chips, same set as decode tool) - defined early for listener closure
-            const newSerialIdsGuidelines = new Set([
-                '1:51','1:52','1:53','1:54','1:55','1:56','1:57','1:58','1:59','1:60',
-                '13:90','13:89','22:90','21:79','22:89','287:12','298:11',
-                '6:81','17:81','6:80','17:80','6:79','17:79',
-                '11:81','14:78','13:82','18:99','23:22','6:77','4:84','12:78','25:81','21:80','9:99','17:82','22:91','3:82','7:55',
-                '18:100','9:100','11:82','287:11','13:83','4:85','3:83','12:79','25:82','7:56','298:12','17:83','6:78','14:79','22:92','21:81','23:56'
-            ]);
-            const newPartKeysGuidelines = new Set([
-                'pearl_damage','pearl_reload','pearl_firerate','pearl_handling','pearl_normal','pearl_shock','pearl_radiation','pearl_corrosive','pearl_cryo','pearl_fire',
-                'part_underbarrel_04_atlas_mercredi','part_underbarrel_04_atlas_ball_mercredi','part_mag_torgue_normal_mercury','part_mag_torgue_normal_songbird','part_mag_torgue_sticky_mercury',
-                'body_flare','part_body_hopscotch',
-                'part_foregrip_01_handcannon','part_foregrip_01_fleabag','part_foregrip_02_handcannon','part_foregrip_02_fleabag','part_foregrip_03_handcannon','part_foregrip_03_fleabag',
-                'part_barrel_01_eigenburst','part_barrel_01_laserdisc','part_barrel_01_mercredi','part_barrel_01_bubbles','part_barrel_01_tankbuster','part_barrel_02_handcannon','part_barrel_02_roulette','part_barrel_02_arctic','part_barrel_02_conflux','part_barrel_02_songbird','part_barrel_doeshot','part_barrel_fleabag','part_barrel_mercury','part_barrel_shalashaska','part_unique_barrel_02_demo',
-                'comp_05_legendary_bubbles','comp_05_legendary_doeshot','comp_05_legendary_eigenburst','comp_05_legendary_hopscotch','comp_05_legendary_mercredi','comp_05_legendary_roulette','comp_05_legendary_shalashaska','comp_05_legendary_arctic','comp_05_legendary_conflux','comp_05_legendary_demo','comp_05_legendary_flare','comp_05_legendary_fleabag','comp_05_legendary_handcannon','comp_05_legendary_laserdisc','comp_05_legendary_mercury','comp_05_legendary_songbird','comp_05_legendary_tankbuster'
-            ].map(k => k.toLowerCase()));
+            const newSerialIdsGuidelines = window.bl4ReleaseNewParts?.serialIds || new Set();
+            const newPartKeysGuidelines = window.bl4ReleaseNewParts?.partKeys || new Set();
             
             // Set up master unlock checkbox event listener (only once)
             const masterUnlock = document.getElementById('masterUnlockGuidelines');
@@ -2058,7 +2045,13 @@
                     // Known shield typeIds - ONLY these should appear in shield body categories
                     const knownShieldTypeIds = new Set([279, 283, 287, 293, 300, 306, 312, 321]);
                     // Known classmod typeIds - should be excluded from grenade body categories
-                    const knownClassModTypeIds = new Set([254, 255, 256, 257, 258, 259]);
+                    const knownClassModTypeIds = new Set([254, 255, 256, 257, 258, 259, 402, 404]);
+                    typeIdMap.forEach((info, tid) => {
+                        const typeId = Number(tid);
+                        if (Number.isInteger(typeId) && /^class[\s_-]*mods?$/i.test(String(info?.category || '').trim())) {
+                            knownClassModTypeIds.add(typeId);
+                        }
+                    });
                     
                     const allParts = [];
                     partsByTypeId.forEach((parts, tid) => {

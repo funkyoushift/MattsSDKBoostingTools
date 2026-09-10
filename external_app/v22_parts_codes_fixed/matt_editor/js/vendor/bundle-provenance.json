@@ -1,0 +1,8 @@
+{
+  "js_yaml_version": "4.3.2",
+  "source": "https://registry.npmjs.org/js-yaml/-/js-yaml-4.3.2.tgz",
+  "upstream_minified_sha256": "32391560601990bb6e0daabd8106a35a6a539de088532413931a70a4cb4f4769",
+  "preserved_pako_monaco_sha256": "916fc8f3fc6d1fe50d8b366f51db65e8d06e85b848b2cc17b5ceade6bee85278",
+  "bundle_sha256": "2a37c22eee70ac90cff5a5bb9dc2a82f48f60819790aad2be290f3fb6f89020e",
+  "notes": "Official js-yaml browser distribution; source-map comment removed. Existing pako 2.1.0 and Monaco AMD loader tail preserved byte-for-byte from the canonical LF Git source."
+}

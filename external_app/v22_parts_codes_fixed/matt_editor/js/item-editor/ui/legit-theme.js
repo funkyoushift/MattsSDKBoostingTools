@@ -3754,10 +3754,10 @@
                 const hid = row.querySelector('.profile-blackmarket-comp-hidden');
                 const gsEl = row.querySelector('.profile-blackmarket-gs');
                 const comp = hid && hid.value ? String(hid.value).trim() : '';
-                const gsRaw = gsEl && gsEl.value !== '' ? parseInt(gsEl.value, 10) : 60;
+                const gsRaw = gsEl && gsEl.value !== '' ? parseInt(gsEl.value, 10) : ITEM_MAX_LEVEL;
                 rows.push({
                     itemcomp: comp,
-                    gamestage: Number.isFinite(gsRaw) ? gsRaw : 60
+                    gamestage: Number.isFinite(gsRaw) ? gsRaw : ITEM_MAX_LEVEL
                 });
             });
             return rows;
@@ -3769,7 +3769,7 @@
             const html = rows
                 .map(function (row, i) {
                     const comp = (row.itemcomp || '').trim();
-                    const gs = row.gamestage != null ? row.gamestage : 60;
+                    const gs = row.gamestage != null ? row.gamestage : ITEM_MAX_LEVEL;
                     const vis = blackMarketLabelForComp(comp);
                     return (
                         '<div class="profile-blackmarket-slot-row" style="position:relative;border:1px solid rgba(79,195,247,0.22);padding:10px 12px;border-radius:4px;background:rgba(0,0,0,0.2);">' +
@@ -3787,7 +3787,7 @@
                         '<div class="profile-blackmarket-suggest" style="display:none;position:absolute;z-index:30;left:0;right:0;top:100%;max-height:240px;overflow-y:auto;background:#141e24;border:1px solid rgba(79,195,247,0.45);border-radius:4px;margin-top:2px;box-shadow:0 8px 24px rgba(0,0,0,0.45);"></div>' +
                         '</div>' +
                         '<label style="font-size:0.8em;color:#b3e5fc;white-space:nowrap;display:flex;align-items:center;gap:6px;">Game stage ' +
-                        '<input type="number" class="profile-blackmarket-gs" min="1" max="100" value="' +
+                        '<input type="number" class="profile-blackmarket-gs" min="1" max="' + ITEM_MAX_LEVEL + '" value="' +
                         escapeHtmlProgressionUi(String(gs)) +
                         '" style="width:68px;padding:6px;background:rgba(0,0,0,0.5);border:1px solid rgba(79,195,247,0.35);border-radius:4px;color:#81d4fa;" />' +
                         '</label>' +
@@ -3953,7 +3953,7 @@
                         if (typeof window.profileDataParseBlackMarketRow === 'function') {
                             return window.profileDataParseBlackMarketRow(row);
                         }
-                        return { itemcomp: '', itemtype: '', gamestage: 60 };
+                        return { itemcomp: '', itemtype: '', gamestage: ITEM_MAX_LEVEL };
                     });
                 }
             }
@@ -3963,7 +3963,7 @@
                 rows.push(
                     yamlRows[i] || {
                         itemcomp: '',
-                        gamestage: 60
+                        gamestage: ITEM_MAX_LEVEL
                     }
                 );
             }

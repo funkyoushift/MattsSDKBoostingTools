@@ -886,20 +886,32 @@
             return mapUnlockMethodTokenToProfilePrefix(raw);
         }
 
-        function extractCosmeticUnlockIdsFromResident(rawData, targetSet) {
+        /** Resolve partial Resident records against their canonical parent before reading child unlocks. */
+        function collectResidentCosmeticParents(rawData, targetMap = new Map()) {
+            const records = rawData?.unlockable?.records;
+            if (!Array.isArray(records)) return targetMap;
+            records.forEach(record => {
+                (record.entries || []).forEach(entryObj => {
+                    if (!entryObj || typeof entryObj !== 'object') return;
+                    Object.entries(entryObj).forEach(([key, value]) => {
+                        if (typeof value?.unlockable !== 'string' || !value.unlockable.startsWith('Unlockable_')) return;
+                        targetMap.set(key.toLowerCase(), mapUnlockMethodTokenToProfilePrefix(value.unlockable));
+                    });
+                });
+            });
+            return targetMap;
+        }
+
+        function extractCosmeticUnlockIdsFromResident(rawData, targetSet, canonicalParents) {
             if (!rawData || !rawData.unlockable || !Array.isArray(rawData.unlockable.records)) return;
+            const parents = canonicalParents || collectResidentCosmeticParents(rawData);
             rawData.unlockable.records.forEach(record => {
                 (record.entries || []).forEach(entryObj => {
                     if (!entryObj || typeof entryObj !== 'object') return;
                     let parentPrefix = '';
-                    for (const val of Object.values(entryObj)) {
-                        if (
-                            val &&
-                            typeof val === 'object' &&
-                            typeof val.unlockable === 'string' &&
-                            val.unlockable.indexOf('Unlockable_') === 0
-                        ) {
-                            parentPrefix = mapUnlockMethodTokenToProfilePrefix(val.unlockable);
+                    for (const key of Object.keys(entryObj)) {
+                        if (parents.has(key.toLowerCase())) {
+                            parentPrefix = parents.get(key.toLowerCase());
                             break;
                         }
                     }
@@ -923,6 +935,17 @@
                     });
                 });
             });
+        }
+
+        /** Release metadata is optional; an absent manifest must not mark an old release's parts as new. */
+        function getReleaseNewPartSets() {
+            const release = window.bl4ReleaseNewParts || {};
+            const values = value => Array.isArray(value) || value instanceof Set ? Array.from(value) : [];
+            return {
+                serialIds: new Set(values(release.serialIds).map(value => String(value).trim())),
+                partKeys: new Set(values(release.partKeys).map(value => String(value).trim().toLowerCase())),
+                typeIds: new Set(values(release.typeIds).map(value => String(value).trim()))
+            };
         }
 
         /** Nexus uiname/displayname: `Cosmetics_Weapon, <guid>, <display>` — display may contain commas (e.g. "Halt, Citizen"). */
@@ -1812,6 +1835,9 @@
             const uiStatByKey = new Map();
             /** @type {Map<string, { tooltipRef?: string, character: string, iconAsset?: string }>} normalized "progressgraph|nodename" -> skilltrees node metadata */
             const skilltreesNodeByGraphAndName = new Map();
+            const skilltreeNodeAliases = collectSkilltreeNodeAliases(orderedFileResults);
+            const residentCosmeticParents = new Map();
+            orderedFileResults.forEach(chunk => collectResidentCosmeticParents(chunk.data, residentCosmeticParents));
             /** @type {Map<string, object>} uitooltipdata key (lowercase) -> { header, body, stats } */
             const uitooltipByKey = new Map();
 
@@ -2092,55 +2118,9 @@
                     return;
                 }
 
-                // Check if this is skilltrees_data (passive node -> tooltip ref + character + optional icon asset)
+                // Use the same normalized lookup builder for initial and supplemental chunks.
                 if (rawData.skilltrees_data && Array.isArray(rawData.skilltrees_data.records)) {
-                    const treeNameToCharacter = {
-                        dark_siren_skill_trees: 'Siren',
-                        exo_skill_trees: 'Rafa',
-                        gravitar_skill_trees: 'Harlowe',
-                        paladin_skill_trees: 'Paladin',
-                        corpohacker_skill_trees: 'Loveless',
-                        robodealer_skill_trees: 'Robodealer'
-                    };
-                    rawData.skilltrees_data.records.forEach(record => {
-                        (record.entries || []).forEach(entryObj => {
-                            if (!entryObj || typeof entryObj !== 'object') return;
-                            Object.entries(entryObj).forEach(([treeName, treeValue]) => {
-                                if (!treeValue || typeof treeValue !== 'object') return;
-                                const character = treeNameToCharacter[treeName] || treeName;
-                                const skilltrees = treeValue.skilltrees;
-                                if (!Array.isArray(skilltrees)) return;
-                                skilltrees.forEach(st => {
-                                    const segments = st.segments;
-                                    if (!Array.isArray(segments)) return;
-                                    segments.forEach(seg => {
-                                        const progressgraph = seg.progressgraph != null ? String(seg.progressgraph) : '';
-                                        const tiers = seg.tiers;
-                                        if (!Array.isArray(tiers)) return;
-                                        tiers.forEach(tier => {
-                                            const nodes = tier.nodes;
-                                            if (!Array.isArray(nodes)) return;
-                                            nodes.forEach(node => {
-                                                const name = node.name;
-                                                if (!name) return;
-                                                const tooltip = node.tooltip;
-                                                const iconRaw = node.icon;
-                                                const hasTooltip = tooltip && typeof tooltip === 'string';
-                                                const hasIcon = iconRaw && typeof iconRaw === 'string';
-                                                if (!hasTooltip && !hasIcon) return;
-                                                const key = progressgraph + '|' + name;
-                                                const prev = skilltreesNodeByGraphAndName.get(key) || {};
-                                                const merged = { ...prev, character: character || prev.character };
-                                                if (hasTooltip) merged.tooltipRef = tooltip;
-                                                if (hasIcon) merged.iconAsset = iconRaw;
-                                                skilltreesNodeByGraphAndName.set(key, merged);
-                                            });
-                                        });
-                                    });
-                                });
-                            });
-                        });
-                    });
+                    mergeSkilltreesIntoData({ skilltreesNodeByGraphAndName }, rawData);
                     return;
                 }
 
@@ -2187,7 +2167,7 @@
 
                 // Nexus unlock table (Resident): cosmetic ids for profile editor
                 if (rawData.unlockable && Array.isArray(rawData.unlockable.records)) {
-                    extractCosmeticUnlockIdsFromResident(rawData, nexusCosmeticUnlockIds);
+                    extractCosmeticUnlockIdsFromResident(rawData, nexusCosmeticUnlockIds, residentCosmeticParents);
                     return;
                 }
 
@@ -2491,6 +2471,7 @@
                 invStatByKey: invStatByKey,
                 uiStatByKey: uiStatByKey,
                 skilltreesNodeByGraphAndName: skilltreesNodeByGraphAndName,
+                skilltreeNodeAliases: skilltreeNodeAliases,
                 uitooltipByKey: uitooltipByKey,
                 datatableValues: datatableValues
             };
@@ -2765,7 +2746,7 @@
                                         const hasTooltip = tooltip && typeof tooltip === 'string';
                                         const hasIcon = iconRaw && typeof iconRaw === 'string';
                                         if (!hasTooltip && !hasIcon) return;
-                                        const key = progressgraph + '|' + name;
+                                        const key = normalizeSkilltreeNodeKey(progressgraph, name);
                                         const prev = skilltreesNodeByGraphAndName.get(key) || {};
                                         const merged = { ...prev, character: character || prev.character };
                                         if (hasTooltip) merged.tooltipRef = tooltip;
@@ -3094,6 +3075,69 @@
             };
         }
 
+        function normalizeSkilltreeNodeKey(progressgraph, nodename) {
+            const graph = String(progressgraph || '').trim().replace(/^progress_graph'([^']+)'$/i, '$1').toLowerCase();
+            return graph + '|' + String(nodename || '').trim().toLowerCase();
+        }
+
+        /** Native graph nodes with the same skill can share UI metadata even when one position is hidden. */
+        function collectSkilltreeNodeAliases(chunks) {
+            const graphs = new Map();
+            (chunks || []).forEach(chunk => {
+                const records = chunk.data?.progress_graph?.records;
+                if (!Array.isArray(records)) return;
+                records.forEach(record => (record.entries || []).forEach(entry => {
+                    Object.entries(entry || {}).forEach(([graphKey, definition]) => {
+                        const pairs = definition?.nodes?.pairs;
+                        if (!pairs || typeof pairs !== 'object') return;
+                        const graph = normalizeSkilltreeNodeKey(graphKey, '').split('|')[0];
+                        if (!graphs.has(graph)) graphs.set(graph, new Map());
+                        const nodes = graphs.get(graph);
+                        Object.entries(pairs).forEach(([pairKey, pair]) => {
+                            if (!pair || typeof pair !== 'object') {
+                                nodes.delete(pairKey);
+                                return;
+                            }
+                            const previous = nodes.get(pairKey) || {};
+                            nodes.set(pairKey, {
+                                ...previous, ...pair,
+                                value: { ...previous.value, ...pair.value,
+                                    itemdata: { ...previous.value?.itemdata, ...pair.value?.itemdata } }
+                            });
+                        });
+                    });
+                }));
+            });
+            const aliases = new Map();
+            graphs.forEach((nodes, graph) => {
+                const bySkill = new Map();
+                nodes.forEach(node => {
+                    const skill = node.value?.itemdata?.skill;
+                    if (typeof node.key !== 'string' || typeof skill !== 'string') return;
+                    const skillKey = skill.trim().toLowerCase();
+                    if (!bySkill.has(skillKey)) bySkill.set(skillKey, new Set());
+                    bySkill.get(skillKey).add(normalizeSkilltreeNodeKey(graph, node.key));
+                });
+                bySkill.forEach(keys => {
+                    if (keys.size < 2) return;
+                    keys.forEach(key => aliases.set(key, Array.from(keys).filter(other => other !== key)));
+                });
+            });
+            return aliases;
+        }
+
+        function getSkilltreeNodeInfo(data, progressgraph, nodename) {
+            const key = normalizeSkilltreeNodeKey(progressgraph, nodename);
+            const direct = data?.skilltreesNodeByGraphAndName?.get(key);
+            if (direct) return direct;
+            const aliases = data?.skilltreeNodeAliases?.get(key) || [];
+            for (const alias of aliases) {
+                const info = data.skilltreesNodeByGraphAndName.get(alias);
+                if (info) return info;
+            }
+            return null;
+        }
+
         /** Normalize tooltip ref (e.g. "uitooltipdata'ToolTip_DS_P_DemonicInscriptions'") to uitooltipdata lookup key (e.g. "tooltip_ds_p_demonicinscriptions"). */
         function normalizeTooltipRef(ref) {
             if (ref == null || typeof ref !== 'string') return '';
@@ -3366,7 +3410,7 @@
             const tn = tableName || item.depTableName || 'passive_points';
             const { progressgraph, nodename } = getPassiveAspectGraphAndNodeName(item, data, tn);
             if (!progressgraph || !nodename) return null;
-            const nodeInfo = data.skilltreesNodeByGraphAndName.get(progressgraph + '|' + nodename);
+            const nodeInfo = getSkilltreeNodeInfo(data, progressgraph, nodename);
             const asset = nodeInfo?.iconAsset;
             if (!asset || typeof asset !== 'string') return null;
             return assetPathToUiresourcesUrl(asset);
@@ -3377,8 +3421,7 @@
             if (!item || !data?.skilltreesNodeByGraphAndName) return null;
             const { progressgraph, nodename } = getPassiveAspectGraphAndNodeName(item, data, 'passive_points');
             if (!progressgraph || !nodename) return null;
-            const key = progressgraph + '|' + nodename;
-            const nodeInfo = data.skilltreesNodeByGraphAndName.get(key);
+            const nodeInfo = getSkilltreeNodeInfo(data, progressgraph, nodename);
             if (!nodeInfo) return null;
             if (nodeInfo.tooltipRef && data.uitooltipByKey) {
                 const tooltipKey = normalizeTooltipRef(nodeInfo.tooltipRef);
@@ -24291,23 +24334,10 @@
                     validationIssues.push('Root not found - cannot validate');
                 }
                 
-                // Serials/parts that show "NEW!" badge in the editor
-                const newSerialIds = new Set([
-                    '1:51','1:52','1:53','1:54','1:55','1:56','1:57','1:58','1:59','1:60',
-                    '13:90','13:89','22:90','21:79','22:89','287:12','298:11',
-                    '6:81','17:81','6:80','17:80','6:79','17:79',
-                    '11:81','14:78','13:82','18:99','23:22','6:77','4:84','12:78','25:81','21:80','9:99','17:82','22:91','3:82','7:55',
-                    '18:100','9:100','11:82','287:11','13:83','4:85','3:83','12:79','25:82','7:56','298:12','17:83','6:78','14:79','22:92','21:81','23:56'
-                ]);
-                const newPartKeys = new Set([
-                    'pearl_damage','pearl_reload','pearl_firerate','pearl_handling','pearl_normal','pearl_shock','pearl_radiation','pearl_corrosive','pearl_cryo','pearl_fire',
-                    'part_underbarrel_04_atlas_mercredi','part_underbarrel_04_atlas_ball_mercredi','part_mag_torgue_normal_mercury','part_mag_torgue_normal_songbird','part_mag_torgue_sticky_mercury',
-                    'body_flare','part_body_hopscotch',
-                    'part_foregrip_01_handcannon','part_foregrip_01_fleabag','part_foregrip_02_handcannon','part_foregrip_02_fleabag','part_foregrip_03_handcannon','part_foregrip_03_fleabag',
-                    'part_barrel_01_eigenburst','part_barrel_01_laserdisc','part_barrel_01_mercredi','part_barrel_01_bubbles','part_barrel_01_tankbuster','part_barrel_02_handcannon','part_barrel_02_roulette','part_barrel_02_arctic','part_barrel_02_conflux','part_barrel_02_songbird','part_barrel_doeshot','part_barrel_fleabag','part_barrel_mercury','part_barrel_shalashaska','part_unique_barrel_02_demo',
-                    'comp_05_legendary_bubbles','comp_05_legendary_doeshot','comp_05_legendary_eigenburst','comp_05_legendary_hopscotch','comp_05_legendary_mercredi','comp_05_legendary_roulette','comp_05_legendary_shalashaska','comp_05_legendary_arctic','comp_05_legendary_conflux','comp_05_legendary_demo','comp_05_legendary_flare','comp_05_legendary_fleabag','comp_05_legendary_handcannon','comp_05_legendary_laserdisc','comp_05_legendary_mercury','comp_05_legendary_songbird','comp_05_legendary_tankbuster'
-                ].map(k => k.toLowerCase()));
-                
+                const releaseNewParts = getReleaseNewPartSets();
+                const newSerialIds = releaseNewParts.serialIds;
+                const newPartKeys = releaseNewParts.partKeys;
+
                 // Build result HTML
                 const legitimacyColor = isLegit ? '#4CAF50' : '#ff4444';
                 const legitimacyIcon = isLegit ? '✓' : '✗';
@@ -24367,7 +24397,8 @@
                     const statusColor = partIsValid ? '#4CAF50' : '#ff4444';
                     const statusIcon = partIsValid ? '✓' : '✗';
                     const partIdStr = part.rootSerial != null ? `${part.rootSerial}:${part.serial}` : `${part.serial}`;
-                    const isNewPart = newSerialIds.has(partIdStr) || (part.partKey && newPartKeys.has(String(part.partKey).toLowerCase()));
+                    const isNewPart = newSerialIds.has(partIdStr) ||
+                        (part.partKey && newPartKeys.has(String(part.partKey).toLowerCase()));
                     const newBadge = isNewPart ? '<span style="color: #FF8C42; font-weight: 700;">NEW!</span> ' : '';
                     const addTags = part.foundPart ? formatTags(part.foundPart.addtags || []) : [];
                     const depTags = part.foundPart ? formatTags(part.foundPart.dependencytags || []) : [];

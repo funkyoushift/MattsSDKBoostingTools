@@ -123,16 +123,16 @@
             <div class="header-banner" style="background: rgba(7, 255, 210, 0.15); border: 2px solid rgba(7, 255, 210, 0.5);">
                 <strong style="color: #FF8C42;">Updated to include!</strong>
                 <p>
-                     Bounty Pack 3: A Zane to Kill For
+                     Story Pack 2: FL4K and the Last Resort
                 </p>
                 <p>
-                     Takedown at Hadron Abyss
+                     Bounty Pack 5: Amara and the Vile Shadows
                 </p>
                 <p>
-                    New Legendary and Pearlescents!
+                    Loveless the Hacker • Level 70 • Vault Card 5
                 </p>
                 <p>
-                    New Cosmetics!
+                    Updated gear, cosmetics, skills, and mission data
                 </p>
             </div>
             <div class="header-banner" style="background: rgba(255, 193, 7, 0.15); border: 2px solid rgba(255, 193, 7, 0.5);">
@@ -213,20 +213,20 @@
 				   📟  BL4 Item Serial Codes (Credit @Ynot)
 				</a>
 
-                <script type='text/javascript' src='https://storage.ko-fi.com/cdn/widget/Widget_2.js'></script><script type='text/javascript'>kofiwidget2.init('Support me on Ko-fi', '#72a4f2', 'E1E71V74IO');kofiwidget2.draw();</script>
+                <script type='text/javascript' src='https://storage.ko-fi.com/cdn/widget/Widget_2.js'></script><script type='text/javascript'>if (typeof kofiwidget2 !== 'undefined') { kofiwidget2.init('Support me on Ko-fi', '#72a4f2', 'E1E71V74IO');kofiwidget2.draw(); }</script>
             </div>
         </header>
 
         <!-- Tab Navigation -->
         <div class="tabs">
             <button class="tab-button active" onclick="switchTab('save-editor-tab')">
-                💾 Save Editor (Added C4sh) (New Missions and Challenge completions)
+                💾 Save Editor (All six Vault Hunters, missions and challenges)
             </button>
             <button class="tab-button" onclick="switchTab('profile-editor-tab')">
-                👤 Profile Editor (Bounty Pack 3 & Hadron Abyss Cosmetics!) (Shared Progression Data)
+                👤 Profile Editor (Loveless, Story Pack 2 & Bounty Pack 5 Cosmetics) (Shared Progression Data)
             </button>
             <button class="tab-button" onclick="switchTab('legit-builder-tab')">
-                🧩 Legit Item Builder and Validator (Includes Bounty Pack 3 & Takedown at Hadron Abyss)
+                🧩 Legit Item Builder and Validator (Updated for BL4 1.10)
             </button>
             <button class="tab-button" onclick="switchTab('item-editor-tab')">
                 🔧 Modded Item Builder (relaxed rules, cross-manufacturer)
@@ -8228,7 +8228,7 @@
                         ⚡ Quick Presets
                     </h3>
                     <div class="help-text" style="margin-bottom: 15px">
-                        <span style="color: #FF8C42; font-weight: 700;">NEW!</span> Bounty Pack 3 & Hadron Abyss Cosmetics!
+                        <span style="color: #FF8C42; font-weight: 700;">NEW!</span> Loveless, Story Pack 2 & Bounty Pack 5 Cosmetics
                     </div>
                     <div class="help-text" style="margin-bottom: 15px">
                         Apply quick modifications to your profile save file:
@@ -8538,7 +8538,7 @@
                         🎨 Cosmetics <span id="cosmetics-items-count" style="font-weight: normal; opacity: 0.8;">(0 unlocked)</span>
                     </h3>
                     <div class="help-text" style="margin-bottom: 15px">
-                        <span style="color: #FF8C42; font-weight: 700;">NEW!</span> Bounty Pack 3 & Hadron Abyss Cosmetics!
+                        <span style="color: #FF8C42; font-weight: 700;">NEW!</span> Loveless, Story Pack 2 & Bounty Pack 5 Cosmetics
                     </div>
                     <div class="help-text" style="margin-bottom: 15px; font-size: 0.85em; opacity: 0.8;">
                         Manage your unlocked cosmetics. Changes are saved directly to the YAML.
@@ -8649,7 +8649,7 @@
                         💰 Shared Currencies and Experience (Vault Card)
                     </h3>
                     <div class="help-text" style="margin-bottom: 15px">
-                        <span style="color: #FF8C42; font-weight: 700;">NEW!</span> Vault Card 4 support!
+                        <span style="color: #FF8C42; font-weight: 700;">NEW!</span> Vault Cards 1–5 supported
                     </div>
                     <div class="help-text" style="margin-bottom: 15px; font-size: 0.85em; opacity: 0.8;">
                         Edit shared currencies including Vault Card tokens and experience. Changes are saved directly to the YAML.
@@ -9457,7 +9457,7 @@
                                     Skip / complete Side
                                 </button>
                             </div>
-                            <div style="font-size: 0.78em; color: #ce93d8; margin-bottom: 6px;">By zone (main + side keys)</div>
+                            <div style="font-size: 0.78em; color: #ce93d8; margin-bottom: 6px;">By area</div>
                             <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px;">
                                 <button
                                     type="button"
@@ -9499,6 +9499,8 @@
                                 >
                                     Complete Elpis
                                 </button>
+                                <button type="button" class="btn btn-secondary" onclick="typeof missionEditorCompleteZone==='function'&&missionEditorCompleteZone('providence')" style="padding: 4px 10px; font-size: 0.75em;">Complete Providence</button>
+                                <button type="button" class="btn btn-secondary" onclick="typeof missionEditorCompleteZone==='function'&&missionEditorCompleteZone('bp5')" style="padding: 4px 10px; font-size: 0.75em;">Complete Bounty Pack 5</button>
                             </div>
                             <div style="font-size: 0.78em; color: #ce93d8; margin-bottom: 6px;">Scoped reset (remove sets from save)</div>
                             <div style="display: flex; flex-wrap: wrap; gap: 6px;">
@@ -9558,6 +9560,8 @@
                                 >
                                     Reset Elpis
                                 </button>
+                                <button type="button" class="btn btn-secondary" onclick="typeof missionEditorResetZone==='function'&&missionEditorResetZone('providence')" style="padding: 4px 10px; font-size: 0.75em;">Reset Providence</button>
+                                <button type="button" class="btn btn-secondary" onclick="typeof missionEditorResetZone==='function'&&missionEditorResetZone('bp5')" style="padding: 4px 10px; font-size: 0.75em;">Reset Bounty Pack 5</button>
                             </div>
                         </div>
                         <div style="margin-bottom: 15px;">
@@ -10573,23 +10577,24 @@
         </div>
     </div>
 
-    <script src="js/vendor/js-yaml-4.1.1.js"></script>
+    <script src="js/vendor/js-yaml-4.3.2.js"></script>
+    <script src="js/release-new-parts.js?v=20260910-catalog"></script>
     <script src="js/item-editor/ui/tabs.js"></script>
     <script src="js/legit-scope.js"></script>
     <script src="js/item-editor/domain/helpers.js"></script>
     <script src="js/item-editor/data/local-game-part-supplement.js"></script>
     <script src="js/item-editor/data/gzo-family-part-supplement.js"></script>
     <script src="js/item-editor/data/observed-modded-part-supplement.js"></script>
-    <script src="js/item-editor/domain/process-data.js"></script>
+    <script src="js/item-editor/domain/process-data.js?v=20260910-editor-sync"></script>
     <script src="js/item-editor/domain/parse.js"></script>
     <script src="js/item-editor/domain/parts.js"></script>
-    <script src="js/item-editor/ui/guidelines-ui.js"></script>
+    <script src="js/item-editor/ui/guidelines-ui.js?v=20260910-editor-sync"></script>
     <script src="js/item-editor/domain/data-loading.js"></script>
     <script src="js/item-editor-07-analytics.js"></script>
     <script src="js/item-editor-08-credits-stats-easter.js"></script>
-    <script src="js/legit-builder/legit-builder.js?v=20260702-cosmetic-index-2"></script>
-    <script src="js/item-editor-10-yaml-save.js"></script>
-    <script src="js/item-editor/ui/legit-theme.js"></script>
+    <script src="js/legit-builder/legit-builder.js?v=20260910-native-lookups"></script>
+    <script src="js/item-editor-10-yaml-save.js?v=20260910-editor-sync"></script>
+    <script src="js/item-editor/ui/legit-theme.js?v=20260910-editor-sync"></script>
     <script src="js/msbt-editor-prefs.js"></script>
     <script src="js/item-editor-11-bulk-init.js"></script>
     <script src="js/item-editor/ui/floating-tab-handle.js"></script>

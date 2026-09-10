@@ -1,0 +1,8 @@
+# Keep catalog and vendor payload hashes stable on Windows and fresh checkouts.
+docs/data/*.json text eol=lf
+external_app/v22_parts_codes_fixed/resources/*.json text eol=lf
+external_app/v22_parts_codes_fixed/matt_editor/LegitItems/*.json text eol=lf
+external_app/v22_parts_codes_fixed/matt_editor/game_data_export.json text eol=lf
+external_app/v22_parts_codes_fixed/matt_editor/js/vendor/*.js text eol=lf
+external_app/v22_parts_codes_fixed/matt_editor/js/vendor/*.json text eol=lf
+external_app/v22_parts_codes_fixed/matt_editor/js/release-new-parts.js text eol=lf

@@ -20,7 +20,7 @@ claim ownership of third-party code, data, artwork, names, or trademarks.
 | `mod_extracted/MattsSDKBoostingTools/bl4_tpc/` | Renil; distributed archive also credits Epilow | Used under the author's public permission allowing modification and redistribution. Source page: [Third Person Camera SDK](https://www.nexusmods.com/borderlands4/mods/259). This component is not represented as MIT. |
 | Save/profile encryption wrapper adapted through Mattmab's editor | glacierpiece, [borderlands-4-save-utility](https://github.com/glacierpiece/borderlands-4-save-utility) | MIT, `Copyright (c) 2025 glacierpiece`. The exact upstream notice is preserved beside the wrapper as `LICENSE_GLACIERPIECE_MIT.txt`. |
 | `electron_poc/vendor/gridstack/` | GridStack 11.5.1, Alain Dumesny | MIT; full notice stored beside the vendored files. |
-| `matt_editor/js/vendor/js-yaml-4.1.1.js` | js-yaml 4.1.1, pako 2.1.0, and the Microsoft Monaco AMD loader | MIT; pako also identifies zlib-licensed portions. Full notices are stored beside the bundle in `THIRD_PARTY_LICENSES.txt`. |
+| `matt_editor/js/vendor/js-yaml-4.3.2.js` | js-yaml 4.3.2, pako 2.1.0, and the Microsoft Monaco AMD loader | MIT; pako also identifies zlib-licensed portions. Full notices are stored beside the bundle in `THIRD_PARTY_LICENSES.txt`. |
 
 The permission confirmations for Mattmab/Galoob, GZO, and Lootlemon are held
 by the MSBT maintainer. They are described here so that downstream recipients

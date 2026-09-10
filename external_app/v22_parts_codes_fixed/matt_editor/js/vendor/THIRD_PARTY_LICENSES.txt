@@ -1,10 +1,10 @@
-THIRD-PARTY LICENSES FOR js-yaml-4.1.1.js
+THIRD-PARTY LICENSES FOR js-yaml-4.3.2.js
 ============================================
 
-This combined browser file contains js-yaml 4.1.1, pako 2.1.0, and the
+This combined browser file contains js-yaml 4.3.2, pako 2.1.0, and the
 Microsoft Monaco Editor AMD loader. Their notices follow.
 
-js-yaml 4.1.1
+js-yaml 4.3.2
 -------------
 
 (The MIT License)
