@@ -6,6 +6,7 @@ external-bridge state needed by headless bridge actions.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import importlib
 import importlib.util
 import json
@@ -2953,12 +2954,78 @@ def _electron_msbt_data_candidates(file_name: str) -> list[str]:
     return unique
 
 
+_DELIVERY_CATALOG_FILES = frozenset({"challenge_catalog.json", "shiny_serials.json"})
+_DELIVERY_CATALOG_MAX_BYTES = 8 * 1024 * 1024
+
+
+def _catalog_game_build(value: Any) -> int | None:
+    text = str(value or "").strip()
+    try:
+        return int(text) if re.fullmatch(r"[0-9]+", text) and int(text) > 0 else None
+    except ValueError:
+        return None
+
+
+def _delivery_catalog_build(data: Any) -> int | None:
+    if isinstance(data, dict):
+        metadata = data.get("game_data")
+        return _catalog_game_build(metadata.get("game_build")) if isinstance(metadata, dict) else None
+    if isinstance(data, list) and data:
+        builds = [_catalog_game_build(row.get("game_build")) for row in data if isinstance(row, dict)]
+        if len(builds) == len(data) and all(build is not None for build in builds):
+            return min(builds)
+    return None
+
+
+def _valid_delivery_catalog(file_name: str, data: Any) -> bool:
+    if file_name == "shiny_serials.json":
+        return isinstance(data, list) and bool(data) and all(
+            isinstance(row, dict) and isinstance(row.get("serial"), str) and row["serial"].strip()
+            for row in data
+        )
+    rows = data.get("entries") if isinstance(data, dict) else None
+    return isinstance(rows, list) and bool(rows) and all(
+        isinstance(row, dict) and isinstance(row.get("id"), str) and row["id"].strip()
+        and type(row.get("amount", 1)) is int and row.get("amount", 1) > 0 for row in rows
+    )
+
+
 def _read_json_bytes_prefer_electron_cache(file_name: str, packaged_blob: bytes | None) -> tuple[bytes, str]:
+    """Use delivery caches only when valid and no older than the bundled game data."""
+    protected = file_name in _DELIVERY_CATALOG_FILES
+    bundled_build = None
+    if protected and packaged_blob is not None:
+        bundled_build = _delivery_catalog_build(json.loads(packaged_blob.decode("utf-8-sig")))
     for candidate in _electron_msbt_data_candidates(file_name):
         try:
             if os.path.isfile(candidate):
                 with open(candidate, "rb") as fh:
-                    return fh.read(), candidate
+                    blob = fh.read(_DELIVERY_CATALOG_MAX_BYTES + 1) if protected else fh.read()
+                if protected:
+                    if len(blob) > _DELIVERY_CATALOG_MAX_BYTES or not _valid_delivery_catalog(
+                        file_name, json.loads(blob.decode("utf-8-sig"))
+                    ):
+                        continue
+                    descriptor = {}
+                    try:
+                        manifest_path = os.path.join(os.path.dirname(candidate), "catalog_manifest.json")
+                        with open(manifest_path, "rb") as fh:
+                            manifest_blob = fh.read(_DELIVERY_CATALOG_MAX_BYTES + 1)
+                        if len(manifest_blob) <= _DELIVERY_CATALOG_MAX_BYTES:
+                            manifest = json.loads(manifest_blob.decode("utf-8-sig"))
+                            descriptor = next((row for row in manifest.get("files", [])
+                                               if isinstance(row, dict) and row.get("path") == file_name), {})
+                    except Exception:
+                        pass
+                    cached_build = _catalog_game_build(descriptor.get("game_build"))
+                    if bundled_build is not None or cached_build is not None:
+                        digest = str(descriptor.get("sha256") or "").lower()
+                        if cached_build is None or cached_build < (bundled_build or 0) or (
+                            not re.fullmatch(r"[0-9a-f]{64}", digest)
+                            or hashlib.sha256(blob).hexdigest() != digest
+                        ):
+                            continue
+                return blob, candidate
         except Exception:
             continue
     if packaged_blob is not None:
