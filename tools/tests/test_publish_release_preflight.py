@@ -77,12 +77,12 @@ if ($env:TEST_DRAFT -eq '1') { $options.Draft = $true }
 & (Join-Path $PSScriptRoot 'tools/publish_github_release.ps1') @options
 ''')
 
-    def run(check_only=True, draft=False, existing=False, local=COMMIT, remote=COMMIT):
+    def run(check_only=True, draft=False, existing=False, local=COMMIT, remote=COMMIT, shell_override=None):
         env = dict(os.environ, TEST_HEAD_SHA=COMMIT, TEST_LOCAL_SHA=local, TEST_REMOTE_SHA=remote,
                    TEST_GH_LOG=str(tmp_path / "gh.jsonl"), TEST_CHECK_ONLY=str(int(check_only)),
                    TEST_DRAFT=str(int(draft)), TEST_EXISTING_RELEASE=str(int(existing)),
                    TEMP=str(tmp_path), TMP=str(tmp_path))
-        result = subprocess.run([shell, "-NoProfile", "-File", str(driver)], text=True,
+        result = subprocess.run([shell_override or shell, "-NoProfile", "-File", str(driver)], text=True,
                                 capture_output=True, env=env, timeout=45)
         calls = [json.loads(line) for line in (tmp_path / "gh.jsonl").read_text().splitlines()] if (tmp_path / "gh.jsonl").exists() else []
         return result, calls
@@ -99,6 +99,16 @@ def test_check_only_verifies_without_writes_or_github_commands(release_fixture):
     assert not calls
     assert manifest.read_bytes() == before
     assert not (root / "msbt_release_notes_v2.11.0.md").exists()
+
+
+def test_check_only_supports_windows_powershell_5(release_fixture):
+    shell = shutil.which("powershell")
+    if not shell:
+        pytest.skip("Windows PowerShell 5 is unavailable")
+    _root, run = release_fixture
+    result, calls = run(shell_override=shell)
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert not calls
 
 
 @pytest.mark.parametrize("bad", ["portable", "sdkmod", "mobile", "size", "sha512", "embedded", "local_tag", "remote_tag"])

@@ -36,6 +36,13 @@ function Get-StreamSha256 {
     finally { $algorithm.Dispose() }
 }
 
+function Get-ReleaseFileSha256 {
+    param([string]$Path)
+    $stream = [System.IO.File]::OpenRead($Path)
+    try { return Get-StreamSha256 $stream }
+    finally { $stream.Dispose() }
+}
+
 function Assert-PortableEmbeddedFile {
     param($Archive, [string]$EntryName, [string]$ExpectedSha256)
     $entry = $Archive.GetEntry($EntryName)
@@ -52,7 +59,7 @@ function Read-UpdaterYaml {
     if (-not (Get-Command node -ErrorAction SilentlyContinue) -or -not (Test-Path -LiteralPath $yamlModule)) {
         throw 'Updater verification requires Node and the installed Electron dependencies (npm ci).'
     }
-    $parseYaml = 'const fs=require("node:fs");const yaml=require(process.argv[1]);process.stdout.write(JSON.stringify(yaml.load(fs.readFileSync(process.argv[2],"utf8"))));'
+    $parseYaml = "const fs=require('node:fs');const yaml=require(process.argv[1]);process.stdout.write(JSON.stringify(yaml.load(fs.readFileSync(process.argv[2],'utf8'))));"
     $parsed = & node -e $parseYaml $yamlModule $Path
     if ($LASTEXITCODE -ne 0) { throw 'Could not parse latest.yml.' }
     return ($parsed | ConvertFrom-Json)
@@ -190,8 +197,8 @@ $SdkMod = Join-Path $RepoRoot 'MattsSDKBoostingTools.sdkmod'
 $EmbeddedSdkMod = Join-Path $ElectronDist 'win-unpacked\resources\sdkmod\MattsSDKBoostingTools.sdkmod'
 Assert-ReleaseFile $SdkMod
 Assert-ReleaseFile $EmbeddedSdkMod
-$sdkSha256 = (Get-FileHash -LiteralPath $SdkMod -Algorithm SHA256).Hash.ToLowerInvariant()
-if ((Get-FileHash -LiteralPath $EmbeddedSdkMod -Algorithm SHA256).Hash.ToLowerInvariant() -ne $sdkSha256) {
+$sdkSha256 = Get-ReleaseFileSha256 $SdkMod
+if ((Get-ReleaseFileSha256 $EmbeddedSdkMod) -ne $sdkSha256) {
     throw 'Installer staging contains a different SDK mod than the standalone release artifact.'
 }
 if ([string]$PackagedManifest.sdkmod_version -ne $PackageVersion) {
@@ -202,7 +209,7 @@ $portableArchive = [System.IO.Compression.ZipFile]::OpenRead($ElectronUnpackedZi
 try {
     $portableRoot = "MSBT-Portable-v$PackageVersion-win-x64/resources/"
     Assert-PortableEmbeddedFile $portableArchive ($portableRoot + 'sdkmod/MattsSDKBoostingTools.sdkmod') $sdkSha256
-    $manifestSha256 = (Get-FileHash -LiteralPath $PackagedManifestPath -Algorithm SHA256).Hash.ToLowerInvariant()
+    $manifestSha256 = Get-ReleaseFileSha256 $PackagedManifestPath
     Assert-PortableEmbeddedFile $portableArchive ($portableRoot + 'releases/latest.json') $manifestSha256
 } finally { $portableArchive.Dispose() }
 $ElectronAssets += $SdkMod
@@ -225,8 +232,7 @@ $rollingApk = Join-Path $MobileApkDir $rollingApkName
 $versionedApk = Join-Path $MobileApkDir $versionedApkName
 Assert-ReleaseFile $rollingApk
 Assert-ReleaseFile $versionedApk
-if ((Get-FileHash -LiteralPath $rollingApk -Algorithm SHA256).Hash -ne
-    (Get-FileHash -LiteralPath $versionedApk -Algorithm SHA256).Hash) {
+if ((Get-ReleaseFileSha256 $rollingApk) -ne (Get-ReleaseFileSha256 $versionedApk)) {
     throw 'Rolling and versioned Android APKs differ.'
 }
 $ElectronAssets += @($rollingApk, $versionedApk)
