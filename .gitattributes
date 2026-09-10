@@ -1,5 +1,7 @@
 # Keep catalog and vendor payload hashes stable on Windows and fresh checkouts.
-docs/data/*.json text eol=lf
+# Published data assets must retain the exact bytes in catalog_manifest.json.
+docs/data/*.json -text whitespace=cr-at-eol
+docs/releases/latest.json text eol=lf
 external_app/v22_parts_codes_fixed/resources/*.json text eol=lf
 external_app/v22_parts_codes_fixed/matt_editor/LegitItems/*.json text eol=lf
 external_app/v22_parts_codes_fixed/matt_editor/game_data_export.json text eol=lf

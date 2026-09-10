@@ -11,6 +11,13 @@ const {
 } = require("./remote_data_catalogs");
 
 async function main() {
+  const publishedDir = path.join(__dirname, "../docs/data");
+  const published = JSON.parse(await fs.readFile(path.join(publishedDir, "catalog_manifest.json"), "utf8"));
+  for (const entry of published.files) {
+    const bytes = await fs.readFile(path.join(publishedDir, entry.path));
+    assert.strictEqual(bytes.length, entry.bytes, `Published catalog byte count: ${entry.path}`);
+    assert.strictEqual(sha256Buffer(bytes), entry.sha256, `Published catalog checksum: ${entry.path}`);
+  }
   const userData = await fs.mkdtemp(path.join(os.tmpdir(), "msbt-game-build-"));
   try {
     const bundle = path.join(userData, "bundle");

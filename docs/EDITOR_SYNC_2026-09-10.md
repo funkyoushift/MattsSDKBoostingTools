@@ -1,6 +1,6 @@
 # September 10 editor update
 
-This change updates the embedded editor for BL4 v1.10, using installed game build `25234898`. It is prepared on a review branch. It does not change public versions, tags, releases, or updater manifests.
+This change updates the embedded editor for BL4 v1.10, using installed game build `25234898`. The embedded-editor changes ship in MSBT v2.11.1.
 
 | Area | Coverage and behavior |
 | --- | --- |
@@ -28,7 +28,7 @@ npm run check
 
 The focused tests execute real browser helpers against the native data, exercise synthetic save/profile round trips, verify level/XP preservation and region scoping, check ordinary YAML parsing/compression, and verify local script references and badge membership. A hidden Electron window also loads the full page with external requests blocked, then exercises the Loveless selector, level/XP inputs and Providence/BP5 buttons. They do not modify player saves.
 
-Generated native tables and vendor files use canonical LF line endings so their provenance hashes survive Windows and fresh Git checkouts. The importer writes LF explicitly; source hashes still describe the original parser output bytes. The browser checks verify all 59 imported table hashes and the vendored bundle.
+Generated native editor tables and vendor files use canonical LF line endings so their provenance hashes survive Windows and fresh Git checkouts. The importer writes LF explicitly; source hashes still describe the original parser output bytes. The browser checks verify all 59 imported table hashes and the vendored bundle. Published files in `docs/data` retain their exact release bytes to match the existing data-v1.1.0 checksum manifest.
 
 Regenerate or verify badges from the previous published catalog:
 
