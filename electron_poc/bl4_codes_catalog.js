@@ -176,6 +176,36 @@ function decodedIdentity(raw) {
   return {};
 }
 
+function normalizeItemLevel(raw, deserialized = "") {
+  const explicit = field(raw, "item_level", "itemLevel", "level", "lvl");
+  const numeric = Number.parseInt(String(explicit ?? "").trim(), 10);
+  if (Number.isFinite(numeric) && numeric > 0 && numeric <= 999) return numeric;
+  const header = text(deserialized).match(/^\s*-?\d+\s*,\s*-?\d+\s*,\s*-?\d+\s*,\s*(\d+)\b/);
+  if (!header) return null;
+  const parsed = Number.parseInt(header[1], 10);
+  return parsed > 0 && parsed <= 9999 ? parsed : null;
+}
+
+function catalogParameters(raw) {
+  const out = {};
+  const keys = {
+    dlc: ["dlc", "content"],
+    tacklebox: ["tacklebox"],
+    lootlemon: ["lootlemon"],
+    trusted_partner: ["trustedPartner", "trusted_partner"],
+    discord_url: ["discordUrl", "discord_url"],
+    website_url: ["websiteUrl", "website_url"],
+    image_thumbnail: ["imageThumb", "image_thumb"],
+    text_path: ["txtPath", "text_path"],
+    votes: ["votes"]
+  };
+  for (const [name, aliases] of Object.entries(keys)) {
+    const value = field(raw, ...aliases);
+    if (hasValue(value)) out[name] = value;
+  }
+  return out;
+}
+
 function collectGzoTags(raw) {
   const tags = [];
   for (const key of ["tags", "tag", "labels", "categories", "meta", "notes"]) {
@@ -228,6 +258,7 @@ function normalizeGzoRow(raw, inheritedListing = "") {
     "GZO"
   );
   const type = normalizeType(field(raw, "type", "itemType") || classified.type);
+  const deserialized = text(field(raw, "deserialized", "human", "decoded", "decodedSerial", "human_serial"));
   return {
     id: "",
     name: normalizeTitle(field(raw, "name", "displayName", "title", "itemName"), "GZO Serial"),
@@ -241,10 +272,12 @@ function normalizeGzoRow(raw, inheritedListing = "") {
     source: "GZO",
     url: normalizeWebUrl(field(raw, "websiteUrl", "url", "link", "pageUrl") || GZO_CODES_URL),
     image_url: normalizeWebUrl(field(raw, "image", "image_url", "imageUrl", "thumbnail", "screenshot", "screenshot_url", "photo", "picture")),
-    deserialized: text(field(raw, "deserialized", "human", "decoded", "decodedSerial", "human_serial")),
+    deserialized,
+    item_level: normalizeItemLevel(raw, deserialized),
     mattmab_validator: normalizeTitle(field(raw, "mattmab_validator", "validator", "validation", "mattmabResult", "result")),
     mattmab_validator_detail: normalizeTitle(field(raw, "mattmab_validator_detail", "validatorDetail", "detail")),
-    tags: unique([...tags, "gzo"])
+    tags: unique([...tags, "gzo"]),
+    catalog_parameters: catalogParameters(raw)
   };
 }
 
@@ -334,6 +367,11 @@ function normalizeCodeEntry(raw, defaults) {
   const classification = normalizeClassification(raw.classification || raw.validation || raw.mattmab_classification, tags);
   const mattmab = normalizeMattmab(raw.mattmab_validator || raw.mattmab_result || raw.mattmab || raw.validation_result);
   const identity = decodedIdentity(raw);
+  const deserialized = text(raw.deserialized || raw.human || raw.decoded || raw.decoded_serial || raw.human_serial);
+  const url = text(raw.url || raw.lootlemon_url || raw.link);
+  const sourceParameters = raw.catalog_parameters && typeof raw.catalog_parameters === "object" && !Array.isArray(raw.catalog_parameters)
+    ? { ...raw.catalog_parameters }
+    : {};
 
   return {
     id: stableId(defaults.prefix, raw, serial),
@@ -349,12 +387,17 @@ function normalizeCodeEntry(raw, defaults) {
     classification,
     mattmab_validator: mattmab,
     mattmab_validator_detail: text(raw.mattmab_validator_detail || raw.mattmab_detail || raw.validation_detail),
-    url: text(raw.url || raw.lootlemon_url || raw.link),
+    url,
     image_url: normalizeWebUrl(raw.image_url || raw.imageUrl || raw.image || raw.thumbnail || raw.screenshot || raw.screenshot_url || raw.photo || raw.picture || raw.img),
-    deserialized: text(raw.deserialized || raw.human || raw.decoded || raw.decoded_serial || raw.human_serial),
+    deserialized,
+    item_level: normalizeItemLevel(raw, deserialized),
     tags,
     notes: text(raw.notes || raw.description || raw.comment),
     decoded_identity: identity,
+    catalog_parameters: { ...catalogParameters(raw), ...sourceParameters },
+    sources: unique([source]),
+    source_urls: url ? { [source]: url } : {},
+    aliases: unique([raw.name || raw.title || raw.label]),
     raw_id: text(raw.id || raw.uuid || raw.key),
     source_file: defaults.file
   };
@@ -404,10 +447,26 @@ function mergeBySerial(rows) {
         if (value && typeof value === "object") return Object.keys(value).length > 0;
         return text(value);
       })),
-      tags: unique([...(existing.tags || []), ...(row.tags || [])])
+      tags: unique([...(existing.tags || []), ...(row.tags || [])]),
+      sources: unique([...(existing.sources || [existing.source]), ...(row.sources || [row.source])]),
+      aliases: unique([...(existing.aliases || [existing.name]), ...(row.aliases || [row.name])]),
+      catalog_parameters: {
+        ...(existing.catalog_parameters || {}),
+        ...(row.catalog_parameters || {})
+      },
+      source_urls: {
+        ...(existing.source_urls || {}),
+        ...(row.source_urls || {})
+      }
     });
   }
-  return Array.from(bySerial.values()).sort((a, b) => a.name.localeCompare(b.name));
+  return Array.from(bySerial.values())
+    .map((row) => ({
+      ...row,
+      url: (row.source_urls || {}).Lootlemon || row.url,
+      source_count: (row.sources || []).length
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name));
 }
 
 function filterValues(entries) {
@@ -417,6 +476,8 @@ function filterValues(entries) {
     manufacturers: unique(entries.map((entry) => entry.manufacturer)),
     rarities: unique(entries.map((entry) => entry.rarity)),
     creators: unique(entries.map((entry) => entry.creator)),
+    levels: Array.from(new Set(entries.map((entry) => entry.item_level).filter((value) => value !== null).map(String)))
+      .sort((a, b) => Number(a) - Number(b)),
     mattmabResults: ["All", "Legit", "Modded", "Error", "Unchecked"]
   };
 }
@@ -492,7 +553,9 @@ async function loadBl4Catalog(resourceDir = DEFAULT_RESOURCE_DIR, options = {}) 
     entries,
     counts: {
       ...counts,
-      merged: entries.length
+      merged: entries.length,
+      duplicatesCollapsed: Math.max(0, normalized.length - entries.length),
+      multiSource: entries.filter((entry) => (entry.sources || []).length > 1).length
     },
     filters: filterValues(entries),
     warnings
@@ -560,7 +623,10 @@ async function refreshGzoCatalog(resourceDir = DEFAULT_RESOURCE_DIR, gzoCachePat
   await fs.writeFile(gzoCachePath, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
   const catalog = await loadBl4Catalog(resourceDir, {
     gzoCachePath,
-    filePaths: options.filePaths
+    // The caller may have resolved the bundled file before this first refresh
+    // created the cache. Return the data we just wrote, while retaining the
+    // caller's paths for the other catalogs.
+    filePaths: { ...options.filePaths, gzo: gzoCachePath }
   });
   return {
     ...catalog,

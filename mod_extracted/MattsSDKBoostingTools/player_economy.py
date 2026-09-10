@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import argparse
-import re
 import unicodedata
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -11,6 +10,10 @@ from mods_base import command
 from unrealsdk import find_all, find_class, find_object, logging
 from unrealsdk.unreal import FGbxDefPtr, UObject
 
+from .game_parameters import (
+    MAX_PLAYER_LEVEL, MAX_SPEC_LEVEL, MAX_VAULT_CARD_LEVEL,
+    experience_row_for_track, experience_token_name,
+)
 from .party_helpers import (
     _gbc_find_pc_for_player_state,
     _gbc_is_listen_host_world,
@@ -45,21 +48,27 @@ _CURRENCY_KIND_ALIASES: Dict[str, str] = {
     "vaultcard4": "VaultCard04_Tokens",
     "vaultcard_4": "VaultCard04_Tokens",
     "vc4": "VaultCard04_Tokens",
+    # Verified in v1.10 Nexus-Data-Capital0 and Nexus-Data-vault_cards0.
+    "vaultcard5": "VaultCard05_Tokens",
+    "vaultcard_5": "VaultCard05_Tokens",
+    "vc5": "VaultCard05_Tokens",
 }
 
-# OakPlayerState.ExperienceState fixed slots (aliases → index).
+# Logical experience-track indices (resolved against live row tokens before writes).
 #   0 — Player/character level
 #   1 — Specialization level
 #   2 — Vault card 01 XP
 #   3 — Vault card 02 XP
 #   4 — Vault card 03 XP (Raid 3)
+#   5 — Vault card 04 XP
+#   6 — Vault card 05 XP (v1.10; requires a matching live token)
 # Level changes now go through OakPlayerState.BP_SetExperienceLevel using an
 # SDK 03 FGbxDefPtr(name, type) to /Script/GbxGame.GbxExperienceDef. This is much
 # safer than writing ExperienceState fields directly, because the engine updates
 # related level/XP state itself.
-_MAX_PLAYER_LEVEL_ENGINE = 70
-_MAX_SPEC_LEVEL_ENGINE = 701
-_MAX_VAULT_XP_LEVEL_ENGINE = 9_999_999
+_MAX_PLAYER_LEVEL_ENGINE = MAX_PLAYER_LEVEL
+_MAX_SPEC_LEVEL_ENGINE = MAX_SPEC_LEVEL
+_MAX_VAULT_XP_LEVEL_ENGINE = MAX_VAULT_CARD_LEVEL
 
 
 def _clamp_engine_experience_level(track_index: int, level: int) -> int:
@@ -77,6 +86,8 @@ _EXPERIENCE_TRACK_ALIASES: Dict[str, int] = {
     "2": 2,
     "3": 3,
     "4": 4,
+    "5": 5,
+    "6": 6,
     "character": 0,
     "player": 0,
     "main": 0,
@@ -96,6 +107,9 @@ _EXPERIENCE_TRACK_ALIASES: Dict[str, int] = {
     "vaultcard_xp_4": 5,
     "vaultcard4_xp": 5,
     "vc4_xp": 5,
+    "vaultcard_xp_5": 6,
+    "vaultcard5_xp": 6,
+    "vc5_xp": 6,
 }
 
 
@@ -116,8 +130,8 @@ _MAX_WALLET_AMOUNT = 2_147_483_647
 _SDU_POINTS_POOL_INDEX = 2
 _MAX_SDU_POINTS = 3225
 
-# --- Cumulative total XP (ExperiencePoints) vs level — from workspace `xp.md` (BL4 / Oak) ---
-# Under-shooting total XP for a level causes HUD counter glitches; use documented curves + margin.
+# Legacy XP estimates from workspace `xp.md`; native level setters below do not use them.
+# These are not authoritative game thresholds and must not replace native XP state.
 _CHAR_XP_ANCHOR_L50 = 3_430_227
 _CHAR_XP_ANCHOR_L60 = 5_714_893
 _SPEC_XP_ANCHOR_L701 = 7_431_910_510
@@ -187,7 +201,8 @@ def _xp_safety_margin(total: int) -> int:
 def _character_cumulative_total_xp(level: int) -> int | None:
     """
     Cumulative total XP for OakPlayerState ExperienceState slot 0 (character level).
-    Anchors L50 / L60 from xp.md; polynomial segment for 11–50; linear bridge 50–60; extrapolate past 60.
+    Legacy estimate through level 60; unknown above it. The game's native setter
+    owns the XP curve for the level-cap increase, including its rounding rules.
     """
     if level <= 1:
         return 0
@@ -205,8 +220,7 @@ def _character_cumulative_total_xp(level: int) -> int | None:
     if level <= 60:
         t = (level - 50) / 10.0
         return int(round(_CHAR_XP_ANCHOR_L50 + t * (_CHAR_XP_ANCHOR_L60 - _CHAR_XP_ANCHOR_L50)))
-    per = (_CHAR_XP_ANCHOR_L60 - _CHAR_XP_ANCHOR_L50) / 10.0
-    return int(round(_CHAR_XP_ANCHOR_L60 + (level - 60) * per))
+    return None
 
 
 def _specialization_cumulative_total_xp(level: int) -> int | None:
@@ -266,24 +280,24 @@ def _vault_track_cumulative_total_xp(level: int, prior_level: int, prior_points:
     return max(0, int(round(rate * lvl)))
 
 
-def _cumulative_floor_for_track(track_index: int, level: int, prior_lvl: int, prior_pts: int) -> int:
-    """Minimum lifetime ExperiencePoints to sit at ``level`` with an empty bar (HUD thresholds)."""
+def _cumulative_floor_for_track(track_index: int, level: int, prior_lvl: int, prior_pts: int) -> int | None:
+    """Legacy lifetime XP estimate, or None when the character curve is unknown."""
     lv = max(0, int(level))
     if track_index == 0:
-        return int(_character_cumulative_total_xp(lv))
+        return _character_cumulative_total_xp(lv)
     if track_index == 1:
         return int(_specialization_cumulative_total_xp(lv))
     return _vault_track_cumulative_total_xp(lv, prior_lvl, prior_pts)
 
 
-def _cumulative_next_floor_for_track(track_index: int, level: int, prior_lvl: int, prior_pts: int) -> int:
+def _cumulative_next_floor_for_track(track_index: int, level: int, prior_lvl: int, prior_pts: int) -> int | None:
     """
     Cumulative lifetime XP threshold to finish ``level`` and reach ``level + 1`` at 0 bar.
-    Used for ExperiencePointsRequiredForNextLevel.
+    Legacy estimate only; None means unknown. Never replaces native thresholds.
     """
     lv = max(0, int(level))
     if track_index == 0:
-        return int(_character_cumulative_total_xp(lv + 1))
+        return _character_cumulative_total_xp(lv + 1)
     if track_index == 1:
         return int(_specialization_cumulative_total_xp(lv + 1))
     if lv >= _MAX_VAULT_XP_LEVEL_ENGINE:
@@ -315,6 +329,7 @@ _EXPERIENCE_TRACK_TOKEN_FALLBACKS: Dict[int, Tuple[str, ...]] = {
     3: ("VaultCard02", "VaultCard2", "VaultCard02_XP", "VaultCard02_Experience"),
     4: ("VaultCard03", "VaultCard3", "VaultCard03_XP", "VaultCard03_Experience"),
     5: ("VaultCard04", "VaultCard4", "VaultCard04_XP", "VaultCard04_Experience"),
+    6: ("VaultCard05_Experience",),
 }
 
 
@@ -351,34 +366,13 @@ def _make_experience_def_ptr(token_name: str) -> Optional[FGbxDefPtr]:
 
 
 def _experience_state_token_name(row: Any) -> Optional[str]:
-    """Best-effort extraction of the SName token shown as Name: 'Character' in runtime dumps."""
-    try:
-        eid = getattr(row, "ExperienceId", None)
-    except Exception:
-        eid = None
-    if eid is None:
-        return None
-    for attr in ("Name", "name"):
-        try:
-            value = getattr(eid, attr)
-            if isinstance(value, str) and value:
-                return value
-        except Exception:
-            pass
-    try:
-        text = str(eid)
-    except Exception:
-        return None
-    m = re.search(r"Name:\s*'([^']+)'", text)
-    if m:
-        return m.group(1)
-    m = re.search(r'Name:\s*"([^"]+)"', text)
-    if m:
-        return m.group(1)
-    return None
+    return experience_token_name(row)
 
 
 def _candidate_experience_tokens(track_index: int, row: Any) -> List[str]:
+    live_token = _experience_state_token_name(row)
+    if live_token:
+        return [live_token]
     seen: set[str] = set()
     out: List[str] = []
     for token in (_experience_state_token_name(row), *(_EXPERIENCE_TRACK_TOKEN_FALLBACKS.get(track_index, ()))):
@@ -649,8 +643,9 @@ def _set_experience_level_via_bp(ps: Any, track_index: int, level: int) -> bool:
     except Exception as e:
         _log_err("ExperienceState length: %s", e)
         return False
-    if track_index < 0 or track_index >= n:
-        _log_err("Experience track index %s out of range (0..%s).", track_index, max(0, n - 1))
+    row = experience_row_for_track(es, track_index)
+    if row is None:
+        _log_err("Experience track %s not found in %s live rows; no level write made.", track_index, n)
         return False
 
     requested = max(0, int(level))
@@ -662,12 +657,6 @@ def _set_experience_level_via_bp(ps: Any, track_index: int, level: int) -> bool:
             requested,
             lvl,
         )
-
-    try:
-        row = es[track_index]
-    except Exception as e:
-        _log_err("ExperienceState[%s] read failed: %s", track_index, e)
-        return False
 
     candidates = _candidate_experience_tokens(track_index, row)
     if not candidates:
@@ -692,7 +681,7 @@ def _set_experience_level_via_bp(ps: Any, track_index: int, level: int) -> bool:
             after = ps.BP_GetExperienceLevel(xp_def)
         except Exception:
             after = None
-        if after == lvl or before != after or token == candidates[-1]:
+        if after == lvl or after is None:
             _log(
                 "ExperienceState[%s]: BP_SetExperienceLevel token=%r level %s -> %s (requested %s).",
                 track_index,
@@ -702,6 +691,7 @@ def _set_experience_level_via_bp(ps: Any, track_index: int, level: int) -> bool:
                 requested,
             )
             return True
+        _log_err("Experience token %r read back level %s after requesting %s.", token, after, lvl)
 
     if last_error is not None:
         _log_err("BP_SetExperienceLevel failed for ExperienceState[%s]: %s", track_index, last_error)
@@ -710,107 +700,92 @@ def _set_experience_level_via_bp(ps: Any, track_index: int, level: int) -> bool:
     return False
 
 
-def _do_give_currency(kind_raw: str, amount: int, name_sub: str) -> None:
+def _do_give_currency(kind_raw: str, amount: int, name_sub: str) -> bool:
     if not name_sub:
-        _log_err("Usage: givecurrency <kind> <amount> name <substring>  — kinds: cash, eridium, vaultcard1, vaultcard2, vaultcard3, vaultcard4")
-        return
+        _log_err("Usage: givecurrency <kind> <amount> name <substring>  — kinds: cash, eridium, vaultcard1, vaultcard2, vaultcard3, vaultcard4, vaultcard5")
+        return False
     key = (kind_raw or "").strip().lower()
     token = _CURRENCY_KIND_ALIASES.get(key)
     if not token:
-        _log_err("Unknown currency kind %r — use cash, eridium, vaultcard1, vaultcard2, vaultcard3, vaultcard4.", kind_raw)
-        return
+        _log_err("Unknown currency kind %r — use cash, eridium, vaultcard1, vaultcard2, vaultcard3, vaultcard4, vaultcard5.", kind_raw)
+        return False
     if amount == 0:
         _log_err("Amount must be non-zero.")
-        return
+        return False
     if amount < -_INT32_MAX:
         _log_err("Negative amount out of int32 range.")
-        return
+        return False
     if amount > _MAX_WALLET_AMOUNT:
         _log_err("Amount above supported max wallet/int32 limit (%s).", _MAX_WALLET_AMOUNT)
-        return
+        return False
     pc, err = _resolve_target_pc_for_name(name_sub)
     if pc is None:
         _log_err("givecurrency: %s", err)
-        return
+        return False
 
     # GiveCurrency takes a 32-bit integer amount in current SDK builds, so large
     # wallet targets are delivered in int32-safe chunks.
     remaining = int(amount)
     if remaining < 0:
-        if not _give_currency_on_pc(pc, token, remaining):
-            _log_err("givecurrency failed for token=%s amount=%s.", token, remaining)
-        return
+        return _give_currency_on_pc(pc, token, remaining)
 
     chunks = 0
     while remaining > 0:
         chunk = min(remaining, _INT32_MAX)
         if not _give_currency_on_pc(pc, token, chunk):
             _log_err("givecurrency failed for token=%s chunk=%s remaining=%s.", token, chunk, remaining)
-            return
+            return False
         remaining -= chunk
         chunks += 1
     if chunks > 1:
         _log("GiveCurrency delivered %s total to token=%s in %s chunks.", amount, token, chunks)
+    return True
 
 
-def _do_give_experience(track_raw: str, level: int, name_sub: str) -> None:
+def _do_give_experience(track_raw: str, level: int, name_sub: str) -> bool:
     if not name_sub:
         _log_err(
             "Usage: giveexperience <track> <level> name <substring>  — slots: 0 player level, 1 specialization, "
-            "2 vault card 01, 3 vault card 02, 4 vault card 03, 5 vault card 04 "
-            "(or aliases character/player, specialization, vaultcard_xp_1/2/3/4), or digit 0..5."
+            "2 vault card 01, 3 vault card 02, 4 vault card 03, 5 vault card 04, 6 vault card 05 "
+            "(or aliases character/player, specialization, vaultcard_xp_1/2/3/4/5), or digit 0..6."
         )
-        return
+        return False
     tkey = _normalize_track_key(track_raw)
     if tkey not in _EXPERIENCE_TRACK_ALIASES:
         _log_err(
-            "Unknown track %r — use slots 0..5 or character/player, specialization, "
-            "vaultcard_xp_1, vaultcard_xp_2, vaultcard_xp_3, vaultcard_xp_4.",
+            "Unknown track %r — use slots 0..6 or character/player, specialization, "
+            "vaultcard_xp_1, vaultcard_xp_2, vaultcard_xp_3, vaultcard_xp_4, vaultcard_xp_5.",
             track_raw,
         )
-        return
+        return False
     if level < 0:
         _log_err("Level must be non-negative.")
-        return
+        return False
     world, gs = _gbc_session_world_and_gamestate()
     if world is None or gs is None:
         _log_err("giveexperience: no world or GameState")
-        return
+        return False
     if not _gbc_is_listen_host_world(world):
         _log_err("giveexperience: listen host only")
-        return
+        return False
     player_idx, err = _gbc_resolve_player_index_for_name_substring(gs, name_sub)
     if err:
         _log_err("giveexperience: %s", err)
-        return
+        return False
     pa = getattr(gs, "PlayerArray", None)
     if pa is None:
         _log_err("giveexperience: PlayerArray missing")
-        return
+        return False
     try:
         ps = pa[player_idx]
     except Exception as e:
         _log_err("giveexperience: could not read PlayerState: %s", e)
-        return
+        return False
     if ps is None:
         _log_err("giveexperience: null PlayerState")
-        return
-    es = getattr(ps, "ExperienceState", None)
-    try:
-        es_n = len(es) if es is not None else 0
-    except Exception:
-        es_n = 0
+        return False
     track_idx = _EXPERIENCE_TRACK_ALIASES[tkey]
-    if track_idx < 0 or track_idx >= es_n:
-        _log_err(
-            "giveexperience: slot %s for track %r out of range (ExperienceState length %s).",
-            track_idx,
-            track_raw,
-            es_n,
-        )
-        return
-    if not _set_experience_level_via_bp(ps, track_idx, level):
-        _log_err("giveexperience: BP_SetExperienceLevel failed.")
+    return _set_experience_level_via_bp(ps, track_idx, level)
 
 
 def _do_msbt_maxsdu(parts: List[str]) -> None:
@@ -827,7 +802,7 @@ def _do_msbt_maxsdu(parts: List[str]) -> None:
     description=(
         "Listen host: GbxCurrencyFunctionLibrary.GiveCurrency for one player. "
         "Usage: givecurrency <kind> <amount> name <substring>  — kinds: cash, eridium, "
-        "vaultcard1, vaultcard2, vaultcard3, vaultcard4. "
+        "vaultcard1, vaultcard2, vaultcard3, vaultcard4, vaultcard5. "
         "Verify in-game: client wallet updates; ambiguous name → gbc_players."
     ),
 )
@@ -857,7 +832,7 @@ _cmd_givecurrency.add_argument(
     description=(
         "Listen host: set one player's experience level via OakPlayerState.BP_SetExperienceLevel "
         "using a GbxExperienceDef FGbxDefPtr. Slots: 0 player, 1 specialization, "
-        "2 vault 01, 3 vault 02. Character uses token 'Character'; other tracks reuse "
+        "2–6 vault cards 01–05. Character uses token 'Character'; other tracks reuse "
         "their ExperienceState token when available. Usage: giveexperience <track> <level> name <substring>."
     ),
 )

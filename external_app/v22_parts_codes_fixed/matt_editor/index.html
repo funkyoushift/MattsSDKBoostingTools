@@ -4218,7 +4218,7 @@
                     </div>
                     <div class="mi-prop-field mi-prop-field--level">
                         <label class="mi-field-label" for="mi_outputLevel">Level</label>
-                        <input type="number" id="mi_outputLevel" class="mi-prop-input" min="1" max="60" value="60" />
+                        <input type="number" id="mi_outputLevel" class="mi-prop-input" min="1" max="70" value="70" />
                         <span class="mi-card-hint">Item level</span>
                     </div>
                     <div class="mi-prop-field mi-prop-field--seed">
@@ -8016,8 +8016,8 @@
                     <summary class="final-output-summary" style="color: var(--accent-primary); margin-bottom: 8px; font-size: 13px; font-weight: 600; cursor: pointer; list-style: none; user-select: none;">Final Output</summary>
                     <div class="final-output-inner">
                         <div style="margin-bottom: 8px;">
-                            <label style="display: block; color: var(--text-secondary); font-size: 11px; margin-bottom: 4px; font-weight: 500;">Level (1-60):</label>
-                            <input type="number" id="outputLevel" min="1" max="60" value="60" style="width: 100%; padding: 6px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: var(--text-primary); font-size: 13px;">
+                            <label style="display: block; color: var(--text-secondary); font-size: 11px; margin-bottom: 4px; font-weight: 500;">Level (1-70):</label>
+                            <input type="number" id="outputLevel" min="1" max="70" value="70" style="width: 100%; padding: 6px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: var(--text-primary); font-size: 13px;">
                         </div>
                         <div style="margin-bottom: 8px;">
                             <label style="display: block; color: var(--text-secondary); font-size: 11px; margin-bottom: 4px; font-weight: 500;">Seed (1–4096):</label>
@@ -8312,7 +8312,7 @@
                             <div style="display: flex; flex-direction: column; gap: 10px;">
                                 <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
                                     <label for="profile-mass-level-input" style="min-width: 150px; color: #81d4fa; font-weight: 500;">Mass Level:</label>
-                                    <input type="number" id="profile-mass-level-input" min="1" max="100" placeholder="1–60" style="flex: 1; min-width: 120px; padding: 8px; background: rgba(0,0,0,0.5); border: 1px solid rgba(79, 195, 247, 0.3); border-radius: 4px; color: #fff;" />
+                                    <input type="number" id="profile-mass-level-input" min="1" max="70" placeholder="1–70" style="flex: 1; min-width: 120px; padding: 8px; background: rgba(0,0,0,0.5); border: 1px solid rgba(79, 195, 247, 0.3); border-radius: 4px; color: #fff;" />
                                     <button type="button" class="btn btn-secondary" onclick="profileMassChangeLevel()" style="padding: 8px 16px; background: rgba(79, 195, 247, 0.3); border-color: rgba(79, 195, 247, 0.5); color: #81d4fa;">🔄 Change all bank levels</button>
                                 </div>
                                 <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
@@ -8687,6 +8687,7 @@
                                         id="vaultcard-level-input"
                                         name="vaultcard-level-input"
                                         min="1"
+                                        max="9999"
                                         step="1"
                                         placeholder="1"
                                         style="
@@ -8702,7 +8703,7 @@
                                         onchange="updateVaultCardLevel()"
                                     />
                                     <div style="margin-top: 5px; font-size: 0.85em; opacity: 0.6;">
-                                        Experience points will be automatically calculated based on the level using the specialization XP curve.
+                                        Changing the level preserves the XP points below. Edit XP points separately if needed.
                                     </div>
                                 </div>
                                 <div>
@@ -8727,7 +8728,7 @@
                                         onchange="updateCurrencies()"
                                     />
                                     <div style="margin-top: 5px; font-size: 0.85em; opacity: 0.6;">
-                                        This value is automatically calculated when you change the level, but you can manually override it if needed.
+                                        XP points are saved exactly as entered.
                                     </div>
                                 </div>
                             </div>
@@ -8764,6 +8765,7 @@
                                         id="vaultcard02-level-input"
                                         name="vaultcard02-level-input"
                                         min="1"
+                                        max="9999"
                                         step="1"
                                         placeholder="1"
                                         style="
@@ -8779,7 +8781,7 @@
                                         onchange="updateVaultCard02Level()"
                                     />
                                     <div style="margin-top: 5px; font-size: 0.85em; opacity: 0.6;">
-                                        Experience points will be automatically calculated based on the level using the specialization XP curve.
+                                        Changing the level preserves the XP points below. Edit XP points separately if needed.
                                     </div>
                                 </div>
                                 <div>
@@ -8804,7 +8806,7 @@
                                         onchange="updateCurrencies()"
                                     />
                                     <div style="margin-top: 5px; font-size: 0.85em; opacity: 0.6;">
-                                        This value is automatically calculated when you change the level, but you can manually override it if needed.
+                                        XP points are saved exactly as entered.
                                     </div>
                                 </div>
                             </div>
@@ -8841,6 +8843,7 @@
                                         id="vaultcard03-level-input"
                                         name="vaultcard03-level-input"
                                         min="1"
+                                        max="9999"
                                         step="1"
                                         placeholder="1"
                                         style="
@@ -8856,7 +8859,7 @@
                                         onchange="updateVaultCard03Level()"
                                     />
                                     <div style="margin-top: 5px; font-size: 0.85em; opacity: 0.6;">
-                                        Experience points will be automatically calculated based on the level using the specialization XP curve.
+                                        Changing the level preserves the XP points below. Edit XP points separately if needed.
                                     </div>
                                 </div>
                                 <div>
@@ -8881,7 +8884,7 @@
                                         onchange="updateCurrencies()"
                                     />
                                     <div style="margin-top: 5px; font-size: 0.85em; opacity: 0.6;">
-                                        This value is automatically calculated when you change the level, but you can manually override it if needed.
+                                        XP points are saved exactly as entered.
                                     </div>
                                 </div>
                             </div>
@@ -8918,6 +8921,7 @@
                                         id="vaultcard04-level-input"
                                         name="vaultcard04-level-input"
                                         min="1"
+                                        max="9999"
                                         step="1"
                                         placeholder="1"
                                         style="
@@ -8933,7 +8937,7 @@
                                         onchange="updateVaultCard04Level()"
                                     />
                                     <div style="margin-top: 5px; font-size: 0.85em; opacity: 0.6;">
-                                        Experience points will be automatically calculated based on the level using the specialization XP curve.
+                                        Changing the level preserves the XP points below. Edit XP points separately if needed.
                                     </div>
                                 </div>
                                 <div>
@@ -8958,7 +8962,85 @@
                                         onchange="updateCurrencies()"
                                     />
                                     <div style="margin-top: 5px; font-size: 0.85em; opacity: 0.6;">
-                                        This value is automatically calculated when you change the level, but you can manually override it if needed.
+                                        XP points are saved exactly as entered.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 20px; padding: 15px; background: rgba(79, 195, 247, 0.1); border: 2px solid rgba(79, 195, 247, 0.3); border-radius: 8px;">
+                            <h6 style="margin: 0 0 15px 0; color: #81d4fa; font-size: 1em; font-weight: 600;">Vault Card 5</h6>
+                            <div style="display: flex; flex-direction: column; gap: 15px;">
+                                <div>
+                                    <label for="vaultcard05-tokens-input" style="display: block; margin-bottom: 8px; font-weight: 500; color: #81d4fa;">Vault Card 5 Tokens:</label>
+                                    <input
+                                        type="number"
+                                        id="vaultcard05-tokens-input"
+                                        name="vaultcard05-tokens-input"
+                                        min="0"
+                                        step="1"
+                                        placeholder="0"
+                                        style="
+                                            width: 100%;
+                                            padding: 8px;
+                                            background: rgba(0,0,0,0.5);
+                                            border: 1px solid rgba(79, 195, 247, 0.3);
+                                            border-radius: 4px;
+                                            color: #81d4fa;
+                                            font-family: monospace;
+                                            font-size: 0.9em;
+                                        "
+                                        onchange="updateCurrencies()"
+                                    />
+                                </div>
+                                <div>
+                                    <label for="vaultcard05-level-input" style="display: block; margin-bottom: 8px; font-weight: 500; color: #81d4fa;">Vault Card 5 Level:</label>
+                                    <input
+                                        type="number"
+                                        id="vaultcard05-level-input"
+                                        name="vaultcard05-level-input"
+                                        min="1"
+                                        max="9999"
+                                        step="1"
+                                        placeholder="1"
+                                        style="
+                                            width: 100%;
+                                            padding: 8px;
+                                            background: rgba(0,0,0,0.5);
+                                            border: 1px solid rgba(79, 195, 247, 0.3);
+                                            border-radius: 4px;
+                                            color: #81d4fa;
+                                            font-family: monospace;
+                                            font-size: 0.9em;
+                                        "
+                                        onchange="updateVaultCard05Level()"
+                                    />
+                                    <div style="margin-top: 5px; font-size: 0.85em; opacity: 0.6;">
+                                        Changing the level preserves the XP points below. Edit XP points separately if needed.
+                                    </div>
+                                </div>
+                                <div>
+                                    <label for="vaultcard05-points-input" style="display: block; margin-bottom: 8px; font-weight: 500; color: #81d4fa;">Vault Card 5 Experience Points:</label>
+                                    <input
+                                        type="number"
+                                        id="vaultcard05-points-input"
+                                        name="vaultcard05-points-input"
+                                        min="0"
+                                        step="1"
+                                        placeholder="0"
+                                        style="
+                                            width: 100%;
+                                            padding: 8px;
+                                            background: rgba(0,0,0,0.5);
+                                            border: 1px solid rgba(79, 195, 247, 0.3);
+                                            border-radius: 4px;
+                                            color: #81d4fa;
+                                            font-family: monospace;
+                                            font-size: 0.9em;
+                                        "
+                                        onchange="updateCurrencies()"
+                                    />
+                                    <div style="margin-top: 5px; font-size: 0.85em; opacity: 0.6;">
+                                        XP points are saved exactly as entered.
                                     </div>
                                 </div>
                             </div>
@@ -9265,7 +9347,7 @@
                         </div>
                         <h3 style="margin-bottom: 8px; color: #81d4fa; font-size: 1em; cursor: pointer; user-select: none; display: flex; align-items: center; gap: 8px;" onclick="toggleSection('edit-values-content')">
                             <span id="edit-values-toggle" style="font-size: 0.8em;">▶</span>
-                            ✏️ Edit Values (Change to level 60)
+                            ✏️ Edit Values (Change to level 70)
                         </h3>
                         <div class="help-text" style="margin-bottom: 10px; font-size: 0.85em; opacity: 0.8;">
                             Directly edit character stats, currency, and ammo values. Changes update in real-time.
@@ -9510,7 +9592,7 @@
                     </div>
                     <h5 style="margin-bottom: 10px; font-size: 1em; cursor: pointer; user-select: none; display: flex; align-items: center; gap: 8px;" onclick="toggleSection('mass-edit-tools-content')">
                         <span id="mass-edit-tools-toggle" style="font-size: 0.8em;">▶</span>
-                        ⚡ Mass Edit Tools (Set all to Level 60)
+                        ⚡ Mass Edit Tools (Set all to Level 70)
                     </h5>
                     <div class="help-text" style="margin-bottom: 15px; font-size: 0.85em; opacity: 0.8;">
                         Bulk edit tools for changing levels, removing parts, and modifying state flags across all items in your inventory.
@@ -9525,8 +9607,8 @@
                                 id="mass-level-input"
                                 name="mass-level-input"
                                 min="1"
-                                max="100"
-                                placeholder="New level (1-60)"
+                                max="70"
+                                placeholder="New level (1-70)"
                                 style="flex: 1; min-width: 120px; padding: 8px; background: rgba(0,0,0,0.5); border: 1px solid rgba(79, 195, 247, 0.3); border-radius: 4px; color: #fff;"
                             />
                             <button
@@ -10235,8 +10317,8 @@
                     </select>
                 </div>
                 <div class="form-group" style="margin-top: 15px;">
-                    <label for="randomItemLevel" style="color: #fff; margin-bottom: 10px; display: block;">Level (1-60, leave empty to randomize):</label>
-                    <input type="number" id="randomItemLevel" min="1" max="60" placeholder="Random" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid rgba(79, 195, 247, 0.5); font-size: 16px;">
+                    <label for="randomItemLevel" style="color: #fff; margin-bottom: 10px; display: block;">Level (1-70, leave empty to randomize):</label>
+                    <input type="number" id="randomItemLevel" min="1" max="70" placeholder="Random" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid rgba(79, 195, 247, 0.5); font-size: 16px;">
                 </div>
                 <div class="form-group" style="margin-top: 15px;">
                     <label for="randomItemModLevel" style="color: #fff; margin-bottom: 10px; display: block;">Modification Level:</label>
@@ -10495,6 +10577,7 @@
     <script src="js/item-editor/ui/tabs.js"></script>
     <script src="js/legit-scope.js"></script>
     <script src="js/item-editor/domain/helpers.js"></script>
+    <script src="js/item-editor/data/local-game-part-supplement.js"></script>
     <script src="js/item-editor/data/gzo-family-part-supplement.js"></script>
     <script src="js/item-editor/data/observed-modded-part-supplement.js"></script>
     <script src="js/item-editor/domain/process-data.js"></script>

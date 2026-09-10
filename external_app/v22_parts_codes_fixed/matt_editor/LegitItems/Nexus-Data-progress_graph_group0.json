@@ -1,8 +1,4 @@
 {
-  "__copyright": {
-    "author": "Cr4nkSt4r",
-    "github": "https://github.com/Cr4nkSt4r/Borderlands-4.NcsParser"
-  },
   "progress_graph_group": {
     "records": [
       {
@@ -13,6 +9,41 @@
               "groupname": "Global",
               "progressgraphs": [
                 "progress_graph'sdu_upgrades'"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "entries": [
+          {
+            "progressgroup_corpohacker": {
+              "progress_graph_group": "ProgressGroup_Corpohacker",
+              "groupname": "Corpohacker Progress Groups",
+              "progressgraphs": [
+                "progress_graph'Progress_Corpohacker_ActionSkills'",
+                "progress_graph'Progress_Corpohacker_ActionSkill_Modifiers_Contagion'",
+                "progress_graph'Progress_Corpohacker_Trunk_Virology'",
+                "progress_graph'Progress_Corpohacker_Branch_Virology_01'",
+                "progress_graph'Progress_Corpohacker_Branch_Virology_02'",
+                "progress_graph'Progress_Corpohacker_Branch_Virology_03'",
+                "progress_graph'Progress_Corpohacker_ActionSkill_Modifiers_VPN'",
+                "progress_graph'Progress_Corpohacker_Trunk_HackAndSlash'",
+                "progress_graph'Progress_Corpohacker_Branch_HackAndSlash_01'",
+                "progress_graph'Progress_Corpohacker_Branch_HackAndSlash_02'",
+                "progress_graph'Progress_Corpohacker_Branch_HackAndSlash_03'",
+                "progress_graph'Progress_Corpohacker_ActionSkill_Modifiers_Manifestation'",
+                "progress_graph'Progress_Corpohacker_Trunk_Assimilation'",
+                "progress_graph'progress_corpohacker_branch_Assimilation_01'",
+                "progress_graph'progress_corpohacker_branch_Assimilation_02'",
+                "progress_graph'progress_corpohacker_branch_Assimilation_03'",
+                "progress_graph'vaultpower_vaultreward_upgrades'",
+                "progress_graph'ProgressGraph_Specializations'",
+                "progress_graph'ProgressGraph_Specializations_Skills'"
+              ],
+              "displaydata": [
+                "skilltrees_data'corpohacker_skill_trees'",
+                "specializations_data'UI_Specializations_DisplayData'"
               ]
             }
           }

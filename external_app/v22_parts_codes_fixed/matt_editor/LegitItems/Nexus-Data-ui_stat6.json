@@ -1,8 +1,4 @@
 {
-  "__copyright": {
-    "author": "Cr4nkSt4r",
-    "github": "https://github.com/Cr4nkSt4r/Borderlands-4.NcsParser"
-  },
   "ui_stat": {
     "records": [
       {
@@ -164,7 +160,7 @@
               "sortingpriority": "-1000.000000",
               "statvalue": {
                 "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
-                "formattext": "classmod_darksiren_tuba, 478584304855C41386E448949A01BDC3, When [primary]Vex[/primary] deals [secondary]Action Skill Damage[/secondary] she has a 2% chance to trigger [secondary]Kill Skills[/secondary]. This effect can only occur every 5 seconds."
+                "formattext": "classmod_darksiren_tuba, 478584304855C41386E448949A01BDC3, When [primary]Vex[/primary] deals [secondary]Action Skill Damage[/secondary] she has a [secondary]5% Chance[/secondary] to trigger [secondary]Kill Skills[/secondary]. This effect can only occur every [secondary]1[/secondary] second."
               }
             }
           },
@@ -486,7 +482,7 @@
               "staticon": "Asset'/Game/uiresources/_shared/assets/ico_ui_art_discovery/ico_misc_legendaries.ico_misc_legendaries'",
               "statvalue": {
                 "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
-                "formattext": "Uni_MAL_SG_Kickballer, 1723F1B443EF63B43A377297B65955F1, [rarity_legendary]Fish Fry[/rarity_legendary] - On [secondary]Kill[/secondary], increase the [secondary]Damage Dealt[/secondary] of the next [secondary]Mag[/secondary] by [secondary]{mod}[/secondary] for a [secondary]Maximum[/secondary] [secondary]5 stacks[/secondary]",
+                "formattext": "Uni_MAL_SG_Kickballer, 1723F1B443EF63B43A377297B65955F1, [rarity_legendary]Fish Fry[/rarity_legendary] - On [secondary]Kill[/secondary], increase the [secondary]Damage Dealt[/secondary] of the next [secondary]Mag[/secondary] by [secondary]{mod}[/secondary] for a [secondary]Maximum[/secondary] of [secondary]5 stacks[/secondary]",
                 "argsmap": {
                   "pairs": {
                     "pair2013007324": {
@@ -511,6 +507,20 @@
                 "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
                 "formattext": "Uni_JAK_AR_Rowan, 86A8F7CF4E8145D611DDD3A2A67413FB, Like shooting fish from a barrel."
               }
+            }
+          },
+          {
+            "uistat_harmmain2_mrchewcollar": {
+              "ui_stat": "UIStat_HarmMain2_MrChewCollar",
+              "displaygroup": "ui_stat_group'Text'",
+              "statlabel": {
+                "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
+                "keygroup": "Mr. Chew's RFID enabled tracking collar. Probably connected to Fl4k's systems."
+              },
+              "statvalue": {
+                "structtype": "Asset'/Script/GbxGame.StringDisplayValue'"
+              },
+              "type": "/Script/GbxGame.UIStatDisplayDef"
             }
           },
           {
@@ -617,6 +627,37 @@
               "statvalue": {
                 "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
                 "formattext": "Uni_TED_Grenade_Gadget_PredatorDrone, 2DC7BB0743D684F2D9D18D9A86020CB2, No harm ever came from reading a book."
+              }
+            }
+          },
+          {
+            "uistat_pickup_spa_safecode": {
+              "ui_stat": "UIStat_Pickup_Spa_SafeCode",
+              "displaygroup": "ui_stat_group'Text'",
+              "statlabel": {
+                "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
+                "formattext": "UIStat_Pickup_VehiclePowercore, 32A8DAA5476559A7696D238B2961B00F, 1 of 5. Collect them all for a cool prize! (Proof of purchase required.)"
+              },
+              "type": "/Script/GbxGame.UIStatDisplayDef"
+            }
+          },
+          {
+            "uistat_pickup_vmuf_lytfestposter": {
+              "ui_stat": "UIStat_Pickup_VMUF_LytFestPoster",
+              "displaygroup": "ui_stat_group'Text'",
+              "statlabel": {
+                "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
+                "formattext": "UIStat_Pickup_VehiclePowercore, CDA67B9C482F32B81A1CDCBF0235C160, This festival's gonna be LYT!"
+              }
+            }
+          },
+          {
+            "uistat_pickup_vmuf_microphone": {
+              "ui_stat": "UIStat_Pickup_VMUF_Microphone",
+              "displaygroup": "ui_stat_group'Text'",
+              "statlabel": {
+                "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
+                "formattext": "UIStat_Pickup_VehiclePowercore, F13016B24730F626FE6FA3BA4C0C99A4, This is your moment."
               }
             }
           },
@@ -769,6 +810,17 @@
                 "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
                 "formattext": "Uni_JAK_PS_Kings_Gambit, 8269A74144A55C0E8D4B3A8E357D7233, The real voyage of discovery consists not in seeking new landscapes but in having new eyes."
               }
+            }
+          },
+          {
+            "uistat_si_pickup_detonator": {
+              "ui_stat": "UIStat_SI_Pickup_Detonator",
+              "displaygroup": "ui_stat_group'Text'",
+              "statlabel": {
+                "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
+                "formattext": "IO_SI_Pickup_Detonator, 586DED8342E495416550108DA26696C6, Don't press that button unless you mean it!"
+              },
+              "type": "/Script/GbxGame.UIStatDisplayDef"
             }
           },
           {

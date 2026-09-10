@@ -1,0 +1,1000 @@
+{
+  "skilltrees_data": {
+    "records": [
+      {
+        "entries": [
+          {
+            "corpohacker_skill_trees": {
+              "skilltrees_data": "corpohacker_skill_trees",
+              "vaulthuntername": "corpohacker",
+              "actionskills": "progress_graph'Progress_Corpohacker_ActionSkills'",
+              "trait": {
+                "previewtooltip": "uitooltipdata'ToolTip_Corpohacker_Trait_ToolTip_Preview'",
+                "tooltip": "uitooltipdata'ToolTip_Corpohacker_Trait_ToolTip'",
+                "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Trait/vh_trait_loveless.vh_trait_loveless'"
+              },
+              "skilltrees": [
+                {
+                  "treename": "dark_siren, D14BE83F47ECB789711E99AAAFCA5D1F, Virology",
+                  "color": "Green",
+                  "actionskill": {
+                    "name": "action_skill_0",
+                    "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Action_Skills/loveless_menu_action_skill_1.loveless_menu_action_skill_1'",
+                    "tooltip": "uitooltipdata'ToolTip_Corpohacker_ActionSkill_Contagion'",
+                    "previewtooltip": "uitooltipdata'Tooltip_Corpohacker_ActionSkill_Contagion_Preview'",
+                    "flourishtag": {
+                      "tagname": "Trick.StandIn.NonGunUser.SkillFlourish_B"
+                    }
+                  },
+                  "modifiersgraph": "progress_graph'Progress_Corpohacker_ActionSkill_Modifiers_Contagion'",
+                  "segments": [
+                    {
+                      "progressgraph": "progress_graph'Progress_Corpohacker_Trunk_Virology'",
+                      "tiers": [
+                        {
+                          "nodes": [
+                            {
+                              "name": "Trunk - Row 1 - 1",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_01.loveless_passive_green_01'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_01_Capacitor'"
+                            },
+                            {
+                              "name": "Trunk - Row 1 - 2",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_02.loveless_passive_green_02'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_02_EstablishedGameplayLoop'"
+                            },
+                            {
+                              "name": "Trunk - Row 1 - 3",
+                              "nodetype": "None",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_03.loveless_passive_green_03'"
+                            },
+                            {
+                              "name": "Trunk - Row 1 - 4",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_04.loveless_passive_green_04'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_03_MiseryLovesCompnany'"
+                            },
+                            {
+                              "name": "Trunk - Row 1 - 5",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_05.loveless_passive_green_05'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_04_ToxicMentality'"
+                            }
+                          ]
+                        },
+                        {
+                          "nodes": [
+                            {
+                              "name": "Trunk - Row 2 - 1",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_06.loveless_passive_green_06'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_05_LovelessSecretStuff'"
+                            },
+                            {
+                              "name": "augment_1",
+                              "nodetype": "Augment",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Augment/loveless_augment_green_02.loveless_augment_green_02'",
+                              "tooltip": "uitooltipdata'ToolTip_Corpohacker_ActionSkill_Contagion_Augment_Recursion'",
+                              "eventtag": {
+                                "tagname": "StandIn.CorpoHacker.Augment.Contagion.Recursion"
+                              }
+                            },
+                            {
+                              "name": "Trunk - Row 2 - 3",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_07.loveless_passive_green_07'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_06_Containment'"
+                            },
+                            {
+                              "name": "augment_2",
+                              "nodetype": "Augment",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Augment/loveless_augment_green_01.loveless_augment_green_01'",
+                              "tooltip": "uitooltipdata'ToolTip_Corpohacker_ActionSkill_Contagion_Augment_DefilePath'",
+                              "eventtag": {
+                                "tagname": "StandIn.CorpoHacker.Augment.Contagion.DefilePath"
+                              }
+                            },
+                            {
+                              "name": "Trunk - Row 2 - 5",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_08.loveless_passive_green_08'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_07_Luckless'"
+                            }
+                          ]
+                        },
+                        {
+                          "nodes": [
+                            {
+                              "name": "Trunk - Row 3 - 1",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_09.loveless_passive_green_09'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_08_Cat5'"
+                            },
+                            {
+                              "name": "Trunk - Row 3 - 2",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_10.loveless_passive_green_10'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_09_PotentialTransference'"
+                            },
+                            {
+                              "name": "Trunk - Row 3 - 3",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_11.loveless_passive_green_11'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_10_Kaleidoscontaminant'"
+                            },
+                            {
+                              "name": "Trunk - Row 3 - 4",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_12.loveless_passive_green_12'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_11_CommunicableCombustible'"
+                            },
+                            {
+                              "name": "Trunk - Row 3 - 5",
+                              "nodetype": "None",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_13.loveless_passive_green_13'"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "progressgraph": "progress_graph'Progress_Corpohacker_Branch_Virology_01'",
+                      "tiers": [
+                        {
+                          "nodes": [
+                            {
+                              "name": "Branch - Row 1 - 1",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_14.loveless_passive_green_14'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_12_GeneticImmunity'"
+                            },
+                            {
+                              "name": "augment_3",
+                              "nodetype": "Augment",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Augment/loveless_augment_green_03.loveless_augment_green_03'",
+                              "tooltip": "uitooltipdata'ToolTip_Corpohacker_ActionSkill_Contagion_Augment_LagSwitch'",
+                              "eventtag": {
+                                "tagname": "StandIn.CorpoHacker.Augment.Contagion.LagSwitch"
+                              }
+                            },
+                            {
+                              "name": "Branch - Row 1 - 3",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_15.loveless_passive_green_15'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_13_IrrationalIrradiation'"
+                            }
+                          ]
+                        },
+                        {
+                          "nodes": [
+                            {
+                              "name": "Branch - Row 2 - 1",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_16.loveless_passive_green_16'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_14_ConservationOfLife'"
+                            },
+                            {
+                              "name": "Branch - Row 2 - 2",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_17.loveless_passive_green_17'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_15_TurboButton'"
+                            },
+                            {
+                              "name": "Branch - Row 2 - 3",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_18.loveless_passive_green_18'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_16_CircularLogic'"
+                            }
+                          ]
+                        },
+                        {
+                          "nodes": [
+                            {
+                              "name": "Branch - Row 3 - 1",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_19.loveless_passive_green_19'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_17_Overflow'"
+                            },
+                            {
+                              "name": "capstone_1",
+                              "nodetype": "Capstone",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Capstones/loveless_capstone_green_01.loveless_capstone_green_01'",
+                              "tooltip": "uitooltipdata'ToolTip_Corpohacker_ActionSkill_Contagion_Capstone_Replicate'",
+                              "eventtag": {
+                                "tagname": "StandIn.CorpoHacker.Capstone.Contagion.Replicate"
+                              }
+                            },
+                            {
+                              "name": "Branch - Row 3 - 3",
+                              "nodetype": "None",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_20.loveless_passive_green_20'"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "progressgraph": "progress_graph'Progress_Corpohacker_Branch_Virology_02'",
+                      "tiers": [
+                        {
+                          "nodes": [
+                            {
+                              "name": "Branch - Row 1 - 1",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_21.loveless_passive_green_21'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_24_SystemRestore'"
+                            },
+                            {
+                              "name": "augment_4",
+                              "nodetype": "Augment",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Augment/loveless_augment_green_04.loveless_augment_green_04'",
+                              "tooltip": "uitooltipdata'ToolTip_Corpohacker_ActionSkill_Contagion_Augment_LetItRip'",
+                              "eventtag": {
+                                "tagname": "StandIn.CorpoHacker.Augment.Contagion.LetItRip"
+                              }
+                            },
+                            {
+                              "name": "Branch - Row 1 - 3",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_22.loveless_passive_green_22'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_19_WideNet'"
+                            }
+                          ]
+                        },
+                        {
+                          "nodes": [
+                            {
+                              "name": "Branch - Row 2 - 1",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_23.loveless_passive_green_23'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_20_DirtyBomb'"
+                            },
+                            {
+                              "name": "Branch - Row 2 - 2",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_24.loveless_passive_green_24'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_21_DataLeakage'"
+                            },
+                            {
+                              "name": "Branch - Row 2 - 3",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_25.loveless_passive_green_25'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_22_ConservationOfVolatility'"
+                            }
+                          ]
+                        },
+                        {
+                          "nodes": [
+                            {
+                              "name": "Branch - Row 3 - 1",
+                              "nodetype": "None"
+                            },
+                            {
+                              "name": "capstone_2",
+                              "nodetype": "Capstone",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Capstones/loveless_capstone_green_02.loveless_capstone_green_02'",
+                              "tooltip": "uitooltipdata'ToolTip_Corpohacker_ActionSkill_Contagion_Capstone_DaisyChain'",
+                              "eventtag": {
+                                "tagname": "StandIn.CorpoHacker.Capstone.Contagion.DaisyChain"
+                              }
+                            },
+                            {
+                              "name": "Branch - Row 3 - 3",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_27.loveless_passive_green_27'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_18_CompoundingDetonation'"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "progressgraph": "progress_graph'Progress_Corpohacker_Branch_Virology_03'",
+                      "tiers": [
+                        {
+                          "nodes": [
+                            {
+                              "name": "Branch - Row 1 - 1",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_28.loveless_passive_green_28'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_25_StatusCritical'"
+                            },
+                            {
+                              "name": "augment_5",
+                              "nodetype": "Augment",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Augment/loveless_augment_green_05.loveless_augment_green_05'",
+                              "tooltip": "uitooltipdata'ToolTip_Corpohacker_ActionSkill_Contagion_Augment_Propagation'",
+                              "eventtag": {
+                                "tagname": "StandIn.CorpoHacker.Augment.Contagion.Propogate"
+                              }
+                            },
+                            {
+                              "name": "Branch - Row 1 - 3",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_29.loveless_passive_green_29'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_26_ConservationOfMalice'"
+                            }
+                          ]
+                        },
+                        {
+                          "nodes": [
+                            {
+                              "name": "Branch - Row 2 - 1",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_30.loveless_passive_green_30'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_27_WhenItRains'"
+                            },
+                            {
+                              "name": "Branch - Row 2 - 2",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_31.loveless_passive_green_31'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_28_DataThief'"
+                            },
+                            {
+                              "name": "Branch - Row 2 - 3",
+                              "nodetype": "None"
+                            }
+                          ]
+                        },
+                        {
+                          "nodes": [
+                            {
+                              "name": "Branch - Row 3 - 1",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_33.loveless_passive_green_33'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_30_ItPours'"
+                            },
+                            {
+                              "name": "capstone_3",
+                              "nodetype": "Capstone",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Capstones/loveless_capstone_green_03.loveless_capstone_green_03'",
+                              "tooltip": "uitooltipdata'ToolTip_Corpohacker_ActionSkill_Contagion_Capstone_Proliferate'",
+                              "eventtag": {
+                                "tagname": "StandIn.CorpoHacker.Capstone.Contagion.Proliferate"
+                              }
+                            },
+                            {
+                              "name": "Branch - Row 3 - 3",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_34.loveless_passive_green_34'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_31_DeadHorse'"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "treename": "dark_siren, 4B51EA6B4BDEA73AE5E2768FBBCD4AE9, Hack / Slash",
+                  "color": "Blue",
+                  "actionskill": {
+                    "name": "action_skill_1",
+                    "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Action_Skills/loveless_menu_action_skill_2.loveless_menu_action_skill_2'",
+                    "tooltip": "uitooltipdata'ToolTip_Corpohacker_ActionSkill_VPN'",
+                    "previewtooltip": "uitooltipdata'Tooltip_Corpohacker_ActionSkill_VPN_Preview'",
+                    "flourishtag": {
+                      "tagname": "Trick.StandIn.NonGunUser.SkillFlourish_A"
+                    }
+                  },
+                  "modifiersgraph": "progress_graph'Progress_Corpohacker_ActionSkill_Modifiers_VPN'",
+                  "segments": [
+                    {
+                      "progressgraph": "progress_graph'Progress_Corpohacker_Trunk_HackAndSlash'",
+                      "tiers": [
+                        {
+                          "nodes": [
+                            {
+                              "name": "Trunk - Row 1 - 1",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_01.loveless_passive_blue_01'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_35_Contempt'"
+                            },
+                            {
+                              "name": "Trunk - Row 1 - 2",
+                              "nodetype": "None",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_02.loveless_passive_blue_02'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_36_GottaGoFast'"
+                            },
+                            {
+                              "name": "Trunk - Row 1 - 3",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_03.loveless_passive_blue_03'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_37_Flurry'"
+                            },
+                            {
+                              "name": "Trunk - Row 1 - 4",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_04.loveless_passive_blue_04'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_38_PluggedIn'"
+                            },
+                            {
+                              "name": "Trunk - Row 1 - 5",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_05.loveless_passive_blue_05'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_39_RatioTechnique'"
+                            }
+                          ]
+                        },
+                        {
+                          "nodes": [
+                            {
+                              "name": "Trunk - Row 2 - 1",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_06.loveless_passive_blue_06'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_40_Odium'"
+                            },
+                            {
+                              "name": "augment_1",
+                              "nodetype": "Augment",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Augment/loveless_augment_blue_01.loveless_augment_blue_01'",
+                              "tooltip": "uitooltipdata'ToolTip_Corpohacker_ActionSkill_VPN_Augment_OffTheGrid'",
+                              "eventtag": {
+                                "tagname": "StandIn.CorpoHacker.Augment.VPN.OffTheGrid"
+                              }
+                            },
+                            {
+                              "name": "Trunk - Row 2 - 3",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_07.loveless_passive_blue_07'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_41_DeathBegetsDeath'"
+                            },
+                            {
+                              "name": "augment_2",
+                              "nodetype": "Augment",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Augment/loveless_augment_blue_02.loveless_augment_blue_02'",
+                              "tooltip": "uitooltipdata'ToolTip_Corpohacker_ActionSkill_VPN_Augment_InformationOverload'",
+                              "eventtag": {
+                                "tagname": "StandIn.CorpoHacker.Augment.VPN.InformationOverload"
+                              }
+                            },
+                            {
+                              "name": "Trunk - Row 2 - 5",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_08.loveless_passive_blue_08'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_42_GoingGhost'"
+                            }
+                          ]
+                        },
+                        {
+                          "nodes": [
+                            {
+                              "name": "Trunk - Row 3 - 1",
+                              "nodetype": "None",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_09.loveless_passive_blue_09'"
+                            },
+                            {
+                              "name": "Trunk - Row 3 - 2",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_10.loveless_passive_blue_10'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_44_Initialize'"
+                            },
+                            {
+                              "name": "Trunk - Row 3 - 3",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_11.loveless_passive_blue_11'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_45_NeutralSpecial'"
+                            },
+                            {
+                              "name": "Trunk - Row 3 - 4",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_12.loveless_passive_blue_12'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_46_Footwork'"
+                            },
+                            {
+                              "name": "Trunk - Row 3 - 5",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_13.loveless_passive_blue_13'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_55_TargetPractice'"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "progressgraph": "progress_graph'Progress_Corpohacker_Branch_HackAndSlash_01'",
+                      "tiers": [
+                        {
+                          "nodes": [
+                            {
+                              "name": "Branch - Row 1 - 1",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_14.loveless_passive_blue_14'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_47_Methodical'"
+                            },
+                            {
+                              "name": "augment_3",
+                              "nodetype": "Augment",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Augment/loveless_augment_blue_03.loveless_augment_blue_03'",
+                              "tooltip": "uitooltipdata'ToolTip_Corpohacker_ActionSkill_VPN_Augment_Compile'",
+                              "eventtag": {
+                                "tagname": "StandIn.CorpoHacker.Augment.VPN.Compile"
+                              }
+                            },
+                            {
+                              "name": "Branch - Row 1 - 3",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_16.loveless_passive_blue_16'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_49_Marathon'"
+                            }
+                          ]
+                        },
+                        {
+                          "nodes": [
+                            {
+                              "name": "Branch - Row 2 - 1",
+                              "nodetype": "None"
+                            },
+                            {
+                              "name": "Branch - Row 2 - 2",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_17.loveless_passive_blue_17'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_50_Retribution'"
+                            },
+                            {
+                              "name": "Branch - Row 2 - 3",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_18.loveless_passive_blue_18'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_51_InfiniteMurderHack'"
+                            }
+                          ]
+                        },
+                        {
+                          "nodes": [
+                            {
+                              "name": "Branch - Row 3 - 1",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_15.loveless_passive_blue_15'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_48_KillingMachine'"
+                            },
+                            {
+                              "name": "capstone_1",
+                              "nodetype": "Capstone",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Capstones/loveless_capstone_blue_01.loveless_capstone_blue_01'",
+                              "tooltip": "uitooltipdata'ToolTip_Corpohacker_ActionSkill_VPN_Capstone_AccelerationGate'",
+                              "eventtag": {
+                                "tagname": "StandIn.CorpoHacker.Capstone.VPN.AccelerationGate"
+                              }
+                            },
+                            {
+                              "name": "Branch - Row 3 - 3",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_20.loveless_passive_blue_20'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_53_Refactored'"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "progressgraph": "progress_graph'Progress_Corpohacker_Branch_HackAndSlash_02'",
+                      "tiers": [
+                        {
+                          "nodes": [
+                            {
+                              "name": "Branch - Row 1 - 1",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_22.loveless_passive_blue_22'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_56_ThirdParty'"
+                            },
+                            {
+                              "name": "augment_4",
+                              "nodetype": "Augment",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Augment/loveless_augment_blue_04.loveless_augment_blue_04'",
+                              "tooltip": "uitooltipdata'ToolTip_Corpohacker_ActionSkill_VPN_Augment_Malware'",
+                              "eventtag": {
+                                "tagname": "StandIn.CorpoHacker.Augment.VPN.Malware"
+                              }
+                            },
+                            {
+                              "name": "Branch - Row 1 - 3",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_30.loveless_passive_blue_30'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_62_TheSweetScience'"
+                            }
+                          ]
+                        },
+                        {
+                          "nodes": [
+                            {
+                              "name": "Branch - Row 2 - 1",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_24.loveless_passive_blue_24'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_57_ChipSurplus'"
+                            },
+                            {
+                              "name": "Branch - Row 2 - 2",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_21.loveless_passive_blue_21'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_54_TheGangsAllHere'"
+                            },
+                            {
+                              "name": "Branch - Row 2 - 3",
+                              "nodetype": "None"
+                            }
+                          ]
+                        },
+                        {
+                          "nodes": [
+                            {
+                              "name": "Branch - Row 3 - 1",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_26.loveless_passive_blue_26'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_59_Overclocked'"
+                            },
+                            {
+                              "name": "capstone_2",
+                              "nodetype": "Capstone",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Capstones/loveless_capstone_blue_02.loveless_capstone_blue_02'",
+                              "tooltip": "uitooltipdata'ToolTip_Corpohacker_ActionSkill_VPN_Capstone_Synchronism'",
+                              "eventtag": {
+                                "tagname": "StandIn.CorpoHacker.Capstone.VPN.Synchronism"
+                              }
+                            },
+                            {
+                              "name": "Branch - Row 3 - 3",
+                              "nodetype": "None",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_27.loveless_passive_blue_27'"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "progressgraph": "progress_graph'Progress_Corpohacker_Branch_HackAndSlash_03'",
+                      "tiers": [
+                        {
+                          "nodes": [
+                            {
+                              "name": "Branch - Row 1 - 1",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_28.loveless_passive_blue_28'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_60_FlowState'"
+                            },
+                            {
+                              "name": "augment_5",
+                              "nodetype": "Augment",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Augment/loveless_augment_blue_05.loveless_augment_blue_05'",
+                              "tooltip": "uitooltipdata'ToolTip_Corpohacker_ActionSkill_VPN_Augment_BladeMaster'",
+                              "eventtag": {
+                                "tagname": "StandIn.CorpoHacker.Augment.VPN.BladeMaster"
+                              }
+                            },
+                            {
+                              "name": "Branch - Row 1 - 3",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_29.loveless_passive_blue_29'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_61_ViolentOutburst'"
+                            }
+                          ]
+                        },
+                        {
+                          "nodes": [
+                            {
+                              "name": "Branch - Row 2 - 1",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_25.loveless_passive_blue_25'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_58_WatchYourStep'"
+                            },
+                            {
+                              "name": "Branch - Row 2 - 2",
+                              "nodetype": "None",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_31.loveless_passive_blue_31'"
+                            },
+                            {
+                              "name": "Branch - Row 2 - 3",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_32.loveless_passive_blue_32'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_63_AssaultVest'"
+                            }
+                          ]
+                        },
+                        {
+                          "nodes": [
+                            {
+                              "name": "Branch - Row 3 - 1",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_33.loveless_passive_blue_33'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_65_Upload'"
+                            },
+                            {
+                              "name": "capstone_3",
+                              "nodetype": "Capstone",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Capstones/loveless_capstone_blue_03.loveless_capstone_blue_03'",
+                              "tooltip": "uitooltipdata'ToolTip_Corpohacker_ActionSkill_VPN_Capstone_Redirect'",
+                              "eventtag": {
+                                "tagname": "StandIn.CorpoHacker.Capstone.VPN.Redirect"
+                              }
+                            },
+                            {
+                              "name": "Branch - Row 3 - 3",
+                              "nodetype": "None",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_34.loveless_passive_blue_34'"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "treename": "dark_siren, 951ED7704278383ABD1CCF97EDCD623B, Manifestation",
+                  "actionskill": {
+                    "name": "action_skill_2",
+                    "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Action_Skills/loveless_menu_action_skill_3.loveless_menu_action_skill_3'",
+                    "tooltip": "uitooltipdata'ToolTip_Corpohacker_ActionSkill_Manifestation'",
+                    "previewtooltip": "uitooltipdata'ToolTip_Corpohacker_ActionSkill_Manifestation_Preview'",
+                    "flourishtag": {
+                      "tagname": "Trick.StandIn.NonGunUser.SkillFlourish_C"
+                    }
+                  },
+                  "modifiersgraph": "progress_graph'Progress_Corpohacker_ActionSkill_Modifiers_Manifestation'",
+                  "segments": [
+                    {
+                      "progressgraph": "progress_graph'Progress_Corpohacker_Trunk_Assimilation'",
+                      "tiers": [
+                        {
+                          "nodes": [
+                            {
+                              "name": "Trunk - Row 1 - 1",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_14.loveless_passive_red_14'",
+                              "tooltip": "uitooltipdata'ToolTip_CH_P_79_SharingTactics'"
+                            },
+                            {
+                              "name": "Trunk - Row 1 - 2",
+                              "nodetype": "None",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_02.loveless_passive_red_02'"
+                            },
+                            {
+                              "name": "Trunk - Row 1 - 3",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_03.loveless_passive_red_03'",
+                              "tooltip": "uitooltipdata'ToolTip_CH_P_70_Irradiated'"
+                            },
+                            {
+                              "name": "Trunk - Row 1 - 4",
+                              "nodetype": "None",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_04.loveless_passive_red_04'"
+                            },
+                            {
+                              "name": "Trunk - Row 1 - 5",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_13.loveless_passive_red_13'",
+                              "tooltip": "uitooltipdata'ToolTip_CH_P_78_Antivirus'"
+                            }
+                          ]
+                        },
+                        {
+                          "nodes": [
+                            {
+                              "name": "Trunk - Row 2 - 1",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_06.loveless_passive_red_06'",
+                              "tooltip": "uitooltipdata'ToolTip_CH_P_72_HidingThePain'"
+                            },
+                            {
+                              "name": "augment_1",
+                              "nodetype": "Augment",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Augment/loveless_augment_red_01.loveless_augment_red_01'",
+                              "tooltip": "uitooltipdata'ToolTip_Corpohacker_ActionSkill_Manifestation_Augment_ssd'",
+                              "eventtag": {
+                                "tagname": "StandIn.CorpoHacker.Augment.Manifestation.SSD"
+                              }
+                            },
+                            {
+                              "name": "Trunk - Row 2 - 3",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_07.loveless_passive_red_07'",
+                              "tooltip": "uitooltipdata'ToolTip_CH_P_73_Overclocking'"
+                            },
+                            {
+                              "name": "augment_2",
+                              "nodetype": "Augment",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Augment/loveless_augment_red_02.loveless_augment_red_02'",
+                              "tooltip": "uitooltipdata'ToolTip_Corpohacker_ActionSkill_Manifestation_Augment_IntelligentArtifice'",
+                              "eventtag": {
+                                "tagname": "StandIn.CorpoHacker.Augment.Manifestation.IntelligentArtifice"
+                              }
+                            },
+                            {
+                              "name": "Trunk - Row 2 - 5",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_08.loveless_passive_red_08'",
+                              "tooltip": "uitooltipdata'ToolTip_CH_P_74_PeakPerformance'"
+                            }
+                          ]
+                        },
+                        {
+                          "nodes": [
+                            {
+                              "name": "Trunk - Row 3 - 1",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_09.loveless_passive_red_09'",
+                              "tooltip": "uitooltipdata'ToolTip_CH_P_75_SharingThePain'"
+                            },
+                            {
+                              "name": "Trunk - Row 3 - 2",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_10.loveless_passive_red_10'",
+                              "tooltip": "uitooltipdata'ToolTip_CH_P_76_PureFusion'"
+                            },
+                            {
+                              "name": "Trunk - Row 3 - 3",
+                              "nodetype": "None",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_11.loveless_passive_red_11'"
+                            },
+                            {
+                              "name": "Trunk - Row 3 - 4",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_12.loveless_passive_red_12'",
+                              "tooltip": "uitooltipdata'ToolTip_CH_P_77_Optimization'"
+                            },
+                            {
+                              "name": "Trunk - Row 3 - 5",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_05.loveless_passive_red_05'",
+                              "tooltip": "uitooltipdata'ToolTip_CH_P_71_CriticallyAcclaimed'"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "progressgraph": "progress_graph'progress_corpohacker_branch_Assimilation_01'",
+                      "tiers": [
+                        {
+                          "nodes": [
+                            {
+                              "name": "Branch - Row 1 - 1",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_01.loveless_passive_red_01'",
+                              "tooltip": "uitooltipdata'ToolTip_CH_P_69_StorageUpgrade'"
+                            },
+                            {
+                              "name": "augment_3",
+                              "nodetype": "Augment",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Augment/loveless_augment_red_03.loveless_augment_red_03'",
+                              "tooltip": "uitooltipdata'ToolTip_Corpohacker_ActionSkill_Manifestation_Augment_DDoS'",
+                              "eventtag": {
+                                "tagname": "StandIn.CorpoHacker.Augment.Manifestation.DDoS"
+                              }
+                            },
+                            {
+                              "name": "Branch - Row 1 - 3",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_15.loveless_passive_red_15'",
+                              "tooltip": "uitooltipdata'ToolTip_CH_P_80_NoTimeToThink'"
+                            }
+                          ]
+                        },
+                        {
+                          "nodes": [
+                            {
+                              "name": "Branch - Row 2 - 1",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_16.loveless_passive_red_16'",
+                              "tooltip": "uitooltipdata'ToolTip_CH_P_81_PowerOverwhelming'"
+                            },
+                            {
+                              "name": "Branch - Row 2 - 2",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_17.loveless_passive_red_17'",
+                              "tooltip": "uitooltipdata'ToolTip_CH_P_82_ManipulatingRNG'"
+                            },
+                            {
+                              "name": "Branch - Row 2 - 3",
+                              "nodetype": "None",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_18.loveless_passive_red_18'"
+                            }
+                          ]
+                        },
+                        {
+                          "nodes": [
+                            {
+                              "name": "Branch - Row 3 - 1",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_19.loveless_passive_red_19'",
+                              "tooltip": "uitooltipdata'ToolTip_CH_P_83_Everchanging'"
+                            },
+                            {
+                              "name": "capstone_1",
+                              "nodetype": "Capstone",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Capstones/loveless_capstone_red_01.loveless_capstone_red_01'",
+                              "tooltip": "uitooltipdata'ToolTip_Corpohacker_ActionSkill_Manifestation_Capstone_Evolv'",
+                              "eventtag": {
+                                "tagname": "StandIn.CorpoHacker.Capstone.Manifestation.EvolveExe"
+                              }
+                            },
+                            {
+                              "name": "Branch - Row 3 - 3",
+                              "nodetype": "None",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_20.loveless_passive_red_20'"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "progressgraph": "progress_graph'progress_corpohacker_branch_Assimilation_02'",
+                      "tiers": [
+                        {
+                          "nodes": [
+                            {
+                              "name": "Branch - Row 1 - 1",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_21.loveless_passive_red_21'",
+                              "tooltip": "uitooltipdata'ToolTip_CH_P_84_DeeperConnexion'"
+                            },
+                            {
+                              "name": "augment_4",
+                              "nodetype": "Augment",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Augment/loveless_augment_red_04.loveless_augment_red_04'",
+                              "tooltip": "uitooltipdata'ToolTip_Corpohacker_ActionSkill_Manifestation_Augment_WiredConnection'",
+                              "eventtag": {
+                                "tagname": "StandIn.CorpoHacker.Augment.Manifestation.WiredConnection"
+                              }
+                            },
+                            {
+                              "name": "Branch - Row 1 - 3",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_22.loveless_passive_red_22'",
+                              "tooltip": "uitooltipdata'ToolTip_CH_P_85_EmpoweredWyrm'"
+                            }
+                          ]
+                        },
+                        {
+                          "nodes": [
+                            {
+                              "name": "Branch - Row 2 - 1",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_23.loveless_passive_red_23'",
+                              "tooltip": "uitooltipdata'ToolTip_CH_P_86_InMemoriam'"
+                            },
+                            {
+                              "name": "Branch - Row 2 - 2",
+                              "nodetype": "None",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_24.loveless_passive_red_24'"
+                            },
+                            {
+                              "name": "Branch - Row 2 - 3",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_32.loveless_passive_green_32'",
+                              "tooltip": "uitooltipdata'Tooltip_CH_Passive_29_InsultToInjury'"
+                            }
+                          ]
+                        },
+                        {
+                          "nodes": [
+                            {
+                              "name": "Branch - Row 3 - 1",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_26.loveless_passive_red_26'",
+                              "tooltip": "uitooltipdata'ToolTip_CH_P_87_SymbiosisOverflow'"
+                            },
+                            {
+                              "name": "capstone_2",
+                              "nodetype": "Capstone",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Capstones/loveless_capstone_red_02.loveless_capstone_red_02'",
+                              "tooltip": "uitooltipdata'ToolTip_Corpohacker_ActionSkill_Manifestation_Capstone_Centrifug'",
+                              "eventtag": {
+                                "tagname": "StandIn.CorpoHacker.Capstone.Manifestation.CentrifugeExe"
+                              }
+                            },
+                            {
+                              "name": "Branch - Row 3 - 3",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_27.loveless_passive_red_27'",
+                              "tooltip": "uitooltipdata'ToolTip_CH_P_88_FNXdotBat'"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "progressgraph": "progress_graph'progress_corpohacker_branch_Assimilation_03'",
+                      "tiers": [
+                        {
+                          "nodes": [
+                            {
+                              "name": "Branch - Row 1 - 1",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_28.loveless_passive_red_28'",
+                              "tooltip": "uitooltipdata'ToolTip_CH_P_89_WhatsYourStatus'"
+                            },
+                            {
+                              "name": "augment_5",
+                              "nodetype": "Augment",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Augment/loveless_augment_red_05.loveless_augment_red_05'",
+                              "tooltip": "uitooltipdata'ToolTip_Corpohacker_ActionSkill_Manifestation_Augment_Gigabite'",
+                              "eventtag": {
+                                "tagname": "StandIn.CorpoHacker.Augment.Manifestation.Gigabite"
+                              }
+                            },
+                            {
+                              "name": "Branch - Row 1 - 3",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_29.loveless_passive_red_29'",
+                              "tooltip": "uitooltipdata'ToolTip_CH_P_90_ExplosiveMindset'"
+                            }
+                          ]
+                        },
+                        {
+                          "nodes": [
+                            {
+                              "name": "Branch - Row 2 - 1",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_30.loveless_passive_red_30'",
+                              "tooltip": "uitooltipdata'ToolTip_CH_P_91_IHATEYOU'"
+                            },
+                            {
+                              "name": "Branch - Row 2 - 2",
+                              "nodetype": "None",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_31.loveless_passive_red_31'"
+                            },
+                            {
+                              "name": "Branch - Row 2 - 3",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_32.loveless_passive_red_32'",
+                              "tooltip": "uitooltipdata'ToolTip_CH_P_92_IrradiateEmAll'"
+                            }
+                          ]
+                        },
+                        {
+                          "nodes": [
+                            {
+                              "name": "Branch - Row 3 - 1",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_33.loveless_passive_red_33'",
+                              "tooltip": "uitooltipdata'ToolTip_CH_P_93_SecondImpact'"
+                            },
+                            {
+                              "name": "capstone_3",
+                              "nodetype": "Capstone",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Capstones/loveless_capstone_red_03.loveless_capstone_red_03'",
+                              "tooltip": "uitooltipdata'ToolTip_Corpohacker_ActionSkill_Manifestation_Capstone_Brutaliz'",
+                              "eventtag": {
+                                "tagname": "StandIn.CorpoHacker.Capstone.Manifestation.Brutalize"
+                              }
+                            },
+                            {
+                              "name": "Branch - Row 3 - 3",
+                              "nodetype": "None",
+                              "icon": "Asset'/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_34.loveless_passive_red_34'"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "specializationsdef": "specializations_data'UI_Specializations_DisplayData'",
+              "type": "/Script/OakGame.OakUISkillTreesDef"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

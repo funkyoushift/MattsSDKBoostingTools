@@ -1,8 +1,4 @@
 {
-  "__copyright": {
-    "author": "Cr4nkSt4r",
-    "github": "https://github.com/Cr4nkSt4r/Borderlands-4.NcsParser"
-  },
   "globals": {
     "records": [
       {
@@ -1791,6 +1787,478 @@
               "inv_aspect": "SpliceArm_Launcher_fire_projectile",
               "behavior": {
                 "lightprojectile": "light_projectile'lp_SpliceArm_Launcher'"
+              },
+              "structtype": "Asset'/Script/GbxGame.InventoryAspect'",
+              "parent": "inv_aspect'fire_projectile'"
+            }
+          },
+          {
+            "tedioreglider_rocketlauncher_fire_projectile": {
+              "inv_aspect": "TedioreGlider_RocketLauncher_fire_projectile",
+              "behavior": {
+                "firesockets": [
+                  "BodyRocket01",
+                  "BodyRocket02",
+                  "BodyRocket01",
+                  "BodyRocket02"
+                ],
+                "aimaxdesiredrange": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Rocket"
+                  }
+                },
+                "aimindesiredrange": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Rocket"
+                  }
+                },
+                "aiburstcount": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Rocket",
+                    "columnname": "BurstCount_Value_27_BCCD780541CF9CCE5F49FCAFABB30B4D"
+                  }
+                },
+                "aiburstdelay": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Rocket",
+                    "columnname": "BurstDelay_Value_11_C0E505764E41BF4C090EA6950E1E950C"
+                  }
+                },
+                "aiaccuracy": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Rocket",
+                    "columnname": "AI_Accuracy_33_D3C350EA449BFAA6F271BF84E3777958"
+                  }
+                },
+                "aiprojectilespeed": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Rocket"
+                  }
+                },
+                "lightprojectile": "light_projectile'LightProj_TedioreGlider_RocketShot'",
+                "firerate": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Rocket",
+                    "columnname": "FireRate_Value"
+                  }
+                },
+                "spread": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Rocket",
+                    "columnname": "Spread_Value"
+                  }
+                },
+                "busebursttime": "true",
+                "aibursttime": {
+                  "constant": "1.000000",
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Rocket",
+                    "columnname": "BurstTime_Value_19_3271459048CFCB819A268B9824FEC3FE"
+                  }
+                }
+              },
+              "structtype": "Asset'/Script/GbxGame.InventoryAspect'",
+              "parent": "inv_aspect'fire_projectile'"
+            }
+          },
+          {
+            "tedioreturret_gatemission4_fire_projectile": {
+              "inv_aspect": "TedioreTurret_GateMission4_fire_projectile",
+              "behavior": {
+                "firesockets": [
+                  "Rocket_Barrel01",
+                  "Rocket_Barrel02",
+                  "Rocket_Barrel03",
+                  "Rocket_Barrel04"
+                ],
+                "aimaxdesiredrange": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Mission4Gate"
+                  }
+                },
+                "aimindesiredrange": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Mission4Gate"
+                  }
+                },
+                "aiburstcount": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Mission4Gate",
+                    "columnname": "BurstCount_Value_27_BCCD780541CF9CCE5F49FCAFABB30B4D"
+                  }
+                },
+                "aiburstdelay": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Mission4Gate",
+                    "columnname": "BurstDelay_Value_11_C0E505764E41BF4C090EA6950E1E950C"
+                  }
+                },
+                "aiaccuracy": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Mission4Gate",
+                    "columnname": "AI_Accuracy_33_D3C350EA449BFAA6F271BF84E3777958"
+                  }
+                },
+                "aiprojectilespeed": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Mission4Gate"
+                  }
+                },
+                "lightprojectile": "light_projectile'LightProj_Tediore_RocketShot'",
+                "firerate": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Rocket",
+                    "columnname": "FireRate_Value"
+                  }
+                },
+                "spread": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Rocket",
+                    "columnname": "Spread_Value"
+                  }
+                },
+                "busebursttime": "true",
+                "aibursttime": {
+                  "constant": "1.000000",
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Mission4Gate",
+                    "columnname": "BurstTime_Value_19_3271459048CFCB819A268B9824FEC3FE"
+                  }
+                }
+              },
+              "structtype": "Asset'/Script/GbxGame.InventoryAspect'",
+              "parent": "inv_aspect'fire_projectile'"
+            }
+          },
+          {
+            "tedioreturret_mg_fire_projectile": {
+              "inv_aspect": "TedioreTurret_MG_fire_projectile",
+              "behavior": {
+                "firesockets": [
+                  "TedMG_Barrel01"
+                ],
+                "aimaxdesiredrange": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Chaingun"
+                  }
+                },
+                "aimindesiredrange": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Chaingun"
+                  }
+                },
+                "aiburstcount": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Chaingun",
+                    "columnname": "BurstCount_Value_27_BCCD780541CF9CCE5F49FCAFABB30B4D"
+                  }
+                },
+                "aiburstdelay": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Chaingun",
+                    "columnname": "BurstDelay_Value_11_C0E505764E41BF4C090EA6950E1E950C"
+                  }
+                },
+                "aiaccuracy": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Chaingun",
+                    "columnname": "AI_Accuracy_33_D3C350EA449BFAA6F271BF84E3777958"
+                  }
+                },
+                "aiprojectilespeed": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Chaingun"
+                  }
+                },
+                "lightprojectile": "light_projectile'LightProj_TedioreTurret_MGShot'",
+                "damage": {
+                  "attribute": "attribute'TedioreTurret_MG_damage_formula'"
+                },
+                "damageradius": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Chaingun",
+                    "columnname": "Radius_Value_18_1920F6C448DA257A1D8260974B1AB71E"
+                  }
+                },
+                "spread": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Chaingun",
+                    "columnname": "Spread_Value_6_3B1BCC764DC2F3CFBE8BA9B93EFEDAC7"
+                  }
+                },
+                "accuracyimpulse": {
+                  "constant": "0.150000"
+                }
+              },
+              "structtype": "Asset'/Script/GbxGame.InventoryAspect'",
+              "parent": "inv_aspect'fire_projectile'"
+            }
+          },
+          {
+            "tedioreturret_microplasticsmg_fire_projectile": {
+              "inv_aspect": "TedioreTurret_MicroplasticsMG_fire_projectile",
+              "behavior": {
+                "firesockets": [
+                  "TedMG_Barrel01"
+                ],
+                "aimaxdesiredrange": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Chaingun"
+                  }
+                },
+                "aimindesiredrange": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Chaingun"
+                  }
+                },
+                "aiburstcount": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Chaingun",
+                    "columnname": "BurstCount_Value_27_BCCD780541CF9CCE5F49FCAFABB30B4D"
+                  }
+                },
+                "aiburstdelay": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Chaingun",
+                    "columnname": "BurstDelay_Value_11_C0E505764E41BF4C090EA6950E1E950C"
+                  }
+                },
+                "aiaccuracy": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Chaingun",
+                    "columnname": "AI_Accuracy_33_D3C350EA449BFAA6F271BF84E3777958"
+                  }
+                },
+                "aiprojectilespeed": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Chaingun"
+                  }
+                },
+                "lightprojectile": "light_projectile'LightProj_TedioreTurret_MGShot'",
+                "damage": {
+                  "attribute": "attribute'TedioreTurret_RapidLaser_damage_formula'"
+                },
+                "damageradius": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Chaingun",
+                    "columnname": "Radius_Value_18_1920F6C448DA257A1D8260974B1AB71E"
+                  }
+                },
+                "spread": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Chaingun",
+                    "columnname": "Spread_Value_6_3B1BCC764DC2F3CFBE8BA9B93EFEDAC7"
+                  }
+                },
+                "accuracyimpulse": {
+                  "constant": "0.150000"
+                }
+              },
+              "structtype": "Asset'/Script/GbxGame.InventoryAspect'",
+              "parent": "inv_aspect'fire_projectile'"
+            }
+          },
+          {
+            "tedioreturret_rapidlaser_fire_projectile": {
+              "inv_aspect": "TedioreTurret_RapidLaser_fire_projectile",
+              "behavior": {
+                "firesockets": [
+                  "TedMG_Barrel01"
+                ],
+                "aimaxdesiredrange": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Chaingun"
+                  }
+                },
+                "aimindesiredrange": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Chaingun"
+                  }
+                },
+                "aiburstcount": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Chaingun",
+                    "columnname": "BurstCount_Value_27_BCCD780541CF9CCE5F49FCAFABB30B4D"
+                  }
+                },
+                "aiburstdelay": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Chaingun",
+                    "columnname": "BurstDelay_Value_11_C0E505764E41BF4C090EA6950E1E950C"
+                  }
+                },
+                "aiaccuracy": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Chaingun",
+                    "columnname": "AI_Accuracy_33_D3C350EA449BFAA6F271BF84E3777958"
+                  }
+                },
+                "aiprojectilespeed": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Chaingun"
+                  }
+                },
+                "lightprojectile": "light_projectile'LightProj_TedioreTurret_MGShot'",
+                "firerate": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Chaingun",
+                    "columnname": "FireRate_Value_4_0FDA894643A413A9EDF878963787EB6C"
+                  }
+                },
+                "damage": {
+                  "attribute": "attribute'TedioreTurret_RapidLaser_damage_formula'"
+                },
+                "damageradius": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Chaingun",
+                    "columnname": "Radius_Value_18_1920F6C448DA257A1D8260974B1AB71E"
+                  }
+                },
+                "spread": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Chaingun",
+                    "columnname": "Spread_Value_6_3B1BCC764DC2F3CFBE8BA9B93EFEDAC7"
+                  }
+                },
+                "accuracyimpulse": {
+                  "constant": "0.150000"
+                },
+                "aipreferredrange": {
+                  "constant": "0.000000",
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Chaingun",
+                    "columnname": "PreferredRange_37_AE50D09343AC6F6407D69EA999A75DBD"
+                  }
+                }
+              },
+              "structtype": "Asset'/Script/GbxGame.InventoryAspect'",
+              "parent": "inv_aspect'fire_projectile'"
+            }
+          },
+          {
+            "tedioreturret_rocketlauncher_fire_projectile": {
+              "inv_aspect": "TedioreTurret_RocketLauncher_fire_projectile",
+              "behavior": {
+                "firesockets": [
+                  "TedRocket_Barrel01",
+                  "TedRocket_Barrel02",
+                  "TedRocket_Barrel03",
+                  "TedRocket_Barrel04"
+                ],
+                "aimaxdesiredrange": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Rocket"
+                  }
+                },
+                "aimindesiredrange": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Rocket"
+                  }
+                },
+                "aiburstcount": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Rocket",
+                    "columnname": "BurstCount_Value_27_BCCD780541CF9CCE5F49FCAFABB30B4D"
+                  }
+                },
+                "aiburstdelay": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Rocket",
+                    "columnname": "BurstDelay_Value_11_C0E505764E41BF4C090EA6950E1E950C"
+                  }
+                },
+                "aiaccuracy": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Rocket",
+                    "columnname": "AI_Accuracy_33_D3C350EA449BFAA6F271BF84E3777958"
+                  }
+                },
+                "aiprojectilespeed": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Rocket"
+                  }
+                },
+                "lightprojectile": "light_projectile'LightProj_Tediore_RocketShot'",
+                "firerate": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Rocket",
+                    "columnname": "FireRate_Value"
+                  }
+                },
+                "spread": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Rocket",
+                    "columnname": "Spread_Value"
+                  }
+                },
+                "busebursttime": "true",
+                "aipreferredrange": {
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Rocket",
+                    "columnname": "PreferredRange_37_AE50D09343AC6F6407D69EA999A75DBD"
+                  }
+                },
+                "aibursttime": {
+                  "constant": "1.000000",
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                    "rowname": "Rocket",
+                    "columnname": "BurstTime_Value_19_3271459048CFCB819A268B9824FEC3FE"
+                  }
+                }
               },
               "structtype": "Asset'/Script/GbxGame.InventoryAspect'",
               "parent": "inv_aspect'fire_projectile'"

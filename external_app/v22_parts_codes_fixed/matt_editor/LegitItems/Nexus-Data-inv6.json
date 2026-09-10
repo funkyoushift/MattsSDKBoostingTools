@@ -1,8 +1,4 @@
 {
-  "__copyright": {
-    "author": "Cr4nkSt4r",
-    "github": "https://github.com/Cr4nkSt4r/Borderlands-4.NcsParser"
-  },
   "inv": {
     "__deps": [
       "inv_comp",
@@ -12,759 +8,45 @@
       {
         "entries": [
           {
-            "inv_contractitem_base": {
-              "inv": "Inv_ContractItem_base",
-              "serialindex": {
-                "status": "Active",
-                "index": "50",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "inv_contractitem_batkidney": {
-              "inv": "Inv_ContractItem_BatKidney",
-              "basetype": "inv'mission_pickup'",
-              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_BatKidney.Body_CollectContract_BatKidney'",
-              "pickupinteractiontype": "TouchOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "42",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "inv_contractitem_batwing": {
-              "inv": "Inv_ContractItem_BatWing",
-              "basetype": "inv'mission_pickup'",
-              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_BatWing.Body_CollectContract_BatWing'",
-              "pickupinteractiontype": "TouchOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "41",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "inv_contractitem_beastbone": {
-              "inv": "Inv_ContractItem_BeastBone",
-              "basetype": "inv'mission_pickup'",
-              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_BeastBone.Body_CollectContract_BeastBone'",
-              "pickupinteractiontype": "TouchOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "40",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "inv_contractitem_beasthorn": {
-              "inv": "Inv_ContractItem_BeastHorn",
-              "basetype": "inv'mission_pickup'",
-              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_BeastHorn.Body_CollectContract_BeastHorn'",
-              "pickupinteractiontype": "TouchOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "39",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "inv_contractitem_bloodpack": {
-              "inv": "Inv_ContractItem_BloodPack",
-              "basetype": "inv'mission_pickup'",
-              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_BloodPack.Body_CollectContract_BloodPack'",
-              "pickupinteractiontype": "TouchOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "48",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "inv_contractitem_bottle": {
-              "inv": "Inv_ContractItem_Bottle",
-              "basetype": "inv'mission_pickup'",
-              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_Bottle.Body_CollectContract_Bottle'",
-              "pickupinteractiontype": "TouchOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "38",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "inv_contractitem_catheart": {
-              "inv": "Inv_ContractItem_CatHeart",
-              "basetype": "inv'mission_pickup'",
-              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_CatHeart.Body_CollectContract_CatHeart'",
-              "pickupinteractiontype": "TouchOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "37",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "inv_contractitem_cattail": {
-              "inv": "Inv_ContractItem_CatTail",
-              "basetype": "inv'mission_pickup'",
-              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_CatTail.Body_CollectContract_CatTail'",
-              "pickupinteractiontype": "TouchOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "36",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "inv_contractitem_creepbrain": {
-              "inv": "Inv_ContractItem_CreepBrain",
-              "basetype": "inv'mission_pickup'",
-              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_CreepBrain.Body_CollectContract_CreepBrain'",
-              "pickupinteractiontype": "TouchOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "44",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "inv_contractitem_creepparts": {
-              "inv": "Inv_ContractItem_CreepParts",
-              "basetype": "inv'mission_pickup'",
-              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_CreepParts.Body_CollectContract_CreepParts'",
-              "pickupinteractiontype": "TouchOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "47",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "inv_contractitem_cybercore": {
-              "inv": "Inv_ContractItem_CyberCore",
-              "basetype": "inv'mission_pickup'",
-              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_CyberCore.Body_CollectContract_CyberCore'",
-              "pickupinteractiontype": "TouchOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "34",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "inv_contractitem_droneparts": {
-              "inv": "Inv_ContractItem_DroneParts",
-              "basetype": "inv'mission_pickup'",
-              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_DroneParts.Body_CollectContract_DroneParts'",
-              "pickupinteractiontype": "TouchOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "35",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "inv_contractitem_firerod": {
-              "inv": "Inv_ContractItem_FireRod",
-              "basetype": "inv'mission_pickup'",
-              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_FireRod.Body_CollectContract_FireRod'",
-              "pickupinteractiontype": "TouchOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "33",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "inv_contractitem_ingot": {
-              "inv": "Inv_ContractItem_Ingot",
-              "basetype": "inv'mission_pickup'",
-              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_Ingot.Body_CollectContract_Ingot'",
-              "pickupinteractiontype": "TouchOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "32",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "inv_contractitem_pangolinparts": {
-              "inv": "Inv_ContractItem_PangolinParts",
-              "basetype": "inv'mission_pickup'",
-              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_PangolinParts.Body_CollectContract_PangolinParts'",
-              "pickupinteractiontype": "TouchOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "46",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "inv_contractitem_poster": {
-              "inv": "Inv_ContractItem_Poster",
-              "basetype": "inv'mission_pickup'",
-              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_Poster.Body_CollectContract_Poster'",
-              "pickupinteractiontype": "TouchOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "49",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "inv_contractitem_powertools": {
-              "inv": "Inv_ContractItem_PowerTools",
-              "basetype": "inv'mission_pickup'",
-              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_PowerTools.Body_CollectContract_PowerTools'",
-              "pickupinteractiontype": "TouchOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "31",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "inv_contractitem_powertools_a": {
-              "inv": "Inv_ContractItem_PowerTools_A",
-              "basetype": "inv'mission_pickup'",
-              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_PowerTools_A.Body_CollectContract_PowerTools_A'",
-              "pickupinteractiontype": "TouchOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "393",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "inv_contractitem_powertools_b": {
-              "inv": "Inv_ContractItem_PowerTools_B",
-              "basetype": "inv'mission_pickup'",
-              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_PowerTools_B.Body_CollectContract_PowerTools_B'",
-              "pickupinteractiontype": "TouchOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "242",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "inv_contractitem_powertools_c": {
-              "inv": "Inv_ContractItem_PowerTools_C",
-              "basetype": "inv'mission_pickup'",
-              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_PowerTools_C.Body_CollectContract_PowerTools_C'",
-              "pickupinteractiontype": "TouchOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "241",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "inv_contractitem_sparkplug": {
-              "inv": "Inv_ContractItem_SparkPlug",
-              "basetype": "inv'mission_pickup'",
-              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_SparkPlug.Body_CollectContract_SparkPlug'",
-              "pickupinteractiontype": "TouchOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "45",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "inv_contractitem_thresherbrain": {
-              "inv": "Inv_ContractItem_ThresherBrain",
-              "basetype": "inv'mission_pickup'",
-              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_ThresherBrain.Body_CollectContract_ThresherBrain'",
-              "pickupinteractiontype": "TouchOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "30",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "inv_contractitem_thresherliver": {
-              "inv": "Inv_ContractItem_ThresherLiver",
-              "basetype": "inv'mission_pickup'",
-              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_ThresherLiver.Body_CollectContract_ThresherLiver'",
-              "pickupinteractiontype": "TouchOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "29",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "inv_contractitem_tools": {
-              "inv": "Inv_ContractItem_Tools",
-              "basetype": "inv'mission_pickup'",
-              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_Tools.Body_CollectContract_Tools'",
-              "pickupinteractiontype": "TouchOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "43",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "inv_contractitem_tools_a": {
-              "inv": "Inv_ContractItem_Tools_A",
-              "basetype": "inv'mission_pickup'",
-              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_Tools_A.Body_CollectContract_Tools_A'",
-              "pickupinteractiontype": "TouchOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "396",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "inv_contractitem_tools_b": {
-              "inv": "Inv_ContractItem_Tools_B",
-              "basetype": "inv'mission_pickup'",
-              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_Tools_B.Body_CollectContract_Tools_B'",
-              "pickupinteractiontype": "TouchOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "395",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "inv_contractitem_tools_c": {
-              "inv": "Inv_ContractItem_Tools_C",
-              "basetype": "inv'mission_pickup'",
-              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_Tools_C.Body_CollectContract_Tools_C'",
-              "pickupinteractiontype": "TouchOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "394",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_bfr_pickup_bolt": {
-              "inv": "InvDef_BFR_Pickup_Bolt",
-              "itembasename": "Dead Auger Bolts",
-              "basetype": "inv'mission_pickup'",
-              "class": "Asset'/Script/GbxGame.InventoryPickup'",
-              "uistats": [
-                "ui_stat'UIStat_BFR_Pickup_Bolt'"
-              ],
-              "binventorynameisfullname": "true",
-              "inventoryname": "NexusSerialized, 3FB22DE244802081A4EFE28817EBEA03, Dead Auger Bolts",
-              "body": "Asset'/Game/Missions/Micro/Mountains/Micro_Mountains_BoltFuneralRites/Mission_IO/BFR_Pickup_Bolt/Body_BFR_Bolt.Body_BFR_Bolt'",
-              "serialindex": {
-                "status": "Active",
-                "index": "170",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_boosterplaceable": {
-              "inv": "InvDef_BoosterPlaceable",
-              "itembasename": "Booster Charge",
-              "class": "Asset'/Script/GbxGame.InventoryPickup'",
-              "rarity": "rarity'00_mission'",
-              "binventorynameisfullname": "true",
-              "inventoryname": "NexusSerialized, 6BB086524101A641EB4D74A47692713E, Booster Charge",
-              "body": "Asset'/Game/World/Interactives/Missions/Plot/Shatteredlands/BoosterCharge/SM_Booster_Charge.SM_Booster_Charge'",
-              "pickupinteractiontype": "UseOnly",
-              "pickupprompt": "usability_prompt'UsePrompt_Take'",
+            "currency_money_slotmachine_singlestack": {
+              "inv": "currency_money_slotmachine_singlestack",
+              "basetype": "inv'currency_money'",
+              "body": "Asset'/Game/World/Interactives/Pickups/Money/SM_Money_Stack_Single.SM_Money_Stack_Single'",
               "rotationincontainer": {
-                "pitch": "90.000000",
+                "pitch": "0.000000",
                 "yaw": "0.000000",
-                "roll": "45.000000"
+                "roll": "-90.000000"
               },
               "brotationincontaineroverride": "true",
-              "baddtoinventoryoverride": "true",
-              "baddtoinventory": "true",
-              "serialindex": {
-                "status": "Active",
-                "index": "216",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_broombaplaceable": {
-              "inv": "InvDef_BroombaPlaceable",
-              "itembasename": "Broomba",
-              "class": "Asset'/Script/GbxGame.InventoryPickup'",
-              "rarity": "rarity'00_mission'",
-              "binventorynameisfullname": "true",
-              "inventoryname": "NexusSerialized, 80F63C79477CD3D57302CBAC1BCD2ABF, Broomba",
-              "body": "Asset'/Game/World/Interactives/Missions/Side/OverwritingAWrong/SM_Drone_Body.SM_Drone_Body'",
-              "pickupinteractiontype": "UseOnly",
-              "pickupprompt": "usability_prompt'UsePrompt_Take'",
-              "rotationincontainer": {
-                "pitch": "90.000000",
-                "yaw": "0.000000",
-                "roll": "45.000000"
-              },
-              "brotationincontaineroverride": "true",
-              "baddtoinventoryoverride": "true",
-              "baddtoinventory": "true",
-              "serialindex": {
-                "status": "Active",
-                "index": "102",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_commanderdoor_boltkey": {
-              "inv": "InvDef_CommanderDoor_BoltKey",
-              "class": "Asset'/Script/GbxGame.InventoryPickup'",
-              "rarity": "rarity'00_mission'",
-              "body": "Asset'/Game/Missions/Side/Shattered/Side_Shattered_ElectiFactionMission3/Assets/Body_EFM3_EMPPickup_Part3.Body_EFM3_EMPPickup_Part3'",
-              "pickupinteractiontype": "UseOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "220",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_efm1_boomstickpickup": {
-              "inv": "InvDef_EFM1_BoomstickPickup",
-              "itembasename": "Ripper Explosives",
-              "basetype": "inv'mission_pickup'",
-              "class": "Asset'/Script/GbxGame.InventoryPickup'",
-              "uistats": [
-                "ui_stat'UIStat_Pickup_EFM1_BoomtickPickup'"
+              "aspects": [
+                {
+                  "parent": "inv_aspect'pickup_cash_aspect'",
+                  "attributeeffects": [
+                    {
+                      "attributetomodify": "attribute'cash_held'",
+                      "modifiertype": "PostAdd",
+                      "modifiervalue": {
+                        "constant": "100.000000",
+                        "datatablevalue": {
+                          "datatable": "gbx_ue_data_table'none'",
+                          "rowname": "None",
+                          "columnname": "None"
+                        },
+                        "attribute": "attribute'none'",
+                        "postscale": "1.000000"
+                      }
+                    }
+                  ]
+                }
               ],
-              "binventorynameisfullname": "true",
-              "inventoryname": "NexusSerialized, 049AC1804FB1AF8CA08D7191A6F07CF0, Ripper Explosives",
-              "body": "Asset'/Game/Missions/Side/Shattered/Side_Shattered_ElectiFactionMission1/Assets/Body_EFM1_BoomstickPickup.Body_EFM1_BoomstickPickup'",
-              "pickupsound": {
-                "wwiseevent": "audio_event'IO_Pickups_Shared.IO_Pickup_OnPickup_GenericMaterials'"
-              },
-              "pickupequipsound": {
-                "wwiseevent": "audio_event'IO_Pickups_Shared.IO_Pickup_OnPickup_GenericMaterials'"
-              },
               "serialindex": {
                 "status": "Active",
-                "index": "112",
+                "index": "523",
                 "_category": "inv_type",
                 "_scope": "Root"
               }
             }
           },
-          {
-            "invdef_efm2_creepmeatpickup": {
-              "inv": "InvDef_EFM2_CreepMeatPickup",
-              "itembasename": "Creep Meat Chunks",
-              "basetype": "inv'mission_pickup'",
-              "class": "Asset'/Script/GbxGame.InventoryPickup'",
-              "uistats": [
-                "ui_stat'UIStat_Pickup_EFM2_CreepMeat'"
-              ],
-              "binventorynameisfullname": "true",
-              "inventoryname": "NexusSerialized, 6C55D22F48DDF0AEF8D3D5ADC4F51D78, Creep Meat Chunks",
-              "body": "Asset'/Game/Missions/Side/Shattered/Side_Shattered_ElectiFactionMission2/Assets/Shatteredlands_EFM2_CreepMeatPickup/Body_EFM2_CreepMeatPickup.Body_EFM2_CreepMeatPickup'",
-              "pickupsound": {
-                "wwiseevent": "audio_event'IO_Pickups_Shared.IO_Pickup_OnPickup_ThresherEgg'"
-              },
-              "pickupequipsound": {
-                "wwiseevent": "audio_event'IO_Pickups_Shared.IO_Pickup_OnPickup_ThresherEgg'"
-              },
-              "serialindex": {
-                "status": "Active",
-                "index": "184",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_efm3_emppickup_part1": {
-              "inv": "InvDef_EFM3_EMPPickup_Part1",
-              "class": "Asset'/Script/GbxGame.InventoryPickup'",
-              "rarity": "rarity'00_mission'",
-              "body": "Asset'/Game/Missions/Side/Shattered/Side_Shattered_ElectiFactionMission3/Assets/Body_EFM3_EMPPIckup_Part1.Body_EFM3_EMPPIckup_Part1'",
-              "pickupinteractiontype": "UseOnly",
-              "pickupsound": {
-                "wwiseevent": "audio_event'IO_Pickup_BruceCore.IO_Pickup_BruceCore'"
-              },
-              "serialindex": {
-                "status": "Active",
-                "index": "132",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_efm3_emppickup_part2": {
-              "inv": "InvDef_EFM3_EMPPickup_Part2",
-              "itembasename": "Weather Antennae",
-              "basetype": "inv'mission_pickup'",
-              "class": "Asset'/Script/GbxGame.InventoryPickup'",
-              "uistats": [
-                "ui_stat'UIStat_Pickup_EFM3_EMPPart2'"
-              ],
-              "binventorynameisfullname": "true",
-              "inventoryname": "NexusSerialized, 6694AD1B4AC83FF49B32B8A08201A34A, Weather Antennae",
-              "body": "Asset'/Game/Missions/Side/Shattered/Side_Shattered_ElectiFactionMission3/Assets/Body_EFM3_EMPPickup_Part2.Body_EFM3_EMPPickup_Part2'",
-              "pickupsound": {
-                "wwiseevent": "audio_event'IO_Pickups_Shared.IO_Pickup_OnPickup_Antenna'"
-              },
-              "pickupequipsound": {
-                "wwiseevent": "audio_event'IO_Pickups_Shared.IO_Pickup_OnPickup_Antenna'"
-              },
-              "serialindex": {
-                "status": "Active",
-                "index": "133",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_efm3_emppickup_part3": {
-              "inv": "InvDef_EFM3_EMPPickup_Part3",
-              "itembasename": "Home Defense Deterrent",
-              "basetype": "inv'mission_pickup'",
-              "class": "Asset'/Script/GbxGame.InventoryPickup'",
-              "uistats": [
-                "ui_stat'UIStat_Pickup_EFM3_EMPPart3'"
-              ],
-              "binventorynameisfullname": "true",
-              "inventoryname": "NexusSerialized, C3C93CE444AFF47BC2335889C9D052A5, Home Defense Deterrent",
-              "body": "Asset'/Game/Missions/Side/Shattered/Side_Shattered_ElectiFactionMission3/Assets/Body_EFM3_EMPPickup_Part3.Body_EFM3_EMPPickup_Part3'",
-              "pickupsound": {
-                "wwiseevent": "audio_event'IO_Pickups_Shared.IO_Pickup_OnPickup_Explosive'"
-              },
-              "pickupequipsound": {
-                "wwiseevent": "audio_event'IO_Pickups_Shared.IO_Pickup_OnPickup_Explosive'"
-              },
-              "serialindex": {
-                "status": "Active",
-                "index": "131",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_efm3_pickup_empcomplete": {
-              "inv": "InvDef_EFM3_Pickup_EMPComplete",
-              "class": "Asset'/Script/GbxGame.InventoryPickup'",
-              "rarity": "rarity'00_mission'",
-              "body": "Asset'/Game/Missions/Side/Shattered/Side_Shattered_ElectiFactionMission3/Assets/Body_EFM3_Pickup_EMPComplete.Body_EFM3_Pickup_EMPComplete'",
-              "pickupinteractiontype": "UseOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "137",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_efpagri_cratepickup": {
-              "inv": "InvDef_EFPAgri_CratePickup",
-              "class": "Asset'/Script/GbxGame.InventoryPickup'",
-              "rarity": "rarity'00_mission'",
-              "body": "Asset'/Game/Missions/Micro/Shattered/Micro_Shattered_ElectiPrologue/Assets/Body_EFPAgri_CratePickup.Body_EFPAgri_CratePickup'",
-              "pickupinteractiontype": "UseOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "229",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_genconstruct": {
-              "inv": "InvDef_GenConstruct",
-              "itembasename": "Broomba",
-              "class": "Asset'/Script/GbxGame.InventoryPickup'",
-              "rarity": "rarity'00_mission'",
-              "binventorynameisfullname": "true",
-              "inventoryname": "NexusSerialized, 586CBA0F407EEF9D3B027EAAAF9200F1, Broomba",
-              "body": "Asset'/Game/World/Interactives/Missions/Side/OverwritingAWrong/SM_Drone_Body.SM_Drone_Body'",
-              "pickupinteractiontype": "UseOnly",
-              "pickupprompt": "usability_prompt'UsePrompt_Take'",
-              "rotationincontainer": {
-                "pitch": "90.000000",
-                "yaw": "0.000000",
-                "roll": "45.000000"
-              },
-              "brotationincontaineroverride": "true",
-              "baddtoinventoryoverride": "true",
-              "baddtoinventory": "true",
-              "serialindex": {
-                "status": "Active",
-                "index": "107",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_io_pickup_reactorpart": {
-              "inv": "InvDef_IO_Pickup_ReactorPart",
-              "itembasename": "Generator Part",
-              "basetype": "inv'mission_pickup'",
-              "class": "Asset'/Script/GbxGame.InventoryPickup'",
-              "uistats": [
-                "ui_stat'UIStat_IO_Pickup_ReactorPart'"
-              ],
-              "binventorynameisfullname": "true",
-              "inventoryname": "NexusSerialized, D661B355450C8A1FBA09BEB7261D0B1D, Generator Part",
-              "body": "Asset'/Game/Missions/Side/Grasslands/Side_Grasslands_Faction02/Assets/Grasslands_Faction02_Pickup_ReactorPart/Body_IO_Pickup_ReactorPart.Body_IO_Pickup_ReactorPart'",
-              "serialindex": {
-                "status": "Active",
-                "index": "215",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_io_pickup_towerbolt": {
-              "inv": "InvDef_IO_Pickup_TowerBolt",
-              "itembasename": "Broken Bolt",
-              "basetype": "inv'mission_pickup'",
-              "class": "Asset'/Script/GbxGame.InventoryPickup'",
-              "uistats": [
-                "ui_stat'UIStat_Pickup_TowerBolt'"
-              ],
-              "binventorynameisfullname": "true",
-              "inventoryname": "NexusSerialized, B209B1F1458119CB5C1BCCBAA2799EC2, Broken Bolt",
-              "body": "Asset'/Game/Missions/Main/Grasslands/Grasslands1/Assets/Grasslands_Main1_Pickup_TowerBolt/Body_IO_Pickup_TowerBolt.Body_IO_Pickup_TowerBolt'",
-              "pickupsound": {
-                "wwiseevent": "audio_event'IO_Pickups_Shared.IO_Pickup_OnPickup_Boss_Bolts'"
-              },
-              "pickupequipsound": {
-                "wwiseevent": "audio_event'IO_Pickups_Shared.IO_Pickup_OnPickup_Boss_Bolts'"
-              },
-              "serialindex": {
-                "status": "Active",
-                "index": "200",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_thesupply_shammylog": {
-              "inv": "InvDef_TheSupply_ShammyLog",
-              "itembasename": "Pickup_ShammyLog, 5228F9F24EAC62A692AFFDA0ACBA9198, A Note from Shammy",
-              "basetype": "inv'mission_pickup'",
-              "class": "Asset'/Script/GbxGame.InventoryPickup'",
-              "uistats": [
-                "ui_stat'UIStat_Pickup_TheSupply_ShammyLog'"
-              ],
-              "binventorynameisfullname": "true",
-              "inventoryname": "NexusSerialized, 674D6AA1430E7BE827438C968634032C, A Note from Shammy",
-              "body": "Asset'/Game/Missions/Micro/Mountains/Micro_Mountains_TheSupply/Pickups/Body_TheSupply_ShammyLog.Body_TheSupply_ShammyLog'",
-              "serialindex": {
-                "status": "Active",
-                "index": "398",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "invdef_vaultpowerorb": {
-              "inv": "InvDef_VaultPowerOrb",
-              "class": "Asset'/Script/GbxGame.InventoryPickup'",
-              "rarity": "rarity'00_mission'",
-              "body": "Asset'/Game/Missions/Side/Grasslands/Side_Grasslands_Vault_Grapple/Assets/VaultPowerOrb/Body_VaultPowerOrb_Pickup.Body_VaultPowerOrb_Pickup'",
-              "pickupinteractiontype": "UseOnly",
-              "pickupprompt": "usability_prompt'UsePrompt_Take'",
-              "serialindex": {
-                "status": "Active",
-                "index": "199",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "newitem": {
-              "inv": "NewItem",
-              "serialindex": {
-                "status": "Active",
-                "index": "149",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          }
-        ]
-      },
-      {
-        "entries": [
           {
             "inv_contractitem_dahlhelmet": {
               "inv": "Inv_ContractItem_DahlHelmet",
@@ -774,20 +56,6 @@
               "serialindex": {
                 "status": "Active",
                 "index": "467",
-                "_category": "inv_type",
-                "_scope": "Root"
-              }
-            }
-          },
-          {
-            "inv_contractitem_dahljetpack": {
-              "inv": "Inv_ContractItem_DahlJetpack",
-              "basetype": "inv'mission_pickup'",
-              "body": "Asset'/Game/DLC/Cowbell/InteractiveObjects/Contract/CollectItems/Bodies/Body_CollectContract_DahlJetPack.Body_CollectContract_DahlJetPack'",
-              "pickupinteractiontype": "TouchOnly",
-              "serialindex": {
-                "status": "Active",
-                "index": "466",
                 "_category": "inv_type",
                 "_scope": "Root"
               }
@@ -808,14 +76,56 @@
             }
           },
           {
-            "inv_contractitem_scavgrenade": {
-              "inv": "Inv_ContractItem_ScavGrenade",
+            "inv_contractitem_rip_mask": {
+              "inv": "Inv_ContractItem_Rip_Mask",
               "basetype": "inv'mission_pickup'",
-              "body": "Asset'/Game/DLC/Cowbell/InteractiveObjects/Contract/CollectItems/Bodies/Body_CollectContract_ScavGrenade.Body_CollectContract_ScavGrenade'",
+              "body": "Asset'/Game/DLC/Harmonica/Activities/Contract/Collect_PickupItems/Body/Body_CollectContract_Rip_Mask.Body_CollectContract_Rip_Mask'",
               "pickupinteractiontype": "TouchOnly",
               "serialindex": {
                 "status": "Active",
-                "index": "468",
+                "index": "511",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "inv_contractitem_rip_satchel": {
+              "inv": "Inv_ContractItem_Rip_Satchel",
+              "basetype": "inv'mission_pickup'",
+              "body": "Asset'/Game/DLC/Harmonica/Activities/Contract/Collect_PickupItems/Body/Body_CollectContract_Rip_Satchel.Body_CollectContract_Rip_Satchel'",
+              "pickupinteractiontype": "TouchOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "510",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "inv_contractitem_ted_hand": {
+              "inv": "Inv_ContractItem_Ted_Hand",
+              "basetype": "inv'mission_pickup'",
+              "body": "Asset'/Game/DLC/Harmonica/Activities/Contract/Collect_PickupItems/Body/Body_CollectContract_Ted_Hand.Body_CollectContract_Ted_Hand'",
+              "pickupinteractiontype": "TouchOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "509",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "inv_contractitem_ted_legpack": {
+              "inv": "Inv_ContractItem_Ted_LegPack",
+              "basetype": "inv'mission_pickup'",
+              "body": "Asset'/Game/DLC/Harmonica/Activities/Contract/Collect_PickupItems/Body/Body_CollectContract_Ted_LegPack.Body_CollectContract_Ted_LegPack'",
+              "pickupinteractiontype": "TouchOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "508",
                 "_category": "inv_type",
                 "_scope": "Root"
               }
@@ -835,6 +145,249 @@
               "serialindex": {
                 "status": "Active",
                 "index": "462",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_h3_hotel_captureflag": {
+              "inv": "InvDef_H3_Hotel_CaptureFlag",
+              "itembasename": "NexusSerialized, CD57891F47BA05D0C5F5AEB01F34099F, TedioreFlag",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "rarity": "rarity'00_mission'",
+              "body": "Asset'/Game/DLC/Harmonica/Missions/Main/Mission_3_Hotel/Assets/Body_H3_Hotel_CaptureFlag.Body_H3_Hotel_CaptureFlag'",
+              "pickupinteractiontype": "UseOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "430",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_h3_lava_duckyhand": {
+              "inv": "InvDef_H3_Lava_DuckyHand",
+              "itembasename": "NexusSerialized, 27B6AD6A4AF14DC814F9AEB498D542AF, Manager Hand",
+              "basetype": "inv'mission_pickup'",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "uistats": [
+                "ui_stat'UIStat_Pickup_Hotel_HandPickup'"
+              ],
+              "binventorynameisfullname": "true",
+              "inventoryname": "NexusSerialized, 4B8CA3D44F728BAFB20F74AE6C77D65D, Manager Hand",
+              "body": "Asset'/Game/DLC/Harmonica/Missions/Main/Mission_3_Lava/Assets/IO_H3_Lava_DuckyHand/Body_H3_Lava_DuckyHand.Body_H3_Lava_DuckyHand'",
+              "serialindex": {
+                "status": "Active",
+                "index": "496",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_h3_lava_missionpickup": {
+              "inv": "InvDef_H3_Lava_MissionPickup",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "rarity": "rarity'00_mission'",
+              "body": "Asset'/Game/DLC/Harmonica/Missions/Main/Mission_3_Lava/Assets/Body_H3_Lava_MissionPickup.Body_H3_Lava_MissionPickup'",
+              "pickupinteractiontype": "UseOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "429",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_h4_fl4keye": {
+              "inv": "InvDef_H4_FL4KEye",
+              "itembasename": "NexusSerialized, 109AA27C4B9805CB1EFEEC97F5BD1580, FL4K's Eye",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "rarity": "rarity'00_mission'",
+              "body": "Asset'/Game/DLC/Harmonica/Missions/Main/Mission_4/Assets/Body_H4_FL4KEye.Body_H4_FL4KEye'",
+              "pickupinteractiontype": "UseOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "438",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_h4_temp_fl4kvirus": {
+              "inv": "InvDef_H4_TEMP_FL4KVirus",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "rarity": "rarity'00_mission'",
+              "body": "Asset'/Game/DLC/Harmonica/Missions/Main/Mission_4/Assets/Body_H4_TEMP_FL4KVirus.Body_H4_TEMP_FL4KVirus'",
+              "pickupinteractiontype": "UseOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "439",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_harmmain2_mrchewcollar": {
+              "inv": "InvDef_HarmMain2_MrChewCollar",
+              "itembasename": "NexusSerialized, 5C2D8DEA4C558F34AAC16A9E3CAEFA10, Mr. Chew's Collar",
+              "basetype": "inv'mission_pickup'",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "uistats": [
+                "ui_stat'UIStat_HarmMain2_MrChewCollar'"
+              ],
+              "body": "Asset'/Game/DLC/Harmonica/Missions/Main/Mission_2/InteractiveObjects/Pickups/Body_Pickup_MrChewCollar.Body_Pickup_MrChewCollar'",
+              "pickupsound": {
+                "wwiseevent": "audio_event'IO_Pickups_Shared.IO_Pickup_OnPickup_DigiDongle'"
+              },
+              "pickupequipsound": {
+                "wwiseevent": "audio_event'IO_Pickups_Shared.IO_Pickup_OnPickup_DigiDongle'"
+              },
+              "serialindex": {
+                "status": "Active",
+                "index": "481",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_harmmain3_safecode": {
+              "inv": "InvDef_HarmMain3_SafeCode",
+              "itembasename": "NexusSerialized, BE5694734A7F9F5FBF05299250372729, Resort Safe Code",
+              "basetype": "inv'mission_pickup'",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "uistats": [
+                "ui_stat'UIStat_Pickup_Spa_SafeCode'"
+              ],
+              "body": "Asset'/Game/DLC/Harmonica/Missions/Main/Mission_3_Spa/InteractiveObjects/Body_Pickup_SafeCode.Body_Pickup_SafeCode'",
+              "serialindex": {
+                "status": "Active",
+                "index": "519",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_pickup_sc_buskermoney": {
+              "inv": "InvDef_Pickup_SC_BuskerMoney",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "rarity": "rarity'00_mission'",
+              "body": "Asset'/Game/DLC/Harmonica/Missions/Micro/SnowCone/Assets/IO_Pickup_SC_BuskerMoney/Body_Pickup_SC_BuskerMoney.Body_Pickup_SC_BuskerMoney'",
+              "pickupinteractiontype": "UseOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "476",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_si_pickup_detonator": {
+              "inv": "InvDef_SI_Pickup_Detonator",
+              "itembasename": "NexusSerialized, C66BC673485EBB5014B3FBA819A9B5A3, Ripper Detonator",
+              "basetype": "inv'mission_pickup'",
+              "uistats": [
+                "ui_stat'UIStat_SI_Pickup_Detonator'"
+              ],
+              "body": "Asset'/Game/DLC/Harmonica/Missions/Side/SasaengInvasion/Mission_IO/Pickup_Detonator/Body_SI_Pickup_Detonator.Body_SI_Pickup_Detonator'",
+              "serialindex": {
+                "status": "Active",
+                "index": "514",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_vmuf_festivalmaterialspickup": {
+              "inv": "InvDef_VMUF_FestivalMaterialsPickup",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "rarity": "rarity'00_mission'",
+              "body": "Asset'/Game/DLC/Harmonica/Missions/Side/VeryMerryUnFestival/Assets/Body_VMUF_FestivalMaterials.Body_VMUF_FestivalMaterials'",
+              "pickupinteractiontype": "UseOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "448",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_vmuf_pickup_borrowedturrets": {
+              "inv": "InvDef_VMUF_Pickup_BorrowedTurrets",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "rarity": "rarity'00_mission'",
+              "body": "Asset'/Game/DLC/Harmonica/Missions/Side/VeryMerryUnFestival/Assets/VMUF_Pickup_BorrowedTurrets/Body_VMUF_Pickup_BorrowedTurrets.Body_VMUF_Pickup_BorrowedTurrets'",
+              "pickupinteractiontype": "UseOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "473",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_vmuf_pickup_lytfestposter": {
+              "inv": "InvDef_VMUF_Pickup_LytFestPoster",
+              "itembasename": "NexusSerialized, 0E5DAB2948D3B766559C048F57F45B6E, Lyt Fest Poster",
+              "basetype": "inv'mission_pickup'",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "uistats": [
+                "ui_stat'UIStat_Pickup_VMUF_LytFestPoster'"
+              ],
+              "body": "Asset'/Game/DLC/Harmonica/Missions/Side/VeryMerryUnFestival/Assets/VMUF_Pickup_LytFestPoster/Body_VMUF_Pickup_LytFestPoster.Body_VMUF_Pickup_LytFestPoster'",
+              "pickupsound": {
+                "wwiseevent": "audio_event'_DLC_Harmonica_Mission_Side_VeryMerryUnfestival.Mission_Side_VeryMerryUnfestival_Poster_Pickup'"
+              },
+              "serialindex": {
+                "status": "Active",
+                "index": "465",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_vmuf_pickup_microphone": {
+              "inv": "InvDef_VMUF_Pickup_Microphone",
+              "itembasename": "NexusSerialized, FCDD793B4BBB40D7FFC50BBA03B75B2A, Microphone of Audience Power",
+              "basetype": "inv'mission_pickup'",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "uistats": [
+                "ui_stat'UIStat_Pickup_VMUF_Microphone'"
+              ],
+              "body": "Asset'/Game/DLC/Harmonica/Missions/Side/VeryMerryUnFestival/Assets/VMUF_Pcikup_Microphone/Body_VMUF_Pickup_Microphone.Body_VMUF_Pickup_Microphone'",
+              "pickupsound": {
+                "wwiseevent": "audio_event'_DLC_Harmonica_Mission_Side_VeryMerryUnfestival.Mission_Side_VeryMerryUnfestival_PickupMic'"
+              },
+              "serialindex": {
+                "status": "Active",
+                "index": "463",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_vmuf_pickup_tenttape": {
+              "inv": "InvDef_VMUF_Pickup_TentTape",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "rarity": "rarity'00_mission'",
+              "body": "Asset'/Game/DLC/Harmonica/Missions/Side/VeryMerryUnFestival/Assets/VMUF_Pickup_Tape/Body_VMUF_Pickup_TentTape.Body_VMUF_Pickup_TentTape'",
+              "pickupinteractiontype": "UseOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "464",
                 "_category": "inv_type",
                 "_scope": "Root"
               }
@@ -3222,6 +2775,1758 @@
             ]
           },
           {
+            "weapon_tediorearmy_framesprayerl": {
+              "inv": "Weapon_TedioreArmy_FrameSprayerL",
+              "basetype": "inv'Weapon_AI_CustomBase'",
+              "parttypes": [
+                "body",
+                "body_ele"
+              ],
+              "pingfeedback": "pingfeedbackdata'pingable_equipment'",
+              "serialindex": {
+                "status": "Active",
+                "index": "504",
+                "_category": "inv_type",
+                "_scope": "Root"
+              },
+              "class_data": {
+                "bodyanimtag": "ORD_AR",
+                "equiptime": {
+                  "constant": "0.330000"
+                },
+                "putdowntime": {
+                  "constant": "0.330000"
+                },
+                "switchmodetime": {
+                  "constant": "0.330000"
+                },
+                "audioprovider": "audioprovider'Audio_Wep_TedioreArmy_FrameSprayer_L'"
+              }
+            },
+            "__dep_entries": [
+              {
+                "depTableName": "inv_comp",
+                "depTableId": 2,
+                "depIndex": 0,
+                "comp_tediorearmy_framesprayerl": {
+                  "inv_comp": "Comp_TedioreArmy_FrameSprayerL",
+                  "basetags": [
+                    {
+                      "body_acc_ele": "body_acc_ele"
+                    },
+                    {
+                      "epic": "epic"
+                    }
+                  ],
+                  "parttypeselectionrules": {
+                    "pairs": {
+                      "pair2189756482": {
+                        "key": "body",
+                        "value": {
+                          "parts": [
+                            {
+                              "part": "part_body_lp"
+                            }
+                          ]
+                        }
+                      },
+                      "pair754667270": {
+                        "key": "body_ele",
+                        "value": {
+                          "parts": [
+                            {
+                              "part": "part_corrosive"
+                            },
+                            {
+                              "part": "part_cryo"
+                            },
+                            {
+                              "part": "part_fire"
+                            },
+                            {
+                              "part": "part_radiation"
+                            },
+                            {
+                              "part": "part_shock"
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  "aspects": [
+                    {
+                      "parent": "inv_aspect'Material_DA_Rarity'",
+                      "dataasset": "Asset'/Game/Gear/Weapons/_Shared/Materials/ORD/DA_MD_ORD_Common.DA_MD_ORD_Common'"
+                    },
+                    {
+                      "parent": "inv_aspect'Material_DA_Type'",
+                      "dataasset": "Asset'/Game/Gear/Weapons/AssaultRifles/ORD/Materials/DA_MD_ORD_AR.DA_MD_ORD_AR'"
+                    }
+                  ],
+                  "serialindex": {
+                    "status": "Active",
+                    "index": "1",
+                    "_category": "inv_type",
+                    "_scope": "Sub"
+                  }
+                }
+              },
+              {
+                "depTableName": "body",
+                "depTableId": 3,
+                "depIndex": 1,
+                "part_body_lp": {
+                  "body": "part_body_lp",
+                  "aspects": [
+                    {
+                      "parent": "inv_aspect'fire_projectile'",
+                      "behavior": {
+                        "lightprojectile": "light_projectile'LightProj_TedioreArmy_Sprayer'",
+                        "firerate": {
+                          "constant": "20.000000"
+                        },
+                        "firesockets": [
+                          "Socket_LGunUp",
+                          "Socket_LGunDown",
+                          "Socket_LGunStraight"
+                        ],
+                        "shotammocost": "0",
+                        "damage": {
+                          "attribute": "attribute'TedioreArmy_Sprayer_damage_formula'"
+                        },
+                        "damagesource": {
+                          "data": [
+                            {
+                              "dmgsrc_gun": "damagesource'DmgSrc_Gun'"
+                            }
+                          ]
+                        },
+                        "spread": {
+                          "constant": "0.400000"
+                        },
+                        "busebursttime": "true",
+                        "aipreferredrange": {
+                          "constant": "1000.000000"
+                        },
+                        "aibursttime": {
+                          "constant": "0.500000"
+                        },
+                        "aiprojectilespeed": {
+                          "constant": "1.000000",
+                          "datatablevalue": {
+                            "datatable": "gbx_ue_data_table'none'",
+                            "rowname": "None",
+                            "columnname": "None"
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "gestaltpartnames": [
+                    "ORD_AR_Body",
+                    "ORD_AR_Body_D",
+                    "ORD_AR_Barrel_02",
+                    "ORD_AR_Barrel_02_A",
+                    "ORD_AR_Barrel_02_B",
+                    "ORD_AR_Mag_05",
+                    "ORD_AR_Grip_02",
+                    "ORD_AR_Foregrip_03"
+                  ],
+                  "serialindex": {
+                    "status": "Active",
+                    "index": "2",
+                    "_category": "inv_type",
+                    "_scope": "Sub"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "weapon_tediorearmy_framesprayerr": {
+              "inv": "Weapon_TedioreArmy_FrameSprayerR",
+              "basetype": "inv'Weapon_AI_CustomBase'",
+              "parttypes": [
+                "body",
+                "body_ele"
+              ],
+              "pingfeedback": "pingfeedbackdata'pingable_equipment'",
+              "serialindex": {
+                "status": "Active",
+                "index": "503",
+                "_category": "inv_type",
+                "_scope": "Root"
+              },
+              "class_data": {
+                "bodyanimtag": "ORD_AR",
+                "equiptime": {
+                  "constant": "0.330000"
+                },
+                "putdowntime": {
+                  "constant": "0.330000"
+                },
+                "switchmodetime": {
+                  "constant": "0.330000"
+                },
+                "audioprovider": "audioprovider'Audio_Wep_TedioreArmy_FrameSprayer_R'"
+              }
+            },
+            "__dep_entries": [
+              {
+                "depTableName": "inv_comp",
+                "depTableId": 2,
+                "depIndex": 0,
+                "comp_tediorearmy_framesprayerr": {
+                  "inv_comp": "Comp_TedioreArmy_FrameSprayerR",
+                  "basetags": [
+                    {
+                      "body_acc_ele": "body_acc_ele"
+                    },
+                    {
+                      "epic": "epic"
+                    }
+                  ],
+                  "parttypeselectionrules": {
+                    "pairs": {
+                      "pair2189756482": {
+                        "key": "body",
+                        "value": {
+                          "parts": [
+                            {
+                              "part": "part_body_lp"
+                            }
+                          ]
+                        }
+                      },
+                      "pair754667270": {
+                        "key": "body_ele",
+                        "value": {
+                          "parts": [
+                            {
+                              "part": "part_corrosive"
+                            },
+                            {
+                              "part": "part_cryo"
+                            },
+                            {
+                              "part": "part_fire"
+                            },
+                            {
+                              "part": "part_radiation"
+                            },
+                            {
+                              "part": "part_shock"
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  "aspects": [
+                    {
+                      "parent": "inv_aspect'Material_DA_Rarity'",
+                      "dataasset": "Asset'/Game/Gear/Weapons/_Shared/Materials/ORD/DA_MD_ORD_Common.DA_MD_ORD_Common'"
+                    },
+                    {
+                      "parent": "inv_aspect'Material_DA_Type'",
+                      "dataasset": "Asset'/Game/Gear/Weapons/AssaultRifles/ORD/Materials/DA_MD_ORD_AR.DA_MD_ORD_AR'"
+                    }
+                  ],
+                  "serialindex": {
+                    "status": "Active",
+                    "index": "1",
+                    "_category": "inv_type",
+                    "_scope": "Sub"
+                  }
+                }
+              },
+              {
+                "depTableName": "body",
+                "depTableId": 3,
+                "depIndex": 1,
+                "part_body_lp": {
+                  "body": "part_body_lp",
+                  "aspects": [
+                    {
+                      "parent": "inv_aspect'fire_projectile'",
+                      "behavior": {
+                        "lightprojectile": "light_projectile'LightProj_TedioreArmy_Sprayer'",
+                        "firerate": {
+                          "constant": "20.000000"
+                        },
+                        "firesockets": [
+                          "Socket_RGunUp",
+                          "Socket_RGunDown",
+                          "Socket_RGunStraight"
+                        ],
+                        "shotammocost": "0",
+                        "damage": {
+                          "attribute": "attribute'TedioreArmy_Sprayer_damage_formula'"
+                        },
+                        "damagesource": {
+                          "data": [
+                            {
+                              "dmgsrc_gun": "damagesource'DmgSrc_Gun'"
+                            }
+                          ]
+                        },
+                        "spread": {
+                          "constant": "0.400000"
+                        },
+                        "busebursttime": "true",
+                        "aipreferredrange": {
+                          "constant": "1000.000000"
+                        },
+                        "aibursttime": {
+                          "constant": "0.500000"
+                        },
+                        "aiprojectilespeed": {
+                          "constant": "1.000000",
+                          "datatablevalue": {
+                            "datatable": "gbx_ue_data_table'none'",
+                            "rowname": "None",
+                            "columnname": "None"
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "gestaltpartnames": [
+                    "ORD_AR_Body",
+                    "ORD_AR_Body_D",
+                    "ORD_AR_Barrel_02",
+                    "ORD_AR_Barrel_02_A",
+                    "ORD_AR_Barrel_02_B",
+                    "ORD_AR_Mag_05",
+                    "ORD_AR_Grip_02",
+                    "ORD_AR_Foregrip_03"
+                  ],
+                  "serialindex": {
+                    "status": "Active",
+                    "index": "2",
+                    "_category": "inv_type",
+                    "_scope": "Sub"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "weapon_tediorearmy_sprayer": {
+              "inv": "Weapon_TedioreArmy_Sprayer",
+              "basetype": "inv'Weapon_AI_CustomBase'",
+              "body": "Asset'/Game/AI/ArmyOrder/Soldier/_Shared/_Design/Weapons/Body_Soldier_Sprayer.Body_Soldier_Sprayer'",
+              "parttypes": [
+                "body",
+                "body_ele"
+              ],
+              "pingfeedback": "pingfeedbackdata'pingable_equipment'",
+              "serialindex": {
+                "status": "Active",
+                "index": "474",
+                "_category": "inv_type",
+                "_scope": "Root"
+              },
+              "class_data": {
+                "bodyanimtag": "ORD_AR",
+                "equiptime": {
+                  "constant": "0.330000"
+                },
+                "putdowntime": {
+                  "constant": "0.330000"
+                },
+                "switchmodetime": {
+                  "constant": "0.330000"
+                },
+                "audioprovider": "audioprovider'Enm_Order_Soldier_Wep_Sprayer'"
+              }
+            },
+            "__dep_entries": [
+              {
+                "depTableName": "inv_comp",
+                "depTableId": 2,
+                "depIndex": 0,
+                "comp_tediorearmy_sprayer": {
+                  "inv_comp": "Comp_TedioreArmy_Sprayer",
+                  "basetags": [
+                    {
+                      "body_acc_ele": "body_acc_ele"
+                    },
+                    {
+                      "epic": "epic"
+                    }
+                  ],
+                  "parttypeselectionrules": {
+                    "pairs": {
+                      "pair2189756482": {
+                        "key": "body",
+                        "value": {
+                          "parts": [
+                            {
+                              "part": "part_body_lp"
+                            }
+                          ]
+                        }
+                      },
+                      "pair754667270": {
+                        "key": "body_ele",
+                        "value": {
+                          "parts": [
+                            {
+                              "part": "part_corrosive"
+                            },
+                            {
+                              "part": "part_cryo"
+                            },
+                            {
+                              "part": "part_fire"
+                            },
+                            {
+                              "part": "part_radiation"
+                            },
+                            {
+                              "part": "part_shock"
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  "aspects": [
+                    {
+                      "parent": "inv_aspect'Material_DA_Rarity'",
+                      "dataasset": "Asset'/Game/Gear/Weapons/_Shared/Materials/ORD/DA_MD_ORD_Common.DA_MD_ORD_Common'"
+                    },
+                    {
+                      "parent": "inv_aspect'Material_DA_Type'",
+                      "dataasset": "Asset'/Game/Gear/Weapons/AssaultRifles/ORD/Materials/DA_MD_ORD_AR.DA_MD_ORD_AR'"
+                    }
+                  ],
+                  "serialindex": {
+                    "status": "Active",
+                    "index": "1",
+                    "_category": "inv_type",
+                    "_scope": "Sub"
+                  }
+                }
+              },
+              {
+                "depTableName": "body",
+                "depTableId": 3,
+                "depIndex": 1,
+                "part_body_lp": {
+                  "body": "part_body_lp",
+                  "aspects": [
+                    {
+                      "parent": "inv_aspect'fire_projectile'",
+                      "behavior": {
+                        "lightprojectile": "light_projectile'LightProj_TedioreArmy_Sprayer'",
+                        "firerate": {
+                          "constant": "20.000000"
+                        },
+                        "shotammocost": "0",
+                        "damage": {
+                          "attribute": "attribute'TedioreArmy_Sprayer_damage_formula'"
+                        },
+                        "damagesource": {
+                          "data": [
+                            {
+                              "dmgsrc_gun": "damagesource'DmgSrc_Gun'"
+                            }
+                          ]
+                        },
+                        "spread": {
+                          "constant": "0.500000"
+                        },
+                        "busebursttime": "true",
+                        "aipreferredrange": {
+                          "constant": "1000.000000"
+                        },
+                        "aibursttime": {
+                          "constant": "0.500000"
+                        },
+                        "aiprojectilespeed": {
+                          "constant": "1.000000",
+                          "datatablevalue": {
+                            "datatable": "gbx_ue_data_table'none'",
+                            "rowname": "None",
+                            "columnname": "None"
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "gestaltpartnames": [
+                    "ORD_AR_Body",
+                    "ORD_AR_Body_D",
+                    "ORD_AR_Barrel_02",
+                    "ORD_AR_Barrel_02_A",
+                    "ORD_AR_Barrel_02_B",
+                    "ORD_AR_Mag_05",
+                    "ORD_AR_Grip_02",
+                    "ORD_AR_Foregrip_03"
+                  ],
+                  "serialindex": {
+                    "status": "Active",
+                    "index": "2",
+                    "_category": "inv_type",
+                    "_scope": "Sub"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "weapon_tedioredigishotgun": {
+              "inv": "Weapon_TedioreDigiShotgun",
+              "basetype": "inv'Weapon_AI_CustomBase'",
+              "parttypes": [
+                "body",
+                "body_ele"
+              ],
+              "pingfeedback": "pingfeedbackdata'pingable_equipment'",
+              "serialindex": {
+                "status": "Active",
+                "index": "506",
+                "_category": "inv_type",
+                "_scope": "Root"
+              },
+              "class_data": {
+                "weapontype": "None",
+                "equiptime": {
+                  "constant": "0.330000"
+                },
+                "putdowntime": {
+                  "constant": "0.330000"
+                },
+                "switchmodetime": {
+                  "constant": "0.330000"
+                },
+                "audioprovider": "audioprovider'Audio_Weapon_TedioreDigiShotgun'"
+              }
+            },
+            "__dep_entries": [
+              {
+                "depTableName": "inv_comp",
+                "depTableId": 2,
+                "depIndex": 0,
+                "comp_digishotgun": {
+                  "inv_comp": "Comp_DigiShotgun",
+                  "basetags": [
+                    {
+                      "body_acc_ele": "body_acc_ele"
+                    }
+                  ],
+                  "parttypeselectionrules": {
+                    "pairs": {
+                      "pair2189756482": {
+                        "key": "body",
+                        "value": {
+                          "additionalpartchance": {
+                            "constant": "0.000000"
+                          },
+                          "parts": [
+                            {
+                              "part": "part_body_DigiShotgun"
+                            }
+                          ]
+                        }
+                      },
+                      "pair754667270": {
+                        "key": "body_ele",
+                        "value": {
+                          "additionalpartchance": {
+                            "constant": "0.000000"
+                          },
+                          "parts": [
+                            {
+                              "part": "part_corrosive"
+                            },
+                            {
+                              "part": "part_cryo"
+                            },
+                            {
+                              "part": "part_fire"
+                            },
+                            {
+                              "part": "part_radiation"
+                            },
+                            {
+                              "part": "part_shock"
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  "serialindex": {
+                    "status": "Active",
+                    "index": "2",
+                    "_category": "inv_type",
+                    "_scope": "Sub"
+                  }
+                }
+              },
+              {
+                "depTableName": "body",
+                "depTableId": 3,
+                "depIndex": 1,
+                "part_body_digishotgun": {
+                  "body": "part_body_DigiShotgun",
+                  "aspects": [
+                    {
+                      "parent": "inv_aspect'fire_projectile'",
+                      "behavior": {
+                        "lightprojectile": "light_projectile'LightProj_TedioreDigiShotgun'",
+                        "projectilespershot": {
+                          "constant": "12.000000"
+                        },
+                        "firerate": {
+                          "datatablevalue": {
+                            "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                            "rowname": "Shotgun",
+                            "columnname": "FireRate_Value_4_0FDA894643A413A9EDF878963787EB6C"
+                          }
+                        },
+                        "shotammocost": "0",
+                        "damage": {
+                          "attribute": "attribute'TedioreDigiShotgun_damage_formula'"
+                        },
+                        "damagetype": "damagetype'none'",
+                        "damagesource": {
+                          "data": [
+                            {
+                              "dmgsrc_gun": "damagesource'DmgSrc_Gun'"
+                            }
+                          ]
+                        },
+                        "spread": {
+                          "datatablevalue": {
+                            "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                            "rowname": "Shotgun",
+                            "columnname": "Spread_Value_6_3B1BCC764DC2F3CFBE8BA9B93EFEDAC7"
+                          }
+                        },
+                        "aidamagescale": {
+                          "constant": "0.500000"
+                        },
+                        "buseweaponspread": "true",
+                        "crosshair": "crosshair'none'",
+                        "aimaxdesiredrange": {
+                          "datatablevalue": {
+                            "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                            "rowname": "Shotgun",
+                            "columnname": "MaxDesiredRange_14_07395E0949A4A37FC7DDB4810AB6D12B"
+                          }
+                        },
+                        "aimindesiredrange": {
+                          "datatablevalue": {
+                            "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                            "rowname": "Shotgun",
+                            "columnname": "MinDesiredRange_16_584D370145431CF777C11CAE612C2C44"
+                          }
+                        },
+                        "aipreferredrange": {
+                          "datatablevalue": {
+                            "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                            "rowname": "Shotgun",
+                            "columnname": "PreferredRange_37_AE50D09343AC6F6407D69EA999A75DBD"
+                          }
+                        },
+                        "aiburstcount": {
+                          "constant": "4.000000",
+                          "datatablevalue": {
+                            "datatable": "gbx_ue_data_table'none'",
+                            "rowname": "None",
+                            "columnname": "None"
+                          }
+                        },
+                        "aiburstdelay": {
+                          "constant": "2.000000",
+                          "datatablevalue": {
+                            "datatable": "gbx_ue_data_table'none'",
+                            "rowname": "None",
+                            "columnname": "None"
+                          }
+                        },
+                        "aiaccuracy": {
+                          "datatablevalue": {
+                            "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                            "rowname": "Shotgun",
+                            "columnname": "AI_Accuracy_33_D3C350EA449BFAA6F271BF84E3777958"
+                          }
+                        },
+                        "aiprojectilespeed": {
+                          "datatablevalue": {
+                            "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                            "rowname": "Chaingun"
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "serialindex": {
+                    "status": "Active",
+                    "index": "1",
+                    "_category": "inv_type",
+                    "_scope": "Sub"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "weapon_tedioreglider_flamethrower": {
+              "inv": "Weapon_TedioreGlider_Flamethrower",
+              "basetype": "inv'Weapon_AI_CustomBase'",
+              "parttypes": [
+                "body",
+                "body_ele"
+              ],
+              "pingfeedback": "pingfeedbackdata'pingable_equipment'",
+              "serialindex": {
+                "status": "Active",
+                "index": "475",
+                "_category": "inv_type",
+                "_scope": "Root"
+              },
+              "class_data": {
+                "audioprovider": "audioprovider'Audio_Wep_TedioreGlider_Flamethrower'"
+              }
+            },
+            "__dep_entries": [
+              {
+                "depTableName": "inv_comp",
+                "depTableId": 2,
+                "depIndex": 0,
+                "comp_tedioreglider_flamethrower": {
+                  "inv_comp": "Comp_TedioreGlider_Flamethrower",
+                  "basetags": [
+                    {
+                      "epic": "epic"
+                    }
+                  ],
+                  "aspects": [
+                    {
+                      "parent": "inv_aspect'Material'"
+                    }
+                  ],
+                  "serialindex": {
+                    "status": "Active",
+                    "index": "2",
+                    "_category": "inv_type",
+                    "_scope": "Sub"
+                  }
+                }
+              },
+              {
+                "depTableName": "body",
+                "depTableId": 3,
+                "depIndex": 1,
+                "part_body": {
+                  "body": "part_body",
+                  "addtags": [
+                    {
+                      "body_acc_ele": "body_acc_ele"
+                    }
+                  ],
+                  "aspects": [
+                    {
+                      "parent": "inv_aspect'Fire_Beam'",
+                      "behavior": {
+                        "lightbeam": "light_beam'LightBeam_Turret_Flamethrower'",
+                        "bfollowplayercrosshair": "false",
+                        "lockoncontacttime": "1.500000",
+                        "firesockets": [
+                          "Flamethrower_Barrel01"
+                        ],
+                        "damage": {
+                          "attribute": "attribute'TedioreGlider_flamethrower_damage_formula'"
+                        },
+                        "spread": {
+                          "datatablevalue": {
+                            "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                            "rowname": "Flamethrower",
+                            "columnname": "Spread_Value"
+                          }
+                        },
+                        "accuracyimpulse": {
+                          "datatablevalue": {
+                            "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                            "rowname": "Flamethrower"
+                          }
+                        },
+                        "bautoburst": "false",
+                        "busebursttime": "true",
+                        "aimaxdesiredrange": {
+                          "datatablevalue": {
+                            "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                            "rowname": "Flamethrower"
+                          }
+                        },
+                        "aimindesiredrange": {
+                          "datatablevalue": {
+                            "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                            "rowname": "Flamethrower"
+                          }
+                        },
+                        "aipreferredrange": {
+                          "datatablevalue": {
+                            "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                            "rowname": "Flamethrower",
+                            "columnname": "PreferredRange_37_AE50D09343AC6F6407D69EA999A75DBD"
+                          }
+                        },
+                        "aimaxaccuracyscalerange": {
+                          "datatablevalue": {
+                            "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                            "rowname": "Flamethrower",
+                            "columnname": "AI_Accuracy_Max_25_F2BA7FE045472328DCE864A9C179B2D3"
+                          }
+                        },
+                        "aiminaccuracyscalerange": {
+                          "datatablevalue": {
+                            "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                            "rowname": "Flamethrower",
+                            "columnname": "AI_Accuracy_Min_24_36BE30B84D055E56E52F03BF054411CF"
+                          }
+                        },
+                        "aiburstcount": {
+                          "datatablevalue": {
+                            "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                            "rowname": "Flamethrower",
+                            "columnname": "BurstCount_Value_27_BCCD780541CF9CCE5F49FCAFABB30B4D"
+                          }
+                        },
+                        "aibursttime": {
+                          "datatablevalue": {
+                            "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                            "rowname": "Flamethrower",
+                            "columnname": "BurstTime_Value_19_3271459048CFCB819A268B9824FEC3FE"
+                          }
+                        },
+                        "aiburstdelay": {
+                          "datatablevalue": {
+                            "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                            "rowname": "Flamethrower",
+                            "columnname": "BurstDelay_Value"
+                          }
+                        },
+                        "aiaccuracy": {
+                          "datatablevalue": {
+                            "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                            "rowname": "Flamethrower",
+                            "columnname": "AI_Accuracy_33_D3C350EA449BFAA6F271BF84E3777958"
+                          }
+                        },
+                        "aiprojectilespeed": {
+                          "datatablevalue": {
+                            "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                            "rowname": "Flamethrower"
+                          }
+                        }
+                      },
+                      "selectionpriority": "High"
+                    },
+                    {
+                      "parent": "inv_aspect'use_particle'",
+                      "data": {
+                        "particlescollection": "effect_collection'muzzle_Smoke_Energy'",
+                        "socketname": "Flamethrower_Barrel01"
+                      }
+                    },
+                    {
+                      "parent": "inv_aspect'sight_2_5x'",
+                      "behavior": {
+                        "puppetzoomfovscale": "0.500000",
+                        "zoomduration": "0.500000"
+                      }
+                    }
+                  ],
+                  "serialindex": {
+                    "status": "Active",
+                    "index": "1",
+                    "_category": "inv_type",
+                    "_scope": "Sub"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "weapon_tedioreglider_rapidlaser": {
+              "inv": "Weapon_TedioreGlider_RapidLaser",
+              "basetype": "inv'Weapon_AI_CustomBase'",
+              "parttypes": [
+                "body",
+                "body_ele"
+              ],
+              "pingfeedback": "pingfeedbackdata'pingable_equipment'",
+              "serialindex": {
+                "status": "Active",
+                "index": "521",
+                "_category": "inv_type",
+                "_scope": "Root"
+              },
+              "class_data": {
+                "bodyanimtag": "DahlMech_Chaingun",
+                "audioprovider": "audioprovider'Enm_TedioreTurret_Wep_RapidLaser'"
+              }
+            },
+            "__dep_entries": [
+              {
+                "depTableName": "inv_comp",
+                "depTableId": 2,
+                "depIndex": 0,
+                "comp_tedioreglider_rapidlaser": {
+                  "inv_comp": "Comp_TedioreGlider_RapidLaser",
+                  "basetags": [
+                    {
+                      "epic": "epic"
+                    }
+                  ],
+                  "serialindex": {
+                    "status": "Active",
+                    "index": "2",
+                    "_category": "inv_type",
+                    "_scope": "Sub"
+                  }
+                }
+              },
+              {
+                "depTableName": "body",
+                "depTableId": 3,
+                "depIndex": 1,
+                "part_body": {
+                  "body": "part_body",
+                  "addtags": [
+                    {
+                      "body_acc_ele": "body_acc_ele"
+                    }
+                  ],
+                  "aspects": [
+                    {
+                      "parent": "inv_aspect'TedioreTurret_RapidLaser_fire_projectile'",
+                      "behavior": {
+                        "firesockets": [
+                          "MGLaserMuzzle"
+                        ]
+                      }
+                    },
+                    {
+                      "parent": "inv_aspect'use_particle'",
+                      "data": {
+                        "particlescollection": "effect_collection'MeatheadCollection_ChaingunMuzzleFlash'",
+                        "socketname": "MGLaserMuzzle"
+                      }
+                    },
+                    {
+                      "parent": "inv_aspect'sight_2_5x'",
+                      "behavior": {
+                        "puppetzoomfovscale": "0.500000",
+                        "zoomduration": "0.500000"
+                      }
+                    }
+                  ],
+                  "serialindex": {
+                    "status": "Active",
+                    "index": "1",
+                    "_category": "inv_type",
+                    "_scope": "Sub"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "weapon_tedioregliderarm_rocketlauncher": {
+              "inv": "Weapon_TedioreGliderArm_RocketLauncher",
+              "basetype": "inv'Weapon_AI_CustomBase'",
+              "parttypes": [
+                "body",
+                "body_ele"
+              ],
+              "pingfeedback": "pingfeedbackdata'pingable_equipment'",
+              "serialindex": {
+                "status": "Active",
+                "index": "477",
+                "_category": "inv_type",
+                "_scope": "Root"
+              },
+              "class_data": {
+                "bodyanimtag": "DahlMech_Chaingun",
+                "audioprovider": "audioprovider'Enm_Bandit_Turret_Wep_Launcher'"
+              }
+            },
+            "__dep_entries": [
+              {
+                "depTableName": "inv_comp",
+                "depTableId": 2,
+                "depIndex": 0,
+                "comp_tedioregliderarm_rocketlauncher": {
+                  "inv_comp": "Comp_TedioreGliderArm_RocketLauncher",
+                  "basetags": [
+                    {
+                      "epic": "epic"
+                    }
+                  ],
+                  "aspects": [
+                    {
+                      "parent": "inv_aspect'Material'"
+                    }
+                  ],
+                  "serialindex": {
+                    "status": "Active",
+                    "index": "1",
+                    "_category": "inv_type",
+                    "_scope": "Sub"
+                  }
+                }
+              },
+              {
+                "depTableName": "body",
+                "depTableId": 3,
+                "depIndex": 1,
+                "part_body": {
+                  "body": "part_body",
+                  "addtags": [
+                    {
+                      "body_acc_ele": "body_acc_ele"
+                    }
+                  ],
+                  "aspects": [
+                    {
+                      "parent": "inv_aspect'TedioreGlider_RocketLauncher_fire_projectile'",
+                      "behavior": {
+                        "firerate": {
+                          "postscale": "0.800000"
+                        },
+                        "firesockets": [
+                          "TurretMuzzle",
+                          "TurretMuzzle",
+                          "TurretMuzzle",
+                          "TurretMuzzle"
+                        ],
+                        "aiburstdelay": {
+                          "postscale": "2.000000"
+                        }
+                      }
+                    },
+                    {
+                      "parent": "inv_aspect'use_particle'",
+                      "data": {
+                        "particlescollection": "effect_collection'hw_muzzle_TOR'",
+                        "socketname": "TurretMuzzle",
+                        "id": "1"
+                      }
+                    },
+                    {
+                      "parent": "inv_aspect'use_particle'",
+                      "data": {
+                        "particlescollection": "effect_collection'hw_muzzle_TOR'",
+                        "socketname": "TurretMuzzle",
+                        "id": "2"
+                      }
+                    },
+                    {
+                      "parent": "inv_aspect'use_particle'",
+                      "data": {
+                        "particlescollection": "effect_collection'hw_muzzle_TOR'",
+                        "socketname": "TurretMuzzle",
+                        "id": "3"
+                      }
+                    },
+                    {
+                      "parent": "inv_aspect'use_particle'",
+                      "data": {
+                        "particlescollection": "effect_collection'hw_muzzle_TOR'",
+                        "socketname": "TurretMuzzle",
+                        "id": "4"
+                      }
+                    },
+                    {
+                      "parent": "inv_aspect'sight_2_5x'",
+                      "behavior": {
+                        "puppetzoomfovscale": "0.500000",
+                        "zoomduration": "0.500000"
+                      }
+                    }
+                  ],
+                  "serialindex": {
+                    "status": "Active",
+                    "index": "2",
+                    "_category": "inv_type",
+                    "_scope": "Sub"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "weapon_tedioreglidercore_rocketlauncher": {
+              "inv": "Weapon_TedioreGliderCore_RocketLauncher",
+              "basetype": "inv'Weapon_AI_CustomBase'",
+              "parttypes": [
+                "body",
+                "body_ele"
+              ],
+              "pingfeedback": "pingfeedbackdata'pingable_equipment'",
+              "serialindex": {
+                "status": "Active",
+                "index": "478",
+                "_category": "inv_type",
+                "_scope": "Root"
+              },
+              "class_data": {
+                "bodyanimtag": "DahlMech_Chaingun",
+                "audioprovider": "audioprovider'Audio_Wep_TedioreGliderCore_RocketLauncher'"
+              }
+            },
+            "__dep_entries": [
+              {
+                "depTableName": "inv_comp",
+                "depTableId": 2,
+                "depIndex": 0,
+                "comp_tedioreglidercore_rocketlauncher": {
+                  "inv_comp": "Comp_TedioreGliderCore_RocketLauncher",
+                  "basetags": [
+                    {
+                      "epic": "epic"
+                    }
+                  ],
+                  "aspects": [
+                    {
+                      "parent": "inv_aspect'Material'"
+                    }
+                  ],
+                  "serialindex": {
+                    "status": "Active",
+                    "index": "1",
+                    "_category": "inv_type",
+                    "_scope": "Sub"
+                  }
+                }
+              },
+              {
+                "depTableName": "body",
+                "depTableId": 3,
+                "depIndex": 1,
+                "part_body": {
+                  "body": "part_body",
+                  "addtags": [
+                    {
+                      "body_acc_ele": "body_acc_ele"
+                    }
+                  ],
+                  "aspects": [
+                    {
+                      "parent": "inv_aspect'TedioreGlider_RocketLauncher_fire_projectile'",
+                      "behavior": {
+                        "firerate": {
+                          "datatablevalue": {
+                            "rowname": "GliderRocket"
+                          }
+                        },
+                        "spread": {
+                          "datatablevalue": {
+                            "rowname": "GliderRocket"
+                          }
+                        },
+                        "aimaxdesiredrange": {
+                          "datatablevalue": {
+                            "rowname": "GliderRocket"
+                          }
+                        },
+                        "aimindesiredrange": {
+                          "datatablevalue": {
+                            "rowname": "GliderRocket"
+                          }
+                        },
+                        "aiburstcount": {
+                          "datatablevalue": {
+                            "rowname": "GliderRocket"
+                          }
+                        },
+                        "aibursttime": {
+                          "datatablevalue": {
+                            "rowname": "GliderRocket"
+                          }
+                        },
+                        "aiburstdelay": {
+                          "datatablevalue": {
+                            "rowname": "GliderRocket"
+                          }
+                        },
+                        "aiaccuracy": {
+                          "datatablevalue": {
+                            "rowname": "GliderRocket"
+                          }
+                        },
+                        "aiprojectilespeed": {
+                          "datatablevalue": {
+                            "rowname": "GliderRocket"
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "parent": "inv_aspect'use_particle'",
+                      "data": {
+                        "particlescollection": "effect_collection'hw_muzzle_TOR'",
+                        "socketname": "BodyRocket01",
+                        "id": "1"
+                      }
+                    },
+                    {
+                      "parent": "inv_aspect'use_particle'",
+                      "data": {
+                        "particlescollection": "effect_collection'hw_muzzle_TOR'",
+                        "socketname": "BodyRocket01",
+                        "id": "2"
+                      }
+                    },
+                    {
+                      "parent": "inv_aspect'use_particle'",
+                      "data": {
+                        "particlescollection": "effect_collection'hw_muzzle_TOR'",
+                        "socketname": "BodyRocket01",
+                        "id": "3"
+                      }
+                    },
+                    {
+                      "parent": "inv_aspect'use_particle'",
+                      "data": {
+                        "particlescollection": "effect_collection'hw_muzzle_TOR'",
+                        "socketname": "BodyRocket01",
+                        "id": "4"
+                      }
+                    },
+                    {
+                      "parent": "inv_aspect'sight_2_5x'",
+                      "behavior": {
+                        "puppetzoomfovscale": "0.500000",
+                        "zoomduration": "0.500000"
+                      }
+                    }
+                  ],
+                  "serialindex": {
+                    "status": "Active",
+                    "index": "2",
+                    "_category": "inv_type",
+                    "_scope": "Sub"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "weapon_tedioreturret_gatemission4": {
+              "inv": "Weapon_TedioreTurret_GateMission4",
+              "basetype": "inv'Weapon_AI_CustomBase'",
+              "parttypes": [
+                "body",
+                "body_ele"
+              ],
+              "pingfeedback": "pingfeedbackdata'pingable_equipment'",
+              "serialindex": {
+                "status": "Active",
+                "index": "479",
+                "_category": "inv_type",
+                "_scope": "Root"
+              },
+              "class_data": {
+                "bodyanimtag": "DahlMech_Chaingun",
+                "audioprovider": "audioprovider'Enm_Bandit_Turret_Wep_Launcher'"
+              }
+            },
+            "__dep_entries": [
+              {
+                "depTableName": "inv_comp",
+                "depTableId": 2,
+                "depIndex": 0,
+                "comp_tedioreturret_gatemission4": {
+                  "inv_comp": "Comp_TedioreTurret_GateMission4",
+                  "basetags": [
+                    {
+                      "epic": "epic"
+                    }
+                  ],
+                  "aspects": [
+                    {
+                      "parent": "inv_aspect'Material'"
+                    }
+                  ],
+                  "serialindex": {
+                    "status": "Active",
+                    "index": "2",
+                    "_category": "inv_type",
+                    "_scope": "Sub"
+                  }
+                }
+              },
+              {
+                "depTableName": "body",
+                "depTableId": 3,
+                "depIndex": 1,
+                "part_body": {
+                  "body": "part_body",
+                  "addtags": [
+                    {
+                      "body_acc_ele": "body_acc_ele"
+                    }
+                  ],
+                  "aspects": [
+                    {
+                      "parent": "inv_aspect'TedioreTurret_GateMission4_fire_projectile'",
+                      "behavior": {
+                        "firerate": {
+                          "datatablevalue": {
+                            "rowname": "Mission4Gate"
+                          }
+                        },
+                        "spread": {
+                          "datatablevalue": {
+                            "rowname": "Mission4Gate"
+                          }
+                        },
+                        "aimaxaccuracyscalerange": {
+                          "constant": "0.900000"
+                        },
+                        "aiminaccuracyscalerange": {
+                          "constant": "0.300000"
+                        }
+                      }
+                    },
+                    {
+                      "parent": "inv_aspect'use_particle'",
+                      "data": {
+                        "particlescollection": "effect_collection'hw_muzzle_TOR'",
+                        "socketname": "Rocket_Barrel01",
+                        "id": "1"
+                      }
+                    },
+                    {
+                      "parent": "inv_aspect'use_particle'",
+                      "data": {
+                        "particlescollection": "effect_collection'hw_muzzle_TOR'",
+                        "socketname": "Rocket_Barrel02",
+                        "id": "2"
+                      }
+                    },
+                    {
+                      "parent": "inv_aspect'use_particle'",
+                      "data": {
+                        "particlescollection": "effect_collection'hw_muzzle_TOR'",
+                        "socketname": "Rocket_Barrel03",
+                        "id": "3"
+                      }
+                    },
+                    {
+                      "parent": "inv_aspect'use_particle'",
+                      "data": {
+                        "particlescollection": "effect_collection'hw_muzzle_TOR'",
+                        "socketname": "Rocket_Barrel04",
+                        "id": "4"
+                      }
+                    },
+                    {
+                      "parent": "inv_aspect'sight_2_5x'",
+                      "behavior": {
+                        "enablemaskzoompercent": "1.000000",
+                        "transitionparam": "None",
+                        "puppetzoomfovscale": "0.500000",
+                        "zoomlevels": "",
+                        "zoomfovscale": "0.700000",
+                        "zoomduration": "0.500000",
+                        "zoomshotoffsetscale": "1.000000",
+                        "viewmodelleadingscale": "1.000000",
+                        "instigatoraccuracyscale": "0.000000",
+                        "mutemotionweight": "0.000000",
+                        "busescopesocket": "false",
+                        "eyesocket": "EyeSocket",
+                        "bapplyattributeswhenfullyzoomed": "false",
+                        "attributeeffects": "",
+                        "instigatorattributeeffects": "",
+                        "behaviorclass": "Asset'None'"
+                      }
+                    }
+                  ],
+                  "serialindex": {
+                    "status": "Active",
+                    "index": "1",
+                    "_category": "inv_type",
+                    "_scope": "Sub"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "weapon_tedioreturret_mg": {
+              "inv": "Weapon_TedioreTurret_MG",
+              "basetype": "inv'Weapon_AI_CustomBase'",
+              "parttypes": [
+                "body",
+                "body_ele"
+              ],
+              "pingfeedback": "pingfeedbackdata'pingable_equipment'",
+              "serialindex": {
+                "status": "Active",
+                "index": "480",
+                "_category": "inv_type",
+                "_scope": "Root"
+              },
+              "class_data": {
+                "bodyanimtag": "DahlMech_Chaingun",
+                "audioprovider": "audioprovider'Enm_Dahl_Mech_Wep_ChainGun'"
+              }
+            },
+            "__dep_entries": [
+              {
+                "depTableName": "inv_comp",
+                "depTableId": 2,
+                "depIndex": 0,
+                "comp_tedioreturret_mg": {
+                  "inv_comp": "Comp_TedioreTurret_MG",
+                  "basetags": [
+                    {
+                      "epic": "epic"
+                    }
+                  ],
+                  "serialindex": {
+                    "status": "Active",
+                    "index": "2",
+                    "_category": "inv_type",
+                    "_scope": "Sub"
+                  }
+                }
+              },
+              {
+                "depTableName": "body",
+                "depTableId": 3,
+                "depIndex": 1,
+                "part_body": {
+                  "body": "part_body",
+                  "addtags": [
+                    {
+                      "body_acc_ele": "body_acc_ele"
+                    }
+                  ],
+                  "aspects": [
+                    {
+                      "parent": "inv_aspect'TedioreTurret_MG_fire_projectile'"
+                    },
+                    {
+                      "parent": "inv_aspect'use_particle'",
+                      "data": {
+                        "particlescollection": "effect_collection'MeatheadCollection_ChaingunMuzzleFlash'",
+                        "socketname": "TedMG_Barrel01"
+                      }
+                    },
+                    {
+                      "parent": "inv_aspect'sight_2_5x'",
+                      "behavior": {
+                        "puppetzoomfovscale": "0.500000",
+                        "zoomduration": "0.500000"
+                      }
+                    }
+                  ],
+                  "serialindex": {
+                    "status": "Active",
+                    "index": "1",
+                    "_category": "inv_type",
+                    "_scope": "Sub"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "weapon_tedioreturret_microplasticsmg": {
+              "inv": "Weapon_TedioreTurret_MicroplasticsMG",
+              "basetype": "inv'Weapon_AI_CustomBase'",
+              "parttypes": [
+                "body",
+                "body_ele"
+              ],
+              "pingfeedback": "pingfeedbackdata'pingable_equipment'",
+              "serialindex": {
+                "status": "Active",
+                "index": "484",
+                "_category": "inv_type",
+                "_scope": "Root"
+              },
+              "class_data": {
+                "bodyanimtag": "DahlMech_Chaingun",
+                "audioprovider": "audioprovider'Enm_TedioreTurret_Wep_RapidLaser'"
+              }
+            },
+            "__dep_entries": [
+              {
+                "depTableName": "inv_comp",
+                "depTableId": 2,
+                "depIndex": 0,
+                "comp_tedioreturret_microplasticsmg": {
+                  "inv_comp": "Comp_TedioreTurret_MicroplasticsMG",
+                  "basetags": [
+                    {
+                      "epic": "epic"
+                    }
+                  ],
+                  "serialindex": {
+                    "status": "Active",
+                    "index": "2",
+                    "_category": "inv_type",
+                    "_scope": "Sub"
+                  }
+                }
+              },
+              {
+                "depTableName": "body",
+                "depTableId": 3,
+                "depIndex": 1,
+                "part_body": {
+                  "body": "part_body",
+                  "addtags": [
+                    {
+                      "body_acc_ele": "body_acc_ele"
+                    }
+                  ],
+                  "aspects": [
+                    {
+                      "parent": "inv_aspect'TedioreTurret_MicroplasticsMG_fire_projectile'",
+                      "behavior": {
+                        "damage": {
+                          "attribute": "attribute'TedioreTurret_MicroplasticsMG_damage_formula'"
+                        }
+                      }
+                    },
+                    {
+                      "parent": "inv_aspect'use_particle'",
+                      "data": {
+                        "particlescollection": "effect_collection'MeatheadCollection_ChaingunMuzzleFlash'",
+                        "socketname": "TedMG_Barrel01"
+                      }
+                    },
+                    {
+                      "parent": "inv_aspect'sight_2_5x'",
+                      "behavior": {
+                        "puppetzoomfovscale": "0.500000",
+                        "zoomduration": "0.500000"
+                      }
+                    }
+                  ],
+                  "serialindex": {
+                    "status": "Active",
+                    "index": "1",
+                    "_category": "inv_type",
+                    "_scope": "Sub"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "weapon_tedioreturret_rapidlaser": {
+              "inv": "Weapon_TedioreTurret_RapidLaser",
+              "basetype": "inv'Weapon_AI_CustomBase'",
+              "parttypes": [
+                "body",
+                "body_ele"
+              ],
+              "pingfeedback": "pingfeedbackdata'pingable_equipment'",
+              "serialindex": {
+                "status": "Active",
+                "index": "482",
+                "_category": "inv_type",
+                "_scope": "Root"
+              },
+              "class_data": {
+                "bodyanimtag": "DahlMech_Chaingun",
+                "audioprovider": "audioprovider'Enm_TedioreTurret_Wep_Mech_RapidLaser'"
+              }
+            },
+            "__dep_entries": [
+              {
+                "depTableName": "inv_comp",
+                "depTableId": 2,
+                "depIndex": 0,
+                "comp_tedioreturret_rapidlaser": {
+                  "inv_comp": "Comp_TedioreTurret_RapidLaser",
+                  "basetags": [
+                    {
+                      "epic": "epic"
+                    }
+                  ],
+                  "serialindex": {
+                    "status": "Active",
+                    "index": "2",
+                    "_category": "inv_type",
+                    "_scope": "Sub"
+                  }
+                }
+              },
+              {
+                "depTableName": "body",
+                "depTableId": 3,
+                "depIndex": 1,
+                "part_body": {
+                  "body": "part_body",
+                  "addtags": [
+                    {
+                      "body_acc_ele": "body_acc_ele"
+                    }
+                  ],
+                  "aspects": [
+                    {
+                      "parent": "inv_aspect'TedioreTurret_RapidLaser_fire_projectile'"
+                    },
+                    {
+                      "parent": "inv_aspect'use_particle'",
+                      "data": {
+                        "particlescollection": "effect_collection'MeatheadCollection_ChaingunMuzzleFlash'",
+                        "socketname": "TedMG_Barrel01"
+                      }
+                    },
+                    {
+                      "parent": "inv_aspect'sight_2_5x'",
+                      "behavior": {
+                        "puppetzoomfovscale": "0.500000",
+                        "zoomduration": "0.500000"
+                      }
+                    }
+                  ],
+                  "serialindex": {
+                    "status": "Active",
+                    "index": "1",
+                    "_category": "inv_type",
+                    "_scope": "Sub"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "weapon_tedioreturret_rocketlauncher": {
+              "inv": "Weapon_TedioreTurret_RocketLauncher",
+              "basetype": "inv'Weapon_AI_CustomBase'",
+              "parttypes": [
+                "body",
+                "body_ele"
+              ],
+              "pingfeedback": "pingfeedbackdata'pingable_equipment'",
+              "serialindex": {
+                "status": "Active",
+                "index": "485",
+                "_category": "inv_type",
+                "_scope": "Root"
+              },
+              "class_data": {
+                "bodyanimtag": "DahlMech_Chaingun",
+                "audioprovider": "audioprovider'Audio_Wep_Tediore_ArtilleryRocketLauncher'"
+              }
+            },
+            "__dep_entries": [
+              {
+                "depTableName": "inv_comp",
+                "depTableId": 2,
+                "depIndex": 0,
+                "comp_tedioreturret_rocketlauncher": {
+                  "inv_comp": "Comp_TedioreTurret_RocketLauncher",
+                  "basetags": [
+                    {
+                      "epic": "epic"
+                    }
+                  ],
+                  "aspects": [
+                    {
+                      "parent": "inv_aspect'Material'"
+                    }
+                  ],
+                  "serialindex": {
+                    "status": "Active",
+                    "index": "2",
+                    "_category": "inv_type",
+                    "_scope": "Sub"
+                  }
+                }
+              },
+              {
+                "depTableName": "body",
+                "depTableId": 3,
+                "depIndex": 1,
+                "part_body": {
+                  "body": "part_body",
+                  "addtags": [
+                    {
+                      "body_acc_ele": "body_acc_ele"
+                    }
+                  ],
+                  "aspects": [
+                    {
+                      "parent": "inv_aspect'TedioreTurret_RocketLauncher_fire_projectile'",
+                      "behavior": {
+                        "aipreferredrange": {
+                          "datatablevalue": {
+                            "datatable": "gbx_ue_data_table'Table_TedioreArmy_Weapon_Balance'",
+                            "rowname": "Rocket",
+                            "columnname": "PreferredRange_37_AE50D09343AC6F6407D69EA999A75DBD"
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "parent": "inv_aspect'use_particle'",
+                      "data": {
+                        "particlescollection": "effect_collection'hw_muzzle_TOR'",
+                        "socketname": "TedRocket_Barrel01",
+                        "id": "1"
+                      }
+                    },
+                    {
+                      "parent": "inv_aspect'use_particle'",
+                      "data": {
+                        "particlescollection": "effect_collection'hw_muzzle_TOR'",
+                        "socketname": "TedRocket_Barrel02",
+                        "id": "2"
+                      }
+                    },
+                    {
+                      "parent": "inv_aspect'use_particle'",
+                      "data": {
+                        "particlescollection": "effect_collection'hw_muzzle_TOR'",
+                        "socketname": "TedRocket_Barrel03",
+                        "id": "3"
+                      }
+                    },
+                    {
+                      "parent": "inv_aspect'use_particle'",
+                      "data": {
+                        "particlescollection": "effect_collection'hw_muzzle_TOR'",
+                        "socketname": "TedRocket_Barrel04",
+                        "id": "4"
+                      }
+                    },
+                    {
+                      "parent": "inv_aspect'sight_2_5x'",
+                      "behavior": {
+                        "puppetzoomfovscale": "0.500000",
+                        "zoomduration": "0.500000"
+                      }
+                    }
+                  ],
+                  "serialindex": {
+                    "status": "Active",
+                    "index": "1",
+                    "_category": "inv_type",
+                    "_scope": "Sub"
+                  }
+                }
+              }
+            ]
+          },
+          {
             "weapon_turret_chaingun": null,
             "__dep_entries": [
               {
@@ -3686,6 +4991,721 @@
                 }
               }
             ]
+          }
+        ]
+      },
+      {
+        "entries": [
+          {
+            "inv_contractitem_batkidney": {
+              "inv": "Inv_ContractItem_BatKidney",
+              "basetype": "inv'mission_pickup'",
+              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_BatKidney.Body_CollectContract_BatKidney'",
+              "pickupinteractiontype": "TouchOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "42",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "inv_contractitem_beastbone": {
+              "inv": "Inv_ContractItem_BeastBone",
+              "basetype": "inv'mission_pickup'",
+              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_BeastBone.Body_CollectContract_BeastBone'",
+              "pickupinteractiontype": "TouchOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "40",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "inv_contractitem_beasthorn": {
+              "inv": "Inv_ContractItem_BeastHorn",
+              "basetype": "inv'mission_pickup'",
+              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_BeastHorn.Body_CollectContract_BeastHorn'",
+              "pickupinteractiontype": "TouchOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "39",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "inv_contractitem_bloodpack": {
+              "inv": "Inv_ContractItem_BloodPack",
+              "basetype": "inv'mission_pickup'",
+              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_BloodPack.Body_CollectContract_BloodPack'",
+              "pickupinteractiontype": "TouchOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "48",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "inv_contractitem_bottle": {
+              "inv": "Inv_ContractItem_Bottle",
+              "basetype": "inv'mission_pickup'",
+              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_Bottle.Body_CollectContract_Bottle'",
+              "pickupinteractiontype": "TouchOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "38",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "inv_contractitem_catheart": {
+              "inv": "Inv_ContractItem_CatHeart",
+              "basetype": "inv'mission_pickup'",
+              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_CatHeart.Body_CollectContract_CatHeart'",
+              "pickupinteractiontype": "TouchOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "37",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "inv_contractitem_cattail": {
+              "inv": "Inv_ContractItem_CatTail",
+              "basetype": "inv'mission_pickup'",
+              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_CatTail.Body_CollectContract_CatTail'",
+              "pickupinteractiontype": "TouchOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "36",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "inv_contractitem_creepbrain": {
+              "inv": "Inv_ContractItem_CreepBrain",
+              "basetype": "inv'mission_pickup'",
+              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_CreepBrain.Body_CollectContract_CreepBrain'",
+              "pickupinteractiontype": "TouchOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "44",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "inv_contractitem_cybercore": {
+              "inv": "Inv_ContractItem_CyberCore",
+              "basetype": "inv'mission_pickup'",
+              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_CyberCore.Body_CollectContract_CyberCore'",
+              "pickupinteractiontype": "TouchOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "34",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "inv_contractitem_droneparts": {
+              "inv": "Inv_ContractItem_DroneParts",
+              "basetype": "inv'mission_pickup'",
+              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_DroneParts.Body_CollectContract_DroneParts'",
+              "pickupinteractiontype": "TouchOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "35",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "inv_contractitem_firerod": {
+              "inv": "Inv_ContractItem_FireRod",
+              "basetype": "inv'mission_pickup'",
+              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_FireRod.Body_CollectContract_FireRod'",
+              "pickupinteractiontype": "TouchOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "33",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "inv_contractitem_ingot": {
+              "inv": "Inv_ContractItem_Ingot",
+              "basetype": "inv'mission_pickup'",
+              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_Ingot.Body_CollectContract_Ingot'",
+              "pickupinteractiontype": "TouchOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "32",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "inv_contractitem_pangolinparts": {
+              "inv": "Inv_ContractItem_PangolinParts",
+              "basetype": "inv'mission_pickup'",
+              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_PangolinParts.Body_CollectContract_PangolinParts'",
+              "pickupinteractiontype": "TouchOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "46",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "inv_contractitem_poster": {
+              "inv": "Inv_ContractItem_Poster",
+              "basetype": "inv'mission_pickup'",
+              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_Poster.Body_CollectContract_Poster'",
+              "pickupinteractiontype": "TouchOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "49",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "inv_contractitem_powertools": {
+              "inv": "Inv_ContractItem_PowerTools",
+              "basetype": "inv'mission_pickup'",
+              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_PowerTools.Body_CollectContract_PowerTools'",
+              "pickupinteractiontype": "TouchOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "31",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "inv_contractitem_powertools_a": {
+              "inv": "Inv_ContractItem_PowerTools_A",
+              "basetype": "inv'mission_pickup'",
+              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_PowerTools_A.Body_CollectContract_PowerTools_A'",
+              "pickupinteractiontype": "TouchOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "393",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "inv_contractitem_powertools_b": {
+              "inv": "Inv_ContractItem_PowerTools_B",
+              "basetype": "inv'mission_pickup'",
+              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_PowerTools_B.Body_CollectContract_PowerTools_B'",
+              "pickupinteractiontype": "TouchOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "242",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "inv_contractitem_powertools_c": {
+              "inv": "Inv_ContractItem_PowerTools_C",
+              "basetype": "inv'mission_pickup'",
+              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_PowerTools_C.Body_CollectContract_PowerTools_C'",
+              "pickupinteractiontype": "TouchOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "241",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "inv_contractitem_sparkplug": {
+              "inv": "Inv_ContractItem_SparkPlug",
+              "basetype": "inv'mission_pickup'",
+              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_SparkPlug.Body_CollectContract_SparkPlug'",
+              "pickupinteractiontype": "TouchOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "45",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "inv_contractitem_thresherbrain": {
+              "inv": "Inv_ContractItem_ThresherBrain",
+              "basetype": "inv'mission_pickup'",
+              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_ThresherBrain.Body_CollectContract_ThresherBrain'",
+              "pickupinteractiontype": "TouchOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "30",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "inv_contractitem_thresherliver": {
+              "inv": "Inv_ContractItem_ThresherLiver",
+              "basetype": "inv'mission_pickup'",
+              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_ThresherLiver.Body_CollectContract_ThresherLiver'",
+              "pickupinteractiontype": "TouchOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "29",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "inv_contractitem_tools": {
+              "inv": "Inv_ContractItem_Tools",
+              "basetype": "inv'mission_pickup'",
+              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_Tools.Body_CollectContract_Tools'",
+              "pickupinteractiontype": "TouchOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "43",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "inv_contractitem_tools_a": {
+              "inv": "Inv_ContractItem_Tools_A",
+              "basetype": "inv'mission_pickup'",
+              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_Tools_A.Body_CollectContract_Tools_A'",
+              "pickupinteractiontype": "TouchOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "396",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "inv_contractitem_tools_b": {
+              "inv": "Inv_ContractItem_Tools_B",
+              "basetype": "inv'mission_pickup'",
+              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_Tools_B.Body_CollectContract_Tools_B'",
+              "pickupinteractiontype": "TouchOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "395",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "inv_contractitem_tools_c": {
+              "inv": "Inv_ContractItem_Tools_C",
+              "basetype": "inv'mission_pickup'",
+              "body": "Asset'/Game/InteractiveObjects/ContractSpecific/Collect_Items/Body_Graphs/Body_CollectContract_Tools_C.Body_CollectContract_Tools_C'",
+              "pickupinteractiontype": "TouchOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "394",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_bfr_pickup_bolt": {
+              "inv": "InvDef_BFR_Pickup_Bolt",
+              "itembasename": "Dead Auger Bolts",
+              "basetype": "inv'mission_pickup'",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "uistats": [
+                "ui_stat'UIStat_BFR_Pickup_Bolt'"
+              ],
+              "binventorynameisfullname": "true",
+              "inventoryname": "NexusSerialized, 3FB22DE244802081A4EFE28817EBEA03, Dead Auger Bolts",
+              "body": "Asset'/Game/Missions/Micro/Mountains/Micro_Mountains_BoltFuneralRites/Mission_IO/BFR_Pickup_Bolt/Body_BFR_Bolt.Body_BFR_Bolt'",
+              "serialindex": {
+                "status": "Active",
+                "index": "170",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_boosterplaceable": {
+              "inv": "InvDef_BoosterPlaceable",
+              "itembasename": "Booster Charge",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "rarity": "rarity'00_mission'",
+              "binventorynameisfullname": "true",
+              "inventoryname": "NexusSerialized, 6BB086524101A641EB4D74A47692713E, Booster Charge",
+              "body": "Asset'/Game/World/Interactives/Missions/Plot/Shatteredlands/BoosterCharge/SM_Booster_Charge.SM_Booster_Charge'",
+              "pickupinteractiontype": "UseOnly",
+              "pickupprompt": "usability_prompt'UsePrompt_Take'",
+              "rotationincontainer": {
+                "pitch": "90.000000",
+                "yaw": "0.000000",
+                "roll": "45.000000"
+              },
+              "brotationincontaineroverride": "true",
+              "baddtoinventoryoverride": "true",
+              "baddtoinventory": "true",
+              "serialindex": {
+                "status": "Active",
+                "index": "216",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_broombaplaceable": {
+              "inv": "InvDef_BroombaPlaceable",
+              "itembasename": "Broomba",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "rarity": "rarity'00_mission'",
+              "binventorynameisfullname": "true",
+              "inventoryname": "NexusSerialized, 80F63C79477CD3D57302CBAC1BCD2ABF, Broomba",
+              "body": "Asset'/Game/World/Interactives/Missions/Side/OverwritingAWrong/SM_Drone_Body.SM_Drone_Body'",
+              "pickupinteractiontype": "UseOnly",
+              "pickupprompt": "usability_prompt'UsePrompt_Take'",
+              "rotationincontainer": {
+                "pitch": "90.000000",
+                "yaw": "0.000000",
+                "roll": "45.000000"
+              },
+              "brotationincontaineroverride": "true",
+              "baddtoinventoryoverride": "true",
+              "baddtoinventory": "true",
+              "serialindex": {
+                "status": "Active",
+                "index": "102",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_commanderdoor_boltkey": {
+              "inv": "InvDef_CommanderDoor_BoltKey",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "rarity": "rarity'00_mission'",
+              "body": "Asset'/Game/Missions/Side/Shattered/Side_Shattered_ElectiFactionMission3/Assets/Body_EFM3_EMPPickup_Part3.Body_EFM3_EMPPickup_Part3'",
+              "pickupinteractiontype": "UseOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "220",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_efm1_boomstickpickup": {
+              "inv": "InvDef_EFM1_BoomstickPickup",
+              "itembasename": "Ripper Explosives",
+              "basetype": "inv'mission_pickup'",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "uistats": [
+                "ui_stat'UIStat_Pickup_EFM1_BoomtickPickup'"
+              ],
+              "binventorynameisfullname": "true",
+              "inventoryname": "NexusSerialized, 049AC1804FB1AF8CA08D7191A6F07CF0, Ripper Explosives",
+              "body": "Asset'/Game/Missions/Side/Shattered/Side_Shattered_ElectiFactionMission1/Assets/Body_EFM1_BoomstickPickup.Body_EFM1_BoomstickPickup'",
+              "pickupsound": {
+                "wwiseevent": "audio_event'IO_Pickups_Shared.IO_Pickup_OnPickup_GenericMaterials'"
+              },
+              "pickupequipsound": {
+                "wwiseevent": "audio_event'IO_Pickups_Shared.IO_Pickup_OnPickup_GenericMaterials'"
+              },
+              "serialindex": {
+                "status": "Active",
+                "index": "112",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_efm2_creepmeatpickup": {
+              "inv": "InvDef_EFM2_CreepMeatPickup",
+              "itembasename": "Creep Meat Chunks",
+              "basetype": "inv'mission_pickup'",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "uistats": [
+                "ui_stat'UIStat_Pickup_EFM2_CreepMeat'"
+              ],
+              "binventorynameisfullname": "true",
+              "inventoryname": "NexusSerialized, 6C55D22F48DDF0AEF8D3D5ADC4F51D78, Creep Meat Chunks",
+              "body": "Asset'/Game/Missions/Side/Shattered/Side_Shattered_ElectiFactionMission2/Assets/Shatteredlands_EFM2_CreepMeatPickup/Body_EFM2_CreepMeatPickup.Body_EFM2_CreepMeatPickup'",
+              "pickupsound": {
+                "wwiseevent": "audio_event'IO_Pickups_Shared.IO_Pickup_OnPickup_ThresherEgg'"
+              },
+              "pickupequipsound": {
+                "wwiseevent": "audio_event'IO_Pickups_Shared.IO_Pickup_OnPickup_ThresherEgg'"
+              },
+              "serialindex": {
+                "status": "Active",
+                "index": "184",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_efm3_emppickup_part1": {
+              "inv": "InvDef_EFM3_EMPPickup_Part1",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "rarity": "rarity'00_mission'",
+              "body": "Asset'/Game/Missions/Side/Shattered/Side_Shattered_ElectiFactionMission3/Assets/Body_EFM3_EMPPIckup_Part1.Body_EFM3_EMPPIckup_Part1'",
+              "pickupinteractiontype": "UseOnly",
+              "pickupsound": {
+                "wwiseevent": "audio_event'IO_Pickup_BruceCore.IO_Pickup_BruceCore'"
+              },
+              "serialindex": {
+                "status": "Active",
+                "index": "132",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_efm3_emppickup_part2": {
+              "inv": "InvDef_EFM3_EMPPickup_Part2",
+              "itembasename": "Weather Antennae",
+              "basetype": "inv'mission_pickup'",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "uistats": [
+                "ui_stat'UIStat_Pickup_EFM3_EMPPart2'"
+              ],
+              "binventorynameisfullname": "true",
+              "inventoryname": "NexusSerialized, 6694AD1B4AC83FF49B32B8A08201A34A, Weather Antennae",
+              "body": "Asset'/Game/Missions/Side/Shattered/Side_Shattered_ElectiFactionMission3/Assets/Body_EFM3_EMPPickup_Part2.Body_EFM3_EMPPickup_Part2'",
+              "pickupsound": {
+                "wwiseevent": "audio_event'IO_Pickups_Shared.IO_Pickup_OnPickup_Antenna'"
+              },
+              "pickupequipsound": {
+                "wwiseevent": "audio_event'IO_Pickups_Shared.IO_Pickup_OnPickup_Antenna'"
+              },
+              "serialindex": {
+                "status": "Active",
+                "index": "133",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_efm3_emppickup_part3": {
+              "inv": "InvDef_EFM3_EMPPickup_Part3",
+              "itembasename": "Home Defense Deterrent",
+              "basetype": "inv'mission_pickup'",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "uistats": [
+                "ui_stat'UIStat_Pickup_EFM3_EMPPart3'"
+              ],
+              "binventorynameisfullname": "true",
+              "inventoryname": "NexusSerialized, C3C93CE444AFF47BC2335889C9D052A5, Home Defense Deterrent",
+              "body": "Asset'/Game/Missions/Side/Shattered/Side_Shattered_ElectiFactionMission3/Assets/Body_EFM3_EMPPickup_Part3.Body_EFM3_EMPPickup_Part3'",
+              "pickupsound": {
+                "wwiseevent": "audio_event'IO_Pickups_Shared.IO_Pickup_OnPickup_Explosive'"
+              },
+              "pickupequipsound": {
+                "wwiseevent": "audio_event'IO_Pickups_Shared.IO_Pickup_OnPickup_Explosive'"
+              },
+              "serialindex": {
+                "status": "Active",
+                "index": "131",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_efm3_pickup_empcomplete": {
+              "inv": "InvDef_EFM3_Pickup_EMPComplete",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "rarity": "rarity'00_mission'",
+              "body": "Asset'/Game/Missions/Side/Shattered/Side_Shattered_ElectiFactionMission3/Assets/Body_EFM3_Pickup_EMPComplete.Body_EFM3_Pickup_EMPComplete'",
+              "pickupinteractiontype": "UseOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "137",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_efpagri_cratepickup": {
+              "inv": "InvDef_EFPAgri_CratePickup",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "rarity": "rarity'00_mission'",
+              "body": "Asset'/Game/Missions/Micro/Shattered/Micro_Shattered_ElectiPrologue/Assets/Body_EFPAgri_CratePickup.Body_EFPAgri_CratePickup'",
+              "pickupinteractiontype": "UseOnly",
+              "serialindex": {
+                "status": "Active",
+                "index": "229",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_genconstruct": {
+              "inv": "InvDef_GenConstruct",
+              "itembasename": "Broomba",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "rarity": "rarity'00_mission'",
+              "binventorynameisfullname": "true",
+              "inventoryname": "NexusSerialized, 586CBA0F407EEF9D3B027EAAAF9200F1, Broomba",
+              "body": "Asset'/Game/World/Interactives/Missions/Side/OverwritingAWrong/SM_Drone_Body.SM_Drone_Body'",
+              "pickupinteractiontype": "UseOnly",
+              "pickupprompt": "usability_prompt'UsePrompt_Take'",
+              "rotationincontainer": {
+                "pitch": "90.000000",
+                "yaw": "0.000000",
+                "roll": "45.000000"
+              },
+              "brotationincontaineroverride": "true",
+              "baddtoinventoryoverride": "true",
+              "baddtoinventory": "true",
+              "serialindex": {
+                "status": "Active",
+                "index": "107",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_io_pickup_reactorpart": {
+              "inv": "InvDef_IO_Pickup_ReactorPart",
+              "itembasename": "Generator Part",
+              "basetype": "inv'mission_pickup'",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "uistats": [
+                "ui_stat'UIStat_IO_Pickup_ReactorPart'"
+              ],
+              "binventorynameisfullname": "true",
+              "inventoryname": "NexusSerialized, D661B355450C8A1FBA09BEB7261D0B1D, Generator Part",
+              "body": "Asset'/Game/Missions/Side/Grasslands/Side_Grasslands_Faction02/Assets/Grasslands_Faction02_Pickup_ReactorPart/Body_IO_Pickup_ReactorPart.Body_IO_Pickup_ReactorPart'",
+              "serialindex": {
+                "status": "Active",
+                "index": "215",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_io_pickup_towerbolt": {
+              "inv": "InvDef_IO_Pickup_TowerBolt",
+              "itembasename": "Broken Bolt",
+              "basetype": "inv'mission_pickup'",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "uistats": [
+                "ui_stat'UIStat_Pickup_TowerBolt'"
+              ],
+              "binventorynameisfullname": "true",
+              "inventoryname": "NexusSerialized, B209B1F1458119CB5C1BCCBAA2799EC2, Broken Bolt",
+              "body": "Asset'/Game/Missions/Main/Grasslands/Grasslands1/Assets/Grasslands_Main1_Pickup_TowerBolt/Body_IO_Pickup_TowerBolt.Body_IO_Pickup_TowerBolt'",
+              "pickupsound": {
+                "wwiseevent": "audio_event'IO_Pickups_Shared.IO_Pickup_OnPickup_Boss_Bolts'"
+              },
+              "pickupequipsound": {
+                "wwiseevent": "audio_event'IO_Pickups_Shared.IO_Pickup_OnPickup_Boss_Bolts'"
+              },
+              "serialindex": {
+                "status": "Active",
+                "index": "200",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_thesupply_shammylog": {
+              "inv": "InvDef_TheSupply_ShammyLog",
+              "itembasename": "Pickup_ShammyLog, 5228F9F24EAC62A692AFFDA0ACBA9198, A Note from Shammy",
+              "basetype": "inv'mission_pickup'",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "uistats": [
+                "ui_stat'UIStat_Pickup_TheSupply_ShammyLog'"
+              ],
+              "binventorynameisfullname": "true",
+              "inventoryname": "NexusSerialized, 674D6AA1430E7BE827438C968634032C, A Note from Shammy",
+              "body": "Asset'/Game/Missions/Micro/Mountains/Micro_Mountains_TheSupply/Pickups/Body_TheSupply_ShammyLog.Body_TheSupply_ShammyLog'",
+              "serialindex": {
+                "status": "Active",
+                "index": "398",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "invdef_vaultpowerorb": {
+              "inv": "InvDef_VaultPowerOrb",
+              "class": "Asset'/Script/GbxGame.InventoryPickup'",
+              "rarity": "rarity'00_mission'",
+              "body": "Asset'/Game/Missions/Side/Grasslands/Side_Grasslands_Vault_Grapple/Assets/VaultPowerOrb/Body_VaultPowerOrb_Pickup.Body_VaultPowerOrb_Pickup'",
+              "pickupinteractiontype": "UseOnly",
+              "pickupprompt": "usability_prompt'UsePrompt_Take'",
+              "serialindex": {
+                "status": "Active",
+                "index": "199",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
+          },
+          {
+            "newitem": {
+              "inv": "NewItem",
+              "serialindex": {
+                "status": "Active",
+                "index": "149",
+                "_category": "inv_type",
+                "_scope": "Root"
+              }
+            }
           }
         ]
       },

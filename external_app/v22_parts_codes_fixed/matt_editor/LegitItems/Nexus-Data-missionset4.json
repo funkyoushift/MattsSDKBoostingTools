@@ -1,8 +1,4 @@
 {
-  "__copyright": {
-    "author": "Cr4nkSt4r",
-    "github": "https://github.com/Cr4nkSt4r/Borderlands-4.NcsParser"
-  },
   "missionset": {
     "records": [
       {
@@ -16,6 +12,26 @@
           {
             "missionset_dlc_banjo": {
               "missionset": "MissionSet_DLC_Banjo",
+              "type": "/Script/OakGame.OakMissionSetDef"
+            }
+          },
+          {
+            "missionset_dlc_cello": {
+              "missionset": "MissionSet_DLC_Cello",
+              "bisdlcmissionset": "true",
+              "dlc": "DLCDef'DLCDef_Cello'",
+              "manualdependencies": {
+                "dependency": [
+                  {
+                    "dependency1": {
+                      "dependency": {
+                        "dependency1": "dependency1"
+                      },
+                      "completed": "mission'Mission_Main_Mountains1'"
+                    }
+                  }
+                ]
+              },
               "type": "/Script/OakGame.OakMissionSetDef"
             }
           },
@@ -85,10 +101,111 @@
             }
           },
           {
+            "missionset_harmonica_zoneactivity_grotto": {
+              "missionset": "MissionSet_Harmonica_ZoneActivity_Grotto",
+              "bisdlcmissionset": "true",
+              "dlc": "DLCDef'DLCDef_Harmonica'",
+              "generateddependencies": {
+                "dependency": [
+                  {
+                    "dependency1": {
+                      "dependency": {
+                        "dependency1": "dependency1"
+                      },
+                      "completed": "missionset'MissionSet_Main_Harmonica1'"
+                    }
+                  }
+                ]
+              },
+              "type": "/Script/OakGame.OakMissionSetDef"
+            }
+          },
+          {
+            "missionset_harmonica_zoneactivity_lockdown": {
+              "missionset": "MissionSet_Harmonica_ZoneActivity_Lockdown",
+              "bisdlcmissionset": "true",
+              "dlc": "DLCDef'DLCDef_Harmonica'",
+              "generateddependencies": {
+                "dependency": [
+                  {
+                    "dependency1": {
+                      "dependency": {
+                        "dependency1": "dependency1"
+                      },
+                      "completed": "missionset'missionset_main_harmonica0'"
+                    }
+                  }
+                ]
+              },
+              "type": "/Script/OakGame.OakMissionSetDef"
+            }
+          },
+          {
+            "missionset_harmonica_zoneactivity_safehouse": {
+              "missionset": "MissionSet_Harmonica_ZoneActivity_Safehouse",
+              "bisdlcmissionset": "true",
+              "dlc": "DLCDef'DLCDef_Harmonica'",
+              "generateddependencies": {
+                "dependency": [
+                  {
+                    "dependency1": {
+                      "dependency": {
+                        "dependency1": "dependency1"
+                      },
+                      "completed": "missionset'MissionSet_Main_Harmonica0'"
+                    }
+                  }
+                ]
+              },
+              "type": "/Script/OakGame.OakMissionSetDef"
+            }
+          },
+          {
             "missionset_main_cowbell": {
               "missionset": "MissionSet_Main_Cowbell",
               "bisdlcmissionset": "true",
               "dlc": "DLCDef'DLCDef_Cowbell'",
+              "bchained": "true",
+              "type": "/Script/OakGame.OakMissionSetDef"
+            }
+          },
+          {
+            "missionset_main_harmonica3_managers": {
+              "missionset": "MissionSet_Main_Harmonica3_Managers",
+              "bisdlcmissionset": "true",
+              "dlc": "DLCDef'DLCDef_Harmonica'",
+              "generateddependencies": {
+                "dependency": [
+                  {
+                    "dependency1": {
+                      "dependency": {
+                        "dependency1": "dependency1"
+                      },
+                      "completed": "missionset'MissionSet_Main_Harmonica2B'"
+                    }
+                  }
+                ]
+              },
+              "type": "/Script/OakGame.OakMissionSetDef"
+            }
+          },
+          {
+            "missionset_main_harmonica4_handcounter": {
+              "missionset": "MissionSet_Main_Harmonica4_HandCounter",
+              "bisdlcmissionset": "true",
+              "dlc": "DLCDef'DLCDef_Harmonica'",
+              "generateddependencies": {
+                "dependency": [
+                  {
+                    "dependency1": {
+                      "dependency": {
+                        "dependency1": "dependency1"
+                      },
+                      "completed": "missionset'MissionSet_Main_Harmonica2B'"
+                    }
+                  }
+                ]
+              },
               "bchained": "true",
               "type": "/Script/OakGame.OakMissionSetDef"
             }
@@ -104,6 +221,66 @@
               "missionset": "MissionSet_Micro_Cowbell",
               "bisdlcmissionset": "true",
               "dlc": "DLCDef'DLCDef_Cowbell'",
+              "type": "/Script/OakGame.OakMissionSetDef"
+            }
+          },
+          {
+            "missionset_micro_harmonica1": {
+              "missionset": "MissionSet_Micro_Harmonica1",
+              "bisdlcmissionset": "true",
+              "dlc": "DLCDef'DLCDef_Harmonica'",
+              "generateddependencies": {
+                "dependency": [
+                  {
+                    "dependency1": {
+                      "dependency": {
+                        "dependency1": "dependency1"
+                      },
+                      "completed": "missionset'MissionSet_Main_Harmonica1'"
+                    }
+                  }
+                ]
+              },
+              "type": "/Script/OakGame.OakMissionSetDef"
+            }
+          },
+          {
+            "missionset_micro_harmonica2": {
+              "missionset": "MissionSet_Micro_Harmonica2",
+              "bisdlcmissionset": "true",
+              "dlc": "DLCDef'DLCDef_Harmonica'",
+              "generateddependencies": {
+                "dependency": [
+                  {
+                    "dependency1": {
+                      "dependency": {
+                        "dependency1": "dependency1"
+                      },
+                      "completed": "missionset'MissionSet_Main_Harmonica2'"
+                    }
+                  }
+                ]
+              },
+              "type": "/Script/OakGame.OakMissionSetDef"
+            }
+          },
+          {
+            "missionset_micro_harmonica3": {
+              "missionset": "MissionSet_Micro_Harmonica3",
+              "bisdlcmissionset": "true",
+              "dlc": "DLCDef'DLCDef_Harmonica'",
+              "generateddependencies": {
+                "dependency": [
+                  {
+                    "dependency1": {
+                      "dependency": {
+                        "dependency1": "dependency1"
+                      },
+                      "completed": "missionset'MissionSet_Main_Harmonica3'"
+                    }
+                  }
+                ]
+              },
               "type": "/Script/OakGame.OakMissionSetDef"
             }
           },
@@ -134,6 +311,87 @@
             }
           },
           {
+            "missionset_side_harmonica1": {
+              "missionset": "MissionSet_Side_Harmonica1",
+              "bisdlcmissionset": "true",
+              "dlc": "DLCDef'DLCDef_Harmonica'",
+              "generateddependencies": {
+                "dependency": [
+                  {
+                    "dependency1": {
+                      "dependency": {
+                        "dependency1": "dependency1"
+                      },
+                      "completed": "missionset'MissionSet_Main_Harmonica1'"
+                    }
+                  }
+                ]
+              },
+              "type": "/Script/OakGame.OakMissionSetDef"
+            }
+          },
+          {
+            "missionset_side_harmonica2": {
+              "missionset": "MissionSet_Side_Harmonica2",
+              "bisdlcmissionset": "true",
+              "dlc": "DLCDef'DLCDef_Harmonica'",
+              "generateddependencies": {
+                "dependency": [
+                  {
+                    "dependency1": {
+                      "dependency": {
+                        "dependency1": "dependency1"
+                      },
+                      "completed": "missionset'MissionSet_Main_Harmonica2'"
+                    }
+                  }
+                ]
+              },
+              "type": "/Script/OakGame.OakMissionSetDef"
+            }
+          },
+          {
+            "missionset_side_harmonica3": {
+              "missionset": "MissionSet_Side_Harmonica3",
+              "bisdlcmissionset": "true",
+              "dlc": "DLCDef'DLCDef_Harmonica'",
+              "generateddependencies": {
+                "dependency": [
+                  {
+                    "dependency1": {
+                      "dependency": {
+                        "dependency1": "dependency1"
+                      },
+                      "completed": "missionset'MissionSet_Main_Harmonica4'"
+                    }
+                  }
+                ]
+              },
+              "type": "/Script/OakGame.OakMissionSetDef"
+            }
+          },
+          {
+            "missionset_side_harmonica4": {
+              "missionset": "MissionSet_Side_Harmonica4",
+              "bisdlcmissionset": "true",
+              "dlc": "DLCDef'DLCDef_Harmonica'",
+              "generateddependencies": {
+                "dependency": [
+                  {
+                    "dependency1": {
+                      "dependency": {
+                        "dependency1": "dependency1"
+                      },
+                      "completed": "missionset'MissionSet_Main_Harmonica3'"
+                    }
+                  }
+                ]
+              },
+              "bchained": "true",
+              "type": "/Script/OakGame.OakMissionSetDef"
+            }
+          },
+          {
             "missionset_zoneactivity_dlc1_bunker": {
               "missionset": "MissionSet_ZoneActivity_DLC1_Bunker",
               "bisdlcmissionset": "true",
@@ -146,6 +404,30 @@
               "missionset": "MissionSet_ZoneActivity_DLC1_FuelSiphon",
               "bisdlcmissionset": "true",
               "dlc": "DLCDef'DLCDef_Cowbell'",
+              "type": "/Script/OakGame.OakMissionSetDef"
+            }
+          }
+        ]
+      },
+      {
+        "entries": [
+          {
+            "missionset_dlc_viola": {
+              "missionset": "MissionSet_DLC_Viola",
+              "bisdlcmissionset": "true",
+              "dlc": "DLCDef'DLCDef_Viola'",
+              "manualdependencies": {
+                "dependency": [
+                  {
+                    "dependency1": {
+                      "dependency": {
+                        "dependency1": "dependency1"
+                      },
+                      "completed": "mission'Mission_Main_Grasslands2'"
+                    }
+                  }
+                ]
+              },
               "type": "/Script/OakGame.OakMissionSetDef"
             }
           }

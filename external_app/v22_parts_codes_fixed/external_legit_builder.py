@@ -26,6 +26,7 @@ from external_serial_tools import human_to_serial
 
 RULES_PATH = RESOURCE_DIR / "legit_rules_flat.json"
 OBSERVED_OPTIONS_PATH = RESOURCE_DIR / "observed_working_part_options.json"
+ITEM_LEVEL_CAP = 70  # BL4 v1.10 (September 10, 2026): previous cap 60 + 10.
 
 _RULES_CACHE: dict[str, Any] | None = None
 _ROOT_BY_KEY: dict[str, dict[str, Any]] | None = None
@@ -71,6 +72,7 @@ _BUILDABLE_ROOTS: dict[int, tuple[str, str]] = {
     255: ("forgeknight", "class_mod"),
     256: ("exo_soldier", "class_mod"),
     259: ("gravitar", "class_mod"),
+    402: ("loveless", "class_mod"),
     404: ("c4sh", "class_mod"),
     # Rep kits / ordnance / enhancements / shields
     261: ("torgue", "repair_kit"),
@@ -1176,7 +1178,7 @@ def _serial_part_token(root: dict[str, Any], part: dict[str, Any]) -> str:
     return f"{{{sub}}}"
 
 
-def build_human(root_key: str, selected: Iterable[str | int | dict[str, Any]], level: int = 72, seed: int = 1, seed2: int | None = None) -> str:
+def build_human(root_key: str, selected: Iterable[str | int | dict[str, Any]], level: int = ITEM_LEVEL_CAP, seed: int = 1, seed2: int | None = None) -> str:
     root = get_root(root_key)
     if not root:
         raise ValueError(f"unknown root {root_key!r}")
@@ -1186,10 +1188,11 @@ def build_human(root_key: str, selected: Iterable[str | int | dict[str, Any]], l
         raise ValueError(f"root {root_key!r} has no numeric serial index")
     seed_seg = f"{int(seed)}, {int(seed2)}" if seed2 is not None else str(int(seed))
     toks = " ".join(tok for tok in (_serial_part_token(root, p) for p in parts) if tok)
-    return f"{int(root_serial)}, 0, 1, {int(level)}| {seed_seg}|| {toks}|"
+    level = _clamp_int(level, 1, ITEM_LEVEL_CAP, ITEM_LEVEL_CAP)
+    return f"{int(root_serial)}, 0, 1, {level}| {seed_seg}|| {toks}|"
 
 
-def build_base85(root_key: str, selected: Iterable[str | int | dict[str, Any]], level: int = 72, seed: int = 1, seed2: int | None = None, validate_first: bool = True) -> str:
+def build_base85(root_key: str, selected: Iterable[str | int | dict[str, Any]], level: int = ITEM_LEVEL_CAP, seed: int = 1, seed2: int | None = None, validate_first: bool = True) -> str:
     v = validate(root_key, selected)
     if validate_first and not v.get("ok"):
         raise ValueError("invalid item: " + "; ".join(v.get("errors") or []))
@@ -1370,10 +1373,10 @@ def _selected_part_lines(selected_parts: Any) -> list[str]:
     return out
 
 
-def validate_build(root_serial: Any, selected_parts: Any, unlock_modded: Any = False, level: Any = 60, signature: Any = 1) -> dict[str, Any]:
+def validate_build(root_serial: Any, selected_parts: Any, unlock_modded: Any = False, level: Any = ITEM_LEVEL_CAP, signature: Any = 1) -> dict[str, Any]:
     root_key = _root_key_from_serial(root_serial)
     selected = _selected_part_lines(selected_parts)
-    lvl = _clamp_int(level, 1, 60, 60)
+    lvl = _clamp_int(level, 1, ITEM_LEVEL_CAP, ITEM_LEVEL_CAP)
     sig = _clamp_int(signature, 1, 4095, 1)
     unlocked = _truthy(unlock_modded)
 
@@ -1404,7 +1407,7 @@ def validate_build(root_serial: Any, selected_parts: Any, unlock_modded: Any = F
     }
 
 
-def build_human_external(root_serial: Any, selected_parts: Any, unlock_modded: Any = False, level: Any = 60, signature: Any = 1) -> dict[str, Any]:
+def build_human_external(root_serial: Any, selected_parts: Any, unlock_modded: Any = False, level: Any = ITEM_LEVEL_CAP, signature: Any = 1) -> dict[str, Any]:
     result = validate_build(root_serial, selected_parts, unlock_modded, level, signature)
     if not result["ok"]:
         return result
@@ -1412,7 +1415,7 @@ def build_human_external(root_serial: Any, selected_parts: Any, unlock_modded: A
     return {**result, "human": human}
 
 
-def build_base85_external(root_serial: Any, selected_parts: Any, unlock_modded: Any = False, level: Any = 60, signature: Any = 1) -> dict[str, Any]:
+def build_base85_external(root_serial: Any, selected_parts: Any, unlock_modded: Any = False, level: Any = ITEM_LEVEL_CAP, signature: Any = 1) -> dict[str, Any]:
     result = build_human_external(root_serial, selected_parts, unlock_modded, level, signature)
     human = str(result.get("human") or "")
     if not human:

@@ -1,8 +1,4 @@
 {
-  "__copyright": {
-    "author": "Cr4nkSt4r",
-    "github": "https://github.com/Cr4nkSt4r/Borderlands-4.NcsParser"
-  },
   "itempoollist": {
     "records": [
       {
@@ -148,6 +144,35 @@
                   },
                   "probability": {
                     "attribute": "attribute'Att_Loot_UVH_ShinyScalar'"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "itempoollist_ordinitefracture": {
+              "itempoollist": "ItemPoolList_OrdiniteFracture",
+              "itempools": [
+                {
+                  "itempool": {
+                    "item": {
+                      "binstance": "true",
+                      "instance": {
+                        "structtype": "Asset'/Script/GbxGame.ItemPoolDef'",
+                        "items": [
+                          {
+                            "item": {
+                              "item": {
+                                "handle": "inv'JAK_SG.comp_05_legendary_Verce'"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "probability": {
+                    "attribute": "attribute'Att_Loot_UVH_PrimaryScalar'"
                   }
                 }
               ]

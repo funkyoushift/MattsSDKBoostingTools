@@ -686,10 +686,10 @@ class _MattEditorHandler(BaseHTTPRequestHandler):
                 return
 
         try:
-            level = int(str(data.get("level") or "60").replace(",", "").strip())
+            level = int(str(data.get("level") or "70").replace(",", "").strip())
         except Exception:
-            level = 60
-        level = max(1, min(60, level))
+            level = 70
+        level = max(1, min(70, level))
         try:
             copies = int(str(data.get("copies") or "1").replace(",", "").strip())
         except Exception:

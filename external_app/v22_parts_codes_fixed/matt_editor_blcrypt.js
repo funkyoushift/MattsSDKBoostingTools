@@ -9,6 +9,7 @@
  *
  * Matt's editor credits glacierpiece (@glacierpiece) for the original blcrypt.py
  * BL4 save utility powering save/profile encryption and decryption.
+ * See the adjacent LICENSE_GLACIERPIECE_MIT.txt for its complete MIT notice.
  */
 
 const crypto = require("crypto");

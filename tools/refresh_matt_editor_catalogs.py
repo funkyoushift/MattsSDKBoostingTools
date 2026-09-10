@@ -9,7 +9,8 @@ Steps:
   5) Mirror updated resource JSONs into mod_extracted when present
   6) Regenerate Matt editor part supplements via tools/audit_matt_editor_modded_parts.py
 
-Safe defaults: backups before overwrite; atomic replace; does not commit.
+Safe defaults: preserve locally extracted Nexus tables; backups before overwrite;
+atomic replace; does not commit.
 """
 
 from __future__ import annotations
@@ -64,6 +65,11 @@ ATTR_RE = re.compile(r'([\w-]+)="([^"]*)"')
 # Stop at whitespace/quotes — never treat a Base85 '<' as an HTML tag boundary.
 SERIAL_RE = re.compile(r"@U[^\s\"'\\]+")
 DATA_CODE_RE = re.compile(r'\bdata-code="([^"]+)"', re.I)
+OG_IMAGE_RE = re.compile(
+    r'<meta\b[^>]*(?:property|name)=["\'](?:og:image|twitter:image)["\'][^>]*content=["\']([^"\']+)["\']'
+    r'|<meta\b[^>]*content=["\']([^"\']+)["\'][^>]*(?:property|name)=["\'](?:og:image|twitter:image)["\']',
+    re.I,
+)
 DB_ITEM_OPEN_RE = re.compile(r"<div\b[^>]*\bdata-name=\"[^\"]+\"[^>]*>", re.I)
 # Cut only at real markup tails; a lone '<' inside Base85 is payload, not a tag.
 _SERIAL_MARKUP_TAIL_RES = (
@@ -166,7 +172,13 @@ WATCHLIST = [
 
 
 def log(msg: str) -> None:
-    print(msg, flush=True)
+    try:
+        print(msg, flush=True)
+    except UnicodeEncodeError:
+        # Windows redirected consoles can still use cp1252. A catalog name or
+        # child-tool status symbol must not abort a completed refresh/report.
+        encoding = getattr(sys.stdout, "encoding", None) or "utf-8"
+        print(str(msg).encode(encoding, errors="backslashreplace").decode(encoding), flush=True)
 
 
 def fetch_bytes(url: str, timeout: int = 120) -> bytes:
@@ -212,6 +224,10 @@ def norm_name(s: str) -> str:
 def fold_name(s: str) -> str:
     # Drop accents/punctuation; also collapse spaces so "Fil ntropo" matches "Filántropo".
     return re.sub(r"[^a-z0-9'&]+", "", norm_name(s))
+
+
+def lootlemon_catalog_key(category: str, name: str) -> str:
+    return f"{norm_name(category)}|{fold_name(name)}"
 
 
 def parse_attrs(tag_open: str) -> dict[str, str]:
@@ -313,13 +329,39 @@ def extend_serial_if_split_by_markup(detail_html: str, match: re.Match[str], ser
 # ---------------------------------------------------------------------------
 
 
-def sync_nexus(keys: list[str] | None = None) -> dict[str, Any]:
+def local_nexus_protected_files() -> set[str]:
+    """Preserve locally managed imports, including later edits to those files.
+
+    This is an overwrite guard, not a claim that modified bytes still match the
+    extraction. Provenance hashes remain unchanged when an override is used.
+    """
+    provenance_path = LEGIT / "local_game_data_provenance.json"
+    if not provenance_path.is_file():
+        return set()
+    provenance = json.loads(provenance_path.read_text(encoding="utf-8-sig"))
+    if not isinstance(provenance, dict) or not isinstance(provenance.get("imported"), list):
+        raise ValueError(f"Invalid local Nexus provenance: {provenance_path}")
+    protected = {str(row["file"]).casefold() for row in provenance["imported"]
+                 if isinstance(row, dict) and isinstance(row.get("file"), str)}
+    # This layer is merged against native part identities rather than copied
+    # from an NCS shard, so it is recorded separately from imported tables.
+    if isinstance(provenance.get("hotfix_override_comparison"), dict):
+        protected.add("nexus-data-inv.json")
+    return protected
+
+
+def sync_nexus(keys: list[str] | None = None, *, replace_local_nexus: bool = False) -> dict[str, Any]:
     wanted = keys or list(NEXUS_FILE_MAP.keys())
-    results: dict[str, Any] = {"ok": [], "missing_remote": [], "failed": [], "bytes": {}}
+    protected = set() if replace_local_nexus else local_nexus_protected_files()
+    results: dict[str, Any] = {"ok": [], "preserved_local": [], "missing_remote": [], "failed": [], "bytes": {}}
     for key in wanted:
         filename = NEXUS_FILE_MAP[key]
         url = f"{NEXUS_PROXY}?file={urllib.parse.quote(key)}"
         dest = LEGIT / filename
+        if dest.is_file() and filename.casefold() in protected:
+            results["preserved_local"].append(key)
+            log(f"  nexus preserve locally imported table: {key} (use --replace-local-nexus to replace)")
+            continue
         try:
             data = fetch_bytes(url, timeout=180)
         except urllib.error.HTTPError as exc:
@@ -605,6 +647,15 @@ def extract_serials_from_detail(detail_html: str) -> list[str]:
     return serials
 
 
+def extract_image_from_detail(detail_html: str, detail_url: str = "") -> str:
+    """Return the canonical social/card image from a Lootlemon detail page."""
+    match = OG_IMAGE_RE.search(detail_html or "")
+    if not match:
+        return ""
+    raw = html.unescape(match.group(1) or match.group(2) or "").strip()
+    return urllib.parse.urljoin(detail_url or "https://www.lootlemon.com", raw)
+
+
 def title_rarity(raw: str) -> str:
     raw = (raw or "").strip()
     if not raw:
@@ -616,15 +667,36 @@ def refresh_lootlemon() -> dict[str, Any]:
     path = RESOURCES / "MattsSDKBoostingTools_lootlemon_codes.json"
     backup_file(path)
     payload = json.loads(path.read_text(encoding="utf-8"))
-    entries = list(payload.get("entries") or [])
-    before = len(entries)
+    loaded_entries = list(payload.get("entries") or [])
+    before = len(loaded_entries)
+
+    # One Lootlemon detail URL represents one canonical catalog item. Older
+    # name-only refreshes could duplicate same-named gear across categories;
+    # collapse those rows while preferring an id whose category matches.
+    deduped: dict[str, dict[str, Any]] = {}
+    for row in loaded_entries:
+        if not isinstance(row, dict):
+            continue
+        category = str(row.get("category") or "")
+        name = str(row.get("name") or "")
+        url_key = str(row.get("url") or "").rstrip("/").lower()
+        key = f"url:{url_key}" if url_key else f"item:{lootlemon_catalog_key(category, name)}"
+        existing = deduped.get(key)
+        if existing is None:
+            deduped[key] = row
+            continue
+        wanted_id_part = f":{category}:".lower()
+        if wanted_id_part in str(row.get("id") or "").lower() and wanted_id_part not in str(existing.get("id") or "").lower():
+            deduped[key] = row
+    entries = list(deduped.values())
+    duplicates_removed = before - len(entries)
 
     by_fold: dict[str, dict[str, Any]] = {}
     by_url: dict[str, dict[str, Any]] = {}
     for e in entries:
         if not isinstance(e, dict):
             continue
-        fk = fold_name(str(e.get("name") or ""))
+        fk = lootlemon_catalog_key(str(e.get("category") or ""), str(e.get("name") or ""))
         if fk:
             by_fold[fk] = e
         url = str(e.get("url") or "").rstrip("/").lower()
@@ -640,11 +712,12 @@ def refresh_lootlemon() -> dict[str, Any]:
     fetched = 0
     unchanged = 0
 
-    def _apply_listing_meta(row: dict[str, Any], it: dict[str, str], url: str) -> None:
+    def _apply_listing_meta(
+        row: dict[str, Any], it: dict[str, str], url: str, image_url: str = ""
+    ) -> None:
         name = it["name"]
         old_name = str(row.get("name") or "")
-        fk = fold_name(name)
-        if old_name != name and fold_name(old_name) == fk:
+        if old_name != name and fold_name(old_name) == fold_name(name):
             row["name"] = name
             renamed.append({"from": old_name, "to": name, "category": it["category"]})
         elif not old_name:
@@ -659,11 +732,13 @@ def refresh_lootlemon() -> dict[str, Any]:
             row["rarity"] = title_rarity(it.get("rarity") or "")
         if it.get("content") is not None and it.get("content") != "":
             row["content"] = it.get("content") or ""
+        if image_url:
+            row["image_url"] = image_url
         row["source"] = "Lootlemon"
 
     for idx, it in enumerate(live_items, start=1):
         name = it["name"]
-        fk = fold_name(name)
+        fk = lootlemon_catalog_key(it["category"], name)
         url = (it.get("url") or "").rstrip("/")
         existing = by_fold.get(fk) or (by_url.get(url.lower()) if url else None)
 
@@ -689,15 +764,16 @@ def refresh_lootlemon() -> dict[str, Any]:
             log(f"    detail {idx}/{len(live_items)}: {name}")
 
         serials = extract_serials_from_detail(detail)
+        image_url = extract_image_from_detail(detail, url)
         if not serials:
             missing_serial.append({**it, "reason": "no @U serial on detail page"})
             if existing is not None:
-                _apply_listing_meta(existing, it, url)
+                _apply_listing_meta(existing, it, url, image_url)
             continue
 
         serial = serials[0]
         if existing is not None:
-            _apply_listing_meta(existing, it, url)
+            _apply_listing_meta(existing, it, url, image_url)
             old_serial = str(existing.get("serial") or "").strip()
             if old_serial != serial:
                 updated_serials.append(
@@ -725,6 +801,7 @@ def refresh_lootlemon() -> dict[str, Any]:
             "source": "Lootlemon",
             "url": url,
             "content": it.get("content") or "",
+            "image_url": image_url,
         }
         entries.append(row)
         by_fold[fk] = row
@@ -745,6 +822,7 @@ def refresh_lootlemon() -> dict[str, Any]:
     return {
         "before": before,
         "after": len(entries),
+        "duplicates_removed": duplicates_removed,
         "added": added,
         "updated_serials": updated_serials,
         "updated_serial_count": len(updated_serials),
@@ -789,7 +867,7 @@ def refresh_gzo_codes() -> dict[str, Any]:
 def run_audit_supplements() -> dict[str, Any]:
     script = ROOT / "tools" / "audit_matt_editor_modded_parts.py"
     proc = subprocess.run(
-        [sys.executable, str(script)],
+        [sys.executable, "-X", "utf8", str(script)],
         cwd=str(ROOT),
         capture_output=True,
         text=True,
@@ -855,7 +933,7 @@ def mirror_docs_data() -> list[str]:
 
 def rebuild_data_manifest(bump: str = "") -> dict[str, Any]:
     script = ROOT / "tools" / "build_data_catalog_manifest.py"
-    cmd = [sys.executable, str(script)]
+    cmd = [sys.executable, "-X", "utf8", str(script)]
     if bump:
         cmd.extend(["--bump", bump])
     proc = subprocess.run(
@@ -902,6 +980,10 @@ def verify_watchlist() -> dict[str, Any]:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--skip-nexus", action="store_true")
+    parser.add_argument(
+        "--replace-local-nexus", action="store_true",
+        help="Explicitly replace locally extracted Nexus tables with online data; keeps backups and original provenance.",
+    )
     parser.add_argument("--skip-gzo-map", action="store_true")
     parser.add_argument("--skip-gzo-codes", action="store_true")
     parser.add_argument("--skip-lootlemon", action="store_true")
@@ -933,7 +1015,7 @@ def main() -> int:
     if not args.skip_nexus:
         log("== Sync Nexus LegitItems ==")
         keys = [k.strip() for k in args.nexus_keys.split(",") if k.strip()] or None
-        report["steps"]["nexus"] = sync_nexus(keys)
+        report["steps"]["nexus"] = sync_nexus(keys, replace_local_nexus=args.replace_local_nexus)
 
     if not args.skip_gzo_map:
         log("== Merge GZO parts map ==")

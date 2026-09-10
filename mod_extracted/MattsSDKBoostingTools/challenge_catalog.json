@@ -1,47 +1,10 @@
 {
-  "source": "Game challenge identifiers and highest reflected tier goal (data only).",
-  "count": 2549,
+  "source": "Locally extracted game challenge identifiers and highest inherited tier goal; existing catalog-only identifiers retained.",
+  "game_data": {
+    "game_build": "25234898"
+  },
+  "count": 3286,
   "entries": [
-    {
-      "id": "ChallengeParent_AssaultRifle",
-      "amount": 1
-    },
-    {
-      "id": "ChallengeParent_CombatAux",
-      "amount": 1
-    },
-    {
-      "id": "ChallengeParent_Currencies",
-      "amount": 1
-    },
-    {
-      "id": "ChallengeParent_Daedalus",
-      "amount": 1
-    },
-    {
-      "id": "ChallengeParent_KillArmy",
-      "amount": 1
-    },
-    {
-      "id": "ChallengeParent_KillEnemy",
-      "amount": 1
-    },
-    {
-      "id": "ChallengeParent_Loot",
-      "amount": 1
-    },
-    {
-      "id": "ChallengeParent_Pistol",
-      "amount": 1
-    },
-    {
-      "id": "ChallengeParent_SMG",
-      "amount": 1
-    },
-    {
-      "id": "ChallengeParent_Torgue",
-      "amount": 1
-    },
     {
       "id": "Challenge_2_Status_Effects",
       "amount": 5
@@ -193,6 +156,22 @@
     {
       "id": "Challenge_Activity_FuelSiphon_Parent",
       "amount": 2
+    },
+    {
+      "id": "Challenge_Activity_Grotto_Jungle",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Activity_Grotto_Lava",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Activity_Lockdown_Jungle",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Activity_Lockdown_Lava",
+      "amount": 1
     },
     {
       "id": "Challenge_Activity_OrderBunkers_City_1",
@@ -479,8 +458,32 @@
       "amount": 1
     },
     {
+      "id": "challenge_clot_26",
+      "amount": 1
+    },
+    {
       "id": "Challenge_Collect_AllKeys_EchoLocationTest",
       "amount": 3
+    },
+    {
+      "id": "Challenge_Collect_BP4_EchoLog_1",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_BP4_EchoLog_2",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_BP4_EchoLog_3",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_BP4_EchoLog_4",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_BP4_EchoLog_5",
+      "amount": 1
     },
     {
       "id": "Challenge_Collect_Caches_Grasslands_1",
@@ -613,6 +616,30 @@
     {
       "id": "Challenge_Collect_Capsules_Shatteredlands_5",
       "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DahlCaches_1",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DahlCaches_2",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DahlCaches_3",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DahlCaches_4",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DahlCaches_5",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DahlCaches_Parent",
+      "amount": 5
     },
     {
       "id": "Challenge_Collect_DLC1_EchoLog_1",
@@ -755,28 +782,256 @@
       "amount": 5
     },
     {
-      "id": "Challenge_Collect_DahlCaches_1",
+      "id": "Challenge_Collect_DLC2_EchoLog_1",
       "amount": 1
     },
     {
-      "id": "Challenge_Collect_DahlCaches_2",
+      "id": "Challenge_Collect_DLC2_EchoLog_10",
       "amount": 1
     },
     {
-      "id": "Challenge_Collect_DahlCaches_3",
+      "id": "Challenge_Collect_DLC2_EchoLog_11",
       "amount": 1
     },
     {
-      "id": "Challenge_Collect_DahlCaches_4",
+      "id": "Challenge_Collect_DLC2_EchoLog_12",
       "amount": 1
     },
     {
-      "id": "Challenge_Collect_DahlCaches_5",
+      "id": "Challenge_Collect_DLC2_EchoLog_13",
       "amount": 1
     },
     {
-      "id": "Challenge_Collect_DahlCaches_Parent",
+      "id": "Challenge_Collect_DLC2_EchoLog_14",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_EchoLog_15",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_EchoLog_16",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_EchoLog_17",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_EchoLog_18",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_EchoLog_19",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_EchoLog_2",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_EchoLog_20",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_EchoLog_21",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_EchoLog_22",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_EchoLog_23",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_EchoLog_24",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_EchoLog_25",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_EchoLog_26",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_EchoLog_27",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_EchoLog_28",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_EchoLog_29",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_EchoLog_3",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_EchoLog_30",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_EchoLog_31",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_EchoLog_32",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_EchoLog_33",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_EchoLog_34",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_EchoLog_35",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_EchoLog_36",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_EchoLog_37",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_EchoLog_38",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_EchoLog_39",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_EchoLog_4",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_EchoLog_40",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_EchoLog_41",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_EchoLog_42",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_EchoLog_5",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_EchoLog_6",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_EchoLog_7",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_EchoLog_8",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_EchoLog_9",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_EchoLog_Parent",
+      "amount": 42
+    },
+    {
+      "id": "Challenge_Collect_DLC2_IslandSafe_1",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_IslandSafe_2",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_IslandSafe_3",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_IslandSafe_4",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_IslandSafe_5",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_IslandSafe_Parent",
       "amount": 5
+    },
+    {
+      "id": "Challenge_Collect_DLC2_Tediore_1",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_Tediore_10",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_Tediore_2",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_Tediore_3",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_Tediore_4",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_Tediore_5",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_Tediore_6",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_Tediore_7",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_Tediore_8",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_Tediore_9",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_DLC2_Tediore_Parent",
+      "amount": 10
+    },
+    {
+      "id": "Challenge_Collect_Echo_Log_Dogleg_1",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_Echo_Log_Dogleg_2",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Collect_Echo_Log_Dogleg_3",
+      "amount": 1
     },
     {
       "id": "Challenge_Collect_EchoLog_ARJ_CITY_01",
@@ -872,6 +1127,42 @@
     },
     {
       "id": "Challenge_Collect_EchoLog_ERD_09",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_collect_echolog_erd_10",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_collect_echolog_erd_11",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_collect_echolog_erd_12",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_collect_echolog_erd_13",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_collect_echolog_erd_14",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_collect_echolog_erd_15",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_collect_echolog_erd_16",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_collect_echolog_erd_17",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_collect_echolog_erd_18",
       "amount": 1
     },
     {
@@ -1100,6 +1391,10 @@
     },
     {
       "id": "Challenge_Collect_EchoLog_GEN_GRA_24",
+      "amount": 1
+    },
+    {
+      "id": "challenge_collect_echolog_gen_gra_25",
       "amount": 1
     },
     {
@@ -1407,6 +1702,10 @@
       "amount": 1
     },
     {
+      "id": "challenge_collect_echolog_mis_city_16",
+      "amount": 1
+    },
+    {
       "id": "Challenge_Collect_EchoLog_MIS_CITY_17",
       "amount": 1
     },
@@ -1448,6 +1747,14 @@
     },
     {
       "id": "Challenge_Collect_EchoLog_MIS_GRA_10",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_collect_echolog_mis_gra_11",
+      "amount": 1
+    },
+    {
+      "id": "challenge_collect_echolog_mis_gra_12",
       "amount": 1
     },
     {
@@ -1691,6 +1998,10 @@
       "amount": 1
     },
     {
+      "id": "Challenge_collect_echolog_vh_gra_10",
+      "amount": 1
+    },
+    {
       "id": "Challenge_Collect_EchoLog_VH_MTN_01",
       "amount": 1
     },
@@ -1724,6 +2035,10 @@
     },
     {
       "id": "Challenge_Collect_EchoLog_VH_MTN_09",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_collect_echolog_vh_mtn_10",
       "amount": 1
     },
     {
@@ -1767,15 +2082,7 @@
       "amount": 1
     },
     {
-      "id": "Challenge_Collect_Echo_Log_Dogleg_1",
-      "amount": 1
-    },
-    {
-      "id": "Challenge_Collect_Echo_Log_Dogleg_2",
-      "amount": 1
-    },
-    {
-      "id": "Challenge_Collect_Echo_Log_Dogleg_3",
+      "id": "Challenge_collect_echolog_vh_sha_10",
       "amount": 1
     },
     {
@@ -2135,6 +2442,18 @@
       "amount": 10
     },
     {
+      "id": "Challenge_Collect_VaultKey_Grasslands_Parent",
+      "amount": 3
+    },
+    {
+      "id": "Challenge_Collect_VaultKey_Mountains_Parent",
+      "amount": 3
+    },
+    {
+      "id": "Challenge_Collect_VaultKey_Shatteredlands_Parent",
+      "amount": 3
+    },
+    {
       "id": "Challenge_Collect_VaultKeyA_Grasslands",
       "amount": 1
     },
@@ -2169,18 +2488,6 @@
     {
       "id": "Challenge_Collect_VaultKeyC_Shatteredlands",
       "amount": 1
-    },
-    {
-      "id": "Challenge_Collect_VaultKey_Grasslands_Parent",
-      "amount": 3
-    },
-    {
-      "id": "Challenge_Collect_VaultKey_Mountains_Parent",
-      "amount": 3
-    },
-    {
-      "id": "Challenge_Collect_VaultKey_Shatteredlands_Parent",
-      "amount": 3
     },
     {
       "id": "Challenge_Collect_VaultPower_Grasslands",
@@ -2404,7 +2711,7 @@
     },
     {
       "id": "Challenge_Cowbell_Kickdowns_WSWBridge_Left",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "Challenge_Cowbell_Kickdowns_WSWBridge_Parent",
@@ -2412,7 +2719,7 @@
     },
     {
       "id": "Challenge_Cowbell_Kickdowns_WSWBridge_Right",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "Challenge_Cryo_Kills",
@@ -2421,30 +2728,6 @@
     {
       "id": "Challenge_Cryo_Status",
       "amount": 10000
-    },
-    {
-      "id": "Challenge_DLC1_EchoLog_RecordPlayer_1",
-      "amount": 1
-    },
-    {
-      "id": "Challenge_DLC1_EchoLog_RecordPlayer_2",
-      "amount": 1
-    },
-    {
-      "id": "Challenge_DLC1_EchoLog_RecordPlayer_3",
-      "amount": 1
-    },
-    {
-      "id": "Challenge_DLC1_EchoLog_RecordPlayer_4",
-      "amount": 1
-    },
-    {
-      "id": "Challenge_DLC1_EchoLog_RecordPlayer_5",
-      "amount": 1
-    },
-    {
-      "id": "Challenge_DLC1_EchoLog_RecordPlayer_Parent",
-      "amount": 5
     },
     {
       "id": "Challenge_Daedalus_Kills",
@@ -2459,12 +2742,12 @@
       "amount": 500
     },
     {
-      "id": "Challenge_Daedalus_Multiloader_SMG",
-      "amount": 750
-    },
-    {
       "id": "Challenge_Daedalus_Multiloader_Shotgun",
       "amount": 400
+    },
+    {
+      "id": "Challenge_Daedalus_Multiloader_SMG",
+      "amount": 750
     },
     {
       "id": "Challenge_Daedalus_Multiloader_Sniper",
@@ -2503,6 +2786,82 @@
       "amount": 50
     },
     {
+      "id": "Challenge_DLC1_EchoLog_RecordPlayer_1",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_DLC1_EchoLog_RecordPlayer_2",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_DLC1_EchoLog_RecordPlayer_3",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_DLC1_EchoLog_RecordPlayer_4",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_DLC1_EchoLog_RecordPlayer_5",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_DLC1_EchoLog_RecordPlayer_Parent",
+      "amount": 5
+    },
+    {
+      "id": "Challenge_DLC2_Digigunk_01",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_DLC2_Digigunk_02",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_DLC2_Digigunk_03",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_DLC2_Digigunk_04",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_DLC2_Digigunk_05",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_DLC2_Digigunk_06",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_DLC2_ZiplineShortcut_01",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_DLC2_ZiplineShortcut_02",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_DLC2_ZiplineShortcut_03",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_DLC2_ZiplineShortcut_04",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_DLC2_ZiplineShortcut_05",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_DLC2_ZiplineShortcut_06",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_DLC2_ZiplineShortcut_07",
+      "amount": 1
+    },
+    {
       "id": "Challenge_EchoLog_Tuba_1",
       "amount": 1
     },
@@ -2528,6 +2887,22 @@
     },
     {
       "id": "Challenge_EchoLog_Tuba_7",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_EchoLog_Viola_1",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_EchoLog_Viola_2",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_EchoLog_Viola_3",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_EchoLog_Viola_4",
       "amount": 1
     },
     {
@@ -2639,6 +3014,38 @@
       "amount": 500
     },
     {
+      "id": "Challenge_Harmonica_TreasureHunt_BossKilled",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Harmonica_TreasureHunt_DoorOpened",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Harmonica_TreasureHunt_Switch_01",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Harmonica_TreasureHunt_Switch_02",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Harmonica_TreasureHunt_Switch_03",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Harmonica_TreasureHunt_Switch_04",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Harmonica_TreasureHunt_Switch_05",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Harmonica_TreasureHunt_SwitchParent",
+      "amount": 5
+    },
+    {
       "id": "Challenge_HaveCash",
       "amount": 1
     },
@@ -2707,18 +3114,6 @@
       "amount": 175
     },
     {
-      "id": "Challenge_KillArmy_Bandits",
-      "amount": 5000
-    },
-    {
-      "id": "Challenge_KillArmy_Beasts",
-      "amount": 4500
-    },
-    {
-      "id": "Challenge_KillArmy_Order",
-      "amount": 4000
-    },
-    {
       "id": "Challenge_Kill_Airborne",
       "amount": 1000
     },
@@ -2775,12 +3170,12 @@
       "amount": 1500
     },
     {
-      "id": "Challenge_Kill_GunToters",
-      "amount": 1250
-    },
-    {
       "id": "Challenge_Kill_Gunships",
       "amount": 100000
+    },
+    {
+      "id": "Challenge_Kill_GunToters",
+      "amount": 1250
     },
     {
       "id": "Challenge_Kill_Leaders",
@@ -2825,6 +3220,18 @@
     {
       "id": "Challenge_Kill_WhileSliding",
       "amount": 1500
+    },
+    {
+      "id": "Challenge_KillArmy_Bandits",
+      "amount": 5000
+    },
+    {
+      "id": "Challenge_KillArmy_Beasts",
+      "amount": 4500
+    },
+    {
+      "id": "Challenge_KillArmy_Order",
+      "amount": 4000
     },
     {
       "id": "Challenge_Loot_Blues",
@@ -2911,18 +3318,6 @@
       "amount": 1
     },
     {
-      "id": "Challenge_Misc_WorldEvent_Grasslands",
-      "amount": 1
-    },
-    {
-      "id": "Challenge_Misc_WorldEvent_Mountains",
-      "amount": 1
-    },
-    {
-      "id": "Challenge_Misc_WorldEvent_Shatteredlands",
-      "amount": 1
-    },
-    {
       "id": "Challenge_Misc_World_CompleteCityEpilogue",
       "amount": 1
     },
@@ -2937,6 +3332,18 @@
     {
       "id": "Challenge_Misc_World_TipJar",
       "amount": 20000
+    },
+    {
+      "id": "Challenge_Misc_WorldEvent_Grasslands",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Misc_WorldEvent_Mountains",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Misc_WorldEvent_Shatteredlands",
+      "amount": 1
     },
     {
       "id": "Challenge_Order_FullChargeKills",
@@ -3043,34 +3450,6 @@
       "amount": 200
     },
     {
-      "id": "Challenge_SMG_CriticalHits",
-      "amount": 10000
-    },
-    {
-      "id": "Challenge_SMG_CriticalKills",
-      "amount": 1000
-    },
-    {
-      "id": "Challenge_SMG_Dash",
-      "amount": 1500
-    },
-    {
-      "id": "Challenge_SMG_Kills",
-      "amount": 2000
-    },
-    {
-      "id": "Challenge_SMG_SecondWinds",
-      "amount": 75
-    },
-    {
-      "id": "Challenge_SMG_SlidingKills",
-      "amount": 750
-    },
-    {
-      "id": "Challenge_SMG_SprintingKills",
-      "amount": 1000
-    },
-    {
       "id": "Challenge_SecondWind",
       "amount": 200
     },
@@ -3119,11 +3498,15 @@
       "amount": 2000000
     },
     {
-      "id": "Challenge_Shiny_ATLien",
+      "id": "Challenge_Shiny_anarchy",
       "amount": 1
     },
     {
       "id": "Challenge_Shiny_Asher",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Shiny_ATLien",
       "amount": 1
     },
     {
@@ -3132,6 +3515,10 @@
     },
     {
       "id": "Challenge_Shiny_BeeGun",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Shiny_bloodstarved",
       "amount": 1
     },
     {
@@ -3164,6 +3551,14 @@
     },
     {
       "id": "Challenge_Shiny_CommBD",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Shiny_complex_root",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Shiny_convergence",
       "amount": 1
     },
     {
@@ -3211,6 +3606,10 @@
       "amount": 1
     },
     {
+      "id": "Challenge_Shiny_hellfire",
+      "amount": 1
+    },
+    {
       "id": "Challenge_Shiny_Hellwalker",
       "amount": 1
     },
@@ -3220,6 +3619,10 @@
     },
     {
       "id": "Challenge_Shiny_KaoSon",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Shiny_katagawa",
       "amount": 1
     },
     {
@@ -3255,11 +3658,11 @@
       "amount": 1
     },
     {
-      "id": "Challenge_Shiny_OM",
+      "id": "Challenge_Shiny_OhmIGot",
       "amount": 1
     },
     {
-      "id": "Challenge_Shiny_OhmIGot",
+      "id": "Challenge_Shiny_OM",
       "amount": 1
     },
     {
@@ -3319,11 +3722,19 @@
       "amount": 1
     },
     {
+      "id": "Challenge_Shiny_seventh_sense",
+      "amount": 1
+    },
+    {
       "id": "Challenge_Shiny_Sideshow",
       "amount": 1
     },
     {
       "id": "Challenge_Shiny_Slugger",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Shiny_star_helix",
       "amount": 1
     },
     {
@@ -3364,38 +3775,6 @@
     },
     {
       "id": "Challenge_Shiny_Zipgun",
-      "amount": 1
-    },
-    {
-      "id": "Challenge_Shiny_anarchy",
-      "amount": 1
-    },
-    {
-      "id": "Challenge_Shiny_bloodstarved",
-      "amount": 1
-    },
-    {
-      "id": "Challenge_Shiny_complex_root",
-      "amount": 1
-    },
-    {
-      "id": "Challenge_Shiny_convergence",
-      "amount": 1
-    },
-    {
-      "id": "Challenge_Shiny_hellfire",
-      "amount": 1
-    },
-    {
-      "id": "Challenge_Shiny_katagawa",
-      "amount": 1
-    },
-    {
-      "id": "Challenge_Shiny_seventh_sense",
-      "amount": 1
-    },
-    {
-      "id": "Challenge_Shiny_star_helix",
       "amount": 1
     },
     {
@@ -3449,6 +3828,34 @@
     {
       "id": "Challenge_ShuggurathTank_03",
       "amount": 1
+    },
+    {
+      "id": "Challenge_SMG_CriticalHits",
+      "amount": 10000
+    },
+    {
+      "id": "Challenge_SMG_CriticalKills",
+      "amount": 1000
+    },
+    {
+      "id": "Challenge_SMG_Dash",
+      "amount": 1500
+    },
+    {
+      "id": "Challenge_SMG_Kills",
+      "amount": 2000
+    },
+    {
+      "id": "Challenge_SMG_SecondWinds",
+      "amount": 75
+    },
+    {
+      "id": "Challenge_SMG_SlidingKills",
+      "amount": 750
+    },
+    {
+      "id": "Challenge_SMG_SprintingKills",
+      "amount": 1000
     },
     {
       "id": "Challenge_Sniper_Bigshot",
@@ -3755,6 +4162,46 @@
       "amount": 1
     },
     {
+      "id": "Challenge_Unlock_VaultDoor_Grasslands",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Unlock_VaultDoor_Mountains",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Unlock_VaultDoor_Shatteredlands",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Unlock_VaultLock_Grasslands",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Unlock_VaultLock_Mountains",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_Unlock_VaultLock_Parent",
+      "amount": 3
+    },
+    {
+      "id": "Challenge_Unlock_VaultLock_Shatteredlands",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_UpgradeInventory",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_UpgradeInventoryAll",
+      "amount": 1
+    },
+    {
+      "id": "Challenge_UpgradeWeaponSlots",
+      "amount": 1
+    },
+    {
       "id": "Challenge_UVH_Rankup_1_BMVM",
       "amount": 1
     },
@@ -3839,46 +4286,6 @@
       "amount": 1
     },
     {
-      "id": "Challenge_Unlock_VaultDoor_Grasslands",
-      "amount": 1
-    },
-    {
-      "id": "Challenge_Unlock_VaultDoor_Mountains",
-      "amount": 1
-    },
-    {
-      "id": "Challenge_Unlock_VaultDoor_Shatteredlands",
-      "amount": 1
-    },
-    {
-      "id": "Challenge_Unlock_VaultLock_Grasslands",
-      "amount": 1
-    },
-    {
-      "id": "Challenge_Unlock_VaultLock_Mountains",
-      "amount": 1
-    },
-    {
-      "id": "Challenge_Unlock_VaultLock_Parent",
-      "amount": 3
-    },
-    {
-      "id": "Challenge_Unlock_VaultLock_Shatteredlands",
-      "amount": 1
-    },
-    {
-      "id": "Challenge_UpgradeInventory",
-      "amount": 1
-    },
-    {
-      "id": "Challenge_UpgradeInventoryAll",
-      "amount": 1
-    },
-    {
-      "id": "Challenge_UpgradeWeaponSlots",
-      "amount": 1
-    },
-    {
       "id": "Challenge_Vladof_Bipod",
       "amount": 750
     },
@@ -3899,55 +4306,43 @@
       "amount": 150
     },
     {
-      "id": "Challenge_collect_echolog_erd_10",
+      "id": "ChallengeParent_AssaultRifle",
       "amount": 1
     },
     {
-      "id": "Challenge_collect_echolog_erd_11",
+      "id": "ChallengeParent_CombatAux",
       "amount": 1
     },
     {
-      "id": "Challenge_collect_echolog_erd_12",
+      "id": "ChallengeParent_Currencies",
       "amount": 1
     },
     {
-      "id": "Challenge_collect_echolog_erd_13",
+      "id": "ChallengeParent_Daedalus",
       "amount": 1
     },
     {
-      "id": "Challenge_collect_echolog_erd_14",
+      "id": "ChallengeParent_KillArmy",
       "amount": 1
     },
     {
-      "id": "Challenge_collect_echolog_erd_15",
+      "id": "ChallengeParent_KillEnemy",
       "amount": 1
     },
     {
-      "id": "Challenge_collect_echolog_erd_16",
+      "id": "ChallengeParent_Loot",
       "amount": 1
     },
     {
-      "id": "Challenge_collect_echolog_erd_17",
+      "id": "ChallengeParent_Pistol",
       "amount": 1
     },
     {
-      "id": "Challenge_collect_echolog_erd_18",
+      "id": "ChallengeParent_SMG",
       "amount": 1
     },
     {
-      "id": "Challenge_collect_echolog_mis_gra_11",
-      "amount": 1
-    },
-    {
-      "id": "Challenge_collect_echolog_vh_gra_10",
-      "amount": 1
-    },
-    {
-      "id": "Challenge_collect_echolog_vh_mtn_10",
-      "amount": 1
-    },
-    {
-      "id": "Challenge_collect_echolog_vh_sha_10",
+      "id": "ChallengeParent_Torgue",
       "amount": 1
     },
     {
@@ -4187,6 +4582,118 @@
       "amount": 1
     },
     {
+      "id": "Challenges_Achievements_49_Harp_response_dave1",
+      "amount": 1
+    },
+    {
+      "id": "Challenges_Achievements_49_Harp_response_dave2",
+      "amount": 1
+    },
+    {
+      "id": "Challenges_Achievements_49_Harp_response_skankeyes1",
+      "amount": 1
+    },
+    {
+      "id": "Challenges_Achievements_49_Harp_response_skankeyes2",
+      "amount": 1
+    },
+    {
+      "id": "Challenges_Achievements_49_Harp_response_william1",
+      "amount": 1
+    },
+    {
+      "id": "Challenges_Achievements_49_Harp_response_william2",
+      "amount": 1
+    },
+    {
+      "id": "Challenges_Achievements_49_Harp_responses_all",
+      "amount": 6
+    },
+    {
+      "id": "Challenges_Achievements_50_Harp_boss_betamaxxx",
+      "amount": 1
+    },
+    {
+      "id": "Challenges_Achievements_50_Harp_boss_defeat",
+      "amount": 4
+    },
+    {
+      "id": "Challenges_Achievements_50_Harp_boss_infamousdave",
+      "amount": 1
+    },
+    {
+      "id": "Challenges_Achievements_50_Harp_boss_maxxxsupreme",
+      "amount": 1
+    },
+    {
+      "id": "Challenges_Achievements_50_Harp_boss_skankeyes",
+      "amount": 1
+    },
+    {
+      "id": "Challenges_Achievements_51_Harp_missions_main",
+      "amount": 1
+    },
+    {
+      "id": "Challenges_Achievements_52_Viola_treasure_discover",
+      "amount": 1
+    },
+    {
+      "id": "Challenges_Achievements_53_Viola_boss_defeat",
+      "amount": 3
+    },
+    {
+      "id": "Challenges_Achievements_53_Viola_boss_hybridthresher",
+      "amount": 1
+    },
+    {
+      "id": "Challenges_Achievements_53_Viola_boss_testzero",
+      "amount": 1
+    },
+    {
+      "id": "Challenges_Achievements_53_Viola_boss_viledave",
+      "amount": 1
+    },
+    {
+      "id": "Challenges_Achievements_54_Viola_missions_main",
+      "amount": 1
+    },
+    {
+      "id": "Challenges_Achievements_55_Harmonica_Activities",
+      "amount": 7
+    },
+    {
+      "id": "Challenges_Achievements_56_Harmonica_SideMissions",
+      "amount": 15
+    },
+    {
+      "id": "Challenges_Achievements_57_Harmonica_RiftBoss",
+      "amount": 1
+    },
+    {
+      "id": "Challenges_Achievements_58_Harmonica_TreasureHunt",
+      "amount": 7
+    },
+    {
+      "id": "Challenges_Achievements_59_Harmonica_Mission01",
+      "amount": 1
+    },
+    {
+      "id": "Challenges_Achievements_60_Harmonica_Mission02B",
+      "amount": 1
+    },
+    {
+      "id": "Challenges_Achievements_61_Harmonica_UnlockVolcanoFortress",
+      "amount": 1
+    },
+    {
+      "id": "Challenges_Achievements_62_Harmonica_Mission04",
+      "amount": 1
+    },
+    {
+      "id": "Cowbell_Challenges_Characters_CorpoHacker_LevelUp",
+      "amount": 60
+    },
+    {
       "id": "Cowbell_Challenges_Characters_Robodealer_Cleromancy_Single",
       "amount": 1
     },
@@ -4307,6 +4814,162 @@
       "amount": 1
     },
     {
+      "id": "Harmonica_Challenge_Combat_KillFramesBeforeConversion",
+      "amount": 30
+    },
+    {
+      "id": "Harmonica_Challenge_Combat_ZiplineKills",
+      "amount": 50
+    },
+    {
+      "id": "Harmonica_Challenge_Enemies_KillTedioreFrames",
+      "amount": 1000
+    },
+    {
+      "id": "Harmonica_Challenge_Enemies_KillTedioreGliders",
+      "amount": 1000
+    },
+    {
+      "id": "Harmonica_Challenge_Enemies_KillTedioreInfantry",
+      "amount": 1000
+    },
+    {
+      "id": "Harmonica_Challenge_Enemies_KillTedioreReplacements",
+      "amount": 300
+    },
+    {
+      "id": "Harmonica_Challenge_Enemies_KillTedioreWalkerMechs",
+      "amount": 300
+    },
+    {
+      "id": "Harmonica_Challenge_Tutorial_Cargo_Pod_Event",
+      "amount": 1
+    },
+    {
+      "id": "Harmonica_Challenge_Tutorial_Collectible_Tediore_Guns",
+      "amount": 1
+    },
+    {
+      "id": "Harmonica_Challenge_Tutorial_Digi-Gunk",
+      "amount": 1
+    },
+    {
+      "id": "Harmonica_Challenge_Tutorial_Island_Safes",
+      "amount": 1
+    },
+    {
+      "id": "Harmonica_Challenge_Tutorial_Mining_Grottos",
+      "amount": 1
+    },
+    {
+      "id": "Harmonica_Challenge_Tutorial_Tediore_Lockdown",
+      "amount": 1
+    },
+    {
+      "id": "Harmonica_Challenge_Tutorial_Tediore_Pockets",
+      "amount": 1
+    },
+    {
+      "id": "Harmonica_Challenge_Tutorial_Tiki_Safehouses",
+      "amount": 1
+    },
+    {
+      "id": "Harmonica_Challenge_Tutorial_Treasure_Hunt",
+      "amount": 1
+    },
+    {
+      "id": "Harmonica_Challenge_Tutorial_Treasure_Hunt_Final",
+      "amount": 1
+    },
+    {
+      "id": "Harmonica_Challenge_Tutorial_Volcano_Event",
+      "amount": 1
+    },
+    {
+      "id": "Harmonica_Challenge_Tutorial_Ziplines",
+      "amount": 1
+    },
+    {
+      "id": "Harmonica_Challenge_World_ClaimSafehouses",
+      "amount": 3
+    },
+    {
+      "id": "Harmonica_Challenge_World_ClaimSafehouses_Intro",
+      "amount": 1
+    },
+    {
+      "id": "Harmonica_Challenge_World_ClaimSafehouses_Jungle",
+      "amount": 1
+    },
+    {
+      "id": "Harmonica_Challenge_World_ClaimSafehouses_Lava",
+      "amount": 1
+    },
+    {
+      "id": "Harmonica_Challenge_World_CompleteRifts",
+      "amount": 10
+    },
+    {
+      "id": "Harmonica_Challenge_World_Grottos",
+      "amount": 2
+    },
+    {
+      "id": "Harmonica_Challenge_World_Lockdowns",
+      "amount": 2
+    },
+    {
+      "id": "Harmonica_Challenge_World_ManagerHands",
+      "amount": 5
+    },
+    {
+      "id": "Harmonica_Challenge_World_ManagerHands_Hotel",
+      "amount": 1
+    },
+    {
+      "id": "Harmonica_Challenge_World_ManagerHands_Lava",
+      "amount": 1
+    },
+    {
+      "id": "Harmonica_Challenge_World_ManagerHands_Logistics",
+      "amount": 1
+    },
+    {
+      "id": "Harmonica_Challenge_World_ManagerHands_Spa",
+      "amount": 1
+    },
+    {
+      "id": "Harmonica_Challenge_World_ManagerHands_Theater",
+      "amount": 1
+    },
+    {
+      "id": "Harmonica_Challenge_World_VolcanoEvent",
+      "amount": 5
+    },
+    {
+      "id": "Harmonica_Challenges_Characters_CorpoHacker_Contagion_Single",
+      "amount": 1
+    },
+    {
+      "id": "Harmonica_Challenges_Characters_CorpoHacker_Contagion_Tiered",
+      "amount": 1000
+    },
+    {
+      "id": "Harmonica_Challenges_Characters_CorpoHacker_Manifestation_Single",
+      "amount": 1
+    },
+    {
+      "id": "Harmonica_Challenges_Characters_CorpoHacker_Manifestation_Tiered",
+      "amount": 1000
+    },
+    {
+      "id": "Harmonica_Challenges_Characters_CorpoHacker_VPN_Single",
+      "amount": 1
+    },
+    {
+      "id": "Harmonica_Challenges_Characters_CorpoHacker_VPN_Tiered",
+      "amount": 1000
+    },
+    {
       "id": "LoyaltyChallenge_Borg",
       "amount": 250
     },
@@ -4359,16 +5022,20 @@
       "amount": 1
     },
     {
-      "id": "VC1_AcquireContract10",
+      "id": "vault_card_dummy_prereq_challenge",
       "amount": 1
+    },
+    {
+      "id": "VC1_AcquireContract10",
+      "amount": 10
     },
     {
       "id": "VC1_AcquireContract20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_AcquireContract30",
-      "amount": 1
+      "amount": 30
     },
     {
       "id": "VC1_BadassSecondWind1",
@@ -4376,255 +5043,255 @@
     },
     {
       "id": "VC1_BadassSecondWind2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC1_BadassSecondWind3",
-      "amount": 1
+      "amount": 3
     },
     {
       "id": "VC1_BanditAcquire2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC1_BanditAcquire4",
-      "amount": 1
+      "amount": 4
     },
     {
       "id": "VC1_BanditAcquire6",
-      "amount": 1
+      "amount": 6
     },
     {
       "id": "VC1_BanditBounty2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC1_BanditBounty4",
-      "amount": 1
+      "amount": 4
     },
     {
       "id": "VC1_BanditBounty6",
-      "amount": 1
+      "amount": 6
     },
     {
       "id": "VC1_BanditCollect2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC1_BanditCollect4",
-      "amount": 1
+      "amount": 4
     },
     {
       "id": "VC1_BanditCollect6",
-      "amount": 1
+      "amount": 6
     },
     {
       "id": "VC1_BanditPatrol2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC1_BanditPatrol4",
-      "amount": 1
+      "amount": 4
     },
     {
       "id": "VC1_BanditPatrol6",
-      "amount": 1
+      "amount": 6
     },
     {
       "id": "VC1_BanditSearch2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC1_BanditSearch4",
-      "amount": 1
+      "amount": 4
     },
     {
       "id": "VC1_BanditSearch6",
-      "amount": 1
+      "amount": 6
     },
     {
       "id": "VC1_BountyContract10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC1_BountyContract20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_BountyContract30",
-      "amount": 1
+      "amount": 30
     },
     {
       "id": "VC1_CollectContract10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC1_CollectContract20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_CollectContract30",
-      "amount": 1
+      "amount": 30
     },
     {
       "id": "VC1_CorruptedBountyContract10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC1_CorruptedBountyContract20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_CorruptedBountyContract30",
-      "amount": 1
+      "amount": 30
     },
     {
       "id": "VC1_CreatureAcquire2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC1_CreatureAcquire4",
-      "amount": 1
+      "amount": 4
     },
     {
       "id": "VC1_CreatureAcquire6",
-      "amount": 1
+      "amount": 6
     },
     {
       "id": "VC1_CreatureBounty2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC1_CreatureBounty4",
-      "amount": 1
+      "amount": 4
     },
     {
       "id": "VC1_CreatureBounty6",
-      "amount": 1
+      "amount": 6
     },
     {
       "id": "VC1_CreatureCollect2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC1_CreatureCollect4",
-      "amount": 1
+      "amount": 4
     },
     {
       "id": "VC1_CreatureCollect6",
-      "amount": 1
+      "amount": 6
     },
     {
       "id": "VC1_CreaturePatrol2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC1_CreaturePatrol4",
-      "amount": 1
+      "amount": 4
     },
     {
       "id": "VC1_CreaturePatrol6",
-      "amount": 1
+      "amount": 6
     },
     {
       "id": "VC1_CreatureSearch2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC1_CreatureSearch4",
-      "amount": 1
+      "amount": 4
     },
     {
       "id": "VC1_CreatureSearch6",
-      "amount": 1
+      "amount": 6
     },
     {
       "id": "VC1_FirmwareTransfer5",
-      "amount": 1
+      "amount": 5
     },
     {
       "id": "VC1_FirmwareTransfer7",
-      "amount": 1
+      "amount": 7
     },
     {
       "id": "VC1_FirmwareTransfer9",
-      "amount": 1
+      "amount": 9
     },
     {
       "id": "VC1_GetSecondWind10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC1_GetSecondWind15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_GetSecondWind5",
-      "amount": 1
+      "amount": 5
     },
     {
       "id": "VC1_Heal10000",
-      "amount": 1
+      "amount": 10000
     },
     {
       "id": "VC1_Heal100000",
-      "amount": 1
+      "amount": 100000
     },
     {
       "id": "VC1_Heal1000000",
-      "amount": 1
+      "amount": 1000000
     },
     {
       "id": "VC1_KillArmature10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC1_KillArmature15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_KillArmature20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillBadassEnemies10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC1_KillBadassEnemies15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_KillBadassEnemies20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillBadassEnemies30",
-      "amount": 1
+      "amount": 30
     },
     {
       "id": "VC1_KillBandits20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillBandits25",
-      "amount": 1
+      "amount": 25
     },
     {
       "id": "VC1_KillBandits30",
-      "amount": 1
+      "amount": 30
     },
     {
       "id": "VC1_KillBanditsinCITY15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_KillBanditsinCITY20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillBanditsinCITY25",
-      "amount": 1
+      "amount": 25
     },
     {
       "id": "VC1_KillBanditsinCITY30",
@@ -4632,87 +5299,87 @@
     },
     {
       "id": "VC1_KillBanditsinGRA15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_KillBanditsinGRA20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillBanditsinGRA25",
-      "amount": 1
+      "amount": 25
     },
     {
       "id": "VC1_KillBanditsinMOU15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_KillBanditsinMOU20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillBanditsinMOU25",
-      "amount": 1
+      "amount": 25
     },
     {
       "id": "VC1_KillBanditsinSHA15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_KillBanditsinSHA20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillBanditsinSHA25",
-      "amount": 1
+      "amount": 25
     },
     {
       "id": "VC1_KillBossReplay3",
-      "amount": 1
+      "amount": 3
     },
     {
       "id": "VC1_KillBossReplay5",
-      "amount": 1
+      "amount": 5
     },
     {
       "id": "VC1_KillBossReplay7",
-      "amount": 1
+      "amount": 7
     },
     {
       "id": "VC1_KillBulkhead10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC1_KillBulkhead15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_KillBulkhead20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillCorrupted10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC1_KillCorrupted15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_KillCorrupted20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillCreature20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillCreature25",
-      "amount": 1
+      "amount": 25
     },
     {
       "id": "VC1_KillCreature30",
-      "amount": 1
+      "amount": 30
     },
     {
       "id": "VC1_KillCreatureBossReplay1",
@@ -4720,559 +5387,559 @@
     },
     {
       "id": "VC1_KillCreatureBossReplay2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC1_KillCreatureBossReplay3",
-      "amount": 1
+      "amount": 3
     },
     {
       "id": "VC1_KillCreatureinCITY15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_KillCreatureinCITY20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillCreatureinCITY25",
-      "amount": 1
+      "amount": 25
     },
     {
       "id": "VC1_KillCreatureinGRA15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_KillCreatureinGRA20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillCreatureinGRA25",
-      "amount": 1
+      "amount": 25
     },
     {
       "id": "VC1_KillCreatureinMOU15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_KillCreatureinMOU20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillCreatureinMOU25",
-      "amount": 1
+      "amount": 25
     },
     {
       "id": "VC1_KillCreatureinSHA15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_KillCreatureinSHA20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillCreatureinSHA25",
-      "amount": 1
+      "amount": 25
     },
     {
       "id": "VC1_KillCreep10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC1_KillCreep15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_KillCreep20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillEnemies20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillEnemies200",
-      "amount": 1
+      "amount": 200
     },
     {
       "id": "VC1_KillEnemies25",
-      "amount": 1
+      "amount": 25
     },
     {
       "id": "VC1_KillEnemies400",
-      "amount": 1
+      "amount": 400
     },
     {
       "id": "VC1_KillEnemies600",
-      "amount": 1
+      "amount": 600
     },
     {
       "id": "VC1_KillEnemiesInCity100",
-      "amount": 1
+      "amount": 100
     },
     {
       "id": "VC1_KillEnemiesInCity200",
-      "amount": 1
+      "amount": 200
     },
     {
       "id": "VC1_KillEnemiesInCity300",
-      "amount": 1
+      "amount": 300
     },
     {
       "id": "VC1_KillEnemiesInGRA100",
-      "amount": 1
+      "amount": 100
     },
     {
       "id": "VC1_KillEnemiesInGRA200",
-      "amount": 1
+      "amount": 200
     },
     {
       "id": "VC1_KillEnemiesInGRA300",
-      "amount": 1
+      "amount": 300
     },
     {
       "id": "VC1_KillEnemiesInMOU100",
-      "amount": 1
+      "amount": 100
     },
     {
       "id": "VC1_KillEnemiesInMOU200",
-      "amount": 1
+      "amount": 200
     },
     {
       "id": "VC1_KillEnemiesInMOU300",
-      "amount": 1
+      "amount": 300
     },
     {
       "id": "VC1_KillEnemiesInSHA100",
-      "amount": 1
+      "amount": 100
     },
     {
       "id": "VC1_KillEnemiesInSHA200",
-      "amount": 1
+      "amount": 200
     },
     {
       "id": "VC1_KillEnemiesInSHA300",
-      "amount": 1
+      "amount": 300
     },
     {
       "id": "VC1_KillEnemiesWithAR10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC1_KillEnemiesWithAR20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillEnemiesWithAR30",
-      "amount": 1
+      "amount": 30
     },
     {
       "id": "VC1_KillEnemiesWithBorg10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC1_KillEnemiesWithBorg15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_KillEnemiesWithBorg20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillEnemiesWithCorrosive10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC1_KillEnemiesWithCorrosive100",
-      "amount": 1
+      "amount": 100
     },
     {
       "id": "VC1_KillEnemiesWithCorrosive15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_KillEnemiesWithCorrosive20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillEnemiesWithCorrosive300",
-      "amount": 1
+      "amount": 300
     },
     {
       "id": "VC1_KillEnemiesWithCorrosive500",
-      "amount": 1
+      "amount": 500
     },
     {
       "id": "VC1_KillEnemiesWithCryo10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC1_KillEnemiesWithCryo100",
-      "amount": 1
+      "amount": 100
     },
     {
       "id": "VC1_KillEnemiesWithCryo15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_KillEnemiesWithCryo20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillEnemiesWithCryo300",
-      "amount": 1
+      "amount": 300
     },
     {
       "id": "VC1_KillEnemiesWithCryo500",
-      "amount": 1
+      "amount": 500
     },
     {
       "id": "VC1_KillEnemiesWithDaedalus10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC1_KillEnemiesWithDaedalus15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_KillEnemiesWithDaedalus20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillEnemiesWithGrenades10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC1_KillEnemiesWithGrenades15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_KillEnemiesWithGrenades20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillEnemiesWithHeavyWeapon10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC1_KillEnemiesWithHeavyWeapon20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillEnemiesWithHeavyWeapon30",
-      "amount": 1
+      "amount": 30
     },
     {
       "id": "VC1_KillEnemiesWithIncendiary10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC1_KillEnemiesWithIncendiary100",
-      "amount": 1
+      "amount": 100
     },
     {
       "id": "VC1_KillEnemiesWithIncendiary15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_KillEnemiesWithIncendiary20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillEnemiesWithIncendiary300",
-      "amount": 1
+      "amount": 300
     },
     {
       "id": "VC1_KillEnemiesWithIncendiary500",
-      "amount": 1
+      "amount": 500
     },
     {
       "id": "VC1_KillEnemiesWithJakobs10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC1_KillEnemiesWithJakobs15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_KillEnemiesWithJakobs20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillEnemiesWithMaliwan10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC1_KillEnemiesWithMaliwan15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_KillEnemiesWithMaliwan20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillEnemiesWithOrder10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC1_KillEnemiesWithOrder15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_KillEnemiesWithOrder20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillEnemiesWithPistol10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC1_KillEnemiesWithPistol20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillEnemiesWithPistol30",
-      "amount": 1
+      "amount": 30
     },
     {
       "id": "VC1_KillEnemiesWithRadiation10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC1_KillEnemiesWithRadiation100",
-      "amount": 1
+      "amount": 100
     },
     {
       "id": "VC1_KillEnemiesWithRadiation15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_KillEnemiesWithRadiation20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillEnemiesWithRadiation300",
-      "amount": 1
+      "amount": 300
     },
     {
       "id": "VC1_KillEnemiesWithRadiation500",
-      "amount": 1
-    },
-    {
-      "id": "VC1_KillEnemiesWithSMG10",
-      "amount": 1
-    },
-    {
-      "id": "VC1_KillEnemiesWithSMG20",
-      "amount": 1
-    },
-    {
-      "id": "VC1_KillEnemiesWithSMG30",
-      "amount": 1
+      "amount": 500
     },
     {
       "id": "VC1_KillEnemiesWithShock10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC1_KillEnemiesWithShock100",
-      "amount": 1
+      "amount": 100
     },
     {
       "id": "VC1_KillEnemiesWithShock15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_KillEnemiesWithShock20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillEnemiesWithShock300",
-      "amount": 1
+      "amount": 300
     },
     {
       "id": "VC1_KillEnemiesWithShock500",
-      "amount": 1
+      "amount": 500
     },
     {
       "id": "VC1_KillEnemiesWithShotgun10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC1_KillEnemiesWithShotgun20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillEnemiesWithShotgun30",
-      "amount": 1
+      "amount": 30
+    },
+    {
+      "id": "VC1_KillEnemiesWithSMG10",
+      "amount": 10
+    },
+    {
+      "id": "VC1_KillEnemiesWithSMG20",
+      "amount": 20
+    },
+    {
+      "id": "VC1_KillEnemiesWithSMG30",
+      "amount": 30
     },
     {
       "id": "VC1_KillEnemiesWithSniper10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC1_KillEnemiesWithSniper20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillEnemiesWithSniper30",
-      "amount": 1
+      "amount": 30
     },
     {
       "id": "VC1_KillEnemiesWithTediore10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC1_KillEnemiesWithTediore15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_KillEnemiesWithTediore20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillEnemiesWithTorgue10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC1_KillEnemiesWithTorgue15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_KillEnemiesWithTorgue20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillEnemiesWithVladof10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC1_KillEnemiesWithVladof15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_KillEnemiesWithVladof20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillEnemyGroundPound100",
-      "amount": 1
+      "amount": 100
     },
     {
       "id": "VC1_KillEnemyGroundPound150",
-      "amount": 1
+      "amount": 150
     },
     {
       "id": "VC1_KillEnemyGroundPound50",
-      "amount": 1
+      "amount": 50
     },
     {
       "id": "VC1_KillEnemyMelee20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillEnemyMelee40",
-      "amount": 1
+      "amount": 40
     },
     {
       "id": "VC1_KillEnemyMelee60",
-      "amount": 1
+      "amount": 60
     },
     {
       "id": "VC1_KillEngine10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC1_KillEngine15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_KillEngine20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillGrunt10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC1_KillGrunt15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_KillGrunt20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillGunToter10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC1_KillGunToter15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_KillGunToter20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillKratch10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC1_KillKratch15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_KillKratch20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillMangler10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC1_KillMangler15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_KillMangler20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillMeathead10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC1_KillMeathead15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_KillMeathead20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillOppressors10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC1_KillOppressors15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_KillOppressors20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillOrder20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillOrder25",
-      "amount": 1
+      "amount": 25
     },
     {
       "id": "VC1_KillOrder30",
-      "amount": 1
+      "amount": 30
     },
     {
       "id": "VC1_KillOrderBossReplay1",
@@ -5280,95 +5947,95 @@
     },
     {
       "id": "VC1_KillOrderBossReplay2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC1_KillOrderBossReplay3",
-      "amount": 1
+      "amount": 3
     },
     {
       "id": "VC1_KillOrderinCITY15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_KillOrderinCITY20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillOrderinCITY25",
-      "amount": 1
+      "amount": 25
     },
     {
       "id": "VC1_KillOrderinGRA15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_KillOrderinGRA20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillOrderinGRA25",
-      "amount": 1
+      "amount": 25
     },
     {
       "id": "VC1_KillOrderinMOU15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_KillOrderinMOU20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillOrderinMOU25",
-      "amount": 1
+      "amount": 25
     },
     {
       "id": "VC1_KillOrderinSHA15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_KillOrderinSHA20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillOrderinSHA25",
-      "amount": 1
+      "amount": 25
     },
     {
       "id": "VC1_KillPangolin10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC1_KillPangolin15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_KillPangolin20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillPhalanx10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC1_KillPhalanx15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_KillPhalanx20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillPsycho10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC1_KillPsycho15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_KillPsycho20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillRipperBossReplay1",
@@ -5376,35 +6043,35 @@
     },
     {
       "id": "VC1_KillRipperBossReplay2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC1_KillRipperBossReplay3",
-      "amount": 1
+      "amount": 3
     },
     {
       "id": "VC1_KillSplice10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC1_KillSplice15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_KillSplice20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillThresher10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC1_KillThresher15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_KillThresher20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillTrueBoss",
@@ -5412,319 +6079,319 @@
     },
     {
       "id": "VC1_KillTurret10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC1_KillTurret15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_KillTurret20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillWarden10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC1_KillWarden15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_KillWarden20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillWildhorn10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC1_KillWildhorn15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_KillWildhorn20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_KillWitness10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC1_KillWitness15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_KillWitness20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_LootClassMod3",
-      "amount": 1
+      "amount": 3
     },
     {
       "id": "VC1_LootClassMod5",
-      "amount": 1
+      "amount": 5
     },
     {
       "id": "VC1_LootClassMod7",
-      "amount": 1
+      "amount": 7
     },
     {
       "id": "VC1_LootGadget3",
-      "amount": 1
+      "amount": 3
     },
     {
       "id": "VC1_LootGadget5",
-      "amount": 1
+      "amount": 5
     },
     {
       "id": "VC1_LootGadget7",
-      "amount": 1
+      "amount": 7
     },
     {
       "id": "VC1_LootLegendary10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC1_LootLegendary15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_LootLegendary5",
-      "amount": 1
+      "amount": 5
     },
     {
       "id": "VC1_LootPurple10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC1_LootPurple15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_LootPurple5",
-      "amount": 1
+      "amount": 5
     },
     {
       "id": "VC1_LootRepkit3",
-      "amount": 1
+      "amount": 3
     },
     {
       "id": "VC1_LootRepkit5",
-      "amount": 1
+      "amount": 5
     },
     {
       "id": "VC1_LootRepkit7",
-      "amount": 1
+      "amount": 7
     },
     {
       "id": "VC1_LootShield3",
-      "amount": 1
+      "amount": 3
     },
     {
       "id": "VC1_LootShield5",
-      "amount": 1
+      "amount": 5
     },
     {
       "id": "VC1_LootShield7",
-      "amount": 1
+      "amount": 7
     },
     {
       "id": "VC1_LootWeapon10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC1_LootWeapon15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC1_LootWeapon5",
-      "amount": 1
+      "amount": 5
+    },
+    {
+      "id": "VC1_openlootables100",
+      "amount": 100
     },
     {
       "id": "VC1_OpenLootables20",
-      "amount": 1
+      "amount": 20
+    },
+    {
+      "id": "VC1_openlootables200",
+      "amount": 200
     },
     {
       "id": "VC1_OpenLootables30",
-      "amount": 1
+      "amount": 30
+    },
+    {
+      "id": "VC1_openlootables300",
+      "amount": 300
     },
     {
       "id": "VC1_OpenLootables40",
-      "amount": 1
+      "amount": 40
     },
     {
       "id": "VC1_OrderAcquire2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC1_OrderAcquire4",
-      "amount": 1
+      "amount": 4
     },
     {
       "id": "VC1_OrderAcquire6",
-      "amount": 1
+      "amount": 6
     },
     {
       "id": "VC1_OrderBounty2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC1_OrderBounty4",
-      "amount": 1
+      "amount": 4
     },
     {
       "id": "VC1_OrderBounty6",
-      "amount": 1
+      "amount": 6
     },
     {
       "id": "VC1_OrderCollect2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC1_OrderCollect4",
-      "amount": 1
+      "amount": 4
     },
     {
       "id": "VC1_OrderCollect6",
-      "amount": 1
+      "amount": 6
     },
     {
       "id": "VC1_OrderPatrol2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC1_OrderPatrol4",
-      "amount": 1
+      "amount": 4
     },
     {
       "id": "VC1_OrderPatrol6",
-      "amount": 1
+      "amount": 6
     },
     {
       "id": "VC1_OrderSearch2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC1_OrderSearch4",
-      "amount": 1
+      "amount": 4
     },
     {
       "id": "VC1_OrderSearch6",
-      "amount": 1
+      "amount": 6
     },
     {
       "id": "VC1_PatrolContract10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC1_PatrolContract20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_PatrolContract30",
-      "amount": 1
+      "amount": 30
     },
     {
       "id": "VC1_PickupCash1000",
-      "amount": 1
+      "amount": 1000
     },
     {
       "id": "VC1_PickupCash100000",
-      "amount": 1
+      "amount": 100000
     },
     {
       "id": "VC1_PickupCash1000000",
-      "amount": 1
+      "amount": 1000000
     },
     {
       "id": "VC1_PickupCash1500",
-      "amount": 1
+      "amount": 1500
     },
     {
       "id": "VC1_PickupCash500",
-      "amount": 1
+      "amount": 500
     },
     {
       "id": "VC1_PickupCash500000",
-      "amount": 1
+      "amount": 500000
     },
     {
       "id": "VC1_PickupEridium100",
-      "amount": 1
+      "amount": 100
     },
     {
       "id": "VC1_PickupEridium200",
-      "amount": 1
+      "amount": 200
     },
     {
       "id": "VC1_PickupEridium300",
-      "amount": 1
+      "amount": 300
     },
     {
       "id": "VC1_PurchaseItemFromBMVM2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC1_PurchaseItemFromBMVM4",
-      "amount": 1
+      "amount": 4
     },
     {
       "id": "VC1_PurchaseItemFromBMVM6",
-      "amount": 1
+      "amount": 6
     },
     {
       "id": "VC1_SearchContract10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC1_SearchContract20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_SearchContract30",
-      "amount": 1
+      "amount": 30
     },
     {
       "id": "VC1_SellItemToVendingMachine20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC1_SellItemToVendingMachine30",
-      "amount": 1
+      "amount": 30
     },
     {
       "id": "VC1_SellItemToVendingMachine40",
-      "amount": 1
+      "amount": 40
     },
     {
       "id": "VC1_WeeklyTraitMission",
       "amount": 1
     },
     {
-      "id": "VC1_openlootables100",
-      "amount": 1
-    },
-    {
-      "id": "VC1_openlootables200",
-      "amount": 1
-    },
-    {
-      "id": "VC1_openlootables300",
-      "amount": 1
-    },
-    {
       "id": "VC2_AcquireContract10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_AcquireContract20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_AcquireContract30",
-      "amount": 1
+      "amount": 30
     },
     {
       "id": "VC2_BadassSecondWind1",
@@ -5732,255 +6399,255 @@
     },
     {
       "id": "VC2_BadassSecondWind2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC2_BadassSecondWind3",
-      "amount": 1
+      "amount": 3
     },
     {
       "id": "VC2_BanditAcquire2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC2_BanditAcquire4",
-      "amount": 1
+      "amount": 4
     },
     {
       "id": "VC2_BanditAcquire6",
-      "amount": 1
+      "amount": 6
     },
     {
       "id": "VC2_BanditBounty2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC2_BanditBounty4",
-      "amount": 1
+      "amount": 4
     },
     {
       "id": "VC2_BanditBounty6",
-      "amount": 1
+      "amount": 6
     },
     {
       "id": "VC2_BanditCollect2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC2_BanditCollect4",
-      "amount": 1
+      "amount": 4
     },
     {
       "id": "VC2_BanditCollect6",
-      "amount": 1
+      "amount": 6
     },
     {
       "id": "VC2_BanditPatrol2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC2_BanditPatrol4",
-      "amount": 1
+      "amount": 4
     },
     {
       "id": "VC2_BanditPatrol6",
-      "amount": 1
+      "amount": 6
     },
     {
       "id": "VC2_BanditSearch2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC2_BanditSearch4",
-      "amount": 1
+      "amount": 4
     },
     {
       "id": "VC2_BanditSearch6",
-      "amount": 1
+      "amount": 6
     },
     {
       "id": "VC2_BountyContract10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_BountyContract20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_BountyContract30",
-      "amount": 1
+      "amount": 30
     },
     {
       "id": "VC2_CollectContract10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_CollectContract20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_CollectContract30",
-      "amount": 1
+      "amount": 30
     },
     {
       "id": "VC2_CorruptedBountyContract10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_CorruptedBountyContract20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_CorruptedBountyContract30",
-      "amount": 1
+      "amount": 30
     },
     {
       "id": "VC2_CreatureAcquire2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC2_CreatureAcquire4",
-      "amount": 1
+      "amount": 4
     },
     {
       "id": "VC2_CreatureAcquire6",
-      "amount": 1
+      "amount": 6
     },
     {
       "id": "VC2_CreatureBounty2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC2_CreatureBounty4",
-      "amount": 1
+      "amount": 4
     },
     {
       "id": "VC2_CreatureBounty6",
-      "amount": 1
+      "amount": 6
     },
     {
       "id": "VC2_CreatureCollect2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC2_CreatureCollect4",
-      "amount": 1
+      "amount": 4
     },
     {
       "id": "VC2_CreatureCollect6",
-      "amount": 1
+      "amount": 6
     },
     {
       "id": "VC2_CreaturePatrol2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC2_CreaturePatrol4",
-      "amount": 1
+      "amount": 4
     },
     {
       "id": "VC2_CreaturePatrol6",
-      "amount": 1
+      "amount": 6
     },
     {
       "id": "VC2_CreatureSearch2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC2_CreatureSearch4",
-      "amount": 1
+      "amount": 4
     },
     {
       "id": "VC2_CreatureSearch6",
-      "amount": 1
+      "amount": 6
     },
     {
       "id": "VC2_FirmwareTransfer5",
-      "amount": 1
+      "amount": 5
     },
     {
       "id": "VC2_FirmwareTransfer7",
-      "amount": 1
+      "amount": 7
     },
     {
       "id": "VC2_FirmwareTransfer9",
-      "amount": 1
+      "amount": 9
     },
     {
       "id": "VC2_GetSecondWind10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_GetSecondWind15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_GetSecondWind5",
-      "amount": 1
+      "amount": 5
     },
     {
       "id": "VC2_Heal10000",
-      "amount": 1
+      "amount": 10000
     },
     {
       "id": "VC2_Heal100000",
-      "amount": 1
+      "amount": 100000
     },
     {
       "id": "VC2_Heal1000000",
-      "amount": 1
+      "amount": 1000000
     },
     {
       "id": "VC2_KillArmature10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_KillArmature15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_KillArmature20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillBadassEnemies10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_KillBadassEnemies15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_KillBadassEnemies20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillBadassEnemies30",
-      "amount": 1
+      "amount": 30
     },
     {
       "id": "VC2_KillBandits20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillBandits25",
-      "amount": 1
+      "amount": 25
     },
     {
       "id": "VC2_KillBandits30",
-      "amount": 1
+      "amount": 30
     },
     {
       "id": "VC2_KillBanditsinCITY15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_KillBanditsinCITY20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillBanditsinCITY25",
-      "amount": 1
+      "amount": 25
     },
     {
       "id": "VC2_KillBanditsinCITY30",
@@ -5988,87 +6655,87 @@
     },
     {
       "id": "VC2_KillBanditsinGRA15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_KillBanditsinGRA20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillBanditsinGRA25",
-      "amount": 1
+      "amount": 25
     },
     {
       "id": "VC2_KillBanditsinMOU15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_KillBanditsinMOU20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillBanditsinMOU25",
-      "amount": 1
+      "amount": 25
     },
     {
       "id": "VC2_KillBanditsinSHA15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_KillBanditsinSHA20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillBanditsinSHA25",
-      "amount": 1
+      "amount": 25
     },
     {
       "id": "VC2_KillBossReplay3",
-      "amount": 1
+      "amount": 3
     },
     {
       "id": "VC2_KillBossReplay5",
-      "amount": 1
+      "amount": 5
     },
     {
       "id": "VC2_KillBossReplay7",
-      "amount": 1
+      "amount": 7
     },
     {
       "id": "VC2_KillBulkhead10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_KillBulkhead15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_KillBulkhead20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillCorrupted10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_KillCorrupted15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_KillCorrupted20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillCreature20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillCreature25",
-      "amount": 1
+      "amount": 25
     },
     {
       "id": "VC2_KillCreature30",
-      "amount": 1
+      "amount": 30
     },
     {
       "id": "VC2_KillCreatureBossReplay1",
@@ -6076,559 +6743,559 @@
     },
     {
       "id": "VC2_KillCreatureBossReplay2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC2_KillCreatureBossReplay3",
-      "amount": 1
+      "amount": 3
     },
     {
       "id": "VC2_KillCreatureinCITY15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_KillCreatureinCITY20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillCreatureinCITY25",
-      "amount": 1
+      "amount": 25
     },
     {
       "id": "VC2_KillCreatureinGRA15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_KillCreatureinGRA20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillCreatureinGRA25",
-      "amount": 1
+      "amount": 25
     },
     {
       "id": "VC2_KillCreatureinMOU15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_KillCreatureinMOU20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillCreatureinMOU25",
-      "amount": 1
+      "amount": 25
     },
     {
       "id": "VC2_KillCreatureinSHA15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_KillCreatureinSHA20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillCreatureinSHA25",
-      "amount": 1
+      "amount": 25
     },
     {
       "id": "VC2_KillCreep10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_KillCreep15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_KillCreep20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillEnemies20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillEnemies200",
-      "amount": 1
+      "amount": 200
     },
     {
       "id": "VC2_KillEnemies25",
-      "amount": 1
+      "amount": 25
     },
     {
       "id": "VC2_KillEnemies400",
-      "amount": 1
+      "amount": 400
     },
     {
       "id": "VC2_KillEnemies600",
-      "amount": 1
+      "amount": 600
     },
     {
       "id": "VC2_KillEnemiesInCity100",
-      "amount": 1
+      "amount": 100
     },
     {
       "id": "VC2_KillEnemiesInCity200",
-      "amount": 1
+      "amount": 200
     },
     {
       "id": "VC2_KillEnemiesInCity300",
-      "amount": 1
+      "amount": 300
     },
     {
       "id": "VC2_KillEnemiesInGRA100",
-      "amount": 1
+      "amount": 100
     },
     {
       "id": "VC2_KillEnemiesInGRA200",
-      "amount": 1
+      "amount": 200
     },
     {
       "id": "VC2_KillEnemiesInGRA300",
-      "amount": 1
+      "amount": 300
     },
     {
       "id": "VC2_KillEnemiesInMOU100",
-      "amount": 1
+      "amount": 100
     },
     {
       "id": "VC2_KillEnemiesInMOU200",
-      "amount": 1
+      "amount": 200
     },
     {
       "id": "VC2_KillEnemiesInMOU300",
-      "amount": 1
+      "amount": 300
     },
     {
       "id": "VC2_KillEnemiesInSHA100",
-      "amount": 1
+      "amount": 100
     },
     {
       "id": "VC2_KillEnemiesInSHA200",
-      "amount": 1
+      "amount": 200
     },
     {
       "id": "VC2_KillEnemiesInSHA300",
-      "amount": 1
+      "amount": 300
     },
     {
       "id": "VC2_KillEnemiesWithAR10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_KillEnemiesWithAR20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillEnemiesWithAR30",
-      "amount": 1
+      "amount": 30
     },
     {
       "id": "VC2_KillEnemiesWithBorg10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_KillEnemiesWithBorg15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_KillEnemiesWithBorg20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillEnemiesWithCorrosive10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_KillEnemiesWithCorrosive100",
-      "amount": 1
+      "amount": 100
     },
     {
       "id": "VC2_KillEnemiesWithCorrosive15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_KillEnemiesWithCorrosive20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillEnemiesWithCorrosive300",
-      "amount": 1
+      "amount": 300
     },
     {
       "id": "VC2_KillEnemiesWithCorrosive500",
-      "amount": 1
+      "amount": 500
     },
     {
       "id": "VC2_KillEnemiesWithCryo10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_KillEnemiesWithCryo100",
-      "amount": 1
+      "amount": 100
     },
     {
       "id": "VC2_KillEnemiesWithCryo15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_KillEnemiesWithCryo20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillEnemiesWithCryo300",
-      "amount": 1
+      "amount": 300
     },
     {
       "id": "VC2_KillEnemiesWithCryo500",
-      "amount": 1
+      "amount": 500
     },
     {
       "id": "VC2_KillEnemiesWithDaedalus10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_KillEnemiesWithDaedalus15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_KillEnemiesWithDaedalus20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillEnemiesWithGrenades10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_KillEnemiesWithGrenades15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_KillEnemiesWithGrenades20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillEnemiesWithHeavyWeapon10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_KillEnemiesWithHeavyWeapon20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillEnemiesWithHeavyWeapon30",
-      "amount": 1
+      "amount": 30
     },
     {
       "id": "VC2_KillEnemiesWithIncendiary10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_KillEnemiesWithIncendiary100",
-      "amount": 1
+      "amount": 100
     },
     {
       "id": "VC2_KillEnemiesWithIncendiary15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_KillEnemiesWithIncendiary20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillEnemiesWithIncendiary300",
-      "amount": 1
+      "amount": 300
     },
     {
       "id": "VC2_KillEnemiesWithIncendiary500",
-      "amount": 1
+      "amount": 500
     },
     {
       "id": "VC2_KillEnemiesWithJakobs10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_KillEnemiesWithJakobs15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_KillEnemiesWithJakobs20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillEnemiesWithMaliwan10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_KillEnemiesWithMaliwan15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_KillEnemiesWithMaliwan20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillEnemiesWithOrder10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_KillEnemiesWithOrder15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_KillEnemiesWithOrder20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillEnemiesWithPistol10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_KillEnemiesWithPistol20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillEnemiesWithPistol30",
-      "amount": 1
+      "amount": 30
     },
     {
       "id": "VC2_KillEnemiesWithRadiation10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_KillEnemiesWithRadiation100",
-      "amount": 1
+      "amount": 100
     },
     {
       "id": "VC2_KillEnemiesWithRadiation15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_KillEnemiesWithRadiation20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillEnemiesWithRadiation300",
-      "amount": 1
+      "amount": 300
     },
     {
       "id": "VC2_KillEnemiesWithRadiation500",
-      "amount": 1
-    },
-    {
-      "id": "VC2_KillEnemiesWithSMG10",
-      "amount": 1
-    },
-    {
-      "id": "VC2_KillEnemiesWithSMG20",
-      "amount": 1
-    },
-    {
-      "id": "VC2_KillEnemiesWithSMG30",
-      "amount": 1
+      "amount": 500
     },
     {
       "id": "VC2_KillEnemiesWithShock10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_KillEnemiesWithShock100",
-      "amount": 1
+      "amount": 100
     },
     {
       "id": "VC2_KillEnemiesWithShock15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_KillEnemiesWithShock20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillEnemiesWithShock300",
-      "amount": 1
+      "amount": 300
     },
     {
       "id": "VC2_KillEnemiesWithShock500",
-      "amount": 1
+      "amount": 500
     },
     {
       "id": "VC2_KillEnemiesWithShotgun10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_KillEnemiesWithShotgun20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillEnemiesWithShotgun30",
-      "amount": 1
+      "amount": 30
+    },
+    {
+      "id": "VC2_KillEnemiesWithSMG10",
+      "amount": 10
+    },
+    {
+      "id": "VC2_KillEnemiesWithSMG20",
+      "amount": 20
+    },
+    {
+      "id": "VC2_KillEnemiesWithSMG30",
+      "amount": 30
     },
     {
       "id": "VC2_KillEnemiesWithSniper10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_KillEnemiesWithSniper20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillEnemiesWithSniper30",
-      "amount": 1
+      "amount": 30
     },
     {
       "id": "VC2_KillEnemiesWithTediore10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_KillEnemiesWithTediore15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_KillEnemiesWithTediore20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillEnemiesWithTorgue10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_KillEnemiesWithTorgue15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_KillEnemiesWithTorgue20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillEnemiesWithVladof10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_KillEnemiesWithVladof15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_KillEnemiesWithVladof20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillEnemyGroundPound100",
-      "amount": 1
+      "amount": 100
     },
     {
       "id": "VC2_KillEnemyGroundPound150",
-      "amount": 1
+      "amount": 150
     },
     {
       "id": "VC2_KillEnemyGroundPound50",
-      "amount": 1
+      "amount": 50
     },
     {
       "id": "VC2_KillEnemyMelee20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillEnemyMelee40",
-      "amount": 1
+      "amount": 40
     },
     {
       "id": "VC2_KillEnemyMelee60",
-      "amount": 1
+      "amount": 60
     },
     {
       "id": "VC2_KillEngine10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_KillEngine15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_KillEngine20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillGrunt10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_KillGrunt15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_KillGrunt20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillGunToter10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_KillGunToter15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_KillGunToter20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillKratch10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_KillKratch15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_KillKratch20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillMangler10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_KillMangler15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_KillMangler20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillMeathead10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_KillMeathead15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_KillMeathead20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillOppressors10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_KillOppressors15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_KillOppressors20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillOrder20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillOrder25",
-      "amount": 1
+      "amount": 25
     },
     {
       "id": "VC2_KillOrder30",
-      "amount": 1
+      "amount": 30
     },
     {
       "id": "VC2_KillOrderBossReplay1",
@@ -6636,95 +7303,95 @@
     },
     {
       "id": "VC2_KillOrderBossReplay2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC2_KillOrderBossReplay3",
-      "amount": 1
+      "amount": 3
     },
     {
       "id": "VC2_KillOrderinCITY15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_KillOrderinCITY20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillOrderinCITY25",
-      "amount": 1
+      "amount": 25
     },
     {
       "id": "VC2_KillOrderinGRA15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_KillOrderinGRA20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillOrderinGRA25",
-      "amount": 1
+      "amount": 25
     },
     {
       "id": "VC2_KillOrderinMOU15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_KillOrderinMOU20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillOrderinMOU25",
-      "amount": 1
+      "amount": 25
     },
     {
       "id": "VC2_KillOrderinSHA15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_KillOrderinSHA20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillOrderinSHA25",
-      "amount": 1
+      "amount": 25
     },
     {
       "id": "VC2_KillPangolin10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_KillPangolin15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_KillPangolin20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillPhalanx10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_KillPhalanx15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_KillPhalanx20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillPsycho10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_KillPsycho15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_KillPsycho20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillRipperBossReplay1",
@@ -6732,35 +7399,35 @@
     },
     {
       "id": "VC2_KillRipperBossReplay2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC2_KillRipperBossReplay3",
-      "amount": 1
+      "amount": 3
     },
     {
       "id": "VC2_KillSplice10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_KillSplice15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_KillSplice20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillThresher10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_KillThresher15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_KillThresher20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillTrueBoss",
@@ -6768,319 +7435,319 @@
     },
     {
       "id": "VC2_KillTurret10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_KillTurret15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_KillTurret20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillWarden10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_KillWarden15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_KillWarden20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillWildhorn10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_KillWildhorn15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_KillWildhorn20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_KillWitness10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_KillWitness15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_KillWitness20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_LootClassMod3",
-      "amount": 1
+      "amount": 3
     },
     {
       "id": "VC2_LootClassMod5",
-      "amount": 1
+      "amount": 5
     },
     {
       "id": "VC2_LootClassMod7",
-      "amount": 1
+      "amount": 7
     },
     {
       "id": "VC2_LootGadget3",
-      "amount": 1
+      "amount": 3
     },
     {
       "id": "VC2_LootGadget5",
-      "amount": 1
+      "amount": 5
     },
     {
       "id": "VC2_LootGadget7",
-      "amount": 1
+      "amount": 7
     },
     {
       "id": "VC2_LootLegendary10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_LootLegendary15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_LootLegendary5",
-      "amount": 1
+      "amount": 5
     },
     {
       "id": "VC2_LootPurple10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_LootPurple15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_LootPurple5",
-      "amount": 1
+      "amount": 5
     },
     {
       "id": "VC2_LootRepkit3",
-      "amount": 1
+      "amount": 3
     },
     {
       "id": "VC2_LootRepkit5",
-      "amount": 1
+      "amount": 5
     },
     {
       "id": "VC2_LootRepkit7",
-      "amount": 1
+      "amount": 7
     },
     {
       "id": "VC2_LootShield3",
-      "amount": 1
+      "amount": 3
     },
     {
       "id": "VC2_LootShield5",
-      "amount": 1
+      "amount": 5
     },
     {
       "id": "VC2_LootShield7",
-      "amount": 1
+      "amount": 7
     },
     {
       "id": "VC2_LootWeapon10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_LootWeapon15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC2_LootWeapon5",
-      "amount": 1
+      "amount": 5
+    },
+    {
+      "id": "VC2_openlootables100",
+      "amount": 100
     },
     {
       "id": "VC2_OpenLootables20",
-      "amount": 1
+      "amount": 20
+    },
+    {
+      "id": "VC2_openlootables200",
+      "amount": 200
     },
     {
       "id": "VC2_OpenLootables30",
-      "amount": 1
+      "amount": 30
+    },
+    {
+      "id": "VC2_openlootables300",
+      "amount": 300
     },
     {
       "id": "VC2_OpenLootables40",
-      "amount": 1
+      "amount": 40
     },
     {
       "id": "VC2_OrderAcquire2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC2_OrderAcquire4",
-      "amount": 1
+      "amount": 4
     },
     {
       "id": "VC2_OrderAcquire6",
-      "amount": 1
+      "amount": 6
     },
     {
       "id": "VC2_OrderBounty2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC2_OrderBounty4",
-      "amount": 1
+      "amount": 4
     },
     {
       "id": "VC2_OrderBounty6",
-      "amount": 1
+      "amount": 6
     },
     {
       "id": "VC2_OrderCollect2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC2_OrderCollect4",
-      "amount": 1
+      "amount": 4
     },
     {
       "id": "VC2_OrderCollect6",
-      "amount": 1
+      "amount": 6
     },
     {
       "id": "VC2_OrderPatrol2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC2_OrderPatrol4",
-      "amount": 1
+      "amount": 4
     },
     {
       "id": "VC2_OrderPatrol6",
-      "amount": 1
+      "amount": 6
     },
     {
       "id": "VC2_OrderSearch2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC2_OrderSearch4",
-      "amount": 1
+      "amount": 4
     },
     {
       "id": "VC2_OrderSearch6",
-      "amount": 1
+      "amount": 6
     },
     {
       "id": "VC2_PatrolContract10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_PatrolContract20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_PatrolContract30",
-      "amount": 1
+      "amount": 30
     },
     {
       "id": "VC2_PickupCash1000",
-      "amount": 1
+      "amount": 1000
     },
     {
       "id": "VC2_PickupCash100000",
-      "amount": 1
+      "amount": 100000
     },
     {
       "id": "VC2_PickupCash1000000",
-      "amount": 1
+      "amount": 1000000
     },
     {
       "id": "VC2_PickupCash1500",
-      "amount": 1
+      "amount": 1500
     },
     {
       "id": "VC2_PickupCash500",
-      "amount": 1
+      "amount": 500
     },
     {
       "id": "VC2_PickupCash500000",
-      "amount": 1
+      "amount": 500000
     },
     {
       "id": "VC2_PickupEridium100",
-      "amount": 1
+      "amount": 100
     },
     {
       "id": "VC2_PickupEridium200",
-      "amount": 1
+      "amount": 200
     },
     {
       "id": "VC2_PickupEridium300",
-      "amount": 1
+      "amount": 300
     },
     {
       "id": "VC2_PurchaseItemFromBMVM2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC2_PurchaseItemFromBMVM4",
-      "amount": 1
+      "amount": 4
     },
     {
       "id": "VC2_PurchaseItemFromBMVM6",
-      "amount": 1
+      "amount": 6
     },
     {
       "id": "VC2_SearchContract10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC2_SearchContract20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_SearchContract30",
-      "amount": 1
+      "amount": 30
     },
     {
       "id": "VC2_SellItemToVendingMachine20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC2_SellItemToVendingMachine30",
-      "amount": 1
+      "amount": 30
     },
     {
       "id": "VC2_SellItemToVendingMachine40",
-      "amount": 1
+      "amount": 40
     },
     {
       "id": "VC2_WeeklyTraitMission",
       "amount": 1
     },
     {
-      "id": "VC2_openlootables100",
-      "amount": 1
-    },
-    {
-      "id": "VC2_openlootables200",
-      "amount": 1
-    },
-    {
-      "id": "VC2_openlootables300",
-      "amount": 1
-    },
-    {
       "id": "VC3_AcquireContract10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_AcquireContract20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_AcquireContract30",
-      "amount": 1
+      "amount": 30
     },
     {
       "id": "VC3_BadassSecondWind1",
@@ -7088,255 +7755,255 @@
     },
     {
       "id": "VC3_BadassSecondWind2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC3_BadassSecondWind3",
-      "amount": 1
+      "amount": 3
     },
     {
       "id": "VC3_BanditAcquire2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC3_BanditAcquire4",
-      "amount": 1
+      "amount": 4
     },
     {
       "id": "VC3_BanditAcquire6",
-      "amount": 1
+      "amount": 6
     },
     {
       "id": "VC3_BanditBounty2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC3_BanditBounty4",
-      "amount": 1
+      "amount": 4
     },
     {
       "id": "VC3_BanditBounty6",
-      "amount": 1
+      "amount": 6
     },
     {
       "id": "VC3_BanditCollect2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC3_BanditCollect4",
-      "amount": 1
+      "amount": 4
     },
     {
       "id": "VC3_BanditCollect6",
-      "amount": 1
+      "amount": 6
     },
     {
       "id": "VC3_BanditPatrol2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC3_BanditPatrol4",
-      "amount": 1
+      "amount": 4
     },
     {
       "id": "VC3_BanditPatrol6",
-      "amount": 1
+      "amount": 6
     },
     {
       "id": "VC3_BanditSearch2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC3_BanditSearch4",
-      "amount": 1
+      "amount": 4
     },
     {
       "id": "VC3_BanditSearch6",
-      "amount": 1
+      "amount": 6
     },
     {
       "id": "VC3_BountyContract10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_BountyContract20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_BountyContract30",
-      "amount": 1
+      "amount": 30
     },
     {
       "id": "VC3_CollectContract10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_CollectContract20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_CollectContract30",
-      "amount": 1
+      "amount": 30
     },
     {
       "id": "VC3_CorruptedBountyContract10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_CorruptedBountyContract20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_CorruptedBountyContract30",
-      "amount": 1
+      "amount": 30
     },
     {
       "id": "VC3_CreatureAcquire2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC3_CreatureAcquire4",
-      "amount": 1
+      "amount": 4
     },
     {
       "id": "VC3_CreatureAcquire6",
-      "amount": 1
+      "amount": 6
     },
     {
       "id": "VC3_CreatureBounty2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC3_CreatureBounty4",
-      "amount": 1
+      "amount": 4
     },
     {
       "id": "VC3_CreatureBounty6",
-      "amount": 1
+      "amount": 6
     },
     {
       "id": "VC3_CreatureCollect2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC3_CreatureCollect4",
-      "amount": 1
+      "amount": 4
     },
     {
       "id": "VC3_CreatureCollect6",
-      "amount": 1
+      "amount": 6
     },
     {
       "id": "VC3_CreaturePatrol2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC3_CreaturePatrol4",
-      "amount": 1
+      "amount": 4
     },
     {
       "id": "VC3_CreaturePatrol6",
-      "amount": 1
+      "amount": 6
     },
     {
       "id": "VC3_CreatureSearch2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC3_CreatureSearch4",
-      "amount": 1
+      "amount": 4
     },
     {
       "id": "VC3_CreatureSearch6",
-      "amount": 1
+      "amount": 6
     },
     {
       "id": "VC3_FirmwareTransfer5",
-      "amount": 1
+      "amount": 5
     },
     {
       "id": "VC3_FirmwareTransfer7",
-      "amount": 1
+      "amount": 7
     },
     {
       "id": "VC3_FirmwareTransfer9",
-      "amount": 1
+      "amount": 9
     },
     {
       "id": "VC3_GetSecondWind10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_GetSecondWind15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_GetSecondWind5",
-      "amount": 1
+      "amount": 5
     },
     {
       "id": "VC3_Heal10000",
-      "amount": 1
+      "amount": 10000
     },
     {
       "id": "VC3_Heal100000",
-      "amount": 1
+      "amount": 100000
     },
     {
       "id": "VC3_Heal1000000",
-      "amount": 1
+      "amount": 1000000
     },
     {
       "id": "VC3_KillArmature10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_KillArmature15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_KillArmature20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillBadassEnemies10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_KillBadassEnemies15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_KillBadassEnemies20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillBadassEnemies30",
-      "amount": 1
+      "amount": 30
     },
     {
       "id": "VC3_KillBandits20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillBandits25",
-      "amount": 1
+      "amount": 25
     },
     {
       "id": "VC3_KillBandits30",
-      "amount": 1
+      "amount": 30
     },
     {
       "id": "VC3_KillBanditsinCITY15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_KillBanditsinCITY20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillBanditsinCITY25",
-      "amount": 1
+      "amount": 25
     },
     {
       "id": "VC3_KillBanditsinCITY30",
@@ -7344,87 +8011,87 @@
     },
     {
       "id": "VC3_KillBanditsinGRA15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_KillBanditsinGRA20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillBanditsinGRA25",
-      "amount": 1
+      "amount": 25
     },
     {
       "id": "VC3_KillBanditsinMOU15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_KillBanditsinMOU20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillBanditsinMOU25",
-      "amount": 1
+      "amount": 25
     },
     {
       "id": "VC3_KillBanditsinSHA15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_KillBanditsinSHA20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillBanditsinSHA25",
-      "amount": 1
+      "amount": 25
     },
     {
       "id": "VC3_KillBossReplay3",
-      "amount": 1
+      "amount": 3
     },
     {
       "id": "VC3_KillBossReplay5",
-      "amount": 1
+      "amount": 5
     },
     {
       "id": "VC3_KillBossReplay7",
-      "amount": 1
+      "amount": 7
     },
     {
       "id": "VC3_KillBulkhead10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_KillBulkhead15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_KillBulkhead20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillCorrupted10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_KillCorrupted15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_KillCorrupted20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillCreature20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillCreature25",
-      "amount": 1
+      "amount": 25
     },
     {
       "id": "VC3_KillCreature30",
-      "amount": 1
+      "amount": 30
     },
     {
       "id": "VC3_KillCreatureBossReplay1",
@@ -7432,559 +8099,559 @@
     },
     {
       "id": "VC3_KillCreatureBossReplay2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC3_KillCreatureBossReplay3",
-      "amount": 1
+      "amount": 3
     },
     {
       "id": "VC3_KillCreatureinCITY15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_KillCreatureinCITY20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillCreatureinCITY25",
-      "amount": 1
+      "amount": 25
     },
     {
       "id": "VC3_KillCreatureinGRA15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_KillCreatureinGRA20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillCreatureinGRA25",
-      "amount": 1
+      "amount": 25
     },
     {
       "id": "VC3_KillCreatureinMOU15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_KillCreatureinMOU20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillCreatureinMOU25",
-      "amount": 1
+      "amount": 25
     },
     {
       "id": "VC3_KillCreatureinSHA15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_KillCreatureinSHA20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillCreatureinSHA25",
-      "amount": 1
+      "amount": 25
     },
     {
       "id": "VC3_KillCreep10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_KillCreep15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_KillCreep20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillEnemies20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillEnemies200",
-      "amount": 1
+      "amount": 200
     },
     {
       "id": "VC3_KillEnemies25",
-      "amount": 1
+      "amount": 25
     },
     {
       "id": "VC3_KillEnemies400",
-      "amount": 1
+      "amount": 400
     },
     {
       "id": "VC3_KillEnemies600",
-      "amount": 1
+      "amount": 600
     },
     {
       "id": "VC3_KillEnemiesInCity100",
-      "amount": 1
+      "amount": 100
     },
     {
       "id": "VC3_KillEnemiesInCity200",
-      "amount": 1
+      "amount": 200
     },
     {
       "id": "VC3_KillEnemiesInCity300",
-      "amount": 1
+      "amount": 300
     },
     {
       "id": "VC3_KillEnemiesInGRA100",
-      "amount": 1
+      "amount": 100
     },
     {
       "id": "VC3_KillEnemiesInGRA200",
-      "amount": 1
+      "amount": 200
     },
     {
       "id": "VC3_KillEnemiesInGRA300",
-      "amount": 1
+      "amount": 300
     },
     {
       "id": "VC3_KillEnemiesInMOU100",
-      "amount": 1
+      "amount": 100
     },
     {
       "id": "VC3_KillEnemiesInMOU200",
-      "amount": 1
+      "amount": 200
     },
     {
       "id": "VC3_KillEnemiesInMOU300",
-      "amount": 1
+      "amount": 300
     },
     {
       "id": "VC3_KillEnemiesInSHA100",
-      "amount": 1
+      "amount": 100
     },
     {
       "id": "VC3_KillEnemiesInSHA200",
-      "amount": 1
+      "amount": 200
     },
     {
       "id": "VC3_KillEnemiesInSHA300",
-      "amount": 1
+      "amount": 300
     },
     {
       "id": "VC3_KillEnemiesWithAR10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_KillEnemiesWithAR20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillEnemiesWithAR30",
-      "amount": 1
+      "amount": 30
     },
     {
       "id": "VC3_KillEnemiesWithBorg10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_KillEnemiesWithBorg15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_KillEnemiesWithBorg20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillEnemiesWithCorrosive10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_KillEnemiesWithCorrosive100",
-      "amount": 1
+      "amount": 100
     },
     {
       "id": "VC3_KillEnemiesWithCorrosive15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_KillEnemiesWithCorrosive20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillEnemiesWithCorrosive300",
-      "amount": 1
+      "amount": 300
     },
     {
       "id": "VC3_KillEnemiesWithCorrosive500",
-      "amount": 1
+      "amount": 500
     },
     {
       "id": "VC3_KillEnemiesWithCryo10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_KillEnemiesWithCryo100",
-      "amount": 1
+      "amount": 100
     },
     {
       "id": "VC3_KillEnemiesWithCryo15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_KillEnemiesWithCryo20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillEnemiesWithCryo300",
-      "amount": 1
+      "amount": 300
     },
     {
       "id": "VC3_KillEnemiesWithCryo500",
-      "amount": 1
+      "amount": 500
     },
     {
       "id": "VC3_KillEnemiesWithDaedalus10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_KillEnemiesWithDaedalus15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_KillEnemiesWithDaedalus20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillEnemiesWithGrenades10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_KillEnemiesWithGrenades15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_KillEnemiesWithGrenades20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillEnemiesWithHeavyWeapon10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_KillEnemiesWithHeavyWeapon20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillEnemiesWithHeavyWeapon30",
-      "amount": 1
+      "amount": 30
     },
     {
       "id": "VC3_KillEnemiesWithIncendiary10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_KillEnemiesWithIncendiary100",
-      "amount": 1
+      "amount": 100
     },
     {
       "id": "VC3_KillEnemiesWithIncendiary15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_KillEnemiesWithIncendiary20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillEnemiesWithIncendiary300",
-      "amount": 1
+      "amount": 300
     },
     {
       "id": "VC3_KillEnemiesWithIncendiary500",
-      "amount": 1
+      "amount": 500
     },
     {
       "id": "VC3_KillEnemiesWithJakobs10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_KillEnemiesWithJakobs15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_KillEnemiesWithJakobs20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillEnemiesWithMaliwan10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_KillEnemiesWithMaliwan15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_KillEnemiesWithMaliwan20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillEnemiesWithOrder10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_KillEnemiesWithOrder15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_KillEnemiesWithOrder20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillEnemiesWithPistol10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_KillEnemiesWithPistol20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillEnemiesWithPistol30",
-      "amount": 1
+      "amount": 30
     },
     {
       "id": "VC3_KillEnemiesWithRadiation10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_KillEnemiesWithRadiation100",
-      "amount": 1
+      "amount": 100
     },
     {
       "id": "VC3_KillEnemiesWithRadiation15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_KillEnemiesWithRadiation20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillEnemiesWithRadiation300",
-      "amount": 1
+      "amount": 300
     },
     {
       "id": "VC3_KillEnemiesWithRadiation500",
-      "amount": 1
-    },
-    {
-      "id": "VC3_KillEnemiesWithSMG10",
-      "amount": 1
-    },
-    {
-      "id": "VC3_KillEnemiesWithSMG20",
-      "amount": 1
-    },
-    {
-      "id": "VC3_KillEnemiesWithSMG30",
-      "amount": 1
+      "amount": 500
     },
     {
       "id": "VC3_KillEnemiesWithShock10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_KillEnemiesWithShock100",
-      "amount": 1
+      "amount": 100
     },
     {
       "id": "VC3_KillEnemiesWithShock15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_KillEnemiesWithShock20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillEnemiesWithShock300",
-      "amount": 1
+      "amount": 300
     },
     {
       "id": "VC3_KillEnemiesWithShock500",
-      "amount": 1
+      "amount": 500
     },
     {
       "id": "VC3_KillEnemiesWithShotgun10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_KillEnemiesWithShotgun20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillEnemiesWithShotgun30",
-      "amount": 1
+      "amount": 30
+    },
+    {
+      "id": "VC3_KillEnemiesWithSMG10",
+      "amount": 10
+    },
+    {
+      "id": "VC3_KillEnemiesWithSMG20",
+      "amount": 20
+    },
+    {
+      "id": "VC3_KillEnemiesWithSMG30",
+      "amount": 30
     },
     {
       "id": "VC3_KillEnemiesWithSniper10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_KillEnemiesWithSniper20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillEnemiesWithSniper30",
-      "amount": 1
+      "amount": 30
     },
     {
       "id": "VC3_KillEnemiesWithTediore10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_KillEnemiesWithTediore15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_KillEnemiesWithTediore20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillEnemiesWithTorgue10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_KillEnemiesWithTorgue15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_KillEnemiesWithTorgue20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillEnemiesWithVladof10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_KillEnemiesWithVladof15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_KillEnemiesWithVladof20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillEnemyGroundPound100",
-      "amount": 1
+      "amount": 100
     },
     {
       "id": "VC3_KillEnemyGroundPound150",
-      "amount": 1
+      "amount": 150
     },
     {
       "id": "VC3_KillEnemyGroundPound50",
-      "amount": 1
+      "amount": 50
     },
     {
       "id": "VC3_KillEnemyMelee20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillEnemyMelee40",
-      "amount": 1
+      "amount": 40
     },
     {
       "id": "VC3_KillEnemyMelee60",
-      "amount": 1
+      "amount": 60
     },
     {
       "id": "VC3_KillEngine10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_KillEngine15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_KillEngine20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillGrunt10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_KillGrunt15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_KillGrunt20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillGunToter10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_KillGunToter15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_KillGunToter20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillKratch10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_KillKratch15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_KillKratch20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillMangler10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_KillMangler15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_KillMangler20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillMeathead10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_KillMeathead15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_KillMeathead20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillOppressors10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_KillOppressors15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_KillOppressors20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillOrder20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillOrder25",
-      "amount": 1
+      "amount": 25
     },
     {
       "id": "VC3_KillOrder30",
-      "amount": 1
+      "amount": 30
     },
     {
       "id": "VC3_KillOrderBossReplay1",
@@ -7992,95 +8659,95 @@
     },
     {
       "id": "VC3_KillOrderBossReplay2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC3_KillOrderBossReplay3",
-      "amount": 1
+      "amount": 3
     },
     {
       "id": "VC3_KillOrderinCITY15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_KillOrderinCITY20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillOrderinCITY25",
-      "amount": 1
+      "amount": 25
     },
     {
       "id": "VC3_KillOrderinGRA15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_KillOrderinGRA20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillOrderinGRA25",
-      "amount": 1
+      "amount": 25
     },
     {
       "id": "VC3_KillOrderinMOU15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_KillOrderinMOU20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillOrderinMOU25",
-      "amount": 1
+      "amount": 25
     },
     {
       "id": "VC3_KillOrderinSHA15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_KillOrderinSHA20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillOrderinSHA25",
-      "amount": 1
+      "amount": 25
     },
     {
       "id": "VC3_KillPangolin10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_KillPangolin15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_KillPangolin20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillPhalanx10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_KillPhalanx15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_KillPhalanx20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillPsycho10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_KillPsycho15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_KillPsycho20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillRipperBossReplay1",
@@ -8088,35 +8755,35 @@
     },
     {
       "id": "VC3_KillRipperBossReplay2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC3_KillRipperBossReplay3",
-      "amount": 1
+      "amount": 3
     },
     {
       "id": "VC3_KillSplice10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_KillSplice15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_KillSplice20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillThresher10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_KillThresher15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_KillThresher20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillTrueBoss",
@@ -8124,306 +8791,3010 @@
     },
     {
       "id": "VC3_KillTurret10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_KillTurret15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_KillTurret20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillWarden10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_KillWarden15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_KillWarden20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillWildhorn10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_KillWildhorn15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_KillWildhorn20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_KillWitness10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_KillWitness15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_KillWitness20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_LootClassMod3",
-      "amount": 1
+      "amount": 3
     },
     {
       "id": "VC3_LootClassMod5",
-      "amount": 1
+      "amount": 5
     },
     {
       "id": "VC3_LootClassMod7",
-      "amount": 1
+      "amount": 7
     },
     {
       "id": "VC3_LootGadget3",
-      "amount": 1
+      "amount": 3
     },
     {
       "id": "VC3_LootGadget5",
-      "amount": 1
+      "amount": 5
     },
     {
       "id": "VC3_LootGadget7",
-      "amount": 1
+      "amount": 7
     },
     {
       "id": "VC3_LootLegendary10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_LootLegendary15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_LootLegendary5",
-      "amount": 1
+      "amount": 5
     },
     {
       "id": "VC3_LootPurple10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_LootPurple15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_LootPurple5",
-      "amount": 1
+      "amount": 5
     },
     {
       "id": "VC3_LootRepkit3",
-      "amount": 1
+      "amount": 3
     },
     {
       "id": "VC3_LootRepkit5",
-      "amount": 1
+      "amount": 5
     },
     {
       "id": "VC3_LootRepkit7",
-      "amount": 1
+      "amount": 7
     },
     {
       "id": "VC3_LootShield3",
-      "amount": 1
+      "amount": 3
     },
     {
       "id": "VC3_LootShield5",
-      "amount": 1
+      "amount": 5
     },
     {
       "id": "VC3_LootShield7",
-      "amount": 1
+      "amount": 7
     },
     {
       "id": "VC3_LootWeapon10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_LootWeapon15",
-      "amount": 1
+      "amount": 15
     },
     {
       "id": "VC3_LootWeapon5",
-      "amount": 1
+      "amount": 5
+    },
+    {
+      "id": "VC3_openlootables100",
+      "amount": 100
     },
     {
       "id": "VC3_OpenLootables20",
-      "amount": 1
+      "amount": 20
+    },
+    {
+      "id": "VC3_openlootables200",
+      "amount": 200
     },
     {
       "id": "VC3_OpenLootables30",
-      "amount": 1
+      "amount": 30
+    },
+    {
+      "id": "VC3_openlootables300",
+      "amount": 300
     },
     {
       "id": "VC3_OpenLootables40",
-      "amount": 1
+      "amount": 40
     },
     {
       "id": "VC3_OrderAcquire2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC3_OrderAcquire4",
-      "amount": 1
+      "amount": 4
     },
     {
       "id": "VC3_OrderAcquire6",
-      "amount": 1
+      "amount": 6
     },
     {
       "id": "VC3_OrderBounty2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC3_OrderBounty4",
-      "amount": 1
+      "amount": 4
     },
     {
       "id": "VC3_OrderBounty6",
-      "amount": 1
+      "amount": 6
     },
     {
       "id": "VC3_OrderCollect2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC3_OrderCollect4",
-      "amount": 1
+      "amount": 4
     },
     {
       "id": "VC3_OrderCollect6",
-      "amount": 1
+      "amount": 6
     },
     {
       "id": "VC3_OrderPatrol2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC3_OrderPatrol4",
-      "amount": 1
+      "amount": 4
     },
     {
       "id": "VC3_OrderPatrol6",
-      "amount": 1
+      "amount": 6
     },
     {
       "id": "VC3_OrderSearch2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC3_OrderSearch4",
-      "amount": 1
+      "amount": 4
     },
     {
       "id": "VC3_OrderSearch6",
-      "amount": 1
+      "amount": 6
     },
     {
       "id": "VC3_PatrolContract10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_PatrolContract20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_PatrolContract30",
-      "amount": 1
+      "amount": 30
     },
     {
       "id": "VC3_PickupCash1000",
-      "amount": 1
+      "amount": 1000
     },
     {
       "id": "VC3_PickupCash100000",
-      "amount": 1
+      "amount": 100000
     },
     {
       "id": "VC3_PickupCash1000000",
-      "amount": 1
+      "amount": 1000000
     },
     {
       "id": "VC3_PickupCash1500",
-      "amount": 1
+      "amount": 1500
     },
     {
       "id": "VC3_PickupCash500",
-      "amount": 1
+      "amount": 500
     },
     {
       "id": "VC3_PickupCash500000",
-      "amount": 1
+      "amount": 500000
     },
     {
       "id": "VC3_PickupEridium100",
-      "amount": 1
+      "amount": 100
     },
     {
       "id": "VC3_PickupEridium200",
-      "amount": 1
+      "amount": 200
     },
     {
       "id": "VC3_PickupEridium300",
-      "amount": 1
+      "amount": 300
     },
     {
       "id": "VC3_PurchaseItemFromBMVM2",
-      "amount": 1
+      "amount": 2
     },
     {
       "id": "VC3_PurchaseItemFromBMVM4",
-      "amount": 1
+      "amount": 4
     },
     {
       "id": "VC3_PurchaseItemFromBMVM6",
-      "amount": 1
+      "amount": 6
     },
     {
       "id": "VC3_SearchContract10",
-      "amount": 1
+      "amount": 10
     },
     {
       "id": "VC3_SearchContract20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_SearchContract30",
-      "amount": 1
+      "amount": 30
     },
     {
       "id": "VC3_SellItemToVendingMachine20",
-      "amount": 1
+      "amount": 20
     },
     {
       "id": "VC3_SellItemToVendingMachine30",
-      "amount": 1
+      "amount": 30
     },
     {
       "id": "VC3_SellItemToVendingMachine40",
-      "amount": 1
+      "amount": 40
     },
     {
       "id": "VC3_WeeklyTraitMission",
       "amount": 1
     },
     {
-      "id": "VC3_openlootables100",
+      "id": "VC4_AcquireContract10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_AcquireContract20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_AcquireContract30",
+      "amount": 30
+    },
+    {
+      "id": "VC4_BadassSecondWind1",
       "amount": 1
     },
     {
-      "id": "VC3_openlootables200",
+      "id": "VC4_BadassSecondWind2",
+      "amount": 2
+    },
+    {
+      "id": "VC4_BadassSecondWind3",
+      "amount": 3
+    },
+    {
+      "id": "VC4_BanditAcquire2",
+      "amount": 2
+    },
+    {
+      "id": "VC4_BanditAcquire4",
+      "amount": 4
+    },
+    {
+      "id": "VC4_BanditAcquire6",
+      "amount": 6
+    },
+    {
+      "id": "VC4_BanditBounty2",
+      "amount": 2
+    },
+    {
+      "id": "VC4_BanditBounty4",
+      "amount": 4
+    },
+    {
+      "id": "VC4_BanditBounty6",
+      "amount": 6
+    },
+    {
+      "id": "VC4_BanditCollect2",
+      "amount": 2
+    },
+    {
+      "id": "VC4_BanditCollect4",
+      "amount": 4
+    },
+    {
+      "id": "VC4_BanditCollect6",
+      "amount": 6
+    },
+    {
+      "id": "VC4_BanditPatrol2",
+      "amount": 2
+    },
+    {
+      "id": "VC4_BanditPatrol4",
+      "amount": 4
+    },
+    {
+      "id": "VC4_BanditPatrol6",
+      "amount": 6
+    },
+    {
+      "id": "VC4_BanditSearch2",
+      "amount": 2
+    },
+    {
+      "id": "VC4_BanditSearch4",
+      "amount": 4
+    },
+    {
+      "id": "VC4_BanditSearch6",
+      "amount": 6
+    },
+    {
+      "id": "VC4_BountyContract10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_BountyContract20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_BountyContract30",
+      "amount": 30
+    },
+    {
+      "id": "VC4_CollectContract10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_CollectContract20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_CollectContract30",
+      "amount": 30
+    },
+    {
+      "id": "VC4_CorruptedBountyContract10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_CorruptedBountyContract20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_CorruptedBountyContract30",
+      "amount": 30
+    },
+    {
+      "id": "VC4_CreatureAcquire2",
+      "amount": 2
+    },
+    {
+      "id": "VC4_CreatureAcquire4",
+      "amount": 4
+    },
+    {
+      "id": "VC4_CreatureAcquire6",
+      "amount": 6
+    },
+    {
+      "id": "VC4_CreatureBounty2",
+      "amount": 2
+    },
+    {
+      "id": "VC4_CreatureBounty4",
+      "amount": 4
+    },
+    {
+      "id": "VC4_CreatureBounty6",
+      "amount": 6
+    },
+    {
+      "id": "VC4_CreatureCollect2",
+      "amount": 2
+    },
+    {
+      "id": "VC4_CreatureCollect4",
+      "amount": 4
+    },
+    {
+      "id": "VC4_CreatureCollect6",
+      "amount": 6
+    },
+    {
+      "id": "VC4_CreaturePatrol2",
+      "amount": 2
+    },
+    {
+      "id": "VC4_CreaturePatrol4",
+      "amount": 4
+    },
+    {
+      "id": "VC4_CreaturePatrol6",
+      "amount": 6
+    },
+    {
+      "id": "VC4_CreatureSearch2",
+      "amount": 2
+    },
+    {
+      "id": "VC4_CreatureSearch4",
+      "amount": 4
+    },
+    {
+      "id": "VC4_CreatureSearch6",
+      "amount": 6
+    },
+    {
+      "id": "VC4_FirmwareTransfer5",
+      "amount": 5
+    },
+    {
+      "id": "VC4_FirmwareTransfer7",
+      "amount": 7
+    },
+    {
+      "id": "VC4_FirmwareTransfer9",
+      "amount": 9
+    },
+    {
+      "id": "VC4_GetSecondWind10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_GetSecondWind15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_GetSecondWind5",
+      "amount": 5
+    },
+    {
+      "id": "VC4_Heal10000",
+      "amount": 10000
+    },
+    {
+      "id": "VC4_Heal100000",
+      "amount": 100000
+    },
+    {
+      "id": "VC4_Heal1000000",
+      "amount": 1000000
+    },
+    {
+      "id": "VC4_KillArmature10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_KillArmature15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_KillArmature20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillBadassEnemies10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_KillBadassEnemies15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_KillBadassEnemies20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillBadassEnemies30",
+      "amount": 30
+    },
+    {
+      "id": "VC4_KillBandits20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillBandits25",
+      "amount": 25
+    },
+    {
+      "id": "VC4_KillBandits30",
+      "amount": 30
+    },
+    {
+      "id": "VC4_KillBanditsinCITY15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_KillBanditsinCITY20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillBanditsinCITY25",
+      "amount": 25
+    },
+    {
+      "id": "VC4_KillBanditsinGRA15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_KillBanditsinGRA20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillBanditsinGRA25",
+      "amount": 25
+    },
+    {
+      "id": "VC4_KillBanditsinMOU15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_KillBanditsinMOU20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillBanditsinMOU25",
+      "amount": 25
+    },
+    {
+      "id": "VC4_KillBanditsinSHA15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_KillBanditsinSHA20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillBanditsinSHA25",
+      "amount": 25
+    },
+    {
+      "id": "VC4_KillBossReplay3",
+      "amount": 3
+    },
+    {
+      "id": "VC4_KillBossReplay5",
+      "amount": 5
+    },
+    {
+      "id": "VC4_KillBossReplay7",
+      "amount": 7
+    },
+    {
+      "id": "VC4_KillBulkhead10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_KillBulkhead15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_KillBulkhead20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillCorrupted10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_KillCorrupted15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_KillCorrupted20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillCreature20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillCreature25",
+      "amount": 25
+    },
+    {
+      "id": "VC4_KillCreature30",
+      "amount": 30
+    },
+    {
+      "id": "VC4_KillCreatureBossReplay1",
       "amount": 1
     },
     {
-      "id": "VC3_openlootables300",
+      "id": "VC4_KillCreatureBossReplay2",
+      "amount": 2
+    },
+    {
+      "id": "VC4_KillCreatureBossReplay3",
+      "amount": 3
+    },
+    {
+      "id": "VC4_KillCreatureinCITY15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_KillCreatureinCITY20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillCreatureinCITY25",
+      "amount": 25
+    },
+    {
+      "id": "VC4_KillCreatureinGRA15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_KillCreatureinGRA20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillCreatureinGRA25",
+      "amount": 25
+    },
+    {
+      "id": "VC4_KillCreatureinMOU15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_KillCreatureinMOU20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillCreatureinMOU25",
+      "amount": 25
+    },
+    {
+      "id": "VC4_KillCreatureinSHA15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_KillCreatureinSHA20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillCreatureinSHA25",
+      "amount": 25
+    },
+    {
+      "id": "VC4_KillCreep10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_KillCreep15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_KillCreep20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillEnemies20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillEnemies200",
+      "amount": 200
+    },
+    {
+      "id": "VC4_KillEnemies25",
+      "amount": 25
+    },
+    {
+      "id": "VC4_KillEnemies400",
+      "amount": 400
+    },
+    {
+      "id": "VC4_KillEnemies600",
+      "amount": 600
+    },
+    {
+      "id": "VC4_KillEnemiesInCity100",
+      "amount": 100
+    },
+    {
+      "id": "VC4_KillEnemiesInCity200",
+      "amount": 200
+    },
+    {
+      "id": "VC4_KillEnemiesInCity300",
+      "amount": 300
+    },
+    {
+      "id": "VC4_KillEnemiesInGRA100",
+      "amount": 100
+    },
+    {
+      "id": "VC4_KillEnemiesInGRA200",
+      "amount": 200
+    },
+    {
+      "id": "VC4_KillEnemiesInGRA300",
+      "amount": 300
+    },
+    {
+      "id": "VC4_KillEnemiesInMOU100",
+      "amount": 100
+    },
+    {
+      "id": "VC4_KillEnemiesInMOU200",
+      "amount": 200
+    },
+    {
+      "id": "VC4_KillEnemiesInMOU300",
+      "amount": 300
+    },
+    {
+      "id": "VC4_KillEnemiesInSHA100",
+      "amount": 100
+    },
+    {
+      "id": "VC4_KillEnemiesInSHA200",
+      "amount": 200
+    },
+    {
+      "id": "VC4_KillEnemiesInSHA300",
+      "amount": 300
+    },
+    {
+      "id": "VC4_KillEnemiesWithAR10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_KillEnemiesWithAR20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillEnemiesWithAR30",
+      "amount": 30
+    },
+    {
+      "id": "VC4_KillEnemiesWithBorg10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_KillEnemiesWithBorg15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_KillEnemiesWithBorg20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillEnemiesWithCorrosive10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_KillEnemiesWithCorrosive100",
+      "amount": 100
+    },
+    {
+      "id": "VC4_KillEnemiesWithCorrosive15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_KillEnemiesWithCorrosive20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillEnemiesWithCorrosive300",
+      "amount": 300
+    },
+    {
+      "id": "VC4_KillEnemiesWithCorrosive500",
+      "amount": 500
+    },
+    {
+      "id": "VC4_KillEnemiesWithCryo10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_KillEnemiesWithCryo100",
+      "amount": 100
+    },
+    {
+      "id": "VC4_KillEnemiesWithCryo15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_KillEnemiesWithCryo20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillEnemiesWithCryo300",
+      "amount": 300
+    },
+    {
+      "id": "VC4_KillEnemiesWithCryo500",
+      "amount": 500
+    },
+    {
+      "id": "VC4_KillEnemiesWithDaedalus10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_KillEnemiesWithDaedalus15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_KillEnemiesWithDaedalus20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillEnemiesWithGrenades10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_KillEnemiesWithGrenades15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_KillEnemiesWithGrenades20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillEnemiesWithHeavyWeapon10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_KillEnemiesWithHeavyWeapon20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillEnemiesWithHeavyWeapon30",
+      "amount": 30
+    },
+    {
+      "id": "VC4_KillEnemiesWithIncendiary10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_KillEnemiesWithIncendiary100",
+      "amount": 100
+    },
+    {
+      "id": "VC4_KillEnemiesWithIncendiary15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_KillEnemiesWithIncendiary20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillEnemiesWithIncendiary300",
+      "amount": 300
+    },
+    {
+      "id": "VC4_KillEnemiesWithIncendiary500",
+      "amount": 500
+    },
+    {
+      "id": "VC4_KillEnemiesWithJakobs10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_KillEnemiesWithJakobs15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_KillEnemiesWithJakobs20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillEnemiesWithMaliwan10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_KillEnemiesWithMaliwan15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_KillEnemiesWithMaliwan20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillEnemiesWithOrder10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_KillEnemiesWithOrder15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_KillEnemiesWithOrder20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillEnemiesWithPistol10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_KillEnemiesWithPistol20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillEnemiesWithPistol30",
+      "amount": 30
+    },
+    {
+      "id": "VC4_KillEnemiesWithRadiation10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_KillEnemiesWithRadiation100",
+      "amount": 100
+    },
+    {
+      "id": "VC4_KillEnemiesWithRadiation15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_KillEnemiesWithRadiation20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillEnemiesWithRadiation300",
+      "amount": 300
+    },
+    {
+      "id": "VC4_KillEnemiesWithRadiation500",
+      "amount": 500
+    },
+    {
+      "id": "VC4_KillEnemiesWithShock10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_KillEnemiesWithShock100",
+      "amount": 100
+    },
+    {
+      "id": "VC4_KillEnemiesWithShock15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_KillEnemiesWithShock20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillEnemiesWithShock300",
+      "amount": 300
+    },
+    {
+      "id": "VC4_KillEnemiesWithShock500",
+      "amount": 500
+    },
+    {
+      "id": "VC4_KillEnemiesWithShotgun10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_KillEnemiesWithShotgun20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillEnemiesWithShotgun30",
+      "amount": 30
+    },
+    {
+      "id": "VC4_KillEnemiesWithSMG10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_KillEnemiesWithSMG20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillEnemiesWithSMG30",
+      "amount": 30
+    },
+    {
+      "id": "VC4_KillEnemiesWithSniper10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_KillEnemiesWithSniper20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillEnemiesWithSniper30",
+      "amount": 30
+    },
+    {
+      "id": "VC4_KillEnemiesWithTediore10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_KillEnemiesWithTediore15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_KillEnemiesWithTediore20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillEnemiesWithTorgue10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_KillEnemiesWithTorgue15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_KillEnemiesWithTorgue20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillEnemiesWithVladof10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_KillEnemiesWithVladof15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_KillEnemiesWithVladof20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillEnemyGroundPound100",
+      "amount": 100
+    },
+    {
+      "id": "VC4_KillEnemyGroundPound150",
+      "amount": 150
+    },
+    {
+      "id": "VC4_KillEnemyGroundPound50",
+      "amount": 50
+    },
+    {
+      "id": "VC4_KillEnemyMelee20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillEnemyMelee40",
+      "amount": 40
+    },
+    {
+      "id": "VC4_KillEnemyMelee60",
+      "amount": 60
+    },
+    {
+      "id": "VC4_KillEngine10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_KillEngine15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_KillEngine20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillGrunt10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_KillGrunt15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_KillGrunt20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillGunToter10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_KillGunToter15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_KillGunToter20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillKratch10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_KillKratch15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_KillKratch20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillMangler10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_KillMangler15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_KillMangler20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillMeathead10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_KillMeathead15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_KillMeathead20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillOppressors10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_KillOppressors15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_KillOppressors20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillOrder20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillOrder25",
+      "amount": 25
+    },
+    {
+      "id": "VC4_KillOrder30",
+      "amount": 30
+    },
+    {
+      "id": "VC4_KillOrderBossReplay1",
+      "amount": 1
+    },
+    {
+      "id": "VC4_KillOrderBossReplay2",
+      "amount": 2
+    },
+    {
+      "id": "VC4_KillOrderBossReplay3",
+      "amount": 3
+    },
+    {
+      "id": "VC4_KillOrderinCITY15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_KillOrderinCITY20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillOrderinCITY25",
+      "amount": 25
+    },
+    {
+      "id": "VC4_KillOrderinGRA15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_KillOrderinGRA20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillOrderinGRA25",
+      "amount": 25
+    },
+    {
+      "id": "VC4_KillOrderinMOU15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_KillOrderinMOU20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillOrderinMOU25",
+      "amount": 25
+    },
+    {
+      "id": "VC4_KillOrderinSHA15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_KillOrderinSHA20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillOrderinSHA25",
+      "amount": 25
+    },
+    {
+      "id": "VC4_KillPangolin10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_KillPangolin15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_KillPangolin20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillPhalanx10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_KillPhalanx15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_KillPhalanx20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillPsycho10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_KillPsycho15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_KillPsycho20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillRipperBossReplay1",
+      "amount": 1
+    },
+    {
+      "id": "VC4_KillRipperBossReplay2",
+      "amount": 2
+    },
+    {
+      "id": "VC4_KillRipperBossReplay3",
+      "amount": 3
+    },
+    {
+      "id": "VC4_KillSplice10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_KillSplice15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_KillSplice20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillThresher10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_KillThresher15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_KillThresher20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillTrueBoss",
+      "amount": 1
+    },
+    {
+      "id": "VC4_KillTurret10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_KillTurret15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_KillTurret20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillWarden10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_KillWarden15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_KillWarden20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillWildhorn10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_KillWildhorn15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_KillWildhorn20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_KillWitness10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_KillWitness15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_KillWitness20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_LootClassMod3",
+      "amount": 3
+    },
+    {
+      "id": "VC4_LootClassMod5",
+      "amount": 5
+    },
+    {
+      "id": "VC4_LootClassMod7",
+      "amount": 7
+    },
+    {
+      "id": "VC4_LootGadget3",
+      "amount": 3
+    },
+    {
+      "id": "VC4_LootGadget5",
+      "amount": 5
+    },
+    {
+      "id": "VC4_LootGadget7",
+      "amount": 7
+    },
+    {
+      "id": "VC4_LootLegendary10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_LootLegendary15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_LootLegendary5",
+      "amount": 5
+    },
+    {
+      "id": "VC4_LootPurple10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_LootPurple15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_LootPurple5",
+      "amount": 5
+    },
+    {
+      "id": "VC4_LootRepkit3",
+      "amount": 3
+    },
+    {
+      "id": "VC4_LootRepkit5",
+      "amount": 5
+    },
+    {
+      "id": "VC4_LootRepkit7",
+      "amount": 7
+    },
+    {
+      "id": "VC4_LootShield3",
+      "amount": 3
+    },
+    {
+      "id": "VC4_LootShield5",
+      "amount": 5
+    },
+    {
+      "id": "VC4_LootShield7",
+      "amount": 7
+    },
+    {
+      "id": "VC4_LootWeapon10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_LootWeapon15",
+      "amount": 15
+    },
+    {
+      "id": "VC4_LootWeapon5",
+      "amount": 5
+    },
+    {
+      "id": "VC4_openlootables100",
+      "amount": 100
+    },
+    {
+      "id": "VC4_OpenLootables20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_openlootables200",
+      "amount": 200
+    },
+    {
+      "id": "VC4_OpenLootables30",
+      "amount": 30
+    },
+    {
+      "id": "VC4_openlootables300",
+      "amount": 300
+    },
+    {
+      "id": "VC4_OpenLootables40",
+      "amount": 40
+    },
+    {
+      "id": "VC4_OrderAcquire2",
+      "amount": 2
+    },
+    {
+      "id": "VC4_OrderAcquire4",
+      "amount": 4
+    },
+    {
+      "id": "VC4_OrderAcquire6",
+      "amount": 6
+    },
+    {
+      "id": "VC4_OrderBounty2",
+      "amount": 2
+    },
+    {
+      "id": "VC4_OrderBounty4",
+      "amount": 4
+    },
+    {
+      "id": "VC4_OrderBounty6",
+      "amount": 6
+    },
+    {
+      "id": "VC4_OrderCollect2",
+      "amount": 2
+    },
+    {
+      "id": "VC4_OrderCollect4",
+      "amount": 4
+    },
+    {
+      "id": "VC4_OrderCollect6",
+      "amount": 6
+    },
+    {
+      "id": "VC4_OrderPatrol2",
+      "amount": 2
+    },
+    {
+      "id": "VC4_OrderPatrol4",
+      "amount": 4
+    },
+    {
+      "id": "VC4_OrderPatrol6",
+      "amount": 6
+    },
+    {
+      "id": "VC4_OrderSearch2",
+      "amount": 2
+    },
+    {
+      "id": "VC4_OrderSearch4",
+      "amount": 4
+    },
+    {
+      "id": "VC4_OrderSearch6",
+      "amount": 6
+    },
+    {
+      "id": "VC4_PatrolContract10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_PatrolContract20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_PatrolContract30",
+      "amount": 30
+    },
+    {
+      "id": "VC4_PickupCash1000",
+      "amount": 1000
+    },
+    {
+      "id": "VC4_PickupCash100000",
+      "amount": 100000
+    },
+    {
+      "id": "VC4_PickupCash1000000",
+      "amount": 1000000
+    },
+    {
+      "id": "VC4_PickupCash1500",
+      "amount": 1500
+    },
+    {
+      "id": "VC4_PickupCash500",
+      "amount": 500
+    },
+    {
+      "id": "VC4_PickupCash500000",
+      "amount": 500000
+    },
+    {
+      "id": "VC4_PickupEridium100",
+      "amount": 100
+    },
+    {
+      "id": "VC4_PickupEridium200",
+      "amount": 200
+    },
+    {
+      "id": "VC4_PickupEridium300",
+      "amount": 300
+    },
+    {
+      "id": "VC4_PurchaseItemFromBMVM2",
+      "amount": 2
+    },
+    {
+      "id": "VC4_PurchaseItemFromBMVM4",
+      "amount": 4
+    },
+    {
+      "id": "VC4_PurchaseItemFromBMVM6",
+      "amount": 6
+    },
+    {
+      "id": "VC4_SearchContract10",
+      "amount": 10
+    },
+    {
+      "id": "VC4_SearchContract20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_SearchContract30",
+      "amount": 30
+    },
+    {
+      "id": "VC4_SellItemToVendingMachine20",
+      "amount": 20
+    },
+    {
+      "id": "VC4_SellItemToVendingMachine30",
+      "amount": 30
+    },
+    {
+      "id": "VC4_SellItemToVendingMachine40",
+      "amount": 40
+    },
+    {
+      "id": "VC4_WeeklyTraitMission",
+      "amount": 1
+    },
+    {
+      "id": "vc5_AcquireContract10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_AcquireContract20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_AcquireContract30",
+      "amount": 30
+    },
+    {
+      "id": "vc5_BadassSecondWind1",
+      "amount": 1
+    },
+    {
+      "id": "vc5_BadassSecondWind2",
+      "amount": 2
+    },
+    {
+      "id": "vc5_BadassSecondWind3",
+      "amount": 3
+    },
+    {
+      "id": "vc5_BanditAcquire2",
+      "amount": 2
+    },
+    {
+      "id": "vc5_BanditAcquire4",
+      "amount": 4
+    },
+    {
+      "id": "vc5_BanditAcquire6",
+      "amount": 6
+    },
+    {
+      "id": "vc5_BanditBounty2",
+      "amount": 2
+    },
+    {
+      "id": "vc5_BanditBounty4",
+      "amount": 4
+    },
+    {
+      "id": "vc5_BanditBounty6",
+      "amount": 6
+    },
+    {
+      "id": "vc5_BanditCollect2",
+      "amount": 2
+    },
+    {
+      "id": "vc5_BanditCollect4",
+      "amount": 4
+    },
+    {
+      "id": "vc5_BanditCollect6",
+      "amount": 6
+    },
+    {
+      "id": "vc5_BanditPatrol2",
+      "amount": 2
+    },
+    {
+      "id": "vc5_BanditPatrol4",
+      "amount": 4
+    },
+    {
+      "id": "vc5_BanditPatrol6",
+      "amount": 6
+    },
+    {
+      "id": "vc5_BanditSearch2",
+      "amount": 2
+    },
+    {
+      "id": "vc5_BanditSearch4",
+      "amount": 4
+    },
+    {
+      "id": "vc5_BanditSearch6",
+      "amount": 6
+    },
+    {
+      "id": "vc5_BountyContract10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_BountyContract20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_BountyContract30",
+      "amount": 30
+    },
+    {
+      "id": "vc5_CollectContract10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_CollectContract20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_CollectContract30",
+      "amount": 30
+    },
+    {
+      "id": "vc5_CorruptedBountyContract10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_CorruptedBountyContract20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_CorruptedBountyContract30",
+      "amount": 30
+    },
+    {
+      "id": "vc5_CreatureAcquire2",
+      "amount": 2
+    },
+    {
+      "id": "vc5_CreatureAcquire4",
+      "amount": 4
+    },
+    {
+      "id": "vc5_CreatureAcquire6",
+      "amount": 6
+    },
+    {
+      "id": "vc5_CreatureBounty2",
+      "amount": 2
+    },
+    {
+      "id": "vc5_CreatureBounty4",
+      "amount": 4
+    },
+    {
+      "id": "vc5_CreatureBounty6",
+      "amount": 6
+    },
+    {
+      "id": "vc5_CreatureCollect2",
+      "amount": 2
+    },
+    {
+      "id": "vc5_CreatureCollect4",
+      "amount": 4
+    },
+    {
+      "id": "vc5_CreatureCollect6",
+      "amount": 6
+    },
+    {
+      "id": "vc5_CreaturePatrol2",
+      "amount": 2
+    },
+    {
+      "id": "vc5_CreaturePatrol4",
+      "amount": 4
+    },
+    {
+      "id": "vc5_CreaturePatrol6",
+      "amount": 6
+    },
+    {
+      "id": "vc5_CreatureSearch2",
+      "amount": 2
+    },
+    {
+      "id": "vc5_CreatureSearch4",
+      "amount": 4
+    },
+    {
+      "id": "vc5_CreatureSearch6",
+      "amount": 6
+    },
+    {
+      "id": "vc5_FirmwareTransfer5",
+      "amount": 5
+    },
+    {
+      "id": "vc5_FirmwareTransfer7",
+      "amount": 7
+    },
+    {
+      "id": "vc5_FirmwareTransfer9",
+      "amount": 9
+    },
+    {
+      "id": "vc5_GetSecondWind10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_GetSecondWind15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_GetSecondWind5",
+      "amount": 5
+    },
+    {
+      "id": "vc5_Heal10000",
+      "amount": 10000
+    },
+    {
+      "id": "vc5_Heal100000",
+      "amount": 100000
+    },
+    {
+      "id": "vc5_Heal1000000",
+      "amount": 1000000
+    },
+    {
+      "id": "vc5_KillArmature10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_KillArmature15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_KillArmature20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillBadassEnemies10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_KillBadassEnemies15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_KillBadassEnemies20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillBadassEnemies30",
+      "amount": 30
+    },
+    {
+      "id": "vc5_KillBandits20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillBandits25",
+      "amount": 25
+    },
+    {
+      "id": "vc5_KillBandits30",
+      "amount": 30
+    },
+    {
+      "id": "vc5_KillBanditsinCITY15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_KillBanditsinCITY20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillBanditsinCITY25",
+      "amount": 25
+    },
+    {
+      "id": "vc5_KillBanditsinGRA15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_KillBanditsinGRA20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillBanditsinGRA25",
+      "amount": 25
+    },
+    {
+      "id": "vc5_KillBanditsinMOU15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_KillBanditsinMOU20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillBanditsinMOU25",
+      "amount": 25
+    },
+    {
+      "id": "vc5_KillBanditsinSHA15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_KillBanditsinSHA20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillBanditsinSHA25",
+      "amount": 25
+    },
+    {
+      "id": "vc5_KillBossReplay3",
+      "amount": 3
+    },
+    {
+      "id": "vc5_KillBossReplay5",
+      "amount": 5
+    },
+    {
+      "id": "vc5_KillBossReplay7",
+      "amount": 7
+    },
+    {
+      "id": "vc5_KillBulkhead10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_KillBulkhead15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_KillBulkhead20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillCorrupted10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_KillCorrupted15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_KillCorrupted20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillCreature20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillCreature25",
+      "amount": 25
+    },
+    {
+      "id": "vc5_KillCreature30",
+      "amount": 30
+    },
+    {
+      "id": "vc5_KillCreatureBossReplay1",
+      "amount": 1
+    },
+    {
+      "id": "vc5_KillCreatureBossReplay2",
+      "amount": 2
+    },
+    {
+      "id": "vc5_KillCreatureBossReplay3",
+      "amount": 3
+    },
+    {
+      "id": "vc5_KillCreatureinCITY15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_KillCreatureinCITY20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillCreatureinCITY25",
+      "amount": 25
+    },
+    {
+      "id": "vc5_KillCreatureinGRA15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_KillCreatureinGRA20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillCreatureinGRA25",
+      "amount": 25
+    },
+    {
+      "id": "vc5_KillCreatureinMOU15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_KillCreatureinMOU20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillCreatureinMOU25",
+      "amount": 25
+    },
+    {
+      "id": "vc5_KillCreatureinSHA15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_KillCreatureinSHA20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillCreatureinSHA25",
+      "amount": 25
+    },
+    {
+      "id": "vc5_KillCreep10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_KillCreep15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_KillCreep20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillEnemies20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillEnemies200",
+      "amount": 200
+    },
+    {
+      "id": "vc5_KillEnemies25",
+      "amount": 25
+    },
+    {
+      "id": "vc5_KillEnemies400",
+      "amount": 400
+    },
+    {
+      "id": "vc5_KillEnemies600",
+      "amount": 600
+    },
+    {
+      "id": "vc5_KillEnemiesInCity100",
+      "amount": 100
+    },
+    {
+      "id": "vc5_KillEnemiesInCity200",
+      "amount": 200
+    },
+    {
+      "id": "vc5_KillEnemiesInCity300",
+      "amount": 300
+    },
+    {
+      "id": "vc5_KillEnemiesInGRA100",
+      "amount": 100
+    },
+    {
+      "id": "vc5_KillEnemiesInGRA200",
+      "amount": 200
+    },
+    {
+      "id": "vc5_KillEnemiesInGRA300",
+      "amount": 300
+    },
+    {
+      "id": "vc5_KillEnemiesInMOU100",
+      "amount": 100
+    },
+    {
+      "id": "vc5_KillEnemiesInMOU200",
+      "amount": 200
+    },
+    {
+      "id": "vc5_KillEnemiesInMOU300",
+      "amount": 300
+    },
+    {
+      "id": "vc5_KillEnemiesInSHA100",
+      "amount": 100
+    },
+    {
+      "id": "vc5_KillEnemiesInSHA200",
+      "amount": 200
+    },
+    {
+      "id": "vc5_KillEnemiesInSHA300",
+      "amount": 300
+    },
+    {
+      "id": "vc5_KillEnemiesWithAR10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_KillEnemiesWithAR20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillEnemiesWithAR30",
+      "amount": 30
+    },
+    {
+      "id": "vc5_KillEnemiesWithBorg10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_KillEnemiesWithBorg15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_KillEnemiesWithBorg20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillEnemiesWithCorrosive10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_KillEnemiesWithCorrosive100",
+      "amount": 100
+    },
+    {
+      "id": "vc5_KillEnemiesWithCorrosive15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_KillEnemiesWithCorrosive20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillEnemiesWithCorrosive300",
+      "amount": 300
+    },
+    {
+      "id": "vc5_KillEnemiesWithCorrosive500",
+      "amount": 500
+    },
+    {
+      "id": "vc5_KillEnemiesWithCryo10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_KillEnemiesWithCryo100",
+      "amount": 100
+    },
+    {
+      "id": "vc5_KillEnemiesWithCryo15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_KillEnemiesWithCryo20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillEnemiesWithCryo300",
+      "amount": 300
+    },
+    {
+      "id": "vc5_KillEnemiesWithCryo500",
+      "amount": 500
+    },
+    {
+      "id": "vc5_KillEnemiesWithDaedalus10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_KillEnemiesWithDaedalus15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_KillEnemiesWithDaedalus20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillEnemiesWithGrenades10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_KillEnemiesWithGrenades15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_KillEnemiesWithGrenades20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillEnemiesWithHeavyWeapon10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_KillEnemiesWithHeavyWeapon20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillEnemiesWithHeavyWeapon30",
+      "amount": 30
+    },
+    {
+      "id": "vc5_KillEnemiesWithIncendiary10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_KillEnemiesWithIncendiary100",
+      "amount": 100
+    },
+    {
+      "id": "vc5_KillEnemiesWithIncendiary15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_KillEnemiesWithIncendiary20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillEnemiesWithIncendiary300",
+      "amount": 300
+    },
+    {
+      "id": "vc5_KillEnemiesWithIncendiary500",
+      "amount": 500
+    },
+    {
+      "id": "vc5_KillEnemiesWithJakobs10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_KillEnemiesWithJakobs15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_KillEnemiesWithJakobs20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillEnemiesWithMaliwan10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_KillEnemiesWithMaliwan15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_KillEnemiesWithMaliwan20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillEnemiesWithOrder10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_KillEnemiesWithOrder15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_KillEnemiesWithOrder20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillEnemiesWithPistol10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_KillEnemiesWithPistol20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillEnemiesWithPistol30",
+      "amount": 30
+    },
+    {
+      "id": "vc5_KillEnemiesWithRadiation10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_KillEnemiesWithRadiation100",
+      "amount": 100
+    },
+    {
+      "id": "vc5_KillEnemiesWithRadiation15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_KillEnemiesWithRadiation20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillEnemiesWithRadiation300",
+      "amount": 300
+    },
+    {
+      "id": "vc5_KillEnemiesWithRadiation500",
+      "amount": 500
+    },
+    {
+      "id": "vc5_KillEnemiesWithShock10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_KillEnemiesWithShock100",
+      "amount": 100
+    },
+    {
+      "id": "vc5_KillEnemiesWithShock15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_KillEnemiesWithShock20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillEnemiesWithShock300",
+      "amount": 300
+    },
+    {
+      "id": "vc5_KillEnemiesWithShock500",
+      "amount": 500
+    },
+    {
+      "id": "vc5_KillEnemiesWithShotgun10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_KillEnemiesWithShotgun20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillEnemiesWithShotgun30",
+      "amount": 30
+    },
+    {
+      "id": "vc5_KillEnemiesWithSMG10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_KillEnemiesWithSMG20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillEnemiesWithSMG30",
+      "amount": 30
+    },
+    {
+      "id": "vc5_KillEnemiesWithSniper10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_KillEnemiesWithSniper20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillEnemiesWithSniper30",
+      "amount": 30
+    },
+    {
+      "id": "vc5_KillEnemiesWithTediore10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_KillEnemiesWithTediore15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_KillEnemiesWithTediore20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillEnemiesWithTorgue10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_KillEnemiesWithTorgue15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_KillEnemiesWithTorgue20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillEnemiesWithVladof10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_KillEnemiesWithVladof15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_KillEnemiesWithVladof20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillEnemyGroundPound100",
+      "amount": 100
+    },
+    {
+      "id": "vc5_KillEnemyGroundPound150",
+      "amount": 150
+    },
+    {
+      "id": "vc5_KillEnemyGroundPound50",
+      "amount": 50
+    },
+    {
+      "id": "vc5_KillEnemyMelee20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillEnemyMelee40",
+      "amount": 40
+    },
+    {
+      "id": "vc5_KillEnemyMelee60",
+      "amount": 60
+    },
+    {
+      "id": "vc5_KillEngine10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_KillEngine15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_KillEngine20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillGrunt10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_KillGrunt15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_KillGrunt20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillGunToter10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_KillGunToter15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_KillGunToter20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillKratch10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_KillKratch15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_KillKratch20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillMangler10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_KillMangler15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_KillMangler20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillMeathead10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_KillMeathead15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_KillMeathead20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillOppressors10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_KillOppressors15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_KillOppressors20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillOrder20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillOrder25",
+      "amount": 25
+    },
+    {
+      "id": "vc5_KillOrder30",
+      "amount": 30
+    },
+    {
+      "id": "vc5_KillOrderBossReplay1",
+      "amount": 1
+    },
+    {
+      "id": "vc5_KillOrderBossReplay2",
+      "amount": 2
+    },
+    {
+      "id": "vc5_KillOrderBossReplay3",
+      "amount": 3
+    },
+    {
+      "id": "vc5_KillOrderinCITY15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_KillOrderinCITY20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillOrderinCITY25",
+      "amount": 25
+    },
+    {
+      "id": "vc5_KillOrderinGRA15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_KillOrderinGRA20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillOrderinGRA25",
+      "amount": 25
+    },
+    {
+      "id": "vc5_KillOrderinMOU15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_KillOrderinMOU20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillOrderinMOU25",
+      "amount": 25
+    },
+    {
+      "id": "vc5_KillOrderinSHA15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_KillOrderinSHA20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillOrderinSHA25",
+      "amount": 25
+    },
+    {
+      "id": "vc5_KillPangolin10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_KillPangolin15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_KillPangolin20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillPhalanx10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_KillPhalanx15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_KillPhalanx20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillPsycho10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_KillPsycho15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_KillPsycho20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillRipperBossReplay1",
+      "amount": 1
+    },
+    {
+      "id": "vc5_KillRipperBossReplay2",
+      "amount": 2
+    },
+    {
+      "id": "vc5_KillRipperBossReplay3",
+      "amount": 3
+    },
+    {
+      "id": "vc5_KillSplice10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_KillSplice15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_KillSplice20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillThresher10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_KillThresher15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_KillThresher20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillTrueBoss",
+      "amount": 1
+    },
+    {
+      "id": "vc5_KillTurret10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_KillTurret15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_KillTurret20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillWarden10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_KillWarden15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_KillWarden20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillWildhorn10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_KillWildhorn15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_KillWildhorn20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_KillWitness10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_KillWitness15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_KillWitness20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_LootClassMod3",
+      "amount": 3
+    },
+    {
+      "id": "vc5_LootClassMod5",
+      "amount": 5
+    },
+    {
+      "id": "vc5_LootClassMod7",
+      "amount": 7
+    },
+    {
+      "id": "vc5_LootGadget3",
+      "amount": 3
+    },
+    {
+      "id": "vc5_LootGadget5",
+      "amount": 5
+    },
+    {
+      "id": "vc5_LootGadget7",
+      "amount": 7
+    },
+    {
+      "id": "vc5_LootLegendary10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_LootLegendary15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_LootLegendary5",
+      "amount": 5
+    },
+    {
+      "id": "vc5_LootPurple10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_LootPurple15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_LootPurple5",
+      "amount": 5
+    },
+    {
+      "id": "vc5_LootRepkit3",
+      "amount": 3
+    },
+    {
+      "id": "vc5_LootRepkit5",
+      "amount": 5
+    },
+    {
+      "id": "vc5_LootRepkit7",
+      "amount": 7
+    },
+    {
+      "id": "vc5_LootShield3",
+      "amount": 3
+    },
+    {
+      "id": "vc5_LootShield5",
+      "amount": 5
+    },
+    {
+      "id": "vc5_LootShield7",
+      "amount": 7
+    },
+    {
+      "id": "vc5_LootWeapon10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_LootWeapon15",
+      "amount": 15
+    },
+    {
+      "id": "vc5_LootWeapon5",
+      "amount": 5
+    },
+    {
+      "id": "vc5_openlootables100",
+      "amount": 100
+    },
+    {
+      "id": "vc5_OpenLootables20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_openlootables200",
+      "amount": 200
+    },
+    {
+      "id": "vc5_OpenLootables30",
+      "amount": 30
+    },
+    {
+      "id": "vc5_openlootables300",
+      "amount": 300
+    },
+    {
+      "id": "vc5_OpenLootables40",
+      "amount": 40
+    },
+    {
+      "id": "vc5_OrderAcquire2",
+      "amount": 2
+    },
+    {
+      "id": "vc5_OrderAcquire4",
+      "amount": 4
+    },
+    {
+      "id": "vc5_OrderAcquire6",
+      "amount": 6
+    },
+    {
+      "id": "vc5_OrderBounty2",
+      "amount": 2
+    },
+    {
+      "id": "vc5_OrderBounty4",
+      "amount": 4
+    },
+    {
+      "id": "vc5_OrderBounty6",
+      "amount": 6
+    },
+    {
+      "id": "vc5_OrderCollect2",
+      "amount": 2
+    },
+    {
+      "id": "vc5_OrderCollect4",
+      "amount": 4
+    },
+    {
+      "id": "vc5_OrderCollect6",
+      "amount": 6
+    },
+    {
+      "id": "vc5_OrderPatrol2",
+      "amount": 2
+    },
+    {
+      "id": "vc5_OrderPatrol4",
+      "amount": 4
+    },
+    {
+      "id": "vc5_OrderPatrol6",
+      "amount": 6
+    },
+    {
+      "id": "vc5_OrderSearch2",
+      "amount": 2
+    },
+    {
+      "id": "vc5_OrderSearch4",
+      "amount": 4
+    },
+    {
+      "id": "vc5_OrderSearch6",
+      "amount": 6
+    },
+    {
+      "id": "vc5_PatrolContract10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_PatrolContract20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_PatrolContract30",
+      "amount": 30
+    },
+    {
+      "id": "vc5_PickupCash1000",
+      "amount": 1000
+    },
+    {
+      "id": "vc5_PickupCash100000",
+      "amount": 100000
+    },
+    {
+      "id": "vc5_PickupCash1000000",
+      "amount": 1000000
+    },
+    {
+      "id": "vc5_PickupCash1500",
+      "amount": 1500
+    },
+    {
+      "id": "vc5_PickupCash500",
+      "amount": 500
+    },
+    {
+      "id": "vc5_PickupCash500000",
+      "amount": 500000
+    },
+    {
+      "id": "vc5_PickupEridium100",
+      "amount": 100
+    },
+    {
+      "id": "vc5_PickupEridium200",
+      "amount": 200
+    },
+    {
+      "id": "vc5_PickupEridium300",
+      "amount": 300
+    },
+    {
+      "id": "vc5_PurchaseItemFromBMVM2",
+      "amount": 2
+    },
+    {
+      "id": "vc5_PurchaseItemFromBMVM4",
+      "amount": 4
+    },
+    {
+      "id": "vc5_PurchaseItemFromBMVM6",
+      "amount": 6
+    },
+    {
+      "id": "vc5_SearchContract10",
+      "amount": 10
+    },
+    {
+      "id": "vc5_SearchContract20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_SearchContract30",
+      "amount": 30
+    },
+    {
+      "id": "vc5_SellItemToVendingMachine20",
+      "amount": 20
+    },
+    {
+      "id": "vc5_SellItemToVendingMachine30",
+      "amount": 30
+    },
+    {
+      "id": "vc5_SellItemToVendingMachine40",
+      "amount": 40
+    },
+    {
+      "id": "vc5_WeeklyTraitMission",
       "amount": 1
     },
     {
@@ -9123,18 +12494,6 @@
       "amount": 500
     },
     {
-      "id": "VCChallenge_KillEnemiesWithSMG10",
-      "amount": 10
-    },
-    {
-      "id": "VCChallenge_KillEnemiesWithSMG20",
-      "amount": 20
-    },
-    {
-      "id": "VCChallenge_KillEnemiesWithSMG30",
-      "amount": 30
-    },
-    {
       "id": "VCChallenge_KillEnemiesWithShock10",
       "amount": 10
     },
@@ -9168,6 +12527,18 @@
     },
     {
       "id": "VCChallenge_KillEnemiesWithShotgun30",
+      "amount": 30
+    },
+    {
+      "id": "VCChallenge_KillEnemiesWithSMG10",
+      "amount": 10
+    },
+    {
+      "id": "VCChallenge_KillEnemiesWithSMG20",
+      "amount": 20
+    },
+    {
+      "id": "VCChallenge_KillEnemiesWithSMG30",
       "amount": 30
     },
     {
@@ -9607,12 +12978,24 @@
       "amount": 5
     },
     {
+      "id": "VCChallenge_openlootables100",
+      "amount": 100
+    },
+    {
       "id": "VCChallenge_OpenLootables20",
       "amount": 20
     },
     {
+      "id": "VCChallenge_openlootables200",
+      "amount": 200
+    },
+    {
       "id": "VCChallenge_OpenLootables30",
       "amount": 30
+    },
+    {
+      "id": "VCChallenge_openlootables300",
+      "amount": 300
     },
     {
       "id": "VCChallenge_OpenLootables40",
@@ -9764,438 +13147,6 @@
     },
     {
       "id": "VCChallenge_WeeklyTraitMission",
-      "amount": 1
-    },
-    {
-      "id": "VCChallenge_openlootables100",
-      "amount": 100
-    },
-    {
-      "id": "VCChallenge_openlootables200",
-      "amount": 200
-    },
-    {
-      "id": "VCChallenge_openlootables300",
-      "amount": 300
-    },
-    {
-      "id": "challenge_clot_10",
-      "amount": 1
-    },
-    {
-      "id": "challenge_clot_11",
-      "amount": 1
-    },
-    {
-      "id": "challenge_clot_12",
-      "amount": 1
-    },
-    {
-      "id": "challenge_clot_13",
-      "amount": 1
-    },
-    {
-      "id": "challenge_clot_14",
-      "amount": 1
-    },
-    {
-      "id": "challenge_clot_15",
-      "amount": 1
-    },
-    {
-      "id": "challenge_clot_16",
-      "amount": 1
-    },
-    {
-      "id": "challenge_clot_17",
-      "amount": 1
-    },
-    {
-      "id": "challenge_clot_18",
-      "amount": 1
-    },
-    {
-      "id": "challenge_clot_19",
-      "amount": 1
-    },
-    {
-      "id": "challenge_clot_20",
-      "amount": 1
-    },
-    {
-      "id": "challenge_clot_21",
-      "amount": 1
-    },
-    {
-      "id": "challenge_clot_22",
-      "amount": 1
-    },
-    {
-      "id": "challenge_clot_23",
-      "amount": 1
-    },
-    {
-      "id": "challenge_clot_24",
-      "amount": 1
-    },
-    {
-      "id": "challenge_clot_25",
-      "amount": 1
-    },
-    {
-      "id": "challenge_clot_26",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_erd_10",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_erd_11",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_erd_12",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_erd_13",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_erd_14",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_erd_15",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_erd_16",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_erd_17",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_erd_18",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_city_10",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_city_11",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_city_12",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_city_13",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_city_14",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_city_15",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_city_16",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_city_17",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_city_18",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_city_19",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_city_21",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_city_22",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_city_23",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_gra_10",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_gra_11",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_gra_12",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_gra_13",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_gra_14",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_gra_15",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_gra_16",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_gra_17",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_gra_18",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_gra_19",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_gra_20",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_gra_21",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_gra_22",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_gra_23",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_gra_24",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_gra_25",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_gra_26",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_gra_27",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_gra_28",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_mtn_10",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_mtn_11",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_mtn_12",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_mtn_13",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_mtn_14",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_mtn_15",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_mtn_16",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_mtn_17",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_mtn_18",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_mtn_19",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_mtn_20",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_mtn_21",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_mtn_22",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_mtn_23",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_mtn_24",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_mtn_25",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_mtn_26",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_mtn_27",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_mtn_28",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_sha_10",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_sha_11",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_sha_12",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_sha_13",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_sha_14",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_sha_15",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_sha_16",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_sha_17",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_sha_18",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_sha_19",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_sha_20",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_sha_21",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_sha_22",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_sha_23",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_sha_24",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_sha_25",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_sha_26",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_sha_27",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_sha_28",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_gen_sha_29",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_mis_city_16",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_mis_gra_10",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_mis_gra_11",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_mis_gra_12",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_vh_gra_10",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_vh_mtn_10",
-      "amount": 1
-    },
-    {
-      "id": "challenge_collect_echolog_vh_sha_10",
-      "amount": 1
-    },
-    {
-      "id": "vault_card_dummy_prereq_challenge",
       "amount": 1
     }
   ]

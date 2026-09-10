@@ -1,6 +1,6 @@
         // Build typeIdMap, partsMap, partsByTypeId from flattened format (metadata + parts_by_id only)
         // Class mod typeId -> display name (Siren -> Vex for consistency with legacy)
-        var CLASS_MOD_NAMES = { 254: 'Vex', 255: 'Amon', 256: 'Rafa', 257: 'Rafa', 258: 'Harlowe', 259: 'Harlowe' };
+        var CLASS_MOD_NAMES = { 254: 'Vex', 255: 'Amon', 256: 'Rafa', 257: 'Rafa', 258: 'Harlowe', 259: 'Harlowe', 402: 'Loveless', 404: 'C4SH' };
         function buildFromPartsById(data) {
             const partsById = data.parts_by_id || {};
             let total = 0;
@@ -135,6 +135,12 @@
         function mergeMsbtPartSupplements() {
             const supplements = [];
             if (typeof window !== 'undefined') {
+                if (Array.isArray(window.MSBT_LOCAL_GAME_PART_SUPPLEMENT)) {
+                    supplements.push({
+                        label: 'installed game data',
+                        entries: window.MSBT_LOCAL_GAME_PART_SUPPLEMENT
+                    });
+                }
                 if (Array.isArray(window.MSBT_GZO_FAMILY_PART_SUPPLEMENT)) {
                     supplements.push({
                         label: 'GZO family data',
@@ -5477,7 +5483,7 @@
                     return true;
                 })
                 .forEach(type => {
-                    // Group class mod characters (Rafa, Amon, Harlowe, Vex) under "Class Mods"
+                    // Group class mod characters under "Class Mods".
                     let manufacturer = type.manufacturer || 'Class Mods';
                     const category = (type.category || '').toLowerCase();
                     const manufacturerLower = (manufacturer || '').toLowerCase();
@@ -5488,7 +5494,9 @@
                         manufacturerLower === 'amon' || 
                         manufacturerLower === 'harlowe' || 
                         manufacturerLower === 'vex' || 
-                        manufacturerLower === 'siren') {
+                        manufacturerLower === 'siren' ||
+                        manufacturerLower === 'c4sh' ||
+                        manufacturerLower === 'loveless') {
                         manufacturer = 'Class Mods';
                     }
                     

@@ -930,6 +930,8 @@ function applyLiveModsFromStatus(data){
   }
 }
 function applyStatus(data){
+  if(data&&data.game_parameters)state.gameParameters=data.game_parameters;
+  syncBoostXpLimit();
   state.bridgeOnline=Boolean(data&&data.ok!==false&&(data.started||data.players||data.name));
   state.players=Array.isArray(data&&data.players)?data.players:[];
   const statusValue=data&&data.selected_player
@@ -1427,7 +1429,10 @@ function buildActionPayload(action,button){
     return{...button._quickPayload};
   }
   if(action==='give_currency')return{currency_kind:text($('boostCurrencyKind').value)||'cash',amount:intValue($('boostCurrencyAmount').value,1000000)};
-  if(action==='set_level')return{xp_track:text($('boostXpTrack').value)||'player',level:intValue($('boostXpLevel').value,70)};
+  if(action==='set_level'){
+    syncBoostXpLimit();
+    return{xp_track:text($('boostXpTrack').value)||'player',level:intValue($('boostXpLevel').value,70)};
+  }
   if(action==='set_backpack_bank_selected'||action==='set_backpack_bank_all')return{backpack_size:intValue($('boostBackpackSize').value,999),bank_size:intValue($('boostBankSize').value,1500)};
   if(action==='movement_apply_all')return movementPayload();
   if(action==='movement_set_time'){
@@ -2527,6 +2532,21 @@ $$('[data-select-all]').forEach((button)=>{
 
 $$('[data-live]').forEach(button=>button.addEventListener('click',()=>void runLiveAction(button)));
 
+function syncBoostXpLimit(){
+  const input=$('boostXpLevel');
+  const select=$('boostXpTrack');
+  if(!input||!select)return;
+  const params=state.gameParameters||{};
+  const track=select.value||'player';
+  const fallback=track==='specialization'?701:track.startsWith('vaultcard_xp_')?9999:70;
+  const field=track==='specialization'?'specialization_level_cap':track.startsWith('vaultcard_xp_')?'vault_card_level_cap':'player_level_cap';
+  const cap=intValue(params[field],fallback);
+  const max=cap>0?cap:fallback;
+  input.min='0';input.max=String(max);
+  input.value=String(Math.max(0,Math.min(max,intValue(input.value,70))));
+}
+if($('boostXpTrack'))$('boostXpTrack').addEventListener('change',syncBoostXpLimit);
+syncBoostXpLimit();
 state.activity=read(STORE.activity,[]);setLiveEnabled();initBookmarks();loadMovement();loadQuick();loadConnection();renderActivity();loadCatalogs();loadTravelCatalog();loadPoolCatalog();initHoard();loadDevCatalog();
 syncAboutVersion();
 requestUpdateCheck({quiet:true,reason:'launch'});

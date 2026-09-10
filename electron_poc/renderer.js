@@ -23,6 +23,7 @@ const els = {
   bl4Detail: document.getElementById("bl4Detail"),
   bl4ImportSelectedBtn: document.getElementById("bl4ImportSelectedBtn"),
   bl4ListingFilter: document.getElementById("bl4ListingFilter"),
+  bl4LevelFilter: document.getElementById("bl4LevelFilter"),
   bl4ManufacturerFilter: document.getElementById("bl4ManufacturerFilter"),
   bl4MattmabFilter: document.getElementById("bl4MattmabFilter"),
   bl4OpenLootlemonBtn: document.getElementById("bl4OpenLootlemonBtn"),
@@ -501,6 +502,7 @@ const els = {
 };
 
 const state = {
+  gameParameters: { player_level_cap: 70, item_level_cap: 70, specialization_level_cap: 701, vault_card_level_cap: 9999 },
   activeTab: "",
   activity: [],
   autoInventoryInFlight: false,
@@ -1298,7 +1300,7 @@ function quickMenuSerialPayload() {
   return {
     serial_text: getValue(els.boostSerialText),
     serial_override_level: boolFromSelect(els.boostSerialOverride),
-    serial_level: getInt(els.boostSerialLevel, 1, 70, 70)
+    serial_level: getInt(els.boostSerialLevel, 1, state.gameParameters.item_level_cap, state.gameParameters.item_level_cap)
   };
 }
 
@@ -1333,7 +1335,7 @@ function quickMenuBl4SerialPayload() {
   return {
     serial_text: expanded.text || "",
     serial_override_level: boolFromSelect(els.bl4OverrideLevel),
-    serial_level: getInt(els.bl4DeliveryLevel, 1, 70, 70)
+    serial_level: getInt(els.bl4DeliveryLevel, 1, state.gameParameters.item_level_cap, state.gameParameters.item_level_cap)
   };
 }
 
@@ -1359,7 +1361,7 @@ function quickMenuItemPoolPayload() {
   return {
     itempool_name: names[0] || getValue(els.itempoolList) || "",
     itempool_count: getInt(els.itempoolCount, 1, 100, 1),
-    itempool_level: getInt(els.itempoolLevel, 1, 70, 70),
+    itempool_level: getInt(els.itempoolLevel, 1, state.gameParameters.item_level_cap, state.gameParameters.item_level_cap),
     ...itemPoolKnobPayload()
   };
 }
@@ -1452,7 +1454,7 @@ function quickMenuPayloadFromCurrentControls(action) {
   if (action === "set_level") {
     return {
       xp_track: getValue(els.xpTrack),
-      level: getInt(els.xpLevel, 1, 9999999, 70)
+      level: getExperienceLevel()
     };
   }
   if (action === "set_backpack_bank_selected" || action === "set_backpack_bank_all") {
@@ -1794,7 +1796,7 @@ function installQuickMenuAddButtons() {
     "set_level",
     () => ({
       xp_track: getValue(els.xpTrack),
-      level: getInt(els.xpLevel, 1, 9999999, 70)
+      level: getExperienceLevel()
     })
   );
   decorateQuickMenuActionButton(
@@ -1821,7 +1823,7 @@ function installQuickMenuAddButtons() {
     () => ({
       itempool_names: filteredItemPoolNames(),
       itempool_count: getInt(els.itempoolCount, 1, 100, 1),
-      itempool_level: getInt(els.itempoolLevel, 1, 70, 70),
+      itempool_level: getInt(els.itempoolLevel, 1, state.gameParameters.item_level_cap, state.gameParameters.item_level_cap),
       ...itemPoolKnobPayload()
     }),
     () => `All filtered (${filteredItemPoolNames().length})`
@@ -3466,6 +3468,7 @@ function applyBridgeStatusResult(result, options = {}) {
 
   state.snapshotReady = data.snapshot_ready !== false;
   state.bridgeOnline = true;
+  syncGameParameterControls(data.game_parameters);
   state.bridgeDiagnostics = data.diagnostics && typeof data.diagnostics === "object" ? data.diagnostics : {};
   const playersFingerprint = fingerprint({
     players: data.players || [],
@@ -4568,7 +4571,7 @@ async function sendBoostSerial(mode) {
     mode,
     serialText,
     boolFromSelect(els.boostSerialOverride),
-    getInt(els.boostSerialLevel, 1, 70, 70),
+    getInt(els.boostSerialLevel, 1, state.gameParameters.item_level_cap, state.gameParameters.item_level_cap),
     els.boostOutput,
     getInt(els.boostSerialCopies, 1, 50, 1),
     "Serial Rewards"
@@ -5104,25 +5107,51 @@ function bl4DecodedText(row) {
   return Object.entries(identity).map(([key, value]) => `${key} ${value}`).join(" ");
 }
 
+function experienceLevelCap() {
+  const track = getValue(els.xpTrack);
+  if (track === "specialization") return state.gameParameters.specialization_level_cap;
+  if (/^vaultcard_xp_\d+$/.test(track)) return state.gameParameters.vault_card_level_cap;
+  return state.gameParameters.player_level_cap;
+}
+
+function getExperienceLevel() {
+  const cap = experienceLevelCap();
+  return getInt(els.xpLevel, 1, cap, Math.min(70, cap));
+}
+
+function syncGameParameterControls(parameters) {
+  if (parameters && typeof parameters === "object") {
+    for (const key of Object.keys(state.gameParameters)) {
+      const value = Number(parameters[key]);
+      if (Number.isSafeInteger(value) && value > 0) state.gameParameters[key] = value;
+    }
+  }
+  if (els.xpLevel) {
+    els.xpLevel.max = String(experienceLevelCap());
+    if (Number(els.xpLevel.value) > experienceLevelCap()) els.xpLevel.value = String(experienceLevelCap());
+  }
+  for (const node of [els.boostSerialLevel, els.bl4DeliveryLevel, els.invSerialLevel, els.itempoolLevel]) {
+    if (node) node.max = String(state.gameParameters.item_level_cap);
+  }
+}
+
+function bl4FlattenSearchValues(value, out = []) {
+  if (value === null || value === undefined) return out;
+  if (Array.isArray(value)) {
+    value.forEach((item) => bl4FlattenSearchValues(item, out));
+  } else if (typeof value === "object") {
+    Object.entries(value).forEach(([key, item]) => {
+      out.push(key);
+      bl4FlattenSearchValues(item, out);
+    });
+  } else {
+    out.push(String(value));
+  }
+  return out;
+}
+
 function bl4SearchBlob(row) {
-  return [
-    row.name,
-    row.serial,
-    row.source,
-    row.listing,
-    row.type,
-    row.manufacturer,
-    row.rarity,
-    row.creator,
-    row.classification,
-    row.mattmab_validator,
-    row.deserialized,
-    row.notes,
-    row.url,
-    row.image_url,
-    bl4TagText(row),
-    bl4DecodedText(row)
-  ].filter(Boolean).join(" ").toLowerCase();
+  return bl4FlattenSearchValues(row).join(" ").toLowerCase();
 }
 
 function bl4MattmabLabel(value) {
@@ -5224,6 +5253,7 @@ function populateBl4Filters(filters = {}) {
   fillBl4Filter(els.bl4ManufacturerFilter, filters.manufacturers || []);
   fillBl4Filter(els.bl4RarityFilter, filters.rarities || []);
   fillBl4Filter(els.bl4CreatorFilter, filters.creators || []);
+  fillBl4Filter(els.bl4LevelFilter, filters.levels || []);
   fillBl4Filter(els.bl4MattmabFilter, ["Legit", "Modded", "Error", "Unchecked"]);
 }
 
@@ -5256,6 +5286,7 @@ function filteredBl4Entries() {
   const manufacturer = bl4FilterValue(els.bl4ManufacturerFilter);
   const rarity = bl4FilterValue(els.bl4RarityFilter);
   const creator = bl4FilterValue(els.bl4CreatorFilter);
+  const level = bl4FilterValue(els.bl4LevelFilter);
   const mattmab = bl4FilterValue(els.bl4MattmabFilter);
 
   return state.bl4Entries.filter((row) => {
@@ -5265,8 +5296,9 @@ function filteredBl4Entries() {
     const manufacturerOk = manufacturer === "All" || String(row.manufacturer || "") === manufacturer;
     const rarityOk = rarity === "All" || String(row.rarity || "") === rarity;
     const creatorOk = creator === "All" || String(row.creator || "") === creator;
+    const levelOk = level === "All" || String(row.item_level || "") === level;
     const mattmabOk = bl4MattmabMatches(row, mattmab);
-    return termOk && listingOk && typeOk && manufacturerOk && rarityOk && creatorOk && mattmabOk;
+    return termOk && listingOk && typeOk && manufacturerOk && rarityOk && creatorOk && levelOk && mattmabOk;
   });
 }
 
@@ -5286,10 +5318,13 @@ function formatBl4Detail(row) {
     `Manufacturer: ${row.manufacturer || ""}`,
     `Rarity: ${row.rarity || ""}`,
     `Creator: ${row.creator || ""}`,
+    `Item Level: ${row.item_level || "Unknown"}`,
+    `Sources: ${(row.sources || [row.source]).filter(Boolean).join(", ")}`,
     `Tags: ${bl4TagText(row) || ""}`,
     row.url ? `Lootlemon URL: ${row.url}` : "",
     row.image_url ? `Image URL: ${row.image_url}` : "",
     row.notes ? `Notes: ${row.notes}` : "",
+    Object.keys(row.catalog_parameters || {}).length ? `Catalog parameters: ${JSON.stringify(row.catalog_parameters)}` : "",
     "Decoded identity:",
     ...identityLines
   ].filter((line) => line !== "").join("\n");
@@ -5300,7 +5335,8 @@ function bl4ImageUrl(row) {
 }
 
 function bl4IsGzoRow(row) {
-  return String(row && row.source ? row.source : "").toLowerCase() === "gzo";
+  const sources = row && Array.isArray(row.sources) ? row.sources : [row && row.source];
+  return sources.some((source) => String(source || "").toLowerCase() === "gzo");
 }
 
 function bl4ImageStats(rows = state.bl4Entries) {
@@ -5405,6 +5441,7 @@ function renderBl4Cards() {
       row.listing,
       row.type,
       row.rarity,
+      row.item_level ? `Level ${row.item_level}` : "",
       row.creator
     ].filter(Boolean).join(" | ");
     const result = document.createElement("div");
@@ -5989,7 +6026,7 @@ async function sendBl4Serial(mode) {
   let deliveryRows = rows;
   let serialText = rows.map((row) => String(row.serial || "").trim()).join("\n");
   const overrideLevel = boolFromSelect(els.bl4OverrideLevel);
-  const deliveryLevel = getInt(els.bl4DeliveryLevel, 1, 70, 70);
+  const deliveryLevel = getInt(els.bl4DeliveryLevel, 1, state.gameParameters.item_level_cap, state.gameParameters.item_level_cap);
   let skippedByOverride = [];
   if (overrideLevel) {
     const preflight = await preflightBl4LevelOverride(rows, serialText, deliveryLevel);
@@ -6075,7 +6112,7 @@ async function loadBl4Catalog() {
     state.bl4CatalogLoaded = true;
     const warnings = state.bl4CatalogWarnings.length ? ` ${state.bl4CatalogWarnings.join(" ")}` : "";
     setBl4Status(
-      `Loaded ${counts.merged || state.bl4Entries.length} local BL4 code(s): ${counts.lootlemon || 0} Lootlemon, ${counts.custom || 0} Custom Static, ${counts.gzo || 0} GZO.${warnings}`,
+      `Loaded ${counts.merged || state.bl4Entries.length} unique local BL4 code(s): ${counts.lootlemon || 0} Lootlemon, ${counts.custom || 0} Custom Static, ${counts.gzo || 0} GZO; ${counts.duplicatesCollapsed || 0} exact duplicate serial(s) collapsed.${warnings}`,
       state.bl4CatalogWarnings.length ? "warning" : "ok"
     );
   })();
@@ -6102,7 +6139,7 @@ async function refreshBl4GzoCatalog() {
     const counts = acceptBl4CatalogResult(result);
     const warnings = state.bl4CatalogWarnings.length ? ` ${state.bl4CatalogWarnings.join(" ")}` : "";
     setBl4Status(
-      `Refreshed ${result.refreshed || counts.gzo || 0} GZO code(s). Loaded ${counts.merged || state.bl4Entries.length} merged BL4 code(s): ${counts.lootlemon || 0} Lootlemon, ${counts.custom || 0} Custom Static, ${counts.gzo || 0} GZO.${warnings}`,
+      `Refreshed ${result.refreshed || counts.gzo || 0} GZO code(s). Loaded ${counts.merged || state.bl4Entries.length} unique BL4 code(s); ${counts.duplicatesCollapsed || 0} exact duplicate serial(s) collapsed.${warnings}`,
       state.bl4CatalogWarnings.length ? "warning" : "ok"
     );
   } catch (error) {
@@ -7060,7 +7097,7 @@ async function spawnItemPool() {
     setOutput(els.itempoolOutput, "Select an item pool first.");
     return;
   }
-  const level = getInt(els.itempoolLevel, 1, 70, 70);
+  const level = getInt(els.itempoolLevel, 1, state.gameParameters.item_level_cap, state.gameParameters.item_level_cap);
   const count = getInt(els.itempoolCount, 1, 100, 1);
   setOutput(els.itempoolOutput, `Spawning ${names.length} item pool(s)...`);
 
@@ -7096,7 +7133,7 @@ async function spawnAllFilteredItemPools() {
     setOutput(els.itempoolOutput, "No filtered item pools to spawn.");
     return;
   }
-  const level = getInt(els.itempoolLevel, 1, 70, 70);
+  const level = getInt(els.itempoolLevel, 1, state.gameParameters.item_level_cap, state.gameParameters.item_level_cap);
   const count = getInt(els.itempoolCount, 1, 100, 1);
   setOutput(els.itempoolOutput, `Queuing ${names.length} filtered item pool(s)...`);
   appendActivity(`Sending spawn_itempool_all for ${names.length} pool(s)...`);
@@ -9742,7 +9779,7 @@ async function invGiveSerialToGame() {
   const copies = getInt(els.invSerialCopies, 1, 50, 1);
   if (els.invSerialCopies) els.invSerialCopies.value = String(copies);
   const overrideLevel = boolFromSelect(els.invSerialOverride);
-  const deliveryLevel = getInt(els.invSerialLevel, 1, 70, 70);
+  const deliveryLevel = getInt(els.invSerialLevel, 1, state.gameParameters.item_level_cap, state.gameParameters.item_level_cap);
   if (els.invSerialLevel) els.invSerialLevel.value = String(deliveryLevel);
   const giveLabel = invPlayerLabelForValue(giveTarget);
   const viewLabel = invPlayerLabelForValue(
@@ -11306,8 +11343,10 @@ function wireEvents() {
   });
   document.getElementById("setLevelBtn").addEventListener("click", () => runScopedPlayerAction("set_level", {
     xp_track: getValue(els.xpTrack),
-    level: getInt(els.xpLevel, 1, 9999999, 70)
+    level: getExperienceLevel()
   }, els.boostOutput, 30000));
+  if (els.xpTrack) els.xpTrack.addEventListener("change", () => syncGameParameterControls());
+  syncGameParameterControls();
   document.getElementById("giveCurrencyBtn").addEventListener("click", () => runScopedPlayerAction("give_currency", {
     currency_kind: getValue(els.currencyKind),
     amount: getInt(els.currencyAmount, 0, 2147483647, 1000000)
@@ -11473,6 +11512,7 @@ function wireEvents() {
     els.bl4ManufacturerFilter,
     els.bl4RarityFilter,
     els.bl4CreatorFilter,
+    els.bl4LevelFilter,
     els.bl4MattmabFilter
   ].forEach((selectNode) => {
     if (selectNode) selectNode.addEventListener("change", renderBl4Codes);

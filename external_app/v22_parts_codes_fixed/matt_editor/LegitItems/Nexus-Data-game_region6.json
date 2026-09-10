@@ -1,8 +1,4 @@
 {
-  "__copyright": {
-    "author": "Cr4nkSt4r",
-    "github": "https://github.com/Cr4nkSt4r/Borderlands-4.NcsParser"
-  },
   "game_region": {
     "records": [
       {
@@ -66,6 +62,26 @@
               "game_region": "Mandolin_PrivateDick",
               "regioninfo": "display_data'UIRegionDisplayData_Mandolin_PrivateDick'",
               "parent": "game_region'Mandolin'"
+            }
+          },
+          {
+            "viola_elpisvile": {
+              "game_region": "Viola_ElpisVile",
+              "regioninfo": "display_data'UIRegionDisplayData_Viola_ElpisVile'",
+              "loadingscreendef": "loadingscreen_data'ls_elpis'",
+              "zonehandle": "map'Viola_ElpisVile_P.Zone_ElpisVile_Start'",
+              "parent": "game_region'Viola'"
+            }
+          },
+          {
+            "viola_elpisvile_phase": {
+              "game_region": "Viola_ElpisVile_Phase",
+              "regioninfo": "display_data'UIRegionDisplayData_Viola_ElpisVile'",
+              "loadingscreendef": "loadingscreen_data'ls_elpis'",
+              "zonehandle": "map'Viola_ElpisVile_P.Zone_ElpisVile_Phase'",
+              "displayname": "bp5_world_regions, A8B6B101401D89E28155A0AD2BBE95C8, Do not localize, this is never used",
+              "type": "/Script/OakGame.WorldRegionDef",
+              "parent": "game_region'Viola'"
             }
           }
         ]

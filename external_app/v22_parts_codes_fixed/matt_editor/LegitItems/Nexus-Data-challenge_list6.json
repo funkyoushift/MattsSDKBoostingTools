@@ -1,8 +1,4 @@
 {
-  "__copyright": {
-    "author": "Cr4nkSt4r",
-    "github": "https://github.com/Cr4nkSt4r/Borderlands-4.NcsParser"
-  },
   "challenge_list": {
     "records": [
       {
@@ -59,6 +55,20 @@
             }
           },
           {
+            "challengelist_achievements_viola": {
+              "challenge_list": "ChallengeList_Achievements_Viola",
+              "displayname": "ChallengeList_Achievements, 62430062414E2010A130A0929BF3B145, {0}|platform(default=Achievements,xbox=Achievements,playstation=Trophies,sage=Achievements)",
+              "challenges": [
+                "challenge'Challenges_Achievements_52_Viola_treasure_discover'",
+                "challenge'Challenges_Achievements_53_Viola_boss_defeat'",
+                "challenge'Challenges_Achievements_53_Viola_boss_hybridthresher'",
+                "challenge'Challenges_Achievements_53_Viola_boss_testzero'",
+                "challenge'Challenges_Achievements_53_Viola_boss_viledave'",
+                "challenge'Challenges_Achievements_54_Viola_missions_main'"
+              ]
+            }
+          },
+          {
             "challengelist_echologs_cello": {
               "challenge_list": "ChallengeList_EchoLogs_Cello",
               "displayname": "ChallengeLists_Collectibles_Cello, CDFD3B084776DD896F2E91BB344C2D47, Echo Logs - Cello",
@@ -104,6 +114,18 @@
             }
           },
           {
+            "challengelist_echologs_viola": {
+              "challenge_list": "ChallengeList_EchoLogs_Viola",
+              "displayname": "ChallengeLists_Collectibles_Tuba, CFF7DB5041670B0FCF111B917AE152EE, Viola Echo Logs",
+              "challenges": [
+                "challenge'Challenge_EchoLog_Viola_1'",
+                "challenge'Challenge_EchoLog_Viola_2'",
+                "challenge'Challenge_EchoLog_Viola_3'",
+                "challenge'Challenge_EchoLog_Viola_4'"
+              ]
+            }
+          },
+          {
             "challengelist_mandolin_tutorials": {
               "challenge_list": "ChallengeList_Mandolin_Tutorials",
               "challenges": [
@@ -126,6 +148,15 @@
               "displayname": "UVH_Rankup_Challenge, 9345292F41AF53BA504C5FA18A480248, UVH Rankup 7",
               "challenges": [
                 "challenge'Challenge_UVH_Rankup_7_Parent'"
+              ]
+            }
+          },
+          {
+            "vc5_challengelist_debug": {
+              "challenge_list": "vc5_ChallengeList_DEBUG",
+              "bisvaultcard": "true",
+              "challenges": [
+                "challenge'vc5_KillEnemiesWithTorgue10'"
               ]
             }
           }

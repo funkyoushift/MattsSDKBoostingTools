@@ -2123,6 +2123,10 @@
             if (tokens04Input) tokens04Input.value = '';
             if (level04Input) level04Input.value = '';
             if (points04Input) points04Input.value = '';
+            for (const field of ['tokens', 'level', 'points']) {
+                const input = document.getElementById(`vaultcard05-${field}-input`);
+                if (input) input.value = '';
+            }
 
             const bmHost = document.getElementById('profile-blackmarket-slots-host');
             if (bmHost) bmHost.innerHTML = '';
@@ -4612,6 +4616,7 @@
             if (cosmeticKey.startsWith('Unlockable_Gravitar.')) return 'unlockable_gravitar';
             if (cosmeticKey.startsWith('Unlockable_Paladin.')) return 'unlockable_paladin';
             if (cosmeticKey.startsWith('Unlockable_RoboDealer.')) return 'unlockable_robodealer';
+            if (cosmeticKey.startsWith('Unlockable_CorpoHacker.')) return 'unlockable_corpohacker';
             if (cosmeticKey.startsWith('Unlockable_Echo4.')) return 'unlockable_echo4';
             if (cosmeticKey.startsWith('Unlockable_Weapons.')) return 'unlockable_weapons';
             if (cosmeticKey.startsWith('Unlockable_Vehicles.')) return 'unlockable_vehicles';
@@ -4990,6 +4995,7 @@
                 'unlockable_gravitar': { label: 'Gravitar', items: [] },
                 'unlockable_paladin': { label: 'Paladin', items: [] },
                 'unlockable_robodealer': { label: 'RoboDealer', items: [] },
+                'unlockable_corpohacker': { label: 'Loveless', items: [] },
                 'unlockable_echo4': { label: 'Echo4', items: [] },
                 'unlockable_weapons': { label: 'Weapons', items: [] },
                 'unlockable_vehicles': { label: 'Vehicles', items: [] },
@@ -5284,6 +5290,8 @@
         }
 
         // Currency Management Functions
+        const VAULT_CARD_MAX_LEVEL = 9999;
+
         function renderCurrencies(data) {
             if (!data || typeof data === 'string') return;
             
@@ -5341,6 +5349,10 @@
             }
             const level04 = vaultCard04Exp.level || 1;
             const points04 = vaultCard04Exp.points || 0;
+            const tokens05 = shared.currencies.vaultcard05_tokens || 0;
+            const vaultCard05Exp = shared.experience.find(exp => exp.type === 'VaultCard05_Experience');
+            const level05 = vaultCard05Exp?.level || 1;
+            const points05 = vaultCard05Exp?.points || 0;
             
             // Update input fields
             const tokensInput = document.getElementById('vaultcard-tokens-input');
@@ -5370,6 +5382,12 @@
             if (tokens04Input) tokens04Input.value = tokens04;
             if (level04Input) level04Input.value = level04;
             if (points04Input) points04Input.value = points04;
+            const tokens05Input = document.getElementById('vaultcard05-tokens-input');
+            const level05Input = document.getElementById('vaultcard05-level-input');
+            const points05Input = document.getElementById('vaultcard05-points-input');
+            if (tokens05Input) tokens05Input.value = tokens05;
+            if (level05Input) level05Input.value = level05;
+            if (points05Input) points05Input.value = points05;
         }
 
         function updateVaultCardLevel() {
@@ -5377,21 +5395,13 @@
             if (!levelInput) return;
             
             const level = parseInt(levelInput.value, 10);
-            if (isNaN(level) || level < 1) {
-                showSaveStatus('currencies-items-status', '❌ Level must be at least 1.', false);
+            if (isNaN(level) || level < 1 || level > VAULT_CARD_MAX_LEVEL) {
+                showSaveStatus('currencies-items-status', `❌ Level must be between 1 and ${VAULT_CARD_MAX_LEVEL}.`, false);
                 return;
             }
             
-            // Calculate experience points based on level using specialization XP curve
-            const points = calculateSpecializationXp(level);
-            
-            // Update points input
-            const pointsInput = document.getElementById('vaultcard-points-input');
-            if (pointsInput) {
-                pointsInput.value = points;
-            }
-            
-            // Update YAML
+            // The native Vault Card XP curve differs from specialization.
+            // Preserve the explicitly entered points when changing the level.
             updateCurrencies();
         }
 
@@ -5400,16 +5410,13 @@
             if (!levelInput) return;
             
             const level = parseInt(levelInput.value, 10);
-            if (isNaN(level) || level < 1) {
-                showSaveStatus('currencies-items-status', '❌ Level must be at least 1.', false);
+            if (isNaN(level) || level < 1 || level > VAULT_CARD_MAX_LEVEL) {
+                showSaveStatus('currencies-items-status', `❌ Level must be between 1 and ${VAULT_CARD_MAX_LEVEL}.`, false);
                 return;
             }
             
-            const points = calculateSpecializationXp(level);
-            const pointsInput = document.getElementById('vaultcard02-points-input');
-            if (pointsInput) {
-                pointsInput.value = points;
-            }
+            // The native Vault Card XP curve differs from specialization.
+            // Preserve the explicitly entered points when changing the level.
             updateCurrencies();
         }
 
@@ -5418,16 +5425,13 @@
             if (!levelInput) return;
 
             const level = parseInt(levelInput.value, 10);
-            if (isNaN(level) || level < 1) {
-                showSaveStatus('currencies-items-status', '❌ Level must be at least 1.', false);
+            if (isNaN(level) || level < 1 || level > VAULT_CARD_MAX_LEVEL) {
+                showSaveStatus('currencies-items-status', `❌ Level must be between 1 and ${VAULT_CARD_MAX_LEVEL}.`, false);
                 return;
             }
 
-            const points = calculateSpecializationXp(level);
-            const pointsInput = document.getElementById('vaultcard03-points-input');
-            if (pointsInput) {
-                pointsInput.value = points;
-            }
+            // The native Vault Card XP curve differs from specialization.
+            // Preserve the explicitly entered points when changing the level.
             updateCurrencies();
         }
 
@@ -5436,16 +5440,28 @@
             if (!levelInput) return;
 
             const level = parseInt(levelInput.value, 10);
-            if (isNaN(level) || level < 1) {
-                showSaveStatus('currencies-items-status', '❌ Level must be at least 1.', false);
+            if (isNaN(level) || level < 1 || level > VAULT_CARD_MAX_LEVEL) {
+                showSaveStatus('currencies-items-status', `❌ Level must be between 1 and ${VAULT_CARD_MAX_LEVEL}.`, false);
                 return;
             }
 
-            const points = calculateSpecializationXp(level);
-            const pointsInput = document.getElementById('vaultcard04-points-input');
-            if (pointsInput) {
-                pointsInput.value = points;
+            // The native Vault Card XP curve differs from specialization.
+            // Preserve the explicitly entered points when changing the level.
+            updateCurrencies();
+        }
+
+        function updateVaultCard05Level() {
+            const levelInput = document.getElementById('vaultcard05-level-input');
+            if (!levelInput) return;
+
+            const level = parseInt(levelInput.value, 10);
+            if (isNaN(level) || level < 1 || level > VAULT_CARD_MAX_LEVEL) {
+                showSaveStatus('currencies-items-status', `❌ Level must be between 1 and ${VAULT_CARD_MAX_LEVEL}.`, false);
+                return;
             }
+
+            // The native Vault Card XP curve differs from specialization.
+            // Preserve the explicitly entered points when changing the level.
             updateCurrencies();
         }
 
@@ -5468,6 +5484,9 @@
                 const tokens04Input = document.getElementById('vaultcard04-tokens-input');
                 const level04Input = document.getElementById('vaultcard04-level-input');
                 const points04Input = document.getElementById('vaultcard04-points-input');
+                const tokens05Input = document.getElementById('vaultcard05-tokens-input');
+                const level05Input = document.getElementById('vaultcard05-level-input');
+                const points05Input = document.getElementById('vaultcard05-points-input');
                 
                 if (!tokensInput || !levelInput || !pointsInput) return;
                 
@@ -5483,6 +5502,13 @@
                 const tokens04 = tokens04Input ? (parseInt(tokens04Input.value, 10) || 0) : 0;
                 const level04 = level04Input ? (parseInt(level04Input.value, 10) || 1) : 1;
                 const points04 = points04Input ? (parseInt(points04Input.value, 10) || 0) : 0;
+                const tokens05 = tokens05Input ? (parseInt(tokens05Input.value, 10) || 0) : 0;
+                const level05 = level05Input ? (parseInt(level05Input.value, 10) || 1) : 1;
+                const points05 = points05Input ? (parseInt(points05Input.value, 10) || 0) : 0;
+                if ([level, level02, level03, level04, level05].some(value => value < 1 || value > VAULT_CARD_MAX_LEVEL)) {
+                    showSaveStatus('currencies-items-status', `❌ Vault Card level must be between 1 and ${VAULT_CARD_MAX_LEVEL}.`, false);
+                    return;
+                }
                 
                 const yamlContent = window.profileMonacoEditor.getValue();
                 // Clean YAML before parsing
@@ -5517,6 +5543,7 @@
                 shared.currencies.vaultcard02_tokens = tokens02;
                 shared.currencies.vaultcard03_tokens = tokens03;
                 shared.currencies.vaultcard04_tokens = tokens04;
+                shared.currencies.vaultcard05_tokens = tokens05;
                 
                 // Update or create Vault Card 1 experience entry
                 let vaultCardExp = shared.experience.find(exp => exp.type === 'VaultCard01_Experience');
@@ -5556,6 +5583,14 @@
                 } else {
                     vaultCard04Exp.level = level04;
                     vaultCard04Exp.points = points04;
+                }
+                let vaultCard05Exp = shared.experience.find(exp => exp.type === 'VaultCard05_Experience');
+                if (!vaultCard05Exp) {
+                    vaultCard05Exp = { type: 'VaultCard05_Experience', level: level05, points: points05 };
+                    shared.experience.push(vaultCard05Exp);
+                } else {
+                    vaultCard05Exp.level = level05;
+                    vaultCard05Exp.points = points05;
                 }
                 
                 const newYaml = jsyaml.dump(data, { lineWidth: -1, noRefs: true });
@@ -5925,7 +5960,7 @@
             {
                 handler: 'setCharacterLevelPrompt',
                 title: 'Set Character Level',
-                desc: 'Sets character level to a specified value (1-60).',
+                desc: 'Sets character level to a specified value (1-70).',
                 saveType: 'character',
                 group: 'Character',
             },
@@ -6493,4 +6528,3 @@
                 if (el) el.style.display = "none";
             };
         })();
-

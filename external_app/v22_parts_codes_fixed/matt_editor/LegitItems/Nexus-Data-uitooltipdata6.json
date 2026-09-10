@@ -1,29 +1,154 @@
 {
-  "__copyright": {
-    "author": "Cr4nkSt4r",
-    "github": "https://github.com/Cr4nkSt4r/Borderlands-4.NcsParser"
-  },
   "uitooltipdata": {
     "records": [
       {
         "entries": [
           {
-            "_tooltip_exo_passives_0": {
-              "uitooltipdata": "_tooltip_exo_passives_0",
-              "header": "tooltips_passives, 9B313CD1E325487BA33251DE66858032, Exo Passive Skill - Temp",
-              "type": "Asset'/Script/OakGame.OakUISkillTooltipDataDef'",
+            "1corpohackertooltips_passives": {
+              "uitooltipdata": "1CorpoHackerTooltips_Passives",
+              "stats": "",
+              "header": "tooltips_passives, 29373A1E431803FF4B3B0E967168F6B6, Passive Skill - Corphacker",
+              "subheader": "tooltips_skills, C58CE8A14EC170F69EF1A4A6781FD9D7, Passive",
               "parent": "uitooltipdata'tooltip_passive'"
             }
-          }
-        ]
-      },
-      {
-        "entries": [
+          },
+          {
+            "_tooltip_corpohacker_augments": {
+              "uitooltipdata": "_tooltip_CorpoHacker_augments",
+              "notifytext": "corpohacker_ui_skills, C4E8939949843434D1EC7BB911B86784, Equip Augment to Activate",
+              "header": "corpohacker_ui_skills, 994F8E13484DC70DC39E12AFAE95BF06, Nothing",
+              "subheader": "corpohacker_ui_skills, 355269124E76C0808E3F01A4C6F9CED2, Augment",
+              "body": "corpohacker_ui_skills, DA8FC22C473A3B23FD13E8B0601B115C, This augment does nothing",
+              "type": "/Script/OakGame.OakUISkillTooltipDataDef",
+              "parent": "uitooltipdata'tooltip_augment'"
+            }
+          },
+          {
+            "_tooltip_corpohacker_augments_manifestation": {
+              "uitooltipdata": "_tooltip_CorpoHacker_augments_Manifestation",
+              "notifytext": "corpohacker_ui_skills, C5E471A64EB5F06AB678799B69D2AD0B, Equip Augment to Activate",
+              "header": "corpohacker_ui_skills, B5094FB34F1C51DEFF96D19086C205CE, Nothing",
+              "subheader": "corpohacker_ui_skills, C3398F8C46EAEB85FBD992A3892EE244, Augment",
+              "body": "corpohacker_ui_skills, 270AF91246374D8145EFDFAE96E18F9C, This augment does nothing",
+              "type": "/Script/OakGame.OakUISkillTooltipDataDef",
+              "parent": "uitooltipdata'_tooltip_CorpoHacker_augments'"
+            }
+          },
+          {
+            "_tooltip_corpohacker_capstones": {
+              "uitooltipdata": "_tooltip_CorpoHacker_capstones",
+              "notifytext": "corpohacker_ui_skills, 325DA6C5498FB781D915E88D94FDCD6F, Equip Augment to Activate",
+              "header": "corpohacker_ui_skills, E015583842DE9BF05F769E85F0D900E8, Nothing",
+              "subheader": "corpohacker_ui_skills, 7146D8A24A9830A9326D54A1960D48EB, Capstone",
+              "body": "corpohacker_ui_skills, 9677DA6A4342487473F618989D82F8CB, This capstone does nothing",
+              "type": "/Script/OakGame.OakUISkillTooltipDataDef",
+              "parent": "uitooltipdata'tooltip_capstone'"
+            }
+          },
+          {
+            "_tooltip_corpohacker_capstones_manifestation": {
+              "uitooltipdata": "_tooltip_CorpoHacker_capstones_Manifestation",
+              "notifytext": "corpohacker_ui_skills, 398902E447AAB239F277C18CF3686BD1, Equip Augment to Activate",
+              "header": "corpohacker_ui_skills, 8D24A7424368001FD4CF43ACF6928F18, Nothing",
+              "subheader": "corpohacker_ui_skills, F5D4258C4F9986B206BC3791FD68BCA6, Capstone",
+              "body": "corpohacker_ui_skills, 605DA28245E1CBF79E95FFAF6D11949A, This capstone does nothing.",
+              "type": "/Script/OakGame.OakUISkillTooltipDataDef",
+              "parent": "uitooltipdata'_tooltip_CorpoHacker_capstones'"
+            }
+          },
           {
             "robodealertooltipspassive": {
               "uitooltipdata": "RoboDealerTooltipsPassive",
               "header": "tooltips_passives, 54306AB04029A9B2817160A649858D53, Passive Skill - Robodealer Temp",
               "parent": "uitooltipdata'tooltip_passive'"
+            }
+          },
+          {
+            "tooltip_ch_passive_23_zeroday": {
+              "uitooltipdata": "Tooltip_CH_Passive_23_ZeroDay",
+              "header": "tooltips_passives, C825C63045A2E79BD63FAD8D0D3A1498, Zero Day",
+              "body": "tooltips_passives, 0645C1D24670C9765996F29BB183BA18, Enemies infected by [primary]Loveless's Contagion[/primary] [secondary]Explode[/secondary] when they die, dealing [nowrap][corrosive_icon][corrosive]Corrosive[/corrosive][/nowrap] [corrosive]Ordnance Damage[/corrosive].",
+              "parent": "uitooltipdata'CorpoHackerTooltips_Passives'",
+              "stats": [
+                {
+                  "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
+                  "formattext": "Corpohacker_Passives_Contagion_UI, 9455A5074B6075102A4BDD9217E9D6BA, [secondary]Corrosive Explosion Damage:[/secondary] {0} {grade}",
+                  "argsmap": {
+                    "pairs": {
+                      "pair633932275": {
+                        "key": "0",
+                        "value": {
+                          "structtype": "Asset'/Script/GbxGame.NumericDisplayValue'",
+                          "attributedef": "attribute'Calc_CH_UI_Passive_23_ZeroDay_Damage'",
+                          "bshowstatmodifier": "true"
+                        }
+                      },
+                      "pair2259948949": {
+                        "key": "1",
+                        "value": {
+                          "structtype": "Asset'/Script/GbxGame.NumericDisplayValue'",
+                          "keygroup": "grade",
+                          "displaycondition": {
+                            "attributedef": "attribute'SkillGrade_CH_23_ZeroDay'"
+                          },
+                          "attributedef": "attribute'Calc_CH_UI_Passive_23_ZeroDay_Damage_NoGrade'",
+                          "bdisplayplussign": "true"
+                        }
+                      },
+                      "pair3052137813": {
+                        "key": "2",
+                        "value": {
+                          "structtype": "Asset'/Script/GbxGame.NumericDisplayValue'",
+                          "keygroup": "grade",
+                          "displaycondition": {
+                            "attributedef": "attribute'SkillGrade_CH_23_ZeroDay'",
+                            "comparetype": "GreaterThan"
+                          },
+                          "attributedef": "attribute'Calc_CH_UI_Passive_23_ZeroDay_DamagePerGrade'",
+                          "bdisplayplussign": "true"
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "tooltip_ch_passive_52_montage": {
+              "uitooltipdata": "Tooltip_CH_Passive_52_Montage",
+              "stats": [
+                {
+                  "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
+                  "formattext": "Corpohacker_Passives_VPN_UI, B5B984B24EB1D1820350168D98C9DDA1, [secondary]Stealth Duration:[/secondary] {0}",
+                  "argsmap": {
+                    "pairs": {
+                      "pair2271591783": "",
+                      "pair633932275": {
+                        "key": "0",
+                        "value": {
+                          "structtype": "Asset'/Script/GbxGame.NumericDisplayValue'",
+                          "attributedef": "attribute'Att_Calc_Corpohacker_PSV_52_Montage_StealthDuration'"
+                        }
+                      }
+                    }
+                  }
+                }
+              ],
+              "header": "tooltips_passives, BC67D5ED428F2ACC2CA4B0A7989BC211, Montage",
+              "subheader": "tooltips_skills, B1310C1445F4839C1F898893F1C01FCE, Passive",
+              "body": "tooltips_passives, 8796C65A4FACB04E6078A3AE5ACA332B, [primary]Loveless[/primary] now enters [secondary]Stealth[/secondary] for a [secondary]Duration[/secondary] when she kills an enemy with a [secondary]Sniper Rifle[/secondary].",
+              "parent": "uitooltipdata'_tooltip_CH_passives'"
+            }
+          },
+          {
+            "tooltip_corpohacker_actionskill_contagion_augment_explosiveshuriken": {
+              "uitooltipdata": "ToolTip_Corpohacker_ActionSkill_Contagion_Augment_ExplosiveShuriken",
+              "notifytext": "Corpohacker_ActionSkill_Contagion, DA0C7305443A5D2968B13892BD2E054A, Equip Augment to Activate",
+              "header": "Corpohacker_ActionSkill_Contagion, 06DF5509403BA41BC71E96A6742881CD, Explosive Shuriken",
+              "subheader": "Corpohacker_ActionSkill_Contagion, EE9BAACB4B0F326F51D532B1E380345E, Augment",
+              "body": "Corpohacker_ActionSkill_Contagion, 4B73417E4EC48580CBFA85ACEA8FCF5D, Your Shuriken now explodes on contact, dealing higher Corrosive Damage in a large area. Your Executable does 25% more damage.",
+              "type": "/Script/OakGame.OakUISkillTooltipDataDef"
             }
           },
           {
@@ -406,6 +531,18 @@
               "header": "tooltips_passives, ECD1FAC54714AB3F1D324DA699A38478, Force Windfall",
               "body": "tooltips_passives, 97FADE2F421A2B3A3370FCBE7EDA63B4, Slot this to force windfall whenever it would try to active",
               "parent": "uitooltipdata'RoboDealerTooltipsPassive'"
+            }
+          }
+        ]
+      },
+      {
+        "entries": [
+          {
+            "_tooltip_exo_passives_0": {
+              "uitooltipdata": "_tooltip_exo_passives_0",
+              "header": "tooltips_passives, 9B313CD1E325487BA33251DE66858032, Exo Passive Skill - Temp",
+              "type": "Asset'/Script/OakGame.OakUISkillTooltipDataDef'",
+              "parent": "uitooltipdata'tooltip_passive'"
             }
           }
         ]

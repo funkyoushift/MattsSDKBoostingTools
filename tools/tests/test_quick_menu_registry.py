@@ -50,6 +50,17 @@ def test_registry_rejects_unknown_actions():
     assert result["ok"] is False
 
 
+def test_vault_cards_four_and_five_keep_their_pin_targets():
+    registry = _registry()
+    for card in (4, 5):
+        kind = f"vaultcard{card}"
+        track = f"vaultcard_xp_{card}"
+        assert registry.sanitize_payload("give_currency", {"currency_kind": kind}) == {"currency_kind": kind}
+        assert registry.sanitize_payload("set_level", {"xp_track": track, "level": 9_999_999}) == {
+            "xp_track": track, "level": 9999,
+        }
+
+
 def test_registry_sanitizes_payload_and_label():
     registry = _registry()
     source_payload = {"backpack_size": 777, "bank_size": 888, "danger": "drop table"}

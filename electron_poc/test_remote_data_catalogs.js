@@ -248,7 +248,8 @@ async function testHashMismatchRetriesThenKeepsPrior() {
     const travelCache = cachedFilePath(userData, KNOWN_FILES.travelstations);
     const goodHash = await sha256File(travelCache);
 
-    // Corrupt only travelstations in a poisoned seed dir so hash fails; prior cache must survive.
+    // A mismatched seed must fall through to remote download. Poison that
+    // response too, then verify a failed hash leaves the prior cache untouched.
     const poisonDir = await fsp.mkdtemp(path.join(os.tmpdir(), "msbt-poison-seed-"));
     try {
       for (const name of fs.readdirSync(DATA_DIR)) {
@@ -266,7 +267,10 @@ async function testHashMismatchRetriesThenKeepsPrior() {
         electronAppDir: ELECTRON_APP_DIR,
         retries: 2,
         manifestUrls: [manifestUrl],
-        fetch: globalThis.fetch
+        fetch: async () => ({
+          ok: true,
+          arrayBuffer: async () => Buffer.from('{"poison":true}\n')
+        })
       });
       assert.ok(poisoned.failed.some((row) => row.id === "travelstations"), "expected travelstations hash failure");
       // Stale rewritten cache remains (we do not delete on failed write of new bytes from mismatch before write — actually download fails before write, so stale remains)

@@ -220,6 +220,24 @@ def build_asset_entries(data_version: str, label: str) -> list[dict[str, Any]]:
     return assets
 
 
+def catalog_game_build(path: Path, digest: str) -> str | None:
+    """Carry verified installed-game freshness into cache preference checks."""
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    candidates = []
+    if isinstance(payload, dict):
+        candidates.append((payload.get("game_data") or {}).get("game_build"))
+    elif isinstance(payload, list):
+        candidates.extend(row.get("game_build") for row in payload if isinstance(row, dict))
+    provenance_path = ROOT / "external_app/v22_parts_codes_fixed/matt_editor/LegitItems/local_game_data_provenance.json"
+    if provenance_path.is_file():
+        provenance = json.loads(provenance_path.read_text(encoding="utf-8"))
+        derived = (provenance.get("derived_catalogs") or {}).get(path.name) or {}
+        if derived.get("sha256") == digest:
+            candidates.append(derived.get("game_build"))
+    builds = {str(value) for value in candidates if value is not None and re.fullmatch(r"[1-9]\d*", str(value))}
+    return str(max(map(int, builds))) if builds else None
+
+
 def build_manifest(data_version: str, min_app_version: str) -> dict[str, Any]:
     ensure_seed_copies()
     label = f"data-v{data_version}"
@@ -247,6 +265,9 @@ def build_manifest(data_version: str, min_app_version: str) -> dict[str, Any]:
             entry["primary_url"] = spec["primary"]
         if spec.get("notes"):
             entry["notes"] = spec["notes"]
+        game_build = catalog_game_build(path, digest)
+        if game_build:
+            entry["game_build"] = game_build
         files.append(entry)
 
     if missing:

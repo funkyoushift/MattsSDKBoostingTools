@@ -1,8 +1,4 @@
 {
-  "__copyright": {
-    "author": "Cr4nkSt4r",
-    "github": "https://github.com/Cr4nkSt4r/Borderlands-4.NcsParser"
-  },
   "itempool": {
     "records": [
       {
@@ -12165,6 +12161,29 @@
       {
         "entries": [
           {
+            "itempool_bor_sg_05_legendary_relay_shiny": {
+              "itempool": "itempool_bor_sg_05_legendary_relay_shiny",
+              "items": [
+                {
+                  "item": {
+                    "item": {
+                      "handle": "inv'BOR_SG.comp_05_legendary_relay'"
+                    }
+                  }
+                }
+              ],
+              "mingamestage": "attribute'Att_MinGameStage_WeaponType_Shotgun'",
+              "customizationlist": [
+                {
+                  "probability": {
+                    "attribute": "attribute'attr_is_story_complete'"
+                  },
+                  "customization": "inv_custom'Cosmetics_Weapon_Shiny_relay'"
+                }
+              ]
+            }
+          },
+          {
             "itempool_bor_sr_05_legendary_tankbuster_shiny": {
               "itempool": "itempool_bor_sr_05_legendary_tankbuster_shiny",
               "items": [
@@ -12328,6 +12347,16 @@
                   "weight": {
                     "attribute": "attribute'weight_classmod_robodealer'"
                   }
+                },
+                {
+                  "item": {
+                    "item": {
+                      "handle": "inv'classmod_corpohacker.comp_05_legendary_tuba'"
+                    }
+                  },
+                  "weight": {
+                    "attribute": "attribute'weight_classmod_corpohacker'"
+                  }
                 }
               ],
               "mingamestage": "attribute'Att_MinGameStage_ClassMod'"
@@ -12398,6 +12427,29 @@
                     "attribute": "attribute'attr_is_story_complete'"
                   },
                   "customization": "inv_custom'Cosmetics_Weapon_Shiny_mercredi'"
+                }
+              ]
+            }
+          },
+          {
+            "itempool_dad_ps_05_legendary_blackout_shiny": {
+              "itempool": "itempool_dad_ps_05_legendary_blackout_shiny",
+              "items": [
+                {
+                  "item": {
+                    "item": {
+                      "handle": "inv'DAD_PS.comp_05_legendary_blackout'"
+                    }
+                  }
+                }
+              ],
+              "mingamestage": "attribute'Att_MinGameStage_WeaponType_Pistol'",
+              "customizationlist": [
+                {
+                  "probability": {
+                    "attribute": "attribute'attr_is_story_complete'"
+                  },
+                  "customization": "inv_custom'Cosmetics_Weapon_Shiny_blackout'"
                 }
               ]
             }
@@ -12948,6 +13000,16 @@
                   "weight": {
                     "attribute": "attribute'weight_classmod_robodealer'"
                   }
+                },
+                {
+                  "item": {
+                    "item": {
+                      "handle": "inv'classmod_corpohacker.comp_05_legendary_raid2'"
+                    }
+                  },
+                  "weight": {
+                    "attribute": "attribute'weight_classmod_corpohacker'"
+                  }
                 }
               ],
               "mingamestage": "attribute'Att_MinGameStage_ClassMod'"
@@ -12972,6 +13034,29 @@
                     "attribute": "attribute'attr_is_story_complete'"
                   },
                   "customization": "inv_custom'Cosmetics_Weapon_Shiny_fishward'"
+                }
+              ]
+            }
+          },
+          {
+            "itempool_jak_ar_05_legendary_flashfuel_shiny": {
+              "itempool": "itempool_jak_ar_05_legendary_FlashFuel_shiny",
+              "items": [
+                {
+                  "item": {
+                    "item": {
+                      "handle": "inv'JAK_AR.comp_05_legendary_rowdy'"
+                    }
+                  }
+                }
+              ],
+              "mingamestage": "attribute'Att_MinGameStage_WEaponType_AssaultRifle'",
+              "customizationlist": [
+                {
+                  "probability": {
+                    "attribute": "attribute'attr_is_story_complete'"
+                  },
+                  "customization": "inv_custom'Cosmetics_Weapon_Shiny_FlashFuel'"
                 }
               ]
             }
@@ -13041,6 +13126,29 @@
                     "attribute": "attribute'attr_is_story_complete'"
                   },
                   "customization": "inv_custom'Cosmetics_Weapon_Shiny_Extinction'"
+                }
+              ]
+            }
+          },
+          {
+            "itempool_mal_sg_05_legendary_aerodramatic_shiny": {
+              "itempool": "itempool_mal_sg_05_legendary_AeroDramatic_shiny",
+              "items": [
+                {
+                  "item": {
+                    "item": {
+                      "handle": "inv'TOR_SG.comp_05_legendary_AeroDramatic'"
+                    }
+                  }
+                }
+              ],
+              "mingamestage": "attribute'Att_MinGameStage_WeaponType_Shotgun'",
+              "customizationlist": [
+                {
+                  "probability": {
+                    "attribute": "attribute'attr_is_story_complete'"
+                  },
+                  "customization": "inv_custom'Cosmetics_Weapon_Shiny_AeroDramatic'"
                 }
               ]
             }
@@ -13834,6 +13942,62 @@
             }
           },
           {
+            "itempool_tediorearmy_sprayer": {
+              "itempool": "ItemPool_TedioreArmy_Sprayer",
+              "items": [
+                {
+                  "item": {
+                    "item": {
+                      "handle": "inv'Weapon_TedioreArmy_Sprayer.Comp_TedioreArmy_Sprayer'"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "itempool_tedioreglider_rapidlaser": {
+              "itempool": "ItemPool_TedioreGlider_RapidLaser",
+              "items": [
+                {
+                  "item": {
+                    "item": {
+                      "handle": "inv'Weapon_TedioreGlider_RapidLaser.Comp_TedioreGlider_RapidLaser'"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "itempool_tedioreturret_gatemission4": {
+              "itempool": "ItemPool_TedioreTurret_GateMission4",
+              "items": [
+                {
+                  "item": {
+                    "item": {
+                      "handle": "inv'Weapon_TedioreTurret_GateMission4.Comp_TedioreTurret_GateMission4'"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "itempool_tedioreturret_mg": {
+              "itempool": "ItemPool_TedioreTurret_MG",
+              "items": [
+                {
+                  "item": {
+                    "item": {
+                      "handle": "inv'Weapon_TedioreTurret_MG.Comp_TedioreTurret_MG'"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
             "itempool_tor_ps_05_legendary_breadth_shiny": {
               "itempool": "itempool_tor_PS_05_legendary_Breadth_shiny",
               "items": [
@@ -13875,6 +14039,29 @@
                     "attribute": "attribute'attr_is_story_complete'"
                   },
                   "customization": "inv_custom'Cosmetics_Weapon_Shiny_arctic'"
+                }
+              ]
+            }
+          },
+          {
+            "itempool_vla_sm_05_legendary_aura_shiny": {
+              "itempool": "itempool_vla_sm_05_legendary_aura_shiny",
+              "items": [
+                {
+                  "item": {
+                    "item": {
+                      "handle": "inv'VLA_SM.comp_05_legendary_aura'"
+                    }
+                  }
+                }
+              ],
+              "mingamestage": "attribute'Att_MinGameStage_WeaponType_SMG'",
+              "customizationlist": [
+                {
+                  "probability": {
+                    "attribute": "attribute'attr_is_story_complete'"
+                  },
+                  "customization": "inv_custom'Cosmetics_Weapon_Shiny_aura'"
                 }
               ]
             }

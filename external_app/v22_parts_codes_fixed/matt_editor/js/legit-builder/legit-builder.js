@@ -1080,14 +1080,14 @@
 
         function rootKeyNeedsPack4Nexus(rootKey) {
             const k = String(rootKey || '').toLowerCase();
-            return k.indexOf('robodealer') !== -1 || k.indexOf('robo_dealer') !== -1;
+            return k.indexOf('robodealer') !== -1 || k.indexOf('robo_dealer') !== -1 || k.indexOf('corpohacker') !== -1;
         }
 
         function rootDefNeedsPack4Nexus(root) {
             if (!root) return false;
             if (rootKeyNeedsPack4Nexus(root.key)) return true;
             const si = root.serialIndex;
-            return si === 404 || si === '404';
+            return si === 404 || si === '404' || si === 402 || si === '402';
         }
 
         function textMightReferencePack4ClassMod(text) {
@@ -1096,6 +1096,8 @@
             if (/Char_RoboDealer/i.test(s)) return true;
             if (/\b404\s*:/.test(s)) return true;
             if (/robo_dealer/i.test(s) && /classmod/i.test(s)) return true;
+            if (/classmod_corpohacker|Char_CorpoHacker/i.test(s)) return true;
+            if (/\b402\s*:/.test(s)) return true;
             return false;
         }
 
@@ -1126,6 +1128,7 @@
             '254': 'Siren', // Vex
             '253': 'Rafa',
             '252': 'Harlowe',
+            '402': 'Loveless',
             '404': 'Robodealer'
         };
 
@@ -2096,6 +2099,7 @@
                         exo_skill_trees: 'Rafa',
                         gravitar_skill_trees: 'Harlowe',
                         paladin_skill_trees: 'Paladin',
+                        corpohacker_skill_trees: 'Loveless',
                         robodealer_skill_trees: 'Robodealer'
                     };
                     rawData.skilltrees_data.records.forEach(record => {
@@ -2732,6 +2736,7 @@
                 exo_skill_trees: 'Rafa',
                 gravitar_skill_trees: 'Harlowe',
                 paladin_skill_trees: 'Paladin',
+                corpohacker_skill_trees: 'Loveless',
                 robodealer_skill_trees: 'Robodealer'
             };
             parsedPayload.skilltrees_data.records.forEach(record => {
@@ -10685,7 +10690,7 @@
                 if (invTn === 'passive_points' && (it.passiveIconUrl || it.passiveDesc)) {
                     const iconUrl = it.passiveIconUrl ? String(it.passiveIconUrl) : '';
                     const imgHtml = iconUrl
-                        ? `<img src="${escAttrCross(iconUrl)}" alt="" width="24" height="24" loading="lazy" style="object-fit:contain;flex-shrink:0;border-radius:3px;border:1px solid #555;background:#151515;align-self:flex-start;margin-top:1px;" onerror="this.style.opacity='0.2';" />`
+                        ? `<img src="${escAttrCross(iconUrl)}" alt="" width="24" height="24" loading="lazy" style="object-fit:contain;flex-shrink:0;border-radius:3px;border:1px solid #555;background:#151515;align-self:flex-start;margin-top:1px;" onerror="this.style.display='none';" />`
                         : `<span style="width:24px;height:24px;flex-shrink:0;border:1px dashed #444;border-radius:3px;background:#151515;display:block;box-sizing:border-box;align-self:flex-start;margin-top:1px;"></span>`;
                     const descRaw =
                         it.passiveDesc != null && String(it.passiveDesc).trim() ? String(it.passiveDesc).trim() : '';
@@ -10826,7 +10831,7 @@
                 if (depPick && normalizeDepTableName(depPick.depTableName) === 'passive_points') {
                     const pEx = resolvePassivePointsUiExtras(depPick, data, 'passive_points');
                     if (pEx && pEx.iconUrl) {
-                        passiveIconHtml = `<img class="mi-picked-passive-icon" src="${escAttr(pEx.iconUrl)}" alt="" width="28" height="28" loading="lazy" style="object-fit:contain;flex-shrink:0;border-radius:4px;border:1px solid #444;background:#1a1a1a;align-self:flex-start;" onerror="this.style.opacity='0.25';" />`;
+                        passiveIconHtml = `<img class="mi-picked-passive-icon" src="${escAttr(pEx.iconUrl)}" alt="" width="28" height="28" loading="lazy" style="object-fit:contain;flex-shrink:0;border-radius:4px;border:1px solid #444;background:#1a1a1a;align-self:flex-start;" onerror="this.style.display='none';" />`;
                     }
                     if (pEx && pEx.description) {
                         passiveFormatHtml = `<div class="mi-picked-passive-formattext" style="font-size:10px;line-height:1.4;margin-top:3px;color:#b8b8b8;white-space:normal;overflow-wrap:break-word;word-break:normal;">${formatUiStatTextToHtml(pEx.description)}</div>`;
@@ -11791,7 +11796,7 @@
                 if (tn === 'passive_points') {
                     const iconUrl = x.i ? String(x.i) : '';
                     const imgHtml = iconUrl
-                        ? `<img src="${escAttrMiCand(iconUrl)}" alt="" width="24" height="24" loading="lazy" style="object-fit:contain;flex-shrink:0;border-radius:3px;border:1px solid #555;background:#151515;align-self:flex-start;margin-top:1px;" onerror="this.style.opacity='0.2';" />`
+                        ? `<img src="${escAttrMiCand(iconUrl)}" alt="" width="24" height="24" loading="lazy" style="object-fit:contain;flex-shrink:0;border-radius:3px;border:1px solid #555;background:#151515;align-self:flex-start;margin-top:1px;" onerror="this.style.display='none';" />`
                         : `<span style="width:24px;height:24px;flex-shrink:0;border:1px dashed #444;border-radius:3px;background:#151515;display:block;box-sizing:border-box;align-self:flex-start;margin-top:1px;"></span>`;
                     const descRaw = x.p != null && String(x.p).trim() ? String(x.p).trim() : '';
                     const descBlock = descRaw
@@ -14440,12 +14445,13 @@
                     
                     // Determine if this is a classmod root and which character it belongs to
                     const isClassModRoot = root.key && root.key.toLowerCase().includes('classmod');
-                    // Serial indices: 254=Siren, 255=Paladin, 256=Rafa, 259=Harlowe, 404=Robodealer (DLC inv4)
+                    // DLC inv4 roots: 402=Loveless, 404=Robodealer.
                     const classModCharacterMap = {
                         254: 'Siren',
                         255: 'Paladin',
                         256: 'Rafa',
                         259: 'Harlowe',
+                        402: 'Loveless',
                         404: 'Robodealer'
                     };
                     const classModCharacter = isClassModRoot && root.serialIndex !== null && root.serialIndex !== undefined
@@ -15010,7 +15016,7 @@
                                             <div class="dep-item ${selectableClass} ${selectedClass} ${invalidClass} ${orderConflictClass} ${disabledClass}" style="${invCompCardStyle}" data-part-id="${partId}" data-root-key="${root.key}" data-part-key="${item.key}" data-table-name="${tableName}" data-is-selectable="${isSelectable}" data-dep-search="${depSearchAttr}" title="${tooltipText}">
                                                 ${showPassiveSkillRow ? `
                                                     <div class="dep-item-skill-row${isSlotDisabled ? ' legit-opacity-50' : ''}">
-                                                        ${skillImageUrl ? `<img class="dep-item-skill-icon dep-item-skill-icon--sm" src="${skillImageUrl}" alt="${passiveIconAlt}" onerror="this.style.opacity='0.25';">` : ''}
+                                                        ${skillImageUrl ? `<img class="dep-item-skill-icon dep-item-skill-icon--sm" src="${skillImageUrl}" alt="${passiveIconAlt}" onerror="this.style.display='none';">` : ''}
                                                         <div class="dep-item-skill-meta">
                                                             <div class="dep-item-head">
                                                                 ${(skillInfo && (skillInfo.name || skillInfo.skill_name)) ? (skillInfo.name || skillInfo.skill_name) : partDisplayName}${serialFormat ? `<span class="dep-item-serial-muted">${serialFormat}</span>` : ''}
@@ -15084,7 +15090,7 @@
                                             <div class="dep-item ${selectableClass} ${selectedClass} ${invalidClass} ${orderConflictClass} ${disabledClass}" style="${invCompCardStyle}" data-part-id="${partId}" data-root-key="${root.key}" data-part-key="${item.key}" data-table-name="${tableName}" data-is-selectable="${isSelectable}" data-dep-search="${depSearchAttr}" title="${tooltipText}">
                                                 ${showPassiveSkillRow ? `
                                                     <div class="dep-item-skill-row dep-item-skill-row--start${isSlotDisabled ? ' legit-opacity-50' : ''}">
-                                                        ${skillImageUrl ? `<img class="dep-item-skill-icon dep-item-skill-icon--lg" src="${skillImageUrl}" alt="${passiveIconAlt}" onerror="this.style.opacity='0.25';">` : ''}
+                                                        ${skillImageUrl ? `<img class="dep-item-skill-icon dep-item-skill-icon--lg" src="${skillImageUrl}" alt="${passiveIconAlt}" onerror="this.style.display='none';">` : ''}
                                                         <div class="dep-item-skill-meta">
                                                             <div class="dep-item-head--bold">
                                                                 ${(skillInfo && (skillInfo.name || skillInfo.skill_name)) ? (skillInfo.name || skillInfo.skill_name) : partDisplayName}${serialFormat ? `<span class="dep-item-serial-muted">${serialFormat}</span>` : ''}${selectedStateIcon}${isSlotDisabled ? ' (Disabled)' : ''}
@@ -15682,7 +15688,7 @@
                                             <div class="dep-item ${selectableClass} ${selectedClass} ${invalidClass} ${orderConflictClass} ${disabledClass}" style="${invCompCardStyle}" data-part-id="${partId}" data-root-key="${root.key}" data-part-key="${item.key}" data-table-name="${tableName}" data-is-selectable="${isSelectable}" data-dep-search="${depSearchAttr}" title="${tooltipText}">
                                                 ${showPassiveSkillRow ? `
                                                     <div class="dep-item-skill-row${isSlotDisabled ? ' legit-opacity-50' : ''}">
-                                                        ${skillImageUrl ? `<img class="dep-item-skill-icon dep-item-skill-icon--sm" src="${skillImageUrl}" alt="${passiveIconAlt}" onerror="this.style.opacity='0.25';">` : ''}
+                                                        ${skillImageUrl ? `<img class="dep-item-skill-icon dep-item-skill-icon--sm" src="${skillImageUrl}" alt="${passiveIconAlt}" onerror="this.style.display='none';">` : ''}
                                                         <div class="dep-item-skill-meta">
                                                             <div class="dep-item-head">
                                                                 ${(skillInfo && (skillInfo.name || skillInfo.skill_name)) ? (skillInfo.name || skillInfo.skill_name) : partDisplayName}${serialFormat ? `<span class="dep-item-serial-muted">${serialFormat}</span>` : ''}
@@ -15756,7 +15762,7 @@
                                             <div class="dep-item ${selectableClass} ${selectedClass} ${invalidClass} ${orderConflictClass} ${disabledClass}" style="${invCompCardStyle}" data-part-id="${partId}" data-root-key="${root.key}" data-part-key="${item.key}" data-table-name="${tableName}" data-is-selectable="${isSelectable}" data-dep-search="${depSearchAttr}" title="${tooltipText}">
                                                 ${showPassiveSkillRow ? `
                                                     <div class="dep-item-skill-row dep-item-skill-row--start${isSlotDisabled ? ' legit-opacity-50' : ''}">
-                                                        ${skillImageUrl ? `<img class="dep-item-skill-icon dep-item-skill-icon--lg" src="${skillImageUrl}" alt="${passiveIconAlt}" onerror="this.style.opacity='0.25';">` : ''}
+                                                        ${skillImageUrl ? `<img class="dep-item-skill-icon dep-item-skill-icon--lg" src="${skillImageUrl}" alt="${passiveIconAlt}" onerror="this.style.display='none';">` : ''}
                                                         <div class="dep-item-skill-meta">
                                                             <div class="dep-item-head--bold">
                                                                 ${(skillInfo && (skillInfo.name || skillInfo.skill_name)) ? (skillInfo.name || skillInfo.skill_name) : partDisplayName}${serialFormat ? `<span class="dep-item-serial-muted">${serialFormat}</span>` : ''}${selectedStateIcon}${isSlotDisabled ? ' (Disabled)' : ''}
@@ -17526,7 +17532,7 @@
             const rootSerial = m0[1];
             const levelEl = document.getElementById('mi_outputLevel');
             const seedEl = document.getElementById('mi_outputSeed');
-            const rawLv = levelEl && levelEl.value != null ? String(levelEl.value).trim() : '60';
+            const rawLv = levelEl && levelEl.value != null ? String(levelEl.value).trim() : '70';
             const rawSd = seedEl && seedEl.value != null ? String(seedEl.value).trim() : '1';
             const lvN = parseInt(rawLv, 10);
             const sdN = parseInt(rawSd, 10);
@@ -29307,7 +29313,7 @@
             }
             
             const rootDefs = data && data.rootDefinitions ? data.rootDefinitions : [];
-            const level = lbEl('outputLevel')?.value || '60';
+            const level = lbEl('outputLevel')?.value || '70';
             const seed = lbEl('outputSeed')?.value || '1';
             
             // Build output string for each root
@@ -30828,7 +30834,7 @@
             }
             const levelEl = lbEl('outputLevel');
             const seedEl = lbEl('outputSeed');
-            if (levelEl) levelEl.value = '60';
+            if (levelEl) levelEl.value = '70';
             if (seedEl) seedEl.value = '1';
             clearAllSelectedParts();
         };
@@ -30844,7 +30850,7 @@
             clearModdedDecodedSummaryAndSkinUi();
             const levelEl = lbEl('outputLevel');
             const seedEl = lbEl('outputSeed');
-            if (levelEl) levelEl.value = '60';
+            if (levelEl) levelEl.value = '70';
             if (seedEl) seedEl.value = '1';
             clearAllSelectedParts();
         };

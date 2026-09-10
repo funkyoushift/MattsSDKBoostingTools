@@ -11,6 +11,10 @@ import re
 from typing import Any
 
 from .inventory_capacity import clamp_container_size, load_inventory_settings, save_extra_settings
+from .game_parameters import (
+    CURRENCY_KINDS, EXP_TRACKS, MAX_ITEM_LEVEL, MAX_PLAYER_LEVEL,
+    MAX_SPEC_LEVEL, MAX_VAULT_CARD_LEVEL,
+)
 
 MAX_PAGES = 5
 SLOTS_PER_PAGE = 21  # 3 cols x 7 rows — leaves bottom dock space for rarity controls
@@ -615,8 +619,6 @@ ALLOWED_PAYLOAD_KEYS: dict[str, frozenset[str]] = {
     "cxp_toggle": frozenset({"multiplier", "cxp_multiplier"}),
     "cxp_set_mult": frozenset({"multiplier", "cxp_multiplier"}),
     "fog_of_war_clear": frozenset({"target_player", "name"}),
-    "guest_grid_try": frozenset({"target_player", "name"}),
-    "guest_grid_dump": frozenset({"target_player", "name"}),
     "debug_cam_set_speed": frozenset({"debug_cam_speed", "speed"}),
     "debug_cam_set_distance": frozenset({"debug_cam_distance", "distance"}),
 }
@@ -693,21 +695,24 @@ def sanitize_payload(action: str, raw: object) -> dict[str, Any]:
             result[key] = clamp_container_size(source[key], 1000)
         elif key == "currency_kind":
             value = str(source[key] or "cash").strip().lower()
-            result[key] = value if value in {"cash", "eridium", "vaultcard1", "vaultcard2", "vaultcard3"} else "cash"
+            result[key] = value if value in CURRENCY_KINDS else "cash"
         elif key == "amount":
             result[key] = max(0, min(2147483647, _safe_int(source[key], 0)))
         elif key == "xp_track":
             value = str(source[key] or "player").strip().lower()
-            allowed_tracks = {"player", "specialization", "vaultcard_xp_1", "vaultcard_xp_2", "vaultcard_xp_3"}
-            result[key] = value if value in allowed_tracks else "player"
+            result[key] = value if value in EXP_TRACKS else "player"
         elif key == "level":
-            result[key] = max(1, min(9999999, _safe_int(source[key], 60)))
+            track = str(source.get("xp_track") or "player").strip().lower()
+            cap = MAX_SPEC_LEVEL if track == "specialization" else (
+                MAX_VAULT_CARD_LEVEL if track in EXP_TRACKS[2:] else MAX_PLAYER_LEVEL
+            )
+            result[key] = max(1, min(cap, _safe_int(source[key], cap)))
         elif key == "itempool_name":
             result[key] = str(source[key] or "").strip()[:MAX_ITEMPOOL_NAME_LEN]
         elif key == "itempool_count":
             result[key] = max(1, min(100, _safe_int(source[key], 1)))
         elif key == "itempool_level":
-            result[key] = max(1, min(70, _safe_int(source[key], 70)))
+            result[key] = max(1, min(MAX_ITEM_LEVEL, _safe_int(source[key], MAX_ITEM_LEVEL)))
         elif key == "itempool_names":
             raw_names = source[key]
             if isinstance(raw_names, str):
@@ -729,7 +734,7 @@ def sanitize_payload(action: str, raw: object) -> dict[str, Any]:
         elif key == "serial_override_level":
             result[key] = _truthy_payload(source[key])
         elif key == "serial_level":
-            result[key] = max(1, min(70, _safe_int(source[key], 70)))
+            result[key] = max(1, min(MAX_ITEM_LEVEL, _safe_int(source[key], MAX_ITEM_LEVEL)))
         elif key in ("movement_individual_jump_goals", "movement_zero_vault_on_apply"):
             result[key] = _truthy_payload(source[key])
         elif key == "movement_jump_count":

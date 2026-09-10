@@ -6,7 +6,7 @@ import types
 from pathlib import Path
 
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 PACKAGE_NAME = "MattsSDKBoostingTools"
 
 package = types.ModuleType(PACKAGE_NAME)
@@ -17,7 +17,7 @@ writes: list[tuple[str, object, int]] = []
 economy = types.ModuleType(f"{PACKAGE_NAME}.player_economy")
 economy._CURRENCY_KIND_ALIASES = {
     f"vaultcard{number}": f"VaultCard{number:02d}_Tokens"
-    for number in range(1, 5)
+    for number in range(1, 6)
 }
 economy._MAX_WALLET_AMOUNT = 2_147_483_647
 economy._give_currency_on_pc = (
@@ -40,7 +40,9 @@ ok, summary = vault_card_boost._economy_max_vault_cards(pc, log=lambda _message:
 
 assert ok, summary
 assert ("currency", "VaultCard04_Tokens", 2_147_483_647) in writes
-assert ("experience", 5, 9_999_999) in writes
-assert len(writes) == 8, writes
+assert ("experience", 5, 9_999) in writes
+assert ("currency", "VaultCard05_Tokens", 2_147_483_647) in writes
+assert ("experience", 6, 9_999) in writes
+assert len(writes) == 10, writes
 
-print("VAULT CARD 4 TEST PASSED")
+print("VAULT CARDS 4 AND 5 TEST PASSED")

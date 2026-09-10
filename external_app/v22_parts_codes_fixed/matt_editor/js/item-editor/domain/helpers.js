@@ -256,7 +256,7 @@
         function clearItemEditor() {
             // Clear input fields
             document.getElementById('itemCodeInput').value = '';
-            document.getElementById('level').value = '60';
+            document.getElementById('level').value = '70';
             var rawPerm = localStorage.getItem('permanentSeed');
             var seedStr;
             if (rawPerm != null && rawPerm !== '') {

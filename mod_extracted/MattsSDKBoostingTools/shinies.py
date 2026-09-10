@@ -263,8 +263,8 @@ def _spawn_pool(config: UObject, world: UObject, transform: Any, level: int, poo
     config.SpawnInventoryFromItemPool(world, transform, level, pool_name)
 
 
-def _canonical_shiny_itempools(pools: Sequence[str]) -> tuple[str, ...]:
-    """Use catalog casing for shiny itempools while preserving embedded-only pools."""
+def _canonical_shiny_itempools(pools: Sequence[str], *, include_catalog: bool = False) -> tuple[str, ...]:
+    """Resolve canonical names; optionally include newly cataloged shiny pools."""
     canonical_by_lower: dict[str, str] = {}
     try:
         blob = pkgutil.get_data(__package__ or __name__.rpartition(".")[0], "item_pools.json")
@@ -299,6 +299,12 @@ def _canonical_shiny_itempools(pools: Sequence[str]) -> tuple[str, ...]:
             missing.append(pool)
         unique.append(canonical)
 
+    if include_catalog:
+        for key, pool in sorted(canonical_by_lower.items()):
+            if key not in seen:
+                unique.append(pool)
+                seen.add(key)
+
     if renamed:
         _log_info(
             "Canonicalized shiny itempool casing: "
@@ -312,7 +318,7 @@ def _canonical_shiny_itempools(pools: Sequence[str]) -> tuple[str, ...]:
     return tuple(unique)
 
 
-def _spawn_all_shinies(level: int, pools: Sequence[str] = SHINY_ITEMPOOLS) -> int:
+def _spawn_all_shinies(level: int, pools: Sequence[str] | None = None) -> int:
     world = _get_world()
     pc = _get_runtime_pc()
     if world is None or pc is None:
@@ -328,9 +334,10 @@ def _spawn_all_shinies(level: int, pools: Sequence[str] = SHINY_ITEMPOOLS) -> in
     spawned = 0
     failed: list[str] = []
 
-    raw_pools = tuple(str(pool).strip() for pool in pools if str(pool).strip())
-    unique_pools = _canonical_shiny_itempools(raw_pools)
-    duplicate_count = len(raw_pools) - len(unique_pools)
+    requested_pools = SHINY_ITEMPOOLS if pools is None else pools
+    raw_pools = tuple(str(pool).strip() for pool in requested_pools if str(pool).strip())
+    unique_pools = _canonical_shiny_itempools(raw_pools, include_catalog=pools is None)
+    duplicate_count = len(raw_pools) - len({pool.lower() for pool in raw_pools})
     if duplicate_count:
         _log_info(f"Skipped {duplicate_count} duplicate shiny itempool entries.")
 
@@ -352,6 +359,6 @@ def _spawn_all_shinies(level: int, pools: Sequence[str] = SHINY_ITEMPOOLS) -> in
 
 
 def drop_all_shinies(level: int = DEFAULT_ITEM_LEVEL) -> int:
-    """Spawn every embedded shiny itempool near the local player."""
+    """Spawn every cataloged/embedded shiny itempool near the local player."""
     level = max(1, min(MAX_ITEM_LEVEL, int(level)))
     return _spawn_all_shinies(level)

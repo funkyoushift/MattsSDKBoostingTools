@@ -2,7 +2,7 @@
 
 MSBT is a Borderlands 4 boosting and item toolkit: a standalone Windows app outside the game, plus a small SDK mod that talks to Borderlands 4 while you play. Use it for currency/XP/SDU helpers, serial delivery, BL4 code browsing, Mattmab’s save/profile/item editor, Dev Spawner, map travel, movement tools, and more.
 
-**Current release: [v2.10.1](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.10.1)** — stabilization patch: Dev Spawner / Hoard / Clear default back to ASD spawn path; v2.10.0 fog tools and Late Join unchanged.
+**Current release: [v2.11.0](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.11.0)** — stabilization patch: Dev Spawner / Hoard / Clear default back to ASD spawn path; v2.10.0 fog tools and Late Join unchanged.
 
 This project is **unofficial**. It is not affiliated with, endorsed by, or connected to Gearbox, 2K, or the Borderlands franchise owners.
 
@@ -16,12 +16,12 @@ This project is **unofficial**. It is not affiliated with, endorsed by, or conne
 
 **Recommended:** grab the latest Windows installer from GitHub Releases:
 
-[![Installer downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Installer-v2.10.1.exe?label=Installer%20downloads&color=2ea44f)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest)
-[![Portable downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Portable-v2.10.1-win-x64.zip?label=Portable%20downloads&color=0969da)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest)
+[![Installer downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Installer-v2.11.0.exe?label=Installer%20downloads&color=2ea44f)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest)
+[![Portable downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Portable-v2.11.0-win-x64.zip?label=Portable%20downloads&color=0969da)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest)
 [![Android APK downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Mobile-Controller.apk?label=Android%20APK%20downloads&color=e8a23a)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Mobile-Controller.apk)
 
 - [GitHub Releases — download page](https://github.com/funkyoushift/MattsSDKBoostingTools/releases)
-- Latest installer example: `MSBT-Installer-v2.10.1.exe`
+- Latest installer example: `MSBT-Installer-v2.11.0.exe`
 
 **Portable option:** if you do not want an installer, download the portable ZIP instead (`MSBT-Portable-v…-win-x64.zip`), extract it, and run the app from that folder.
 
@@ -253,7 +253,7 @@ Huge thanks to the people who built pieces of this, shared data, and helped prov
 | **Ynot / GZO** | BL4 Codes site, catalog/API, and community code pipeline. [GZO Codes](https://save-editor.be/GZO/Borderlands4/Codes.html) · [GZO hub](https://save-editor.be/GZO/) · [Discord](https://discord.gg/4hGKAHdvp6) |
 | **Levin / Lootlemon** | Lootlemon item/code references used in the catalog. [Lootlemon](https://www.lootlemon.com/) |
 | **Azalea Asvail** | Azzy UVH Booster workflow adapted into the Boosting tab (MIT). Source credits **Pyrex** for UVH6/UVH7 challenge paths. |
-| **RDP / Squ1ggs** (Ryan David Picton) | Author of the initial BL4 Player Movement SDK mod on the oak2 mod database; helped with vault card support. |
+| **RDP / Squ1ggs** (Ryan David Picton) | MIT-licensed SDK helpers, standalone mods, and data adapted across movement, travel, serials, economy, inventory, legit building, spawning, vault-card, and related game-side features. [Bl4SDKmods source](https://github.com/Squ1ggs/Bl4SDKmods) |
 | **Azzarock, Frag Em All, Tobgun1, Crayons82.0** | Testing, feedback, item data, and community reports that caught real breakage. |
 | **Everyone else** | Item-code authors and players who published lists, filed bugs, and shared serials — a lot of this only works because of public community work. |
 
@@ -307,8 +307,8 @@ Repo layout in short (see [`docs/PROJECT_MAP.md`](docs/PROJECT_MAP.md) for neste
 
 ## License
 
-Released under the [PolyForm Noncommercial License 1.0.0](LICENSE).
+MSBT's original code is released under the [MIT License](LICENSE).
 
-Personal / community modding use is fine under that license. Commercial use, resale, paid redistribution, or selling packaged builds needs separate written permission from Matt / FunkYouSHiFT.
+Bundled and adapted third-party code, community catalogs, game-derived data, and artwork remain under their own licenses or permission grants. See [Third-Party Notices](docs/THIRD_PARTY_NOTICES.md) for the source-by-source scope; the MSBT MIT license does not relicense those materials.
 
 Again: **not** official Gearbox / 2K / Borderlands software.

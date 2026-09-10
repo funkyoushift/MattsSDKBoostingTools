@@ -23,8 +23,10 @@ from typing import Any, Iterable
 
 try:
     from .serial_converter import human_to_serial
+    from .game_parameters import MAX_ITEM_LEVEL
 except Exception:  # direct script/debug fallback
     from serial_converter import human_to_serial  # type: ignore
+    from game_parameters import MAX_ITEM_LEVEL  # type: ignore
 
 _RULES_CACHE: dict[str, Any] | None = None
 _ROOT_BY_KEY: dict[str, dict[str, Any]] | None = None
@@ -68,6 +70,7 @@ _BUILDABLE_ROOTS: dict[int, tuple[str, str]] = {
     255: ("forgeknight", "class_mod"),
     256: ("exo_soldier", "class_mod"),
     259: ("gravitar", "class_mod"),
+    402: ("loveless", "class_mod"),
     404: ("c4sh", "class_mod"),
     # Rep kits / ordnance / enhancements / shields
     261: ("torgue", "repair_kit"),
@@ -190,6 +193,8 @@ def _annotate_root(root: dict[str, Any]) -> dict[str, Any]:
         out["build_label"] = f"{manufacturer} {item_type}".replace("_", " ").title()
         if manufacturer == "c4sh":
             out["build_label"] = "C4SH Class Mod"
+        elif manufacturer == "loveless":
+            out["build_label"] = "Loveless Class Mod"
     return out
 
 def is_buildable_root(root: dict[str, Any]) -> bool:
@@ -1042,7 +1047,7 @@ def _serial_part_token(root: dict[str, Any], part: dict[str, Any]) -> str:
     return f"{{{sub}}}"
 
 
-def build_human(root_key: str, selected: Iterable[str | int | dict[str, Any]], level: int = 72, seed: int = 1, seed2: int | None = None) -> str:
+def build_human(root_key: str, selected: Iterable[str | int | dict[str, Any]], level: int = MAX_ITEM_LEVEL, seed: int = 1, seed2: int | None = None) -> str:
     root = get_root(root_key)
     if not root:
         raise ValueError(f"unknown root {root_key!r}")
@@ -1052,10 +1057,11 @@ def build_human(root_key: str, selected: Iterable[str | int | dict[str, Any]], l
         raise ValueError(f"root {root_key!r} has no numeric serial index")
     seed_seg = f"{int(seed)}, {int(seed2)}" if seed2 is not None else str(int(seed))
     toks = " ".join(tok for tok in (_serial_part_token(root, p) for p in parts) if tok)
-    return f"{int(root_serial)}, 0, 1, {int(level)}| {seed_seg}|| {toks}|"
+    item_level = max(1, min(MAX_ITEM_LEVEL, int(level)))
+    return f"{int(root_serial)}, 0, 1, {item_level}| {seed_seg}|| {toks}|"
 
 
-def build_base85(root_key: str, selected: Iterable[str | int | dict[str, Any]], level: int = 72, seed: int = 1, seed2: int | None = None, validate_first: bool = True) -> str:
+def build_base85(root_key: str, selected: Iterable[str | int | dict[str, Any]], level: int = MAX_ITEM_LEVEL, seed: int = 1, seed2: int | None = None, validate_first: bool = True) -> str:
     v = validate(root_key, selected)
     if validate_first and not v.get("ok"):
         raise ValueError("invalid item: " + "; ".join(v.get("errors") or []))

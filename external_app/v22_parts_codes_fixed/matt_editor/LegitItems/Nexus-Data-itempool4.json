@@ -1,8 +1,4 @@
 {
-  "__copyright": {
-    "author": "Cr4nkSt4r",
-    "github": "https://github.com/Cr4nkSt4r/Borderlands-4.NcsParser"
-  },
   "itempool": {
     "records": [
       {
@@ -26,6 +22,29 @@
                     "attribute": "attribute'attr_is_story_complete'"
                   },
                   "customization": "inv_custom'Cosmetics_Weapon_Shiny_PlumbBob'"
+                }
+              ]
+            }
+          },
+          {
+            "itempool_bor_sm_05_legendary_enumeration_shiny": {
+              "itempool": "itempool_bor_sm_05_legendary_enumeration_shiny",
+              "items": [
+                {
+                  "item": {
+                    "item": {
+                      "handle": "inv'BOR_SM.comp_05_legendary_enumeration'"
+                    }
+                  }
+                }
+              ],
+              "mingamestage": "attribute'Att_MinGameStage_WeaponType_SMG'",
+              "customizationlist": [
+                {
+                  "probability": {
+                    "attribute": "attribute'attr_is_story_complete'"
+                  },
+                  "customization": "inv_custom'Cosmetics_Weapon_Shiny_enumeration'"
                 }
               ]
             }
@@ -82,6 +101,16 @@
                   },
                   "weight": {
                     "attribute": "attribute'weight_classmod_robodealer'"
+                  }
+                },
+                {
+                  "item": {
+                    "item": {
+                      "handle": "inv'classmod_corpohacker.comp_05_legendary_raid2'"
+                    }
+                  },
+                  "weight": {
+                    "attribute": "attribute'weight_classmod_corpohacker'"
                   }
                 }
               ],
@@ -181,6 +210,29 @@
             }
           },
           {
+            "itempool_dad_sg_05_legendary_pragmate_shiny": {
+              "itempool": "itempool_dad_sg_05_legendary_pragmate_shiny",
+              "items": [
+                {
+                  "item": {
+                    "item": {
+                      "handle": "inv'DAD_SG.comp_05_legendary_pragmate'"
+                    }
+                  }
+                }
+              ],
+              "mingamestage": "attribute'Att_MinGameStage_WeaponType_Shotgun'",
+              "customizationlist": [
+                {
+                  "probability": {
+                    "attribute": "attribute'attr_is_story_complete'"
+                  },
+                  "customization": "inv_custom'Cosmetics_Weapon_Shiny_pragmate'"
+                }
+              ]
+            }
+          },
+          {
             "itempool_goldsilver_classmods_raid1": {
               "itempool": "itempool_GoldSilver_ClassMods_Raid1",
               "items": [
@@ -233,6 +285,16 @@
                   "weight": {
                     "attribute": "attribute'weight_classmod_robodealer'"
                   }
+                },
+                {
+                  "item": {
+                    "item": {
+                      "handle": "inv'classmod_corpohacker.comp_05_legendary_raid1'"
+                    }
+                  },
+                  "weight": {
+                    "attribute": "attribute'weight_classmod_corpohacker'"
+                  }
                 }
               ],
               "mingamestage": "attribute'Att_MinGameStage_ClassMod'"
@@ -262,6 +324,29 @@
             }
           },
           {
+            "itempool_jak_ps_05_legendary_shalashaska_shiny": {
+              "itempool": "itempool_jak_ps_05_legendary_Shalashaska_shiny",
+              "items": [
+                {
+                  "item": {
+                    "item": {
+                      "handle": "inv'JAK_PS.comp_05_legendary_Shalashaska'"
+                    }
+                  }
+                }
+              ],
+              "mingamestage": "attribute'Att_MinGameStage_WeaponType_Pistol'",
+              "customizationlist": [
+                {
+                  "probability": {
+                    "attribute": "attribute'attr_is_story_complete'"
+                  },
+                  "customization": "inv_custom'Cosmetics_Weapon_Shiny_Shalashaska'"
+                }
+              ]
+            }
+          },
+          {
             "itempool_jak_ps_05_legendary_shoals_shiny": {
               "itempool": "itempool_jak_ps_05_legendary_shoals_shiny",
               "items": [
@@ -280,6 +365,29 @@
                     "attribute": "attribute'attr_is_story_complete'"
                   },
                   "customization": "inv_custom'Cosmetics_Weapon_Shiny_shoals'"
+                }
+              ]
+            }
+          },
+          {
+            "itempool_jak_sr_legendary_triplicate_shiny": {
+              "itempool": "itempool_jak_sr_legendary_Triplicate_shiny",
+              "items": [
+                {
+                  "item": {
+                    "item": {
+                      "handle": "inv'VLA_AR.comp_05_legendary_Triplicate'"
+                    }
+                  }
+                }
+              ],
+              "mingamestage": "attribute'Att_MinGameStage_WEaponType_AssaultRifle'",
+              "customizationlist": [
+                {
+                  "probability": {
+                    "attribute": "attribute'attr_is_story_complete'"
+                  },
+                  "customization": "inv_custom'Cosmetics_Weapon_Shiny_Triplicate'"
                 }
               ]
             }
@@ -308,6 +416,29 @@
             }
           },
           {
+            "itempool_mal_sg_05_legendary_outback_shiny": {
+              "itempool": "itempool_mal_sg_05_legendary_outback_shiny",
+              "items": [
+                {
+                  "item": {
+                    "item": {
+                      "handle": "inv'jak_sr.comp_05_legendary_outback'"
+                    }
+                  }
+                }
+              ],
+              "mingamestage": "attribute'Att_MinGameStage_WeaponType_SniperRifle'",
+              "customizationlist": [
+                {
+                  "probability": {
+                    "attribute": "attribute'attr_is_story_complete'"
+                  },
+                  "customization": "inv_custom'Cosmetics_Weapon_Shiny_outback'"
+                }
+              ]
+            }
+          },
+          {
             "itempool_mal_sm_05_legendary_brickhouse_shiny": {
               "itempool": "itempool_mal_sm_05_legendary_brickhouse_shiny",
               "items": [
@@ -326,6 +457,98 @@
                     "attribute": "attribute'attr_is_story_complete'"
                   },
                   "customization": "inv_custom'Cosmetics_Weapon_Shiny_mercury'"
+                }
+              ]
+            }
+          },
+          {
+            "itempool_mal_sm_05_legendary_mercury_shiny": {
+              "itempool": "itempool_mal_sm_05_legendary_mercury_shiny",
+              "items": [
+                {
+                  "item": {
+                    "item": {
+                      "handle": "inv'VLA_SM.comp_05_legendary_mercury'"
+                    }
+                  }
+                }
+              ],
+              "mingamestage": "attribute'Att_MinGameStage_WeaponType_SMG'",
+              "customizationlist": [
+                {
+                  "probability": {
+                    "attribute": "attribute'attr_is_story_complete'"
+                  },
+                  "customization": "inv_custom'Cosmetics_Weapon_Shiny_mercury'"
+                }
+              ]
+            }
+          },
+          {
+            "itempool_mal_sm_05_legendary_songbird_shiny": {
+              "itempool": "itempool_mal_sm_05_legendary_songbird_shiny",
+              "items": [
+                {
+                  "item": {
+                    "item": {
+                      "handle": "inv'MAL_SM.comp_05_legendary_songbird'"
+                    }
+                  }
+                }
+              ],
+              "mingamestage": "attribute'Att_MinGameStage_WeaponType_SMG'",
+              "customizationlist": [
+                {
+                  "probability": {
+                    "attribute": "attribute'attr_is_story_complete'"
+                  },
+                  "customization": "inv_custom'Cosmetics_Weapon_Shiny_songbird'"
+                }
+              ]
+            }
+          },
+          {
+            "itempool_mal_sr_05_legendary_clarity_shiny": {
+              "itempool": "itempool_mal_sr_05_legendary_Clarity_shiny",
+              "items": [
+                {
+                  "item": {
+                    "item": {
+                      "handle": "inv'MAL_SR.comp_05_legendary_Clarity'"
+                    }
+                  }
+                }
+              ],
+              "mingamestage": "attribute'Att_MinGameStage_WeaponType_SniperRifle'",
+              "customizationlist": [
+                {
+                  "probability": {
+                    "attribute": "attribute'attr_is_story_complete'"
+                  },
+                  "customization": "inv_custom'Cosmetics_Weapon_Shiny_Clarity'"
+                }
+              ]
+            }
+          },
+          {
+            "itempool_ord_ps_05_legendary_roulette_shiny": {
+              "itempool": "itempool_ord_ps_05_legendary_Roulette_shiny",
+              "items": [
+                {
+                  "item": {
+                    "item": {
+                      "handle": "inv'ORD_PS.comp_05_legendary_Roulette'"
+                    }
+                  }
+                }
+              ],
+              "mingamestage": "attribute'Att_MinGameStage_WeaponType_Pistol'",
+              "customizationlist": [
+                {
+                  "probability": {
+                    "attribute": "attribute'attr_is_story_complete'"
+                  },
+                  "customization": "inv_custom'Cosmetics_Weapon_Shiny_Roulette'"
                 }
               ]
             }
@@ -363,6 +586,29 @@
                       "handle": "inv'Weapon_SpliceArm_Launcher.comp_SpliceArm_Launcher'"
                     }
                   }
+                }
+              ]
+            }
+          },
+          {
+            "itempool_ted_ar_05_legendary_laserdisc_shiny": {
+              "itempool": "itempool_ted_ar_05_legendary_laserdisc_shiny",
+              "items": [
+                {
+                  "item": {
+                    "item": {
+                      "handle": "inv'TED_AR.comp_05_legendary_laserdisc'"
+                    }
+                  }
+                }
+              ],
+              "mingamestage": "attribute'Att_MinGameStage_WEaponType_AssaultRifle'",
+              "customizationlist": [
+                {
+                  "probability": {
+                    "attribute": "attribute'attr_is_story_complete'"
+                  },
+                  "customization": "inv_custom'Cosmetics_Weapon_Shiny_LaserDisc'"
                 }
               ]
             }
@@ -437,6 +683,29 @@
             }
           },
           {
+            "itempool_tor_ar_05_legendary_fleabag_shiny": {
+              "itempool": "itempool_tor_ar_05_legendary_Fleabag_shiny",
+              "items": [
+                {
+                  "item": {
+                    "item": {
+                      "handle": "inv'TOR_AR.comp_05_legendary_fleabag'"
+                    }
+                  }
+                }
+              ],
+              "mingamestage": "attribute'Att_MinGameStage_WEaponType_AssaultRifle'",
+              "customizationlist": [
+                {
+                  "probability": {
+                    "attribute": "attribute'attr_is_story_complete'"
+                  },
+                  "customization": "inv_custom'Cosmetics_Weapon_Shiny_Fleabag'"
+                }
+              ]
+            }
+          },
+          {
             "itempool_tor_ar_05_legendary_lockjaw_shiny": {
               "itempool": "itempool_tor_ar_05_legendary_lockjaw_shiny",
               "items": [
@@ -455,6 +724,75 @@
                     "attribute": "attribute'attr_is_story_complete'"
                   },
                   "customization": "inv_custom'Cosmetics_Weapon_Shiny_lockjaw'"
+                }
+              ]
+            }
+          },
+          {
+            "itempool_tor_sg_05_legendary_demo_shiny": {
+              "itempool": "itempool_tor_sg_05_legendary_Demo_shiny",
+              "items": [
+                {
+                  "item": {
+                    "item": {
+                      "handle": "inv'BOR_SG.comp_05_legendary_demo'"
+                    }
+                  }
+                }
+              ],
+              "mingamestage": "attribute'Att_MinGameStage_WeaponType_Shotgun'",
+              "customizationlist": [
+                {
+                  "probability": {
+                    "attribute": "attribute'attr_is_story_complete'"
+                  },
+                  "customization": "inv_custom'Cosmetics_Weapon_Shiny_Demo'"
+                }
+              ]
+            }
+          },
+          {
+            "itempool_tor_sg_05_legendary_doeshot_shiny": {
+              "itempool": "itempool_tor_sg_05_legendary_Doeshot_shiny",
+              "items": [
+                {
+                  "item": {
+                    "item": {
+                      "handle": "inv'JAK_SG.comp_05_legendary_Doeshot'"
+                    }
+                  }
+                }
+              ],
+              "mingamestage": "attribute'Att_MinGameStage_WeaponType_Shotgun'",
+              "customizationlist": [
+                {
+                  "probability": {
+                    "attribute": "attribute'attr_is_story_complete'"
+                  },
+                  "customization": "inv_custom'Cosmetics_Weapon_Shiny_Doeshot'"
+                }
+              ]
+            }
+          },
+          {
+            "itempool_vla_ar_05_legendary_bubbles_shiny": {
+              "itempool": "itempool_vla_ar_05_legendary_bubbles_shiny",
+              "items": [
+                {
+                  "item": {
+                    "item": {
+                      "handle": "inv'VLA_AR.comp_05_Legendary_bubbles'"
+                    }
+                  }
+                }
+              ],
+              "mingamestage": "attribute'Att_MinGameStage_WEaponType_AssaultRifle'",
+              "customizationlist": [
+                {
+                  "probability": {
+                    "attribute": "attribute'attr_is_story_complete'"
+                  },
+                  "customization": "inv_custom'Cosmetics_Weapon_Shiny_bubbles'"
                 }
               ]
             }
@@ -848,12 +1186,12 @@
       {
         "entries": [
           {
-            "itempool_meathead_rocket": {
-              "itempool": "ItemPool_Meathead_Rocket",
+            "itempool_meathead_flamethrower": {
+              "itempool": "ItemPool_Meathead_Flamethrower",
               "items": [
                 {
                   "item": {
-                    "handle": "inv'Weapon_Meathead_Rocket.Comp_Meathead_Rocket'"
+                    "handle": "inv'Weapon_Meathead_Flamethrower.Comp_Meathead_Flamethrower'"
                   }
                 }
               ]

@@ -4,7 +4,7 @@
  * MSBT-owned remote data catalogs (GitHub-hosted JSON refresh).
  *
  * Preference for each file:
- *   1) userData/msbt_data/ cache (last good)
+ *   1) userData/msbt_data/ cache (last good, at least the bundled game build)
  *   2) bundled seed (resources / docs/data)
  *   3) GZO only: live save-editor.be, then GitHub snapshot
  *
@@ -18,7 +18,7 @@ const { fileURLToPath } = require("url");
 
 const DEFAULT_MANIFEST_URLS = [
   // Prefer tag-specific data release assets (never /releases/latest — that is the app channel).
-  "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.0.3/catalog_manifest.json",
+  "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.1.0/catalog_manifest.json",
   "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/docs/data/catalog_manifest.json",
   // Older data tag fallbacks while newer tags propagate.
   "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.0.1/catalog_manifest.json",
@@ -152,8 +152,21 @@ function bundledCandidates(fileName, resourceDir, docsDataDir, modDataDir, elect
 async function resolveLocalCatalogPath(userDataPath, fileName, options = {}) {
   const name = path.basename(fileName);
   const cachePath = cachedFilePath(userDataPath, name);
+  const bundledManifest = await loadBundledManifest(options.docsDataDir);
+  const bundledEntry = manifestEntryForPath(bundledManifest, name);
   if (await fileExists(cachePath)) {
-    return { path: cachePath, source: "cache" };
+    const cached = await loadCachedManifest(userDataPath);
+    const cachedEntry = manifestEntryForPath(cached, name);
+    if (!gameBuild(bundledEntry) && !gameBuild(cachedEntry)) return { path: cachePath, source: "cache" };
+    if (!isOlderGameBuild(cachedEntry, bundledEntry)) {
+      try {
+        if ((await sha256File(cachePath)) === cachedEntry.sha256) {
+          return { path: cachePath, source: "cache" };
+        }
+      } catch {
+        // A stale or interrupted cache update must not hide the current seed.
+      }
+    }
   }
   for (const candidate of bundledCandidates(
     name,
@@ -206,8 +219,24 @@ function normalizeManifestEntry(entry, { requireKind = false } = {}) {
     primary_url: text(entry.primary_url),
     notes: text(entry.notes),
     kind: kind || "catalog_json",
-    min_app_version: text(entry.min_app_version)
+    min_app_version: text(entry.min_app_version),
+    game_build: /^\d+$/.test(text(entry.game_build)) ? text(entry.game_build) : ""
   };
+}
+
+function manifestEntryForPath(manifest, name) {
+  return (manifest && (manifest.downloadables || manifest.files) || []).find(entry => entry.path === name) || null;
+}
+
+function gameBuild(entry) {
+  const value = text(entry && entry.game_build);
+  return /^\d+$/.test(value) && BigInt(value) > 0n ? BigInt(value) : null;
+}
+
+function isOlderGameBuild(candidate, minimum) {
+  const floor = gameBuild(minimum);
+  const offered = gameBuild(candidate);
+  return floor !== null && (offered === null || offered < floor);
 }
 
 function normalizeManifest(payload) {
@@ -419,11 +448,15 @@ async function downloadCatalogEntry(entry, options, attemptHint = 0) {
       });
     }
     let buffer;
-    if (localSeed && (await fileExists(localSeed))) {
-      buffer = await fs.readFile(localSeed);
-    } else if (electronSeed && (await fileExists(electronSeed))) {
-      buffer = await fs.readFile(electronSeed);
-    } else {
+    for (const seed of [localSeed, electronSeed]) {
+      if (!seed || !(await fileExists(seed))) continue;
+      const candidate = await fs.readFile(seed);
+      if (sha256Buffer(candidate).toLowerCase() === entry.sha256) {
+        buffer = candidate;
+        break;
+      }
+    }
+    if (!buffer) {
       try {
         buffer = await fetchBuffer(entry.url, fetchImpl);
       } catch (primaryError) {
@@ -465,6 +498,10 @@ async function refreshRemoteDataCatalogs(options = {}) {
   const updated = [];
   const skipped = [];
   const failed = [];
+  const priorManifest = await loadCachedManifest(userDataPath);
+  const bundledManifest = await loadBundledManifest(options.docsDataDir);
+  const cachedFiles = new Map((priorManifest && priorManifest.files || []).map(entry => [entry.path, entry]));
+  const cachedAssets = new Map((priorManifest && priorManifest.assets || []).map(entry => [entry.path, entry]));
 
   let manifest;
   let manifestUrl = "";
@@ -531,21 +568,23 @@ async function refreshRemoteDataCatalogs(options = {}) {
     return result;
   }
 
-  // Persist manifest only after a successful remote fetch.
-  try {
-    await writeFileAtomic(
-      cachedManifestPath(userDataPath),
-      `${JSON.stringify(manifest, null, 2)}\n`
-    );
-  } catch (error) {
-    warnings.push(`Could not cache manifest: ${error && error.message ? error.message : error}`);
-  }
-
   const total = (manifest.downloadables || manifest.files).length;
+  const rememberCachedEntry = (entry) => {
+    const catalog = manifest.files.some(row => row.path === entry.path);
+    (catalog ? cachedFiles : cachedAssets).set(entry.path, entry);
+    (catalog ? cachedAssets : cachedFiles).delete(entry.path);
+  };
   let index = 0;
   for (const entry of manifest.downloadables || manifest.files) {
     index += 1;
     try {
+      const bundledEntry = manifestEntryForPath(bundledManifest, entry.path);
+      const priorEntry = manifestEntryForPath(priorManifest, entry.path);
+      if (isOlderGameBuild(entry, bundledEntry) || isOlderGameBuild(entry, priorEntry)) {
+        skipped.push(entry.id);
+        warnings.push(`${entry.id}: remote game build ${entry.game_build || "unspecified"} is older than the installed catalog; keeping current game data.`);
+        continue;
+      }
       if (typeof options.onProgress === "function") {
         options.onProgress({
           phase: "file",
@@ -560,6 +599,7 @@ async function refreshRemoteDataCatalogs(options = {}) {
       }
       const needs = await cacheNeedsUpdate(userDataPath, entry);
       if (!needs) {
+        rememberCachedEntry(entry);
         skipped.push(entry.id);
         continue;
       }
@@ -570,6 +610,7 @@ async function refreshRemoteDataCatalogs(options = {}) {
         );
       }
       await writeFileAtomic(cachedFilePath(userDataPath, entry.path), buffer);
+      rememberCachedEntry(entry);
       updated.push(entry.id);
       if (typeof options.onProgress === "function") {
         options.onProgress({
@@ -586,6 +627,22 @@ async function refreshRemoteDataCatalogs(options = {}) {
     } catch (error) {
       failed.push({ id: entry.id, message: String(error && error.message ? error.message : error) });
       // Keep prior cache file untouched.
+    }
+  }
+
+  // Only describe bytes that reached the cache. Failed/older downloads retain
+  // their prior descriptor, so they cannot masquerade as the new game build.
+  if (cachedFiles.size) {
+    const cacheManifest = {
+      ...manifest,
+      files: Array.from(cachedFiles.values()),
+      assets: Array.from(cachedAssets.values()),
+      downloadables: [...cachedFiles.values(), ...cachedAssets.values()]
+    };
+    try {
+      await writeFileAtomic(cachedManifestPath(userDataPath), `${JSON.stringify(cacheManifest, null, 2)}\n`);
+    } catch (error) {
+      warnings.push(`Could not cache manifest: ${error && error.message ? error.message : error}`);
     }
   }
 

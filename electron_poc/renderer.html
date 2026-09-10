@@ -456,11 +456,12 @@
                     <option value="vaultcard_xp_2">Vault Card 2</option>
                     <option value="vaultcard_xp_3">Vault Card 3</option>
                     <option value="vaultcard_xp_4">Vault Card 4</option>
+                    <option value="vaultcard_xp_5">Vault Card 5</option>
                   </select>
                 </label>
                 <label>
                   Target Level
-                  <input id="xpLevel" type="number" min="1" max="9999999" value="70">
+                  <input id="xpLevel" type="number" min="1" max="70" value="70">
                 </label>
               </div>
               <div class="button-row wrap">
@@ -481,6 +482,7 @@
                     <option value="vaultcard2">Vault Card 2</option>
                     <option value="vaultcard3">Vault Card 3</option>
                     <option value="vaultcard4">Vault Card 4</option>
+                    <option value="vaultcard5">Vault Card 5</option>
                   </select>
                 </label>
                 <label>
@@ -1033,13 +1035,13 @@
           <details class="filter-panel bl4-filter-panel" open>
             <summary>
               <strong>Catalog filters</strong>
-              <span>Search, manufacturer, rarity, type, creator</span>
+              <span>Search every catalog field, including level, DLC, votes, and source metadata</span>
             </summary>
             <div class="grid two compact">
               <label>
                 Search
                 <div class="search-row">
-                  <input id="bl4SearchInput" type="search" autocomplete="off" spellcheck="false" placeholder="name, type, creator, modded...">
+                  <input id="bl4SearchInput" type="search" autocomplete="off" spellcheck="false" placeholder="name, level, DLC, creator, serial, votes...">
                   <button id="bl4SearchBtn">Search</button>
                 </div>
               </label>
@@ -1062,6 +1064,10 @@
               <label>
                 Creator
                 <select id="bl4CreatorFilter"></select>
+              </label>
+              <label>
+                Item Level
+                <select id="bl4LevelFilter"></select>
               </label>
               <label>
                 Mattmab Result

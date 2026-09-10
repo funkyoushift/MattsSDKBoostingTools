@@ -133,13 +133,13 @@
   }
 
   function currentLevel() {
-    var candidates = ["outputLevel", "mi_level", "level", "itemLevel"];
+    var candidates = ["outputLevel", "mi_outputLevel", "mi_level", "level", "itemLevel"];
     for (var i = 0; i < candidates.length; i += 1) {
       var raw = textFromElement(candidates[i]);
       var parsed = parseInt(raw, 10);
-      if (!Number.isNaN(parsed)) return Math.max(1, Math.min(60, parsed));
+      if (!Number.isNaN(parsed)) return Math.max(1, Math.min(70, parsed));
     }
-    return 60;
+    return 70;
   }
 
   function setStatus(message, ok) {

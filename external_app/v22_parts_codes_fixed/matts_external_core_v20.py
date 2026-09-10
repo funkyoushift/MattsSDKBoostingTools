@@ -307,6 +307,7 @@ class App(tk.Tk):
         if m:
             man=m.group(1); return 'Ripper' if man.lower() in ('borg','bor') else man
         if 'robodealer' in low: return 'C4SH'
+        if 'corpohacker' in low: return 'Loveless / Hacker'
         if 'dark_siren' in low or 'siren' in low: return 'Vex / Siren'
         if 'paladin' in low: return 'Amon / Paladin'
         if 'exo_soldier' in low or 'soldier' in low: return 'Rafa / Exo Soldier'

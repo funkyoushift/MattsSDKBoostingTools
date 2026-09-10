@@ -1,11 +1,12 @@
-"""Vault card 1/2/3/4 max for boosting mods — ULM struct writes + economy fallback."""
+"""Vault card max for boosting mods — ULM struct writes + economy fallback."""
 
 from __future__ import annotations
 
 from typing import Any, Callable
+from .game_parameters import CURRENCY_KINDS, EXP_TRACKS, MAX_VAULT_CARD_LEVEL
 
 _MAX_WALLET = 2_147_483_647
-_MAX_VAULT_XP_LEVEL = 9_999_999
+_MAX_VAULT_XP_LEVEL = MAX_VAULT_CARD_LEVEL
 
 
 def _economy_max_vault_cards(
@@ -27,23 +28,19 @@ def _economy_max_vault_cards(
     ok_bits: list[str] = []
     fail = False
 
-    for kind in ("vaultcard1", "vaultcard2", "vaultcard3", "vaultcard4"):
+    for kind in CURRENCY_KINDS[2:]:
         token = _CURRENCY_KIND_ALIASES.get(kind)
         if token and _give_currency_on_pc(target_pc, token, _MAX_WALLET_AMOUNT):
             ok_bits.append(f"{kind}=direct GiveCurrency")
         else:
             fail = True
 
-    for slot, label in (
-        (2, "vaultcard_xp_1"),
-        (3, "vaultcard_xp_2"),
-        (4, "vaultcard_xp_3"),
-        (5, "vaultcard_xp_4"),
-    ):
+    for slot, label in enumerate(EXP_TRACKS[2:], start=2):
         if _set_experience_level_via_bp(ps, slot, _MAX_VAULT_XP_LEVEL):
             ok_bits.append(f"{label}=BP_SetLevel")
         else:
             fail = True
+            log(f"{label}: track not available or level write failed")
 
     summary = ", ".join(ok_bits) if ok_bits else "no writes"
     return not fail, summary

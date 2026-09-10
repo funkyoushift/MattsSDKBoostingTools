@@ -1,8 +1,4 @@
 {
-  "__copyright": {
-    "author": "Cr4nkSt4r",
-    "github": "https://github.com/Cr4nkSt4r/Borderlands-4.NcsParser"
-  },
   "game_region": {
     "records": [
       {
@@ -514,6 +510,34 @@
               "regioninfo": "display_data'UIRegionDisplayData_Cowbell_CrookedTeeth'",
               "type": "/Script/OakGame.WorldRegionDef",
               "parent": "game_region'Cowbell'"
+            }
+          },
+          {
+            "harmonica": {
+              "game_region": "Harmonica",
+              "regioninfo": "display_data'UIRegionDisplayData_Harmonica'",
+              "armyspawnzones": "Asset'/Game/DLC/Harmonica/GameData/WorldPaintLayers/WPLayer_SpawnArmy_ISLE.WPLayer_SpawnArmy_ISLE'",
+              "creaturespawnzones": "Asset'/Game/DLC/Harmonica/GameData/WorldPaintLayers/WPLayer_SpawnCreature_ISLE.WPLayer_SpawnCreature_ISLE'",
+              "loadingscreendef": "loadingscreen_data'ls_providenceisland'",
+              "priority": "100",
+              "displayname": "dlc1_world_regions, 34AFDC3245F07E2D5058BF9C212CD996, Do not localize, this is never used",
+              "type": "/Script/OakGame.WorldRegionDef"
+            }
+          },
+          {
+            "harmonica_vinechokedcanopy": {
+              "game_region": "Harmonica_VinechokedCanopy",
+              "regioninfo": "display_data'UIRegionDisplayData_Harmonica_VinechokedCanopy'",
+              "type": "/Script/OakGame.WorldRegionDef",
+              "parent": "game_region'Harmonica'"
+            }
+          },
+          {
+            "harmonica_volcanofortress": {
+              "game_region": "Harmonica_VolcanoFortress",
+              "regioninfo": "display_data'UIRegionDisplayData_Harmonica_VolcanoFortress'",
+              "priority": "0",
+              "parent": "game_region'Harmonica'"
             }
           }
         ]

@@ -44,7 +44,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -67,7 +69,7 @@ public class MainActivity extends Activity {
             Pattern.compile("(\\d+)\\.(\\d+)\\.(\\d+)(?:-beta\\.(\\d+))?", Pattern.CASE_INSENSITIVE);
     private static final String DATA_CACHE_DIR = "msbt_data";
     private static final String[] DATA_MANIFEST_URLS = new String[]{
-            "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.0.3/catalog_manifest.json",
+            "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.1.0/catalog_manifest.json",
             "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/docs/data/catalog_manifest.json",
             "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.0.1/catalog_manifest.json",
             "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.0.0/catalog_manifest.json"
@@ -96,7 +98,7 @@ public class MainActivity extends Activity {
      * Narrow asset reader fallback. Primary loading uses WebViewAssetLoader so
      * large catalog JSON can stream through normal fetch() instead of a giant
      * JavascriptInterface string return (GZO alone is multi-megabyte).
-     * Cached remote catalogs under filesDir/msbt_data/ win over APK assets.
+     * Cached catalogs must satisfy the bundled asset's game-build requirement.
      */
     public class AssetBridge {
         private final Set<String> allowed = new HashSet<>(CATALOG_ASSET_NAMES);
@@ -112,7 +114,7 @@ public class MainActivity extends Activity {
             }
             try {
                 File cached = cachedCatalogFile(name);
-                if (cached.isFile()) {
+                if (isUsableCachedCatalog(name)) {
                     return readFileUtf8(cached);
                 }
                 try (InputStream input = MainActivity.this.getAssets().open(name);
@@ -141,7 +143,7 @@ public class MainActivity extends Activity {
                 return false;
             }
             String name = fileName.trim();
-            return allowed.contains(name) && cachedCatalogFile(name).isFile();
+            return allowed.contains(name) && isUsableCachedCatalog(name);
         }
 
         @JavascriptInterface
@@ -155,7 +157,7 @@ public class MainActivity extends Activity {
                 JSONObject files = new JSONObject();
                 for (String name : CATALOG_ASSET_NAMES) {
                     File cached = cachedCatalogFile(name);
-                    boolean exists = cached.isFile();
+                    boolean exists = isUsableCachedCatalog(name);
                     if (exists) {
                         cachedCount += 1;
                     }
@@ -378,6 +380,48 @@ public class MainActivity extends Activity {
         }
     }
 
+    private static String catalogEntryName(JSONObject entry) {
+        String path = entry.optString("path", "").replace('\\', '/');
+        return path.substring(path.lastIndexOf('/') + 1);
+    }
+
+    private static Map<String, JSONObject> manifestEntries(JSONObject manifest) {
+        Map<String, JSONObject> entries = new LinkedHashMap<>();
+        JSONArray files = manifest == null ? null : manifest.optJSONArray("files");
+        if (files != null) {
+            for (int i = 0; i < files.length(); i++) {
+                JSONObject entry = files.optJSONObject(i);
+                if (entry != null && !catalogEntryName(entry).isEmpty()) {
+                    entries.put(catalogEntryName(entry), entry);
+                }
+            }
+        }
+        return entries;
+    }
+
+    private static String descriptorBuild(JSONObject entry) {
+        return entry == null ? "" : entry.optString("game_build", "");
+    }
+
+    private boolean isUsableCachedCatalog(String name) {
+        File cached = cachedCatalogFile(name);
+        if (!cached.isFile()) return false;
+        JSONObject bundled = manifestEntries(loadBundledManifest()).get(name);
+        JSONObject descriptor = manifestEntries(loadCachedManifest()).get(name);
+        String bundledBuild = descriptorBuild(bundled);
+        String cachedBuild = descriptorBuild(descriptor);
+        // Legacy untagged assets retain their existing cache preference.
+        if (CatalogCachePolicy.gameBuild(bundledBuild) == null
+                && CatalogCachePolicy.gameBuild(cachedBuild) == null) return true;
+        if (!CatalogCachePolicy.isCurrent(cachedBuild, bundledBuild, "")) return false;
+        try {
+            return descriptor != null && CatalogCachePolicy.validDigest(
+                    descriptor.optString("sha256", ""), sha256Hex(readFileBytes(cached)));
+        } catch (Exception ignored) {
+            return false;
+        }
+    }
+
     private void refreshDataCatalogsAsync() {
         if (dataCatalogRefreshRunning) {
             notifyJs("__msbtDataCatalogRefresh",
@@ -396,6 +440,9 @@ public class MainActivity extends Activity {
                 JSONArray failed = new JSONArray();
                 JSONArray warnings = new JSONArray();
                 JSONObject manifest = null;
+                JSONObject priorManifest = loadCachedManifest();
+                Map<String, JSONObject> cachedEntries = manifestEntries(priorManifest);
+                Map<String, JSONObject> bundledEntries = manifestEntries(loadBundledManifest());
                 String manifestUrl = "";
                 Exception lastError = null;
                 for (String url : DATA_MANIFEST_URLS) {
@@ -403,7 +450,6 @@ public class MainActivity extends Activity {
                         byte[] body = httpGetBytes(url);
                         manifest = new JSONObject(new String(body, StandardCharsets.UTF_8));
                         manifestUrl = url;
-                        writeBytesAtomic(cachedCatalogFile("catalog_manifest.json"), body);
                         break;
                     } catch (Exception error) {
                         lastError = error;
@@ -470,10 +516,7 @@ public class MainActivity extends Activity {
                         continue;
                     }
                     String id = entry.optString("id", "");
-                    String pathName = entry.optString("path", "");
-                    String basename = pathName.contains("/")
-                            ? pathName.substring(pathName.lastIndexOf('/') + 1)
-                            : pathName;
+                    String basename = catalogEntryName(entry);
                     if (basename.isEmpty() || !CATALOG_ASSET_NAMES.contains(basename)) {
                         // Skip files not used by mobile (shiny/challenge/tutorial_copy/etc).
                         skipped.put(id.isEmpty() ? basename : id);
@@ -481,10 +524,29 @@ public class MainActivity extends Activity {
                     }
                     String expectedSha = entry.optString("sha256", "").toLowerCase(Locale.US);
                     File target = cachedCatalogFile(basename);
+                    String bundledBuild = descriptorBuild(bundledEntries.get(basename));
+                    String cachedBuild = descriptorBuild(cachedEntries.get(basename));
+                    String incomingBuild = descriptorBuild(entry);
+                    if (!CatalogCachePolicy.isCurrent(incomingBuild, bundledBuild, cachedBuild)) {
+                        skipped.put(id.isEmpty() ? basename : id);
+                        warnings.put("Kept newer game data for " + basename + ".");
+                        continue;
+                    }
+                    boolean needsHash = CatalogCachePolicy.gameBuild(bundledBuild) != null
+                            || CatalogCachePolicy.gameBuild(cachedBuild) != null
+                            || CatalogCachePolicy.gameBuild(incomingBuild) != null;
+                    if (needsHash && !expectedSha.matches("[0-9a-f]{64}")) {
+                        JSONObject fail = new JSONObject();
+                        fail.put("id", id.isEmpty() ? basename : id);
+                        fail.put("message", "Missing valid SHA-256 for game-tagged catalog.");
+                        failed.put(fail);
+                        continue;
+                    }
                     if (target.isFile() && !expectedSha.isEmpty()) {
                         try {
                             byte[] existing = readFileBytes(target);
                             if (sha256Hex(existing).equals(expectedSha)) {
+                                cachedEntries.put(basename, entry);
                                 skipped.put(id.isEmpty() ? basename : id);
                                 continue;
                             }
@@ -517,6 +579,7 @@ public class MainActivity extends Activity {
                             }
                         }
                         writeBytesAtomic(target, buffer);
+                        cachedEntries.put(basename, entry);
                         updated.put(id.isEmpty() ? basename : id);
                     } catch (Exception error) {
                         JSONObject fail = new JSONObject();
@@ -525,6 +588,14 @@ public class MainActivity extends Activity {
                         failed.put(fail);
                     }
                 }
+                // Only verified bytes adopt a new per-asset descriptor. Failed,
+                // blocked and absent remote entries retain their previous one.
+                JSONObject effectiveManifest = new JSONObject(manifest.toString());
+                JSONArray effectiveFiles = new JSONArray();
+                for (JSONObject descriptor : cachedEntries.values()) effectiveFiles.put(descriptor);
+                effectiveManifest.put("files", effectiveFiles);
+                writeBytesAtomic(cachedCatalogFile("catalog_manifest.json"),
+                        effectiveManifest.toString().getBytes(StandardCharsets.UTF_8));
                 result.put("dataVersion", manifest.optString("data_version_label",
                         manifest.optString("data_version", "")));
                 result.put("manifestUrl", manifestUrl);
@@ -1046,7 +1117,7 @@ public class MainActivity extends Activity {
                         }
                         if (CATALOG_ASSET_NAMES.contains(name)) {
                             File cached = cachedCatalogFile(name);
-                            if (cached.isFile()) {
+                            if (isUsableCachedCatalog(name)) {
                                 String mime = name.endsWith(".json") ? "application/json" : "application/octet-stream";
                                 return new WebResourceResponse(
                                         mime,

@@ -20,6 +20,10 @@ from typing import Any
 from mods_base import ENGINE, command, get_pc
 
 from . import player_economy, quick_menu_registry, serial_rewards
+from .game_parameters import (
+    CURRENCY_KINDS, EXP_TRACKS, MAX_ITEM_LEVEL, MAX_PLAYER_LEVEL,
+    MAX_SPEC_LEVEL, MAX_VAULT_CARD_LEVEL, status_parameters,
+)
 from .golden_chest_keybinds import _close_golden_chest, _open_golden_chest
 from .inventory_capacity import (
     auto_apply_inventory_sizes_if_needed,
@@ -119,24 +123,10 @@ from . import instant_click_holds as _ich
 from . import no_fog_of_war as _nfow
 from . import fod_reveal as _fod
 from . import fod_party_reveal as _party_fod
-from . import fod_guest_grid as _guest_fod
 from . import third_person_camera as _tpc
 from . import asd_hybrid as _asd_hybrid
 
-CURRENCY_KINDS = ["cash", "eridium", "vaultcard1", "vaultcard2", "vaultcard3", "vaultcard4"]
-EXP_TRACKS = [
-    "player",
-    "specialization",
-    "vaultcard_xp_1",
-    "vaultcard_xp_2",
-    "vaultcard_xp_3",
-    "vaultcard_xp_4",
-]
 MAX_WALLET_AMOUNT = 2147483647
-MAX_PLAYER_LEVEL = 70
-MAX_ITEM_LEVEL = 70
-MAX_SPEC_LEVEL = 701
-MAX_VAULT_CARD_LEVEL = 9999999
 RARITY_ROWS: tuple[tuple[str, str, tuple[str, ...]], ...] = (
     ("common", "Common", ("CommonModifier",)),
     ("uncommon", "Uncommon", ("UncommonModifier",)),
@@ -2159,10 +2149,6 @@ def run_quick_menu_action(
         result = fog_of_war_toggle()
     elif key == "fog_of_war_status":
         result = fog_of_war_status()
-    elif key == "guest_grid_dump":
-        result = guest_grid_dump(payload.get("target_player") or payload.get("name"))
-    elif key == "guest_grid_try":
-        result = guest_grid_try(payload.get("target_player") or payload.get("name"))
     elif key == "hoard_set_plan":
         result = hoard_set_plan(payload)
     elif key == "hoard_start":
@@ -2236,6 +2222,7 @@ def get_status() -> dict[str, Any]:
         "serial_text": serial_text,
         "read_serials": get_last_read_serials(),
         "diagnostics": _sdk_diagnostics(),
+        "game_parameters": status_parameters(),
         "rarity_weights": get_rarity_weights(),
         "rarity_revision": get_rarity_revision(),
         "asd_autoclear": _asd_autoclear_status(),
@@ -3365,7 +3352,8 @@ def give_currency(kind_or_index: object, amount: object) -> dict[str, Any]:
     except Exception:
         return {"ok": False, "message": "Currency amount must be a number."}
     try:
-        player_economy._do_give_currency(kind, amount_i, name)
+        if player_economy._do_give_currency(kind, amount_i, name) is False:
+            return {"ok": False, "message": f"Give {kind} failed; the currency or target may be unavailable in the current game."}
         return {"ok": True, "message": f"Give {amount_i} {kind} requested."}
     except Exception as exc:
         return {"ok": False, "message": f"Give currency failed: {exc!r}"}
@@ -3383,7 +3371,8 @@ def give_experience(track_or_index: object, level: object) -> dict[str, Any]:
     except Exception:
         return {"ok": False, "message": "Level must be a number."}
     try:
-        player_economy._do_give_experience(track, level_i, name)
+        if player_economy._do_give_experience(track, level_i, name) is False:
+            return {"ok": False, "message": f"Set {track} level failed; the track or target may be unavailable in the current game."}
         return {"ok": True, "message": f"Set {track} level {level_i} requested."}
     except Exception as exc:
         return {"ok": False, "message": f"Set level failed: {exc!r}"}
@@ -3847,50 +3836,10 @@ def party_reveal_status() -> dict[str, Any]:
     }
 
 
-def _guest_grid_target(target: object = None) -> object:
-    raw = target
-    if raw is None or str(raw).strip() == "":
-        idx = get_selected_player_index()
-        name = get_selected_player_name()
-        if idx is not None:
-            return f"{idx}|{name}" if name else idx
-        return name or None
-    err = _apply_optional_target_player({"target_player": raw})
-    if err is not None:
-        return err
-    idx = get_selected_player_index()
-    name = get_selected_player_name()
-    if idx is not None:
-        return f"{idx}|{name}" if name else idx
-    return raw
 
 
-def guest_grid_dump(target: object = None) -> dict[str, Any]:
-    """DEV: dump host vs P2–P4 FoD slots. Does not fill. Does not replace Party Reveal."""
-    try:
-        resolved = _guest_grid_target(target)
-        if isinstance(resolved, dict) and resolved.get("ok") is False:
-            return resolved
-        result = dict(_guest_fod.try_for_target(resolved, write=False))
-        result["fog_of_war"] = _fog_status_dict()
-        result["guest_grid"] = _guest_fod.last_status()
-        return result
-    except Exception as exc:
-        return {"ok": False, "message": f"Guest grid dump failed: {exc!r}"}
 
 
-def guest_grid_try(target: object = None) -> dict[str, Any]:
-    """DEV: try +0xB0 / NHA +0x670 on the named P2–P4 player. Not Party Reveal Map."""
-    try:
-        resolved = _guest_grid_target(target)
-        if isinstance(resolved, dict) and resolved.get("ok") is False:
-            return resolved
-        result = dict(_guest_fod.try_for_target(resolved, write=True))
-        result["fog_of_war"] = _fog_status_dict()
-        result["guest_grid"] = _guest_fod.last_status()
-        return result
-    except Exception as exc:
-        return {"ok": False, "message": f"Guest grid try failed: {exc!r}"}
 
 
 def unlock_cosmetics() -> dict[str, Any]:
@@ -3952,30 +3901,8 @@ _cmd_msbt_fog.add_argument(
 )
 
 
-@command("msbt_guest_grid", description="DEV: dump or fill P2–P4 FoD grid candidates: msbt_guest_grid [dump|write] [index|name]")
-def _cmd_msbt_guest_grid(args: argparse.Namespace) -> None:
-    from unrealsdk import logging as _sdk_logging
-
-    parts = [str(p) for p in (getattr(args, "parts", None) or [])]
-    write = True
-    target: object = None
-    if parts and parts[0].lower() in ("dump", "inspect", "status"):
-        write = False
-        target = " ".join(parts[1:]).strip() or None
-    elif parts and parts[0].lower() in ("write", "fill", "try"):
-        write = True
-        target = " ".join(parts[1:]).strip() or None
-    elif parts:
-        target = " ".join(parts).strip()
-    result = guest_grid_try(target) if write else guest_grid_dump(target)
-    _sdk_logging.info(f"[MSBT GuestGrid] {result.get('message')}")
 
 
-_cmd_msbt_guest_grid.add_argument(
-    "parts",
-    nargs="*",
-    help="dump|write [index or name]",
-)
 
 
 def _uvh_live(obj: Any) -> bool:

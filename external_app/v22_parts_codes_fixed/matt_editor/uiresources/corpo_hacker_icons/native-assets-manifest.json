@@ -1,0 +1,1184 @@
+{
+  "game_build": "25234898",
+  "source": "Installed Borderlands 4 game assets (Gearbox / 2K)",
+  "extracted_at": "2026-09-10T17:33:31.3994553+00:00",
+  "cue4parse_version": "1.2.2",
+  "conversion_version": "1.2.1",
+  "engine_format": "UE5.5",
+  "mapping_sha256": "24880fe9a734979f12522c7c3ad62066d03dbb735987308809a2c89dd7028012",
+  "expected_count": 130,
+  "file_count": 130,
+  "files": [
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Action_Skills/loveless_menu_action_skill_1.loveless_menu_action_skill_1",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Action_Skills/loveless_menu_action_skill_1.uasset",
+      "relative_png": "corpo_hacker_icons/Action_Skills/loveless_menu_action_skill_1.png",
+      "width": 356,
+      "height": 204,
+      "bytes": 63634,
+      "sha256": "2c8edd6308282e316c000293613decd00cf456a6423c30b34a70b817683d6404"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Action_Skills/loveless_menu_action_skill_2.loveless_menu_action_skill_2",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Action_Skills/loveless_menu_action_skill_2.uasset",
+      "relative_png": "corpo_hacker_icons/Action_Skills/loveless_menu_action_skill_2.png",
+      "width": 356,
+      "height": 204,
+      "bytes": 88186,
+      "sha256": "94ead74643104b94a13b0bdc5667437deeecb743b1d0fc44c3dada40e2bf0a33"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Action_Skills/loveless_menu_action_skill_3.loveless_menu_action_skill_3",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Action_Skills/loveless_menu_action_skill_3.uasset",
+      "relative_png": "corpo_hacker_icons/Action_Skills/loveless_menu_action_skill_3.png",
+      "width": 356,
+      "height": 204,
+      "bytes": 81040,
+      "sha256": "b2ebee842574015a8d34d90b65be8a46650293ab3492a70acea7c6973e4a570c"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Augment/loveless_augment_blue_01.loveless_augment_blue_01",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Augment/loveless_augment_blue_01.uasset",
+      "relative_png": "corpo_hacker_icons/Augment/Augment/loveless_augment_blue_01.png",
+      "width": 160,
+      "height": 160,
+      "bytes": 25252,
+      "sha256": "506d2ee2c04ba1dcad123defa837db3816a19ab6bc5d038fa190ed0627be63b3"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Augment/loveless_augment_blue_02.loveless_augment_blue_02",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Augment/loveless_augment_blue_02.uasset",
+      "relative_png": "corpo_hacker_icons/Augment/Augment/loveless_augment_blue_02.png",
+      "width": 160,
+      "height": 160,
+      "bytes": 28541,
+      "sha256": "c7a18a5dc3c1d8a4bd56e63d641083dc433ae1a1d4769c371057a820142d92cf"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Augment/loveless_augment_blue_03.loveless_augment_blue_03",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Augment/loveless_augment_blue_03.uasset",
+      "relative_png": "corpo_hacker_icons/Augment/Augment/loveless_augment_blue_03.png",
+      "width": 160,
+      "height": 160,
+      "bytes": 26223,
+      "sha256": "e8be2f2361e437f6a543c6845bc81b0ffb5e9fd77a80bb930357abde08e139d3"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Augment/loveless_augment_blue_04.loveless_augment_blue_04",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Augment/loveless_augment_blue_04.uasset",
+      "relative_png": "corpo_hacker_icons/Augment/Augment/loveless_augment_blue_04.png",
+      "width": 160,
+      "height": 160,
+      "bytes": 27538,
+      "sha256": "efc159171201a09d901827d2714129319518177fb5df3c1820bf24e19a945fc5"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Augment/loveless_augment_blue_05.loveless_augment_blue_05",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Augment/loveless_augment_blue_05.uasset",
+      "relative_png": "corpo_hacker_icons/Augment/Augment/loveless_augment_blue_05.png",
+      "width": 160,
+      "height": 160,
+      "bytes": 28866,
+      "sha256": "f5d2db03fa0fa581193875289b7ad0ec19da6a24eef4849b06a5cc7d531b0b3e"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Augment/loveless_augment_green_01.loveless_augment_green_01",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Augment/loveless_augment_green_01.uasset",
+      "relative_png": "corpo_hacker_icons/Augment/Augment/loveless_augment_green_01.png",
+      "width": 160,
+      "height": 160,
+      "bytes": 30693,
+      "sha256": "04e078f426e4556867e36e5d36747c75e8e875da6aa8c8d9ca30298dee4dcbcf"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Augment/loveless_augment_green_02.loveless_augment_green_02",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Augment/loveless_augment_green_02.uasset",
+      "relative_png": "corpo_hacker_icons/Augment/Augment/loveless_augment_green_02.png",
+      "width": 160,
+      "height": 160,
+      "bytes": 27934,
+      "sha256": "284c87dda0c382df38719676e3efd8b4225ecac56f6af23a4085e1426802c9e7"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Augment/loveless_augment_green_03.loveless_augment_green_03",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Augment/loveless_augment_green_03.uasset",
+      "relative_png": "corpo_hacker_icons/Augment/Augment/loveless_augment_green_03.png",
+      "width": 160,
+      "height": 160,
+      "bytes": 28607,
+      "sha256": "f66679472bc82229716a011e47ea45fd709c0ada18e7def3476766607c14b343"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Augment/loveless_augment_green_04.loveless_augment_green_04",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Augment/loveless_augment_green_04.uasset",
+      "relative_png": "corpo_hacker_icons/Augment/Augment/loveless_augment_green_04.png",
+      "width": 160,
+      "height": 160,
+      "bytes": 34108,
+      "sha256": "b34271247bdf26e04c6feb371e1cafe30b539fa8013ac83f37fbb76fb24b09d8"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Augment/loveless_augment_green_05.loveless_augment_green_05",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Augment/loveless_augment_green_05.uasset",
+      "relative_png": "corpo_hacker_icons/Augment/Augment/loveless_augment_green_05.png",
+      "width": 160,
+      "height": 160,
+      "bytes": 25593,
+      "sha256": "758f942b3a8f5f3836d3cf3095a6280bf68a6c72726cc414e0e2ba9534c23def"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Augment/loveless_augment_red_01.loveless_augment_red_01",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Augment/loveless_augment_red_01.uasset",
+      "relative_png": "corpo_hacker_icons/Augment/Augment/loveless_augment_red_01.png",
+      "width": 160,
+      "height": 160,
+      "bytes": 26249,
+      "sha256": "29192d06e82984fa7a5025043dfae15ba548e4f3862d4e41cef8f7332c4d57eb"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Augment/loveless_augment_red_02.loveless_augment_red_02",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Augment/loveless_augment_red_02.uasset",
+      "relative_png": "corpo_hacker_icons/Augment/Augment/loveless_augment_red_02.png",
+      "width": 160,
+      "height": 160,
+      "bytes": 27563,
+      "sha256": "0bb9b56775991198ac7f776a0c00ac9b9551750a61c5a7eaa77ed651733f0b90"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Augment/loveless_augment_red_03.loveless_augment_red_03",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Augment/loveless_augment_red_03.uasset",
+      "relative_png": "corpo_hacker_icons/Augment/Augment/loveless_augment_red_03.png",
+      "width": 160,
+      "height": 160,
+      "bytes": 27651,
+      "sha256": "477ba46beba2023b4b4d9284bd58a0a7b407741a0fb742becb7d7ea9800daf04"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Augment/loveless_augment_red_04.loveless_augment_red_04",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Augment/loveless_augment_red_04.uasset",
+      "relative_png": "corpo_hacker_icons/Augment/Augment/loveless_augment_red_04.png",
+      "width": 160,
+      "height": 160,
+      "bytes": 28480,
+      "sha256": "9dc30b127d8f4a55c5f469ed075b0a261beef9caf985a7889755bad931bd27bd"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Augment/loveless_augment_red_05.loveless_augment_red_05",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Augment/loveless_augment_red_05.uasset",
+      "relative_png": "corpo_hacker_icons/Augment/Augment/loveless_augment_red_05.png",
+      "width": 160,
+      "height": 160,
+      "bytes": 27811,
+      "sha256": "9ec2a7b71704a9311474238b9feaf376406d6a15dadf537ce28c2848d2796b7b"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Capstones/loveless_capstone_blue_01.loveless_capstone_blue_01",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Capstones/loveless_capstone_blue_01.uasset",
+      "relative_png": "corpo_hacker_icons/Augment/Capstones/loveless_capstone_blue_01.png",
+      "width": 172,
+      "height": 172,
+      "bytes": 34936,
+      "sha256": "71f45c6a3a32abcbd6833a17099545cb2ae4cced09fe0329ba35a074633e46aa"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Capstones/loveless_capstone_blue_02.loveless_capstone_blue_02",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Capstones/loveless_capstone_blue_02.uasset",
+      "relative_png": "corpo_hacker_icons/Augment/Capstones/loveless_capstone_blue_02.png",
+      "width": 172,
+      "height": 172,
+      "bytes": 43649,
+      "sha256": "4fd9d8e6cdf4fbad6ad0ac6466b496b87b076973039597be8eacd457690e463e"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Capstones/loveless_capstone_blue_03.loveless_capstone_blue_03",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Capstones/loveless_capstone_blue_03.uasset",
+      "relative_png": "corpo_hacker_icons/Augment/Capstones/loveless_capstone_blue_03.png",
+      "width": 172,
+      "height": 172,
+      "bytes": 30147,
+      "sha256": "a079619adc5b90a9a100bc5f33f8984a636b39faf4d4086c9cbcc69dd1fb475e"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Capstones/loveless_capstone_green_01.loveless_capstone_green_01",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Capstones/loveless_capstone_green_01.uasset",
+      "relative_png": "corpo_hacker_icons/Augment/Capstones/loveless_capstone_green_01.png",
+      "width": 172,
+      "height": 172,
+      "bytes": 36306,
+      "sha256": "d5364873094b51b529152f5dede7279c77fcdace7b1e939a76d914ef81b96f13"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Capstones/loveless_capstone_green_02.loveless_capstone_green_02",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Capstones/loveless_capstone_green_02.uasset",
+      "relative_png": "corpo_hacker_icons/Augment/Capstones/loveless_capstone_green_02.png",
+      "width": 172,
+      "height": 172,
+      "bytes": 42646,
+      "sha256": "0271474b14947ff1a863afb1d8a309241987057229b5bb6c91997b6995da10b1"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Capstones/loveless_capstone_green_03.loveless_capstone_green_03",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Capstones/loveless_capstone_green_03.uasset",
+      "relative_png": "corpo_hacker_icons/Augment/Capstones/loveless_capstone_green_03.png",
+      "width": 172,
+      "height": 172,
+      "bytes": 38204,
+      "sha256": "e75146374b1ae290a19c9a2a7df2c3f8ef88f966f9bb9b7df152a24ec96b28d2"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Capstones/loveless_capstone_red_01.loveless_capstone_red_01",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Capstones/loveless_capstone_red_01.uasset",
+      "relative_png": "corpo_hacker_icons/Augment/Capstones/loveless_capstone_red_01.png",
+      "width": 172,
+      "height": 172,
+      "bytes": 38442,
+      "sha256": "ee6575f14ee28deaa564b26d1bb372856a6860ff9acc00969f45ab8c37a1d1c5"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Capstones/loveless_capstone_red_02.loveless_capstone_red_02",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Capstones/loveless_capstone_red_02.uasset",
+      "relative_png": "corpo_hacker_icons/Augment/Capstones/loveless_capstone_red_02.png",
+      "width": 172,
+      "height": 172,
+      "bytes": 34963,
+      "sha256": "0373c8f93ffd73c38bb9738bb955ffd3a8491d39d0d6e05d1132631d370fa8ab"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Capstones/loveless_capstone_red_03.loveless_capstone_red_03",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Augment/Capstones/loveless_capstone_red_03.uasset",
+      "relative_png": "corpo_hacker_icons/Augment/Capstones/loveless_capstone_red_03.png",
+      "width": 172,
+      "height": 172,
+      "bytes": 35892,
+      "sha256": "f63a69adb1cb37b9ffccb29af606d4261b9cd4cc24ef59d7d785d39aab50fdb9"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_01.loveless_passive_blue_01",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_01.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_blue_01.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 2945,
+      "sha256": "3991a0c97a7ea7888b120334c26db415fecaa54c547fdd6edd9ae9d097e0500f"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_02.loveless_passive_blue_02",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_02.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_blue_02.png",
+      "width": 84,
+      "height": 80,
+      "bytes": 7067,
+      "sha256": "13ab4f7c2802cec17bc135f8415d68ab9691defaad97b008a27d8df66d5a1782"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_03.loveless_passive_blue_03",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_03.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_blue_03.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 3529,
+      "sha256": "5c2d2eea84ffb115e9260f22971720524e64bca83e22a98caaedb0bb7c4e4c39"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_04.loveless_passive_blue_04",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_04.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_blue_04.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 3437,
+      "sha256": "8873f4e110b12e2fd546b0f30b5cfc821147813991556f92a34d8ca2c5601dd0"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_05.loveless_passive_blue_05",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_05.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_blue_05.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 2958,
+      "sha256": "79757d2d25eda400fb5117048be70cb302b93340fdd4b91b78c81e6f97575311"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_06.loveless_passive_blue_06",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_06.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_blue_06.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 2047,
+      "sha256": "2b0b423181121f14ab3f13d1ea07c331171d983d632d44733b91cac8674209d4"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_07.loveless_passive_blue_07",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_07.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_blue_07.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 2573,
+      "sha256": "e9a7c551b2856e7fb53061049a1b6c1ea4130e4ef7e782aba7c056902b260125"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_08.loveless_passive_blue_08",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_08.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_blue_08.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 3295,
+      "sha256": "fab54f78b0ae29867e05adeede0bfe36a6552707f49115e68954c1c62433ac77"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_09.loveless_passive_blue_09",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_09.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_blue_09.png",
+      "width": 84,
+      "height": 80,
+      "bytes": 7021,
+      "sha256": "40d8ec1de63abb232cac8c961a649aa2282be91f6b50ad01aac6e7036b1ffe7b"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_10.loveless_passive_blue_10",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_10.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_blue_10.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 3067,
+      "sha256": "67a84aa7c30d6e761c89e8455cac01faedb8e89bccaadb31c27929ce57985bba"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_11.loveless_passive_blue_11",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_11.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_blue_11.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 3350,
+      "sha256": "89ea19091f7ff7da9afc4bf0767d547c172f984d7a179c546f994ea9f1d8c492"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_12.loveless_passive_blue_12",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_12.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_blue_12.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 2840,
+      "sha256": "475c47b2f585fe6a4e15911e19fe19a233dd178ab90814567096a2679571706b"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_13.loveless_passive_blue_13",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_13.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_blue_13.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 4104,
+      "sha256": "9bccd6649999e5e14d0b64966228f595b86d5110d4693238ca331259c3907571"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_14.loveless_passive_blue_14",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_14.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_blue_14.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 3149,
+      "sha256": "ace6429e0e2b64f4cd00b3ce2e3f9d55b668088d52cf3bfc6034857446d9ac63"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_15.loveless_passive_blue_15",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_15.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_blue_15.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 2596,
+      "sha256": "db00e90cc937e790cd3adcb3a3446df8ee69caa7c823e3682472c47375d428d1"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_16.loveless_passive_blue_16",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_16.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_blue_16.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 2789,
+      "sha256": "8651ffd9c90b89ea020ffc2d8a235f2648e14aceb3c05416cfb621418dc845be"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_17.loveless_passive_blue_17",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_17.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_blue_17.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 3145,
+      "sha256": "1c8e9543e533bbf65f13f68958ad6eed30d5f8546d5802c7c42a214ab9f687d9"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_18.loveless_passive_blue_18",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_18.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_blue_18.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 2892,
+      "sha256": "c43b0daa487bf8b13bebdf3b0e078df0923b90cd574aac5bf261fe5935fcdc1b"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_20.loveless_passive_blue_20",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_20.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_blue_20.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 2263,
+      "sha256": "e59d22ef7cc89127a73d89f49e0748e5c5e3bc00beea1be9231157f2210fe4fc"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_21.loveless_passive_blue_21",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_21.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_blue_21.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 2401,
+      "sha256": "651e57b9a8434de9a69b1ea7818d26c823e696053ac5d2081be148ef165870a5"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_22.loveless_passive_blue_22",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_22.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_blue_22.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 3717,
+      "sha256": "c9131d32cf594f5085fdd6f0724886808f737afcbcc457662d00d3fb2d6624d6"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_24.loveless_passive_blue_24",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_24.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_blue_24.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 2610,
+      "sha256": "f7f64056f8cbae6422372dfbfe7b55c64ba8ea64bf9e17a185ee90ddad6898eb"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_25.loveless_passive_blue_25",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_25.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_blue_25.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 2860,
+      "sha256": "da286c105f6c5ddd84ac24e0e89c719f6a1aa44217085a465af7c9f512de4f85"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_26.loveless_passive_blue_26",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_26.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_blue_26.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 2685,
+      "sha256": "be5f34cd9f67c604efe7edc5958c9db6f7f59bc945670c8c4da702e8a033a10c"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_27.loveless_passive_blue_27",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_27.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_blue_27.png",
+      "width": 84,
+      "height": 80,
+      "bytes": 7067,
+      "sha256": "a33c32f956dd0d2f61db3101e5ea2bc12f4e8f5a4696b67409e5013d51ba4d3b"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_28.loveless_passive_blue_28",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_28.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_blue_28.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 2934,
+      "sha256": "8cb8f447265194ea0999d3d2e69de839ec47382c002dd22ee4c0b356cb673933"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_29.loveless_passive_blue_29",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_29.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_blue_29.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 3425,
+      "sha256": "e19e62ee63fbac43c0967f3d6d1ae229ca1fdd430bfb29d6aa9645f4e7502c26"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_30.loveless_passive_blue_30",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_30.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_blue_30.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 2577,
+      "sha256": "72f0409c320e8bae73d35b08e4a65089847ed578997c391149fce06f8d5f5c1d"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_31.loveless_passive_blue_31",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_31.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_blue_31.png",
+      "width": 84,
+      "height": 80,
+      "bytes": 6965,
+      "sha256": "923990d76a5eb730494f74398bb178cefae353a968d71fa1ae67317fb9f6bb6d"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_32.loveless_passive_blue_32",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_32.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_blue_32.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 3983,
+      "sha256": "bdf6c644d8c07d530524d2981df391bc915977cceb15319af2430d698d8d4819"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_33.loveless_passive_blue_33",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_33.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_blue_33.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 3586,
+      "sha256": "5a0def21e9ad82d02ccfa079225b639428aebc9eebde6377ac2f210bf8d5107a"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_34.loveless_passive_blue_34",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_blue_34.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_blue_34.png",
+      "width": 84,
+      "height": 80,
+      "bytes": 7172,
+      "sha256": "4b9fe6a9bbb2065ac1cbd17bb0c5f91f06e0a6a58cfdee71f6f93ea2b9b1b018"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_01.loveless_passive_green_01",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_01.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_green_01.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 2042,
+      "sha256": "eda415f2e0cf99623f02666c5ab9dfef592166588c59f3fb563f853e36fcb8f6"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_02.loveless_passive_green_02",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_02.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_green_02.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 2024,
+      "sha256": "bc424d88286c3c59c69532d24844fc032121fd1be3c79f41c42ed3bb6a7b990e"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_03.loveless_passive_green_03",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_03.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_green_03.png",
+      "width": 84,
+      "height": 80,
+      "bytes": 7030,
+      "sha256": "2a1af6edcd3f69001e35e2d9a666fcbeb310e73a076077e4f963facbfd8f2ef1"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_04.loveless_passive_green_04",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_04.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_green_04.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 3274,
+      "sha256": "aa8dd16669c22297657893a07226633234ac0f33e710e4b4d573968b88733978"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_05.loveless_passive_green_05",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_05.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_green_05.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 3013,
+      "sha256": "d70a07977d5707d5f9ec0d201d57260e1c48f18b7ee25eb904fe7fb296951220"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_06.loveless_passive_green_06",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_06.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_green_06.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 2855,
+      "sha256": "7975b2b6d72ecb2b7e230f0840d05bd056ee38dd70ff7e347947de5e9d05e01e"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_07.loveless_passive_green_07",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_07.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_green_07.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 2881,
+      "sha256": "0727c111a00b549b0e890cc1ec6d93b738e02664ba1902a2598800e44ae20777"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_08.loveless_passive_green_08",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_08.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_green_08.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 3992,
+      "sha256": "fee6225d76bf054dd9c96da2fcc6cc3e405a1a6a5d1477a3cfb799c5ff59bc89"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_09.loveless_passive_green_09",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_09.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_green_09.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 2304,
+      "sha256": "7866f063c2afab1923272088093d3a8871ca468612c8c6015be5e557eb03610a"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_10.loveless_passive_green_10",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_10.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_green_10.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 3380,
+      "sha256": "1254da59dfc9c27bee4802eb0305f0e4741bf1ea11e712e93c776ed2ebc3e215"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_11.loveless_passive_green_11",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_11.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_green_11.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 3847,
+      "sha256": "36f662257b0806c828e587e29f18f835c40cb786282643a8b26e591c76994464"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_12.loveless_passive_green_12",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_12.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_green_12.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 2997,
+      "sha256": "532422fd6ccf65267b8aa5cade2986a7d9229b391b18368a206e70d3d8f5c4c8"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_13.loveless_passive_green_13",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_13.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_green_13.png",
+      "width": 84,
+      "height": 80,
+      "bytes": 6786,
+      "sha256": "d0fcf5d94776d6322debfe935e1a04d0c4fd593efe447f2acb45c8aeb55a15b4"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_14.loveless_passive_green_14",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_14.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_green_14.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 3552,
+      "sha256": "ab0d031223b5885cca91f9d9153bff4653a8f42beee8f0cc48ed7a7bd7e931ce"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_15.loveless_passive_green_15",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_15.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_green_15.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 3336,
+      "sha256": "ecb54530b8e0ab2581eaa97c1947f38db0bd352a09c793fdbcaf1c97fdce4b68"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_16.loveless_passive_green_16",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_16.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_green_16.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 3097,
+      "sha256": "69ed716261953987e24094799bbb3cd9709bbb550c6a6919127f5d59fdf2a689"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_17.loveless_passive_green_17",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_17.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_green_17.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 2327,
+      "sha256": "816024591fb517828ca88c42bf20e0a1c37efe9c9410692121623fbab72a2352"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_18.loveless_passive_green_18",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_18.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_green_18.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 3364,
+      "sha256": "6c08d6fc54a8c3098f39aff0281ac9cfaa759f2c87122ad8a5da6c5526d35adf"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_19.loveless_passive_green_19",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_19.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_green_19.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 2742,
+      "sha256": "fb37300b33b81011fdc0f562985c27ca8956941ccecd94ed9409ae17c8925481"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_20.loveless_passive_green_20",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_20.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_green_20.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 2742,
+      "sha256": "fb37300b33b81011fdc0f562985c27ca8956941ccecd94ed9409ae17c8925481"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_21.loveless_passive_green_21",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_21.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_green_21.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 3409,
+      "sha256": "f27051cbeafb697f6f3db4ead9b944fd87edea3d010faee92048cf25c9a4724d"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_22.loveless_passive_green_22",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_22.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_green_22.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 2580,
+      "sha256": "556bc8b01eb2317d54eb8f177bdc45c9cbdaec9359026b2ce620cdab8eef631c"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_23.loveless_passive_green_23",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_23.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_green_23.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 3155,
+      "sha256": "d9c1ca242100d524ba41f2b7e527173e556d6e1567d17ddfe6c7952b144be7c0"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_24.loveless_passive_green_24",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_24.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_green_24.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 3469,
+      "sha256": "6bbd9c8de1b5f1ddfbd64ded59b19e3f03dfbef1f3851a867768813fbcfac8fa"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_25.loveless_passive_green_25",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_25.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_green_25.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 3435,
+      "sha256": "5ebfa872c7dbb1f3acf592383fb5f4b9b07262cbfcbb48ee1ff6dce9f145664a"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_27.loveless_passive_green_27",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_27.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_green_27.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 4604,
+      "sha256": "e9cf09ea982c28ba809ec9fb0fde17509257a94a42570d43fbce3c3110f5b048"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_28.loveless_passive_green_28",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_28.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_green_28.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 2574,
+      "sha256": "fefa0cf07a068851f7af80c79e40a45e89a68151abaf8f5f7ba9dfd8594547d3"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_29.loveless_passive_green_29",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_29.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_green_29.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 2181,
+      "sha256": "89e444c98b1bb6eaa83e0f3c38cec0e3f0f7994381b362bf2b8a9b8605f570d1"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_30.loveless_passive_green_30",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_30.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_green_30.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 2954,
+      "sha256": "883c0186f13ca47ed9aa114e8c9ac87c0e778c29993292e6c2fd3cf015fd0fe3"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_31.loveless_passive_green_31",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_31.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_green_31.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 2938,
+      "sha256": "ff596871cb317fa5708098900a8005a8a8ff36bd11f29718dd64baff3b461e27"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_32.loveless_passive_green_32",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_32.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_green_32.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 3480,
+      "sha256": "08db27bdcba3d083e4e6f45448cb8d047ab5829ef58b501d08730a4d60f757c4"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_33.loveless_passive_green_33",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_33.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_green_33.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 4460,
+      "sha256": "83ff27a7b2da875011540bbba8a58c499142793c2d21ef444bed410f7898f1fb"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_34.loveless_passive_green_34",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_green_34.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_green_34.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 3635,
+      "sha256": "1fd1db79ff5df97cd91bd2418fcc85e7c375de807d08bc1ec7cb2455ac6ceeee"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_01.loveless_passive_red_01",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_01.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_red_01.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 2321,
+      "sha256": "67179c52a72132c44ffb079e975b31b0af79162815fbc25d2641220b9d1fc206"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_02.loveless_passive_red_02",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_02.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_red_02.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 6887,
+      "sha256": "00b6d97c5cee8f7b6f4a7f9e2c715f7094c522a3d03136de428d4e60d966ba89"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_03.loveless_passive_red_03",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_03.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_red_03.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 2669,
+      "sha256": "8c763d4490e0da8543a77b1d9f6a660d028a2ce2cf1a2f009b4be3724b2adfe2"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_04.loveless_passive_red_04",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_04.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_red_04.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 6968,
+      "sha256": "a76d6751c6ba8523035ad074a860ebeac5ff61b30e822d5537d19492d0872ef8"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_05.loveless_passive_red_05",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_05.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_red_05.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 3643,
+      "sha256": "bbf56413d5615db4be2a18982b641d0df4197178c8b05218f4391673a5a6f291"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_06.loveless_passive_red_06",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_06.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_red_06.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 3067,
+      "sha256": "a0348bbae4e170ebaca4acd85851dd72d1434935d9fb53a5d9bdba93efa5dae6"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_07.loveless_passive_red_07",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_07.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_red_07.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 2732,
+      "sha256": "cfcfa35667a134ecddc710d6bd25b41bc3dba5ded5c43788e7810200aaa45987"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_08.loveless_passive_red_08",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_08.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_red_08.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 3529,
+      "sha256": "3d282d15c8b280338d12741e3225a0aa43dee516a43b611d6e0acebe2a672068"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_09.loveless_passive_red_09",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_09.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_red_09.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 3342,
+      "sha256": "f55469b66b00bed2d0bcd462412a26fa0d205d4694092048d0e3abbf580c9e0f"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_10.loveless_passive_red_10",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_10.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_red_10.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 3150,
+      "sha256": "60ae01b7dd5138cddb646bb1839e1759e12a9aff82ec15b3c3f16bff760ba684"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_11.loveless_passive_red_11",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_11.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_red_11.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 6492,
+      "sha256": "5ff19da8f51bd74bc15b7be92a12781bdf8a543adde672623bcbe797424ed7d6"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_12.loveless_passive_red_12",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_12.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_red_12.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 2507,
+      "sha256": "7e49ba4416d581f5d1a9aa4267c8d841b297915c86dfb8d7144956fb7563cdcf"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_13.loveless_passive_red_13",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_13.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_red_13.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 3199,
+      "sha256": "eb2192fd0c5f120dacbe00e8096f82b049f4b1bfb476d3b845c771e20f9aeea7"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_14.loveless_passive_red_14",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_14.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_red_14.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 3365,
+      "sha256": "196a4a01b2044f1e49cbfce6a234d6fa1ab6590d5460c8056e20cd6d0e177d92"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_15.loveless_passive_red_15",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_15.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_red_15.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 2429,
+      "sha256": "ae3eeeaedf781ec83e530b2b4f87c638a32ecc6181047f2dd2137fa10aaa91ef"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_16.loveless_passive_red_16",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_16.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_red_16.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 3309,
+      "sha256": "f851f4fe7495be190b8bfade307e532fad8cc48575412eaee7b786d42f343bd2"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_17.loveless_passive_red_17",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_17.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_red_17.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 2297,
+      "sha256": "84a5a39143c419ce8f8a5e1be4e11f13e17802a7e2f2a075e53a1a004a59f794"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_18.loveless_passive_red_18",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_18.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_red_18.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 6782,
+      "sha256": "65abf6dbd0a43f4be373fa86d5d6ff4db44206aec2757c8fc1064f72ea8dc235"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_19.loveless_passive_red_19",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_19.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_red_19.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 2763,
+      "sha256": "38059bb141674cd63918a9d8bb5ceffe7ab46eef3d8fe1690f35116dcf42c4b3"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_20.loveless_passive_red_20",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_20.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_red_20.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 6822,
+      "sha256": "422b398f6c1748b0a3df32512c4be2e2389b4a92d277d17be71aef4001a4f335"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_21.loveless_passive_red_21",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_21.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_red_21.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 1968,
+      "sha256": "4bc6cd2ebcdc3a644181dad0b41f385630c7e90e485a516f4fdc0e83712cd2bc"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_22.loveless_passive_red_22",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_22.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_red_22.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 3818,
+      "sha256": "10697feba57e9d9f2bac38fd5c6ff5a5554a1b1fd5c3ac6d50eb99a42a617e1d"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_23.loveless_passive_red_23",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_23.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_red_23.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 3040,
+      "sha256": "b5e42264c2c6c961f6e90f5e88f5d66c50665d98fabd1820f8b4c5a423d6e873"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_24.loveless_passive_red_24",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_24.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_red_24.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 7009,
+      "sha256": "dc0c21ee0195e41e9c3692c793a6aac4013fe48204b38e907f394181f1960489"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_26.loveless_passive_red_26",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_26.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_red_26.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 2829,
+      "sha256": "f632ab48b807f3e62e0c541b7ee734017f919fb3f06314af6853adf7eb02dc69"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_27.loveless_passive_red_27",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_27.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_red_27.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 3863,
+      "sha256": "8f9a4b1a82230088781bfae8a5399e0b208c7b5bc0469dd437437befebf287cb"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_28.loveless_passive_red_28",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_28.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_red_28.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 2728,
+      "sha256": "2331ac501e7f750d172870694e1dba4a4703f3d18cd1891b1f12a929b7cd178b"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_29.loveless_passive_red_29",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_29.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_red_29.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 2858,
+      "sha256": "8e11dc4950c6f29050fded7940ad9bf7f1a46d23c1e2cdba101a691fcf97d42d"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_30.loveless_passive_red_30",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_30.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_red_30.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 3441,
+      "sha256": "a9c22eabd24e2557faf4f7d25565158a7563dd6433a365354188afb27a2c6bfd"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_31.loveless_passive_red_31",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_31.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_red_31.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 6791,
+      "sha256": "bc75e046644a9bebc756c81b7ca0730b932ee7f3f4d2f5f9f6a27ccead2f5625"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_32.loveless_passive_red_32",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_32.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_red_32.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 3321,
+      "sha256": "1ecbeba75e6a74ca4c7d22d46a0f3f1ce3ff1a7fdee6ea91e9a6e53aa1c81cfd"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_33.loveless_passive_red_33",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_33.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_red_33.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 3332,
+      "sha256": "44323909efa6c6a702a44a4db0366b979743dbe815c8e4b95cbc85be16cb644b"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_34.loveless_passive_red_34",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Passives/loveless_passive_red_34.uasset",
+      "relative_png": "corpo_hacker_icons/Passives/loveless_passive_red_34.png",
+      "width": 80,
+      "height": 80,
+      "bytes": 7090,
+      "sha256": "747cd324eec5c946a4d8ef03776e293f757e45fef10065bba5cedaf99147c158"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/portrait/player_class_loveless_tooltip.player_class_loveless_tooltip",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/portrait/player_class_loveless_tooltip.uasset",
+      "relative_png": "corpo_hacker_icons/portrait/player_class_loveless_tooltip.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 17015,
+      "sha256": "51595f5bd505a4b19248a0f2b90a6dbdc8afe364998290085ae4076b0959a348"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Tooltip_images/loveless_menu_blue_skill_tooltip.loveless_menu_blue_skill_tooltip",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Tooltip_images/loveless_menu_blue_skill_tooltip.uasset",
+      "relative_png": "corpo_hacker_icons/Tooltip_images/loveless_menu_blue_skill_tooltip.png",
+      "width": 936,
+      "height": 380,
+      "bytes": 433347,
+      "sha256": "df034290d068d07ac70d61b739a7586db8f4394c98e6c7247d79ad1bd06861f6"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Tooltip_images/loveless_menu_green_skill_tooltip.loveless_menu_green_skill_tooltip",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Tooltip_images/loveless_menu_green_skill_tooltip.uasset",
+      "relative_png": "corpo_hacker_icons/Tooltip_images/loveless_menu_green_skill_tooltip.png",
+      "width": 936,
+      "height": 380,
+      "bytes": 549638,
+      "sha256": "daf7e43d343dbd0abd7ef600fe327380d82780ee413415d9ccd06615251bd5b4"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Tooltip_images/loveless_menu_red_skill_tooltip.loveless_menu_red_skill_tooltip",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Tooltip_images/loveless_menu_red_skill_tooltip.uasset",
+      "relative_png": "corpo_hacker_icons/Tooltip_images/loveless_menu_red_skill_tooltip.png",
+      "width": 936,
+      "height": 380,
+      "bytes": 652636,
+      "sha256": "3bbbb2fe9c8c11ce0283b0dad1aba095ebbdd6ca3a5dfa463f9d4d667920332a"
+    },
+    {
+      "asset": "/Game/DLC/Harmonica/uiresources/corpo_hacker_icons/Trait/vh_trait_loveless.vh_trait_loveless",
+      "package": "OakGame/Content/DLC/Harmonica/uiresources/corpo_hacker_icons/Trait/vh_trait_loveless.uasset",
+      "relative_png": "corpo_hacker_icons/Trait/vh_trait_loveless.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 12294,
+      "sha256": "f82ba5df3b8cc61f5fe56f3bd059c7aed490f7f605480227e1e528e846e8ae78"
+    }
+  ],
+  "failures": []
+}

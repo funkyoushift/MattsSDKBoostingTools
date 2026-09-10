@@ -17,6 +17,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any, Callable
 
 from . import backend_actions, mobile_lan, perf_profile, quick_menu_registry
+from .game_parameters import CURRENCY_KINDS, EXP_TRACKS, status_parameters
 
 try:
     from mods_base import hook
@@ -326,7 +327,7 @@ UI_LAYOUT: dict[str, Any] = {
                 {"id":"clear_serials","label":"Clear Serials","accent":"red"}
             ]},
             {"id":"experience","label":"EXPERIENCE","accent":"cyan","fields":[
-                {"id":"xp_track","label":"XP Track","type":"choice","choices":["player","specialization"],"default":"player"},
+                {"id":"xp_track","label":"XP Track","type":"choice","choices":list(EXP_TRACKS),"default":"player"},
                 {"id":"level","label":"Target Level","type":"int","default":70}
             ],"actions":[
                 {"id":"set_level","label":"Set Player Level","accent":"cyan","uses_fields":["xp_track","level"]},
@@ -334,7 +335,7 @@ UI_LAYOUT: dict[str, Any] = {
                 {"id":"max_spec_level","label":"Set Spec 701","accent":"purple"}
             ]},
             {"id":"currency","label":"CURRENCY","accent":"green","fields":[
-                {"id":"currency_kind","label":"Currency Kind","type":"choice","choices":["cash","eridium"],"default":"cash"},
+                {"id":"currency_kind","label":"Currency Kind","type":"choice","choices":list(CURRENCY_KINDS),"default":"cash"},
                 {"id":"amount","label":"Currency Amount","type":"int","default":1000000}
             ],"actions":[
                 {"id":"give_currency","label":"Give Currency","accent":"green","uses_fields":["currency_kind","amount"]},
@@ -1008,10 +1009,6 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
         return backend_actions.assign_quick_menu_slot(_copy_payload(payload))
     if action == "quick_menu_clear_page":
         return backend_actions.clear_quick_menu_page(_copy_payload(payload))
-    if action == "guest_grid_dump":
-        return backend_actions.guest_grid_dump(payload.get("target_player") or payload.get("name"))
-    if action == "guest_grid_try":
-        return backend_actions.guest_grid_try(payload.get("target_player") or payload.get("name"))
     return {"ok": False, "message": f"Unknown action: {action}"}
 
 
@@ -1051,6 +1048,7 @@ def _status() -> dict[str, Any]:
         "third_person": backend_status.get("third_person") or {},
         "mobile_lan": mobile_lan.status_dict(),
         "diagnostics": diagnostics,
+        "game_parameters": dict(backend_status.get("game_parameters") or status_parameters()),
         "last_action": _last_action,
         "last_error": last_error,
     }
@@ -1068,6 +1066,7 @@ def _safe_status_stub() -> dict[str, Any]:
         "selected_player": "",
         "serial_delivery": {},
         "diagnostics": {"external_bridge_started": _started},
+        "game_parameters": status_parameters(),
         "last_action": _last_action,
         "last_error": _last_error,
         "snapshot_ready": False,

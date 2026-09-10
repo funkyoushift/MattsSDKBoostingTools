@@ -1,8 +1,4 @@
 {
-  "__copyright": {
-    "author": "Cr4nkSt4r",
-    "github": "https://github.com/Cr4nkSt4r/Borderlands-4.NcsParser"
-  },
   "ui_stat": {
     "records": [
       {
@@ -312,6 +308,7 @@
                 "defaultvalue": "false"
               },
               "sortingpriority": "2.000000",
+              "compareattribute": "attribute'impact_contribution_scalar'",
               "statvalue": {
                 "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
                 "formattext": "weapon_uistats, 948F812C4443EABC1BD83FB4030F2AF3, {element} Cryo Efficiency",
@@ -340,6 +337,7 @@
                 "defaultvalue": "false"
               },
               "sortingpriority": "2.000000",
+              "compareattribute": "attribute'impact_contribution_scalar'",
               "statvalue": {
                 "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
                 "formattext": "weapon_uistats, F83862CE4F297C9EF81C388F13566B21, {element} Cryo Efficiency",
@@ -368,6 +366,7 @@
                 "comparetype": "GreaterThan"
               },
               "sortingpriority": "1.000000",
+              "compareattribute": "attribute'weapon_ui_elemental_dps'",
               "statvalue": {
                 "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
                 "formattext": "weapon_uistats, 5DDC28944C1DBB1F94AA779A75C35730, {dps} | {element} Chance",
@@ -415,6 +414,7 @@
                 "comparetype": "GreaterThan"
               },
               "sortingpriority": "2.000000",
+              "compareattribute": "attribute'weapon_ui_elemental_dps'",
               "statvalue": {
                 "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
                 "formattext": "weapon_uistats, DC166D574DDEBC668CA1E7B8AC61F212, {dps2} | {element} Chance",
@@ -508,6 +508,7 @@
                 "comparetype": "LessOrEqual"
               },
               "sortingpriority": "1.000000",
+              "compareattribute": "attribute'grenade_damage_modifier_base_status_effect_charge'",
               "statvalue": {
                 "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
                 "formattext": "weapon_uistats, BC88288548F438B35FF7B6B5648ED05A, {element} Cryo Efficiency",
@@ -535,6 +536,7 @@
                 "comparetype": "GreaterThan"
               },
               "sortingpriority": "1.000000",
+              "compareattribute": "attribute'grenade_ui_elemental_dps'",
               "statvalue": {
                 "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
                 "formattext": "weapon_uistats, E66599624CB34DEBF6185683121F0977, {dps} | {element} Chance",
@@ -1038,6 +1040,43 @@
             }
           },
           {
+            "uistat_shield_armor_damage_reduction": {
+              "ui_stat": "uistat_shield_armor_damage_reduction",
+              "displaygroup": "ui_stat_group'Primary'",
+              "sortingpriority": "0.200000",
+              "compareattribute": "attribute'shield_armor_damage_reduction'",
+              "staticon": "Asset'/Game/uiresources/_shared/assets/ico_ui_art_item_stats/ico_ui_art_shield_dmg_reduction.ico_ui_art_shield_dmg_reduction'",
+              "statlabel": {
+                "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
+                "formattext": "shield_uistats, 06B4AC7A4613E3F1FD6C0FB4635DF9E7, Armor Damage Reduction"
+              },
+              "statvalue": {
+                "structtype": "Asset'/Script/GbxGame.NumericDisplayValue'",
+                "attributedef": "attribute'shield_armor_damage_reduction'",
+                "signstyle": "Positive",
+                "bdisplayaspercentage": "true",
+                "bcalculatewithreductionmath": "true"
+              }
+            }
+          },
+          {
+            "uistat_shield_armor_segments": {
+              "ui_stat": "uistat_shield_armor_segments",
+              "displaygroup": "ui_stat_group'Primary'",
+              "sortingpriority": "0.100000",
+              "compareattribute": "attribute'shield_segments'",
+              "staticon": "Asset'/Game/uiresources/_shared/assets/ico_ui_art_item_stats/ico_ui_art_shield_armor_segments.ico_ui_art_shield_armor_segments'",
+              "statlabel": {
+                "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
+                "formattext": "shield_uistats, 8415FAB34857E9975DC3FF832FCF6ECD, Armor Segments"
+              },
+              "statvalue": {
+                "structtype": "Asset'/Script/GbxGame.NumericDisplayValue'",
+                "attributedef": "attribute'shield_segments'"
+              }
+            }
+          },
+          {
             "uistat_shield_capacity": {
               "ui_stat": "uistat_shield_capacity",
               "displaygroup": "ui_stat_group'Primary'",
@@ -1067,6 +1106,21 @@
                 "bdisplayplussign": "true",
                 "buseformattext": "true",
                 "formattext": "shield_uistats, AA42F6E348C91C31BED7ECA61F352DA8, $VALUE$ Resist"
+              }
+            }
+          },
+          {
+            "uistat_shield_type_armor": {
+              "ui_stat": "uistat_shield_type_armor",
+              "displaygroup": "ui_stat_group'TypeLine'",
+              "staticon": "Asset'/Game/uiresources/_shared/assets/ico_ui_art_item_card_type/ico_art_item_card_armor_shield.ico_art_item_card_armor_shield'",
+              "statlabel": {
+                "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
+                "formattext": "shield_uistats, 548825A84252D72597659D8756FD11AA, Shield"
+              },
+              "statvalue": {
+                "structtype": "Asset'/Script/GbxGame.StringDisplayValue'",
+                "formattext": "shield_uistats, 0B9B173747EE09218EE284A2A62E0C6F, Armor Shield"
               }
             }
           },

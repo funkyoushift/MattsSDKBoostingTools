@@ -15,6 +15,10 @@ from mods_base import get_pc, hook
 from unrealsdk import find_all, find_object, logging
 from unrealsdk.hooks import Type
 from unrealsdk.unreal import BoundFunction, UObject, WrappedStruct
+from .game_parameters import (
+    EXP_TRACKS, MAX_PLAYER_LEVEL, MAX_SPEC_LEVEL, MAX_VAULT_CARD_LEVEL,
+    experience_row_for_track, experience_token_name,
+)
 
 __version__ = "0.5.0"
 __version_info__ = (0, 5, 0)
@@ -26,12 +30,13 @@ _PREFIX = "[Matts SDK Boosting Tools | CXP]"
 _DEFAULT_MULT = 1000.0
 _INT32_MAX = 2_147_483_647
 _MAX_LEVEL_BY_TRACK = {
-    0: 70,  # Character
-    1: 701,  # Specialization
-    2: 9_999_999,  # Vault cards
-    3: 9_999_999,
-    4: 9_999_999,
-    5: 9_999_999,
+    0: MAX_PLAYER_LEVEL,  # Character
+    1: MAX_SPEC_LEVEL,  # Specialization
+    2: MAX_VAULT_CARD_LEVEL,  # Vault cards
+    3: MAX_VAULT_CARD_LEVEL,
+    4: MAX_VAULT_CARD_LEVEL,
+    5: MAX_VAULT_CARD_LEVEL,
+    6: MAX_VAULT_CARD_LEVEL,
 }
 _TRACK_TOKEN_FALLBACKS: dict[int, tuple[str, ...]] = {
     0: ("Character",),
@@ -40,6 +45,7 @@ _TRACK_TOKEN_FALLBACKS: dict[int, tuple[str, ...]] = {
     3: ("VaultCard02", "VaultCard2", "VaultCard02_XP", "VaultCard02_Experience"),
     4: ("VaultCard03", "VaultCard3", "VaultCard03_XP", "VaultCard03_Experience"),
     5: ("VaultCard04", "VaultCard4", "VaultCard04_XP", "VaultCard04_Experience"),
+    6: ("VaultCard05_Experience",),
 }
 _EXPERIENCE_DEF_PATHS = (
     "/Script/GbxGame.GbxExperienceDef",
@@ -263,6 +269,9 @@ def _token_from_row(row: Any) -> str | None:
 
 
 def _track_tokens(track: int, row: Any) -> list[str]:
+    live_token = experience_token_name(row)
+    if live_token:
+        return [live_token]
     seen: set[str] = set()
     out: list[str] = []
     for token in (_token_from_row(row), *(_TRACK_TOKEN_FALLBACKS.get(track, ()))):
@@ -281,7 +290,7 @@ def _es_len(ps: Any) -> int:
 
 def _row(ps: Any, track: int) -> Any:
     try:
-        return ps.ExperienceState[track]
+        return experience_row_for_track(ps.ExperienceState, track)
     except Exception:
         return None
 
@@ -341,8 +350,8 @@ def _max_level(track: int) -> int:
     if track in _MAX_LEVEL_BY_TRACK:
         return _MAX_LEVEL_BY_TRACK[track]
     if track >= 2:
-        return 9_999_999
-    return 70
+        return MAX_VAULT_CARD_LEVEL
+    return MAX_PLAYER_LEVEL
 
 
 def _set_experience_level(ps: Any, track: int, level: int) -> bool:
@@ -496,8 +505,7 @@ def _apply_boost_to_track(ps: Any, track: int, target_points: int, award_hint: i
 
 def _snapshot_points(ps: Any) -> dict[int, int]:
     snap: dict[int, int] = {}
-    n = _es_len(ps)
-    for track in range(n):
+    for track in range(len(EXP_TRACKS)):
         pts = _read_points(ps, track)
         if pts is not None:
             snap[track] = pts
@@ -605,8 +613,7 @@ def _process_player(ps: Any) -> None:
 
         # Combat kill signal → Spec/Vault rank jumps (BP_SetExperienceLevel, not int32 XP)
         if combat_delta > 0 and bool(_boost_spec_vault_on_combat):
-            n = _es_len(ps)
-            for track in range(1, n):
+            for track in range(1, len(EXP_TRACKS)):
                 if track in jumped_ranks:
                     continue
                 _apply_rank_jump_from_combat(ps, track)

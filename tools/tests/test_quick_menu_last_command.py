@@ -159,7 +159,6 @@ def _load_backend_actions():
         "MattsSDKBoostingTools.no_fog_of_war": {},
         "MattsSDKBoostingTools.fod_reveal": {},
         "MattsSDKBoostingTools.fod_party_reveal": {},
-        "MattsSDKBoostingTools.fod_guest_grid": {},
         "MattsSDKBoostingTools.asd_hybrid": {
             "spawn_live": lambda *a, **k: {
                 "ok": False,

@@ -90,6 +90,11 @@ _GZO_CLASS_NAMES = {
     "gravitar": "Gravitar",
     "ai": "AI",
     "c4sh": "C4SH",
+    "robodealer": "C4SH",
+    "corpohacker": "Loveless",
+    "corpo_hacker": "Loveless",
+    "hacker": "Loveless",
+    "loveless": "Loveless",
 }
 
 _GUN_TYPES = frozenset(

@@ -1,8 +1,4 @@
 {
-  "__copyright": {
-    "author": "Cr4nkSt4r",
-    "github": "https://github.com/Cr4nkSt4r/Borderlands-4.NcsParser"
-  },
   "inv_name_part": {
     "records": [
       {
@@ -732,9 +728,51 @@
             }
           },
           {
+            "np_accretion": {
+              "inv_name_part": "np_accretion",
+              "partname": "Uni_MAL_SG_Kickballer, 448D090B40019438435737AB87E2CCAE, Honeymooner",
+              "priority": "3.000000"
+            }
+          },
+          {
+            "np_aerodramatic": {
+              "inv_name_part": "np_AeroDramatic",
+              "partname": "Uni_MAL_SG_Kickballer, 01685367481C2D5578B5488F7E256E83, AeroDramatic",
+              "priority": "3.000000"
+            }
+          },
+          {
+            "np_alignment": {
+              "inv_name_part": "np_alignment",
+              "partname": "Uni_ORD_Aggrovator, 5D1A93654025C11EB0B344B8C38C4A35, Alignment",
+              "priority": "3.000000"
+            }
+          },
+          {
             "np_arctic": {
               "inv_name_part": "np_arctic",
               "partname": "Uni_MAL_SG_Kickballer, C74BC1854BCB0B44B9CF8BA0D8419453, ARC-TAN",
+              "priority": "3.000000"
+            }
+          },
+          {
+            "np_assembler": {
+              "inv_name_part": "np_assembler",
+              "partname": "Uni_MAL_SG_Kickballer, 3AEA1318467D0C953967F0BEB991122A, Decompiler",
+              "priority": "3.000000"
+            }
+          },
+          {
+            "np_aura": {
+              "inv_name_part": "np_aura",
+              "partname": "Uni_MAL_SG_Kickballer, 30F4FAC24A01A7C5277A968CB20FFC36, Tempered Essence",
+              "priority": "3.000000"
+            }
+          },
+          {
+            "np_avarice": {
+              "inv_name_part": "np_Avarice",
+              "partname": "Uni_MAL_SG_Kickballer, CCB55B044D2B2B14DEF9A0AD8AC3CBB9, Avarice",
               "priority": "3.000000"
             }
           },
@@ -760,6 +798,13 @@
             }
           },
           {
+            "np_blackout": {
+              "inv_name_part": "np_blackout",
+              "partname": "Uni_MAL_SG_Kickballer, 57E022884D38CD3D74648097C2AD8A2A, Shield Overflow",
+              "priority": "3.000000"
+            }
+          },
+          {
             "np_breadth": {
               "inv_name_part": "np_Breadth",
               "partname": "Uni_MAL_SG_Kickballer, 97F41F7C462F1FBE00B45C85669C6DC6, Hardpoint",
@@ -770,6 +815,13 @@
             "np_brickhouse": {
               "inv_name_part": "np_brickhouse",
               "partname": "Uni_MAL_SG_Kickballer, AC23DAE24E41AB75F94F168ED15797D4, Brickhouse",
+              "priority": "3.000000"
+            }
+          },
+          {
+            "np_brudder": {
+              "inv_name_part": "np_Brudder",
+              "partname": "Uni_Spinning_Blade, 1C10498B4BDC4978BBB607886C9A23C0, Li'l Brudder",
               "priority": "3.000000"
             }
           },
@@ -788,9 +840,170 @@
             }
           },
           {
+            "np_clarity": {
+              "inv_name_part": "np_clarity",
+              "partname": "Uni_MAL_SR_ComplexRoot, EFD5454040A5B20D4A252DBBCFC78FEC, Clarity",
+              "priority": "3.000000"
+            }
+          },
+          {
+            "np_cm_corpo_01": {
+              "inv_name_part": "np_cm_corpo_01",
+              "partname": "ClassModNameParts, 07468C164E259A5414189994B87ED3D5, Keylogger",
+              "priority": "1.000000"
+            }
+          },
+          {
+            "np_cm_corpo_02": {
+              "inv_name_part": "np_cm_corpo_02",
+              "partname": "ClassModNameParts, 2BB51A3E4281B1530B70A3A6CB36A08F, Hacktivist ",
+              "priority": "1.000000"
+            }
+          },
+          {
+            "np_cm_corpo_03": {
+              "inv_name_part": "np_cm_corpo_03",
+              "partname": "ClassModNameParts, 88B187B942B5F835168FD1AF45395CAB, Researcher",
+              "priority": "1.000000"
+            }
+          },
+          {
+            "np_cm_corpo_04": {
+              "inv_name_part": "np_cm_corpo_04",
+              "partname": "ClassModNameParts, DDA745EE48EDB11F4A05C99563CCEE55, Assimilator",
+              "priority": "1.000000"
+            }
+          },
+          {
+            "np_cm_corpo_05": {
+              "inv_name_part": "np_cm_corpo_05",
+              "partname": "ClassModNameParts, 7C2E99934097CFE2A82B15A028A95C77, Royal We",
+              "priority": "1.000000"
+            }
+          },
+          {
+            "np_cm_corpo_06": {
+              "inv_name_part": "np_cm_corpo_06",
+              "partname": "ClassModNameParts, D69528064FCF25C9C88EBE99D01E9823, Wyrmkind",
+              "priority": "1.000000"
+            }
+          },
+          {
+            "np_cm_corpo_07": {
+              "inv_name_part": "np_cm_corpo_07",
+              "partname": "ClassModNameParts, 8951C53D42C37A4B9134E1BADFFAA688, Defragger",
+              "priority": "1.000000"
+            }
+          },
+          {
+            "np_cm_corpo_08": {
+              "inv_name_part": "np_cm_corpo_08",
+              "partname": "ClassModNameParts, D88FE8474DA2537B44BD068F77B4DF00, Corrupter",
+              "priority": "1.000000"
+            }
+          },
+          {
+            "np_cm_corpo_09": {
+              "inv_name_part": "np_cm_corpo_09",
+              "partname": "ClassModNameParts, E356F17E476D2B9588929AAEFC8DD0A5, Eminence",
+              "priority": "1.000000"
+            }
+          },
+          {
+            "np_cm_corpo_10": {
+              "inv_name_part": "np_cm_corpo_10",
+              "partname": "ClassModNameParts, 532885B345B679B9BD2EAA8D8E26E56E, System",
+              "priority": "1.000000"
+            }
+          },
+          {
+            "np_cm_corpo_leg_01": {
+              "inv_name_part": "np_cm_corpo_leg_01",
+              "partname": "ClassModNameParts_CorpoHacker, 37E7A9DA4770846D1FADBA82504D4083, Devourer",
+              "priority": "1.000000"
+            }
+          },
+          {
+            "np_cm_corpo_leg_02": {
+              "inv_name_part": "np_cm_corpo_leg_02",
+              "partname": "ClassModNameParts, 4E76425449C0E107EEFF91B0EFEE247A, Virophile",
+              "priority": "1.000000"
+            }
+          },
+          {
+            "np_cm_corpo_leg_03": {
+              "inv_name_part": "np_cm_corpo_leg_03",
+              "partname": "ClassModNameParts, 1E5CE2754C6A6EFA57235A8F074033F7, Montage Maker",
+              "priority": "1.000000"
+            }
+          },
+          {
+            "np_cm_corpo_leg_04": {
+              "inv_name_part": "np_cm_corpo_leg_04",
+              "partname": "ClassModNameParts, 9F21C7CE47ED06EAD2C06BA357832B92, Memory Hoarder",
+              "priority": "1.000000"
+            }
+          },
+          {
+            "np_cm_corpo_leg_05": {
+              "inv_name_part": "np_cm_corpo_leg_05",
+              "partname": "ClassModNameParts_CorpoHacker, 28F25AFA43F1F80BEE2E97B175D6FEDB, Trackstar",
+              "priority": "1.000000"
+            }
+          },
+          {
+            "np_cm_corpo_leg_06": {
+              "inv_name_part": "np_cm_corpo_leg_06",
+              "partname": "ClassModNameParts, DEE46AAA4E97066A47D797A0CC688917, Functional Human",
+              "priority": "1.000000"
+            }
+          },
+          {
+            "np_cm_corpo_leg_dlc1": {
+              "inv_name_part": "np_cm_corpo_leg_dlc1",
+              "partname": "ClassModNameParts, 1BD1295F4B07659A128A7EB39DDFB995, Martyr",
+              "priority": "1.000000"
+            }
+          },
+          {
+            "np_cm_corpo_leg_dlc2": {
+              "inv_name_part": "np_cm_corpo_leg_dlc2",
+              "partname": "ClassModNameParts, 67F5648F41B1F1060CD77598E5F3AC3C, Programmer",
+              "priority": "1.000000"
+            }
+          },
+          {
+            "np_cm_corpo_leg_raid1": {
+              "inv_name_part": "np_cm_corpo_leg_raid1",
+              "partname": "ClassModNameParts, 2F9CE9E847A5859EC6809D9EE13C0108, Boomer",
+              "priority": "1.000000"
+            }
+          },
+          {
+            "np_cm_corpo_leg_raid2": {
+              "inv_name_part": "np_cm_corpo_leg_raid2",
+              "partname": "ClassModNameParts, 3A182F944BCE003C8F9CAC85D4166020, Plague Engineer",
+              "priority": "1.000000"
+            }
+          },
+          {
+            "np_cm_corpo_leg_tuba": {
+              "inv_name_part": "np_cm_corpo_leg_tuba",
+              "partname": "ClassModNameParts, 8BCE1F864500ABC8E6CCA192B962CB38, Puppetmaster",
+              "priority": "1.000000"
+            }
+          },
+          {
             "np_cm_ds_leg_dlc1": {
               "inv_name_part": "np_cm_ds_leg_dlc1",
               "partname": "ClassModNameParts, 18EE838543259CA45C4049B430EEFC13, Configuration",
+              "priority": "1.000000"
+            }
+          },
+          {
+            "np_cm_ds_leg_harmonica": {
+              "inv_name_part": "np_cm_ds_leg_harmonica",
+              "partname": "ClassModNameParts, 203DD1D64830A0D7525FF3801149DBB0, GOAT",
               "priority": "1.000000"
             }
           },
@@ -809,6 +1022,13 @@
             }
           },
           {
+            "np_cm_exo_leg_harmonica": {
+              "inv_name_part": "np_cm_exo_leg_harmonica",
+              "partname": "classmod_exosoldier_harmonica, 1E6D22194A101A793FDCE7BDA039DACF, Masochist",
+              "priority": "1.000000"
+            }
+          },
+          {
             "np_cm_exo_leg_raid2": {
               "inv_name_part": "np_cm_exo_leg_raid2",
               "partname": "ClassModNameParts, 4C7A3E6A469BF508D54DA9A30A1D8D1C, Bombastic",
@@ -823,6 +1043,13 @@
             }
           },
           {
+            "np_cm_grav_leg_harmonica": {
+              "inv_name_part": "np_cm_grav_leg_harmonica",
+              "partname": "classmod_gravitar_harmonica, E7B37723431FDE5D0408AE9BB422D67A, Ultracapacitor",
+              "priority": "1.000000"
+            }
+          },
+          {
             "np_cm_grav_leg_raid2": {
               "inv_name_part": "np_cm_grav_leg_raid2",
               "partname": "ClassModNameParts, 29C43EDF4D3211B351AF3980CAA0BA69, Plasmaphile",
@@ -833,6 +1060,13 @@
             "np_cm_pld_leg_cowbell": {
               "inv_name_part": "np_cm_pld_leg_cowbell",
               "partname": "ClassModNameParts, ADE3B6154D860AB2794A3AB1C27855F9, Tempest",
+              "priority": "1.000000"
+            }
+          },
+          {
+            "np_cm_pld_leg_harmonica": {
+              "inv_name_part": "np_cm_pld_leg_harmonica",
+              "partname": "classmod_paladin_harmonica, B966978247BDD2B578E5D38CE6A44F74, Wastelander",
               "priority": "1.000000"
             }
           },
@@ -963,6 +1197,13 @@
             }
           },
           {
+            "np_cm_robo_leg_harmonica": {
+              "inv_name_part": "np_cm_robo_leg_harmonica",
+              "partname": "classmod_robodealer_harmonica, B02C2D334007B912B87D25A30E1FDF19, Table Hopper",
+              "priority": "1.000000"
+            }
+          },
+          {
             "np_cm_robo_leg_raid1": {
               "inv_name_part": "np_cm_robo_leg_raid1",
               "partname": "ClassModNameParts_RoboDealer, 68573E46404145AA3EF600BEBE49CC95, Hooligan",
@@ -1040,6 +1281,13 @@
             }
           },
           {
+            "np_devourer": {
+              "inv_name_part": "np_devourer",
+              "partname": "Uni_MAL_SG_Kickballer, CDE495A24D18119C1C1E41BD4315AC5F, Devourer",
+              "priority": "3.000000"
+            }
+          },
+          {
             "np_discybusiness": {
               "inv_name_part": "np_discybusiness",
               "partname": "Uni_MAL_SG_DiscyBusiness, 5C54EC7A4CC05205A821ED9F02ADEB8F, Discy Business",
@@ -1075,6 +1323,27 @@
             }
           },
           {
+            "np_enumeration": {
+              "inv_name_part": "np_enumeration",
+              "partname": "Uni_BOR_SM_Hellfire, C12EDC9849F995BFD86231AC3E1231F3, Enumeration",
+              "priority": "3.000000"
+            }
+          },
+          {
+            "np_exfoliatrix": {
+              "inv_name_part": "np_Exfoliatrix",
+              "partname": "Uni_OnionLayeredGuard, D2F0570642AD5271975021B2CF0447E2, Exfoliatrix",
+              "priority": "3.000000"
+            }
+          },
+          {
+            "np_exhibition": {
+              "inv_name_part": "np_Exhibition",
+              "partname": "Uni_MAL_SG_Kickballer, AC7BF538461E6037438FC09AE6D4DFE4, Exhibition",
+              "priority": "3.000000"
+            }
+          },
+          {
             "np_extinction": {
               "inv_name_part": "np_Extinction",
               "partname": "WeaponNamingStrategies, F6DE4403412987726BA339A5E99B3066, Eradication",
@@ -1092,6 +1361,13 @@
             "np_fearstalker": {
               "inv_name_part": "np_fearstalker",
               "partname": "Uni_MAL_SG_Kickballer, 8BD80CE147FFA19B3FA9488329FC9BE2, Fearstalker",
+              "priority": "3.000000"
+            }
+          },
+          {
+            "np_fl4k_weapon": {
+              "inv_name_part": "np_Fl4k_weapon",
+              "partname": "Uni_MAL_SG_Kickballer, EE3B4A7D4C9924F40BCC8DAA3B958D11, Fanged Beast",
               "priority": "3.000000"
             }
           },
@@ -1117,6 +1393,13 @@
             }
           },
           {
+            "np_flashfuel": {
+              "inv_name_part": "np_FlashFuel",
+              "partname": "Uni_MAL_SG_Kickballer, C6D1CE9140B1F02D8E01889F9E11E258, Flash Fuel",
+              "priority": "3.000000"
+            }
+          },
+          {
             "np_fleabag": {
               "inv_name_part": "NP_fleabag",
               "partname": "Uni_TOR_AR_PotatoThrower, C325671D4C70745B3BD6EFA45A2C7CC7, Fleabag",
@@ -1127,6 +1410,13 @@
             "np_follower": {
               "inv_name_part": "np_follower",
               "partname": "Inv_DAD_SM_BloodStarved, 4804B1294E78B22EB9BCEB97806B45F4, Prowler",
+              "priority": "3.000000"
+            }
+          },
+          {
+            "np_fourier": {
+              "inv_name_part": "np_Fourier",
+              "partname": "Uni_Inv_TED_SG_Anarchy, 494C360F42FD86DA19BC0AB9E1BA392F, Fourier's Malady",
               "priority": "3.000000"
             }
           },
@@ -1145,6 +1435,13 @@
             }
           },
           {
+            "np_handfrag": {
+              "inv_name_part": "np_handfrag",
+              "partname": "Inv_DAD_SM_BloodStarved, 78C7129140FF9E2E8AC9EDBEE3E97BF0, Hand Frag",
+              "priority": "3.000000"
+            }
+          },
+          {
             "np_hemorrhage": {
               "inv_name_part": "np_Hemorrhage",
               "partname": "Uni_MAL_SG_Kickballer, 17DAEDD04172B72FCC9BA3B05198D6C6, Hemorrhage",
@@ -1155,6 +1452,13 @@
             "np_herald": {
               "inv_name_part": "np_Herald",
               "partname": "Uni_MAL_SG_Kickballer, 8085C0284709C684CF4433B73803FE5F, Herald",
+              "priority": "3.000000"
+            }
+          },
+          {
+            "np_hippogun": {
+              "inv_name_part": "np_Hippogun",
+              "partname": "Uni_MAL_SG_Kickballer, E4B89F5441EEB83C79445EA03691B40D, Hippo Gun",
               "priority": "3.000000"
             }
           },
@@ -1173,6 +1477,13 @@
             }
           },
           {
+            "np_hotmod": {
+              "inv_name_part": "np_HotMod",
+              "partname": "Uni_MAL_SG_Kickballer, 2B66DCB545C13FBE805E83A350ED6A3A, Lovelorn",
+              "priority": "3.000000"
+            }
+          },
+          {
             "np_hydrowerks": {
               "inv_name_part": "np_hydrowerks",
               "partname": "Uni_CinderShelly, 5AF6A48F4BA3DEF0A45AECBCD3B5BD05, Hydrowerks",
@@ -1183,6 +1494,13 @@
             "np_ichor": {
               "inv_name_part": "np_Ichor",
               "partname": "Uni_Spinning_Blade, 7C5BD5DD446B6E80BD9158A09CC7C1F8, Ichor",
+              "priority": "3.000000"
+            }
+          },
+          {
+            "np_infection": {
+              "inv_name_part": "np_Infection",
+              "partname": "Uni_MAL_SG_Kickballer, F92699584FBA344D68572DB14FDD88EF, Infection",
               "priority": "3.000000"
             }
           },
@@ -1299,10 +1617,24 @@
             }
           },
           {
+            "np_outback": {
+              "inv_name_part": "np_outback",
+              "partname": "Uni_MAL_SG_Kickballer, DED78B7345E78A9AB1F10198D3F46BB9, Wind Skimmer",
+              "priority": "3.000000"
+            }
+          },
+          {
             "np_overswarm": {
               "inv_name_part": "np_OverSwarm",
               "partname": "Uni_Supernova, 1689ACC549010C3F7DEEF6AF26559169, Over Swarm",
               "priority": "3.000000"
+            }
+          },
+          {
+            "np_patience": {
+              "inv_name_part": "NP_Patience",
+              "partname": "Uni_ORD_PS_NoisyCricket, 9569AB9E4E31B6D33F8B6B9817E8CA2D, Virtue",
+              "priority": "1.000000"
             }
           },
           {
@@ -1320,6 +1652,13 @@
             }
           },
           {
+            "np_petanque": {
+              "inv_name_part": "np_petanque",
+              "partname": "Uni_MAL_SG_Kickballer, 52E91B4A4716703CAAA7E6859F659BDE, Petanque",
+              "priority": "3.000000"
+            }
+          },
+          {
             "np_plumbbob": {
               "inv_name_part": "np_plumbbob",
               "partname": "Uni_BOR_SG_Convergence, DC33E8814CB03583463A4CB2053B348F, Plumb Bob",
@@ -1327,9 +1666,23 @@
             }
           },
           {
+            "np_pragmate": {
+              "inv_name_part": "NP_pragmate",
+              "partname": "Uni_DAD_SG_HeartGun, 2BB4AC8243CEA7E64A225BB63E71CB5D, Pragmate",
+              "priority": "1.000000"
+            }
+          },
+          {
             "np_pressurecooker": {
               "inv_name_part": "np_pressurecooker",
               "partname": "Uni_Spinning_Blade, 768D97E8489292670A092CBFE769BA20, Pressure Kettle",
+              "priority": "3.000000"
+            }
+          },
+          {
+            "np_quattro": {
+              "inv_name_part": "np_Quattro",
+              "partname": "Uni_VLA_HW_Splatoon, 45F7C17B40F20831C9039EB0F6CEEED6, Quadratus",
               "priority": "3.000000"
             }
           },
@@ -1344,6 +1697,20 @@
             "np_rainmaker": {
               "inv_name_part": "np_rainmaker",
               "partname": "Uni_MAL_SG_Kickballer, BF530643466869A751ADC3A2BBCA1B04, Rainmaker",
+              "priority": "3.000000"
+            }
+          },
+          {
+            "np_relay": {
+              "inv_name_part": "np_relay",
+              "partname": "Uni_BOR_SG_Convergence, 96B6B03E42F344195087C5A65241B5E7, Astonisher",
+              "priority": "3.000000"
+            }
+          },
+          {
+            "np_relievingguard": {
+              "inv_name_part": "np_RelievingGuard",
+              "partname": "Uni_MAL_SG_Kickballer, 79941F8B4C3EEC502CCF4F8B45302026, Secured Relief",
               "priority": "3.000000"
             }
           },
@@ -1383,6 +1750,20 @@
             }
           },
           {
+            "np_repkit_uni_ted_font": {
+              "inv_name_part": "np_repkit_uni_TED_font",
+              "partname": "RepKitNameParts, 27AA68474B72611F1060FBA0B682C9C3, Font of Life",
+              "priority": "2.000000"
+            }
+          },
+          {
+            "np_repkit_uni_tor_outburst": {
+              "inv_name_part": "np_repkit_uni_TOR_Outburst",
+              "partname": "RepKitNameParts, 9DFA731E4C43F8FFD8346794EDBD2351, Outburst",
+              "priority": "2.000000"
+            }
+          },
+          {
             "np_repkit_uni_vla_bloodiron": {
               "inv_name_part": "np_repkit_uni_VLA_BloodIron",
               "partname": "RepKitNameParts, 52B5E9754AF47285BBA6CE9C11978A42, Oxidation",
@@ -1393,6 +1774,13 @@
             "np_rhythm": {
               "inv_name_part": "NP_Rhythm",
               "partname": "Uni_ORD_PS_NoisyCricket, 5186A6E94313B48A1C3D58937D7C4D3F, Rhythm",
+              "priority": "1.000000"
+            }
+          },
+          {
+            "np_ripple": {
+              "inv_name_part": "NP_Ripple",
+              "partname": "Uni_TOR_AR_PotatoThrower, 4E20FE0944E0017431B53FB1984289E9, Ripple",
               "priority": "1.000000"
             }
           },
@@ -1453,6 +1841,13 @@
             }
           },
           {
+            "np_shardenfreude": {
+              "inv_name_part": "np_Shardenfreude",
+              "partname": "Uni_DAD_AR_OM, E6D0C450449491B21D9ED78B7FFD0D9A, Shardenfreude",
+              "priority": "3.000000"
+            }
+          },
+          {
             "np_silversliver": {
               "inv_name_part": "np_silversliver",
               "partname": "Uni_MAL_SG_Kickballer, 7385224748552C245697ADBF72B6CBE1, Silver Sliver",
@@ -1463,6 +1858,13 @@
             "np_skully": {
               "inv_name_part": "np_skully",
               "partname": "Uni_ORD_Aggrovator, A701912942195EDBDB9110B1692F4FC2, Skully",
+              "priority": "3.000000"
+            }
+          },
+          {
+            "np_sledge": {
+              "inv_name_part": "np_Sledge",
+              "partname": "Uni_MAL_SG_Kickballer, 7C314B1E4A83ABA2462FDC84D9DACA1E, Critical Decay",
               "priority": "3.000000"
             }
           },
@@ -1513,6 +1915,20 @@
               "inv_name_part": "np_Testament",
               "partname": "Uni_MAL_SG_Kickballer, BA8E4EEE492F11178CF577B47562FF6B, Divided Glow",
               "priority": "3.000000"
+            }
+          },
+          {
+            "np_tradingup": {
+              "inv_name_part": "np_TradingUp",
+              "partname": "Uni_MAL_SG_Kickballer, 90F61DE24F63D433818F01B884065506, Paperclip",
+              "priority": "3.000000"
+            }
+          },
+          {
+            "np_triplicate": {
+              "inv_name_part": "np_Triplicate",
+              "partname": "WeaponNamingStrategies, DC6C70064EA4727E97CF2B8ADB7786CA, Triplicate",
+              "priority": "1.000000"
             }
           },
           {

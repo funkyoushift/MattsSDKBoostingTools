@@ -10,8 +10,8 @@ android {
         applicationId 'com.funkyoushift.msbt.mobile'
         minSdk 28
         targetSdk 35
-        versionCode 23
-        versionName '1.0.0'
+        versionCode 24
+        versionName '1.1.0'
     }
 
     def betaKeystore = file('../debug-signing/msbt-mobile-debug.keystore')
@@ -85,6 +85,21 @@ tasks.register('syncMobileCatalogAssets') {
             } else if (name != 'catalog_manifest.json') {
                 logger.warn("syncMobileCatalogAssets: missing ${name}")
             }
+        }
+        def licenseDest = new File(dest, 'licenses')
+        licenseDest.mkdirs()
+        copy {
+            from '../../LICENSE'
+            into licenseDest
+            rename { 'MSBT-MIT.txt' }
+        }
+        copy {
+            from '../../docs/THIRD_PARTY_NOTICES.md'
+            into licenseDest
+        }
+        copy {
+            from '../../mod_extracted/MattsSDKBoostingTools/LICENSE_SQU1GGS_MIT.txt'
+            into licenseDest
         }
     }
 }

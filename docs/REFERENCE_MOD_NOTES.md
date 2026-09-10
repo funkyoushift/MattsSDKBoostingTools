@@ -1,8 +1,8 @@
 # Reference Mod Notes
 
-This file records local reference mods reviewed for useful MSBT ideas. It is not
-a code-import record. Unless a later commit says otherwise, MSBT has not copied
-implementation code from these mods.
+This file records GPL/reference-only mods and earlier source-review notes. It is
+not the complete import record. MIT-licensed Squ1ggs code was in fact adapted
+into MSBT and is documented in `THIRD_PARTY_NOTICES.md` and the oak2 audit.
 
 Public catalog reference:
 
@@ -12,7 +12,7 @@ Public catalog reference:
 
 | Mod | Author | Local license | Useful to MSBT | Current decision |
 | --- | --- | --- | --- | --- |
-| BL4 Player Movement | Squ1ggs | MIT | Movement component lookup, scoped player targeting, reset/default handling, vault cost helpers | Safe candidate for future adaptation with attribution |
+| BL4 Player Movement | Squ1ggs | MIT | Movement component lookup, scoped player targeting, reset/default handling, vault cost helpers | Adapted into MSBT; exact Squ1ggs MIT notice is now shipped |
 | obj_dump | apple1417 | GPL3 | Object property dump diagnostics | Reference only unless GPL compatibility is explicitly accepted |
 | Dump Ping | Yeti | GPL3 | Ping-to-object discovery workflow | Reference only unless GPL compatibility is explicitly accepted |
 | Trash Seller | FreepDryer | GPL3 | Inventory iteration and sell-junk workflow | Reference only; destructive inventory actions are out of current scope |
@@ -59,15 +59,13 @@ Useful patterns:
   - `_vault_zero`
   - `_vault_set_uniform`
 
-Potential MSBT use:
+MSBT use:
 
-- Improve or verify Movement tab reset behavior.
-- Harden player scope handling for local/all/others style movement operations.
-- Compare movement field names against MSBT's SDK 03 backend before changing
-  the live implementation.
+- Movement and related shared helpers were adapted into the shipped SDK code.
+- Additional provenance is recorded in `docs/THIRD_PARTY_NOTICES.md`.
 
-Because this mod is MIT, code can be adapted if needed, but attribution and the
-license notice must remain.
+Because this mod is MIT, adaptation is permitted, but Squ1ggs' copyright and
+license notice must remain with copies or substantial portions.
 
 ## obj_dump
 
@@ -191,4 +189,3 @@ Potential MSBT use:
 
 - Reference only. The pak requirement and GPL license make it a poor fit for
   direct MSBT integration right now.
-

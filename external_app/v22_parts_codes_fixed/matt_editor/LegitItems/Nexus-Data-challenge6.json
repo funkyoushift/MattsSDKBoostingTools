@@ -1,8 +1,4 @@
 {
-  "__copyright": {
-    "author": "Cr4nkSt4r",
-    "github": "https://github.com/Cr4nkSt4r/Borderlands-4.NcsParser"
-  },
   "challenge": {
     "records": [
       {
@@ -1697,6 +1693,78 @@
             }
           },
           {
+            "challenge_echolog_viola_1": {
+              "challenge": "Challenge_EchoLog_Viola_1",
+              "displayname": "Challenges_Viola_EchoLogs, D495C711499D346202FD79AC218A8F72, Echo Log",
+              "description": "Challenges_Viola_EchoLogs, 150FBD4944F0125C7D63569D5EDE1979, Collect this Echo Log",
+              "showprogressui": "false",
+              "showcompletionui": "false",
+              "associatedstat": "stats.viola_openworld.viola_collectibles.viola_echologs.viola_echolog_1",
+              "bisaccountwideunlockablesharedprogression": "false",
+              "challengetype": "FactTrigger",
+              "challengetiers": [
+                {
+                  "goalvalue": "1",
+                  "notificationthreshold": "1"
+                }
+              ]
+            }
+          },
+          {
+            "challenge_echolog_viola_2": {
+              "challenge": "Challenge_EchoLog_Viola_2",
+              "displayname": "Challenges_Viola_EchoLogs, A004E2AD4B5E9AF06F5D34A3ADF74E5B, Echo Log",
+              "description": "Challenges_Viola_EchoLogs, E36CEEB346EC5B4E4983B0B36252992F, Collect this Echo Log",
+              "showprogressui": "false",
+              "showcompletionui": "false",
+              "associatedstat": "stats.viola_openworld.viola_collectibles.viola_echologs.viola_echolog_2",
+              "bisaccountwideunlockablesharedprogression": "false",
+              "challengetype": "FactTrigger",
+              "challengetiers": [
+                {
+                  "goalvalue": "1",
+                  "notificationthreshold": "1"
+                }
+              ]
+            }
+          },
+          {
+            "challenge_echolog_viola_3": {
+              "challenge": "Challenge_EchoLog_Viola_3",
+              "displayname": "Challenges_Viola_EchoLogs, 9160F3EF4CA590AFC4CF47BF3FCE900F, Echo Log",
+              "description": "Challenges_Viola_EchoLogs, 6ED6E7EF47F99560D14A37BE4BAF22D3, Collect this Echo Log",
+              "showprogressui": "false",
+              "showcompletionui": "false",
+              "associatedstat": "stats.viola_openworld.viola_collectibles.viola_echologs.viola_echolog_3",
+              "bisaccountwideunlockablesharedprogression": "false",
+              "challengetype": "FactTrigger",
+              "challengetiers": [
+                {
+                  "goalvalue": "1",
+                  "notificationthreshold": "1"
+                }
+              ]
+            }
+          },
+          {
+            "challenge_echolog_viola_4": {
+              "challenge": "Challenge_EchoLog_Viola_4",
+              "displayname": "Challenges_Viola_EchoLogs, 0CA9977D4CEF26493A1F7BBC46549044, Echo Log",
+              "description": "Challenges_Viola_EchoLogs, 7C4020E442AC6350E675EBAD5BC6AFFB, Collect this Echo Log",
+              "showprogressui": "false",
+              "showcompletionui": "false",
+              "associatedstat": "stats.viola_openworld.viola_collectibles.viola_echologs.viola_echolog_4",
+              "bisaccountwideunlockablesharedprogression": "false",
+              "challengetype": "FactTrigger",
+              "challengetiers": [
+                {
+                  "goalvalue": "1",
+                  "notificationthreshold": "1"
+                }
+              ]
+            }
+          },
+          {
             "challenge_mandolin_tutorial_cos_badassswitch": {
               "challenge": "Challenge_Mandolin_Tutorial_CoS_BadassSwitch",
               "showprogressui": "false",
@@ -2097,6 +2165,124 @@
             }
           },
           {
+            "challenges_achievements_52_viola_treasure_discover": {
+              "challenge": "Challenges_Achievements_52_Viola_treasure_discover",
+              "displayname": "Challenges_Achievements, BFB5BAE74D3DBB42E71251A98370395E, Thief in the Night",
+              "description": "Challenges_Achievements, C6E046834D018E54C16FAF975CF72235, Open the locked treasure room in Nuada Cove.",
+              "showprogressui": "false",
+              "showcompletionui": "false",
+              "associatedstat": "stats.viola_achievements.52_viola_discover_treasure",
+              "bispartychallenge": "true",
+              "bisprogressreplicated": "true",
+              "achievementdef": "achievement'ID_Achievement_52_Viola_discover_treasure'",
+              "challengetype": "BlueprintDriven",
+              "challengetiers": [
+                {
+                  "goalvalue": "1",
+                  "notificationthreshold": "1"
+                }
+              ]
+            }
+          },
+          {
+            "challenges_achievements_53_viola_boss_defeat": {
+              "challenge": "Challenges_Achievements_53_Viola_boss_defeat",
+              "displayname": "Challenges_Achievements, 76343AE74F9849539E07E5868B3F0686, Came Back Wrong",
+              "description": "Challenges_Achievements, 161AF6F74E0E60F673E379B1C72EB5E4, Defeat all bosses in Nuada Cove and Dark Side of Elpis.",
+              "showprogressui": "false",
+              "showcompletionui": "false",
+              "associatedstat": "stats.viola_achievements.53_viola_boss_defeat",
+              "achievementdef": "achievement'ID_Achievement_53_Viola_boss_defeat'",
+              "challengetype": "ParentChallenge",
+              "challengetiers": [
+                {
+                  "goalvalue": "3",
+                  "notificationthreshold": "3"
+                }
+              ]
+            }
+          },
+          {
+            "challenges_achievements_53_viola_boss_hybridthresher": {
+              "challenge": "Challenges_Achievements_53_Viola_boss_hybridthresher",
+              "showprogressui": "false",
+              "showcompletionui": "false",
+              "associatedstat": "stats.viola_achievements.53_viola_boss_defeat.hybridthresher",
+              "bispartychallenge": "true",
+              "challengetype": "Enemy_Kill",
+              "damagetargetcharacterdef": "gbxactor'Char_ThresherHybridThresher_Worm'",
+              "challengetiers": [
+                {
+                  "goalvalue": "1",
+                  "notificationthreshold": "1"
+                }
+              ]
+            }
+          },
+          {
+            "challenges_achievements_53_viola_boss_testzero": {
+              "challenge": "Challenges_Achievements_53_Viola_boss_testzero",
+              "showprogressui": "false",
+              "showcompletionui": "false",
+              "associatedstat": "stats.viola_achievements.53_viola_boss_defeat.testzero",
+              "bispartychallenge": "true",
+              "challengetype": "Enemy_Kill",
+              "damagetargetcharacterdef": "gbxactor'Char_SoldierTestZeroMain'",
+              "challengetiers": [
+                {
+                  "goalvalue": "1",
+                  "notificationthreshold": "1"
+                }
+              ]
+            }
+          },
+          {
+            "challenges_achievements_53_viola_boss_viledave": {
+              "challenge": "Challenges_Achievements_53_Viola_boss_viledave",
+              "showprogressui": "false",
+              "showcompletionui": "false",
+              "associatedstat": "stats.viola_achievements.53_viola_boss_defeat.viledave",
+              "bispartychallenge": "true",
+              "challengetype": "Enemy_Kill",
+              "damagetargetcharacterdef": "gbxactor'Char_Leader_VileDave'",
+              "challengetiers": [
+                {
+                  "goalvalue": "1",
+                  "notificationthreshold": "1"
+                }
+              ]
+            }
+          },
+          {
+            "challenges_achievements_54_viola_missions_main": {
+              "challenge": "Challenges_Achievements_54_Viola_missions_main",
+              "displayname": "Challenges_Achievements, 55F5C64C49AECD0A7B91DD8855811E01, Reach Exceeded",
+              "description": "Challenges_Achievements, E2FD18A845229E4377DEFC87CF49A283, Complete mission \"The Rift Crisis\".",
+              "showprogressui": "false",
+              "showcompletionui": "false",
+              "bhideuntilprogressmade": "true",
+              "associatedstat": "stats.viola_achievements.54_viola_missions_main",
+              "bispartychallenge": "true",
+              "bisprogressreplicated": "true",
+              "achievementdef": "achievement'ID_Achievement_54_Viola_missions_main'",
+              "challengetype": "Mission",
+              "busecustommissionlist": "true",
+              "missiondefs": [
+                "mission'Mission_DLC_Viola'"
+              ],
+              "challengetiers": [
+                {
+                  "goalvalue": "1",
+                  "notificationthreshold": "1",
+                  "reward": {
+                    "type": "RewardDef",
+                    "value": "rewards'Challenge_Reward_GenericTier_5'"
+                  }
+                }
+              ]
+            }
+          },
+          {
             "vc1_killbadassenemies30": {
               "challenge": "VC1_KillBadassEnemies30",
               "celebratorynotification": "display_data'daily_challenge_complete_notification_vc1'",
@@ -2207,6 +2393,36 @@
               "rewardcurrencytype": "vc4",
               "celebratorynotification": "display_data'daily_challenge_complete_notification_vc4'",
               "associatedstat": "stats.daily_bp4_vc.kill_daily_bp4.enemies_bp4",
+              "parent": "challenge'VCChallenge_KillEnemies25'"
+            }
+          },
+          {
+            "vc5_killbadassenemies30": {
+              "challenge": "vc5_KillBadassEnemies30",
+              "uichallengeicontype": "vc5",
+              "rewardcurrencytype": "vc5",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc5'",
+              "associatedstat": "stats.daily_bp5_vc.kill_daily_bp5.enemies_bp5",
+              "parent": "challenge'VCChallenge_KillEnemies30'"
+            }
+          },
+          {
+            "vc5_killenemies20": {
+              "challenge": "vc5_KillEnemies20",
+              "uichallengeicontype": "vc5",
+              "rewardcurrencytype": "vc5",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc5'",
+              "associatedstat": "stats.daily_bp5_vc.kill_daily_bp5.enemies_bp5",
+              "parent": "challenge'VCChallenge_KillEnemies20'"
+            }
+          },
+          {
+            "vc5_killenemies25": {
+              "challenge": "vc5_KillEnemies25",
+              "uichallengeicontype": "vc5",
+              "rewardcurrencytype": "vc5",
+              "celebratorynotification": "display_data'daily_challenge_complete_notification_vc5'",
+              "associatedstat": "stats.daily_bp5_vc.kill_daily_bp5.enemies_bp5",
               "parent": "challenge'VCChallenge_KillEnemies25'"
             }
           },

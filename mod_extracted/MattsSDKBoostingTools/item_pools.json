@@ -75,6 +75,34 @@
     "category": "Assault Rifle"
   },
   {
+    "display_name": "dad ar 05 legendary Cormano shiny",
+    "itempool": "itempool_dad_ar_05_legendary_Cormano_shiny",
+    "category": "Assault Rifle",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "dad ar 05 legendary DarkHard shiny",
+    "itempool": "itempool_dad_ar_05_legendary_DarkHard_shiny",
+    "category": "Assault Rifle",
+    "source_file": "Nexus-Data-itempool4.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "dad ar 05 legendary DiscyBusiness shiny",
+    "itempool": "itempool_dad_ar_05_legendary_DiscyBusiness_shiny",
+    "category": "Assault Rifle",
+    "source_file": "Nexus-Data-itempool4.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "dad ar 05 legendary LightGun shiny",
+    "itempool": "itempool_dad_ar_05_legendary_LightGun_shiny",
+    "category": "Assault Rifle",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
     "display_name": "Dad AR 05 Legendary Lumberjack Shiny",
     "itempool": "itempool_dad_ar_05_legendary_Lumberjack_shiny",
     "category": "Assault Rifle"
@@ -90,6 +118,13 @@
     "category": "Assault Rifle"
   },
   {
+    "display_name": "dad ar 05 legendary Shardenfreude shiny",
+    "itempool": "itempool_dad_ar_05_legendary_Shardenfreude_shiny",
+    "category": "Assault Rifle",
+    "source_file": "Nexus-Data-itempool0.json",
+    "game_build": "25234898"
+  },
+  {
     "display_name": "Dad AR 05 Legendary Star Helix Shiny",
     "itempool": "itempool_dad_ar_05_legendary_star_helix_shiny",
     "category": "Assault Rifle"
@@ -97,6 +132,11 @@
   {
     "display_name": "Enemies Guns AR",
     "itempool": "itempool_enemies_guns_ar",
+    "category": "Assault Rifle"
+  },
+  {
+    "display_name": "Fishward",
+    "itempool": "itempool_jak_ar_05_legendary_fishward_shiny",
     "category": "Assault Rifle"
   },
   {
@@ -108,6 +148,13 @@
     "display_name": "Jak AR 05 Legendary Bonnieclyde Shiny",
     "itempool": "itempool_jak_ar_05_legendary_BonnieClyde_shiny",
     "category": "Assault Rifle"
+  },
+  {
+    "display_name": "jak ar 05 legendary FlashFuel shiny",
+    "itempool": "itempool_jak_ar_05_legendary_FlashFuel_shiny",
+    "category": "Assault Rifle",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
   },
   {
     "display_name": "Jak AR 05 Legendary Rowan Shiny",
@@ -125,6 +172,13 @@
     "category": "Assault Rifle"
   },
   {
+    "display_name": "ord ar 05 legendary Avarice shiny",
+    "itempool": "itempool_ord_ar_05_legendary_Avarice_shiny",
+    "category": "Assault Rifle",
+    "source_file": "Nexus-Data-itempool0.json",
+    "game_build": "25234898"
+  },
+  {
     "display_name": "Ord AR 05 Legendary Gmr Shiny",
     "itempool": "itempool_ord_ar_05_legendary_GMR_shiny",
     "category": "Assault Rifle"
@@ -133,6 +187,13 @@
     "display_name": "Ord AR 05 Legendary Goalkeeper Shiny",
     "itempool": "itempool_ord_ar_05_legendary_Goalkeeper_shiny",
     "category": "Assault Rifle"
+  },
+  {
+    "display_name": "ord ar 05 legendary Pchonk shiny",
+    "itempool": "itempool_ord_ar_05_legendary_Pchonk_shiny",
+    "category": "Assault Rifle",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
   },
   {
     "display_name": "Shield Armor",
@@ -153,6 +214,13 @@
     "display_name": "Ted AR 05 Legendary Dividedfocus Shiny",
     "itempool": "itempool_ted_ar_05_legendary_DividedFocus_shiny",
     "category": "Assault Rifle"
+  },
+  {
+    "display_name": "ted ar 05 legendary HotMod shiny",
+    "itempool": "itempool_ted_ar_05_legendary_HotMod_shiny",
+    "category": "Assault Rifle",
+    "source_file": "Nexus-Data-itempool0.json",
+    "game_build": "25234898"
   },
   {
     "display_name": "Ted AR 05 Legendary Laserdisc Shiny",
@@ -193,6 +261,13 @@
     "display_name": "Tor AR 05 Legendary Potatothrower Shiny",
     "itempool": "itempool_tor_ar_05_legendary_PotatoThrower_shiny",
     "category": "Assault Rifle"
+  },
+  {
+    "display_name": "tor ar 05 legendary Ripple shiny",
+    "itempool": "itempool_tor_ar_05_legendary_Ripple_shiny",
+    "category": "Assault Rifle",
+    "source_file": "Nexus-Data-itempool0.json",
+    "game_build": "25234898"
   },
   {
     "display_name": "Vla AR",
@@ -315,9 +390,23 @@
     "category": "Class Mod"
   },
   {
+    "display_name": "ClassMods Harmonica",
+    "itempool": "itempool_ClassMods_Harmonica",
+    "category": "Class Mod",
+    "source_file": "Nexus-Data-itempool0.json",
+    "game_build": "25234898"
+  },
+  {
     "display_name": "Classmods Raid2",
     "itempool": "itempool_ClassMods_Raid2",
     "category": "Class Mod"
+  },
+  {
+    "display_name": "ClassMods Tuba",
+    "itempool": "itempool_ClassMods_Tuba",
+    "category": "Class Mod",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
   },
   {
     "display_name": "Goldsilver Classmods Raid1",
@@ -935,6 +1024,13 @@
     "category": "Cosmetic"
   },
   {
+    "display_name": "circleofslaughter currency",
+    "itempool": "itempool_circleofslaughter_currency",
+    "category": "Currency",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
     "display_name": "Event Colosseum Cash",
     "itempool": "ItemPool_Event_Colosseum_Cash",
     "category": "Currency"
@@ -1150,9 +1246,51 @@
     "category": "Other"
   },
   {
+    "display_name": "Bronze Weapon Tuba",
+    "itempool": "itempool_Bronze_Weapon_Tuba",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
     "display_name": "Brute Facelaser",
     "itempool": "ItemPool_Brute_FaceLaser",
     "category": "Other"
+  },
+  {
+    "display_name": "circleofslaughter legendaries",
+    "itempool": "itempool_circleofslaughter_legendaries",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "circleofslaughter standard",
+    "itempool": "itempool_circleofslaughter_standard",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "circleofslaughter standard fivepieces",
+    "itempool": "itempool_circleofslaughter_standard_fivepieces",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "class mods 05 legendary corpohacker",
+    "itempool": "itempool_class_mods_05_legendary_corpohacker",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool0.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "class mods corpohacker",
+    "itempool": "itempool_class_mods_corpohacker",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool0.json",
+    "game_build": "25234898"
   },
   {
     "display_name": "Dahlgrunt Crashflamer",
@@ -1198,6 +1336,13 @@
     "display_name": "Dahlmech Flamespitterunderbarrel",
     "itempool": "ItemPool_DahlMech_FlameSpitterUnderbarrel",
     "category": "Other"
+  },
+  {
+    "display_name": "DahlTurret Chaingun",
+    "itempool": "ItemPool_DahlTurret_Chaingun",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
   },
   {
     "display_name": "Dynamicevent Helpnpc",
@@ -1320,6 +1465,27 @@
     "category": "Other"
   },
   {
+    "display_name": "exosoldier turret base",
+    "itempool": "itempool_exosoldier_turret_base",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "exosoldier turret rocket",
+    "itempool": "itempool_exosoldier_turret_rocket",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "exosoldier turret shotgun",
+    "itempool": "itempool_exosoldier_turret_shotgun",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
     "display_name": "Fishcollector Reward Common",
     "itempool": "ItemPool_FishCollector_Reward_Common",
     "category": "Other"
@@ -1413,6 +1579,13 @@
     "display_name": "Gadgets Vla",
     "itempool": "itempool_gadgets_vla",
     "category": "Other"
+  },
+  {
+    "display_name": "Gold Weapon Tuba",
+    "itempool": "itempool_Gold_Weapon_Tuba",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
   },
   {
     "display_name": "Grassboss",
@@ -1630,6 +1803,55 @@
     "category": "Other"
   },
   {
+    "display_name": "Mandolin All",
+    "itempool": "ItemPool_Mandolin_All",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "Mandolin Bowling Large",
+    "itempool": "ItemPool_Mandolin_Bowling_Large",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "Mandolin Bowling Medium",
+    "itempool": "ItemPool_Mandolin_Bowling_Medium",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "Mandolin Bowling Small",
+    "itempool": "ItemPool_Mandolin_Bowling_Small",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "Mandolin Skeeball Large",
+    "itempool": "ItemPool_Mandolin_Skeeball_Large",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "Mandolin Skeeball Medium",
+    "itempool": "ItemPool_Mandolin_Skeeball_Medium",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "Mandolin Skeeball Small",
+    "itempool": "ItemPool_Mandolin_Skeeball_Small",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
     "display_name": "Mat Grasslands",
     "itempool": "itempool_mat_grasslands",
     "category": "Other"
@@ -1675,6 +1897,13 @@
     "category": "Other"
   },
   {
+    "display_name": "MissionTurret Chaingun",
+    "itempool": "ItemPool_MissionTurret_Chaingun",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
     "display_name": "Mountboss",
     "itempool": "ItemPool_MountBoss",
     "category": "Other"
@@ -1705,9 +1934,37 @@
     "category": "Other"
   },
   {
+    "display_name": "Platinum Weapon Raid1",
+    "itempool": "itempool_Platinum_Weapon_Raid1",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
     "display_name": "Platinum Weapon Raid2",
     "itempool": "itempool_Platinum_Weapon_Raid2",
     "category": "Other"
+  },
+  {
+    "display_name": "Platinum Weapon Tuba",
+    "itempool": "itempool_Platinum_Weapon_Tuba",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "RipperTurret Flamethrower",
+    "itempool": "ItemPool_RipperTurret_Flamethrower",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool0.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "RipperTurret Rocket",
+    "itempool": "ItemPool_RipperTurret_Rocket",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool0.json",
+    "game_build": "25234898"
   },
   {
     "display_name": "Shatterboss",
@@ -1970,6 +2227,13 @@
     "category": "Other"
   },
   {
+    "display_name": "Silver Weapon Tuba",
+    "itempool": "itempool_Silver_Weapon_Tuba",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
     "display_name": "Soldier Sprayer",
     "itempool": "ItemPool_Soldier_Sprayer",
     "category": "Other"
@@ -1988,6 +2252,174 @@
     "display_name": "Splicespiderjumbo Rocketgun",
     "itempool": "ItemPool_SpliceSpiderJumbo_RocketGun",
     "category": "Other"
+  },
+  {
+    "display_name": "TedioreArmy Sprayer",
+    "itempool": "ItemPool_TedioreArmy_Sprayer",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "TedioreGlider Flamethrower",
+    "itempool": "ItemPool_TedioreGlider_Flamethrower",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool0.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "TedioreGlider RapidLaser",
+    "itempool": "ItemPool_TedioreGlider_RapidLaser",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "TedioreGlider RocketLauncher",
+    "itempool": "ItemPool_TedioreGlider_RocketLauncher",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool0.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "TedioreGliderArm RocketLauncher",
+    "itempool": "ItemPool_TedioreGliderArm_RocketLauncher",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool0.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "TedioreTurret GateMission4",
+    "itempool": "ItemPool_TedioreTurret_GateMission4",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "TedioreTurret MG",
+    "itempool": "ItemPool_TedioreTurret_MG",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "TedioreTurret MicroplasticsMG",
+    "itempool": "ItemPool_TedioreTurret_MicroplasticsMG",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool0.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "TedioreTurret RapidLaser",
+    "itempool": "ItemPool_TedioreTurret_RapidLaser",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool0.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "TedioreTurret RocketLauncher",
+    "itempool": "ItemPool_TedioreTurret_RocketLauncher",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool0.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "terminal 01 common",
+    "itempool": "itempool_terminal_01_common",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "terminal 02 uncommon",
+    "itempool": "itempool_terminal_02_uncommon",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "terminal 03 rare",
+    "itempool": "itempool_terminal_03_rare",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "terminal 04 epic",
+    "itempool": "itempool_terminal_04_epic",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "terminal 05 legendary",
+    "itempool": "itempool_terminal_05_legendary",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "terminal all",
+    "itempool": "itempool_terminal_all",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "terminal bor",
+    "itempool": "itempool_terminal_bor",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "terminal dad",
+    "itempool": "itempool_terminal_dad",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "terminal jak",
+    "itempool": "itempool_terminal_jak",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "terminal mal",
+    "itempool": "itempool_terminal_mal",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "terminal ord",
+    "itempool": "itempool_terminal_ord",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "terminal ted",
+    "itempool": "itempool_terminal_ted",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "terminal tor",
+    "itempool": "itempool_terminal_tor",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "terminal vla",
+    "itempool": "itempool_terminal_vla",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
   },
   {
     "display_name": "Tipjar",
@@ -2020,6 +2452,165 @@
     "category": "Other"
   },
   {
+    "display_name": "turret bor",
+    "itempool": "itempool_turret_bor",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "Turret Chaingun",
+    "itempool": "ItemPool_Turret_Chaingun",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool0.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "turret dad",
+    "itempool": "itempool_turret_dad",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "turret gadgets 01 common",
+    "itempool": "itempool_turret_gadgets_01_common",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "turret gadgets 02 uncommon",
+    "itempool": "itempool_turret_gadgets_02_uncommon",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "turret gadgets 03 rare",
+    "itempool": "itempool_turret_gadgets_03_rare",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "turret gadgets 04 epic",
+    "itempool": "itempool_turret_gadgets_04_epic",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "turret gadgets 05 legendary",
+    "itempool": "itempool_turret_gadgets_05_legendary",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "turret gadgets all",
+    "itempool": "itempool_turret_gadgets_all",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "turret jak",
+    "itempool": "itempool_turret_jak",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "turret mal",
+    "itempool": "itempool_turret_mal",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "turret ord",
+    "itempool": "itempool_turret_ord",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "turret ted",
+    "itempool": "itempool_turret_ted",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "turret tor",
+    "itempool": "itempool_turret_tor",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "turret vla",
+    "itempool": "itempool_turret_vla",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "turret weapon basic",
+    "itempool": "itempool_turret_weapon_basic",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool4.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "turret weapon beam",
+    "itempool": "itempool_turret_weapon_beam",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool4.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "turret weapon beam Anchor",
+    "itempool": "itempool_turret_weapon_beam_Anchor",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "turret weapon chaingun",
+    "itempool": "itempool_turret_weapon_chaingun",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool4.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "turret weapon longrifle",
+    "itempool": "itempool_turret_weapon_longrifle",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool4.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "turret weapon rocketlauncher",
+    "itempool": "itempool_turret_weapon_rocketlauncher",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool4.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "turret weapon shotgun",
+    "itempool": "itempool_turret_weapon_shotgun",
+    "category": "Other",
+    "source_file": "Nexus-Data-itempool4.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "Ultimate (Any Weapon Shiny)",
+    "itempool": "itempool_Weapon_shiny",
+    "category": "Other"
+  },
+  {
     "display_name": "Wolrdboss October",
     "itempool": "ItemPool_WolrdBoss_October",
     "category": "Other"
@@ -2045,9 +2636,23 @@
     "category": "Pistol"
   },
   {
+    "display_name": "dad ps 05 legendary blackout shiny",
+    "itempool": "itempool_dad_ps_05_legendary_blackout_shiny",
+    "category": "Pistol",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
     "display_name": "Dad PS 05 Legendary Rangefinder Shiny",
     "itempool": "itempool_dad_ps_05_legendary_Rangefinder_shiny",
     "category": "Pistol"
+  },
+  {
+    "display_name": "dad ps 05 legendary silversliver shiny",
+    "itempool": "itempool_dad_ps_05_legendary_silversliver_shiny",
+    "category": "Pistol",
+    "source_file": "Nexus-Data-itempool4.json",
+    "game_build": "25234898"
   },
   {
     "display_name": "Dad PS 05 Legendary Soulsurvivor Shiny",
@@ -2070,9 +2675,23 @@
     "category": "Pistol"
   },
   {
+    "display_name": "jak ps 05 legendary Infection shiny",
+    "itempool": "itempool_jak_ps_05_legendary_Infection_shiny",
+    "category": "Pistol",
+    "source_file": "Nexus-Data-itempool0.json",
+    "game_build": "25234898"
+  },
+  {
     "display_name": "Jak PS 05 Legendary Kingsgambit Shiny",
     "itempool": "itempool_jak_ps_05_legendary_KingsGambit_shiny",
     "category": "Pistol"
+  },
+  {
+    "display_name": "jak ps 05 legendary manifest shiny",
+    "itempool": "itempool_jak_ps_05_legendary_manifest_shiny",
+    "category": "Pistol",
+    "source_file": "Nexus-Data-itempool4.json",
+    "game_build": "25234898"
   },
   {
     "display_name": "Jak PS 05 Legendary Phantom Flame Shiny",
@@ -2160,6 +2779,16 @@
     "category": "Pistol"
   },
   {
+    "display_name": "Rhythm",
+    "itempool": "itempool_ord_ps_05_legendary_Rhythm_shiny",
+    "category": "Pistol"
+  },
+  {
+    "display_name": "Shoals",
+    "itempool": "itempool_jak_ps_05_legendary_Shoals_shiny",
+    "category": "Pistol"
+  },
+  {
     "display_name": "Ted PS",
     "itempool": "itempool_ted_ps",
     "category": "Pistol"
@@ -2168,6 +2797,13 @@
     "display_name": "Ted PS 05 Legendary Atlien Shiny",
     "itempool": "itempool_ted_ps_05_legendary_ATLien_shiny",
     "category": "Pistol"
+  },
+  {
+    "display_name": "ted ps 05 legendary EarlyExcess shiny",
+    "itempool": "itempool_ted_ps_05_legendary_EarlyExcess_shiny",
+    "category": "Pistol",
+    "source_file": "Nexus-Data-itempool4.json",
+    "game_build": "25234898"
   },
   {
     "display_name": "Ted PS 05 Legendary Inscriber Shiny",
@@ -2208,6 +2844,13 @@
     "display_name": "Tor PS 05 Legendary Roach Shiny",
     "itempool": "itempool_tor_ps_05_legendary_Roach_shiny",
     "category": "Pistol"
+  },
+  {
+    "display_name": "tor PS 05 legendary Sledge shiny",
+    "itempool": "itempool_tor_PS_05_legendary_Sledge_shiny",
+    "category": "Pistol",
+    "source_file": "Nexus-Data-itempool0.json",
+    "game_build": "25234898"
   },
   {
     "display_name": "Repkit 01 Common",
@@ -2290,6 +2933,13 @@
     "category": "SMG"
   },
   {
+    "display_name": "bor sm 05 legendary enumeration shiny",
+    "itempool": "itempool_bor_sm_05_legendary_enumeration_shiny",
+    "category": "SMG",
+    "source_file": "Nexus-Data-itempool4.json",
+    "game_build": "25234898"
+  },
+  {
     "display_name": "Bor SM 05 Legendary Falke Shiny",
     "itempool": "itempool_bor_sm_05_legendary_falke_shiny",
     "category": "SMG"
@@ -2302,6 +2952,11 @@
   {
     "display_name": "Bor SM 05 Legendary Prince Shiny",
     "itempool": "itempool_bor_sm_05_legendary_Prince_shiny",
+    "category": "SMG"
+  },
+  {
+    "display_name": "Brickhouse",
+    "itempool": "itempool_vla_sm_05_legendary_brickhouse_shiny",
     "category": "SMG"
   },
   {
@@ -2320,6 +2975,13 @@
     "category": "SMG"
   },
   {
+    "display_name": "dad sm 05 legendary handfrag shiny",
+    "itempool": "itempool_dad_sm_05_legendary_handfrag_shiny",
+    "category": "SMG",
+    "source_file": "Nexus-Data-itempool0.json",
+    "game_build": "25234898"
+  },
+  {
     "display_name": "Dad SM 05 Legendary Luty Shiny",
     "itempool": "itempool_dad_sm_05_legendary_Luty_shiny",
     "category": "SMG"
@@ -2335,9 +2997,28 @@
     "category": "SMG"
   },
   {
+    "display_name": "Loarmaster",
+    "itempool": "itempool_dad_sm_05_legendary_loarmaster_shiny",
+    "category": "SMG"
+  },
+  {
     "display_name": "Mal SM",
     "itempool": "itempool_mal_sm",
     "category": "SMG"
+  },
+  {
+    "display_name": "mal sm 05 legendary accretion shiny",
+    "itempool": "itempool_mal_sm_05_legendary_accretion_shiny",
+    "category": "SMG",
+    "source_file": "Nexus-Data-itempool0.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "mal sm 05 legendary brickhouse shiny",
+    "itempool": "itempool_mal_sm_05_legendary_brickhouse_shiny",
+    "category": "SMG",
+    "source_file": "Nexus-Data-itempool4.json",
+    "game_build": "25234898"
   },
   {
     "display_name": "Mal SM 05 Legendary Flashcyclone Shiny",
@@ -2408,6 +3089,13 @@
     "display_name": "Vla SM",
     "itempool": "itempool_vla_sm",
     "category": "SMG"
+  },
+  {
+    "display_name": "vla sm 05 legendary aura shiny",
+    "itempool": "itempool_vla_sm_05_legendary_aura_shiny",
+    "category": "SMG",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
   },
   {
     "display_name": "Vla SM 05 Legendary Beegun Shiny",
@@ -2530,6 +3218,30 @@
     "category": "Shotgun"
   },
   {
+    "display_name": "bor sg 05 legendary PlumbBob shiny",
+    "itempool": "itempool_bor_sg_05_legendary_PlumbBob_shiny",
+    "category": "Shotgun",
+    "source_file": "Nexus-Data-itempool4.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "bor sg 05 legendary relay shiny",
+    "itempool": "itempool_bor_sg_05_legendary_relay_shiny",
+    "category": "Shotgun",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "Cannon Brawl",
+    "itempool": "itempool_dad_sg_05_legendary_cannonbrawl_shiny",
+    "category": "Shotgun"
+  },
+  {
+    "display_name": "Cormano",
+    "itempool": "itempool_tor_sg_05_legendary_Cormano_shiny",
+    "category": "Shotgun"
+  },
+  {
     "display_name": "Dad SG",
     "itempool": "itempool_dad_sg",
     "category": "Shotgun"
@@ -2547,6 +3259,18 @@
   {
     "display_name": "Dad SG 05 Legendary Misslaser Shiny",
     "itempool": "itempool_dad_sg_05_legendary_misslaser_shiny",
+    "category": "Shotgun"
+  },
+  {
+    "display_name": "dad sg 05 legendary pragmate shiny",
+    "itempool": "itempool_dad_sg_05_legendary_pragmate_shiny",
+    "category": "Shotgun",
+    "source_file": "Nexus-Data-itempool4.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "Discy Business",
+    "itempool": "itempool_mal_sg_05_legendary_DiscyBusiness_shiny",
     "category": "Shotgun"
   },
   {
@@ -2580,14 +3304,42 @@
     "category": "Shotgun"
   },
   {
+    "display_name": "JAK sg 05 legendary Verce shiny",
+    "itempool": "itempool_JAK_sg_05_legendary_Verce_shiny",
+    "category": "Shotgun",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
     "display_name": "Mal SG",
     "itempool": "itempool_mal_sg",
     "category": "Shotgun"
   },
   {
+    "display_name": "mal sg 05 legendary AeroDramatic shiny",
+    "itempool": "itempool_mal_sg_05_legendary_AeroDramatic_shiny",
+    "category": "Shotgun",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "mal sg 05 legendary assembler shiny",
+    "itempool": "itempool_mal_sg_05_legendary_assembler_shiny",
+    "category": "Shotgun",
+    "source_file": "Nexus-Data-itempool0.json",
+    "game_build": "25234898"
+  },
+  {
     "display_name": "Mal SG 05 Legendary Crazedearl Shiny",
     "itempool": "itempool_mal_sg_05_legendary_CrazedEarl_shiny",
     "category": "Shotgun"
+  },
+  {
+    "display_name": "mal sg 05 legendary devourer shiny",
+    "itempool": "itempool_mal_sg_05_legendary_devourer_shiny",
+    "category": "Shotgun",
+    "source_file": "Nexus-Data-itempool0.json",
+    "game_build": "25234898"
   },
   {
     "display_name": "Mal SG 05 Legendary Fearstalker Shiny",
@@ -2618,6 +3370,13 @@
     "display_name": "Mal SG 05 Legendary Mantra Shiny",
     "itempool": "itempool_mal_sg_05_legendary_mantra_shiny",
     "category": "Shotgun"
+  },
+  {
+    "display_name": "mal sg 05 legendary outback shiny",
+    "itempool": "itempool_mal_sg_05_legendary_outback_shiny",
+    "category": "Shotgun",
+    "source_file": "Nexus-Data-itempool4.json",
+    "game_build": "25234898"
   },
   {
     "display_name": "Mal SG 05 Legendary Rainmaker Shiny",
@@ -2700,6 +3459,20 @@
     "category": "Shotgun"
   },
   {
+    "display_name": "ted sg 05 legendary HeavyTurret shiny",
+    "itempool": "itempool_ted_sg_05_legendary_HeavyTurret_shiny",
+    "category": "Shotgun",
+    "source_file": "Nexus-Data-itempool0.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "TED SG HeavyTurret",
+    "itempool": "itempool_TED_SG_HeavyTurret",
+    "category": "Shotgun",
+    "source_file": "Nexus-Data-itempool4.json",
+    "game_build": "25234898"
+  },
+  {
     "display_name": "Tor SG",
     "itempool": "itempool_tor_sg",
     "category": "Shotgun"
@@ -2718,6 +3491,20 @@
     "display_name": "Tor SG 05 Legendary Doeshot Shiny",
     "itempool": "itempool_tor_sg_05_legendary_Doeshot_shiny",
     "category": "Shotgun"
+  },
+  {
+    "display_name": "tor sg 05 legendary Fourier shiny",
+    "itempool": "itempool_tor_sg_05_legendary_Fourier_shiny",
+    "category": "Shotgun",
+    "source_file": "Nexus-Data-itempool0.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "tor sg 05 legendary Hippogun shiny",
+    "itempool": "itempool_tor_sg_05_legendary_Hippogun_shiny",
+    "category": "Shotgun",
+    "source_file": "Nexus-Data-itempool0.json",
+    "game_build": "25234898"
   },
   {
     "display_name": "Tor SG 05 Legendary Leadballoon Shiny",
@@ -2760,6 +3547,11 @@
     "category": "Sniper"
   },
   {
+    "display_name": "Ishmael",
+    "itempool": "itempool_ord_sr_05_legendary_ishmael_shiny",
+    "category": "Sniper"
+  },
+  {
     "display_name": "Jak SR",
     "itempool": "itempool_jak_sr",
     "category": "Sniper"
@@ -2780,6 +3572,27 @@
     "category": "Sniper"
   },
   {
+    "display_name": "jak sr legendary Burrow shiny",
+    "itempool": "itempool_jak_sr_legendary_Burrow_shiny",
+    "category": "Sniper",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "jak sr legendary Extinction shiny",
+    "itempool": "itempool_jak_sr_legendary_Extinction_shiny",
+    "category": "Sniper",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "jak sr legendary Triplicate shiny",
+    "itempool": "itempool_jak_sr_legendary_Triplicate_shiny",
+    "category": "Sniper",
+    "source_file": "Nexus-Data-itempool4.json",
+    "game_build": "25234898"
+  },
+  {
     "display_name": "Mal SR",
     "itempool": "itempool_mal_sr",
     "category": "Sniper"
@@ -2788,6 +3601,13 @@
     "display_name": "Mal SR 05 Legendary Asher Shiny",
     "itempool": "itempool_mal_sr_05_legendary_Asher_shiny",
     "category": "Sniper"
+  },
+  {
+    "display_name": "mal sr 05 legendary Clarity shiny",
+    "itempool": "itempool_mal_sr_05_legendary_Clarity_shiny",
+    "category": "Sniper",
+    "source_file": "Nexus-Data-itempool4.json",
+    "game_build": "25234898"
   },
   {
     "display_name": "Mal SR 05 Legendary Complex Root Shiny",
@@ -2800,6 +3620,18 @@
     "category": "Sniper"
   },
   {
+    "display_name": "mal sr 05 legendary Stealth shiny",
+    "itempool": "itempool_mal_sr_05_legendary_Stealth_shiny",
+    "category": "Sniper",
+    "source_file": "Nexus-Data-itempool6.json",
+    "game_build": "25234898"
+  },
+  {
+    "display_name": "Manifest",
+    "itempool": "itempool_mal_sr_05_legendary_manifest_shiny",
+    "category": "Sniper"
+  },
+  {
     "display_name": "Ord SR",
     "itempool": "itempool_ord_sr",
     "category": "Sniper"
@@ -2808,6 +3640,13 @@
     "display_name": "Ord SR 05 Legendary Fisheye Shiny",
     "itempool": "itempool_ord_sr_05_legendary_Fisheye_shiny",
     "category": "Sniper"
+  },
+  {
+    "display_name": "ord sr 05 legendary petanque shiny",
+    "itempool": "itempool_ord_sr_05_legendary_petanque_shiny",
+    "category": "Sniper",
+    "source_file": "Nexus-Data-itempool0.json",
+    "game_build": "25234898"
   },
   {
     "display_name": "Ord SR 05 Legendary Seamstress Shiny",
@@ -2865,6 +3704,13 @@
     "category": "Sniper"
   },
   {
+    "display_name": "vla sr 05 legendary exhibition shiny",
+    "itempool": "itempool_vla_sr_05_legendary_exhibition_shiny",
+    "category": "Sniper",
+    "source_file": "Nexus-Data-itempool0.json",
+    "game_build": "25234898"
+  },
+  {
     "display_name": "Vla SR 05 Legendary Finnty Shiny",
     "itempool": "itempool_vla_sr_05_legendary_Finnty_shiny",
     "category": "Sniper"
@@ -2873,60 +3719,5 @@
     "display_name": "Vla SR 05 Legendary Stopgap Shiny",
     "itempool": "itempool_vla_sr_05_legendary_StopGap_shiny",
     "category": "Sniper"
-  },
-  {
-    "display_name": "Ultimate (Any Weapon Shiny)",
-    "itempool": "itempool_Weapon_shiny",
-    "category": "Other"
-  },
-  {
-    "display_name": "Cannon Brawl",
-    "itempool": "itempool_dad_sg_05_legendary_cannonbrawl_shiny",
-    "category": "Shotgun"
-  },
-  {
-    "display_name": "Loarmaster",
-    "itempool": "itempool_dad_sm_05_legendary_loarmaster_shiny",
-    "category": "SMG"
-  },
-  {
-    "display_name": "Fishward",
-    "itempool": "itempool_jak_ar_05_legendary_fishward_shiny",
-    "category": "Assault Rifle"
-  },
-  {
-    "display_name": "Shoals",
-    "itempool": "itempool_jak_ps_05_legendary_Shoals_shiny",
-    "category": "Pistol"
-  },
-  {
-    "display_name": "Discy Business",
-    "itempool": "itempool_mal_sg_05_legendary_DiscyBusiness_shiny",
-    "category": "Shotgun"
-  },
-  {
-    "display_name": "Manifest",
-    "itempool": "itempool_mal_sr_05_legendary_manifest_shiny",
-    "category": "Sniper"
-  },
-  {
-    "display_name": "Rhythm",
-    "itempool": "itempool_ord_ps_05_legendary_Rhythm_shiny",
-    "category": "Pistol"
-  },
-  {
-    "display_name": "Ishmael",
-    "itempool": "itempool_ord_sr_05_legendary_ishmael_shiny",
-    "category": "Sniper"
-  },
-  {
-    "display_name": "Cormano",
-    "itempool": "itempool_tor_sg_05_legendary_Cormano_shiny",
-    "category": "Shotgun"
-  },
-  {
-    "display_name": "Brickhouse",
-    "itempool": "itempool_vla_sm_05_legendary_brickhouse_shiny",
-    "category": "SMG"
   }
 ]

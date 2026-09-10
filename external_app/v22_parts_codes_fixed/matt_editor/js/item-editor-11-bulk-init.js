@@ -4159,15 +4159,15 @@
             let levelToUse;
             if (selectedLevelInput && selectedLevelInput.value && selectedLevelInput.value.trim() !== '') {
                 const parsedLevel = parseInt(selectedLevelInput.value);
-                if (!isNaN(parsedLevel) && parsedLevel >= 1 && parsedLevel <= 60) {
+                if (!isNaN(parsedLevel) && parsedLevel >= 1 && parsedLevel <= ITEM_MAX_LEVEL) {
                     levelToUse = parsedLevel;
                 } else {
                     // Invalid level, randomize
-                    levelToUse = Math.floor(Math.random() * 60) + 1;
+                    levelToUse = Math.floor(Math.random() * ITEM_MAX_LEVEL) + 1;
                 }
             } else {
                 // No level selected, randomize
-                levelToUse = Math.floor(Math.random() * 60) + 1;
+                levelToUse = Math.floor(Math.random() * ITEM_MAX_LEVEL) + 1;
             }
             document.getElementById('level').value = levelToUse;
             
@@ -4853,7 +4853,7 @@
             // Save original UI state
             const savedCurrentParts = [...currentParts];
             const savedTypeId = document.getElementById('typeId')?.value || '';
-            const savedLevel = document.getElementById('level')?.value || '60';
+            const savedLevel = document.getElementById('level')?.value || String(ITEM_MAX_LEVEL);
             const savedSeed = document.getElementById('seed')?.value || '1';
             const savedSelectValue = select.value;
             

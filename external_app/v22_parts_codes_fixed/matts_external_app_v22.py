@@ -755,7 +755,7 @@ class App(V9App):
         tk.Label(inner, text="Matt-style external builder: choose Type → Manufacturer → Root, then pick parts inside each slot panel. Unlock mode preserves duplicates.", bg='#090d17', fg='#9fb3d9', font=('Segoe UI',8), anchor='w').pack(fill='x', padx=8, pady=(5,2))
         form=tk.Frame(inner,bg='#090d17'); form.pack(fill='x',padx=8,pady=4)
         labels=[('Unlock rules for modded gear','legit_unlock_modded','choice'),('Type','legit_type','legit_type'),('Manufacturer','legit_manufacturer','legit_manufacturer'),('Optional Root Filter','legit_root_filter','text'),('Root Variant','legit_root_serial','legit_root'),('Filter Available Parts','legit_part_filter','text'),('Duplicate / Add Count','legit_duplicate_qty','int'),('Level','legit_level','int'),('Signature','legit_signature','int')]
-        defaults={'legit_unlock_modded':'false','legit_duplicate_qty':'1','legit_level':'60','legit_signature':'1534'}
+        defaults={'legit_unlock_modded':'false','legit_duplicate_qty':'1','legit_level':'70','legit_signature':'1534'}
         for r,(lab,fid,typ) in enumerate(labels):
             tk.Label(form,text=lab,bg='#090d17',fg='#cfd8f3',width=22,anchor='w',font=('Segoe UI',8)).grid(row=r,column=0,sticky='w',pady=2)
             var=self.field_vars.get(fid) or tk.StringVar(value=defaults.get(fid,'')); self.field_vars[fid]=var
@@ -890,7 +890,7 @@ class App(V9App):
             'root_serial': self.field_vars.get('legit_root_serial', tk.StringVar()).get(),
             'selected_parts': '\n'.join(self._legit_selected_lines_for_core()),
             'unlock_modded': self.field_vars.get('legit_unlock_modded', tk.StringVar(value='false')).get(),
-            'level': self.field_vars.get('legit_level', tk.StringVar(value='60')).get(),
+            'level': self.field_vars.get('legit_level', tk.StringVar(value='70')).get(),
             'signature': self.field_vars.get('legit_signature', tk.StringVar(value='1')).get(),
         }
 
@@ -979,7 +979,7 @@ class App(V9App):
             self._set_legit_status('No current Base85 serial to give. Build Base85 after the latest root/part/level change, then try again.')
             return
         try:
-            level = int(str(self.field_vars.get('legit_level', tk.StringVar(value='60')).get()).replace(',','').strip())
+            level = int(str(self.field_vars.get('legit_level', tk.StringVar(value='70')).get()).replace(',','').strip())
         except Exception:
             return messagebox.showerror('Invalid value', 'Legit Builder Level must be a number.')
         aid = {'selected':'give_serial_selected','all':'give_serial_all','nonhost':'give_serial_nonhost'}[mode]
@@ -2434,7 +2434,7 @@ class App(V9App):
         footer = tk.Frame(inner, bg='#090d17'); footer.pack(fill='x', padx=8, pady=(4,8))
         self._external_player_target_row(footer, 'code_target_player', 'BL4 Codes Target')
         self._field_row_combo_v13(footer, 'Override delivery level?', 'code_override_level', ['false','true'], readonly=True)
-        self._field_row_entry_v13(footer, 'Delivery Level', 'code_delivery_level', '60')
+        self._field_row_entry_v13(footer, 'Delivery Level', 'code_delivery_level', '70')
         self.bl4_delivery_status_var=tk.StringVar(value='0 selected | Delivery uses GiveRewardAllPlayers, then patches requested target(s)')
         tk.Label(footer, textvariable=self.bl4_delivery_status_var, bg='#090d17', fg='#9fb3d9', font=('Segoe UI',8), anchor='w').pack(fill='x', padx=8, pady=(2,0))
         deliver = tk.Frame(footer, bg='#090d17'); deliver.pack(fill='x', padx=8, pady=(3,0))
@@ -2958,7 +2958,7 @@ class App(V9App):
         if oversized:
             return self._set_bl4_status(f'Serial {oversized[0]} exceeds the {MAX_SERIAL_DELIVERY_CHARS} character delivery limit.', log_global=True)
         plan=self._serial_delivery_plan_local(serials, mode)
-        try: level=int(str(self.field_vars.get('code_delivery_level', tk.StringVar(value='60')).get()).replace(',','').strip())
+        try: level=int(str(self.field_vars.get('code_delivery_level', tk.StringVar(value='70')).get()).replace(',','').strip())
         except Exception: return messagebox.showerror('Invalid value','Delivery Level must be a number.')
         override=str(self.field_vars.get('code_override_level', tk.StringVar(value='false')).get()).lower() in ('1','true','yes','on')
         payload={'serial_text':'\n'.join(serials),'serial_level':level,'serial_override_level':override}

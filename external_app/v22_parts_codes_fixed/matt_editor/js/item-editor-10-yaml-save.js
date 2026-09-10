@@ -488,7 +488,7 @@
             charLevelInput.id = 'preset-input-character-level';
             charLevelInput.name = 'preset-input-character-level';
             charLevelInput.min = '1';
-            charLevelInput.max = '100';
+            charLevelInput.max = String(PRESET_CHARACTER_MAX_LEVEL);
             charLevelInput.style.padding = '4px 8px';
             charLevelInput.style.background = 'rgba(0, 0, 0, 0.3)';
             charLevelInput.style.border = '1px solid rgba(79, 195, 247, 0.4)';
@@ -505,9 +505,9 @@
                 const level = parseInt(this.value, 10);
                 this.style.borderColor = 'rgba(79, 195, 247, 0.4)';
                 if (this.value === '' || isNaN(level)) return;
-                if (level < 1 || level > 60) {
+                if (level < 1 || level > PRESET_CHARACTER_MAX_LEVEL) {
                     this.style.borderColor = 'rgba(244, 67, 54, 0.8)';
-                    showSaveStatus('save-preset-status', `❌ Character level must be between 1 and 60.`, false);
+                    showSaveStatus('save-preset-status', `❌ Character level must be between 1 and ${PRESET_CHARACTER_MAX_LEVEL}.`, false);
                     return;
                 }
                 charLevelTimeout = setTimeout(() => setCharacterLevel(level), 500);
@@ -1044,7 +1044,9 @@
 
         // ===== PRESET HANDLERS =====
         /** Max character level for presets (Unlock / Max Everything, setCharacterToMaxLevel). */
-        const PRESET_CHARACTER_MAX_LEVEL = 60;
+        const PRESET_CHARACTER_MAX_LEVEL = 70;
+        /** Gear level cap after the September 10, 2026 game update. */
+        const ITEM_MAX_LEVEL = 70;
         /** Max UVHM level for Edit Values dropdowns and unlockPostgame. */
         const PRESET_UVHM_MAX_LEVEL = 7;
         /** Max Mayhem level for Edit Values dropdowns (Table_Difficulty_Mayhem goes to Mayhem20). */
@@ -1279,12 +1281,12 @@
                 }
             }
 
-            const levelInput = prompt(`Enter character level (1-60):\n\nCurrent level: ${currentLevel}`, currentLevel);
+            const levelInput = prompt(`Enter character level (1-${PRESET_CHARACTER_MAX_LEVEL}):\n\nCurrent level: ${currentLevel}`, currentLevel);
             if (levelInput === null) return; // User cancelled
 
             const level = parseInt(levelInput, 10);
-            if (isNaN(level) || level < 1 || level > 60) {
-                showSaveStatus('save-preset-status', '❌ Invalid level. Please enter a number between 1 and 60.', false);
+            if (isNaN(level) || level < 1 || level > PRESET_CHARACTER_MAX_LEVEL) {
+                showSaveStatus('save-preset-status', `❌ Invalid level. Please enter a number between 1 and ${PRESET_CHARACTER_MAX_LEVEL}.`, false);
                 return;
             }
 
@@ -1352,6 +1354,10 @@
             RoboDealer: {
                 name: 'C4sh',
                 class: 'Robo-Dealer',
+            },
+            CorpoHacker: {
+                name: 'Loveless',
+                class: 'Hacker',
             },
         };
 
@@ -3141,37 +3147,74 @@
          * Completes character challenges
          */
         function completeCharacterChallenges() {
-            const counters = {
-                siren_death_tiered: 1000,
-                siren_death_single: 1,
-                siren_demonology_tiered: 1000,
-                siren_demonology_single: 1,
-                siren_duplicate_tiered: 1000,
-                siren_duplicate_single: 1,
-                siren_levelup: 60,
-                exo_autolock_tiered: 1000,
-                exo_autolock_single: 1,
-                exo_buster_tiered: 1000,
-                exo_buster_single: 1,
-                exo_heavyarms_tiered: 1000,
-                exo_heavyarms_single: 1,
-                exo_levelup: 60,
-                gravitar_terminal_tiered: 1000,
-                gravitar_terminal_single: 1,
-                gravitar_stasis_tiered: 1000,
-                gravitar_stasis_single: 1,
-                gravitar_exodus_tiered: 1000,
-                gravitar_exodus_single: 1,
-                gravitar_levelup: 60,
-                paladin_cybernetics_tiered: 1000,
-                paladin_cybernetics_single: 1,
-                paladin_vengeance_tiered: 1000,
-                paladin_vengeance_single: 1,
-                paladin_weaponmaster_tiered: 1000,
-                paladin_weaponmaster_single: 1,
-                paladin_levelup: 60,
+            // Exact associatedstat paths and highest goals from game build 25234898.
+            // Challenge level-up tiers (50/60) are separate from the level cap (70).
+            const targets = {
+                "stats.challenge.siren_death_single": 1,
+                "stats.challenge.siren_death_tiered": 1000,
+                "stats.challenge.siren_demonology_single": 1,
+                "stats.challenge.siren_demonology_tiered": 1000,
+                "stats.challenge.siren_duplicate_single": 1,
+                "stats.challenge.siren_duplicate_tiered": 1000,
+                "stats.challenge.siren_levelup": 50,
+                "stats.challenge.exo_autolock_single": 1,
+                "stats.challenge.exo_autolock_tiered": 1000,
+                "stats.challenge.exo_buster_single": 1,
+                "stats.challenge.exo_buster_tiered": 1000,
+                "stats.challenge.exo_heavyarms_single": 1,
+                "stats.challenge.exo_heavyarms_tiered": 1000,
+                "stats.challenge.exo_levelup": 50,
+                "stats.challenge.gravitar_exodus_single": 1,
+                "stats.challenge.gravitar_exodus_tiered": 1000,
+                "stats.challenge.gravitar_levelup": 50,
+                "stats.challenge.gravitar_stasis_single": 1,
+                "stats.challenge.gravitar_stasis_tiered": 1000,
+                "stats.challenge.gravitar_terminal_single": 1,
+                "stats.challenge.gravitar_terminal_tiered": 1000,
+                "stats.challenge.paladin_cybernetics_single": 1,
+                "stats.challenge.paladin_cybernetics_tiered": 1000,
+                "stats.challenge.paladin_levelup": 50,
+                "stats.challenge.paladin_vengeance_single": 1,
+                "stats.challenge.paladin_vengeance_tiered": 1000,
+                "stats.challenge.paladin_weaponmaster_single": 1,
+                "stats.challenge.paladin_weaponmaster_tiered": 1000,
+                "stats.harmonica_challenges.dlc2_characters.corpohacker_levelup": 60,
+                "stats.cowbell_challenges.characters.robodealer_cleromancy_single": 1,
+                "stats.cowbell_challenges.characters.robodealer_cleromancy_tiered": 1000,
+                "stats.cowbell_challenges.characters.robodealer_crossfire_single": 1,
+                "stats.cowbell_challenges.characters.robodealer_crossfire_tiered": 1000,
+                "stats.cowbell_challenges.characters.robodealer_levelup": 50,
+                "stats.cowbell_challenges.characters.robodealer_sleightofhand_single": 1,
+                "stats.cowbell_challenges.characters.robodealer_sleightofhand_tiered": 1000,
+                "stats.harmonica_challenges.dlc2_characters.corpohacker_contagion_single": 1,
+                "stats.harmonica_challenges.dlc2_characters.corpohacker_contagion_tiered": 1000,
+                "stats.harmonica_challenges.dlc2_characters.corpohacker_manifestation_single": 1,
+                "stats.harmonica_challenges.dlc2_characters.corpohacker_manifestation_tiered": 1000,
+                "stats.harmonica_challenges.dlc2_characters.corpohacker_vpn_single": 1,
+                "stats.harmonica_challenges.dlc2_characters.corpohacker_vpn_tiered": 1000
             };
-            updateStatsCounters(counters);
+            const byName = typeof window !== 'undefined' ? window.NEXUS_CHALLENGE_BY_NAME : null;
+            const characterPath = /^stats\.(?:challenge\.(?:siren|exo|gravitar|paladin)_|cowbell_challenges\.characters\.robodealer_|harmonica_challenges\.dlc2_characters\.corpohacker_)/i;
+            if (byName && typeof byName === 'object') {
+                for (const meta of Object.values(byName)) {
+                    if (!meta || !characterPath.test(String(meta.associatedstat || ''))) continue;
+                    const goal = Number(meta.goalValue);
+                    if (Number.isFinite(goal) && goal > 0) {
+                        targets[meta.associatedstat] = Math.max(targets[meta.associatedstat] || 0, goal);
+                    }
+                }
+            }
+            const data = getYamlDataFromTextarea();
+            if (!data || typeof data !== 'object') return;
+            data.stats = data.stats || {};
+            for (const [stat, goal] of Object.entries(targets)) {
+                setDeepStatOnStatsRoot(data.stats, stat, goal);
+            }
+            setYamlDataToTextarea(data, {
+                showChanges: false,
+                message: 'Updating character challenges...',
+                successMessage: 'Character challenge counters updated for all six Vault Hunters.'
+            });
         }
 
         /**
@@ -10979,6 +11022,7 @@
                 255: 'Paladin',
                 256: 'Rafa',
                 259: 'Harlowe',
+                402: 'Loveless',
                 404: 'Robodealer',
             };
             var parseRootSerialFromDecodedHeader = function (decodedStr) {
@@ -17766,8 +17810,8 @@
             const levelInput = document.getElementById('mass-level-input');
             const newLevel = parseInt(levelInput.value);
             
-            if (!newLevel || newLevel < 1 || newLevel > 60) {
-                showSaveStatus('save-decrypt-status', '❌ Please enter a valid level between 1 and 60.', false);
+            if (!newLevel || newLevel < 1 || newLevel > ITEM_MAX_LEVEL) {
+                showSaveStatus('save-decrypt-status', `❌ Please enter a valid level between 1 and ${ITEM_MAX_LEVEL}.`, false);
                 return;
             }
             
@@ -19049,8 +19093,8 @@
             }
             const levelInput = document.getElementById('profile-mass-level-input');
             const newLevel = levelInput ? parseInt(levelInput.value, 10) : NaN;
-            if (!newLevel || newLevel < 1 || newLevel > 60) {
-                showSaveStatus('bank-items-status', '❌ Enter a valid level between 1 and 60.', false);
+            if (!newLevel || newLevel < 1 || newLevel > ITEM_MAX_LEVEL) {
+                showSaveStatus('bank-items-status', `❌ Enter a valid level between 1 and ${ITEM_MAX_LEVEL}.`, false);
                 return;
             }
             setSaveProcessingState(true, 'Profile bank: change levels');

@@ -2,7 +2,12 @@
 
 Plan only. No Electron/SDK code, no SemVer, no release. Source: [`SQBT_FEATURE_INVENTORY.md`](./SQBT_FEATURE_INVENTORY.md), [`SQBT_INSPIRED_TEST_NOTES.md`](./SQBT_INSPIRED_TEST_NOTES.md), `electron_poc/renderer.html` tab bar + sections, `mod_extracted/MattsSDKBoostingTools/quick_menu_registry.py`.
 
-**License:** Challenge Ticker and the bundled Squ1ggsBoostingTools SDK are **GPL-3.0** — copy *behavior*, not files. MIT packages (movement, vehicle, damage, resources, BMS, P2P, world travel) can be adapted **with credit**. Loot shapes live in the GPL bundled SDK, **not** in the MIT package list — reimplement, do not vendor.
+**License:** `Squ1ggsBoostingTools` and the standalone movement, vehicle,
+damage, resources, BMS, P2P, and world-travel packages are **MIT** under
+`Copyright (c) 2026 Squ1ggs`; copied or adapted portions must retain that
+notice. **Challenge Ticker alone is GPL-3.0-or-later** and remains
+reference-only. The current Squ1ggsBoostingTools repository also places loot
+shapes under MIT; preserve the Squ1ggs notice if implementation is reused.
 
 ---
 

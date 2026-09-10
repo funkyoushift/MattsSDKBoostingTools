@@ -2,7 +2,12 @@
 
 Source of truth for **his** desktop app: Squ1ggs Boosting Tools **v1.1.0** portable (`sqbt-v1.1.0`, 2026-08-18), bundled SDK `panel_manifest.py` + README. Standalone MIT packages in [Squ1ggs/Bl4SDKmods](https://github.com/Squ1ggs/Bl4SDKmods) were also read. Matt’s fork: [funkyoushift/Bl4SDKmods](https://github.com/funkyoushift/Bl4SDKmods).
 
-**License:** Challenge Ticker and the bundled Squ1ggsBoostingTools SDK are **GPL-3.0**. MSBT may copy *behavior*, not files. MIT packages (player movement, vehicle, damage, resources, BMS, P2P, world travel) can be adapted with attribution.
+**License:** `Squ1ggsBoostingTools` and the standalone player movement, vehicle,
+damage, resources, BMS, P2P, and world-travel packages are **MIT** under
+`Copyright (c) 2026 Squ1ggs`; copied or adapted portions must retain that
+notice. **Challenge Ticker alone is GPL-3.0-or-later** and remains
+reference-only. See [`THIRD_PARTY_NOTICES.md`](./THIRD_PARTY_NOTICES.md) and
+[`OAK2_MOD_DB_LICENSE_AUDIT_2026-09-10.md`](./OAK2_MOD_DB_LICENSE_AUDIT_2026-09-10.md).
 
 Status key:
 

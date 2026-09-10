@@ -2,7 +2,8 @@ param(
     [string]$Repository = "funkyoushift/MattsSDKBoostingTools",
     [string]$TagName = "",
     [string]$Title = "",
-    [switch]$Draft
+    [switch]$Draft,
+    [switch]$CheckOnly
 )
 
 $ErrorActionPreference = "Stop"
@@ -19,6 +20,42 @@ function Write-Utf8NoBom {
     )
     $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
     [System.IO.File]::WriteAllText($Path, $Text, $utf8NoBom)
+}
+
+function Assert-ReleaseFile {
+    param([string]$Path)
+    if (-not (Test-Path -LiteralPath $Path -PathType Leaf) -or (Get-Item -LiteralPath $Path).Length -eq 0) {
+        throw "Required release artifact is missing or empty: $Path"
+    }
+}
+
+function Get-StreamSha256 {
+    param([System.IO.Stream]$Stream)
+    $algorithm = [System.Security.Cryptography.SHA256]::Create()
+    try { return ([BitConverter]::ToString($algorithm.ComputeHash($Stream))).Replace('-', '').ToLowerInvariant() }
+    finally { $algorithm.Dispose() }
+}
+
+function Assert-PortableEmbeddedFile {
+    param($Archive, [string]$EntryName, [string]$ExpectedSha256)
+    $entry = $Archive.GetEntry($EntryName)
+    if ($null -eq $entry) { throw "Portable ZIP is missing $EntryName" }
+    $stream = $entry.Open()
+    try { $actual = Get-StreamSha256 $stream }
+    finally { $stream.Dispose() }
+    if ($actual -ne $ExpectedSha256) { throw "Portable ZIP has mismatched embedded file: $EntryName" }
+}
+
+function Read-UpdaterYaml {
+    param([string]$Path)
+    $yamlModule = Join-Path $RepoRoot 'electron_poc\node_modules\js-yaml'
+    if (-not (Get-Command node -ErrorAction SilentlyContinue) -or -not (Test-Path -LiteralPath $yamlModule)) {
+        throw 'Updater verification requires Node and the installed Electron dependencies (npm ci).'
+    }
+    $parseYaml = 'const fs=require("node:fs");const yaml=require(process.argv[1]);process.stdout.write(JSON.stringify(yaml.load(fs.readFileSync(process.argv[2],"utf8"))));'
+    $parsed = & node -e $parseYaml $yamlModule $Path
+    if ($LASTEXITCODE -ne 0) { throw 'Could not parse latest.yml.' }
+    return ($parsed | ConvertFrom-Json)
 }
 
 function Get-ElectronSemverVersion {
@@ -73,6 +110,9 @@ function Test-PrereleaseVersion {
 if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
     throw "GitHub CLI 'gh' was not found. Install it and run 'gh auth login', then rerun this script."
 }
+if ($Repository -notmatch '^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$') {
+    throw "Repository must be OWNER/REPO: $Repository"
+}
 
 $PackageVersion = Get-PublicReleaseVersion
 $ElectronSemver = Get-ElectronSemverVersion
@@ -102,9 +142,21 @@ $latestYml = Join-Path $ElectronDist "latest.yml"
 if (-not (Test-Path $latestYml)) {
     throw "Electron updater manifest not found: $latestYml"
 }
-$latestYmlText = Get-Content -Raw $latestYml
-if ($latestYmlText -notmatch "(?m)^version:\s*$([regex]::Escape($ElectronSemver))\s*$") {
+$updater = Read-UpdaterYaml $latestYml
+if ([string]$updater.version -ne $ElectronSemver) {
     throw "latest.yml version does not match npm package version $ElectronSemver."
+}
+$installerRows = @($updater.files | Where-Object { [string]$_.url -ceq $ElectronInstallerName })
+if ($installerRows.Count -ne 1 -or [string]$updater.path -cne $ElectronInstallerName) {
+    throw 'latest.yml must identify exactly the expected installer in files[] and path.'
+}
+$installerStream = [System.IO.File]::OpenRead($ElectronInstaller)
+$sha512 = [System.Security.Cryptography.SHA512]::Create()
+try { $installerSha512 = [Convert]::ToBase64String($sha512.ComputeHash($installerStream)) }
+finally { $installerStream.Dispose(); $sha512.Dispose() }
+if ([string]$installerRows[0].sha512 -cne $installerSha512 -or [string]$updater.sha512 -cne $installerSha512 -or
+    [long]$installerRows[0].size -ne (Get-Item -LiteralPath $ElectronInstaller).Length) {
+    throw 'Installer SHA512/bytes do not match latest.yml.'
 }
 if (-not (Test-Path $ManifestPath)) {
     throw "Release update manifest not found: $ManifestPath."
@@ -121,9 +173,7 @@ if ([string]$PackagedManifest.package_version -ne $PackageVersion) {
 # Always publish the packaged latest.json so remote update checks match the
 # installer-bundled manifest. Post-release git_commit refreshes caused false
 # same-version rebuild prompts when they diverged from the baked file.
-$PackagedManifestText = Get-Content -Raw $PackagedManifestPath
-Write-Utf8NoBom -Path $ManifestPath -Text $PackagedManifestText
-$Manifest = Get-Content -Raw $ManifestPath | ConvertFrom-Json
+$Manifest = $PackagedManifest
 
 $ElectronAssets = @($ElectronInstaller)
 $blockMap = "$ElectronInstaller.blockmap"
@@ -134,26 +184,69 @@ $ElectronAssets += $latestYml
 $ElectronAssets += $PackagedManifestPath
 $ElectronUnpackedZipName = "MSBT-Portable-v$PackageVersion-win-x64.zip"
 $ElectronUnpackedZip = Join-Path $ElectronDist $ElectronUnpackedZipName
-if (Test-Path $ElectronUnpackedZip) {
-    $ElectronAssets += $ElectronUnpackedZip
+Assert-ReleaseFile $ElectronUnpackedZip
+$ElectronAssets += $ElectronUnpackedZip
+$SdkMod = Join-Path $RepoRoot 'MattsSDKBoostingTools.sdkmod'
+$EmbeddedSdkMod = Join-Path $ElectronDist 'win-unpacked\resources\sdkmod\MattsSDKBoostingTools.sdkmod'
+Assert-ReleaseFile $SdkMod
+Assert-ReleaseFile $EmbeddedSdkMod
+$sdkSha256 = (Get-FileHash -LiteralPath $SdkMod -Algorithm SHA256).Hash.ToLowerInvariant()
+if ((Get-FileHash -LiteralPath $EmbeddedSdkMod -Algorithm SHA256).Hash.ToLowerInvariant() -ne $sdkSha256) {
+    throw 'Installer staging contains a different SDK mod than the standalone release artifact.'
 }
-$MobileVersionJson = Join-Path $RepoRoot "docs\releases\mobile-version.json"
-if (Test-Path $MobileVersionJson) {
-    $ElectronAssets += $MobileVersionJson
+if ([string]$PackagedManifest.sdkmod_version -ne $PackageVersion) {
+    throw 'Packaged latest.json SDK version does not match the release version.'
 }
-$MobileApkDir = Join-Path $RepoRoot "dist_mobile"
-if (Test-Path $MobileApkDir) {
-    Get-ChildItem -Path $MobileApkDir -Filter "MSBT-Mobile-Controller*.apk" | ForEach-Object {
-        $ElectronAssets += $_.FullName
-    }
-}
-
-$shortCommit = ""
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+$portableArchive = [System.IO.Compression.ZipFile]::OpenRead($ElectronUnpackedZip)
 try {
-    $shortCommit = (& git -C $RepoRoot rev-parse --short HEAD).Trim()
-} catch {
-    $shortCommit = [DateTime]::UtcNow.ToString("yyyyMMddHHmm")
+    $portableRoot = "MSBT-Portable-v$PackageVersion-win-x64/resources/"
+    Assert-PortableEmbeddedFile $portableArchive ($portableRoot + 'sdkmod/MattsSDKBoostingTools.sdkmod') $sdkSha256
+    $manifestSha256 = (Get-FileHash -LiteralPath $PackagedManifestPath -Algorithm SHA256).Hash.ToLowerInvariant()
+    Assert-PortableEmbeddedFile $portableArchive ($portableRoot + 'releases/latest.json') $manifestSha256
+} finally { $portableArchive.Dispose() }
+$ElectronAssets += $SdkMod
+$MobileVersionJson = Join-Path $RepoRoot "docs\releases\mobile-version.json"
+Assert-ReleaseFile $MobileVersionJson
+$MobileVersion = Get-Content -Raw $MobileVersionJson | ConvertFrom-Json
+if ([string]$MobileVersion.versionName -notmatch '^\d+\.\d+\.\d+$' -or [int]$MobileVersion.versionCode -lt 1) {
+    throw 'mobile-version.json requires a versionName and positive versionCode.'
 }
+$rollingApkName = 'MSBT-Mobile-Controller.apk'
+$versionedApkName = "MSBT-Mobile-Controller-$($MobileVersion.versionName).apk"
+if ([IO.Path]::GetFileName(([Uri]$MobileVersion.apkUrl).AbsolutePath) -cne $rollingApkName -or
+    [IO.Path]::GetFileName(([Uri]$MobileVersion.apkVersionedUrl).AbsolutePath) -cne $versionedApkName -or
+    [string]$Manifest.mobile_apk_version -ne [string]$MobileVersion.versionName) {
+    throw 'Mobile APK names/version do not match mobile-version.json and packaged latest.json.'
+}
+$ElectronAssets += $MobileVersionJson
+$MobileApkDir = Join-Path $RepoRoot "dist_mobile"
+$rollingApk = Join-Path $MobileApkDir $rollingApkName
+$versionedApk = Join-Path $MobileApkDir $versionedApkName
+Assert-ReleaseFile $rollingApk
+Assert-ReleaseFile $versionedApk
+if ((Get-FileHash -LiteralPath $rollingApk -Algorithm SHA256).Hash -ne
+    (Get-FileHash -LiteralPath $versionedApk -Algorithm SHA256).Hash) {
+    throw 'Rolling and versioned Android APKs differ.'
+}
+$ElectronAssets += @($rollingApk, $versionedApk)
+$ChecksumFile = Join-Path $RepoRoot 'SHA256SUMS.txt'
+if (Test-Path -LiteralPath $ChecksumFile) { $ElectronAssets += $ChecksumFile }
+
+$HeadCommit = [string](& git -C $RepoRoot rev-parse --verify 'HEAD^{commit}')
+if ($LASTEXITCODE -ne 0 -or $HeadCommit -notmatch '^[0-9a-f]{40}$') { throw 'Could not resolve exact HEAD commit.' }
+$LocalTagCommit = [string](& git -C $RepoRoot rev-parse --verify "refs/tags/$TagName^{commit}")
+if ($LASTEXITCODE -ne 0 -or $LocalTagCommit -cne $HeadCommit) { throw 'Local release tag must point to exact HEAD.' }
+$remoteRefs = @(& git -C $RepoRoot ls-remote "https://github.com/$Repository.git" "refs/tags/$TagName" "refs/tags/$TagName^{}")
+if ($LASTEXITCODE -ne 0) { throw 'Could not verify the remote release tag.' }
+$tagObjects = @{}
+foreach ($line in $remoteRefs) {
+    if ($line -match '^([0-9a-f]{40})\s+(.+)$') { $tagObjects[$Matches[2]] = $Matches[1] }
+}
+$RemoteTagCommit = $tagObjects["refs/tags/$TagName^{}"]
+if (-not $RemoteTagCommit) { $RemoteTagCommit = $tagObjects["refs/tags/$TagName"] }
+if ($RemoteTagCommit -cne $HeadCommit) { throw 'Remote release tag must dereference to exact HEAD.' }
+$shortCommit = $HeadCommit.Substring(0, 12)
 $BuiltAtUtc = [DateTime]::UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ")
 
 if ($Manifest.package_version -and [string]$Manifest.package_version -ne $PackageVersion) {
@@ -212,6 +305,12 @@ Counts track the installer, portable ZIP, and Android APK (not update-check file
 "@
 
 $NotesPath = Join-Path ([System.IO.Path]::GetTempPath()) "msbt_release_notes_$TagName.md"
+if ($CheckOnly) {
+    Write-Host "Release preflight passed for $TagName at $HeadCommit ($($ElectronAssets.Count) assets)."
+    $ElectronAssets | ForEach-Object { Write-Host "  $([IO.Path]::GetFileName($_))" }
+    Write-Host 'CheckOnly: no files, tags, or GitHub releases were changed.'
+    return
+}
 Write-Utf8NoBom $NotesPath $notes
 
 $releaseExists = $false
@@ -233,10 +332,9 @@ if ($releaseExists) {
     if ($LASTEXITCODE -ne 0) {
         throw "Failed to upload assets to existing GitHub Release $TagName."
     }
-    $editArgs = @("release", "edit", $TagName, "--repo", $Repository, "--title", $Title, "--notes-file", $NotesPath)
-    if ($Prerelease) {
-        $editArgs += "--prerelease"
-    } else {
+    $editArgs = @("release", "edit", $TagName, "--repo", $Repository, "--title", $Title, "--notes-file", $NotesPath,
+        "--draft=$($Draft.IsPresent.ToString().ToLowerInvariant())", "--prerelease=$($Prerelease.ToString().ToLowerInvariant())")
+    if (-not $Prerelease -and -not $Draft) {
         $editArgs += "--latest"
     }
     & gh @editArgs
@@ -246,13 +344,14 @@ if ($releaseExists) {
 } else {
     $assets = @()
     $assets += $ElectronAssets
-    $ghArgs = @("release", "create", $TagName) + $assets + @("--repo", $Repository, "--title", $Title, "--notes-file", $NotesPath)
+    $ghArgs = @("release", "create", $TagName) + $assets + @("--repo", $Repository, "--title", $Title, "--notes-file", $NotesPath,
+        "--verify-tag", "--target", $HeadCommit)
     if ($Draft) {
         $ghArgs += "--draft"
     }
     if ($Prerelease) {
         $ghArgs += "--prerelease"
-    } else {
+    } elseif (-not $Draft) {
         $ghArgs += "--latest"
     }
     & gh @ghArgs
@@ -261,5 +360,5 @@ if ($releaseExists) {
     }
 }
 
-Write-Host "Published release assets to GitHub Release:"
+Write-Host "Uploaded release assets (draft=$($Draft.IsPresent)) to GitHub Release:"
 Write-Host "https://github.com/$Repository/releases/tag/$TagName"

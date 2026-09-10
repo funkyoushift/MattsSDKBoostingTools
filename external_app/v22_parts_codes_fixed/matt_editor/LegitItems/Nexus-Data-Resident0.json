@@ -1,8 +1,4 @@
 {
-  "__copyright": {
-    "author": "Cr4nkSt4r",
-    "github": "https://github.com/Cr4nkSt4r/Borderlands-4.NcsParser"
-  },
   "setdef": {
     "records": [
       {
@@ -6503,7 +6499,7 @@
           {
             "def_globals_ui": {
               "globals": "def_globals_ui",
-              "gameversion": "1.9.1",
+              "gameversion": "1.10.1",
               "statusmenusettings": {
                 "defaultsubmenu": "Inventory",
                 "submenulookup": [
@@ -6891,6 +6887,13 @@
               "distancescalecurve": "Asset'/Game/UI/Curves/ItemCard_Distance.ItemCard_Distance'",
               "scaleuprate": "20.000000",
               "visibilitydelay": "0.150000",
+              "worldiconsettings": {
+                "radius": {
+                  "x": "0.450000",
+                  "y": "0.280000",
+                  "z": "4.000000"
+                }
+              },
               "inventorythumbnailmaterial": "Asset'/Game/UI/Materials/MUI_InventoryThumbnail.MUI_InventoryThumbnail'",
               "thumbnailcubemap": "Asset'/Game/Common/Texture/Cubemap/Cube_Prologue_Day.Cube_Prologue_Day'",
               "inventorythumbnailstreamingcontentfiltername": "Appearance",
@@ -8897,8 +8900,7 @@
                   "pair2473777205": {
                     "key": "Takedown",
                     "value": {
-                      "startmessagedef": "display_data'takedown_accept_notification'",
-                      "completemessagedef": "display_data'takedown_complete_notification'"
+                      "startmessagedef": "display_data'dlc_side_mission_accept_notification'"
                     }
                   }
                 }
@@ -9032,6 +9034,14 @@
                   "pair2777614932": {
                     "key": "timer_bronze",
                     "value": "display_data'takedown_bronze_complete_notification'"
+                  }
+                }
+              },
+              "messagefacts": {
+                "pairs": {
+                  "pair4225318407": {
+                    "key": "stats.harmonica_openworld.dlc2_activities.treasurehunt.treasurehunt_bosskilled",
+                    "value": "display_data'treasure_hunt_completed_notification'"
                   }
                 }
               },
@@ -10162,6 +10172,38 @@
                   "pair100400925": {
                     "key": "Cowbell_P",
                     "value": "damagedata'Damage_Cowbell_Ocean_Cryo'"
+                  },
+                  "pair1343721075": {
+                    "key": "Harmonica_P",
+                    "value": "damagedata'Damage_Harmonica_WaterBody_Lava'"
+                  },
+                  "pair3004297146": {
+                    "key": "VolcanoFortress_P",
+                    "value": "damagedata'Damage_Harmonica_WaterBody_Lava'"
+                  },
+                  "pair2885408532": {
+                    "key": "Metrics_DLC_P",
+                    "value": "damagedata'Damage_Harmonica_WaterBody_Lava'"
+                  },
+                  "pair1071803686": {
+                    "key": "DLC2_Activities_TestRoom",
+                    "value": "damagedata'Damage_Harmonica_WaterBody_Lava'"
+                  },
+                  "pair2583515754": {
+                    "key": "Stamp_SC_DLC2_Geyser_Major",
+                    "value": "damagedata'Damage_Harmonica_WaterBody_Lava'"
+                  },
+                  "pair35802318": {
+                    "key": "SL_DLC2_Geyser_Active_StoryVariant",
+                    "value": "damagedata'Damage_Harmonica_WaterBody_Lava'"
+                  },
+                  "pair1219299277": {
+                    "key": "SL_DLC2_Geyser_Active",
+                    "value": "damagedata'Damage_Harmonica_WaterBody_Lava'"
+                  },
+                  "pair1483147710": {
+                    "key": "SL_DLC2_Geyser_NotActive_GeyserMesh",
+                    "value": "damagedata'Damage_Harmonica_WaterBody_Lava'"
                   }
                 }
               },
@@ -10372,7 +10414,11 @@
                 "dialogscript'VOCT_SHATTEREDLANDS_DJ_CB'",
                 "dialogscript'VOCT_COWBELL_ELLIE_CB'",
                 "dialogscript'VOCT_COWBELL_COWBELL_DJ_CB'",
-                "dialogscript'VOCT_COWBELL_MANCUBUS_CB'"
+                "dialogscript'VOCT_COWBELL_MANCUBUS_CB'",
+                "dialogscript'VOCT_HARMONICA_FL4K_CB'",
+                "dialogscript'VOCT_HARMONICA_MR_CHEW_CB'",
+                "dialogscript'VOCT_HARMONICA_HARMONICA_DJ_CB'",
+                "dialogscript'VOCT_HARMONICA_ROBO_BUTLER_CB'"
               ],
               "defaultquiettimedef": "dialogquiettime'QuietTime_Default'",
               "smallcooldownradius": "2000.000000",
@@ -11408,6 +11454,17 @@
                       "missiondef": "mission'Mission_Main_Harmonica4'",
                       "checkstatus": "Completed"
                     }
+                  },
+                  "pair3963399802": {
+                    "key": {
+                      "dialogenumvalue": {
+                        "tagname": "DialogEnums.MissionStatus.bActive_Harmonica4"
+                      }
+                    },
+                    "value": {
+                      "missiondef": "mission'Mission_Main_Harmonica4'",
+                      "checkstatus": "Active"
+                    }
                   }
                 }
               },
@@ -11538,7 +11595,7 @@
                     }
                   },
                   "pair2973209542": {
-                    "key": "game_region'Mountains'",
+                    "key": "game_region'mountains'",
                     "value": {
                       "dialogenumvalue": {
                         "tagname": "DialogEnums.Region.Mountains"
@@ -11546,7 +11603,7 @@
                     }
                   },
                   "pair4000622070": {
-                    "key": "game_region'shatteredlands'",
+                    "key": "game_region'Shatteredlands'",
                     "value": {
                       "dialogenumvalue": {
                         "tagname": "DialogEnums.Region.Shatteredlands"
@@ -14144,6 +14201,9 @@
                   "micromission": "MicroMission"
                 },
                 {
+                  "raid": "Raid"
+                },
+                {
                   "sidemission": "SideMission"
                 },
                 {
@@ -14167,9 +14227,6 @@
                   "dahlbunker": "DahlBunker"
                 },
                 {
-                  "digispaceboss": "DigispaceBoss"
-                },
-                {
                   "drillsite": "DrillSite"
                 },
                 {
@@ -14180,9 +14237,6 @@
                 },
                 {
                   "orderbunker": "OrderBunker"
-                },
-                {
-                  "raid": "Raid"
                 },
                 {
                   "safehouse": "Safehouse"
@@ -14206,6 +14260,9 @@
                 },
                 {
                   "colosseum": "Colosseum"
+                },
+                {
+                  "digispaceboss": "DigispaceBoss"
                 },
                 {
                   "event": "Event"
@@ -14498,6 +14555,33 @@
                     "value": {
                       "enemytypetext": "display_data'Name_ScavPsychoBasic'",
                       "namepooldef": "uiname_weightedlist'CNameList_ScavPsycho'"
+                    }
+                  },
+                  "pair714080244": {
+                    "key": {
+                      "tagname": "GbxActor.Character.EnemyType.TedioreMech"
+                    },
+                    "value": {
+                      "enemytypetext": "display_data'Name_TedMech_Badass'",
+                      "namepooldef": "uiname_weightedlist'CNameList_TedFrame_Spray'"
+                    }
+                  },
+                  "pair881505358": {
+                    "key": {
+                      "tagname": "GbxActor.Character.EnemyType.TedioreInfantry"
+                    },
+                    "value": {
+                      "enemytypetext": "display_data'Name_InfantryCaptain'",
+                      "namepooldef": "uiname_weightedlist'CNameList_TedCaptain'"
+                    }
+                  },
+                  "pair227608702": {
+                    "key": {
+                      "tagname": "GbxActor.Character.EnemyType.TedioreFrame"
+                    },
+                    "value": {
+                      "enemytypetext": "display_data'Name_FrameBadass_Live'",
+                      "namepooldef": "uiname_weightedlist'CNameList_TedFrame_Spray'"
                     }
                   }
                 }
@@ -16909,7 +16993,8 @@
                         "capital'VaultCard01_Experience'",
                         "capital'VaultCard02_Experience'",
                         "capital'VaultCard03_Experience'",
-                        "capital'VaultCard04_Experience'"
+                        "capital'VaultCard04_Experience'",
+                        "capital'VaultCard05_Experience'"
                       ]
                     }
                   }
@@ -17030,6 +17115,22 @@
                     "key": "Takedown_Hardcore",
                     "value": "gbx_discovery_location_type_def'DiscoveryLocation_Primary_TakedownMissionWaypoint'"
                   },
+                  "pair1852093551": {
+                    "key": "TikiBar",
+                    "value": "gbx_discovery_location_type_def'DiscoveryLocation_Primary_TikiBarWaypoint'"
+                  },
+                  "pair1772309633": {
+                    "key": "TedioreGrotto",
+                    "value": "gbx_discovery_location_type_def'DiscoveryLocation_Primary_TedioreGrottoWaypoint'"
+                  },
+                  "pair3968797043": {
+                    "key": "TedioreLockdown",
+                    "value": "gbx_discovery_location_type_def'DiscoveryLocation_Primary_TedioreLockdownWaypoint'"
+                  },
+                  "pair2858617756": {
+                    "key": "Volcano",
+                    "value": "gbx_discovery_location_type_def'DiscoveryLocation_Primary_VolcanoWaypoint'"
+                  },
                   "pair2059649800": {
                     "key": "DigispaceBoss",
                     "value": "gbx_discovery_location_type_def'DiscoveryLocation_Primary_DigiBossWaypoint'"
@@ -17143,8 +17244,24 @@
                     "key": "Takedown_Hardcore",
                     "value": "gbx_discovery_location_type_def'DiscoveryLocation_Primary_TakedownMissionBreadcrumb'"
                   },
-                  "pair3932504343": {
-                    "key": "DigiBoss",
+                  "pair1852093551": {
+                    "key": "TikiBar",
+                    "value": "gbx_discovery_location_type_def'DiscoveryLocation_Primary_TikiBarWaypoint'"
+                  },
+                  "pair1772309633": {
+                    "key": "TedioreGrotto",
+                    "value": "gbx_discovery_location_type_def'DiscoveryLocation_Primary_TedioreGrottoWaypoint'"
+                  },
+                  "pair3968797043": {
+                    "key": "TedioreLockdown",
+                    "value": "gbx_discovery_location_type_def'DiscoveryLocation_Primary_TedioreLockdownWaypoint'"
+                  },
+                  "pair2858617756": {
+                    "key": "Volcano",
+                    "value": "gbx_discovery_location_type_def'DiscoveryLocation_Primary_VolcanoWaypoint'"
+                  },
+                  "pair2059649800": {
+                    "key": "DigispaceBoss",
                     "value": "gbx_discovery_location_type_def'DiscoveryLocation_Primary_DigiBossWaypoint'"
                   }
                 }
@@ -17256,6 +17373,22 @@
                     "key": "Takedown_Hardcore",
                     "value": "gbx_discovery_location_type_def'DiscoveryLocation_Primary_TakedownMissionOptional'"
                   },
+                  "pair1852093551": {
+                    "key": "TikiBar",
+                    "value": "gbx_discovery_location_type_def'DiscoveryLocation_Primary_TikiBarWaypoint'"
+                  },
+                  "pair1772309633": {
+                    "key": "TedioreGrotto",
+                    "value": "gbx_discovery_location_type_def'DiscoveryLocation_Primary_TedioreGrottoWaypoint'"
+                  },
+                  "pair3968797043": {
+                    "key": "TedioreLockdown",
+                    "value": "gbx_discovery_location_type_def'DiscoveryLocation_Primary_TedioreLockdownWaypoint'"
+                  },
+                  "pair2858617756": {
+                    "key": "Volcano",
+                    "value": "gbx_discovery_location_type_def'DiscoveryLocation_Primary_VolcanoWaypoint'"
+                  },
                   "pair2059649800": {
                     "key": "DigispaceBoss",
                     "value": "gbx_discovery_location_type_def'DiscoveryLocation_Primary_DigiBossWaypoint'"
@@ -17357,6 +17490,10 @@
                     "key": "DLC_FactionMission",
                     "value": "gbx_discovery_location_type_def'DiscoveryLocation_Secondary_SideMissionGiver_DLC'"
                   },
+                  "pair742118418": {
+                    "key": "RiftBoss",
+                    "value": "gbx_discovery_location_type_def'DiscoveryLocation_Secondary_NoMissionGiver'"
+                  },
                   "pair3316767299": {
                     "key": "Takedown",
                     "value": "gbx_discovery_location_type_def'DiscoveryLocation_Secondary_TakedownMissionGiver'"
@@ -17368,6 +17505,26 @@
                   "pair1651734405": {
                     "key": "Takedown_Hardcore",
                     "value": "gbx_discovery_location_type_def'DiscoveryLocation_Secondary_TakedownMissionGiver'"
+                  },
+                  "pair1852093551": {
+                    "key": "TikiBar",
+                    "value": "gbx_discovery_location_type_def'DiscoveryLocation_Secondary_NoMissionGiver'"
+                  },
+                  "pair1772309633": {
+                    "key": "TedioreGrotto",
+                    "value": "gbx_discovery_location_type_def'DiscoveryLocation_Secondary_NoMissionGiver'"
+                  },
+                  "pair3968797043": {
+                    "key": "TedioreLockdown",
+                    "value": "gbx_discovery_location_type_def'DiscoveryLocation_Secondary_NoMissionGiver'"
+                  },
+                  "pair2858617756": {
+                    "key": "Volcano",
+                    "value": "gbx_discovery_location_type_def'DiscoveryLocation_Secondary_NoMissionGiver'"
+                  },
+                  "pair2059649800": {
+                    "key": "DigispaceBoss",
+                    "value": "gbx_discovery_location_type_def'DiscoveryLocation_Secondary_NoMissionGiver'"
                   }
                 }
               },
@@ -17694,6 +17851,156 @@
                     "registryname": "PoAActor_City_SHA_Safehouse1"
                   },
                   "markedfact": "global.vault_hunter_level"
+                },
+                {
+                  "actorfactaddress": {
+                    "map": "World_P",
+                    "registryname": "LT_DLC_Banjo_Entr"
+                  },
+                  "markedfact": "stats.dlc_lts.bp1_banjo"
+                },
+                {
+                  "actorfactaddress": {
+                    "map": "World_P",
+                    "registryname": "LT_DLC_Cello_Entr"
+                  },
+                  "markedfact": "stats.dlc_lts.bp2_cello"
+                },
+                {
+                  "actorfactaddress": {
+                    "map": "World_P",
+                    "registryname": "LT_SHA_ToMandolin"
+                  },
+                  "markedfact": "stats.dlc_lts.bp3_mandolin"
+                },
+                {
+                  "actorfactaddress": {
+                    "map": "World_P",
+                    "registryname": "LT_DLC_WorldPtoHarp"
+                  },
+                  "markedfact": "stats.dlc_lts.bp4_harp"
+                },
+                {
+                  "actorfactaddress": {
+                    "map": "World_P",
+                    "registryname": "LT_DLC_Viola_Entr"
+                  },
+                  "markedfact": "stats.dlc_lts.bp5_viola"
+                },
+                {
+                  "actorfactaddress": {
+                    "map": "World_P",
+                    "registryname": "LT_GRA_CoastToCowBell"
+                  },
+                  "markedfact": "stats.dlc_lts.dlc1_cowbell"
+                },
+                {
+                  "actorfactaddress": {
+                    "map": "World_P",
+                    "registryname": "LTS_MOU_SanctuaryToHarmonica"
+                  },
+                  "markedfact": "stats.dlc_lts.dlc2_harmonica"
+                },
+                {
+                  "actorfactaddress": {
+                    "map": "World_P",
+                    "registryname": "LT_DLC_Raid1_Entr"
+                  },
+                  "markedfact": "stats.dlc_lts.raid1"
+                },
+                {
+                  "actorfactaddress": {
+                    "map": "World_P",
+                    "registryname": "LT_DLC_Raid2_Entr"
+                  },
+                  "markedfact": "stats.dlc_lts.raid2"
+                },
+                {
+                  "actorfactaddress": {
+                    "map": "World_P",
+                    "registryname": "LT_DLC_TubaEntr"
+                  },
+                  "markedfact": "stats.dlc_lts.td1_tuba"
+                },
+                {
+                  "actorfactaddress": {
+                    "map": "Harmonica_P",
+                    "groupname": "Guarded",
+                    "registryname": "IO_TedioreCollectible"
+                  },
+                  "markedfact": "transient.tediorecollectiblesunlocked"
+                },
+                {
+                  "actorfactaddress": {
+                    "map": "Harmonica_P",
+                    "groupname": "Guarded",
+                    "registryname": "IO_TedioreCollectible2"
+                  },
+                  "markedfact": "transient.tediorecollectiblesunlocked"
+                },
+                {
+                  "actorfactaddress": {
+                    "map": "Harmonica_P",
+                    "groupname": "Guarded",
+                    "registryname": "IO_TedioreCollectible3"
+                  },
+                  "markedfact": "transient.tediorecollectiblesunlocked"
+                },
+                {
+                  "actorfactaddress": {
+                    "map": "Harmonica_P",
+                    "groupname": "Guarded",
+                    "registryname": "IO_TedioreCollectible4"
+                  },
+                  "markedfact": "transient.tediorecollectiblesunlocked"
+                },
+                {
+                  "actorfactaddress": {
+                    "map": "Harmonica_P",
+                    "groupname": "Guarded",
+                    "registryname": "IO_TedioreCollectible5"
+                  },
+                  "markedfact": "transient.tediorecollectiblesunlocked"
+                },
+                {
+                  "actorfactaddress": {
+                    "map": "Harmonica_P",
+                    "groupname": "Guarded",
+                    "registryname": "IO_TedioreCollectible6"
+                  },
+                  "markedfact": "transient.tediorecollectiblesunlocked"
+                },
+                {
+                  "actorfactaddress": {
+                    "map": "Harmonica_P",
+                    "groupname": "Guarded",
+                    "registryname": "IO_TedioreCollectible7"
+                  },
+                  "markedfact": "transient.tediorecollectiblesunlocked"
+                },
+                {
+                  "actorfactaddress": {
+                    "map": "Harmonica_P",
+                    "groupname": "Guarded",
+                    "registryname": "IO_TedioreCollectible8"
+                  },
+                  "markedfact": "transient.tediorecollectiblesunlocked"
+                },
+                {
+                  "actorfactaddress": {
+                    "map": "Harmonica_P",
+                    "groupname": "Guarded",
+                    "registryname": "IO_TedioreCollectible9"
+                  },
+                  "markedfact": "transient.tediorecollectiblesunlocked"
+                },
+                {
+                  "actorfactaddress": {
+                    "map": "Harmonica_P",
+                    "groupname": "Guarded",
+                    "registryname": "IO_TedioreCollectible10"
+                  },
+                  "markedfact": "transient.tediorecollectiblesunlocked"
                 }
               ],
               "metadatanexussource": "/Game/GameData/Discovery/discovery_meta_data",
@@ -17837,7 +18144,9 @@
               "vaultcardsdisplayorder": [
                 "vault_cards'VaultCard01'",
                 "vault_cards'VaultCard02'",
-                "vault_cards'VaultCard03'"
+                "vault_cards'VaultCard03'",
+                "vault_cards'VaultCard04'",
+                "vault_cards'VaultCard05'"
               ],
               "structtype": "Asset'/Script/OakGame.VaultCards_GlobalsDef'"
             }
@@ -18086,6 +18395,284 @@
             }
           }
         ]
+      },
+      {
+        "entries": [
+          {
+            "def_globals_ui": {
+              "globals": "def_globals_ui",
+              "hudstatefact": "transient.hud_init_step",
+              "tutorialfacttodefmapping": {
+                "pairs": {
+                  "pair2110410439": {
+                    "key": "stats.tutorial_harmonica.digi_gunk",
+                    "value": {
+                      "tutorialdef": {
+                        "inputmappingcontext": "context_ui_tutorial",
+                        "buttonprompt": "display_data'TutorialExpandText'",
+                        "inputaction": "action_ui_expand_tutorial",
+                        "displaytimeinsec": "12.000000",
+                        "header": "ui_globals, 32FFC91A4D4A149072F5B682963F1E93, Polyclusters",
+                        "text": "ui_globals, 39B0F63A4F19992B1232F786890A0789, Used by Tediore to reinforce objects. Shoot the Polyclusters to clear it off and gain access to what's underneath. "
+                      },
+                      "expandedtutorialdef": {
+                        "message_type": "Tutorial",
+                        "bannerimage": "Asset'/Game/DLC/Harmonica/uiresources/ui_art_tutorial_images/Tutorial_Digigunk.Tutorial_Digigunk'",
+                        "inputmappingcontext": "context_ui_expanded_tutorial",
+                        "buttonprompt": "display_data'CloseText'",
+                        "inputaction": "action_ui_close_tutorial",
+                        "header": "ui_globals, BED944394BD83BA324E862A55E1ED4F3, Polyclusters",
+                        "text": "ui_globals, 8179C1444B0B4AE32BE6B1BB19EF29A7, Used by Tediore to reinforce objects. Shoot the Polyclusters to clear it off and gain access to what's underneath. [newline][newline] Target red clusters to destroy it quickly. If not completely destroyed, it will regrow over time. "
+                      }
+                    }
+                  },
+                  "pair3573535330": {
+                    "key": "stats.tutorial_harmonica.treasure_hunt",
+                    "value": {
+                      "tutorialdef": {
+                        "inputmappingcontext": "context_ui_tutorial",
+                        "buttonprompt": "display_data'TutorialExpandText'",
+                        "inputaction": "action_ui_expand_tutorial",
+                        "displaytimeinsec": "12.000000",
+                        "header": "ui_globals, EE34E0A0465F30F9D2A9A2A7B2671B61, Substation Control",
+                        "text": "ui_globals, 05BFBA7B4C9122CE4C4AB39339D54CC7, Find all the switches, but what do they open? What lies inside?"
+                      },
+                      "expandedtutorialdef": {
+                        "message_type": "Tutorial",
+                        "bannerimage": "Asset'/Game/DLC/Harmonica/uiresources/ui_art_tutorial_images/Tutorial_Treasure.Tutorial_Treasure'",
+                        "inputmappingcontext": "context_ui_expanded_tutorial",
+                        "buttonprompt": "display_data'CloseText'",
+                        "inputaction": "action_ui_close_tutorial",
+                        "header": "ui_globals, F0178F4740CEEC2D2C6785B5B31AB121, Substation Control",
+                        "text": "ui_globals, C27474104F8FD60C5CC95782A1992A7B, Find all the switches, but what do they open? What lies inside?"
+                      }
+                    }
+                  },
+                  "pair3743794403": {
+                    "key": "stats.tutorial_harmonica.tiki_safehouses",
+                    "value": {
+                      "tutorialdef": {
+                        "inputmappingcontext": "context_ui_tutorial",
+                        "buttonprompt": "display_data'TutorialExpandText'",
+                        "inputaction": "action_ui_expand_tutorial",
+                        "displaytimeinsec": "12.000000",
+                        "header": "ui_globals, E7020B5F406987D3B4CDC5815E512BF7, Providence Tiki Bars",
+                        "text": "ui_globals, EC60F5E043EBCDD3498622B5D46931F8, Claim the Providence Tiki Bar by starting the generator and defending it until power is restored."
+                      },
+                      "expandedtutorialdef": {
+                        "message_type": "Tutorial",
+                        "bannerimage": "Asset'/Game/DLC/Harmonica/uiresources/ui_art_tutorial_images/Tutorial_TikiSafehouse.Tutorial_TikiSafehouse'",
+                        "inputmappingcontext": "context_ui_expanded_tutorial",
+                        "buttonprompt": "display_data'CloseText'",
+                        "inputaction": "action_ui_close_tutorial",
+                        "header": "ui_globals, 8783E8644FEEC7C59B282DB00B2EEF9B, Providence Tiki Bars",
+                        "text": "ui_globals, 4616959A4CFDC1417F6B57B23C493068, Claim the Providence Tiki Bar by starting the generator and defending it until power is restored."
+                      }
+                    }
+                  },
+                  "pair3960170180": {
+                    "key": "stats.tutorial_harmonica.mining_grottos",
+                    "value": {
+                      "tutorialdef": {
+                        "inputmappingcontext": "context_ui_tutorial",
+                        "buttonprompt": "display_data'TutorialExpandText'",
+                        "inputaction": "action_ui_expand_tutorial",
+                        "displaytimeinsec": "12.000000",
+                        "header": "ui_globals, 4EADC1744D3E4ED334FE83BB6B3F94EE, Occupied Sector",
+                        "text": "ui_globals, 43A157C846F985CCA959FF8EAB7A38CE, This area is swarming with riff-raff and locked up tight. Break through the Polyclusters blocking the door, defeat those inside, and take anything of value you find."
+                      },
+                      "expandedtutorialdef": {
+                        "message_type": "Tutorial",
+                        "bannerimage": "Asset'/Game/DLC/Harmonica/uiresources/ui_art_tutorial_images/Tutorial_Grotto.Tutorial_Grotto'",
+                        "inputmappingcontext": "context_ui_expanded_tutorial",
+                        "buttonprompt": "display_data'CloseText'",
+                        "inputaction": "action_ui_close_tutorial",
+                        "header": "ui_globals, C8FB3FAD42E87DDAFA00C2A6220DFC70, Occupied Sector",
+                        "text": "ui_globals, 82A88B404A4708D5A6743E95F03DCB9E, This area is swarming with riff-raff and locked up tight. Break through the Polyclusters blocking the door, defeat those inside, and take anything of value you find."
+                      }
+                    }
+                  },
+                  "pair1726489424": {
+                    "key": "stats.tutorial_harmonica.volcano_event",
+                    "value": {
+                      "tutorialdef": {
+                        "inputmappingcontext": "context_ui_tutorial",
+                        "buttonprompt": "display_data'TutorialExpandText'",
+                        "inputaction": "action_ui_expand_tutorial",
+                        "displaytimeinsec": "12.000000",
+                        "header": "ui_globals, 1EA0D35E42DD2E89E4C817B7D1EFDDD8, Volcanic Rumblings",
+                        "text": "ui_globals, 9DFCA7C94305F987A934EEBEA48C57D8, The volcano awakens! Seek out volcanic activity to find volcano-specific loot before it goes dormant again."
+                      },
+                      "expandedtutorialdef": {
+                        "message_type": "Tutorial",
+                        "bannerimage": "Asset'/Game/DLC/Harmonica/uiresources/ui_art_tutorial_images/Tutorial_LavaEvent.Tutorial_LavaEvent'",
+                        "inputmappingcontext": "context_ui_expanded_tutorial",
+                        "buttonprompt": "display_data'CloseText'",
+                        "inputaction": "action_ui_close_tutorial",
+                        "header": "ui_globals, 7090AD0F4C53BDA3282DCC9B59C356BD, Volcanic Rumblings",
+                        "text": "ui_globals, 615DAF9F4AF27E6D890271B9887452A9, The volcano awakens! Seek out volcanic activity to find volcano-specific loot before it goes dormant again."
+                      }
+                    }
+                  },
+                  "pair452567565": {
+                    "key": "stats.tutorial_harmonica.tediore_pockets",
+                    "value": {
+                      "tutorialdef": {
+                        "inputmappingcontext": "context_ui_tutorial",
+                        "buttonprompt": "display_data'TutorialExpandText'",
+                        "inputaction": "action_ui_expand_tutorial",
+                        "displaytimeinsec": "12.000000",
+                        "header": "ui_globals, DDCC7B4446C57818FF7817A23067890F, Tediore Digi-Rifts",
+                        "text": "ui_globals, BE35EF62449D1A2BB7969E928648442A, Enter the Digi-Rifts and defeat those inside to claim what Tediore has hidden away."
+                      },
+                      "expandedtutorialdef": {
+                        "message_type": "Tutorial",
+                        "bannerimage": "Asset'/Game/DLC/Harmonica/uiresources/ui_art_tutorial_images/Tutorial_Rift.Tutorial_Rift'",
+                        "inputmappingcontext": "context_ui_expanded_tutorial",
+                        "buttonprompt": "display_data'CloseText'",
+                        "inputaction": "action_ui_close_tutorial",
+                        "header": "ui_globals, DC59F5FF41B5030A5CE7928159EAF319, Tediore Digi-Rifts",
+                        "text": "ui_globals, DC3AF1B84AC4B9A269BF32AF90F296D4, Enter the Digi-Rifts and defeat those inside to claim what Tediore has hidden away."
+                      }
+                    }
+                  },
+                  "pair2805700680": {
+                    "key": "stats.tutorial_harmonica.collectible_tediore_guns",
+                    "value": {
+                      "tutorialdef": {
+                        "inputmappingcontext": "context_ui_tutorial",
+                        "buttonprompt": "display_data'TutorialExpandText'",
+                        "inputaction": "action_ui_expand_tutorial",
+                        "displaytimeinsec": "12.000000",
+                        "header": "ui_globals, CF6851D14434D7040321A9AC08370AAD, Escaped Tediore Guns",
+                        "text": "ui_globals, D21E21E4495C314FC3732B885F0899C3, Find all ten of the escaped Tediore guns and bring them home."
+                      },
+                      "expandedtutorialdef": {
+                        "message_type": "Tutorial",
+                        "bannerimage": "Asset'/Game/DLC/Harmonica/uiresources/ui_art_tutorial_images/Tutorial_Gun.Tutorial_Gun'",
+                        "inputmappingcontext": "context_ui_expanded_tutorial",
+                        "buttonprompt": "display_data'CloseText'",
+                        "inputaction": "action_ui_close_tutorial",
+                        "header": "ui_globals, 6058C7944904831316DFE2A7083AE3D6, Escaped Tediore Guns",
+                        "text": "ui_globals, 6C427DCD4E1DF45E88F3F6B555C20949, Find all ten of the escaped Tediore guns and bring them home."
+                      }
+                    }
+                  },
+                  "pair4280512264": {
+                    "key": "stats.tutorial_harmonica.island_safes",
+                    "value": {
+                      "tutorialdef": {
+                        "inputmappingcontext": "context_ui_tutorial",
+                        "buttonprompt": "display_data'TutorialExpandText'",
+                        "inputaction": "action_ui_expand_tutorial",
+                        "displaytimeinsec": "12.000000",
+                        "header": "ui_globals, 3461BB6B45BD148C7128FEA6ECE6132E, Safes",
+                        "text": "ui_globals, C315980B45818B41433142A3D485B384, A safe full of loot - and one of many. You know what to do."
+                      },
+                      "expandedtutorialdef": {
+                        "message_type": "Tutorial",
+                        "bannerimage": "Asset'/Game/DLC/Harmonica/uiresources/ui_art_tutorial_images/Tutorial_Safe.Tutorial_Safe'",
+                        "inputmappingcontext": "context_ui_expanded_tutorial",
+                        "buttonprompt": "display_data'CloseText'",
+                        "inputaction": "action_ui_close_tutorial",
+                        "header": "ui_globals, D9FCAEEE48A6068D7FCD9D9FFA8CA406, Safes",
+                        "text": "ui_globals, 679926EC446852F34706D69BAB3008EA, A safe full of loot - and one of many. You know what to do."
+                      }
+                    }
+                  },
+                  "pair1265110970": {
+                    "key": "stats.tutorial_harmonica.ziplines",
+                    "value": {
+                      "tutorialdef": {
+                        "inputmappingcontext": "context_ui_tutorial",
+                        "buttonprompt": "display_data'TutorialExpandText'",
+                        "inputaction": "action_ui_expand_tutorial",
+                        "displaytimeinsec": "12.000000",
+                        "header": "ui_globals, B001DA0648DC92D702C330AA8F9C8A3F, Ziplines",
+                        "text": "ui_globals, 3455FDA44E0218FC36160483034DACC2, Use your grapple with [glyph]Action_Melee[/glyph] to pull yourself to and attach to a zipline."
+                      },
+                      "expandedtutorialdef": {
+                        "message_type": "Tutorial",
+                        "bannerimage": "Asset'/Game/DLC/Harmonica/uiresources/ui_art_tutorial_images/Tutorial_Zipline.Tutorial_Zipline'",
+                        "inputmappingcontext": "context_ui_expanded_tutorial",
+                        "buttonprompt": "display_data'CloseText'",
+                        "inputaction": "action_ui_close_tutorial",
+                        "header": "ui_globals, 8A66E1454955931738F5F6B6E29555E8, Ziplines",
+                        "text": "ui_globals, F2FCD08846D28E79B6093BAE58231FFD, Use your grapple with [glyph]Action_Melee[/glyph] to pull yourself to and attach to a zipline.[newline][newline]You might also grab onto a zipline by falling or jumping near it."
+                      }
+                    }
+                  },
+                  "pair2796372851": {
+                    "key": "stats.tutorial_harmonica.cargo_pod_event",
+                    "value": {
+                      "tutorialdef": {
+                        "inputmappingcontext": "context_ui_tutorial",
+                        "buttonprompt": "display_data'TutorialExpandText'",
+                        "inputaction": "action_ui_expand_tutorial",
+                        "displaytimeinsec": "12.000000",
+                        "header": "ui_globals, F2E814314A7971D4617707BFC2453760, Tediore Supply Point",
+                        "text": "ui_globals, 1A6D8BCA4FF3F363FF9D7199A1E6CF7B, Explore the Tediore Supply Points! Different Tediore Supply Points hold different loot... and different threats."
+                      },
+                      "expandedtutorialdef": {
+                        "message_type": "Tutorial",
+                        "bannerimage": "Asset'/Game/DLC/Harmonica/uiresources/ui_art_tutorial_images/Tutorial_SupplyPoint.Tutorial_SupplyPoint'",
+                        "inputmappingcontext": "context_ui_expanded_tutorial",
+                        "buttonprompt": "display_data'CloseText'",
+                        "inputaction": "action_ui_close_tutorial",
+                        "header": "ui_globals, 50D8C1DA4595BEB329B10EB3DC3B4052, Tediore Supply Point",
+                        "text": "ui_globals, 0F23E7DC49885947DA51FAB738F950A6, Explore the Tediore Supply Points! Different Tediore Supply Points hold different loot... and different threats."
+                      }
+                    }
+                  },
+                  "pair1554718131": {
+                    "key": "stats.tutorial_harmonica.tediore_lockdown",
+                    "value": {
+                      "tutorialdef": {
+                        "inputmappingcontext": "context_ui_tutorial",
+                        "buttonprompt": "display_data'TutorialExpandText'",
+                        "inputaction": "action_ui_expand_tutorial",
+                        "displaytimeinsec": "12.000000",
+                        "header": "ui_globals, 3561605C4A94D1FFA5438AADBB593601, Tediore Lockdown",
+                        "text": "ui_globals, 8A02D30D46587A9ACEB84F969589E3F1, Tediore has deployed temporary bases to control the island. Take them out."
+                      },
+                      "expandedtutorialdef": {
+                        "message_type": "Tutorial",
+                        "bannerimage": "Asset'/Game/DLC/Harmonica/uiresources/ui_art_tutorial_images/Tutorial_Lockdown.Tutorial_Lockdown'",
+                        "inputmappingcontext": "context_ui_expanded_tutorial",
+                        "buttonprompt": "display_data'CloseText'",
+                        "inputaction": "action_ui_close_tutorial",
+                        "header": "ui_globals, D5B1340A4A728A6608D20A8BED535262, Tediore Lockdown",
+                        "text": "ui_globals, 002725074435275BF0DCA386DD93FDFB, Tediore has deployed temporary bases to control the island. Take them out."
+                      }
+                    }
+                  },
+                  "pair125188532": {
+                    "key": "stats.tutorial_harmonica.treasure_hunt_final",
+                    "value": {
+                      "tutorialdef": {
+                        "inputmappingcontext": "context_ui_tutorial",
+                        "buttonprompt": "display_data'TutorialExpandText'",
+                        "inputaction": "action_ui_expand_tutorial",
+                        "displaytimeinsec": "12.000000",
+                        "header": "ui_globals, EF9838444706BC5DE4D62592A8071A85, Substation Control",
+                        "text": "ui_globals, CD6F198D41B2E494273F9AB2ECF324B4, All substation switches have been activated. Check the map to look for the final location."
+                      },
+                      "expandedtutorialdef": {
+                        "message_type": "Tutorial",
+                        "bannerimage": "Asset'/Game/DLC/Harmonica/uiresources/ui_art_tutorial_images/Tutorial_SubstationFinal.Tutorial_SubstationFinal'",
+                        "inputmappingcontext": "context_ui_expanded_tutorial",
+                        "buttonprompt": "display_data'CloseText'",
+                        "inputaction": "action_ui_close_tutorial",
+                        "header": "ui_globals, 7DB9A91B44C5B2ADD49DE2B99731AD81, Substation Control",
+                        "text": "ui_globals, 2CCDB2ED4A1AC3E1047F09AFBB28D2A5, All substation switches have been activated. Check the map to look for the final location."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
       }
     ]
   },
@@ -18166,6 +18753,21 @@
           {
             "unlockable_banjodlc": {
               "unlockable": "Unlockable_BanjoDLC"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "usable_consumer": {
+    "records": [
+      {
+        "entries": [
+          {
+            "default_usable_consumer": {
+              "usable_consumer": "default_usable_consumer",
+              "maxinteractiondistance": "3000.000000",
+              "interactiondistance": "330.000000"
             }
           }
         ]
@@ -19241,6 +19843,44 @@
             }
           },
           {
+            "shield_armor": {
+              "inv_aspect": "shield_armor",
+              "resourcepooldamagegauge": "resourcepool'Shield_Reactive_Armor_Damage'",
+              "armorshielddamagegaugescalar": "0.200000",
+              "armorshieldsegmentlostaudioevent": {
+                "wwiseevent": "audio_event'UI.HUD_Shield_Armor_Segment_Lost'"
+              },
+              "armorshieldsegmentgainedaudioevent": {
+                "wwiseevent": "audio_event'UI.HUD_Shield_Armor_Segment_Gain'"
+              },
+              "armorshieldarmordepletedaudioevent": {
+                "wwiseevent": "audio_event'UI.HUD_Shield_Armor_Lost'"
+              },
+              "armorshielddamagegaugefilledaudioevent": {
+                "wwiseevent": "audio_event'ASB_HUD.ASB_HUD_Shield_Rally_Success'"
+              },
+              "structtype": "Asset'/Script/OakGame.ShieldArmorAspect'",
+              "class": "shield_armor"
+            }
+          },
+          {
+            "shield_health": {
+              "inv_aspect": "shield_health",
+              "resourcepool": "resourcepool'ResourcePool_Player_02_Shield'",
+              "energyshieldbreakaudioevent": {
+                "wwiseevent": "audio_event'UI.HUD_Shield_Energy_Lost'"
+              },
+              "energyshieldrechargestartaudioevent": {
+                "wwiseevent": "audio_event'UI.HUD_Shield_Energy_Recharge'"
+              },
+              "energyshieldrechargefinishaudioevent": {
+                "wwiseevent": "audio_event'UI.HUD_Shield_Energy_Recharge_Full'"
+              },
+              "structtype": "Asset'/Script/OakGame.ShieldHealthAspect'",
+              "class": "shield_health"
+            }
+          },
+          {
             "shield_onscreen_fx": {
               "inv_aspect": "shield_onscreen_fx",
               "shieldbreakfeedback": "feedback'FBData_Shield_Break_Energy'",
@@ -19266,6 +19906,43 @@
               },
               "screeneffect": "Asset'/Game/Common/Effects/Systems/Damage/NS_ScreenEffect_Damage_Shield.NS_ScreenEffect_Damage_Shield'",
               "structtype": "Asset'/Script/OakGame.ShieldOnScreenFXAspect'"
+            }
+          },
+          {
+            "shield_spawn_armor_pickups": {
+              "inv_aspect": "shield_spawn_armor_pickups",
+              "augment": {
+                "structtype": "Asset'/Script/OakGame.InventoryAugmentDef'",
+                "conditionbehaviordef": {
+                  "structtype": "Asset'/Script/OakGame.InventoryAugmentBehaviorDef'",
+                  "functionname": "SpawnInventoryFromCharacter",
+                  "classname": "/Script/OakGame.OakInventoryStatics",
+                  "contextname": "OwnerContext",
+                  "parameters": [
+                    {
+                      "value": {
+                        "type": "String",
+                        "value": "shield_armor_pickup"
+                      }
+                    },
+                    {
+                      "value": {
+                        "type": "String",
+                        "value": "None"
+                      }
+                    }
+                  ]
+                },
+                "targettype": "Enemy",
+                "conditionname": "enemy_kill",
+                "chance": {
+                  "constant": "0.500000",
+                  "datatablevalue": {
+                    "datatable": "gbx_ue_data_table'none'"
+                  }
+                }
+              },
+              "structtype": "Asset'/Script/OakGame.InventoryAugmentAspect'"
             }
           },
           {
@@ -19951,7 +20628,7 @@
             "__dep_entries": [
               {
                 "depTableName": "register",
-                "depTableId": 14,
+                "depTableId": 15,
                 "depIndex": 0,
                 "r_shutdown": {
                   "register": "R_Shutdown"
@@ -19959,7 +20636,7 @@
               },
               {
                 "depTableName": "state",
-                "depTableId": 15,
+                "depTableId": 16,
                 "depIndex": 1,
                 "sms_charging": {
                   "state": "SMS_Charging"
@@ -19967,7 +20644,7 @@
               },
               {
                 "depTableName": "state",
-                "depTableId": 15,
+                "depTableId": 16,
                 "depIndex": 1,
                 "sms_shutdown": {
                   "state": "SMS_Shutdown",
@@ -20083,7 +20760,7 @@
             "__dep_entries": [
               {
                 "depTableName": "register",
-                "depTableId": 14,
+                "depTableId": 15,
                 "depIndex": 0,
                 "r_active": {
                   "register": "R_Active"
@@ -20091,7 +20768,7 @@
               },
               {
                 "depTableName": "register",
-                "depTableId": 14,
+                "depTableId": 15,
                 "depIndex": 0,
                 "r_cancelled": {
                   "register": "R_Cancelled"
@@ -20099,7 +20776,7 @@
               },
               {
                 "depTableName": "register",
-                "depTableId": 14,
+                "depTableId": 15,
                 "depIndex": 0,
                 "r_keepactive": {
                   "register": "R_KeepActive"
@@ -20107,7 +20784,7 @@
               },
               {
                 "depTableName": "register",
-                "depTableId": 14,
+                "depTableId": 15,
                 "depIndex": 0,
                 "r_manualend": {
                   "register": "R_ManualEnd"
@@ -20115,7 +20792,7 @@
               },
               {
                 "depTableName": "register",
-                "depTableId": 14,
+                "depTableId": 15,
                 "depIndex": 0,
                 "r_offline": {
                   "register": "R_Offline"
@@ -20123,7 +20800,7 @@
               },
               {
                 "depTableName": "state",
-                "depTableId": 15,
+                "depTableId": 16,
                 "depIndex": 1,
                 "sms_active": {
                   "state": "SMS_Active",
@@ -20214,7 +20891,7 @@
               },
               {
                 "depTableName": "state",
-                "depTableId": 15,
+                "depTableId": 16,
                 "depIndex": 1,
                 "sms_charging": {
                   "state": "SMS_Charging",
@@ -20239,7 +20916,7 @@
               },
               {
                 "depTableName": "state",
-                "depTableId": 15,
+                "depTableId": 16,
                 "depIndex": 1,
                 "sms_offline": {
                   "state": "SMS_Offline",
@@ -20349,7 +21026,7 @@
             "__dep_entries": [
               {
                 "depTableName": "register",
-                "depTableId": 14,
+                "depTableId": 15,
                 "depIndex": 0,
                 "r_activated": {
                   "register": "R_Activated"
@@ -20357,7 +21034,7 @@
               },
               {
                 "depTableName": "register",
-                "depTableId": 14,
+                "depTableId": 15,
                 "depIndex": 0,
                 "r_active": {
                   "register": "R_Active"
@@ -20365,7 +21042,7 @@
               },
               {
                 "depTableName": "register",
-                "depTableId": 14,
+                "depTableId": 15,
                 "depIndex": 0,
                 "r_active_modea": {
                   "register": "R_Active_ModeA"
@@ -20373,7 +21050,7 @@
               },
               {
                 "depTableName": "register",
-                "depTableId": 14,
+                "depTableId": 15,
                 "depIndex": 0,
                 "r_cancelled": {
                   "register": "R_Cancelled"
@@ -20381,7 +21058,7 @@
               },
               {
                 "depTableName": "register",
-                "depTableId": 14,
+                "depTableId": 15,
                 "depIndex": 0,
                 "r_ended": {
                   "register": "R_Ended"
@@ -20389,7 +21066,7 @@
               },
               {
                 "depTableName": "register",
-                "depTableId": 14,
+                "depTableId": 15,
                 "depIndex": 0,
                 "r_failuretoactivate": {
                   "register": "R_FailureToActivate"
@@ -20397,7 +21074,7 @@
               },
               {
                 "depTableName": "register",
-                "depTableId": 14,
+                "depTableId": 15,
                 "depIndex": 0,
                 "r_keepactive": {
                   "register": "R_KeepActive"
@@ -20405,7 +21082,7 @@
               },
               {
                 "depTableName": "register",
-                "depTableId": 14,
+                "depTableId": 15,
                 "depIndex": 0,
                 "r_manualend": {
                   "register": "R_ManualEnd"
@@ -20413,7 +21090,7 @@
               },
               {
                 "depTableName": "register",
-                "depTableId": 14,
+                "depTableId": 15,
                 "depIndex": 0,
                 "r_offline": {
                   "register": "R_Offline"
@@ -20421,7 +21098,7 @@
               },
               {
                 "depTableName": "register",
-                "depTableId": 14,
+                "depTableId": 15,
                 "depIndex": 0,
                 "r_performending": {
                   "register": "R_PerformEnding"
@@ -20429,7 +21106,7 @@
               },
               {
                 "depTableName": "register",
-                "depTableId": 14,
+                "depTableId": 15,
                 "depIndex": 0,
                 "r_shutdown": {
                   "register": "R_Shutdown"
@@ -20437,7 +21114,7 @@
               },
               {
                 "depTableName": "state",
-                "depTableId": 15,
+                "depTableId": 16,
                 "depIndex": 1,
                 "sms_active": {
                   "state": "SMS_Active",
@@ -20531,7 +21208,7 @@
               },
               {
                 "depTableName": "state",
-                "depTableId": 15,
+                "depTableId": 16,
                 "depIndex": 1,
                 "sms_active_modea": {
                   "state": "SMS_Active_ModeA",
@@ -20608,7 +21285,7 @@
               },
               {
                 "depTableName": "state",
-                "depTableId": 15,
+                "depTableId": 16,
                 "depIndex": 1,
                 "sms_active_modeb": {
                   "state": "SMS_Active_ModeB",
@@ -20683,7 +21360,7 @@
               },
               {
                 "depTableName": "state",
-                "depTableId": 15,
+                "depTableId": 16,
                 "depIndex": 1,
                 "sms_coolingdown": {
                   "state": "SMS_CoolingDown",
@@ -20707,7 +21384,7 @@
               },
               {
                 "depTableName": "state",
-                "depTableId": 15,
+                "depTableId": 16,
                 "depIndex": 1,
                 "sms_ending": {
                   "state": "SMS_Ending",
@@ -20765,7 +21442,7 @@
               },
               {
                 "depTableName": "state",
-                "depTableId": 15,
+                "depTableId": 16,
                 "depIndex": 1,
                 "sms_offline": {
                   "state": "SMS_Offline",
@@ -20786,7 +21463,7 @@
               },
               {
                 "depTableName": "state",
-                "depTableId": 15,
+                "depTableId": 16,
                 "depIndex": 1,
                 "sms_ready": {
                   "state": "SMS_Ready",
@@ -20872,7 +21549,7 @@
             "__dep_entries": [
               {
                 "depTableName": "register",
-                "depTableId": 14,
+                "depTableId": 15,
                 "depIndex": 0,
                 "r_bulletbuddy": {
                   "register": "R_BulletBuddy"
@@ -20880,7 +21557,7 @@
               },
               {
                 "depTableName": "register",
-                "depTableId": 14,
+                "depTableId": 15,
                 "depIndex": 0,
                 "r_conduit": {
                   "register": "R_Conduit"
@@ -20888,7 +21565,7 @@
               },
               {
                 "depTableName": "register",
-                "depTableId": 14,
+                "depTableId": 15,
                 "depIndex": 0,
                 "r_hias": {
                   "register": "R_HIAS"
@@ -20896,7 +21573,7 @@
               },
               {
                 "depTableName": "register",
-                "depTableId": 14,
+                "depTableId": 15,
                 "depIndex": 0,
                 "r_missileflurry": {
                   "register": "R_MissileFlurry"
@@ -20904,7 +21581,7 @@
               },
               {
                 "depTableName": "register",
-                "depTableId": 14,
+                "depTableId": 15,
                 "depIndex": 0,
                 "r_missileflurryend": {
                   "register": "R_MissileFlurryEnd"
@@ -20912,7 +21589,7 @@
               },
               {
                 "depTableName": "register",
-                "depTableId": 14,
+                "depTableId": 15,
                 "depIndex": 0,
                 "r_psd_deployed": {
                   "register": "R_PSD_Deployed"
@@ -20920,7 +21597,7 @@
               },
               {
                 "depTableName": "register",
-                "depTableId": 14,
+                "depTableId": 15,
                 "depIndex": 0,
                 "r_psd_deploying": {
                   "register": "R_PSD_Deploying"
@@ -20928,7 +21605,7 @@
               },
               {
                 "depTableName": "state",
-                "depTableId": 15,
+                "depTableId": 16,
                 "depIndex": 1,
                 "sms_bulletbuddy": {
                   "state": "SMS_BulletBuddy",
@@ -20966,7 +21643,7 @@
               },
               {
                 "depTableName": "state",
-                "depTableId": 15,
+                "depTableId": 16,
                 "depIndex": 1,
                 "sms_conduit": {
                   "state": "SMS_Conduit",
@@ -21004,7 +21681,7 @@
               },
               {
                 "depTableName": "state",
-                "depTableId": 15,
+                "depTableId": 16,
                 "depIndex": 1,
                 "sms_hias_coolingdown": {
                   "state": "SMS_HIAS_CoolingDown",
@@ -21023,7 +21700,7 @@
               },
               {
                 "depTableName": "state",
-                "depTableId": 15,
+                "depTableId": 16,
                 "depIndex": 1,
                 "sms_hias_ready": {
                   "state": "SMS_HIAS_Ready",
@@ -21048,7 +21725,7 @@
               },
               {
                 "depTableName": "state",
-                "depTableId": 15,
+                "depTableId": 16,
                 "depIndex": 1,
                 "sms_missileflurry": {
                   "state": "SMS_MissileFlurry",
@@ -21080,7 +21757,7 @@
               },
               {
                 "depTableName": "state",
-                "depTableId": 15,
+                "depTableId": 16,
                 "depIndex": 1,
                 "sms_psd_deployed": {
                   "state": "SMS_PSD_Deployed",
@@ -21106,7 +21783,7 @@
               },
               {
                 "depTableName": "state",
-                "depTableId": 15,
+                "depTableId": 16,
                 "depIndex": 1,
                 "sms_psd_deploying": {
                   "state": "SMS_PSD_Deploying",
@@ -21139,7 +21816,7 @@
               },
               {
                 "depTableName": "state",
-                "depTableId": 15,
+                "depTableId": 16,
                 "depIndex": 1,
                 "sms_ready": {
                   "state": "SMS_Ready",
@@ -21202,7 +21879,7 @@
             "__dep_entries": [
               {
                 "depTableName": "register",
-                "depTableId": 14,
+                "depTableId": 15,
                 "depIndex": 0,
                 "r_abort": {
                   "register": "R_Abort"
@@ -21210,7 +21887,7 @@
               },
               {
                 "depTableName": "state",
-                "depTableId": 15,
+                "depTableId": 16,
                 "depIndex": 1,
                 "sms_active": {
                   "state": "SMS_Active",
@@ -21262,7 +21939,7 @@
               },
               {
                 "depTableName": "state",
-                "depTableId": 15,
+                "depTableId": 16,
                 "depIndex": 1,
                 "sms_cancelled": {
                   "state": "SMS_Cancelled",
@@ -21282,7 +21959,7 @@
               },
               {
                 "depTableName": "state",
-                "depTableId": 15,
+                "depTableId": 16,
                 "depIndex": 1,
                 "sms_ended": {
                   "state": "SMS_Ended"
@@ -21290,7 +21967,7 @@
               },
               {
                 "depTableName": "state",
-                "depTableId": 15,
+                "depTableId": 16,
                 "depIndex": 1,
                 "sms_inperpetuity": {
                   "state": "SMS_InPerpetuity",
@@ -21339,7 +22016,7 @@
               },
               {
                 "depTableName": "state",
-                "depTableId": 15,
+                "depTableId": 16,
                 "depIndex": 1,
                 "sms_notargets": {
                   "state": "SMS_NoTargets",
@@ -21365,7 +22042,7 @@
               },
               {
                 "depTableName": "state",
-                "depTableId": 15,
+                "depTableId": 16,
                 "depIndex": 1,
                 "sms_particlediffuser": {
                   "state": "SMS_ParticleDiffuser",
@@ -21427,7 +22104,7 @@
               },
               {
                 "depTableName": "state",
-                "depTableId": 15,
+                "depTableId": 16,
                 "depIndex": 1,
                 "sms_starting": {
                   "state": "SMS_Starting",
@@ -21467,7 +22144,7 @@
             "__dep_entries": [
               {
                 "depTableName": "register",
-                "depTableId": 14,
+                "depTableId": 15,
                 "depIndex": 0,
                 "r_deployed": {
                   "register": "R_Deployed"
@@ -21475,7 +22152,7 @@
               },
               {
                 "depTableName": "register",
-                "depTableId": 14,
+                "depTableId": 15,
                 "depIndex": 0,
                 "r_failedtodeploy": {
                   "register": "R_FailedToDeploy"
@@ -21483,7 +22160,7 @@
               },
               {
                 "depTableName": "register",
-                "depTableId": 14,
+                "depTableId": 15,
                 "depIndex": 0,
                 "r_pickup": {
                   "register": "R_Pickup"
@@ -21491,7 +22168,7 @@
               },
               {
                 "depTableName": "register",
-                "depTableId": 14,
+                "depTableId": 15,
                 "depIndex": 0,
                 "r_specialaction": {
                   "register": "R_SpecialAction"
@@ -21499,7 +22176,7 @@
               },
               {
                 "depTableName": "register",
-                "depTableId": 14,
+                "depTableId": 15,
                 "depIndex": 0,
                 "r_superposition": {
                   "register": "R_Superposition"
@@ -21507,7 +22184,7 @@
               },
               {
                 "depTableName": "register",
-                "depTableId": 14,
+                "depTableId": 15,
                 "depIndex": 0,
                 "r_totaldeployed": {
                   "register": "R_TotalDeployed"
@@ -21515,7 +22192,7 @@
               },
               {
                 "depTableName": "state",
-                "depTableId": 15,
+                "depTableId": 16,
                 "depIndex": 1,
                 "s_deployed": {
                   "state": "S_Deployed",
@@ -21670,7 +22347,7 @@
               },
               {
                 "depTableName": "state",
-                "depTableId": 15,
+                "depTableId": 16,
                 "depIndex": 1,
                 "s_deployed_oncooldown": {
                   "state": "S_Deployed_OnCooldown",
@@ -21756,7 +22433,7 @@
               },
               {
                 "depTableName": "state",
-                "depTableId": 15,
+                "depTableId": 16,
                 "depIndex": 1,
                 "s_deploying": {
                   "state": "S_Deploying",
@@ -21841,7 +22518,7 @@
               },
               {
                 "depTableName": "state",
-                "depTableId": 15,
+                "depTableId": 16,
                 "depIndex": 1,
                 "s_error": {
                   "state": "S_Error"
@@ -21849,7 +22526,7 @@
               },
               {
                 "depTableName": "state",
-                "depTableId": 15,
+                "depTableId": 16,
                 "depIndex": 1,
                 "s_failedtodeploy": {
                   "state": "S_FailedToDeploy",
@@ -21880,7 +22557,7 @@
               },
               {
                 "depTableName": "state",
-                "depTableId": 15,
+                "depTableId": 16,
                 "depIndex": 1,
                 "s_preparing": {
                   "state": "S_Preparing",
@@ -21909,7 +22586,7 @@
               },
               {
                 "depTableName": "state",
-                "depTableId": 15,
+                "depTableId": 16,
                 "depIndex": 1,
                 "s_ready": {
                   "state": "S_Ready",
@@ -22591,7 +23268,6 @@
                   },
                   "unique_rewards": [
                     "pgraph.sdu_upgrades.RepKit_Slot",
-                    "Reward_Vehicle_Grazer",
                     "Reward_HoverDrive_Jakobs_01",
                     "pgraph.sdu_upgrades.Weapon_Slot_04",
                     "pgraph.sdu_upgrades.Weapon_Slot_03"
@@ -22631,6 +23307,11 @@
                   "cowbell_challenges": {
                     "characters": {
                       "robodealer_levelup": "13"
+                    }
+                  },
+                  "harmonica_challenges": {
+                    "dlc2_characters": {
+                      "corpohacker_levelup": "13"
                     }
                   },
                   "challenge": {
@@ -22893,7 +23574,7 @@
                   }
                 },
                 "gbx_discovery_pg": {
-                  "dlblob": "DLMD_World_P_PoAActor_UAID_02504100000187D401_1882517809:2:DLMD_World_P_PoAActor_UAID_047C1619B44AA00302_1687647825:2:DLMD_World_P_PoAActor_UAID_04922658D4A791C201_1271147543:2:DLMD_World_P_FastTravelStation_UAID_04922658D4A761E201_1194967919:2:DLMD_World_P_FastTravelStationObject_UAID_64D69A64CE76FE7901_1755073639:2:DLMD_World_P_FastTravelStationObject_UAID_907841CAD8650E4A02_1592825107:2:DLMD_World_P_FastTravelStation_UAID_7C10C93FFF14701F02_1862572944:2:DLMD_World_P_FastTravelStationObject_UAID_64D69A64CE76FF7901_2107426819:2:"
+                  "dlblob": "DLMD_World_P_PoAActor_UAID_02504100000187D401_1882517809:2:DLMD_World_P_PoAActor_UAID_047C1619B44AA00302_1687647825:2:DLMD_World_P_PoAActor_UAID_04922658D4A791C201_1271147543:2:DLMD_World_P_LevelTravelStationObject_UAID_CUSTOM_DLC_DLC1:2:DLMD_Cowbell_P_LevelTravelStationObject_UAID_089204DCF69B76B202_1398394236:2:DLMD_World_P_FastTravelStationObject_UAID_64D69A64CE76FE7901_1755073639:2:DLMD_World_P_FastTravelStationObject_UAID_907841CAD8650E4A02_1592825107:2:DLMD_Cowbell_P_FastTravelStationObject_UAID_089204DCF69BDEB502_1396694717:2:"
                 }
               }
             }
@@ -23060,6 +23741,11 @@
                   "cowbell_challenges": {
                     "characters": {
                       "robodealer_levelup": "30"
+                    }
+                  },
+                  "harmonica_challenges": {
+                    "dlc2_characters": {
+                      "corpohacker_levelup": "30"
                     }
                   },
                   "challenge": {
@@ -23523,7 +24209,7 @@
                   }
                 },
                 "gbx_discovery_pg": {
-                  "dlblob": "DLMD_World_P_PoAActor_UAID_02504100000187D401_1882517809:2:DLMD_World_P_PoAActor_UAID_02504100000113ED01_1588318775:2:DLMD_World_P_PoAActor_UAID_0250410000015FED01_1875042151:2:DLMD_World_P_PoAActor_UAID_047C1619B44AA00302_1687647825:2:DLMD_World_P_PoAActor_UAID_04922658D4A791C201_1271147543:2:DLMD_World_P_IO_PointOfInterest_UAID_025041000001256002_1337117384:2:DLMD_World_P_CarryableObjectContainer_UAID_08BFB89AE7C85D2802_1684482113:2:DLMD_World_P_IO_LostCapsule_DecryptStation_UAID_047C1619B44AA00302_1861225831:2:DLMD_World_P_IO_LostCapsule_DecryptStation_UAID_089204DCF7EF290002_1402034712:2:DLMD_World_P_IO_LostCapsule_DecryptStation_UAID_089204DCF7EF2B0002_1667303070:2:DLMD_World_P_IO_LostCapsule_DecryptStation_UAID_089204DCF7EF2D0002_1947412430:2:DLMD_World_P_IO_LostCapsule_DecryptStation_UAID_089204DCF7EF54FE01_1960602211:2:DLMD_World_P_IO_LostCapsule_DecryptStation_UAID_089204DCF7EFAD0F02_1616494078:2:DLMD_World_P_IO_LostCapsule_DecryptStation_UAID_089204DCF7EFC61D02_2081124994:2:DLMD_World_P_IO_LostCapsule_DecryptStation_UAID_08BFB89AE7C8082402_2027277924:2:DLMD_World_P_IO_LostCapsule_DecryptStation_UAID_08BFB89AE7C87C2302_1968194374:2:DLMD_World_P_IO_LostCapsule_DecryptStation_UAID_244BFE96422DF40F02_1726095288:2:DLMD_World_P_IO_LostCapsule_DecryptStation_UAID_5811224CB628B30F02_1893911891:2:DLMD_World_P_IO_LostCapsule_DecryptStation_UAID_5811224CB628B30F02_1955619892:2:DLMD_World_P_IO_LostCapsule_DecryptStation_UAID_D843AE5FAC6A091E02_1526421768:2:DLMD_World_P_IO_LostCapsule_DecryptStation_UAID_D843AE5FAC6ABC2302_1462881555:2:DLMD_World_P_IO_LostCapsule_DecryptStation_UAID_E04F43E63017481F02_1231511914:2:DLMD_World_P_IO_LostCapsule_DecryptStation_UAID_E04F43E6DF41E21A02_1097913731:2:DLMD_World_P_LevelTravelStationObject_UAID_64D69A64CE76297D01_1630823376:2:DLMD_World_P_LevelTravelStationObject_UAID_64D69A64CE76297D01_1924121378:2:DLMD_World_P_LevelTravelStationObject_UAID_64D69A64CE76297D01_2045164380:2:DLMD_World_P_LevelTravelStationObject_UAID_025041000001617C02_1144379513:2:DLMD_World_P_LevelTravelStationObject_UAID_2CF05D100364712D02_1502694903:2:DLMD_World_P_LevelTravelStation_UAID_E04F43E6DB331B8E01_1561982867:2:DLMD_Fortress_Grasslands_P_LevelTravelStationObject_UAID_04D9F52032D5F18001_1882045875:2:DLMD_Fortress_Mountains_P_LevelTravelStationObject_UAID_B04F1307B522318101_1552810512:2:DLMD_Fortress_Shatteredlands_P_LevelTravelStationObject_UAID_025041000001609501_1620023403:2:DLMD_Elpis_P_LevelTravelStationObject_UAID_08BFB89AE7C8F26602_1817662799:2:DLMD_UpperCity_P_LevelTravelStationObject_UAID_64D69A64CE768B8C01_2092729463:2:DLMD_World_P_FastTravelStation_UAID_04922658D4A761E201_1194967919:2:DLMD_World_P_FastTravelStationObject_UAID_64D69A64CE76FE7901_1755073639:2:DLMD_World_P_FastTravelStationObject_UAID_907841CAD8650E4A02_1592825107:2:DLMD_World_P_FastTravelStation_UAID_7C10C93FFF14701F02_1862572944:2:DLMD_World_P_FastTravelStationObject_UAID_64D69A64CE76FF7901_2107426819:2:DLMD_World_P_FastTravelStationObject_UAID_64D69A64CE76017A01_1720532183:2:DLMD_World_P_FastTravelStationObject_UAID_64D69A64CE76087A01_1645300414:2:DLMD_World_P_FastTravelStationObject_UAID_2CF05D1003644A6102_1381889951:2:DLMD_World_P_FastTravelStationObject_UAID_089204DCF69B9F1B02_1667512991:2:DLMD_World_P_FastTravelStationObject_UAID_64D69A64CE76087A01_1202798410:2:DLMD_World_P_FastTravelStationObject_UAID_64D69A64CE76077A01_1929442228:2:DLMD_World_P_FastTravelStationObject_UAID_E04F43E6DB3946D201_1271129239:2:DLMD_World_P_FastTravelStation_UAID_E04F43E6DF415C4502_1132289554:2:DLMD_World_P_FastTravelStationObject_UAID_244BFE96417DD12702_1521581463:2:DLMD_World_P_FastTravelStationObject_UAID_047C164D0C215D4502_1408312727:2:DLMD_Fortress_Grasslands_P_FastTravelStationObject_UAID_2CF05D10036413E601_1711602384:2:DLMD_Fortress_Mountains_P_FastTravelStationObject_UAID_0250410000015B9501_1846435520:2:DLMD_Fortress_Shatteredlands_P_FastTravelStationObject_UAID_025041000001609501_1315293402:2:DLMD_Elpis_P_FastTravelStationObject_UAID_E04F43E6DB33FBFD01_1267828511:2:DLMD_UpperCity_P_FastTravelStationObject_UAID_047BCBA534EAC07002_2081382559:2:DLMD_UpperCity_P_FastTravelStationObject_UAID_E04F43E63017674902_2010716712:2:"
+                  "dlblob": "DLMD_World_P_PoAActor_UAID_02504100000187D401_1882517809:2:DLMD_World_P_PoAActor_UAID_02504100000113ED01_1588318775:2: DLMD_World_P_PoAActor_UAID_0250410000015FED01_1875042151:2: DLMD_World_P_PoAActor_UAID_047C1619B44AA00302_1687647825:2:DLMD_World_P_PoAActor_UAID_04922658D4A791C201_1271147543:2:DLMD_World_P_LevelTravelStationObject_UAID_64D69A64CE76297D01_1630823376:2:DLMD_World_P_LevelTravelStationObject_UAID_64D69A64CE76297D01_1924121378:2:DLMD_World_P_LevelTravelStationObject_UAID_64D69A64CE76297D01_2045164380:2:DLMD_World_P_LevelTravelStationObject_UAID_025041000001617C02_1144379513:2:DLMD_World_P_LevelTravelStationObject_UAID_2CF05D100364712D02_1502694903:2:DLMD_World_P_LevelTravelStation_UAID_E04F43E6DB331B8E01_1561982867:2:DLMD_Fortress_Grasslands_P_LevelTravelStationObject_UAID_04D9F52032D5F18001_1882045875:2:DLMD_Fortress_Mountains_P_LevelTravelStationObject_UAID_B04F1307B522318101_1552810512:2:DLMD_Fortress_Shatteredlands_P_LevelTravelStationObject_UAID_025041000001609501_1620023403:2:DLMD_Elpis_P_LevelTravelStationObject_UAID_08BFB89AE7C8F26602_1817662799:2:DLMD_UpperCity_P_LevelTravelStationObject_UAID_64D69A64CE768B8C01_2092729463:2:DLMD_World_P_FastTravelStationObject_UAID_64D69A64CE76FE7901_1755073639:2:DLMD_World_P_FastTravelStationObject_UAID_907841CAD8650E4A02_1592825107:2:DLMD_World_P_FastTravelStationObject_UAID_64D69A64CE76087A01_1645300414:2:DLMD_World_P_FastTravelStationObject_UAID_2CF05D1003644A6102_1381889951:2:DLMD_World_P_FastTravelStationObject_UAID_64D69A64CE76087A01_1202798410:2:DLMD_World_P_FastTravelStationObject_UAID_64D69A64CE76077A01_1929442228:2:DLMD_World_P_FastTravelStationObject_UAID_E04F43E6DB3946D201_1271129239:2:DLMD_World_P_FastTravelStation_UAID_E04F43E6DF415C4502_1132289554:2:DLMD_World_P_FastTravelStationObject_UAID_244BFE96417DD12702_1521581463:2:DLMD_World_P_FastTravelStationObject_UAID_047C164D0C215D4502_1408312727:2:DLMD_Fortress_Grasslands_P_FastTravelStationObject_UAID_2CF05D10036413E601_1711602384:2:DLMD_Fortress_Mountains_P_FastTravelStationObject_UAID_0250410000015B9501_1846435520:2:DLMD_Fortress_Shatteredlands_P_FastTravelStationObject_UAID_025041000001609501_1315293402:2:DLMD_Elpis_P_FastTravelStationObject_UAID_E04F43E6DB33FBFD01_1267828511:2:DLMD_UpperCity_P_FastTravelStationObject_UAID_047BCBA534EAC07002_2081382559:2:DLMD_UpperCity_P_FastTravelStationObject_UAID_E04F43E63017674902_2010716712:2:DLMD_World_P_IO_PointOfInterest_UAID_025041000001256002_1337117384:2:DLMD_World_P_CarryableObjectContainer_UAID_08BFB89AE7C85D2802_1684482113:2:DLMD_World_P_IO_LostCapsule_DecryptStation_UAID_047C1619B44AA00302_1861225831:2:DLMD_World_P_IO_LostCapsule_DecryptStation_UAID_089204DCF7EF290002_1402034712:2:DLMD_World_P_IO_LostCapsule_DecryptStation_UAID_089204DCF7EF2B0002_1667303070:2:DLMD_World_P_IO_LostCapsule_DecryptStation_UAID_089204DCF7EF2D0002_1947412430:2:DLMD_World_P_IO_LostCapsule_DecryptStation_UAID_089204DCF7EF54FE01_1960602211:2:DLMD_World_P_IO_LostCapsule_DecryptStation_UAID_089204DCF7EFAD0F02_1616494078:2:DLMD_World_P_IO_LostCapsule_DecryptStation_UAID_089204DCF7EFC61D02_2081124994:2:DLMD_World_P_IO_LostCapsule_DecryptStation_UAID_08BFB89AE7C8082402_2027277924:2:DLMD_World_P_IO_LostCapsule_DecryptStation_UAID_08BFB89AE7C87C2302_1968194374:2:DLMD_World_P_IO_LostCapsule_DecryptStation_UAID_244BFE96422DF40F02_1726095288:2:DLMD_World_P_IO_LostCapsule_DecryptStation_UAID_5811224CB628B30F02_1893911891:2:DLMD_World_P_IO_LostCapsule_DecryptStation_UAID_5811224CB628B30F02_1955619892:2:DLMD_World_P_IO_LostCapsule_DecryptStation_UAID_D843AE5FAC6A091E02_1526421768:2:DLMD_World_P_IO_LostCapsule_DecryptStation_UAID_D843AE5FAC6ABC2302_1462881555:2:DLMD_World_P_IO_LostCapsule_DecryptStation_UAID_E04F43E63017481F02_1231511914:2:DLMD_World_P_IO_LostCapsule_DecryptStation_UAID_E04F43E6DF41E21A02_1097913731:2:"
                 }
               }
             }
@@ -23613,6 +24299,442 @@
             }
           }
         ]
+      },
+      {
+        "entries": [
+          {
+            "skiptodlc_harmonica": {
+              "profile_default": "SkipToDLC_Harmonica",
+              "default_data": {
+                "state": {
+                  "vault_hunter": "false",
+                  "experience": [
+                    {
+                      "type": "Character",
+                      "level": "13",
+                      "points": "79460"
+                    }
+                  ],
+                  "inventory": {
+                    "items": {
+                      "backpack": {
+                        "slot_0": {
+                          "serial": "@UgbV{rFoFnUHG%%33bm+5okMM^4(b-F90C",
+                          "state_flags": "1"
+                        },
+                        "slot_1": {
+                          "serial": "@UgxFw!38oQYa7IvQRG/(Pshp@y%/Z1+twQBOr9;g_00",
+                          "flags": "1",
+                          "state_flags": "1"
+                        },
+                        "slot_2": {
+                          "serial": "@Uge8dvm/z+a#=`*}s!->94FC",
+                          "flags": "1",
+                          "state_flags": "1"
+                        },
+                        "slot_3": {
+                          "serial": "@Uge8>*m/z+aCf@=LsuB",
+                          "flags": "1",
+                          "state_flags": "1"
+                        },
+                        "slot_4": {
+                          "serial": "@Ugr$oHm/z+aCPoGwst^",
+                          "flags": "1",
+                          "state_flags": "1"
+                        },
+                        "slot_5": {
+                          "serial": "@Ugydj=38oQYDu2*uRG/))s74JPdQ?f&NmQrupiZH3q57eQ2mk",
+                          "flags": "1"
+                        },
+                        "slot_6": {
+                          "serial": "@Ugv4Ng38oQYJQq-CR65k69(513sWqrosG0}"
+                        },
+                        "slot_7": {
+                          "serial": "@Ugvelk38oQYZZA-1RG/`es7KXAb!rZ(7HS--9I74y",
+                          "flags": "1"
+                        },
+                        "slot_8": {
+                          "serial": "@UgcJizFpUT!dxAov3U#PNMQSGMQf*LsP`^;?5C",
+                          "flags": "1",
+                          "state_flags": "1"
+                        }
+                      }
+                    },
+                    "equipped_inventory": {
+                      "equipped": {
+                        "slot_1": [
+                          {
+                            "serial": "@UgxFw!38oQYa7IvQRG/(Pshp@y%/Z1+twQBOr9;g_00",
+                            "flags": "1",
+                            "state_flags": "1"
+                          }
+                        ],
+                        "slot_6": [
+                          {
+                            "serial": "@Uge8dvm/z+a#=`*}s!->94FC",
+                            "flags": "1",
+                            "state_flags": "1"
+                          }
+                        ],
+                        "slot_5": [
+                          {
+                            "serial": "@Uge8>*m/z+aCf@=LsuB",
+                            "flags": "1",
+                            "state_flags": "1"
+                          }
+                        ],
+                        "slot_4": [
+                          {
+                            "serial": "@Ugr$oHm/z+aCPoGwst^",
+                            "flags": "1",
+                            "state_flags": "1"
+                          }
+                        ],
+                        "slot_2": [
+                          {
+                            "serial": "@Ugydj=38oQYDu2*uRG/))s74JPdQ?f&NmQrupiZH3q57eQ2mk",
+                            "flags": "1"
+                          }
+                        ],
+                        "slot_3": [
+                          {
+                            "serial": "@Ugvelk38oQYZZA-1RG/`es7KXAb!rZ(7HS--9I74y",
+                            "flags": "1"
+                          }
+                        ],
+                        "slot_0": [
+                          {
+                            "serial": "@UgcJizFpUT!dxAov3U#PNMQSGMQf*LsP`^;?5C",
+                            "flags": "1",
+                            "state_flags": "1"
+                          }
+                        ]
+                      }
+                    },
+                    "equip_slots_unlocked": [
+                      "2",
+                      "3",
+                      "6"
+                    ],
+                    "active_slot": "0"
+                  },
+                  "unique_rewards": [
+                    "pgraph.sdu_upgrades.RepKit_Slot",
+                    "Reward_HoverDrive_Jakobs_01",
+                    "pgraph.sdu_upgrades.Weapon_Slot_04",
+                    "pgraph.sdu_upgrades.Weapon_Slot_03"
+                  ],
+                  "currencies": {
+                    "eridium": "40",
+                    "cash": "20000"
+                  },
+                  "personal_vehicle": "PV_Grazer",
+                  "hover_drive": "HoverDrive_Jakobs_03",
+                  "ammo": {
+                    "assaultrifle": "280",
+                    "pistol": "200",
+                    "shotgun": "80",
+                    "smg": "360",
+                    "sniper": "50",
+                    "repairkit": "10"
+                  },
+                  "checkpoint_name": "Harmonica_P.LTS_HarmonicaToSanctuary",
+                  "world_region_name": "Harmonica"
+                },
+                "globals": {
+                  "time_of_day": "Morning",
+                  "movegrant_grapplegrabber": "TRUE",
+                  "prologue_completed": "TRUE",
+                  "movegrant_echolocation": "TRUE",
+                  "worldchange_has_sight": "FALSE",
+                  "repkit_unlocked": "TRUE",
+                  "movegrant_glide": "TRUE",
+                  "player_skipped_to_dlc": "TRUE",
+                  "any_hover_drive_unlocked": "TRUE"
+                },
+                "stats": {
+                  "achievements": {
+                    "00_level_10": "1"
+                  },
+                  "cowbell_challenges": {
+                    "characters": {
+                      "robodealer_levelup": "13"
+                    }
+                  },
+                  "harmonica_challenges": {
+                    "dlc2_characters": {
+                      "corpohacker_levelup": "13"
+                    }
+                  },
+                  "challenge": {
+                    "siren_levelup": "13",
+                    "exo_levelup": "13",
+                    "gravitar_levelup": "13",
+                    "paladin_levelup": "13"
+                  },
+                  "openworld": {
+                    "activities": {
+                      "safehouses": {
+                        "safehouse_grasslands_1": "1"
+                      },
+                      "silos": {
+                        "silo_grasslands_1": "1"
+                      }
+                    }
+                  },
+                  "tutorial": {
+                    "climb": "1",
+                    "crouch": "1",
+                    "double_jump": "1",
+                    "grapple": "1",
+                    "ground_pound": "1",
+                    "jump": "1",
+                    "look": "1",
+                    "revive": "1",
+                    "shield": "1",
+                    "walk": "1",
+                    "weapon_fire": "1",
+                    "weapon_reload": "1",
+                    "checkpoints": "1",
+                    "echo_location": "1",
+                    "sdu_tokens": "1",
+                    "vehicle": "1",
+                    "repkit": "1",
+                    "dash": "1",
+                    "glide": "1",
+                    "zonetransition_locked": "1",
+                    "melee": "1",
+                    "activity_safehouse_discovery": "1",
+                    "activity_safehouse_capture": "1",
+                    "activity_silo_discovery": "1",
+                    "activity_silo_capture": "1"
+                  }
+                },
+                "missions": {
+                  "tracked_missions": [
+                    "mission_main_harmonica1"
+                  ],
+                  "local_sets": {
+                    "missionset_main_prisonprologue": {
+                      "status": "completed",
+                      "missions": {
+                        "mission_main_prisonprologue": {
+                          "ui_flags": "1",
+                          "status": "completed",
+                          "final": {
+                            "obj_firstswim_endstate": "completed"
+                          }
+                        }
+                      }
+                    },
+                    "missionset_main_beach": {
+                      "status": "completed",
+                      "missions": {
+                        "mission_main_beach": {
+                          "ui_flags": "1",
+                          "status": "completed",
+                          "final": {
+                            "melee_the_door_0_endstate": "completed",
+                            "reach_village_endstate": "completed",
+                            "use_glide_to_reach_exit_endstate": "completed",
+                            "destroy_bolt_1_endstate": "completed",
+                            "destroy_bolt_3_endstate": "deactivated",
+                            "destroy_bolt_2_endstate": "deactivated",
+                            "activate__cl4ptps_safehouse_endstate": "completed"
+                          }
+                        }
+                      }
+                    },
+                    "missionset_zoneactivity_safehouse": {
+                      "missions": {
+                        "zoneactivity_grasslands_safehousemain": {
+                          "ui_flags": "1",
+                          "status": "completed",
+                          "final": {
+                            "fact_lightson": "TRUE",
+                            "find_the_datapad_endstate": "completed",
+                            "claim_the_command_console_endstate": "completed"
+                          }
+                        }
+                      }
+                    },
+                    "missionset_zoneactivity_silo": {
+                      "missions": {
+                        "zoneactivity_grasslands_silo1": {
+                          "status": "Active",
+                          "objectives": {
+                            "claim_the_command_console": {
+                              "status": "Active"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "missionset_main_grasslands1": {
+                      "status": "completed",
+                      "missions": {
+                        "mission_main_grasslands1": {
+                          "ui_flags": "1",
+                          "status": "completed",
+                          "final": {
+                            "meet_nudge_endstate": "completed",
+                            "commander_holo_tracker_endstate": "completed",
+                            "kill_order_soldiers_endstate": "completed",
+                            "talk_with_conway_endstate": "completed",
+                            "scan_vehicle_endstate": "completed",
+                            "get_close_to_contra_2_endstate": "deactivated",
+                            "get_close_to_contra_1_endstate": "deactivated",
+                            "get_close_to_contra_4_endstate": "deactivated",
+                            "get_close_to_contra_3_endstate": "deactivated",
+                            "reach_the_lieutenant_endstate": "completed",
+                            "return_to_outbounder_hq_endstate": "completed"
+                          }
+                        }
+                      }
+                    },
+                    "missionset_main_grasslands2a": {
+                      "status": "completed",
+                      "missions": {
+                        "mission_main_grasslands2": {
+                          "ui_flags": "1",
+                          "status": "completed",
+                          "final": {
+                            "find_zadra_0_endstate": "completed",
+                            "find_zadra_1_endstate": "completed",
+                            "invis_fast_complete_generator_endstate": "completed",
+                            "enter_slide_quick_complete_endstate": "deactivated",
+                            "find_zadra_endstate": "completed",
+                            "holder_for_timekeeper_vo_finish_endstate": "completed",
+                            "wait_for_zadra_endstate": "completed",
+                            "kill_roof_intro_guys_endstate": "completed",
+                            "kill_synth_reinforcements_invis_tracker_endstate": "deactivated",
+                            "combat_composit_obj_endstate": "deactivated",
+                            "kill_the_gunship_endstate": "completed"
+                          }
+                        }
+                      }
+                    },
+                    "missionset_main_grasslands2b": {
+                      "missions": {
+                        "mission_main_grasslands2b": {
+                          "ui_flags": "1",
+                          "status": "Active",
+                          "objectives": {
+                            "talktozadra": {
+                              "status": "Active"
+                            },
+                            "zadratolabexit": {
+                              "status": "WaitingOnDependencies"
+                            },
+                            "inviszadratalksmore": {
+                              "status": "WaitingOnDependencies"
+                            },
+                            "invisbeckonline": {
+                              "status": "Active"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "missionset_side_grasslandsa": {
+                      "missions": {
+                        "grasslands_side_murdermystery_beckon": {
+                          "status": "Active",
+                          "objectives": {
+                            "encounter_outside_": {
+                              "status": "WaitingOnDependencies"
+                            },
+                            "survivor_calls_for_help": {
+                              "status": "Active"
+                            },
+                            "encounter_not_complete_dialogue_": {
+                              "status": "WaitingOnDependencies"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "missionset_main_mountains1": {
+                      "missions": {
+                        "mission_main_mountains1": {
+                          "ui_flags": "1",
+                          "status": "Active",
+                          "objectives": {
+                            "mtn1_enter_mountain_north": {
+                              "status": "Deactivated_PostFinished"
+                            },
+                            "mtn1_enter_mountain_south": {
+                              "status": "Completed_PostFinished"
+                            },
+                            "mtn1_enter_the_mountain_zone": {
+                              "status": "Completed_PostFinished"
+                            },
+                            "mtn1_arrive_augerhq": {
+                              "status": "Active"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "missionset_main_shatteredlands1": {
+                      "missions": {
+                        "mission_main_shatteredlands1": {
+                          "ui_flags": "1",
+                          "status": "Active",
+                          "objectives": {
+                            "head_to_the_shatteredlands_0": {
+                              "status": "Active"
+                            },
+                            "head_to_the_shatteredlands": {
+                              "status": "Active"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "missionset_main_harmonica0": {
+                      "missions": {
+                        "mission_main_harmonica0": {
+                          "status": "completed"
+                        }
+                      }
+                    },
+                    "missionset_main_harmonica1": {
+                      "missions": {
+                        "mission_main_harmonica1": {
+                          "ui_flags": "1",
+                          "status": "Active",
+                          "objectives": {
+                            "invisarrival": {
+                              "status": "Kickoffing"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "unlockables": {
+                  "unlockable_hoverdrives": {
+                    "entries": [
+                      "Unlockable_HoverDrives.Jakobs_01"
+                    ]
+                  }
+                },
+                "progression": {
+                  "point_pools": {
+                    "characterprogresspoints": "14",
+                    "specializationtokenpool": "0",
+                    "echotokenprogresspoints": "40"
+                  }
+                },
+                "gbx_discovery_pg": {
+                  "dlblob": "DLMD_World_P_PoAActor_UAID_02504100000187D401_1882517809:2:DLMD_World_P_PoAActor_UAID_047C1619B44AA00302_1687647825:2:DLMD_World_P_PoAActor_UAID_04922658D4A791C201_1271147543:2:DLMD_World_P_LevelTravelStationObject_UAID_CUSTOM_DLC_DLC2:2:DLMD_Harmonica_P_LevelTravelStation_UAID_A85E45B5B96E6BD402_1323071200:2:DLMD_World_P_FastTravelStationObject_UAID_64D69A64CE76FE7901_1755073639:2:DLMD_World_P_FastTravelStationObject_UAID_907841CAD8650E4A02_1592825107:2:DLMD_Harmonica_P_FastTravelStation_UAID_A85E45B5B96EEABF02_2108092383:2:"
+                }
+              }
+            }
+          }
+        ]
       }
     ]
   },
@@ -23652,39 +24774,18 @@
             }
           },
           {
-            "dlcdef_cello": {
-              "dlcdef": "DLCDef_Cello",
-              "dlctitle": "DLCInfo, 82F6EEAD4B54EC380ACF18A991ABB5AA, Vault x Hunter",
-              "dlcshorttitle": "DLCInfo, B4A030A04DF46D74FDC86891D913A421, The Stone Demon",
-              "dlcname": "Cello",
-              "dlcdatalayer": "Asset'/Game/GameData/Entitlements/DLC_Cello.DLC_Cello'",
-              "autounlockreward": "rewards'RewardPackage_CelloVehicle'",
+            "dlcdef_vaultcard2": {
+              "dlcdef": "DLCDef_VaultCard2",
+              "dlctitle": "DLCInfo, 6CA5C7144CB9194106BF24872B54F253, Vault x Hunter",
+              "dlcshorttitle": "DLCInfo, A652C4244A428D5E092375A65384BD6D, Vault x Hunter",
+              "dlcname": "VaultCard2",
               "uiclass": "vc2",
-              "entitlementfact": "entitlement.cello.enabled",
-              "steamid": "3802420",
-              "epicstoreid": "borderlands-4-borderlands4-bounty-pack-2-5732d0",
-              "epicentitlementid": "cd5c83a1db224022a69fdd2c6a0d1daa",
-              "sonyid": "BL4BOUNTYPACK200",
-              "microsoftid": "9NJ29Z5BVHLP",
-              "nintendoid": "aoc5",
-              "btravelstationsrequireentitlement": "true",
-              "patchtravelstations": [
-                {
-                  "travelstationdef": "map'World_P.LT_DLC_Cello_Entr'",
-                  "travelobjectdef": "gbxactor'LevelTravelStation_ToDLC_Cello'",
-                  "leveloverride": "37V9L8OT8JSL96W8J8QM5AKVX"
-                }
-              ],
-              "characterbodyactions": [
-                "Asset'/Game/DLC/Cello/PlayerCharacters/_Shared/WeaponAnimation/BodyActions/BodyActions_BOR_SG_Cello.BodyActions_BOR_SG_Cello'"
-              ],
-              "dedicateddroptable": "gbx_ue_data_table'Table_Cello_DedicatedDrops'",
-              "bismatchmakingrelevant": "true",
-              "matchmakingmissionname": "Mission_DLC_Cello",
-              "bisbountypack": "true",
-              "assetstoappend": [
-                "Asset'/Game/DLC/Cello/Gear/Vehicles/Personal/_Shared/Animation/DLC_ASetPicker_PersonalVehicle_Cello.DLC_ASetPicker_PersonalVehicle_Cello'"
-              ]
+              "entitlementfact": "entitlement.vaultcard2.enabled",
+              "steamid": "4602020",
+              "epicstoreid": "borderlands-4-borderlands-4-bounty-pack-2-vault-card-part-2-70fb18",
+              "epicentitlementid": "0fa62b2098554e78ba2d150bd0222ebd",
+              "sonyid": "BL4BOUNTYPACK2B0",
+              "microsoftid": "9PFSXGQ2FLCG"
             }
           },
           {
@@ -23701,11 +24802,54 @@
               "sonyid": "BL4BOUNTYPACK3B0",
               "microsoftid": "9P5JKS1MTHVZ"
             }
+          },
+          {
+            "dlcdef_vaultcard4": {
+              "dlcdef": "DLCDef_VaultCard4",
+              "dlctitle": "DLCInfo, B0B468EB4C29A85B998AE5AFB09F5091, Desert Dreams",
+              "dlcshorttitle": "DLCInfo, 2BE6688F45CC29D3F16DD4BC99D40F3A, Desert Dreams",
+              "dlcname": "VaultCard4",
+              "uiclass": "vc4",
+              "entitlementfact": "entitlement.vaultcard4.enabled",
+              "steamid": "4614360",
+              "epicstoreid": "borderlands-4-borderlands-4-bounty-pack-4-vault-card-part-2-a341a3",
+              "epicentitlementid": "28275a06a4224a2ca6c9babc071cdede",
+              "sonyid": "BL4BOUNTYPACK4B0",
+              "microsoftid": "9N7B2L2ZWG48"
+            }
+          },
+          {
+            "dlcdef_vaultcard5": {
+              "dlcdef": "DLCDef_VaultCard5",
+              "dlctitle": "DLCInfo, 99B9AF2E43EEF67CE93CA3A700A0544B, Warped & Weird",
+              "dlcshorttitle": "DLCInfo, B7CEF38043983ADEC1ECDA847095F02C, Warped & Weird",
+              "dlcname": "VaultCard5",
+              "uiclass": "vc5",
+              "entitlementfact": "entitlement.vaultcard5.enabled",
+              "steamid": "4614380",
+              "epicstoreid": "borderlands-4-borderlands-4-bounty-pack-5-vault-card-part-2-c64606",
+              "epicentitlementid": "ce4f25e053ef413d9510ecbccebdee0a",
+              "sonyid": "BL4BOUNTYPACK5B0",
+              "microsoftid": "9PBJWXS5PTWS"
+            }
           }
         ]
       },
       {
         "entries": [
+          {
+            "dlcdef_corpohacker": {
+              "dlcdef": "DLCDef_CorpoHacker",
+              "dlcshorttitle": "DLCInfo, 34AB9E3F439C8B6565C131B057531398, Loveless, the Hacker",
+              "dlcname": "CorpoHacker",
+              "entitlementfact": "entitlement.corpohacker.enabled",
+              "steamid": "4627500",
+              "epicstoreid": "borderlands-4-borderlands-4-story-pack-2-part-2-635b0d",
+              "epicentitlementid": "730d695afd1f430d9ef7f8c94eaca958",
+              "sonyid": "BL4STORYPACK2B00",
+              "microsoftid": "9N1JF9RX460G"
+            }
+          },
           {
             "dlcdef_cowbell": {
               "dlcdef": "DLCDef_Cowbell",
@@ -23715,10 +24859,10 @@
               "dlcdatalayer": "Asset'/Game/GameData/Entitlements/DLC_Cowbell.DLC_Cowbell'",
               "entitlementfact": "entitlement.cowbell.enabled",
               "steamid": "3802450",
-              "epicstoreid": "borderlands-4-borderlands4-story-pack-1-16ee5f",
-              "epicentitlementid": "f998297adab74716a66451d6c439846f",
-              "sonyid": "BL4STORYPACK1000",
-              "microsoftid": "9NR2D658LZ22",
+              "epicstoreid": "borderlands-4-borderlands-4-story-pack-1-part-1-34fd16",
+              "epicentitlementid": "a28b78f17b5848db8afd2cbe8a589adc",
+              "sonyid": "BL4STORYPACK1A00",
+              "microsoftid": "9NPVHNDP6B64",
               "nintendoid": "aoc6",
               "btravelstationsrequireentitlement": "true",
               "alttraveleffects": "alt_travel_efects'CowbellTravelEffects'",
@@ -23742,6 +24886,44 @@
                 "Asset'/Game/DLC/Cowbell/PlayerCharacters/_Shared/Animation/DLC_ASetPicker_Player3rd_Vehicle_RoboDealer.DLC_ASetPicker_Player3rd_Vehicle_RoboDealer'",
                 "Asset'/Game/DLC/Cowbell/PlayerCharacters/_Shared/Animation/DLC_ASetPicker_Player_StandIn_CharSelect_Cowbell.DLC_ASetPicker_Player_StandIn_CharSelect_Cowbell'",
                 "Asset'/Game/DLC/Cowbell/PlayerCharacters/_Shared/Animation/DLC_ASetPicker_Player_StandIn_RoboDealer.DLC_ASetPicker_Player_StandIn_RoboDealer'"
+              ]
+            }
+          },
+          {
+            "dlcdef_harmonica": {
+              "dlcdef": "DLCDef_Harmonica",
+              "dlctitle": "DLCInfo, 0B16A41948477D867ACDC18F2D948426, FL4K and the Last Resort",
+              "dlcshorttitle": "DLCInfo, F03F1FBB418E13E9C1628C8506775E8A, FL4K and the Last Resort",
+              "dlcname": "Harmonica",
+              "dlcdatalayer": "Asset'/Game/GameData/Entitlements/DLC_Harmonica.DLC_Harmonica'",
+              "entitlementfact": "entitlement.harmonica.enabled",
+              "steamid": "3802460",
+              "epicstoreid": "borderlands-4-borderlands-4-story-pack-2-part-1-562d2e",
+              "epicentitlementid": "9a5ee6b4074844a998d998ee2042316b",
+              "sonyid": "BL4STORYPACK2A00",
+              "microsoftid": "9NC4H7GJVBPK",
+              "nintendoid": "aoc9",
+              "btravelstationsrequireentitlement": "true",
+              "patchtravelstations": [
+                {
+                  "travelstationdef": "map'World_P.LTS_MOU_SanctuaryToHarmonica'",
+                  "travelobjectdef": "gbxactor'LevelTravelStation_ToDLC_Harmonica'",
+                  "leveloverride": "63MUDIXMN1XFASVJFNZ83LBZZ"
+                }
+              ],
+              "characterbodyactions": [
+                "Asset'/Game/DLC/Harmonica/PlayerCharacters/_Shared/BodyActions/BodyActions_DAD_SM_Harmonica.BodyActions_DAD_SM_Harmonica'"
+              ],
+              "dedicateddroptable": "gbx_ue_data_table'Table_Harmonica_DedicatedDrops'",
+              "bismatchmakingrelevant": "true",
+              "assetstoappend": [
+                "Asset'/Game/DLC/Harmonica/Gear/Vehicles/Personal/_Shared/Animation/DLC_ASetPicker_PersonalVehicle_Harmonica.DLC_ASetPicker_PersonalVehicle_Harmonica'",
+                "Asset'/Game/DLC/Harmonica/PlayerCharacters/_Shared/Animation/DLC_ASetPicker_Player_StandIn_Inventory_Harmonica.DLC_ASetPicker_Player_StandIn_Inventory_Harmonica'",
+                "Asset'/Game/DLC/Harmonica/PlayerCharacters/_Shared/Animation/DLC_ASetPicker_Player1st_Shared_CorpoHacker.DLC_ASetPicker_Player1st_Shared_CorpoHacker'",
+                "Asset'/Game/DLC/Harmonica/PlayerCharacters/_Shared/Animation/DLC_ASetPicker_Player3rd_Shared_CorpoHacker.DLC_ASetPicker_Player3rd_Shared_CorpoHacker'",
+                "Asset'/Game/DLC/Harmonica/PlayerCharacters/_Shared/Animation/DLC_ASetPicker_Player3rd_Vehicle_CorpoHacker.DLC_ASetPicker_Player3rd_Vehicle_CorpoHacker'",
+                "Asset'/Game/DLC/Harmonica/PlayerCharacters/_Shared/Animation/DLC_ASetPicker_Player_StandIn_CharSelect_Harmonica.DLC_ASetPicker_Player_StandIn_CharSelect_Harmonica'",
+                "Asset'/Game/DLC/Harmonica/PlayerCharacters/_Shared/Animation/DLC_ASetPicker_Player_StandIn_CorpoHacker.DLC_ASetPicker_Player_StandIn_CorpoHacker'"
               ]
             }
           }

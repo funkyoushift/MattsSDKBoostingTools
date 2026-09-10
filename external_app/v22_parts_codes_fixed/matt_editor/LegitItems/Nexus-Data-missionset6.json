@@ -1,8 +1,4 @@
 {
-  "__copyright": {
-    "author": "Cr4nkSt4r",
-    "github": "https://github.com/Cr4nkSt4r/Borderlands-4.NcsParser"
-  },
   "missionset": {
     "records": [
       {
@@ -16,6 +12,19 @@
       },
       {
         "entries": [
+          {
+            "missionset_dlc2_npcmoments": {
+              "missionset": "MissionSet_DLC2_NPCMoments",
+              "bisdlcmissionset": "true",
+              "dlc": "DLCDef'DLCDef_Harmonica'",
+              "tags": [
+                {
+                  "missionset_harmonica_npcmoments": "missionset_harmonica_NPCMoments"
+                }
+              ],
+              "type": "/Script/OakGame.OakMissionSetDef"
+            }
+          },
           {
             "missionset_dlc_storysofar": {
               "missionset": "MissionSet_DLC_StorySoFar",

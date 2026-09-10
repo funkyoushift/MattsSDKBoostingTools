@@ -1,89 +1,79 @@
 # Third-Party Notices
 
-## Mattmab Legit Builder
+MSBT's original code is licensed under the repository's MIT `LICENSE`. That
+license does not replace the licenses or permission grants below and does not
+claim ownership of third-party code, data, artwork, names, or trademarks.
 
-This repository includes an experimental local integration of Mattmab's Legit Builder / item editor assets under:
+## Source and permission map
 
-- `external_app/v22_parts_codes_fixed/matt_editor/`
+| Material in MSBT | Source / author | Governing terms retained by MSBT |
+| --- | --- | --- |
+| `external_app/v22_parts_codes_fixed/matt_editor/` | Mattmab, also known as Galoob | Incorporated, modified, and redistributed with the author's direct permission. The reviewed upstream package also declared ISC; its notice is preserved as `LICENSE_MATTMAB_ISC.txt`. Mattmab has requested that the MSBT project itself use MIT. |
+| Previously supplied Nexus JSON data and retained overrides | Dominic (Cr4nkSt4r), [Borderlands-4.NcsParser](https://github.com/Cr4nkSt4r/Borderlands-4.NcsParser) | The previously received copies carried the MIT notice `Copyright (c) 2026 Dominic (Cr4nkSt4r)`. That notice remains in `LICENSE_CR4NKST4R.txt` and in retained source material. |
+| Current game-derived Nexus tables, world definitions and part supplements | Gearbox / 2K game data, extracted locally from installed BL4 build 25234898 | These game data are not claimed as original MSBT code or relicensed as MIT. Extraction provenance and hashes are recorded in `external_app/v22_parts_codes_fixed/matt_editor/LegitItems/local_game_data_provenance.json`. The unmodified NcsParser CLI is a separate local maintainer tool and is not shipped or linked into MSBT. |
+| Loveless skill, tooltip and portrait PNGs in `matt_editor/uiresources/corpo_hacker_icons/` | Gearbox / 2K artwork, extracted locally from installed BL4 build 25234898 | Native game artwork, not original MSBT artwork or relicensed as MIT. The adjacent `native-assets-manifest.json` records source paths and hashes. CUE4Parse and CUE4Parse-Conversion are external maintainer extraction dependencies; they are not shipped as MSBT runtime components. |
+| GZO-derived catalogs, part maps, and linked images | Ynot / GZO, [GZO BL4 Codes](https://save-editor.be/GZO/Borderlands4/Codes.html) | Used and redistributed with the site owner's direct permission. These data are not relicensed as MIT by MSBT. |
+| Lootlemon-derived catalog records and links | Levin / Lootlemon, [Lootlemon](https://www.lootlemon.com/) | Used and redistributed with the site owner's direct permission. These data are not relicensed as MIT by MSBT. |
+| UVH tier workflow in `backend_actions.py` | Azalea Asvail, Azzy UVH Booster; upstream credits Pyrex for UVH6/UVH7 paths | MIT, as declared by the reviewed source metadata. |
+| SDK helpers and data adapted from `Squ1ggsBoostingTools` and the standalone BL4 Player Movement, P2P Teleporter, Vehicle Movement, World Travel, Damage & More, Resources & Cooldowns, and Borderlands Mob Spawner mods | RDP / Squ1ggs, [Bl4SDKmods](https://github.com/Squ1ggs/Bl4SDKmods) | MIT, `Copyright (c) 2026 Squ1ggs`. The exact notice is stored as `LICENSE_SQU1GGS_MIT.txt` in both the SDK source and packaged external-app tree. |
+| `tools/third_party/sdk_mods/ActorScriptDeployer/` | Matt | MIT, as declared by its `pyproject.toml`; a full MIT notice is stored in that directory. |
+| `mod_extracted/MattsSDKBoostingTools/bl4_tpc/` | Renil; distributed archive also credits Epilow | Used under the author's public permission allowing modification and redistribution. Source page: [Third Person Camera SDK](https://www.nexusmods.com/borderlands4/mods/259). This component is not represented as MIT. |
+| Save/profile encryption wrapper adapted through Mattmab's editor | glacierpiece, [borderlands-4-save-utility](https://github.com/glacierpiece/borderlands-4-save-utility) | MIT, `Copyright (c) 2025 glacierpiece`. The exact upstream notice is preserved beside the wrapper as `LICENSE_GLACIERPIECE_MIT.txt`. |
+| `electron_poc/vendor/gridstack/` | GridStack 11.5.1, Alain Dumesny | MIT; full notice stored beside the vendored files. |
+| `matt_editor/js/vendor/js-yaml-4.1.1.js` | js-yaml 4.1.1, pako 2.1.0, and the Microsoft Monaco AMD loader | MIT; pako also identifies zlib-licensed portions. Full notices are stored beside the bundle in `THIRD_PARTY_LICENSES.txt`. |
 
-Upstream source:
+The permission confirmations for Mattmab/Galoob, GZO, and Lootlemon are held
+by the MSBT maintainer. They are described here so that downstream recipients
+do not mistake permission-only data or assets for MIT-licensed MSBT code.
 
-- `https://github.com/mattmab/legit-builder`
+The Squ1ggs-derived scope includes substantial portions of the SDK-side legit
+builder, serial conversion/reward, movement, party, travel, economy, inventory,
+developer-tool, shinies, vault-card, golden-chest, and BLImGui helper modules.
+It also includes portions of the external legit-builder/serial helpers and
+derived `gzo_parts_map.json`, `item_pools.json`, and Dev Spawner catalog data.
+This list describes provenance; MSBT's filenames and implementations may have
+continued to change after adaptation.
 
-The upstream `Application/package.json` declares license `ISC`. No separate upstream `LICENSE` file was present in the reviewed checkout at the time this integration was added.
+## Desktop runtime and npm packages
 
-The MSBT wrapper starts a local Python host for these assets and routes serial conversion through MSBT's standalone serial helpers. The external app must not import SDK/game modules for this editor path.
+Electron and Chromium notices are emitted next to the packaged executable as
+`LICENSE.electron.txt` and `LICENSES.chromium.html`. Production npm package
+license files remain inside `app.asar`. The embedded CPython runtime retains
+its own `LICENSE.txt`. MSBT additionally packages its root `LICENSE` and this
+notice as top-level resources.
 
-## ActorScriptDeployer
+The separately vendored GridStack copy and the editor browser bundle are
+covered by the adjacent notices identified in the table above.
 
-This repository vendors ActorScriptDeployer under:
+## Android controller
 
-- `tools/third_party/sdk_mods/ActorScriptDeployer/`
+The Android app directly uses AndroidX Core 1.13.1, AndroidX WebKit 1.12.1,
+and JourneyApps ZXing Android Embedded 4.3.0 (including ZXing Core transitively).
+Those dependencies use Apache License 2.0. The APK build copies MSBT's license,
+this notice, and the complete Apache 2.0 text into its `assets/licenses/`
+directory.
 
-Author and license:
+## Downloaded, not vendored
 
-- Author: Matt
-- License: MIT, per `tools/third_party/sdk_mods/ActorScriptDeployer/pyproject.toml`
+MSBT can download the official unmodified `oak2-sdk.zip` release of
+[oak2-mod-manager](https://github.com/bl-sdk/oak2-mod-manager). It is cached in
+the user's application-data directory rather than stored in this repository.
+oak2-mod-manager is LGPL-3.0 and retains the license files in its own release.
 
-MSBT bundles ActorScriptDeployer as a folder-form SDK mod dependency for the
-Dev Spawner tab. Live game actions still go through the MSBT bridge/backend,
-and ActorScriptDeployer remains game-side only.
+## Reference-only projects
 
-## oak2-mod-manager (BL4 SDK)
+The GPL projects listed in `docs/REFERENCE_MOD_NOTES.md` were reviewed for behavior.
+Reviewing a project does not mean its implementation was copied. In particular,
+GPL-licensed reference implementations must remain reference-only unless MSBT
+is deliberately made compliant with their copyleft terms.
 
-MSBT's Electron app can download and install the official unmodified
-`oak2-sdk.zip` release asset for [oak2-mod-manager v0.3](https://github.com/bl-sdk/oak2-mod-manager/releases/tag/v0.3)
-into the detected Borderlands 4 game folder. The zip is cached under the app
-`userData` folder (`oak2-cache/`) and is not vendored in git.
+The complete 2026-09-10 comparison against the oak2 Mod Database is recorded in
+`docs/OAK2_MOD_DB_LICENSE_AUDIT_2026-09-10.md`.
 
-Upstream:
+## Game and community content
 
-- Project: https://github.com/bl-sdk/oak2-mod-manager
-- Install guide / mod DB: https://bl-sdk.github.io/oak2-mod-db/
-- License: LGPL-3.0 (see upstream `LICENSE`; GPL/LGPL texts at https://www.gnu.org/licenses/)
-
-MSBT also writes `sdk_mods/settings/<module>.json` with `"enabled": true` for
-required gameplay mods (`MattsSDKBoostingTools`, `ActorScriptDeployer`) so users
-do not have to enable them manually in the in-game mods menu. Core oak2
-libraries (`mods_base`, console mod menu) ship with the official release and
-load as part of the SDK.
-
-## Azzy UVH Booster
-
-MSBT's Boosting tab includes UVH rank-up buttons adapted from Azzy UVH Booster.
-
-Author and license:
-
-- Author: Azalea Asvail
-- License: MIT, per the reviewed `AzzyUVHbooster.sdkmod` `pyproject.toml`
-
-The adapted MSBT implementation uses the UVH tier challenge workflow and keeps
-the live-game execution inside MSBT's SDK bridge/backend. The reviewed source
-credits Pyrex for the UVH6/UVH7 challenge paths.
-
-## Reference Mods Reviewed
-
-MSBT also reviews community BL4 SDK mods as behavior references. Reviewing a mod
-does not mean its implementation has been copied into MSBT.
-
-Reference notes:
-
-- `docs/REFERENCE_MOD_NOTES.md`
-
-Reviewed local mods and credits:
-
-- BL4 Player Movement by Squ1ggs, MIT. Useful movement-targeting and movement
-  reset patterns may be adapted later with attribution and license notice.
-- obj_dump by apple1417, GPL3. Reviewed for object-dump diagnostics. No GPL
-  implementation code has been copied into MSBT.
-- Dump Ping by Yeti, GPL3. Reviewed for ping-to-object discovery workflow. No
-  GPL implementation code has been copied into MSBT.
-- Trash Seller by FreepDryer, GPL3. Reviewed for inventory workflow context. No
-  GPL implementation code has been copied into MSBT.
-- Falling Menus by Yeti, GPL3. Reviewed for menu/movement behavior context. No
-  GPL implementation code has been copied into MSBT.
-- Grapple Anywhere by Yeti, GPL3. Reviewed for grapple behavior context. No GPL
-  implementation code has been copied into MSBT.
-
-Apple/apple1417 is also credited for BL4 SDK ecosystem contributions and object
-diagnostic tooling that informs future MSBT debugging work.
+Borderlands, Gearbox, 2K, and related names and assets belong to their respective
+owners. MSBT is an unofficial fan project and no affiliation or endorsement is
+claimed. Permission from a community source owner covers that source owner's
+contribution; it does not purport to grant rights owned by Gearbox, 2K, or any
+other third party.

@@ -1,8 +1,4 @@
 {
-  "__copyright": {
-    "author": "Cr4nkSt4r",
-    "github": "https://github.com/Cr4nkSt4r/Borderlands-4.NcsParser"
-  },
   "ui_challenge_list": {
     "records": [
       {
@@ -121,6 +117,31 @@
                   ]
                 },
                 {
+                  "displayname": "menu_challenges, E7D6999245477DDE01FC5CB873AE1563, FL4K and the Last Resort",
+                  "icon": "harmonica_icon",
+                  "ident": "harmonica",
+                  "challenges": [
+                    "challenge'Harmonica_Challenge_Combat_KillFramesBeforeConversion'",
+                    "challenge'Harmonica_Challenge_Combat_ZiplineKills'",
+                    "challenge'Harmonica_Challenge_Enemies_KillTedioreFrames'",
+                    "challenge'Harmonica_Challenge_Enemies_KillTedioreGliders'",
+                    "challenge'Harmonica_Challenge_Enemies_KillTedioreInfantry'",
+                    "challenge'Harmonica_Challenge_Enemies_KillTedioreWalkerMechs'",
+                    "challenge'Harmonica_Challenge_Enemies_KillTedioreReplacements'",
+                    "challenge'Challenge_Collect_DLC2_EchoLog_Parent'",
+                    "challenge'Challenge_Collect_DLC2_IslandSafe_Parent'",
+                    "challenge'Challenge_Collect_DLC2_Tediore_Parent'",
+                    "challenge'Challenge_Harmonica_TreasureHunt_SwitchParent'",
+                    "challenge'Harmonica_Challenge_World_ManagerHands'",
+                    "challenge'Harmonica_Challenge_World_CompleteRifts'",
+                    "challenge'Harmonica_Challenge_World_ClaimSafehouses'",
+                    "challenge'Harmonica_Challenge_World_Grottos'",
+                    "challenge'Harmonica_Challenge_World_Lockdowns'",
+                    "challenge'Harmonica_Challenge_World_VolcanoEvent'"
+                  ],
+                  "dlcdef": "DLCDef'DLCDef_Harmonica'"
+                },
+                {
                   "displayname": "menu_challenges, 0C100221422D5452B925108E47984DD8, Vault of the Damned",
                   "icon": "cowbell_icon",
                   "ident": "cowbell",
@@ -143,6 +164,22 @@
                     "challenge'Cowbell_Challenges_Combat_kraggon_secondwind'"
                   ],
                   "dlcdef": "DLCDef'DLCDef_Cowbell'"
+                },
+                {
+                  "displayname": "menu_challenges, 20852F174D1FD50B4F07E089718DA6A6, Character",
+                  "icon": "char_corpohacker_icon",
+                  "ident": "char_corpohacker",
+                  "characterident": "char_corpohacker",
+                  "challenges": [
+                    "challenge'Harmonica_Challenges_Characters_CorpoHacker_Contagion_Tiered'",
+                    "challenge'Harmonica_Challenges_Characters_CorpoHacker_Contagion_Single'",
+                    "challenge'Harmonica_Challenges_Characters_CorpoHacker_VPN_Tiered'",
+                    "challenge'Harmonica_Challenges_Characters_CorpoHacker_VPN_Single'",
+                    "challenge'Harmonica_Challenges_Characters_CorpoHacker_Manifestation_Tiered'",
+                    "challenge'Harmonica_Challenges_Characters_CorpoHacker_Manifestation_Single'",
+                    "challenge'Cowbell_Challenges_Characters_CorpoHacker_LevelUp'"
+                  ],
+                  "dlcdef": "DLCDef'DLCDef_Harmonica'"
                 },
                 {
                   "displayname": "menu_challenges, 690EB4D34BA0E8F6B36273B8FAFCC26A, Character",
