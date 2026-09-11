@@ -789,6 +789,14 @@ def _resolve_def_for_give(pc: Any, lib: Any, def_path: str) -> Optional[Any]:
 
 
 def _give_reward_def(def_path: str, all_players: bool) -> bool:
+    # GiveReward opens a real loyalty package.  The package can replicate a
+    # small XP award, so tell Combat XP to baseline it rather than multiply it.
+    try:
+        from . import extreme_combat_xp
+
+        extreme_combat_xp.suppress_noncombat_xp_for()
+    except Exception:
+        pass
     pc = get_pc()
     if pc is None:
         _log_error("No player controller.")

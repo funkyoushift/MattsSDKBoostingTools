@@ -162,6 +162,42 @@ def test_combat_xp_tracks_reordered_fifth_card_and_ignores_unknown_rows(sdk_modu
     assert cxp._max_level(6) == 9999
 
 
+def test_reward_package_xp_is_not_multiplied_by_combat_xp(sdk_modules, monkeypatch):
+    """Serial delivery opens a package; its incidental XP is not a combat kill."""
+    cxp = sdk_modules("extreme_combat_xp")
+    character = row("Character", points=100)
+    ps = types.SimpleNamespace(ExperienceState=[character])
+    cxp._enabled = True
+    cxp._mult_value = 1000.0
+    state = cxp._state_for(ps)
+    state.update({"last_points": {0: 100}, "armed": True, "stable": 60})
+    boosted = []
+    monkeypatch.setattr(cxp, "_boost_track_from_delta", lambda *_args: boosted.append(_args) or True)
+    cxp.suppress_noncombat_xp_for(10)
+    assert cxp._noncombat_xp_suppressed()
+    character.ExperiencePoints = 101
+    cxp._process_player(ps)
+    assert boosted == []
+    state = cxp._state_for(ps)
+    assert state["last_points"] == {0: 101}
+    assert state["armed"] is False
+
+
+def test_currency_grant_marks_its_xp_replication_as_noncombat(sdk_modules, monkeypatch):
+    economy = sdk_modules("player_economy")
+    cxp = sdk_modules("extreme_combat_xp")
+    suppressed = []
+    given = []
+    monkeypatch.setattr(cxp, "suppress_noncombat_xp_for", lambda: suppressed.append(True))
+    monkeypatch.setattr(economy, "_get_currency_function_library", lambda: types.SimpleNamespace(
+        GiveCurrency=lambda *args: given.append(args)
+    ))
+    monkeypatch.setattr(economy, "_make_currency_def_ptr", lambda token: token)
+    assert economy._give_currency_on_pc(object(), "Cash", 100)
+    assert suppressed == [True]
+    assert given and given[0][-1] == 100
+
+
 def test_max_vault_cards_includes_fifth_card_at_verified_cap(sdk_modules):
     economy = sdk_modules("player_economy")
     boost = sdk_modules("vault_card_boost")

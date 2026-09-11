@@ -61,6 +61,10 @@ _tick_n = 0
 _topups = 0
 _attr_writes = 0
 _applying = False
+# Serial/item delivery opens a real reward package.  Some game builds replicate
+# a small character-XP change with that package, which must never be treated as
+# a combat award by this multiplier.
+_noncombat_xp_suppress_until = 0.0
 
 # MSBT-controlled state (not mods_base options — toggled from Electron / QM).
 _enabled = False
@@ -74,6 +78,25 @@ def _log(msg: str) -> None:
         logging.info(f"{_PREFIX} {msg}")
     except Exception:
         print(f"{_PREFIX} {msg}")
+
+
+def suppress_noncombat_xp_for(seconds: float = 10.0) -> None:
+    """Ignore reward/package XP replication briefly and refresh CXP baselines.
+
+    Called immediately before MSBT opens an injected-item reward package.  This
+    keeps Combat XP armed for actual kills while preventing a package's native
+    XP side effect from being multiplied into an unintended level jump.
+    """
+    global _noncombat_xp_suppress_until
+    try:
+        duration = max(0.0, min(30.0, float(seconds)))
+    except Exception:
+        duration = 10.0
+    _noncombat_xp_suppress_until = max(_noncombat_xp_suppress_until, time.monotonic() + duration)
+
+
+def _noncombat_xp_suppressed() -> bool:
+    return time.monotonic() < _noncombat_xp_suppress_until
 
 
 _HOT_ERROR_INTERVAL_S = 5.0
@@ -581,6 +604,14 @@ def _process_player(ps: Any) -> None:
 
     snap = _snapshot_points(ps)
     if not snap:
+        return
+    if _noncombat_xp_suppressed():
+        # A real reward package may update XP on its recipient(s).  Consume that
+        # replication as the new baseline so it cannot be multiplied later.
+        st = _state_for(ps)
+        st["last_points"] = dict(snap)
+        st["stable"] = 0
+        st["armed"] = False
         return
     if not _arming_tick(ps, snap):
         return

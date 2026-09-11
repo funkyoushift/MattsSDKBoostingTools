@@ -524,6 +524,15 @@ def _resolve_target_pc_from_parts(parts: List[str], command_name: str) -> Tuple[
 
 
 def _give_currency_on_pc(target_pc: Any, currency_token: str, amount: int) -> bool:
+    # Currency grants can replicate alongside a reward/progression update on
+    # some game builds.  They are never combat kills, so do not let an armed
+    # Combat XP multiplier turn that replication into a level boost.
+    try:
+        from . import extreme_combat_xp
+
+        extreme_combat_xp.suppress_noncombat_xp_for()
+    except Exception:
+        pass
     lib = _get_currency_function_library()
     if lib is None:
         _log_err("GbxCurrencyFunctionLibrary not found.")
