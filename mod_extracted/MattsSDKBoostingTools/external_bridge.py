@@ -1013,7 +1013,7 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
 
 
 def _status() -> dict[str, Any]:
-    backend_status = backend_actions.get_status()
+    backend_status = backend_actions.get_status(include_extended=False)
     diagnostics = dict(backend_status.get("diagnostics") or {})
     diagnostics.setdefault("external_bridge_started", _started)
     last_error = _last_error or backend_status.get("last_refresh_error", "")
@@ -1089,12 +1089,13 @@ def _refresh_status_snapshot(*, force: bool = False) -> None:
     now = _now()
     if not force and now - _status_snapshot_at < STATUS_REFRESH_SECONDS:
         return
+    # Failed SDK reads must not turn the half-second refresh into a 60 Hz loop.
+    _status_snapshot_at = now
     try:
         snapshot = _status()
         snapshot["snapshot_ready"] = True
         with _lock:
             _status_snapshot = snapshot
-            _status_snapshot_at = now
     except Exception as exc:
         _last_error = repr(exc)
 
@@ -1638,6 +1639,7 @@ def stop_bridge() -> None:
     _generation += 1
     try:
         mobile_lan.set_rebind_callback(None)
+        mobile_lan.stop_hosts_discovery()
     except Exception:
         pass
     with _http_lock:

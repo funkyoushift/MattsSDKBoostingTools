@@ -21,7 +21,7 @@ def _load_bridge():
     sys.modules["MattsSDKBoostingTools"] = package
 
     backend = types.ModuleType("MattsSDKBoostingTools.backend_actions")
-    backend.get_status = lambda: {"players": [], "serial_delivery": {}, "diagnostics": {}}
+    backend.get_status = lambda **_kwargs: {"players": [], "serial_delivery": {}, "diagnostics": {}}
     sys.modules["MattsSDKBoostingTools.backend_actions"] = backend
     quick_menu_registry = types.ModuleType("MattsSDKBoostingTools.quick_menu_registry")
     quick_menu_registry.ASSIGNABLE_ACTIONS = frozenset()

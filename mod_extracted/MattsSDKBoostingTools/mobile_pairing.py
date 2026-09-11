@@ -5,6 +5,7 @@ in mobile_lan; the bridge registers a rebind callback). Same tick family as F7.
 """
 from __future__ import annotations
 
+import json
 import time
 from dataclasses import dataclass, field
 from typing import Any, Callable
@@ -50,6 +51,7 @@ class PairingState:
     key_escape: bool = False
     last_input_refresh: float = 0.0
     ui_dirty: bool = True
+    hosts: tuple[str, ...] = ()
     status: str = "Phone Pairing"
 
 
@@ -339,10 +341,11 @@ def rebuild_ui() -> None:
         tint=C_DIM,
     )
 
-    pair_text = mobile_lan.pairing_payload_text()
     install_text = mobile_lan.install_payload_text()
     payload = mobile_lan.pairing_payload()
+    pair_text = json.dumps(payload, separators=(",", ":"))
     hosts = payload.get("hosts") or []
+    STATE.hosts = tuple(hosts)
     nonce = str(payload.get("n") or "")
     port = payload.get("port") or 49774
     qr_box = 400.0
@@ -355,10 +358,13 @@ def rebuild_ui() -> None:
         _draw_qr(factory, canvas, qr_lite.encode(install_text), left_x, qr_y, qr_box, 20)
     except Exception as exc:
         factory.text(canvas, f"Install QR failed: {exc}", left_x, qr_y, qr_box, 40, scale=0.28, z=21)
-    try:
-        _draw_qr(factory, canvas, qr_lite.encode(pair_text), right_x, qr_y, qr_box, 20)
-    except Exception as exc:
-        factory.text(canvas, f"Pair QR failed: {exc}", right_x, qr_y, qr_box, 40, scale=0.28, z=21)
+    if hosts:
+        try:
+            _draw_qr(factory, canvas, qr_lite.encode(pair_text), right_x, qr_y, qr_box, 20)
+        except Exception as exc:
+            factory.text(canvas, f"Pair QR failed: {exc}", right_x, qr_y, qr_box, 40, scale=0.28, z=21)
+    else:
+        factory.text(canvas, "Waiting for a LAN address...", right_x, qr_y, qr_box, 40, scale=0.28, z=21)
 
     host_line = ", ".join(str(h) for h in hosts) or "(no LAN IPv4 found)"
     factory.text(
@@ -547,6 +553,8 @@ def tick(_obj: Any = None, _args: Any = None, _ret: Any = None, _func: Any = Non
         now = time.monotonic()
         if now - STATE.last_input_refresh >= 0.5:
             capture_input()
+            if tuple(mobile_lan.list_lan_ipv4()) != STATE.hosts:
+                STATE.ui_dirty = True
         down = _key_down(pc, "Escape")
         was = STATE.key_escape
         STATE.key_escape = down

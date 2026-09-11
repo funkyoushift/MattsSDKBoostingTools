@@ -264,12 +264,9 @@ TPC_KEYBINDS = (kb_toggle_third_person,)
 def _player_tick(*_args: Any, **_kwargs: Any) -> None:
     if not _want_enabled:
         return
+    # reapply_if_wanted handles the native-miss fallback itself. Requesting it
+    # again here refreshed the same controller/pawn/camera twice every tick.
     reapply_if_wanted()
-    ctrl = _standalone_controller() or _local_controller
-    if ctrl is None:
-        return
-    if not _hooks_installed(ctrl):
-        _request_third_person(ctrl)
 
 
 def sync_engine_hooks() -> None:

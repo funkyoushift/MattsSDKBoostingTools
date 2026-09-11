@@ -20,9 +20,8 @@ from . import backend_actions, quick_menu_registry
 PREFIX = "[Matts SDK Boosting Tools | QuickMenu]"
 TICK_PATH = "/Script/Engine.CameraModifier:BlueprintModifyCamera"
 HOOK_ID = "matts_sdk_boosting_tools_quick_menu_tick_v1"
-# Wall-clock budget for the camera tick. Closed is the always-on cost, so it only
-# needs to be fast enough to catch a key press edge. 30 Hz still samples normal
-# human keypresses reliably while halving closed-menu polling; open stays higher.
+# Closed-menu polling runs only for configured slot hotkeys, pending delivery,
+# or a visible toast. 30 Hz catches normal keypress edges; open stays higher.
 TICK_INTERVAL_CLOSED_S = 1.0 / 30.0
 TICK_INTERVAL_OPEN_S = 1.0 / 120.0
 _last_tick_at = 0.0
@@ -1164,6 +1163,7 @@ def show_toast(message: str, *, ok: bool = True, seconds: float = 2.6) -> None:
     STATE.toast_until = time.monotonic() + max(0.8, float(seconds))
     STATE.status = STATE.toast
     _log(STATE.toast)
+    _sync_camera_need()
     if STATE.is_open:
         STATE.ui_dirty = True
         return
@@ -2854,6 +2854,7 @@ def open_panel() -> None:
 
 def close_panel(defer_ui_state_pop: bool = False) -> None:
     if not STATE.is_open and not live(STATE.overlay):
+        _sync_camera_need()
         return
     STATE.is_open = False
     STATE.modal = ""
@@ -3115,6 +3116,7 @@ def _expire_toast() -> None:
         return
     STATE.toast = ""
     _clear_toast_overlay()
+    _sync_camera_need()
     if STATE.is_open:
         STATE.ui_dirty = True
 
@@ -3182,6 +3184,7 @@ def tick(_obj: Any, _args: Any, _ret: Any, _func: Any) -> None:
             STATE.buttons.clear()
             STATE.sliders.clear()
             restore_input()
+            _sync_camera_need()
             return None
         if quick_menu_registry.get_layout_revision() != STATE.layout_revision:
             STATE.modal = ""
@@ -3222,14 +3225,26 @@ def _sync_camera_need() -> None:
         from . import camera_tick
     except Exception:
         return
-    camera_tick.set_needed("quick_menu", bool(STATE.is_open))
     has_hotkeys = False
     if not STATE.is_open:
         try:
             has_hotkeys = bool(_configured_slot_hotkeys())
         except Exception:
             has_hotkeys = False
-    camera_tick.set_needed("quick_menu_hotkeys", has_hotkeys)
+    needs = {
+        "quick_menu": bool(STATE.is_open),
+        "quick_menu_hotkeys": has_hotkeys,
+        "quick_menu_toast": bool(STATE.toast),
+        "quick_menu_delivery": bool(STATE.delivery_was_active),
+    }
+    # Arm the next lifetime before releasing the previous one so closing a
+    # menu with hotkeys/toasts does not remove and reinstall the engine hook.
+    for name, needed in needs.items():
+        if needed:
+            camera_tick.set_needed(name, True)
+    for name, needed in needs.items():
+        if not needed:
+            camera_tick.set_needed(name, False)
 
 
 def install_hook() -> None:

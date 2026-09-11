@@ -21,7 +21,7 @@ def _load_bridge():
     sys.modules["MattsSDKBoostingTools"] = pkg
 
     ba = types.ModuleType("MattsSDKBoostingTools.backend_actions")
-    ba.get_status = lambda: {"players": [], "selected_player": "", "serial_delivery": {}}
+    ba.get_status = lambda **_kwargs: {"players": [], "selected_player": "", "serial_delivery": {}}
     ba._sdk_diagnostics = lambda: {}
     sys.modules["MattsSDKBoostingTools.backend_actions"] = ba
     quick_menu_registry = types.ModuleType("MattsSDKBoostingTools.quick_menu_registry")
@@ -135,7 +135,7 @@ def test_quick_menu_bridge_actions_dispatch():
         "ok": True,
         "message": "cleared",
     }
-    ba.get_status = lambda: {
+    ba.get_status = lambda **_kwargs: {
         "players": [],
         "selected_player": "Buddy",
         "selected_player_index": 1,

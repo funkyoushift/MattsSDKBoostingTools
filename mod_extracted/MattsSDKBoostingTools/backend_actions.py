@@ -2190,7 +2190,8 @@ def _infinite_jump_status_safe() -> dict[str, Any]:
         return {"enabled": False, "enabled_local": False, "count": 0, "names": "none"}
 
 
-def get_status() -> dict[str, Any]:
+def get_status(*, include_extended: bool = True) -> dict[str, Any]:
+    """Build status; periodic bridge snapshots omit unused UI-only lookups."""
     players = refresh_players()
     try:
         delivery_progress = serial_rewards.serial_delivery_progress()
@@ -2210,7 +2211,7 @@ def get_status() -> dict[str, Any]:
         delivery_progress.setdefault("last_error", "")
     else:
         delivery_progress = {"active": False, "message": str(delivery_progress or ""), "last_error": ""}
-    return {
+    result = {
         "players": players,
         "selected_player": _selected_player_name,
         "selected_player_index": _selected_player_index,
@@ -2226,24 +2227,28 @@ def get_status() -> dict[str, Any]:
         "game_parameters": status_parameters(),
         "rarity_weights": get_rarity_weights(),
         "rarity_revision": get_rarity_revision(),
-        "asd_autoclear": _asd_autoclear_status(),
-        "spawn_aggro_mode": _get_aggro_mode(),
-        "spawn_anchor": _get_spawn_anchor(),
-        "location_bookmarks": _list_location_bookmarks(),
-        "vehicle_presets": _list_vehicle_presets(),
-        "vehicle_catalog": _list_vehicle_catalog(),
         "cxp": _cxp.get_status_dict(),
         "instant_drops": _ich.get_status_dict(),
         "instant_holds": _ich.get_holds_status_dict(),
         "fog_of_war": _fog_status_dict(),
         "third_person": _tpc.get_status_dict(),
-        "infinite_jump": _infinite_jump_status_safe(),
         "challenge_bulk": _challenge_progress_payload(),
         "itempool_bulk": _itempool_progress_payload(),
         "uvh_boost": uvh_boost_status(),
-        "debug_cam": _debug_cam_status(),
-        "deleted_backpack": _deleted_backpack_status(),
     }
+    if include_extended:
+        result.update({
+            "asd_autoclear": _asd_autoclear_status(),
+            "spawn_aggro_mode": _get_aggro_mode(),
+            "spawn_anchor": _get_spawn_anchor(),
+            "location_bookmarks": _list_location_bookmarks(),
+            "vehicle_presets": _list_vehicle_presets(),
+            "vehicle_catalog": _list_vehicle_catalog(),
+            "infinite_jump": _infinite_jump_status_safe(),
+            "debug_cam": _debug_cam_status(),
+            "deleted_backpack": _deleted_backpack_status(),
+        })
+    return result
 
 
 def kick_selected_player() -> dict[str, Any]:

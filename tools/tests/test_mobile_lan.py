@@ -34,6 +34,7 @@ def _load_lan(tmp_path, monkeypatch):
     lan = _load_module("mobile_lan", "mobile_lan.py")
     lan.reset_state()
     lan.set_rebind_callback(None)
+    monkeypatch.setattr(lan, "_discover_lan_ipv4", lambda: [])
     return lan
 
 
@@ -112,7 +113,7 @@ def _load_bridge(tmp_path, monkeypatch):
     package.__path__ = [str(PKG)]
     sys.modules["MattsSDKBoostingTools"] = package
     backend = types.ModuleType("MattsSDKBoostingTools.backend_actions")
-    backend.get_status = lambda: {"players": [], "serial_delivery": {}, "diagnostics": {}}
+    backend.get_status = lambda **_kwargs: {"players": [], "serial_delivery": {}, "diagnostics": {}}
     sys.modules["MattsSDKBoostingTools.backend_actions"] = backend
     registry = types.ModuleType("MattsSDKBoostingTools.quick_menu_registry")
     registry.ASSIGNABLE_ACTIONS = frozenset()
@@ -122,6 +123,7 @@ def _load_bridge(tmp_path, monkeypatch):
     lan = _load_module("mobile_lan", "mobile_lan.py")
     lan.reset_state()
     lan.set_rebind_callback(None)
+    monkeypatch.setattr(lan, "_discover_lan_ipv4", lambda: [])
     spec = importlib.util.spec_from_file_location(
         "MattsSDKBoostingTools.external_bridge", PKG / "external_bridge.py"
     )

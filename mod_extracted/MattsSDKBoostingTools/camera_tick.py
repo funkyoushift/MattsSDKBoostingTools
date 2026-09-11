@@ -35,6 +35,10 @@ _in_flight = False
 _installed = False
 _callbacks: list[tuple[int, str, TickFn]] = []
 _needed: set[str] = set()
+# These lifetimes share the Quick Menu callback, not the phone-pairing callback.
+_NEED_ALIASES = {
+    "quick_menu": ("quick_menu_hotkeys", "quick_menu_toast", "quick_menu_delivery"),
+}
 
 
 def register(name: str, callback: TickFn, *, priority: int = 100) -> None:
@@ -48,6 +52,10 @@ def register(name: str, callback: TickFn, *, priority: int = 100) -> None:
 
 def _ui_needed() -> bool:
     return any(name.startswith("quick_menu") for name in _needed)
+
+
+def _callback_needed(name: str) -> bool:
+    return name in _needed or any(alias in _needed for alias in _NEED_ALIASES.get(name, ()))
 
 
 def set_needed(name: str, needed: bool) -> None:
@@ -98,7 +106,7 @@ def disable_shared_hook() -> None:
 
 def _pump(_obj: Any, _args: Any, _ret: Any, _func: Any) -> None:
     global _last_at, _in_flight
-    if _in_flight:
+    if _in_flight or not _needed:
         return None
     if travel_gate.is_travel_quiet() and not _ui_needed():
         return None
@@ -117,6 +125,10 @@ def _pump(_obj: Any, _args: Any, _ret: Any, _func: Any) -> None:
     try:
         quiet = travel_gate.is_travel_quiet()
         for _prio, _name, fn in _callbacks:
+            # One active feature must not wake every registered feature's idle
+            # path. Check live needs so an earlier callback can cancel work.
+            if not _callback_needed(_name):
+                continue
             if quiet and not _name.startswith("quick_menu") and _name != "party_reveal":
                 continue
             try:

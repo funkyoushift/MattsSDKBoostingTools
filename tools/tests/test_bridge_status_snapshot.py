@@ -11,7 +11,7 @@ def test_get_status_uses_cached_snapshot_not_backend():
         "players": [{"index": 0, "name": "Cached Player"}],
         "queue": 99,
     }
-    bridge.backend_actions.get_status = lambda: (_ for _ in ()).throw(
+    bridge.backend_actions.get_status = lambda **_kwargs: (_ for _ in ()).throw(
         AssertionError("HTTP thread called live backend status")
     )
     sent = []
@@ -32,9 +32,9 @@ def test_get_status_uses_cached_snapshot_not_backend():
 def test_http_snapshot_keeps_backend_game_parameters():
     bridge = _load_bridge()
     parameters = {"player_level_cap": 70, "vault_card_count": 5, "extracted_game_build": "25234898"}
-    bridge.backend_actions.get_status = lambda: {"game_parameters": parameters}
+    bridge.backend_actions.get_status = lambda **_kwargs: {"game_parameters": parameters}
     bridge._refresh_status_snapshot(force=True)
-    bridge.backend_actions.get_status = lambda: (_ for _ in ()).throw(
+    bridge.backend_actions.get_status = lambda **_kwargs: (_ for _ in ()).throw(
         AssertionError("HTTP thread called live backend status")
     )
     assert bridge._get_status_snapshot()["game_parameters"] == parameters

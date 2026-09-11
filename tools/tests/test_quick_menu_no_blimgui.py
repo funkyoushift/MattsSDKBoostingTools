@@ -213,7 +213,7 @@ def test_quick_menu_modal_layers_and_blockers_are_consistent():
 def test_external_bridge_does_not_import_blimgui_panel():
     _install_base_stubs()
     ba = types.ModuleType("MattsSDKBoostingTools.backend_actions")
-    ba.get_status = lambda: {
+    ba.get_status = lambda **_kwargs: {
         "players": [],
         "selected_player": "",
         "serial_delivery": {},

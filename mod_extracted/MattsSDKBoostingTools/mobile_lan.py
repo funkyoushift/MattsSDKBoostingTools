@@ -27,6 +27,11 @@ _enroll_open = False
 _enroll_nonce = ""
 _enroll_nonce_at = 0.0
 _ENROLL_TTL_S = 15 * 60.0
+_HOSTS_REFRESH_SECONDS = 30.0
+_hosts_cache: list[str] = []
+_hosts_refresh_after = 0.0
+_hosts_generation = 0
+_hosts_worker: threading.Thread | None = None
 
 
 def set_rebind_callback(callback: Callable[[], None] | None) -> None:
@@ -105,6 +110,10 @@ def set_lan_enabled(enabled: bool, *, persist_now: bool = True) -> bool:
     with _LOCK:
         changed = _lan_enabled != want
         _lan_enabled = want
+    if want:
+        _request_hosts_refresh(force=changed)
+    elif changed:
+        stop_hosts_discovery()
     if persist_now:
         save()
     if changed and _rebind_cb is not None:
@@ -136,6 +145,7 @@ def arm_enroll() -> str:
         _enroll_open = True
         _enroll_nonce = nonce
         _enroll_nonce_at = time.time()
+    _request_hosts_refresh()
     return nonce
 
 
@@ -144,6 +154,8 @@ def disarm_enroll() -> None:
     with _LOCK:
         _enroll_open = False
         _enroll_nonce = ""
+    if not lan_enabled():
+        stop_hosts_discovery()
 
 
 def list_phones() -> list[dict[str, Any]]:
@@ -219,6 +231,7 @@ def remember_phone(*, ip: str, token: str, name: str = "Phone") -> dict[str, Any
         was_lan = bool(_lan_enabled)
         _lan_enabled = True
         snapshot = dict(found)
+    _request_hosts_refresh(force=not was_lan)
     save()
     if not was_lan and _rebind_cb is not None:
         try:
@@ -248,7 +261,8 @@ def enroll(nonce: str, *, ip: str, token: str, name: str = "Phone") -> dict[str,
     }
 
 
-def list_lan_ipv4() -> list[str]:
+def _discover_lan_ipv4() -> list[str]:
+    """Potentially blocking OS/network calls; only run on the discovery worker."""
     addresses: list[str] = []
     try:
         hostname = socket.gethostname()
@@ -277,6 +291,71 @@ def list_lan_ipv4() -> list[str]:
         except Exception:
             pass
     return addresses
+
+
+def _request_hosts_refresh(*, force: bool = False) -> None:
+    """At most one resolver, with no network work or waits on the caller thread."""
+    global _hosts_worker, _hosts_refresh_after
+    with _LOCK:
+        if not (_lan_enabled or enroll_open()):
+            return
+        if _hosts_worker is not None:
+            return
+        now = time.monotonic()
+        if not force and now < _hosts_refresh_after:
+            return
+        generation = _hosts_generation
+        _hosts_refresh_after = now + _HOSTS_REFRESH_SECONDS
+        worker = threading.Thread(
+            target=_refresh_hosts_worker, args=(generation,),
+            daemon=True, name="MSBTLanDiscovery",
+        )
+        _hosts_worker = worker
+    try:
+        worker.start()
+    except Exception:
+        with _LOCK:
+            if _hosts_worker is worker:
+                _hosts_worker = None
+
+
+def _refresh_hosts_worker(generation: int) -> None:
+    global _hosts_cache, _hosts_refresh_after, _hosts_worker
+    try:
+        with _LOCK:
+            if generation != _hosts_generation:
+                return
+        # Never hold the status/pairing lock while DNS or adapter discovery runs.
+        hosts = _discover_lan_ipv4()
+        with _LOCK:
+            if generation == _hosts_generation:
+                _hosts_cache = list(hosts)
+                _hosts_refresh_after = time.monotonic() + _HOSTS_REFRESH_SECONDS
+    except Exception:
+        pass
+    finally:
+        with _LOCK:
+            if generation == _hosts_generation:
+                _hosts_refresh_after = time.monotonic() + _HOSTS_REFRESH_SECONDS
+            if _hosts_worker is threading.current_thread():
+                _hosts_worker = None
+
+
+def stop_hosts_discovery() -> None:
+    """Invalidate pending results without waiting for an OS resolver to return."""
+    global _hosts_generation, _hosts_refresh_after
+    with _LOCK:
+        _hosts_generation += 1
+        _hosts_refresh_after = 0.0
+        # Keep an outstanding worker's slot until it exits: repeated toggles
+        # must not create additional threads when a resolver is stalled.
+
+
+def list_lan_ipv4() -> list[str]:
+    """Return cached addresses immediately and refresh active LAN in the background."""
+    _request_hosts_refresh()
+    with _LOCK:
+        return list(_hosts_cache)
 
 
 def _usable_lan_ip(ip: str) -> bool:
@@ -316,13 +395,14 @@ def install_payload_text() -> str:
 
 
 def status_dict() -> dict[str, Any]:
+    hosts = list_lan_ipv4()
     with _LOCK:
         return {
             "lan_enabled": bool(_lan_enabled),
             "bind_host": bind_host(),
             "port": _PORT,
             "enroll_open": enroll_open(),
-            "hosts": list_lan_ipv4(),
+            "hosts": hosts,
             "phones": [
                 {"name": row.get("name"), "ip": row.get("ip")}
                 for row in _allowlist
@@ -333,12 +413,15 @@ def status_dict() -> dict[str, Any]:
 def reset_state(*, persist: bool = False) -> None:
     """Clear in-memory pairing state. Tests only; does not bind sockets."""
     global _lan_enabled, _allowlist, _enroll_open, _enroll_nonce, _enroll_nonce_at
+    global _hosts_cache
+    stop_hosts_discovery()
     with _LOCK:
         _lan_enabled = False
         _allowlist = []
         _enroll_open = False
         _enroll_nonce = ""
         _enroll_nonce_at = 0.0
+        _hosts_cache = []
     if persist:
         save()
 
