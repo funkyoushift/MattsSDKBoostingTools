@@ -1606,6 +1606,25 @@ def _next_loyalty_reward_name() -> Tuple[str, int, int]:
     return DEFAULT_REWARD_DEF_NAME, 1, 1
 
 
+def _is_local_only_serial_target(player_indices: List[int]) -> bool:
+    """Return true only when the requested target is this host's controller."""
+    if len(player_indices) != 1:
+        return False
+    local = get_pc()
+    if local is None:
+        return False
+    try:
+        target = _pc_for_player_index(int(player_indices[0]))
+    except Exception:
+        return False
+    if target is local:
+        return True
+    # SDK wrappers for the same UObject may not retain Python identity.
+    try:
+        return str(target) == str(local)
+    except Exception:
+        return False
+
 def _queue_serial_delivery_sequence(serials: List[str], player_indices: List[int], *, scope_label: str, mode: str | None = None) -> None:
     mode_key = _serial_delivery_mode_key(mode)
     max_serials = _serial_delivery_max_serials_per_chunk(mode_key)
@@ -1666,6 +1685,8 @@ def _queue_serial_delivery_sequence(serials: List[str], player_indices: List[int
         _log_info(f"Serial delivery queued for {scope_label}: 1 package, {len(serials)} serial(s).")
     _set_serial_delivery_status(f"Serial delivery queued: {len(chunks)} part(s), {len(serials)} serial(s) to {scope_label}", log=True)
     _pending_serial_delivery_sequences.append({
+        # Self-delivery uses the narrow local API; remote sends retain all-player replication.
+        "all_players_reward": not _is_local_only_serial_target(targets),
         "serials": list(serials),
         "chunks": [list(chunk) for chunk in chunks],
         "targets": list(targets),
@@ -1762,8 +1783,11 @@ def _process_pending_serial_delivery_sequences() -> None:
                     continue
                 seq["target_wait_started"] = 0.0
                 seq["target_retry_after"] = 0.0
-                if not _give_reward_def(reward_name, True):
-                    _set_serial_delivery_status(f"Serial delivery stopped: GiveRewardAllPlayers failed on {idx + 1}/{len(chunks)}", hold_sec=20.0, log=True)
+                # Only remote/party targets need the all-player RPC. A self-send uses the local reward API.
+                all_players_reward = bool(seq.get("all_players_reward", True))
+                if not _give_reward_def(reward_name, all_players_reward):
+                    grant_label = "GiveRewardAllPlayers" if all_players_reward else "GiveReward"
+                    _set_serial_delivery_status(f"Serial delivery stopped: {grant_label} failed on {idx + 1}/{len(chunks)}", hold_sec=20.0, log=True)
                     continue
                 seq["before_counts"] = before_counts
                 seq["stage"] = "patch"

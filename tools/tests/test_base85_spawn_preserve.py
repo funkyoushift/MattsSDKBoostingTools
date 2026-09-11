@@ -224,3 +224,23 @@ if __name__ == "__main__":
     test_bad_human_keeps_good_base85()
     test_needs_async_when_local_fails_and_genie_on()
     print("ALL TESTS PASSED")
+
+
+def test_local_serial_delivery_uses_local_reward_scope(monkeypatch):
+    """A self-send must not invoke the broad all-player reward grant."""
+    local = object()
+    sr.get_pc = lambda: local
+    sr._pc_for_player_index = lambda index: local if index == 0 else object()
+    sr._serial_delivery_chunks = lambda serials, mode: [list(serials)]
+    sr._serial_delivery_max_serials_per_chunk = lambda mode: 10
+    sr._serial_delivery_post_open_delay = lambda mode: 0.0
+    sr._gbc_run_session_timer_from_give_serial = lambda: None
+    sr._player_name_for_index = lambda index: "Host"
+    sr._set_serial_delivery_status = lambda *args, **kwargs: None
+    sr._set_serial_delivery_tick = lambda enabled: None
+    sr._pending_serial_delivery_sequences.clear()
+    sr._pending_serial_patch_jobs.clear()
+
+    sr._queue_serial_delivery_sequence([SAMPLE], [0], scope_label="local player", mode="selected")
+
+    assert sr._pending_serial_delivery_sequences[0]["all_players_reward"] is False
