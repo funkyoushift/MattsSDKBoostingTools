@@ -1362,6 +1362,27 @@ button.gzo-submit-cta:hover {
   overflow: auto;
 }
 
+.bl4-inline-confirm {
+  margin-top: 8px;
+  padding: 10px 12px;
+  border: 1px solid rgba(232, 196, 92, 0.45);
+  border-radius: 8px;
+  background: rgba(40, 32, 12, 0.55);
+}
+
+.bl4-inline-confirm.hidden,
+.bl4-inline-confirm[hidden] {
+  display: none !important;
+}
+
+.bl4-inline-confirm-message {
+  white-space: pre-wrap;
+  margin-bottom: 8px;
+  color: #f3e6b8;
+  font-size: 0.92rem;
+  line-height: 1.35;
+}
+
 .grid.sidecar {
   grid-template-columns: minmax(320px, 430px) minmax(620px, 1fr);
   min-height: calc(100vh - 136px);

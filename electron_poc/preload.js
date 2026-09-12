@@ -8,6 +8,7 @@ contextBridge.exposeInMainWorld("msbt", {
   downloadUpdate: () => ipcRenderer.invoke("app:downloadUpdate"),
   getVersionInfo: () => ipcRenderer.invoke("app:getVersionInfo"),
   getWindowSettings: () => ipcRenderer.invoke("app:getWindowSettings"),
+  focusMainWindow: () => ipcRenderer.invoke("app:focusMainWindow"),
   installSdkMod: (sdkModsPath) => ipcRenderer.invoke("app:installSdkMod", sdkModsPath),
   installOak2: (sdkModsPath, options) => ipcRenderer.invoke("app:installOak2", sdkModsPath, options || {}),
   enableRequiredSdkMods: (sdkModsPath) => ipcRenderer.invoke("app:enableRequiredSdkMods", sdkModsPath),

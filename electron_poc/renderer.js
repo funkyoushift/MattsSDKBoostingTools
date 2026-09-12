@@ -20,6 +20,11 @@ const els = {
   bl4CreatorFilter: document.getElementById("bl4CreatorFilter"),
   bl4DeliveryLevel: document.getElementById("bl4DeliveryLevel"),
   bl4DeliveryStatus: document.getElementById("bl4DeliveryStatus"),
+  bl4InlineConfirm: document.getElementById("bl4InlineConfirm"),
+  bl4InlineConfirmMessage: document.getElementById("bl4InlineConfirmMessage"),
+  bl4InlineConfirmOk: document.getElementById("bl4InlineConfirmOk"),
+  bl4InlineConfirmCancel: document.getElementById("bl4InlineConfirmCancel"),
+  bl4SendButtonRow: document.getElementById("bl4SendButtonRow"),
   bl4Detail: document.getElementById("bl4Detail"),
   bl4ImportSelectedBtn: document.getElementById("bl4ImportSelectedBtn"),
   bl4ListingFilter: document.getElementById("bl4ListingFilter"),
@@ -505,18 +510,23 @@ const state = {
   gameParameters: { player_level_cap: 70, item_level_cap: 70, specialization_level_cap: 701, vault_card_level_cap: 9999 },
   activeTab: "",
   activity: [],
+  activityFlushTimer: null,
   autoInventoryInFlight: false,
   autoInventoryLastMessage: "",
   autoInventoryTimer: null,
   bl4ActiveId: "",
   bl4CatalogWarnings: [],
   bl4CatalogLoaded: false,
+  bl4PendingDelivery: null,
   bl4CatalogLoadPromise: null,
   bl4ConfirmedId: "",
   bl4ConfirmedSerial: "",
   bl4Entries: [],
   bl4FilteredEntries: [],
   bl4SearchQuery: "",
+  bl4SearchTimer: null,
+  bl4BreakdownTimer: null,
+  bl4ShownCardIds: [],
   bl4SelectedIds: new Set(),
   bl4SelectionAnchor: "",
   bridgeDiagnostics: {},
@@ -530,6 +540,14 @@ const state = {
   boostTargetScope: "selected",
   publicBoostScope: "local",
   lootScope: "local",
+  // Optimistic named-player selection while set_target_player is in flight.
+  // Status polls must not snap the dropdown back to the previous server target.
+  pendingTargetValue: "",
+  targetSetGeneration: 0,
+  // Multi-player scoped boosts (All / Other). Bump to cancel mid-loop when the
+  // user picks a new named target so setTarget no longer fights the dropdown.
+  scopedRunId: 0,
+  scopedRunActive: false,
   hostPlayerIndex: null,
   invEquipped: [],
   invBackpack: [],
@@ -694,7 +712,14 @@ function appendActivity(message) {
   const stamp = new Date().toLocaleTimeString();
   state.activity.push(`[${stamp}] ${message}`);
   if (state.activity.length > 250) state.activity.shift();
-  setOutput(els.activityOutput, state.activity.join("\n"));
+  // Coalesce DOM writes — delivery status polls used to rewrite the full
+  // activity log every ~1.25s and jank the BL4 Codes tab after Send.
+  if (state.activityFlushTimer) return;
+  const delay = state.serialDeliveryWatch ? 200 : 0;
+  state.activityFlushTimer = window.setTimeout(() => {
+    state.activityFlushTimer = null;
+    setOutput(els.activityOutput, state.activity.join("\n"));
+  }, delay);
 }
 
 async function copyText(value, statusNode, label) {
@@ -2731,6 +2756,31 @@ function selectedTargetFromStatus(status) {
   return targetValueFromParts(index, name);
 }
 
+function bl4SearchIsFocused() {
+  return Boolean(els.bl4SearchInput && document.activeElement === els.bl4SearchInput);
+}
+
+function bl4CodesFilterControlFocused() {
+  const active = document.activeElement;
+  if (!active) return false;
+  return [
+    els.bl4SearchInput,
+    els.bl4ListingFilter,
+    els.bl4TypeFilter,
+    els.bl4ManufacturerFilter,
+    els.bl4RarityFilter,
+    els.bl4CreatorFilter,
+    els.bl4LevelFilter,
+    els.bl4MattmabFilter
+  ].some((node) => node && active === node);
+}
+
+// While Search or a BL4 filter control is focused, status/delivery work may update
+// text nodes only — never remount player/filter selects or call focus().
+function bl4UiShouldStayQuiet() {
+  return bl4CodesFilterControlFocused();
+}
+
 function renderPlayers(status = {}) {
   state.players = Array.isArray(status.players) ? status.players : [];
   if (Object.prototype.hasOwnProperty.call(status, "host_player_index")) {
@@ -2741,7 +2791,10 @@ function renderPlayers(status = {}) {
     if (!Number.isFinite(state.hostPlayerIndex)) state.hostPlayerIndex = null;
   }
   const selected = selectedTargetFromStatus(status);
-  if (selected) {
+  // While a local set_target is in flight (or a scoped All/Other loop is driving
+  // targets), do not let status polls snap selectedTarget / dropdowns backward.
+  const holdLocalTarget = Boolean(state.pendingTargetValue) || Boolean(state.scopedRunActive);
+  if (!holdLocalTarget && selected) {
     state.selectedTarget = selected;
     state.selectedTargetName = targetNameFromValue(selected) || state.selectedTargetName;
   }
@@ -2750,7 +2803,7 @@ function renderPlayers(status = {}) {
   if (resolved) {
     state.selectedTarget = resolved;
     state.selectedTargetName = targetNameFromValue(resolved);
-  } else if (state.selectedTarget && state.players.length) {
+  } else if (!holdLocalTarget && state.selectedTarget && state.players.length) {
     state.selectedTarget = "";
     state.selectedTargetName = "";
   } else if (!state.players.length) {
@@ -2758,12 +2811,51 @@ function renderPlayers(status = {}) {
     state.selectedTargetName = "";
   }
 
+  // State-only while BL4 Search is focused or immediately after Send: skip
+  // <select> rebuilds and focus restore. Post-Send status ticks were still
+  // janking typing/selection even with soft option updates.
+  if (bl4UiShouldStayQuiet()) {
+    updateBoostTargetSummary();
+    updateDevTargetSummary();
+    const selectedPlayer = state.players.find((player) => String(playerValue(player)) === String(state.selectedTarget));
+    const text = `Named player: ${selectedPlayer ? playerLabel(selectedPlayer) : state.selectedTarget || "none"}`;
+    const kind = state.selectedTarget ? "ok" : "warning";
+    setLine(els.bookmarkTargetSummary, text, kind);
+    setLine(els.bl4TargetSummary, text, kind);
+    setLine(els.movementStatus, text, kind);
+    if (els.invGiveTargetSelect) {
+      state.invGiveTarget = String(els.invGiveTargetSelect.value || "");
+    }
+    return;
+  }
+
+  const preferredNamedTarget = () => String(state.pendingTargetValue || state.selectedTarget || "");
+
   const fillSelect = (selectNode, preferredValue = null) => {
     if (!selectNode) return;
     const previous = preferredValue !== null && preferredValue !== undefined
       ? String(preferredValue)
       : String(selectNode.value || "");
-    const fallback = String(state.selectedTarget || "");
+    const fallback = preferredNamedTarget();
+    const nextValues = state.players.map((player) => String(playerValue(player)));
+    const existingValues = Array.from(selectNode.options)
+      .map((option) => String(option.value || ""))
+      .filter(Boolean);
+    const sameOptions = existingValues.length === nextValues.length
+      && existingValues.every((value, index) => value === nextValues[index]);
+
+    // Soft-update only: wiping <select> innerHTML closes an open dropdown and
+    // steals focus, which feels like "can't change targets / can't type" until
+    // the next bridge wait finishes (often 10–30s per scoped player).
+    if (sameOptions) {
+      if (document.activeElement === selectNode) return;
+      const want = previous || fallback;
+      if (want && Array.from(selectNode.options).some((option) => String(option.value) === want)) {
+        selectNode.value = want;
+      }
+      return;
+    }
+
     selectNode.innerHTML = "";
     const blank = document.createElement("option");
     blank.value = "";
@@ -2788,18 +2880,22 @@ function renderPlayers(status = {}) {
     }
   };
 
-  fillSelect(els.targetSelect, state.selectedTarget);
-  fillSelect(els.boostSerialTargetSelect, state.selectedTarget);
-  fillSelect(els.devTargetSelect, state.selectedTarget);
-  fillSelect(els.bookmarkTargetSelect, state.selectedTarget);
-  fillSelect(els.bl4TargetSelect, state.selectedTarget);
-  fillSelect(els.movementTargetSelect, els.movementTargetSelect && els.movementTargetSelect.value);
-  // Inventory viewing vs give-to stay independent of each other and of Boosting target.
-  fillSelect(els.invTargetSelect, els.invTargetSelect && els.invTargetSelect.value);
-  fillSelect(
-    els.invGiveTargetSelect,
-    (els.invGiveTargetSelect && els.invGiveTargetSelect.value) || state.invGiveTarget || state.selectedTarget
-  );
+  // Preserve BL4 Codes Search (and other text fields) across full player-select
+  // rebuilds during Max All / set_target status churn.
+  withBl4SearchFocusPreserved(() => {
+    fillSelect(els.targetSelect, preferredNamedTarget());
+    fillSelect(els.boostSerialTargetSelect, preferredNamedTarget());
+    fillSelect(els.devTargetSelect, preferredNamedTarget());
+    fillSelect(els.bookmarkTargetSelect, preferredNamedTarget());
+    fillSelect(els.bl4TargetSelect, preferredNamedTarget());
+    fillSelect(els.movementTargetSelect, els.movementTargetSelect && els.movementTargetSelect.value);
+    // Inventory viewing vs give-to stay independent of each other and of Boosting target.
+    fillSelect(els.invTargetSelect, els.invTargetSelect && els.invTargetSelect.value);
+    fillSelect(
+      els.invGiveTargetSelect,
+      (els.invGiveTargetSelect && els.invGiveTargetSelect.value) || state.invGiveTarget || preferredNamedTarget()
+    );
+  });
   if (els.invGiveTargetSelect) {
     state.invGiveTarget = String(els.invGiveTargetSelect.value || "");
   }
@@ -2971,7 +3067,12 @@ function setBoostTargetScope(scope) {
 
 async function ensureLocalHostTarget(outNode) {
   const host = hostPlayerFromList();
-  if (!host) return true;
+  if (!host) {
+    const message = "No party players found. Refresh Status while in a session.";
+    if (outNode) setOutput(outNode, message);
+    appendActivity(message);
+    return false;
+  }
   const result = await setTarget(playerValue(host), { keepBoostScope: true });
   return Boolean(result && result.data && result.data.ok);
 }
@@ -3024,36 +3125,80 @@ async function runScopedPlayerAction(action, payload = {}, outNode = els.boostOu
     return { ok: false, message };
   }
 
+  const runId = ++state.scopedRunId;
+  state.scopedRunActive = true;
   const lines = [`Running ${action} for ${labelFor(scope)} (${targets.length})...`];
   if (outNode) setOutput(outNode, lines.join("\n"));
   appendActivity(lines[0]);
 
   let okCount = 0;
   let failCount = 0;
-  for (const player of targets) {
-    const label = playerLabel(player);
-    const targetValue = playerValue(player);
-    const setResult = await setTarget(targetValue, { keepBoostScope: true });
-    if (!actionSucceeded(setResult)) {
-      failCount += 1;
-      lines.push(`${label}: could not set target — ${resultMessage(setResult)}`);
-      continue;
+  let cancelled = false;
+  try {
+    for (let index = 0; index < targets.length; index += 1) {
+      if (runId !== state.scopedRunId) {
+        cancelled = true;
+        lines.push("Cancelled — named player changed while scoped boost was running.");
+        break;
+      }
+      const player = targets[index];
+      const label = playerLabel(player);
+      const targetValue = playerValue(player);
+      lines.push(`(${index + 1}/${targets.length}) ${label}...`);
+      if (outNode) setOutput(outNode, lines.join("\n"));
+      // skipStatus: avoid mid-loop bridgeStatus → renderPlayers wiping dropdowns
+      // between players (each set_target changes selected_player fingerprint).
+      const setResult = await setTarget(targetValue, {
+        keepBoostScope: true,
+        skipStatus: true,
+        fromScopedRun: true
+      });
+      if (runId !== state.scopedRunId) {
+        cancelled = true;
+        lines.push("Cancelled — named player changed while scoped boost was running.");
+        break;
+      }
+      if (!actionSucceeded(setResult)) {
+        failCount += 1;
+        lines.push(`${label}: could not set target — ${resultMessage(setResult)}`);
+        continue;
+      }
+      const result = await runAction(action, await resolveActionPayload(payload), outNode, timeoutMs);
+      if (runId !== state.scopedRunId) {
+        cancelled = true;
+        lines.push("Cancelled — named player changed while scoped boost was running.");
+        break;
+      }
+      if (actionSucceeded(result)) {
+        okCount += 1;
+        lines.push(`${label}: ${resultMessage(result)}`);
+      } else {
+        failCount += 1;
+        lines.push(`${label}: FAILED — ${resultMessage(result)}`);
+      }
     }
-    const result = await runAction(action, await resolveActionPayload(payload), outNode, timeoutMs);
-    if (actionSucceeded(result)) {
-      okCount += 1;
-      lines.push(`${label}: ${resultMessage(result)}`);
-    } else {
-      failCount += 1;
-      lines.push(`${label}: FAILED — ${resultMessage(result)}`);
+  } finally {
+    if (runId === state.scopedRunId) {
+      state.scopedRunActive = false;
+      if (els.bl4SearchInput) {
+        els.bl4SearchInput.disabled = false;
+        els.bl4SearchInput.readOnly = false;
+      }
+      try {
+        await bridgeStatus({ quiet: true });
+      } catch (_err) {
+        /* ignore refresh errors after scoped run */
+      }
     }
   }
 
-  const summary = `${action} finished for ${labelFor(scope)}: ${okCount} ok, ${failCount} failed.`;
+  const summary = cancelled
+    ? `${action} cancelled for ${labelFor(scope)} after ${okCount} ok, ${failCount} failed.`
+    : `${action} finished for ${labelFor(scope)}: ${okCount} ok, ${failCount} failed.`;
   lines.push(summary);
   if (outNode) setOutput(outNode, lines.join("\n"));
   appendActivity(summary);
-  return { ok: failCount === 0 && okCount > 0, message: summary, okCount, failCount };
+  return { ok: !cancelled && failCount === 0 && okCount > 0, message: summary, okCount, failCount, cancelled };
 }
 
 function serialDeliveryMessage(progress = {}) {
@@ -3455,6 +3600,7 @@ function applyBridgeStatusResult(result, options = {}) {
     state.players = [];
     state.selectedTarget = "";
     state.selectedTargetName = "";
+    state.pendingTargetValue = "";
     if (fingerprints.players !== "offline") {
       fingerprints.players = "offline";
       renderPlayers({});
@@ -3472,12 +3618,20 @@ function applyBridgeStatusResult(result, options = {}) {
   state.bridgeDiagnostics = data.diagnostics && typeof data.diagnostics === "object" ? data.diagnostics : {};
   const playersFingerprint = fingerprint({
     players: data.players || [],
-    host_player_index: data.host_player_index,
+    host_player_index: data.host_player_index
+  });
+  const selectionFingerprint = fingerprint({
     selected_player: data.selected_player,
     selected_player_index: data.selected_player_index
   });
   if (fingerprints.players !== playersFingerprint) {
     fingerprints.players = playersFingerprint;
+    fingerprints.playerSelection = selectionFingerprint;
+    renderPlayers(data);
+  } else if (fingerprints.playerSelection !== selectionFingerprint) {
+    // Roster unchanged — soft-update selection only (no <select> wipe). Avoids
+    // stealing BL4 Search focus during Give_Serial / set_target status churn.
+    fingerprints.playerSelection = selectionFingerprint;
     renderPlayers(data);
   }
   const playerCount = Array.isArray(data.players) ? data.players.length : 0;
@@ -3503,7 +3657,11 @@ function applyBridgeStatusResult(result, options = {}) {
     if (data.itempool_bulk.active) startItempoolStatusWatch();
     else stopItempoolStatusWatch();
   }
-  updateSerialState();
+  // Quiet after BL4 Send / while Search is focused — skip editor serial button
+  // churn that is unrelated to the Codes tab.
+  if (!bl4UiShouldStayQuiet()) {
+    updateSerialState();
+  }
   // Always pull rarity from the bridge so F7 live-apply moves Boosting sliders.
   syncBoostingRaritySlidersFromBridge(data);
   syncLiveModsFromStatus(data);
@@ -4230,16 +4388,30 @@ async function runBridgeStatusPoll() {
 function startSerialDeliveryProgressWatch() {
   state.serialDeliveryIdlePolls = 0;
   state.serialDeliveryWatch = true;
-  scheduleNextBridgeStatusPoll(0);
+  // Do not force an early status apply after Send — that raced Search focus.
+  // Keep the existing poll loop; renderPlayers stays quiet while Codes UI is focused.
+  if (!state.bridgeStatusPollTimer && !state.bridgeStatusPollInFlight) {
+    scheduleNextBridgeStatusPoll();
+  }
 }
 
 async function setTarget(value, options = {}) {
   const target = String(value || "").trim();
   const keepBoostScope = Boolean(options && options.keepBoostScope);
+  const skipStatus = Boolean(options && options.skipStatus);
+  const fromScopedRun = Boolean(options && options.fromScopedRun);
   if (!keepBoostScope) {
     state.boostTargetScope = "selected";
   }
+  // Manual target picks cancel an in-flight All/Other scoped loop so the loop
+  // cannot keep overwriting the dropdown after the user chose someone else.
+  if (!fromScopedRun && state.scopedRunActive) {
+    state.scopedRunId += 1;
+    state.scopedRunActive = false;
+    appendActivity("Cancelled scoped boost — named player changed.");
+  }
   if (!target) {
+    state.pendingTargetValue = "";
     state.selectedTarget = "";
     state.selectedTargetName = "";
     updateBoostTargetSummary();
@@ -4254,20 +4426,44 @@ async function setTarget(value, options = {}) {
     return null;
   }
 
-  setLine(els.bookmarkTargetSummary, `Setting target ${target}...`, "warning");
-  setLine(els.bl4TargetSummary, `Setting target ${target}...`, "warning");
-  setLine(els.movementStatus, `Setting target ${target}...`, "warning");
-  if (els.devTargetSummary) setLine(els.devTargetSummary, `Setting target ${target}...`, "warning");
-  if (els.invStatus) setLine(els.invStatus, `Setting target ${target}...`, "warning");
+  const generation = ++state.targetSetGeneration;
+  state.pendingTargetValue = target;
+  state.selectedTarget = target;
+  state.selectedTargetName = targetNameFromValue(target) || state.selectedTargetName;
+  updateBoostTargetSummary();
+  if (!skipStatus) {
+    setLine(els.bookmarkTargetSummary, `Setting target ${target}...`, "warning");
+    setLine(els.bl4TargetSummary, `Setting target ${target}...`, "warning");
+    setLine(els.movementStatus, `Setting target ${target}...`, "warning");
+    if (els.devTargetSummary) setLine(els.devTargetSummary, `Setting target ${target}...`, "warning");
+    if (els.invStatus) setLine(els.invStatus, `Setting target ${target}...`, "warning");
+  }
+  // set_target waits on the game tick. Cap at 10s so a long Max All / serial
+  // delivery cannot leave the named-player UI feeling locked for 30s+.
   const result = await bridgeAction("set_target_player", { target_player: target }, 10000);
+  if (generation !== state.targetSetGeneration) {
+    return result;
+  }
   setOutput(els.statusOutput, result);
   const ok = Boolean(result && result.data && result.data.ok);
   if (ok) {
     const data = result.data || {};
     state.selectedTarget = targetValueFromParts(data.selected_player_index, data.selected_player) || target;
     state.selectedTargetName = targetNameFromValue(state.selectedTarget);
-    await bridgeStatus({ quiet: true });
+    state.pendingTargetValue = "";
+    if (!skipStatus) {
+      await bridgeStatus({ quiet: true });
+    } else {
+      updateBoostTargetSummary();
+      updateDevTargetSummary();
+      const text = `Named player: ${state.selectedTargetName || state.selectedTarget || "none"}`;
+      setLine(els.bookmarkTargetSummary, text, "ok");
+      setLine(els.bl4TargetSummary, text, "ok");
+      setLine(els.movementStatus, text, "ok");
+      if (els.devTargetSummary) setLine(els.devTargetSummary, text, "ok");
+    }
   } else {
+    state.pendingTargetValue = "";
     const message = resultMessage(result) || "Target update failed.";
     updateBoostTargetSummary();
     setLine(els.bookmarkTargetSummary, message, "bad");
@@ -4301,7 +4497,20 @@ async function ensureSelectedTarget(outNode) {
     if (els.devTargetSummary) setLine(els.devTargetSummary, "Select a target player first.", "warning");
     return false;
   }
-  const result = await setTarget(state.selectedTarget, { keepBoostScope: true });
+  // Already aimed at this player — skip another set_target wait (up to 10s) that
+  // leaves BL4 Search feeling locked after Send Item.
+  const current = String(state.selectedTarget || "");
+  const pending = String(state.pendingTargetValue || "");
+  if (current && !pending && !state.scopedRunActive) {
+    const resolved = resolveTargetValue(current, state.players);
+    if (resolved && String(resolved) === current) {
+      return true;
+    }
+  }
+  const result = await setTarget(state.selectedTarget, {
+    keepBoostScope: true,
+    skipStatus: true
+  });
   return Boolean(result && result.data && result.data.ok);
 }
 
@@ -4586,19 +4795,58 @@ async function sendSerialPayload(mode, serialText, overrideLevel, level, outNode
   }
   if (mode === "selected") {
     const ok = await ensureSelectedTarget(outNode);
-    if (!ok) return;
+    if (!ok) return { ok: false, message: "No party player selected." };
   }
 
   const action = serialActionByMode(mode);
+  // Give_Serial queues a tick sequence — keep the waiter short so the fire-
+  // and-forget path resolves quickly. Progress watch owns long-running status.
   const result = await runAction(action, {
     serial_text: expanded.text,
     serial_override_level: Boolean(overrideLevel),
     serial_level: level,
     code_delivery_level: level
-  }, outNode, 60000);
+  }, outNode, 2500);
   startSerialDeliveryProgressWatch();
-  await bridgeStatus({ quiet: true });
+  // Do not kick an extra immediate bridgeStatus here — that raced the progress
+  // watch and caused a second applyBridgeStatusResult / renderPlayers pass
+  // right when Search needed to stay responsive.
+  if (els.bl4SearchInput) {
+    els.bl4SearchInput.disabled = false;
+    els.bl4SearchInput.readOnly = false;
+  }
   return result;
+}
+
+async function deliverBl4SerialInBackground(mode, expanded, overrideLevel, deliveryLevel, deliveryRows, skippedByOverride, copies, destination, action) {
+  try {
+    const result = await sendSerialPayload(
+      mode,
+      expanded.text,
+      overrideLevel,
+      deliveryLevel,
+      els.bl4Output,
+      1,
+      "BL4 Codes"
+    );
+    if (!result) return;
+    const message = actionSucceeded(result)
+      ? resultMessage(result)
+      : annotateDeliveryFailureMessage(resultMessage(result));
+    setBl4DeliveryStatus(
+      actionSucceeded(result) ? `Delivery accepted: ${message}` : `Delivery failed: ${message}`,
+      actionSucceeded(result) ? "ok" : "bad"
+    );
+  } catch (error) {
+    const detail = error && error.message ? error.message : String(error || "Unknown delivery error");
+    setBl4DeliveryStatus(`Delivery failed: ${detail}`, "bad");
+    appendActivity(`BL4 delivery failed: ${detail}`);
+  } finally {
+    if (els.bl4SearchInput) {
+      els.bl4SearchInput.disabled = false;
+      els.bl4SearchInput.readOnly = false;
+    }
+  }
 }
 
 function bookmarkNow() {
@@ -5150,8 +5398,52 @@ function bl4FlattenSearchValues(value, out = []) {
   return out;
 }
 
+// Prefer common catalog fields for search. Full-object flatten is a fallback for
+// odd rows and is cached so filter/render passes stay cheap on ~3k entries.
+const BL4_SEARCH_FIELDS = [
+  "name",
+  "listing",
+  "source",
+  "classification",
+  "type",
+  "category",
+  "manufacturer",
+  "rarity",
+  "creator",
+  "item_level",
+  "serial",
+  "notes",
+  "tags",
+  "mattmab_validator",
+  "url"
+];
+
 function bl4SearchBlob(row) {
-  return bl4FlattenSearchValues(row).join(" ").toLowerCase();
+  if (!row || typeof row !== "object") return "";
+  if (typeof row._msbtSearchBlob === "string") return row._msbtSearchBlob;
+  const parts = [];
+  BL4_SEARCH_FIELDS.forEach((field) => {
+    const value = row[field];
+    if (value === null || value === undefined || value === "") return;
+    if (Array.isArray(value)) parts.push(value.join(" "));
+    else parts.push(String(value));
+  });
+  if (!parts.length) parts.push(...bl4FlattenSearchValues(row));
+  row._msbtSearchBlob = parts.join(" ").toLowerCase();
+  return row._msbtSearchBlob;
+}
+
+function withBl4SearchFocusPreserved(work) {
+  // #bl4SearchInput is a stable node (never replaced). Do not call focus(),
+  // rewrite value, or reset selection — those steal caret/keystrokes while typing
+  // during status polls and card soft-updates after Send.
+  try {
+    return work();
+  } finally {
+    if (!els.bl4SearchInput) return;
+    els.bl4SearchInput.disabled = false;
+    els.bl4SearchInput.readOnly = false;
+  }
 }
 
 function bl4MattmabLabel(value) {
@@ -5236,8 +5528,20 @@ async function preflightBl4LevelOverride(rows, serialText, deliveryLevel) {
 function fillBl4Filter(selectNode, values, currentValue = "All") {
   if (!selectNode) return;
   const previous = currentValue || getValue(selectNode) || "All";
+  const nextValues = ["All", ...(values || []).map((value) => String(value))];
+  const existingValues = Array.from(selectNode.options).map((option) => String(option.value || ""));
+  const sameOptions = existingValues.length === nextValues.length
+    && existingValues.every((value, index) => value === nextValues[index]);
+  // Soft-update: wiping filter <select>s during catalog refresh steals focus from
+  // Search the same way named-player rebuilds did during Max All waits.
+  if (sameOptions) {
+    if (document.activeElement === selectNode) return;
+    const hasPrevious = nextValues.includes(previous);
+    selectNode.value = hasPrevious ? previous : "All";
+    return;
+  }
   selectNode.innerHTML = "";
-  ["All", ...(values || [])].forEach((value) => {
+  nextValues.forEach((value) => {
     const option = document.createElement("option");
     option.value = value;
     option.textContent = value;
@@ -5366,97 +5670,123 @@ function bl4ImageHint(rows = state.bl4Entries) {
 
 function renderBl4Cards() {
   if (!els.bl4Cards) return;
-  els.bl4Cards.innerHTML = "";
-  if (!state.bl4Entries.length) {
-    const empty = document.createElement("div");
-    empty.className = "dev-empty-row";
-    empty.textContent = "No BL4 catalog is loaded.";
-    els.bl4Cards.appendChild(empty);
-    if (els.bl4CardSummary) els.bl4CardSummary.textContent = "GZO images load directly from save-editor.be when available.";
-    return;
-  }
-  if (!state.bl4FilteredEntries.length) {
-    const empty = document.createElement("div");
-    empty.className = "dev-empty-row";
-    empty.textContent = "No BL4 codes match the current filters. Use Search or loosen a dropdown filter.";
-    els.bl4Cards.appendChild(empty);
-    if (els.bl4CardSummary) els.bl4CardSummary.textContent = "No visible cards.";
-    return;
-  }
-
-  const maxCards = 320;
-  const shown = state.bl4FilteredEntries.slice(0, maxCards);
-  if (els.bl4CardSummary) {
-    els.bl4CardSummary.textContent = `${shown.length} of ${state.bl4FilteredEntries.length} card(s) shown; ${bl4ImageHint(shown)} Use Listing/Search to find Lootlemon or Legit codes.`;
-  }
-
-  shown.forEach((row) => {
-    const id = bl4EntryId(row);
-    const card = document.createElement("button");
-    card.type = "button";
-    card.className = `bl4-code-card${id === state.bl4ActiveId ? " active" : ""}${state.bl4SelectedIds.has(id) ? " checked" : ""}`;
-    card.addEventListener("click", (event) => selectBl4Entry(id, event));
-
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.className = "bl4-card-checkbox";
-    checkbox.checked = state.bl4SelectedIds.has(id);
-    checkbox.title = "Select for bulk actions";
-    checkbox.addEventListener("click", (event) => {
-      event.stopPropagation();
-      if (checkbox.checked) {
-        state.bl4SelectedIds.add(id);
-      } else {
-        state.bl4SelectedIds.delete(id);
-      }
-      state.bl4SelectionAnchor = id;
-      renderBl4Codes();
-    });
-
-    const imageWrap = document.createElement("div");
-    imageWrap.className = "bl4-card-image";
-    const imageUrl = bl4ImageUrl(row);
-    if (imageUrl) {
-      const img = document.createElement("img");
-      img.loading = "lazy";
-      img.decoding = "async";
-      img.alt = row.name || "BL4 item image";
-      img.src = imageUrl;
-      img.addEventListener("error", () => {
-        imageWrap.textContent = "Image unavailable";
-        imageWrap.classList.add("missing");
-      });
-      imageWrap.appendChild(img);
-    } else {
-      imageWrap.textContent = bl4IsGzoRow(row) ? "No GZO image" : "No image";
-      imageWrap.classList.add("missing");
+  withBl4SearchFocusPreserved(() => {
+    if (!state.bl4Entries.length) {
+      state.bl4ShownCardIds = [];
+      els.bl4Cards.innerHTML = "";
+      const empty = document.createElement("div");
+      empty.className = "dev-empty-row";
+      empty.textContent = "No BL4 catalog is loaded.";
+      els.bl4Cards.appendChild(empty);
+      if (els.bl4CardSummary) els.bl4CardSummary.textContent = "GZO images load directly from save-editor.be when available.";
+      return;
+    }
+    if (!state.bl4FilteredEntries.length) {
+      state.bl4ShownCardIds = [];
+      els.bl4Cards.innerHTML = "";
+      const empty = document.createElement("div");
+      empty.className = "dev-empty-row";
+      empty.textContent = "No BL4 codes match the current filters. Use Search or loosen a dropdown filter.";
+      els.bl4Cards.appendChild(empty);
+      if (els.bl4CardSummary) els.bl4CardSummary.textContent = "No visible cards.";
+      return;
     }
 
-    const title = document.createElement("div");
-    title.className = "bl4-card-title";
-    title.textContent = row.name || "Unnamed Code";
-    const meta = document.createElement("div");
-    meta.className = "bl4-card-meta";
-    meta.textContent = [
-      row.listing,
-      row.type,
-      row.rarity,
-      row.item_level ? `Level ${row.item_level}` : "",
-      row.creator
-    ].filter(Boolean).join(" | ");
-    const result = document.createElement("div");
-    result.className = `bl4-card-result ${bl4MattmabKind(row.mattmab_validator)}`;
-    result.textContent = bl4MattmabLabel(row.mattmab_validator);
-    card.append(checkbox, imageWrap, title, meta, result);
-    els.bl4Cards.appendChild(card);
-  });
+    const maxCards = 320;
+    const shown = state.bl4FilteredEntries.slice(0, maxCards);
+    const shownIds = shown.map((row) => bl4EntryId(row));
+    if (els.bl4CardSummary) {
+      els.bl4CardSummary.textContent = `${shown.length} of ${state.bl4FilteredEntries.length} card(s) shown; ${bl4ImageHint(shown)} Use Listing/Search to find Lootlemon or Legit codes.`;
+    }
 
-  if (state.bl4FilteredEntries.length > maxCards) {
-    const note = document.createElement("div");
-    note.className = "dev-empty-row";
-    note.textContent = `Showing first ${maxCards} card(s). Narrow Search or filters for more.`;
-    els.bl4Cards.appendChild(note);
-  }
+    const existingCards = Array.from(els.bl4Cards.querySelectorAll(".bl4-code-card"));
+    const sameCards = existingCards.length === shownIds.length
+      && existingCards.every((card, index) => String(card.dataset.bl4Id || "") === shownIds[index]);
+    // Soft-update only: wiping the whole card grid on every status/filter tick
+    // freezes the renderer and feels like Search is locked until paint finishes.
+    if (sameCards) {
+      existingCards.forEach((card) => {
+        const id = String(card.dataset.bl4Id || "");
+        card.classList.toggle("active", id === state.bl4ActiveId);
+        card.classList.toggle("checked", state.bl4SelectedIds.has(id));
+        const checkbox = card.querySelector(".bl4-card-checkbox");
+        if (checkbox) checkbox.checked = state.bl4SelectedIds.has(id);
+      });
+      state.bl4ShownCardIds = shownIds;
+      return;
+    }
+
+    els.bl4Cards.innerHTML = "";
+    shown.forEach((row) => {
+      const id = bl4EntryId(row);
+      const card = document.createElement("button");
+      card.type = "button";
+      card.dataset.bl4Id = id;
+      card.className = `bl4-code-card${id === state.bl4ActiveId ? " active" : ""}${state.bl4SelectedIds.has(id) ? " checked" : ""}`;
+      card.addEventListener("click", (event) => selectBl4Entry(id, event));
+
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.className = "bl4-card-checkbox";
+      checkbox.checked = state.bl4SelectedIds.has(id);
+      checkbox.title = "Select for bulk actions";
+      checkbox.addEventListener("click", (event) => {
+        event.stopPropagation();
+        if (checkbox.checked) {
+          state.bl4SelectedIds.add(id);
+        } else {
+          state.bl4SelectedIds.delete(id);
+        }
+        state.bl4SelectionAnchor = id;
+        renderBl4Codes({ preserveSearchFocus: true });
+      });
+
+      const imageWrap = document.createElement("div");
+      imageWrap.className = "bl4-card-image";
+      const imageUrl = bl4ImageUrl(row);
+      if (imageUrl) {
+        const img = document.createElement("img");
+        img.loading = "lazy";
+        img.decoding = "async";
+        img.alt = row.name || "BL4 item image";
+        img.src = imageUrl;
+        img.addEventListener("error", () => {
+          imageWrap.textContent = "Image unavailable";
+          imageWrap.classList.add("missing");
+        });
+        imageWrap.appendChild(img);
+      } else {
+        imageWrap.textContent = bl4IsGzoRow(row) ? "No GZO image" : "No image";
+        imageWrap.classList.add("missing");
+      }
+
+      const title = document.createElement("div");
+      title.className = "bl4-card-title";
+      title.textContent = row.name || "Unnamed Code";
+      const meta = document.createElement("div");
+      meta.className = "bl4-card-meta";
+      meta.textContent = [
+        row.listing,
+        row.type,
+        row.rarity,
+        row.item_level ? `Level ${row.item_level}` : "",
+        row.creator
+      ].filter(Boolean).join(" | ");
+      const result = document.createElement("div");
+      result.className = `bl4-card-result ${bl4MattmabKind(row.mattmab_validator)}`;
+      result.textContent = bl4MattmabLabel(row.mattmab_validator);
+      card.append(checkbox, imageWrap, title, meta, result);
+      els.bl4Cards.appendChild(card);
+    });
+
+    if (state.bl4FilteredEntries.length > maxCards) {
+      const note = document.createElement("div");
+      note.className = "dev-empty-row";
+      note.textContent = `Showing first ${maxCards} card(s). Narrow Search or filters for more.`;
+      els.bl4Cards.appendChild(note);
+    }
+    state.bl4ShownCardIds = shownIds;
+  });
 }
 
 function sortedUniqueText(values = []) {
@@ -5778,6 +6108,14 @@ async function loadBl4Breakdown(row) {
     setTextValue(els.bl4Breakdown, "Parts breakdown is not available in this app build.");
     return;
   }
+  // Debounce so select → immediate Send does not pile Python helper work under
+  // the delivery bridge call (shared worker queue).
+  if (state.bl4BreakdownTimer) window.clearTimeout(state.bl4BreakdownTimer);
+  await new Promise((resolve) => {
+    state.bl4BreakdownTimer = window.setTimeout(resolve, 180);
+  });
+  state.bl4BreakdownTimer = null;
+  if (state.bl4ActiveId !== activeId) return;
   const result = await window.msbt.bl4PartsBreakdown(row.serial);
   if (state.bl4ActiveId !== activeId) return;
   if (result && result.ok) {
@@ -5791,7 +6129,7 @@ function selectBl4Entry(id, selectionEvent = null) {
   const row = state.bl4Entries.find((item) => bl4EntryId(item) === id);
   if (!row) {
     clearBl4Detail();
-    renderBl4Codes();
+    renderBl4Codes({ preserveSearchFocus: true });
     return;
   }
   if (selectionEvent) {
@@ -5812,46 +6150,71 @@ function selectBl4Entry(id, selectionEvent = null) {
   setTextValue(els.bl4Serial, row.serial || "");
   setBl4DeliveryStatus("Active code ready. Delivery sends checked image cards, or this active code if none are checked.", "warning");
   loadBl4Breakdown(row);
-  renderBl4Codes();
+  // Soft card refresh only — avoid select → full render → auto-select → full
+  // render loops that freeze Search while the card grid is rebuilt twice.
+  renderBl4Cards();
 }
 
-function renderBl4Codes() {
-  state.bl4FilteredEntries = filteredBl4Entries();
-  state.bl4SelectedIds = new Set(
-    Array.from(state.bl4SelectedIds).filter((id) => state.bl4Entries.some((row) => bl4EntryId(row) === id))
-  );
-  const selectedCount = state.bl4SelectedIds.size;
-  setLine(
-    els.bl4Count,
-    `${state.bl4FilteredEntries.length} shown / ${state.bl4Entries.length} merged | ${selectedCount} selected`,
-    state.bl4FilteredEntries.length ? "ok" : "warning"
-  );
+function renderBl4Codes(options = {}) {
+  const preserveSearchFocus = options.preserveSearchFocus !== false;
+  const run = () => {
+    state.bl4FilteredEntries = filteredBl4Entries();
+    state.bl4SelectedIds = new Set(
+      Array.from(state.bl4SelectedIds).filter((id) => state.bl4Entries.some((row) => bl4EntryId(row) === id))
+    );
+    const selectedCount = state.bl4SelectedIds.size;
+    setLine(
+      els.bl4Count,
+      `${state.bl4FilteredEntries.length} shown / ${state.bl4Entries.length} merged | ${selectedCount} selected`,
+      state.bl4FilteredEntries.length ? "ok" : "warning"
+    );
 
-  if (!state.bl4Entries.length) {
-    clearBl4Detail("No BL4 catalog is loaded.");
+    if (!state.bl4Entries.length) {
+      clearBl4Detail("No BL4 catalog is loaded.");
+      renderBl4Cards();
+      return;
+    }
+    if (!state.bl4FilteredEntries.length) {
+      clearBl4Detail("No BL4 code is visible with the current filters.");
+      renderBl4Cards();
+      return;
+    }
+
+    if (state.bl4ActiveId && !state.bl4FilteredEntries.some((row) => bl4EntryId(row) === state.bl4ActiveId)) {
+      clearBl4Detail("The active code is hidden by the current filters.");
+    }
+
     renderBl4Cards();
-    return;
-  }
-  if (!state.bl4FilteredEntries.length) {
-    clearBl4Detail("No BL4 code is visible with the current filters.");
-    renderBl4Cards();
-    return;
-  }
 
-  if (state.bl4ActiveId && !state.bl4FilteredEntries.some((row) => bl4EntryId(row) === state.bl4ActiveId)) {
-    clearBl4Detail("The active code is hidden by the current filters.");
-  }
-
-  renderBl4Cards();
-
-  if (!state.bl4ActiveId && state.bl4FilteredEntries.length) {
-    selectBl4Entry(bl4EntryId(state.bl4FilteredEntries[0]));
-  }
+    const searchFocused = Boolean(els.bl4SearchInput && document.activeElement === els.bl4SearchInput);
+    // Do not auto-select / kick off parts-breakdown while the user is typing in Search.
+    if (!state.bl4ActiveId && state.bl4FilteredEntries.length && !searchFocused) {
+      const firstId = bl4EntryId(state.bl4FilteredEntries[0]);
+      state.bl4ActiveId = firstId;
+      const row = state.bl4FilteredEntries[0];
+      setOutput(els.bl4Detail, formatBl4Detail(row));
+      setTextValue(els.bl4Serial, row.serial || "");
+      setBl4DeliveryStatus("Active code ready. Delivery sends checked image cards, or this active code if none are checked.", "warning");
+      loadBl4Breakdown(row);
+      renderBl4Cards();
+    }
+  };
+  if (preserveSearchFocus) withBl4SearchFocusPreserved(run);
+  else run();
 }
 
 function applyBl4Search() {
   state.bl4SearchQuery = getValue(els.bl4SearchInput);
-  renderBl4Codes();
+  renderBl4Codes({ preserveSearchFocus: true });
+}
+
+function scheduleBl4Search() {
+  state.bl4SearchQuery = getValue(els.bl4SearchInput);
+  if (state.bl4SearchTimer) window.clearTimeout(state.bl4SearchTimer);
+  state.bl4SearchTimer = window.setTimeout(() => {
+    state.bl4SearchTimer = null;
+    renderBl4Codes({ preserveSearchFocus: true });
+  }, 120);
 }
 
 function selectAllBl4Visible() {
@@ -6016,6 +6379,82 @@ async function validateBl4ActiveSerial() {
   return true;
 }
 
+function hideBl4InlineConfirm() {
+  if (!els.bl4InlineConfirm) return;
+  els.bl4InlineConfirm.hidden = true;
+  els.bl4InlineConfirm.classList.add("hidden");
+  state.bl4PendingDelivery = null;
+  if (els.bl4SendButtonRow) els.bl4SendButtonRow.classList.remove("hidden");
+}
+
+function restoreBl4SearchFocusAfterConfirm() {
+  // OS modal confirm left Electron without document focus / caret in Search.
+  // Inline confirm never yields HWND; still focus Search so typing works immediately.
+  if (window.msbt && typeof window.msbt.focusMainWindow === "function") {
+    try { void window.msbt.focusMainWindow(); } catch { /* ignore */ }
+  }
+  if (!els.bl4SearchInput) return;
+  els.bl4SearchInput.disabled = false;
+  els.bl4SearchInput.readOnly = false;
+  try {
+    els.bl4SearchInput.focus({ preventScroll: true });
+  } catch {
+    els.bl4SearchInput.focus();
+  }
+}
+
+function beginBl4DeliveryFromConfirm(pending) {
+  if (!pending) return;
+  const {
+    mode,
+    expanded,
+    overrideLevel,
+    deliveryLevel,
+    deliveryRows,
+    skippedByOverride,
+    copies,
+    destination
+  } = pending;
+  const action = serialActionByMode(mode);
+  setBl4DeliveryStatus(`Sending ${expanded.totalCount || deliveryRows.length} BL4 serial(s) to ${destination}...`, "warning");
+  setOutput(
+    els.bl4Output,
+    `Sending BL4 code delivery:\nAction: ${action}\nDestination: ${destination}\nSelected codes: ${deliveryRows.length}\nCopies: ${copies}\nTotal delivered: ${expanded.totalCount || deliveryRows.length}\n${deliveryRows.map((row) => row.name || "Selected BL4 code").join("\n")}${skippedByOverride.length ? `\n\nSkipped by level override: ${skippedByOverride.length}` : ""}`
+  );
+  appendActivity(`BL4 delivery: sending ${deliveryRows.length} code(s) × ${copies} via ${mode}${skippedByOverride.length ? `; skipped ${skippedByOverride.length}` : ""}.`);
+  restoreBl4SearchFocusAfterConfirm();
+  void deliverBl4SerialInBackground(
+    mode,
+    expanded,
+    overrideLevel,
+    deliveryLevel,
+    deliveryRows,
+    skippedByOverride,
+    copies,
+    destination,
+    action
+  );
+}
+
+function confirmBl4InlineDelivery() {
+  const pending = state.bl4PendingDelivery;
+  // Clear UI without wiping the local pending payload we are about to send.
+  if (els.bl4InlineConfirm) {
+    els.bl4InlineConfirm.hidden = true;
+    els.bl4InlineConfirm.classList.add("hidden");
+  }
+  if (els.bl4SendButtonRow) els.bl4SendButtonRow.classList.remove("hidden");
+  state.bl4PendingDelivery = null;
+  if (!pending) return;
+  beginBl4DeliveryFromConfirm(pending);
+}
+
+function cancelBl4InlineDelivery() {
+  hideBl4InlineConfirm();
+  setBl4DeliveryStatus("BL4 delivery cancelled.", "warning");
+  restoreBl4SearchFocusAfterConfirm();
+}
+
 async function sendBl4Serial(mode) {
   const rows = bl4ValidSerialEntries(bl4SelectedEntries());
   if (!rows.length) {
@@ -6046,34 +6485,30 @@ async function sendBl4Serial(mode) {
   const label = deliveryRows.length === 1 ? `"${deliveryRows[0].name || "selected BL4 code"}"` : `${deliveryRows.length} selected BL4 codes`;
   const skipNote = skippedByOverride.length ? `\n\n${skippedByOverride.length} selected code(s) will be skipped because their level could not be changed.` : "";
   const copiesNote = copies > 1 ? `\nCopies: ${copies} each → ${expanded.totalCount} total serials.` : "";
-  const confirmed = window.confirm(`Deliver ${label} to ${destination}?${copiesNote}${skipNote}`);
-  if (!confirmed) {
-    setBl4DeliveryStatus("BL4 delivery cancelled.", "warning");
-    return;
-  }
 
-  const action = serialActionByMode(mode);
-  setBl4DeliveryStatus(`Sending ${expanded.totalCount || deliveryRows.length} BL4 serial(s) to ${destination}...`, "warning");
-  setOutput(
-    els.bl4Output,
-    `Sending BL4 code delivery:\nAction: ${action}\nDestination: ${destination}\nSelected codes: ${deliveryRows.length}\nCopies: ${copies}\nTotal delivered: ${expanded.totalCount || deliveryRows.length}\n${deliveryRows.map((row) => row.name || "Selected BL4 code").join("\n")}${skippedByOverride.length ? `\n\nSkipped by level override: ${skippedByOverride.length}` : ""}`
-  );
-  appendActivity(`BL4 delivery: sending ${deliveryRows.length} code(s) × ${copies} via ${mode}${skippedByOverride.length ? `; skipped ${skippedByOverride.length}` : ""}.`);
-
-  const result = await sendSerialPayload(
+  // In-panel confirm — never use window.confirm (OS modal steals HWND / leaves Search unfocused).
+  state.bl4PendingDelivery = {
     mode,
-    expanded.text,
+    expanded,
     overrideLevel,
     deliveryLevel,
-    els.bl4Output,
-    1,
-    "BL4 Codes"
-  );
-  if (!result) return;
-  const message = actionSucceeded(result)
-    ? resultMessage(result)
-    : annotateDeliveryFailureMessage(resultMessage(result));
-  setBl4DeliveryStatus(actionSucceeded(result) ? `Delivery accepted: ${message}` : `Delivery failed: ${message}`, actionSucceeded(result) ? "ok" : "bad");
+    deliveryRows,
+    skippedByOverride,
+    copies,
+    destination
+  };
+  if (els.bl4InlineConfirmMessage) {
+    els.bl4InlineConfirmMessage.textContent = `Deliver ${label} to ${destination}?${copiesNote}${skipNote}`;
+  }
+  if (els.bl4SendButtonRow) els.bl4SendButtonRow.classList.add("hidden");
+  if (els.bl4InlineConfirm) {
+    els.bl4InlineConfirm.hidden = false;
+    els.bl4InlineConfirm.classList.remove("hidden");
+  }
+  setBl4DeliveryStatus("Confirm delivery in the panel (no OS dialog).", "warning");
+  if (els.bl4InlineConfirmOk) {
+    try { els.bl4InlineConfirmOk.focus({ preventScroll: true }); } catch { els.bl4InlineConfirmOk.focus(); }
+  }
 }
 
 function acceptBl4CatalogResult(result) {
@@ -6082,13 +6517,11 @@ function acceptBl4CatalogResult(result) {
   state.bl4SelectedIds.clear();
   state.bl4ConfirmedId = "";
   state.bl4ConfirmedSerial = "";
+  state.bl4ShownCardIds = [];
   const activeStillExists = state.bl4Entries.some((entry) => bl4EntryId(entry) === state.bl4ActiveId);
   if (!activeStillExists) state.bl4ActiveId = "";
   populateBl4Filters(result.filters || {});
-  renderBl4Codes();
-  if (state.bl4Entries.length && !state.bl4ActiveId) {
-    selectBl4Entry(bl4EntryId(state.bl4Entries[0]));
-  }
+  renderBl4Codes({ preserveSearchFocus: true });
   return result.counts || {};
 }
 
@@ -11500,9 +11933,14 @@ function wireEvents() {
     });
   }
   els.bl4SearchBtn.addEventListener("click", applyBl4Search);
+  els.bl4SearchInput.addEventListener("input", scheduleBl4Search);
   els.bl4SearchInput.addEventListener("keydown", (event) => {
     if (event.key === "Enter") {
       event.preventDefault();
+      if (state.bl4SearchTimer) {
+        window.clearTimeout(state.bl4SearchTimer);
+        state.bl4SearchTimer = null;
+      }
       applyBl4Search();
     }
   });
@@ -11515,7 +11953,7 @@ function wireEvents() {
     els.bl4LevelFilter,
     els.bl4MattmabFilter
   ].forEach((selectNode) => {
-    if (selectNode) selectNode.addEventListener("change", renderBl4Codes);
+    if (selectNode) selectNode.addEventListener("change", () => renderBl4Codes({ preserveSearchFocus: true }));
   });
   els.bl4SelectAllBtn.addEventListener("click", selectAllBl4Visible);
   els.bl4ClearSelectionBtn.addEventListener("click", clearBl4Selection);
@@ -11560,6 +11998,8 @@ function wireEvents() {
   document.querySelectorAll("[data-bl4-send-mode]").forEach((button) => {
     button.addEventListener("click", () => sendBl4Serial(button.dataset.bl4SendMode));
   });
+  if (els.bl4InlineConfirmOk) els.bl4InlineConfirmOk.addEventListener("click", confirmBl4InlineDelivery);
+  if (els.bl4InlineConfirmCancel) els.bl4InlineConfirmCancel.addEventListener("click", cancelBl4InlineDelivery);
 
   els.validatorBasicBtn.addEventListener("click", validateBasic);
   els.validatorBulkBtn.addEventListener("click", validateBulk);

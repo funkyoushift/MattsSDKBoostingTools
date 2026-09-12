@@ -3412,10 +3412,62 @@ def auto_apply_inventory_sizes(backpack_size: object, bank_size: object, enabled
         return {"ok": False, "message": f"Automatic inventory update failed: {exc!r}"}
 
 
-def give_currency(kind_or_index: object, amount: object) -> dict[str, Any]:
+def _selected_economy_target() -> tuple[Any | None, Any | None, str, dict[str, Any] | None]:
+    """Resolve XP/currency target the same way Max All does: party index first, name fallback."""
+    refresh_players()
+    idx = get_selected_player_index()
     name = get_selected_player_name()
-    if not name:
-        return {"ok": False, "message": "No party player selected."}
+    if idx is None and not name:
+        return None, None, "", {
+            "ok": False,
+            "message": "No party player selected. Refresh Status and use Local / Named player.",
+        }
+    label = _selected_player_label(idx, name)
+    pc = _party_controller_for_index(idx) if idx is not None else None
+    if pc is None and name:
+        pc, err = player_economy._resolve_target_pc_for_name(name)
+        if pc is None:
+            return None, None, label, {"ok": False, "message": f"Could not resolve {label}: {err}"}
+    if pc is None:
+        return None, None, label, {
+            "ok": False,
+            "message": (
+                f"Could not resolve a live player controller for {label}. "
+                "Refresh Status while in a session and try again."
+            ),
+        }
+    ps = getattr(pc, "PlayerState", None)
+    return pc, ps, label, None
+
+
+def _give_currency_to_pc(pc: Any, kind: str, amount_i: int) -> bool:
+    token = player_economy._CURRENCY_KIND_ALIASES.get(kind)
+    if not token:
+        return False
+    remaining = int(amount_i)
+    if remaining == 0:
+        return False
+    if remaining < 0:
+        return bool(player_economy._give_currency_on_pc(pc, token, remaining))
+    while remaining > 0:
+        chunk = min(remaining, MAX_WALLET_AMOUNT)
+        if not player_economy._give_currency_on_pc(pc, token, chunk):
+            return False
+        remaining -= chunk
+    return True
+
+
+def _set_experience_on_ps(ps: Any, track: str, level_i: int) -> bool:
+    if ps is None:
+        return False
+    try:
+        track_idx = EXP_TRACKS.index(track)
+    except ValueError:
+        return False
+    return bool(player_economy._set_experience_level_via_bp(ps, track_idx, level_i))
+
+
+def give_currency(kind_or_index: object, amount: object) -> dict[str, Any]:
     kind = _kind_from_input(kind_or_index)
     if kind is None:
         return {"ok": False, "message": f"Unsupported currency kind: {kind_or_index}"}
@@ -3423,18 +3475,23 @@ def give_currency(kind_or_index: object, amount: object) -> dict[str, Any]:
         amount_i = _clamp_int(amount, -MAX_WALLET_AMOUNT, MAX_WALLET_AMOUNT)
     except Exception:
         return {"ok": False, "message": "Currency amount must be a number."}
+    if amount_i == 0:
+        return {"ok": False, "message": "Currency amount must be non-zero."}
+    pc, _ps, label, err = _selected_economy_target()
+    if err is not None:
+        return err
     try:
-        if player_economy._do_give_currency(kind, amount_i, name) is False:
-            return {"ok": False, "message": f"Give {kind} failed; the currency or target may be unavailable in the current game."}
-        return {"ok": True, "message": f"Give {amount_i} {kind} requested."}
+        if not _give_currency_to_pc(pc, kind, amount_i):
+            return {
+                "ok": False,
+                "message": f"Give {amount_i} {kind} failed for {label}; currency or target may be unavailable.",
+            }
+        return {"ok": True, "message": f"Gave {amount_i} {kind} to {label}."}
     except Exception as exc:
         return {"ok": False, "message": f"Give currency failed: {exc!r}"}
 
 
 def give_experience(track_or_index: object, level: object) -> dict[str, Any]:
-    name = get_selected_player_name()
-    if not name:
-        return {"ok": False, "message": "No party player selected."}
     track = _track_from_input(track_or_index)
     if track is None:
         return {"ok": False, "message": f"Unsupported XP track: {track_or_index}"}
@@ -3442,56 +3499,36 @@ def give_experience(track_or_index: object, level: object) -> dict[str, Any]:
         level_i = _clamp_int(level, 0, _max_level_for_track(track))
     except Exception:
         return {"ok": False, "message": "Level must be a number."}
+    _pc, ps, label, err = _selected_economy_target()
+    if err is not None:
+        return err
+    if ps is None:
+        return {"ok": False, "message": f"{label}: no PlayerState for experience write."}
     try:
-        if player_economy._do_give_experience(track, level_i, name) is False:
-            return {"ok": False, "message": f"Set {track} level failed; the track or target may be unavailable in the current game."}
-        return {"ok": True, "message": f"Set {track} level {level_i} requested."}
+        if not _set_experience_on_ps(ps, track, level_i):
+            return {
+                "ok": False,
+                "message": f"Set {track} level {level_i} failed for {label}; track or target may be unavailable.",
+            }
+        return {"ok": True, "message": f"Set {track} level {level_i} for {label}."}
     except Exception as exc:
         return {"ok": False, "message": f"Set level failed: {exc!r}"}
 
 
 def max_player_level() -> dict[str, Any]:
-    name = get_selected_player_name()
-    if not name:
-        return {"ok": False, "message": "No party player selected."}
-    try:
-        player_economy._do_give_experience("player", MAX_PLAYER_LEVEL, name)
-        return {"ok": True, "message": "Max player level requested."}
-    except Exception as exc:
-        return {"ok": False, "message": f"Max player level failed: {exc!r}"}
+    return give_experience("player", MAX_PLAYER_LEVEL)
 
 
 def max_spec_level() -> dict[str, Any]:
-    name = get_selected_player_name()
-    if not name:
-        return {"ok": False, "message": "No party player selected."}
-    try:
-        player_economy._do_give_experience("specialization", MAX_SPEC_LEVEL, name)
-        return {"ok": True, "message": "Max specialization requested."}
-    except Exception as exc:
-        return {"ok": False, "message": f"Max specialization failed: {exc!r}"}
+    return give_experience("specialization", MAX_SPEC_LEVEL)
 
 
 def max_currency() -> dict[str, Any]:
-    name = get_selected_player_name()
-    if not name:
-        return {"ok": False, "message": "No party player selected."}
-    try:
-        player_economy._do_give_currency("cash", MAX_WALLET_AMOUNT, name)
-        return {"ok": True, "message": "Max cash requested for selected player."}
-    except Exception as exc:
-        return {"ok": False, "message": f"Max cash failed: {exc!r}"}
+    return give_currency("cash", MAX_WALLET_AMOUNT)
 
 
 def max_eridium() -> dict[str, Any]:
-    name = get_selected_player_name()
-    if not name:
-        return {"ok": False, "message": "No party player selected."}
-    try:
-        player_economy._do_give_currency("eridium", MAX_WALLET_AMOUNT, name)
-        return {"ok": True, "message": "Max eridium requested for selected player."}
-    except Exception as exc:
-        return {"ok": False, "message": f"Max eridium failed: {exc!r}"}
+    return give_currency("eridium", MAX_WALLET_AMOUNT)
 
 
 def max_sdu() -> dict[str, Any]:

@@ -465,9 +465,9 @@
                 </label>
               </div>
               <div class="button-row wrap">
-                <button id="setLevelBtn">Set Level</button>
-                <button data-action="max_player_level">Max Player Level</button>
-                <button data-action="max_spec_level">Set Spec 701</button>
+                <button id="setLevelBtn" title="Uses XP Track + Target Level for the boost-scope player.">Set Level</button>
+                <button data-action="max_player_level" title="Sets character/player level to the current cap for the boost-scope player.">Max Player Level</button>
+                <button data-action="max_spec_level" title="Always sets Specialization to 701. Ignores the XP Track dropdown.">Set Spec 701</button>
               </div>
             </section>
             <section class="boost-knob-group">
@@ -1143,11 +1143,18 @@
             </label>
           </div>
           <div id="bl4DeliveryStatus" class="status-line warning">Ready.</div>
-          <div class="button-row wrap">
+          <div class="button-row wrap" id="bl4SendButtonRow">
             <button data-bl4-send-mode="local">Local</button>
             <button data-bl4-send-mode="selected">Named Player</button>
             <button data-bl4-send-mode="all">All Players</button>
             <button data-bl4-send-mode="nonhost">Other Players</button>
+          </div>
+          <div id="bl4InlineConfirm" class="bl4-inline-confirm hidden" hidden>
+            <div id="bl4InlineConfirmMessage" class="bl4-inline-confirm-message"></div>
+            <div class="button-row wrap">
+              <button id="bl4InlineConfirmOk" type="button">Confirm</button>
+              <button id="bl4InlineConfirmCancel" type="button">Cancel</button>
+            </div>
           </div>
           <div class="button-row wrap qm-serial-pin-row">
             <button id="bl4QmLocalBtn" type="button" class="qm-pin-button" data-qm-serial-source="bl4" data-qm-serial-mode="local">+ QM Local</button>

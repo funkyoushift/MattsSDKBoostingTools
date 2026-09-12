@@ -1447,6 +1447,20 @@ ipcMain.handle("app:getWindowSettings", async () => {
   };
 });
 
+ipcMain.handle("app:focusMainWindow", async () => {
+  const win = BrowserWindow.getAllWindows().find((candidate) => candidate && !candidate.isDestroyed());
+  if (!win) return { ok: false, message: "No BrowserWindow." };
+  if (win.isMinimized()) win.restore();
+  win.show();
+  win.focus();
+  try {
+    win.webContents.focus();
+  } catch {
+    // Older Electron builds may lack webContents.focus.
+  }
+  return { ok: true };
+});
+
 ipcMain.handle("app:setWindowOpacity", async (_event, rawOpacity) => {
   const opacity = clampWindowOpacity(rawOpacity);
   for (const win of BrowserWindow.getAllWindows()) {
