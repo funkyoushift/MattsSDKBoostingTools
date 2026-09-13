@@ -1,0 +1,21 @@
+{
+  "game_build": "25234898",
+  "source": "Local NCS parser output; Gearbox / 2K game data",
+  "files": [
+    {
+      "file": "Nexus-Data-inv_name_strategy0.json",
+      "source_sha256": "083303c97bcb271824762d8c35b8860aba4534ab22f9d4d9c8e212828de823e7",
+      "imported_sha256": "48fa5473742b0ccd2800dedd6f4aa38d86a6aa11d219e11c49b19098857bdd19"
+    },
+    {
+      "file": "Nexus-Data-inv_name_strategy4.json",
+      "source_sha256": "843b99a7b9e63d9f57b4363f9abf40c6e48c4ee471a53e3d4bb9959e0743130f",
+      "imported_sha256": "a14a23895fabbc0168c5f8dab601e43b5b2f1c141022478037a3db6ce6e763b8"
+    },
+    {
+      "file": "Nexus-Data-inv_name_strategy6.json",
+      "source_sha256": "5ce1123e77309c2b54c38a9e44e91c784aefbe92d990994995ee07667094f910",
+      "imported_sha256": "08aa39229e58fd0a92369554114a11a22775def54740ae7fdcfeb247705b2d6d"
+    }
+  ]
+}

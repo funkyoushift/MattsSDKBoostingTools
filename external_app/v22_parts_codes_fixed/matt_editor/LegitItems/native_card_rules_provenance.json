@@ -1,0 +1,27 @@
+{
+  "game_build": "25234898",
+  "source": "Installed BL4 NCS decoded by NcsParser",
+  "files": [
+    {
+      "file": "Nexus-Data-Rarity0.json",
+      "source": "C:\\Users\\mwenn\\Desktop\\MSBT_Codex_Work\\working\\tools\\_tmp_bl4_ncs_parser\\build\\Release\\output\\json\\Nexus-Data-Rarity0.json",
+      "source_sha256": "0eee76454dba7cbeef6841c41b879494320535c3dbb88412f1f36c4b11ed166a",
+      "sha256": "78c5b11eddea5eecc6e0c8782e08ee0aa57e77a823d7f236ac81be02b2fd0133",
+      "bytes": 36481
+    },
+    {
+      "file": "Nexus-Data-Rarity4.json",
+      "source": "C:\\Users\\mwenn\\Desktop\\MSBT_Codex_Work\\working\\tools\\_tmp_bl4_ncs_parser\\build\\Release\\output\\json\\Nexus-Data-Rarity4.json",
+      "source_sha256": "da928cd4c7f6c8adca4b51a69ddaa5ba7c37c2157bfabc2cb4429d6ae7dca705",
+      "sha256": "6a685ab374127c37e75f9b81db6006db1a2a6dc18cd1b417a7cba6aa3d63756c",
+      "bytes": 965
+    },
+    {
+      "file": "Nexus-Data-Rarity6.json",
+      "source": "C:\\Users\\mwenn\\Desktop\\MSBT_Codex_Work\\working\\tools\\_tmp_bl4_ncs_parser\\build\\Release\\output\\json\\Nexus-Data-Rarity6.json",
+      "source_sha256": "5c2f2540629151c538b81c5490b1fc9476786404f17618e18b84c31237e8ecee",
+      "sha256": "5debc69c2a480ae3cf2661ef3f48467d5b91cfde179db7cd9b588ce7d3a8a334",
+      "bytes": 1203
+    }
+  ]
+}

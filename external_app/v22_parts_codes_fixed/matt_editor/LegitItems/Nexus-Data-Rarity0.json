@@ -1,0 +1,1006 @@
+{
+  "rarity": {
+    "records": [
+      {
+        "entries": [
+          {
+            "00_ammo": {
+              "rarity": "00_ammo",
+              "internalname": "ammo",
+              "displayname": "rarities, F4C7E01B4BF23694EAAD6F95C71E9750, AMMO",
+              "displaycolor": {
+                "source": {
+                  "r": "0.435000",
+                  "g": "0.435000",
+                  "b": "0.435000",
+                  "a": "1.000000"
+                }
+              },
+              "attracteffect": "Asset'/Game/Pickups/_Shared/Effects/Systems/NS_FX_Item_Loot_Beams.NS_FX_Item_Loot_Beams'",
+              "attracteffectparameters": [
+                {
+                  "parametername": "Color",
+                  "type": "Parameter_LinearColor",
+                  "colorparameter": {
+                    "r": "0.435000",
+                    "g": "0.435000",
+                    "b": "0.435000",
+                    "a": "1.000000"
+                  }
+                },
+                {
+                  "parametername": "Height",
+                  "type": "Parameter_Float",
+                  "floatparameter": "85.000000"
+                },
+                {
+                  "parametername": "ScanlineTile",
+                  "type": "Parameter_Float",
+                  "floatparameter": "10.000000"
+                }
+              ],
+              "pickupoutlinecolor": {
+                "source": {
+                  "r": "0.286458",
+                  "g": "0.286458",
+                  "b": "0.286458",
+                  "a": "1.000000"
+                }
+              },
+              "lootfeeddisplayduration": "3.000000",
+              "pickupaudiostinger": "audio_event'IO_Pickups_Shared.IO_Pickup_Spawn_Generic'"
+            }
+          },
+          {
+            "00_eridium": {
+              "rarity": "00_eridium",
+              "internalname": "eridium",
+              "displayname": "ERIDIUM",
+              "displaycolor": {
+                "r": "0.500000",
+                "g": "0.000000",
+                "b": "1.000000",
+                "a": "1.000000"
+              },
+              "attracteffect": "Asset'/Game/Pickups/_Shared/Effects/Systems/NS_FX_Item_Loot_Beams.NS_FX_Item_Loot_Beams'",
+              "attracteffectparameters": [
+                {
+                  "parametername": "Color",
+                  "type": "Parameter_LinearColor",
+                  "colorparameter": {
+                    "r": "0.500000",
+                    "g": "0.000000",
+                    "b": "1.000000",
+                    "a": "1.000000"
+                  }
+                },
+                {
+                  "parametername": "Height",
+                  "type": "Parameter_Float",
+                  "floatparameter": "85.000000"
+                }
+              ],
+              "pickupoutlinecolor": {
+                "r": "0.500000",
+                "g": "0.000000",
+                "b": "1.000000",
+                "a": "1.000000"
+              },
+              "sortvalue": "2",
+              "pickupaudiostinger": "audio_event'IO_Pickups_Shared.IO_Pickup_Spawn_Currency_Cash'"
+            }
+          },
+          {
+            "00_health": {
+              "rarity": "00_health",
+              "internalname": "health",
+              "displayname": "HEALTH",
+              "displaycolor": {
+                "source": {
+                  "r": "1.000000",
+                  "g": "0.000000",
+                  "b": "0.000000",
+                  "a": "1.000000"
+                }
+              },
+              "attracteffect": "Asset'/Game/Pickups/_Shared/Effects/Systems/NS_FX_Item_Loot_Beams.NS_FX_Item_Loot_Beams'",
+              "attracteffectparameters": [
+                {
+                  "parametername": "Color",
+                  "type": "Parameter_LinearColor",
+                  "colorparameter": {
+                    "r": "1.000000",
+                    "g": "0.000000",
+                    "b": "0.000000",
+                    "a": "1.000000"
+                  }
+                },
+                {
+                  "parametername": "Height",
+                  "type": "Parameter_Float",
+                  "floatparameter": "85.000000"
+                }
+              ],
+              "bpickupoutlineenabled": "false",
+              "pickupaudiostinger": "audio_event'IO_Pickups_Shared.IO_Pickup_Spawn_Health'"
+            }
+          },
+          {
+            "00_mission": {
+              "rarity": "00_mission",
+              "internalname": "mission",
+              "displayname": "MISSION",
+              "displaycolor": {
+                "r": "0.000000",
+                "g": "1.000000",
+                "b": "1.000000",
+                "a": "1.000000"
+              },
+              "attracteffect": "Asset'/Game/Pickups/_Shared/Effects/Systems/NS_FX_Item_Loot_Beams.NS_FX_Item_Loot_Beams'",
+              "attracteffectparameters": [
+                {
+                  "parametername": "Color",
+                  "type": "Parameter_LinearColor",
+                  "colorparameter": {
+                    "r": "0.000000",
+                    "g": "1.000000",
+                    "b": "1.000000",
+                    "a": "1.000000"
+                  }
+                },
+                {
+                  "parametername": "Height",
+                  "type": "Parameter_Float",
+                  "floatparameter": "85.000000"
+                }
+              ],
+              "pickupoutlinecolor": {
+                "r": "0.000000",
+                "g": "1.000000",
+                "b": "1.000000",
+                "a": "1.000000"
+              },
+              "pickuplifespantype": "Session",
+              "pickupaudiostinger": "audio_event'IO_Pickups_Shared.IO_Pickup_Spawn_Generic'"
+            }
+          },
+          {
+            "00_money": {
+              "rarity": "00_money",
+              "internalname": "money",
+              "displayname": "MONEY",
+              "displaycolor": {
+                "r": "1.000000",
+                "g": "1.000000",
+                "b": "0.000000",
+                "a": "1.000000"
+              },
+              "attracteffect": "Asset'/Game/Pickups/_Shared/Effects/Systems/NS_FX_Item_Loot_Beams.NS_FX_Item_Loot_Beams'",
+              "attracteffectparameters": [
+                {
+                  "parametername": "Color",
+                  "type": "Parameter_LinearColor",
+                  "colorparameter": {
+                    "r": "1.000000",
+                    "g": "1.000000",
+                    "b": "0.000000",
+                    "a": "1.000000"
+                  }
+                },
+                {
+                  "parametername": "Height",
+                  "type": "Parameter_Float",
+                  "floatparameter": "85.000000"
+                }
+              ],
+              "pickupoutlinecolor": {
+                "r": "1.000000",
+                "g": "0.561501",
+                "b": "0.000000",
+                "a": "1.000000"
+              },
+              "sortvalue": "2",
+              "lootfeeddisplayduration": "3.000000",
+              "pickupaudiostinger": "audio_event'IO_Pickups_Shared.IO_Pickup_Spawn_Currency_Cash'"
+            }
+          },
+          {
+            "01_common": {
+              "rarity": "01_common",
+              "baddtocriteria": "true",
+              "internalname": "common",
+              "displayname": "rarities, 8ED6EC414BB285C005F20AB6C28A72DD, Common",
+              "displaycolor": {
+                "source": {
+                  "r": "0.514918",
+                  "g": "0.491021",
+                  "b": "0.623961",
+                  "a": "1.000000"
+                },
+                "colormodes": {
+                  "pairs": {
+                    "pair4162403806": {
+                      "key": "Deuteranope",
+                      "value": {
+                        "r": "0.309469",
+                        "g": "0.309469",
+                        "b": "0.309469",
+                        "a": "1.000000"
+                      }
+                    },
+                    "pair3814921266": {
+                      "key": "Protanope",
+                      "value": {
+                        "r": "0.198069",
+                        "g": "0.198069",
+                        "b": "0.198069",
+                        "a": "1.000000"
+                      }
+                    },
+                    "pair2887238593": {
+                      "key": "Tritanope",
+                      "value": {
+                        "r": "0.313989",
+                        "g": "0.313989",
+                        "b": "0.291771",
+                        "a": "1.000000"
+                      }
+                    }
+                  }
+                }
+              },
+              "attracteffect": "Asset'/Game/Pickups/_Shared/Effects/Systems/NS_FX_Item_Loot_Beams.NS_FX_Item_Loot_Beams'",
+              "attracteffectparameters": [
+                {
+                  "parametername": "Color",
+                  "type": "Parameter_LinearColor",
+                  "colorparameter": {
+                    "r": "0.287441",
+                    "g": "0.278894",
+                    "b": "0.391573",
+                    "a": "1.000000"
+                  }
+                },
+                {
+                  "parametername": "Height",
+                  "type": "Parameter_Float",
+                  "floatparameter": "112.000000"
+                },
+                {
+                  "parametername": "HasAnointment",
+                  "type": "Parameter_Bool",
+                  "boolparameter": "true",
+                  "condition": "attribute'has_anointment'"
+                },
+                {
+                  "parametername": "HasFirmware",
+                  "type": "Parameter_Bool",
+                  "boolparameter": "true",
+                  "condition": "attribute'has_firmware'"
+                }
+              ],
+              "attracteffectheight": "120.000000",
+              "pickupoutlinecolor": {
+                "source": {
+                  "r": "0.514918",
+                  "g": "0.491021",
+                  "b": "0.623961",
+                  "a": "1.000000"
+                },
+                "colormodes": {
+                  "pairs": {
+                    "pair4162403806": {
+                      "key": "Deuteranope",
+                      "value": {
+                        "r": "0.313989",
+                        "g": "0.313989",
+                        "b": "0.291771",
+                        "a": "1.000000"
+                      }
+                    },
+                    "pair3814921266": {
+                      "key": "Protanope",
+                      "value": {
+                        "r": "0.313989",
+                        "g": "0.313989",
+                        "b": "0.291771",
+                        "a": "1.000000"
+                      }
+                    },
+                    "pair2887238593": {
+                      "key": "Tritanope",
+                      "value": {
+                        "r": "0.313989",
+                        "g": "0.313989",
+                        "b": "0.291771",
+                        "a": "1.000000"
+                      }
+                    }
+                  }
+                }
+              },
+              "sortvalue": "3",
+              "lootfeeddisplayduration": "3.000000",
+              "bcanbelostloot": "true",
+              "raritybalancetablerowhandle": {
+                "datatable": "gbx_ue_data_table'Rarity_Balance'",
+                "rowname": "Common"
+              },
+              "raritymultipliercolumnname": "CommonModifier",
+              "statmultipliercolumnname": "Stat_Scale",
+              "pickupaudiostinger": "audio_event'IO_Pickups_Shared.IO_Pickup_Spawn_Generic'"
+            }
+          },
+          {
+            "02_uncommon": {
+              "rarity": "02_uncommon",
+              "baddtocriteria": "true",
+              "internalname": "uncommon",
+              "displayname": "rarities, D3B89CAB40508B382220A881EADF3CC7, Uncommon",
+              "displaycolor": {
+                "source": {
+                  "r": "0.095307",
+                  "g": "0.558341",
+                  "b": "0.111932",
+                  "a": "1.000000"
+                },
+                "colormodes": {
+                  "pairs": {
+                    "pair4162403806": {
+                      "key": "Deuteranope",
+                      "value": {
+                        "r": "0.014413",
+                        "g": "0.190236",
+                        "b": "0.376736",
+                        "a": "1.000000"
+                      }
+                    },
+                    "pair3814921266": {
+                      "key": "Protanope",
+                      "value": {
+                        "r": "0.063832",
+                        "g": "0.150929",
+                        "b": "0.321181",
+                        "a": "1.000000"
+                      }
+                    },
+                    "pair2887238593": {
+                      "key": "Tritanope",
+                      "value": {
+                        "r": "0.012107",
+                        "g": "0.178819",
+                        "b": "0.082774",
+                        "a": "1.000000"
+                      }
+                    }
+                  }
+                }
+              },
+              "attracteffect": "Asset'/Game/Pickups/_Shared/Effects/Systems/NS_FX_Item_Loot_Beams.NS_FX_Item_Loot_Beams'",
+              "attracteffectparameters": [
+                {
+                  "parametername": "Color",
+                  "type": "Parameter_LinearColor",
+                  "colorparameter": {
+                    "r": "0.010330",
+                    "g": "0.250158",
+                    "b": "0.025187",
+                    "a": "1.000000"
+                  }
+                },
+                {
+                  "parametername": "Height",
+                  "type": "Parameter_Float",
+                  "floatparameter": "130.000000"
+                },
+                {
+                  "parametername": "HasAnointment",
+                  "type": "Parameter_Bool",
+                  "boolparameter": "true",
+                  "condition": "attribute'has_anointment'"
+                },
+                {
+                  "parametername": "HasFirmware",
+                  "type": "Parameter_Bool",
+                  "boolparameter": "true",
+                  "condition": "attribute'has_firmware'"
+                }
+              ],
+              "attracteffectheight": "120.000000",
+              "pickupoutlinecolor": {
+                "source": {
+                  "r": "0.095307",
+                  "g": "0.558341",
+                  "b": "0.111932",
+                  "a": "1.000000"
+                },
+                "colormodes": {
+                  "pairs": {
+                    "pair4162403806": {
+                      "key": "Deuteranope",
+                      "value": {
+                        "r": "0.025187",
+                        "g": "0.332452",
+                        "b": "0.658375",
+                        "a": "1.000000"
+                      }
+                    },
+                    "pair3814921266": {
+                      "key": "Protanope",
+                      "value": {
+                        "r": "0.097587",
+                        "g": "0.230740",
+                        "b": "0.491021",
+                        "a": "1.000000"
+                      }
+                    },
+                    "pair2887238593": {
+                      "key": "Tritanope",
+                      "value": {
+                        "r": "0.222880",
+                        "g": "0.617207",
+                        "b": "0.390030",
+                        "a": "1.000000"
+                      }
+                    }
+                  }
+                }
+              },
+              "pickuplifespantype": "Short",
+              "sortvalue": "4",
+              "lootfeeddisplayduration": "3.000000",
+              "bcanbelostloot": "true",
+              "raritybalancetablerowhandle": {
+                "datatable": "gbx_ue_data_table'Rarity_Balance'",
+                "rowname": "UnCommon"
+              },
+              "raritymultipliercolumnname": "UncommonModifier",
+              "statmultipliercolumnname": "Stat_Scale",
+              "pickupaudiostinger": "audio_event'IO_Pickups_Shared.IO_Pickup_Spawn_Uncommon'"
+            }
+          },
+          {
+            "03_rare": {
+              "rarity": "03_rare",
+              "baddtocriteria": "true",
+              "internalname": "rare",
+              "displayname": "rarities, 4FA7D0184F06CBB5FDDFEFA18D90AB0A, Rare",
+              "displaycolor": {
+                "source": {
+                  "r": "0.018500",
+                  "g": "0.337164",
+                  "b": "0.590619",
+                  "a": "1.000000"
+                },
+                "colormodes": {
+                  "pairs": {
+                    "pair4162403806": {
+                      "key": "Deuteranope",
+                      "value": {
+                        "r": "0.274677",
+                        "g": "0.033105",
+                        "b": "0.938686",
+                        "a": "1.000000"
+                      }
+                    },
+                    "pair3814921266": {
+                      "key": "Protanope",
+                      "value": {
+                        "r": "0.266356",
+                        "g": "0.068478",
+                        "b": "1.000000",
+                        "a": "1.000000"
+                      }
+                    },
+                    "pair2887238593": {
+                      "key": "Tritanope",
+                      "value": {
+                        "r": "0.174647",
+                        "g": "0.082283",
+                        "b": "1.000000",
+                        "a": "1.000000"
+                      }
+                    }
+                  }
+                }
+              },
+              "attracteffect": "Asset'/Game/Pickups/_Shared/Effects/Systems/NS_FX_Item_Loot_Beams.NS_FX_Item_Loot_Beams'",
+              "attracteffectparameters": [
+                {
+                  "parametername": "Color",
+                  "type": "Parameter_LinearColor",
+                  "colorparameter": {
+                    "r": "0.016807",
+                    "g": "0.119538",
+                    "b": "0.434154",
+                    "a": "1.000000"
+                  }
+                },
+                {
+                  "parametername": "Height",
+                  "type": "Parameter_Float",
+                  "floatparameter": "155.000000"
+                },
+                {
+                  "parametername": "HasAnointment",
+                  "type": "Parameter_Bool",
+                  "boolparameter": "true",
+                  "condition": "attribute'has_anointment'"
+                },
+                {
+                  "parametername": "HasFirmware",
+                  "type": "Parameter_Bool",
+                  "boolparameter": "true",
+                  "condition": "attribute'has_firmware'"
+                }
+              ],
+              "attracteffectheight": "120.000000",
+              "pickupoutlinecolor": {
+                "source": {
+                  "r": "0.018500",
+                  "g": "0.337164",
+                  "b": "0.590619",
+                  "a": "1.000000"
+                },
+                "colormodes": {
+                  "pairs": {
+                    "pair4162403806": {
+                      "key": "Deuteranope",
+                      "value": {
+                        "r": "0.274677",
+                        "g": "0.033105",
+                        "b": "0.938686",
+                        "a": "1.000000"
+                      }
+                    },
+                    "pair3814921266": {
+                      "key": "Protanope",
+                      "value": {
+                        "r": "0.266356",
+                        "g": "0.068478",
+                        "b": "1.000000",
+                        "a": "1.000000"
+                      }
+                    },
+                    "pair2887238593": {
+                      "key": "Tritanope",
+                      "value": {
+                        "r": "0.174647",
+                        "g": "0.082283",
+                        "b": "1.000000",
+                        "a": "1.000000"
+                      }
+                    }
+                  }
+                }
+              },
+              "pickuplifespantype": "Long",
+              "sortvalue": "5",
+              "lootfeeddisplayduration": "4.000000",
+              "bcanbelostloot": "true",
+              "raritybalancetablerowhandle": {
+                "datatable": "gbx_ue_data_table'Rarity_Balance'",
+                "rowname": "Rare"
+              },
+              "raritymultipliercolumnname": "RareModifier",
+              "statmultipliercolumnname": "Stat_Scale",
+              "pickupaudiostinger": "audio_event'IO_Pickups_Shared.IO_Pickup_Spawn_Rare'"
+            }
+          },
+          {
+            "04_epic": {
+              "rarity": "04_epic",
+              "baddtocriteria": "true",
+              "internalname": "epic",
+              "displayname": "rarities, 87E789514ECB38B7BDEE6BADED2C9537, Epic",
+              "displaycolor": {
+                "source": {
+                  "r": "0.479320",
+                  "g": "0.056128",
+                  "b": "0.658375",
+                  "a": "1.000000"
+                },
+                "colormodes": {
+                  "pairs": {
+                    "pair4162403806": {
+                      "key": "Deuteranope",
+                      "value": {
+                        "r": "0.610496",
+                        "g": "0.181164",
+                        "b": "0.138432",
+                        "a": "1.000000"
+                      }
+                    },
+                    "pair3814921266": {
+                      "key": "Protanope",
+                      "value": {
+                        "r": "0.543403",
+                        "g": "0.017989",
+                        "b": "0.000000",
+                        "a": "1.000000"
+                      }
+                    },
+                    "pair2887238593": {
+                      "key": "Tritanope",
+                      "value": {
+                        "r": "0.346704",
+                        "g": "0.009134",
+                        "b": "0.168269",
+                        "a": "1.000000"
+                      }
+                    }
+                  }
+                }
+              },
+              "attracteffect": "Asset'/Game/Pickups/_Shared/Effects/Systems/NS_FX_Item_Loot_Beams.NS_FX_Item_Loot_Beams'",
+              "attracteffectparameters": [
+                {
+                  "parametername": "Color",
+                  "type": "Parameter_LinearColor",
+                  "colorparameter": {
+                    "r": "0.254152",
+                    "g": "0.010330",
+                    "b": "0.450786",
+                    "a": "1.000000"
+                  }
+                },
+                {
+                  "parametername": "Height",
+                  "type": "Parameter_Float",
+                  "floatparameter": "187.000000"
+                },
+                {
+                  "parametername": "HasAnointment",
+                  "type": "Parameter_Bool",
+                  "boolparameter": "true",
+                  "condition": "attribute'has_anointment'"
+                },
+                {
+                  "parametername": "HasFirmware",
+                  "type": "Parameter_Bool",
+                  "boolparameter": "true",
+                  "condition": "attribute'has_firmware'"
+                }
+              ],
+              "attracteffectheight": "120.000000",
+              "pickupoutlinecolor": {
+                "source": {
+                  "r": "0.605695",
+                  "g": "0.071247",
+                  "b": "0.935000",
+                  "a": "1.000000"
+                },
+                "colormodes": {
+                  "pairs": {
+                    "pair4162403806": {
+                      "key": "Deuteranope",
+                      "value": {
+                        "r": "0.610496",
+                        "g": "0.181164",
+                        "b": "0.138432",
+                        "a": "1.000000"
+                      }
+                    },
+                    "pair3814921266": {
+                      "key": "Protanope",
+                      "value": {
+                        "r": "1.000000",
+                        "g": "0.033105",
+                        "b": "0.000000",
+                        "a": "1.000000"
+                      }
+                    },
+                    "pair2887238593": {
+                      "key": "Tritanope",
+                      "value": {
+                        "r": "0.346704",
+                        "g": "0.009134",
+                        "b": "0.168269",
+                        "a": "1.000000"
+                      }
+                    }
+                  }
+                }
+              },
+              "pickuplifespantype": "AsLongAsLevel",
+              "sortvalue": "6",
+              "lootfeeddisplayduration": "5.000000",
+              "bcanbelostloot": "true",
+              "raritybalancetablerowhandle": {
+                "datatable": "gbx_ue_data_table'Rarity_Balance'",
+                "rowname": "Epic"
+              },
+              "raritymultipliercolumnname": "VeryRareModifier",
+              "statmultipliercolumnname": "Stat_Scale",
+              "pickupaudiostinger": "audio_event'IO_Pickups_Shared.IO_Pickup_Spawn_Epic'",
+              "shouldattachpickupspawnstinger": "true"
+            }
+          },
+          {
+            "05_legendary": {
+              "rarity": "05_legendary",
+              "baddtocriteria": "true",
+              "internalname": "legendary",
+              "displayname": "rarities, 9876F82141B335ABE762D9AC17C4B5CF, Legendary",
+              "displaycolor": {
+                "source": {
+                  "r": "1.000000",
+                  "g": "0.229151",
+                  "b": "0.000000",
+                  "a": "1.000000"
+                },
+                "colormodes": {
+                  "pairs": {
+                    "pair4162403806": {
+                      "key": "Deuteranope",
+                      "value": {
+                        "r": "0.913099",
+                        "g": "0.760525",
+                        "b": "0.165132",
+                        "a": "1.000000"
+                      }
+                    },
+                    "pair3814921266": {
+                      "key": "Protanope",
+                      "value": {
+                        "r": "0.799103",
+                        "g": "0.783538",
+                        "b": "0.508881",
+                        "a": "1.000000"
+                      }
+                    },
+                    "pair2887238593": {
+                      "key": "Tritanope",
+                      "value": {
+                        "r": "0.921582",
+                        "g": "0.005605",
+                        "b": "0.007499",
+                        "a": "1.000000"
+                      }
+                    }
+                  }
+                }
+              },
+              "attracteffect": "Asset'/Game/Pickups/_Shared/Effects/Systems/NS_FX_Item_Loot_Beam_Legendary.NS_FX_Item_Loot_Beam_Legendary'",
+              "attracteffectparameters": [
+                {
+                  "parametername": "Color",
+                  "type": "Parameter_LinearColor",
+                  "colorparameter": {
+                    "r": "1.000000",
+                    "g": "0.229151",
+                    "b": "0.000000",
+                    "a": "1.000000"
+                  }
+                },
+                {
+                  "parametername": "Height",
+                  "type": "Parameter_Float",
+                  "floatparameter": "512.000000"
+                },
+                {
+                  "parametername": "IsLegendary",
+                  "type": "Parameter_Bool",
+                  "boolparameter": "true"
+                },
+                {
+                  "parametername": "HasAnointment",
+                  "type": "Parameter_Bool",
+                  "boolparameter": "true",
+                  "condition": "attribute'has_anointment'"
+                },
+                {
+                  "parametername": "HasFirmware",
+                  "type": "Parameter_Bool",
+                  "boolparameter": "true",
+                  "condition": "attribute'has_firmware'"
+                },
+                {
+                  "parametername": "IsShiny",
+                  "type": "Parameter_Bool",
+                  "boolparameter": "true",
+                  "condition": "attribute'has_inventory_customization'"
+                }
+              ],
+              "attracteffectheight": "120.000000",
+              "pickupoutlinecolor": {
+                "source": {
+                  "r": "1.000000",
+                  "g": "0.229151",
+                  "b": "0.000000",
+                  "a": "1.000000"
+                },
+                "colormodes": {
+                  "pairs": {
+                    "pair4162403806": {
+                      "key": "Deuteranope",
+                      "value": {
+                        "r": "0.913099",
+                        "g": "0.760525",
+                        "b": "0.165132",
+                        "a": "1.000000"
+                      }
+                    },
+                    "pair3814921266": {
+                      "key": "Protanope",
+                      "value": {
+                        "r": "0.799103",
+                        "g": "0.783538",
+                        "b": "0.508881",
+                        "a": "1.000000"
+                      }
+                    },
+                    "pair2887238593": {
+                      "key": "Tritanope",
+                      "value": {
+                        "r": "0.921582",
+                        "g": "0.005605",
+                        "b": "0.007499",
+                        "a": "1.000000"
+                      }
+                    }
+                  }
+                }
+              },
+              "pickuplifespantype": "Session",
+              "sortvalue": "7",
+              "lootfeeddisplayduration": "6.000000",
+              "bcanbelostloot": "true",
+              "bignorelostloottimeout": "true",
+              "raritybalancetablerowhandle": {
+                "datatable": "gbx_ue_data_table'Rarity_Balance'",
+                "rowname": "Legendary"
+              },
+              "raritymultipliercolumnname": "LegendaryModifier",
+              "statmultipliercolumnname": "Stat_Scale",
+              "pickupaudiostinger": "audio_event'IO_Pickups_Shared.IO_Pickup_Spawn_Legendary'",
+              "shouldattachpickupspawnstinger": "true",
+              "discoverylocationtype": "gbx_discovery_location_type_def'DiscoveryLocation_Miscellaneous_LegendaryItem'"
+            }
+          },
+          {
+            "06_pearlescent": {
+              "rarity": "06_pearlescent",
+              "baddtocriteria": "true",
+              "internalname": "pearl",
+              "displayname": "rarities, 9A2C84D14E6E67F159C607A98E404DFF, Pearlescent",
+              "displaycolor": {
+                "source": {
+                  "r": "0.309469",
+                  "g": "1.000000",
+                  "b": "0.644480",
+                  "a": "1.000000"
+                },
+                "colormodes": {
+                  "pairs": {
+                    "pair4162403806": {
+                      "key": "Deuteranope",
+                      "value": {
+                        "r": "0.064803",
+                        "g": "0.871367",
+                        "b": "0.246201",
+                        "a": "1.000000"
+                      }
+                    },
+                    "pair3814921266": {
+                      "key": "Protanope",
+                      "value": {
+                        "r": "0.064803",
+                        "g": "0.871367",
+                        "b": "0.246201",
+                        "a": "1.000000"
+                      }
+                    },
+                    "pair2887238593": {
+                      "key": "Tritanope",
+                      "value": {
+                        "r": "1.000000",
+                        "g": "0.300544",
+                        "b": "0.132868",
+                        "a": "1.000000"
+                      }
+                    }
+                  }
+                }
+              },
+              "attracteffect": "Asset'/Game/DLC/Cello/Effects/Niagara_Systems/NS_FX_Item_Loot_Beam_Pearlescent.NS_FX_Item_Loot_Beam_Pearlescent'",
+              "attracteffectparameters": [
+                {
+                  "parametername": "Color",
+                  "type": "Parameter_LinearColor",
+                  "colorparameter": {
+                    "r": "0.000000",
+                    "g": "1.000000",
+                    "b": "0.990256",
+                    "a": "1.000000"
+                  }
+                },
+                {
+                  "parametername": "Height",
+                  "type": "Parameter_Float",
+                  "floatparameter": "512.000000"
+                },
+                {
+                  "parametername": "IsLegendary",
+                  "type": "Parameter_Bool",
+                  "boolparameter": "true"
+                },
+                {
+                  "parametername": "HasAnointment",
+                  "type": "Parameter_Bool",
+                  "boolparameter": "true",
+                  "condition": "attribute'has_anointment'"
+                },
+                {
+                  "parametername": "HasFirmware",
+                  "type": "Parameter_Bool",
+                  "boolparameter": "true",
+                  "condition": "attribute'has_firmware'"
+                },
+                {
+                  "parametername": "IsShiny",
+                  "type": "Parameter_Bool",
+                  "boolparameter": "true",
+                  "condition": "attribute'has_inventory_customization'"
+                }
+              ],
+              "attracteffectheight": "120.000000",
+              "pickupoutlinecolor": {
+                "source": {
+                  "r": "0.309469",
+                  "g": "1.000000",
+                  "b": "0.644480",
+                  "a": "1.000000"
+                },
+                "colormodes": {
+                  "pairs": {
+                    "pair4162403806": {
+                      "key": "Deuteranope",
+                      "value": {
+                        "r": "0.064803",
+                        "g": "0.871367",
+                        "b": "0.246201",
+                        "a": "1.000000"
+                      }
+                    },
+                    "pair3814921266": {
+                      "key": "Protanope",
+                      "value": {
+                        "r": "0.064803",
+                        "g": "0.871367",
+                        "b": "0.246201",
+                        "a": "1.000000"
+                      }
+                    },
+                    "pair2887238593": {
+                      "key": "Tritanope",
+                      "value": {
+                        "r": "1.000000",
+                        "g": "0.300544",
+                        "b": "0.132868",
+                        "a": "1.000000"
+                      }
+                    }
+                  }
+                }
+              },
+              "pickuplifespantype": "Session",
+              "sortvalue": "8",
+              "lootfeeddisplayduration": "6.000000",
+              "bcanbelostloot": "true",
+              "raritybalancetablerowhandle": {
+                "datatable": "gbx_ue_data_table'Rarity_Balance'",
+                "rowname": "Pearl"
+              },
+              "raritymultipliercolumnname": "PearlModifier",
+              "statmultipliercolumnname": "Stat_Scale",
+              "pickupaudiostinger": "audio_event'_DLC_Cello_IO_Pickup_Spawn_Pearl.IO_Pickup_Spawn_Pearlescent'",
+              "shouldattachpickupspawnstinger": "true",
+              "discoverylocationtype": "gbx_discovery_location_type_def'DiscoveryLocation_Miscellaneous_PearlescentItem'"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

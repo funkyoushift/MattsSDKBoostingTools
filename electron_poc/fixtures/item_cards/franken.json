@@ -1,0 +1,122 @@
+[
+  {
+    "label": "Gmr",
+    "gzo_name": "Gmr",
+    "set": "ORD_AR",
+    "item_type": "Assault Rifle",
+    "level": 60,
+    "serial": "@UgggUGFnkbUZcordV@F6xNJvOXNJvOXNJt2sfkuz$5S0~80!w0{Lp3x}B#K0lC=x}YNEC^J61AvC9W*8;CMG5(CMG5(CMG5(CMG6^I+~G@k&%&+k&%&+kwHU+3iXCHpo7MX$dDPRp@//<B#K0lC=x}YNEC@8Q6!2)kth;HqDT~pB2grYM3E>G1>J#WlWdYrvPm/{CfOvLWRq-?O/l8aL(N0gL*+x=f#&7q<>lq&<>lq&<>lq&<>lq&<x!Iol!O6osthzg<cIu_AM!(f$Pf7;Kjeq}kRS3xexO&VJJ4*BO/nTg0R",
+    "human": "15, 0, 1, 60| 2, 2519|| {7:[54 4 4 4 4 4 4 4 4 4 4 4 4 4]} {19:[58 26 10 11 74 80 81]} {3} {6:[33 33 33 33 33 33 33 33]} {4} {5} {6} {3:[6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6]} {14:[3 3 3 3 3 3 3 3 3 3 3 3]} {1:10} {2} {23:21} {3:[46 18 19]} {6:[33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33]} {27:[75 75 75 75 75 75 75 75 75 75 75 75]} {56} {57} {58} {60} {27:[15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15]} {6:68} {4:16} {13} {18:[31 31 31 31 31 31 31 31 31 31 31 31 31 31]} {39} {27:[75 75 75 75]}|",
+    "message": "Converted successfully."
+  },
+  {
+    "label": "Draupner",
+    "gzo_name": "Draupner",
+    "set": "BOR_HW",
+    "item_type": "Heavy Weapon",
+    "level": 60,
+    "serial": "@Ugr$iFm/*xI!q7ROR;Wv5YEzvWW1xW{Fa(Cc5EueOU<eFU$3T;kl9G~=l9Ff@YNKIcVPRomVPRomVPRomVPRomVPSL!nwOVHqYPs}V+=Grgop4D9>PO-2oK>QJcNhv5FWxqcnA;SAv}bK@DLutLwE=e;UPSPhwu;{!b5nVfkuz)5k7K9@(3Q8BXz`%&_QMR1Da?&i6`+Sp2U-Q0s",
+    "human": "275, 0, 1, 60| 2, 820|| {38} {11} {12} {13} {14} {273:[16 16 16 16 16 16 16 16]} {282:[9 9 9 9 9 9 9 9]} {37} {13:[12 12 12 12 12 12 12 12 12 12 12 12 12 12 12 12 12 12 12 12]} {27:[15 15 15]} {289:17} {273:[28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28]} {1:[58 59 60 55 57 56 51 53 54 52]} {18:31} {9:[78 78 78 78 78 78]}|",
+    "message": "Converted successfully."
+  },
+  {
+    "label": "Ichor",
+    "gzo_name": "Ichor",
+    "set": "VLA_SR",
+    "item_type": "Sniper",
+    "level": 60,
+    "serial": "@Uguq~c35E/M%<T#KN`q>m4%N^^kth;HqDT~pB2grYM3E>GMWRR)i6T)X3QE+X8g<Z^n3$NDn3$NDn3$NDn3$ND80u(7Mn*<PMn*<PMn(n=85(7{11i)T)_}5dpgYiPl1;KnHpwR0B%5Rtiietqs)x#lx&zJ2%gf8l%gf8l%gf8l%gf8l%gduCB`664+SD9W8EAgU5BVWK<cIu_AM!(f$Pf7;Kjeq}K(A06%_i9d00",
+    "human": "16, 0, 1, 60| 2, 2519|| {15:98} {74} {3} {6:[33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33]} {4} {5} {6} {3:[6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6]} {14:[3 3 3 3 3 3 3 3 3 3 3 3]} {1:12} {289:27} {2} {23:21} {12:50} {27:[75 75 75 75 75 75 75 75]} {56} {57} {58} {60} {27:[15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15]} {6:68} {4:16} {13} {25} {18:[31 31 31 31 31 31 31 31 31 31 31 31 31 31]} {39} {13:[75 75]}|",
+    "message": "Converted successfully."
+  },
+  {
+    "label": "Stray",
+    "gzo_name": "Stray",
+    "set": "BOR_SR",
+    "item_type": "Sniper",
+    "level": 60,
+    "serial": "@Ugxp/&35E/MOn}ay3U#PN9W*8;CMJf44y8ejAuZ?*G@E3TY?4i~32ihiER60z^YZfY@~9-LB&sB8qVXi2#1p!MD#IVpEmSVlI#fT@K%+<IfQPXu00",
+    "human": "23, 0, 1, 60| 2, 1|| {19} {2} {3} {4} {3:[6 6 6 6 6]} {1:14} {20} {17:84} {27:[75 75 75 75 75]} {13:[12 12 12]} {27:[15 15 15 15 15]} {66} {66} {66} {9:[78 78 78]} {27} {18:31} {43} {44} {53} {62} {1:[58 51]}| \"c\", 5|",
+    "message": "Converted successfully."
+  },
+  {
+    "label": "Bloodstarved",
+    "gzo_name": "Bloodstarved",
+    "set": "DAD_SM",
+    "item_type": "",
+    "level": 60,
+    "serial": "@UgwSAs35E/M4E6*1hw6tq)S?;{5)~IU26Ym32UQAn3Y80$4pk3z3Uvx~3UvxK22~1G3RMbK3Uvx~3Y80$3zZ9%3zZI)4wVj-4mAcf29*Yt29*Yt2DJ;d3$+Wi3$+Wi3$+fl4wVj-4wVj-4s{N74s{N-4z&)o4z&)o4z&(77Bv<%7Bv<%7Bv<%7Bv<%7Bv<%7Bv<%7Bv<%7Bv<%7Bv<%7Bv>Ns6{PmQR`5P8jBi>8jBi>8jBi>8jBi>8jBi>8jBi>8jBi>8jA{x3X2Mh3X2Mh3X2Mh3X2Mh3X2+x8jBi>8jBi>8fa8h6pb>B0i7/>+>je`LvF/oxgj^?hTM=F=zTP?B$~vMXcA4LNi?+4sHmu@sHmu@sHmu@sHmu@sHmu@sHmu@sHmu@sHmu@sHmu<q@<*zq@<*zq^PK<s3^K+ph-zdNl8gbNl8gbNl8gbNl8gbNl8gbNl8gbNl8fn",
+    "human": "20, 0, 1, 60| 2, 1000|| {63} {62} {3} {5} {6} {64} {88} {17} {67} {27} {34} {35} {44} {52} {58} {35} {35} {35} {35} {17} {34} {34} {34} {34} {35} {35} {44} {44} {44} {44} {52} {52} {52} {52} {17} {17} {20} {20} {20} {20} {45} {45} {45} {45} {45} {45} {53} {53} {52} {52} {52} {52} {51} {51} {51} {53} {53} {53} {53} {53} {53} {81} {81} {81} {81} {81} {81} {81} {81} {81} {81} {81} {81} {81} {81} {81} {81} {81} {81} {81} {81} {5} {5} {5} {5} {53} {5} {81} {81} {81} {81} {81} {81} {81} {81} {81} {81} {81} {81} {81} {81} {81} {80} {80} {80} {80} {80} {80} {80} {80} {80} {80} {81} {81} {81} {81} {81} {1:[10 10 10]} {289:17} {275:[23 23 23 23 23 23 23 23 23 23]} {247:[81 97 81 97 97 97 97]} {13:[10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 9 9 9 9 9 9 9 9 9 9 10 10 10 10 10]} {299:[9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9]}|",
+    "message": "Converted successfully."
+  },
+  {
+    "label": "Eigenburst",
+    "gzo_name": "Eigenburst",
+    "set": "ORD_AR",
+    "item_type": "Assault Rifle",
+    "level": 1,
+    "serial": "@UgggU`Fn%xSDhnEDSPordK{Zj0O4Okil@7HI6$TXs6$Uj1wF)&3RT7mC)ekiX^#}C_bqCc4l?QbPnoY7vHldZMLKUh/>!ZOUSOkk;5iEj5um~2xB3J~AU=b{WMX-nzks?w=ib#=25=kOSB#9({<d6K3Kk`TZ$RGJ5f8-D9XhK2)oiapdeKeUQlVp-il1Va2Cdnk3Bomrrpcxq%85tQF85tQF85tQF85tQF85tQF85wj3noY6^oiWhdkQ;JCZpaO}AvffP+>je`LvF/oxgj^?hTM=Fazk#&4Y?sV<c8cpsSGqJDJdz5>aY`3hLxb}CTODJAy5R1+>t%vM<@vofg)Jsj_eUXLP>ZC6u}~QWRLg}O2R{+2o/{`d&G}W5*`9Yu*e<RBYuRE@DM11MefKR@gtPb7{eX_",
+    "human": "15, 0, 2, 3006|| {11:82} {1:[12 7]} {11:81} {74} {6} {4} {3} {5} {52} {53} {16} {16} {16} {17} {37} {49} {66} {60} {62} {25} {31} {31} {27} {30} {28} {27:[75 75 75]} {69} {2} {2} {2} {245:[40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 34 34 34 34 34 65 65 65 65 65 63 63 63 63 63 63 63 63 63 63]} {14:[1 1 1]} {291:8} {245:[73 73 73 73 73 73 73 73 73 73]} {281:[3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3]} {27:[75 75]} {275:[23 23 23 23 23 23 23 23 23 23 23 23 23 23 23 23 23 23 23 23 23 23 23 23 23]} {292:[9 9 9 9 9]} {26:77} {18:69} {11:75} {9:[28 32 40 55 59 62 68 28 32 40 55 59 62 68 28 32 40 55 59 62 68 28 32 40 55 59 62 68 28 32 40 55 59 62 68 28 32 40 55 59 62 68]} {273:29}|",
+    "message": "Converted successfully."
+  },
+  {
+    "label": "Crazedearl",
+    "gzo_name": "Crazedearl",
+    "set": "ORD_AR",
+    "item_type": "Assault Rifle",
+    "level": 60,
+    "serial": "@UgggUGFnkbUa)F+9pqi*!h6^RCqZt_)85tQF8FbK?n3$Lt8Y<KiHHS2yJKO/iG@OK!a1u_!NjRbFCMX{&9;yvAm?V>El1=gnjWW>0kQfp}Vn_^$Au%L/#E=*gLt;n_i6Jr2L~}>($Q`*OcjS)Tkvnon?#LavBX{JE+>twSNAAcSxg&Svj@*$ua!2mS9l0ZS<c{2tJ90<v$Q`*OcjS)Tkvnon?#LavBX{JE+>t%9NA}1b*&};okL-~>vPbsF9@!&%WRL8TJ+epk$R61vdt{I7kv+0U_Q)RDBYR/z?2$dPNA}1b*&};okL-~>vPbsF9@!&%WRLg}KjKIHh#&DIe#DRX5kKNb{D>d%BYwn>_z^$iNBoE%@gsi3kN6Qk;z#_5AMqo8#E<w9KjKIHh#&DIe#DRX5kKNb{D>d%BYsfP5>%<B4yXwOnrJ+UC-Een#FKauPpH}nnuEH7D#IU8LlZ@!NEC@8Q6!2)kth-cO*A}&hwu;{!b5ln58)v^gop4D9>PO-2oK>QJcNhv5FWxqcnA;SAv}bK@DLutLwE=e;UPSPhwu;{!b5ln58)v^gop4D9>PO-2oHfGPy~uV5hwyhpa>L!B2Wa1KoKYcMW6^2fg(@@ia-%40!5$*6oDd81d2crC;~;G2o!-LPy~uV5hwyhpa>L!B2Wa1KoKYcMW6^2^a?f6U=b{WMX(4K!6H}$i(nBff<>?h7QrG/1dCu1EP_R_2o}L2SOkk;5iEj5um~2xB3J~AU=b{WMX(4K!6H}$i(nBff<>?h7QrG/1Pf}3YQsLzb`mtvP!dW)Nhk>=G/<cuI#NgMh#mCK(4qCw;1DSyMWl!nks?w=ibxSDB1NQ#6p<oQM2bieEP_R_2o}L2SOkk;5iEj5B1t5PB#/VNM3P7nNi2yau_Ttnl2{T;Vo5H^CAlP*<dR&HOL9pr$tAfYm*kRMl1p+400",
+    "human": "15, 0, 1, 60| 2, 89|| {7:54} {74} {298:11} {4} {14:[3 3 3 3 3 3 3 3]} {3:[6 6 6 6 6]} {1:10} {78} {25:20} {27:75} {12:[76 76 76 76 76 76]} {11:75} {60} {56} {22:[72 73 74 75 79]} {289:[17 17 17 17 17 17 17 17 17 17 17 17 17 17 17]} {9:[55 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55 59 59 59 59 59 59 59 59 59 59 59 59 59 59 59 59 59 59 59 59 59 59 59 59 59 59 59 59 59 59 59 59 59 59 59 59 59 59 59 59 59 59 59 59 59 59 59 62 62 62 62 62 62 62 62 62 62 62 62 62 62 62 62 62 62 62 62 62 62 62 62 62 62 62 62 62 62 62 62 62 62 62 62 62 62 62 62 62 62 62 62 62 62 62]} {2:70} {10} {5:26} {6:16} {9:[78 78 78 78 78 78 78]} {10:77} {25} {27} {18:31} {6:[33 33 33 33 33 33 33 33 33]} {9:[28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32]} {39} {9:[40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40]} {70} {22:61} {13:67} {9:[68 68 68 68 68]} {1:[51 52 53 54 54]} {311:14} {245:[24 34 34 34 34 34 34 34 34 34 34 34 34 34 34 34 34 40 40 40 40 40 40 40 40 40 40 65 65 65 65 65 65 65 65 70 70 70 70 70 70 70 70 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71]}|",
+    "message": "Converted successfully."
+  },
+  {
+    "label": "Eigenburst",
+    "gzo_name": "Eigenburst",
+    "set": "ORD_AR",
+    "item_type": "Assault Rifle",
+    "level": 60,
+    "serial": "@UgggUGFnkbU{9e#i7BtYX9J<DWYN8sIs6#C(9cmpa3@QvN3~CH&6>1zRAF3Z}4(bo;mVqWEB_$;#B_$;#B_$;#B_$;#B_$;#B_$;#B_$;#B_+`x)E!hGR36kFXg0/v*@RZ23RS2=t&awaU=b{WMX(4K!6H}$i(nBff<>?h7QrG?M2bieDI!H8NhFCRktCA*kw5ZB{>UHsBY)(N{E<JXqX`KKbjlE+_0eRKOp-}5NhZl8nIw~Bl1ylhfo5c6WMpJyWMpJyWMpJyWMpJyWMpJyWMt4CXg0/vbjCn)LvF/oxgj^?hTM=Fazk#&4Y?sV<c8dk8*)Q#$PKw6H{^!gkQ;IXr83Z@q@<)Is>4oD8CHU>o1lq?hd>c5a!2-vAE6{X1d3phJF-Xo2qobmPy~zIkv-x^C<zaNB3R^(>=8dgNq7hp!6J8LkN6Qv!b6}47P%vP#E(!yV+?yh-8cX",
+    "human": "15, 0, 1, 60| 2, 3006|| {11:82} {1:[12 7]} {11:81} {74} {6} {4} {3} {5} {52} {53} {16} {16} {16} {17} {37} {49} {60} {62} {25} {31} {299:[9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9]} {31} {27} {30} {28} {27:[75 75 75]} {69} {2} {2} {2} {245:[40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 34 34 34 34 34 65 65 65 65 65 63 63 63 63 63 63 63 63 63 63]} {14:[1 1 1]} {291:8} {245:[73 73 73 73 73 73 73 73 73 73]} {281:[3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3]} {27:[75 75]} {275:[23 23 23 23 23 23 23 23 23 23 23 23 23 23 23 23 23 23 23 23 23 23 23 23 23]} {292:[9 9 9 9 9]} {26:77} {18:69} {11:75} {9:[28 32 40 55 59 62 68 28 32 40 55 59 62 68 28 32 40 55 59 62 68 28 32 40 55 59 62 68 28 32 40 55 59 62 68 28 32 40 55 59 62 68]} {273:29} {14:49}|",
+    "message": "Converted successfully."
+  },
+  {
+    "label": "Gmr",
+    "gzo_name": "Gmr",
+    "set": "ORD_AR",
+    "item_type": "Assault Rifle",
+    "level": 60,
+    "serial": "@UgggUGFnkbUZcordV@F6xNJvOXNJvOXNJt2sfkuz$5S0~80!w0{Lp3x}B#K0lC=x}YNEC^J61AvC9W*8;CMG5(CMG5(CMG5(CMG6^I+~G@k&%&+k&%&+kwL?S3iXCHpo7MX$dDPRp@//<B#K0lC=x}YNEC@8Q6!2)kth;HqDT~pB2grYM3E>G1>J#WlWdYrvPm/{CfOvLWRq-?O/l8aL(N0gL*+x=f#&7q<>lq&<>lq&<>lq&<>lq&<x!Iol!O6osthzg<cIu_AM!(f$Pf7;Kjeq}kRS3xexO&VJJ4*BO/nTg0R",
+    "human": "15, 0, 1, 60| 2, 2519|| {7:[54 4 4 4 4 4 4 4 4 4 4 4 4 4]} {19:[58 26 10 11 74 80 81]} {3} {6:[33 33 33 33 33 33 33 33]} {4} {5} {6} {3:[6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6]} {14:[3 3 3 3 3 3 3 3 3 3 3 3]} {1:11} {2} {23:21} {3:[46 18 19]} {6:[33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33]} {27:[75 75 75 75 75 75 75 75 75 75 75 75]} {56} {57} {58} {60} {27:[15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15]} {6:68} {4:16} {13} {18:[31 31 31 31 31 31 31 31 31 31 31 31 31 31]} {39} {27:[75 75 75 75]}|",
+    "message": "Converted successfully."
+  },
+  {
+    "label": "Gmr",
+    "gzo_name": "Gmr",
+    "set": "ORD_AR",
+    "item_type": "Assault Rifle",
+    "level": 60,
+    "serial": "@UgggUGFnkbUZcordV@F6xNJvOXNJvOXNJt2sfkuz$5S0~80!w0{Lp3x}B#K0lC=x}YNEC^J61AvC9W*8;CMG5(CMG5(CMG5(CMG6^I+~G@k&%&+k&%&+kwHU-3iXCHpo7MX$dDPRp@//<B#K0lC=x}YNEC@8Q6!2)kth;HqDT~pB2grYM3E>G1>J#WlWdYrvPm/{CfOvLWRq-?O/l8aL(N0gL*+x=f#&7q<>lq&<>lq&<>lq&<>lq&<x!Iol!O6osthzg<cIu_AM!(f$Pf7;Kjeq}kRS3xexO&VJJ4*BO/nTg0R",
+    "human": "15, 0, 1, 60| 2, 2519|| {7:[54 4 4 4 4 4 4 4 4 4 4 4 4 4]} {19:[58 26 10 11 74 80 81]} {3} {6:[33 33 33 33 33 33 33 33]} {4} {5} {6} {3:[6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6]} {14:[3 3 3 3 3 3 3 3 3 3 3 3]} {1:12} {2} {23:21} {3:[46 18 19]} {6:[33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33]} {27:[75 75 75 75 75 75 75 75 75 75 75 75]} {56} {57} {58} {60} {27:[15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15]} {6:68} {4:16} {13} {18:[31 31 31 31 31 31 31 31 31 31 31 31 31 31]} {39} {27:[75 75 75 75]}|",
+    "message": "Converted successfully."
+  },
+  {
+    "label": "Gmr",
+    "gzo_name": "Gmr",
+    "set": "ORD_AR",
+    "item_type": "Assault Rifle",
+    "level": 60,
+    "serial": "@UgggUGFnkbUZcordV@F6xNJvOXNJvOXNJt2sfkuz$5S0~80!w0{Lp3x}B#K0lC=x}YNEC^J61AvC9W*8;CMG5(CMG5(CMG5(CMG6^I+~G@k&%&+k&%&+kwL?T3iXCHpo7MX$dDPRp@//<B#K0lC=x}YNEC@8Q6!2)kth;HqDT~pB2grYM3E>G1>J#WlWdYrvPm/{CfOvLWRq-?O/l8aL(N0gL*+x=f#&7q<>lq&<>lq&<>lq&<>lq&<x!Iol!O6osthzg<cIu_AM!(f$Pf7;Kjeq}kRS3xexO&VJJ4*BO/nTg0R",
+    "human": "15, 0, 1, 60| 2, 2519|| {7:[54 4 4 4 4 4 4 4 4 4 4 4 4 4]} {19:[58 26 10 11 74 80 81]} {3} {6:[33 33 33 33 33 33 33 33]} {4} {5} {6} {3:[6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6]} {14:[3 3 3 3 3 3 3 3 3 3 3 3]} {1:13} {2} {23:21} {3:[46 18 19]} {6:[33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33]} {27:[75 75 75 75 75 75 75 75 75 75 75 75]} {56} {57} {58} {60} {27:[15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15]} {6:68} {4:16} {13} {18:[31 31 31 31 31 31 31 31 31 31 31 31 31 31]} {39} {27:[75 75 75 75]}|",
+    "message": "Converted successfully."
+  },
+  {
+    "label": "Gmr",
+    "gzo_name": "Gmr",
+    "set": "ORD_AR",
+    "item_type": "Assault Rifle",
+    "level": 60,
+    "serial": "@UgggUGFnkbUZcordV@F6xNJvOXNJvOXNJt2sfkuz$5S0~80!w0{Lp3x}B#K0lC=x}YNEC^J61AvC9W*8;CMG5(CMG5(CMG5(CMG6^I+~G@k&%&+k&%&+kwHU;3iXCHpo7MX$dDPRp@//<B#K0lC=x}YNEC@8Q6!2)kth;HqDT~pB2grYM3E>G1>J#WlWdYrvPm/{CfOvLWRq-?O/l8aL(N0gL*+x=f#&7q<>lq&<>lq&<>lq&<>lq&<x!Iol!O6osthzg<cIu_AM!(f$Pf7;Kjeq}kRS3xexO&VJJ4*BO/nTg0R",
+    "human": "15, 0, 1, 60| 2, 2519|| {7:[54 4 4 4 4 4 4 4 4 4 4 4 4 4]} {19:[58 26 10 11 74 80 81]} {3} {6:[33 33 33 33 33 33 33 33]} {4} {5} {6} {3:[6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6]} {14:[3 3 3 3 3 3 3 3 3 3 3 3]} {1:14} {2} {23:21} {3:[46 18 19]} {6:[33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33]} {27:[75 75 75 75 75 75 75 75 75 75 75 75]} {56} {57} {58} {60} {27:[15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15]} {6:68} {4:16} {13} {18:[31 31 31 31 31 31 31 31 31 31 31 31 31 31]} {39} {27:[75 75 75 75]}|",
+    "message": "Converted successfully."
+  }
+]

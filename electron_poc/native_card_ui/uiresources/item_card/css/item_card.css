@@ -1,0 +1,2506 @@
+#def_item_card,
+#def_item_card_compare,
+#def_item_card_bank,
+#def_item_card_bank_compare,
+#def_item_card_vending,
+#def_item_card_vending_compare,
+#def_item_card_customize,
+#def_item_card_hud_abbreviated {
+    position: absolute;
+    top: 0%;
+    left: 0%;
+    pointer-events: none;
+    width: 54.6rem;
+    height: auto;
+}
+
+#def_item_card_hud {
+    pointer-events: none;
+    width: auto;
+    height: auto;
+}
+
+.item_card {
+    width: 54.6rem;
+    position: relative;
+}
+
+.item_card_tooltip {
+    width: 54.6rem;
+    height: auto;
+}
+
+.item_card_bkg {
+    border-image-source: url("coui://uiresources/item_card/assets/UI_Art_Assets/item_card_background.png");
+    border-image-slice: 49% 49% 49% 49% fill;
+    border-image-width: 2rem 3.05rem 2rem 3.05rem;
+    position: absolute;
+    right: 0rem;
+    left: 0rem;
+    opacity: 1;
+    bottom: 0rem;
+    top: 2.5rem;
+}
+
+.item_card_wrapper {
+    display: flex;
+    align-items: flex-start;
+    position: relative;
+    justify-content: center;
+    pointer-events: none;
+    flex-direction: column;
+}
+
+#def_item_card_hud .item_card_wrapper {
+    transform: translateX(-50%) translateY(-100%) translateZ(0rem);
+}
+
+.item_card_stat_cntr {
+    margin: 0rem 0.8rem 0rem 0rem;
+    flex: 1 0;
+    display: flex;
+    height: 100%;
+}
+
+.item_card_primary_stats {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    margin: 1rem 0rem 0.5rem 0rem;
+}
+
+.item_card_primary_stat_icon_placholder {
+    position: absolute;
+    height: 3.25rem;
+    width: 3.25rem;
+    margin: 0rem 0rem 0rem 0rem;
+    top: -0.5rem;
+}
+
+.item_card_bkg_cntr {
+    position: absolute;
+    opacity: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: -4rem;
+    right: 0rem;
+    bottom: -1.5rem;
+    left: 0rem;
+}
+
+.item_card_name {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    font-family: Industry-DemiBold;
+    color: #ffffff;
+    white-space: normal;
+    position: relative;
+    text-align: left;
+    overflow-x: visible;
+    font-size: 2.4rem;
+    line-height: 110%;
+}
+
+.item_card_lvl_cntr {
+    display: flex;
+    justify-content: flex-end;
+    position: absolute;
+    align-items: flex-start;
+    right: 1rem;
+    top: 0.5rem;
+    width: 9rem;
+    height: 3rem;
+}
+
+.item_card_stat_price_cntr {
+    display: flex;
+    position: relative;
+    align-items: center;
+    justify-content: space-between;
+    background-color: rgba(22, 111, 135, 0.3);
+    padding: 0rem 2rem 0rem 0rem;
+}
+
+.item_card_text_cream {
+    color: #e4d9ce;
+}
+
+.item_card_text_blue_gray {
+    color: #a0aeb1;
+}
+
+.item_card_manufacturer_bkg {
+    width: 27.85rem;
+    height: 100%;
+    position: relative;
+    display: flex;
+    font-family: Industry-Bold;
+    font-size: 4rem;
+    opacity: 1;
+    background-image: none;
+    background-repeat: no-repeat;
+    background-position: left center;
+    background-attachment: scroll;
+    background-size: contain;
+}
+
+/* header manufacturer logotype*/
+.item_card_manufacturer_bkg.borg {
+    background-image: url("coui://uiresources/_shared/assets/ui_art_manufacturer_logos/ui_art_manu_itemcard_logotype_ripper.png");
+}
+
+.item_card_manufacturer_bkg.daedalus {
+    background-image: url("coui://uiresources/_shared/assets/ui_art_manufacturer_logos/ui_art_manu_itemcard_logotype_daedalus.png");
+}
+
+.item_card_manufacturer_bkg.jakobs {
+    background-image: url("coui://uiresources/_shared/assets/ui_art_manufacturer_logos/ui_art_manu_itemcard_logotype_jakobs.png");
+}
+
+.item_card_manufacturer_bkg.maliwan {
+    background-image: url("coui://uiresources/_shared/assets/ui_art_manufacturer_logos/ui_art_manu_itemcard_logotype_maliwan.png");
+}
+
+.item_card_manufacturer_bkg.order {
+    background-image: url("coui://uiresources/_shared/assets/ui_art_manufacturer_logos/ui_art_manu_itemcard_logotype_order.png");
+}
+
+.item_card_manufacturer_bkg.tediore {
+    background-image: url("coui://uiresources/_shared/assets/ui_art_manufacturer_logos/ui_art_manu_itemcard_logotype_tediore.png");
+}
+
+.item_card_manufacturer_bkg.torgue {
+    background-image: url("coui://uiresources/_shared/assets/ui_art_manufacturer_logos/ui_art_manu_itemcard_logotype_torgue.png");
+}
+
+.item_card_manufacturer_bkg.vladof {
+    background-image: url("coui://uiresources/_shared/assets/ui_art_manufacturer_logos/ui_art_manu_itemcard_logotype_vladof.png");
+}
+
+.item_card_manufacturer_bkg.atlas {
+    background-image: url("coui://uiresources/_shared/assets/ui_art_manufacturer_logos/ui_art_manu_itemcard_logotype_atlas.png");
+}
+
+.item_card_manufacturer_bkg.hyperion {
+    background-image: url("coui://uiresources/_shared/assets/ui_art_manufacturer_logos/ui_art_manu_itemcard_logotype_hyperion.png");
+}
+
+.item_card_manufacturer_bkg.cov {
+    background-image: url("coui://uiresources/_shared/assets/ui_art_manufacturer_logos/ui_art_manu_itemcard_logotype_cov.png");
+}
+
+/* header manufacturer logotype END*/
+.item_card_stat_foil {
+    position: absolute;
+    right: 0rem;
+    top: 0rem;
+    left: 0rem;
+    bottom: 0rem;
+    mix-blend-mode: lighten;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.13) 73.60000000000001%, #ffffff 100%);
+    border: 0.2rem solid #ffffff;
+}
+
+.item_card_primary_stat_value {
+    display: flex;
+    justify-content: space-around;
+    flex: 1 1;
+    align-items: center;
+    font-family: Industry-DemiBold;
+    z-index: 1;
+    flex-direction: column;
+    font-size: 2rem;
+    position: absolute;
+    bottom: 0.15rem;
+    coh-font-fit-mode: shrink;
+    height: 2.8rem;
+}
+
+.item_card_primary_stat_icon.damage {
+    background-image: url("coui://uiresources/item_card/assets/damage_icon.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+}
+
+.item_card_rarity_bkg {
+    position: absolute;
+    top: 0rem;
+    right: 0rem;
+    left: 0rem;
+    bottom: 0rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    align-content: flex-end;
+    justify-content: center;
+}
+
+.item_card_abbr_rarity_bkg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+}
+
+.item_card_header_cntr {
+    position: relative;
+    padding: 0rem 0rem 0rem 0rem;
+}
+
+.item_card_header {
+    padding: 1rem 0.8rem 1rem 0.8rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    position: relative;
+    min-height: 9.5rem;
+}
+
+.item_card_elemental_size {
+    width: 3.2rem;
+    height: 3.2rem;
+    margin: 0rem 0.2rem 0rem 0rem;
+}
+
+.item_card_elem_damage_cntr {
+    display: flex;
+    position: relative;
+    justify-content: center;
+    align-items: center;
+    height: 4rem;
+    margin: 0.5rem 1rem 0.5rem 1rem;
+}
+
+.item_card_abbr_elem_damage_cntr {
+    position: relative;
+    height: 100%;
+    margin: 0rem 1.4rem 0.8rem 0rem;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.item_card_damage_type {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.item_card_primary_stat {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    flex: 1 1;
+    justify-content: center;
+    border-image-slice: 0% 49% 0% 49% fill;
+    opacity: 1;
+    position: relative;
+}
+
+.class_mod_locked .top_left_cntr_sub_text {
+    color: #a63b3b;
+}
+
+.class_mod_locked .top_left_cntr_txt {
+    color: #ff4646;
+}
+
+.class_mod_locked .item_card_class_mod_locked {
+    height: 9.6rem;
+    width: 0.5rem;
+}
+
+.item_card_banner_cntr {
+    align-items: center;
+    justify-content: flex-start;
+    opacity: 0;
+    display: flex;
+    flex-direction: row;
+    position: relative;
+    height: 3.5rem;
+    left: 1.75rem;
+    top: 0rem;
+    z-index: 1;
+}
+
+.item_card_banner {
+    align-items: center;
+    justify-content: flex-start;
+    display: flex;
+    position: relative;
+    flex-direction: row;
+    top: 0rem;
+    right: 0rem;
+    bottom: 0rem;
+    left: 0rem;
+    margin: 0rem 1rem 0rem 1rem;
+}
+
+.item_card_banner_icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    background-image: none;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+    margin: 0rem 0.5rem 0rem 0rem;
+}
+
+.item_card_banner_cntr.equipped {
+    opacity: 1;
+}
+
+.item_card_banner_cntr.lowlevel {
+    opacity: 1;
+    right: -1.75rem;
+    flex-direction: row-reverse;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.item_card_banner_cntr.wrong_class {
+    opacity: 1;
+}
+
+.item_card_banner_cntr.need_dlc {
+    opacity: 1;
+}
+
+.item_card_banner_cntr.not_comparable {
+    opacity: 1;
+}
+
+.item_card_banner_cntr.favorite {
+    opacity: 1;
+}
+
+.item_card_banner_cntr.trash {
+    opacity: 1;
+}
+
+.item_card_banner_cntr.autobank {
+    opacity: 1;
+}
+
+.item_card_banner_cntr.tagged {
+    opacity: 1;
+}
+
+.item_card_secondary_section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0rem 0rem 0.25rem 0rem;
+}
+
+.item_card_textstat_section {
+    width: 100%;
+}
+
+.item_card_secondary_stat_augment {
+    position: relative;
+    flex: 1 1;
+    width: 100%;
+    flex-direction: row;
+    display: flex;
+    margin: 0rem 0rem 1rem 0rem;
+    align-items: flex-start;
+}
+
+.augment_medium {
+    width: 15.4rem;
+}
+
+.augment_large {
+    width: 24.8rem;
+}
+
+.augment_legendary {
+    border: 0.1rem solid #dcac28;
+}
+
+.no_health_overtime {
+    opacity: 0.3;
+}
+
+.item_card_firmware {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    flex: 1 1;
+    position: relative;
+}
+
+.item_card_secondary_stat_duration_icon {
+    width: 2.8rem;
+    height: 2.8rem;
+    position: absolute;
+    right: 0rem;
+    bottom: 0rem;
+    background-color: rgba(255, 255, 255, 0.2);
+    visibility: hidden;
+}
+
+.item_card_detailed_stat_icon {
+    width: 2.8rem;
+    height: 2.8rem;
+    position: absolute;
+    right: 0rem;
+    bottom: 0rem;
+    background-color: rgba(255, 255, 255, 0.2);
+    visibility: hidden;
+}
+
+.item_card_secondary_stat_augment_icon {
+    width: 4rem;
+    height: 4rem;
+    background-image: none;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+}
+
+.item_card_abbr_headline {
+    position: relative;
+    width: 100%;
+    height: 5rem;
+    margin: 0.2rem 0rem 0rem 0rem;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.item_card_primary_stats_section {
+    width: 100%;
+}
+
+.item_card_corestats_n_overclock {
+    display: flex;
+    flex-direction: row;
+    border-image-source: url("coui://uiresources/item_card/assets/UI_Art_Assets/item_card_primary_stat_background.png");
+    border-image-slice: 49% 49% 49% 49% fill;
+    border-image-width: 4.1rem 1.05rem 4.1rem 1.05rem;
+    align-items: center;
+    padding: 1rem 1rem 1rem 1rem;
+    margin: 0rem 0rem 1rem 0rem;
+}
+
+.item_card_corestats_n_overclock_icon_cntr {
+    width: 2.6rem;
+    background-color: #484848;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+}
+
+.item_card_corestats_n_overclock_cntr {
+    flex: 1 1;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.item_card_corestats_n_overclock_icon {
+    width: 2rem;
+    height: 2rem;
+    opacity: 1;
+    background-image: url("coui://uiresources/item_card/assets/UI_Art_Assets/item_card_enhancement_small.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+}
+
+.item_card_firmware_icon_cntr {
+    width: 6.7rem;
+    height: 6.7rem;
+    padding: 1rem 1rem 1rem 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.item_card_detailed_stat_icon_cntr {
+    margin: 0rem 0.7rem 0rem 0rem;
+    width: 7rem;
+    height: 7rem;
+    background-color: rgba(70, 70, 70, 0.1);
+    padding: 1rem 1rem 1rem 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.item_card_firmware_cntr {
+    display: flex;
+    margin: 0rem 1rem 0rem 1rem;
+}
+
+.item_card_detailed_firmware_cntr {
+    display: flex;
+    background-color: #151515;
+}
+
+.item_card_corestat_description {
+    flex: 1 1;
+    display: flex;
+    align-items: center;
+    coh-font-fit-mode: shrink;
+    font-family: Industry-Medium;
+    font-size: 2rem;
+    color: rgb(160, 174, 177);
+    margin: 0rem 0rem 0rem 1rem;
+}
+
+.item_card_textstat_description {
+    display: flex;
+    align-items: center;
+    font-size: 2rem;
+    font-family: Industry-Medium;
+    color: #a0aeb1;
+}
+
+.item_card_secondary_stats_augments {
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: column;
+    align-items: center;
+    margin: 0.5rem 0rem 0rem 0rem;
+}
+
+.item_card_secondary_stat_enhance_icon_cntr {
+    width: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.item_card_secondary_stat_enhance_icon {
+    width: 0.4rem;
+    height: 100%;
+    background-image: url("coui://uiresources/item_card/assets/UI_Art_Assets/item_card_enhancement_bullet.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+    display: flex;
+    align-items: center;
+}
+
+.item_card_secondary_stat_enhance_text {
+    flex: 1 1;
+    font-family: Industry-Medium;
+    font-size: 2rem;
+    padding: 0rem 0rem 0rem 1rem;
+    color: rgb(160, 174, 177);
+}
+
+.item_card_lvl {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: flex-start;
+}
+
+.item_card_primary_stat_comparison_cntr {
+    display: flex;
+    transform: translateX(0rem);
+    padding: 0rem 0.6rem 0rem 0.6rem;
+    position: relative;
+    right: 0rem;
+    left: 0rem;
+}
+
+.item_card_stat_item_icon_cntr {
+    padding: 0.5rem 0.5rem 0.5rem 0.5rem;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 4.5rem;
+    border-image-source: url("coui://uiresources/item_card/assets/UI_Art_Assets/item_card_secondary_stat_background_grey.png");
+    border-image-slice: 49% 49% 49% 49% fill;
+    border-image-width: 1.6rem 0 1.6rem 1.6rem;
+}
+
+.item_card_stat_item_value {
+    display: flex;
+    coh-font-fit-mode: shrink;
+    flex-wrap: wrap;
+    flex: 1 1;
+    font-family: Industry-Medium;
+    font-size: 2.2rem;
+    align-items: center;
+    justify-content: center;
+    background-image: none;
+}
+
+.item_card_stat_item_comparison {
+    width: 3rem;
+    height: 100%;
+    position: absolute;
+    left: 0rem;
+}
+
+.item_card_primary_stat_content {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.item_card_secondary_stats_enhance {
+    display: flex;
+    flex: 1 1;
+    flex-direction: row;
+    width: 100%;
+    margin: 0rem 0rem 0.5rem 0rem;
+}
+
+.item_card_anointment_icon {
+    width: 100%;
+    height: 100%;
+    background-image: url("coui://uiresources/item_card/assets/UI_Art_Assets/item_card_anointed_icon.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: 2.7rem 2.7rem;
+}
+
+.item_card_firmware_icon {
+    width: 4.8rem;
+    height: 4.8rem;
+    background-color: #515151;
+    position: absolute;
+}
+
+.item_card_detailed_stat_img {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.item_card_firmware_bonus_icon {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.2);
+    position: relative;
+}
+
+.top_left_cntr {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    margin: 0rem 0rem 0rem 0rem;
+    align-self: flex-start;
+    flex-direction: column;
+}
+
+.item_card_abbr_left_cntr {
+    position: relative;
+    height: 100%;
+    width: 30%;
+    display: flex;
+    flex: 0 1;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+.item_card_abbr_right_cntr {
+    position: absolute;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    right: 1rem;
+    padding: 0rem 0rem 0.25rem 0rem;
+}
+
+.top_left_cntr_txt {
+    font-family: Industry-DemiBold;
+    font-size: 2.6rem;
+    position: relative;
+    display: flex;
+    margin: 0rem 0.5rem 0rem 0rem;
+    height: 100%;
+    align-items: flex-end;
+}
+
+.item_card_left_txt {
+    position: relative;
+    font-family: Industry-DemiBold;
+    coh-font-fit-mode: shrink;
+    flex: 0 1;
+    margin: 0rem 0.2rem 0.2rem 0rem;
+    font-size: 2.2rem;
+}
+
+.item_card_left_txt.med_text_2 {
+    margin: 0rem 1rem 0.6rem 0rem;
+}
+
+dps_sub_text {
+    font-size: 2.2rem;
+    font-family: Industry-Medium;
+    coh-font-fit-mode: shrink;
+    position: relative;
+    height: 100%;
+    align-items: flex-end;
+    display: flex;
+}
+
+.dps_sub_text {
+    font-size: 2rem;
+    font-family: Industry-Medium;
+    coh-font-fit-mode: shrink;
+    position: relative;
+    display: flex;
+    margin: 0rem 1rem 0.1rem 0rem;
+    height: 100%;
+    align-items: flex-end;
+}
+
+.top_left_cntr_sub_text {
+    font-size: 2.2rem;
+    font-family: Industry-Medium;
+    position: relative;
+    height: 100%;
+    align-items: flex-end;
+    display: flex;
+}
+
+.abbr_top_left_cntr_sub_text {
+    position: relative;
+    margin: 0rem 0rem 0.4rem 0rem;
+    padding: 0rem 0.8rem 0rem 0rem;
+    font-family: Industry-Medium;
+    coh-font-fit-mode: shrink;
+    flex: 0 1;
+    font-size: 2.2rem;
+    align-self: flex-end;
+}
+
+.item_card_top_left_comparison_icon {
+    width: 2rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    transform: none;
+    left: -0.5rem;
+    bottom: 0.7rem;
+}
+
+.item_card_abbr_comparison_icon {
+    position: relative;
+    width: 2.5rem;
+    height: 2.5rem;
+    transform: translateY(0.4rem);
+}
+
+.item_card_shield_type {
+    position: relative;
+    width: 3.2rem;
+    height: 3.2rem;
+    margin: 0rem 0.4rem 0.2rem 0rem;
+    border: 0.2rem solid #ffffff;
+    background-color: rgba(255, 255, 255, 0.66);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.item_card_top_left.ic_comparison_icon {
+    width: 3.2rem;
+    height: 3.2rem;
+    margin: 0rem 0.2rem 0rem 0rem;
+    background-color: rgba(255, 255, 255, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.item_card_abbr.ic_comparison_icon {
+    position: absolute;
+    top: 1rem;
+    left: -1.6rem;
+    width: 2.5rem;
+    height: 2.5rem;
+}
+
+.item_card_comparison_ctr {
+    position: relative;
+    top: 0.4rem;
+    height: 100%;
+    padding: 0rem 0rem 0rem 0.6rem;
+    display: flex;
+    flex: 0 1;
+    align-items: flex-end;
+}
+
+.item_card_comparison_bkg {
+    position: absolute;
+    left: -0.4rem;
+    top: 0rem;
+    bottom: -0.2rem;
+    right: 0.4rem;
+}
+
+.item_card_comparison_gradient {
+    position: absolute;
+    left: -0.4rem;
+    bottom: -0.2rem;
+    right: 0.4rem;
+    top: 0rem;
+}
+
+.item_card_slideout {
+    width: 54.4rem;
+    display: flex;
+    flex-direction: column;
+    min-height: 7rem;
+    position: relative;
+    z-index: 0;
+    opacity: 1;
+    transform: translateY(0rem);
+    height: 73rem;
+}
+
+.item_card_main_divider {
+    width: 100%;
+    height: 0.2rem;
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.item_card_slideout_divider {
+    width: 100%;
+    height: 0.2rem;
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.item_card_secondary_firmware_enhance {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1;
+}
+
+.item_card_red_text_cntr {
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0rem 6rem 0rem 6rem;
+    color: #f33a47;
+    coh-font-fit-mode: shrink;
+    font-family: Industry-MediumItalic;
+    font-size: 2rem;
+    margin: 0rem 0rem 1rem 0rem;
+}
+
+.item_card_debug_text {
+    text-align: left;
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    padding: 0.2rem 1rem 0.2rem 1rem;
+    color: #e4d9ce;
+    coh-font-fit-mode: shrink;
+    font-family: Industry-MediumItalic;
+    font-size: 2.2rem;
+    min-height: 5rem;
+}
+
+.item_card_detailed_stats {
+    display: flex;
+    flex-direction: column;
+    background-color: #151515;
+}
+
+.item_card_detailed_firmware {
+    display: flex;
+    flex-direction: column;
+    background-color: #202020;
+}
+
+.item_card_detailed_firmware_bonus {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border: 0.1rem solid rgba(255, 255, 255, 0.1);
+    max-height: 7rem;
+}
+
+.item_card_detailed_stat {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border: 0.1rem solid rgba(255, 255, 255, 0.1);
+    max-height: 7rem;
+}
+
+.item_card_detailed_firmware_bonus_icon_cntr {
+    width: 4rem;
+    height: 4rem;
+    padding: 1rem 1rem 1rem 1rem;
+    position: relative;
+    visibility: hidden;
+}
+
+.item_card_detailed_firmware_bonus_lvl {
+    width: 3.2rem;
+    text-align: center;
+}
+
+.item_card_detailed_firmware_bonus_text {
+    flex: 1 1;
+    coh-font-fit-mode: shrink;
+    margin: 1rem 0rem 1rem 0rem;
+    padding: 0rem 3rem 0rem 1rem;
+    letter-spacing: 0.08rem;
+}
+
+.item_card_detailed_sec_stat_text {
+    flex: 1 1;
+    coh-font-fit-mode: shrink;
+    margin: 1rem 0rem 1rem 0rem;
+    padding: 0rem 3rem 0rem 1rem;
+    letter-spacing: 0.08rem;
+}
+
+.item_card_detailed_firmware_bonus.unlocked {
+    background-color: rgba(143, 247, 131, 0.11);
+}
+
+.item_card_detailed_firmware_bonus.unlocked .item_card_detailed_firmware_bonus_icon_cntr {
+    visibility: visible;
+}
+
+.item_card_secondary_stat_augment.duration_effect .item_card_secondary_stat_duration_icon {
+    visibility: visible;
+}
+
+.item_card_detailed_stat_icon_cntr.duration_effect .item_card_detailed_stat_icon {
+    visibility: visible;
+}
+
+.item_card_detailed_stat_stacks {
+    width: 50%;
+    height: 2.8rem;
+    position: absolute;
+    right: 0rem;
+    bottom: 0rem;
+    text-align: right;
+}
+
+.item_card_action_btn_icon {
+    width: 4rem;
+    height: 4rem;
+    margin: 0rem 1rem 0rem 0rem;
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+.item_card_prompt {
+    background-color: #515151;
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    min-height: 6rem;
+    flex-direction: row;
+    align-items: center;
+    flex: 0 0;
+    padding: 1rem 0rem 0rem 0rem;
+    opacity: 0.8;
+}
+
+.item_card_action_btn {
+    display: flex;
+    align-items: center;
+    margin: 0rem 1rem 1rem 1rem;
+}
+
+.item_card_action_btn_text {
+    coh-font-fit-mode: shrink;
+}
+
+.item_card_top_left_comparison_icon.item_card_compare_worse {
+    background-image: url("coui://uiresources/item_card/assets/UI_Art_Assets/item_card_compare_arrow_1.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+    transform: scaleY(-1) translateY(-0.5rem);
+}
+
+.item_card_top_left_comparison_icon.item_card_compare_much_worse {
+    background-image: url("coui://uiresources/item_card/assets/UI_Art_Assets/item_card_compare_arrow_2_vert.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+    transform: scaleY(-1) translateY(-0.4rem);
+}
+
+.item_card_top_left_comparison_icon.item_card_compare_better {
+    background-image: url("coui://uiresources/item_card/assets/UI_Art_Assets/item_card_compare_arrow_1.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+}
+
+.item_card_top_left_comparison_icon.item_card_compare_much_better {
+    background-image: url("coui://uiresources/item_card/assets/UI_Art_Assets/item_card_compare_arrow_2_vert.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+}
+
+.item_card_primary_stat_divider {
+    width: 0.2rem;
+    height: 100%;
+    background-color: #ff5555;
+}
+
+.item_card_thumbnail {
+    width: 18rem;
+    height: 5.5rem;
+    position: relative;
+    background-image: none;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    right: 3rem;
+    top: 1rem;
+}
+
+.item_card_lvl_text {
+    font-size: 2.2rem;
+    font-family: Industry-Medium;
+    position: relative;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.primary_stat_large {
+    flex: 5 1 auto;
+    max-width: 21.1rem;
+}
+
+.item_card_class_mod_passive_bkg {
+    display: flex;
+    flex-direction: row;
+    flex: 1 1 8.8rem;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+.item_card_primary_stat_cntr {
+    display: flex;
+    flex-direction: column;
+    flex: 1 0 8.8rem;
+    border-image-source: url("coui://uiresources/item_card/assets/UI_Art_Assets/item_card_primary_stat_background.png");
+    border-image-slice: 49% 49% 49% 49% fill;
+    border-image-width: 4.1rem 1.05rem 4.1rem 1.05rem;
+    height: 5.5rem;
+}
+
+.item_card_primary_stat_divider_cntr {
+    flex: 0 1 2.5rem;
+    display: flex;
+    height: 100%;
+    justify-content: center;
+}
+
+.item_card_primary_stat_comparison_good {
+    flex: 1 1 auto;
+    background-color: #18341a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.2rem;
+    height: 100%;
+}
+
+.item_card_primary_stat_comparison_bad {
+    flex: 1 1 auto;
+    background-color: #8d1515;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.2rem;
+    height: 100%;
+}
+
+.item_card_primary_stat_comparison_not_comparable {
+    flex: 1 1 auto;
+    background-color: #262626;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.2rem;
+    height: 100%;
+}
+
+.item_card_primary_stat_comparison_same {
+    flex: 1 1 auto;
+    background-color: #262626;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.2rem;
+    height: 100%;
+}
+
+.item_card_primary_stat_better_icon {
+    flex: 1 0 auto;
+    background-color: rgba(255, 255, 255, 0.1);
+    height: 100%;
+}
+
+.item_card_primary_stat_way_better_icon {
+    flex: 1 0 auto;
+    background-color: rgba(255, 255, 255, 0.1);
+    height: 100%;
+}
+
+.item_card_primary_stat_worst_icon {
+    flex: 1 0 auto;
+    background-color: rgba(255, 255, 255, 0.1);
+    height: 100%;
+}
+
+.item_card_primary_stat_way_worst_icon {
+    flex: 1 0 auto;
+    background-color: rgba(255, 255, 255, 0.1);
+    height: 100%;
+}
+
+.item_card_primary_stat_same_icon {
+    flex: 1 0 auto;
+    background-color: rgba(255, 255, 255, 0.1);
+    height: 100%;
+}
+
+.item_card_primary_stat_not_comparable_icon {
+    flex: 1 0 auto;
+    background-color: rgba(255, 255, 255, 0.1);
+    height: 100%;
+}
+
+.primary_stat_better {
+    background-color: #0A5605;
+    height: 7.8rem;
+}
+
+.primary_stat_way_better {
+    background-color: #0A5605;
+}
+
+.primary_stat_worse {
+    background-color: #610F0F;
+}
+
+.primary_stat_way_worse {
+    background-color: #610F0F;
+}
+
+.primary_stat_worse {
+    background-color: #610F0F;
+}
+
+.primary_stat_way_worse {
+    background-color: #610F0F;
+}
+
+.primary_stat_not_comparable {
+    background-color: #6A6A6A;
+}
+
+.primary_stat_same {
+    background-color: #6A6A6A;
+}
+
+.item_card_ctr {
+    padding: 0rem 2rem 0rem 2rem;
+    position: relative;
+}
+
+.item_card_bkg_lines {
+    border-image-source: url("coui://uiresources/item_card/assets/UI_Art_Assets/item_card_background_lines.png");
+    position: absolute;
+    border-image-slice: 49% 49% 49% 49% fill;
+    border-image-width: 4.175rem 2.775rem 4.175rem 2.775rem;
+    margin: 1rem 0rem 1rem 0rem;
+    top: 0.5rem;
+    right: 0rem;
+    bottom: -2.5rem;
+    left: 0rem;
+}
+
+.item_card_rarity_fui {
+    position: absolute;
+    height: 100%;
+    border-image-source: url("coui://uiresources/item_card/assets/UI_Art_Assets/item_card_header_FUI.png");
+    border-image-slice: 49% 49% 49% 49% fill;
+    border-image-width: 4.2rem 3.15rem 4.2rem 3.15rem;
+    padding: 0rem 0rem 0rem 0rem;
+    right: -0.65rem;
+    left: -0.65rem;
+}
+
+.item_card_abbr_rarity_fui {
+    position: absolute;
+    height: 100%;
+    right: -0.8rem;
+    left: -0.8rem;
+    border-image-source: url("coui://uiresources/item_card/assets/UI_Art_Assets/item_card_abbr_header_FUI.png");
+    border-image-slice: 49% 53% 26% 53% fill;
+    border-image-width: 5rem 3rem 2rem 3rem;
+}
+
+.item_card_rarity_gradient {
+    position: absolute;
+    bottom: 0.75rem;
+    opacity: 0.7;
+    width: 50.1rem;
+    top: 0.5rem;
+    border-image-source: url("coui://uiresources/item_card/assets/UI_Art_Assets/item_card_header_background_2.png");
+    border-image-slice: 30% 49% 30% 49% fill;
+    border-image-width: 2.85rem 25.05rem 2.85rem 24.5rem;
+}
+
+.item_card_rarity_fui,
+.item_card_rarity_bkg_dim {
+    filter: coh-color-matrix(0.08235294117647059, 0, 0, 0, 0, 0, 0.43137254901960786, 0, 0, 0, 0, 0, 0.5254901960784314, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.item_card_abbr_rarity_gradient {
+    position: absolute;
+    top: 0.4rem;
+    bottom: 0.5rem;
+    width: 100%;
+    border-image-source: url("coui://uiresources/item_card/assets/UI_Art_Assets/item_card_abbr_header_gradient.png");
+    border-image-slice: 50% 13% 48% 13% fill;
+    border-image-width: 2rem 2rem 1.9rem 2rem;
+    border-image-repeat: stretch stretch;
+}
+
+.item_card_value {
+    font-size: 2.2rem;
+    font-family: Industry-DemiBold;
+}
+
+.item_card_text_currency {
+    color: #a0aeb1;
+    font-family: Industry-DemiBold;
+    position: relative;
+    font-size: 2.2rem;
+}
+
+.item_card_elem_icon {
+    width: 3rem;
+    height: 3rem;
+    margin: 0rem 0.5rem 0rem 0rem;
+}
+
+.item_card_abbr_elem_icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    margin: 0rem 0.6rem 0rem 0rem;
+}
+
+.item_card_element_text {
+    font-family: Industry-Medium;
+    font-size: 2.2rem;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0rem 0rem 0.2rem 0rem;
+    margin: 0rem 0rem 0rem 1rem;
+}
+
+.item_card_abbr_element_text {
+    font-family: Industry-DemiBold;
+}
+
+.item_card_header_top_fui {
+    position: absolute;
+    right: 1rem;
+    left: 1rem;
+    height: 0.2rem;
+    top: 0rem;
+    background-color: #ffffff;
+}
+
+.item_card_rarity_type {
+    position: relative;
+    margin: 0.5rem 0rem 0rem 0rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.item_card_abbr_rarity_type {
+    position: relative;
+    width: 5.7rem;
+    height: 1rem;
+    margin: 0rem 0rem 0rem 1rem;
+}
+
+.item_card_rarity_type_text {
+    position: relative;
+    font-size: 2rem;
+    font-family: Industry-Medium;
+    color: #2d95ca;
+}
+
+.item_card_rarity_pip_container .rarity_pips_root {
+    position: relative;
+    width: 4.5rem;
+    height: 1rem;
+    margin: 0rem 0.25rem 0rem 0rem;
+}
+
+.item_card_name_rarity_container {
+    width: 36rem;
+    position: relative;
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+.item_card_lvl_value {
+    font-family: Industry-DemiBold;
+    font-size: 2.4rem;
+    height: 100%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    text-align: left;
+    coh-font-fit-mode: shrink;
+}
+
+.item_card_stat_text {
+    display: flex;
+    align-items: center;
+    position: relative;
+    border-style: none solid none solid;
+    border-color: #65ba52;
+    border-width: 0.3rem;
+    padding: 0.5rem 1rem 0.5rem 1rem;
+    flex-direction: row;
+    justify-content: center;
+    background-color: #03101a;
+    height: 3rem;
+    margin: 0.5rem 0rem 0.5rem 0rem;
+}
+
+.item_card_currency_icon {
+    position: relative;
+    height: 2.5rem;
+    width: 2.5rem;
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_currency/ico_ui_art_currency_money.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+    margin: 0rem 0.25rem 0rem 0rem;
+}
+
+.weapon_dmg .item_card_primary_stats {
+    max-width: 12rem;
+}
+
+.augment_stat_divider {
+    height: 2rem;
+    width: 0.4rem;
+    position: relative;
+    margin: 0rem 0rem 0rem 0rem;
+    background-image: url("coui://uiresources/item_card/assets/UI_Art_Assets/stat_divider.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: fixed;
+    background-size: contain;
+}
+
+.tertiary_stat_divider {
+    position: relative;
+    width: 0.6rem;
+    height: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-image: url("coui://uiresources/item_card/assets/UI_Art_Assets/stat_divider.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: fixed;
+    background-size: contain;
+    transform: none;
+}
+
+.primary_stat_divider {
+    position: relative;
+    transform: translateY(-1rem);
+    background-image: url("coui://uiresources/item_card/assets/UI_Art_Assets/stat_divider.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: fixed;
+    background-size: contain;
+    width: 0.6rem;
+    height: 2rem;
+    display: flex;
+    justify-content: center;
+}
+
+.item_card_text_stat_ctr {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    font-size: 2.2rem;
+    font-family: Industry-Medium;
+    color: #a0aeb1;
+    align-items: flex-start;
+    margin: 2rem 0rem 2rem 0rem;
+}
+
+.item_card_section_divider {
+    height: 0.2rem;
+    width: 100%;
+    border-image-source: url("coui://uiresources/item_card/assets/UI_Art_Assets/separator_separator_9slice.png");
+    border-image-slice: 0% 49% 0% 49% fill;
+    border-image-width: 0 1.6rem 0 1.6rem;
+    margin: 0.5rem 0rem 0.5rem 0rem;
+}
+
+.item_card_augment_wrapper {
+    display: flex;
+    align-items: center;
+    flex: 1 1;
+    flex-direction: column;
+}
+
+.item_card_augment_wrapper:last-child .augment_stat_divider {
+    display: none;
+}
+
+.item_card_firmware_name_ctr {
+    font-size: 2.6rem;
+    font-family: Industry-Medium;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.item_card_firmware_text_ctr {
+    font-size: 2.6rem;
+    font-family: Industry-Medium;
+    justify-content: flex-start;
+    position: relative;
+    display: flex;
+}
+
+.item_card_firmware_number_ctr .active {
+    color: #1eb9fd;
+}
+
+.item_card_firmware_number_ctr {
+    font-family: Industry-DemiBold;
+}
+
+.item_card_firmware_number_ctr .full {
+    color: #ff7800;
+}
+
+.item_card_banner_text {
+    font-family: Industry-Medium;
+    font-size: 2.2rem;
+}
+
+.item_card_banner_enders {
+    height: 100%;
+    width: 0.2rem;
+    background-color: #ff00c8;
+    position: absolute;
+}
+
+.item_card_banner_enders_left {
+    left: -0.5rem;
+}
+
+.item_card_banner_enders_right {
+    right: -0.5rem;
+}
+
+.item_card_banner_icon.equipped {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_item_state/ico_ui_art_equipped.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: 3rem 3rem;
+}
+
+.item_card_banner_text.equipped {
+    color: #eb7300;
+}
+
+.item_card_banner_enders.equipped {
+    background-color: #eb7300;
+}
+
+.item_card_banner_enders.trash {
+    background-color: #d71e44;
+}
+
+.item_card_banner_enders.autobank {
+    background-color: #00a0ce;
+}
+
+.item_card_banner_enders.tagged {
+    background-color: #00a0ce;
+}
+
+.item_card_banner_enders.favorite {
+    background-color: #00a0ce;
+}
+
+.item_card_banner_enders.not_comparable {
+    background-image: none;
+}
+
+.item_card_banner_enders.lowlevel {
+    background-image: none;
+}
+
+.item_card_banner_enders.wrong_class {
+    background-image: none;
+}
+
+.item_card_banner_enders.need_dlc {
+    background-color: #d71e44;
+}
+
+.item_card_banner_icon.favorite {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_item_state/ico_ui_art_favorite.png");
+}
+
+.item_card_banner_icon.autobank {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_item_state/ico_ui_art_bank.png");
+}
+
+.item_card_banner_icon.trash {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_item_state/ico_ui_art_trash.png");
+}
+
+.item_card_banner_icon.tag1 {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_item_state/ico_ui_art_tag_1.png");
+}
+
+.item_card_banner_icon.tag2 {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_item_state/ico_ui_art_tag_2.png");
+}
+
+.item_card_banner_icon.tag3 {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_item_state/ico_ui_art_tag_3.png");
+}
+
+.item_card_banner_icon.tag4 {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_item_state/ico_ui_art_tag_4.png");
+}
+
+.item_card_banner_icon.need_dlc,
+.item_card_banner_icon.lowlevel,
+.item_card_banner_icon.wrong_class,
+.item_card_banner_icon.not_comparable {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_item_state/ico_ui_art_warning_flat.png");
+}
+
+.item_card_banner_text.trash,
+.item_card_banner_text.autobank,
+.item_card_banner_text.tagged {
+    color: #a0aeb1;
+}
+
+.item_card_banner_text.favorite {
+    color: #1eb9fd;
+}
+
+.item_card_banner_text.not_comparable {
+    color: #a0aeb1;
+}
+
+.item_card_banner_text.need_dlc,
+.item_card_banner_text.lowlevel,
+.item_card_banner_text.wrong_class {
+    color: #d71e44;
+    margin: 0rem 0.5rem 0rem 0rem;
+}
+
+.item_car_banner_backing.lowlevel,
+.item_car_banner_backing.wrong_class,
+.item_car_banner_backing.need_dlc {
+    border-image-source: url("coui://uiresources/_shared/assets/ui_art_misc_assets/item_card_warning_backing.png");
+    border-image-slice: 100% 49% 0% 49% fill;
+    border-image-width: 3.3rem 0.65rem 0 0.65rem;
+}
+
+.item_car_banner_backing.autobank,
+.item_car_banner_backing.favorite,
+.item_car_banner_backing.tagged {
+    border-image-source: url("coui://uiresources/_shared/assets/ui_art_misc_assets/item_card_generic_backing.png");
+    border-image-slice: 100% 49% 0% 49% fill;
+    border-image-width: 3.3rem 0.65rem 0 0.65rem;
+}
+
+.item_car_banner_backing.trash,
+.item_car_banner_backing.not_comparable {
+    border-image-source: url("coui://uiresources/_shared/assets/ui_art_misc_assets/item_card_junk_backing.png");
+    border-image-slice: 100% 49% 0% 49% fill;
+    border-image-width: 3.3rem 0.65rem 0 0.65rem;
+}
+
+.item_car_banner_backing.equipped {
+    border-image-source: url("coui://uiresources/_shared/assets/ui_art_misc_assets/item_card_equipped_backing.png");
+    border-image-slice: 100% 49% 0% 49% fill;
+    border-image-width: 3.3rem 0.65rem 0 0.65rem;
+}
+
+.item_card_banner_cntr.lowlevel {
+    flex-direction: row-reverse;
+}
+
+.weapon .item_card_primary_stat:first-child {
+    flex: 1 1 25%;
+}
+
+.shield .item_card_primary_stat:first-child {
+    flex: 1 1 29.4%;
+}
+
+.repair_kit .item_card_primary_stat:nth-child(2) {
+    flex: 1 1 30%;
+}
+
+.grenade .item_card_primary_stat:nth-child(n + 2) {
+    flex: 1 1 29.4%;
+}
+
+.heavy_weapon .item_card_primary_stat:nth-child(2) {
+    flex: 1 1 29.4%;
+}
+
+.item_card_comparison_backing {
+    opacity: 1;
+    height: 2.5rem;
+    position: absolute;
+    width: 100%;
+    bottom: 0rem;
+}
+
+.item_card_comparison_backing.item_card_compare_equal {
+    border-image-source: url("coui://uiresources/item_card/assets/UI_Art_Assets/item_card_comparison_backing_equal.png");
+    border-image-slice: 49% 49% 49% 49% fill;
+    border-image-width: 1.825rem 1rem 1.825rem 1rem;
+    opacity: 1;
+}
+
+.item_card_comparison_backing.item_card_compare_worse,
+.item_card_comparison_backing.item_card_compare_much_worse,
+.item_card_comparison_backing.item_card_compare_better,
+.item_card_comparison_backing.item_card_compare_much_better {
+    opacity: 1;
+    border-image-source: url("coui://uiresources/item_card/assets/UI_Art_Assets/item_card_comparison_backing_gradient_2.png");
+    border-image-slice: 49% 49% 49% 49% fill;
+    border-image-width: 1.8rem 1rem 1.8rem 1rem;
+}
+
+.item_card_compare_icons {
+    height: 2.6rem;
+    width: 2.6rem;
+    align-self: center;
+    position: absolute;
+    top: 0rem;
+    transform: translateX(-3rem);
+}
+
+.top_left_cntr.item_card_compare_equal .item_card_compare_icons,
+.item_card_compare_icons.item_card_compare_equal {
+    background-image: url("coui://uiresources/item_card/assets/UI_Art_Assets/item_card_compare_equal.png"), linear-gradient(rgba(3, 16, 26, 0.8), rgba(3, 16, 26, 0.8));
+    background-repeat: no-repeat, repeat;
+    background-position: center center, left top;
+    background-attachment: scroll, scroll;
+    background-size: contain, auto;
+}
+
+.top_left_cntr.item_card_compare_nocompare .item_card_compare_icons,
+.item_card_compare_icons.item_card_compare_nocompare {
+    background-image: url("coui://uiresources/item_card/assets/UI_Art_Assets/item_card_compare_not_comparable.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+    width: 3rem;
+    height: 1.65rem;
+    transform: translateX(-3.5rem);
+}
+
+.top_left_cntr.item_card_compare_much_worse .item_card_compare_icons,
+.item_card_compare_icons.item_card_compare_much_worse {
+    background-image: url("coui://uiresources/item_card/assets/UI_Art_Assets/item_card_compare_arrow_2_vert.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+    transform: scaleY(-1) translateX(-3rem);
+}
+
+.top_left_cntr.item_card_compare_worse .item_card_compare_icons,
+.item_card_compare_icons.item_card_compare_worse {
+    background-image: url("coui://uiresources/item_card/assets/UI_Art_Assets/item_card_compare_arrow_1.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+    transform: scaleY(-1) translateX(-3rem);
+}
+
+.top_left_cntr.item_card_compare_much_better .item_card_compare_icons,
+.item_card_compare_icons.item_card_compare_much_better {
+    background-image: url("coui://uiresources/item_card/assets/UI_Art_Assets/item_card_compare_arrow_2_vert.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+}
+
+.top_left_cntr.item_card_compare_better .item_card_compare_icons,
+.item_card_compare_icons.item_card_compare_better {
+    background-image: url("coui://uiresources/item_card/assets/UI_Art_Assets/item_card_compare_arrow_1.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+}
+
+.item_card_stat_empty_left {
+    width: 1rem;
+    height: 4.5rem;
+    opacity: 0.5;
+    border-image-source: url("coui://uiresources/item_card/assets/UI_Art_Assets/item_card_secondary_stat_background_white.png");
+    border-image-slice: 49% 30% 50% 30% fill;
+    border-image-width: 1.6rem 0 1.6rem 1rem;
+}
+
+.item_card_stat_empty_right {
+    width: 1rem;
+    height: 4.5rem;
+    opacity: 0.5;
+    border-image-source: url("coui://uiresources/item_card/assets/UI_Art_Assets/item_card_secondary_stat_background_white.png");
+    border-image-slice: 49% 30% 50% 30% fill;
+    border-image-width: 1.6rem 1rem 1.6rem 0;
+}
+
+.item_card_stat_empty_center {
+    margin: 0rem 0.15rem 0rem 0.15rem;
+    background-image: url("coui://uiresources/item_card/assets/UI_Art_Assets/hash_lines_pattern_white.png");
+    background-repeat: repeat;
+    background-position: left top;
+    background-attachment: scroll;
+    background-size: 0.35rem;
+    flex: 1 0;
+}
+
+.item_card_glyph_wrapper {
+    min-height: 5rem;
+    margin: 1rem 0rem 0rem 0rem;
+    right: 0rem;
+    left: 0rem;
+    bottom: 0rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0.5rem 0.5rem 0.5rem 0.5rem;
+    flex-wrap: wrap;
+    background-color: rgba(3, 16, 26, 0.8);
+    position: relative;
+}
+
+.item_card_elem_icons {
+    display: flex;
+    margin: 0rem 0rem 0.2rem 0rem;
+}
+
+.item_card_class_mod_locked {
+    position: absolute;
+    visibility: hidden;
+    height: 0;
+    width: 0;
+    background-color: #ff0000;
+    transform: rotateZ(-45deg);
+    right: 50%;
+}
+
+.item_card_class_mod_cntr {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.item_card_class_mod {
+    height: 7rem;
+    display: flex;
+    position: relative;
+    margin: 0rem 1.2rem 0rem 0rem;
+    align-items: center;
+}
+
+.item_card_class_mod_icon_spec {
+    position: relative;
+    width: 3.5rem;
+    height: 3.5rem;
+    background-image: var();
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+}
+
+.item_card_class_mod_stat_amount {
+    position: relative;
+    display: flex;
+    font-family: Industry-DemiBold;
+    font-size: 2.4rem;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    color: #a0aeb1;
+}
+
+.item_card_class_mods {
+    display: flex;
+}
+
+.item_card_compare_footer {
+    margin: 1rem 0rem 0rem 0rem;
+    right: 0rem;
+    left: 0rem;
+    bottom: 0rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0.25rem 1.5rem 0.25rem 1.5rem;
+    flex-wrap: wrap;
+    background-color: rgba(21, 88, 67, 0.5);
+    height: 4rem;
+    border-style: none solid;
+    border-width: 0.4rem;
+    border-color: #07cf90;
+    position: relative;
+    justify-content: center;
+}
+
+.top_left_cntr_gradient.item_card_compare_better,
+.top_left_cntr_gradient.item_card_compare_much_better,
+.top_left_cntr_gradient.item_card_compare_worse,
+.top_left_cntr_gradient.item_card_compare_much_worse {
+    opacity: 1;
+}
+
+.top_left_abbr_cntr_content {
+    flex-direction: row;
+    display: flex;
+    position: relative;
+    left: -2.8rem;
+}
+
+.ic_compare_other_ico {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_item_state/item_compare_icon.png");
+    background-repeat: no-repeat;
+    background-position: left top;
+    background-attachment: scroll;
+    background-size: contain;
+    width: 3rem;
+    height: 3rem;
+}
+
+.compare_from_text {
+    font-family: Industry-Medium;
+    font-size: 2.2rem;
+    margin: 0rem 0rem 0rem 1rem;
+    color: #07cf90;
+}
+
+.item_card_noelement_buffer {
+    transform: translateY(2.2rem);
+}
+
+.temp_itemcard_augment_value_container {
+    text-align: left;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    position: relative;
+}
+
+.item_card_secondary_icon {
+    width: 5rem;
+    position: relative;
+    transform: none;
+    margin: 0rem 1rem 0rem 0rem;
+    border-image-source: url("coui://uiresources/item_card/assets/UI_Art_Assets/item_card_secondary_stat_background.png");
+    border-image-slice: 49% 49% 49% 49% fill;
+    border-image-width: 1.6rem 0 1.6rem 1.6rem;
+    height: 5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.temp_itemcard_augment_value {
+    font-family: Industry-Medium;
+    font-size: 2rem;
+    position: relative;
+    text-align: left;
+    display: flex;
+    width: 44.5rem;
+    align-items: center;
+    flex-direction: row;
+    min-height: 5rem;
+}
+
+.top_left_cntr_bkg {
+    display: flex;
+    position: absolute;
+    border-image-source: url("coui://uiresources/item_card/assets/UI_Art_Assets/item_card_dps_backing.png");
+    border-image-slice: 49% 49% 49% 50% fill;
+    border-image-width: 1.625rem 1.7rem 1.625rem 1.7rem;
+    align-items: center;
+    padding: 0rem 0rem 0.4rem 1.5rem;
+    left: 0rem;
+    height: 3.5rem;
+}
+
+.top_left_cntr_gradient {
+    position: absolute;
+    top: 0rem;
+    right: 0rem;
+    left: 0rem;
+    bottom: 0rem;
+    opacity: 0;
+    border-image-source: url("coui://uiresources/item_card/assets/UI_Art_Assets/item_card_dps_gradient.png");
+    border-image-slice: 49% 49% 49% 49% fill;
+    border-image-width: 1.625rem 1.7rem 1.625rem 1.7rem;
+}
+
+.ic_element_backing {
+    border-image-source: url("coui://uiresources/item_card/assets/UI_Art_Assets/item_card_element_backing.png");
+    border-image-slice: 49% 49% 49% 49% fill;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    border-image-width: 0.575rem 1rem 0.575rem 1rem;
+}
+
+.element_dmg_divider {
+    height: 2rem;
+    width: 0.2rem;
+    background-color: #ffffff;
+    margin: 0rem 0rem 0rem 1rem;
+}
+
+.abbr_primary_margin {
+    margin: 1rem 0rem 0rem 0rem;
+}
+
+.top_left_cntr_bkg_abbv {
+    top: 0.6rem;
+}
+
+.item_card_passive_icon_container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0rem 0.5rem 0rem 0rem;
+    width: 5rem;
+    height: 5rem;
+}
+
+.item_card_class_mod_inner_wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-image-source: url("coui://uiresources/item_card/assets/UI_Art_Assets/item_card_primary_stat_background.png");
+    border-image-slice: 49% 49% 49% 49% fill;
+    border-image-width: 4.1rem 1.05rem 4.1rem 1.05rem;
+    justify-content: center;
+    flex: 1 1;
+    height: 7rem;
+}
+
+.class_mod_divider {
+    transform: translateY(0.2rem);
+    height: 2.5rem;
+}
+
+.ic_iotd_banner_container {
+    position: absolute;
+    height: 4.65rem;
+    margin: 0rem 0rem 0rem 2rem;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    top: -0.25rem;
+}
+
+.ic_iotd_text {
+    font-size: 2.2rem;
+    font-family: Industry-Bold;
+    color: #031019;
+    position: relative;
+    margin: 0rem 4rem 0rem 4.5rem;
+    text-stroke-width: 0rem;
+}
+
+.ic_iotd_backing {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    border-image-source: url("coui://uiresources/components/inventory_item_cell/assets/ui_art_asset/iotd_name_backing.png");
+    border-image-slice: 55% 50% 44% 49% fill;
+    border-image-width: 2.5575rem 5.85rem 2.046rem 5.85rem;
+}
+
+.item_card_enhancement {
+    margin: 0.5rem 0rem 0rem 0rem;
+}
+
+.class_mod_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_item_card_type/ico_art_item_card_class_mod.png");
+    background-repeat: repeat;
+    background-position: left top;
+    background-attachment: scroll;
+    background-size: contain;
+    width: 3.6rem;
+    height: 2.85rem;
+    position: absolute;
+    right: -2rem;
+    bottom: -0.25rem;
+}
+
+.class_mod_thumb_size {
+    height: 6.5rem;
+    width: 6.5rem;
+    background-image: none;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+    top: 1rem;
+    right: 9rem;
+    position: absolute;
+}
+
+.item_card_lvl_text.lowlevel {
+    color: #d71e44;
+}
+
+.item_card_lvl_value.lowlevel {
+    color: #d71e44;
+}
+
+.item_card_class_mod_stat {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    margin: 0rem 0rem 1rem 0rem;
+    justify-content: flex-start;
+}
+
+.item_card_class_mod_wrapper {
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    flex: 1 1;
+}
+
+.ic_legendary_augment_notint {
+    filter: coh-color-matrix(1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.ic_firmware_margin {
+    margin: 0.5rem 0rem 0.5rem 0rem;
+}
+
+.item_card_comparison_backing.item_card_compare_worse .item_card_primary_stat_value,
+.item_card_comparison_backing.item_card_compare_much_worse .item_card_primary_stat_value,
+.item_card_comparison_backing.item_card_compare_better .item_card_primary_stat_value,
+.item_card_comparison_backing.item_card_compare_much_better .item_card_primary_stat_value {
+    color: #ffffff;
+}
+
+.ic_rarity_type_cntr {
+    display: flex;
+    align-items: center;
+    padding: 0rem 0rem 0rem 0.15rem;
+    margin: 0.25rem 0rem 0.5rem 0rem;
+    position: relative;
+}
+
+.ic_type_text_position {
+    position: relative;
+}
+
+.ic_dps_cntr {
+    position: relative;
+    height: 3.6rem;
+}
+
+.ic_thumb_lvl_cntr {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
+    position: absolute;
+    right: 0rem;
+    top: 0.5rem;
+    height: 100%;
+}
+
+.item_card_legendary_cntr {
+    align-items: center;
+    display: flex;
+    margin: 0rem 0rem 0.5rem 0rem;
+    position: relative;
+}
+
+.item_card_legendary_text {
+    flex: 1 1;
+    font-size: 2rem;
+    font-family: Industry-Medium;
+    text-align: left;
+    width: 100%;
+    opacity: 1;
+    position: relative;
+    color: #a0aeb1;
+    flex-direction: column;
+    display: flex;
+}
+
+.item_card_legendary_icon_cntr {
+    margin: 0rem 0.7rem 0rem 0rem;
+    width: 6.8rem;
+    height: 6.8rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    left: -2.5rem;
+    background-image: url("coui://uiresources/item_card/assets/UI_Art_Assets/item_card_anointed_icon_container.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+}
+
+.item_card_legendary_glow {
+    position: absolute;
+    background-image: url("coui://uiresources/item_card/assets/UI_Art_Assets/item_card_anointed_glow.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+    width: 29.75rem;
+    height: 30.65rem;
+    left: 0.9rem;
+    opacity: 1;
+}
+
+.item_card_legendary_details {
+    background-image: url("coui://uiresources/item_card/assets/UI_Art_Assets/item_card_anointed_line_details.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+    width: 14.2rem;
+    height: 23.95rem;
+    position: absolute;
+    left: -1.9rem;
+}
+
+.item_card_legendary_rarity {
+    display: flex;
+    align-items: center;
+    position: relative;
+    left: -4rem;
+}
+
+.ic_class_mod_point_text {
+    font-family: Industry-DemiBold;
+}
+
+.ic_elem_damage_indcator {
+    width: 3rem;
+    height: 0.5rem;
+    position: absolute;
+    bottom: 0rem;
+    background-image: none;
+    background-repeat: repeat;
+    background-position: left top;
+    background-attachment: scroll;
+    background-size: auto;
+}
+
+.item_card_lvl_cntr.lowlevel .ic_low_level_bkg {
+    background-image: url("coui://uiresources/item_card/assets/UI_Art_Assets/item_card_low_level_gradient.png");
+    width: 19.3rem;
+    height: 7.7rem;
+    position: absolute;
+    top: -0.5rem;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+    right: -0.75rem;
+}
+
+.item_card_rarity_bkg_dim {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.item_card_class_mod_icon_backing {
+    background-image: url("coui://uiresources/item_card/assets/UI_Art_Assets/item_card_passive_icon_container.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.item_card_thumbnail.wrong_class {
+    filter: coh-color-matrix(0.8431372549019608, 0, 0, 0, 0, 0, 0.11764705882352941, 0, 0, 0, 0, 0, 0.26666666666666666, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.ic_iotd_zane {
+    position: absolute;
+    background-image: url("coui://uiresources/components/inventory_item_cell/assets/ui_art_asset/iotd_zane_logo_small_outline.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+    width: 6rem;
+    height: 6rem;
+    left: -2rem;
+    bottom: 0.5rem;
+}
+
+.abbr_scale_down {
+    transform: rotateY(0deg) scaleX(.75) scaleY(.75);
+}
+
+#def_item_card_hud_abbreviated .item_card_wrapper {
+    transform: translateX(-100rem) translateY(23rem);
+}
+
+/* Damage types */
+.ic_element_backing.corrosive {
+    border-image-source: url("coui://uiresources/item_card/assets/UI_Art_Assets/item_card_element_backing_corrosive.png");
+}
+
+.ic_element_backing.cryo {
+    border-image-source: url("coui://uiresources/item_card/assets/UI_Art_Assets/item_card_element_backing_cryo.png");
+}
+
+.ic_element_backing.fire {
+    border-image-source: url("coui://uiresources/item_card/assets/UI_Art_Assets/item_card_element_backing_fire.png");
+}
+
+.ic_element_backing.radiation {
+    border-image-source: url("coui://uiresources/item_card/assets/UI_Art_Assets/item_card_element_backing_radiation.png");
+}
+
+.ic_element_backing.electric {
+    border-image-source: url("coui://uiresources/item_card/assets/UI_Art_Assets/item_card_element_backing_shock.png");
+}
+
+.ic_pearl_texture {
+    width: 46.15rem;
+    height: 6.1rem;
+    position: absolute;
+    bottom: 0.75rem;
+    background-image: url("common://uiresources/dlc_rarity_pips/assets/ui_art_pearl_texture_itemcard.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+    display: none;
+}
+
+.item_card_tertiary_stat_wrapper {
+    width: 100%;
+    height: 4rem;
+    margin: 0rem 0rem 0.5rem 0rem;
+    display: flex;
+    flex-direction: row;
+    position: relative;
+}
+
+.item_card_tertiary_stat_cntr {
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    flex: 1 1;
+}
+
+.item_card_tertiary_stat_icon {
+    width: 3rem;
+    height: 3rem;
+    margin: 0.25rem 0.5rem 0.25rem 0rem;
+    background-image: none;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+    position: relative;
+}
+
+.item_card_secondary_stat_value {
+    font-size: 2rem;
+    font-family: Industry-DemiBold;
+    position: relative;
+}
+
+.item_card_tertiary_stat_group {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    flex: 1 1;
+    border-image-source: url("coui://uiresources/item_card/assets/UI_Art_Assets/item_card_primary_stat_background.png");
+    border-image-slice: 49% 49% 49% 49% fill;
+    border-image-width: 4.1rem 1.05rem 4.1rem 1.05rem;
+}
+
+.item_card_tertiary_stat_comparison_arrow_position {
+    top: 0.55rem !important;
+    left: 0.5rem;
+    width: 2rem;
+    height: 2rem;
+}
+
+.tertiary_stat_comparison_backing {
+    height: 100% !important;
+    opacity: 0.5 !important;
+}
+
+.item_card_top_half {
+    position: relative;
+}
+
+.item_card_bottom_half {
+    position: relative;
+}
+
+.item_car_banner_backing {
+    position: relative;
+}
+
+@media (splitscreen_mode: split-horizontal) {
+    .item_card_wrapper {
+        transform: scale(0.75);
+    }
+
+    .item_card {
+        transform: translateX(-18%);
+        width: 50rem;
+    }
+
+    .item_card_rarity_gradient {
+        width: 45.5rem;
+    }
+
+    .temp_itemcard_augment_value {
+        width: 40rem;
+    }
+
+    #def_item_card_hud .item_card_wrapper,
+    #def_item_card_hud_abbreviated .item_card_wrapper {
+        transform: scale(0.75) translateX(-50%) translateZ(0rem);
+    }
+
+    #def_item_card_hud .item_card {
+        transform: translateX(-40%) translateY(-100%);
+    }
+
+    #item_card_red_text,
+    #item_card_red_text_divider {
+        display: none;
+    }
+
+    .item_card_tooltip {
+        width: 38.22rem;
+    }
+
+    #def_item_card_hud_abbreviated {
+        top: initial;
+        left: initial;
+        bottom: 19.4rem;
+        right: 8.4rem;
+        transform: none !important;
+    }
+}
+
+@media (splitscreen_mode: split-vertical) {
+    .item_card_wrapper {
+        transform: scale(0.8);
+    }
+
+    .item_card {
+        transform: translateX(-12%);
+    }
+
+    #def_item_card_hud .item_card_wrapper {
+        transform: translateX(-50%) translateY(-100%);
+    }
+
+    #def_item_card_hud_abbreviated .item_card_wrapper {
+        transform: translateX(-65rem) translateY(30rem) scale(0.8);
+    }
+
+    .item_card_tooltip {
+        width: 43.68rem;
+    }
+
+    #item_card_red_text,
+    #item_card_red_text_divider {
+        display: none;
+    }
+}

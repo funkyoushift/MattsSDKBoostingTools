@@ -1,0 +1,249 @@
+/* Info Card start */
+.tooltip_container {
+    opacity: 0;
+    position: absolute;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.tooltip_container.tooltip_active {
+    opacity: 1;
+    transition-property: opacity;
+    transition-duration: 0.2s;
+}
+
+.tooltip_title_text_container {
+    margin: 0rem 0rem 0.25rem 0rem;
+    display: flex;
+    align-items: center;
+}
+
+.tooltip_title_text {
+    font-family: Industry-DemiBold;
+    color: #e4d9ce;
+    font-size: 3rem;
+}
+
+.tooltip_line_separator {
+    height: 0.15rem;
+    border-image-source: url("coui://uiresources/_shared/assets/ui_art_tool_tip_assets/separator_separator_9slice.png");
+    border-image-slice: 49% 49% 50% 49% fill;
+    border-image-width: 0.05rem 0.9rem 0.05rem 0.9rem;
+    margin: 0.5rem 0rem 0.5rem 0rem;
+    position: relative;
+}
+
+.tooltip_subtitle_text {
+    font-family: Industry-Medium;
+    font-size: 2.4rem;
+    color: #3f769d;
+}
+
+.tooltip_info_block_text_cntr {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.tooltip_info_block_cntr {
+    display: flex;
+    margin: 0.5rem 0rem 0.5rem 0rem;
+    flex-direction: row;
+    align-items: center;
+    height: 4rem;
+}
+
+.tooltip_info_block_text {
+    margin: 0rem 1rem 0rem 1rem;
+    max-width: 50rem;
+    font-size: 2rem;
+}
+
+.tooltip_content_header_text {
+    width: 100%;
+    font-family: Industry-DemiBold;
+    margin: 0.5rem 0rem 0.5rem 0rem;
+    color: #e4d9ce;
+    font-size: 2.6rem;
+}
+
+.tooltip_cntr_backing {
+    display: block;
+    padding: 1.5rem 1.5rem 1.5rem 1.5rem;
+    text-stroke-width: 0.25rem;
+    text-stroke-color: rgba(3, 16, 25, 0.5);
+    border-image-source: url("coui://uiresources/_shared/assets/ui_art_misc_assets/ui_art_tooltip_9slice_bg.png");
+    border-image-slice: 10% 10% 10% 10% fill;
+    border-image-width: 0.32rem 0.32rem 0.32rem 0.32rem;
+    max-width: 52.5rem;
+    min-width: 52.5rem;
+}
+
+.tooltip_text_shadow {
+    text-stroke-width: 0.25rem;
+    text-stroke-color: rgba(3, 16, 25, 0.5);
+}
+
+.tooltip_content_body_text {
+    width: 100%;
+    margin: 0.5rem 0rem 1rem 0rem;
+    font-family: Industry-Medium;
+    color: #a0aeb1;
+    font-size: 2rem;
+}
+
+.tooltip_button_glyph_wrapper {
+    min-height: 5rem;
+    margin: 0.5rem -1.3rem -1.3rem -1.3rem;
+    bottom: 0rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0.5rem 1rem 0.5rem 1rem;
+    flex-wrap: wrap;
+    background-color: rgba(3, 16, 26, 0.8);
+}
+
+.tooltip_info_block_backing {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.tooltip_button_glyph_text {
+    margin: 0rem 0.5rem 0rem 0.5rem;
+    font-family: Industry-Medium;
+    font-size: 2rem;
+    color: #a0aeb1;
+}
+
+.tooltip_button_glyph_container {
+    height: 4rem;
+    margin: 0rem 1rem 0rem 0rem;
+    display: flex;
+    position: relative;
+    align-items: center;
+}
+
+/* Info Card end */
+/* Skill Tooltips */
+.skill_tooltip_loadout {
+    width: 100%;
+    font-family: Industry-Normal;
+    color: #a0aeb1;
+    font-size: 2.0rem;
+}
+
+.skill_tooltip_loadout_text {
+    font-family: Industry-DemiBold;
+    color: #e4d9ce;
+    font-size: 2.5rem;
+}
+
+.skill_tooltip_body_text {
+    width: 100%;
+    font-family: Industry-Normal;
+    color: #a0aeb1;
+    font-size: 2rem;
+}
+
+.skill_tooltip_text {
+    margin: 0.3rem 0rem 0.25rem 0rem;
+    display: flex;
+    flex-direction: column;
+    color: #a0aeb1;
+}
+
+.skill_tooltip_text:nth-child(2) {
+    margin: 0.0rem 0rem 0.25rem 0rem;
+}
+
+.skill_tooltip_tag_bg_equipped {
+    background-color: rgba(3, 16, 25, 0.8);
+    display: flex;
+    align-items: center;
+    padding: 0rem 1.9rem 0rem 0rem;
+    height: 3.3rem;
+}
+
+.skill_tooltip_tag_icon_equipped {
+    width: 3.7rem;
+    height: 3.7rem;
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_item_state/ico_ui_art_equipped.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+}
+
+.skill_tooltip_tag_bg_locked {
+    background-color: rgba(39, 2, 8, 0.9);
+    display: flex;
+    align-items: center;
+    padding: 0rem 1.2rem 0rem 0.8rem;
+    height: 3.3rem;
+    position: relative;
+}
+
+.skill_tooltip_tag_icon_locked {
+    width: 2rem;
+    height: 2rem;
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_item_state/ico_ui_art_lock.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+    z-index: 1;
+    margin: 0rem 0.9rem 0rem 0rem;
+    flex: 0 0 2rem;
+}
+
+.skill_tooltip_tag_text {
+    font-family: Industry-DemiBold;
+    font-size: 2rem;
+    text-align: left;
+    position: relative;
+    flex: 1 1 auto;
+}
+
+.skill_tooltip_notify_cntr {
+    padding: 0rem 0.4rem 0rem 0.4rem;
+    position: relative;
+}
+
+.skill_tooltip_notify_text {
+    font-family: Industry-Normal;
+    font-size: 2rem;
+    position: relative;
+    text-align: center;
+    color: #eb7300;
+    padding: 0rem 1rem 0rem 1rem;
+}
+
+.skill_tooltip_points_text {
+    width: auto;
+    min-height: 2.3rem;
+    font-size: 2.4rem;
+    font-family: Industry-DemiBold;
+    text-align: left;
+    filter: coh-color-matrix(0.6274509803921569, 0, 0, 0, 0, 0, 0.6823529411764706, 0, 0, 0, 0, 0, 0.6941176470588235, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.skill_tooltip_hint_bar_entry_inner {
+    display: flex;
+    align-items: center;
+    padding: 0.0rem 0.5rem 0.0rem 0.0rem;
+    position: relative;
+    filter: brightness(85%);
+    transition: filter 0.24s ease-in-out;
+    z-index: 3;
+}
+
+/* Skill Tooltips */
+oak-auto-scroll>div {
+    transition-timing-function: linear;
+    transition-duration: 1s;
+    transition-property: transform;
+}

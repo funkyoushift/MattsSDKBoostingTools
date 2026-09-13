@@ -1,0 +1,980 @@
+/***** Filters ******/
+/* Health / Shield Type Tint Color */
+.fleshred,
+.tint_healthtype_fleshred,
+.healthtype.tint_health {
+    filter: coh-color-matrix(1, 0, 0, 0, 0, 0, 0.14901960784313725, 0, 0, 0, 0, 0, 0.2196078431372549, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.energyblue,
+.tint_shieldtype_shield,
+.shieldtype.tint_shield {
+    filter: coh-color-matrix(0, 0, 0, 0, 0, 0, 0.8, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.armoryellow,
+.tint_shieldtype_armor,
+.shieldtype.tint_armor {
+    filter: coh-color-matrix(1, 0, 0, 0, 0, 0, 0.7843137254901961, 0, 0, 0, 0, 0, 0.37254901960784315, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.tint_shieldtype_bio,
+.shieldtype.tint_bio {
+    filter: coh-color-matrix(0.7450980392156863, 0, 0, 0, 0, 0, 0.10196078431372549, 0, 0, 0, 0, 0, 0.09019607843137255, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.tint_shieldtype_overshield,
+.shieldtype.tint_overshield {
+    filter: coh-color-matrix(0.6431372549019608, 0, 0, 0, 0, 0, 0.6274509803921569, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.overshieldteal,
+.shieldtype.tint_overshield {
+    background-color: #a0b4ff !important;
+    mix-blend-mode: lighten;
+}
+
+.bonewhite,
+.tint_healthtype_bonewhite {
+    filter: coh-color-matrix(0.9058823529411765, 0, 0, 0, 0, 0, 0.8431372549019608, 0, 0, 0, 0, 0, 0.7490196078431373, 0, 0, 0, 0, 0, 1, 0);
+}
+
+/*corruptionblack*/
+.tint_healthtype_black {
+    filter: coh-color-matrix(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.95, 0);
+}
+
+.eridiumpurple,
+.tint_shieldtype_eridiumpurple,
+.bossbar_bar_effect.eridiumpurple {
+    filter: coh-color-matrix(0.45098039215686275, 0, 0, 0, 0, 0, 0.4627450980392157, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.tint_shieldtype_corruptionblack,
+.bossbar_bar_effect.corruptionblack {
+    filter: coh-color-matrix(0.23921568627450981, 0, 0, 0, 0, 0, 0.23921568627450981, 0, 0, 0, 0, 0, 0.23921568627450981, 0, 0, 0, 0, 0, 0.94, 0);
+}
+
+.tint_healthtype_white,
+.bossbar_bar_effect.bonewhite,
+.bossbar_bar_effect.overshieldteal {
+    filter: coh-color-matrix(1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0);
+}
+
+/* Characters */
+.tint_paladin_1,
+.lc_char_icon_cntr.char_paladin .lc_char_icon_bg,
+.crosshair_action_skill_container.show_color.char_paladin,
+.lc_tooltip_avatar.char_paladin .lc_campaign_avatar_bg,
+.load_char_subtitle_text.char_paladin {
+    filter: coh-color-matrix(0.7647058823529411, 0, 0, 0, 0, 0, 0.4470588235294118, 0, 0, 0, 0, 0, 0.1607843137254902, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.tint_darksiren_1,
+.vh_trait_color_dark_siren .vh_trait_inner_glow,
+.lc_char_icon_cntr.char_darksiren .lc_char_icon_bg,
+.crosshair_action_skill_container.show_color.char_darksiren,
+.lc_tooltip_avatar.char_darksiren .lc_campaign_avatar_bg,
+.load_char_subtitle_text.char_darksiren {
+    filter: coh-color-matrix(0.8274509803921568, 0, 0, 0, 0, 0, 0.1411764705882353, 0, 0, 0, 0, 0, 0.7019607843137254, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.tint_gravitar_1,
+.vh_trait_color_gravitar .vh_trait_inner_glow,
+.lc_char_icon_cntr.char_gravitar .lc_char_icon_bg,
+.crosshair_action_skill_container.show_color.char_gravitar,
+.lc_tooltip_avatar.char_gravitar .lc_campaign_avatar_bg,
+.load_char_subtitle_text.char_gravitar {
+    filter: coh-color-matrix(0.6666666666666666, 0, 0, 0, 0, 0, 0.9254901960784314, 0, 0, 0, 0, 0, 0.6588235294117647, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.tint_exosoldier_1,
+.vh_trait_color_exo .vh_trait_inner_glow,
+.lc_char_icon_cntr.char_exosoldier .lc_char_icon_bg,
+.crosshair_action_skill_container.show_color.char_exosoldier,
+.lc_tooltip_avatar.char_exosoldier .lc_campaign_avatar_bg,
+.load_char_subtitle_text.char_exosoldier {
+    filter: coh-color-matrix(0.19215686274509805, 0, 0, 0, 0, 0, 0.9254901960784314, 0, 0, 0, 0, 0, 0.9254901960784314, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.tint_robodealer_1,
+.vh_trait_color_robodealer .vh_trait_inner_glow,
+.lc_char_icon_cntr.char_robodealer .lc_char_icon_bg,
+.crosshair_action_skill_container.show_color.char_robodealer,
+.lc_tooltip_avatar.char_robodealer .lc_campaign_avatar_bg,
+.load_char_subtitle_text.char_robodealer {
+    filter: coh-color-matrix(0.23921568627450981, 0, 0, 0, 0, 0, 0.7450980392156863, 0, 0, 0, 0, 0, 0.6078431372549019, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.tint_corpohacker_1,
+.vh_trait_color_corpohacker .vh_trait_inner_glow,
+.lc_char_icon_cntr.char_corpohacker .lc_char_icon_bg,
+.crosshair_action_skill_container.show_color.char_corpohacker,
+.lc_tooltip_avatar.char_corpohacker .lc_campaign_avatar_bg,
+.load_char_subtitle_text.char_corpohacker {
+    filter: coh-color-matrix(0.6, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0.3607843137254902, 0, 0, 0, 0, 0, 1, 0);
+}
+
+/* VH Text color for Load Character*/
+.lc_char_text_cntr.char_paladin .lc_char_class_text,
+.lc_char_text_cntr.char_paladin .lc_char_level_text {
+    color: #fe981e;
+}
+
+.lc_char_text_cntr.char_darksiren .lc_char_class_text,
+.lc_char_text_cntr.char_darksiren .lc_char_level_text {
+    color: #d324b3;
+}
+
+.lc_char_text_cntr.char_exosoldier .lc_char_class_text,
+.lc_char_text_cntr.char_exosoldier .lc_char_level_text {
+    color: #31ecec;
+}
+
+.lc_char_text_cntr.char_gravitar .lc_char_class_text,
+.lc_char_text_cntr.char_gravitar .lc_char_level_text {
+    color: #aaeca8;
+}
+
+.lc_char_text_cntr.char_robodealer .lc_char_class_text,
+.lc_char_text_cntr.char_robodealer .lc_char_level_text {
+    color: #3dbe9b;
+}
+
+.lc_char_text_cntr.char_corpohacker .lc_char_class_text,
+.lc_char_text_cntr.char_corpohacker .lc_char_level_text {
+    color: #99ff5c;
+}
+
+/* UI Element Tint */
+.tint_color_blue_1 {
+    filter: coh-color-matrix(0.24705882352941178, 0, 0, 0, 0, 0, 0.4627450980392157, 0, 0, 0, 0, 0, 0.615686274509804, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.tint_color_blue_2 {
+    filter: coh-color-matrix(0.08235294117647059, 0, 0, 0, 0, 0, 0.43137254901960786, 0, 0, 0, 0, 0, 0.5254901960784314, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.tint_color_blue_3 {
+    filter: coh-color-matrix(0.08627450980392157, 0, 0, 0, 0, 0, 0.3176470588235294, 0, 0, 0, 0, 0, 0.49411764705882355, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.tint_color_darkblue {
+    filter: coh-color-matrix(0.011764705882352941, 0, 0, 0, 0, 0, 0.06274509803921569, 0, 0, 0, 0, 0, 0.09803921568627451, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.tint_color_highlight {
+    filter: coh-color-matrix(0.8941176470588236, 0, 0, 0, 0, 0, 0.8509803921568627, 0, 0, 0, 0, 0, 0.807843137254902, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.tint_color_locked {
+    filter: coh-color-matrix(0.8470588235294118, 0, 0, 0, 0, 0, 0.11764705882352941, 0, 0, 0, 0, 0, 0.27058823529411763, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.tint_color_completed {
+    filter: coh-color-matrix(0.13725490196078433, 0, 0, 0, 0, 0, 0.8352941176470589, 0, 0, 0, 0, 0, 0.4745098039215686, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.tint_color_empty {
+    filter: coh-color-matrix(0.30980392156862746, 0, 0, 0, 0, 0, 0.2980392156862745, 0, 0, 0, 0, 0, 0.2980392156862745, 0, 0, 0, 0, 0, 1, 0);
+}
+
+/* Text Tint */
+.distanced_icon,
+.tint_text_neutral {
+    filter: coh-color-matrix(0.6274509803921569, 0, 0, 0, 0, 0, 0.6823529411764706, 0, 0, 0, 0, 0, 0.6941176470588235, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.tint_text_highlight {
+    filter: coh-color-matrix(0.8941176470588236, 0, 0, 0, 0, 0, 0.8509803921568627, 0, 0, 0, 0, 0, 0.807843137254902, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.tint_text_secondary {
+    filter: coh-color-matrix(0.17647058823529413, 0, 0, 0, 0, 0, 0.5843137254901961, 0, 0, 0, 0, 0, 0.792156862745098, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.tint_ic_arrow_good,
+.enemy_radar_pip.ally,
+.color_filter.item_card_compare_better,
+.color_filter.item_card_compare_much_better,
+.menu_customization_hoverdrive_stat_pip.upgrade,
+.iic_compare_icons.item_card_compare_better,
+.iic_compare_icons.item_card_compare_much_better {
+    filter: coh-color-matrix(0.16470588235294117, 0, 0, 0, 0, 0, 0.9725490196078431, 0, 0, 0, 0, 0, 0.5529411764705883, 0, 0, 0, 0, 0, 1, 0) !important;
+}
+
+.tint_text_good,
+.color_text.item_card_compare_better,
+.color_text.item_card_compare_much_better,
+.iic_score.item_card_compare_better,
+.iic_score.item_card_compare_much_better {
+    color: #2af88d;
+}
+
+.tint_ic_arrow_bad,
+.color_filter.item_card_compare_worse,
+.color_filter.item_card_compare_much_worse,
+.menu_customization_hoverdrive_stat_pip.downgrade,
+.iic_compare_icons.item_card_compare_worse,
+.iic_compare_icons.item_card_compare_much_worse {
+    filter: coh-color-matrix(1, 0, 0, 0, 0, 0, 0.13725490196078433, 0, 0, 0, 0, 0, 0.25882352941176473, 0, 0, 0, 0, 0, 1, 0) !important;
+}
+
+.tint_text_warning,
+.color_text.item_card_compare_worse,
+.color_text.item_card_compare_much_worse,
+.iic_score.item_card_compare_worse,
+.iic_score.item_card_compare_much_worse {
+    color: #ff2342;
+}
+
+.tint_text_disabled {
+    filter: coh-color-matrix(0.6274509803921569, 0, 0, 0, 0, 0, 0.6823529411764706, 0, 0, 0, 0, 0, 0.6941176470588235, 0, 0, 0, 0, 0, 1, 0);
+}
+
+/* Accent Tint */
+.tint_accent_orange {
+    filter: coh-color-matrix(0.9215686274509803, 0, 0, 0, 0, 0, 0.45098039215686275, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.tint_accent_blue {
+    filter: coh-color-matrix(0.10196078431372549, 0, 0, 0, 0, 0, 0.7294117647058823, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0);
+}
+
+/* Rarity Tint */
+.tint_rarity_common_1 {
+    filter: coh-color-matrix(0.47843137254901963, 0, 0, 0, 0, 0, 0.45098039215686275, 0, 0, 0, 0, 0, 0.47843137254901963, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.tint_rarity_common_2 {
+    filter: coh-color-matrix(0.24705882352941178, 0, 0, 0, 0, 0, 0.23137254901960785, 0, 0, 0, 0, 0, 0.24705882352941178, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.tint_color_backing {
+    filter: coh-color-matrix(0.06274509803921569, 0, 0, 0, 0, 0, 0.07450980392156863, 0, 0, 0, 0, 0, 0.08235294117647059, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.rarity.common {
+    color: #9290a8;
+}
+
+.rarity.common.bright {
+    color: #bdbbd1;
+}
+
+.common .tint,
+.rarity.tint-common {
+    filter: coh-color-matrix(0.5725490196078431, 0, 0, 0, 0, 0, 0.5647058823529412, 0, 0, 0, 0, 0, 0.6588235294117647, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.common .tint.bright,
+.rarity.tint-common.bright {
+    filter: coh-color-matrix(0.7411764705882353, 0, 0, 0, 0, 0, 0.7333333333333333, 0, 0, 0, 0, 0, 0.8196078431372549, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.rarity.uncommon {
+    color: #1a892c;
+}
+
+.rarity.uncommon.bright {
+    color: #5ac54f;
+}
+
+.uncommon .tint,
+.rarity.tint-uncommon {
+    filter: coh-color-matrix(0.10196078431372549, 0, 0, 0, 0, 0, 0.5372549019607843, 0, 0, 0, 0, 0, 0.17254901960784313, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.uncommon .tint.bright,
+.rarity.tint-uncommon.bright {
+    filter: coh-color-matrix(0.35294117647058826, 0, 0, 0, 0, 0, 0.7725490196078432, 0, 0, 0, 0, 0, 0.30980392156862746, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.rarity.rare {
+    color: #2361b0;
+}
+
+.rarity.rare.bright {
+    color: #00a0ce;
+}
+
+.rare .tint,
+.rarity.tint-rare {
+    filter: coh-color-matrix(0.13725490196078433, 0, 0, 0, 0, 0, 0.3803921568627451, 0, 0, 0, 0, 0, 0.6901960784313725, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.rare .tint.bright,
+.rarity.tint-rare.bright {
+    filter: coh-color-matrix(0, 0, 0, 0, 0, 0, 0.6274509803921569, 0, 0, 0, 0, 0, 0.807843137254902, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.rarity.epic {
+    color: #8a1ab3;
+}
+
+.rarity.epic.bright {
+    color: #b648db;
+}
+
+.epic .tint,
+.rarity.tint-epic {
+    filter: coh-color-matrix(0.5411764705882353, 0, 0, 0, 0, 0, 0.10196078431372549, 0, 0, 0, 0, 0, 0.7019607843137254, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.epic .tint.bright,
+.rarity.tint-epic.bright {
+    filter: coh-color-matrix(0.7137254901960784, 0, 0, 0, 0, 0, 0.2823529411764706, 0, 0, 0, 0, 0, 0.8588235294117647, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.rarity.legendary {
+    color: #a96b1b;
+}
+
+.rarity.legendary.bright {
+    color: #ffd900;
+}
+
+.legendary .tint,
+.rarity.tint-legendary {
+    filter: coh-color-matrix(0.7490196078431373, 0, 0, 0, 0, 0, 0.4549019607843137, 0, 0, 0, 0, 0, 0.047058823529411764, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.legendary .tint.bright,
+.rarity.tint-legendary.bright {
+    filter: coh-color-matrix(1, 0, 0, 0, 0, 0, 0.8509803921568627, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.rarity.pearl {
+    color: #0eafad;
+}
+
+.rarity.pearl.bright {
+    color: #97ffd2;
+}
+
+.pearl .tint,
+.rarity.rarity.tint-pearl {
+    filter: coh-color-matrix(0.054901960784313725, 0, 0, 0, 0, 0, 0.6862745098039216, 0, 0, 0, 0, 0, 0.6784313725490196, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.pearl .tint.bright,
+.rarity.tint-pearl.bright {
+    filter: coh-color-matrix(0.592156862745098, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0.8235294117647058, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.rarity.cosmetic {
+    color: #800e3b;
+}
+
+.rarity.cosmetic.bright {
+    color: #e34762;
+}
+
+.cosmetic .tint,
+.rarity.tint-cosmetic {
+    filter: coh-color-matrix(0.5019607843137255, 0, 0, 0, 0, 0, 0.054901960784313725, 0, 0, 0, 0, 0, 0.23137254901960785, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.cosmetic .tint.bright,
+.rarity.tint-cosmetic.bright {
+    filter: coh-color-matrix(0.8901960784313725, 0, 0, 0, 0, 0, 0.2784313725490196, 0, 0, 0, 0, 0, 0.3843137254901961, 0, 0, 0, 0, 0, 1, 0);
+}
+
+@media (colorblind_mode: clrblnd_prot) {
+
+    .hc_rarity_bkg,
+    .hc_nameplate_bkg {
+        opacity: 0.7 !important;
+    }
+
+    .hc_nameplate_bkg {
+        left: -1rem !important;
+        right: -1rem !important;
+    }
+
+    .rarity_pip.dark {
+        filter: coh-color-matrix(0.3215686274509804, 0, 0, 0, 0, 0, 0.3215686274509804, 0, 0, 0, 0, 0, 0.3215686274509804, 0, 0, 0, 0, 0, 0.8, 0);
+    }
+
+    .fleshred,
+    .tint_healthtype_fleshred,
+    .healthtype.tint_health {
+        filter: coh-color-matrix(1, 0, 0, 0, 0, 0, 0.8156862745098039, 0, 0, 0, 0, 0, 0.1803921568627451, 0, 0, 0, 0, 0, 1, 0);
+    }
+
+    .energyblue,
+    .tint_shieldtype_shield,
+    .shieldtype.tint_shield {
+        filter: coh-color-matrix(0.5176470588235295, 0, 0, 0, 0, 0, 0.7294117647058823, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0);
+    }
+
+    .armoryellow,
+    .tint_shieldtype_armor,
+    .shieldtype.tint_armor {
+        filter: coh-color-matrix(0.4235294117647059, 0, 0, 0, 0, 0, 0.8274509803921568, 0, 0, 0, 0, 0, 0.8705882352941177, 0, 0, 0, 0, 0, 1, 0);
+    }
+
+    .tint_shieldtype_overshield,
+    .shieldtype.tint_overshield {
+        filter: coh-color-matrix(0.4, 0, 0, 0, 0, 0, 0.3215686274509804, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0);
+    }
+
+    .shieldtype.tint_overshield,
+    .overshieldteal {
+        background-color: #6652FF !important;
+    }
+
+    .bonewhite,
+    .tint_healthtype_bonewhite {
+        filter: coh-color-matrix(1, 0, 0, 0, 0, 0, 0.12156862745098039, 0, 0, 0, 0, 0, 0.5607843137254902, 0, 0, 0, 0, 0, 1, 0);
+    }
+
+    .eridiumpurple,
+    .tint_shieldtype_eridiumpurple,
+    .bossbar_bar_effect.eridiumpurple {
+        filter: coh-color-matrix(1, 0, 0, 0, 0, 0, 0.39215686274509803, 0, 0, 0, 0, 0, 0.011764705882352941, 0, 0, 0, 0, 0, 1, 0);
+    }
+
+    .rarity.common,
+    .rarity.common.bright {
+        color: #989893;
+    }
+
+    .common .tint,
+    .common .tint.bright,
+    .rarity.tint-common.bright,
+    .rarity.tint-common.bright {
+        filter: coh-color-matrix(0.596078431372549, 0, 0, 0, 0, 0, 0.596078431372549, 0, 0, 0, 0, 0, 0.5764705882352941, 0, 0, 0, 0, 0, 1, 0);
+    }
+
+    .rarity.uncommon,
+    .rarity.uncommon.bright {
+        color: #5884BA;
+    }
+
+    .uncommon .tint,
+    .uncommon .tint.bright,
+    .rarity.tint-uncommon,
+    .rarity.tint-uncommon.bright {
+        filter: coh-color-matrix(0.34509803921568627, 0, 0, 0, 0, 0, 0.5176470588235295, 0, 0, 0, 0, 0, 0.7294117647058823, 0, 0, 0, 0, 0, 1, 0);
+    }
+
+    .rarity.rare,
+    .rarity.rare.bright {
+        color: #8D4AFF;
+    }
+
+    .rare .tint,
+    .rare .tint.bright,
+    .rarity.tint-rare,
+    .rarity.tint-rare.bright {
+        filter: coh-color-matrix(0.5529411764705883, 0, 0, 0, 0, 0, 0.2901960784313726, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0);
+    }
+
+    .rarity.epic,
+    .rarity.epic.bright {
+        color: #ff663f;
+    }
+
+    .epic .tint,
+    .epic .tint.bright,
+    .rarity.tint-epic,
+    .rarity.tint-epic.bright {
+        filter: coh-color-matrix(1, 0, 0, 0, 0, 0, 0.2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0);
+    }
+
+    .rarity.legendary,
+    .rarity.legendary.bright {
+        color: #FFF30D;
+    }
+
+    .legendary .tint,
+    .legendary .tint.bright,
+    .rarity.tint-legendary,
+    .rarity.tint-legendary.bright {
+        filter: coh-color-matrix(1, 0, 0, 0, 0, 0, 0.9529411764705882, 0, 0, 0, 0, 0, 0.050980392156862744, 0, 0, 0, 0, 0, 1, 0);
+    }
+
+    .rarity.pearl,
+    .rarity.pearl.bright {
+        color: #48F088 !important;
+    }
+
+    .pearl .tint,
+    .pearl .tint.bright,
+    .rarity.tint-pearl,
+    .rarity.tint-pearl.bright {
+        filter: coh-color-matrix(0.2823529411764706, 0, 0, 0, 0, 0, 0.9411764705882353, 0, 0, 0, 0, 0, 0.5333333333333333, 0, 0, 0, 0, 0, 1, 0) !important;
+    }
+
+    .tint_ic_arrow_good,
+    .color_filter.item_card_compare_better,
+    .enemy_radar_pip.ally,
+    .color_filter.item_card_compare_much_better,
+    .menu_customization_hoverdrive_stat_pip.upgrade,
+    .iic_compare_icons.item_card_compare_better,
+    .iic_compare_icons.item_card_compare_much_better {
+        filter: coh-color-matrix(0.9215686274509803, 0, 0, 0, 0, 0, 0.7764705882352941, 0, 0, 0, 0, 0, 0.11372549019607843, 0, 0, 0, 0, 0, 1, 0) !important;
+    }
+
+    .tint_text_good,
+    .color_text.item_card_compare_better,
+    .color_text.item_card_compare_much_better,
+    .iic_score.item_card_compare_better,
+    .iic_score.item_card_compare_much_better {
+        color: #EBC61D;
+    }
+
+    .tint_ic_arrow_bad,
+    .color_filter.item_card_compare_worse,
+    .color_filter.item_card_compare_much_worse,
+    .menu_customization_hoverdrive_stat_pip.downgrade,
+    .iic_compare_icons.item_card_compare_worse,
+    .iic_compare_icons.item_card_compare_much_worse {
+        filter: coh-color-matrix(0.9607843137254902, 0, 0, 0, 0, 0, 0.6784313725490196, 0, 0, 0, 0, 0, 0.7686274509803922, 0, 0, 0, 0, 0, 1, 0) !important;
+    }
+
+    .tint_text_warning,
+    .color_text.item_card_compare_worse,
+    .color_text.item_card_compare_much_worse,
+    .iic_score.item_card_compare_worse,
+    .iic_score.item_card_compare_much_worse {
+        color: #F5ADC4;
+    }
+
+    .item_card_rarity_gradient,
+    .item_card_abbr_rarity_gradient {
+        opacity: 0.5 !important;
+    }
+}
+
+@media (colorblind_mode: clrblnd_deut) {
+
+    .hc_rarity_bkg,
+    .hc_nameplate_bkg {
+        opacity: 0.7 !important;
+    }
+
+    .hc_nameplate_bkg {
+        visibility: inherit !important;
+        left: -1rem !important;
+        right: -1rem !important;
+    }
+
+    .rarity_pip.dark {
+        filter: coh-color-matrix(0.3215686274509804, 0, 0, 0, 0, 0, 0.3215686274509804, 0, 0, 0, 0, 0, 0.3215686274509804, 0, 0, 0, 0, 0, 0.8, 0);
+    }
+
+    .fleshred,
+    .tint_healthtype_fleshred,
+    .healthtype.tint_health {
+        filter: coh-color-matrix(0.5372549019607843, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0.27058823529411763, 0, 0, 0, 0, 0, 1, 0);
+    }
+
+    .energyblue,
+    .tint_shieldtype_shield,
+    .shieldtype.tint_shield {
+        filter: coh-color-matrix(0.7333333333333333, 0, 0, 0, 0, 0, 0.23529411764705882, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0);
+    }
+
+    .armoryellow,
+    .tint_shieldtype_armor,
+    .shieldtype.tint_armor {
+        filter: coh-color-matrix(0.4470588235294118, 0, 0, 0, 0, 0, 0.8862745098039215, 0, 0, 0, 0, 0, 0.8274509803921568, 0, 0, 0, 0, 0, 1, 0);
+    }
+
+    .tint_shieldtype_overshield,
+    .shieldtype.tint_overshield {
+        filter: coh-color-matrix(0.23529411764705882, 0, 0, 0, 0, 0, 0.3254901960784314, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0);
+    }
+
+    .shieldtype.tint_overshield,
+    .overshieldteal {
+        background-color: #3C53FF !important;
+    }
+
+    .bonewhite,
+    .tint_healthtype_bonewhite {
+        filter: coh-color-matrix(0.8862745098039215, 0, 0, 0, 0, 0, 0.30980392156862746, 0, 0, 0, 0, 0, 0.43529411764705883, 0, 0, 0, 0, 0, 1, 0);
+    }
+
+    .eridiumpurple,
+    .tint_shieldtype_eridiumpurple {
+        filter: coh-color-matrix(0.6588235294117647, 0, 0, 0, 0, 0, 0.32941176470588235, 0, 0, 0, 0, 0, 0.7764705882352941, 0, 0, 0, 0, 0, 1, 0);
+    }
+
+    .rarity.common,
+    .rarity.common.bright {
+        color: #989893;
+    }
+
+    .common .tint,
+    .common .tint.bright,
+    .rarity.tint-common,
+    .rarity.tint-common.bright {
+        filter: coh-color-matrix(0.596078431372549, 0, 0, 0, 0, 0, 0.596078431372549, 0, 0, 0, 0, 0, 0.5764705882352941, 0, 0, 0, 0, 0, 1, 0);
+    }
+
+    .rarity.uncommon,
+    .rarity.uncommon.bright {
+        color: #2C9CD4;
+    }
+
+    .uncommon .tint,
+    .uncommon .tint.bright,
+    .rarity.tint-uncommon,
+    .rarity.tint-uncommon.bright {
+        filter: coh-color-matrix(0.17254901960784313, 0, 0, 0, 0, 0, 0.611764705882353, 0, 0, 0, 0, 0, 0.8313725490196079, 0, 0, 0, 0, 0, 1, 0);
+    }
+
+    .rarity.rare,
+    .rarity.rare.bright {
+        color: #8F33F8;
+    }
+
+    .rare .tint,
+    .rare .tint.bright,
+    .rarity.tint-rare,
+    .rarity.tint-rare.bright {
+        filter: coh-color-matrix(0.5607843137254902, 0, 0, 0, 0, 0, 0.2, 0, 0, 0, 0, 0, 0.9725490196078431, 0, 0, 0, 0, 0, 1, 0) !important;
+    }
+
+    .rarity.epic,
+    .rarity.epic.bright {
+        color: #CD7668;
+    }
+
+    .epic .tint,
+    .epic .tint.bright,
+    .rarity.tint-epic,
+    .rarity.tint-epic.bright {
+        filter: coh-color-matrix(1, 0, 0, 0, 0, 0, 0.26666666666666666, 0, 0, 0, 0, 0, 0.1568627450980392, 0, 0, 0, 0, 0, 1, 0);
+    }
+
+    .rarity.legendary,
+    .rarity.legendary.bright {
+        color: #F2FF00;
+    }
+
+    .legendary .tint,
+    .legendary .tint.bright,
+    .rarity.tint-legendary,
+    .rarity.tint-legendary.bright {
+        filter: coh-color-matrix(0.9490196078431372, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0);
+    }
+
+    .rarity.pearl,
+    .rarity.pearl.bright {
+        color: #48F088 !important;
+    }
+
+    .pearl .tint,
+    .pearl .tint.bright,
+    .rarity.tint-pearl,
+    .rarity.tint-pearl.bright {
+        filter: coh-color-matrix(0.2823529411764706, 0, 0, 0, 0, 0, 0.9411764705882353, 0, 0, 0, 0, 0, 0.5333333333333333, 0, 0, 0, 0, 0, 1, 0) !important;
+    }
+
+    .tint_ic_arrow_good,
+    .color_filter.item_card_compare_better,
+    .enemy_radar_pip.ally,
+    .color_filter.item_card_compare_much_better,
+    .menu_customization_hoverdrive_stat_pip.upgrade,
+    .iic_compare_icons.item_card_compare_better,
+    .iic_compare_icons.item_card_compare_much_better {
+        filter: coh-color-matrix(0.596078431372549, 0, 0, 0, 0, 0, 0.9607843137254902, 0, 0, 0, 0, 0, 0.11764705882352941, 0, 0, 0, 0, 0, 1, 0) !important;
+    }
+
+    .tint_text_good,
+    .color_text.item_card_compare_better,
+    .color_text.item_card_compare_much_better,
+    .iic_score.item_card_compare_better,
+    .iic_score.item_card_compare_much_better {
+        color: #98F51E;
+    }
+
+    .tint_ic_arrow_bad,
+    .color_filter.item_card_compare_worse,
+    .color_filter.item_card_compare_much_worse,
+    .menu_customization_hoverdrive_stat_pip.downgrade,
+    .iic_compare_icons.item_card_compare_worse,
+    .iic_compare_icons.item_card_compare_much_worse {
+        filter: coh-color-matrix(0.7058823529411765, 0, 0, 0, 0, 0, 0.2, 0, 0, 0, 0, 0, 0.7529411764705882, 0, 0, 0, 0, 0, 1, 0) !important;
+    }
+
+    .tint_text_warning,
+    .top_left_cntr_txt.item_card_compare_worse,
+    .top_left_cntr_txt.item_card_compare_much_worse,
+    .item_card_primary_stat_value.item_card_compare_worse,
+    .item_card_primary_stat_value.item_card_compare_much_worse,
+    .iic_score.item_card_compare_worse,
+    .iic_score.item_card_compare_much_worse {
+        color: #B433C0;
+    }
+
+    .item_card_rarity_gradient,
+    .item_card_abbr_rarity_gradient {
+        opacity: 0.5 !important;
+    }
+}
+
+@media (colorblind_mode: clrblnd_tritl) {
+
+    .hc_rarity_bkg,
+    .hc_nameplate_bkg {
+        opacity: 0.8 !important;
+    }
+
+    .hc_nameplate_bkg {
+        visibility: inherit !important;
+        left: -1rem !important;
+        right: -1rem !important;
+    }
+
+    .rarity_pip.dark {
+        filter: coh-color-matrix(0.3215686274509804, 0, 0, 0, 0, 0, 0.3215686274509804, 0, 0, 0, 0, 0, 0.3215686274509804, 0, 0, 0, 0, 0, 0.8, 0);
+    }
+
+    .fleshred,
+    .tint_healthtype_fleshred,
+    .healthtype.tint_health {
+        filter: coh-color-matrix(0.9725490196078431, 0, 0, 0, 0, 0, 0.34901960784313724, 0, 0, 0, 0, 0, 0.47843137254901963, 0, 0, 0, 0, 0, 1, 0);
+    }
+
+    .energyblue,
+    .tint_shieldtype_shield,
+    .shieldtype.tint_shield {
+        filter: coh-color-matrix(0.30196078431372547, 0, 0, 0, 0, 0, 0.9215686274509803, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0);
+    }
+
+    .armoryellow,
+    .tint_shieldtype_armor,
+    .shieldtype.tint_armor {
+        filter: coh-color-matrix(0.9529411764705882, 0, 0, 0, 0, 0, 0.8313725490196079, 0, 0, 0, 0, 0, 0.5254901960784314, 0, 0, 0, 0, 0, 1, 0);
+    }
+
+    .tint_shieldtype_overshield,
+    .shieldtype.tint_overshield {
+        filter: coh-color-matrix(0.6862745098039216, 0, 0, 0, 0, 0, 0.9490196078431372, 0, 0, 0, 0, 0, 0.6039215686274509, 0, 0, 0, 0, 0, 1, 0);
+    }
+
+    .shieldtype.tint_overshield,
+    .overshieldteal {
+        background-color: #AFF29A !important;
+    }
+
+    .bonewhite,
+    .tint_healthtype_bonewhite {
+        filter: coh-color-matrix(0.7450980392156863, 0, 0, 0, 0, 0, 0.6039215686274509, 0, 0, 0, 0, 0, 0.5686274509803921, 0, 0, 0, 0, 0, 1, 0);
+    }
+
+    .eridiumpurple,
+    .tint_shieldtype_eridiumpurple {
+        filter: coh-color-matrix(0.6588235294117647, 0, 0, 0, 0, 0, 0.6588235294117647, 0, 0, 0, 0, 0, 0.6588235294117647, 0, 0, 0, 0, 0, 1, 0);
+    }
+
+    .rarity.common,
+    .rarity.common.bright {
+        color: #989893;
+    }
+
+    .common .tint,
+    .common .tint.bright,
+    .rarity.tint-common,
+    .rarity.tint-common.bright {
+        filter: coh-color-matrix(0.596078431372549, 0, 0, 0, 0, 0, 0.596078431372549, 0, 0, 0, 0, 0, 0.5764705882352941, 0, 0, 0, 0, 0, 1, 0);
+    }
+
+    .rarity.uncommon,
+    .rarity.uncommon.bright {
+        color: #5E8E74;
+    }
+
+    .uncommon .tint,
+    .uncommon .tint.bright,
+    .rarity.tint-uncommon,
+    .rarity.tint-uncommon.bright {
+        filter: coh-color-matrix(0.3686274509803922, 0, 0, 0, 0, 0, 0.5568627450980392, 0, 0, 0, 0, 0, 0.4549019607843137, 0, 0, 0, 0, 0, 1, 0);
+    }
+
+    .rarity.rare,
+    .rarity.rare.bright {
+        color: #5197FF;
+    }
+
+    .rare .tint,
+    .rare .tint.bright,
+    .rarity.tint-rare,
+    .rarity.tint-rare.bright {
+        filter: coh-color-matrix(0.3176470588235294, 0, 0, 0, 0, 0, 0.592156862745098, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0);
+    }
+
+    .rarity.epic,
+    .rarity.epic.bright {
+        color: #da229d;
+    }
+
+    .epic .tint,
+    .epic .tint.bright,
+    .rarity.tint-epic,
+    .rarity.tint-epic.bright {
+        filter: coh-color-matrix(0.6235294117647059, 0, 0, 0, 0, 0, 0.09411764705882353, 0, 0, 0, 0, 0, 0.4470588235294118, 0, 0, 0, 0, 0, 1, 0);
+    }
+
+    .rarity.legendary,
+    .rarity.legendary.bright {
+        color: #F61115;
+    }
+
+    .legendary .tint,
+    .legendary .tint.bright,
+    .rarity.tint-legendary,
+    .rarity.tint-legendary.bright {
+        filter: coh-color-matrix(0.9647058823529412, 0, 0, 0, 0, 0, 0.06666666666666667, 0, 0, 0, 0, 0, 0.08235294117647059, 0, 0, 0, 0, 0, 1, 0);
+    }
+
+    .rarity.pearl,
+    .rarity.pearl.bright {
+        color: #ff9566 !important;
+    }
+
+    .pearl .tint,
+    .pearl .tint.bright,
+    .rarity.tint-pearl,
+    .rarity.tint-pearl.bright {
+        filter: coh-color-matrix(1, 0, 0, 0, 0, 0, 0.5843137254901961, 0, 0, 0, 0, 0, 0.4, 0, 0, 0, 0, 0, 1, 0) !important;
+    }
+
+    .tint_ic_arrow_good,
+    .color_filter.item_card_compare_better,
+    .enemy_radar_pip.ally,
+    .color_filter.item_card_compare_much_better,
+    .menu_customization_hoverdrive_stat_pip.upgrade,
+    .iic_compare_icons.item_card_compare_better,
+    .iic_compare_icons.item_card_compare_much_better {
+        filter: coh-color-matrix(0.058823529411764705, 0, 0, 0, 0, 0, 0.9607843137254902, 0, 0, 0, 0, 0, 0.7215686274509804, 0, 0, 0, 0, 0, 1, 0) !important;
+    }
+
+    .tint_text_good,
+    .color_text.item_card_compare_better,
+    .color_text.item_card_compare_much_better,
+    .iic_score.item_card_compare_better,
+    .iic_score.item_card_compare_much_better {
+        color: #0FF5B8;
+    }
+
+    .tint_ic_arrow_bad,
+    .color_filter.item_card_compare_worse,
+    .color_filter.item_card_compare_much_worse,
+    .menu_customization_hoverdrive_stat_pip.downgrade,
+    .iic_compare_icons.item_card_compare_worse,
+    .iic_compare_icons.item_card_compare_much_worse {
+        filter: coh-color-matrix(0.9725490196078431, 0, 0, 0, 0, 0, 0.34901960784313724, 0, 0, 0, 0, 0, 0.5686274509803921, 0, 0, 0, 0, 0, 1, 0) !important;
+    }
+
+    .tint_text_warning,
+    .color_text.item_card_compare_worse,
+    .color_text.item_card_compare_much_worse,
+    .iic_score.item_card_compare_worse,
+    .iic_score.item_card_compare_much_worse {
+        color: #F85991;
+    }
+
+    .item_card_rarity_gradient,
+    .item_card_abbr_rarity_gradient {
+        opacity: 0.5 !important;
+    }
+}
+
+@media (high_contrast_crosshair:on) {
+
+    .crosshair_glow,
+    .crosshair_accuracy_shadow {
+        filter: drop-shadow(0rem 0rem 0.2rem rgba(0, 0, 0)) drop-shadow(0rem 0rem 0.2rem rgba(0, 0, 0)) brightness(150%) contrast(350%) grayscale(100%);
+    }
+}
+
+@media (high_contrast_hud:on) {
+    .high_contrast_backing {
+        position: absolute;
+        width: 77rem;
+        left: 50%;
+        transform: translateX(-50%);
+        border-image-source: url("coui://uiresources/_shared/assets/ui_art_misc_assets/backing_nameplate.png");
+        border-image-slice: 49% 49% 49% 49% fill;
+        border-image-width: 1.175rem 20rem 1.175rem 20rem;
+        opacity: 0.8;
+        z-index: -2;
+    }
+
+    .enemy_radar_acc.high_contrast_backing {
+        height: 2.5rem;
+        top: 0.25rem;
+    }
+
+    .compass_acc.high_contrast_backing {
+        height: 4rem;
+        top: 3.2rem;
+    }
+
+    .hc_rarity_bkg,
+    .hc_nameplate_bkg,
+    .enemy_radar_circle_hc_backing {
+        opacity: 1 !important;
+        visibility: inherit !important;
+    }
+
+    .rarity_pip.dark {
+        filter: coh-color-matrix(0.3215686274509804, 0, 0, 0, 0, 0, 0.3215686274509804, 0, 0, 0, 0, 0, 0.3215686274509804, 0, 0, 0, 0, 0, 0.8, 0);
+    }
+
+    .compass_distance_indicator_text,
+    .compass_area_label_text,
+    .distance_indicator_text,
+    .mt_mission_name,
+    .mission_tracker_objective_name,
+    .buddy_gametag_name,
+    .nameplate_trait_entry_display,
+    .nameplate_name,
+    .overhead_nameplate_name,
+    .overhead_nameplate_icon_name_wrapper,
+    .overhead_nameplate_distance,
+    .bossbar_name,
+    .bossbar_ai_traits,
+    .bossbar_small_name,
+    .bossbar_small_ai_traits,
+    .bossbar_level,
+    .bossbar_small_level,
+    .ws_sl_title_text,
+    .ws_cm_firing_mode_text,
+    .down_state_prompt_cntr,
+    .down_state_display_text,
+    .celeb_sn_notif_txt,
+    .celeb_notif_txt,
+    .ws_ammo_loaded_value,
+    .ws_ammo_reserve_wrapper,
+    .mission_tracker_objective_stepsdata_cntr.default,
+    .mission_tracker_objective_timerdata_cntr.default,
+    .mission_tracker_objective_timerdata_cntr.warning,
+    .mission_tracker_objective_stepsdata_cntr.warning,
+    #xp_gain {
+        background-color: rgba(3, 16, 26, 0.9) !important;
+    }
+
+    .loot_feed_inner_content_backing {
+        opacity: 1 !important;
+    }
+
+    .world_icons {
+        background-color: rgba(3, 16, 26, 0.8);
+        border-radius: 50%;
+    }
+
+    .distanced_icon {
+        filter: none !important;
+    }
+
+    .mt_mission_name {
+        color: #e4d9ce !important;
+    }
+}

@@ -1,0 +1,177 @@
+.FadeIn_From_Top {
+    background-image: none;
+    background-repeat: repeat;
+    background-position: left top;
+    background-attachment: scroll;
+    background-size: auto;
+}
+
+.FadeIn_From_Bottom {
+    background-image: none;
+    background-repeat: repeat;
+    background-position: left top;
+    background-attachment: scroll;
+    background-size: auto;
+}
+
+/* Animation for FLoating Panel IOs (vending, lost loot, new character, etc)*/
+/* Repeated Animation */
+@keyframes vending_backing_opening {
+    0% {
+        opacity: 0.5;
+        top: 20rem;
+        right: 25rem;
+        bottom: 40rem;
+        left: 25rem;
+    }
+
+    20% {
+        top: 5rem;
+        bottom: 5rem;
+        right: 25rem;
+        left: 25rem;
+    }
+
+    40% {
+        opacity: 1;
+        right: 5rem;
+        left: 0rem;
+    }
+
+    60% {
+        top: 5rem;
+        right: 5rem;
+        bottom: 5rem;
+        left: 0rem;
+    }
+
+    80% {
+        top: -0.5rem;
+        right: -0.5rem;
+        bottom: -0.5rem;
+        left: 0.5rem;
+    }
+
+    100% {
+        top: 0rem;
+        right: 0rem;
+        bottom: 0rem;
+        left: 0rem;
+    }
+}
+
+@keyframes vending_ui_anim_in {
+    0% {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    55% {
+        opacity: 0;
+    }
+
+    60% {
+        opacity: 1;
+        transform: scale(0.9);
+    }
+
+    80% {
+        opacity: 1;
+        transform: scale(1.01);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes equippable_anim {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: .25;
+        transform: scale(1);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes hitmarkAnimation {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes respec_wipe_anim {
+    0% {
+        opacity: 0;
+        top: 100%;
+        bottom: 0%;
+    }
+
+    30% {
+        opacity: 1.0;
+        top: 0%;
+        bottom: 0%;
+    }
+
+    70% {
+        opacity: 1.0;
+        top: 0%;
+        bottom: 0%;
+    }
+
+    100% {
+        opacity: 0.5;
+        top: 0%;
+        bottom: 90%;
+    }
+}
+
+@keyframes unlock_anim {
+    0% {
+        opacity: 0;
+        transform: scale(.5);
+    }
+
+    10% {
+        opacity: 1.0;
+        transform: scale(1.2);
+    }
+
+    30% {
+        opacity: 1.0;
+        transform: scale(0.95);
+    }
+
+    50% {
+        opacity: 1.0;
+        transform: scale(1);
+    }
+
+    70% {
+        opacity: 0.5;
+        transform: scale(1);
+    }
+
+    90% {
+        opacity: 1.0;
+        transform: scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(2);
+    }
+}

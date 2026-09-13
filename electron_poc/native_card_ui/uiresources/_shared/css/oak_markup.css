@@ -1,0 +1,440 @@
+.oak-markup.boldtext {
+    font-family: Industry-DemiBold;
+}
+
+.oak-markup.italictext {
+    font-family: Industry-MediumItalic;
+}
+
+.oak-markup.rarity_common {
+    color: #bdbbd1;
+}
+
+.oak-markup.rarity_uncommon {
+    color: #5ac54f;
+}
+
+.oak-markup.rarity_rare {
+    color: #00a0ce;
+}
+
+.oak-markup.rarity_epic {
+    color: #b648db;
+}
+
+.oak-markup.rarity_legendary {
+    color: #ffd900;
+}
+
+.oak-markup.rarity_pearl {
+    color: #97ffd2;
+}
+
+.oak-markup.flavor {
+    font-family: Industry-MediumItalic;
+    color: #2896a6;
+}
+
+/* red */
+.oak-markup.skill_red {
+    color: rgb(219, 131, 78);
+}
+
+/* green */
+.oak-markup.skill_green {
+    color: rgb(125, 205, 117);
+}
+
+/* blue */
+.oak-markup.skill_blue {
+    color: rgb(60, 175, 174, 1);
+}
+
+.oak-markup.skill {
+    color: #F9F3DE;
+}
+
+.oak-markup.spec {
+    color: #D200FF;
+}
+
+.oak-markup.corrosive {
+    color: #72f800;
+}
+
+.oak-markup.cryo {
+    color: #53fbfb;
+}
+
+.oak-markup.fire {
+    color: #ff5224;
+}
+
+.oak-markup.kinetic {
+    color: #e4d9ce;
+}
+
+.oak-markup.radiation {
+    color: #f1ff00;
+}
+
+.oak-markup.shock {
+    color: #2f63f9;
+}
+
+.oak-markup.firmware {
+    color: #2ef0ce;
+}
+
+.oak-markup.gear {
+    color: #1abaff;
+}
+
+.oak-markup.output {
+    color: #E8B56A;
+}
+
+.oak-markup.cash_text {
+    font-family: Industry-Medium;
+    color: #a0aeb1;
+}
+
+.oak-markup.cant_afford_text {
+    font-family: Industry-Medium;
+    color: #fc0629;
+}
+
+.oak-markup.eridium_text {
+    font-family: Industry-Medium;
+    color: #a0aeb1;
+}
+
+.oak-markup.primary {
+    font-family: Industry-Medium;
+    color: #eb7300;
+}
+
+.oak-markup.secondary {
+    color: #2d95ca;
+    font-family: Industry-Medium;
+}
+
+.oak-markup.img_icon {
+    padding-right: 2.2rem;
+    padding-top: 0rem;
+    margin-left: 0rem;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center center;
+}
+
+.oak-markup.img_icon.corrosive_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_elemental_damage/ico_ui_art_elemental_corrosive.png");
+    padding-bottom: 0.3rem;
+    padding-right: 2.2rem;
+    background-size: auto 100%;
+}
+
+.oak-markup.img_icon.cryo_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_elemental_damage/ico_ui_art_elemental_cryo.png");
+    padding-bottom: 0.2rem;
+    padding-right: 2.2rem;
+    background-size: auto 100%;
+}
+
+.oak-markup.img_icon.fire_icon,
+.oak-markup.img_icon.incendiary_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_elemental_damage/ico_ui_art_elemental_fire.png");
+    padding-bottom: 0.2rem;
+    padding-right: 1.7rem;
+    background-size: auto 100%;
+}
+
+.oak-markup.img_icon.kinetic_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_elemental_damage/ico_ui_art_elemental_kinetic.png");
+    padding-bottom: 0.3rem;
+    padding-right: 2rem;
+    background-size: auto 100%;
+}
+
+.oak-markup.img_icon.radiation_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_elemental_damage/ico_ui_art_elemental_radiation.png");
+    padding-bottom: 0.2rem;
+    padding-right: 2.4rem;
+    background-size: auto 100%;
+}
+
+.oak-markup.img_icon.shock_icon,
+.oak-markup.img_icon.electric_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_elemental_damage/ico_ui_art_elemental_shock.png");
+    padding-bottom: 0.3rem;
+    padding-right: 1.7rem;
+    background-size: auto 100%;
+}
+
+.oak-markup.img_icon.elemental_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_elemental_damage/ico_ui_art_elemental_all.png");
+    padding-top: 0.2rem;
+    padding-bottom: 0.1rem;
+    padding-right: 2.2rem;
+    background-size: auto 100%;
+}
+
+.oak-markup.img_icon.cash {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_currency/ico_ui_art_currency_money.png");
+}
+
+.oak-markup.img_icon.gold_key {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_currency/ico_ui_art_currency_gold_keys.png");
+}
+
+.oak-markup.img_icon.eridium {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_currency/ico_ui_art_currency_eridium.png");
+}
+
+.oak-markup.img_icon.cash_cant_afford {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_currency/ico_ui_art_currency_money_cant_afford.png");
+}
+
+.oak-markup.img_icon.eridium_cant_afford {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_currency/ico_ui_art_currency_eridium_cant_afford.png");
+}
+
+.markup_newline {
+    min-height: 1.5rem;
+    min-width: 1rem;
+}
+
+.oak-markup.img_icon.steam {
+    background-image: url("coui://uiresources/_shared/assets/platform_icons/icon_steam.png");
+}
+
+.oak-markup.img_icon.switch {
+    background-image: url("coui://uiresources/_shared/assets/platform_icons/icon_switch.png");
+}
+
+.oak-markup.img_icon.epic {
+    background-image: url("coui://uiresources/_shared/assets/platform_icons/icon_epic.png");
+}
+
+.oak-markup.img_icon.psn {
+    background-image: url("coui://uiresources/_shared/assets/platform_icons/icon_psn.png");
+}
+
+.oak-markup.img_icon.xboxlive {
+    background-image: url("coui://uiresources/_shared/assets/platform_icons/icon_xbox.png");
+}
+
+.oak-markup.img_icon.shift {
+    background-image: url("coui://uiresources/_shared/assets/platform_icons/icon_shift.png");
+}
+
+/*platform icon space*/
+.oak-markup.img_icon.steam,
+.oak-markup.img_icon.switch,
+.oak-markup.img_icon.epic,
+.oak-markup.img_icon.psn,
+.oak-markup.img_icon.xboxlive,
+.oak-markup.img_icon.shift {
+    padding-right: 2.5rem;
+}
+
+.oak-markup.img_icon.siren_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_vault_hunters/player_class_dark_siren.png");
+}
+
+.oak-markup.img_icon.exo_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_vault_hunters/player_class_exo_soldier.png");
+}
+
+.oak-markup.img_icon.paladin_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_vault_hunters/player_class_paladin.png");
+}
+
+.oak-markup.img_icon.gravitar_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_vault_hunters/player_class_gravitar.png");
+}
+
+.oak-markup.img_icon.recent_party_leader_icon {
+    background-image: url("coui://uiresources/_shared/assets/ui_art_misc_assets/ui_icon_blue_crown.png");
+}
+
+.oak-markup.img_icon.robodealer_icon {
+    background-image: url("cowbell://uiresources/portrait_icons/player_class_robodealer_tooltip.png");
+}
+
+.oak-markup.img_icon.corpohacker_icon {
+    background-image: url("harmonica://uiresources/corpo_hacker_icons/portrait/player_class_loveless.png");
+}
+
+.oak-markup.img_icon.siren_icon,
+.oak-markup.img_icon.exo_icon,
+.oak-markup.img_icon.paladin_icon,
+.oak-markup.img_icon.gravitar_icon,
+.oak-markup.img_icon.siren_icon {
+    padding-right: 2.5rem;
+}
+
+/* Vault Hunter Markup Colors */
+.oak-markup.siren {
+    color: #d324b3;
+}
+
+.oak-markup.exo {
+    color: #31ecec;
+}
+
+.oak-markup.paladin {
+    color: #fe981e;
+}
+
+.oak-markup.gravitar {
+    color: #aaeca8;
+}
+
+.oak-markup.goodping {
+    color: #09ff00;
+}
+
+.oak-markup.okping {
+    color: #fbff00;
+}
+
+.oak-markup.badping {
+    color: #ff0000;
+}
+
+/* Manufacturer markup icons */
+.oak-markup.img_icon.maliwan_icon {
+    background-image: url("coui://uiresources/_shared/assets/ui_art_manufacturer_logos/ui_art_manu_logomark_maliwan_small.png");
+}
+
+.oak-markup.img_icon.jakobs_icon {
+    background-image: url("coui://uiresources/_shared/assets/ui_art_manufacturer_logos/ui_art_manu_logomark_jakobs_small.png");
+}
+
+.oak-markup.img_icon.atlas_icon {
+    background-image: url("coui://uiresources/_shared/assets/ui_art_manufacturer_logos/ui_art_manu_logomark_atlas_small.png");
+}
+
+.oak-markup.img_icon.cov_icon {
+    background-image: url("coui://uiresources/_shared/assets/ui_art_manufacturer_logos/ui_art_manu_logomark_cov_small.png");
+}
+
+.oak-markup.img_icon.daedalus_icon {
+    background-image: url("coui://uiresources/_shared/assets/ui_art_manufacturer_logos/ui_art_manu_logomark_daedalus_small.png");
+}
+
+.oak-markup.img_icon.hyperion_icon {
+    background-image: url("coui://uiresources/_shared/assets/ui_art_manufacturer_logos/ui_art_manu_logomark_hyperion_small.png");
+}
+
+.oak-markup.img_icon.order_icon {
+    background-image: url("coui://uiresources/_shared/assets/ui_art_manufacturer_logos/ui_art_manu_logomark_order_small.png");
+}
+
+.oak-markup.img_icon.borg_icon {
+    background-image: url("coui://uiresources/_shared/assets/ui_art_manufacturer_logos/ui_art_manu_logomark_ripper_small.png");
+}
+
+.oak-markup.img_icon.tediore_icon {
+    background-image: url("coui://uiresources/_shared/assets/ui_art_manufacturer_logos/ui_art_manu_logomark_tediore_small.png");
+}
+
+.oak-markup.img_icon.torgue_icon {
+    background-image: url("coui://uiresources/_shared/assets/ui_art_manufacturer_logos/ui_art_manu_logomark_torgue_small.png");
+}
+
+.oak-markup.img_icon.vladof_icon {
+    background-image: url("coui://uiresources/_shared/assets/ui_art_manufacturer_logos/ui_art_manu_logomark_vladof_small.png");
+}
+
+.oak-markup.img_icon.cs_avail_icon {
+    background-image: url("coui://uiresources/menu_load_character/assets/ui_art_asset/ico_cross_save_available.png");
+}
+
+.oak-markup.img_icon.cs_unav_icon {
+    background-image: url("coui://uiresources/menu_load_character/assets/ui_art_asset/ico_cross_save_unavailable.png");
+}
+
+.oak-markup.img_icon.sdu_icon {
+    background-image: url("coui://uiresources/echo_upgrade/assets/UI_Art_Assets/echo_upgrade_token_ico.png");
+    margin-right: 0.5rem;
+}
+
+.oak-markup.img_icon.fasttravel_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_discovery/ico_FT_Fast_Travel_Station.png");
+    margin-right: 0.5rem;
+}
+
+/*redacted*/
+.oak-markup.redacted {
+    background-image: url("coui://uiresources/_shared/assets/ui_art_misc_assets/small_diagonal_lines.png");
+    background-repeat: repeat;
+    background-position: left top;
+    background-attachment: scroll;
+    background-size: contain;
+}
+
+.oak-markup.nowrap {
+    white-space: nowrap;
+}
+
+/*DLC*/
+.oak-markup.dlc_warning {
+    background-image: url("common://uiresources/_shared_dlc_icons/ico_dlc_warning_markup.png");
+    margin-right: 1rem;
+}
+
+.oak-markup.dlc_text {
+    font-family: Industry-MediumItalic;
+    color: #eb7300;
+}
+
+.oak-markup.warning {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_item_state/ico_ui_art_warning_flat.png");
+    margin-right: 1rem;
+}
+
+.oak-markup.warning_text {
+    font-family: Industry-MediumItalic;
+    color: #fd3752;
+}
+
+.oak-markup.wfll_icon {
+    background-image: url("cowbell://uiresources/markup_icons/ico_rd_wfll.png");
+}
+
+.oak-markup.frtn_icon {
+    background-image: url("cowbell://uiresources/markup_icons/ico_rd_frtn.png");
+}
+
+.oak-markup.roll_icon {
+    background-image: url("cowbell://uiresources/markup_icons/ico_rd_roll.png");
+}
+
+.oak-markup.func_icon {
+    background-image: url("harmonica://uiresources/corpo_hacker_icons/markup_icons/ico_corpo_function.png");
+    margin-right: 0.25rem;
+    padding-right: 3rem;
+}
+
+.oak-markup.exe_icon {
+    background-image: url("harmonica://uiresources/corpo_hacker_icons/markup_icons/ico_corpo_exec.png");
+    margin-right: 0.25rem;
+    padding-right: 3rem;
+}
+
+.oak-markup.symb_icon {
+    background-image: url("harmonica://uiresources/corpo_hacker_icons/markup_icons/ico_corpo_symbiosis.png");
+    padding-right: .75rem;
+    margin-right: 0.25rem;
+}
+
+.rd_color {
+    color: #3dbe9b;
+}
+
+.oak-markup.cs_incompatible {
+    color: #ff0000;
+}

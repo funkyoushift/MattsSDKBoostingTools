@@ -1,0 +1,39 @@
+{
+  "rarity": {
+    "records": [
+      {
+        "entries": [
+          {
+            "00_faction_rank": {
+              "rarity": "00_faction_rank",
+              "internalname": "rank",
+              "displayname": "FACTION_RANK",
+              "attracteffect": "Asset'/Game/Pickups/_Shared/Effects/Systems/NS_FX_Item_Loot_Beams.NS_FX_Item_Loot_Beams'",
+              "attracteffectparameters": [
+                {
+                  "parametername": "Color",
+                  "type": "Parameter_LinearColor",
+                  "colorparameter": {
+                    "r": "1.000000",
+                    "g": "0.986341",
+                    "b": "0.149653",
+                    "a": "1.000000"
+                  }
+                },
+                {
+                  "parametername": "Height",
+                  "type": "Parameter_Float",
+                  "floatparameter": "85.000000"
+                }
+              ],
+              "bpickupoutlineenabled": "false",
+              "pickuplifespantype": "Session",
+              "sortvalue": "2",
+              "pickupaudiostinger": "audio_event'IO_Pickups_Shared.IO_Pickup_Spawn_Generic'"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

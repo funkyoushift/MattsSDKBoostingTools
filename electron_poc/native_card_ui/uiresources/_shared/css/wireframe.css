@@ -1,0 +1,340 @@
+html {
+    --wf-key: rgb(102, 112, 128);
+    --wf-key-bg: rgb(239, 249, 255);
+    --wf-ctrl: rgb(255, 255, 255);
+    --wf-hover: rgb(102, 112, 128);
+    --wf-key-trans: rgba(102, 112, 128, 0.4);
+}
+
+/* Generic layout */
+.Wireframe_flexRow {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    gap: 1rem;
+}
+
+.Wireframe_col {
+    flex: 1;
+}
+
+.Wireframe_flex3 .col {
+    width: 32%;
+}
+
+.Wireframe_flexRow .Wireframe_btn {
+    /* By default buttons span the row */
+    flex-grow: 1;
+}
+
+.Wireframe_flexCol {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row;
+}
+
+.Wireframe_layout3 {
+    align-items: stretch;
+}
+
+.Wireframe_panel {
+    font-size: 2.2rem;
+    margin: 2rem 0 0 0;
+    padding: 2rem;
+    background-color: var(--wf-key-bg);
+}
+
+.Wireframe_panelTitle {
+    text-align: center;
+    margin: 0 0 1rem 0;
+    padding: 0 0 1rem 0;
+    border-bottom-color: var(--wf-key-trans);
+    border-bottom-width: 0.1rem;
+    border-bottom-style: solid;
+}
+
+/* Grouping, Order, Icons */
+.Wireframe_ctrlGroup {
+    margin: 2rem 0 0 0;
+}
+
+.Wireframe_first {
+    margin-top: 0;
+}
+
+.Wireframe_label {
+    font-size: 2.2rem;
+}
+
+.Wireframe_labelTop {
+    margin-bottom: 1rem;
+}
+
+.Wireframe_callout {
+    font-size: 2.2rem;
+    margin: 2rem;
+    padding: 4.5rem 1rem 1rem 1rem;
+    background-image: url(coui://uiresources/_shared/assets/Ico_UI_Info.png);
+    background-repeat: no-repeat;
+    background-size: 3.5rem;
+    background-position: 1rem 1rem;
+    border-width: 0.1rem;
+    border-bottom-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+    border-color: var(--wf-key-trans);
+    border-style: solid;
+}
+
+.Wireframe_icon {
+    width: 2rem;
+    height: 2rem;
+    background-image: url(coui://uiresources/_shared/assets/Ico_UI_ArrowRight.png);
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+.Wireframe_iconLarge {
+    width: 4rem;
+    height: 4rem;
+}
+
+/* Widget Buttons */
+.Wireframe_btn {
+    font-size: 2.2rem;
+    border-width: 0.1rem;
+    border-style: solid;
+    background-color: var(--wf-ctrl);
+    border-radius: 0.5rem;
+    padding: 0.2rem 1rem 0.2rem 1rem;
+    text-align: center;
+    box-shadow: 0 0 0 0.1rem rgb(255, 255, 255),
+        0.2rem 0.2rem 0.5rem rgba(0, 0, 0, 0.3),
+        inset 0 -0.4rem 1rem rgba(0, 0, 0, 0.02);
+}
+
+.Wireframe_btn:hover {
+    border-color: var(--wf-hover);
+    background-color: var(--wf-key);
+    color: var(--wf-ctrl);
+    box-shadow: 0.2rem 0.2rem 0.5rem rgba(0, 0, 0, 0.3);
+}
+
+.Wireframe_btnActive {
+    border-color: var(--wf-key);
+    border-width: 0.1rem 0.1rem 0.4rem 0.1rem;
+}
+
+.Wireframe_btnPressed {
+    border-color: var(--wf-hover);
+    background-color: var(--wf-key);
+    color: var(--wf-ctrl);
+    box-shadow: -0.1rem -0.1rem 0.2rem rgba(0, 0, 0, 0.3),
+        inset 0.2rem 0.2rem 0.3rem rgba(0, 0, 0, 0.3);
+}
+
+.Wireframe_btnActive:hover {
+    border-color: var(--wf-ctrl);
+}
+
+.Wireframe_btnLarge {
+    font-size: 3rem;
+    padding: 1rem 2rem 1rem 2rem;
+}
+
+.Wireframe_btnAttract {
+    animation: animPulseX 2s infinite;
+}
+
+/* Widget Wizard Stepper */
+.Wireframe_stepperContainer {
+    display: flex;
+    justify-content: center;
+    background-color: var(--wf-key-bg);
+    padding: 0.5rem 0;
+}
+
+.Wireframe_stepperStep {
+    min-width: 12vw;
+}
+
+.Wireframe_stepperDivider {
+    min-width: 4rem;
+    background-image: url(coui://uiresources/_shared/assets/Ico_UI_ArrowRight.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center center;
+    text-align: center;
+    opacity: 0.33;
+}
+
+/* Widget Slider */
+.Wireframe_Pnl_Widget_Slider {
+    font-size: 2.2rem;
+    position: relative;
+    display: block;
+    background-color: var(--wf-key-bg);
+    border-radius: 0.5rem;
+    border-width: 0.05rem;
+    border-style: solid;
+    border-color: var(--wf-key);
+    height: 4.3rem;
+    /* width: 40rem; */
+}
+
+.Wireframe_Txt_Slider {
+    position: absolute;
+    padding: 0 0.3rem 0;
+    text-align: right;
+    width: 6rem;
+    margin: 0 2rem 0 0;
+    left: 2rem;
+    top: 0.5rem;
+}
+
+.Wireframe_Cont_Slider {
+    /* width: 28rem; */
+    position: absolute;
+    display: block;
+    flex-direction: column;
+    justify-content: space-around;
+    top: 1.25rem;
+    left: 10rem;
+}
+
+.Wireframe_Img_Slider_Bg {
+    position: absolute;
+    height: 1.6rem;
+    width: 100%;
+    background-color: var(--wf-key);
+    border-radius: 1rem;
+}
+
+.Wireframe_Img_Slider_Fill {
+    position: absolute;
+    height: 1.6rem;
+    width: 28rem;
+    transform-origin: 0 50%;
+    background-color: var(--wf-ctrl);
+    border: solid;
+    border-radius: 1rem;
+    border-width: 0.1rem;
+    border-color: var(--wf-key);
+}
+
+.Wireframe_Btn_Slider {
+    position: absolute;
+    width: 2.7rem;
+    height: 2.7rem;
+    background-color: var(--wf-ctrl);
+    border-style: solid;
+    border-color: var(--wf-key);
+    border-radius: 50%;
+    margin-top: -0.5rem;
+    margin-left: -1.35rem;
+}
+
+/* Widget Text Input */
+.Wireframe_InputTxt {
+    font-size: 2.2rem;
+    background-color: var(--wf-ctrl);
+    border-radius: 0.5rem;
+    border-width: 0.05rem;
+    border-style: solid;
+    border-color: var(--wf-key);
+    box-shadow: inset 0.1rem 0.1rem 0.25rem rgba(0, 0, 0, 0.3);
+    height: 4.3rem;
+    width: 100%;
+}
+
+/* Widget Carousel */
+.Wireframe_Widget_Carousel {
+    font-size: 2.2rem;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    height: 100%;
+    display: flex;
+    padding: 0.5rem;
+    border-radius: 1rem;
+    border-style: solid;
+    border-width: 0.1rem;
+    border-color: var(--wf-key);
+}
+
+.Wireframe_Widget_Carousel_Value {
+    flex-grow: 10;
+    text-align: center;
+    padding: 0.5rem 1rem;
+    background-color: var(--wf-ctrl);
+}
+
+.Wireframe_Btn_Arrow {
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: local;
+    background-size: 75%;
+    width: 2.2rem;
+    height: 2.1rem;
+    padding: 0.6rem;
+}
+
+.Wireframe_Btn_ArrowR {
+    background-image: url(coui://uiresources/_shared/assets/Ico_UI_ArrowRight.png);
+    transform: rotateX(0) rotateY(0) rotateZ(0) scaleX(1) scaleY(1) scaleZ(1) translateX(0) translateY(0) translateZ(0);
+}
+
+.Wireframe_Btn_ArrowL {
+    background-image: url(coui://uiresources/_shared/assets/Ico_UI_ArrowRight.png);
+    transform: rotateX(0) rotateY(0) rotateZ(0) scaleX(-1) scaleY(1) scaleZ(1) translateX(0) translateY(0) translateZ(0);
+}
+
+/* Widget Rotate */
+.Wireframe_Btn_Rotate {
+    background-size: 75%;
+    width: 4rem;
+    height: 5.6rem;
+    padding: 0.6rem;
+}
+
+/* Character Creator */
+.Wireframe_Marker_CharGen_Keep {
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: local;
+    background-image: url(coui://uiresources/_shared/assets/Ico_UI_Keep.png);
+    background-size: 80%;
+    width: 2.2rem;
+    height: 2.1rem;
+    padding: 1.2rem;
+    background-color: var(--wf-key-bg);
+    border-radius: 3rem;
+}
+
+/* Animations */
+@keyframes animPulseX {
+    0% {
+        transform: scaleX(1.0);
+    }
+
+    1% {
+        transform: scaleX(1.05);
+    }
+
+    10% {
+        transform: scaleX(0.95);
+    }
+
+    25% {
+        transform: scaleX(1.02);
+    }
+
+    37% {
+        transform: scaleX(0.99);
+    }
+
+    60% {
+        transform: scaleX(1.0);
+    }
+}

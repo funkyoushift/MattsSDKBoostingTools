@@ -1,0 +1,46 @@
+"use strict";
+const assert = require("node:assert/strict"), path = require("node:path"), fs = require("node:fs");
+const {app,BrowserWindow,protocol} = require("electron");
+const nativeProtocol = require("./native_card_protocol");
+nativeProtocol.registerNativeCardSchemes(protocol);
+app.whenReady().then(async () => {
+  nativeProtocol.installNativeCardProtocol(protocol);
+  const resolver = require("./serial_card_resolve").loadResolver({sourceRoot:path.resolve(__dirname,"..")});
+  const card = resolver.resolveFromHuman(require("./fixtures/item_cards/mixed_order_user.json")[10].human);
+  const win = new BrowserWindow({show:false,width:650,height:1800,webPreferences:{sandbox:true,contextIsolation:true,nodeIntegration:false,backgroundThrottling:false,offscreen:true}});
+  await win.loadFile(path.join(__dirname,"renderer.html"),{query:{nosplash:"1"}});
+  const result = await win.webContents.executeJavaScript(`(async()=>{
+    const entry=applyOfflineCardToInventoryEntry({},${JSON.stringify(card)});
+    const node=createBl4ItemCard(entry);node.id='native-test-card';node.style.cssText='position:absolute;left:10px;top:10px;width:546px;z-index:999999';document.querySelectorAll('dialog[open]').forEach(dialog=>dialog.close());document.body.replaceChildren(node);
+    const frame=node.querySelector('iframe');
+    const deadline=Date.now()+15000;
+    while(frame.dataset.rendered!=='true'&&Date.now()<deadline)await new Promise(resolve=>setTimeout(resolve,100));
+    await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+    return {rendered:frame.dataset.rendered,errors:JSON.parse(frame.dataset.renderErrors||'[]'),height:frame.getBoundingClientRect().height,title:frame.title,stats:entry.damage,notice:node.querySelector('.native-game-card-status').textContent};
+  })()`);
+  assert.equal(result.rendered,"true",JSON.stringify(result));
+  assert.deepEqual(result.errors,[]);
+  assert.equal(result.title,"Zealous Regulated Bubbles");
+  assert.equal(result.stats,541);
+  assert.ok(result.height>300 && result.height<3000);
+  const frame = win.webContents.mainFrame.frames.find(frame=>frame.url.startsWith("msbt-card:"));
+  assert.ok(frame);
+  const details = await frame.executeJavaScript(`({name:document.querySelector('.item_card_name').textContent,font:document.fonts.check('20px Industry-DemiBold'),primary:document.querySelectorAll('.item_card_primary_stat_value').length,nodeAvailable:typeof require,bodyHeight:document.body.getBoundingClientRect().height})`);
+  assert.equal(details.name,"Zealous Regulated Bubbles");
+  assert.equal(details.nodeAvailable,"undefined");
+  assert.equal(details.font,true);assert.ok(details.bodyHeight>300,"frame body must not clip the painted card to zero height");
+  const output = path.resolve(__dirname,"../_tmp_native_card_preview");fs.mkdirSync(output,{recursive:true});
+  win.webContents.invalidate();
+  await new Promise(resolve=>setTimeout(resolve,500));
+  const capture = await win.webContents.capturePage({x:10,y:10,width:546,height:Math.ceil(result.height)});
+  const bitmap = capture.toBitmap();
+  let brightPixels = 0;
+  for(let i=0;i<bitmap.length;i+=4) if(bitmap[i]>100 || bitmap[i+1]>100 || bitmap[i+2]>100) brightPixels++;
+  assert.ok(brightPixels>10000,"native frame must paint artwork and text, not just pass DOM checks while blank");
+  fs.writeFileSync(path.join(output,"inventory-native-card.png"),capture.toPNG());
+  // Imported metadata cannot turn into HTML in the original game's markup binding.
+  const safety = await frame.executeJavaScript(`(async()=>{const model=${JSON.stringify(require("./native_card_model").toNativeCardModel(card))};model.secondary_stat_entries=[{image:'',value:'<img src=x onerror="window.injected=true">[secondary]Safe[/secondary]',comparison:''}];await renderNativeCard(model,templates);return {injected:window.injected===true,images:document.querySelectorAll('.item_card_secondary_stats_augments img').length,text:document.querySelector('.item_card_secondary_stats_augments').textContent};})()`);
+  assert.equal(safety.injected,false);assert.equal(safety.images,0);assert.ok(safety.text.includes("<img"));
+  console.log("PASS original game card in Inventory: isolated frame, native assets/fonts, calculated name/damage, resize, escaped imported markup",JSON.stringify(result));
+  win.destroy();app.exit(0);
+}).catch(error=>{console.error(error);app.exit(1);});

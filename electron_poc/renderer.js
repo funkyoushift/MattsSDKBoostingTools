@@ -533,6 +533,7 @@ const state = {
   bridgeOnline: false,
   snapshotReady: false,
   bridgeFingerprints: {},
+  playerSelectSyncPending: false,
   bridgeStatusPollInFlight: false,
   bridgeStatusPollTimer: null,
   bridgeStatusSubscribersBusy: false,
@@ -2004,11 +2005,13 @@ async function runBoostActionButton(button) {
       30000
     );
   }
-  const result = DEV_SCOPED_BOOST_ACTIONS.has(action)
-    ? await runScopedPlayerAction(action, {}, els.boostOutput, 30000, "dev")
-    : PUBLIC_SCOPED_BOOST_ACTIONS.has(action)
-      ? await runScopedPlayerAction(action, {}, els.boostOutput, 30000, "public")
-      : await runAction(action, {}, els.boostOutput, 30000);
+  const result = action === "max_all"
+    ? await runMaxAllScoped(els.boostOutput, "public")
+    : DEV_SCOPED_BOOST_ACTIONS.has(action)
+      ? await runScopedPlayerAction(action, {}, els.boostOutput, 30000, "dev")
+      : PUBLIC_SCOPED_BOOST_ACTIONS.has(action)
+        ? await runScopedPlayerAction(action, {}, els.boostOutput, 30000, "public")
+        : await runAction(action, {}, els.boostOutput, 30000);
   applyDebugCamFromStatus(unwrapActionData(result));
   applyDeletedBackpackFromStatus(unwrapActionData(result));
   const toggleKey = button.dataset.devperkToggle;
@@ -2775,13 +2778,14 @@ function bl4CodesFilterControlFocused() {
   ].some((node) => node && active === node);
 }
 
-// While Search or a BL4 filter control is focused, status/delivery work may update
-// text nodes only — never remount player/filter selects or call focus().
+// Avoid unrelated editor/delivery UI churn while a BL4 filter has focus.
+// Player options are reconciled separately without remounting controls.
 function bl4UiShouldStayQuiet() {
   return bl4CodesFilterControlFocused();
 }
 
 function renderPlayers(status = {}) {
+  state.playerSelectSyncPending = false;
   state.players = Array.isArray(status.players) ? status.players : [];
   if (Object.prototype.hasOwnProperty.call(status, "host_player_index")) {
     const hostRaw = status.host_player_index;
@@ -2811,24 +2815,6 @@ function renderPlayers(status = {}) {
     state.selectedTargetName = "";
   }
 
-  // State-only while BL4 Search is focused or immediately after Send: skip
-  // <select> rebuilds and focus restore. Post-Send status ticks were still
-  // janking typing/selection even with soft option updates.
-  if (bl4UiShouldStayQuiet()) {
-    updateBoostTargetSummary();
-    updateDevTargetSummary();
-    const selectedPlayer = state.players.find((player) => String(playerValue(player)) === String(state.selectedTarget));
-    const text = `Named player: ${selectedPlayer ? playerLabel(selectedPlayer) : state.selectedTarget || "none"}`;
-    const kind = state.selectedTarget ? "ok" : "warning";
-    setLine(els.bookmarkTargetSummary, text, kind);
-    setLine(els.bl4TargetSummary, text, kind);
-    setLine(els.movementStatus, text, kind);
-    if (els.invGiveTargetSelect) {
-      state.invGiveTarget = String(els.invGiveTargetSelect.value || "");
-    }
-    return;
-  }
-
   const preferredNamedTarget = () => String(state.pendingTargetValue || state.selectedTarget || "");
 
   const fillSelect = (selectNode, preferredValue = null) => {
@@ -2837,51 +2823,33 @@ function renderPlayers(status = {}) {
       ? String(preferredValue)
       : String(selectNode.value || "");
     const fallback = preferredNamedTarget();
-    const nextValues = state.players.map((player) => String(playerValue(player)));
-    const existingValues = Array.from(selectNode.options)
-      .map((option) => String(option.value || ""))
-      .filter(Boolean);
-    const sameOptions = existingValues.length === nextValues.length
-      && existingValues.every((value, index) => value === nextValues[index]);
-
-    // Soft-update only: wiping <select> innerHTML closes an open dropdown and
-    // steals focus, which feels like "can't change targets / can't type" until
-    // the next bridge wait finishes (often 10–30s per scoped player).
-    if (sameOptions) {
-      if (document.activeElement === selectNode) return;
-      const want = previous || fallback;
-      if (want && Array.from(selectNode.options).some((option) => String(option.value) === want)) {
-        selectNode.value = want;
-      }
-      return;
+    const current = String(selectNode.value || "");
+    // Follow a named player across slot changes. A departed player must not
+    // silently become the new occupant of that slot or the global target.
+    let want = resolveTargetValue(previous || fallback, state.players);
+    if (document.activeElement === selectNode && resolveTargetValue(current, state.players)) {
+      const held = resolveTargetValue(current, state.players);
+      if (want !== held) state.playerSelectSyncPending = true;
+      want = held;
     }
-
-    selectNode.innerHTML = "";
-    const blank = document.createElement("option");
-    blank.value = "";
-    blank.textContent = state.players.length ? "Choose player" : "No players loaded";
-    selectNode.appendChild(blank);
-
-    let matched = false;
-    state.players.forEach((player) => {
-      const option = document.createElement("option");
-      option.value = playerValue(player);
-      option.textContent = playerLabel(player);
-      const value = String(option.value);
-      if (previous && value === previous) {
-        option.selected = true;
-        matched = true;
-      }
-      selectNode.appendChild(option);
+    const rows = [{value:"",label:state.players.length ? "Choose player" : "No players loaded"},
+      ...state.players.map(player => ({value:String(playerValue(player)),label:playerLabel(player)}))];
+    const existing = new Map(Array.from(selectNode.options, option => [option.value, option]));
+    const wanted = new Set(rows.map(row => row.value));
+    for (const option of Array.from(selectNode.options)) {
+      if (!wanted.has(option.value)) option.remove();
+    }
+    rows.forEach((row, index) => {
+      const option = existing.get(row.value) || document.createElement("option");
+      if (option.value !== row.value) option.value = row.value;
+      if (option.textContent !== row.label) option.textContent = row.label;
+      if (selectNode.options[index] !== option) selectNode.insertBefore(option, selectNode.options[index] || null);
     });
-    if (!matched && fallback) {
-      const fallbackOption = Array.from(selectNode.options).find((option) => String(option.value) === fallback);
-      if (fallbackOption) fallbackOption.selected = true;
-    }
+    if (selectNode.value !== want) selectNode.value = want;
   };
 
-  // Preserve BL4 Codes Search (and other text fields) across full player-select
-  // rebuilds during Max All / set_target status churn.
+  // Reconcile only changed options, including while Search has focus. Never
+  // replace a select or restore focus during background roster updates.
   withBl4SearchFocusPreserved(() => {
     fillSelect(els.targetSelect, preferredNamedTarget());
     fillSelect(els.boostSerialTargetSelect, preferredNamedTarget());
@@ -3099,6 +3067,86 @@ async function resolveActionPayload(payload) {
   return typeof payload === "function" ? await payload() : payload;
 }
 
+async function runMaxAllScoped(outNode = els.boostOutput, scopeKind = "public") {
+  if (state.maxAllRunActive) return { ok: false, message: "Max All is already running." };
+  const scope = scopeKind === "dev"
+    ? (state.boostTargetScope || "selected")
+    : (state.publicBoostScope || "local");
+  const labelFor = scopeKind === "dev" ? boostScopeLabel : publicBoostScopeLabel;
+
+  // Every scope carries its own targets. A separate set_target request (or
+  // cached UI selection) can race other actions that update the shared target.
+  const targets = playersForBoostScope(scope);
+  if (!targets.length) {
+    const message = scope === "selected"
+      ? "Choose a named player who is currently in the session."
+      : scope === "nonhost"
+      ? "No non-host party players found. Refresh Status while others are loaded in."
+      : "No party players found. Refresh Status first.";
+    if (outNode) setOutput(outNode, message);
+    appendActivity(message);
+    return { ok: false, message };
+  }
+
+  const indices = [...new Set(targets
+    .map((player) => Number(player && player.index))
+    .filter((idx) => Number.isInteger(idx) && idx >= 0))];
+  if (!indices.length) {
+    const message = "Could not resolve party indices for scoped Max All.";
+    if (outNode) setOutput(outNode, message);
+    appendActivity(message);
+    return { ok: false, message };
+  }
+
+  const runId = ++state.scopedRunId;
+  state.scopedRunActive = true;
+  state.maxAllRunActive = true;
+  const buttons = [...document.querySelectorAll('[data-action="max_all"]')];
+  const disabledBefore = buttons.map((button) => button.disabled);
+  buttons.forEach((button) => { button.disabled = true; });
+  const intro = `Running max_all for ${labelFor(scope)} (${indices.length}) in one batch...`;
+  if (outNode) setOutput(outNode, intro);
+  appendActivity(intro);
+
+  try {
+    if (runId !== state.scopedRunId) {
+      return { ok: false, message: "Cancelled — named player changed while scoped Max All was running.", cancelled: true };
+    }
+    const timeoutMs = Math.min(180000, 45000 + indices.length * 20000);
+    const result = await runAction("max_all", { party_indices: indices }, outNode, timeoutMs);
+    const data = unwrapActionData(result);
+    const okCount = data?.ok_count == null ? NaN : Number(data.ok_count);
+    const failCount = data?.fail_count == null ? NaN : Number(data.fail_count);
+    const summary = Number.isFinite(okCount) && Number.isFinite(failCount)
+      ? `max_all finished for ${labelFor(scope)}: ${okCount} ok, ${failCount} failed.`
+      : resultMessage(result);
+    appendActivity(summary);
+    return {
+      ok: actionSucceeded(result),
+      message: summary,
+      okCount: Number.isFinite(okCount) ? okCount : undefined,
+      failCount: Number.isFinite(failCount) ? failCount : undefined,
+      cancelled: false
+    };
+  } catch (error) {
+    const message = `Max All could not finish: ${error.message || error}. Check the game connection before trying again.`;
+    if (outNode) setOutput(outNode, message);
+    appendActivity(message);
+    return { ok: false, message };
+  } finally {
+    state.maxAllRunActive = false;
+    buttons.forEach((button, index) => { button.disabled = disabledBefore[index]; });
+    if (runId === state.scopedRunId) {
+      state.scopedRunActive = false;
+      try {
+        await bridgeStatus({ quiet: true });
+      } catch (_err) {
+        /* ignore refresh errors after scoped Max All */
+      }
+    }
+  }
+}
+
 async function runScopedPlayerAction(action, payload = {}, outNode = els.boostOutput, timeoutMs = 30000, scopeKind = "public") {
   const scope = scopeKind === "dev"
     ? (state.boostTargetScope || "selected")
@@ -3175,6 +3223,10 @@ async function runScopedPlayerAction(action, payload = {}, outNode = els.boostOu
       } else {
         failCount += 1;
         lines.push(`${label}: FAILED — ${resultMessage(result)}`);
+      }
+      // Let the game breathe between per-player bridge calls (Max Currency, etc.).
+      if (index + 1 < targets.length) {
+        await new Promise((resolve) => window.setTimeout(resolve, 350));
       }
     }
   } finally {
@@ -3624,7 +3676,7 @@ function applyBridgeStatusResult(result, options = {}) {
     selected_player: data.selected_player,
     selected_player_index: data.selected_player_index
   });
-  if (fingerprints.players !== playersFingerprint) {
+  if (fingerprints.players !== playersFingerprint || state.playerSelectSyncPending) {
     fingerprints.players = playersFingerprint;
     fingerprints.playerSelection = selectionFingerprint;
     renderPlayers(data);
@@ -4268,7 +4320,12 @@ async function bridgeStatus(options = {}) {
     setLine(els.bridgeSummary, "Checking game connection...", "warning");
     if (els.devBridgeSummary) setLine(els.devBridgeSummary, "Checking game connection...", "warning");
   }
-  const result = await window.msbt.bridgeRequest({ method: "GET", path: "/status" });
+  let result;
+  try {
+    result = await window.msbt.bridgeRequest({ method: "GET", path: "/status" });
+  } catch (error) {
+    result = {ok:false,data:{ok:false,message:error?.message || "Bridge offline."}};
+  }
   if (!options.quiet) setOutput(els.statusOutput, result);
   const statusData = applyBridgeStatusResult(result, options);
   await autoApplySavedMovementPresetIfNeeded();
@@ -4328,7 +4385,13 @@ function startBridgeStatusPolling() {
 }
 
 function bridgeProgressIsActive() {
-  return Boolean(state.serialDeliveryWatch || challengeStatusWatch || itempoolStatusWatch || state.hoardRunning);
+  return Boolean(
+    state.serialDeliveryWatch
+    || challengeStatusWatch
+    || itempoolStatusWatch
+    || state.hoardRunning
+    || state.scopedRunActive
+  );
 }
 
 function scheduleNextBridgeStatusPoll(delayMs = null) {
@@ -4389,7 +4452,7 @@ function startSerialDeliveryProgressWatch() {
   state.serialDeliveryIdlePolls = 0;
   state.serialDeliveryWatch = true;
   // Do not force an early status apply after Send — that raced Search focus.
-  // Keep the existing poll loop; renderPlayers stays quiet while Codes UI is focused.
+  // Keep the existing poll loop; player options update without disturbing Search.
   if (!state.bridgeStatusPollTimer && !state.bridgeStatusPollInFlight) {
     scheduleNextBridgeStatusPoll();
   }
@@ -5621,10 +5684,13 @@ function formatBl4Detail(row) {
     `Type: ${row.type || ""}`,
     `Manufacturer: ${row.manufacturer || ""}`,
     `Rarity: ${row.rarity || ""}`,
+    row.element || row.damage_type ? `Element: ${row.element || row.damage_type}` : "",
     `Creator: ${row.creator || ""}`,
     `Item Level: ${row.item_level || "Unknown"}`,
     `Sources: ${(row.sources || [row.source]).filter(Boolean).join(", ")}`,
     `Tags: ${bl4TagText(row) || ""}`,
+    Array.isArray(row.red_text) && row.red_text.length ? `Red text: ${row.red_text.join(" | ")}` : "",
+    Array.isArray(row.perk_lines) && row.perk_lines.length ? `Perks: ${row.perk_lines.join(" | ")}` : "",
     row.url ? `Lootlemon URL: ${row.url}` : "",
     row.image_url ? `Image URL: ${row.image_url}` : "",
     row.notes ? `Notes: ${row.notes}` : "",
@@ -5769,13 +5835,25 @@ function renderBl4Cards() {
         row.listing,
         row.type,
         row.rarity,
+        row.element || row.damage_type || "",
         row.item_level ? `Level ${row.item_level}` : "",
         row.creator
       ].filter(Boolean).join(" | ");
-      const result = document.createElement("div");
-      result.className = `bl4-card-result ${bl4MattmabKind(row.mattmab_validator)}`;
-      result.textContent = bl4MattmabLabel(row.mattmab_validator);
-      card.append(checkbox, imageWrap, title, meta, result);
+      const perkPreview = Array.isArray(row.perk_lines) ? row.perk_lines.find((line) => String(line || "").trim()) : "";
+      if (perkPreview) {
+        const perk = document.createElement("div");
+        perk.className = "bl4-card-perk muted-line";
+        perk.textContent = String(perkPreview);
+        const result = document.createElement("div");
+        result.className = `bl4-card-result ${bl4MattmabKind(row.mattmab_validator)}`;
+        result.textContent = bl4MattmabLabel(row.mattmab_validator);
+        card.append(checkbox, imageWrap, title, meta, perk, result);
+      } else {
+        const result = document.createElement("div");
+        result.className = `bl4-card-result ${bl4MattmabKind(row.mattmab_validator)}`;
+        result.textContent = bl4MattmabLabel(row.mattmab_validator);
+        card.append(checkbox, imageWrap, title, meta, result);
+      }
       els.bl4Cards.appendChild(card);
     });
 
@@ -6185,6 +6263,7 @@ function renderBl4Codes(options = {}) {
     }
 
     renderBl4Cards();
+    void enrichVisibleBl4CardsOffline();
 
     const searchFocused = Boolean(els.bl4SearchInput && document.activeElement === els.bl4SearchInput);
     // Do not auto-select / kick off parts-breakdown while the user is typing in Search.
@@ -6523,6 +6602,36 @@ function acceptBl4CatalogResult(result) {
   populateBl4Filters(result.filters || {});
   renderBl4Codes({ preserveSearchFocus: true });
   return result.counts || {};
+}
+
+let bl4CardEnrichRunId = 0;
+
+async function enrichVisibleBl4CardsOffline() {
+  const runId = ++bl4CardEnrichRunId;
+  const shown = (state.bl4FilteredEntries || []).slice(0, 320);
+  const pending = shown.filter((row) => {
+    if (!row || row.card_resolved || row.card_resolve_attempted) return false;
+    return String(row.serial || row.base85 || row.code || "").startsWith("@U");
+  });
+  if (!pending.length) return;
+  const pendingIds = new Set(pending.map((row) => bl4EntryId(row)));
+  const enriched = await enrichBl4EntriesOffline(pending);
+  if (runId !== bl4CardEnrichRunId) return;
+  const byId = new Map(enriched.map((row) => [bl4EntryId(row), row]));
+  let changed = false;
+  state.bl4Entries = state.bl4Entries.map((row) => {
+    const id = bl4EntryId(row);
+    if (!pendingIds.has(id)) return row;
+    changed = true;
+    if (byId.has(id)) {
+      return { ...byId.get(id), card_resolve_attempted: true };
+    }
+    return { ...row, card_resolve_attempted: true };
+  });
+  if (!changed) return;
+  // Force card remount so titles/meta pick up resolved fields.
+  state.bl4ShownCardIds = [];
+  renderBl4Codes({ preserveSearchFocus: true });
 }
 
 async function loadBl4Catalog() {
@@ -9636,6 +9745,164 @@ function invDisplayName(entry) {
   return String(entry.display_name || entry.summary || entry.label || "Item").trim() || "Item";
 }
 
+function invPerkPreview(entry, limit = 2) {
+  if (!entry) return [];
+  const lines = [];
+  for (const pool of [entry.red_text, entry.perk_lines, entry.description_lines]) {
+    if (!Array.isArray(pool)) continue;
+    for (const line of pool) {
+      const text = String(line || "").trim();
+      if (!text || lines.includes(text)) continue;
+      lines.push(text);
+      if (lines.length >= limit) return lines;
+    }
+  }
+  return lines;
+}
+
+async function resolveOfflineCardMap(serials) {
+  const unique = Array.from(new Set(
+    (Array.isArray(serials) ? serials : [])
+      .map((s) => String(s || "").trim())
+      .filter((s) => s.startsWith("@U"))
+  ));
+  const out = new Map();
+  if (!unique.length) return out;
+  if (!window.msbt || typeof window.msbt.serialCardResolve !== "function") return out;
+  const chunkSize = 40;
+  for (let i = 0; i < unique.length; i += chunkSize) {
+    const chunk = unique.slice(i, i + chunkSize);
+    try {
+      const result = await window.msbt.serialCardResolve({ serials: chunk, clearCache: i === 0 });
+      if (!result || result.ok === false) {
+        appendActivity(`Inventory: serialCardResolve chunk failed: ${String((result && result.message) || "no result")}`);
+      }
+      const cards = (result && Array.isArray(result.cards)) ? result.cards : [];
+      cards.forEach((row, index) => {
+        if (!row || !row.ok || !row.card) return;
+        // Key by the requested @U (inventory entry serial) AND any re-serialized form.
+        // convert_serial_tool can return a different serialized string; lookup must not miss.
+        const requested = String(chunk[index] || "").trim();
+        const returned = String(row.serial || "").trim();
+        if (requested) out.set(requested, row.card);
+        if (returned && returned !== requested) out.set(returned, row.card);
+      });
+    } catch (err) {
+      appendActivity(`Inventory: serialCardResolve threw: ${err && err.message ? err.message : err}`);
+    }
+  }
+  return out;
+}
+
+function applyOfflineCardToInventoryEntry(entry, card) {
+  if (!entry || !card || !card.meta_ok) return entry;
+  const next = { ...entry };
+  const resolvedName = String(card.display_name || "").trim();
+  const liveName = entry.meta_source === "live_card" && entry.card_ok === true
+    ? String(entry.card_name || "").trim() : "";
+  // Replace legacy cached/GZO labels with the resolved barrel title.
+  if (liveName || resolvedName) {
+    next.display_name = liveName || resolvedName;
+  }
+  if (card.rarity) next.rarity = card.rarity;
+  if (card.manufacturer) next.manufacturer = card.manufacturer;
+  if (card.item_type) next.item_type = card.item_type;
+  if (card.character_class) next.character_class = card.character_class;
+  if (card.category) next.category = card.category;
+  if (Number.isFinite(card.level)) next.level = card.level;
+  if (card.element) {
+    next.element = card.element;
+    next.damage_type = card.element;
+  }
+  if (card.perk_lines && card.perk_lines.length) next.perk_lines = card.perk_lines.slice();
+  if (card.red_text && card.red_text.length) next.red_text = card.red_text.slice();
+  if (card.description_lines && card.description_lines.length) {
+    next.description_lines = card.description_lines.slice();
+  }
+  next.dps = card.dps != null ? card.dps : null;
+  if (card.damage != null) next.damage = card.damage;
+  if (card.accuracy != null) next.accuracy = card.accuracy;
+  if (card.reload != null) next.reload = card.reload;
+  if (card.fire_rate != null) next.fire_rate = card.fire_rate;
+  if (card.magazine != null) next.magazine = card.magazine;
+  if (card.crit != null) next.crit = card.crit;
+  next.value = card.value != null ? card.value : null;
+  for (const key of ["damage_radius","shot_cost","projectile_count"]) next[key] = card[key] ?? null;
+  next.element_text = card.element_text || "";
+  next.native_equipment = card.native_equipment || null;
+  next.stats_blocked = card.stats_blocked || [];
+  if (card.stats_ok) next.stats_ok = true;
+  if (card.stats_source) next.stats_source = card.stats_source;
+  next.card_resolved = true;
+  next.name_status = liveName ? "complete" : card.name_status || "";
+  next.naming = liveName ? { status: "complete", source: "live_card" } : card.naming || null;
+  next.meta_source = liveName ? "live_card" : card.meta_source || "offline_nexus";
+  return next;
+}
+
+async function enrichInventoryEntriesOffline(entries) {
+  const list = Array.isArray(entries) ? entries : [];
+  const cards = await resolveOfflineCardMap(list.map((e) => e && e.serial));
+  if (!cards.size) {
+    if (list.some((e) => String((e && e.serial) || "").startsWith("@U"))) {
+      appendActivity("Inventory: offline card resolve returned 0 cards (IPC/decode miss).");
+    }
+    return list;
+  }
+  let applied = 0;
+  const nextList = list.map((entry) => {
+    const serial = String((entry && entry.serial) || "").trim();
+    const card = serial ? cards.get(serial) : null;
+    if (!card) return entry;
+    applied += 1;
+    return applyOfflineCardToInventoryEntry(entry, card);
+  });
+  appendActivity(`Inventory: offline card resolve applied ${applied}/${list.length} (map ${cards.size}).`);
+  return nextList;
+}
+
+async function enrichBl4EntriesOffline(entries) {
+  const list = Array.isArray(entries) ? entries : [];
+  const cards = await resolveOfflineCardMap(list.map((e) => e && (e.serial || e.base85 || e.code)));
+  if (!cards.size) return list;
+  return list.map((entry) => {
+    const serial = String((entry && (entry.serial || entry.base85 || entry.code)) || "").trim();
+    const card = serial ? cards.get(serial) : null;
+    if (!card || !card.meta_ok) return entry;
+    const next = { ...entry };
+    const catalogName = String(entry.name || "").trim();
+    const resolvedName = String(card.display_name || "").trim();
+    const offlineIsComposed = Boolean(
+      card.unique_name || card.licensed_prefix || card.stat_prefix
+    );
+    if (resolvedName && (offlineIsComposed || !catalogName || /^unnamed/i.test(catalogName))) {
+      next.name = resolvedName;
+    }
+    if (card.rarity) next.rarity = card.rarity;
+    if (card.item_type) next.type = card.item_type;
+    if (card.manufacturer && !next.manufacturer) next.manufacturer = card.manufacturer;
+    if (card.element) {
+      next.element = card.element;
+      next.damage_type = card.element;
+    }
+    if (card.perk_lines && card.perk_lines.length) next.perk_lines = card.perk_lines.slice();
+    if (card.red_text && card.red_text.length) next.red_text = card.red_text.slice();
+    next.dps = card.dps != null ? card.dps : null;
+    if (card.damage != null) next.damage = card.damage;
+    if (card.accuracy != null) next.accuracy = card.accuracy;
+    if (card.reload != null) next.reload = card.reload;
+    if (card.fire_rate != null) next.fire_rate = card.fire_rate;
+    if (card.magazine != null) next.magazine = card.magazine;
+    if (card.crit != null) next.crit = card.crit;
+    next.value = card.value != null ? card.value : null;
+    next.card_resolved = true;
+    next.name_status = card.name_status || "";
+    next.naming = card.naming || null;
+    next.meta_source = card.meta_source || "offline_nexus";
+    return next;
+  });
+}
+
 function invFillSelect(select, values) {
   if (!select) return;
   const current = select.value || "All";
@@ -9736,42 +10003,373 @@ function invApplyFilters() {
   if (els.invFilterCount) els.invFilterCount.textContent = `Filter: ${filtered.length.toLocaleString()}`;
 }
 
+function invFormatStatNumber(value) {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return "";
+  if (Math.abs(n) >= 1000) return Math.round(n).toLocaleString();
+  if (Number.isInteger(n)) return String(n);
+  return String(Math.round(n * 10) / 10);
+}
+
+/** Shared in-game-style card body (Phase B mined fields only). Used inline by Inventory
+ *  tiles the same way BL4 Codes embeds `.bl4-card-image` inside each catalog tile.
+ *  Panel layout follows the cyan-border reference row; gold name when rarity allows. */
+function invGameUiRoot() {
+  // Dev: electron_poc → ../external_app/.../uiresources
+  // Packaged: same relative layout under resources when bundled.
+  return "../external_app/v22_parts_codes_fixed/matt_editor/uiresources";
+}
+
+/** Mined Nexus Asset'/Game/uiresources/_shared/assets/ico_ui_art_item_card_type/...' stems. */
+const INV_GAME_TYPE_ICON = {
+  "Assault Rifle": "ico_art_item_card_weap_assault",
+  Pistol: "ico_art_item_card_weap_pistol",
+  Shotgun: "ico_art_item_card_weap_shotgun",
+  SMG: "ico_art_item_card_weap_smg",
+  Sniper: "ico_art_item_card_weap_sniper",
+  "Heavy Gun Ordnance": "ico_art_item_card_heavy_weapon_torgue_rocket_launcher",
+  "Heavy Weapon": "ico_art_item_card_heavy_weapon_torgue_rocket_launcher",
+  Shield: "ico_art_item_card_energy_shield",
+  Enhancement: "ico_art_item_card_enhancement",
+  Repkit: "ico_art_item_card_rep_kit",
+  // Ordnance / grenade gadget — mined type icons are manufacturer-specific; Tediore is the shared fallback.
+  Ordnance: "ico_art_item_card_grenade_tediore"
+};
+
+const INV_GAME_ELEMENT_ICON = {
+  Fire: "pearl_elemental_fire",
+  Shock: "pearl_elemental_shock",
+  Cryo: "pearl_elemental_cryo",
+  Corrosive: "pearl_elemental_corrosive",
+  Radiation: "pearl_elemental_radiation",
+  Kinetic: "pearl_elemental_kinetic"
+};
+
+/** Primary combat-row icons from mined item_card/assets (only rate-of-fire shipped in the 47 PNGs). */
+const INV_GAME_STAT_ICON = {
+  fire_rate: "item_card/assets/weapon_stat_icons/primary/ui_art_primary_stat_rateoffire.png"
+};
+
+function invGameTypeIconUrl(itemType) {
+  const stem = INV_GAME_TYPE_ICON[String(itemType || "").trim()];
+  if (!stem) return "";
+  return `${invGameUiRoot()}/_Shared/assets/ico_ui_art_item_card_type/${stem}.png`;
+}
+
+function invGameElementIconUrl(element) {
+  const stem = INV_GAME_ELEMENT_ICON[String(element || "").trim()];
+  if (!stem) return "";
+  // game_icon_extract stores paths after the /uiresources/ segment.
+  return `${invGameUiRoot()}/pearl_elemental_icons/${stem}.png`;
+}
+
+function invGameStatIconUrl(statKey) {
+  const rel = INV_GAME_STAT_ICON[String(statKey || "").trim()];
+  if (!rel) return "";
+  return `${invGameUiRoot()}/${rel}`;
+}
+
+const nativeCardFrames = new WeakMap();
+window.addEventListener("message", event => {
+  const record = event.source && nativeCardFrames.get(event.source);
+  if (!record || !record.frame.isConnected) return;
+  if (event.data?.type === "msbt-card-ready") {
+    record.frame.contentWindow.postMessage({type:"msbt-card-model",model:record.model},"*");
+  } else if (event.data?.type === "msbt-card-size") {
+    const height = Number(event.data.height);
+    if (Number.isFinite(height) && height>0 && height<20000) record.frame.style.height = Math.ceil(height)+"px";
+  } else if (event.data?.type === "msbt-card-rendered") {
+    record.frame.dataset.rendered = "true";
+    record.frame.dataset.renderErrors = JSON.stringify(event.data.errors || []);
+  } else if (event.data?.type === "msbt-card-error") {
+    record.frame.dataset.renderErrors = JSON.stringify([String(event.data.message || "Card failed to render")]);
+  }
+});
+
+function fillBl4ItemCard(host, entry) {
+  const nativeWeaponType = entry && ["Assault Rifle","Pistol","Shotgun","SMG","Sniper","Heavy Weapon","Heavy Gun Ordnance","Shield","Ordnance","Repkit","Enhancement","Classmod","Class Mod"].includes(entry.item_type);
+  if (host && nativeWeaponType && window.MSBTNativeCard && window.MSBTNativeCard.enabled !== false) {
+    host.replaceChildren();
+    host.classList.remove("hidden");
+    host.classList.add("bl4-item-card","native-game-card");
+    host.dataset.rarity = String(entry.rarity || "unknown").toLowerCase();
+    const frame = document.createElement("iframe");
+    frame.className = "native-game-card-frame";
+    frame.title = invDisplayName(entry);
+    frame.loading = "lazy";
+    frame.tabIndex = -1;
+    frame.setAttribute("sandbox","allow-scripts");
+    frame.setAttribute("scrolling","no");
+    const model = window.MSBTNativeCard.toNativeCardModel(entry);
+    host.appendChild(frame);
+    const register = () => {
+      if (!frame.contentWindow) return;
+      nativeCardFrames.set(frame.contentWindow,{frame,model});
+      frame.contentWindow.postMessage({type:"msbt-card-model",model},"*");
+    };
+    frame.addEventListener("load",register);
+    frame.src = "msbt-card://inventory/card.html";
+    // Detached cards acquire their browsing context after insertion.
+    queueMicrotask(register);
+    const note = document.createElement("div");
+    note.className = "bl4-card-stats-status native-game-card-status";
+    note.textContent = entry.name_status === "partial" ? "Partial name · details still being validated" : "Card details still being validated";
+    note.title = "Original game layout with offline calculations. Mixed-part perk selection, elemental values, and some combat values remain unverified.";
+    host.appendChild(note);
+    return host;
+  }
+  return fillLegacyBl4ItemCard(host,entry);
+}
+
+function fillLegacyBl4ItemCard(host, entry) {
+  if (!host) return null;
+  host.innerHTML = "";
+  host.classList.add("bl4-item-card");
+  if (!entry) {
+    host.classList.add("hidden");
+    host.removeAttribute("data-rarity");
+    return host;
+  }
+  host.classList.remove("hidden");
+  const rarity = String(entry.rarity || "").trim().toLowerCase();
+  host.dataset.rarity = rarity || "unknown";
+
+  const head = document.createElement("div");
+  head.className = "bl4-card-head";
+  const left = document.createElement("div");
+  left.className = "bl4-card-head-main";
+  const name = document.createElement("div");
+  name.className = "bl4-card-name";
+  name.textContent = invDisplayName(entry);
+  left.appendChild(name);
+  if (entry.name_status === "partial") {
+    const note = document.createElement("div");
+    note.className = "bl4-card-type bl4-card-name-status";
+    note.textContent = "Partial name";
+    note.title = "The base name is resolved from game data. Stat prefixes and conflicting licensed-part prefixes are not fully resolved yet.";
+    left.appendChild(note);
+  }
+  const typeLine = document.createElement("div");
+  typeLine.className = "bl4-card-type";
+  typeLine.textContent = String(entry.item_type || entry.character_class || entry.category || "").trim() || "Item";
+  left.appendChild(typeLine);
+  head.appendChild(left);
+  const headRight = document.createElement("div");
+  headRight.className = "bl4-card-head-side";
+  const level = Number(entry.level);
+  if (Number.isFinite(level) && level >= 0) {
+    const lvl = document.createElement("div");
+    lvl.className = "bl4-card-level";
+    lvl.textContent = `Lvl ${level}`;
+    headRight.appendChild(lvl);
+  }
+  const typeIconUrl = invGameTypeIconUrl(entry.item_type || entry.type);
+  if (typeIconUrl) {
+    const icon = document.createElement("img");
+    icon.className = "bl4-card-type-icon";
+    icon.alt = "";
+    icon.decoding = "async";
+    icon.src = typeIconUrl;
+    icon.addEventListener("error", () => {
+      icon.remove();
+    });
+    headRight.appendChild(icon);
+  }
+  if (headRight.childNodes.length) head.appendChild(headRight);
+  host.appendChild(head);
+
+  const primaryDefs = [
+    { key: "damage", label: "Damage", fmt: invFormatStatNumber },
+    { key: "accuracy", label: "Accuracy", fmt: (v) => `${invFormatStatNumber(v)}%` },
+    { key: "reload", label: "Reload", fmt: (v) => `${invFormatStatNumber(v)}s` },
+    { key: "fire_rate", label: "Fire Rate", fmt: (v) => `${invFormatStatNumber(v)}/s` },
+    { key: "magazine", label: "Magazine", fmt: invFormatStatNumber }
+  ];
+  const secondaryDefs = [
+    { key: "crit", label: "Crit", fmt: (v) => `${invFormatStatNumber(v)}%` }
+  ];
+  const primary = primaryDefs.filter((row) => entry[row.key] != null);
+  const secondary = secondaryDefs.filter((row) => entry[row.key] != null);
+  const hasCombat = entry.dps != null || primary.length || secondary.length;
+  if (hasCombat) {
+    const combat = document.createElement("div");
+    combat.className = "bl4-card-combat";
+    if (/nexus/.test(String(entry.stats_source || ""))) {
+      const estimate = document.createElement("div");
+      estimate.className = "bl4-card-type bl4-card-stats-status";
+      estimate.textContent = "Estimated stats";
+      estimate.title = "Offline formulas do not yet reproduce all stacked-part modifiers and in-game stat selection.";
+      combat.appendChild(estimate);
+    }
+    if (entry.dps != null) {
+      const dps = document.createElement("div");
+      dps.className = "bl4-card-dps";
+      const val = document.createElement("span");
+      val.className = "bl4-card-dps-value";
+      val.textContent = invFormatStatNumber(entry.dps);
+      const lab = document.createElement("span");
+      lab.className = "bl4-card-dps-label";
+      lab.textContent = "DPS";
+      dps.appendChild(val);
+      dps.appendChild(lab);
+      combat.appendChild(dps);
+    }
+    if (primary.length) {
+      const row = document.createElement("div");
+      row.className = "bl4-card-stat-row";
+      primary.forEach((def) => {
+        const cell = document.createElement("div");
+        cell.className = "bl4-card-stat";
+        const iconUrl = invGameStatIconUrl(def.key);
+        if (iconUrl) {
+          const icon = document.createElement("img");
+          icon.className = "bl4-card-stat-icon";
+          icon.alt = "";
+          icon.decoding = "async";
+          icon.src = iconUrl;
+          icon.addEventListener("error", () => {
+            icon.remove();
+          });
+          cell.appendChild(icon);
+        }
+        const value = document.createElement("div");
+        value.className = "bl4-card-stat-value";
+        value.textContent = def.fmt(entry[def.key]);
+        const label = document.createElement("div");
+        label.className = "bl4-card-stat-label";
+        label.textContent = def.label;
+        cell.appendChild(value);
+        cell.appendChild(label);
+        row.appendChild(cell);
+      });
+      combat.appendChild(row);
+    }
+    if (secondary.length) {
+      const row = document.createElement("div");
+      row.className = "bl4-card-stat-row is-secondary";
+      secondary.forEach((def) => {
+        const cell = document.createElement("div");
+        cell.className = "bl4-card-stat";
+        const value = document.createElement("div");
+        value.className = "bl4-card-stat-value";
+        value.textContent = def.fmt(entry[def.key]);
+        const label = document.createElement("div");
+        label.className = "bl4-card-stat-label";
+        label.textContent = def.label;
+        cell.appendChild(value);
+        cell.appendChild(label);
+        row.appendChild(cell);
+      });
+      combat.appendChild(row);
+    }
+    host.appendChild(combat);
+  }
+
+  const element = String(entry.damage_type || entry.element || "").trim();
+  if (element) {
+    const elRow = document.createElement("div");
+    elRow.className = "bl4-card-element";
+    elRow.dataset.element = element.toLowerCase();
+    const elIconUrl = invGameElementIconUrl(element);
+    if (elIconUrl) {
+      const elIcon = document.createElement("img");
+      elIcon.className = "bl4-card-element-icon";
+      elIcon.alt = "";
+      elIcon.decoding = "async";
+      elIcon.src = elIconUrl;
+      elIcon.addEventListener("error", () => {
+        elIcon.remove();
+      });
+      elRow.appendChild(elIcon);
+    }
+    const elText = document.createElement("span");
+    elText.textContent = element;
+    elRow.appendChild(elText);
+    host.appendChild(elRow);
+  }
+
+  const perkHost = document.createElement("div");
+  perkHost.className = "bl4-card-perks";
+  const reds = Array.isArray(entry.red_text) ? entry.red_text : [];
+  const descs = Array.isArray(entry.description_lines) ? entry.description_lines : [];
+  const perks = Array.isArray(entry.perk_lines) ? entry.perk_lines : [];
+  const seen = new Set();
+  descs.concat(perks).forEach((line) => {
+    const text = String(line || "").trim();
+    if (!text || seen.has(text) || reds.includes(text)) return;
+    seen.add(text);
+    const row = document.createElement("div");
+    row.className = "bl4-card-perk";
+    row.textContent = text;
+    perkHost.appendChild(row);
+  });
+  reds.forEach((line) => {
+    const text = String(line || "").trim();
+    if (!text || seen.has(text)) return;
+    seen.add(text);
+    const row = document.createElement("div");
+    row.className = "bl4-card-perk is-red";
+    row.textContent = text;
+    perkHost.appendChild(row);
+  });
+  if (perkHost.childNodes.length) host.appendChild(perkHost);
+
+  if (entry.manufacturer || entry.value != null) {
+    const foot = document.createElement("div");
+    foot.className = "bl4-card-footer";
+    if (entry.manufacturer) {
+      const brand = document.createElement("div");
+      brand.className = "bl4-card-brand";
+      brand.textContent = String(entry.manufacturer);
+      foot.appendChild(brand);
+    }
+    if (entry.value != null) {
+      const value = document.createElement("div");
+      value.className = "bl4-card-value";
+      value.textContent = `$ ${Number(entry.value).toLocaleString()}`;
+      foot.appendChild(value);
+    }
+    host.appendChild(foot);
+  }
+  return host;
+}
+
+function createBl4ItemCard(entry) {
+  return fillBl4ItemCard(document.createElement("div"), entry);
+}
+
 function invMakeCard(entry, { slotLabel = "", empty = false, equipped = false } = {}) {
   const card = document.createElement("button");
   card.type = "button";
   const rarityClass = empty ? "inv-rarity-unknown" : invRarityClass(entry && entry.rarity);
   card.className = `${equipped || empty ? "inv-slot-card" : "inv-item-card"} ${rarityClass}${empty ? " empty" : ""}`;
-  if (!empty && entry && state.invSelectedKeys.has(invEntryKey(entry))) card.classList.add("selected");
+  if (!empty && entry) {
+    card.dataset.invKey = invEntryKey(entry);
+    const selected = state.invSelectedKeys.has(card.dataset.invKey);
+    card.classList.toggle("selected", selected);
+    card.setAttribute("aria-pressed", String(selected));
+  }
   if (slotLabel) {
     const lab = document.createElement("div");
     lab.className = "inv-slot-label";
     lab.textContent = slotLabel;
     card.appendChild(lab);
   }
-  const name = document.createElement("div");
-  name.className = "inv-item-name";
-  name.textContent = empty ? "Empty" : invDisplayName(entry);
-  card.appendChild(name);
-  const meta = document.createElement("div");
-  meta.className = "inv-item-meta";
   if (empty) {
+    const name = document.createElement("div");
+    name.className = "inv-item-name";
+    name.textContent = "Empty";
+    card.appendChild(name);
+    const meta = document.createElement("div");
+    meta.className = "inv-item-meta";
     meta.textContent = "—";
-  } else {
-    const rarity = String(entry.rarity || "Unknown");
-    const level = Number(entry.level);
-    const bits = [];
-    bits.push(`<span class="inv-rarity-dot"></span>${rarity}`);
-    if (Number.isFinite(level) && level >= 0) bits.push(`L${level}`);
-    const typeBit = String(entry.item_type || entry.character_class || entry.category || "").trim();
-    if (typeBit) bits.push(typeBit);
-    if (entry.manufacturer) bits.push(String(entry.manufacturer));
-    if (entry.damage_type) bits.push(String(entry.damage_type));
-    meta.innerHTML = bits.join(" · ");
+    card.appendChild(meta);
+    return card;
   }
-  card.appendChild(meta);
-  if (!empty && entry) {
-    card.addEventListener("click", (event) => invSelectEntry(entry, event));
-  }
+  // Inline replacement: Phase B card is the tile visual (BL4 Codes pattern).
+  card.classList.add("inv-has-item-card");
+  card.appendChild(createBl4ItemCard(entry));
+  card.addEventListener("click", (event) => invSelectEntry(entry, event));
   return card;
 }
 
@@ -9828,6 +10426,21 @@ function invRenderBackpack() {
     els.invBackpackCount.textContent =
       `${state.invFiltered.length.toLocaleString()} shown / ${state.invBackpack.length.toLocaleString()} backpack · ${state.invEquipped.length} equipped${trunc}`;
   }
+  invUpdateSelectionUI();
+}
+
+function invUpdateSelectionUI() {
+  // Selection must preserve the existing tiles and their native-card frames.
+  // Rebuilding either grid reloads every iframe and collapses its fitted height.
+  for (const grid of [els.invEquippedGrid, els.invBackpackGrid]) {
+    if (!grid) continue;
+    for (const card of grid.children) {
+      if (card.dataset.invKey === undefined) continue;
+      const selected = state.invSelectedKeys.has(card.dataset.invKey);
+      card.classList.toggle("selected", selected);
+      card.setAttribute("aria-pressed", String(selected));
+    }
+  }
   if (els.invSelectedCount) {
     els.invSelectedCount.textContent = `${state.invSelectedKeys.size.toLocaleString()} selected`;
   }
@@ -9844,15 +10457,18 @@ function invRenderAll() {
 
 function invEntryMetaLine(entry) {
   if (!entry) return "";
-  return [
+  const bits = [
     entry.label,
     entry.category,
     entry.item_type || entry.character_class,
     entry.manufacturer,
     entry.rarity,
-    entry.damage_type,
+    entry.damage_type || entry.element,
     Number(entry.level) >= 0 ? `L${entry.level}` : ""
-  ].filter(Boolean).join(" · ");
+  ].filter(Boolean);
+  const perks = invPerkPreview(entry, 2);
+  if (perks.length) bits.push(perks.join(" · "));
+  return bits.join(" · ");
 }
 
 function invFillDetail(entry) {
@@ -9893,7 +10509,7 @@ function invSelectEntry(entry, event = {}) {
   state.invSelectedKeys = next.selected;
   state.invSelectionAnchor = next.anchor;
   invFillDetail(entry);
-  invRenderAll();
+  invUpdateSelectionUI();
 }
 
 function invClearDetail() {
@@ -9901,7 +10517,7 @@ function invClearDetail() {
   state.invSelectedKey = "";
   if (els.invDetail) els.invDetail.classList.add("hidden");
   if (els.invDetailSerial) els.invDetailSerial.value = "";
-  invRenderAll();
+  invUpdateSelectionUI();
 }
 
 function invSelectAllFiltered() {
@@ -9909,7 +10525,7 @@ function invSelectAllFiltered() {
   const preview = state.invFiltered.find((row) => invEntryKey(row) === invEntryKey(state.invSelectedEntry))
     || state.invFiltered[state.invFiltered.length - 1];
   if (preview) invFillDetail(preview);
-  invRenderAll();
+  invUpdateSelectionUI();
   setLine(els.invStatus, `Selected ${state.invFiltered.length.toLocaleString()} filtered inventory item(s).`, "ok");
 }
 
@@ -10017,12 +10633,49 @@ async function refreshInventoryFallback(targetPayload = {}) {
   };
 }
 
+let inventoryRefreshGeneration = 0;
+let inventorySavedAt = "";
+
+function invRenderReading() {
+  if (!els.invReading) return;
+  els.invReading.textContent = inventorySavedAt
+    ? `Saved inventory — ${state.invReading || "Unknown player"} — ${new Date(inventorySavedAt).toLocaleString()}`
+    : state.invReading || "Reading: none";
+}
+
+async function restoreInventorySnapshot() {
+  if (!window.msbt || typeof window.msbt.loadInventorySnapshot !== "function") return;
+  const generation = inventoryRefreshGeneration;
+  try {
+    const result = await window.msbt.loadInventorySnapshot();
+    if (!result || !result.ok) throw new Error(result && result.message || "Could not read saved inventory.");
+    const saved = result.snapshot;
+    if (!saved || generation !== inventoryRefreshGeneration) return;
+    const equipped = await enrichInventoryEntriesOffline(saved.equipped);
+    const backpack = await enrichInventoryEntriesOffline(saved.backpack);
+    // A fresh user read always wins over a slow disk/offline restore.
+    if (generation !== inventoryRefreshGeneration) return;
+    state.invEquipped = equipped;
+    state.invBackpack = backpack;
+    state.invReading = saved.reading;
+    state.invTruncated = Boolean(saved.truncated);
+    inventorySavedAt = saved.saved_at;
+    invRenderReading();
+    invRefreshFilterOptions();
+    invRenderAll();
+    setLine(els.invStatus,"Showing saved inventory. Refresh Inventory updates it from the selected player when BL4 is running.","warning");
+  } catch (error) {
+    appendActivity(`Inventory: saved inventory could not be loaded: ${error.message || error}`);
+  }
+}
+
 async function refreshInventory() {
   if (state.invRefreshInFlight) {
     setLine(els.invStatus, "Inventory refresh already running…", "warning");
     return null;
   }
   state.invRefreshInFlight = true;
+  inventoryRefreshGeneration += 1;
   try {
     const targetPayload = invInventoryTargetPayload();
     const target = String(targetPayload.target_player || "").trim();
@@ -10074,10 +10727,12 @@ async function refreshInventory() {
       appendActivity(`Inventory: ${message}`);
       return result;
     }
-    state.invEquipped = inventory.equipped;
-    state.invBackpack = inventory.backpack;
+    state.invEquipped = await enrichInventoryEntriesOffline(inventory.equipped);
+    // Show equipped names immediately; backpack offline resolve can take a long time.
+    state.invBackpack = Array.isArray(inventory.backpack) ? inventory.backpack.slice() : [];
     state.invTruncated = Boolean(inventory.truncated);
     state.invReading = String((data && data.reading) || "");
+    inventorySavedAt = "";
     state.invPage = 0;
     state.invSelectedEntry = null;
     state.invSelectedKey = "";
@@ -10089,9 +10744,22 @@ async function refreshInventory() {
     }
     invRefreshFilterOptions();
     invRenderAll();
+    state.invBackpack = await enrichInventoryEntriesOffline(inventory.backpack);
+    invRefreshFilterOptions();
+    invRenderAll();
     const message = resultMessage(result) || (ok ? "Inventory refreshed." : "Inventory refresh failed.");
     setLine(els.invStatus, message, ok ? "ok" : "warning");
     appendActivity(`Inventory: ${message}`);
+    if (ok && window.msbt && typeof window.msbt.saveInventorySnapshot === "function") {
+      try {
+        const saved = await window.msbt.saveInventorySnapshot({version:1,saved_at:new Date().toISOString(),
+          reading:state.invReading || `Player ${target || "unknown"}`,truncated:state.invTruncated,
+          equipped:inventory.equipped,backpack:inventory.backpack});
+        if (!saved || !saved.ok) throw new Error(saved && saved.message || "Save failed.");
+      } catch (error) {
+        setLine(els.invStatus,`${message} Could not save inventory for offline use: ${error.message || error}`,"warning");
+      }
+    }
     return result;
   } catch (error) {
     const message = `Inventory refresh failed: ${error && error.message ? error.message : error}`;
@@ -10100,6 +10768,7 @@ async function refreshInventory() {
     return null;
   } finally {
     state.invRefreshInFlight = false;
+    invRenderReading();
   }
 }
 
@@ -10283,7 +10952,6 @@ function wireInventoryEvents() {
   if (els.invMultiSelectToggle) {
     els.invMultiSelectToggle.addEventListener("change", () => {
       state.invMultiSelect = Boolean(els.invMultiSelectToggle.checked);
-      invRenderAll();
       setLine(
         els.invStatus,
         state.invMultiSelect
@@ -14282,6 +14950,7 @@ async function init() {
   }
   wireEvents();
   wireHoardBuilder();
+  void restoreInventorySnapshot();
   try {
     if (window.MsbtPanelLayout && typeof window.MsbtPanelLayout.initViewChrome === "function") {
       window.MsbtPanelLayout.initViewChrome();

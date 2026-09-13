@@ -1,14 +1,14 @@
-# Matt's SDK Boosting Tools (MSBT)
+﻿# Matt's SDK Boosting Tools (MSBT)
 
-MSBT is a Borderlands 4 boosting and item toolkit: a standalone Windows app outside the game, plus a small SDK mod that talks to Borderlands 4 while you play. Use it for currency/XP/SDU helpers, serial delivery, BL4 code browsing, Mattmab’s save/profile/item editor, Dev Spawner, map travel, movement tools, and more.
+MSBT is a Borderlands 4 boosting and item toolkit: a standalone Windows app outside the game, plus a small SDK mod that talks to Borderlands 4 while you play. Use it for currency/XP/SDU helpers, serial delivery, BL4 code browsing, Mattmabâ€™s save/profile/item editor, Dev Spawner, map travel, movement tools, and more.
 
-**Current release: [v2.11.3](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.11.3)** — party-index XP/currency targeting and BL4 Codes in-panel Send confirm.
+**Current release: [v2.11.4](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.11.4)** — inventory selection, native item cards, Max All party indices, and live player-roster refresh.
 
 This project is **unofficial**. It is not affiliated with, endorsed by, or connected to Gearbox, 2K, or the Borderlands franchise owners.
 
-**Repo layout (developers):** see [`docs/PROJECT_MAP.md`](docs/PROJECT_MAP.md). On GitHub’s file list, the grey text next to a folder is the *last commit that touched it*, not a folder description — so a big multi-folder commit can make every line look the same.
+**Repo layout (developers):** see [`docs/PROJECT_MAP.md`](docs/PROJECT_MAP.md). On GitHubâ€™s file list, the grey text next to a folder is the *last commit that touched it*, not a folder description â€” so a big multi-folder commit can make every line look the same.
 
-**Electron panels:** on Boosting, Map Travel, Player Movement, Serial Tools, Inventory, and Dev Spawner (Panels mode) you can drag panels onto empty space, resize, stack into tabs, compact to fill gaps, and lock the arrangement — see [`docs/PANEL_LAYOUT.md`](docs/PANEL_LAYOUT.md). The layout toolbar is off by default (View → Layout toolbar). Dev Spawner Compact mode and the Mobile Gateway tab use a fixed layout so key controls stay fully visible.
+**Electron panels:** on Boosting, Map Travel, Player Movement, Serial Tools, Inventory, and Dev Spawner (Panels mode) you can drag panels onto empty space, resize, stack into tabs, compact to fill gaps, and lock the arrangement â€” see [`docs/PANEL_LAYOUT.md`](docs/PANEL_LAYOUT.md). The layout toolbar is off by default (View â†’ Layout toolbar). Dev Spawner Compact mode and the Mobile Gateway tab use a fixed layout so key controls stay fully visible.
 
 ---
 
@@ -16,35 +16,35 @@ This project is **unofficial**. It is not affiliated with, endorsed by, or conne
 
 **Recommended:** grab the latest Windows installer from GitHub Releases:
 
-[![Installer downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Installer-v2.11.3.exe?label=Installer%20downloads&color=2ea44f)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest)
-[![Portable downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Portable-v2.11.3-win-x64.zip?label=Portable%20downloads&color=0969da)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest)
+[![Installer downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Installer-v2.11.4.exe?label=Installer%20downloads&color=2ea44f)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest)
+[![Portable downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Portable-v2.11.4-win-x64.zip?label=Portable%20downloads&color=0969da)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest)
 [![Android APK downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Mobile-Controller.apk?label=Android%20APK%20downloads&color=e8a23a)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Mobile-Controller.apk)
 
-- [GitHub Releases — download page](https://github.com/funkyoushift/MattsSDKBoostingTools/releases)
-- Latest installer example: `MSBT-Installer-v2.11.3.exe`
+- [GitHub Releases â€” download page](https://github.com/funkyoushift/MattsSDKBoostingTools/releases)
+- Latest installer example: `MSBT-Installer-v2.11.4.exe`
 
-**Portable option:** if you do not want an installer, download the portable ZIP instead (`MSBT-Portable-v…-win-x64.zip`), extract it, and run the app from that folder.
+**Portable option:** if you do not want an installer, download the portable ZIP instead (`MSBT-Portable-vâ€¦-win-x64.zip`), extract it, and run the app from that folder.
 
-**Android app:** phone companion that drives MSBT over LAN (Boost / Codes / Quick Menu / Control / Spawn). Needs desktop **v2.9.0+** with Mobile Gateway (or in-game Phone Pairing) on the same Wi‑Fi.
+**Android app:** phone companion that drives MSBT over LAN (Boost / Codes / Quick Menu / Control / Spawn). Needs desktop **v2.9.0+** with Mobile Gateway (or in-game Phone Pairing) on the same Wiâ€‘Fi.
 
 - Install page (best on phone): [mobile-install.html](https://www.funkyoushift.com/MattsSDKBoostingTools/mobile-install.html)
-- Or desktop Support → **Mobile App** QR → same install page
+- Or desktop Support â†’ **Mobile App** QR â†’ same install page
 - Pairing: PC **Mobile Gateway** tab QR or in-game Phone Pairing (different from the install QR)
 - Direct APK: [`MSBT-Mobile-Controller.apk`](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Mobile-Controller.apk) on the [latest GitHub Release](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest)
 
-Counts above track **installer**, **portable ZIP**, and the rolling **Android APK** (`MSBT-Mobile-Controller.apk` on Latest) — not update-check files (`latest.json` / `latest.yml` / `mobile-version.json` / `.blockmap`). Opening the install page alone does not increment the APK counter; tapping **Download APK** (GitHub asset) does.
+Counts above track **installer**, **portable ZIP**, and the rolling **Android APK** (`MSBT-Mobile-Controller.apk` on Latest) â€” not update-check files (`latest.json` / `latest.yml` / `mobile-version.json` / `.blockmap`). Opening the install page alone does not increment the APK counter; tapping **Download APK** (GitHub asset) does.
 
 **Requirements**
 
 - Borderlands 4 on PC (Windows)
 - [oak2-mod-manager **v0.3**](https://github.com/bl-sdk/oak2-mod-manager/releases/tag/v0.3) (SDK 03)
-- Android companion: Android 9+ phone on the same Wi‑Fi as the PC
+- Android companion: Android 9+ phone on the same Wiâ€‘Fi as the PC
 
 Install / update the mod manager **before** you rely on MSBT live actions. Older SDK 02 setups are not the target for current builds.
 
-Ignore `latest.json`, `latest.yml`, and `.blockmap` files unless you know why you need them — those are for the update system.
+Ignore `latest.json`, `latest.yml`, and `.blockmap` files unless you know why you need them â€” those are for the update system.
 
-Site / tools: [FunkYouSHiFT.com](https://www.funkyoushift.com/) · [Tools page](https://www.funkyoushift.com/borderlands-resources.html)
+Site / tools: [FunkYouSHiFT.com](https://www.funkyoushift.com/) Â· [Tools page](https://www.funkyoushift.com/borderlands-resources.html)
 
 ---
 
@@ -53,22 +53,22 @@ Site / tools: [FunkYouSHiFT.com](https://www.funkyoushift.com/) · [Tools page](
 In plain terms, the Electron app is the control panel. The SDK mod does the live work in-game.
 
 <p align="center">
-  <img src="docs/media/msbt-boosting.jpg" alt="MSBT Boosting tab — targeting, UVH booster, serial copies" width="900">
+  <img src="docs/media/msbt-boosting.jpg" alt="MSBT Boosting tab â€” targeting, UVH booster, serial copies" width="900">
 </p>
 
-- **Quick Menu** — native in-game F7 panel (no BLImGui required): pin/repeat/lock, optional rarity-weight strip, **INV inventory tab**, MOVE/THEME/resize, plus the Electron **★ Quick Menu** editor and gold `+ QM` pin buttons
-- **Inventory** — live equipped + backpack browser in the Electron app and on F7 **INV**; GZO names, sort/filter, party player picker, **Send to Game** with separate Give-to target and multiplier
-- **Boosting** — cash, Eridium, XP/spec, SDU, inventory size helpers, **Drop All (Backpack)**, rarity drop weights, lobby targeting (selected / all / non-host), UVH booster controls, and **experimental Late Join Character** (host picker; P2 persist not confirmed)
-- **Serial tools** — paste, validate, bookmark, and deliver `@U` item serials
-- **BL4 Codes** — search/browse a merged local catalog (GZO image cards, Lootlemon references, custom/static codes), then deliver from a sticky delivery panel
-- **Matt Editor** — hosted Mattmab save/profile/item editor workflow with MSBT delivery buttons
-- **Item Pool Spawning** — browse and spawn from item pools through the bridge
-- **Dev Spawner** — catalog-wide hybrid spawn of live pawns (clone if present, else OakSpawner + PushActorDef), Attack Me after spawn, Compact | Panels layout (needs the bundled ActorScriptDeployer support mod)
-- **Hoard Builder** — persistent multi-wave enemy groups with staggered multi-point spawning, favorites, adjustable caps/distance, and an explicit Emergency Clear safety path
-- **Pull Loot Here** — gathers loot into a roomy Archimedean spiral around the player instead of tight overlapping rings
-- **Map Travel / Player Movement** — expanded station/map catalog, renamable travel favorites, **XYZ location bookmarks**, **Party Reveal Map** (guest FoD sweep), **Host Clear Fog** (this machine’s tiles), **Hide Fog** (this client’s overlay), movement scope (Local / All / Others), and peer teleports (Selected ↔ Me / All → Me)
-- **Activity Log / Mobile Gateway / Report / Updates** — hidden from the main tab bar by default; header **Updates**, Find, and View → Main tabs still open them. Pair the Android controller from Mobile Gateway (pairing QR) after installing from Support → Mobile App (install QR).
-- **Mobile Gateway / Android controller** — pair a phone on the same Wi‑Fi and run Boost / Codes / Quick Menu / Control / Spawn from the Android app. Install QR and pairing QR are different.
+- **Quick Menu** â€” native in-game F7 panel (no BLImGui required): pin/repeat/lock, optional rarity-weight strip, **INV inventory tab**, MOVE/THEME/resize, plus the Electron **â˜… Quick Menu** editor and gold `+ QM` pin buttons
+- **Inventory** â€” live equipped + backpack browser in the Electron app and on F7 **INV**; GZO names, sort/filter, party player picker, **Send to Game** with separate Give-to target and multiplier
+- **Boosting** â€” cash, Eridium, XP/spec, SDU, inventory size helpers, **Drop All (Backpack)**, rarity drop weights, lobby targeting (selected / all / non-host), UVH booster controls, and **experimental Late Join Character** (host picker; P2 persist not confirmed)
+- **Serial tools** â€” paste, validate, bookmark, and deliver `@U` item serials
+- **BL4 Codes** â€” search/browse a merged local catalog (GZO image cards, Lootlemon references, custom/static codes), then deliver from a sticky delivery panel
+- **Matt Editor** â€” hosted Mattmab save/profile/item editor workflow with MSBT delivery buttons
+- **Item Pool Spawning** â€” browse and spawn from item pools through the bridge
+- **Dev Spawner** â€” catalog-wide hybrid spawn of live pawns (clone if present, else OakSpawner + PushActorDef), Attack Me after spawn, Compact | Panels layout (needs the bundled ActorScriptDeployer support mod)
+- **Hoard Builder** â€” persistent multi-wave enemy groups with staggered multi-point spawning, favorites, adjustable caps/distance, and an explicit Emergency Clear safety path
+- **Pull Loot Here** â€” gathers loot into a roomy Archimedean spiral around the player instead of tight overlapping rings
+- **Map Travel / Player Movement** â€” expanded station/map catalog, renamable travel favorites, **XYZ location bookmarks**, **Party Reveal Map** (guest FoD sweep), **Host Clear Fog** (this machineâ€™s tiles), **Hide Fog** (this clientâ€™s overlay), movement scope (Local / All / Others), and peer teleports (Selected â†” Me / All â†’ Me)
+- **Activity Log / Mobile Gateway / Report / Updates** â€” hidden from the main tab bar by default; header **Updates**, Find, and View â†’ Main tabs still open them. Pair the Android controller from Mobile Gateway (pairing QR) after installing from Support â†’ Mobile App (install QR).
+- **Mobile Gateway / Android controller** â€” pair a phone on the same Wiâ€‘Fi and run Boost / Codes / Quick Menu / Control / Spawn from the Android app. Install QR and pairing QR are different.
 
 <p align="center">
   <img src="docs/media/msbt-bl4-codes.jpg" alt="MSBT BL4 Codes catalog with sticky delivery panel and Copies" width="900">
@@ -79,10 +79,10 @@ In plain terms, the Electron app is the control panel. The SDK mod does the live
 </p>
 
 <p align="center">
-  <img src="docs/media/msbt-inventory-tab.png" alt="MSBT Inventory tab — equipped strip, rarity-bordered grid, sort and category filters, Send to Game" width="900">
+  <img src="docs/media/msbt-inventory-tab.png" alt="MSBT Inventory tab â€” equipped strip, rarity-bordered grid, sort and category filters, Send to Game" width="900">
 </p>
 
-<p align="center"><em><strong>Inventory</strong> tab — live serial read from the game session (listen host recommended)</em></p>
+<p align="center"><em><strong>Inventory</strong> tab â€” live serial read from the game session (listen host recommended)</em></p>
 
 A lot of community testing, late nights, and real money went into keeping this usable after the SDK v0.3 break. Tips help, but the tool stays free for normal community use under the license below.
 
@@ -93,7 +93,7 @@ A lot of community testing, late nights, and real money went into keeping this u
 Native in-game F7 panel plus an external editor. **BLImGui is not required.**
 
 <p align="center">
-  <img src="docs/media/msbt-quick-menu-controls.jpg" alt="MSBT Quick Menu controls — F7 open/close, Esc close modal, F6 unstuck" width="900">
+  <img src="docs/media/msbt-quick-menu-controls.jpg" alt="MSBT Quick Menu controls â€” F7 open/close, Esc close modal, F6 unstuck" width="900">
 </p>
 
 **In-game controls**
@@ -102,54 +102,54 @@ Native in-game F7 panel plus an external editor. **BLImGui is not required.**
 | --- | --- |
 | **F7** | Open **and** close the Quick Menu |
 | **Esc** | Close a popup/modal first; if none, close the menu |
-| **F6** | **Unstuck** — force-close the menu and restore normal mouse / look / move if input feels stuck |
+| **F6** | **Unstuck** â€” force-close the menu and restore normal mouse / look / move if input feels stuck |
 
-Also use the on-screen **Close F7** button. Prefer F7 for normal open/close; use F6 only when the cursor or camera feels stuck after the menu. On the panel itself: **MOVE** to reposition, **− / +** to resize, **THEME** to switch looks.
-
-<p align="center">
-  <img src="docs/media/msbt-quick-menu-neon.png" alt="In-game MSBT Quick Menu (F7) — MSBT Neon theme, 3×7 slot grid, Pin Last / Lock / Target, optional rarity drop weights strip" width="900">
-</p>
-
-<p align="center"><em>In-game Quick Menu (press <strong>F7</strong>) — <strong>MSBT Neon</strong> theme with mixed neon slot colors</em></p>
+Also use the on-screen **Close F7** button. Prefer F7 for normal open/close; use F6 only when the cursor or camera feels stuck after the menu. On the panel itself: **MOVE** to reposition, **âˆ’ / +** to resize, **THEME** to switch looks.
 
 <p align="center">
-  <img src="docs/media/msbt-quick-menu-inventory.png" alt="In-game Quick Menu INV tab — equipped strip, sort/filter, backpack list, Give-to and serial actions" width="900">
+  <img src="docs/media/msbt-quick-menu-neon.png" alt="In-game MSBT Quick Menu (F7) â€” MSBT Neon theme, 3Ã—7 slot grid, Pin Last / Lock / Target, optional rarity drop weights strip" width="900">
 </p>
 
-<p align="center"><em>F7 <strong>INV</strong> tab — browse equipped + backpack, tap an item for Give-to / multiplier / serial copy</em></p>
+<p align="center"><em>In-game Quick Menu (press <strong>F7</strong>) â€” <strong>MSBT Neon</strong> theme with mixed neon slot colors</em></p>
+
+<p align="center">
+  <img src="docs/media/msbt-quick-menu-inventory.png" alt="In-game Quick Menu INV tab â€” equipped strip, sort/filter, backpack list, Give-to and serial actions" width="900">
+</p>
+
+<p align="center"><em>F7 <strong>INV</strong> tab â€” browse equipped + backpack, tap an item for Give-to / multiplier / serial copy</em></p>
 
 **What you get**
 
-- Up to **5 pages** of **3×7** slots (21 buttons per page) plus a dedicated **INV** inventory tab
+- Up to **5 pages** of **3Ã—7** slots (21 buttons per page) plus a dedicated **INV** inventory tab
 - **MSBT Neon (Azzy)** theme and many other looks via **THEME**
-- **Pin Last**, **Repeat Last Drop**, optional **Lock Player**, player target tabs (P1–P4 / PAll)
-- Optional **rarity drop weights** strip on F7 (Apply / Reset / Leg Only / Pearl Only) — equip or hide it from the Electron editor; live apply stays in sync with Boosting
+- **Pin Last**, **Repeat Last Drop**, optional **Lock Player**, player target tabs (P1â€“P4 / PAll)
+- Optional **rarity drop weights** strip on F7 (Apply / Reset / Leg Only / Pearl Only) â€” equip or hide it from the Electron editor; live apply stays in sync with Boosting
 - Edit / assign / clear slots in-game or from the app; layout edits apply live over the bridge (no game restart)
 
 <p align="center">
-  <img src="docs/media/msbt-quick-menu-editor.jpg" alt="Electron ★ Quick Menu editor — F7 panel modules, pages, 3×7 slot grid, pin/repeat controls" width="900">
+  <img src="docs/media/msbt-quick-menu-editor.jpg" alt="Electron â˜… Quick Menu editor â€” F7 panel modules, pages, 3Ã—7 slot grid, pin/repeat controls" width="900">
 </p>
 
-<p align="center"><em>Electron <strong>★ Quick Menu</strong> editor — equip the rarity strip, manage pages/slots, pin from other tabs</em></p>
+<p align="center"><em>Electron <strong>â˜… Quick Menu</strong> editor â€” equip the rarity strip, manage pages/slots, pin from other tabs</em></p>
 
 **How to pin commands from the app**
 
 1. Run or configure an action in MSBT (Boosting, Serial Bookmarks, BL4 Codes, Travel, Item Pool, Dev Spawner, etc.).
 2. Click a **`+ QM`** button next to that action (gold buttons on serial/BL4 delivery; smaller `+ QM` beside many Boosting / Movement actions).
-3. Choose a page and slot → **Save**.
-4. Press **F7** in-game — the slot is live (no game restart needed for layout edits).
+3. Choose a page and slot â†’ **Save**.
+4. Press **F7** in-game â€” the slot is live (no game restart needed for layout edits).
 
 <p align="center">
   <img src="docs/media/msbt-qm-serial-bookmarks.png" alt="Gold + QM Selected / All / Non-Host buttons under Serial Bookmarks delivery" width="720">
 </p>
 
-<p align="center"><em>Serial Tools → Bookmarks delivery: gold <strong>+ QM Selected / All / Non-Host</strong></em></p>
+<p align="center"><em>Serial Tools â†’ Bookmarks delivery: gold <strong>+ QM Selected / All / Non-Host</strong></em></p>
 
 <p align="center">
   <img src="docs/media/msbt-qm-bl4-codes.png" alt="Gold + QM buttons on the BL4 Codes delivery panel" width="720">
 </p>
 
-<p align="center"><em>BL4 Codes → Delivery panel: same gold <strong>+ QM</strong> buttons</em></p>
+<p align="center"><em>BL4 Codes â†’ Delivery panel: same gold <strong>+ QM</strong> buttons</em></p>
 
 <p align="center">
   <img src="docs/media/msbt-qm-boosting-pins.png" alt="Small + QM pins next to Give Currency and Max Eridium" width="480">
@@ -161,7 +161,7 @@ Also use the on-screen **Close F7** button. Prefer F7 for normal open/close; use
 
 ## Why this project exists
 
-Mattmab put the original toolset together: homemade SDK pieces plus community mods that fit Borderlands 4 boosting and item work. That first version lived **inside** the game through **BLImGui** (Borderlands ImGui) — a separate in-game UI framework, not Mattmab’s project. It worked, but running a full panel inside the engine was heavy; it competed with the game for the same resources.
+Mattmab put the original toolset together: homemade SDK pieces plus community mods that fit Borderlands 4 boosting and item work. That first version lived **inside** the game through **BLImGui** (Borderlands ImGui) â€” a separate in-game UI framework, not Mattmabâ€™s project. It worked, but running a full panel inside the engine was heavy; it competed with the game for the same resources.
 
 That stack targeted **oak2-mod-manager v0.2**. When **v0.3** landed, a lot of old hooks and assumptions stopped lining up. Matt also had personal stuff going on and stepped back.
 
@@ -190,7 +190,7 @@ The older Tkinter app is still in the repo as legacy/reference. New work targets
 - **Electron** owns the UI, local resources, catalogs, bookmarks, validator, and Matt editor hosting. It does **not** import UnrealSDK / game modules.
 - **The SDK mod** owns live game interaction.
 - **The bridge** is how they talk.
-- **BLImGui** is optional. You do not need it for the Electron app or the native F7 Quick Menu. If BLImGui is installed, the old-style in-game panel may still be available — that is optional, not required.
+- **BLImGui** is optional. You do not need it for the Electron app or the native F7 Quick Menu. If BLImGui is installed, the old-style in-game panel may still be available â€” that is optional, not required.
 
 More architecture detail for developers: [docs/BLIMGUI_REPLACEMENT_ARCHITECTURE.md](docs/BLIMGUI_REPLACEMENT_ARCHITECTURE.md).
 
@@ -199,7 +199,7 @@ More architecture detail for developers: [docs/BLIMGUI_REPLACEMENT_ARCHITECTURE.
 ## Install steps
 
 1. Install or update **[oak2-mod-manager v0.3](https://github.com/bl-sdk/oak2-mod-manager/releases/tag/v0.3)**.
-2. Download **`MSBT-Installer-v….exe`** from [Releases](https://github.com/funkyoushift/MattsSDKBoostingTools/releases) (or extract the portable ZIP).
+2. Download **`MSBT-Installer-vâ€¦.exe`** from [Releases](https://github.com/funkyoushift/MattsSDKBoostingTools/releases) (or extract the portable ZIP).
 3. Run the installer. It installs the Electron app and copies into your Borderlands 4 `sdk_mods` folder (when it can find the game):
    - `MattsSDKBoostingTools.sdkmod`
    - `ActorScriptDeployer/` (needed for Dev Spawner)
@@ -224,7 +224,7 @@ Borderlands 4/
 
 - The app checks **GitHub Releases** for newer builds (Updates tab / Check Updates).
 - After an **SDK mod** update, **fully restart Borderlands 4** before testing live actions. An Electron-only update is not enough if the in-game `.sdkmod` changed.
-- Bookmarks, favorites, opacity, and other user settings live in the Electron user-data folder — not inside the install directory — so they should survive app updates.
+- Bookmarks, favorites, opacity, and other user settings live in the Electron user-data folder â€” not inside the install directory â€” so they should survive app updates.
 
 Versioning rules: [docs/VERSIONING.md](docs/VERSIONING.md).
 
@@ -235,7 +235,7 @@ Versioning rules: [docs/VERSIONING.md](docs/VERSIONING.md).
 - This is a **modding / boosting** tool. Treat it like one.
 - **Back up saves** before save editing or anything you are unsure about.
 - **Dev Spawner** and other debug-style tools can stress or destabilize a session. Use them carefully, especially in multiplayer.
-- Selected-player serial delivery still uses a game reward-package workaround: it can produce extra base reward behavior for non-target players. Do not delete other players’ mail unless you are sure which package is which.
+- Selected-player serial delivery still uses a game reward-package workaround: it can produce extra base reward behavior for non-target players. Do not delete other playersâ€™ mail unless you are sure which package is which.
 - If something looks wrong after an update, confirm the SDK mod version in the app header matches the release, then restart the game.
 
 ---
@@ -246,16 +246,16 @@ Huge thanks to the people who built pieces of this, shared data, and helped prov
 
 | Who | What |
 | --- | --- |
-| **Mattmab** | Original toolset, save/editor work, and the foundation this project grew from. [Ko-fi](https://ko-fi.com/mattmab) · [legit-builder](https://github.com/mattmab/legit-builder) |
-| **FunkYouSHiFT** | Current maintainer: Electron app, bridge, SDK v0.3 migration, packaging/releases. [Site](https://www.funkyoushift.com/) · [Twitch](https://www.twitch.tv/funkyoushift/) · [YouTube](https://www.youtube.com/@Funkyoushift) · [Tip](https://streamlabs.com/funkyoushift/tip) |
-| **BLImGui / Borderlands ImGui** | Original in-game UI framework used by the early MSBT panel. Credited separately — not a Mattmab project. |
-| **apple1417 / BL SDK community** | oak2 / UnrealSDK ecosystem and tooling that make mods like this possible. [oak2-mod-manager](https://github.com/bl-sdk/oak2-mod-manager) · [Mod DB](https://bl-sdk.github.io/oak2-mod-db/) |
-| **Ynot / GZO** | BL4 Codes site, catalog/API, and community code pipeline. [GZO Codes](https://save-editor.be/GZO/Borderlands4/Codes.html) · [GZO hub](https://save-editor.be/GZO/) · [Discord](https://discord.gg/4hGKAHdvp6) |
+| **Mattmab** | Original toolset, save/editor work, and the foundation this project grew from. [Ko-fi](https://ko-fi.com/mattmab) Â· [legit-builder](https://github.com/mattmab/legit-builder) |
+| **FunkYouSHiFT** | Current maintainer: Electron app, bridge, SDK v0.3 migration, packaging/releases. [Site](https://www.funkyoushift.com/) Â· [Twitch](https://www.twitch.tv/funkyoushift/) Â· [YouTube](https://www.youtube.com/@Funkyoushift) Â· [Tip](https://streamlabs.com/funkyoushift/tip) |
+| **BLImGui / Borderlands ImGui** | Original in-game UI framework used by the early MSBT panel. Credited separately â€” not a Mattmab project. |
+| **apple1417 / BL SDK community** | oak2 / UnrealSDK ecosystem and tooling that make mods like this possible. [oak2-mod-manager](https://github.com/bl-sdk/oak2-mod-manager) Â· [Mod DB](https://bl-sdk.github.io/oak2-mod-db/) |
+| **Ynot / GZO** | BL4 Codes site, catalog/API, and community code pipeline. [GZO Codes](https://save-editor.be/GZO/Borderlands4/Codes.html) Â· [GZO hub](https://save-editor.be/GZO/) Â· [Discord](https://discord.gg/4hGKAHdvp6) |
 | **Levin / Lootlemon** | Lootlemon item/code references used in the catalog. [Lootlemon](https://www.lootlemon.com/) |
 | **Azalea Asvail** | Azzy UVH Booster workflow adapted into the Boosting tab (MIT). Source credits **Pyrex** for UVH6/UVH7 challenge paths. |
 | **RDP / Squ1ggs** (Ryan David Picton) | MIT-licensed SDK helpers, standalone mods, and data adapted across movement, travel, serials, economy, inventory, legit building, spawning, vault-card, and related game-side features. [Bl4SDKmods source](https://github.com/Squ1ggs/Bl4SDKmods) |
 | **Azzarock, Frag Em All, Tobgun1, Crayons82.0** | Testing, feedback, item data, and community reports that caught real breakage. |
-| **Everyone else** | Item-code authors and players who published lists, filed bugs, and shared serials — a lot of this only works because of public community work. |
+| **Everyone else** | Item-code authors and players who published lists, filed bugs, and shared serials â€” a lot of this only works because of public community work. |
 
 Third-party notices and license details for bundled/adapted pieces: [docs/THIRD_PARTY_NOTICES.md](docs/THIRD_PARTY_NOTICES.md).
 
@@ -267,8 +267,8 @@ Third-party notices and license details for bundled/adapted pieces: [docs/THIRD_
 - [oak2-mod-manager v0.3](https://github.com/bl-sdk/oak2-mod-manager/releases/tag/v0.3)
 - [GZO Borderlands 4 Codes](https://save-editor.be/GZO/Borderlands4/Codes.html)
 - [Lootlemon](https://www.lootlemon.com/)
-- [FunkYouSHiFT site](https://www.funkyoushift.com/) · [Tools](https://www.funkyoushift.com/borderlands-resources.html)
-- [Tip FunkYouSHiFT](https://streamlabs.com/funkyoushift/tip) · [Donate to Mattmab](https://ko-fi.com/mattmab)
+- [FunkYouSHiFT site](https://www.funkyoushift.com/) Â· [Tools](https://www.funkyoushift.com/borderlands-resources.html)
+- [Tip FunkYouSHiFT](https://streamlabs.com/funkyoushift/tip) Â· [Donate to Mattmab](https://ko-fi.com/mattmab)
 - [Report issues](https://github.com/funkyoushift/MattsSDKBoostingTools/issues)
 
 ---
@@ -297,11 +297,11 @@ Quick build from repo root (Windows, Node/npm, Python 3.13 for tooling; the pack
 
 Repo layout in short (see [`docs/PROJECT_MAP.md`](docs/PROJECT_MAP.md) for nested detail):
 
-- `mod_extracted/MattsSDKBoostingTools/` — SDK mod, bridge, live actions, Quick Menu, optional BLImGui
-- `electron_poc/` — shipping Electron desktop app (folder name is historical)
-- `external_app/v22_parts_codes_fixed/` — packaged catalogs, serial helpers, Matt Editor host (not the main UI)
-- `docs/` — developer docs, screenshots, versioning, release metadata (`docs/releases/`), look-back (`docs/reference/`)
-- `tools/` — build/publish scripts, `tools/tests/`, bundled `tools/third_party/` (ActorScriptDeployer), NearbyDump
+- `mod_extracted/MattsSDKBoostingTools/` â€” SDK mod, bridge, live actions, Quick Menu, optional BLImGui
+- `electron_poc/` â€” shipping Electron desktop app (folder name is historical)
+- `external_app/v22_parts_codes_fixed/` â€” packaged catalogs, serial helpers, Matt Editor host (not the main UI)
+- `docs/` â€” developer docs, screenshots, versioning, release metadata (`docs/releases/`), look-back (`docs/reference/`)
+- `tools/` â€” build/publish scripts, `tools/tests/`, bundled `tools/third_party/` (ActorScriptDeployer), NearbyDump
 
 ---
 
@@ -312,3 +312,4 @@ MSBT's original code is released under the [MIT License](LICENSE).
 Bundled and adapted third-party code, community catalogs, game-derived data, and artwork remain under their own licenses or permission grants. See [Third-Party Notices](docs/THIRD_PARTY_NOTICES.md) for the source-by-source scope; the MSBT MIT license does not relicense those materials.
 
 Again: **not** official Gearbox / 2K / Borderlands software.
+

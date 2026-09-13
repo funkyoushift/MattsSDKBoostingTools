@@ -1,0 +1,2636 @@
+{
+  "inv_name_strategy": {
+    "records": [
+      {
+        "entries": [
+          {
+            "enhancementnamestrat": {
+              "inv_name_strategy": "EnhancementNameStrat",
+              "namingstrategy": {
+                "structtype": "Asset'/Script/OakGame.OakEnhancementNamingStrategy'",
+                "singlestatnames": [
+                  {
+                    "firstattributename": "Part_Stat_Weapon_Damage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "EnhancementNamingStrategies, C8E84F49423149248AD4D5B494B5856E, Agonizing"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_FireRate",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 9CDD54CEBE4642719100DE185B760E87, Rapid"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_Accuracy",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, F239E6C5F616408582A8B756945882F5, Concentrated"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_SplashDamage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 8FA836F9D4CC43DD9565F0F27D142AB6, Concussive"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_CriticalDamage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, E067BCFB7120474BA27BEAEFF0006C03, Brutal"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_SplashRadius",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 115771FE8E3342409C3C4C49D75A4C4D, Messy"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_ADS_Proficiency",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 31010330D30D44638DD2AFBD5E6CDEAA, Keen"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_StatusEffect_Damage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, D50F7B27F27D44FC952BD98A4626A351, Hazardous"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_StatusEffect_Chance",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, F6A7B226AA9B40D4940F03278B73EC9F, Reactive"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_ReloadSpeed",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 30033A526823476488C27EAC094B2325, Fast-Handed"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_MagSize",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 7E2ED2BBE3814C1A9D79B279B6EFC4FD, Hefty"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_EquipSpeed",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, AB667E1D1ABF47F7A497C349C3A32C95, Prestidigital"
+                    }
+                  }
+                ],
+                "combinationstatnames": [
+                  {
+                    "firstattributename": "Part_Stat_Weapon_Damage",
+                    "secondattributename": "Part_Stat_Weapon_Damage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 3C4094CCC0DC4916A932F3BEC309BFE8, Excruciating"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_FireRate",
+                    "secondattributename": "Part_Stat_Weapon_Damage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 81596C439E164FDC8E815850EFF39E9D, Torrential"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_Accuracy",
+                    "secondattributename": "Part_Stat_Weapon_Damage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 96FDDE6F052443369043B9D43843F885, Stabbing"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_SplashDamage",
+                    "secondattributename": "Part_Stat_Weapon_Damage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, A6FEA74197094A38A7A4D6D9D3E494CA, Blasting"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_CriticalDamage",
+                    "secondattributename": "Part_Stat_Weapon_Damage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 60D5A833FF52409EB6E78AFAC44B6ECE, Vindictive"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_SplashRadius",
+                    "secondattributename": "Part_Stat_Weapon_Damage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, B3B4A05D5B3C49F9BF29B8083FB7F2A1, Catastrophic"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_ADS_Proficiency",
+                    "secondattributename": "Part_Stat_Weapon_Damage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 2E83D40D97A04AD2A72BD6FB92A69068, Sharp"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_StatusEffect_Damage",
+                    "secondattributename": "Part_Stat_Weapon_Damage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 4A8371354D3945EB95794108930ABD22, Dangerous"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_StatusEffect_Chance",
+                    "secondattributename": "Part_Stat_Weapon_Damage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, F65A852E54F445B582ACF854313A33A2, Retributive"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_ReloadSpeed",
+                    "secondattributename": "Part_Stat_Weapon_Damage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, B8A174B497B8433789AE453B1E4FD133, Tearing"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_MagSize",
+                    "secondattributename": "Part_Stat_Weapon_Damage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 447E92D70B564A54806A1FF53588DD8C, Crushing"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_EquipSpeed",
+                    "secondattributename": "Part_Stat_Weapon_Damage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, F8B8433479A24946B3EB53009868B368, Flurrying"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_Damage",
+                    "secondattributename": "Part_Stat_Weapon_FireRate",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 33C442C7A790488896A1ABE44D291678, Torrential"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_FireRate",
+                    "secondattributename": "Part_Stat_Weapon_FireRate",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 895403E14BE14D5EB0FFD4CB0DE203E5, Alacritous"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_Accuracy",
+                    "secondattributename": "Part_Stat_Weapon_FireRate",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, D27EFACC64314C1AA30AD5E97472B8CF, Fanning"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_SplashDamage",
+                    "secondattributename": "Part_Stat_Weapon_FireRate",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 51F70E87A78F48C1BBC0531F62DEA58E, Bombarding"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_CriticalDamage",
+                    "secondattributename": "Part_Stat_Weapon_FireRate",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, C36608D991074FB0AF71E4B3ACDEE969, Crack-Shot"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_SplashRadius",
+                    "secondattributename": "Part_Stat_Weapon_FireRate",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 587776D62FD944768ED1884981085E19, Sloppy"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_ADS_Proficiency",
+                    "secondattributename": "Part_Stat_Weapon_FireRate",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 006A4F916E154164AA1BFC6C3B5ED1D5, Staccato"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_StatusEffect_Damage",
+                    "secondattributename": "Part_Stat_Weapon_FireRate",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 46A966235CC24F57A06742C57EB89F33, Wide-Nozzle"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_StatusEffect_Chance",
+                    "secondattributename": "Part_Stat_Weapon_FireRate",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, BC65ED5354994E73B1231214026FD98D, Coating"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_ReloadSpeed",
+                    "secondattributename": "Part_Stat_Weapon_FireRate",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 09C2C2768E934D38AD9C4918AF223BDD, Relentless"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_MagSize",
+                    "secondattributename": "Part_Stat_Weapon_FireRate",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 25860F9456A743F089433317F87250E2, Disgorging"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_EquipSpeed",
+                    "secondattributename": "Part_Stat_Weapon_FireRate",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, E68EA60546793E4206F831B5EBE77D9D, Snappy"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_Damage",
+                    "secondattributename": "Part_Stat_Weapon_Accuracy",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, AD55347DFEF34816862DD99420D1259B, Stabbing"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_FireRate",
+                    "secondattributename": "Part_Stat_Weapon_Accuracy",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 44EB6A8AD86744ED9C5039B118164909, Fanning"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_Accuracy",
+                    "secondattributename": "Part_Stat_Weapon_Accuracy",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 575F05E22D504CAF8297F3B668F333C3, Obsessive"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_SplashDamage",
+                    "secondattributename": "Part_Stat_Weapon_Accuracy",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, F6F034C6D0844D318BCDF80180936203, Targeted"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_CriticalDamage",
+                    "secondattributename": "Part_Stat_Weapon_Accuracy",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, B5B851B9A719489C82997B9F00418D67, Calculating"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_SplashRadius",
+                    "secondattributename": "Part_Stat_Weapon_Accuracy",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, F53B7A812C8544938B3CCA7B2FA8CA79, Comprehensive"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_ADS_Proficiency",
+                    "secondattributename": "Part_Stat_Weapon_Accuracy",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 59929BA7BC134F1893AF4F4CDA739A2A, Commando"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_StatusEffect_Damage",
+                    "secondattributename": "Part_Stat_Weapon_Accuracy",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 025C6B5337214617971B9B835D405014, Erupting"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_StatusEffect_Chance",
+                    "secondattributename": "Part_Stat_Weapon_Accuracy",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, BAED533B4D894E8D973135488EAF648B, Volatile"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_ReloadSpeed",
+                    "secondattributename": "Part_Stat_Weapon_Accuracy",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 5420DB24B2A94BC8982D7316F081B6FE, Professional"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_MagSize",
+                    "secondattributename": "Part_Stat_Weapon_Accuracy",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 6C20E80E39F14827BA8C0791F5C1D691, Frugal"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_EquipSpeed",
+                    "secondattributename": "Part_Stat_Weapon_Accuracy",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, DF1E294DF6C14A91B9CE2A6E36616C19, Poised"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_Damage",
+                    "secondattributename": "Part_Stat_Weapon_SplashDamage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 8956CEBEDE22430C8E19032669EB0110, Blasting"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_FireRate",
+                    "secondattributename": "Part_Stat_Weapon_SplashDamage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 8D6E0733128D47A7A3432A9F4C3A1C45, Bombarding"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_Accuracy",
+                    "secondattributename": "Part_Stat_Weapon_SplashDamage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, C68B6C41C2B247519B07FFEE2430AECF, Targeted"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_SplashDamage",
+                    "secondattributename": "Part_Stat_Weapon_SplashDamage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 38F62E5CB93B4E288FA58ECC50C96A41, Collateral"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_CriticalDamage",
+                    "secondattributename": "Part_Stat_Weapon_SplashDamage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, AC09D5B02132432B8AA1591C5B065149, Hotshot"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_SplashRadius",
+                    "secondattributename": "Part_Stat_Weapon_SplashDamage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 039E426340DB495AB87CBDD9913478C5, Cratering"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_ADS_Proficiency",
+                    "secondattributename": "Part_Stat_Weapon_SplashDamage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 7F9F4AFB744E49AC8EFFD666FF702E53, Guided"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_StatusEffect_Damage",
+                    "secondattributename": "Part_Stat_Weapon_SplashDamage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 1D99DB71CFBD448B9DE6F394E446FF17, Disastrous"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_StatusEffect_Chance",
+                    "secondattributename": "Part_Stat_Weapon_SplashDamage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 52C38C16F4FF49E3AF5902CF22F00A85, Blowback"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_ReloadSpeed",
+                    "secondattributename": "Part_Stat_Weapon_SplashDamage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, FE65DDFAAFAE4C488D4047AE9FDB8DFD, Pelting"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_MagSize",
+                    "secondattributename": "Part_Stat_Weapon_SplashDamage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 81E80A50F90E4CA39C4D176BF1CE0F48, Arsenal"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_EquipSpeed",
+                    "secondattributename": "Part_Stat_Weapon_SplashDamage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 505BA13CB4C54D4B927679BC5111F0C3, Primed"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_Damage",
+                    "secondattributename": "Part_Stat_Weapon_CriticalDamage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, E5782B45C62A4589992FBF7948F521A8, Vindictive"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_FireRate",
+                    "secondattributename": "Part_Stat_Weapon_CriticalDamage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, E602938CAF294C78B5AC51D0E3ED645C, Crack-Shot"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_Accuracy",
+                    "secondattributename": "Part_Stat_Weapon_CriticalDamage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 77DE0570E9C842EBB5A741239CCAC098, Calculating"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_SplashDamage",
+                    "secondattributename": "Part_Stat_Weapon_CriticalDamage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, DA671C7F0D914EDCBA32E16E0084B11E, Hotshot"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_CriticalDamage",
+                    "secondattributename": "Part_Stat_Weapon_CriticalDamage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 853A8282ED1B428D868E82AB7FBAE790, Deadly"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_SplashRadius",
+                    "secondattributename": "Part_Stat_Weapon_CriticalDamage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 8ACF07A4B846417F8A12DEABEB4C2B2D, Merciless"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_ADS_Proficiency",
+                    "secondattributename": "Part_Stat_Weapon_CriticalDamage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 69DA5FE74A204E518B36F1E83BEE8B33, Proficient"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_StatusEffect_Damage",
+                    "secondattributename": "Part_Stat_Weapon_CriticalDamage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, B122007B924148ABABCEE2EF9B28DA4F, Decimating"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_StatusEffect_Chance",
+                    "secondattributename": "Part_Stat_Weapon_CriticalDamage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, FE34D4A4E1A549AAA19BBCA9B290C40C, Infusing"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_ReloadSpeed",
+                    "secondattributename": "Part_Stat_Weapon_CriticalDamage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 977A05331FC441FB8F653E5389E9E05B, Pneumatic"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_MagSize",
+                    "secondattributename": "Part_Stat_Weapon_CriticalDamage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 4BB794E762B844C086E2E0FE2D3DCE03, Cyclopean"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_EquipSpeed",
+                    "secondattributename": "Part_Stat_Weapon_CriticalDamage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, E8C7E955E72C43D4A1C0752367316F16, Versatile"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_Damage",
+                    "secondattributename": "Part_Stat_Weapon_SplashRadius",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 4D07E74FD3D9414C96F6745C0D5E3E3C, Catastrophic"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_FireRate",
+                    "secondattributename": "Part_Stat_Weapon_SplashRadius",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 28E51C4EF82B4A9CAD87ADFF589EC340, Sloppy"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_Accuracy",
+                    "secondattributename": "Part_Stat_Weapon_SplashRadius",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 7FF1CFFCE8CD483492EBD4C884E5FAC2, Comprehensive"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_SplashDamage",
+                    "secondattributename": "Part_Stat_Weapon_SplashRadius",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, C79CD35B33C140BE8AC4E236F263C892, Cratering"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_CriticalDamage",
+                    "secondattributename": "Part_Stat_Weapon_SplashRadius",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, F120DDA219F440FD99D7E11D698D1D13, Merciless"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_SplashRadius",
+                    "secondattributename": "Part_Stat_Weapon_SplashRadius",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 64122AED3B794EEA839AC2CB5EDD9A09, Devastating"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_ADS_Proficiency",
+                    "secondattributename": "Part_Stat_Weapon_SplashRadius",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 892B9598A5044D1C8A3F2B56BF6A2DE7, Booming"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_StatusEffect_Damage",
+                    "secondattributename": "Part_Stat_Weapon_SplashRadius",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 058D85C4712C4450A227C14272D5DBE7, Blighting"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_StatusEffect_Chance",
+                    "secondattributename": "Part_Stat_Weapon_SplashRadius",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, A3AAE87BBF72480894D7F889237287A7, Rampant"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_ReloadSpeed",
+                    "secondattributename": "Part_Stat_Weapon_SplashRadius",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, CFAC03DE63C04EA28C571B3FB819E36E, Deluge"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_MagSize",
+                    "secondattributename": "Part_Stat_Weapon_SplashRadius",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 10F06CDCF3B94629AF9316BA6DA6C1FA, Spilling"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_EquipSpeed",
+                    "secondattributename": "Part_Stat_Weapon_SplashRadius",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, B11B8899BE5340A1B28E4BF718F7DB44, Tidal"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_Damage",
+                    "secondattributename": "Part_Stat_Weapon_ADS_Proficiency",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, FB5F1C2851FF4C5F972BDAC7593407BD, Sharp"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_FireRate",
+                    "secondattributename": "Part_Stat_Weapon_ADS_Proficiency",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 437920148042436B9E6222817E659C1C, Staccato"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_Accuracy",
+                    "secondattributename": "Part_Stat_Weapon_ADS_Proficiency",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 4874003DCD344838B7193EB52C842C5E, Commando"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_SplashDamage",
+                    "secondattributename": "Part_Stat_Weapon_ADS_Proficiency",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 24D71FCB3D164952899EE1E158BED816, Guided"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_CriticalDamage",
+                    "secondattributename": "Part_Stat_Weapon_ADS_Proficiency",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 205968072D4D448AAEACAB19B5B78D3E, Proficient"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_SplashRadius",
+                    "secondattributename": "Part_Stat_Weapon_ADS_Proficiency",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, BC8E49E3911448CF9352F12413C55791, Booming"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_ADS_Proficiency",
+                    "secondattributename": "Part_Stat_Weapon_ADS_Proficiency",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 3A63205A76DD490EA08EBFC9EF04D27A, Masterful"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_StatusEffect_Damage",
+                    "secondattributename": "Part_Stat_Weapon_ADS_Proficiency",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, AAE95FF06FCC4A909761EA8CE02C6D56, Shattering"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_StatusEffect_Chance",
+                    "secondattributename": "Part_Stat_Weapon_ADS_Proficiency",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 255DFCBC92BF4201B930B8DA26936486, Alchemical"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_ReloadSpeed",
+                    "secondattributename": "Part_Stat_Weapon_ADS_Proficiency",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, FF8C69234B5E44199B643E5850A5E2E7, Impulse"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_MagSize",
+                    "secondattributename": "Part_Stat_Weapon_ADS_Proficiency",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 76356003547E4329BB832BA4B9A524A7, Harvesting"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_EquipSpeed",
+                    "secondattributename": "Part_Stat_Weapon_ADS_Proficiency",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 5BDB222AF448416A8B9212975E7110B0, Strapped"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_Damage",
+                    "secondattributename": "Part_Stat_StatusEffect_Damage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 3E40B32CFC9741FFB8168D71B3FDD02C, Dangerous"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_FireRate",
+                    "secondattributename": "Part_Stat_StatusEffect_Damage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, B325EA4522034C7C908A8CAE9FE974BF, Wide-Nozzle"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_Accuracy",
+                    "secondattributename": "Part_Stat_StatusEffect_Damage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 70F79A469AA24F16B7475400845652F2, Erupting"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_SplashDamage",
+                    "secondattributename": "Part_Stat_StatusEffect_Damage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, B94F52DE5CB24430A86C6E79CA28ECAB, Disastrous"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_CriticalDamage",
+                    "secondattributename": "Part_Stat_StatusEffect_Damage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 9045D72986004E349ADCC9E9E2C4BBA3, Decimating"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_SplashRadius",
+                    "secondattributename": "Part_Stat_StatusEffect_Damage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 00A69CB1FFBC459AA7A8DB1AA136B417, Blighting"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_ADS_Proficiency",
+                    "secondattributename": "Part_Stat_StatusEffect_Damage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, B51C966A445D4A40B9FE3DF06B1772BF, Shattering"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_StatusEffect_Damage",
+                    "secondattributename": "Part_Stat_StatusEffect_Damage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 448B14EC2B5442378D32CA88AE915696, Fulminant"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_StatusEffect_Chance",
+                    "secondattributename": "Part_Stat_StatusEffect_Damage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 1990514353F741EF80DCC46FCC15E355, Debilitating"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_ReloadSpeed",
+                    "secondattributename": "Part_Stat_StatusEffect_Damage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 515482B496B547B4A744F857822FE9DD, Dumping"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_MagSize",
+                    "secondattributename": "Part_Stat_StatusEffect_Damage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, ABA751470A844587AC25446D249CEC00, Excessive"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_EquipSpeed",
+                    "secondattributename": "Part_Stat_StatusEffect_Damage",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 84A0C5ED1A494C8EAB1141E68FCEF5D6, Rapid-Onset"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_Damage",
+                    "secondattributename": "Part_Stat_StatusEffect_Chance",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, A50A393CCB654808B1A0307B39FC5095, Retributive"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_FireRate",
+                    "secondattributename": "Part_Stat_StatusEffect_Chance",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 325955EF20D749B8A0267734A354DAC5, Coating"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_Accuracy",
+                    "secondattributename": "Part_Stat_StatusEffect_Chance",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 1749FC46579D4FC193D16D61559CFEAE, Volatile"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_SplashDamage",
+                    "secondattributename": "Part_Stat_StatusEffect_Chance",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 10E4BAD4E18E4A7E902168141DDC9BD4, Blowback"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_CriticalDamage",
+                    "secondattributename": "Part_Stat_StatusEffect_Chance",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, D5D8578E69444B6CB8470D2E11893D23, Infusing"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_SplashRadius",
+                    "secondattributename": "Part_Stat_StatusEffect_Chance",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, B07BF68F0DED41C38338A74E6F621505, Rampant"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_ADS_Proficiency",
+                    "secondattributename": "Part_Stat_StatusEffect_Chance",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, E6F0F1E4B9C94320B894390B6B32D7A5, Alchemical"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_StatusEffect_Damage",
+                    "secondattributename": "Part_Stat_StatusEffect_Chance",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 3A8C1837D5CC4CEDB0EDB360AD00B4AC, Debilitating"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_StatusEffect_Chance",
+                    "secondattributename": "Part_Stat_StatusEffect_Chance",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 77A00768C45B4B90971AED1D51B66C7A, Distilled"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_ReloadSpeed",
+                    "secondattributename": "Part_Stat_StatusEffect_Chance",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, A2760B4072434EB9AA375D7E88037A28, Rolling"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_MagSize",
+                    "secondattributename": "Part_Stat_StatusEffect_Chance",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, CA4291ECC00B43AFBD0A0DC1F767F379, Chimeric"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_EquipSpeed",
+                    "secondattributename": "Part_Stat_StatusEffect_Chance",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 0BFB8588753C4AE0A16A742AA7110282, Slippery"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_Damage",
+                    "secondattributename": "Part_Stat_Weapon_ReloadSpeed",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, F173914A4B9E4FE4A6926666862821A2, Tearing"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_FireRate",
+                    "secondattributename": "Part_Stat_Weapon_ReloadSpeed",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 8A5BCE667448433EB289E85C81DE5A29, Relentless"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_Accuracy",
+                    "secondattributename": "Part_Stat_Weapon_ReloadSpeed",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 8100C979C921443F812FAFD763977E99, Professional"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_SplashDamage",
+                    "secondattributename": "Part_Stat_Weapon_ReloadSpeed",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, C0E30C7355FD4BF0AC8BB912ED85CD27, Pelting"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_CriticalDamage",
+                    "secondattributename": "Part_Stat_Weapon_ReloadSpeed",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 0FF128908CC347B499D8BD536DB124AF, Pneumatic"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_SplashRadius",
+                    "secondattributename": "Part_Stat_Weapon_ReloadSpeed",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 221EDCF95A91493CB4F96F80A86B2C6E, Deluge"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_ADS_Proficiency",
+                    "secondattributename": "Part_Stat_Weapon_ReloadSpeed",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 0C4DD4490ADD4F20B52F5AA8749481AD, Impulsive"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_StatusEffect_Damage",
+                    "secondattributename": "Part_Stat_Weapon_ReloadSpeed",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 1645709A48314AC18B6677177B3A74BA, Dumping"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_StatusEffect_Chance",
+                    "secondattributename": "Part_Stat_Weapon_ReloadSpeed",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 11D7047203534EDABDC0FC480919AC55, Rolling"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_ReloadSpeed",
+                    "secondattributename": "Part_Stat_Weapon_ReloadSpeed",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 4FF13405C7FB4AEBA15262A253B66175, Blurred"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_MagSize",
+                    "secondattributename": "Part_Stat_Weapon_ReloadSpeed",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 858872AE83AE47DB850FD76011B46555, Greased"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_EquipSpeed",
+                    "secondattributename": "Part_Stat_Weapon_ReloadSpeed",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 4904F85109934E0AAE87AD852CC332BF, Quick-Fingered"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_Damage",
+                    "secondattributename": "Part_Stat_Weapon_MagSize",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 4A60D9DDF92B4456A81A1D57B821535F, Crushing"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_FireRate",
+                    "secondattributename": "Part_Stat_Weapon_MagSize",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, B7555233813448D4B40B6D4DC6061029, Disgorging"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_Accuracy",
+                    "secondattributename": "Part_Stat_Weapon_MagSize",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, CDC0F99678704CC8B888ED418EA76B9C, Frugal"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_SplashDamage",
+                    "secondattributename": "Part_Stat_Weapon_MagSize",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 78011ECE8E094EF7A5C23E97BD3444C3, Arsenal"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_CriticalDamage",
+                    "secondattributename": "Part_Stat_Weapon_MagSize",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 0D59ABDEB0454E2CACEEA30B8687EF6E, Cyclopean"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_SplashRadius",
+                    "secondattributename": "Part_Stat_Weapon_MagSize",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, E9383917E6CA45799094366AE9BBA554, Spilling"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_ADS_Proficiency",
+                    "secondattributename": "Part_Stat_Weapon_MagSize",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, A3267D67572548D0AD1167CF04E88E55, Harvesting"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_StatusEffect_Damage",
+                    "secondattributename": "Part_Stat_Weapon_MagSize",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 29A5777C2549475A8E510D1B6A912DEF, Excessive"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_StatusEffect_Chance",
+                    "secondattributename": "Part_Stat_Weapon_MagSize",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, D7884264773145E48DB782E8DD270545, Chimeric"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_ReloadSpeed",
+                    "secondattributename": "Part_Stat_Weapon_MagSize",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, CEACA964D3004A6AA43E78B11B3CC6E5, Greased"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_MagSize",
+                    "secondattributename": "Part_Stat_Weapon_MagSize",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 92C752B8D6764FE6970832AA77B9832D, Bountiful"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_EquipSpeed",
+                    "secondattributename": "Part_Stat_Weapon_MagSize",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 662D50B866314A599A55C3DE98ADDBB2, Quartermaster"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_Damage",
+                    "secondattributename": "Part_Stat_Weapon_EquipSpeed",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, E85833769C2949DB8CD8592ADB13B6CF, Flurrying"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_FireRate",
+                    "secondattributename": "Part_Stat_Weapon_EquipSpeed",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 7352D4D5E89E436584DF930480D6AF75, Snappy"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_Accuracy",
+                    "secondattributename": "Part_Stat_Weapon_EquipSpeed",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, EA5BFB16CC764D169BA2E7F7B6A515D2, Poised"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_SplashDamage",
+                    "secondattributename": "Part_Stat_Weapon_EquipSpeed",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 5E385AE953F34C7CBBBFD9E98B01D510, Primed"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_CriticalDamage",
+                    "secondattributename": "Part_Stat_Weapon_EquipSpeed",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 9B01B4226A5E491C9F7DACB442F40DA5, Versatile"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_SplashRadius",
+                    "secondattributename": "Part_Stat_Weapon_EquipSpeed",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, CAE0FE1009DD49BB8E7BEF5877599A37, Tidal"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_ADS_Proficiency",
+                    "secondattributename": "Part_Stat_Weapon_EquipSpeed",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 798A8F0EFBED46F79795282868E94360, Strapped"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_StatusEffect_Damage",
+                    "secondattributename": "Part_Stat_Weapon_EquipSpeed",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 6C6E8F2C87DB450EBCC9D4AF562F8667, Rapid-Onset"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_StatusEffect_Chance",
+                    "secondattributename": "Part_Stat_Weapon_EquipSpeed",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 98207452A3954D319C4F517E0C8A564A, Slippery"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_ReloadSpeed",
+                    "secondattributename": "Part_Stat_Weapon_EquipSpeed",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 2A72F3A5339048BBA8BADE242396E70D, Quick-Fingered"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_MagSize",
+                    "secondattributename": "Part_Stat_Weapon_EquipSpeed",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, BC4131D6D9714E18A9A9AC1A51F07377, Quartermaster"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Stat_Weapon_EquipSpeed",
+                    "secondattributename": "Part_Stat_Weapon_EquipSpeed",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 9584CFB12C78455FB1144FDE14A08FD9, Legerdemain"
+                    }
+                  }
+                ],
+                "singlecorenames": [
+                  {
+                    "firstattributename": "Part_Core_ATL_Protractor",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 6DEFAD4D851B45CBB8CA5BA6FE64B356, Y-Cartridge"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_ATL_SureShot",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, AC385FD7E2104BAA811C6D1004EAE4E7, Initiator"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_ATL_TrackerAntenna",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 692AE47986A1409CA5325E60B226D410, Z-Intercept"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_ATL_TraumaBond",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 4534B94AD4A94C9E9E10FE7A38D37388, X-Terminal"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_BOR_FreeLoader",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, C6D37C70D0034C618763E15C1C418006, Autophage"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_BOR_HardCharger",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 72272F7B7DEE425786B4A82E7144B124, Sledge"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_BOR_HighRoller",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 652168944A524F3C8900B180CCE1B6C6, Slammer"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_BOR_ShortCircuit",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 6BA41BF27E1B4509BBC3D0FA91161DC4, Glutton"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_COV_ColdOpen",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 8E2DFAF03B9B4BC0A855B0AD461D451B, Breezer"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_COV_DuctTape",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 31601F58CC8B42EFACDC6AC16002AF34, Ramshackler"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_COV_Smelter",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, A0496AA7ED674C0F840443D620B0D708, Rapid Fire"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_COV_Ventilator",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 8A0879EC5DFF4C919A7C13C5FB9651EF, Hole Punch"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_DAD_Accelerator",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 11EABB4CC62B4688A850C1AF47418133, Uptick"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_DAD_BackupPlan",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 3258A33B87C841CE8F8E4FA2FF4A968E, Stockpiler"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_DAD_BulletFabricator",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 9CB27F2676934E79BCF2706AA114CEF7, Inheritor"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_DAD_Stockpiler",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 0D22AEB2D2CB4DF3AB8FA6C01C7EDDE7, Hoarder"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_HYP_Bulwark",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, EF6EED12674D467F882B840AB03B6B1A, Vanguard"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_HYP_ShockGuard",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, F8BE56A457C34EB7B72BB18449E5CA90, Volt Action"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_HYP_Stabilizer",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, A65E2E47B2814E609E8CBE8A5B13F0AF, Confidant"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_HYP_StimConverter",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 605C291FF2E646AAB069C711E8A7617F, Insurance"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_JAK_BouncePass",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 5EF7DA602ED144398B1434A92E180517, Trick Shot"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_JAK_Leaper",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 4DC6EFFC25E84F1D88845D9D75458068, Sampler"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_JAK_Piercer",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 8D65C6EA031044A78640D3225F12C00B, Widowmaker"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_JAK_Sequencer",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 0D32496463134005ADDBAA63F5C82632, Hawkeye"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_MAL_Mixologist",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 7C15491CA67E471EB286E99B8DF6C09C, Houndstooth"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_MAL_PrimedPotency",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 4767A5C484FA4C369853AD8707F3D9CB, Premiere"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_MAL_Synthesizer",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 6A55F51337364B5593DDF7B8BE7DBB09, Haute Shot"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_MAL_Transfuser",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 8AD7471C0A4845BC9593EF575D2A44B7, Trendsetter"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_ORD_AmmoGenerator",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 095DDF2ED34146009EA0D2E03BA4B779, Eternity"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_ORD_FreeCharger",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 4C236BCA96554D2589D41AED3E6417F7, Leap Year"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_ORD_MuzzleBrake",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, DF5DFF59B1E4447696BE7EA5DB77A9B7, Celeritas"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_ORD_PowerShot",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 6A197DCCC3204021BBAD4517AA0F53F7, Genesis"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_TED_Banger",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, F781232A53C64E539BD8279EA149C720, 100% Real Juice"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_TED_ExtendaFriend",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 8CCBD82C53C342BBAD0B07A759C6BFF2, Social Integration"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_TED_Recycler",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, B45E877D389E4DDF8FCD185A2DABC52F, Value Mag"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_TED_Digidivider",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 6E28BE647BB64DE2868833BA372E972B, Family Pack"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_TOR_AirBurst",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 4168C7FE86314A3F82A8340B88B27F83, Premature Detonator"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_TOR_Boompuppy",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 96C4E1AEB9FA4506A7E2714605D242F3, Bang Ganger"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_TOR_Explosiception",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, C048C8208D9C4CA2B5E5CF51BC25732B, Cherry Popper"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_TOR_HeadRinger",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 08F7B10ACEDD4E119334972963FE46C7, Pounder"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_VLA_BottomFeeder",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 7330D72019E6485E8D09E3806B095BEB, Grassroots Movement"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_VLA_BoxMagazine",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 3522ACAB496B46488A951145A8E8403B, Hero of Labor"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_VLA_BulletHose",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 9169062D9393472F836FB8598B220027, Lead Curtain"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_VLA_Underdog",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 33FA58D4074A47329D580AFDA311D0C4, Dog of War"
+                    }
+                  }
+                ],
+                "combinationcorenames": [
+                  {
+                    "firstattributename": "Part_Core_ATL_SureShot",
+                    "secondattributename": "Part_Core_ATL_Protractor",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, A6548D22716E4DCD8FEC7F5C5D8012ED, Y-Initiator"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_ATL_TrackerAntenna",
+                    "secondattributename": "Part_Core_ATL_Protractor",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, AA2E6FA0D9374709BC818B48F8517085, Y-Z Nexus"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_ATL_TraumaBond",
+                    "secondattributename": "Part_Core_ATL_Protractor",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, BCAED15978904D07BC3FFCEAE2E8DA87, X-Y Combo"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_ATL_Protractor",
+                    "secondattributename": "Part_Core_ATL_SureShot",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 373FCE1099844D9BBAA22A55E6083BE1, Y-Initiator"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_ATL_TrackerAntenna",
+                    "secondattributename": "Part_Core_ATL_SureShot",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, ECA385466AD84082970D52CDECBA31E2, Z-Initator"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_ATL_TraumaBond",
+                    "secondattributename": "Part_Core_ATL_SureShot",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 14E48C29F7D94D1C9B41E96639AAC40F, X-Initiator"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_ATL_Protractor",
+                    "secondattributename": "Part_Core_ATL_TrackerAntenna",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 4A5BE3054A8445169BAEFC04DA4C3D68, Y-Z Nexus"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_ATL_SureShot",
+                    "secondattributename": "Part_Core_ATL_TrackerAntenna",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, D3A9FB9132B549818B4CAF631CDFFDDF, Z-Initiator"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_ATL_TraumaBond",
+                    "secondattributename": "Part_Core_ATL_TrackerAntenna",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, FF8B0928D7234FFCBCC97226332A6A7E, Z-X Junction"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_ATL_Protractor",
+                    "secondattributename": "Part_Core_ATL_TraumaBond",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 11AE5102CC9B429892177B0AD73AE552, X-Y Combo"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_ATL_SureShot",
+                    "secondattributename": "Part_Core_ATL_TraumaBond",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 52AC28ADA0CE4B43A805B96693667F55, X-Initiator"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_ATL_TrackerAntenna",
+                    "secondattributename": "Part_Core_ATL_TraumaBond",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 51C73DFE7C354EC7B1C6B93907296FE9, Z-X Junction"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_BOR_HardCharger",
+                    "secondattributename": "Part_Core_BOR_FreeLoader",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, D522A12789F14B15A4A2E994AE378C1C, Entropic"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_BOR_HighRoller",
+                    "secondattributename": "Part_Core_BOR_FreeLoader",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 364BC28037EB4071BF68F5AA998A1C96, Disruptor"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_BOR_ShortCircuit",
+                    "secondattributename": "Part_Core_BOR_FreeLoader",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 23B0D198CF364A999FD52B2972710302, Autocannibal"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_BOR_FreeLoader",
+                    "secondattributename": "Part_Core_BOR_HardCharger",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 4C01E9704E134A7A8F497DF29440C502, Entropic"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_BOR_HighRoller",
+                    "secondattributename": "Part_Core_BOR_HardCharger",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 02957049C6F74937852385536A0DB92D, Slugger"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_BOR_ShortCircuit",
+                    "secondattributename": "Part_Core_BOR_HardCharger",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, F4A967BE210E495094B66149F38FD0A9, Devourer"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_BOR_FreeLoader",
+                    "secondattributename": "Part_Core_BOR_HighRoller",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 35FC7730C0B04BEE8FDF51B9F992E6FF, Disruptor"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_BOR_HardCharger",
+                    "secondattributename": "Part_Core_BOR_HighRoller",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, FBC9106D68DA4874939BD6DDD9DDFB1E, Slugger"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_BOR_ShortCircuit",
+                    "secondattributename": "Part_Core_BOR_HighRoller",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 7C625BA55DFD486EAC188E2B6790B916, Binger"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_BOR_FreeLoader",
+                    "secondattributename": "Part_Core_BOR_ShortCircuit",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, A6FD08C310734EE8ACC1CF328F098027, Autocannibal"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_BOR_HardCharger",
+                    "secondattributename": "Part_Core_BOR_ShortCircuit",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 189AD3A8741649BB806902738069CAD1, Devourer"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_BOR_HighRoller",
+                    "secondattributename": "Part_Core_BOR_ShortCircuit",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 3E7DAE1056984CE3BEFDF15CC64F7858, Binger"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_COV_DuctTape",
+                    "secondattributename": "Part_Core_COV_ColdOpen",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 3C634AC479064654922ED51E3C128F19, Boiling Point"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_COV_Smelter",
+                    "secondattributename": "Part_Core_COV_ColdOpen",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 3DBBAAEC8D834613A91A1EEB3388DE75, Blizzness"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_COV_Ventilator",
+                    "secondattributename": "Part_Core_COV_ColdOpen",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 467A6EBBE19F4DEDAF5F3782D2258D59, Glacier"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_COV_ColdOpen",
+                    "secondattributename": "Part_Core_COV_DuctTape",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 4DFD562A8C2E41E7BB4C4B018C681995, Boiling Point"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_COV_Smelter",
+                    "secondattributename": "Part_Core_COV_DuctTape",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 3F92FC2A177A40D7A061E0795EE58686, Quicksilver"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_COV_Ventilator",
+                    "secondattributename": "Part_Core_COV_DuctTape",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, ACF4376FC63B4BA9969F47255CAF92CE, Even Keel"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_COV_ColdOpen",
+                    "secondattributename": "Part_Core_COV_Smelter",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 22852B2E5FB0470BAF1971BE58B27242, Blizzness"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_COV_DuctTape",
+                    "secondattributename": "Part_Core_COV_Smelter",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 01040BB8FEC84A258FC3BA261565638C, Quicksilver"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_COV_Ventilator",
+                    "secondattributename": "Part_Core_COV_Smelter",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 265CA460598F4297A35F26D3ED431D34, Smooth Operator"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_COV_ColdOpen",
+                    "secondattributename": "Part_Core_COV_Ventilator",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, E37DB63B21DC46D0AE6DDFF2F8C516CA, Glacier"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_COV_DuctTape",
+                    "secondattributename": "Part_Core_COV_Ventilator",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 8A8CC7B7469E4D4ABC6B4228C216FCBD, Even Keel"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_COV_Smelter",
+                    "secondattributename": "Part_Core_COV_Ventilator",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 2E444894E8284228B3749B033211A516, Smooth Operator"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_DAD_BackupPlan",
+                    "secondattributename": "Part_Core_DAD_Accelerator",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 899E1F197A7C4D8293A9ACBDFCD5E404, Accumulator"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_DAD_BulletFabricator",
+                    "secondattributename": "Part_Core_DAD_Accelerator",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 611AD5C91AB744E6B3BBDB50649F434E, Scion"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_DAD_Stockpiler",
+                    "secondattributename": "Part_Core_DAD_Accelerator",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 31389230DDA744CE9B5AC9392AEB4D9F, Gatherer"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_DAD_Accelerator",
+                    "secondattributename": "Part_Core_DAD_BackupPlan",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, B1F8EDAD3F5E47FDA67EAB0ED3126A67, Accumulator"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_DAD_BulletFabricator",
+                    "secondattributename": "Part_Core_DAD_BackupPlan",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, BB5CD766B5A545E9879385BDF3FE78CB, Steward"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_DAD_Stockpiler",
+                    "secondattributename": "Part_Core_DAD_BackupPlan",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, ED76AA3985884803AF142D6256EAC103, Collector"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_DAD_Accelerator",
+                    "secondattributename": "Part_Core_DAD_BulletFabricator",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 0347EF1673A44C64815CE73FB4B9B2FF, Scion"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_DAD_BackupPlan",
+                    "secondattributename": "Part_Core_DAD_BulletFabricator",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 015662DB031F465DB327681A4A1287EA, Steward"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_DAD_Stockpiler",
+                    "secondattributename": "Part_Core_DAD_BulletFabricator",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 5855DF904C554DF1806F7ADCF7F794A4, Hephaestian"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_DAD_Accelerator",
+                    "secondattributename": "Part_Core_DAD_Stockpiler",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 111D908A4C0B47388F69BAF2F9966412, Gatherer"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_DAD_BackupPlan",
+                    "secondattributename": "Part_Core_DAD_Stockpiler",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 6ED95D5212484173B2D3A0B50D518A27, Collector"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_DAD_BulletFabricator",
+                    "secondattributename": "Part_Core_DAD_Stockpiler",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 9F53F75D5A6C4702A9D7659C89CAA545, Hephaestian"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_HYP_ShockGuard",
+                    "secondattributename": "Part_Core_HYP_Bulwark",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 9C76D1A243DE4032BD1911EE8558795F, Trooper"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_HYP_Stabilizer",
+                    "secondattributename": "Part_Core_HYP_Bulwark",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, EF40E418318D422CB4BF35D5D0C8F265, Besieger"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_HYP_StimConverter",
+                    "secondattributename": "Part_Core_HYP_Bulwark",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 65A44B6183FD4E6B8124D4137158FD2D, Champion"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_HYP_Bulwark",
+                    "secondattributename": "Part_Core_HYP_ShockGuard",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 7231E829146745DF9A367E5D8FA1C567, Trooper"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_HYP_Stabilizer",
+                    "secondattributename": "Part_Core_HYP_ShockGuard",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, D06FA3616F2A400E80E9241F65AD3986, Director"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_HYP_StimConverter",
+                    "secondattributename": "Part_Core_HYP_ShockGuard",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 3AB03D9043EB4691AAD4BFD5ECBA2708, Principal"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_HYP_Bulwark",
+                    "secondattributename": "Part_Core_HYP_Stabilizer",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 502EAD0AA2F74263990A17DAA79819C6, Besieger"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_HYP_ShockGuard",
+                    "secondattributename": "Part_Core_HYP_Stabilizer",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 3178864FA54746598410AC7951F78836, Director"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_HYP_StimConverter",
+                    "secondattributename": "Part_Core_HYP_Stabilizer",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, E2656CEFDFA24013A3CD8F1A6354E782, Stalwart"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_HYP_Bulwark",
+                    "secondattributename": "Part_Core_HYP_StimConverter",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 47F8B284ACF2492B8F99423143D9E68F, Champion"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_HYP_ShockGuard",
+                    "secondattributename": "Part_Core_HYP_StimConverter",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 73244308A4BE4AFDAE4EED0A645C0A76, Principal"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_HYP_Stabilizer",
+                    "secondattributename": "Part_Core_HYP_StimConverter",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, C29DBC57B13A4139B3860C7D3F231399, Stalwart"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_JAK_Leaper",
+                    "secondattributename": "Part_Core_JAK_BouncePass",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, F1122BAE91BE41A481158D50BCA35C74, Blind Box"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_JAK_Piercer",
+                    "secondattributename": "Part_Core_JAK_BouncePass",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 214BF2DCA62245E38E3D0FFB5A601E9F, Quintain"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_JAK_Sequencer",
+                    "secondattributename": "Part_Core_JAK_BouncePass",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 6BF01EF6033E4CC88F66D43C0974D1D2, Hat Trick"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_JAK_BouncePass",
+                    "secondattributename": "Part_Core_JAK_Leaper",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 2A39AFB44BA148DE8C4C1168AA548AFA, Blind Box"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_JAK_Piercer",
+                    "secondattributename": "Part_Core_JAK_Leaper",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 828738669D1B4481B3AEDEEBC8CC449A, Ladykiller"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_JAK_Sequencer",
+                    "secondattributename": "Part_Core_JAK_Leaper",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, CFCB31BE674B49428FBDAAA4F1BAA3EA, Scattershot"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_JAK_BouncePass",
+                    "secondattributename": "Part_Core_JAK_Piercer",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 495A89BA906A4A939915C1736A8AF41E, Quintain"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_JAK_Leaper",
+                    "secondattributename": "Part_Core_JAK_Piercer",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 4F73BE37004F49DE9921263539E61452, Ladykiller"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_JAK_Sequencer",
+                    "secondattributename": "Part_Core_JAK_Piercer",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, AE6DF9AD283745D69C16D36D27BE028A, Multistrike"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_JAK_BouncePass",
+                    "secondattributename": "Part_Core_JAK_Sequencer",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 26E93D9016BF479282B7823CEFDF95C8, Hat Trick"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_JAK_Leaper",
+                    "secondattributename": "Part_Core_JAK_Sequencer",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 017DD69E31B6429CAEF224D8EEBC7870, Scattershot"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_JAK_Piercer",
+                    "secondattributename": "Part_Core_JAK_Sequencer",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 695186C42525491EAD167BE05D1DC7FC, Multistrike"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_MAL_PrimedPotency",
+                    "secondattributename": "Part_Core_MAL_Mixologist",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 4E6BDDB2A2AE479E936649F9A2C29D27, Assuit"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_MAL_Synthesizer",
+                    "secondattributename": "Part_Core_MAL_Mixologist",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, DC77505341844FF8B541DD5F8704D286, Lamé"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_MAL_Transfuser",
+                    "secondattributename": "Part_Core_MAL_Mixologist",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, ABC164C017194402B2D2A05BD9AEC27C, Toile"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_MAL_Mixologist",
+                    "secondattributename": "Part_Core_MAL_PrimedPotency",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 86DB350B244245B9A84E7A85880AC8C4, Assuit"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_MAL_Synthesizer",
+                    "secondattributename": "Part_Core_MAL_PrimedPotency",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 828D294AB9C9429F9F3F37CB42794C7E, Maestro"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_MAL_Transfuser",
+                    "secondattributename": "Part_Core_MAL_PrimedPotency",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, A877E11F1D5F45798FA6E206462A5D4D, Icon"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_MAL_Mixologist",
+                    "secondattributename": "Part_Core_MAL_Synthesizer",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 9A35413681CC46E78564D90BCDA9CDE0, Lamé"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_MAL_PrimedPotency",
+                    "secondattributename": "Part_Core_MAL_Synthesizer",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 7CCCCB0B24674418B2251FE3FA8F7ABF, Maestro"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_MAL_Transfuser",
+                    "secondattributename": "Part_Core_MAL_Synthesizer",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, B9462CE4D5F240E096ED85A38CC21FE1, Fashionista"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_MAL_Mixologist",
+                    "secondattributename": "Part_Core_MAL_Transfuser",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, CD00C797872648A7AED8A57E2A832920, Toile"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_MAL_PrimedPotency",
+                    "secondattributename": "Part_Core_MAL_Transfuser",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, B735E3338E92443CA72C7209CBD4C9A6, Icon"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_MAL_Synthesizer",
+                    "secondattributename": "Part_Core_MAL_Transfuser",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 51C30FAE391A4B4096FEB691A182AF8A, Fashionista"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_ORD_FreeCharger",
+                    "secondattributename": "Part_Core_ORD_AmmoGenerator",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, C90B5AE261BB42E08BD07DED7694501A, Looper"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_ORD_MuzzleBrake",
+                    "secondattributename": "Part_Core_ORD_AmmoGenerator",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, A65BCF4800F248EE908455CDF1DC6680, Parallaxis"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_ORD_PowerShot",
+                    "secondattributename": "Part_Core_ORD_AmmoGenerator",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 226406A7FB504672BBC591D1D2A4D5CC, Ouroboros"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_ORD_AmmoGenerator",
+                    "secondattributename": "Part_Core_ORD_FreeCharger",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 3A8EC92A925240538BBEB1F6481DB6F6, Looper"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_ORD_MuzzleBrake",
+                    "secondattributename": "Part_Core_ORD_FreeCharger",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 869A11C324D14DB38BBFE236C565F20A, Entangler"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_ORD_PowerShot",
+                    "secondattributename": "Part_Core_ORD_FreeCharger",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 5CF0CF40B307478784C6C6C8917FF0EE, Primadiem"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_ORD_AmmoGenerator",
+                    "secondattributename": "Part_Core_ORD_MuzzleBrake",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, A1459710D0CD42199456CB608C5E165A, Parallaxis"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_ORD_FreeCharger",
+                    "secondattributename": "Part_Core_ORD_MuzzleBrake",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, B88C12292FE943F089CA2D96C709FE9C, Entangler"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_ORD_PowerShot",
+                    "secondattributename": "Part_Core_ORD_MuzzleBrake",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 157967B0CAAA4F2E877802BB545D8521, Evolver"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_ORD_AmmoGenerator",
+                    "secondattributename": "Part_Core_ORD_PowerShot",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, B4BD2365499E4D45B3C24BFFE2D6E5DC, Ouroboros"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_ORD_FreeCharger",
+                    "secondattributename": "Part_Core_ORD_PowerShot",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 2E1DD13D3BD7435A8BD8532DFB30D982, Primadiem"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_ORD_MuzzleBrake",
+                    "secondattributename": "Part_Core_ORD_PowerShot",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, C966BD941D2D472A9492CD9088593BDD, Evolver"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_TED_ExtendaFriend",
+                    "secondattributename": "Part_Core_TED_Banger",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, DF48932038864193B57CE0A750722389, Gummy"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_TED_Recycler",
+                    "secondattributename": "Part_Core_TED_Banger",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, F565F7DBDB45417D95C70C59F1FA5EF2, Quencher"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_TED_Digidivider",
+                    "secondattributename": "Part_Core_TED_Banger",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 2EF5CF43641F4C67917287A3C940444E, Hydrator"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_TED_Banger",
+                    "secondattributename": "Part_Core_TED_ExtendaFriend",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 05CF4FB85C2842EEAF7035751A4888AF, Gummy"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_TED_Recycler",
+                    "secondattributename": "Part_Core_TED_ExtendaFriend",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 3F45B005EB764C74BD0317757A7B9966, Value-Add"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_TED_Digidivider",
+                    "secondattributename": "Part_Core_TED_ExtendaFriend",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 011C286A7DE04E718505A4F9985E1B66, Extension"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_TED_Banger",
+                    "secondattributename": "Part_Core_TED_Recycler",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 4D12D961245C459C99B65E25C59A493D, Quencher"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_TED_ExtendaFriend",
+                    "secondattributename": "Part_Core_TED_Recycler",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, BE081C3ABB7D490AAB3ECA89555D598E, Value-Add"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_TED_Digidivider",
+                    "secondattributename": "Part_Core_TED_Recycler",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 847DF87BD5144B70BDFDAD6EB86F6EE4, Valuepalooza"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_TED_Banger",
+                    "secondattributename": "Part_Core_TED_Digidivider",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 8A83908FF78D466EBD85066A441D9797, Hydrator"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_TED_ExtendaFriend",
+                    "secondattributename": "Part_Core_TED_Digidivider",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, EE8BA48A7B934B60B8FFD0AD664726C9, Extension"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_TED_Recycler",
+                    "secondattributename": "Part_Core_TED_Digidivider",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 3C357F64CCC2478B8F50DC37FEF130EB, Valuepalooza"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_TOR_Boompuppy",
+                    "secondattributename": "Part_Core_TOR_AirBurst",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 6047C5326F6049DB962ACE48E049864D, Flashpan"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_TOR_Explosiception",
+                    "secondattributename": "Part_Core_TOR_AirBurst",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 07754AA723F94D8795FFC5B79F2D49BF, Jackhammer"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_TOR_HeadRinger",
+                    "secondattributename": "Part_Core_TOR_AirBurst",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 730413E4A62D4F42B3EAF8D92B97EC1B, Pumper"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_TOR_AirBurst",
+                    "secondattributename": "Part_Core_TOR_Boompuppy",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, C6B8F8B313EF4064A104274D1123DC6F, Flashpan"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_TOR_Explosiception",
+                    "secondattributename": "Part_Core_TOR_Boompuppy",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 524C9ADFCAE14BC6ACA87A0FBBBBFF3B, Body Counter"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_TOR_HeadRinger",
+                    "secondattributename": "Part_Core_TOR_Boompuppy",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, AC0F86763F83418DB5596F82CD6FCBF8, Big Banger"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_TOR_AirBurst",
+                    "secondattributename": "Part_Core_TOR_Explosiception",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 2D77F76DCD514784892FB6A641D62B07, Jackhammer"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_TOR_Boompuppy",
+                    "secondattributename": "Part_Core_TOR_Explosiception",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, F4F7A05B085443FD94F9B5DFDD22DFFF, Body Counter"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_TOR_HeadRinger",
+                    "secondattributename": "Part_Core_TOR_Explosiception",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 526494E421A940C889F4637780B359D6, Studfinder"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_TOR_AirBurst",
+                    "secondattributename": "Part_Core_TOR_HeadRinger",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 4023C42980924E699956C06F48A7013A, Pumper"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_TOR_Boompuppy",
+                    "secondattributename": "Part_Core_TOR_HeadRinger",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 30C97D0BAA5C4077ADEB3EE93E06A9AB, Big Banger"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_TOR_Explosiception",
+                    "secondattributename": "Part_Core_TOR_HeadRinger",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 047E4CACE0734B5B8AEB06DC1FACDB87, Studfinder"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_VLA_BoxMagazine",
+                    "secondattributename": "Part_Core_VLA_BottomFeeder",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 4DBCD78109D045EBB048D9964EF716AC, Labor Movement"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_VLA_BulletHose",
+                    "secondattributename": "Part_Core_VLA_BottomFeeder",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 47A4514E4511444085851195583A8F05, Riot Hose"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_VLA_Underdog",
+                    "secondattributename": "Part_Core_VLA_BottomFeeder",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, FAC780E071054340ADD2A7E0B77DE3D3, Dog Movement"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_VLA_BottomFeeder",
+                    "secondattributename": "Part_Core_VLA_BoxMagazine",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 5B703245802B44DFB24EC51577D88923, Labor Movement"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_VLA_BulletHose",
+                    "secondattributename": "Part_Core_VLA_BoxMagazine",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, F2519D368E614270AD8B822D9151D00D, Hero of Bullet"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_VLA_Underdog",
+                    "secondattributename": "Part_Core_VLA_BoxMagazine",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, B4C60D132D984BB1ADE391BB0FB90E71, Dog of Labor"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_VLA_BottomFeeder",
+                    "secondattributename": "Part_Core_VLA_BulletHose",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 045D2683D9284C8A86ADC6DFC784BFF9, Riot Hose"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_VLA_BoxMagazine",
+                    "secondattributename": "Part_Core_VLA_BulletHose",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 65C11F261E5D47F1BEE88742991498CC, Hero of Bullet"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_VLA_Underdog",
+                    "secondattributename": "Part_Core_VLA_BulletHose",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, EA852712A09C49C2A588E153221AED48, Bullet Dog"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_VLA_BottomFeeder",
+                    "secondattributename": "Part_Core_VLA_Underdog",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 6F4CCA2BC629413B8A72CC372F0EF62A, Dog Movement"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_VLA_BoxMagazine",
+                    "secondattributename": "Part_Core_VLA_Underdog",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, 900397EAC4E14080860982291EC89289, Dog of Labor"
+                    }
+                  },
+                  {
+                    "firstattributename": "Part_Core_VLA_BulletHose",
+                    "secondattributename": "Part_Core_VLA_Underdog",
+                    "namepart": {
+                      "structtype": "Asset'/Script/GbxGame.InventoryNamePartDef'",
+                      "partname": "NexusSerialized, B85CB9078E5444198E5D7E70E48ABE27, Bullet Dog"
+                    }
+                  }
+                ],
+                "statprioritydatatable": "gbx_ue_data_table'EnhancementNamingStatPriorityTable'"
+              }
+            }
+          },
+          {
+            "shieldnamestrat": {
+              "inv_name_strategy": "ShieldNameStrat",
+              "namingstrategy": {
+                "structtype": "Asset'/Script/OakGame.OakShieldNamingStrategy'",
+                "namingcombinationdatatable": "gbx_ue_data_table'ShieldNameTable'"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

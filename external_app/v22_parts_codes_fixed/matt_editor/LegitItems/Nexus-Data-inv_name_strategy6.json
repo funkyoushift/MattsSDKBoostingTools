@@ -1,0 +1,25 @@
+{
+  "inv_name_strategy": {
+    "records": [
+      {
+        "entries": [
+          {
+            "grenadenamestrat": {
+              "inv_name_strategy": "GrenadeNameStrat"
+            }
+          },
+          {
+            "terminalnamestrat": {
+              "inv_name_strategy": "TerminalNameStrat"
+            }
+          },
+          {
+            "turretnamingstrategy": {
+              "inv_name_strategy": "TurretNamingStrategy"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

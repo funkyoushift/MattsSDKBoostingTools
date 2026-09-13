@@ -1,0 +1,184 @@
+._GUE .tooltip_container {
+    position: absolute;
+    top: 0rem;
+    left: 0rem;
+    pointer-events: auto;
+}
+
+.skill_tooltip_image {
+    width: 100%;
+    height: 19rem;
+    background-image: url("coui://uiresources/menu_skills/assets/placeholder_tooltip_img.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: cover;
+    margin: 0.5rem 0rem 0.5rem 0rem;
+}
+
+.skill_tooltip_tag_text_locked {
+    font-family: Industry-DemiBold;
+    font-size: 2.2rem;
+    text-align: left;
+    color: rgb(215, 30, 68);
+}
+
+.skill_tooltip_tag_text_equipped {
+    font-family: Industry-DemiBold;
+    font-size: 2.2rem;
+    text-align: left;
+    color: #eb7300;
+}
+
+.temp_title_text {
+    font-size: 3rem;
+}
+
+.temp_subtitle_text {
+    font-size: 2.6rem;
+}
+
+.skill_tooltip_tag_bg_skill_cooldown {
+    display: flex;
+    align-items: center;
+    padding: 0rem 0.8rem 0rem 0.5rem;
+    position: relative;
+    height: 3.3rem;
+    background-color: rgba(3, 16, 25, 0.8);
+}
+
+.skill_tooltip_tag_text_skill_cooldown {
+    color: #d81e45;
+    font-family: Industry-DemiBold;
+    font-size: 2.2rem;
+    margin: 0rem 0rem 0rem 0.3rem;
+    position: relative;
+    top: -0.2rem;
+}
+
+.skill_tooltip_tag_icon_skill_cooldown {
+    width: 2.2rem;
+    height: 2.1rem;
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_item_state/ico_ui_art_cannot.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+}
+
+.skill_tooltip_tag_skill_cooldown_pattern {
+    position: absolute;
+    top: 0rem;
+    bottom: 0rem;
+    left: 0rem;
+    right: 0rem;
+    pointer-events: none;
+    background-image: url("coui://uiresources/_shared/assets/ui_art_misc_assets/diagonal_line_pattern_1.png");
+    background-repeat: repeat;
+    background-position: left top;
+    background-attachment: scroll;
+    background-size: 1.2rem;
+    opacity: 0.2;
+    filter: coh-color-matrix(0.8470588235294118, 0, 0, 0, 0, 0, 0.11764705882352941, 0, 0, 0, 0, 0, 0.27058823529411763, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.skill_tooltip_image_wrapper {
+    display: block !important;
+}
+
+.skill_tooltip_tag_equipped {
+    border-left: 0.25rem solid #eb7300;
+    border-right: 0.25rem solid #eb7300;
+    padding: 0rem 0.25rem 0rem 0.25rem;
+    margin: 0rem 0rem 0.5rem 0rem;
+}
+
+.skill_tooltip_tag_locked {
+    border-left: 0.25rem solid transparent;
+    border-right: 0.25rem solid transparent;
+    padding: 0rem 0.3rem 0rem 0.3rem;
+    margin: 0rem 0rem 0.2rem 0rem;
+    position: relative;
+}
+
+.skill_tooltip_tag_skill_cooldown {
+    border-left: 0.25rem solid #d81e45;
+    border-right: 0.25rem solid #d81e45;
+    margin: 0rem 0rem 0.3rem 0rem;
+    padding: 0rem 0.3rem 0rem 0.3rem;
+}
+
+.skill_tooltip_tag_locked_borders {
+    position: absolute;
+    top: 0rem;
+    left: -0.3rem;
+    right: -0.3rem;
+    bottom: 0rem;
+    display: flex;
+    justify-content: space-between;
+    filter: coh-color-matrix(0.9882352941176471, 0, 0, 0, 0, 0, 0.023529411764705882, 0, 0, 0, 0, 0, 0.1607843137254902, 0, 0, 0, 0, 0, 1, 0);
+    pointer-events: none;
+}
+
+.skill_tooltip_tag_locked_border {
+    width: 0.25rem;
+    height: 100%;
+    background-image: url("coui://uiresources/_shared/assets/ui_art_misc_assets/diagonal_line_pattern_1.png");
+    background-repeat: repeat;
+    background-position: left top;
+    background-attachment: scroll;
+    background-size: 0.4rem;
+}
+
+.skill_tooltip_notify {
+    position: relative;
+    height: 2.9rem;
+    background-color: rgba(0, 189, 240, 0.2);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.skill_tooltip_notify_glow_borders {
+    position: absolute;
+    top: 0rem;
+    left: 0rem;
+    right: 0rem;
+    bottom: 0rem;
+    display: flex;
+    justify-content: space-between;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.skill_tooltip_notify_border {
+    width: 1.5rem;
+    height: 4.2rem;
+    position: absolute;
+    background-image: url("coui://uiresources/menu_skills/assets/ui_art_assets/orange_border_w_glow.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+    top: -0.7rem;
+}
+
+.skill_tooltip_notify_border.left {
+    left: -0.6rem;
+}
+
+.skill_tooltip_notify_border.right {
+    right: -0.6rem;
+}
+
+@media (splitscreen_mode: split-horizontal) {
+    .skill_tooltip_image_wrapper {
+        display: none !important;
+    }
+}
+
+@media (splitscreen_mode: split-vertical) {
+    .skill_tooltip_image_wrapper {
+        display: none !important;
+    }
+}

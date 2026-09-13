@@ -1,0 +1,18 @@
+.pearl .rarity_pip_container {
+    background-image: url("common://uiresources/dlc_rarity_pips/assets/rarity_pip_06_pearl.png");
+}
+
+.item_icon_rarity_pips .pearl .hc_rarity_bkg,
+.pearl .hc_rarity_bkg {
+    right: -0.6rem;
+    left: -1rem;
+}
+
+.ic_pearl_texture.pearl,
+.iic_pearl_texture.tint-pearl,
+.me_weap_pearl_texture.pearl,
+.me_gear_pearl_texture.pearl,
+.me_gear2_pearl_texture.pearl,
+.ii_pearl_texture.pearl {
+    display: block;
+}

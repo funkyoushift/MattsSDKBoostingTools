@@ -1,0 +1,105 @@
+.oakscroll {
+    overflow: scroll;
+}
+
+.oakscroll-v {
+    top: 0;
+    bottom: 0;
+    width: 2rem;
+    right: 0rem;
+    position: absolute;
+    background-color: rgba(3, 16, 25, 0.5);
+    transition-property: background-color, opacity, width;
+    transition-duration: 0.2s, 0.2s;
+    transition-delay: 0.0s, 0.0s;
+    transition-timing-function: linear, linear;
+    -webkit-user-select: none;
+    user-select: none;
+    border-image-source: url("coui://uiresources/_shared/assets/ui_art_misc_assets/scrollbar_track.png");
+    border-image-slice: 49% 50% 49% 50% fill;
+    border-image-width: 1rem 1.65rem 1rem 1.65rem;
+    padding: 0.5rem 0rem 0.5rem 0rem;
+    opacity: 0.2;
+}
+
+.oakscroll-v .oakscroll-vtrack {
+    left: 50%;
+    top: 0rem;
+    width: 3rem;
+    height: 3rem;
+    position: relative;
+    transform: translate(-50%, 0%);
+}
+
+.oakscroll-v .oakscroll-vtrackVisual {
+    opacity: 0.8;
+    left: 50%;
+    top: 0rem;
+    width: 0.6rem;
+    height: 100%;
+    position: relative;
+    pointer-events: none;
+    transition-property: background-color, width;
+    transition-duration: 0.2s, 0.2s;
+    transition-delay: 0.0s, 0.0s;
+    transition-timing-function: linear, ease-in-out;
+    -webkit-user-select: none;
+    user-select: none;
+    touch-action: none;
+    -ms-transform: translate(0%, 0%);
+    transform: translate(-50%, 0%);
+    transition: height 0.2s ease 0s, width 0.2s ease 0s, opacity 0.2s ease 0s, transform 0.05s ease 0s;
+    box-sizing: border-box;
+    background-image: url("coui://uiresources/_shared/assets/ui_art_misc_assets/diagonal_line_pattern_1.png"), linear-gradient(rgba(235, 115, 0, 0.5), rgba(235, 115, 0, 0.5));
+    filter: coh-color-matrix(0.9215686274509803, 0, 0, 0, 0, 0, 0.45098039215686275, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0);
+    background-repeat: repeat, repeat;
+    background-position: center center, left top;
+    background-attachment: scroll, scroll;
+    background-size: 0.4rem, auto;
+}
+
+.oakscroll-v.oakscroll-scrollbar-hidden .oakscroll-vtrackVisual,
+.oakscroll-h.oakscroll-scrollbar-hidden .oakscroll-htrackVisual {
+    opacity: 0.0;
+}
+
+.oakscroll-v.is-active,
+.oakscroll-h.is-active {
+    opacity: 0.5;
+}
+
+.oakscroll-v.is-active .oakscroll-vtrackVisual,
+.oakscroll-h.is-active .oakscroll-htrackVisual {
+    opacity: 0.5;
+}
+
+.oakscroll-v.is-hovered,
+.oakscroll-h.is-hovered {
+    opacity: 0.8;
+}
+
+.oakscroll-v.is-hovered .oakscroll-vtrackVisual,
+.oakscroll-h.is-hovered .oakscroll-htrackVisual {
+    opacity: 0.8;
+}
+
+.oakscroll-v.is-active:hover,
+.oakscroll-h.is-active:hover {
+    opacity: 1;
+}
+
+.oakscroll-v.is-active:hover .oakscroll-vtrackVisual,
+.oakscroll-v.is-active.trackDragging .oakscroll-vtrackVisual {
+    opacity: 0.8;
+    width: 1rem;
+    padding: 3rem 0rem 0rem 0rem;
+}
+
+.oakscroll-h.is-active:hover .oakscroll-htrackVisual {
+    opacity: 0.8;
+}
+
+.oakscroll-v.is-active.trackDragging,
+.oakscroll-h.is-active.trackDragging {
+    opacity: 1;
+}

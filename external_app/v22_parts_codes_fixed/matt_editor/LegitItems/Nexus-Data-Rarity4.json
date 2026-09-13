@@ -1,0 +1,35 @@
+{
+  "rarity": {
+    "records": [
+      {
+        "entries": [
+          {
+            "00_cosmetic": {
+              "rarity": "00_cosmetic",
+              "internalname": "cosmetic",
+              "displayname": "COSMETIC",
+              "displaycolor": {
+                "r": "1.000000",
+                "g": "0.100000",
+                "b": "0.750000",
+                "a": "1.000000"
+              },
+              "attracteffectheight": "128.000000",
+              "pickupoutlinecolor": {
+                "r": "1.000000",
+                "g": "0.100000",
+                "b": "0.750000",
+                "a": "1.000000"
+              },
+              "pickuplifespantype": "Session",
+              "sortvalue": "8",
+              "lootfeeddisplayduration": "5.000000",
+              "bcanbelostloot": "true",
+              "pickupaudiostinger": "audio_event'IO_Pickups_Shared.IO_Pickup_Spawn_Legendary'"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

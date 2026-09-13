@@ -29,6 +29,7 @@ contextBridge.exposeInMainWorld("msbt", {
     return () => ipcRenderer.removeListener("app:updateState", listener);
   },
   serialToolsConvert: (text) => ipcRenderer.invoke("app:serialToolsConvert", text),
+  serialCardResolve: (payload) => ipcRenderer.invoke("app:serialCardResolve", payload || {}),
   serialDecodeCheck: (text) => ipcRenderer.invoke("app:serialDecodeCheck", text),
   validatorBasic: (text) => ipcRenderer.invoke("app:validatorBasic", text),
   validatorBulk: (text) => ipcRenderer.invoke("app:validatorBulk", text),
@@ -38,6 +39,8 @@ contextBridge.exposeInMainWorld("msbt", {
   loadTravelFavorites: () => ipcRenderer.invoke("app:loadTravelFavorites"),
   saveTravelFavorites: (payload) => ipcRenderer.invoke("app:saveTravelFavorites", payload),
   loadSerialBookmarks: () => ipcRenderer.invoke("app:loadSerialBookmarks"),
+  loadInventorySnapshot: () => ipcRenderer.invoke("app:loadInventorySnapshot"),
+  saveInventorySnapshot: (payload) => ipcRenderer.invoke("app:saveInventorySnapshot", payload),
   saveSerialBookmarks: (payload) => ipcRenderer.invoke("app:saveSerialBookmarks", payload),
   loadMovementSettings: () => ipcRenderer.invoke("app:loadMovementSettings"),
   saveMovementSettings: (payload) => ipcRenderer.invoke("app:saveMovementSettings", payload),

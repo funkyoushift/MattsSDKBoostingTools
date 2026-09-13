@@ -1,0 +1,99 @@
+.rarity_pips_root {
+    width: 5.7rem;
+    height: 1rem;
+    position: absolute;
+}
+
+.rarity_pips_root.invisible,
+.rarity_pips_root.cosmetic {
+    display: none;
+}
+
+.rarity_pip_bkg {
+    background-image: url("coui://uiresources/_shared/assets/ui_art_rarity_indicator/rarity_indicator_backing_white.png");
+    opacity: 0.2;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+}
+
+.common .rarity_pip_bkg {
+    filter: coh-color-matrix(0.47843137254901963, 0, 0, 0, 0, 0, 0.45098039215686275, 0, 0, 0, 0, 0, 0.47843137254901963, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.uncommon .rarity_pip_bkg,
+.rare .rarity_pip_bkg,
+.epic .rarity_pip_bkg,
+.legendary .rarity_pip_bkg {
+    filter: coh-color-matrix(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0);
+    opacity: 0.3;
+}
+
+.rarity_pip_backing {
+    background-image: url("coui://uiresources/_shared/assets/ui_art_rarity_indicator/rarity_indicator_backing_white.png");
+    opacity: 0.2;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+}
+
+.rarity_pip_container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    transform: translateX(-0.2rem);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-image: none;
+    background-position: center center;
+    background-attachment: scroll;
+}
+
+.common .rarity_pip_container {
+    background-image: url("coui://uiresources/components/rarity_pips/assets/ui_art_asset/rarity_pip_01_common.png");
+}
+
+.uncommon .rarity_pip_container {
+    background-image: url("coui://uiresources/components/rarity_pips/assets/ui_art_asset/rarity_pip_02_uncommon.png");
+}
+
+.rare .rarity_pip_container {
+    background-image: url("coui://uiresources/components/rarity_pips/assets/ui_art_asset/rarity_pip_03_rare.png");
+}
+
+.epic .rarity_pip_container {
+    background-image: url("coui://uiresources/components/rarity_pips/assets/ui_art_asset/rarity_pip_04_epic.png");
+}
+
+.legendary .rarity_pip_container {
+    background-image: url("coui://uiresources/components/rarity_pips/assets/ui_art_asset/rarity_pip_05_legendary.png");
+}
+
+.rarity_pip_backing_black {
+    filter: coh-color-matrix(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0);
+    opacity: 0.3;
+}
+
+.hc_rarity_bkg {
+    position: absolute;
+    border-image-source: url("coui://uiresources/components/rarity_pips/assets/ui_art_asset/ui_art_rarity_backing.png");
+    border-image-slice: 100% 49% 0% 49% fill;
+    border-image-width: 1.5rem 1.5rem 0 1.5rem;
+    top: -0.25rem;
+    right: -0.1rem;
+    bottom: -0.25rem;
+    left: -0.35rem;
+    opacity: 0;
+}

@@ -1,0 +1,647 @@
+.mrc_rewardset_icon {
+    background-image: none;
+}
+
+.mh_hover_button.char_darksiren,
+.mrc_rewardset_icon.char_darksiren,
+.celeb_sn_notif_icon_container .char_darksiren_icon,
+.char_darksiren_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_small_dark_siren.png");
+}
+
+.char_darksiren_icon_big {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_big_dark_siren.png");
+}
+
+.mh_hover_button.char_exosoldier,
+.mrc_rewardset_icon.char_exosoldier,
+.celeb_sn_notif_icon_container .char_exosoldier_icon,
+.char_exosoldier_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_small_exo_soldier.png");
+}
+
+.char_exosoldier_icon_big {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_big_exo_soldier.png");
+}
+
+.mh_hover_button.char_gravitar,
+.mrc_rewardset_icon.char_gravitar,
+.celeb_sn_notif_icon_container .char_gravitar_icon,
+.char_gravitar_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_small_gravitar.png");
+}
+
+.char_gravitar_icon_big {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_big_gravitar.png");
+}
+
+.mh_hover_button.char_paladin,
+.mrc_rewardset_icon.char_paladin,
+.celeb_sn_notif_icon_container .char_paladin_icon,
+.char_paladin_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_small_paladin.png");
+}
+
+.char_paladin_icon_big {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_big_paladin.png");
+}
+
+/* Challenges, Rewards & Celebratory icons ====================================================================================*/
+.icon.activities_icon,
+.mrc_rewardset_icon.activities_icon,
+.celeb_sn_notif_icon_container .activities_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_small_activities.png");
+}
+
+.activities_icon_big {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_big_activities.png");
+}
+
+.icon.kills_icon,
+.mrc_rewardset_icon.kills_icon,
+.celeb_sn_notif_icon_container .kills_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_small_combat.png");
+}
+
+.kills_icon_big {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_big_combat.png");
+}
+
+.icon.world_icon,
+.mrc_rewardset_icon.world_icon,
+.celeb_sn_notif_icon_container .world_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_small_world.png");
+}
+
+.world_icon_big {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_big_world.png");
+}
+
+.icon.enemies_icon,
+.mrc_rewardset_icon.enemies_icon,
+.celeb_sn_notif_icon_container .enemies_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_small_enemies.png");
+}
+
+.enemies_icon_big {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_big_enemies.png");
+}
+
+.icon.elemental_icon,
+.mrc_rewardset_icon.elemental_icon,
+.celeb_sn_notif_icon_container .elemental_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_small_elemental.png");
+}
+
+.elemental_icon_big {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_big_elemental.png");
+}
+
+.icon.pistol_icon,
+.mrc_rewardset_icon.pistol_icon,
+.celeb_sn_notif_icon_container .pistol_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_small_pistol.png");
+}
+
+.pistol_icon_big {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_big_pistol.png");
+}
+
+.icon.smg_icon,
+.mrc_rewardset_icon.smg_icon,
+.celeb_sn_notif_icon_container .smg_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_small_smg.png");
+}
+
+.smg_icon_big {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_big_smg.png");
+}
+
+.icon.shotgun_icon,
+.mrc_rewardset_icon.shotgun_icon,
+.celeb_sn_notif_icon_container .shotgun_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_small_shotgun.png");
+}
+
+.shotgun_icon_big {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_big_shotgun.png");
+}
+
+.icon.ar_icon,
+.mrc_rewardset_icon.ar_icon,
+.celeb_sn_notif_icon_container .ar_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_small_ar.png");
+}
+
+.ar_icon_big {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_big_ar.png");
+}
+
+.icon.sniper_icon,
+.mrc_rewardset_icon.sniper_icon,
+.celeb_sn_notif_icon_container .sniper_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_small_sniper.png");
+}
+
+.sniper_icon_big {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_big_sniper.png");
+}
+
+.icon.heavy_icon,
+.mrc_rewardset_icon.heavy_icon,
+.celeb_sn_notif_icon_container .heavy_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_small_heavy.png");
+}
+
+.heavy_icon_big {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_big_heavy.png");
+}
+
+.icon.shield_icon,
+.mrc_rewardset_icon.shield_icon,
+.celeb_sn_notif_icon_container .shield_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_small_shields.png");
+}
+
+.shield_icon_big {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_big_shields.png");
+}
+
+.icon.grenade_icon,
+.mrc_rewardset_icon.grenade_icon,
+.celeb_sn_notif_icon_container .grenade_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_small_grenades.png");
+}
+
+.grenade_icon_big {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_big_grenades.png");
+}
+
+.icon.daedalus_icon,
+.mrc_rewardset_icon.daedalus_icon,
+.celeb_sn_notif_icon_container .daedalus_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_small_daedalus.png");
+}
+
+.daedalus_icon_big {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_big_daedalus.png");
+}
+
+.icon.jakobs_icon,
+.mrc_rewardset_icon.jakobs_icon,
+.celeb_sn_notif_icon_container .jakobs_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_small_jakobs.png");
+}
+
+.jakobs_icon_big {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_big_jakobs.png");
+}
+
+.icon.maliwan_icon,
+.mrc_rewardset_icon.maliwan_icon,
+.celeb_sn_notif_icon_container .maliwan_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_small_maliwan.png");
+}
+
+.maliwan_icon_big {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_big_maliwan.png");
+}
+
+.icon.order_icon,
+.mrc_rewardset_icon.order_icon,
+.celeb_sn_notif_icon_container .order_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_small_order.png");
+}
+
+.order_icon_big {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_big_order.png");
+}
+
+.icon.borg_icon,
+.mrc_rewardset_icon.borg_icon,
+.celeb_sn_notif_icon_container .borg_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_small_ripper.png");
+}
+
+.borg_icon_big {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_big_ripper.png");
+}
+
+.icon.tediore_icon,
+.mrc_rewardset_icon.tediore_icon,
+.celeb_sn_notif_icon_container .tediore_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_small_tediore.png");
+}
+
+.tediore_icon_big {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_big_tediore.png");
+}
+
+.icon.torgue_icon,
+.mrc_rewardset_icon.torgue_icon,
+.celeb_sn_notif_icon_container .torgue_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_small_torgue.png");
+}
+
+.torgue_icon_big {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_big_torgue.png");
+}
+
+.icon.vladof_icon,
+.mrc_rewardset_icon.vladof_icon,
+.celeb_sn_notif_icon_container .vladof_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_small_vladof.png");
+}
+
+.vladof_icon_big {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_big_vladof.png");
+}
+
+.icon.economy_icon,
+.mrc_rewardset_icon.economy_icon,
+.celeb_sn_notif_icon_container .economy_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_small_economy.png");
+}
+
+.economy_icon_big {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_big_economy.png");
+}
+
+.icon.loot_icon,
+.mrc_rewardset_icon.loot_icon,
+.celeb_sn_notif_icon_container .loot_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_small_loot.png");
+}
+
+.loot_icon_big {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_big_loot.png");
+}
+
+.icon.repair_kit_icon,
+.mrc_rewardset_icon.repair_kit_icon,
+.celeb_sn_notif_icon_container .repair_kit_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_small_repkits.png");
+}
+
+.repair_kit_icon_big {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_big_repkits.png");
+}
+
+.icon.collectable_icon,
+.mrc_rewardset_icon.collectable_icon,
+.celeb_sn_notif_icon_container .collectible_icon,
+.celeb_sn_notif_icon_container .collectable_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_small_collectibles.png");
+}
+
+.collectable_icon_big {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_big_collectibles.png");
+}
+
+.icon.ultimate_vh_icon,
+.mrc_rewardset_icon.ultimate_vh_icon,
+.celeb_sn_notif_icon_container .ultimate_vh_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_small_ultimate_vault_hunter.png");
+}
+
+.ultimate_vh_icon_big {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_big_ultimate_vault_hunter.png");
+}
+
+.icon.shiny_gear_icon,
+.mrc_rewardset_icon.shiny_gear_icon,
+.celeb_sn_notif_icon_container .shiny_gear_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_small_shiny_gear.png");
+}
+
+.shiny_gear_icon_big {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_big_shiny_gear.png");
+}
+
+.icon.spare_parts_icon,
+.mrc_rewardset_icon.spare_parts_icon,
+.celeb_sn_notif_icon_container .spare_parts_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_small_spare_parts.png");
+}
+
+.spare_parts_icon_big {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_challenges/ico_challenge_big_spare_parts.png");
+}
+
+/*DLC Challenge and Rewards icons*/
+.icon.cowbell_icon,
+.mrc_rewardset_icon.cowbell_icon,
+.celeb_sn_notif_icon_container .cowbell_icon {
+    background-image: url("cowbell://uiresources/challenges_icons/ico_challenge_small_cowbell.png");
+}
+
+.cowbell_icon_big {
+    background-image: url("cowbell://uiresources/challenges_icons/ico_challenge_big_cowbell.png");
+}
+
+.mh_hover_button.char_robodealer,
+.mrc_rewardset_icon.char_robodealer,
+.celeb_sn_notif_icon_container .char_robodealer_icon,
+.char_robodealer_icon {
+    background-image: url("cowbell://uiresources/challenges_icons/ico_challenge_small_robodealer.png");
+}
+
+.char_robodealer_icon_big {
+    background-image: url("cowbell://uiresources/challenges_icons/ico_challenge_big_robodealer.png");
+}
+
+.icon.harmonica_icon,
+.mrc_rewardset_icon.harmonica_icon,
+.celeb_sn_notif_icon_container .harmonica_icon {
+    background-image: url("harmonica://uiresources/challenges_icons/ico_challenge_small_harmonica.png");
+}
+
+.harmonica_icon_big {
+    background-image: url("harmonica://uiresources/challenges_icons/ico_challenge_big_harmonica.png");
+}
+
+.mh_hover_button.char_corpohacker,
+.mrc_rewardset_icon.char_corpohacker,
+.celeb_sn_notif_icon_container .char_corpohacker_icon,
+.char_corpohacker_icon {
+    background-image: url("harmonica://uiresources/challenges_icons/ico_challenge_small_corpohacker.png");
+}
+
+.char_corpohacker_icon_big {
+    background-image: url("harmonica://uiresources/challenges_icons/ico_challenge_big_corpohacker.png");
+}
+
+.mc_challenge_cell_pip.challenge_complete .mc_challenge_cell_pip_outline,
+.challenge_progress_pip.challenge_complete .challenge_progress_pip_outline {
+    background-image: url("coui://uiresources/ingame_message/assets/ui_art_asset/challenge_progressbar_outline_pip_green.png");
+    opacity: 1;
+}
+
+.mc_challenge_cell_pip.challenge_complete .mc_challenge_cell_pip_fill,
+.challenge_progress_pip.challenge_complete .challenge_progress_pip_fill {
+    background-image: url("coui://uiresources/ingame_message/assets/ui_art_asset/challenge_progressbar_fill_pip_green.png");
+    opacity: 1;
+}
+
+.mc_challenge_cell_pip.challenge_complete .mc_challenge_cell_pip_activated {
+    background-image: url("coui://uiresources/ingame_message/assets/ui_art_asset/challenge_progressbar_fill_pip_green.png");
+}
+
+.mc_challenge_cell_pip.challenge_complete .mc_challenge_cell_pip_bg,
+.challenge_progress_pip.challenge_complete .challenge_progress_pip_bg {
+    background-image: url("coui://uiresources/ingame_message/assets/ui_art_asset/challenge_progressbar_bg_pip_green.png");
+}
+
+.mc_challenges_cell.completed .mc_challenge_cell_fui_arrow,
+.challenge_progress.completed .challenge_progress_fui_arrow {
+    background-image: url("coui://uiresources/ingame_message/assets/ui_art_asset/challenges_progress_fui_arrow_green.png");
+}
+
+.mc_challenges_cell.completed .mc_challenge_cell_fui,
+.challenge_progress.completed .challenge_progress_fui {
+    border-image-source: url("coui://uiresources/ingame_message/assets/ui_art_asset/challenges_progress_fui_line_green.png");
+}
+
+.mc_challenges_cell.completed .mc_challenge_cell_bar_brackets,
+.challenge_progress.completed .challenge_progress_bar_brackets {
+    border-image-source: url("coui://uiresources/ingame_message/assets/ui_art_asset/challenges_progressbar_brackets_green.png");
+}
+
+.mc_challenges_cell.completed .mc_challenge_cell_bg_1,
+.challenge_progress.completed .challenge_progress_bg_1 {
+    border-image-source: url("coui://uiresources/ingame_message/assets/ui_art_asset/challenge_progresss_bg_1_green.png");
+}
+
+/** Mission and Activities **/
+/* HEADER ICONS  && Backgrounds For Special Notifs*/
+.main_mission,
+.celeb_sn_notif_icon_container .main_mission,
+.celeb_notif_icon_container .main_mission,
+.mrc_rewardset_icon.mainstory,
+.lc_tooltip_mission_icon.main_mission,
+.mission_tracker_mission_type.mainstory {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_discovery/ico_main_mission.png");
+}
+
+.celeb_sn_notif_icon_container .level_up,
+.oak_reward_icon.progressionpoints {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_celebratory_notifications/ico_celeb_notif_level_up.png");
+}
+
+.celeb_sn_notif_icon_container .level_up_spec,
+.celeb_notif_icon_container .level_up_spec {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_celebratory_notifications/ico_celeb_notif_spec_level_up.png");
+}
+
+/* HEADER ICONS  && Backgrounds For Special Notifs*/
+.side_mission,
+.celeb_sn_notif_icon_container .side_mission,
+.celeb_notif_icon_container .side_mission,
+.lc_tooltip_mission_icon.side_mission,
+.mrc_rewardset_icon.generic,
+.mrc_rewardset_icon.sidemission,
+.mrc_rewardset_icon.micromission,
+.mission_tracker_mission_type.sidemission,
+.mission_tracker_mission_type.sidemission .mission_tracker_mission_type.micromission {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_discovery/ico_side_mission.png");
+}
+
+.faction_mission,
+.celeb_sn_notif_icon_container .faction_mission,
+.celeb_notif_icon_container .faction_mission,
+.lc_tooltip_mission_icon.factionmission,
+.mission_tracker_mission_type.factionmission,
+.mrc_rewardset_icon.factionmission {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_discovery/ico_faction_mission.png");
+}
+
+.contract,
+.celeb_sn_notif_icon_container .contract,
+.celeb_notif_icon_container .contract,
+.mrc_rewardset_icon.contract,
+.mrc_rewardset_icon.contract,
+.mission_tracker_mission_type.contract,
+.mission_tracker_mission_type.contract {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_discovery/ico_contract_mission.png");
+}
+
+.celeb_notif_reward_icon.echo_token,
+.oak_reward_icon.echotokens {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_rewards_bundles/ico_reward_echo_upgrade_token.png");
+}
+
+.mrc_rewardset_icon.bounty,
+.mrc_rewardset_icon.generated,
+.mrc_rewardset_icon.dynamicevent,
+.compass_icon.alert .compass_icon_img,
+.mission_tracker_mission_type.bounty,
+.mission_tracker_mission_type.generated,
+.mission_tracker_mission_type.dynamicevent {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_discovery/ico_world_events.png");
+}
+
+.mrc_rewardset_icon.outpost,
+.mission_tracker_mission_type.outpost {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_discovery/temp_ico_ui_art_POA_outpost.png");
+}
+
+.mrc_rewardset_icon.depot,
+.mission_tracker_mission_type.depot {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_discovery/temp_ico_ui_art_POA_depot.png");
+}
+
+.mrc_rewardset_icon.statue,
+.mission_tracker_mission_type.statue {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_discovery/temp_ico_ui_art_POA_statue.png");
+}
+
+.mrc_rewardset_icon.crawler,
+.celeb_notif_icon_container .crawler_discovered,
+.mission_tracker_mission_type.crawler {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_discovery/ico_Activities_Crawlers.png");
+}
+
+.mrc_rewardset_icon.orderbunker,
+.celeb_notif_icon_container .order_bunker_discovered,
+.mission_tracker_mission_type.orderbunker {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_discovery/ico_Activities_Bunker.png");
+}
+
+.mrc_rewardset_icon.safehouse,
+.celeb_notif_icon_container .safehouse_discovered,
+.mission_tracker_mission_type.safehouse {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_discovery/ico_FT_Safehouse.png");
+}
+
+.mrc_rewardset_icon.silo,
+.celeb_notif_icon_container .silo_discovered,
+.mission_tracker_mission_type.silo {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_discovery/ico_FT_Silo.png");
+}
+
+.mrc_rewardset_icon.mine,
+.celeb_notif_icon_container .mine_discovered,
+.mission_tracker_mission_type.mine {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_discovery/ico_activities_auger_mine.png");
+}
+
+.mrc_rewardset_icon.drillsite,
+.celeb_notif_icon_container .drill_discovered,
+.mission_tracker_mission_type.drillsite {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_discovery/ico_activities_drill_site.png");
+}
+
+.mrc_rewardset_icon.weekly_wildcard {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_discovery/ico_weekly_trait_mission.png");
+}
+
+.mrc_rewardset_icon.pre_order {
+    background-image: url("coui://uiresources/menu_reward_center/assets/ui_art_assets/mrc_rewards_icon_pre_order.png");
+}
+
+.mrc_rewardset_icon.shift_rewards {
+    background-image: url("coui://uiresources/menu_reward_center/assets/ui_art_assets/mrc_rewards_icon_shift.png");
+}
+
+.mrc_rewardset_icon.dlc {
+    background-image: url("coui://uiresources/menu_reward_center/assets/ui_art_assets/mrc_rewards_icon_dlc.png");
+}
+
+.mrc_rewardset_icon.misc {
+    background-image: url("coui://uiresources/menu_reward_center/assets/ui_art_assets/mrc_rewards_icon_misc.png");
+}
+
+/* Item Cell Type Start */
+.item_cell_type_icon {
+    position: absolute;
+    width: 6rem;
+    height: 2rem;
+    top: 2.5rem;
+    left: 1rem;
+    background-image: none;
+    background-repeat: no-repeat;
+    background-position: left center;
+    background-attachment: scroll;
+    background-size: contain;
+}
+
+/*Guns*/
+.item_cell_type_icon.assault_rifle,
+.assaultrifle .item_cell_type_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_weapon_small/ico_ui_art_assault_small.png");
+}
+
+.item_cell_type_icon.pistol,
+.pistol .item_cell_type_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_weapon_small/ico_ui_art_pistol_small.png");
+}
+
+.item_cell_type_icon.shotgun,
+.shotgun .item_cell_type_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_weapon_small/ico_ui_art_shotgun_small.png");
+}
+
+.item_cell_type_icon.smg,
+.smg .item_cell_type_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_weapon_small/ico_ui_art_smg_small.png");
+}
+
+.item_cell_type_icon.sniper,
+.sniper .item_cell_type_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_weapon_small/ico_ui_art_sniper_small.png");
+}
+
+/*Ordnances*/
+.item_cell_type_icon.grenade,
+.gadget .item_cell_type_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_weapon_small/ico_ui_art_gadget_small.png");
+}
+
+.item_cell_type_icon.heavy,
+.heavy .item_cell_type_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_weapon_small/ico_ui_art_heavy_small.png");
+}
+
+/*Shields*/
+.item_cell_type_icon.energy_shield,
+.energy_shield .item_cell_type_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_weapon_small/ico_ui_art_shields_small.png");
+}
+
+.item_cell_type_icon.armor_shield,
+.armor_shield .item_cell_type_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_weapon_small/ico_ui_art_armor_small.png");
+}
+
+/*Misc gear*/
+.item_cell_type_icon.repair_kit,
+.repair_kit .item_cell_type_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_weapon_small/ico_ui_art_repkit_small.png");
+}
+
+.item_cell_type_icon.enhancement,
+.enhancement .item_cell_type_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_weapon_small/ico_ui_art_enhancement_small.png");
+}
+
+.item_cell_type_icon.classmod,
+.classmod .item_cell_type_icon {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_weapon_small/ico_ui_art_class_mod_small.png");
+}
+
+/* Item Cell Type END */
+.dlc_main_mission,
+.celeb_sn_notif_icon_container .dlc_main_mission,
+.celeb_notif_icon_container .dlc_main_mission,
+.mrc_rewardset_icon.dlc_mainstory,
+.lc_tooltip_mission_icon.dlc_main_mission {
+    background-image: url("cowbell://uiresources/discovery_icons/ico_main_mission_dlc.png");
+}
+
+.dlc_side_mission,
+.celeb_sn_notif_icon_container .dlc_side_mission,
+.celeb_notif_icon_container .dlc_side_mission,
+.mrc_rewardset_icon.dlc_sidemission,
+.lc_tooltip_mission_icon.dlc_side_mission {
+    background-image: url("cowbell://uiresources/discovery_icons/ico_side_mission_dlc.png");
+}

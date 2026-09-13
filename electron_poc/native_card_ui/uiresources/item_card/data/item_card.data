@@ -1,0 +1,13 @@
+{
+    "animations": {},
+    "editorData": {
+        "canvasBackground": "rgba(0,0,0,0)",
+        "fontScalingId": "",
+        "localeId": "",
+        "databindingMockEntries": [{
+            "name": "new dataset",
+            "isNew": false,
+            "code": "{\n\tproperty: 'data',\n}"
+        }]
+    }
+}

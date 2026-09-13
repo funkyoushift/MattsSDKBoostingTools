@@ -301,7 +301,7 @@ def _asd_note_spawn_for_autoclear() -> None:
         _asd_batch_clear_due = now + float(_ASD_BATCH_WINDOW_S)
         _asd_batch_armed = True
         return
-    # Still inside the current collection window — leave the clear time alone.
+    # Still inside the current collection window â€” leave the clear time alone.
     if now <= float(_asd_batch_clear_due):
         return
     if _asd_autoclear_should_wait():
@@ -386,8 +386,8 @@ def _clear_spawned_actors_hybrid(payload: dict[str, Any] | None = None) -> dict[
 def _asd_autoclear_should_wait() -> bool:
     """Hold the batch clear while the hoard runner still owns live actors.
 
-    ASD_clear destroys every tracked spawner and actor. Firing that mid-wave —
-    or in the frame a wave just died — races the engine's own death handling.
+    ASD_clear destroys every tracked spawner and actor. Firing that mid-wave â€”
+    or in the frame a wave just died â€” races the engine's own death handling.
     """
     try:
         if hoard_runner._spawn_in_flight or hoard_runner._spawn_phase:
@@ -570,7 +570,7 @@ def _install_asd_nonblocking_spawn_poll_patch(asd: Any) -> tuple[bool, str]:
 
     Newer ActorScriptDeployer builds default ``_poll_spawner_for_alive_actors`` to
     a one-shot check and disable world-wide ``find_all("Actor")`` scans. Older
-    ASD installs still sleep (~0.75–3s) and snapshot the whole actor list on the
+    ASD installs still sleep (~0.75â€“3s) and snapshot the whole actor list on the
     Unreal tick queue, which freezes BL4.
 
     Always install this patch so MSBT spawn paths (ASD_spawnai / ASD_spawn /
@@ -659,7 +659,7 @@ def _install_asd_clear_spawners_patch(asd: Any) -> tuple[bool, str]:
     """Ensure ASD_clear disables/destroys throwaway OakSpawners, not only tracked actors.
 
     Heavy ASD_spawnai runs leave enabled disposable OakSpawners behind. Killing
-    spawned enemies is not enough — those spawners keep restocking. Bundle ASD
+    spawned enemies is not enough â€” those spawners keep restocking. Bundle ASD
     already clears them; this patch covers older folder installs.
     """
     if getattr(asd, "_msbt_clear_spawners_patch", False):
@@ -1153,7 +1153,7 @@ def _run_actor_script_deployer_spawnai_like_debug_menu(
     """Run ActorScriptDeployer's native ASD_spawnai for standard row spawns.
 
     Hybrid is opt-in only (`use_hybrid=True`). Default is the original ASD
-    console/Python path. queued_unverified is an accepted result — ASD often
+    console/Python path. queued_unverified is an accepted result â€” ASD often
     queues the pawn and it appears a moment later. Do not fail-closed on an
     empty GetAliveActors peek.
     `angle_degrees` is accepted for call-site compatibility and ignored.
@@ -1765,7 +1765,7 @@ def run_quick_menu_action(
         result = repeat_last_drop(payload.get("target_player"))
         return result
     if key == "max_all":
-        result = max_all()
+        result = max_all(payload)
     elif key == "max_currency":
         result = max_currency()
     elif key == "max_eridium":
@@ -2422,7 +2422,7 @@ def _load_bm_packages() -> int:
 
 
 def _find_world_black_market() -> Any | None:
-    """PersistentLevel dump shop — same find_object call Squiggs logs as working."""
+    """PersistentLevel dump shop â€” same find_object call Squiggs logs as working."""
     try:
         from unrealsdk import find_object
     except Exception as exc:
@@ -3256,7 +3256,7 @@ def open_late_join_ui(state_tag: str, label: str) -> dict[str, Any]:
     MenuOpen) but can fail to bind the chosen save onto P2. 990 pause JS:
     force Debug row, then Event_AttemptAction('state_add', TAG) x3 from the
     pause widget, then close pause. Exe help: stateadd args are [State]
-    [Optional View Handle Index] — that index is a Coherent view, NOT a party
+    [Optional View Handle Index] â€” that index is a Coherent view, NOT a party
     player. Do not pass the named-guest party index as a view handle.
     """
     tag = str(state_tag or "").strip()
@@ -3295,7 +3295,7 @@ def open_late_join_ui(state_tag: str, label: str) -> dict[str, Any]:
         msg = (
             f"{title} opened on YOUR screen (990 pause+late-join path) for {who}. "
             "Pick YOUR VH. Success: THEIR pawn/name changes, then their save when "
-            "they leave. If only YOU change, the bind missed — do not have them "
+            "they leave. If only YOU change, the bind missed â€” do not have them "
             "open the menu."
         )
     else:
@@ -3572,7 +3572,7 @@ def _selected_player_label(idx: int | None, name: str) -> str:
     return "selected player"
 
 
-def _max_all_for_player_controller(pc: Any) -> tuple[bool, str]:
+def _max_all_for_player_controller(pc: Any, *, apply_session_fog: bool = True) -> tuple[bool, str]:
     ps = getattr(pc, "PlayerState", None)
     ok_bits: list[str] = []
     fail_bits: list[str] = []
@@ -3644,13 +3644,15 @@ def _max_all_for_player_controller(pc: Any) -> tuple[bool, str]:
     except Exception as exc:
         fail_bits.append(f"UVH failed: {exc!r}")
 
-    # Overlay hide (this client) plus targeted discovery writes for this player.
-    try:
-        fog_msg = _nfow.clear_fog()
-        fod = _fod.reveal_live_map(pc)
-        ok_bits.append(f"fog: {fog_msg}; {fod.get('message')}")
-    except Exception as exc:
-        fail_bits.append(f"fog failed: {exc!r}")
+    # Overlay hide (this client) plus targeted discovery writes. Scoped Max All
+    # applies fog once after every player is boosted to avoid N× grid fills.
+    if apply_session_fog:
+        try:
+            fog_msg = _nfow.clear_fog()
+            fod = _fod.reveal_live_map(pc)
+            ok_bits.append(f"fog: {fog_msg}; {fod.get('message')}")
+        except Exception as exc:
+            fail_bits.append(f"fog failed: {exc!r}")
 
     detail = "; ".join(ok_bits)
     if fail_bits:
@@ -3680,7 +3682,113 @@ def _pawn_for_party_index(idx: int | None) -> Any | None:
     return None
 
 
-def max_all() -> dict[str, Any]:
+def _normalize_party_indices(raw_indices: object) -> list[int]:
+    if not isinstance(raw_indices, (list, tuple)):
+        return []
+    out: list[int] = []
+    seen: set[int] = set()
+    for raw in raw_indices:
+        try:
+            idx = int(raw)
+        except Exception:
+            continue
+        if idx < 0 or idx in seen:
+            continue
+        seen.add(idx)
+        out.append(idx)
+    return out
+
+
+def _apply_max_all_session_fog(target_pc: Any | None) -> tuple[bool, str]:
+    try:
+        fog_msg = _nfow.clear_fog()
+        fod = _fod.reveal_live_map(target_pc)
+        return True, f"fog (once): {fog_msg}; {fod.get('message')}"
+    except Exception as exc:
+        return False, f"fog failed: {exc!r}"
+
+
+def max_all_for_party_indices(raw_indices: object) -> dict[str, Any]:
+    """Boost many party slots in one bridge call; fog/UVH accumulate safely."""
+    global _selected_player_index, _selected_player_name
+    refresh_players()
+    indices = _normalize_party_indices(raw_indices)
+    if not indices:
+        return {"ok": False, "message": "No party indices supplied for scoped Max All."}
+
+    players = {idx: name for idx, name in _players()}
+    ok_count = 0
+    fail_count = 0
+    player_lines: list[str] = []
+    last_pc: Any | None = None
+    last_idx: int | None = None
+    last_name = ""
+
+    for idx in indices:
+        label = players.get(idx) or f"party index {idx}"
+        pc = _party_controller_for_index(idx)
+        if pc is None:
+            fail_count += 1
+            player_lines.append(f"{label}: could not resolve live player controller")
+            continue
+        last_pc = pc
+        last_idx = idx
+        last_name = label
+        try:
+            ok, detail = _max_all_for_player_controller(pc, apply_session_fog=False)
+        except Exception as exc:
+            fail_count += 1
+            player_lines.append(f"{label}: Max All failed: {exc!r}")
+            continue
+        if ok:
+            ok_count += 1
+        else:
+            fail_count += 1
+        player_lines.append(f"{label}: {detail}")
+
+    if last_idx is not None:
+        _selected_player_index = last_idx
+        _selected_player_name = last_name
+
+    fog_ok, fog_detail = _apply_max_all_session_fog(last_pc)
+    if not fog_ok:
+        fail_count += 1
+    player_lines.append(fog_detail)
+
+    if ok_count <= 0:
+        detail = "; ".join(player_lines[:6])
+        if len(player_lines) > 6:
+            detail += f"; …and {len(player_lines) - 6} more"
+        return {
+            "ok": False,
+            "message": f"Max All failed for all {len(indices)} player(s). {detail}",
+            "ok_count": ok_count,
+            "fail_count": fail_count,
+            "players": len(indices),
+        }
+
+    summary = (
+        f"Max All {'completed' if fail_count == 0 else 'partially completed'} "
+        f"for {len(indices)} player(s): {ok_count} ok, {fail_count} failed."
+    )
+    detail = "; ".join(player_lines[:6])
+    if len(player_lines) > 6:
+        detail += f"; …and {len(player_lines) - 6} more"
+    return {
+        "ok": fail_count == 0 or (ok_count > 0 and fog_ok),
+        "message": f"{summary} {detail}",
+        "ok_count": ok_count,
+        "fail_count": fail_count,
+        "players": len(indices),
+    }
+
+
+def max_all(payload: dict[str, Any] | None = None) -> dict[str, Any]:
+    payload = dict(payload or {})
+    party_indices = payload.get("party_indices")
+    if party_indices is not None:
+        return max_all_for_party_indices(party_indices)
+
     refresh_players()
     idx = _selected_player_index
     name = _selected_player_name
@@ -4162,7 +4270,7 @@ def _uvh_queue_for_pc(pc: Any, indices: list[int]) -> tuple[bool, str]:
         _uvh_next_at = time.monotonic()
         _uvh_running = True
         return True, f"queued {len(plan)} step(s)"
-    # Already running — ensure this PC receives remaining steps.
+    # Already running â€” ensure this PC receives remaining steps.
     if not any(_uvh_obj_addr(t) == addr for t in _uvh_targets if t is not None):
         _uvh_targets.append(pc)
         return True, f"added to active UVH run ({len(_uvh_queue)} step(s) left)"
@@ -4204,7 +4312,7 @@ def uvh_boost_resume() -> dict[str, Any]:
     if _uvh_running or _uvh_queue:
         return {"ok": True, "message": f"UVH boost already running ({len(_uvh_queue)} step(s) left)."}
     if not _uvh_paused_queue:
-        _uvh_set_status("Nothing to resume. Start UVH 1–7 (or Up to rank N) first.")
+        _uvh_set_status("Nothing to resume. Start UVH 1â€“7 (or Up to rank N) first.")
         return {"ok": False, "message": _uvh_last_status}
     live = [controller for controller in _uvh_paused_targets if _uvh_live(controller)]
     if not live:
@@ -5070,7 +5178,7 @@ def spawn_itempool_tick() -> None:
 
 def run_dev_spawner_action(action: str, payload: dict[str, Any] | None = None) -> dict[str, Any]:
     payload = dict(payload or {})
-    # Non-ASD helpers (aggro / anchor) — handled before console command mapping.
+    # Non-ASD helpers (aggro / anchor) â€” handled before console command mapping.
     if action == "dev_spawner_set_aggro":
         msg = _set_aggro_mode(str(payload.get("aggro_mode") or payload.get("mode") or "passive"))
         return {"ok": True, "message": msg, "aggro_mode": _get_aggro_mode()}
@@ -5969,14 +6077,14 @@ def _chaos_run(effect_name: str, runner: Any, *args: Any) -> dict[str, Any]:
     except Exception as exc:
         return {"ok": False, "message": f"{effect_name} failed for {label}: {exc!r}"}
     ok = streamer_chaos.result_ok(str(msg))
-    return {"ok": ok, "message": f"{effect_name} → {label}: {msg}"}
+    return {"ok": ok, "message": f"{effect_name} â†’ {label}: {msg}"}
 
 
 def reset_skills() -> dict[str, Any]:
     """Refund regular skill points for the local host pawn only. No party target."""
     host_ok, host_msg = _challenge_is_host()
     if not host_ok:
-        return {"ok": False, "message": "Reset Skill Tree is host / listen only — do not run as a join client."}
+        return {"ok": False, "message": "Reset Skill Tree is host / listen only â€” do not run as a join client."}
     try:
         pc = get_pc()
     except Exception as exc:
@@ -5988,7 +6096,7 @@ def reset_skills() -> dict[str, Any]:
     except Exception as exc:
         return {"ok": False, "message": f"Reset skills failed for host: {exc!r}"}
     ok = str(msg).lower().startswith("reset skills ok")
-    return {"ok": ok, "message": f"Reset skills → host only: {msg}", "host_only": True}
+    return {"ok": ok, "message": f"Reset skills â†’ host only: {msg}", "host_only": True}
 
 
 def chaos_launch(z: object = None) -> dict[str, Any]:
@@ -6016,7 +6124,7 @@ def chaos_drop_backpack() -> dict[str, Any]:
     except Exception as exc:
         return {"ok": False, "message": f"Drop backpack failed for host: {exc!r}"}
     ok = streamer_chaos.result_ok(str(msg))
-    return {"ok": ok, "message": f"Drop backpack → host only: {msg}", "host_only": True}
+    return {"ok": ok, "message": f"Drop backpack â†’ host only: {msg}", "host_only": True}
 
 
 def chaos_drop_backpack_targeted() -> dict[str, Any]:
@@ -6047,7 +6155,7 @@ def chaos_empty_backpack(payload: dict[str, Any] | None = None) -> dict[str, Any
         extra = (
             f" captured {captured} serial(s) for undo (backpack + equipped)"
             if captured
-            else " (nothing captured for undo — inventory read failed or backpack was empty)"
+            else " (nothing captured for undo â€” inventory read failed or backpack was empty)"
         )
     read_err = str(snapshot.get("read_error") or "").strip()
     if read_err and not captured:
@@ -6056,7 +6164,7 @@ def chaos_empty_backpack(payload: dict[str, Any] | None = None) -> dict[str, Any
             extra += " Quit Borderlands 4 fully, then recopy MattsSDKBoostingTools.sdkmod while the game is closed."
     return {
         "ok": ok,
-        "message": f"Empty backpack → {label}: {msg}{extra}",
+        "message": f"Empty backpack â†’ {label}: {msg}{extra}",
         "deleted_backpack": _deleted_backpack_status(),
         "captured_count": captured,
         "serials": list(snapshot.get("serials") or []) if captured else [],
@@ -6206,7 +6314,7 @@ def chaos_undo_empty_backpack(payload: dict[str, Any] | None = None) -> dict[str
     result["deleted_backpack"] = _deleted_backpack_status()
     if result.get("ok"):
         result["message"] = (
-            f"Undo empty backpack → {label}: queued {len(serials)} serial(s). "
+            f"Undo empty backpack â†’ {label}: queued {len(serials)} serial(s). "
             f"{result.get('message') or ''}"
         ).strip()
     return result
@@ -6706,7 +6814,7 @@ def _store_read_serials(
             "empty_detail": detail,
         }
     if clipboard:
-        clip_note = "copied to clipboard" if clipboard_ok else "clipboard unavailable — see toast/log/dump"
+        clip_note = "copied to clipboard" if clipboard_ok else "clipboard unavailable â€” see toast/log/dump"
         message = f"{title}: {len(cleaned)} serial(s) ({', '.join(summaries[:6])}); {clip_note}."
     else:
         message = f"{title}: {len(cleaned)} serial(s) ({', '.join(summaries[:6])})."
@@ -6742,7 +6850,7 @@ def _serial_read_host_note(target_index: int | None) -> str:
     host_idx = _host_player_index_value()
     if host_idx is not None and int(target_index) == int(host_idx):
         return ""
-    # Joined client reading a remote party member — local memory often lacks full identities.
+    # Joined client reading a remote party member â€” local memory often lacks full identities.
     return " (best on listen host; clients often cannot see other players' full inventory serials)"
 
 
@@ -6773,7 +6881,7 @@ def _zipimport_reload_hint(exc: BaseException) -> str:
 
 
 def read_equipped_serials(target_player: object | None = None) -> dict[str, Any]:
-    """Read equipped-slot @U serials for the selected party player (P1–P4 target)."""
+    """Read equipped-slot @U serials for the selected party player (P1â€“P4 target)."""
     ensured = _ensure_inventory_read_target(target_player)
     if not ensured.get("ok"):
         return {
@@ -6798,8 +6906,8 @@ def read_equipped_serials(target_player: object | None = None) -> dict[str, Any]
                 mode="equipped",
             )
     except Exception as exc:
-        return {"ok": False, "message": f"{reading} — Read equipped serials failed: {exc!r}{_zipimport_reload_hint(exc)}"}
-    title = f"{reading} — Equipped"
+        return {"ok": False, "message": f"{reading} â€” Read equipped serials failed: {exc!r}{_zipimport_reload_hint(exc)}"}
+    title = f"{reading} â€” Equipped"
     result = _store_read_serials(entries, title=title, empty_detail=empty_detail)
     note = _serial_read_host_note(idx)
     if note and not result.get("ok"):
@@ -6839,8 +6947,8 @@ def read_backpack_serials(target_player: object | None = None) -> dict[str, Any]
                 mode="backpack",
             )
     except Exception as exc:
-        return {"ok": False, "message": f"{reading} — Read backpack serials failed: {exc!r}{_zipimport_reload_hint(exc)}"}
-    title = f"{reading} — Backpack"
+        return {"ok": False, "message": f"{reading} â€” Read backpack serials failed: {exc!r}{_zipimport_reload_hint(exc)}"}
+    title = f"{reading} â€” Backpack"
     result = _store_read_serials(entries, title=title, empty_detail=empty_detail)
     note = _serial_read_host_note(idx)
     if note and not result.get("ok"):
@@ -6871,12 +6979,12 @@ def read_inventory(target_player: object | None = None) -> dict[str, Any]:
             player_name=name or f"Player {idx}",
         )
     except Exception as exc:
-        return {"ok": False, "message": f"{reading} — Read inventory failed: {exc!r}{_zipimport_reload_hint(exc)}"}
+        return {"ok": False, "message": f"{reading} â€” Read inventory failed: {exc!r}{_zipimport_reload_hint(exc)}"}
 
     equipped = list(snapshot.get("equipped") or [])
     backpack = list(snapshot.get("backpack") or [])
     combined = equipped + backpack
-    title = f"{reading} — Inventory"
+    title = f"{reading} â€” Inventory"
     empty_detail = ""
     if not combined:
         equipped_diag = item_serial_reader.get_last_read_diagnostics("equipped")
@@ -6886,7 +6994,7 @@ def read_inventory(target_player: object | None = None) -> dict[str, Any]:
             mode="backpack",
         )
     # Avoid dumping / clipboard-pasting hundreds of serials on every browser refresh.
-    # Cache equipped (or a tiny backpack sample) for the serial picker — do not echo the
+    # Cache equipped (or a tiny backpack sample) for the serial picker â€” do not echo the
     # full backpack twice on the wire (inventory.* already carries the browser payload).
     cache_entries = equipped if equipped else backpack[:12]
     result = _store_read_serials(

@@ -1,6 +1,6 @@
 {
   "name": "matts-sdk-boosting-tools",
-  "version": "2.11.3",
+  "version": "2.11.4",
   "private": true,
   "description": "Desktop app for Matt's SDK Boosting Tools.",
   "author": "FunkYouSHiFT",
@@ -15,7 +15,15 @@
     "test:oak2": "node test_oak2_install.js",
     "pack": "electron-builder --dir --publish never",
     "dist:win": "electron-builder --win nsis --publish never",
-    "test:editor-update": "node test_editor_browser_assets.js && node test_editor_native_lookups.js && node test_editor_save_update.js && node test_editor_page_update.js"
+    "test:editor-update": "node test_editor_browser_assets.js && node test_editor_native_lookups.js && node test_editor_save_update.js && node test_editor_page_update.js",
+    "test:item-cards": "node --check serial_card_naming.js && node test_serial_card_naming.js && node test_serial_card_resolve.js && electron test_item_card_render.js",
+    "test:max-all": "node --check renderer.js && electron test_max_all_button.js",
+    "test:inventory-snapshot": "node --check inventory_snapshot_store.js && node --check renderer.js && node --check preload.js && node --check main.js && electron test_inventory_snapshot.js",
+    "test:inventory-selection": "node --check renderer.js && electron test_inventory_selection.js",
+    "test:player-roster": "node --check renderer.js && electron test_player_roster_refresh.js",
+    "test:native-card-inputs": "node --check native_item_sources.js && node --check native_stat_context.js && node --check native_stat_modifiers.js && node test_native_item_sources.js && node test_native_card_stats.js",
+    "test:native-card-render": "node --check native_card_protocol.js && node --check native_card_adapter.js && node --check native_card_model.js && electron test_native_card_render.js",
+    "test:native-equipment-cards": "node --check native_equipment_card.js && node --check serial_card_stats.js && electron test_native_equipment_cards.js"
   },
   "build": {
     "appId": "com.funkyoushift.msbt",
@@ -32,7 +40,11 @@
       "!*.log",
       "!vendor/python/**",
       "!vendor/*.zip",
-      "!vendor/_python_extract/**"
+      "!vendor/_python_extract/**",
+      "!test_*.js",
+      "!fixtures/**",
+      "!_tmp_*",
+      "!_tmp_*/**"
     ],
     "extraResources": [
       {

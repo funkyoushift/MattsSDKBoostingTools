@@ -1,4 +1,6 @@
-const { app, BrowserWindow, dialog, ipcMain, screen, shell, Menu } = require("electron");
+const { app, BrowserWindow, dialog, ipcMain, screen, shell, Menu, protocol } = require("electron");
+const {registerNativeCardSchemes,installNativeCardProtocol} = require("./native_card_protocol");
+registerNativeCardSchemes(protocol);
 const fsSync = require("fs");
 const fs = require("fs/promises");
 const os = require("os");
@@ -8,6 +10,7 @@ const { Blob } = require("buffer");
 const { pathToFileURL } = require("url");
 const { promisify } = require("util");
 const { bindWindowState } = require("./window_state_tracker");
+const inventorySnapshotStore = require("./inventory_snapshot_store");
 const {
   favoritesFilePath,
   readFavorites,
@@ -72,6 +75,7 @@ const {
 } = require("./mobile_gateway");
 const oak2Install = require("./oak2_install");
 const { MAX_OUTPUT_BYTES, PersistentPythonWorker } = require("./python_worker");
+const { loadResolver: loadSerialCardResolver } = require("./serial_card_resolve");
 
 function reportFatalStartupError(kind, error) {
   const message = error && error.stack ? error.stack : String(error);
@@ -181,6 +185,7 @@ const SDK_LOG_FILTER = /MattsSDKBoostingTools|ActorScriptDeployer|ASD_|dev_spawn
 const BL4_DEFAULT_SDK_MODS_CANDIDATES = oak2Install.bl4SdkModsCandidates();
 const USER_DATA_FILE_DEFINITIONS = [
   { key: "serialBookmarks", label: "Serial Bookmarks", fileName: "serial_bookmarks.json" },
+  { key: "inventorySnapshot", label: "Saved Inventory", fileName: "inventory_snapshot.json" },
   { key: "devSpawnerFavorites", label: "Dev Spawner Favorites", fileName: "dev_spawner_favorites.json" },
   { key: "travelFavorites", label: "Travel Favorites", fileName: "travel_favorites.json" },
   { key: "movementSettings", label: "Movement Presets", fileName: "movement_settings.json" },
@@ -1505,6 +1510,9 @@ ipcMain.handle("app:loadSerialBookmarks", async () => {
   return readBookmarks(filePath);
 });
 
+ipcMain.handle("app:loadInventorySnapshot", () => inventorySnapshotStore.loadSnapshot(app.getPath("userData")));
+ipcMain.handle("app:saveInventorySnapshot", (_event, payload) => inventorySnapshotStore.saveSnapshot(app.getPath("userData"), payload));
+
 ipcMain.handle("app:saveSerialBookmarks", async (_event, payload) => {
   const filePath = bookmarksFilePath(app.getPath("userData"));
   try {
@@ -1994,6 +2002,177 @@ ipcMain.handle("app:serialToolsConvert", async (_event, text) => {
   return runExternalPythonJson(code, text, 15000);
 });
 
+let serialCardResolver = null;
+const serialCardCache = new Map();
+
+function clearSerialCardResolveCache() {
+  serialCardCache.clear();
+}
+
+function getSerialCardResolver() {
+  if (serialCardResolver) return serialCardResolver;
+  const legitItems = path.join(EXTERNAL_APP_DIR, "matt_editor", "LegitItems");
+  serialCardResolver = loadSerialCardResolver({
+    sourceRoot: RESOURCE_ROOT,
+    paths: {
+      gzoPartsMap: [
+        path.join(MOD_DATA_DIR, "gzo_parts_map.json"),
+        path.join(RESOURCE_DIR, "gzo_parts_map.json"),
+        path.join(DOCS_DATA_DIR, "gzo_parts_map.json")
+      ],
+      legitRules: [
+        path.join(MOD_DATA_DIR, "legit_rules_flat.json"),
+        path.join(RESOURCE_DIR, "legit_rules_flat.json")
+      ],
+      uiStat: [
+        path.join(legitItems, "Nexus-Data-ui_stat0.json"),
+        path.join(legitItems, "Nexus-Data-ui_stat4.json"),
+        path.join(legitItems, "Nexus-Data-ui_stat6.json")
+      ],
+      inv: [
+        path.join(legitItems, "Nexus-Data-inv0.json"),
+        path.join(legitItems, "Nexus-Data-inv4.json"),
+        path.join(legitItems, "Nexus-Data-inv6.json")
+      ],
+      gbxTables: [
+        path.join(legitItems, "Nexus-Data-gbx_ue_data_table0.json"),
+        path.join(legitItems, "Nexus-Data-gbx_ue_data_table4.json"),
+        path.join(legitItems, "Nexus-Data-gbx_ue_data_table6.json")
+      ]
+    }
+  });
+  return serialCardResolver;
+}
+
+async function humanizeSerialsForCards(serials) {
+  const list = Array.from(new Set(
+    (Array.isArray(serials) ? serials : [])
+      .map((s) => String(s || "").trim())
+      .filter(Boolean)
+  ));
+  const out = new Map();
+  const needsDecode = [];
+  for (const text of list) {
+    if (!text.startsWith("@U")) {
+      out.set(text, { ok: true, human: text, serialized: "" });
+    } else {
+      needsDecode.push(text);
+    }
+  }
+  if (!needsDecode.length) return out;
+  const converted = await runExternalPythonJson(
+    [
+      "import json, sys",
+      "import external_serial_tools",
+      "payload = json.loads(sys.stdin.read() or '{}')",
+      "serials = payload.get('serials') or []",
+      "results = {}",
+      "for serial in serials:",
+      "    text = str(serial or '').strip()",
+      "    try:",
+      "        result = external_serial_tools.convert_serial_tool(text)",
+      "        results[text] = {",
+      "            'ok': True,",
+      "            'human': str(result.get('deserialized') or '').strip(),",
+      "            'serialized': str(result.get('serialized') or text).strip(),",
+      "            'message': str(result.get('message') or '')",
+      "        }",
+      "        if not results[text]['human']:",
+      "            results[text]['ok'] = False",
+      "            results[text]['message'] = results[text]['message'] or 'Serial decode failed.'",
+      "    except Exception as exc:",
+      "        results[text] = {'ok': False, 'human': '', 'serialized': text, 'message': str(exc)}",
+      "print(json.dumps({'ok': True, 'results': results}))"
+    ].join("\n"),
+    JSON.stringify({ serials: needsDecode }),
+    Math.max(20000, needsDecode.length * 250)
+  );
+  const results = (converted && converted.results && typeof converted.results === "object")
+    ? converted.results
+    : {};
+  for (const serial of needsDecode) {
+    const row = results[serial];
+    if (row && row.ok && row.human) {
+      out.set(serial, {
+        ok: true,
+        human: String(row.human || "").trim(),
+        serialized: String(row.serialized || serial).trim()
+      });
+    } else {
+      out.set(serial, {
+        ok: false,
+        human: "",
+        serialized: serial,
+        message: String((row && row.message) || (converted && converted.message) || "Serial decode failed.")
+      });
+    }
+  }
+  return out;
+}
+
+async function resolveSerialCardPayload(payload = {}) {
+  const resolver = getSerialCardResolver();
+  if (payload && (payload.clearCache || payload.bustCache)) {
+    clearSerialCardResolveCache();
+  }
+  const items = [];
+  if (Array.isArray(payload.serials)) {
+    for (const row of payload.serials) items.push(row);
+  } else if (payload.serial != null || payload.human != null || payload.text != null) {
+    items.push(payload.serial != null ? payload.serial : (payload.human != null ? payload.human : payload.text));
+  }
+  const unique = Array.from(new Set(items.map((item) => String(item || "").trim()).filter(Boolean)));
+  const decodedMap = await humanizeSerialsForCards(unique);
+  const cards = [];
+  for (const raw of unique.length ? unique : items.map((item) => String(item || "").trim())) {
+    if (!raw) {
+      cards.push({ ok: false, serial: "", card: null, message: "Empty serial." });
+      continue;
+    }
+    if (serialCardCache.has(raw)) {
+      cards.push(serialCardCache.get(raw));
+      continue;
+    }
+    const decoded = decodedMap.get(raw) || { ok: false, message: "Decode failed." };
+    if (!decoded.ok) {
+      const failed = { ok: false, serial: raw, card: null, message: decoded.message || "Decode failed." };
+      cards.push(failed);
+      continue;
+    }
+    const card = resolver.resolveFromHuman(decoded.human);
+    const row = {
+      ok: Boolean(card && card.meta_ok),
+      serial: decoded.serialized || (raw.startsWith("@U") ? raw : ""),
+      human: decoded.human,
+      card,
+      message: card && card.meta_ok ? "Resolved offline." : "No offline card fields for this serial."
+    };
+    serialCardCache.set(raw, row);
+    if (row.serial && row.serial !== raw) serialCardCache.set(row.serial, row);
+    cards.push(row);
+  }
+  return {
+    ok: cards.some((row) => row.ok),
+    cards,
+    stats: resolver.stats,
+    message: cards.length === 1
+      ? (cards[0].message || "")
+      : `Resolved ${cards.filter((row) => row.ok).length}/${cards.length} serial(s).`
+  };
+}
+
+ipcMain.handle("app:serialCardResolve", async (_event, payload) => {
+  try {
+    return await resolveSerialCardPayload(payload || {});
+  } catch (error) {
+    return {
+      ok: false,
+      cards: [],
+      message: String(error && error.message ? error.message : error)
+    };
+  }
+});
+
 ipcMain.handle("app:serialDecodeCheck", async (_event, payload) => {
   const code = [
     "import json, sys",
@@ -2443,6 +2622,7 @@ app.whenReady().then(() => {
   }
 
   configureAutoUpdater();
+  installNativeCardProtocol(protocol);
   createWindow();
   // Quiet startup auto-check: never blocks UI; offline keeps last-good cache.
   softRefreshDataCatalogs({ quiet: true })

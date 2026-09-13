@@ -733,7 +733,7 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
     if action == "max_sdu":
         return backend_actions.max_sdu()
     if action == "max_all":
-        return backend_actions.max_all()
+        return backend_actions.max_all(payload)
     if action.startswith("uvh_boost_tier_"):
         return backend_actions.uvh_boost_tier(action.rsplit("_", 1)[-1])
     if action == "uvh_boost_all":

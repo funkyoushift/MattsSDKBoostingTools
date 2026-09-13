@@ -1,0 +1,1488 @@
+body {
+    line-height: 100%;
+    box-sizing: border-box;
+}
+
+button,
+div {
+    font-family: "Industry-Normal";
+    color: white;
+    line-height: 100%;
+    box-sizing: border-box;
+}
+
+p {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-block-start: unset;
+    margin-block-end: unset;
+    margin-inline-start: unset;
+    margin-inline-end: unset;
+    box-sizing: border-box;
+    line-height: 115%;
+}
+
+.header {
+    font-family: Industry-Bold;
+}
+
+.Ico_Glyph_Hint {
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: local;
+    background-size: contain;
+    position: relative;
+    min-width: 3rem;
+    min-height: 3rem;
+    max-height: 3rem;
+    max-width: 3rem;
+    width: 3rem;
+    height: 3rem;
+    margin: 0 0.5rem 0 -1.2rem;
+}
+
+.Ico_Glyph_Hint_More {
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: local;
+    background-size: contain;
+    position: relative;
+    min-width: 3rem;
+    min-height: 3rem;
+    max-height: 3rem;
+    max-width: 3rem;
+    width: 3rem;
+    height: 3rem;
+    margin: 0 1.5rem 0 0.5rem;
+}
+
+.Ico_Glyph_Markup {
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: local;
+    background-size: contain;
+    position: relative;
+}
+
+.Ico_Glyph_Markup .glyph-key {
+    display: flex;
+    padding-right: 2.2rem;
+    padding-top: 0rem;
+    margin-left: 0rem;
+}
+
+.Ico_Glyph_Markup .glyph-key.wide {
+    padding-right: 3rem;
+}
+
+.Ico_Glyph_Markup .glyph-key.extra_wide {
+    padding-right: 4rem;
+}
+
+.damagetype.corrosive {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_elemental_damage/ico_ui_art_elemental_corrosive.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.item_card_element_text.corrosive,
+.damagetype.textcolor-corrosive {
+    color: #72f800;
+}
+
+.damagetype.cryo {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_elemental_damage/ico_ui_art_elemental_cryo.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.item_card_element_text.cryo,
+.damagetype.textcolor-cryo {
+    color: #53fbfb;
+}
+
+.damagetype.fire {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_elemental_damage/ico_ui_art_elemental_fire.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.item_card_element_text.fire,
+.damagetype.textcolor-fire {
+    color: #ff5224;
+}
+
+.damagetype.electric {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_elemental_damage/ico_ui_art_elemental_shock.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.item_card_element_text.electric,
+.damagetype.textcolor-electric {
+    color: #2f63f9;
+}
+
+.damagetype.radiation {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_elemental_damage/ico_ui_art_elemental_radiation.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.item_card_element_text.radiation,
+.damagetype.textcolor-radiation {
+    color: #f1ff00;
+}
+
+.damagetype.impact {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_elemental_damage/ico_ui_art_elemental_kinetic.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.item_card_element_text.impact,
+.damagetype.textcolor-impact {
+    color: #e4d9ce;
+}
+
+.damagetype.all {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_elemental_damage/ico_ui_art_elemental_all.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.damagetype.tint-all {
+    filter: coh-color-matrix(0.8941176470588236, 0, 0, 0, 0, 0, 0.8509803921568627, 0, 0, 0, 0, 0, 0.807843137254902, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.item_card_element_text.all,
+.damagetype.textcolor-all {
+    color: #e4d9ce;
+}
+
+.damagetype.frame {
+    /* This is the frame that goes around the damage type. Separated so it can be tinted without effecting the damage type */
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_elemental_damage/ico_ui_art_elemental_frame.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    filter: coh-color-matrix(0.6235294117647059, 0, 0, 0, 0, 0, 0.6784313725490196, 0, 0, 0, 0, 0, 0.6901960784313725, 0, 0, 0, 0, 0, 1, 0);
+    opacity: 0.5;
+}
+
+.damagetype.wrapper {
+    position: relative;
+}
+
+.weapontype,
+.itemtype {
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+}
+
+.weapontype.none {
+    background-image: none;
+}
+
+.weapontype.pistol {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_weapon_small/ico_ui_art_pistol_small.png");
+}
+
+.weapontype.smg {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_weapon_small/ico_ui_art_smg_small.png");
+}
+
+.weapontype.shotgun {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_weapon_small/ico_ui_art_shotgun_small.png");
+}
+
+.weapontype.assaultrifle {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_weapon_small/ico_ui_art_assault_small.png");
+}
+
+.weapontype.sniper {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_weapon_small/ico_ui_art_sniper_small.png");
+}
+
+.weapontype.heavy,
+.itemtype.heavy {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_weapon_small/ico_ui_art_heavy_small.png");
+}
+
+.itemtype.ammo {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_weapon_small/ico_ui_art_ammo.png");
+}
+
+.itemtype.bio_shield,
+.itemtype.armor_shield,
+.itemtype.energy_shield {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_weapon_small/ico_ui_art_shields_small.png");
+}
+
+.itemtype.grenade_gadget {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_weapon_small/ico_ui_art_gadget_small.png");
+}
+
+.itemtype.repair_kit {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_weapon_small/ico_ui_art_repkit_small.png");
+}
+
+.itemtype.classmod {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_weapon_small/ico_ui_art_class_mod_small.png");
+}
+
+.itemtype.enhancement {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_weapon_small/ico_ui_art_enhancement_small.png");
+}
+
+/* Random shared UI */
+/* Rarity indicator */
+/*** BEGIN: Font scaling ***/
+/* Default Font styles for the menus */
+.big_text_1 {
+    font-size: 4rem;
+}
+
+.big_text_2 {
+    font-size: 3.6rem;
+}
+
+.med_text_1 {
+    font-size: 3rem;
+}
+
+.med_text_2 {
+    font-size: 2.6rem;
+}
+
+.small_text_1 {
+    font-size: 2.4rem;
+}
+
+.small_text_2 {
+    font-size: 2rem;
+}
+
+/* Large Font scale for Menus */
+.menu_scale_1 .big_text_1 {
+    font-size: 4.2rem;
+}
+
+.menu_scale_1 .big_text_2 {
+    font-size: 3.8rem;
+}
+
+.menu_scale_1 .med_text_1 {
+    font-size: 3.2rem;
+}
+
+.menu_scale_1 .med_text_2 {
+    font-size: 2.8rem;
+}
+
+.menu_scale_1 .small_text_1 {
+    font-size: 2.6rem;
+}
+
+.menu_scale_1 .small_text_2 {
+    font-size: 2.5rem;
+}
+
+.menu_scale_1 .tooltip_cntr_backing {
+    max-width: 64rem;
+}
+
+.menu_scale_1 .Ico_Glyph_Markup .glyph-key {
+    padding-right: 2.5rem;
+}
+
+.menu_scale_1 .Ico_Glyph_Markup .glyph-key.wide {
+    padding-right: 3.5rem;
+}
+
+.menu_scale_1 .Ico_Glyph_Markup .glyph-key.extra_wide {
+    padding-right: 4.8rem;
+}
+
+/* Extra Large font scale for Menus*/
+.menu_scale_2 .big_text_1 {
+    font-size: 4.4rem;
+}
+
+.menu_scale_2 .big_text_2 {
+    font-size: 4rem;
+}
+
+.menu_scale_2 .med_text_1 {
+    font-size: 3.4rem;
+}
+
+.menu_scale_2 .med_text_2 {
+    font-size: 3rem;
+}
+
+.menu_scale_2 .small_text_1 {
+    font-size: 2.8rem;
+}
+
+.menu_scale_2 .small_text_2 {
+    font-size: 2.8rem;
+}
+
+.menu_scale_2 .Ico_Glyph_Markup .glyph-key {
+    padding-right: 2.8rem;
+}
+
+.menu_scale_2 .Ico_Glyph_Markup .glyph-key.wide {
+    padding-right: 3.9rem;
+}
+
+.menu_scale_2 .Ico_Glyph_Markup .glyph-key.extra_wide {
+    padding-right: 5.2rem;
+}
+
+.menu_scale_2 .tooltip_cntr_backing {
+    max-width: 74rem;
+}
+
+.menu_scale_1 .tooltip_cntr_backing.menu_challenges_info_card_wrapper,
+.menu_scale_1 .game_sett_tooltip_wrapper .tooltip_cntr_backing,
+.menu_scale_1 .matchmaking_sett_wrapper .tooltip_cntr_backing,
+.menu_scale_2 .tooltip_cntr_backing.menu_challenges_info_card_wrapper,
+.menu_scale_2 .game_sett_tooltip_wrapper .tooltip_cntr_backing,
+.menu_scale_2 .matchmaking_sett_wrapper .tooltip_cntr_backing {
+    max-width: 52.5rem;
+}
+
+/*** END: Font scaling ***/
+/* HUD perspective*/
+.hud_master_perspective {
+    perspective: 300rem;
+}
+
+.hud_left_tilt {
+    transform: rotateY(30deg);
+    transform-origin: center left;
+}
+
+.hud_right_tilt {
+    transform: rotateY(-30deg);
+    transform-origin: center right;
+}
+
+.game_setting {
+    background-image: none;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+    width: 100%;
+    height: 100%;
+}
+
+.game_setting.crossplay_on {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_game_settings/ico_ui_art_crossplay_on.png");
+}
+
+.game_setting.crossplay_off {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_game_settings/ico_ui_art_crossplay_off.png");
+}
+
+.game_setting.social_friends_only {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_game_settings/ico_ui_art_social_friends_only.png");
+}
+
+.game_setting.social_lan {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_game_settings/ico_ui_art_social_lan.png");
+}
+
+.game_setting.social_offline {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_game_settings/ico_ui_art_local_only.png");
+}
+
+.game_setting.social_invite_only {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_game_settings/ico_ui_art_social_invite_only.png");
+}
+
+.game_setting.social_public {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_game_settings/ico_ui_art_social_public.png");
+}
+
+.game_setting.difficulty_easy {
+    background-image: url("coui://uiresources/menu_new_game/assets/ui_art_asset/icon_difficulty_easy.png");
+}
+
+.game_setting.difficulty_normal {
+    background-image: url("coui://uiresources/menu_new_game/assets/ui_art_asset/icon_difficulty_normal.png");
+}
+
+.game_setting.difficulty_hard {
+    background-image: url("coui://uiresources/menu_new_game/assets/ui_art_asset/icon_difficulty_hard.png");
+}
+
+.game_setting.uvh {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_mayhem/ico_art_vaulthunter_ultimate.png");
+}
+
+.game_setting.truemode {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_game_settings/ico_ui_art_true_mode.png");
+}
+
+.character.none,
+.character.char_placeholder {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_item_state/ico_ui_art_unknown_avatar.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+}
+
+.character.char_darksiren {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_vault_hunters/player_class_dark_siren.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+}
+
+.class_tint.char_darksiren {
+    filter: coh-color-matrix(0.8274509803921568, 0, 0, 0, 0, 0, 0.1411764705882353, 0, 0, 0, 0, 0, 0.7019607843137254, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.character.char_gravitar {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_vault_hunters/player_class_gravitar.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+}
+
+.class_tint.char_gravitar {
+    filter: coh-color-matrix(0.6666666666666666, 0, 0, 0, 0, 0, 0.9254901960784314, 0, 0, 0, 0, 0, 0.6588235294117647, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.character.char_exosoldier {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_vault_hunters/player_class_exo_soldier.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+}
+
+.class_tint.char_exosoldier {
+    filter: coh-color-matrix(0.19215686274509805, 0, 0, 0, 0, 0, 0.9254901960784314, 0, 0, 0, 0, 0, 0.9254901960784314, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.character.char_paladin {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_vault_hunters/player_class_paladin.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+}
+
+.class_tint.char_paladin {
+    filter: coh-color-matrix(0.996078431372549, 0, 0, 0, 0, 0, 0.596078431372549, 0, 0, 0, 0, 0, 0.11764705882352941, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.character.char_robodealer {
+    background-image: url("cowbell://uiresources/portrait_icons/player_class_robodealer_tooltip.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+}
+
+.class_tint.char_robodealer {
+    filter: coh-color-matrix(0.23921568627450981, 0, 0, 0, 0, 0, 0.7450980392156863, 0, 0, 0, 0, 0, 0.6078431372549019, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.character.char_corpohacker {
+    background-image: url("harmonica://uiresources/corpo_hacker_icons/portrait/player_class_loveless.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+}
+
+.class_tint.char_corpohacker {
+    filter: coh-color-matrix(0.6, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0.3607843137254902, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.platform.steam {
+    background-image: url("coui://uiresources/_shared/assets/platform_icons/icon_steam.png");
+}
+
+.platform.epic {
+    background-image: url("coui://uiresources/_shared/assets/platform_icons/icon_epic.png");
+}
+
+.platform.psn {
+    background-image: url("coui://uiresources/_shared/assets/platform_icons/icon_psn.png");
+}
+
+.platform.xboxlive {
+    background-image: url("coui://uiresources/_shared/assets/platform_icons/icon_xbox.png");
+}
+
+.platform.shift {
+    background-image: url("coui://uiresources/_shared/assets/platform_icons/icon_shift.png");
+}
+
+.platform.sage {
+    background-image: url("coui://uiresources/_shared/assets/platform_icons/sage_icons/icon_sage.png");
+}
+
+.platform.generic {
+    background-image: url("coui://uiresources/_shared/assets/platform_icons/icon_shift.png");
+}
+
+.oak_line_divider {
+    display: flex;
+    height: 0.2rem;
+    align-items: center;
+    margin: 1rem 0.1rem 1rem 0.1rem;
+}
+
+.oak_line_divider_accent_orange {
+    width: 0.75rem;
+    background-color: #ff7800;
+    height: 100%;
+}
+
+.oak_line_divider_accent_teal {
+    background-color: #088aa3;
+    height: 100%;
+    flex: 1 0;
+    margin: 0rem 0.3rem 0rem 0.3rem;
+}
+
+.oak_menu_divider {
+    border-image-source: url("coui://uiresources/_shared/assets/ui_art_misc_assets/menu_divider.png");
+    border-image-slice: 100% 50% 0% 40.9% fill;
+    border-image-width: 0.75rem 5.5rem 0 0;
+    border-image-repeat: repeat repeat;
+    width: 100%;
+    height: 0.8rem;
+}
+
+/* Menu screen boundaries 16:9 aspect ratio */
+.widget .menu_screen_boundaries {
+    max-width: 192rem;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    height: 100%;
+}
+
+.widget .menu_screen_boundaries>div {
+    pointer-events: auto;
+}
+
+.menu_screen_padding {
+    padding: 15rem 4rem 7rem 4rem;
+}
+
+.no_padding {
+    padding: 0rem 0rem 0rem 0rem;
+}
+
+.no_margin {
+    margin: 0rem 0rem 0rem 0rem;
+}
+
+/* Menu screen boundaries 16:9 aspect ratio */
+/* Parallax */
+.parallax_container {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+}
+
+.parallax_transition_1 {
+    transition: transform 0.1s ease-out;
+    pointer-events: none;
+}
+
+.parallax_transition_2 {
+    transition: transform 0.3s ease-out;
+    pointer-events: none;
+}
+
+.parallax_transition_3 {
+    transition: transform 0.6s ease-out;
+    pointer-events: none;
+}
+
+/* Parallax */
+.None {
+    /*Uppercase None*/
+    filter: none;
+}
+
+/*Presentation Def*/
+.mainmission_tint {
+    filter: coh-color-matrix(1, 0, 0, 0, 0, 0, 0.7568627450980392, 0, 0, 0, 0, 0, 0.10588235294117647, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.sidemission_tint {
+    filter: coh-color-matrix(0.38823529411764707, 0, 0, 0, 0, 0, 0.8196078431372549, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.contractmission_tint {
+    filter: coh-color-matrix(0.25882352941176473, 0, 0, 0, 0, 0, 0.9215686274509803, 0, 0, 0, 0, 0, 0.8705882352941177, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.proximitymission_tint {
+    filter: coh-color-matrix(0.8235294117647058, 0, 0, 0, 0, 0, 0.8745098039215686, 0, 0, 0, 0, 0, 0.8862745098039215, 0, 0, 0, 0, 0, 1, 0);
+}
+
+/*Crosshair shared css*/
+.crosshair_glow {
+    filter: drop-shadow(0rem 0rem 0.2rem #83e6ff);
+    width: 100%;
+    height: 100%;
+}
+
+.crosshair_accuracy_shadow {
+    filter: drop-shadow(0rem 0rem 0.1rem rgba(3, 16, 26));
+    width: 100%;
+    height: 100%;
+}
+
+/*High Contrast Options*/
+.hc_crosshair_outline {
+    /* this can be applied to any spread and accuracy parent div in the crosshairs html*/
+    filter: drop-shadow(0rem 0rem 0.2rem rgba(0, 0, 0)) drop-shadow(0rem 0rem 0.2rem rgba(0, 0, 0)) brightness(150%) contrast(350%) grayscale(100%);
+}
+
+.hc_hud_text {
+    /* this can be applied to any text div anywhere but most useful in the HUD*/
+    color: white !important;
+    background-color: rgba(3, 16, 26, 0.8);
+    opacity: 1;
+}
+
+/* Text Ellipses */
+.text_overflow_ellipsis,
+.text_overflow_ellipsis>p {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow-x: hidden;
+}
+
+.menu_bg_nostandin {
+    background-image: linear-gradient(0deg, #032730 0%, rgba(2, 23, 32, 255) 24.534161490683232%, #00030a 100%);
+}
+
+.shrink_text {
+    coh-font-fit-mode: shrink;
+    white-space: nowrap;
+}
+
+/* Text Stroke */
+.hud_text_stroke {
+    text-stroke-width: 0.25rem;
+    text-stroke-color: rgba(10, 37, 55, 0.8);
+}
+
+/* World Icons */
+.arrow_indicator_wrapper {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-55%);
+    width: 17rem;
+    height: 17rem;
+}
+
+.arrow_indicator_rotator {
+    width: 100%;
+    height: 100%;
+    transform: rotateZ(180deg);
+}
+
+.arrow_indicator_cntr {
+    position: absolute;
+    top: 0%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0 0 0 0;
+    width: 4.8rem;
+    height: 2.9rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.arrow_indicator_icon {
+    width: 3.6rem;
+    height: 2.95rem;
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_arrows/ico_ui_art_offscreen_arrow.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+    position: relative;
+    top: 0.5rem;
+    left: 0.1rem;
+    opacity: 0.8;
+}
+
+/***** Optimization classes *****/
+.fill_content {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.full_size {
+    height: 100%;
+    width: 100%;
+}
+
+.full_absolute_size {
+    bottom: 0rem;
+    left: 0rem;
+    position: absolute;
+    right: 0rem;
+    top: 0rem;
+}
+
+.full_absolute_center {
+    height: 100%;
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    width: 100%;
+}
+
+.full_absolute_left_top {
+    height: 100%;
+    left: 0rem;
+    position: absolute;
+    top: 0rem;
+    width: 100%;
+}
+
+.full_absolute_flex {
+    align-items: center;
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    position: absolute;
+    width: 100%;
+}
+
+.full_relative {
+    height: 100%;
+    position: relative;
+    width: 100%;
+}
+
+.full_relative_flex_center {
+    align-items: center;
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    position: relative;
+    width: 100%;
+}
+
+.full_background_setting {
+    background-attachment: scroll;
+    background-image: none;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: 100%;
+    width: 100%;
+}
+
+.display_flex_center {
+    align-items: center;
+    display: flex;
+    position: relative;
+}
+
+.background_setting_left_top {
+    background-attachment: scroll;
+    background-image: none;
+    background-position: left top;
+    background-repeat: repeat;
+    background-size: auto;
+}
+
+.display_flex_relative {
+    display: flex;
+    position: relative;
+}
+
+.menu_changelist {
+    position: absolute;
+    bottom: 3.5rem;
+    left: 7rem;
+    pointer-events: none;
+}
+
+.menu_echo_os_ver {
+    font-size: 1.25rem;
+    font-family: Industry-Medium;
+    margin: 0.25rem 1rem 0.25rem 1rem;
+    position: relative;
+    color: #2d95ca;
+}
+
+.menu_echo_os_bg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-image-source: url("coui://uiresources/_shared/assets/ui_art_misc_assets/echo_os_bg.png");
+    border-image-slice: 49% 49% 49% 49% fill;
+    border-image-width: 0.5rem 0.25rem 0.5rem 0.25rem;
+}
+
+.full_absolute_size_no_pointer {
+    bottom: 0rem;
+    left: 0rem;
+    pointer-events: none;
+    position: absolute;
+    right: 0rem;
+    top: 0rem;
+}
+
+.position_absolute_flex_center {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    position: absolute;
+}
+
+.vh_absolute_left_top {
+    height: 100vh;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100vw;
+}
+
+.full_no_pointer {
+    height: 100%;
+    pointer-events: none;
+    width: 100%;
+}
+
+.flex_height_low_opacity {
+    background-color: rgba(255, 255, 255, 0.1);
+    flex: 1 0 auto;
+    height: 100%;
+}
+
+.flex_start_margin {
+    align-items: center;
+    display: flex;
+    height: 2.5rem;
+    justify-content: flex-start;
+    margin: 0rem 0.1rem 1rem 0rem;
+}
+
+.flex_row {
+    display: flex;
+    flex-direction: row;
+}
+
+.flex_column {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.display_flex_justify_center {
+    align-items: center;
+    display: flex;
+    height: 100%;
+    justify-content: center;
+}
+
+.position_absolute_center {
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translateX(-50%) translateY(-50%);
+}
+
+.mm_panel_logo {
+    position: absolute;
+    width: 100%;
+    height: 24rem;
+    background-image: url("coui://uiresources/menu_main/assets/ui_art_asset/menu_panel_logo.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+    opacity: 1;
+    top: 2rem;
+}
+
+.mm_panel_bkg {
+    width: 100%;
+    height: 93.7rem;
+    position: absolute;
+    top: -2.1rem;
+    opacity: 1;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.mm_bg_pattern_left {
+    background-image: url("coui://uiresources/menu_main/assets/ui_art_asset/menu_panel_logo_bg_2.png");
+    background-repeat: no-repeat;
+    background-position: left top;
+    background-attachment: scroll;
+    background-size: contain;
+    width: 25.85rem;
+    height: 93.7rem;
+}
+
+.mm_tooltip_cntr .tooltip_cntr_backing {
+    min-width: 40rem;
+    max-width: 40rem;
+}
+
+/* unique tooltip scaling rules START */
+.menu_scale_1 .mm_tooltip_cntr .tooltip_cntr_backing,
+.menu_scale_2 .mm_tooltip_cntr .tooltip_cntr_backing {
+    min-width: 50rem;
+    max-width: 50rem;
+}
+
+.skill_tooltip_cntr.tooltip_cntr_backing {
+    max-width: 60rem;
+}
+
+.menu_scale_1 .skill_tooltip_cntr.tooltip_cntr_backing {
+    max-width: 70rem;
+}
+
+.menu_scale_1 .skill_tooltip_image {
+    height: 12rem;
+}
+
+.menu_scale_2 .skill_tooltip_image_wrapper {
+    display: none !important;
+}
+
+.menu_scale_2 .skill_tooltip_cntr.tooltip_cntr_backing {
+    max-width: 80rem;
+}
+
+/* unique tooltip scaling rules END */
+.mm_bg_pattern_right_flip {
+    transform: scaleX(-1);
+}
+
+/* shared property from mission log and mission accept*/
+.ml_reward_tooltip {
+    display: flex;
+    align-items: center;
+}
+
+.reward_title {
+    position: relative;
+}
+
+/* header manufacturer logomarks*/
+.ic_header_manufacturer_bkg {
+    width: 11.7rem;
+    height: 7.6rem;
+    position: absolute;
+    right: 0.25rem;
+    bottom: 0.7rem;
+    background-image: none;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+}
+
+.ic_header_manufacturer_bkg.borg,
+.borg .ic_header_manufacturer_bkg {
+    background-image: url("coui://uiresources/_shared/assets/ui_art_manufacturer_logos/ui_art_manu_itemcard_logomark_ripper.png");
+}
+
+.ic_header_manufacturer_bkg.daedalus,
+.daedalus .ic_header_manufacturer_bkg {
+    background-image: url("coui://uiresources/_shared/assets/ui_art_manufacturer_logos/ui_art_manu_itemcard_logomark_daedalus.png");
+}
+
+.ic_header_manufacturer_bkg.jakobs,
+.jakobs .ic_header_manufacturer_bkg {
+    background-image: url("coui://uiresources/_shared/assets/ui_art_manufacturer_logos/ui_art_manu_itemcard_logomark_jakobs.png");
+}
+
+.ic_header_manufacturer_bkg.maliwan,
+.maliwan .ic_header_manufacturer_bkg {
+    background-image: url("coui://uiresources/_shared/assets/ui_art_manufacturer_logos/ui_art_manu_itemcard_logomark_maliwan.png");
+}
+
+.ic_header_manufacturer_bkg.order,
+.order .ic_header_manufacturer_bkg {
+    background-image: url("coui://uiresources/_shared/assets/ui_art_manufacturer_logos/ui_art_manu_itemcard_logomark_order.png");
+}
+
+.ic_header_manufacturer_bkg.tediore,
+.tediore .ic_header_manufacturer_bkg {
+    background-image: url("coui://uiresources/_shared/assets/ui_art_manufacturer_logos/ui_art_manu_itemcard_logomark_tediore.png");
+}
+
+.ic_header_manufacturer_bkg.torgue,
+.torgue .ic_header_manufacturer_bkg {
+    background-image: url("coui://uiresources/_shared/assets/ui_art_manufacturer_logos/ui_art_manu_itemcard_logomark_torgue.png");
+}
+
+.ic_header_manufacturer_bkg.vladof,
+.vladof .ic_header_manufacturer_bkg {
+    background-image: url("coui://uiresources/_shared/assets/ui_art_manufacturer_logos/ui_art_manu_itemcard_logomark_vladof.png");
+}
+
+.ic_header_manufacturer_bkg.atlas,
+.atlas .ic_header_manufacturer_bkg {
+    background-image: url("coui://uiresources/_shared/assets/ui_art_manufacturer_logos/ui_art_manu_itemcard_logomark_atlas.png");
+}
+
+.ic_header_manufacturer_bkg.hyperion,
+.hyperion .ic_header_manufacturer_bkg {
+    background-image: url("coui://uiresources/_shared/assets/ui_art_manufacturer_logos/ui_art_manu_itemcard_logomark_hyperion.png");
+}
+
+.ic_header_manufacturer_bkg.cov,
+.cov .ic_header_manufacturer_bkg {
+    background-image: url("coui://uiresources/_shared/assets/ui_art_manufacturer_logos/ui_art_manu_itemcard_logomark_cov.png");
+}
+
+/* header manufacturer logomarks END*/
+/* Weapon Slot manufacturer icons */
+.me_weapon_slot_manufacturer {
+    position: absolute;
+    width: 5rem;
+    height: 5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 1rem;
+    opacity: 0.35;
+    background-image: none;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+}
+
+.me_weapon_slot_manufacturer.borg,
+.borg .me_weapon_slot_manufacturer {
+    background-image: url("coui://uiresources/_shared/assets/ui_art_manufacturer_logos/ui_art_manu_logomark_ripper.png");
+}
+
+.me_weapon_slot_manufacturer.daedalus,
+.daedalus .me_weapon_slot_manufacturer {
+    background-image: url("coui://uiresources/_shared/assets/ui_art_manufacturer_logos/ui_art_manu_logomark_daedalus.png");
+}
+
+.me_weapon_slot_manufacturer.jakobs,
+.jakobs .me_weapon_slot_manufacturer {
+    background-image: url("coui://uiresources/_shared/assets/ui_art_manufacturer_logos/ui_art_manu_logomark_jakobs.png");
+}
+
+.me_weapon_slot_manufacturer.maliwan,
+.maliwan .me_weapon_slot_manufacturer {
+    background-image: url("coui://uiresources/_shared/assets/ui_art_manufacturer_logos/ui_art_manu_logomark_maliwan.png");
+}
+
+.me_weapon_slot_manufacturer.order,
+.order .me_weapon_slot_manufacturer {
+    background-image: url("coui://uiresources/_shared/assets/ui_art_manufacturer_logos/ui_art_manu_logomark_order.png");
+}
+
+.me_weapon_slot_manufacturer.tediore,
+.tediore .me_weapon_slot_manufacturer {
+    background-image: url("coui://uiresources/_shared/assets/ui_art_manufacturer_logos/ui_art_manu_logomark_tediore.png");
+}
+
+.me_weapon_slot_manufacturer.torgue,
+.torgue .me_weapon_slot_manufacturer {
+    background-image: url("coui://uiresources/_shared/assets/ui_art_manufacturer_logos/ui_art_manu_logomark_torgue.png");
+}
+
+.me_weapon_slot_manufacturer.vladof,
+.vladof .me_weapon_slot_manufacturer {
+    background-image: url("coui://uiresources/_shared/assets/ui_art_manufacturer_logos/ui_art_manu_logomark_vladof.png");
+}
+
+.me_weapon_slot_manufacturer.atlas,
+.atlas .me_weapon_slot_manufacturer {
+    background-image: url("coui://uiresources/_shared/assets/ui_art_manufacturer_logos/ui_art_manu_logomark_atlas.png");
+}
+
+.me_weapon_slot_manufacturer.hyperion,
+.hyperion .me_weapon_slot_manufacturer {
+    background-image: url("coui://uiresources/_shared/assets/ui_art_manufacturer_logos/ui_art_manu_logomark_hyperion.png");
+}
+
+.me_weapon_slot_manufacturer.cov,
+.cov .me_weapon_slot_manufacturer {
+    background-image: url("coui://uiresources/_shared/assets/ui_art_manufacturer_logos/ui_art_manu_logomark_cov.png");
+}
+
+/* Passive skills tinting on Item Card and Item Inspect*/
+.item_inspect_class_mods.red .item_inspect_passive_icon_backing,
+.item_card_class_mod_inner_wrapper.red .item_card_class_mod_icon_backing,
+.item_inspect_stat_tooltip_content.red .item_inspect_passive_icon_backing {
+    filter: coh-color-matrix(0.6666666666666666, 0, 0, 0, 0, 0, 0.2235294117647059, 0, 0, 0, 0, 0, 0.15294117647058825, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.item_inspect_class_mods.blue .item_inspect_passive_icon_backing,
+.item_card_class_mod_inner_wrapper.blue .item_card_class_mod_icon_backing,
+.item_inspect_stat_tooltip_content.blue .item_inspect_passive_icon_backing {
+    filter: coh-color-matrix(0.1803921568627451, 0, 0, 0, 0, 0, 0.43137254901960786, 0, 0, 0, 0, 0, 0.6431372549019608, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.item_inspect_class_mods.green .item_inspect_passive_icon_backing,
+.item_card_class_mod_inner_wrapper.green .item_card_class_mod_icon_backing,
+.item_inspect_stat_tooltip_content.green .item_inspect_passive_icon_backing {
+    filter: coh-color-matrix(0.1803921568627451, 0, 0, 0, 0, 0, 0.4627450980392157, 0, 0, 0, 0, 0, 0.37254901960784315, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.item_inspect_class_mods.red .item_inspect_class_mod_icon_spec,
+.item_inspect_stat_tooltip_content.red .item_inspect_class_mod_icon_spec,
+.item_card_class_mod_inner_wrapper.red .item_card_class_mod_icon_spec {
+    filter: coh-color-matrix(0.8588235294117647, 0, 0, 0, 0, 0, 0.5137254901960784, 0, 0, 0, 0, 0, 0.3058823529411765, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.item_inspect_class_mods.blue .item_inspect_class_mod_icon_spec,
+.item_inspect_stat_tooltip_content.blue .item_inspect_class_mod_icon_spec,
+.item_card_class_mod_inner_wrapper.blue .item_card_class_mod_icon_spec {
+    filter: coh-color-matrix(0.23529411764705882, 0, 0, 0, 0, 0, 0.6862745098039216, 0, 0, 0, 0, 0, 0.6823529411764706, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.item_inspect_class_mods.green .item_inspect_class_mod_icon_spec,
+.item_inspect_stat_tooltip_content.green .item_inspect_class_mod_icon_spec,
+.item_card_class_mod_inner_wrapper.green .item_card_class_mod_icon_spec {
+    filter: coh-color-matrix(0.49019607843137253, 0, 0, 0, 0, 0, 0.803921568627451, 0, 0, 0, 0, 0, 0.4588235294117647, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.item_inspect_class_mods.red .item_inspect_class_amount,
+.item_inspect_stat_tooltip_content.red .item_inspect_skill_class_name,
+.item_card_class_mod_inner_wrapper.red .ic_class_mod_point_text {
+    color: #db834e;
+}
+
+.item_inspect_class_mods.blue .item_inspect_class_amount,
+.item_inspect_stat_tooltip_content.blue .item_inspect_skill_class_name,
+.item_card_class_mod_inner_wrapper.blue .ic_class_mod_point_text {
+    color: #3cafae;
+}
+
+.item_inspect_class_mods.green .item_inspect_class_amount,
+.item_inspect_stat_tooltip_content.green .item_inspect_skill_class_name,
+.item_card_class_mod_inner_wrapper.green .ic_class_mod_point_text {
+    color: #7dcd75;
+}
+
+/* Passive skills tinting on Item Card and Item Inspect END*/
+@font-face {
+    font-family: Mononum-Industry-Normal;
+    src: url("coui://uiresources/_shared/fonts/IndustryMono-Book.ttf");
+}
+
+@font-face {
+    font-family: Mononum-Industry-Medium;
+    src: url("coui://uiresources/_shared/fonts/IndustryMono-Medium.ttf");
+}
+
+@font-face {
+    font-family: Mononum-Industry-MediumItalic;
+    src: url("coui://uiresources/_shared/fonts/IndustryMono-MediumItalic.ttf");
+}
+
+@font-face {
+    font-family: Mononum-Industry-DemiBold;
+    src: url("coui://uiresources/_shared/fonts/IndustryMono-Demi.ttf");
+}
+
+@font-face {
+    font-family: Mononum-Industry-Bold;
+    src: url("coui://uiresources/_shared/fonts/IndustryMono-Bold.ttf");
+}
+
+/* this is needed for the UI editor to properly show the fonts */
+/* Animation for FLoating Panel IOs (vending, lost loot, new character, etc)*/
+@media (language: None) {
+    @font-face {
+        font-family: Industry-Normal;
+        src: url("coui://uiresources/_shared/fonts/Industry-Book.ttf");
+    }
+
+    @font-face {
+        font-family: Industry-Medium;
+        src: url("coui://uiresources/_shared/fonts/Industry-Medium.ttf");
+    }
+
+    @font-face {
+        font-family: Industry-MediumItalic;
+        src: url("coui://uiresources/_shared/fonts/Industry-MediumItalic.ttf");
+    }
+
+    @font-face {
+        font-family: Industry-DemiBold;
+        src: url("coui://uiresources/_shared/fonts/Industry-Demi.ttf");
+    }
+
+    @font-face {
+        font-family: Industry-Bold;
+        src: url("coui://uiresources/_shared/fonts/Industry-Bold.ttf");
+    }
+}
+
+@media not (language: ja) or (language: ko) or (language: th) or (language: zh-hant) or (language: zh-hans) {
+    @font-face {
+        font-family: Industry-Normal;
+        src: url("coui://uiresources/_shared/fonts/Industry-Book.ttf");
+    }
+
+    @font-face {
+        font-family: Industry-Medium;
+        src: url("coui://uiresources/_shared/fonts/Industry-Medium.ttf");
+    }
+
+    @font-face {
+        font-family: Industry-MediumItalic;
+        src: url("coui://uiresources/_shared/fonts/Industry-MediumItalic.ttf");
+    }
+
+    @font-face {
+        font-family: Industry-DemiBold;
+        src: url("coui://uiresources/_shared/fonts/Industry-Demi.ttf");
+    }
+
+    @font-face {
+        font-family: Industry-Bold;
+        src: url("coui://uiresources/_shared/fonts/Industry-Bold.ttf");
+    }
+}
+
+@media (language: ja) {
+    p {
+        line-height: 130%;
+    }
+
+    @font-face {
+        font-family: Industry-Normal;
+        src: url("coui://uiresources/_shared/fonts/ja/DFP-UDGothic-Bold.ttf");
+    }
+
+    @font-face {
+        font-family: Industry-Medium;
+        src: url("coui://uiresources/_shared/fonts/ja/DFP-UDGothic-Bold.ttf");
+    }
+
+    @font-face {
+        font-family: Industry-MediumItalic;
+        src: url("coui://uiresources/_shared/fonts/ja/DFP-UDGothic-Bold.ttf");
+    }
+
+    @font-face {
+        font-family: Industry-DemiBold;
+        src: url("coui://uiresources/_shared/fonts/ja/DFP-UDGothic-Bold.ttf");
+    }
+
+    @font-face {
+        font-family: Industry-Bold;
+        src: url("coui://uiresources/_shared/fonts/ja/DFP-UDGothic-Bold.ttf");
+    }
+}
+
+@media (language: ko) {
+    p {
+        line-height: 130%;
+    }
+
+    @font-face {
+        font-family: Industry-Normal;
+        src: url("coui://uiresources/_shared/fonts/ko/DreamGothic-Medium.ttf");
+    }
+
+    @font-face {
+        font-family: Industry-Medium;
+        src: url("coui://uiresources/_shared/fonts/ko/DreamGothic-Medium.ttf");
+    }
+
+    @font-face {
+        font-family: Industry-MediumItalic;
+        src: url("coui://uiresources/_shared/fonts/ko/DreamGothic-Medium.ttf");
+    }
+
+    @font-face {
+        font-family: Industry-DemiBold;
+        src: url("coui://uiresources/_shared/fonts/ko/DreamGothic-Bold.ttf");
+    }
+
+    @font-face {
+        font-family: Industry-Bold;
+        src: url("coui://uiresources/_shared/fonts/ko/DreamGothic-Bold.ttf");
+    }
+}
+
+@media (language: zh-hant) {
+    @font-face {
+        font-family: Industry-Normal;
+        src: url("coui://uiresources/_shared/fonts/zh-hant-tw/DFLiHei-Medium.ttf");
+    }
+
+    @font-face {
+        font-family: Industry-Medium;
+        src: url("coui://uiresources/_shared/fonts/zh-hant-tw/DFLiHei-Medium.ttf");
+    }
+
+    @font-face {
+        font-family: Industry-MediumItalic;
+        src: url("coui://uiresources/_shared/fonts/zh-hant-tw/DFLiHei-Medium.ttf");
+    }
+
+    @font-face {
+        font-family: Industry-DemiBold;
+        src: url("coui://uiresources/_shared/fonts/zh-hant-tw/DFLiHei-Bold.ttf");
+    }
+
+    @font-face {
+        font-family: Industry-Bold;
+        src: url("coui://uiresources/_shared/fonts/zh-hant-tw/DFLiHei-Bold.ttf");
+    }
+}
+
+@media (language: zh-hans) {
+    @font-face {
+        font-family: Industry-Normal;
+        src: url("coui://uiresources/_shared/fonts/zh-hans-cn/MFDianHei-Medium.ttf");
+    }
+
+    @font-face {
+        font-family: Industry-Medium;
+        src: url("coui://uiresources/_shared/fonts/zh-hans-cn/MFDianHei-Medium.ttf");
+    }
+
+    @font-face {
+        font-family: Industry-MediumItalic;
+        src: url("coui://uiresources/_shared/fonts/zh-hans-cn/MFDianHei-Medium.ttf");
+    }
+
+    @font-face {
+        font-family: Industry-DemiBold;
+        src: url("coui://uiresources/_shared/fonts/zh-hans-cn/MFDianHei-Bold.ttf");
+    }
+
+    @font-face {
+        font-family: Industry-Bold;
+        src: url("coui://uiresources/_shared/fonts/zh-hans-cn/MFDianHei-Bold.ttf");
+    }
+}
+
+@media (language: th) {
+    p {
+        line-height: 135%;
+    }
+
+    @font-face {
+        font-family: Industry-Normal;
+        src: url("coui://uiresources/_shared/fonts/th/DFPKingGothic-Medium.ttf");
+    }
+
+    @font-face {
+        font-family: Industry-Medium;
+        src: url("coui://uiresources/_shared/fonts/th/DFPKingGothic-Medium.ttf");
+    }
+
+    @font-face {
+        font-family: Industry-MediumItalic;
+        src: url("coui://uiresources/_shared/fonts/th/DFPKingGothic-Medium.ttf");
+    }
+
+    @font-face {
+        font-family: Industry-DemiBold;
+        src: url("coui://uiresources/_shared/fonts/th/DFPKingGothic-Bold.ttf");
+    }
+
+    @font-face {
+        font-family: Industry-Bold;
+        src: url("coui://uiresources/_shared/fonts/th/DFPKingGothic-Bold.ttf");
+    }
+}
+
+@media (splitscreen_mode: split-horizontal) {
+
+    .hud_left_tilt,
+    .hud_right_tilt {
+        transform: rotateY(0deg);
+    }
+
+    .hud_master_perspective {
+        perspective: none;
+    }
+}
+
+@media (splitscreen_mode: split-vertical) {
+
+    .hud_left_tilt,
+    .hud_right_tilt {
+        transform: rotateY(0deg);
+    }
+
+    .hud_master_perspective {
+        perspective: none;
+    }
+}

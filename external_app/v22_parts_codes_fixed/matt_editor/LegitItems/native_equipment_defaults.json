@@ -1,0 +1,52 @@
+{
+  "format": 1,
+  "game_build": "25234898",
+  "captured_at": "2026-09-13T19:43:26.364382+00:00",
+  "source_sha256": "e85fb7931e22d3e436fb3684efddb93769a0e67b2e980a5ccc729cef440f3514",
+  "classes": {
+    "Shield": {
+      "capacity": 0,
+      "regenrate": 0,
+      "regendelay": 0,
+      "segments": 0,
+      "damagereduction": 0,
+      "chargecapacity": 0,
+      "reactivearmordamagecapacity": 0,
+      "segmentrefilledbydamagescale": 0,
+      "customtimedilation": 1
+    },
+    "GrenadeGadget": {
+      "damage": 0,
+      "radius": 0,
+      "fusetime": 0,
+      "force": 0,
+      "projectilespeedscale": 0,
+      "homingturnspeedscale": 0,
+      "criticalhitchance": 0,
+      "cooldowntime": 0,
+      "statuseffectmodifierdata.chanceapplicationmodifier": 1,
+      "statuseffectmodifierdata.chargeapplicationmodifier": 1,
+      "statuseffectmodifierdata.dpsapplicationmodifier": 1,
+      "statuseffectmodifierdata.durationapplicationmodifier": 1,
+      "damagemodifierdata.criticalhitmultiplier": 0,
+      "maxnumberofcharges": 0,
+      "customtimedilation": 1
+    },
+    "RepairKit": {
+      "health": 0,
+      "duration": 0,
+      "cooldown": 0,
+      "healthinstantpct": 0,
+      "healthovertimepct": 0,
+      "maxcharges": 1,
+      "simultaneousrecharging": 0,
+      "customtimedilation": 1
+    },
+    "Enhancement": {
+      "customtimedilation": 1
+    },
+    "ClassMod": {
+      "customtimedilation": 1
+    }
+  }
+}

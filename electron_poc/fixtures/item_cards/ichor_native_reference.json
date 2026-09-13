@@ -1,0 +1,15 @@
+{
+  "description": "Read-only native primary use-mode BaseValue capture. No character Current Value substitutions.",
+  "game_build": "25234898",
+  "captured_at": "2026-09-13T19:23:15.368576+00:00",
+  "source_sha256": "9dff4306cec419638de93da53dbca1616e6b5fc3f814998dedc37d5fad9e12da",
+  "serial": "@UgggUGFnkbUWP#R@4>Zbf2UMs;EviwCYE&y!EYvL28dMq7qz<*HL~W`J>I`a9b5KKvij<%x9;j#ux&zJ2%gf8l%gf8lqc+fB5=??gFbO8XB$xz~U=mD%NiYc}!6cXjlVB1/f=Mt5Ccz/_1e0JAOoB-;2`0fLm;@7=XgrB0@g$zalXwzO;z>M-C-Een#FKauPvS{Di6`+Sp2U-Q5>MhuJc%dqB%Z{RcoI+INj#y3CW=InC=x}YNEC@8Q6!2)kth-c)u9h)jDd!S@DLutLwE=eG=^QEI)*Z!JJ4*BO/nTg$tKw(n`D!0l1;KnHpwR0ghm-?Vn_^$Au%L/#E=*gLt;n_i6Jp0hQyE<5(6DHCMG5(CMG5(CMG5(hUOS(LPSOqr83ZrjEszoq@<*zBno4A&<(?dP8lN9#!#X4(Rh(AB1bd{CxIoF#FAJNOJYeZi6yZlmc)`+5=&x9EQuwtB$mXISQ1NONi2yau_Ttnl2{T;Vo5BCC9x!y#FAJNOJYeZi6yZlmc)`+5=&x9EQuwtB$nioT#`$2NiNAHxg?k5l3bEYa!D@9CAlP*<dR&HOL9pr$tAfYm*kRMl1p+)F3BaiB$wopT#`$2NiNAHxg?k5l3bEYa!D@9CAlP+1e0JAOoB-;2`0fLm;{qx5=??gFbO8XB$xz~U=mD%NiYc}!6cXjlVB1/f=Mt5Ccz/_B$H&4Op-}5NhZl8nIw~Bl1!3GGD#-MB$*_WWRgshNis<$$t0O1lVp-il1Va2Cdnk6gp+U*PQpnz2`AwsoP?8b5>CQNI0+}=B%Fkka1u_!NjM27;Ut`dlW-DF!bvy@C*dSm1dCu1EP_R_2o}L2SOkk;5iEj5um~2xB3J~AU=b{WMX(4K!6H}$i(nBff<>?h761",
+  "human": "15, 0, 1, 60| 2, 82|| {21:60} {289:27} {2} {4} {5} {6} {6} {6} {38} {40} {41} {21} {18} {9} {3} {5} {4} {13} {18} {19} {9} {25} {1:14} {2:68} {6:56} {2:70} {27:[15 15 15 15 15 15 15 15 15 15]} {22:[72 72 72 72 72 72 72 72 72 72 72 72 72 72 72 72 72 72 72 72 72 72 72 72 72 72 72 72 72 72 72 72]} {9:[78 78 78 78 78 78 78 78 78 78 78 78 78 78 78 78 78 78 78 78 78 78 78 78 78 78 78 78 78 78 78 78 78]} {6:[33 33 33 33 33 33 33 33 33 33 33 33]} {26:30} {273:[28 28 28 28 28 28]} {17:45} {282:18} {27:[75 75 75 75 75 75 75 75 75 75 75 75 75 75]} {289:[17 17 17 17 17 17 17 17 17 17 17 17 17 17 17 17]} {3:[6 6 6 6 6 6 6 6 6 6 6 6 6]} {281:[1 2 3 9]} {292:[3 3 3 3 3 9 9 9 9 9]} {272:7} {267:11} {291:8} {278:10} {245:[46 45 50 74 76 80 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 72 72 72 72 72 72 72 72 72 72 72 72 72 72 72 72 72 72 72 72 72 72 72 72 72 72 72 72 72 72 72 72 72 73 73 73 73 73 73 73 73 73 73 73 73 73 73 73 73 73 73 73 73 73 73 73 73 73 73 73 73 73 73 73 76 76 76 76 76 76 76 76 76 76 76 76 76 76 76 76 76 76 76 76 76 76 76 76 76 76 76 76 76 76 76 76 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40 40]}|",
+  "display_name": "Zealous Extolled Ichor",
+  "base_values": {
+    "weapon_damage": 95655760,
+    "weapon_damage_radius": 4153.36474609375,
+    "weapon_fire_rate": 3.433500051498413,
+    "weapon_accuracy_impulse": -0.655975341796875
+  }
+}

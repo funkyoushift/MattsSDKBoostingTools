@@ -1,0 +1,19 @@
+{
+  "description": "Read-only runtime BaseValue capture, 2026-09-13. Current Value includes player modifiers and is deliberately excluded.",
+  "game_build": "25234898",
+  "human": "4, 0, 1, 70| 2, 2002|| {11:82} {2} {6} {4} {4} {4} {4} {4} {4} {4} {4} {4} {5} {3} {84} {55} {54} {58} {60} {61} {59} {57} {56} {56} {56} {56} {62} {16} {2:13} {22} {31} {34} {30} {32} {28} {27} {39} {41} {40} {48} {47} {68} {299:[9 9 9 9 9 9 9 9 9 9]}| \"c\", \"Cosmetics_Weapon_Shiny_Roulette\"|",
+  "base_values": {
+    "weapon_damage": 20820.591796875,
+    "weapon_fire_rate": 7.640937805175781,
+    "weapon_reload_time": 1.2079999446868896,
+    "weapon_charge_time": 0.5049999952316284,
+    "weapon_accuracy_impulse": 0.3128800094127655,
+    "weapon_damage_modifier_add_critical_hit": 1.7000000476837158,
+    "weapon_max_loaded_ammo": 16,
+    "weapon_spread": 0,
+    "weapon_sway_accuracy_scale": 0,
+    "weapon_sway_zoom_scale": 0,
+    "weapon_sway_zoom_accuracy_scale": 0
+  },
+  "display_name": "Zealous Extolled Roulette"
+}
