@@ -1,20 +1,20 @@
 {
   "schema_version": 1,
-  "data_version": "1.1.0",
-  "data_version_label": "data-v1.1.0",
-  "published_at": "2026-09-10T17:49:16Z",
+  "data_version": "1.1.1",
+  "data_version_label": "data-v1.1.1",
+  "published_at": "2026-09-13T21:18:33Z",
   "min_app_version": "2.11.0",
   "manifest_urls": {
-    "release": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.1.0/catalog_manifest.json",
+    "release": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.1.1/catalog_manifest.json",
     "raw_main": "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/docs/data/catalog_manifest.json"
   },
   "files": [
     {
       "id": "lootlemon",
       "path": "MattsSDKBoostingTools_lootlemon_codes.json",
-      "url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.1.0/MattsSDKBoostingTools_lootlemon_codes.json",
-      "sha256": "ec45681f00d2c444254bea8078f2cba01151c12904f6ee9a95c91689de05e913",
-      "bytes": 211566,
+      "url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.1.1/MattsSDKBoostingTools_lootlemon_codes.json",
+      "sha256": "4455390c932b7620a86c9d50a1b25e9d8d178c3745038f446af8a0c314d652d1",
+      "bytes": 243291,
       "schema_version": 1,
       "raw_url": "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/docs/data/MattsSDKBoostingTools_lootlemon_codes.json",
       "kind": "catalog_json",
@@ -23,7 +23,7 @@
     {
       "id": "custom_bl4_codes",
       "path": "custom_bl4_codes.json",
-      "url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.1.0/custom_bl4_codes.json",
+      "url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.1.1/custom_bl4_codes.json",
       "sha256": "b20a7748d9af3532e6689eb4cee9e5851cc1e410412f62661f640d0bc14a7502",
       "bytes": 306545,
       "schema_version": 1,
@@ -34,7 +34,7 @@
     {
       "id": "gzo_codes",
       "path": "MattsSDKBoostingTools_gzo_codes.json",
-      "url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.1.0/MattsSDKBoostingTools_gzo_codes.json",
+      "url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.1.1/MattsSDKBoostingTools_gzo_codes.json",
       "sha256": "321883f909d44800aedc06c54316d5821ffde9a747cd7f0482e4695508a12db0",
       "bytes": 4018386,
       "schema_version": 1,
@@ -46,7 +46,7 @@
     {
       "id": "travelstations",
       "path": "travelstations.json",
-      "url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.1.0/travelstations.json",
+      "url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.1.1/travelstations.json",
       "sha256": "e2f60f7e86e8e90c60f2f83ceb4d8d6326ac0a37fa2a36dc5b90aaf06b15442e",
       "bytes": 955258,
       "schema_version": 1,
@@ -58,7 +58,7 @@
     {
       "id": "travelmaps",
       "path": "travelmaps_flat.json",
-      "url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.1.0/travelmaps_flat.json",
+      "url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.1.1/travelmaps_flat.json",
       "sha256": "91d123d3dd447831ab0cfe82ad4b8d7d5441f0ef2dcf791187335071c86dc3bf",
       "bytes": 11435,
       "schema_version": 1,
@@ -70,7 +70,7 @@
     {
       "id": "item_pools",
       "path": "item_pools.json",
-      "url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.1.0/item_pools.json",
+      "url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.1.1/item_pools.json",
       "sha256": "d2b4a8c5f792b5f51d607ecbe65dce995d1edcd93de51dce9b9d8c6ba8e53161",
       "bytes": 105176,
       "schema_version": 1,
@@ -82,19 +82,18 @@
     {
       "id": "gzo_parts_map",
       "path": "gzo_parts_map.json",
-      "url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.1.0/gzo_parts_map.json",
+      "url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.1.1/gzo_parts_map.json",
       "sha256": "1228e37a1f933f00bc106225808f6db47b490b5483deae4c7506e61ca2fbac80",
       "bytes": 310157,
       "schema_version": 1,
       "raw_url": "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/docs/data/gzo_parts_map.json",
       "kind": "catalog_json",
-      "notes": "GZO part id \u2192 label map",
-      "game_build": "25234898"
+      "notes": "GZO part id \u2192 label map"
     },
     {
       "id": "shiny_serials",
       "path": "shiny_serials.json",
-      "url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.1.0/shiny_serials.json",
+      "url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.1.1/shiny_serials.json",
       "sha256": "730c824ba36c03dfb356be03896a763ebb3446dcb9ad02cca67c38dab4dd120f",
       "bytes": 34024,
       "schema_version": 1,
@@ -106,7 +105,7 @@
     {
       "id": "challenge_catalog",
       "path": "challenge_catalog.json",
-      "url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.1.0/challenge_catalog.json",
+      "url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.1.1/challenge_catalog.json",
       "sha256": "8ed8aef062d9c5c47cd4784eb5771e750fa661854fca8304d92da15a51bf3555",
       "bytes": 260387,
       "schema_version": 1,
@@ -118,7 +117,7 @@
     {
       "id": "dev_spawner_catalog",
       "path": "dev_spawner_catalog.json",
-      "url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.1.0/dev_spawner_catalog.json",
+      "url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.1.1/dev_spawner_catalog.json",
       "sha256": "48e999b873220f77d225a8a349fc53d290baccbeb3be8e2cc16c5add39f67313",
       "bytes": 3220446,
       "schema_version": 1,
@@ -133,11 +132,11 @@
       "id": "tutorial_copy",
       "path": "tutorial_copy.json",
       "kind": "json_copy",
-      "sha256": "9a030138fadd43bc7d7daa75887825e3f1e7b85515d59c31b00d5953373985bb",
-      "bytes": 3398,
+      "sha256": "2352aef14b76fef549a7ac5d5b4a39bb58206093218c16f98d5fe9063f1eae59",
+      "bytes": 3363,
       "schema_version": 1,
       "min_app_version": "2.3.0",
-      "url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.1.0/tutorial_copy.json",
+      "url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.1.1/tutorial_copy.json",
       "raw_url": "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/docs/data/tutorial_copy.json",
       "notes": "Tutorial title/body overlays for Electron walkthroughs (no remote code)"
     }
