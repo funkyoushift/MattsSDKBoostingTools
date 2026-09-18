@@ -15,7 +15,7 @@ async function auditWalkthroughs() {
       sandbox: false
     }
   });
-  await win.loadFile(path.join(__dirname, "renderer.html"), { query: { nosplash: "1" } });
+  await win.loadFile(path.join(__dirname, "renderer.html"), { query: { nosplash: "1", workspace: "classic" } });
   await new Promise((resolve) => setTimeout(resolve, 750));
 
   const result = await win.webContents.executeJavaScript(`(() => {

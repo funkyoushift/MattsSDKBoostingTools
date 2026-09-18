@@ -16,12 +16,12 @@ This project is **unofficial**. It is not affiliated with, endorsed by, or conne
 
 **Recommended:** grab the latest Windows installer from GitHub Releases:
 
-[![Installer downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Installer-v2.11.4.exe?label=Installer%20downloads&color=2ea44f)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest)
-[![Portable downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Portable-v2.11.4-win-x64.zip?label=Portable%20downloads&color=0969da)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest)
+[![Installer downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Installer-v2.12.0.exe?label=Installer%20downloads&color=2ea44f)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest)
+[![Portable downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Portable-v2.12.0-win-x64.zip?label=Portable%20downloads&color=0969da)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest)
 [![Android APK downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Mobile-Controller.apk?label=Android%20APK%20downloads&color=e8a23a)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Mobile-Controller.apk)
 
 - [GitHub Releases â€” download page](https://github.com/funkyoushift/MattsSDKBoostingTools/releases)
-- Latest installer example: `MSBT-Installer-v2.11.4.exe`
+- Latest installer example: `MSBT-Installer-v2.12.0.exe`
 
 **Portable option:** if you do not want an installer, download the portable ZIP instead (`MSBT-Portable-vâ€¦-win-x64.zip`), extract it, and run the app from that folder.
 

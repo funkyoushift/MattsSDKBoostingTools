@@ -316,10 +316,9 @@ let latestUpdateState = {
 const DEFAULT_WINDOW_BOUNDS = {
   width: 1280,
   height: 820,
-  // Floor high enough to stay usable; still allows 1080p half-screen (~960 CSS px).
-  // Tobgun-style 2560×1440 @ 150% half-snap (~853) clamps slightly wider than true half.
-  minWidth: 960,
-  minHeight: 700
+  // Responsive navigation supports narrow snaps and high-DPI work areas.
+  minWidth: 360,
+  minHeight: 360
 };
 const DEFAULT_WINDOW_OPACITY = 1;
 const MIN_WINDOW_OPACITY = 0.35;
@@ -395,19 +394,16 @@ function sanitizeWindowSize(width, height, { maximized = false, x, y } = {}) {
   const rawWidth = Number.isFinite(width) ? width : defaults.width;
   const rawHeight = Number.isFinite(height) ? height : defaults.height;
 
-  let nextWidth = Math.max(DEFAULT_WINDOW_BOUNDS.minWidth, Math.min(rawWidth, limit.width));
-  let nextHeight = Math.max(DEFAULT_WINDOW_BOUNDS.minHeight, Math.min(rawHeight, limit.height));
+  let nextWidth = Math.min(limit.width, Math.max(DEFAULT_WINDOW_BOUNDS.minWidth, rawWidth));
+  let nextHeight = Math.min(limit.height, Math.max(DEFAULT_WINDOW_BOUNDS.minHeight, rawHeight));
 
-  // Reject postage-stamp restores from older lower floors (e.g. minWidth 880) or bad snaps.
+  // Recover invalid restores while retaining narrow, intentionally resized windows.
   // Maximized windows keep restored size; maximize() fills the display.
   if (!maximized) {
     const wasBelowFloor =
       (Number.isFinite(width) && width < DEFAULT_WINDOW_BOUNDS.minWidth) ||
       (Number.isFinite(height) && height < DEFAULT_WINDOW_BOUNDS.minHeight);
-    const stuckAtFloor =
-      nextWidth <= DEFAULT_WINDOW_BOUNDS.minWidth + 4 &&
-      nextHeight <= DEFAULT_WINDOW_BOUNDS.minHeight + 4;
-    if (wasBelowFloor || stuckAtFloor) {
+    if (wasBelowFloor) {
       nextWidth = defaults.width;
       nextHeight = defaults.height;
     }

@@ -3978,6 +3978,7 @@ function updateVehicleCatalogFromStatus(data) {
 const DEV_SPAWNER_LAYOUT_KEY = "msbt.devSpawner.layoutMode";
 
 function getDevSpawnerLayoutMode() {
+  if (window.MsbtWorkspace?.enabled) return "fixed";
   try {
     const raw = localStorage.getItem(DEV_SPAWNER_LAYOUT_KEY);
     if (raw === "docked") return "docked";
@@ -3989,6 +3990,7 @@ function getDevSpawnerLayoutMode() {
 
 function saveDevSpawnerLayoutMode(mode) {
   const next = mode === "docked" ? "docked" : "fixed";
+  if (window.MsbtWorkspace?.enabled) return "fixed";
   try {
     localStorage.setItem(DEV_SPAWNER_LAYOUT_KEY, next);
   } catch (_err) {
@@ -12099,7 +12101,7 @@ function switchTab(tabId) {
     button.classList.toggle("active", button.dataset.tab === tabId);
     if (button.dataset.tab === tabId) activeTabButton = button;
   });
-  if (activeTabButton && !activeTabButton.hidden) {
+  if (activeTabButton && !activeTabButton.hidden && !window.MsbtWorkspace?.enabled) {
     requestAnimationFrame(() => {
       activeTabButton.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" });
     });
@@ -12107,6 +12109,7 @@ function switchTab(tabId) {
   document.querySelectorAll(".tab-panel").forEach((panel) => {
     panel.classList.toggle("active", panel.id === `tab-${tabId}`);
   });
+  window.MsbtWorkspace?.onTabShown?.(tabId);
   if (window.MsbtPanelLayout && typeof window.MsbtPanelLayout.onTabShown === "function") {
     window.MsbtPanelLayout.onTabShown(tabId);
   }
@@ -12267,6 +12270,7 @@ function jumpElectronAppFinder(entry) {
       ? document.querySelector(`[data-msbt-panel="${entry.panel}"]`)
       : document.getElementById(`tab-${entry.tab}`);
     if (!node) return;
+    window.MsbtWorkspace?.revealPanel?.(node);
     try { node.scrollIntoView({ behavior: "smooth", block: "start" }); } catch (_) { node.scrollIntoView(); }
     node.classList.add("app-finder-flash");
     window.setTimeout(() => node.classList.remove("app-finder-flash"), 1400);
@@ -12757,7 +12761,7 @@ function wireEvents() {
   if (supportPanel) {
     const supportCollapseMq = window.matchMedia("(max-width: 1180px)");
     const syncSupportPanelOpen = () => {
-      supportPanel.open = !supportCollapseMq.matches;
+      supportPanel.open = !window.MsbtWorkspace?.enabled && !supportCollapseMq.matches;
     };
     syncSupportPanelOpen();
     if (typeof supportCollapseMq.addEventListener === "function") {
@@ -14303,6 +14307,7 @@ function ensureWalkthroughPanelVisible(tabEl, panelId) {
   const escaped = (typeof CSS !== "undefined" && CSS.escape) ? CSS.escape(id) : id;
   let panel = tabEl.querySelector(`[data-msbt-panel="${escaped}"]`);
   if (!panel) return false;
+  window.MsbtWorkspace?.revealPanel?.(panel);
   let changed = false;
   const inStash = Boolean(panel.closest(".msbt-panel-stash"));
   const hidden = panel.classList.contains("msbt-panel-hidden") || inStash;

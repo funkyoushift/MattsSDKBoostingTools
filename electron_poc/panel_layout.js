@@ -455,6 +455,7 @@
   }
 
   function clearStaleFixedTabLayout(tabId) {
+    if (global.MsbtWorkspace?.enabled) return;
     const tab = document.querySelector(`[data-msbt-fixed-layout="${cssEscape(tabId)}"]`);
     if (!tab) return;
     try {
