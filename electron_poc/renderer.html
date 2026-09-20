@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <meta name="color-scheme" content="dark only">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Matt's SDK Boosting Tools</title>
   <link rel="stylesheet" href="styles.css">
@@ -2359,7 +2360,8 @@
             <div id="installedSdkStatus" class="version-detail">Installed file: detecting...</div>
             <div id="installedSdkPath" class="version-detail">Path: not detected yet.</div>
             <label for="sdkModsPath">Borderlands 4 sdk_mods folder</label>
-            <input id="sdkModsPath" type="text" placeholder="C:\Program Files (x86)\Steam\steamapps\common\Borderlands 4\sdk_mods">
+            <input id="sdkModsPath" type="text" placeholder="Steam or Epic ...\Borderlands 4\sdk_mods">
+            <p class="muted-line">Detect looks at Steam, Epic Games Launcher, Legendary, and Heroic. If it misses, browse the game folder, Win64 folder, or sdk_mods.</p>
             <div id="oak2StatusSummary" class="status-line">oak2-mod-manager status not checked yet.</div>
             <div id="oak2StatusDetail" class="version-detail">Detect or Re-check to verify Win64 Plugins + sdk_mods core files.</div>
             <div class="button-row wrap">

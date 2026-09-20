@@ -68,21 +68,173 @@ function parseSteamLibraryFoldersVdf(text) {
   return roots;
 }
 
-function steamRootCandidates() {
+function ioFromOptions(options = {}) {
+  return {
+    readFileSync: options.readFileSync || ((filePath, encoding) => fsSync.readFileSync(filePath, encoding)),
+    readdirSync: options.readdirSync || ((dirPath) => fsSync.readdirSync(dirPath)),
+    env: options.env || process.env,
+    extraRoots: Array.isArray(options.extraRoots) ? options.extraRoots : []
+  };
+}
+
+function looksLikeBorderlands4Text(value) {
+  const text = String(value || "");
+  return /borderlands\s*4/i.test(text) || /Borderlands4\.exe/i.test(text);
+}
+
+function normalizeToGameRoot(rawPath) {
+  const raw = String(rawPath || "").trim();
+  if (!raw) return "";
+  let resolved = path.resolve(raw);
+  const baseName = () => path.basename(resolved).toLowerCase();
+  if (baseName() === "sdk_mods") resolved = path.dirname(resolved);
+  if (baseName() === "plugins") resolved = path.dirname(resolved);
+  if (baseName() === "win64") {
+    const binaries = path.dirname(resolved);
+    if (path.basename(binaries).toLowerCase() === "binaries") resolved = binaries;
+  }
+  if (baseName() === "binaries") {
+    const oakGame = path.dirname(resolved);
+    if (path.basename(oakGame).toLowerCase() === "oakgame") resolved = oakGame;
+  }
+  if (baseName() === "oakgame") resolved = path.dirname(resolved);
+  return resolved;
+}
+
+function parseEpicManifestItem(text) {
+  try {
+    const data = JSON.parse(String(text || ""));
+    if (!data || typeof data !== "object") return "";
+    const installLocation = String(data.InstallLocation || data.installLocation || "").trim();
+    if (!installLocation) return "";
+    const haystack = [
+      data.DisplayName,
+      data.AppName,
+      data.LaunchExecutable,
+      data.MainWindowProcessName,
+      installLocation,
+      path.basename(installLocation)
+    ].join(" ");
+    if (!looksLikeBorderlands4Text(haystack)) return "";
+    return path.resolve(installLocation);
+  } catch {
+    return "";
+  }
+}
+
+function parseLegendaryInstalledJson(text) {
+  const roots = [];
+  try {
+    const data = JSON.parse(String(text || ""));
+    if (!data || typeof data !== "object") return roots;
+    const entries = Array.isArray(data) ? data : Object.values(data);
+    for (const entry of entries) {
+      if (!entry || typeof entry !== "object") continue;
+      const installPath = String(entry.install_path || entry.installPath || entry.dir || "").trim();
+      if (!installPath) continue;
+      const haystack = [
+        entry.title,
+        entry.app_name,
+        entry.appName,
+        entry.app_title,
+        installPath,
+        path.basename(installPath)
+      ].join(" ");
+      if (!looksLikeBorderlands4Text(haystack)) continue;
+      roots.push(path.resolve(installPath));
+    }
+  } catch {
+    // Malformed Legendary/Heroic helper files are ignored.
+  }
+  return uniquePaths(roots);
+}
+
+function epicManifestDirCandidates(env) {
   return uniquePaths([
-    path.join(process.env["ProgramFiles(x86)"] || "C:\\Program Files (x86)", "Steam"),
-    path.join(process.env.ProgramFiles || "C:\\Program Files", "Steam")
+    path.join(env.ProgramData || "C:\\ProgramData", "Epic", "EpicGamesLauncher", "Data", "Manifests"),
+    env.LOCALAPPDATA
+      ? path.join(env.LOCALAPPDATA, "EpicGamesLauncher", "Saved", "Manifests")
+      : ""
   ]);
 }
 
-function steamLibraryRoots() {
+function legendaryInstalledJsonCandidates(env) {
+  const home = env.USERPROFILE || env.HOME || os.homedir() || "";
+  const appData = env.APPDATA || (home ? path.join(home, "AppData", "Roaming") : "");
+  return uniquePaths([
+    home ? path.join(home, ".config", "legendary", "installed.json") : "",
+    appData ? path.join(appData, "legendary", "installed.json") : "",
+    appData ? path.join(appData, "heroic", "legendaryConfig", "legendary", "installed.json") : "",
+    appData ? path.join(appData, "heroic", "legendary", "installed.json") : "",
+    home ? path.join(home, ".config", "heroic", "legendaryConfig", "legendary", "installed.json") : ""
+  ]);
+}
+
+function collectEpicManifestRoots(options = {}) {
+  const io = ioFromOptions(options);
   const roots = [];
-  for (const steamRoot of steamRootCandidates()) {
+  for (const dir of epicManifestDirCandidates(io.env)) {
+    let names = [];
+    try {
+      names = io.readdirSync(dir);
+    } catch {
+      continue;
+    }
+    for (const name of names) {
+      if (!String(name).toLowerCase().endsWith(".item")) continue;
+      try {
+        const install = parseEpicManifestItem(io.readFileSync(path.join(dir, name), "utf8"));
+        if (install) roots.push(install);
+      } catch {
+        // Skip unreadable launcher manifests.
+      }
+    }
+  }
+  return uniquePaths(roots);
+}
+
+function collectLegendaryInstallRoots(options = {}) {
+  const io = ioFromOptions(options);
+  const roots = [];
+  for (const filePath of legendaryInstalledJsonCandidates(io.env)) {
+    try {
+      roots.push(...parseLegendaryInstalledJson(io.readFileSync(filePath, "utf8")));
+    } catch {
+      // Legendary/Heroic is optional.
+    }
+  }
+  return uniquePaths(roots);
+}
+
+function epicDefaultFolderCandidates(env) {
+  const programFiles = uniquePaths([
+    env.ProgramFiles || "C:\\Program Files",
+    env["ProgramFiles(x86)"] || "C:\\Program Files (x86)"
+  ]);
+  const roots = [];
+  for (const pf of programFiles) {
+    roots.push(path.join(pf, "Epic Games", "Borderlands 4"));
+    roots.push(path.join(pf, "Epic Games", "Borderlands4"));
+  }
+  return uniquePaths(roots);
+}
+
+function steamRootCandidates(options = {}) {
+  const env = ioFromOptions(options).env;
+  return uniquePaths([
+    path.join(env["ProgramFiles(x86)"] || "C:\\Program Files (x86)", "Steam"),
+    path.join(env.ProgramFiles || "C:\\Program Files", "Steam")
+  ]);
+}
+
+function steamLibraryRoots(options = {}) {
+  const io = ioFromOptions(options);
+  const roots = [];
+  for (const steamRoot of steamRootCandidates(options)) {
     roots.push(steamRoot);
     const vdfPath = path.join(steamRoot, "steamapps", "libraryfolders.vdf");
     try {
-      const text = fsSync.readFileSync(vdfPath, "utf8");
-      roots.push(...parseSteamLibraryFoldersVdf(text));
+      roots.push(...parseSteamLibraryFoldersVdf(io.readFileSync(vdfPath, "utf8")));
     } catch {
       // Steam may not be installed in the default location.
     }
@@ -90,24 +242,43 @@ function steamLibraryRoots() {
   return uniquePaths(roots);
 }
 
-function epicGameRootCandidates() {
+function epicGameRootCandidates(options = {}) {
+  const io = ioFromOptions(options);
   return uniquePaths([
-    path.join(process.env.ProgramFiles || "C:\\Program Files", "Epic Games", "Borderlands 4"),
-    path.join(process.env["ProgramFiles(x86)"] || "C:\\Program Files (x86)", "Epic Games", "Borderlands 4")
+    ...epicDefaultFolderCandidates(io.env),
+    ...collectEpicManifestRoots(options),
+    ...collectLegendaryInstallRoots(options),
+    ...io.extraRoots
   ]);
 }
 
-function bl4GameRootCandidates() {
-  const candidates = [...epicGameRootCandidates()];
-  for (const libraryRoot of steamLibraryRoots()) {
+function bl4GameRootCandidates(options = {}) {
+  const io = ioFromOptions(options);
+  const candidates = [...epicGameRootCandidates(options)];
+  for (const libraryRoot of steamLibraryRoots(options)) {
     candidates.push(path.join(libraryRoot, "steamapps", "common", "Borderlands 4"));
     candidates.push(path.join(libraryRoot, "common", "Borderlands 4"));
   }
+  candidates.push(...io.extraRoots);
   return uniquePaths(candidates);
 }
 
-function bl4SdkModsCandidates() {
-  return uniquePaths(bl4GameRootCandidates().map((root) => path.join(root, "sdk_mods")));
+function bl4SdkModsCandidates(options = {}) {
+  return uniquePaths(bl4GameRootCandidates(options).map((root) => path.join(root, "sdk_mods")));
+}
+
+function detectStoreKind(gameRoot) {
+  const normalized = String(gameRoot || "").replace(/\//g, "\\").toLowerCase();
+  if (!normalized) return "unknown";
+  if (normalized.includes("\\steamapps\\") || /(^|\\)steam(\\|$)/.test(normalized)) return "steam";
+  if (normalized.includes("\\epic games\\") || normalized.includes("\\epicgames\\")) return "epic";
+  if (normalized.includes("heroic")) return "heroic";
+  if (normalized.includes("legendary")) return "legendary";
+  return "unknown";
+}
+
+function missingGameMessage() {
+  return "Could not auto-detect Borderlands 4 from Steam, Epic Games Launcher, Legendary, or Heroic. Browse to the game folder, OakGame\\Binaries\\Win64, or sdk_mods. Typical Epic path: C:\\Program Files\\Epic Games\\Borderlands4";
 }
 
 function gameRootFromSdkModsPath(sdkModsPath) {
@@ -146,6 +317,15 @@ async function fileExists(filePath) {
   } catch {
     return false;
   }
+}
+
+async function looksLikeBl4GameRoot(root) {
+  const resolved = path.resolve(String(root || "").trim());
+  if (!resolved) return false;
+  if (await fileExists(path.join(resolved, "OakGame"))) return true;
+  if (await fileExists(path.join(resolved, "OakGame", "Binaries", "Win64", "Borderlands4.exe"))) return true;
+  if (await fileExists(path.join(resolved, "Borderlands4.exe"))) return true;
+  return false;
 }
 
 async function sha256File(filePath) {
@@ -233,6 +413,7 @@ async function inspectOak2Install(gameRoot) {
   const versionOk = oak2VersionLooksLikeRequired(displayVersion);
   const present = Boolean(corePresent);
   const ok = present && versionOk;
+  const storeKind = detectStoreKind(root);
 
   let message = "oak2-mod-manager was not detected in this Borderlands 4 folder.";
   if (ok) {
@@ -252,6 +433,7 @@ async function inspectOak2Install(gameRoot) {
     displayVersion,
     requiredVersion: OAK2_VERSION,
     requiredTag: OAK2_RELEASE_TAG,
+    storeKind,
     markers,
     downloadUrl: OAK2_DOWNLOAD_URL,
     repoUrl: OAK2_REPO_URL,
@@ -573,41 +755,43 @@ async function installOak2FromCache(userDataPath, gameRoot, options = {}) {
 
   const copyResult = await copyWithOptionalElevation(pairs);
   const detection = await inspectOak2Install(root);
+  const storeKind = detection.storeKind || detectStoreKind(root);
+  const storeLabel = storeKind && storeKind !== "unknown" ? ` (${storeKind})` : "";
   return {
     ok: detection.ok,
     elevated: Boolean(copyResult.elevated),
     gameRoot: root,
     sdkModsPath: detection.sdkModsPath,
+    storeKind,
     zipPath: zipInfo.path,
     sha256: zipInfo.sha256,
     oak2: detection,
     noticePath: await writeOak2LicenseNotice(userDataPath),
     message: detection.ok
-      ? `oak2-mod-manager ${OAK2_RELEASE_TAG} installed into ${root}.${copyResult.elevated ? " Used elevated copy for Program Files." : ""}`
+      ? `oak2-mod-manager ${OAK2_RELEASE_TAG} installed into ${root}${storeLabel}.${copyResult.elevated ? " Used elevated copy for Program Files." : ""}`
       : `oak2 install finished but verification failed: ${detection.message}`
   };
 }
 
-async function resolveGameRoot(rawSdkModsOrGamePath = "") {
+async function resolveGameRoot(rawSdkModsOrGamePath = "", options = {}) {
   const raw = String(rawSdkModsOrGamePath || "").trim();
   if (raw) {
     const resolved = path.resolve(raw);
-    if (path.basename(resolved).toLowerCase() === "sdk_mods") {
-      return gameRootFromSdkModsPath(resolved);
-    }
-    if (await fileExists(path.join(resolved, "OakGame"))) {
-      return resolved;
-    }
-    if (await fileExists(path.join(resolved, "sdk_mods"))) {
-      return resolved;
-    }
-    // Treat as game root aspirationally when browsing a folder named Borderlands 4.
-    return resolved;
+    const gameRoot = normalizeToGameRoot(resolved);
+    if (await looksLikeBl4GameRoot(gameRoot)) return gameRoot;
+    if (await fileExists(gameRoot)) return gameRoot;
+    if (await fileExists(resolved)) return gameRoot;
+    return gameRoot;
   }
-  for (const candidate of bl4GameRootCandidates()) {
-    if (await fileExists(candidate)) return candidate;
+  let firstLive = "";
+  for (const candidate of bl4GameRootCandidates(options)) {
+    if (!(await fileExists(candidate))) continue;
+    const root = normalizeToGameRoot(candidate);
+    if (!(await looksLikeBl4GameRoot(root))) continue;
+    if (!firstLive) firstLive = root;
+    if (await fileExists(sdkModsPathFromGameRoot(root))) return root;
   }
-  return "";
+  return firstLive;
 }
 
 module.exports = {
@@ -629,6 +813,14 @@ module.exports = {
   bl4SdkModsCandidates,
   gameRootFromSdkModsPath,
   sdkModsPathFromGameRoot,
+  normalizeToGameRoot,
+  looksLikeBl4GameRoot,
+  parseEpicManifestItem,
+  parseLegendaryInstalledJson,
+  collectEpicManifestRoots,
+  collectLegendaryInstallRoots,
+  detectStoreKind,
+  missingGameMessage,
   parseOak2DisplayVersion,
   oak2VersionLooksLikeRequired,
   cacheRoots,

@@ -1,6 +1,20 @@
-const { app, BrowserWindow, dialog, ipcMain, screen, shell, Menu, protocol } = require("electron");
+const { app, BrowserWindow, dialog, ipcMain, screen, shell, Menu, nativeTheme, protocol } = require("electron");
 const {registerNativeCardSchemes,installNativeCardProtocol} = require("./native_card_protocol");
 registerNativeCardSchemes(protocol);
+
+// Pin the designed dark palette before any window exists. Windows light mode
+// and Contrast / High Contrast themes otherwise remap Chromium UA colors
+// (yellow button chrome on black) and ignore our CSS.
+nativeTheme.themeSource = "dark";
+{
+  const extra = ["ForcedColors"];
+  const current = String(app.commandLine.getSwitchValue("disable-features") || "")
+    .split(",")
+    .map((part) => part.trim())
+    .filter(Boolean);
+  app.commandLine.appendSwitch("disable-features", [...new Set([...current, ...extra])].join(","));
+}
+
 const fsSync = require("fs");
 const fs = require("fs/promises");
 const os = require("os");
@@ -156,29 +170,8 @@ const BUNDLED_PYTHON = path.join(RESOURCE_ROOT, "python", "python.exe");
 const MATT_HOST_START_TIMEOUT_MS = 12000;
 const SDK_LOG_CANDIDATES = [
   process.env.MSBT_UNREALSDK_LOG,
-  path.join(
-    process.env["ProgramFiles(x86)"] || "C:\\Program Files (x86)",
-    "Steam",
-    "steamapps",
-    "common",
-    "Borderlands 4",
-    "OakGame",
-    "Binaries",
-    "Win64",
-    "Plugins",
-    "unrealsdk.log"
-  ),
-  path.join(
-    process.env.ProgramFiles || "C:\\Program Files",
-    "Steam",
-    "steamapps",
-    "common",
-    "Borderlands 4",
-    "OakGame",
-    "Binaries",
-    "Win64",
-    "Plugins",
-    "unrealsdk.log"
+  ...oak2Install.bl4GameRootCandidates().map((root) =>
+    path.join(root, "OakGame", "Binaries", "Win64", "Plugins", "unrealsdk.log")
   )
 ].filter(Boolean);
 const SDK_LOG_FILTER = /MattsSDKBoostingTools|ActorScriptDeployer|ASD_|dev_spawner|spawnai|ERR\||WARN\||Traceback|Exception|did not report/i;
@@ -641,6 +634,7 @@ function createWindow() {
     resizable: true,
     autoHideMenuBar: true,
     backgroundColor: "#090d17",
+    backgroundMaterial: "none",
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
@@ -1183,7 +1177,7 @@ async function autoDetectSdkModsPathInfo(options = {}) {
     ok: false,
     path: "",
     candidates,
-    message: "Could not auto-detect Borderlands 4 sdk_mods from the known Steam library folders. Paste or browse to the sdk_mods folder."
+    message: oak2Install.missingGameMessage()
   };
 }
 
@@ -1195,14 +1189,27 @@ ipcMain.handle("app:browseSdkMods", async () => {
   const prefs = await loadMattEditorPrefsData();
   const remembered = prefs && prefs.data ? prefs.data.sdkModsPath : "";
   const result = await dialog.showOpenDialog({
-    title: "Choose the Borderlands 4 sdk_mods folder",
+    title: "Choose the Borderlands 4 game folder, Win64 folder, or sdk_mods folder",
     defaultPath: remembered || undefined,
     properties: ["openDirectory"]
   });
   if (result.canceled || !result.filePaths.length) {
-    return { ok: false, canceled: true, message: "No sdk_mods folder selected." };
+    return { ok: false, canceled: true, message: "No folder selected." };
   }
-  return sdkModsPathInfo(result.filePaths[0]);
+  const selected = result.filePaths[0];
+  const gameRoot = oak2Install.normalizeToGameRoot(selected);
+  const sdkModsPath = path.basename(path.resolve(selected)).toLowerCase() === "sdk_mods"
+    ? path.resolve(selected)
+    : oak2Install.sdkModsPathFromGameRoot(gameRoot);
+  const looksLikeGame = await oak2Install.looksLikeBl4GameRoot(gameRoot);
+  if (path.basename(sdkModsPath).toLowerCase() !== "sdk_mods") {
+    return {
+      ok: false,
+      path: selected,
+      message: "Choose the Borderlands 4 game folder, OakGame\\Binaries\\Win64, or sdk_mods folder."
+    };
+  }
+  return sdkModsPathInfo(sdkModsPath, "", { allowMissing: looksLikeGame });
 });
 
 async function installBundledSdkMods(rawPath = "", options = {}) {
@@ -1263,7 +1270,7 @@ async function detectOak2Status(rawPath = "") {
       hasOak2: false,
       oak2Present: false,
       sdkPresent: false,
-      message: "Could not auto-detect a Borderlands 4 install. Browse to the game folder or sdk_mods folder."
+      message: oak2Install.missingGameMessage()
     };
   }
   const oak2 = await oak2Install.inspectOak2Install(gameRoot);
@@ -1293,7 +1300,7 @@ async function installOak2SdkManager(rawPath = "", options = {}) {
   if (!gameRoot) {
     return {
       ok: false,
-      message: "Could not find a Borderlands 4 folder. Detect or browse to sdk_mods / the game root first."
+      message: oak2Install.missingGameMessage()
     };
   }
   const installMsbt = options.installMsbt !== false;

@@ -1,5 +1,6 @@
 :root {
-  color-scheme: dark;
+  color-scheme: dark only;
+  forced-color-adjust: none;
   --msbt-text-scale: 1;
   --bg: var(--ui-bg, #090d17);
   --header-bg: var(--ui-header-bg, #080c15);
@@ -31,6 +32,28 @@ body {
   width: 100%;
   min-width: 100%;
   height: 100%;
+  forced-color-adjust: none;
+}
+
+button,
+input,
+select,
+textarea,
+a {
+  forced-color-adjust: none;
+}
+
+@media (forced-colors: active) {
+  :root,
+  html,
+  body,
+  button,
+  input,
+  select,
+  textarea,
+  a {
+    forced-color-adjust: none;
+  }
 }
 
 body {

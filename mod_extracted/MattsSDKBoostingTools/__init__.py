@@ -36,8 +36,8 @@ from .mobile_pairing import (
     start_mobile_pairing,
 )
 
-__version__: str = "2.12.0"
-__version_info__: tuple[int, int, int] = (2, 10, 0)
+__version__: str = "2.12.1"
+__version_info__: tuple[int, int, int] = (2, 12, 1)
 
 _panel_keybinds = []
 _panel_commands = []

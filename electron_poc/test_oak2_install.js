@@ -98,7 +98,143 @@ async function testPathHelpers() {
   assert.ok(oak2.bl4SdkModsCandidates().every((p) => path.basename(p).toLowerCase() === "sdk_mods"));
   const epic = oak2.epicGameRootCandidates();
   assert.ok(epic.some((p) => /Epic Games/i.test(p)));
+  assert.ok(epic.some((p) => /Borderlands 4$/i.test(p)), "default Epic candidates must include spaced Borderlands 4");
+  assert.ok(epic.some((p) => /Borderlands4$/i.test(p)), "default Epic candidates must include Borderlands4 without a space");
+  assert.match(oak2.missingGameMessage(), /Epic Games Launcher/);
   console.log("ok path helpers");
+}
+
+async function testNormalizeToGameRoot() {
+  const gameRoot = "C:\\Program Files\\Epic Games\\Borderlands4";
+  assert.strictEqual(
+    oak2.normalizeToGameRoot(path.join(gameRoot, "sdk_mods")),
+    path.resolve(gameRoot)
+  );
+  assert.strictEqual(
+    oak2.normalizeToGameRoot(path.join(gameRoot, "OakGame", "Binaries", "Win64")),
+    path.resolve(gameRoot)
+  );
+  assert.strictEqual(
+    oak2.normalizeToGameRoot(path.join(gameRoot, "OakGame", "Binaries", "Win64", "Plugins")),
+    path.resolve(gameRoot)
+  );
+  assert.strictEqual(
+    oak2.normalizeToGameRoot(path.join(gameRoot, "OakGame")),
+    path.resolve(gameRoot)
+  );
+  assert.strictEqual(oak2.detectStoreKind(gameRoot), "epic");
+  assert.strictEqual(
+    oak2.detectStoreKind("C:\\Program Files (x86)\\Steam\\steamapps\\common\\Borderlands 4"),
+    "steam"
+  );
+  console.log("ok normalize to game root");
+}
+
+async function testEpicManifestAndLegendaryParsers() {
+  const customRoot = "D:\\EpicGames\\Borderlands4";
+  const item = JSON.stringify({
+    DisplayName: "Borderlands 4",
+    AppName: "Catnip",
+    LaunchExecutable: "OakGame/Binaries/Win64/Borderlands4.exe",
+    InstallLocation: customRoot
+  });
+  assert.strictEqual(oak2.parseEpicManifestItem(item), path.resolve(customRoot));
+  assert.strictEqual(
+    oak2.parseEpicManifestItem(JSON.stringify({ DisplayName: "Fortnite", InstallLocation: "D:\\Fortnite" })),
+    ""
+  );
+
+  const legendary = {
+    Catnip: {
+      app_name: "Catnip",
+      title: "Borderlands 4",
+      install_path: "E:\\Heroic\\Borderlands 4"
+    },
+    Other: {
+      app_name: "Fortnite",
+      title: "Fortnite",
+      install_path: "E:\\Heroic\\Fortnite"
+    }
+  };
+  const parsed = oak2.parseLegendaryInstalledJson(JSON.stringify(legendary));
+  assert.deepStrictEqual(parsed, [path.resolve("E:\\Heroic\\Borderlands 4")]);
+  console.log("ok epic/legendary parsers");
+}
+
+async function testFakeEpicInstallLayouts() {
+  await withTempDir(async (dir) => {
+    const env = {
+      ProgramFiles: path.join(dir, "Program Files"),
+      "ProgramFiles(x86)": path.join(dir, "Program Files (x86)"),
+      ProgramData: path.join(dir, "ProgramData"),
+      USERPROFILE: path.join(dir, "User"),
+      HOME: path.join(dir, "User"),
+      APPDATA: path.join(dir, "User", "AppData", "Roaming"),
+      LOCALAPPDATA: path.join(dir, "User", "AppData", "Local")
+    };
+    const defaultEpic = path.join(env.ProgramFiles, "Epic Games", "Borderlands4");
+    await fs.mkdir(path.join(defaultEpic, "OakGame", "Binaries", "Win64"), { recursive: true });
+    await fs.writeFile(path.join(defaultEpic, "OakGame", "Binaries", "Win64", "Borderlands4.exe"), "x");
+
+    const customEpic = path.join(dir, "CustomEpic", "Borderlands 4");
+    await fs.mkdir(path.join(customEpic, "OakGame"), { recursive: true });
+    const manifestDir = path.join(env.ProgramData, "Epic", "EpicGamesLauncher", "Data", "Manifests");
+    await fs.mkdir(manifestDir, { recursive: true });
+    await fs.writeFile(
+      path.join(manifestDir, "bl4.item"),
+      JSON.stringify({
+        DisplayName: "Borderlands 4",
+        AppName: "Catnip",
+        LaunchExecutable: "OakGame/Binaries/Win64/Borderlands4.exe",
+        InstallLocation: customEpic
+      }),
+      "utf8"
+    );
+
+    const heroicRoot = path.join(dir, "Heroic", "Borderlands4");
+    await fs.mkdir(path.join(heroicRoot, "OakGame"), { recursive: true });
+    const legendaryFile = path.join(
+      env.APPDATA,
+      "heroic",
+      "legendaryConfig",
+      "legendary",
+      "installed.json"
+    );
+    await fs.mkdir(path.dirname(legendaryFile), { recursive: true });
+    await fs.writeFile(
+      legendaryFile,
+      JSON.stringify({
+        Catnip: {
+          app_name: "Catnip",
+          title: "Borderlands 4",
+          install_path: heroicRoot
+        }
+      }),
+      "utf8"
+    );
+
+    const options = { env };
+    const epicRoots = oak2.epicGameRootCandidates(options);
+    assert.ok(epicRoots.some((p) => path.resolve(p) === path.resolve(defaultEpic)));
+    assert.ok(epicRoots.some((p) => path.resolve(p) === path.resolve(customEpic)));
+    assert.ok(epicRoots.some((p) => path.resolve(p) === path.resolve(heroicRoot)));
+
+    const resolvedDefault = await oak2.resolveGameRoot("", options);
+    assert.strictEqual(path.resolve(resolvedDefault), path.resolve(defaultEpic));
+
+    const fromWin64 = await oak2.resolveGameRoot(
+      path.join(defaultEpic, "OakGame", "Binaries", "Win64"),
+      options
+    );
+    assert.strictEqual(path.resolve(fromWin64), path.resolve(defaultEpic));
+
+    const fromSdkMods = await oak2.resolveGameRoot(path.join(customEpic, "sdk_mods"), options);
+    assert.strictEqual(path.resolve(fromSdkMods), path.resolve(customEpic));
+
+    assert.strictEqual(await oak2.looksLikeBl4GameRoot(defaultEpic), true);
+    assert.strictEqual(await oak2.looksLikeBl4GameRoot(path.join(dir, "empty")), false);
+    console.log("ok fake Epic install layouts");
+  });
 }
 
 async function testDryRunInstallUsesCacheContract() {
@@ -163,6 +299,9 @@ async function main() {
   await testInspectMissingInstall();
   await testInspectFakeV03();
   await testPathHelpers();
+  await testNormalizeToGameRoot();
+  await testEpicManifestAndLegendaryParsers();
+  await testFakeEpicInstallLayouts();
   await testCopyPairLayout();
   await testDryRunInstallUsesCacheContract();
   await testCachedZipDryRunWithFixture();
