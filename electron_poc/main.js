@@ -66,6 +66,10 @@ const {
 } = require("./matt_editor_prefs_store");
 const { looksLikeEditorHtml } = require("./matt_editor_page");
 const {
+  autoUpdaterGate,
+  packagedLoadFailure
+} = require("./updater_availability");
+const {
   loadBl4Catalog,
   refreshGzoCatalog
 } = require("./bl4_codes_catalog");
@@ -499,15 +503,39 @@ function configureAutoUpdater() {
   if (autoUpdaterConfigured) return Boolean(autoUpdater);
   autoUpdaterConfigured = true;
 
+  const gate = autoUpdaterGate(app.isPackaged);
+  if (!gate.enabled) {
+    updateState({
+      status: gate.status,
+      message: gate.message,
+      error: gate.error
+    });
+    return false;
+  }
+
+  let updaterModule = null;
   try {
-    ({ autoUpdater } = require("electron-updater"));
+    updaterModule = require("electron-updater");
+  } catch (error) {
+    const failure = packagedLoadFailure(error);
+    updateState({
+      status: failure.status,
+      message: failure.message,
+      error: failure.error
+    });
+    return false;
+  }
+
+  try {
+    autoUpdater = updaterModule.autoUpdater;
     autoUpdater.autoDownload = false;
     autoUpdater.allowDowngrade = false;
   } catch (error) {
+    const failure = packagedLoadFailure(error);
     updateState({
-      status: "error",
-      message: "Electron updater is not available in this build.",
-      error: String(error && error.message ? error.message : error)
+      status: failure.status,
+      message: failure.message,
+      error: failure.error
     });
     return false;
   }
@@ -2552,7 +2580,7 @@ ipcMain.handle("app:downloadUpdate", async () => {
     return { ok: false, message: "Electron updater downloads are only available in an installed/package build." };
   }
   if (!configureAutoUpdater()) {
-    return { ok: false, message: latestUpdateState.message || "Electron updater is not available.", state: latestUpdateState };
+    return { ok: false, message: latestUpdateState.message || "Electron updater failed to load.", state: latestUpdateState };
   }
   try {
     const result = await autoUpdater.downloadUpdate();
@@ -2569,7 +2597,7 @@ ipcMain.handle("app:quitAndInstallUpdate", async () => {
     return { ok: false, message: "No downloaded Electron update is ready to install." };
   }
   if (!configureAutoUpdater()) {
-    return { ok: false, message: latestUpdateState.message || "Electron updater is not available.", state: latestUpdateState };
+    return { ok: false, message: latestUpdateState.message || "Electron updater failed to load.", state: latestUpdateState };
   }
   autoUpdater.quitAndInstall(false, true);
   return { ok: true, message: "Restarting to install update." };
@@ -2601,14 +2629,29 @@ ipcMain.handle("app:openExternal", async (_event, url) => {
 app.whenReady().then(() => {
   app.setAppUserModelId("com.funkyoushift.msbt");
   if (SMOKE_MODE) {
+    const updaterProbe = (() => {
+      if (!app.isPackaged) {
+        const gate = autoUpdaterGate(false);
+        return { ok: true, packaged: false, enabled: false, message: gate.message };
+      }
+      const enabled = configureAutoUpdater();
+      return {
+        ok: enabled,
+        packaged: true,
+        enabled,
+        message: latestUpdateState.message,
+        error: latestUpdateState.error || ""
+      };
+    })();
     console.log(JSON.stringify({
-      ok: true,
+      ok: updaterProbe.ok,
       appVersion: app.getVersion(),
       packaged: app.isPackaged,
       electron: process.versions.electron,
-      bridge: DEFAULT_BRIDGE
+      bridge: DEFAULT_BRIDGE,
+      updater: updaterProbe
     }));
-    app.exit(0);
+    app.exit(updaterProbe.ok ? 0 : 2);
     return;
   }
   if (INSTALL_SDKMODS_AND_EXIT) {

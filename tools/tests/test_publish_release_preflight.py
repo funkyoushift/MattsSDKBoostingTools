@@ -39,6 +39,8 @@ def release_fixture(tmp_path):
     write("MattsSDKBoostingTools.sdkmod", sdk)
     write("dist_electron/win-unpacked/resources/sdkmod/MattsSDKBoostingTools.sdkmod", sdk)
     write("dist_electron/win-unpacked/resources/releases/latest.json", manifest)
+    app_update = "provider: github\nowner: funkyoushift\nrepo: MattsSDKBoostingTools\n"
+    write("dist_electron/win-unpacked/resources/app-update.yml", app_update)
     write("docs/releases/latest.json", manifest + "\n")
     write("dist_electron/MSBT-Installer-v2.11.0.exe", installer)
     sha512 = base64.b64encode(hashlib.sha512(installer).digest()).decode()
@@ -50,6 +52,7 @@ def release_fixture(tmp_path):
         prefix = "MSBT-Portable-v2.11.0-win-x64/resources/"
         archive.writestr(prefix + "sdkmod/MattsSDKBoostingTools.sdkmod", sdk)
         archive.writestr(prefix + "releases/latest.json", manifest)
+        archive.writestr(prefix + "app-update.yml", app_update)
     write("dist_mobile/MSBT-Mobile-Controller.apk", b"apk")
     write("dist_mobile/MSBT-Mobile-Controller-1.1.0.apk", b"apk")
     write("docs/releases/mobile-version.json", json.dumps({"versionName": "1.1.0", "versionCode": 24,
@@ -111,13 +114,14 @@ def test_check_only_supports_windows_powershell_5(release_fixture):
     assert not calls
 
 
-@pytest.mark.parametrize("bad", ["portable", "sdkmod", "mobile", "size", "sha512", "embedded", "local_tag", "remote_tag"])
+@pytest.mark.parametrize("bad", ["portable", "sdkmod", "mobile", "size", "sha512", "embedded", "app_update", "local_tag", "remote_tag"])
 def test_preflight_rejects_incomplete_or_mismatched_release(release_fixture, bad):
     root, run = release_fixture
     if bad == "portable": (root / "dist_electron/MSBT-Portable-v2.11.0-win-x64.zip").unlink()
     elif bad == "sdkmod": (root / "MattsSDKBoostingTools.sdkmod").unlink()
     elif bad == "mobile": (root / "dist_mobile/MSBT-Mobile-Controller-1.1.0.apk").unlink()
     elif bad == "embedded": (root / "dist_electron/win-unpacked/resources/sdkmod/MattsSDKBoostingTools.sdkmod").write_bytes(b"stale")
+    elif bad == "app_update": (root / "dist_electron/win-unpacked/resources/app-update.yml").unlink()
     elif bad in {"size", "sha512"}:
         path = root / "dist_electron/latest.yml"
         updater = json.loads(path.read_text())

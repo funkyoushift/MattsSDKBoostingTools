@@ -211,6 +211,7 @@ $RequiredPackageFiles = @(
     "resources\sdkmod\MattsSDKBoostingTools.sdkmod",
     "resources\sdkmods\ActorScriptDeployer\__init__.py",
     "resources\releases\latest.json",
+    "resources\app-update.yml",
     "resources\external_app\v22_parts_codes_fixed\resources\ui_layout.json",
     "resources\external_app\v22_parts_codes_fixed\resources\MattsSDKBoostingTools_gzo_codes.json"
 )
@@ -222,6 +223,12 @@ foreach ($relativePath in $RequiredPackageFiles) {
 }
 $PackagedGzoCatalog = Join-Path $UnpackedRoot "resources\external_app\v22_parts_codes_fixed\resources\MattsSDKBoostingTools_gzo_codes.json"
 Assert-GzoCatalogImages -CatalogPath $PackagedGzoCatalog -Label "Packaged GZO catalog"
+Push-Location $ElectronRoot
+try {
+    Invoke-Checked "node.exe" @("test_updater_packaging.js")
+} finally {
+    Pop-Location
+}
 Remove-Item -LiteralPath $PortableStageRoot -Recurse -Force -ErrorAction SilentlyContinue
 Remove-Item -LiteralPath $PortableZipPath -Force -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Force -Path $PortableStageRoot | Out-Null

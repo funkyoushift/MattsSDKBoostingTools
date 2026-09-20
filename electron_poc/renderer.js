@@ -6847,6 +6847,7 @@ function renderUpdateCards(info) {
   const updater = data.updateState || data.updater || state.latestUpdateState || {};
   const updaterStatus = String(updater && updater.status ? updater.status : "idle");
   const updaterMessage = updater && updater.message ? updater.message : "Installer updater has not checked yet.";
+  const updaterError = updaterStatus === "error" && updater && updater.error ? ` ${updater.error}` : "";
   const bundled = data.bundledSdkmod || {};
   const installed = data.installedSdkmod || {};
   const localManifest = data.localManifest || data.local || {};
@@ -6863,7 +6864,7 @@ function renderUpdateCards(info) {
   );
   setLine(
     els.electronAppInstaller,
-    `Installer updater: ${updaterMessage}`,
+    `Installer updater: ${updaterMessage}${updaterError}`,
     updaterStatus === "available" || updaterStatus === "progress" ? "warning" : updaterStatus === "error" ? "bad" : updaterStatus === "downloaded" || updaterStatus === "none" ? "ok" : ""
   );
 

@@ -1,6 +1,6 @@
 {
   "name": "matts-sdk-boosting-tools",
-  "version": "2.12.1",
+  "version": "2.12.2",
   "private": true,
   "description": "Desktop app for Matt's SDK Boosting Tools.",
   "author": "FunkYouSHiFT",
@@ -9,7 +9,7 @@
   "scripts": {
     "start": "electron .",
     "smoke": "electron . --smoke",
-    "check": "node --check main.js && node --check preload.js && node --check renderer.js && node --check list_selection.js && node --check enemy_actor_filter.js && node --check poll_coordinator.js && node --check python_worker.js && node --check test_python_worker.js && node --check oak2_install.js && node --check panel_layout.js && node --check window_state_tracker.js && node --check dev_spawner_favorites_store.js && node --check travel_favorites_store.js && node --check serial_bookmarks_store.js && node --check movement_settings_store.js && node --check rarity_settings_store.js && node --check walkthrough_store.js && node --check matt_editor_prefs_store.js && node --check matt_editor_page.js && node --check bl4_codes_catalog.js && node --check remote_data_catalogs.js && node --check test_walkthrough_targets.js && node --check test_tab_workspace_guards.js && node --check test_window_state_persistence.js && node --check test_window_state_electron.js && node --check test_matt_editor_host_port.js && node test_list_selection_and_enemy_filter.js && node test_poll_coordinator.js && node test_panel_layout_persistence.js && node test_window_state_persistence.js && node test_matt_editor_prefs_store.js && node test_matt_editor_host_port.js && node test_appearance_lock.js && node test_oak2_install.js && electron test_walkthrough_targets.js && electron test_tab_workspace_guards.js && electron test_window_state_electron.js && npm run test:responsive",
+    "check": "node --check main.js && node --check preload.js && node --check renderer.js && node --check list_selection.js && node --check enemy_actor_filter.js && node --check poll_coordinator.js && node --check python_worker.js && node --check test_python_worker.js && node --check oak2_install.js && node --check panel_layout.js && node --check window_state_tracker.js && node --check dev_spawner_favorites_store.js && node --check travel_favorites_store.js && node --check serial_bookmarks_store.js && node --check movement_settings_store.js && node --check rarity_settings_store.js && node --check walkthrough_store.js && node --check matt_editor_prefs_store.js && node --check matt_editor_page.js && node --check bl4_codes_catalog.js && node --check remote_data_catalogs.js && node --check updater_availability.js && node --check test_walkthrough_targets.js && node --check test_tab_workspace_guards.js && node --check test_window_state_persistence.js && node --check test_window_state_electron.js && node --check test_matt_editor_host_port.js && node test_list_selection_and_enemy_filter.js && node test_poll_coordinator.js && node test_panel_layout_persistence.js && node test_window_state_persistence.js && node test_matt_editor_prefs_store.js && node test_matt_editor_host_port.js && node test_appearance_lock.js && node test_updater_packaging.js && node test_oak2_install.js && electron test_walkthrough_targets.js && electron test_tab_workspace_guards.js && electron test_window_state_electron.js && npm run test:responsive",
     "test:data-catalogs": "node test_bl4_codes_catalog.js && node test_remote_data_catalogs.js",
     "test:game-update": "node test_game_update_parameters.js && node test_catalog_game_build.js && node test_character_challenge_update.js",
     "test:oak2": "node test_oak2_install.js",
@@ -136,8 +136,14 @@
     "electron@44.3.0": true
   },
   "dependencies": {
+    "builder-util-runtime": "9.7.0",
     "electron-updater": "^6.8.9",
     "gridstack": "^11.5.1",
-    "qrcode": "^1.5.4"
+    "js-yaml": "^4.1.0",
+    "lazy-val": "^1.0.5",
+    "lodash.escaperegexp": "^4.1.2",
+    "lodash.isequal": "^4.5.0",
+    "qrcode": "^1.5.4",
+    "tiny-typed-emitter": "^2.1.0"
   }
 }

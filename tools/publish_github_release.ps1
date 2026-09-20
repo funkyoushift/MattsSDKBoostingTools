@@ -168,6 +168,14 @@ if ([string]$installerRows[0].sha512 -cne $installerSha512 -or [string]$updater.
 if (-not (Test-Path $ManifestPath)) {
     throw "Release update manifest not found: $ManifestPath."
 }
+$AppUpdateYml = Join-Path $ElectronDist "win-unpacked\resources\app-update.yml"
+Assert-ReleaseFile $AppUpdateYml
+$appUpdateText = Get-Content -Raw -LiteralPath $AppUpdateYml
+if ($appUpdateText -notmatch '(?m)^provider:\s*github\s*$' -or
+    $appUpdateText -notmatch '(?m)^owner:\s*funkyoushift\s*$' -or
+    $appUpdateText -notmatch '(?m)^repo:\s*MattsSDKBoostingTools\s*$') {
+    throw 'Packaged app-update.yml must enable electron-updater against GitHub (funkyoushift/MattsSDKBoostingTools).'
+}
 $PackagedManifestPath = Join-Path $ElectronDist "win-unpacked\resources\releases\latest.json"
 if (-not (Test-Path $PackagedManifestPath)) {
     throw "Packaged Electron release manifest not found: $PackagedManifestPath. Run .\tools\build_electron_beta.ps1 -Installer."
@@ -211,6 +219,8 @@ try {
     Assert-PortableEmbeddedFile $portableArchive ($portableRoot + 'sdkmod/MattsSDKBoostingTools.sdkmod') $sdkSha256
     $manifestSha256 = Get-ReleaseFileSha256 $PackagedManifestPath
     Assert-PortableEmbeddedFile $portableArchive ($portableRoot + 'releases/latest.json') $manifestSha256
+    $appUpdateSha256 = Get-ReleaseFileSha256 $AppUpdateYml
+    Assert-PortableEmbeddedFile $portableArchive ($portableRoot + 'app-update.yml') $appUpdateSha256
 } finally { $portableArchive.Dispose() }
 $ElectronAssets += $SdkMod
 $MobileVersionJson = Join-Path $RepoRoot "docs\releases\mobile-version.json"
