@@ -2190,6 +2190,16 @@ def _infinite_jump_status_safe() -> dict[str, Any]:
         return {"enabled": False, "enabled_local": False, "count": 0, "names": "none"}
 
 
+def selected_player_readback() -> dict[str, Any]:
+    from .player_readback import read_player
+    from .party_helpers import _gbc_resolve_player_display_name
+    try:
+        pc = _party_controller_for_index(_selected_player_index) if _selected_player_index is not None else None
+        return read_player(pc, _selected_player_name, _gbc_resolve_player_display_name, player_economy)
+    except Exception:
+        return {"available": False, "name": _selected_player_name}
+
+
 def get_status(*, include_extended: bool = True) -> dict[str, Any]:
     """Build status; periodic bridge snapshots omit unused UI-only lookups."""
     players = refresh_players()
@@ -2215,6 +2225,7 @@ def get_status(*, include_extended: bool = True) -> dict[str, Any]:
         "players": players,
         "selected_player": _selected_player_name,
         "selected_player_index": _selected_player_index,
+        "player_readback": selected_player_readback(),
         "host_player_index": _host_player_index_value(),
         "last_refresh_error": _last_refresh_error,
         "last_command": get_last_command(),

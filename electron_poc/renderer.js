@@ -3639,6 +3639,37 @@ function openMobileInstallPage() {
   }
 }
 
+function renderPlayerReadback(data) {
+  const root = document.getElementById("playerReadback");
+  if (!root) return;
+  const snapshot = data && data.player_readback;
+  const valid = snapshot && snapshot.available && snapshot.name === data.selected_player &&
+    (!state.pendingTargetValue || state.pendingTargetValue === targetValueFromParts(data.selected_player_index, data.selected_player)) &&
+    Number.isFinite(snapshot.sampled_at) && Math.abs(Date.now() / 1000 - snapshot.sampled_at) < 10;
+  document.getElementById("playerReadbackName").textContent = valid ? `Live stats · ${snapshot.name}` : "Live player stats";
+  document.getElementById("playerReadbackStatus").textContent = valid
+    ? `Read from game · ${new Date(snapshot.sampled_at * 1000).toLocaleTimeString()}`
+    : "Waiting for a current reading from the selected player.";
+  const values = document.getElementById("playerReadbackValues");
+  const cards = document.getElementById("playerReadbackCards");
+  values.replaceChildren(); cards.replaceChildren();
+  if (!valid) return;
+  const currency = snapshot.currencies || {};
+  const rows = [["Level", snapshot.level], ["Specialization", snapshot.specialization], ["Cash", currency.Cash], ["Eridium", currency.eridium]];
+  for (let i = 1; i <= 5; i++) rows.push([`Vault card ${i} keys`, currency[`VaultCard0${i}_Tokens`]]);
+  for (const [label, value] of rows) {
+    const cell = document.createElement("div"), term = document.createElement("dt"), amount = document.createElement("dd");
+    term.textContent = label; amount.textContent = Number.isFinite(value) ? value.toLocaleString() : "Unavailable";
+    cell.append(term, amount); values.append(cell);
+  }
+  for (let i = 1; i <= 5; i++) {
+    const card = (snapshot.vault_cards || []).find(row => row.card === i);
+    const line = document.createElement("div");
+    line.textContent = `Card ${i}: ${card && Number.isFinite(card.rank) ? card.rank.toLocaleString() : "Unavailable"}${card ? (card.active ? " · Active" : " · Inactive") : ""}`;
+    cards.append(line);
+  }
+}
+
 function applyBridgeStatusResult(result, options = {}) {
   const data = result && result.data ? result.data : {};
   const fingerprints = state.bridgeFingerprints;
@@ -3646,6 +3677,7 @@ function applyBridgeStatusResult(result, options = {}) {
     ? window.MsbtPollCoordinator.stableFingerprint(value)
     : JSON.stringify(value);
   if (!result.ok || !data.ok) {
+    renderPlayerReadback(null);
     state.bridgeOnline = false;
     state.snapshotReady = false;
     state.bridgeDiagnostics = {};
@@ -3686,6 +3718,7 @@ function applyBridgeStatusResult(result, options = {}) {
     fingerprints.playerSelection = selectionFingerprint;
     renderPlayers(data);
   }
+  renderPlayerReadback(data);
   const playerCount = Array.isArray(data.players) ? data.players.length : 0;
   const selected = data.selected_player || "none";
   const queue = data.queue || 0;

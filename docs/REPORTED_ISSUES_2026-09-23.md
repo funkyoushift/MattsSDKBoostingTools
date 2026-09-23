@@ -107,3 +107,24 @@ missing Nexus-Data-skilltrees_data6.json and blocked external Monaco/resources.
 This broader page test is not counted as passed or established as pre-existing.
 The targeted reported-issues test and actual encrypted save UI roundtrip passed.
 
+
+## Follow-up: live player readback
+
+The desktop Connection & Scope panel now displays a read-only summary of the
+selected player: character level, specialization, cash, Eridium, and keys for
+all five vault cards. Expand Vault-card ranks for active/inactive track values.
+Snapshots are collected on the existing game-thread status tick; the HTTP handler
+serves copied JSON. The UI rejects stale or mismatched readings and shows missing
+values as unavailable. No progression or currency setter is used.
+
+Validated against a live guest (Iced_life97): level 70, specialization 701,
+cash 2,147,483,646, Eridium and all five key balances 2,147,483,647. The restarted
+source desktop preview displayed those values. Nine focused Python tests passed;
+the Electron readback test passed identity, stale/offline, missing-value, and key
+balance cases. No release/version change.
+
+Correction to earlier vault-card assessment: Matt clarified that a player must
+activate a card before its rank can be set. TauntingRoss's live CurrencyManager
+showed 2,147,483,647 keys for each of cards 1-5, including inactive cards. Those
+key grants are confirmed; inactive ranks alone are not evidence of a broken grant.
+Matt also confirmed building and sending two different editor codes successfully.

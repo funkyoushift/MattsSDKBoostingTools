@@ -1030,6 +1030,7 @@ def _status() -> dict[str, Any]:
         "selected_player": backend_status.get("selected_player") or "",
         "selected_player_index": backend_status.get("selected_player_index"),
         "host_player_index": backend_status.get("host_player_index"),
+        "player_readback": backend_status.get("player_readback"),
         "last_command": backend_status.get("last_command"),
         "last_drop": backend_status.get("last_drop"),
         "drop_player_lock": backend_status.get("drop_player_lock") or {"enabled": False},

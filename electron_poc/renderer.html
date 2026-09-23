@@ -246,6 +246,12 @@
           <h2>Connection &amp; Scope</h2>
           <p>Public Boosting cheats use Local, All, Other players, or a named party member. Kick uses the named roster. Drop All Backpack, Reset Skill Tree, and chest/black-market spawns are host-only.</p>
           <div id="bridgeSummary" class="status-line warning">Checking game connection...</div>
+          <section id="playerReadback" class="player-readback" aria-label="Live selected player stats">
+            <strong id="playerReadbackName">Live player stats</strong>
+            <p id="playerReadbackStatus">Select a player to read their stats.</p>
+            <dl id="playerReadbackValues"></dl>
+            <details><summary>Vault-card ranks</summary><div id="playerReadbackCards"></div><small>Activate a card in-game before boosting its rank. Keys are independent.</small></details>
+          </section>
           <div class="button-row wrap" role="group" aria-label="Boost scope">
             <button type="button" data-boost-scope="local">Local</button>
             <button type="button" data-boost-scope="all">All Players</button>
