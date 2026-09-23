@@ -128,3 +128,24 @@ activate a card before its rank can be set. TauntingRoss's live CurrencyManager
 showed 2,147,483,647 keys for each of cards 1-5, including inactive cards. Those
 key grants are confirmed; inactive ranks alone are not evidence of a broken grant.
 Matt also confirmed building and sending two different editor codes successfully.
+
+## Follow-up: completed GZO search and submission integration
+
+Selectively imported the completed search/submission work from
+`working/_release_check/gzo-codes-align` (branch `fix/gzo-codes-search-submit`,
+uncommitted changes over ac323cc). Includes the highlighted submission button,
+manufacturer/creator/type/DLC filters, Legit/Modded selection, pagination,
+submission field mapping and autofill, screenshot attachment, and explicit
+server-acceptance handling. Manual form edits survive autofill, stale serial
+results are rejected, and repeated clicks cannot submit the same pending request.
+
+The in-progress card model, adapter, protocol, assets, resolver, naming, stat
+calculation, and item-pool changes were excluded. Screenshot attachment uses the
+existing release-candidate renderer through a small capture wrapper; its success
+is not a claim that unfinished card rendering is complete.
+
+Validation: catalog, form mapping, DLC contract, transport, Electron form, screenshot
+capture, live-player readback, and roster regression tests passed. Transport tests
+mock the server and do not publish submissions. The app was restarted and the
+updated catalog controls and form visually checked. Local packaging succeeded.
+Version remains 2.12.2; no release was published.

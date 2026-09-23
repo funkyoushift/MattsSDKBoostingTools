@@ -1,0 +1,23 @@
+"use strict";
+const assert = require("node:assert/strict");
+const path = require("node:path");
+const {app, BrowserWindow, protocol, nativeImage} = require("electron");
+const cards = require("./native_card_protocol");
+cards.registerNativeCardSchemes(protocol);
+app.whenReady().then(async () => {
+  cards.installNativeCardProtocol(protocol);
+  const resolver = require("./serial_card_resolve").loadResolver({sourceRoot:path.resolve(__dirname,"..")});
+  const card = resolver.resolveFromHuman(require("./fixtures/item_cards/mixed_order_user.json")[10].human);
+  const result = await require("./native_card_capture").captureNativeCard(BrowserWindow, card);
+  assert.equal(result.ok, true);
+  const pixels = nativeImage.createFromBuffer(Buffer.from(result.base64, "base64"));
+  assert.equal(pixels.isEmpty(), false);
+  assert.ok(result.height > 300);
+  let bright = 0;
+  const bitmap = pixels.toBitmap();
+  for (let i=0;i<bitmap.length;i+=4) if (bitmap[i]>100 || bitmap[i+1]>100 || bitmap[i+2]>100) bright++;
+  assert.ok(bright > 10000, "attachment must contain painted text and artwork");
+  assert.equal(BrowserWindow.getAllWindows().length, 0, "capture window must close");
+  console.log("PASS GZO screenshot attachment using the existing card renderer");
+  app.exit(0);
+}).catch(error => {console.error(error);app.exit(1);});

@@ -1844,6 +1844,14 @@ ipcMain.handle("app:getTutorialCopy", async () => {
   }
 });
 
+ipcMain.handle("app:captureNativeCard", async (_event, card) => {
+  try {
+    return await require("./native_card_capture").captureNativeCard(BrowserWindow, card);
+  } catch (error) {
+    return {ok:false, message:String(error.message || error)};
+  }
+});
+
 ipcMain.handle("app:bl4PartsBreakdown", async (_event, serial) => {
   const code = [
     "import json, sys",
@@ -1873,10 +1881,15 @@ function gzoImageMime(payload, imagePath) {
 }
 
 async function submitGzoCode(payload = {}) {
-  const listing = normalizeGzoField(payload.listing).toLowerCase() === "modded" ? "Modded" : "Legit";
+  const listingRaw = normalizeGzoField(payload.listing).toLowerCase();
+  if (listingRaw !== "legit" && listingRaw !== "modded") {
+    return { ok: false, message: "Required before submission: listing (Legit or Modded)." };
+  }
+  const listing = listingRaw === "modded" ? "Modded" : "Legit";
   const fields = {
     action: "submit",
     listing,
+    dlc: normalizeGzoField(payload.dlc) || "Base Game",
     name: normalizeGzoField(payload.name),
     creator: normalizeGzoField(payload.creator),
     type: normalizeGzoField(payload.type),
@@ -1886,27 +1899,43 @@ async function submitGzoCode(payload = {}) {
     deserialized: normalizeGzoField(payload.deserialized),
     notes: normalizeGzoField(payload.notes)
   };
-  const missing = ["name", "creator", "type", "rarity"].filter((key) => !fields[key]);
+  const missing = ["name", "creator"].filter((key) => !fields[key]);
+  if (fields.category && !fields.type) missing.push("type");
   if (!fields.base85 && !fields.deserialized) {
     missing.push("base85 or deserialized");
   }
   const imagePath = normalizeGzoField(payload.imagePath);
-  if (!imagePath) missing.push("image");
+  const imageBase64 = String(payload.imageBase64 || "").replace(/^data:image\/[a-zA-Z0-9.+-]+;base64,/, "").trim();
+  if (!imagePath && !imageBase64) missing.push("image");
   if (missing.length) {
     return { ok: false, message: `Required before submission: ${missing.join(", ")}.` };
   }
 
-  let stat;
-  try {
-    stat = await fs.stat(imagePath);
-  } catch {
-    return { ok: false, message: "Selected image file could not be read." };
+  let imageData;
+  let imageType = gzoImageMime(payload, imagePath);
+  if (imagePath) {
+    let stat;
+    try {
+      stat = await fs.stat(imagePath);
+    } catch {
+      return { ok: false, message: "Selected image file could not be read." };
+    }
+    if (!stat.isFile()) {
+      return { ok: false, message: "Selected image path is not a file." };
+    }
+    imageData = await fs.readFile(imagePath);
+    if (!imageType) imageType = gzoImageMime({ ...payload, imageType: payload.imageType }, imagePath);
+  } else {
+    try {
+      imageData = Buffer.from(imageBase64, "base64");
+    } catch {
+      return { ok: false, message: "Item-card screenshot could not be decoded." };
+    }
+    if (!imageData.length) return { ok: false, message: "Item-card screenshot was empty." };
+    imageType = ["image/png", "image/jpeg", "image/webp"].includes(String(payload.imageType || "").toLowerCase())
+      ? String(payload.imageType).toLowerCase()
+      : "image/png";
   }
-  if (!stat.isFile()) {
-    return { ok: false, message: "Selected image path is not a file." };
-  }
-
-  const imageType = gzoImageMime(payload, imagePath);
   if (!imageType) {
     return { ok: false, message: "Image must be PNG, JPEG, or WebP." };
   }
@@ -1915,8 +1944,7 @@ async function submitGzoCode(payload = {}) {
   for (const [key, value] of Object.entries(fields)) {
     if (value || key === "action" || key === "listing") form.append(key, value);
   }
-  const imageData = await fs.readFile(imagePath);
-  const imageName = normalizeGzoField(payload.imageName) || path.basename(imagePath);
+  const imageName = normalizeGzoField(payload.imageName) || (imagePath ? path.basename(imagePath) : "msbt-item-card.png");
   form.append("image", new Blob([imageData], { type: imageType }), imageName);
 
   const controller = new AbortController();
@@ -1936,12 +1964,12 @@ async function submitGzoCode(payload = {}) {
     }
     const apiSuccess = Boolean(data && (data.success === true || data.ok === true));
     const apiFailure = Boolean(data && (data.success === false || data.ok === false));
-    const ok = response.ok && !apiFailure;
+    const ok = response.ok && apiSuccess && !apiFailure;
     const message = data && data.message
       ? String(data.message)
       : ok
         ? (apiSuccess ? "Submitted to GZO pending review." : `GZO returned HTTP ${response.status}. Check the response body for review status.`)
-        : `GZO submission failed with HTTP ${response.status}.`;
+        : (response.ok && !apiFailure ? "GZO did not confirm acceptance. Review the response before retrying to avoid a duplicate submission." : `GZO submission failed with HTTP ${response.status}.`);
     return {
       ok,
       status: response.status,

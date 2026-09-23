@@ -45,7 +45,26 @@ body.msbt-workspace {
 .msbt-workspace .panel p { margin-bottom: 12px; }
 .msbt-workspace .panel button, .msbt-workspace .fixed-page-tab button, .msbt-workspace .dev-spawner-fixed button { font-size: inherit; font-weight: 500; white-space: normal; overflow-wrap: anywhere; height: auto; min-height: 36px; }
 .msbt-workspace button { box-shadow: none; border-radius: 7px; }
-.msbt-workspace button:not(.danger):not(.support-link):not(.workspace-menu-button) { background-image: none; }
+.msbt-workspace button:not(.danger):not(.support-link):not(.workspace-menu-button):not(.gzo-submit-cta):not(.submit-btn):not(.primary):not(.qm-pin-button) { background-image: none; }
+.msbt-workspace #bl4SubmitGzoBtn,
+.msbt-workspace #gzoSubmitSendBtn,
+.msbt-workspace button.gzo-submit-cta,
+.msbt-workspace button.submit-btn {
+  background-color: #e37a00;
+  background-image: linear-gradient(180deg, #ff9b1a, #d86f00);
+  border-color: #ffd15a;
+  color: #120900;
+  font-weight: 800;
+  box-shadow: 0 0 16px rgba(255, 139, 0, 0.28);
+}
+.msbt-workspace #bl4SubmitGzoBtn:hover,
+.msbt-workspace #gzoSubmitSendBtn:hover,
+.msbt-workspace button.gzo-submit-cta:hover,
+.msbt-workspace button.submit-btn:hover {
+  background-color: #f08400;
+  background-image: linear-gradient(180deg, #ffb13d, #f08400);
+  color: #120900;
+}
 .msbt-workspace input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), .msbt-workspace select, .msbt-workspace textarea { min-width: 0; max-width: 100%; font-size: inherit; color: var(--text); background: var(--field); }
 .msbt-workspace select { text-overflow: ellipsis; }
 .msbt-workspace label { font-size: inherit; min-width: 0; }

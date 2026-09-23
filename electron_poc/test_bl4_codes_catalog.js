@@ -23,24 +23,55 @@ async function main() {
     }]);
     await writeCatalog(dir, "MattsSDKBoostingTools_gzo_codes.json", [{
       name: "Shared Item GZO",
+      image: "codes/Legit/Tester/Watts 150% Amp.png?v=1",
       base85: serial,
       source: "GZO",
       targetListing: "Legit",
+      category: "Vladof",
+      type: "SMG",
       deserialized: "18, 0, 1, 60| 2, 1|| {1}|",
       dlc: "Bounty Pack 1",
       votes: 7,
       tacklebox: true
+    }, {
+      name: "Paladin Row",
+      base85: "@UPaladin12345678901234567890",
+      targetListing: "Legit",
+      category: "Classmod",
+      type: "Paladin",
+      rarity: "Pearl"
+    }, {
+      name: "Sniper Row",
+      base85: "@USniper12345678901234567890",
+      targetListing: "Legit",
+      category: "Jakobs",
+      type: "Sniper",
+      rarity: "Legendary"
     }]);
     await writeCatalog(dir, "custom_bl4_codes.json", []);
 
     const result = await loadBl4Catalog(dir);
-    assert.strictEqual(result.entries.length, 1, "identical serials should merge into one row");
+    assert.strictEqual(result.entries.length, 3, "identical serials should merge; extra GZO rows stay distinct");
     assert.strictEqual(result.counts.duplicatesCollapsed, 1);
-    assert.deepStrictEqual(result.entries[0].sources, ["GZO", "Lootlemon"]);
-    assert.strictEqual(result.entries[0].item_level, 60);
-    assert.strictEqual(result.entries[0].catalog_parameters.votes, 7);
-    assert.strictEqual(result.entries[0].url, "https://www.lootlemon.com/weapon/shared-item-bl4");
+    const shared = result.entries.find((row) => row.serial === serial);
+    assert.deepStrictEqual(shared.sources, ["GZO", "Lootlemon"]);
+    assert.strictEqual(shared.item_level, 60);
+    assert.ok(shared.image_url.includes("150%25%20Amp.png"),"GZO percent filenames must not produce HTTP 400");
+    assert.strictEqual(shared.manufacturer, "Vladof");
+    assert.strictEqual(shared.type, "SMG");
+    assert.strictEqual(shared.dlc, "Bounty Pack 1");
+    assert.strictEqual(shared.catalog_parameters.votes, 7);
+    assert.strictEqual(shared.url, "https://www.lootlemon.com/weapon/shared-item-bl4");
     assert.ok(result.filters.levels.includes("60"));
+    const paladin = result.entries.find((row) => row.name === "Paladin Row");
+    assert.ok(paladin);
+    assert.strictEqual(paladin.category, "Classmod");
+    assert.strictEqual(paladin.type, "Paladin");
+    assert.strictEqual(paladin.rarity, "Pearlescent");
+    const sniper = result.entries.find((row) => row.name === "Sniper Row");
+    assert.ok(sniper);
+    assert.strictEqual(sniper.manufacturer, "Jakobs");
+    assert.strictEqual(sniper.type, "Sniper");
     console.log("PASS BL4 catalog dedupe, GZO parameters, and item level normalization");
 
     const freshSerial = "@UFresh12345678901234567890";

@@ -1029,7 +1029,7 @@
               <p>Search Lootlemon, GZO, and custom codes. Catalog browsing is the main workspace; delivery stays within reach.</p>
             </div>
             <div class="button-row wrap">
-              <button id="bl4SubmitGzoBtn" class="gzo-submit-cta">Submit Your Code to GZO</button>
+              <button id="bl4SubmitGzoBtn" class="gzo-submit-cta submit-btn" type="button">Submit Your Code to GZO</button>
               <button id="bl4ReloadBtn">Load Catalog</button>
               <button id="bl4RefreshCatalogsBtn">Refresh Catalogs</button>
               <button id="bl4RefreshGzoBtn">Refresh GZO</button>
@@ -1043,36 +1043,96 @@
 
           <details class="filter-panel bl4-filter-panel" open>
             <summary>
-              <strong>Catalog filters</strong>
-              <span>Search every catalog field, including level, DLC, votes, and source metadata</span>
+              <strong>Browse catalog</strong>
+              <span>Search: Name, type, creator, etc.</span>
             </summary>
             <div class="grid two compact">
               <label>
                 Search
                 <div class="search-row">
-                  <input id="bl4SearchInput" type="search" autocomplete="off" spellcheck="false" placeholder="name, level, DLC, creator, serial, votes...">
+                  <input id="bl4SearchInput" type="search" autocomplete="off" spellcheck="false" placeholder="Name, type, creator, etc.">
                   <button id="bl4SearchBtn">Search</button>
                 </div>
               </label>
               <label>
-                Manufacturer
-                <select id="bl4ManufacturerFilter"></select>
+                Author/Creator
+                <select id="bl4CreatorFilter" aria-label="Select author or creator">
+                  <option value="All">All creators</option>
+                </select>
               </label>
               <label>
-                Listing
-                <select id="bl4ListingFilter"></select>
+                Item Type
+                <select id="bl4TypeFilter">
+                  <option value="All">All</option>
+                  <option>Assault Rifle</option>
+                  <option>Pistol</option>
+                  <option>Shotgun</option>
+                  <option>SMG</option>
+                  <option>Sniper</option>
+                  <option>Heavy Weapon</option>
+                  <option>Repkit</option>
+                  <option>Grenade</option>
+                  <option>Shield</option>
+                  <option>Enhancement</option>
+                  <option>Classmod</option>
+                  <option>Amon</option>
+                  <option>Harlowe</option>
+                  <option>Vex</option>
+                  <option>Rafa</option>
+                  <option>C4SH</option>
+                  <option>Loveless</option>
+                </select>
               </label>
               <label>
                 Rarity
-                <select id="bl4RarityFilter"></select>
+                <select id="bl4RarityFilter">
+                  <option value="All">All</option>
+                  <option>Common</option>
+                  <option>Uncommon</option>
+                  <option>Rare</option>
+                  <option>Epic</option>
+                  <option>Legendary</option>
+                  <option>Pearlescent</option>
+                </select>
               </label>
               <label>
-                Type
-                <select id="bl4TypeFilter"></select>
+                Manufacturer
+                <select id="bl4ManufacturerFilter">
+                  <option value="All">All</option>
+                  <option>Atlas</option>
+                  <option>CoV</option>
+                  <option>Daedalus</option>
+                  <option>Hyperion</option>
+                  <option>Jakobs</option>
+                  <option>Maliwan</option>
+                  <option>Order</option>
+                  <option>Ripper</option>
+                  <option>Tediore</option>
+                  <option>Torgue</option>
+                  <option>Vladof</option>
+                </select>
               </label>
               <label>
-                Creator
-                <select id="bl4CreatorFilter"></select>
+                Base Game / DLC
+                <select id="bl4DlcFilter">
+                  <option value="All">All</option>
+                  <option value="Base Game">Base Game</option>
+                  <option value="__any_dlc__">Any DLC</option>
+                  <option value="Stone Demon">Stone Demon</option>
+                  <option value="Vault of the Damned">Vault of the Damned</option>
+                  <option value="Bounty Pack 2">Bounty Pack 2</option>
+                  <option value="Bounty Pack 3">Bounty Pack 3</option>
+                  <option value="Bounty Pack 4">Bounty Pack 4</option>
+                  <option value="Gilded Glory">Gilded Glory</option>
+                  <option value="Story Pack 1">Story Pack 1</option>
+                  <option value="Harmonica">Harmonica</option>
+                  <option value="Non-obtainable">Non-obtainable</option>
+                  <option value="Mixed DLC">Mixed DLC</option>
+                </select>
+              </label>
+              <label class="hidden" hidden>
+                Listing
+                <select id="bl4ListingFilter"></select>
               </label>
               <label>
                 Item Level
@@ -1083,16 +1143,31 @@
                 <select id="bl4MattmabFilter"></select>
               </label>
             </div>
+            <div class="bl4-listing-pills" role="tablist" aria-label="Legit or modded catalog">
+              <button type="button" id="bl4LegitSectionBtn" class="bl4-listing-pill active" data-listing-section="Legit" aria-pressed="true">
+                Legit items <span id="bl4LegitCount" class="bl4-listing-count">0</span>
+              </button>
+              <button type="button" id="bl4ModdedSectionBtn" class="bl4-listing-pill" data-listing-section="Modded" aria-pressed="false">
+                Modded / non-legit gear <span id="bl4ModdedCount" class="bl4-listing-count">0</span>
+              </button>
+            </div>
+            <p class="muted-line">Each card shows Base85 &amp; deserialized, both copyable.</p>
           </details>
 
-          <div class="bl4-selection-bar">
-            <div id="bl4Count" class="status-line">0 shown / 0 merged | 0 selected</div>
+          <div class="bl4-selection-bar" id="bl4CodesListBar">
+            <div id="bl4Count" class="status-line">List: 0 codes</div>
             <div class="button-row wrap">
-              <button id="bl4SelectAllBtn">Select All</button>
-            <button id="bl4ClearSelectionBtn" class="danger">Clear Selection</button>
-              <button id="bl4CopySelectedBtn">Copy Selected Serials</button>
+              <button id="bl4CopySelectedBtn">Copy list (one per line)</button>
+              <button id="bl4SelectAllBtn">Select all</button>
+              <button id="bl4ClearSelectionBtn" class="secondary">Clear list</button>
+              <button id="bl4SpawnInBtn" type="button">Spawn in</button>
             </div>
           </div>
+          <nav class="bl4-catalog-pagination" id="bl4Pagination" aria-label="Catalog pages" hidden>
+            <button type="button" id="bl4PrevPageBtn" class="secondary">Previous</button>
+            <span id="bl4PageLabel">Page 1 / 1</span>
+            <button type="button" id="bl4NextPageBtn" class="secondary">Next</button>
+          </nav>
 
           <div class="bl4-browser-workspace">
             <section class="bl4-card-pane">
@@ -2420,68 +2495,121 @@
     <div class="modal-card gzo-submit-modal">
       <div class="section-heading">
         <div>
-          <h2 id="gzoSubmitTitle">Submit Code to GZO</h2>
-          <p>Submit a new code to GZO Pending from the Matt Editor or a pasted serial. Paste either @U Base85 or decoded text, then normalize before sending. A screenshot/image is required.</p>
+          <h2 id="gzoSubmitTitle">Submit a code</h2>
+          <p>Share legit or modded gear. Uploads go to a <strong>pending queue</strong> (<code>codes/Pending/...</code>). A developer publishes them to the live <code>codes/Legit/</code> or <code>codes/Modded/</code> lists after review. Paste a Base85 <code>@U</code> serial to deserialize, preview an MSBT item card, and auto-fill fields we can decode.</p>
         </div>
         <button id="gzoSubmitCloseBtn" type="button" class="secondary">Close</button>
       </div>
-      <form id="gzoSubmitForm">
-        <div class="grid two compact">
-          <label>
-            Listing
-            <select id="gzoSubmitListing">
-              <option value="Legit">Legit</option>
-              <option value="Modded">Modded</option>
+      <form id="gzoSubmitForm" class="submit-form submit-catalog-form">
+        <div class="gzo-submit-section">
+          <div class="gzo-submit-section-title">Legit or modded</div>
+          <p class="muted-line">Choose where this item should appear after approval. This is required.</p>
+          <label class="submit-full">Destination
+            <select id="gzoSubmitListing" name="listing" required>
+              <option value="">- pick one -</option>
+              <option value="Legit">Legit (game-standard)</option>
+              <option value="Modded">Modded / non-legit</option>
             </select>
           </label>
-          <label>
-            Creator
-            <input id="gzoSubmitCreator" type="text" autocomplete="off" placeholder="Creator handle">
-          </label>
-          <label>
-            Name
-            <input id="gzoSubmitName" type="text" autocomplete="off" placeholder="Item name">
-          </label>
-          <label>
-            Rarity
-            <select id="gzoSubmitRarity"></select>
-          </label>
-          <label>
-            Type
-            <select id="gzoSubmitType"></select>
-          </label>
-          <label>
-            Category
-            <select id="gzoSubmitCategory"></select>
-          </label>
         </div>
-        <label for="gzoSubmitBase85">Base85 @U Code</label>
-        <textarea id="gzoSubmitBase85" class="output-box small" spellcheck="false" placeholder="@U..."></textarea>
-        <label for="gzoSubmitDeserialized">Deserialized / Decoded Serial</label>
-        <textarea id="gzoSubmitDeserialized" class="output-box small" spellcheck="false" placeholder="Optional decoded serial"></textarea>
-        <div class="button-row wrap">
-          <button id="gzoSubmitDecodeBtn" type="button">Decode / Normalize Serial</button>
-          <button id="gzoSubmitUseEditorBtn" type="button">Use Matt Editor Serial</button>
-          <button id="gzoSubmitClearBtn" type="button">Clear Form</button>
-        </div>
-        <label for="gzoSubmitNotes">Notes</label>
-        <textarea id="gzoSubmitNotes" class="output-box small" spellcheck="true" placeholder="Optional notes, part breakdown, or creator notes"></textarea>
-        <div class="gzo-image-picker">
-          <label>
-            Required Image / Screenshot
-            <input id="gzoSubmitImage" type="file" accept="image/png,image/jpeg,image/webp">
+        <div class="gzo-submit-section">
+          <div class="gzo-submit-section-title">Base Game or DLC</div>
+          <p class="muted-line">Detected from the same part IDs used by GZO. You can override the content pack after decoding.</p>
+          <label class="submit-full">Content pack
+            <select id="gzoSubmitDlc" name="dlc">
+              <option value="Base Game">Base Game</option>
+              <option value="Stone Demon">Stone Demon</option>
+              <option value="Vault of the Damned">Vault of the Damned</option>
+              <option value="Bounty Pack 2">Bounty Pack 2</option>
+              <option value="Bounty Pack 3">Bounty Pack 3</option>
+              <option value="Bounty Pack 4">Bounty Pack 4</option>
+              <option value="Gilded Glory">Gilded Glory</option>
+              <option value="Story Pack 1">Story Pack 1</option>
+              <option value="Harmonica">Harmonica</option>
+              <option value="Non-obtainable">Non-obtainable</option>
+              <option value="Mixed DLC">Mixed DLC</option>
+            </select>
           </label>
-          <div id="gzoSubmitImagePreview" class="gzo-image-preview">No image selected.</div>
+          <span id="gzoSubmitDlcStatus" class="status-line">Decode a serial to detect its content pack.</span>
+        </div>
+        <div class="gzo-submit-section">
+          <div class="gzo-submit-section-title">Item details</div>
+          <label class="submit-full">Display name
+            <input id="gzoSubmitName" name="name" type="text" required placeholder="e.g. Ricocheting Fatal Complex Root" autocomplete="off">
+          </label>
+          <div class="grid two compact">
+            <label>Manufacturer
+              <select id="gzoSubmitCategory" name="category">
+                <option value="">- Select -</option>
+              </select>
+            </label>
+            <label>Type
+              <select id="gzoSubmitType" name="type" disabled>
+                <option value="">- Select manufacturer first -</option>
+              </select>
+            </label>
+            <label>Rarity
+              <select id="gzoSubmitRarity" name="rarity">
+                <option value="">-</option>
+                <option>Common</option>
+                <option>Uncommon</option>
+                <option>Rare</option>
+                <option>Epic</option>
+                <option>Legendary</option>
+                <option>Pearl</option>
+              </select>
+            </label>
+            <label>Your name / creator tag
+              <input id="gzoSubmitCreator" name="creator" type="text" required placeholder="e.g. YourHandle" autocomplete="nickname">
+            </label>
+          </div>
+        </div>
+        <div class="gzo-submit-section">
+          <div class="gzo-submit-section-title">Screenshot</div>
+          <p class="muted-line">GZO requires a screenshot. Generating an item card fills this automatically. You can keep that card image or upload a different photo.</p>
+          <div class="gzo-image-picker">
+            <label>
+              Upload a different image (camera or gallery)
+              <input id="gzoSubmitImage" name="image" type="file" accept="image/*" capture="environment" required>
+            </label>
+            <div id="gzoSubmitImagePreview" class="gzo-image-preview">No image selected.</div>
+          </div>
+          <p id="gzoSubmitShotStatus" class="muted-line">Screenshot: none yet.</p>
+        </div>
+        <div class="gzo-submit-section">
+          <div class="gzo-submit-section-title">Item codes</div>
+          <label class="submit-full" for="gzoSubmitBase85">Base85 (<code>@U...</code>)</label>
+          <textarea id="gzoSubmitBase85" name="base85" class="output-box small" rows="3" spellcheck="false" placeholder="@Ugxxxxxxxxxxxxxx..."></textarea>
+          <div class="button-row wrap">
+            <button id="gzoSubmitDecodeBtn" type="button">Fill deserialized</button>
+            <button id="gzoSubmitCardBtn" type="button">Generate item card</button>
+            <button id="gzoSubmitUseEditorBtn" type="button">Use Matt Editor Serial</button>
+          </div>
+          <label class="submit-full" for="gzoSubmitDeserialized">Deserialized</label>
+          <textarea id="gzoSubmitDeserialized" name="deserialized" class="output-box small" rows="3" spellcheck="false" placeholder="22, 0, 1, 50| 2, 1754|| {88} {2} {5} {87} ..."></textarea>
+          <div id="gzoSubmitCardPreview" class="gzo-submit-card-host">Paste a serial and click Fill deserialized to preview the item card and auto-fill fields we can decode.</div>
+          <div class="button-row wrap gzo-card-shot-row">
+            <button id="gzoSubmitUseCardShotBtn" type="button">Use this card as the screenshot</button>
+          </div>
+        </div>
+        <div class="gzo-submit-section">
+          <div class="gzo-submit-section-title">Notes</div>
+          <label class="submit-full" for="gzoSubmitNotes">Notes (per-part breakdown, red text, anything useful)</label>
+          <textarea id="gzoSubmitNotes" name="notes" class="output-box small" rows="5" spellcheck="true" placeholder="22 - Vladof SMG&#10;{88} - VLA_SM.comp_05_legendary_BeeGun&#10;..."></textarea>
         </div>
         <label for="gzoSubmitPayloadPreview">Submission Preview</label>
         <textarea id="gzoSubmitPayloadPreview" class="output-box small" spellcheck="false" readonly></textarea>
         <label for="gzoSubmitResult">Submission Result</label>
         <textarea id="gzoSubmitResult" class="output-box small gzo-submit-result" spellcheck="false" readonly>No submission sent yet.</textarea>
-        <div id="gzoSubmitStatus" class="status-line warning">Submissions go to GZO Pending for developer review. Attach an image before submitting.</div>
+        <div id="gzoSubmitStatus" class="status-line warning">Submissions go to GZO for review. Attach an image before submitting.</div>
         <div class="button-row wrap">
           <button id="gzoSubmitCopyPayloadBtn" type="button">Copy Submission Preview</button>
-          <button id="gzoSubmitSendBtn" type="submit">Submit to GZO Pending</button>
+          <button id="gzoSubmitSendBtn" type="submit" class="submit-btn">Submit to server</button>
+          <button id="gzoSubmitClearBtn" type="button" class="secondary">Reset</button>
         </div>
+        <p class="submit-footnote muted-line">
+          Submissions go to GZO for review before publication.
+        </p>
       </form>
     </div>
   </div>
@@ -2521,6 +2649,8 @@
   <script src="list_selection.js"></script>
   <script src="enemy_actor_filter.js"></script>
   <script src="native_card_model.js"></script>
+  <script src="gzo_dlc_contract.js"></script>
+  <script src="gzo_codes_form.js"></script>
   <script src="workspace.js"></script>
   <script src="renderer.js"></script>
 </body>

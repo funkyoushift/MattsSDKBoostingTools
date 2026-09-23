@@ -18,6 +18,16 @@ const els = {
   bl4CopySerialBtn: document.getElementById("bl4CopySerialBtn"),
   bl4Count: document.getElementById("bl4Count"),
   bl4CreatorFilter: document.getElementById("bl4CreatorFilter"),
+  bl4DlcFilter: document.getElementById("bl4DlcFilter"),
+  bl4LegitCount: document.getElementById("bl4LegitCount"),
+  bl4LegitSectionBtn: document.getElementById("bl4LegitSectionBtn"),
+  bl4ModdedCount: document.getElementById("bl4ModdedCount"),
+  bl4ModdedSectionBtn: document.getElementById("bl4ModdedSectionBtn"),
+  bl4NextPageBtn: document.getElementById("bl4NextPageBtn"),
+  bl4PageLabel: document.getElementById("bl4PageLabel"),
+  bl4Pagination: document.getElementById("bl4Pagination"),
+  bl4PrevPageBtn: document.getElementById("bl4PrevPageBtn"),
+  bl4SpawnInBtn: document.getElementById("bl4SpawnInBtn"),
   bl4DeliveryLevel: document.getElementById("bl4DeliveryLevel"),
   bl4DeliveryStatus: document.getElementById("bl4DeliveryStatus"),
   bl4InlineConfirm: document.getElementById("bl4InlineConfirm"),
@@ -198,10 +208,16 @@ const els = {
   gzoSubmitCopyPayloadBtn: document.getElementById("gzoSubmitCopyPayloadBtn"),
   gzoSubmitCreator: document.getElementById("gzoSubmitCreator"),
   gzoSubmitDecodeBtn: document.getElementById("gzoSubmitDecodeBtn"),
+  gzoSubmitCardBtn: document.getElementById("gzoSubmitCardBtn"),
+  gzoSubmitCardHost: document.getElementById("gzoSubmitCardPreview") || document.getElementById("gzoSubmitCardHost"),
   gzoSubmitDeserialized: document.getElementById("gzoSubmitDeserialized"),
+  gzoSubmitDlc: document.getElementById("gzoSubmitDlc"),
+  gzoSubmitDlcStatus: document.getElementById("gzoSubmitDlcStatus"),
   gzoSubmitForm: document.getElementById("gzoSubmitForm"),
   gzoSubmitImage: document.getElementById("gzoSubmitImage"),
   gzoSubmitImagePreview: document.getElementById("gzoSubmitImagePreview"),
+  gzoSubmitUseCardShotBtn: document.getElementById("gzoSubmitUseCardShotBtn"),
+  gzoSubmitShotStatus: document.getElementById("gzoSubmitShotStatus"),
   gzoSubmitListing: document.getElementById("gzoSubmitListing"),
   gzoSubmitModal: document.getElementById("gzoSubmitModal"),
   gzoSubmitName: document.getElementById("gzoSubmitName"),
@@ -523,6 +539,8 @@ const state = {
   bl4ConfirmedSerial: "",
   bl4Entries: [],
   bl4FilteredEntries: [],
+  bl4ListingSection: "Legit",
+  bl4Page: 1,
   bl4SearchQuery: "",
   bl4SearchTimer: null,
   bl4BreakdownTimer: null,
@@ -614,6 +632,11 @@ const state = {
   filteredMaps: [],
   filteredStations: [],
   gzoSubmitImageObjectUrl: "",
+  gzoSubmitCardTimer: null,
+  gzoSubmitRevision: 0,
+  gzoSubmitAutofill: {},
+  gzoSubmitScreenshotSource: "",
+  gzoSubmitCard: null,
   itemPools: [],
   latestInstallerUrl: "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest",
   latestDownloadUrl: "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest",
@@ -2774,7 +2797,8 @@ function bl4CodesFilterControlFocused() {
     els.bl4RarityFilter,
     els.bl4CreatorFilter,
     els.bl4LevelFilter,
-    els.bl4MattmabFilter
+    els.bl4MattmabFilter,
+    els.bl4DlcFilter
   ].some((node) => node && active === node);
 }
 
@@ -5623,40 +5647,110 @@ async function preflightBl4LevelOverride(rows, serialText, deliveryLevel) {
   };
 }
 
+function gzoForm() {
+  return window.MsbtGzoCodesForm || {};
+}
+
 function fillBl4Filter(selectNode, values, currentValue = "All") {
   if (!selectNode) return;
   const previous = currentValue || getValue(selectNode) || "All";
-  const nextValues = ["All", ...(values || []).map((value) => String(value))];
+  const nextValues = [
+    { value: "All", label: "All" },
+    ...(values || []).map((value) => {
+      if (value && typeof value === "object") {
+        return { value: String(value.value ?? ""), label: String(value.label || value.value || "") };
+      }
+      const label = String(value);
+      return { value: label, label };
+    }).filter((option) => option.value && option.value !== "All")
+  ];
   const existingValues = Array.from(selectNode.options).map((option) => String(option.value || ""));
   const sameOptions = existingValues.length === nextValues.length
-    && existingValues.every((value, index) => value === nextValues[index]);
+    && existingValues.every((value, index) => value === nextValues[index].value)
+    && Array.from(selectNode.options).every((option, index) => option.textContent === nextValues[index].label);
   // Soft-update: wiping filter <select>s during catalog refresh steals focus from
   // Search the same way named-player rebuilds did during Max All waits.
   if (sameOptions) {
     if (document.activeElement === selectNode) return;
-    const hasPrevious = nextValues.includes(previous);
+    const hasPrevious = nextValues.some((option) => option.value === previous);
     selectNode.value = hasPrevious ? previous : "All";
     return;
   }
   selectNode.innerHTML = "";
-  nextValues.forEach((value) => {
-    const option = document.createElement("option");
-    option.value = value;
-    option.textContent = value;
-    selectNode.appendChild(option);
+  nextValues.forEach((option) => {
+    const node = document.createElement("option");
+    node.value = option.value;
+    node.textContent = option.label;
+    selectNode.appendChild(node);
   });
   const hasPrevious = Array.from(selectNode.options).some((option) => option.value === previous);
   selectNode.value = hasPrevious ? previous : "All";
 }
 
+function fillBl4CreatorFilter(creators = []) {
+  if (!els.bl4CreatorFilter) return;
+  const previous = getValue(els.bl4CreatorFilter) || "All";
+  const names = sortedUniqueText(creators);
+  const nextValues = [{ value: "All", label: "All creators" }, ...names.map((name) => ({ value: name, label: name }))];
+  const existingValues = Array.from(els.bl4CreatorFilter.options).map((option) => String(option.value || ""));
+  const sameOptions = existingValues.length === nextValues.length
+    && existingValues.every((value, index) => value === nextValues[index].value)
+    && Array.from(els.bl4CreatorFilter.options).every((option, index) => option.textContent === nextValues[index].label);
+  if (sameOptions) {
+    if (document.activeElement === els.bl4CreatorFilter) return;
+    els.bl4CreatorFilter.value = nextValues.some((option) => option.value === previous) ? previous : "All";
+    return;
+  }
+  els.bl4CreatorFilter.innerHTML = "";
+  nextValues.forEach((option) => {
+    const node = document.createElement("option");
+    node.value = option.value;
+    node.textContent = option.label;
+    els.bl4CreatorFilter.appendChild(node);
+  });
+  els.bl4CreatorFilter.value = nextValues.some((option) => option.value === previous) ? previous : "All";
+}
+
+function updateBl4ListingPills() {
+  const api = gzoForm();
+  const counts = typeof api.listingCounts === "function"
+    ? api.listingCounts(state.bl4Entries)
+    : { legit: 0, modded: 0 };
+  if (els.bl4LegitCount) els.bl4LegitCount.textContent = String(counts.legit);
+  if (els.bl4ModdedCount) els.bl4ModdedCount.textContent = String(counts.modded);
+  const section = state.bl4ListingSection === "Modded" ? "Modded" : "Legit";
+  [els.bl4LegitSectionBtn, els.bl4ModdedSectionBtn].forEach((button) => {
+    if (!button) return;
+    const active = button.dataset.listingSection === section;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", active ? "true" : "false");
+  });
+  if (els.bl4ListingFilter) {
+    const optionValues = Array.from(els.bl4ListingFilter.options).map((option) => option.value);
+    if (!optionValues.includes("Legit")) {
+      fillBl4Filter(els.bl4ListingFilter, ["Legit", "Modded"], section);
+    }
+    els.bl4ListingFilter.value = section;
+  }
+}
+
+function setBl4ListingSection(section, options = {}) {
+  state.bl4ListingSection = section === "Modded" ? "Modded" : "Legit";
+  state.bl4Page = 1;
+  updateBl4ListingPills();
+  if (options.render !== false) renderBl4Codes({ preserveSearchFocus: true, resetPage: true });
+}
+
 function populateBl4Filters(filters = {}) {
-  fillBl4Filter(els.bl4ListingFilter, filters.listings || []);
-  fillBl4Filter(els.bl4TypeFilter, filters.types || []);
-  fillBl4Filter(els.bl4ManufacturerFilter, filters.manufacturers || []);
-  fillBl4Filter(els.bl4RarityFilter, filters.rarities || []);
-  fillBl4Filter(els.bl4CreatorFilter, filters.creators || []);
+  const api = gzoForm();
+  fillBl4Filter(els.bl4TypeFilter, typeof api.mergeTypeFilters === "function" ? api.mergeTypeFilters(filters.types || []) : (filters.types || []));
+  fillBl4Filter(els.bl4ManufacturerFilter, typeof api.mergeManufacturerFilters === "function" ? api.mergeManufacturerFilters(filters.manufacturers || []) : (filters.manufacturers || []));
+  fillBl4Filter(els.bl4RarityFilter, typeof api.mergeRarityFilters === "function" ? api.mergeRarityFilters(filters.rarities || []) : (filters.rarities || []));
+  fillBl4Filter(els.bl4DlcFilter, typeof api.mergeDlcFilters === "function" ? api.mergeDlcFilters(filters.dlcs || []) : (filters.dlcs || []));
+  fillBl4CreatorFilter(filters.creators || []);
   fillBl4Filter(els.bl4LevelFilter, filters.levels || []);
   fillBl4Filter(els.bl4MattmabFilter, ["Legit", "Modded", "Error", "Unchecked"]);
+  updateBl4ListingPills();
 }
 
 function bl4ListingMatches(row, value) {
@@ -5682,26 +5776,42 @@ function bl4FilterValue(selectNode) {
 }
 
 function filteredBl4Entries() {
-  const terms = (state.bl4SearchQuery || "").toLowerCase().split(/\s+/).filter(Boolean);
-  const listing = bl4FilterValue(els.bl4ListingFilter);
+  const api = gzoForm();
+  const query = state.bl4SearchQuery || "";
+  const listing = state.bl4ListingSection || "Legit";
   const type = bl4FilterValue(els.bl4TypeFilter);
   const manufacturer = bl4FilterValue(els.bl4ManufacturerFilter);
   const rarity = bl4FilterValue(els.bl4RarityFilter);
   const creator = bl4FilterValue(els.bl4CreatorFilter);
   const level = bl4FilterValue(els.bl4LevelFilter);
   const mattmab = bl4FilterValue(els.bl4MattmabFilter);
+  const dlc = bl4FilterValue(els.bl4DlcFilter);
 
-  return state.bl4Entries.filter((row) => {
-    const termOk = terms.every((term) => bl4SearchBlob(row).includes(term));
-    const listingOk = bl4ListingMatches(row, listing);
-    const typeOk = type === "All" || String(row.type || "") === type;
-    const manufacturerOk = manufacturer === "All" || String(row.manufacturer || "") === manufacturer;
-    const rarityOk = rarity === "All" || String(row.rarity || "") === rarity;
+  const filtered = state.bl4Entries.filter((row) => {
+    const termOk = typeof api.matchesSearchQuery === "function"
+      ? api.matchesSearchQuery(row, query)
+      : (query.toLowerCase().split(/\s+/).filter(Boolean).every((term) => bl4SearchBlob(row).includes(term)));
+    const listingOk = typeof api.matchesListingSection === "function"
+      ? api.matchesListingSection(row, listing)
+      : bl4ListingMatches(row, listing);
+    const typeOk = typeof api.matchesItemTypeFilter === "function"
+      ? api.matchesItemTypeFilter(row, type)
+      : (type === "All" || String(row.type || "") === type);
+    const manufacturerOk = typeof api.matchesManufacturerFilter === "function"
+      ? api.matchesManufacturerFilter(row, manufacturer)
+      : (manufacturer === "All" || String(row.manufacturer || "") === manufacturer);
+    const rarityOk = typeof api.matchesRarityFilter === "function"
+      ? api.matchesRarityFilter(row, rarity)
+      : (rarity === "All" || String(row.rarity || "") === rarity);
     const creatorOk = creator === "All" || String(row.creator || "") === creator;
     const levelOk = level === "All" || String(row.item_level || "") === level;
     const mattmabOk = bl4MattmabMatches(row, mattmab);
-    return termOk && listingOk && typeOk && manufacturerOk && rarityOk && creatorOk && levelOk && mattmabOk;
+    const dlcOk = typeof api.matchesDlcFilter === "function"
+      ? api.matchesDlcFilter(row, dlc)
+      : (dlc === "All");
+    return termOk && listingOk && typeOk && manufacturerOk && rarityOk && creatorOk && levelOk && mattmabOk && dlcOk;
   });
+  return typeof api.sortItemsByVotes === "function" ? api.sortItemsByVotes(filtered) : filtered;
 }
 
 function formatBl4Detail(row) {
@@ -5793,12 +5903,20 @@ function renderBl4Cards() {
       return;
     }
 
-    const maxCards = 320;
-    const shown = state.bl4FilteredEntries.slice(0, maxCards);
+    const api = gzoForm();
+    const pageSize = api.CATALOG_PAGE_SIZE || 25;
+    const slice = typeof api.catalogPageSlice === "function"
+      ? api.catalogPageSlice(state.bl4FilteredEntries, state.bl4Page, pageSize)
+      : { pageItems: state.bl4FilteredEntries.slice(0, pageSize), total: state.bl4FilteredEntries.length, totalPages: 1, page: 1, start: 0 };
+    state.bl4Page = slice.page;
+    const shown = slice.pageItems;
     const shownIds = shown.map((row) => bl4EntryId(row));
+    const start = slice.start + 1;
+    const end = slice.start + shown.length;
     if (els.bl4CardSummary) {
-      els.bl4CardSummary.textContent = `${shown.length} of ${state.bl4FilteredEntries.length} card(s) shown; ${bl4ImageHint(shown)} Use Listing/Search to find Lootlemon or Legit codes.`;
+      els.bl4CardSummary.textContent = `Top items by votes — page ${slice.page} of ${slice.totalPages} (${slice.total} total). ${bl4ImageHint(shown)}`;
     }
+    updateBl4Pagination(slice);
 
     const existingCards = Array.from(els.bl4Cards.querySelectorAll(".bl4-code-card"));
     const sameCards = existingCards.length === shownIds.length
@@ -5891,15 +6009,30 @@ function renderBl4Cards() {
       }
       els.bl4Cards.appendChild(card);
     });
-
-    if (state.bl4FilteredEntries.length > maxCards) {
-      const note = document.createElement("div");
-      note.className = "dev-empty-row";
-      note.textContent = `Showing first ${maxCards} card(s). Narrow Search or filters for more.`;
-      els.bl4Cards.appendChild(note);
-    }
     state.bl4ShownCardIds = shownIds;
   });
+}
+
+function updateBl4Pagination(slice) {
+  if (!els.bl4Pagination) return;
+  const totalPages = slice && slice.totalPages ? slice.totalPages : 1;
+  const page = slice && slice.page ? slice.page : 1;
+  const total = slice && slice.total ? slice.total : 0;
+  els.bl4Pagination.hidden = total <= (gzoForm().CATALOG_PAGE_SIZE || 25);
+  if (els.bl4PageLabel) {
+    const start = (slice && slice.start || 0) + (total ? 1 : 0);
+    const end = (slice && slice.start || 0) + ((slice && slice.pageItems && slice.pageItems.length) || 0);
+    els.bl4PageLabel.textContent = total
+      ? `Showing ${start}–${end} of ${total} (sorted by votes) · Page ${page} / ${totalPages}`
+      : "Page 1 / 1";
+  }
+  if (els.bl4PrevPageBtn) els.bl4PrevPageBtn.disabled = page <= 1;
+  if (els.bl4NextPageBtn) els.bl4NextPageBtn.disabled = page >= totalPages;
+}
+
+function setBl4CatalogPage(page) {
+  state.bl4Page = Math.max(1, Number(page) || 1);
+  renderBl4Codes({ preserveSearchFocus: true });
 }
 
 function sortedUniqueText(values = []) {
@@ -5910,43 +6043,75 @@ function sortedUniqueText(values = []) {
   )).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
 }
 
-function gzoSubmitCatalogValues(field) {
-  const values = [];
-  state.bl4Entries.forEach((row) => {
-    if (!row) return;
-    if (field === "category") {
-      values.push(row.category || "");
-      values.push(row.type || "");
-    } else {
-      values.push(row[field] || "");
-    }
-  });
-  return sortedUniqueText(values);
+function gzoSubmitEnsureOption(selectNode, value, custom = false) {
+  if (!selectNode || !value) return;
+  const exists = Array.from(selectNode.options).some((option) => option.value === value);
+  if (exists) {
+    selectNode.value = value;
+    return;
+  }
+  const option = document.createElement("option");
+  option.value = value;
+  option.textContent = custom ? `${value} (custom)` : value;
+  if (custom) option.setAttribute("data-custom", "1");
+  selectNode.appendChild(option);
+  selectNode.value = value;
 }
 
-function fillGzoSubmitSelect(selectNode, values, selectedValue = "", blankLabel = "Choose...") {
-  if (!selectNode) return;
-  const selected = String(selectedValue || getValue(selectNode) || "").trim();
-  const options = sortedUniqueText([...(values || []), selected]);
-  selectNode.innerHTML = "";
+function fillGzoSubmitTypeOptions(manufacturer, selectedType = "") {
+  if (!els.gzoSubmitType) return;
+  const api = gzoForm();
+  const types = typeof api.typesForManufacturer === "function" ? api.typesForManufacturer(manufacturer) : [];
+  els.gzoSubmitType.innerHTML = "";
   const blank = document.createElement("option");
+  if (!manufacturer) {
+    blank.value = "";
+    blank.textContent = "- Select manufacturer first -";
+    els.gzoSubmitType.appendChild(blank);
+    els.gzoSubmitType.disabled = true;
+    els.gzoSubmitType.removeAttribute("required");
+    return;
+  }
   blank.value = "";
-  blank.textContent = blankLabel;
-  selectNode.appendChild(blank);
-  options.forEach((value) => {
+  blank.textContent = "- Pick item type -";
+  els.gzoSubmitType.appendChild(blank);
+  els.gzoSubmitType.disabled = false;
+  els.gzoSubmitType.setAttribute("required", "required");
+  types.forEach((value) => {
     const option = document.createElement("option");
     option.value = value;
     option.textContent = value;
-    selectNode.appendChild(option);
+    els.gzoSubmitType.appendChild(option);
   });
-  selectNode.value = selected;
+  if (selectedType) gzoSubmitEnsureOption(els.gzoSubmitType, selectedType, !types.includes(selectedType));
+  else els.gzoSubmitType.value = "";
 }
 
 function refreshGzoSubmitDropdownOptions(row = null) {
-  fillGzoSubmitSelect(els.gzoSubmitRarity, gzoSubmitCatalogValues("rarity"), row && row.rarity ? row.rarity : getValue(els.gzoSubmitRarity), "Choose rarity");
-  fillGzoSubmitSelect(els.gzoSubmitType, gzoSubmitCatalogValues("type"), row && row.type ? row.type : getValue(els.gzoSubmitType), "Choose type");
-  const categoryValue = row && (row.category || row.type) ? row.category || row.type : getValue(els.gzoSubmitCategory);
-  fillGzoSubmitSelect(els.gzoSubmitCategory, gzoSubmitCatalogValues("category"), categoryValue, "Choose category");
+  const api = gzoForm();
+  if (els.gzoSubmitCategory && els.gzoSubmitCategory.options.length <= 1) {
+    const manufacturers = typeof api.manufacturerKeys === "function" ? api.manufacturerKeys() : [];
+    manufacturers.forEach((value) => {
+      const option = document.createElement("option");
+      option.value = value;
+      option.textContent = value;
+      els.gzoSubmitCategory.appendChild(option);
+    });
+  }
+  if (els.gzoSubmitRarity && els.gzoSubmitRarity.options.length <= 1) {
+    const rarities = api.GZO_SUBMIT_RARITIES || [];
+    rarities.forEach((value) => {
+      const option = document.createElement("option");
+      option.value = value;
+      option.textContent = value;
+      els.gzoSubmitRarity.appendChild(option);
+    });
+  }
+  const category = row && (row.category || row.manufacturer) ? (row.category || row.manufacturer) : getValue(els.gzoSubmitCategory);
+  if (els.gzoSubmitCategory && category) gzoSubmitEnsureOption(els.gzoSubmitCategory, category, true);
+  else if (els.gzoSubmitCategory && !row) els.gzoSubmitCategory.value = "";
+  fillGzoSubmitTypeOptions(getValue(els.gzoSubmitCategory), row && row.type ? row.type : getValue(els.gzoSubmitType));
+  if (els.gzoSubmitRarity && row && row.rarity) gzoSubmitEnsureOption(els.gzoSubmitRarity, row.rarity, true);
 }
 
 function setGzoSubmitResult(text = "No submission sent yet.") {
@@ -5968,6 +6133,66 @@ function formatGzoSubmitResult(result = {}, payload = {}) {
   return lines.join("\n");
 }
 
+function setGzoSubmitShotStatus(text) {
+  if (els.gzoSubmitShotStatus) els.gzoSubmitShotStatus.textContent = text;
+}
+
+function fileFromPngBase64(base64, name = "msbt-item-card.png") {
+  const raw = String(base64 || "").replace(/^data:image\/png;base64,/, "");
+  const binary = atob(raw);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
+  return new File([bytes], name, { type: "image/png" });
+}
+
+function assignGzoSubmitImageFile(file, source = "upload") {
+  if (!els.gzoSubmitImage || !file) return false;
+  const transfer = new DataTransfer();
+  transfer.items.add(file);
+  els.gzoSubmitImage.files = transfer.files;
+  state.gzoSubmitScreenshotSource = source;
+  updateGzoSubmitImagePreview();
+  setGzoSubmitShotStatus(source === "card"
+    ? "Screenshot: generated item card."
+    : `Screenshot: uploaded file (${file.name}).`);
+  return true;
+}
+
+async function fileToBase64(file) {
+  if (!file) return "";
+  const buffer = await file.arrayBuffer();
+  const bytes = new Uint8Array(buffer);
+  let binary = "";
+  const chunk = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunk) {
+    binary += String.fromCharCode(...bytes.subarray(i, i + chunk));
+  }
+  return btoa(binary);
+}
+
+async function captureGzoSubmitCardAsScreenshot() {
+  const host = els.gzoSubmitCardHost;
+  if (!host || !state.gzoSubmitCard) {
+    setLine(els.gzoSubmitStatus, "Generate an item card first, then use it as the screenshot.", "warning");
+    return false;
+  }
+  const revision = state.gzoSubmitRevision;
+  const card = state.gzoSubmitCard;
+  let file = null;
+  if (window.msbt && typeof window.msbt.captureNativeCard === "function") {
+    const shot = await window.msbt.captureNativeCard(card);
+    if (revision !== state.gzoSubmitRevision || card !== state.gzoSubmitCard) return false;
+    if (shot && shot.ok && shot.base64) file = fileFromPngBase64(shot.base64);
+  }
+  if (!file) {
+    setLine(els.gzoSubmitStatus, "Could not capture the item card as a screenshot.", "bad");
+    return false;
+  }
+  assignGzoSubmitImageFile(file, "card");
+  setLine(els.gzoSubmitStatus, "Item card captured as the GZO screenshot. Upload a different image if you want a photo instead.", "ok");
+  return true;
+}
+
 function clearGzoSubmitImagePreview() {
   if (state.gzoSubmitImageObjectUrl) {
     URL.revokeObjectURL(state.gzoSubmitImageObjectUrl);
@@ -5978,6 +6203,8 @@ function clearGzoSubmitImagePreview() {
     els.gzoSubmitImagePreview.innerHTML = "";
     els.gzoSubmitImagePreview.textContent = "No image selected.";
   }
+  state.gzoSubmitScreenshotSource = "";
+  setGzoSubmitShotStatus("Screenshot: none yet.");
   updateGzoSubmitPayloadPreview();
 }
 
@@ -5990,6 +6217,7 @@ function gzoSubmitPayload() {
   return {
     action: "submit",
     listing: getValue(els.gzoSubmitListing),
+    dlc: getValue(els.gzoSubmitDlc) || "Base Game",
     name: getValue(els.gzoSubmitName),
     creator: getValue(els.gzoSubmitCreator),
     type: getValue(els.gzoSubmitType),
@@ -6040,21 +6268,75 @@ function updateGzoSubmitImagePreview() {
   setLine(els.gzoSubmitStatus, "Image attached. Submission will go to GZO Pending for developer review.", "ok");
 }
 
+function clearGzoSubmitCardPreview(message = "Paste a serial and click Fill deserialized to preview the item card and auto-fill fields we can decode.") {
+  if (!els.gzoSubmitCardHost) return;
+  els.gzoSubmitCardHost.replaceChildren();
+  els.gzoSubmitCardHost.classList.remove("bl4-item-card", "native-game-card");
+  els.gzoSubmitCardHost.removeAttribute("data-rarity");
+  els.gzoSubmitCardHost.textContent = message;
+  state.gzoSubmitCard = null;
+}
+
+function renderGzoSubmitCardPreview(card) {
+  if (!els.gzoSubmitCardHost) return;
+  if (!card || !card.meta_ok) {
+    clearGzoSubmitCardPreview("No item card for this serial yet. Fill deserialized first.");
+    return;
+  }
+  state.gzoSubmitCard = card;
+  fillBl4ItemCard(els.gzoSubmitCardHost, card);
+}
+
+function applyGzoSubmitCardFields(card, options = {}) {
+  const api = gzoForm();
+  if (typeof api.submitFieldsFromCard !== "function") return null;
+  const fields = api.submitFieldsFromCard(card, {deserialized: getValue(els.gzoSubmitDeserialized)});
+  const overwrite = Boolean(options.overwrite);
+  const nodes = {name:els.gzoSubmitName, category:els.gzoSubmitCategory, type:els.gzoSubmitType,
+    rarity:els.gzoSubmitRarity, notes:els.gzoSubmitNotes, dlc:els.gzoSubmitDlc};
+  const next = {};
+  for (const [key, node] of Object.entries(nodes)) {
+    const current = getValue(node);
+    const automatic = state.gzoSubmitAutofill[key];
+    const canFill = overwrite || !current || current === automatic;
+    next[key] = canFill && fields[key] ? fields[key] : current;
+    if (canFill) state.gzoSubmitAutofill[key] = next[key];
+  }
+  refreshGzoSubmitDropdownOptions(next);
+  fillGzoSubmitTypeOptions(next.category, next.type);
+  for (const [key, node] of Object.entries(nodes)) {
+    if (node && node.tagName === "SELECT") gzoSubmitEnsureOption(node, next[key], false);
+    else setTextValue(node, next[key]);
+  }
+  setLine(els.gzoSubmitDlcStatus, `Detected from GZO part IDs: ${fields.dlc}. You can override the content pack.`, "ok");
+  updateGzoSubmitPayloadPreview();
+  return fields;
+}
+
 function clearGzoSubmitForm() {
+  state.gzoSubmitRevision += 1;
+  state.gzoSubmitAutofill = {dlc:"Base Game"};
+  if (state.gzoSubmitCardTimer) window.clearTimeout(state.gzoSubmitCardTimer);
   refreshGzoSubmitDropdownOptions(null);
-  if (els.gzoSubmitListing) els.gzoSubmitListing.value = "Modded";
+  if (els.gzoSubmitListing) els.gzoSubmitListing.value = "";
+  if (els.gzoSubmitDlc) els.gzoSubmitDlc.value = "Base Game";
+  if (els.gzoSubmitDlcStatus) {
+    els.gzoSubmitDlcStatus.textContent = "Content pack is detected when the serial is decoded; manual override is available.";
+    els.gzoSubmitDlcStatus.className = "status-line";
+  }
   setTextValue(els.gzoSubmitName, "");
   setTextValue(els.gzoSubmitCreator, "");
-  setTextValue(els.gzoSubmitType, "");
-  setTextValue(els.gzoSubmitCategory, "");
+  if (els.gzoSubmitCategory) els.gzoSubmitCategory.value = "";
+  fillGzoSubmitTypeOptions("", "");
   setTextValue(els.gzoSubmitRarity, "");
   setTextValue(els.gzoSubmitBase85, "");
   setTextValue(els.gzoSubmitDeserialized, "");
   setTextValue(els.gzoSubmitNotes, "");
   clearGzoSubmitImagePreview();
+  clearGzoSubmitCardPreview();
   updateGzoSubmitPayloadPreview();
   setGzoSubmitResult();
-  setLine(els.gzoSubmitStatus, "Paste a @U Base85 code or decoded serial, then click Decode / Normalize Serial. Attach an image before submitting.", "warning");
+  setLine(els.gzoSubmitStatus, "Paste a @U Base85 code, then Fill deserialized / Generate item card. Attach an image before submitting.", "warning");
 }
 
 function openGzoSubmitModal() {
@@ -6066,7 +6348,8 @@ function closeGzoSubmitModal() {
   if (els.gzoSubmitModal) els.gzoSubmitModal.classList.add("hidden");
 }
 
-async function normalizeGzoSubmitSerial() {
+async function normalizeGzoSubmitSerial(options = {}) {
+  const revision = state.gzoSubmitRevision;
   const serialText = getValue(els.gzoSubmitBase85) || getValue(els.gzoSubmitDeserialized);
   if (!serialText) {
     setLine(els.gzoSubmitStatus, "Paste a @U Base85 code or decoded serial first.", "warning");
@@ -6078,7 +6361,8 @@ async function normalizeGzoSubmitSerial() {
   }
   setLine(els.gzoSubmitStatus, "Decoding / normalizing serial locally...", "warning");
   const result = await window.msbt.serialToolsConvert(serialText);
-  const ok = String(result && result.ok).toLowerCase() === "true" || result.ok === true;
+  if (revision !== state.gzoSubmitRevision) return null;
+  const ok = String(result && result.ok).toLowerCase() === "true";
   if (!ok) {
     setGzoSubmitResult(`Serial normalize failed:\n${pretty(result || {})}`);
     setLine(els.gzoSubmitStatus, result && result.message ? result.message : "Serial normalize failed.", "bad");
@@ -6095,8 +6379,83 @@ async function normalizeGzoSubmitSerial() {
     message: result.message || "Converted successfully."
   })}`);
   updateGzoSubmitPayloadPreview();
-  setLine(els.gzoSubmitStatus, "Serial normalized. Review metadata and attach an image before submitting.", "ok");
+  if (!options.skipCard) {
+    setLine(els.gzoSubmitStatus, "Deserialized filled. Generating item card...", "ok");
+    await generateGzoSubmitItemCard({ overwrite: false, normalized: true });
+  } else {
+    setLine(els.gzoSubmitStatus, "Deserialized filled. Review metadata and attach an image before submitting.", "ok");
+  }
   return result;
+}
+
+async function generateGzoSubmitItemCard(options = {}) {
+  const revision = ++state.gzoSubmitRevision;
+  if (state.gzoSubmitScreenshotSource === "card") clearGzoSubmitImagePreview();
+  const overwrite = options.overwrite !== false;
+  let serialText = getValue(els.gzoSubmitBase85) || getValue(els.gzoSubmitDeserialized);
+  if (!serialText) {
+    setLine(els.gzoSubmitStatus, "Paste a @U Base85 code or decoded serial first.", "warning");
+    return null;
+  }
+  if (!options.normalized) {
+    const normalized = await normalizeGzoSubmitSerial({ skipCard: true });
+    const ok = String(normalized && normalized.ok).toLowerCase() === "true" || (normalized && normalized.ok === true);
+    if (!ok) return normalized;
+    serialText = getValue(els.gzoSubmitBase85) || getValue(els.gzoSubmitDeserialized);
+  }
+  if (!window.msbt || typeof window.msbt.serialCardResolve !== "function") {
+    setLine(els.gzoSubmitStatus, "Item-card resolver is not available in this build.", "bad");
+    return null;
+  }
+  setLine(els.gzoSubmitStatus, "Generating item card from serial...", "warning");
+  try {
+    const result = await window.msbt.serialCardResolve({ serials: [serialText] });
+    if (revision !== state.gzoSubmitRevision) return null;
+    const cardRow = result && Array.isArray(result.cards) ? result.cards[0] : null;
+    const card = cardRow && cardRow.card;
+    if (!cardRow || !cardRow.ok || !card || !card.meta_ok) {
+      clearGzoSubmitCardPreview(cardRow && cardRow.message ? cardRow.message : "No item card for this serial.");
+      setLine(els.gzoSubmitStatus, cardRow && cardRow.message ? cardRow.message : "Could not generate an item card from this serial.", "warning");
+      return result;
+    }
+    renderGzoSubmitCardPreview(card);
+    const fields = applyGzoSubmitCardFields(card, { overwrite });
+    const filled = fields
+      ? ["name", "category", "type", "rarity"].filter((key) => fields[key]).join(", ")
+      : "";
+    if (state.gzoSubmitScreenshotSource !== "upload") {
+      if (!await captureGzoSubmitCardAsScreenshot()) return result;
+    }
+    if (revision !== state.gzoSubmitRevision) return null;
+    setLine(
+      els.gzoSubmitStatus,
+      filled
+        ? `Item card generated. Auto-filled ${filled}. Screenshot uses the item card unless you upload a different image.`
+        : "Item card generated. Fill remaining GZO fields manually.",
+      "ok"
+    );
+    return result;
+  } catch (error) {
+    if (revision !== state.gzoSubmitRevision) return null;
+    clearGzoSubmitCardPreview("Item card failed.");
+    setLine(els.gzoSubmitStatus, `Item card failed: ${error && error.message ? error.message : error}`, "bad");
+    return null;
+  }
+}
+
+function scheduleGzoSubmitItemCard(event) {
+  state.gzoSubmitRevision += 1;
+  if (event && event.target === els.gzoSubmitBase85) setTextValue(els.gzoSubmitDeserialized, "");
+  if (event && event.target === els.gzoSubmitDeserialized) setTextValue(els.gzoSubmitBase85, "");
+  clearGzoSubmitCardPreview("Serial changed. Generating a new item card...");
+  if (state.gzoSubmitScreenshotSource === "card") clearGzoSubmitImagePreview();
+  if (state.gzoSubmitCardTimer) window.clearTimeout(state.gzoSubmitCardTimer);
+  state.gzoSubmitCardTimer = window.setTimeout(() => {
+    state.gzoSubmitCardTimer = null;
+    const serialText = getValue(els.gzoSubmitBase85) || getValue(els.gzoSubmitDeserialized);
+    if (!serialText) return;
+    void generateGzoSubmitItemCard({ overwrite: false });
+  }, 450);
 }
 
 async function useMattEditorSerialForGzoSubmit() {
@@ -6109,25 +6468,24 @@ async function useMattEditorSerialForGzoSubmit() {
   if (found.length > 1) {
     setLine(els.gzoSubmitStatus, `Found ${found.length} editor serials; using the first one.`, "warning");
   }
-  await normalizeGzoSubmitSerial();
+  await generateGzoSubmitItemCard({ overwrite: true });
 }
 
 function validateGzoSubmitForm() {
   const required = [
     ["listing", getValue(els.gzoSubmitListing)],
     ["name", getValue(els.gzoSubmitName)],
-    ["creator", getValue(els.gzoSubmitCreator)],
-    ["type", getValue(els.gzoSubmitType)],
-    ["rarity", getValue(els.gzoSubmitRarity)]
+    ["creator", getValue(els.gzoSubmitCreator)]
   ];
+  if (getValue(els.gzoSubmitCategory)) required.push(["type", getValue(els.gzoSubmitType)]);
   const missing = required.filter(([, value]) => !String(value || "").trim()).map(([label]) => label);
   if (!getValue(els.gzoSubmitBase85).trim() && !getValue(els.gzoSubmitDeserialized).trim()) {
     missing.push("base85 or deserialized");
   }
   const image = gzoSubmitImageFile();
   if (!image) missing.push("image");
-  const allowedImages = new Set(["image/png", "image/jpeg", "image/webp"]);
-  const unsupportedImage = image && !allowedImages.has(String(image.type || "").toLowerCase());
+  const allowedImages = new Set(["image/png", "image/jpeg", "image/webp", ""]);
+  const unsupportedImage = image && image.type && !allowedImages.has(String(image.type || "").toLowerCase());
   return { ok: !missing.length && !unsupportedImage, missing, unsupportedImage };
 }
 
@@ -6138,6 +6496,7 @@ function gzoSubmitRequestPayload() {
     : "";
   return {
     listing: getValue(els.gzoSubmitListing),
+    dlc: getValue(els.gzoSubmitDlc) || "Base Game",
     name: getValue(els.gzoSubmitName),
     creator: getValue(els.gzoSubmitCreator),
     type: getValue(els.gzoSubmitType),
@@ -6155,8 +6514,21 @@ function gzoSubmitRequestPayload() {
 
 async function handleGzoSubmit(event) {
   if (event) event.preventDefault();
+  if (state.gzoSubmitting) return;
+  state.gzoSubmitting = true;
+  if (state.gzoSubmitCardTimer) window.clearTimeout(state.gzoSubmitCardTimer);
+  if (els.gzoSubmitSendBtn) els.gzoSubmitSendBtn.disabled = true;
+  try { return await submitGzoForm(); }
+  catch (error) { setLine(els.gzoSubmitStatus, `GZO submission failed: ${error.message || error}`, "bad"); }
+  finally {
+    state.gzoSubmitting = false;
+    if (els.gzoSubmitSendBtn) els.gzoSubmitSendBtn.disabled = false;
+  }
+}
+
+async function submitGzoForm() {
   if (getValue(els.gzoSubmitBase85) || getValue(els.gzoSubmitDeserialized)) {
-    const normalized = await normalizeGzoSubmitSerial();
+    const normalized = await normalizeGzoSubmitSerial({ skipCard: true });
     const ok = String(normalized && normalized.ok).toLowerCase() === "true" || (normalized && normalized.ok === true);
     if (!ok) return;
   }
@@ -6173,8 +6545,21 @@ async function handleGzoSubmit(event) {
     return;
   }
   const payload = gzoSubmitRequestPayload();
+  const revision = state.gzoSubmitRevision;
   if (!payload.imagePath) {
-    setLine(els.gzoSubmitStatus, "MSBT could not access the selected image. Choose it again and retry.", "bad");
+    const image = gzoSubmitImageFile();
+    if (image) {
+      payload.imageBase64 = await fileToBase64(image);
+      payload.imageType = image.type || "image/png";
+      payload.imageName = image.name || "msbt-item-card.png";
+    }
+  }
+  if (!payload.imagePath && !payload.imageBase64) {
+    setLine(els.gzoSubmitStatus, "MSBT could not access the selected image. Generate the item card or choose a file and retry.", "bad");
+    return;
+  }
+  if (revision !== state.gzoSubmitRevision) {
+    setLine(els.gzoSubmitStatus, "Serial changed while preparing submission. Review the new card and submit again.", "warning");
     return;
   }
   if (els.gzoSubmitSendBtn) els.gzoSubmitSendBtn.disabled = true;
@@ -6270,7 +6655,9 @@ function selectBl4Entry(id, selectionEvent = null) {
 
 function renderBl4Codes(options = {}) {
   const preserveSearchFocus = options.preserveSearchFocus !== false;
+  if (options.resetPage) state.bl4Page = 1;
   const run = () => {
+    updateBl4ListingPills();
     state.bl4FilteredEntries = filteredBl4Entries();
     state.bl4SelectedIds = new Set(
       Array.from(state.bl4SelectedIds).filter((id) => state.bl4Entries.some((row) => bl4EntryId(row) === id))
@@ -6278,17 +6665,19 @@ function renderBl4Codes(options = {}) {
     const selectedCount = state.bl4SelectedIds.size;
     setLine(
       els.bl4Count,
-      `${state.bl4FilteredEntries.length} shown / ${state.bl4Entries.length} merged | ${selectedCount} selected`,
+      `List: ${selectedCount} codes · ${state.bl4FilteredEntries.length} match filters (${state.bl4Entries.length} merged)`,
       state.bl4FilteredEntries.length ? "ok" : "warning"
     );
 
     if (!state.bl4Entries.length) {
       clearBl4Detail("No BL4 catalog is loaded.");
+      updateBl4Pagination({ pageItems: [], total: 0, totalPages: 1, page: 1, start: 0 });
       renderBl4Cards();
       return;
     }
     if (!state.bl4FilteredEntries.length) {
       clearBl4Detail("No BL4 code is visible with the current filters.");
+      updateBl4Pagination({ pageItems: [], total: 0, totalPages: 1, page: 1, start: 0 });
       renderBl4Cards();
       return;
     }
@@ -6303,13 +6692,14 @@ function renderBl4Codes(options = {}) {
     const searchFocused = Boolean(els.bl4SearchInput && document.activeElement === els.bl4SearchInput);
     // Do not auto-select / kick off parts-breakdown while the user is typing in Search.
     if (!state.bl4ActiveId && state.bl4FilteredEntries.length && !searchFocused) {
-      const firstId = bl4EntryId(state.bl4FilteredEntries[0]);
+      const pageRow = (state.bl4ShownCardIds[0] && state.bl4Entries.find((row) => bl4EntryId(row) === state.bl4ShownCardIds[0]))
+        || state.bl4FilteredEntries[0];
+      const firstId = bl4EntryId(pageRow);
       state.bl4ActiveId = firstId;
-      const row = state.bl4FilteredEntries[0];
-      setOutput(els.bl4Detail, formatBl4Detail(row));
-      setTextValue(els.bl4Serial, row.serial || "");
+      setOutput(els.bl4Detail, formatBl4Detail(pageRow));
+      setTextValue(els.bl4Serial, pageRow.serial || "");
       setBl4DeliveryStatus("Active code ready. Delivery sends checked image cards, or this active code if none are checked.", "warning");
-      loadBl4Breakdown(row);
+      loadBl4Breakdown(pageRow);
       renderBl4Cards();
     }
   };
@@ -6319,7 +6709,7 @@ function renderBl4Codes(options = {}) {
 
 function applyBl4Search() {
   state.bl4SearchQuery = getValue(els.bl4SearchInput);
-  renderBl4Codes({ preserveSearchFocus: true });
+  renderBl4Codes({ preserveSearchFocus: true, resetPage: true });
 }
 
 function scheduleBl4Search() {
@@ -6327,7 +6717,7 @@ function scheduleBl4Search() {
   if (state.bl4SearchTimer) window.clearTimeout(state.bl4SearchTimer);
   state.bl4SearchTimer = window.setTimeout(() => {
     state.bl4SearchTimer = null;
-    renderBl4Codes({ preserveSearchFocus: true });
+    renderBl4Codes({ preserveSearchFocus: true, resetPage: true });
   }, 120);
 }
 
@@ -6632,10 +7022,11 @@ function acceptBl4CatalogResult(result) {
   state.bl4ConfirmedId = "";
   state.bl4ConfirmedSerial = "";
   state.bl4ShownCardIds = [];
+  state.bl4Page = 1;
   const activeStillExists = state.bl4Entries.some((entry) => bl4EntryId(entry) === state.bl4ActiveId);
   if (!activeStillExists) state.bl4ActiveId = "";
   populateBl4Filters(result.filters || {});
-  renderBl4Codes({ preserveSearchFocus: true });
+  renderBl4Codes({ preserveSearchFocus: true, resetPage: true });
   return result.counts || {};
 }
 
@@ -6643,7 +7034,10 @@ let bl4CardEnrichRunId = 0;
 
 async function enrichVisibleBl4CardsOffline() {
   const runId = ++bl4CardEnrichRunId;
-  const shown = (state.bl4FilteredEntries || []).slice(0, 320);
+  const shownIds = Array.isArray(state.bl4ShownCardIds) ? state.bl4ShownCardIds : [];
+  const shown = shownIds.length
+    ? shownIds.map((id) => state.bl4Entries.find((row) => bl4EntryId(row) === id)).filter(Boolean)
+    : (state.bl4FilteredEntries || []).slice(0, gzoForm().CATALOG_PAGE_SIZE || 25);
   const pending = shown.filter((row) => {
     if (!row || row.card_resolved || row.card_resolve_attempted) return false;
     return String(row.serial || row.base85 || row.code || "").startsWith("@U");
@@ -12657,10 +13051,18 @@ function wireEvents() {
     els.bl4RarityFilter,
     els.bl4CreatorFilter,
     els.bl4LevelFilter,
-    els.bl4MattmabFilter
+    els.bl4MattmabFilter,
+    els.bl4DlcFilter
   ].forEach((selectNode) => {
-    if (selectNode) selectNode.addEventListener("change", () => renderBl4Codes({ preserveSearchFocus: true }));
+    if (selectNode) selectNode.addEventListener("change", () => renderBl4Codes({ preserveSearchFocus: true, resetPage: true }));
   });
+  [els.bl4LegitSectionBtn, els.bl4ModdedSectionBtn].forEach((button) => {
+    if (!button) return;
+    button.addEventListener("click", () => setBl4ListingSection(button.dataset.listingSection));
+  });
+  if (els.bl4PrevPageBtn) els.bl4PrevPageBtn.addEventListener("click", () => setBl4CatalogPage(state.bl4Page - 1));
+  if (els.bl4NextPageBtn) els.bl4NextPageBtn.addEventListener("click", () => setBl4CatalogPage(state.bl4Page + 1));
+  if (els.bl4SpawnInBtn) els.bl4SpawnInBtn.addEventListener("click", () => sendBl4Serial("local"));
   els.bl4SelectAllBtn.addEventListener("click", selectAllBl4Visible);
   els.bl4ClearSelectionBtn.addEventListener("click", clearBl4Selection);
   els.bl4CopySelectedBtn.addEventListener("click", copySelectedBl4Serials);
@@ -12673,9 +13075,17 @@ function wireEvents() {
   if (els.gzoSubmitCloseBtn) els.gzoSubmitCloseBtn.addEventListener("click", closeGzoSubmitModal);
   if (els.gzoSubmitClearBtn) els.gzoSubmitClearBtn.addEventListener("click", clearGzoSubmitForm);
   if (els.gzoSubmitDecodeBtn) els.gzoSubmitDecodeBtn.addEventListener("click", normalizeGzoSubmitSerial);
+  if (els.gzoSubmitCardBtn) els.gzoSubmitCardBtn.addEventListener("click", () => generateGzoSubmitItemCard({ overwrite: true }));
   if (els.gzoSubmitUseEditorBtn) els.gzoSubmitUseEditorBtn.addEventListener("click", useMattEditorSerialForGzoSubmit);
+  if (els.gzoSubmitCategory) {
+    els.gzoSubmitCategory.addEventListener("change", () => {
+      fillGzoSubmitTypeOptions(getValue(els.gzoSubmitCategory), "");
+      updateGzoSubmitPayloadPreview();
+    });
+  }
   [
     els.gzoSubmitListing,
+    els.gzoSubmitDlc,
     els.gzoSubmitCreator,
     els.gzoSubmitName,
     els.gzoSubmitRarity,
@@ -12689,8 +13099,22 @@ function wireEvents() {
     node.addEventListener("input", updateGzoSubmitPayloadPreview);
     node.addEventListener("change", updateGzoSubmitPayloadPreview);
   });
+  if (els.gzoSubmitBase85) {
+    els.gzoSubmitBase85.addEventListener("input", scheduleGzoSubmitItemCard);
+  }
+  if (els.gzoSubmitDeserialized) els.gzoSubmitDeserialized.addEventListener("input", scheduleGzoSubmitItemCard);
   if (els.gzoSubmitCopyPayloadBtn) els.gzoSubmitCopyPayloadBtn.addEventListener("click", copyGzoSubmitPayloadPreview);
-  if (els.gzoSubmitImage) els.gzoSubmitImage.addEventListener("change", updateGzoSubmitImagePreview);
+  if (els.gzoSubmitUseCardShotBtn) els.gzoSubmitUseCardShotBtn.addEventListener("click", () => {
+    void captureGzoSubmitCardAsScreenshot();
+  });
+  if (els.gzoSubmitImage) {
+    els.gzoSubmitImage.addEventListener("change", () => {
+      const file = gzoSubmitImageFile();
+      state.gzoSubmitScreenshotSource = file ? "upload" : "";
+      updateGzoSubmitImagePreview();
+      setGzoSubmitShotStatus(file ? `Screenshot: uploaded file (${file.name}).` : "Screenshot: none yet.");
+    });
+  }
   if (els.gzoSubmitForm) els.gzoSubmitForm.addEventListener("submit", handleGzoSubmit);
   if (els.gzoSubmitModal) {
     els.gzoSubmitModal.addEventListener("click", (event) => {
@@ -13593,7 +14017,7 @@ const TAB_TUTORIALS = {
   "bl4-codes": [
     {
       title: "Browse offline",
-      body: "Load Catalog / Refresh GZO, then filter by search, manufacturer, listing, rarity, type, creator, Mattmab result. Image cards load from GZO when available.",
+      body: "Load Catalog / Refresh GZO, then filter like GZO: search, item type, rarity, manufacturer, Base Game/DLC. Listing, creator, level, and Mattmab remain extra MSBT filters. Image cards load from GZO when available.",
       tab: "bl4-codes",
       targetSel: "#tab-bl4-codes .bl4-catalog-canvas"
     },

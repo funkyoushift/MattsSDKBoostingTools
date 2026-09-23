@@ -3,6 +3,7 @@
 const crypto = require("crypto");
 const fs = require("fs/promises");
 const path = require("path");
+const gzoCodesForm = require("./gzo_codes_form");
 
 const RESOURCE_FILES = {
   lootlemon: "MattsSDKBoostingTools_lootlemon_codes.json",
@@ -72,7 +73,9 @@ function normalizeWebUrl(value, baseUrl = GZO_CODES_URL) {
   const raw = text(value);
   if (!raw) return "";
   try {
-    return new URL(raw, baseUrl).toString();
+    // GZO uses literal percent signs in filenames (e.g. "150% Amp.png").
+    // Preserve existing URL escapes, but encode bare percent signs before fetch.
+    return new URL(raw.replace(/%(?![0-9a-f]{2})/gi,"%25"), baseUrl).toString();
   } catch {
     return raw;
   }
@@ -93,17 +96,17 @@ function normalizeType(raw) {
   const value = normalizeTitle(raw);
   const key = compactKey(value);
   const map = {
-    class_mod: "Class Mods",
-    class_mods: "Class Mods",
-    classmod: "Class Mods",
-    classmods: "Class Mods",
+    class_mod: "Classmod",
+    class_mods: "Classmod",
+    classmod: "Classmod",
+    classmods: "Classmod",
     assault_rifle: "Assault Rifle",
     assault_rifles: "Assault Rifle",
     ar: "Assault Rifle",
     smg: "SMG",
-    sniper: "Sniper Rifle",
-    sniper_rifle: "Sniper Rifle",
-    sniper_rifles: "Sniper Rifle",
+    sniper: "Sniper",
+    sniper_rifle: "Sniper",
+    sniper_rifles: "Sniper",
     shotgun: "Shotgun",
     shotguns: "Shotgun",
     pistol: "Pistol",
@@ -217,6 +220,21 @@ function collectGzoTags(raw) {
   return tags;
 }
 
+function recoverManufacturer(raw, classified = {}) {
+  const explicit = normalizeTitle(field(raw, "manufacturer", "maker") || classified.manufacturer);
+  const knownExplicit = gzoCodesForm.knownManufacturer(explicit);
+  if (knownExplicit && knownExplicit !== "Classmod") return knownExplicit;
+  if (explicit && !gzoCodesForm.knownManufacturer(explicit)) return explicit;
+  const fromCategory = gzoCodesForm.knownManufacturer(field(raw, "category"));
+  if (fromCategory && fromCategory !== "Classmod") return fromCategory;
+  return "";
+}
+
+function recoverDlc(raw, parameters = {}) {
+  const value = field(raw, "dlc", "content") || parameters.dlc || parameters.content;
+  return text(value);
+}
+
 function classifyGzoTags(tags) {
   const all = tags.join(" ").toLowerCase();
   const typeMap = [
@@ -254,30 +272,36 @@ function normalizeGzoRow(raw, inheritedListing = "") {
   const tags = collectGzoTags(raw);
   const classified = classifyGzoTags(tags);
   const listing = normalizeListing(
-    field(raw, "targetListing", "listing", "destination", "bucket", "folder", "legitOrModded", "list", "category") || inheritedListing,
+    field(raw, "targetListing", "listing", "destination", "bucket", "folder", "legitOrModded", "list") || inheritedListing,
     "GZO"
   );
   const type = normalizeType(field(raw, "type", "itemType") || classified.type);
+  const manufacturer = recoverManufacturer(raw, classified);
+  const categoryRaw = text(field(raw, "category"));
+  const category = manufacturer || (gzoCodesForm.knownManufacturer(categoryRaw) === "Classmod" ? "Classmod" : categoryRaw) || type || "BL4 Codes";
   const deserialized = text(field(raw, "deserialized", "human", "decoded", "decodedSerial", "human_serial"));
+  const parameters = catalogParameters(raw);
+  const dlc = recoverDlc(raw, parameters);
   return {
     id: "",
     name: normalizeTitle(field(raw, "name", "displayName", "title", "itemName"), "GZO Serial"),
     serial,
     listing,
-    category: normalizeType(field(raw, "category", "type", "itemType") || classified.type || "BL4 Codes"),
+    category,
     type,
     rarity: normalizeRarity(field(raw, "rarity") || classified.rarity),
-    manufacturer: normalizeTitle(field(raw, "manufacturer", "maker") || classified.manufacturer),
+    manufacturer,
     creator: normalizeTitle(field(raw, "creator", "author", "creatorName", "owner")),
     source: "GZO",
     url: normalizeWebUrl(field(raw, "websiteUrl", "url", "link", "pageUrl") || GZO_CODES_URL),
     image_url: normalizeWebUrl(field(raw, "image", "image_url", "imageUrl", "thumbnail", "screenshot", "screenshot_url", "photo", "picture")),
     deserialized,
+    dlc,
     item_level: normalizeItemLevel(raw, deserialized),
     mattmab_validator: normalizeTitle(field(raw, "mattmab_validator", "validator", "validation", "mattmabResult", "result")),
     mattmab_validator_detail: normalizeTitle(field(raw, "mattmab_validator_detail", "validatorDetail", "detail")),
     tags: unique([...tags, "gzo"]),
-    catalog_parameters: catalogParameters(raw)
+    catalog_parameters: dlc && !parameters.dlc ? { ...parameters, dlc } : parameters
   };
 }
 
@@ -359,10 +383,11 @@ function normalizeCodeEntry(raw, defaults) {
   ]);
   const source = normalizeTitle(raw.source, defaults.source);
   const listing = normalizeListing(raw.listing || raw.listing_name || raw.source, defaults.listing || source);
-  const type = normalizeType(raw.type || raw.category || raw.item_type || raw.gear_type || raw.decoded_type);
+  const categoryIsManufacturer = Boolean(gzoCodesForm.knownManufacturer(raw.category) && gzoCodesForm.knownManufacturer(raw.category) !== "Classmod");
+  const type = normalizeType(raw.type || raw.item_type || raw.gear_type || raw.decoded_type || (categoryIsManufacturer ? "" : raw.category));
   const manufacturer = recovered.swappedFromManufacturer
     ? ""
-    : normalizeTitle(manufacturerRaw);
+    : recoverManufacturer(raw);
   const rarity = normalizeRarity(raw.rarity || raw.quality);
   const classification = normalizeClassification(raw.classification || raw.validation || raw.mattmab_classification, tags);
   const mattmab = normalizeMattmab(raw.mattmab_validator || raw.mattmab_result || raw.mattmab || raw.validation_result);
@@ -372,6 +397,10 @@ function normalizeCodeEntry(raw, defaults) {
   const sourceParameters = raw.catalog_parameters && typeof raw.catalog_parameters === "object" && !Array.isArray(raw.catalog_parameters)
     ? { ...raw.catalog_parameters }
     : {};
+  const dlc = recoverDlc(raw, sourceParameters);
+  const category = manufacturer
+    || (gzoCodesForm.knownManufacturer(raw.category) === "Classmod" ? "Classmod" : "")
+    || normalizeType(raw.category || raw.item_category || raw.group || type);
 
   return {
     id: stableId(defaults.prefix, raw, serial),
@@ -379,9 +408,10 @@ function normalizeCodeEntry(raw, defaults) {
     serial,
     source,
     listing,
-    category: normalizeType(raw.category || raw.item_category || raw.group || type),
+    category,
     type,
     manufacturer,
+    dlc,
     rarity,
     creator: normalizeTitle(raw.creator || raw.author),
     classification,
@@ -394,7 +424,11 @@ function normalizeCodeEntry(raw, defaults) {
     tags,
     notes: text(raw.notes || raw.description || raw.comment),
     decoded_identity: identity,
-    catalog_parameters: { ...catalogParameters(raw), ...sourceParameters },
+    catalog_parameters: {
+      ...catalogParameters(raw),
+      ...sourceParameters,
+      ...(dlc ? { dlc } : {})
+    },
     sources: unique([source]),
     source_urls: url ? { [source]: url } : {},
     aliases: unique([raw.name || raw.title || raw.label]),
@@ -473,9 +507,10 @@ function filterValues(entries) {
   return {
     listings: unique(entries.flatMap((entry) => [entry.listing, entry.classification])),
     types: unique(entries.map((entry) => entry.type)),
-    manufacturers: unique(entries.map((entry) => entry.manufacturer)),
+    manufacturers: unique(entries.map((entry) => gzoCodesForm.rowManufacturer(entry) || entry.manufacturer)),
     rarities: unique(entries.map((entry) => entry.rarity)),
     creators: unique(entries.map((entry) => entry.creator)),
+    dlcs: unique(entries.flatMap((entry) => gzoCodesForm.rowDlcPacks(entry))),
     levels: Array.from(new Set(entries.map((entry) => entry.item_level).filter((value) => value !== null).map(String)))
       .sort((a, b) => Number(a) - Number(b)),
     mattmabResults: ["All", "Legit", "Modded", "Error", "Unchecked"]
@@ -639,6 +674,7 @@ async function refreshGzoCatalog(resourceDir = DEFAULT_RESOURCE_DIR, gzoCachePat
 module.exports = {
   loadBl4Catalog,
   normalizeCodeEntry,
+  normalizeGzoRow,
   preferLongerBase85Serial,
   refreshGzoCatalog,
   validSerial
