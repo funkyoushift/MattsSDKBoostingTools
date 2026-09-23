@@ -7991,10 +7991,43 @@ function itemPoolSearchText(item) {
   ].filter(Boolean).join(" ").toLowerCase();
 }
 
+function itemPoolIsPearl(item) {
+  return itemPoolSearchText(item).includes("pearl");
+}
+
+function itemPoolCategoryMatches(item, category) {
+  if (!category || category === "All") return true;
+  if (category === "Pearl") return itemPoolIsPearl(item);
+  return (item.category || "Other") === category;
+}
+
 function populateItemPoolCategories() {
-  const categories = Array.from(new Set(state.itemPools.map((item) => item.category || "Other"))).sort();
+  const found = new Set(state.itemPools.map((item) => item.category || "Other"));
+  if (state.itemPools.some(itemPoolIsPearl)) found.add("Pearl");
+  const preferred = [
+    "All",
+    "Pearl",
+    "Assault Rifle",
+    "Pistol",
+    "SMG",
+    "Sniper",
+    "Shotgun",
+    "Heavy",
+    "Class Mod",
+    "Shield",
+    "Ordnance",
+    "Repkit",
+    "Ammo",
+    "Currency",
+    "Shiny",
+    "Other"
+  ];
+  const ordered = preferred.filter((category) => category === "All" || found.has(category));
+  for (const category of Array.from(found).sort()) {
+    if (!ordered.includes(category)) ordered.push(category);
+  }
   els.itempoolCategory.innerHTML = "";
-  ["All", ...categories].forEach((category) => {
+  ordered.forEach((category) => {
     const option = document.createElement("option");
     option.value = category;
     option.textContent = category;
@@ -8006,7 +8039,7 @@ function renderItemPools() {
   const query = getValue(els.itempoolSearch).toLowerCase();
   const category = getValue(els.itempoolCategory) || "All";
   state.filteredItemPools = state.itemPools.filter((item) => {
-    const categoryOk = category === "All" || (item.category || "Other") === category;
+    const categoryOk = itemPoolCategoryMatches(item, category);
     const queryOk = !query || itemPoolSearchText(item).includes(query);
     return categoryOk && queryOk;
   });
@@ -8014,7 +8047,7 @@ function renderItemPools() {
   const previous = new Set(state.selectedItemPools);
   if (state.selectedItemPool) previous.add(state.selectedItemPool);
   els.itempoolList.innerHTML = "";
-  state.filteredItemPools.slice(0, 400).forEach((item) => {
+  state.filteredItemPools.forEach((item) => {
     const option = document.createElement("option");
     option.value = item.itempool || "";
     option.textContent = `${itemPoolLabel(item)} | ${item.itempool || ""}`;

@@ -176,6 +176,15 @@
   document.querySelector('.tab-bar [data-tab="dev-spawner"]').textContent = "Spawn Enemies & Objects";
   const field = document.getElementById("appFinderInput");
   field.placeholder = "Find a feature… (Ctrl+K)";
+  // Catalog/status responses can contain thousands of lines. Keep the status
+  // visible and make the full diagnostic response available on demand.
+  const challengeOutput = document.getElementById("challengeOutput");
+  const challengeLog = document.createElement("details");
+  challengeLog.className = "workspace-output-fold";
+  const challengeLogTitle = document.createElement("summary");
+  challengeLogTitle.textContent = "Challenge details & log";
+  challengeOutput.before(challengeLog);
+  challengeLog.append(challengeLogTitle, challengeOutput);
   // Keep long category lists optional without hiding the search field.
   const categories = document.getElementById("devActorCategoryButtons").closest(".dev-browser-section");
   const categoryFold = document.createElement("details"); categoryFold.className = "workspace-category-fold";

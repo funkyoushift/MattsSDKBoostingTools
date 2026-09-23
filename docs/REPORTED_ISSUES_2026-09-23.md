@@ -149,3 +149,19 @@ capture, live-player readback, and roster regression tests passed. Transport tes
 mock the server and do not publish submissions. The app was restarted and the
 updated catalog controls and form visually checked. Local packaging succeeded.
 Version remains 2.12.2; no release was published.
+
+## Follow-up: additional worktree changes prepared for Matt's testing
+
+Integrated compact challenge details from 027dbee without its release metadata;
+Map Travel button placement/sticky row from 1081caf and d163375; full item-pool
+lists and Pearl filter from v2.12.1-appearance; mobile pagination/Pearl controls
+from gzo-codes-align. Broad Ponytail changes and card-rendering research remain
+excluded. Eight Python catalog/startup tests, the desktop responsive suite, and
+mobile UI checks passed (699 pools, six Pearl pools, 14 fixture code pages).
+The local desktop package was rebuilt; the source app was restarted for testing.
+SDK archive updated with only item_pool_spawning.py, preserving the existing
+archive entries and backing up the installed archive before replacement. The
+running game was not restarted: the SDK-side default filter change takes effect
+on its next module load; desktop filtering is available immediately. Mobile
+checks exercised its UI in Electron, not an installed phone APK.
+No version bump, publication, or dirty-worktree cleanup was performed.

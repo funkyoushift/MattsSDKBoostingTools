@@ -70,9 +70,19 @@ def load_item_pools() -> list[dict[str, str]]:
     return list(pools)
 
 
+def item_pool_is_pearl(entry: dict[str, str]) -> bool:
+    blob = " ".join(
+        str(entry.get(key, "") or "")
+        for key in ("display_name", "itempool", "category")
+    ).lower()
+    return "pearl" in blob
+
+
 def item_pool_categories() -> list[str]:
-    preferred = ['All', 'Assault Rifle', 'Pistol', 'SMG', 'Sniper', 'Shotgun', 'Heavy', 'Class Mod', 'Shield', 'Ordnance', 'Repkit', 'Ammo', 'Currency', 'Shiny', 'Other']
+    preferred = ['All', 'Pearl', 'Assault Rifle', 'Pistol', 'SMG', 'Sniper', 'Shotgun', 'Heavy', 'Class Mod', 'Shield', 'Ordnance', 'Repkit', 'Ammo', 'Currency', 'Shiny', 'Other']
     found = {entry['category'] for entry in load_item_pools()}
+    if any(item_pool_is_pearl(entry) for entry in load_item_pools()):
+        found.add('Pearl')
     ordered = [category for category in preferred if category == 'All' or category in found]
     for category in sorted(found):
         if category not in ordered:
@@ -80,12 +90,15 @@ def item_pool_categories() -> list[str]:
     return ordered
 
 
-def filter_item_pools(search: str = '', category: str = 'All', limit: int = 100) -> list[dict[str, str]]:
+def filter_item_pools(search: str = '', category: str = 'All', limit: int = 0) -> list[dict[str, str]]:
     needle = (search or '').strip().lower()
     category = category or 'All'
     results: list[dict[str, str]] = []
     for entry in load_item_pools():
-        if category != 'All' and entry['category'] != category:
+        if category == 'Pearl':
+            if not item_pool_is_pearl(entry):
+                continue
+        elif category != 'All' and entry['category'] != category:
             continue
         if needle and needle not in entry['display_name'].lower() and needle not in entry['itempool'].lower():
             continue

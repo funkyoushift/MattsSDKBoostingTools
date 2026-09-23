@@ -415,6 +415,7 @@ function populateFilters(){
   populateSelect('rarityFilter',state.codes.map(x=>x.rarity),'All rarities');
 }
 function filterCodes(){
+  state.codePage=0;
   const q=text($('codeSearch').value).toLowerCase();
   const listing=text($('listingFilter')&&$('listingFilter').value);
   const creator=text($('creatorFilter')&&$('creatorFilter').value);
@@ -431,7 +432,31 @@ function filterCodes(){
   });
   renderCodes();
 }
-function renderCodes(){const list=$('codeList');list.innerHTML='';state.filteredCodes.slice(0,300).forEach(row=>{const selected=state.selectedCodes.has(row.id);const card=document.createElement('div');card.className=`code-card${selected?' selected':''}`;const image=row.image?`<img src="${esc(row.image)}" alt="" loading="lazy" onerror="this.parentElement.textContent='BL4'">`:'BL4';card.innerHTML=`<input type="checkbox" ${selected?'checked':''} aria-label="Select ${esc(row.name)}"><span class="code-thumb">${image}</span><span><strong>${esc(row.name)}</strong><br><small>${esc([row.listing||row.source,row.type||row.category,row.manufacturer,row.rarity,row.creator].filter(Boolean).join(' · '))}</small></span><button type="button">›</button>`;card.querySelector('input').addEventListener('change',e=>{if(e.target.checked)state.selectedCodes.add(row.id);else state.selectedCodes.delete(row.id);renderCodes();updateSelectionSummary()});card.querySelector('button').addEventListener('click',()=>showCodeDetail(row));list.appendChild(card)});if(state.filteredCodes.length>300){const p=document.createElement('small');p.className='muted';p.textContent=`Showing first 300 of ${state.filteredCodes.length}. Refine filters to narrow results.`;list.appendChild(p)}if(!state.filteredCodes.length)list.innerHTML='<div class="card"><p>No matching codes.</p></div>';updateSelectionSummary()}
+function renderCodes(){
+  const list=$('codeList');list.innerHTML='';
+  const pageSize=25,totalPages=Math.max(1,Math.ceil(state.filteredCodes.length/pageSize));
+  state.codePage=Math.min(Math.max(0,state.codePage||0),totalPages-1);
+  const start=state.codePage*pageSize;
+  state.filteredCodes.slice(start,start+pageSize).forEach(row=>{
+    const selected=state.selectedCodes.has(row.id),card=document.createElement('div');
+    card.className=`code-card${selected?' selected':''}`;
+    const image=row.image?`<img src="${esc(row.image)}" alt="" loading="lazy" onerror="this.parentElement.textContent='BL4'">`:'BL4';
+    card.innerHTML=`<input type="checkbox" ${selected?'checked':''} aria-label="Select ${esc(row.name)}"><span class="code-thumb">${image}</span><span><strong>${esc(row.name)}</strong><br><small>${esc([row.listing||row.source,row.type||row.category,row.manufacturer,row.rarity,row.creator].filter(Boolean).join(' · '))}</small></span><button type="button">›</button>`;
+    card.querySelector('input').addEventListener('change',e=>{if(e.target.checked)state.selectedCodes.add(row.id);else state.selectedCodes.delete(row.id);renderCodes();updateSelectionSummary()});
+    card.querySelector('button').addEventListener('click',()=>showCodeDetail(row));list.appendChild(card);
+  });
+  if(state.filteredCodes.length){
+    const pager=document.createElement('div');pager.className='row';
+    const previous=document.createElement('button'),next=document.createElement('button'),label=document.createElement('span');
+    previous.textContent='Previous';previous.disabled=state.codePage===0;
+    next.textContent='Next';next.disabled=state.codePage===totalPages-1;
+    label.textContent=`Page ${state.codePage+1} of ${totalPages} · ${state.filteredCodes.length} codes`;
+    previous.addEventListener('click',()=>{state.codePage--;renderCodes()});
+    next.addEventListener('click',()=>{state.codePage++;renderCodes()});
+    pager.append(previous,label,next);list.appendChild(pager);
+  }else list.innerHTML='<div class="card"><p>No matching codes.</p></div>';
+  updateSelectionSummary();
+}
 function showCodeDetail(row){const details=[row.name,row.listing||row.source,row.source,row.type||row.category,row.manufacturer,row.rarity,row.creator,row.serial].filter(Boolean).join('\n');alert(details)}
 function updateSelectionSummary(){
   const filtered=state.filteredCodes.length;
@@ -1989,10 +2014,11 @@ if($('travelShowAllStations'))$('travelShowAllStations').addEventListener('chang
 function renderPools(){
   const rows=$('poolRows');if(!rows)return;
   const q=text($('poolSearch')&&$('poolSearch').value).toLowerCase();
+  const category=text($('poolCategory')&&$('poolCategory').value);
   const filtered=state.pools.rows.filter((row)=>{
     const hay=`${row.display_name||''} ${row.itempool||''} ${row.category||''}`.toLowerCase();
-    return !q||hay.includes(q);
-  }).slice(0,300);
+    return (!q||hay.includes(q)) && (category!=='Pearl'||hay.includes('pearl'));
+  });
   rows.innerHTML='';
   filtered.forEach((row)=>{
     const button=document.createElement('button');
@@ -2022,6 +2048,7 @@ async function loadPoolCatalog(){
   }
 }
 if($('poolSearch'))$('poolSearch').addEventListener('input',renderPools);
+if($('poolCategory'))$('poolCategory').addEventListener('change',renderPools);
 
 function floatValue(value,fallback=0){const n=Number.parseFloat(String(value??'').trim());return Number.isFinite(n)?n:fallback}
 function buildDevSpawnerPayload(action){

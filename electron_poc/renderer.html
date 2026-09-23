@@ -1277,7 +1277,7 @@
         <div class="grid three compact">
           <label>
             Search Item Pools
-            <input id="itempoolSearch" type="search" placeholder="shield, sniper, class mod...">
+            <input id="itempoolSearch" type="search" placeholder="pearl, shield, sniper, class mod...">
           </label>
           <label>
             Category
@@ -1931,8 +1931,10 @@
       <section class="panel pink" data-msbt-panel="travel-main" data-msbt-span="12" data-msbt-title="Map Travel" data-msbt-resize="1">
         <h2>Map Travel</h2>
         <p>Select a map first, then choose a travel station on that map. Favorites can hold maps or stations in one list. Party Reveal uncovers guest maps (including console). Host Clear Fog fills this machine's tiles. Hide Fog is overlay-only on this client.</p>
-        <div class="button-row wrap">
+        <div class="button-row wrap travel-primary-actions">
           <button type="button" data-msbt-bridge-refresh class="secondary">Refresh Status</button>
+          <button id="travelMapBtn">Travel to Selected Map</button>
+          <button id="travelStationBtn">Travel to Selected Station</button>
           <button id="travelPresetTubaBtn" type="button">Tuba Boss Arena</button>
           <button id="travelPresetDevMapBtn" type="button">Dev Testing Map</button>
           <button data-action="party_reveal_start">Party Reveal Map</button>
@@ -1954,7 +1956,6 @@
             <div id="travelMapSummary" class="status-line">Loading maps...</div>
             <select id="travelMapList" class="list-select" size="16"></select>
             <div class="button-row wrap">
-              <button id="travelMapBtn">Travel to Selected Map</button>
               <button id="travelFavoriteAddMapBtn" type="button">Add Map to Favorites</button>
             </div>
           </div>
@@ -1965,7 +1966,6 @@
             <div id="travelStationSummary" class="status-line">Select a map to filter stations.</div>
             <select id="travelStationList" class="list-select" size="16"></select>
             <div class="button-row wrap">
-              <button id="travelStationBtn">Travel to Selected Station</button>
               <button id="travelFavoriteAddStationBtn" type="button">Add Station to Favorites</button>
             </div>
           </div>

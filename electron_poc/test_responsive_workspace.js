@@ -63,6 +63,29 @@ app.whenReady().then(async () => {
     if(over>3) failures.push({width,scale:1.4,overflow:over});
   }
   // These are real buttons with a stubbed transport; never attach a preload here.
+  // Reproduce the live-game catalog response that previously stretched All Controls.
+  for (const width of [480, 960, 1920]) {
+    win.setContentSize(width, 700);
+    for (const section of ['challenges', 'all']) {
+      const log = await win.webContents.executeJavaScript(`(()=>{
+        window.MsbtWorkspace.open('boosting', ${JSON.stringify(section)});
+        const output=document.getElementById('challengeOutput'), fold=output.closest('details');
+        const panel=output.closest('[data-msbt-panel]');
+        fold.open=false;
+        const before=panel.getBoundingClientRect().height;
+        output.textContent=Array.from({length:5000},(_,i)=>'Challenge '+i+': progress and catalog details').join('\\n');
+        const collapsed=panel.getBoundingClientRect().height;
+        fold.open=true;
+        output.scrollTop=output.scrollHeight;
+        const result={before,collapsed,expanded:panel.getBoundingClientRect().height,height:output.getBoundingClientRect().height,
+          scrollable:output.scrollHeight>output.clientHeight,endAccessible:output.scrollTop+output.clientHeight>=output.scrollHeight-2,
+          complete:output.textContent.includes('Challenge 4999:'),statusVisible:document.getElementById('challengeStatus').getBoundingClientRect().height>0};
+        fold.open=false;
+        return result;
+      })()`);
+      assert(log.collapsed<=log.before+1 && log.expanded<=log.before+280 && log.height<=241 && log.scrollable && log.endAccessible && log.complete && log.statusVisible, JSON.stringify({width,section,...log}));
+    }
+  }
   const dispatch = await win.webContents.executeJavaScript(`(async()=>{
     const calls=[];
     const original=runScopedPlayerAction;

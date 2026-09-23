@@ -1687,6 +1687,15 @@ button.submit-btn:hover {
   width: 100%;
 }
 
+.msbt-panel-body .travel-primary-actions {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding: 5px 0;
+  background: #121a2a;
+  border-bottom: 1px solid rgba(38, 53, 74, .85);
+}
+
 .list-select {
   min-height: 300px;
   background: #0d1320;

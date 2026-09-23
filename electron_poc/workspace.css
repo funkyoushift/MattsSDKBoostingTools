@@ -80,6 +80,8 @@ body.msbt-workspace {
 .msbt-workspace .status-line { font-size: 12px; }
 .msbt-workspace .workspace-scope > summary, .workspace-category-fold > summary { cursor: pointer; color: var(--cyan); padding: 8px 0; }
 .workspace-scope[open] > summary { margin-bottom: 12px; }
+.msbt-workspace .workspace-output-fold > summary { cursor: pointer; color: var(--muted); padding: 8px 0; }
+.msbt-workspace #challengeOutput { min-height: 0; max-height: min(240px, 35vh); overflow: auto; }
 .msbt-workspace [data-msbt-panel="boost-target"] > h2, .msbt-workspace [data-msbt-panel="dev-target"] > h2 { display: none; }
 .msbt-workspace #targetSummary, .msbt-workspace #devTargetSummary { margin: 0 0 4px; }
 .msbt-workspace #setLevelBtn, .msbt-workspace #giveCurrencyBtn, .msbt-workspace #devSpawnerSpawnAiBtn, .msbt-workspace #devSpawnerSpawnAiBtnSide { background: var(--cyan); color: #10242b; border-color: transparent; font-weight: 700; }
