@@ -110,3 +110,8 @@ The Pixel disconnected before the new APK could be installed. The new APK is at
 `mobile_controller/app/build/outputs/apk/release/app-release.apk`; installation
 and actual phone interaction are pending USB reconnection. No publication or
 dirty-worktree cleanup has occurred.
+
+USB follow-up: the Pixel 10 Pro XL reconnected. The parity APK installed
+successfully with `adb install -r` (app data retained), and Android confirmed
+MSBT's MainActivity opened with a running process. User phone testing remains
+pending; installation is no longer blocked.
