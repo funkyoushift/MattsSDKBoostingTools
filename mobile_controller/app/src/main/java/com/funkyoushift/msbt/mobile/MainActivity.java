@@ -86,6 +86,8 @@ public class MainActivity extends Activity {
     ));
 
     private WebView webView;
+    private android.webkit.ValueCallback<android.net.Uri[]> imageChooserCallback;
+    private static final int REQ_SUBMISSION_IMAGE = 1003;
     private PermissionRequest pendingWebPermission;
     private boolean pendingNativeQrScan;
     private final ExecutorService bg = Executors.newSingleThreadExecutor();
@@ -1135,6 +1137,28 @@ public class MainActivity extends Activity {
         });
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
+            public boolean onJsConfirm(WebView view, String url, String message, android.webkit.JsResult result) {
+                new android.app.AlertDialog.Builder(MainActivity.this).setMessage(message)
+                    .setPositiveButton("Continue", (dialog, which) -> result.confirm())
+                    .setNegativeButton("Cancel", (dialog, which) -> result.cancel())
+                    .setOnCancelListener(dialog -> result.cancel()).show();
+                return true;
+            }
+            @Override
+            public boolean onShowFileChooser(WebView view,
+                    android.webkit.ValueCallback<android.net.Uri[]> callback,
+                    WebChromeClient.FileChooserParams params) {
+                if (imageChooserCallback != null) imageChooserCallback.onReceiveValue(null);
+                imageChooserCallback = callback;
+                Intent chooser = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                chooser.addCategory(Intent.CATEGORY_OPENABLE);
+                chooser.setType("image/*");
+                chooser.putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"image/png", "image/jpeg", "image/webp"});
+                try { startActivityForResult(chooser, REQ_SUBMISSION_IMAGE); }
+                catch (Exception error) { imageChooserCallback.onReceiveValue(null); imageChooserCallback = null; }
+                return true;
+            }
+            @Override
             public void onPermissionRequest(final PermissionRequest request) {
                 runOnUiThread(() -> {
                     pendingWebPermission = request;
@@ -1150,7 +1174,7 @@ public class MainActivity extends Activity {
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
         settings.setAllowFileAccess(true);
-        settings.setAllowContentAccess(false);
+        settings.setAllowContentAccess(true); // Read the image explicitly chosen through Android's document picker.
         // LAN pairing talks to desktop / in-game MSBT over cleartext HTTP from
         // the https://appassets.androidplatform.net origin.
         settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
@@ -1197,6 +1221,14 @@ public class MainActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQ_SUBMISSION_IMAGE) {
+            if (imageChooserCallback != null) {
+                android.net.Uri uri = resultCode == RESULT_OK && data != null ? data.getData() : null;
+                imageChooserCallback.onReceiveValue(uri == null ? null : new android.net.Uri[]{uri});
+                imageChooserCallback = null;
+            }
+            return;
+        }
         IntentResult qrResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if (qrResult != null) {
             String contents = qrResult.getContents();

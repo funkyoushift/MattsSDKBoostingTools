@@ -98,6 +98,14 @@ async function main() {
     const cached = JSON.parse(await fs.readFile(cachePath, "utf8"));
     assert.strictEqual(cached.entries[0].serial, freshSerial);
     console.log("PASS first GZO refresh selects fresh cache and retains other catalog overrides");
+    await writeCatalog(dir, "MattsSDKBoostingTools_gzo_codes.json", [
+      {name:"Case A",base85:"@UAbCd12345678901234567890"},
+      {name:"Case B",base85:"@UaBcD12345678901234567890"}
+    ]);
+    const caseCatalog = await loadBl4Catalog(dir);
+    assert.ok(caseCatalog.entries.some(row=>row.serial==="@UAbCd12345678901234567890"));
+    assert.ok(caseCatalog.entries.some(row=>row.serial==="@UaBcD12345678901234567890"));
+    console.log("PASS case-sensitive Base85 entries remain distinct");
   } finally {
     await fs.rm(dir, { recursive: true, force: true });
   }

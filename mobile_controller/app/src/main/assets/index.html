@@ -117,7 +117,7 @@
       </div>
       <div class="selection-bar"><span id="selectionSummary">0 selected</span><button id="selectAllCodes">Select all filtered</button><button id="clearCodeSelection">Clear</button></div>
       <div id="codeList" class="list"></div>
-      <article class="card sticky-delivery"><p class="eyebrow">DELIVERY</p><div class="fields two"><label>Copies<input id="codeCopies" value="1" inputmode="numeric"></label><label>Named player<select id="codeTarget" class="player-target" disabled><option value="">No connection</option></select></label></div><div class="button-row-wrap"><button data-live data-action="give_serial_selected" data-serial-source="codes">Named Player</button><button data-live data-action="give_serial_all" data-serial-source="codes">All Players</button><button data-live data-action="give_serial_nonhost" data-serial-source="codes">Other Players</button></div></article>
+      <article class="card sticky-delivery"><p class="eyebrow">DELIVERY</p><div class="fields two"><label>Copies<input id="codeCopies" value="1" inputmode="numeric"></label><label>Named player<select id="codeTarget" class="player-target" disabled><option value="">No connection</option></select></label></div><div class="fields two"><label>Override level<select id="codeOverride"><option value="no">Keep item level</option><option value="yes">Set level</option></select></label><label>Item level<input id="codeLevel" value="70" inputmode="numeric"></label></div><div class="button-row-wrap"><button data-live data-action="give_serial_selected" data-serial-source="codes">Named Player</button><button data-live data-action="give_serial_all" data-serial-source="codes">All Players</button><button data-live data-action="give_serial_nonhost" data-serial-source="codes">Other Players</button></div></article>
     </section>
 
     <section data-screen="quick" class="screen">
@@ -175,7 +175,7 @@
         <input id="invSearch" type="search" placeholder="Filter inventory rows…">
         <div class="selection-bar"><span id="invSelectionSummary">0 selected</span><button type="button" id="invClearSelection">Clear</button></div>
         <div id="invRows" class="list compact panel-scroll"><small class="muted">Connect and tap Refresh Inventory.</small></div>
-        <div class="button-row-wrap">
+        <div class="fields two"><label>Override level<select id="invOverride"><option value="no">Keep item level</option><option value="yes">Set level</option></select></label><label>Item level<input id="invLevel" value="70" inputmode="numeric"></label></div><div class="button-row-wrap">
           <button id="invUseBoost" disabled>Use in Boost Sender</button>
           <button id="invSaveBookmark" disabled>Bookmark</button>
           <button id="invSendSelected" data-live data-action="give_serial_selected" data-serial-source="inventory" disabled>Named Player</button>
@@ -197,7 +197,7 @@
         <div class="row"><button id="pullDesktopBookmarks" data-live-optional>Pull From MSBT</button><button id="saveBookmark">Save Local</button><button id="deleteBookmark">Delete</button></div>
         <div class="fields two"><label>Name<input id="bookmarkName"></label><label>Group<input id="bookmarkGroup"></label></div>
         <textarea id="bookmarkSerial" placeholder="@U serial"></textarea>
-        <div class="button-row-wrap"><button id="bookmarkUseBoost">Use in Boost Sender</button><button id="bookmarkSendSelected" data-live data-action="give_serial_selected" data-serial-source="bookmark">Named Player</button></div>
+        <div class="fields two"><label>Override level<select id="bookmarkOverride"><option value="no">Keep item level</option><option value="yes">Set level</option></select></label><label>Item level<input id="bookmarkLevel" value="70" inputmode="numeric"></label></div><div class="button-row-wrap"><button id="bookmarkUseBoost">Use in Boost Sender</button><button id="bookmarkSendSelected" data-live data-action="give_serial_selected" data-serial-source="bookmark">Named Player</button></div>
         <input id="bookmarkSearch" type="search" placeholder="Search bookmarks">
         <div class="selection-bar"><span id="bookmarkSelectionSummary">0 selected</span><button type="button" id="bookmarkClearSelection">Clear</button></div>
         <div id="bookmarkRows" class="list compact panel-scroll"></div>
@@ -575,6 +575,9 @@
     <button data-nav="more"><span class="nav-icon">•••</span><span>More</span></button>
   </nav>
   <script src="jsQR.min.js"></script>
+  <script src="gzo_dlc_contract.js"></script>
+  <script src="gzo_codes_form.js"></script>
   <script src="app.js"></script>
+  <script src="parity.js"></script>
 </body>
 </html>

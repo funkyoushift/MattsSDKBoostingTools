@@ -1,0 +1,45 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),os=require('node:os'),path=require('node:path');
+const {app,BrowserWindow}=require('electron');
+app.whenReady().then(async()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'msbt-mobile-parity-'));
+  fs.cpSync(path.resolve(__dirname,'../mobile_controller/app/src/main/assets'),dir,{recursive:true});
+  for(const file of ['gzo_codes_form.js','gzo_dlc_contract.js'])fs.copyFileSync(path.join(__dirname,file),path.join(dir,file));
+  const win=new BrowserWindow({show:false,width:480,height:960,webPreferences:{sandbox:true,contextIsolation:true,partition:'parity-tests'}});
+  win.webContents.session.webRequest.onBeforeRequest({urls:['http://*/*','https://*/*']},(_d,cb)=>cb({cancel:true}));
+  await win.loadFile(path.join(dir,'index.html'));
+  const result=await win.webContents.executeJavaScript(`(async()=>{
+    const check=(ok,msg)=>{if(!ok)throw new Error(msg);};window.alert=()=>{};window.confirm=()=>true;stopStatusPolling();
+    const host={index:0,name:'Host'},guest={index:1,name:'Guest'},replacement={index:1,name:'Replacement'};
+    state.online=true;state.players=[host,guest];state.selectedTarget='1|Guest';fillPlayerSelects();
+    const option=$('boostTarget').options[2];$('boostTarget').focus();fillPlayerSelects();check(option===$('boostTarget').options[2],'unchanged dropdown options replaced');
+    check(resolveTargetValue('1|Guest',[host,replacement])==='','departed name resolves to replacement');
+    applyStatus({ok:true,players:[host,replacement],selected_player:'Replacement',selected_player_index:1});
+    applyStatus({ok:true,players:[host,replacement],selected_player:'Replacement',selected_player_index:1});
+    check(currentTarget()==='','later status silently reselects replacement');
+    state.targetInvalidated=false;state.players=[host,guest];state.selectedTarget='1|Guest';state.pendingTarget='1|Guest';
+    applyStatus({ok:true,players:[host,guest],selected_player:'Host',selected_player_index:0});check(currentTarget()==='1|Guest','old snapshot overrides pending choice');
+    const rows=[];walkCatalog([{serial:'@UAbCd',name:'a'},{serial:'@UaBcD',name:'b'}],'GZO',rows,new Set());check(rows.length===2&&rows[0].id!==rows[1].id,'serial case collapsed');
+    state.codes=rows;state.selectedCodes=new Set([rows[0].id]);$('boostOverride').value='yes';$('boostSerialLevel').value='10';
+    const payload=buildActionPayload('give_serial_selected',document.querySelector('[data-serial-source="codes"]'));check(!payload.serial_override_level,'hidden boost override leaked');
+    $('codeOverride').value='yes';$('codeLevel').value='60';check(buildActionPayload('give_serial_selected',document.querySelector('[data-serial-source="codes"]')).serial_level===60,'visible code level ignored');
+    state.pendingTarget='';state.selectedTarget='1|Guest';const status={ok:true,host_player_index:0,players:[host,guest],selected_player:'Guest',selected_player_index:1,player_readback:{available:true,name:'Guest',sampled_at:Date.now()/1000,level:70,specialization:701,currencies:{Cash:0,VaultCard01_Tokens:42},vault_cards:[{card:1,rank:0,active:false}]}};
+    applyStatus(status);check($('mobileReadbackValues').textContent.includes('701')&&$('mobileReadbackValues').textContent.includes('42'),'readback values absent');check($('mobileReadbackCards').textContent.includes('Inactive'),'inactive card distinction absent');renderMobileReadback({...status,player_readback:{...status.player_readback,sampled_at:0}});check(!$('mobileReadbackValues').children.length,'stale readback shown');
+    const calls=[];gatewayFetch=async()=>({ok:true,data:{players:[host,guest]}});gatewayAction=async(a,p)=>{calls.push([a,p]);return{ok:true,data:{message:'ok'}};};
+    $('boostScope').value='all';await runParityScopedAction(document.querySelector('[data-action="max_spec_level"]'));check(calls.length===2&&calls[0][1].target_player==='0|Host'&&calls[1][1].target_player==='1|Guest','all scope routing');
+    calls.length=0;$('boostScope').value='nonhost';await runParityScopedAction(document.querySelector('[data-action="max_spec_level"]'));check(calls.length===1&&calls[0][1].target_player==='1|Guest','other scope routing');
+    check($('gzoCategory').options.length>5,'shared GZO contract missing');
+    state.connection.address='127.0.0.1';$('gzoPairing').value='fixture';let resolvePrepare;
+    window.fetch=()=>new Promise(resolve=>resolvePrepare=resolve);$('gzoSerial').value='@Uold';const pending=$('gzoPrepare').onclick();$('gzoSerial').value='@Unew';$('gzoSerial').dispatchEvent(new Event('input'));resolvePrepare({ok:true,json:async()=>({ok:true,serial:'@Uold',fields:{name:'OLD'},capture:{ok:false}})});await pending;check($('gzoName').value!=='OLD','stale GZO response applied');
+    let submits=0,finish;window.fetch=async()=>{submits++;return new Promise(resolve=>finish=resolve);};$('gzoListing').value='Legit';$('gzoName').value='Test';$('gzoCreator').value='Tester';
+    // Prepare a mocked attachment without making a public submission.
+    window.fetch=async()=>({ok:true,json:async()=>({ok:true,serial:'@Unew',human:'fixture',fields:{},capture:{ok:true,base64:'aW1hZ2U='}})});await $('gzoPrepare').onclick();
+    window.fetch=async()=>{submits++;return new Promise(resolve=>finish=resolve);};const send=$('gzoSend').onclick();await $('gzoSend').onclick();check(submits===1,'duplicate submit');finish({ok:true,json:async()=>({ok:true,message:'Accepted'})});await send;check($('gzoSerial').value==='','accepted code remains sticky');
+    return {targeting:true,stableRoster:true,visibleDelivery:true,readback:true,scopes:true,serialCase:true,gzo:true};
+  })()`);
+  assert.ok(result.gzo);
+  const layout=await win.webContents.executeJavaScript(`(()=>{showScreen('boost');return {width:innerWidth,body:document.body.scrollWidth,scopes:$('boostScope').options.length};})()`);
+  assert.ok(layout.body<=layout.width+2,JSON.stringify(layout));assert.equal(layout.scopes,4);
+  await new Promise(resolve=>setTimeout(resolve,150));
+  fs.writeFileSync(path.resolve(__dirname,'../output/reported-issues/mobile-parity-preview.png'),(await win.webContents.capturePage()).toPNG());
+  console.log('PASS mobile parity',JSON.stringify(result));win.destroy();fs.rmSync(dir,{recursive:true,force:true});app.exit(0);
+}).catch(error=>{console.error(error);app.exit(1);});

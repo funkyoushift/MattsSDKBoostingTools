@@ -661,6 +661,12 @@ def _normalize_quick_menu_bridge_payload(action: str, payload: dict[str, Any]) -
 
 def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[str, Any]:
     payload = payload or {}
+    if action not in quick_menu_registry.ASSIGNABLE_ACTIONS and action != "set_target_player":
+        target = payload.get("target_player")
+        if target is not None and str(target).strip():
+            selected = backend_actions.set_target_player(target)
+            if not selected.get("ok"):
+                return selected
     if action == "status":
         return _status()
     # Assignable Quick Menu actions go through the shared runner so MSBT buttons

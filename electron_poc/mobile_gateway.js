@@ -38,20 +38,20 @@ function sendJson(res, statusCode, payload) {
     "Content-Type": "application/json; charset=utf-8",
     "Content-Length": Buffer.byteLength(body),
     "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "Content-Type, X-MSBT-Pairing-Code",
+    "Access-Control-Allow-Headers": "Content-Type, X-MSBT-Pairing-Code, X-MSBT-Device",
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     "Cache-Control": "no-store"
   });
   res.end(body);
 }
 
-function readBody(req) {
+function readBody(req, limit = 2 * 1024 * 1024) {
   return new Promise((resolve, reject) => {
     const chunks = [];
     let size = 0;
     req.on("data", (chunk) => {
       size += chunk.length;
-      if (size > 2 * 1024 * 1024) {
+      if (size > limit) {
         reject(new Error("Request body too large"));
         req.destroy();
         return;
@@ -233,6 +233,17 @@ function createMobileGateway(options = {}) {
       return;
     }
 
+    if (method === "POST" && (pathname === "/mobile/gzo/prepare" || pathname === "/mobile/gzo/submit")) {
+      try {
+        const payload = JSON.parse((await readBody(req, 12 * 1024 * 1024)).toString("utf8"));
+        const fn = pathname.endsWith("/prepare") ? options.prepareGzo : options.submitGzo;
+        if (typeof fn !== "function") { sendJson(res, 503, {ok:false,message:"Update the desktop app to use GZO submission."}); return; }
+        const result = await fn(payload);
+        sendJson(res, result.ok ? 200 : 400, result);
+      } catch (error) { sendJson(res, 400, {ok:false,message:String(error.message || error)}); }
+      return;
+    }
+
     const allowedGet = pathname === "/status" || pathname === "/quick_menu" || pathname.startsWith("/status?") || pathname.startsWith("/quick_menu?");
     const allowedPost = pathname === "/action" || pathname.startsWith("/action?");
     if (method === "GET" && allowedGet) {
@@ -240,7 +251,7 @@ function createMobileGateway(options = {}) {
       res.writeHead(upstream.statusCode, {
         "Content-Type": upstream.headers["content-type"] || "application/json; charset=utf-8",
         "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "Content-Type, X-MSBT-Pairing-Code",
+        "Access-Control-Allow-Headers": "Content-Type, X-MSBT-Pairing-Code, X-MSBT-Device",
         "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
         "Cache-Control": "no-store"
       });
@@ -256,11 +267,13 @@ function createMobileGateway(options = {}) {
         sendJson(res, 413, { ok: false, message: String(error && error.message ? error.message : error) });
         return;
       }
-      const upstream = await proxyToBridge(bridgeBase, "POST", pathname + requestUrl.search, body, 45000);
+      let timeoutMs = 45000;
+      try { const request = JSON.parse(body.toString("utf8")); if (request.action === "max_all") timeoutMs = 185000; } catch {}
+      const upstream = await proxyToBridge(bridgeBase, "POST", pathname + requestUrl.search, body, timeoutMs);
       res.writeHead(upstream.statusCode, {
         "Content-Type": upstream.headers["content-type"] || "application/json; charset=utf-8",
         "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "Content-Type, X-MSBT-Pairing-Code",
+        "Access-Control-Allow-Headers": "Content-Type, X-MSBT-Pairing-Code, X-MSBT-Device",
         "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
         "Cache-Control": "no-store"
       });

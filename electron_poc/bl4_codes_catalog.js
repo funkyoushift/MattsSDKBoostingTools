@@ -316,8 +316,8 @@ function walkGzoJson(value, out, seen, inheritedListing = "") {
     "GZO"
   );
   const row = normalizeGzoRow(value, listing);
-  if (row && !seen.has(row.serial.toLowerCase())) {
-    seen.add(row.serial.toLowerCase());
+  if (row && !seen.has(row.serial)) {
+    seen.add(row.serial);
     out.push(row);
   }
   for (const child of Object.values(value)) walkGzoJson(child, out, seen, listing);
@@ -331,8 +331,8 @@ function parseGzoCatalogText(body) {
   } catch {
     for (const match of body.matchAll(GZO_SERIAL_RE)) {
       const serial = text(match[0]);
-      if (!validSerial(serial) || seen.has(serial.toLowerCase())) continue;
-      seen.add(serial.toLowerCase());
+      if (!validSerial(serial) || seen.has(serial)) continue;
+      seen.add(serial);
       out.push({
         id: "",
         name: "GZO Serial",
@@ -468,7 +468,7 @@ function entriesFromJson(json) {
 function mergeBySerial(rows) {
   const bySerial = new Map();
   for (const row of rows) {
-    const key = row.serial.toLowerCase();
+    const key = row.serial;
     const existing = bySerial.get(key);
     if (!existing) {
       bySerial.set(key, row);

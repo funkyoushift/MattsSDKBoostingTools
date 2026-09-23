@@ -86,6 +86,10 @@ tasks.register('syncMobileCatalogAssets') {
                 logger.warn("syncMobileCatalogAssets: missing ${name}")
             }
         }
+        copy {
+            from '../../electron_poc/gzo_codes_form.js', '../../electron_poc/gzo_dlc_contract.js'
+            into dest
+        }
         def licenseDest = new File(dest, 'licenses')
         licenseDest.mkdirs()
         copy {

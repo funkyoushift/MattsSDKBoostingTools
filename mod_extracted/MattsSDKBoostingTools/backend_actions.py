@@ -1758,6 +1758,13 @@ def run_quick_menu_action(
     payload = dict(payload or {})
     key = str(action or "").strip()
     label = str(payload.pop("_label", "") or key)
+    # Resolve the named target in the same queued operation as the action.
+    # A separate set-target request can race another controller's selection.
+    explicit_target = payload.get("target_player")
+    if explicit_target is not None and str(explicit_target).strip():
+        selected = set_target_player(explicit_target)
+        if not selected.get("ok"):
+            return selected
     is_drop = False
     needs_player = False
 

@@ -54,13 +54,14 @@ function resolveTargetValue(value,players){
   const raw=text(value);
   if(!raw)return '';
   const list=Array.isArray(players)?players:[];
-  if(!list.length)return raw;
+  if(!list.length)return '';
   const exact=list.find((player)=>playerValue(player)===raw);
   if(exact)return playerValue(exact);
   const name=raw.includes('|')?raw.split('|').slice(1).join('|'):raw;
   const byName=list.find((player)=>String(player.name||'')===name);
   if(byName)return playerValue(byName);
-  const indexPart=raw.includes('|')?raw.split('|')[0]:raw;
+  if(raw.includes('|') || !/^\d+$/.test(raw))return '';
+  const indexPart=raw;
   const byIndex=list.find((player)=>String(player.index)===String(indexPart));
   if(byIndex)return playerValue(byIndex);
   return '';
@@ -279,12 +280,12 @@ function normalizeCode(raw,source){
   const listing=normalizeListingValue(raw,source,classification,tags);
   // Selection/filter identity must be unique per serial. GZO catalog `id` values
   // collide across many Modded rows, which made Select All under-count (~433 vs ~600+).
-  return {id:`${compact(source)}:${serial.toLowerCase()}`,name,serial,source,type,category:text(raw?.category||raw?.group||type),manufacturer:text(raw?.manufacturer||raw?.maker||raw?.mfr),rarity:text(raw?.rarity||raw?.quality),creator:text(raw?.creator||raw?.author||raw?.creatorName),classification,listing,image:text(raw?.image_url||raw?.imageUrl||raw?.image||raw?.thumbnail||raw?.screenshot||raw?.picture),url:text(raw?.url||raw?.websiteUrl||raw?.lootlemon_url||raw?.link),tags};
+  return {id:`${compact(source)}:${serial}`,name,serial,source,type,category:text(raw?.category||raw?.group||type),manufacturer:text(raw?.manufacturer||raw?.maker||raw?.mfr),rarity:text(raw?.rarity||raw?.quality),creator:text(raw?.creator||raw?.author||raw?.creatorName),classification,listing,dlc:raw?.dlc||raw?.dlc_pack||raw?.content||raw?.catalog_parameters?.dlc||'',deserialized:raw?.deserialized||raw?.human||'',level:raw?.level??raw?.item_level??raw?.itemLevel??null,image:text(raw?.image_url||raw?.imageUrl||raw?.image||raw?.thumbnail||raw?.screenshot||raw?.picture),url:text(raw?.url||raw?.websiteUrl||raw?.lootlemon_url||raw?.link),tags};
 }
 function walkCatalog(value,source,out,seen){
   if(Array.isArray(value)){value.forEach(v=>walkCatalog(v,source,out,seen));return}
   if(!value||typeof value!=='object')return;
-  const row=normalizeCode(value,source);if(row&&!seen.has(row.serial.toLowerCase())){seen.add(row.serial.toLowerCase());out.push(row)}
+  const row=normalizeCode(value,source);if(row&&!seen.has(row.serial)){seen.add(row.serial);out.push(row)}
   Object.values(value).forEach(v=>{if(v&&typeof v==='object')walkCatalog(v,source,out,seen)});
 }
 async function readBundledAssetText(file){
@@ -328,7 +329,7 @@ async function loadCatalogs(){
     loadCatalogFile('custom_bl4_codes.json','MSBT Custom')
   ]);
   const merged=[];const seen=new Set();
-  [...gzo.rows,...lootlemon.rows,...custom.rows].forEach(row=>{const key=row.serial.toLowerCase();if(!seen.has(key)){seen.add(key);merged.push(row)}});
+  [...gzo.rows,...lootlemon.rows,...custom.rows].forEach(row=>{const key=row.serial;if(!seen.has(key)){seen.add(key);merged.push(row)}});
   state.codes=merged;
   populateFilters();filterCodes();
   const errors=[gzo,lootlemon,custom].map((part,i)=>part.error?`${['GZO','Lootlemon','MSBT'][i]}: ${part.error}`:null).filter(Boolean);
@@ -422,13 +423,14 @@ function filterCodes(){
   const src=$('sourceFilter').value,type=$('typeFilter').value,mfr=$('manufacturerFilter').value,rarity=$('rarityFilter').value;
   state.filteredCodes=state.codes.filter(row=>{
     const blob=[row.name,row.source,row.type,row.category,row.manufacturer,row.rarity,row.creator,row.listing,row.classification,...row.tags].join(' ').toLowerCase();
-    return(!q||blob.includes(q))
+    const helper=window.MsbtGzoCodesForm;
+    return(!q||(helper?helper.matchesSearchQuery(row,q):blob.includes(q)))
       &&listingMatches(row,listing)
       &&(!creator||row.creator===creator)
       &&(!src||row.source===src)
-      &&(!type||row.type===type||row.category===type)
-      &&(!mfr||row.manufacturer===mfr)
-      &&(!rarity||row.rarity===rarity);
+      &&(!type||(helper?helper.matchesItemTypeFilter(row,type):row.type===type||row.category===type))
+      &&(!mfr||(helper?helper.matchesManufacturerFilter(row,mfr):row.manufacturer===mfr))
+      &&(!rarity||(helper?helper.matchesRarityFilter(row,rarity):row.rarity===rarity));
   });
   renderCodes();
 }
@@ -853,14 +855,20 @@ function resolveQuickConflict(remote){if(!state.quick.dirty){state.quick=remote;
 
 function fillPlayerSelects(){
   const preferred=resolveTargetValue(state.selectedTarget,state.players)||text(state.selectedTarget);
-  const options=state.players.length
-    ? `<option value="">Choose player</option>${state.players.map((player)=>{const value=playerValue(player);return `<option value="${esc(value)}">${esc(playerLabel(player))}</option>`}).join('')}`
-    : '<option value="">No players loaded</option>';
-  $$('.player-target').forEach((select)=>{
-    select.innerHTML=options;
+  const rows=[{value:'',label:state.players.length?'Choose player':'No players loaded'},...state.players.map(p=>({value:playerValue(p),label:playerLabel(p)}))];
+  $$('.player-target').forEach(select=>{
+    const focused=document.activeElement===select, old=select.value;
+    const existing=new Map([...select.options].map(o=>[o.value,o]));
+    rows.forEach((row,i)=>{
+      let option=existing.get(row.value);
+      if(!option){option=document.createElement('option');option.value=row.value;}
+      if(option.textContent!==row.label)option.textContent=row.label;
+      if(select.options[i]!==option)select.insertBefore(option,select.options[i]||null);
+      existing.delete(row.value);
+    });
+    existing.forEach(option=>option.remove());
     select.disabled=!state.online||!state.players.length;
-    if(preferred&&[...select.options].some((opt)=>opt.value===preferred))select.value=preferred;
-    else select.value='';
+    select.value=focused&&rows.some(r=>r.value===old)?old:(rows.some(r=>r.value===preferred)?preferred:'');
   });
   if(state.players.length){
     const matched=resolveTargetValue(preferred,state.players);
@@ -888,6 +896,7 @@ async function pushSelectedTarget({quiet=true}={}){
 }
 function onTargetSelectChange(select){
   state.selectedTarget=text(select&&select.value);
+  state.targetInvalidated=false;state.pendingTarget=state.selectedTarget;state.targetEpoch=(state.targetEpoch||0)+1;
   write(STORE.target,{target:state.selectedTarget});
   fillPlayerSelects();
   updateConnectionChrome();
@@ -959,6 +968,7 @@ function applyStatus(data){
   syncBoostXpLimit();
   state.bridgeOnline=Boolean(data&&data.ok!==false&&(data.started||data.players||data.name));
   state.players=Array.isArray(data&&data.players)?data.players:[];
+  const departed=state.selectedTarget.includes('|')&&!resolveTargetValue(state.selectedTarget,state.players);
   const statusValue=data&&data.selected_player
     ? (data.selected_player_index!==null&&data.selected_player_index!==undefined&&data.selected_player_index!==''
       ? `${data.selected_player_index}|${data.selected_player}`
@@ -967,12 +977,15 @@ function applyStatus(data){
   const fromStatus=resolveTargetValue(statusValue,state.players);
   const saved=read(STORE.target,{});
   // Bridge is source of truth so phone and desktop stay aligned.
-  let next=fromStatus;
+  let next=state.pendingTarget?resolveTargetValue(state.pendingTarget,state.players):fromStatus;
+  if(state.pendingTarget && (!next || next===fromStatus))state.pendingTarget='';
   if(!next)next=resolveTargetValue(state.selectedTarget,state.players);
   if(!next)next=resolveTargetValue(saved.target,state.players);
+  if(departed)state.targetInvalidated=true;
+  if(state.targetInvalidated){next='';state.pendingTarget='';write(STORE.target,{target:''});}
   if(state.players.length)state.selectedTarget=next||'';
-  else if(text(saved.target))state.selectedTarget=text(saved.target);
-  if(fromStatus)write(STORE.target,{target:fromStatus});
+  else state.selectedTarget='';
+  if(fromStatus&&!state.pendingTarget&&!state.targetInvalidated)write(STORE.target,{target:fromStatus});
   if(data&&data.last_command)state.quickLastCommand=data.last_command;
   applyLiveModsFromStatus(data);
   if(Array.isArray(data&&data.location_bookmarks))renderXyzBookmarks(data.location_bookmarks);
@@ -1091,8 +1104,9 @@ function startStatusPolling(){
   state.pollTimer=window.setInterval(async()=>{
     if(!state.online||state.busy)return;
     try{
+      const epoch=state.targetEpoch||0;
       const status=await gatewayFetch('/status',{timeoutMs:8000});
-      applyStatus(status.data||{});
+      if(epoch===(state.targetEpoch||0))applyStatus(status.data||{});
     }catch{
       state.online=false;state.bridgeOnline=false;updateConnectionChrome();
       $('connectionStatus').textContent='Lost connection. Tap Connect / Test to retry.';
@@ -1530,8 +1544,8 @@ function buildActionPayload(action,button){
     }
     return{
       serial_text:expandSerialText(serialText,copies),
-      serial_override_level:text($('boostOverride').value)==='yes',
-      serial_level:intValue($('boostSerialLevel').value,70),
+      serial_override_level:text($(fromCodes?'codeOverride':fromInventory?'invOverride':fromBookmark?'bookmarkOverride':'boostOverride').value)==='yes',
+      serial_level:intValue($(fromCodes?'codeLevel':fromInventory?'invLevel':fromBookmark?'bookmarkLevel':'boostSerialLevel').value,70),
       target_player:currentTarget()
     };
   }
@@ -1553,6 +1567,7 @@ async function runLiveAction(button){
     return;
   }
   if(state.busy)return;
+  if(window.runParityScopedAction && await runParityScopedAction(button))return;
   state.busy=true;setLiveEnabled();
   try{
     if(action==='hoard_start'||action==='hoard_set_plan'){
@@ -1575,7 +1590,8 @@ async function runLiveAction(button){
       await pushSelectedTarget({quiet:true});
     }
     const payload=buildActionPayload(action,button);
-    const result=await gatewayAction(action,payload,45000);
+    if(PLAYER_SCOPED.has(action))payload.target_player=currentTarget();
+    const result=await gatewayAction(action,payload,action==='max_all'?180000:45000);
     const message=(result.data&&(result.data.message||result.data.error))||(result.ok?`${action} sent.`:`${action} failed.`);
     logActivity(`${action}: ${message}`);
     if($('devSpawnerOutput')&&action.startsWith('dev_spawner_'))$('devSpawnerOutput').textContent=typeof result.data==='object'?JSON.stringify(result.data,null,2):message;
@@ -1806,6 +1822,7 @@ function applyInventoryResult(data,fallbackEquipped,fallbackBackpack){
 async function refreshInventory(mode='all'){
   if(!state.online){alert('Connect to desktop MSBT first.');return}
   if(state.busy)return;
+  if(window.runParityScopedAction && await runParityScopedAction(button))return;
   state.busy=true;setLiveEnabled();
   if($('invStatus'))$('invStatus').textContent='Reading inventory…';
   try{

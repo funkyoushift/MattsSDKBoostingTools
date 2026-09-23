@@ -115,6 +115,26 @@ const mobileGateway = createMobileGateway({
   port: MOBILE_GATEWAY_PORT,
   bridgeBase: DEFAULT_BRIDGE,
   pairingCode: generatePairingCode(),
+  prepareGzo: async (payload) => {
+    const serial = String(payload.serial || "").trim();
+    if (!serial || serial.length > 20000) return {ok:false,message:"Enter one item code."};
+    const resolved = await resolveSerialCardPayload({serial});
+    const row = resolved.cards && resolved.cards[0];
+    if (!row || !row.ok) return {ok:false,message:row?.message || "Could not decode this item."};
+    const fields = require("./gzo_codes_form").submitFieldsFromCard(row.card,{deserialized:row.human});
+    let capture;
+    try { capture = await require("./native_card_capture").captureNativeCard(BrowserWindow,row.card); }
+    catch (error) { capture = {ok:false,message:String(error.message || error)}; }
+    return {ok:true,serial:row.serial,human:row.human,fields,capture};
+  },
+  submitGzo: async (payload) => {
+    // Phone payloads may attach image bytes, never arbitrary paths on the PC.
+    const clean = {};
+    for (const key of ["listing","dlc","name","creator","type","category","rarity","base85","deserialized","notes","imageBase64","imageType"])
+      clean[key] = String(payload[key] || "");
+    if (clean.imageBase64.length > 11 * 1024 * 1024) return {ok:false,message:"Choose an image smaller than 8 MB."};
+    return submitGzoCode(clean);
+  },
   getSerialBookmarks: async () => {
     try {
       // readBookmarks() returns { ok, data: { version, bookmarks }, warnings }
