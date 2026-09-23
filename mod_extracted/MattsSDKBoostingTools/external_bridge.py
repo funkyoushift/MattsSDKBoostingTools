@@ -1110,6 +1110,20 @@ def _process_pending_actions(
     if _callback_generation is not None and _callback_generation != _generation:
         return
     try:
+        from .hook_gate import recover_missed_boot_ready
+
+        recover_missed_boot_ready()
+        # Desktop edits can add the first hotkey while the camera hook is idle.
+        # Load the revised layout here on the game thread to register that key.
+        from . import quick_menu
+
+        if (quick_menu.STATE.started
+                and quick_menu.quick_menu_registry.get_layout_revision()
+                != quick_menu.STATE.layout_revision):
+            quick_menu.load_layout()
+    except Exception as exc:
+        _last_error = repr(exc)
+    try:
         backend_actions.uvh_boost_tick()
     except Exception as exc:
         _last_error = repr(exc)

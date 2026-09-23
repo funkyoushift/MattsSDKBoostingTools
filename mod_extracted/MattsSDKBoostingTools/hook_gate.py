@@ -14,6 +14,9 @@ _ENABLED = False
 _PENDING_ARM = False
 _PENDING_AFTER = 0.0
 _TRACKED: list[Any] = []
+_BOOT_READY_KEY: Any = None
+_BOOT_READY_SINCE = 0.0
+_BOOT_CHECK_AT = 0.0
 _PACKAGE = __package__ or "MattsSDKBoostingTools"
 _KEEP_HOOK_MODULES = {
     f"{_PACKAGE}.runtime_cleanup",
@@ -117,9 +120,9 @@ def try_arm_from_controller(obj: Any) -> None:
     except Exception:
         pass
     try:
-        from .travel_gate import schedule_in_world
+        from .travel_gate import mark_pawn_ready
 
-        schedule_in_world(2.0)
+        mark_pawn_ready(2.0)
     except Exception:
         pass
     enable_join_hooks()
@@ -146,6 +149,54 @@ def enable_join_hooks() -> None:
     _resync_feature_hooks()
 
 
+def recover_missed_boot_ready() -> bool:
+    """Game-thread fallback for startup after the load/restart events were missed.
+
+    Never recover across ClientTravel; that requires the normal load callbacks.
+    A map name alone is insufficient: require a possessed local pawn, its player
+    state in this world's roster, and the same identity for two seconds.
+    """
+    global _BOOT_READY_KEY, _BOOT_READY_SINCE, _BOOT_CHECK_AT
+    from . import travel_gate
+
+    if _ENABLED or _PENDING_ARM or travel_gate.saw_travel():
+        _BOOT_READY_KEY = None
+        return False
+    now = time.monotonic()
+    if now - _BOOT_CHECK_AT < 0.5:
+        return False
+    _BOOT_CHECK_AT = now
+    try:
+        from mods_base import ENGINE, get_pc
+        from .runtime_cleanup import _looks_like_gameplay
+
+        pc = get_pc()
+        pawn = getattr(pc, "Pawn", None)
+        ps = getattr(pc, "PlayerState", None)
+        world = ENGINE.GameViewport.World
+        ready = (
+            pc is not None and pawn is not None and ps is not None
+            and getattr(pawn, "Controller", None) == pc
+            and ps in world.GameState.PlayerArray
+            and _looks_like_gameplay(str(world.Name))
+        )
+        if not ready:
+            _BOOT_READY_KEY = None
+            return False
+        key = (str(world.Name), str(pc.Name), str(pawn.Name))
+    except Exception:
+        _BOOT_READY_KEY = None
+        return False
+    if key != _BOOT_READY_KEY:
+        _BOOT_READY_KEY, _BOOT_READY_SINCE = key, now
+        return False
+    if now - _BOOT_READY_SINCE < 2.0:
+        return False
+    request_arm_when_pawn_ready(1.0)
+    try_arm_from_controller(pc)
+    return _ENABLED
+
+
 def _resync_feature_hooks() -> None:
     """Join-arm enables every tracked hook. Re-disable features that are Off.
 
@@ -153,6 +204,12 @@ def _resync_feature_hooks() -> None:
     stay registered after Off, or they run every frame with only a Python
     early-out (the usual FPS leak).
     """
+    try:
+        from .quick_menu import _sync_camera_need
+
+        _sync_camera_need()
+    except Exception:
+        pass
     try:
         from .movement_adjustments import _sync_movement_camera_need
 

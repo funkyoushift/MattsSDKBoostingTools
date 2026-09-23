@@ -643,6 +643,17 @@ def _set_max_sdu_points_on_pc(target_pc: Any) -> bool:
 
 
 def _set_experience_level_via_bp(ps: Any, track_index: int, level: int) -> bool:
+    # Max All can run before the campaign has unlocked specialization. The
+    # native unlock initializes the track; setting its level alone does not.
+    if track_index == 1:
+        try:
+            xp_def = _make_experience_def_ptr("Specialization")
+            if xp_def is None:
+                return False
+            ps.BP_UnlockExperienceType(xp_def)
+        except Exception as exc:
+            _log_err("Could not unlock specialization: %s", exc)
+            return False
     es = getattr(ps, "ExperienceState", None)
     if es is None:
         _log_err("PlayerState has no ExperienceState array.")
@@ -667,6 +678,8 @@ def _set_experience_level_via_bp(ps: Any, track_index: int, level: int) -> bool:
             lvl,
         )
 
+    # ExperienceId is a WrappedStruct, not FGbxDefPtr in the live SDK.
+    # Resolve the selected row's token into the typed definition required by BP.
     candidates = _candidate_experience_tokens(track_index, row)
     if not candidates:
         _log_err("ExperienceState[%s]: could not determine experience token name.", track_index)
@@ -690,7 +703,7 @@ def _set_experience_level_via_bp(ps: Any, track_index: int, level: int) -> bool:
             after = ps.BP_GetExperienceLevel(xp_def)
         except Exception:
             after = None
-        if after == lvl or after is None:
+        if after == lvl:
             _log(
                 "ExperienceState[%s]: BP_SetExperienceLevel token=%r level %s -> %s (requested %s).",
                 track_index,

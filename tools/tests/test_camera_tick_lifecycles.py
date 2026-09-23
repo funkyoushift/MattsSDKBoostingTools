@@ -67,6 +67,48 @@ def pump(runtime, seconds=0.02):
     runtime.camera._pump(None, None, None, None)
 
 
+def test_native_slot_keys_rebind_and_obey_menu_travel_guards(runtime, monkeypatch):
+    menu = runtime.load("quick_menu")
+    bindings, calls = [], []
+    configured = [("Zero", "refresh_players", {"target": 0})]
+    def bind(*args, **kwargs):
+        binding = types.SimpleNamespace(callback=kwargs["callback"], enabled=False)
+        binding.enable = lambda: setattr(binding, "enabled", True)
+        binding.disable = lambda: setattr(binding, "enabled", False)
+        bindings.append(binding)
+        return binding
+    monkeypatch.setattr(menu, "keybind", bind)
+    monkeypatch.setattr(menu, "_configured_slot_hotkeys", lambda: configured)
+    monkeypatch.setattr(menu, "get_pc", lambda: types.SimpleNamespace(Pawn=object()))
+    monkeypatch.setattr(menu, "quick_menu_toggle", types.SimpleNamespace(is_enabled=True))
+    monkeypatch.setattr(menu, "_run_action", lambda action, payload: calls.append((action, payload)))
+    monkeypatch.setattr(menu, "_key_down", lambda *_: True)
+    menu.STATE.started = True
+    menu.STATE.layout_revision = menu.quick_menu_registry.get_layout_revision()
+    menu._sync_slot_keybinds()
+    menu._sync_slot_keybinds()
+    assert len(bindings) == 1 and bindings[0].enabled
+    bindings[0].callback()
+    menu.process_slot_hotkeys(object())
+    assert calls == [("refresh_players", {"target": 0})]  # no polling duplicate
+    menu.STATE.is_open = True
+    bindings[0].callback()
+    menu.STATE.is_open = False
+    runtime.clock.quiet = True
+    bindings[0].callback()
+    runtime.clock.quiet = False
+    assert len(calls) == 1
+    configured[:] = [("Zero", "refresh_players", {"target": 1})]
+    bindings[0].callback()
+    assert calls[-1][1] == {"target": 1}
+    configured[:] = [("Nine", "refresh_players", {})]
+    menu._sync_slot_keybinds()
+    assert not bindings[0].enabled and bindings[1].enabled
+    configured.clear()
+    menu._sync_slot_keybinds()
+    assert not bindings[1].enabled and not menu._slot_keybinds
+
+
 def quiet_menu(runtime, monkeypatch):
     menu = runtime.load("quick_menu")
     monkeypatch.setattr(menu, "process_hotkeys", lambda *_: None)
@@ -124,6 +166,30 @@ def test_quick_menu_lifetimes_do_not_wake_mobile_pairing(runtime, need_name):
     camera.set_needed("quick_menu_mobile_pair", True)
     pump(runtime)
     assert calls == ["menu", "pair"]
+
+
+def test_closed_menu_bound_zero_dispatches_once_per_press(runtime, monkeypatch):
+    menu = runtime.load("quick_menu")
+    calls, keys = [], {"Zero": False}
+    monkeypatch.setattr(menu, "get_pc", lambda: object())
+    monkeypatch.setattr(menu, "process_hotkeys", lambda *_: None)
+    monkeypatch.setattr(menu, "process_escape", lambda *_: None)
+    monkeypatch.setattr(menu, "_key_down", lambda _pc, key: keys.get(key, False))
+    monkeypatch.setattr(menu, "_run_action", lambda action, payload: calls.append((action, payload)))
+    menu.STATE.layout_revision = menu.quick_menu_registry.get_layout_revision()
+    menu.STATE.pages = [[{"hotkey": "Zero", "action": "spawn_black_market", "payload": {}}]]
+    menu.install_hook()
+    assert runtime.camera._needed == {"quick_menu_hotkeys"}
+    pump(runtime, 0.2)
+    keys["Zero"] = True
+    pump(runtime, 0.2)
+    pump(runtime, 0.2)
+    assert calls == [("spawn_black_market", {})]
+    keys["Zero"] = False
+    pump(runtime, 0.2)
+    keys["Zero"] = True
+    pump(runtime, 0.2)
+    assert calls == [("spawn_black_market", {})] * 2
 
 
 def test_travel_still_allows_open_menu_but_suspends_gameplay_callbacks(runtime):

@@ -1503,7 +1503,7 @@
                     } else if (!fileName.toLowerCase().endsWith('.sav')) {
                         fileName = fileName.replace(/\.[^.]*$/, '') + '.sav';
                     }
-                    if (window.MsbtEditorPrefs && typeof window.MsbtEditorPrefs.writeSavBlob === 'function') {
+                    if (window.MsbtEditorPrefs && window.MsbtEditorPrefs.inMsbtFrame()) {
                         const result = await window.MsbtEditorPrefs.writeSavBlob(blob, {
                             suggestedName: fileName,
                             overwrite: false
@@ -5707,7 +5707,7 @@
                     // Track if we've successfully written the file to prevent double writes
                     let fileWritten = false;
 
-                    if (window.MsbtEditorPrefs && typeof window.MsbtEditorPrefs.writeSavBlob === 'function' && !fileWritten) {
+                    if (window.MsbtEditorPrefs && window.MsbtEditorPrefs.inMsbtFrame() && !fileWritten) {
                         try {
                             let defaultPath = window.saveEditorState.originalFileName || 'save_encrypted.sav';
                             if (defaultPath.toLowerCase().endsWith('.yaml') || defaultPath.toLowerCase().endsWith('.yml')) {
@@ -5732,12 +5732,14 @@
                                 return;
                             }
                         } catch (error) {
-                            console.warn('MSBT save write failed, falling back:', error);
+                            // A failed overwrite must not turn into a download and
+                            // claim success while the original save stays unchanged.
+                            throw error;
                         }
                     }
                     
                     // Check if we're in Electron - use native dialog instead of File System Access API
-                    const isElectron = window.IS_ELECTRON_APP === true || (window.electronAPI && window.electronAPI.isElectron && window.electronAPI.isElectron());
+                    const isElectron = Boolean(window.electronAPI && window.electronAPI.showSaveDialog);
                     
                     // In Electron, ALWAYS use native dialog to avoid double-dialog issues
                     if (isElectron && window.electronAPI && window.electronAPI.showSaveDialog && !fileWritten) {

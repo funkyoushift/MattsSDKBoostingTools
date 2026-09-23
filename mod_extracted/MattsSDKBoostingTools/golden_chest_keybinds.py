@@ -101,26 +101,31 @@ def _new_state_key() -> Optional[WrappedStruct]:
         return None
 
 
-def _open_golden_chest() -> None:
+def _open_golden_chest() -> bool:
     script = _find_golden_chest_script()
     if script is None:
-        return
+        return False
     state_key = _new_state_key()
     if state_key is None:
-        return
+        return False
+    # A delayed F9 close must not run after a newer F8 open of the same chest.
+    if _pending_close is not None and _pending_close[1] == script:
+        clear_pending_closes()
     try:
         script.Success__OnStateEnabled(state_key, False)
         script.Open__OnStateEnabled(state_key, False)
         _log("Called Success + Open on %s", script)
+        return True
     except Exception as e:
         _log_err("Open failed: %s", e)
+        return False
 
 
-def _close_golden_chest() -> None:
+def _close_golden_chest() -> bool:
     global _pending_close
     script = _find_golden_chest_script()
     if script is None:
-        return
+        return False
     try:
         script.DetachUnclaimedLoot()
         _log("Called DetachUnclaimedLoot on %s", script)
@@ -135,6 +140,7 @@ def _close_golden_chest() -> None:
     except Exception:
         pass
     _log("Scheduled close in %.2fs after detach.", _CLOSE_AFTER_DETACH_DELAY_S)
+    return True
 
 
 def _tick_pending_close(*_args: Any, **_kwargs: Any) -> None:

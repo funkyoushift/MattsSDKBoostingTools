@@ -33,6 +33,17 @@ def saw_travel() -> bool:
     return bool(_SAW_TRAVEL)
 
 
+def mark_pawn_ready(delay: float = 2.0) -> None:
+    """Release after the join gate confirms a gameplay controller with a pawn.
+
+    Startup/enable inside a loaded map need not emit ClientTravel. The join
+    gate's pending-arm plus live-pawn check is the readiness signal in that case.
+    """
+    global _SAW_TRAVEL
+    _SAW_TRAVEL = True
+    schedule_in_world(delay)
+
+
 def schedule_in_world(delay: float = 8.0) -> None:
     """Allow hot paths after a world-load event that followed ClientTravel."""
     global _RELEASE_AT

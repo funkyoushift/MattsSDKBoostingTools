@@ -779,6 +779,7 @@ def save_layout() -> None:
         _apply_chrome(result["layout"].get("chrome"))
         STATE.layout_revision = quick_menu_registry.get_layout_revision()
         STATE.slot_hotkey_cache_revision = -1
+        _sync_camera_need()
     except Exception as exc:
         _log(f"Could not save Quick Menu layout: {exc!r}")
 
@@ -1794,6 +1795,45 @@ def _configured_slot_hotkeys() -> list[tuple[str, str, dict[str, Any]]]:
     return cached
 
 
+_slot_keybinds: dict[str, Any] = {}
+
+
+def _dispatch_slot_key(key: str) -> None:
+    """Use SDK input events so a short press cannot fall between camera polls."""
+    from .travel_gate import is_travel_quiet
+
+    if (not STATE.started or STATE.is_open or STATE.hotkey_listen
+            or not quick_menu_toggle.is_enabled or is_travel_quiet()
+            or time.monotonic() < float(STATE.hotkey_ignore_until or 0.0)):
+        return
+    pc = get_pc()
+    if pc is None or getattr(pc, "Pawn", None) is None:
+        return
+    if quick_menu_registry.get_layout_revision() != STATE.layout_revision:
+        load_layout()
+    for configured_key, action, payload in _configured_slot_hotkeys():
+        if configured_key == key:
+            _run_action(action, dict(payload))
+            return
+
+
+def _sync_slot_keybinds() -> None:
+    desired = {key for key, _action, _payload in _configured_slot_hotkeys()}
+    for key in list(_slot_keybinds):
+        if key not in desired:
+            _slot_keybinds.pop(key).disable()
+    for key in desired:
+        if key in _slot_keybinds:
+            continue
+        binding = keybind(
+            f"MSBT Quick Menu slot {key}", key,
+            callback=lambda key=key: _dispatch_slot_key(key),
+            is_hidden=True, is_rebindable=False,
+        )
+        binding.enable()
+        _slot_keybinds[key] = binding
+
+
 def process_slot_hotkeys(pc: Any = None) -> None:
     """Fire assigned slot hotkeys while Quick Menu is closed (camera tick)."""
     if STATE.is_open or STATE.hotkey_listen:
@@ -1806,6 +1846,8 @@ def process_slot_hotkeys(pc: Any = None) -> None:
         return
     seen: set[str] = set()
     for key, action, payload in _configured_slot_hotkeys():
+        if key in _slot_keybinds:
+            continue  # native input owns this key; never also dispatch a poll
         seen.add(key)
         down = _key_down(pc, key)
         was = bool(STATE.slot_hotkey_was_down.get(key, False))
@@ -3221,6 +3263,10 @@ def tick(_obj: Any, _args: Any, _ret: Any, _func: Any) -> None:
 
 
 def _sync_camera_need() -> None:
+    try:
+        _sync_slot_keybinds()
+    except Exception as exc:
+        _log(f"Slot keybind registration failed: {exc!r}")
     try:
         from . import camera_tick
     except Exception:

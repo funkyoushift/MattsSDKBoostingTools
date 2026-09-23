@@ -2264,7 +2264,8 @@ def kick_selected_player() -> dict[str, Any]:
 
 def open_golden_chest() -> dict[str, Any]:
     try:
-        _open_golden_chest()
+        if not _open_golden_chest():
+            return {"ok": False, "message": "Golden chest could not open. Load a nearby chest and check the SDK log."}
         return {"ok": True, "message": "Open Golden Chest requested."}
     except Exception as exc:
         return {"ok": False, "message": f"Open Golden Chest failed: {exc!r}"}
@@ -2272,7 +2273,8 @@ def open_golden_chest() -> dict[str, Any]:
 
 def close_golden_chest() -> dict[str, Any]:
     try:
-        _close_golden_chest()
+        if not _close_golden_chest():
+            return {"ok": False, "message": "No live golden chest could be closed."}
         return {"ok": True, "message": "Close Golden Chest requested."}
     except Exception as exc:
         return {"ok": False, "message": f"Close Golden Chest failed: {exc!r}"}
@@ -2325,6 +2327,8 @@ _BM_RETRY_GAP_S = 0.15
 _bm_pending_until = 0.0
 _bm_pending_last_try = 0.0
 _bm_tick_registered = False
+_bm_owned_spawner: Any | None = None
+_bm_spawn_world = ""
 
 
 def _bm_log(msg: str) -> None:
@@ -2577,202 +2581,76 @@ def _teleport_black_market_to_player(actor: Any, distance: float = _BM_PLACE_DIS
 
 
 def _wake_black_market(machine: Any) -> list[str]:
-    """Unhide actor + Root, then Active/Usable. Do not fire Anim_* / CooldownEnd."""
-    hits: list[str] = []
-    for name, args in (
-        ("SetActorHiddenInGame", (False,)),
-        ("SetActorEnableCollision", (True,)),
-        ("SetActorTickEnabled", (True,)),
-    ):
-        fn = getattr(machine, name, None)
-        if callable(fn):
-            try:
-                fn(*args)
-                hits.append(name)
-            except Exception:
-                pass
-    for attr, value in (("bIgnoreBMVMSchedule", True), ("bHidden", False)):
-        try:
-            setattr(machine, attr, value)
-            hits.append(attr)
-        except Exception:
-            pass
-    root = getattr(machine, "RootComponent", None) or getattr(machine, "Root", None)
-    if root is not None:
-        for name, args in (
-            ("SetHiddenInGame", (False, True)),
-            ("SetVisibility", (True, True)),
-            ("SetComponentTickEnabled", (True,)),
-        ):
-            fn = getattr(root, name, None)
-            if callable(fn):
-                try:
-                    fn(*args)
-                    hits.append(f"Root.{name}")
-                except TypeError:
-                    try:
-                        fn(args[0])
-                        hits.append(f"Root.{name}")
-                    except Exception:
-                        pass
-                except Exception:
-                    pass
-    mesh = getattr(machine, "BaseSkelMesh", None)
-    if mesh is not None:
-        hide = getattr(mesh, "SetHiddenInGame", None)
-        if callable(hide):
-            try:
-                hide(False)
-                hits.append("BaseSkelMesh")
-            except Exception:
-                pass
-    set_state = getattr(machine, "SetScriptStateEnabled", None)
-    if callable(set_state):
-        for state in ("IsInUse", "InUse_Anim", "Dispensing_Anim", "Disabled", "Inactive", "Locked"):
-            try:
-                set_state(state, False)
-            except Exception:
-                pass
-        for state in ("Active", "ActiveIdle", "ActiveIdle_Anim", "Enabled", "Usable", "Useable", "Idle"):
-            try:
-                set_state(state, True)
-                hits.append(state)
-            except Exception:
-                continue
-    try:
-        instances = getattr(getattr(machine, "ScriptData", None), "Instances", None)
-        if instances is not None:
-            for inst in list(instances):
-                update = getattr(inst, "UpdateAnimState", None)
-                if callable(update):
-                    try:
-                        update()
-                        hits.append("UpdateAnimState")
-                    except Exception:
-                        pass
-    except Exception:
-        pass
-    set_usable = getattr(machine, "SetUsable", None)
-    if callable(set_usable):
-        try:
-            set_usable()
-            hits.append("SetUsable")
-        except Exception:
-            pass
-    return hits
+    """Activate the native Black Market script, not guessed actor states."""
+    for script in machine.ScriptData.Instances:
+        if str(script.Class.Name) == "Script_VendingMachine_BlackMarket_C":
+            script.SetScriptStateEnabled("Active", True)
+            script.SetScriptStateEnabled("Anim_Idle", True)
+            machine.SetActorHiddenInGame(False)
+            if script.IsScriptStateEnabled("Active") and not machine.bHidden:
+                return ["Active", "Anim_Idle"]
+    return []
 
 
-def _copy_bm_script_data(source: Any, actor: Any) -> list[str]:
-    hits: list[str] = []
-    try:
-        src_sd = getattr(source, "ScriptData", None)
-        dst_sd = getattr(actor, "ScriptData", None)
-    except Exception:
-        return hits
-    if src_sd is None or dst_sd is None:
-        return hits
-    for field_name in ("Scripts", "Instances", "InstanceDataCache", "ReplicatedInstances"):
-        try:
-            setattr(dst_sd, field_name, getattr(src_sd, field_name))
-            hits.append(field_name)
-        except Exception:
-            continue
-    return hits
+def _new_black_market_spawner(pawn: Any, loc: Any, rot: Any) -> Any:
+    """A fresh native spawner owns initialization and asynchronous asset loading.
 
+    Never repurpose/reset a map spawner or copy live script instances. The latent
+    GbxSpawnActorAtTransform API cannot safely retain Python output parameters.
+    """
+    import math
+    import unrealsdk
+    from unrealsdk.unreal import FGameDataHandle
 
-def _duplicate_world_black_market() -> tuple[Any | None, str]:
-    """Clone PersistentLevel IO_VendingMachine_BlackMarket in front of the player."""
-    shop = _find_world_black_market()
-    if shop is None:
-        return None, "PersistentLevel template not loaded"
-    try:
-        asd = importlib.import_module("ActorScriptDeployer")
-    except Exception as exc:
-        return None, f"ActorScriptDeployer import failed: {exc!r}"
-    patch_ok, patch_msg = _install_asd_spawn_runtime_patches(asd)
-    if not patch_ok:
-        return None, patch_msg
-    spawn_ctx = getattr(asd, "_spawn_context", None)
-    spawn_xform = getattr(asd, "_spawn_transform", None)
-    spawn_fn = getattr(asd, "_spawn_actor_deferred", None)
-    if not callable(spawn_ctx) or not callable(spawn_xform) or not callable(spawn_fn):
-        return None, "ActorScriptDeployer deferred spawn helpers missing"
-    _pc, pawn, world, gs = spawn_ctx()
-    if pawn is None or world is None or gs is None:
-        return None, "no pawn/world for deferred spawn"
-    try:
-        transform = spawn_xform(
-            pawn,
-            distance=_BM_PLACE_DISTANCE,
-            z_offset=_BM_PLACE_Z_OFFSET,
-            scale=1.0,
-        )
-    except Exception as exc:
-        return None, f"spawn transform failed: {exc!r}"
-    cls = getattr(shop, "Class", None)
-    if cls is None:
-        return None, "template has no Class"
-    try:
-        actor = spawn_fn(
-            gs,
-            world,
-            cls,
-            transform,
-            class_name="OakVendingMachine",
-            source=shop,
-            collision_handling=1,
-        )
-    except Exception as exc:
-        return None, f"deferred spawn failed: {exc!r}"
-    if actor is None:
-        return None, "deferred spawn returned none"
-    copied = _copy_bm_script_data(shop, actor)
-    wake = _wake_black_market(actor)
-    path = _bm_obj_path(actor) or _BM_WORLD_NAME
-    _bm_log(
-        f"duplicated template {_bm_obj_path(shop)} -> {path} "
-        f"scriptdata={','.join(copied) or 'none'} wake={','.join(wake) or 'none'}"
-    )
-    return actor, f"duplicated {path}"
-
-
-def _place_world_black_market() -> tuple[bool, str]:
-    actor, detail = _duplicate_world_black_market()
-    if actor is not None:
-        return True, detail
-    shop = _find_world_black_market()
-    if shop is None:
-        return False, detail
-    path = _bm_obj_path(shop) or _BM_WORLD_NAME
-    if _bm_already_at_player(shop):
-        wake = _wake_black_market(shop)
-        return True, f"already at player {path} wake={','.join(wake) or 'none'}"
-    moved = _teleport_black_market_to_player(shop)
-    wake = _wake_black_market(shop)
-    if not moved:
-        return False, f"{detail}; teleport of {path} also failed"
-    return True, f"relocated dump {path} after duplicate miss ({detail})"
+    yaw = math.radians(float(rot.Yaw))
+    transform = unrealsdk.make_struct("Transform")
+    transform.Translation.X = float(loc.X) + math.cos(yaw) * _BM_PLACE_DISTANCE
+    transform.Translation.Y = float(loc.Y) + math.sin(yaw) * _BM_PLACE_DISTANCE
+    transform.Translation.Z = float(loc.Z) + _BM_PLACE_Z_OFFSET
+    transform.Rotation.Z = math.sin((yaw + math.pi) / 2)
+    transform.Rotation.W = math.cos((yaw + math.pi) / 2)
+    transform.Scale3D.X = transform.Scale3D.Y = transform.Scale3D.Z = 1.0
+    gs = unrealsdk.find_class("GameplayStatics").ClassDefaultObject
+    def actor_result(value: Any) -> Any:
+        if isinstance(value, tuple):
+            return next((item for item in value if hasattr(item, "Class")), None)
+        return value
+    spawner = actor_result(gs.BeginDeferredActorSpawnFromClass(
+        pawn, unrealsdk.find_class("Spawner"), transform, 1, get_pc(), 1))
+    if spawner is None:
+        raise RuntimeError("Native spawner creation returned no actor")
+    spawner = actor_result(gs.FinishSpawningActor(spawner, transform, 0))
+    lib = unrealsdk.find_class("SpawnBlueprintLibrary").ClassDefaultObject
+    handle = lib.GetGbxActorDefPure(pawn)
+    spawner.SetGbxActorDef(FGameDataHandle(handle._type_handle, "IO_VendingMachine_BlackMarket"), False)
+    spawner.SetSpawnPointEnabled(True)
+    spawner.SetSpawnerEnabled(True)
+    return spawner
 
 
 def _bm_camera_tick(_obj: Any, _args: Any, _ret: Any, _func: Any) -> None:
-    global _bm_pending_until, _bm_pending_last_try
+    global _bm_pending_until, _bm_owned_spawner
     if _bm_pending_until <= 0.0:
         return
-    now = time.monotonic()
-    if now > _bm_pending_until:
-        _bm_log("retry window expired without placing PersistentLevel shop")
+    try:
+        pc = get_pc()
+        pawn = getattr(pc, "Pawn", None)
+        if pawn is None or _bm_obj_path(pawn).split(":")[0] != _bm_spawn_world:
+            _bm_owned_spawner = None
+            raise RuntimeError("World changed before the Black Market was ready")
+        actors = list(_bm_owned_spawner.GetAliveActors(0, False))
+        if actors and _wake_black_market(actors[0]):
+            # Only our newly created spawn point is changed; no map actors reset.
+            _bm_owned_spawner.SetSpawnPointEnabled(False)
+            _bm_log("Black Market initialized and activated")
+            _bm_pending_until = 0.0
+        elif time.monotonic() > _bm_pending_until:
+            _bm_owned_spawner.SetSpawnPointEnabled(False)
+            raise RuntimeError("Black Market initialization timed out")
+    except Exception as exc:
+        _bm_log(str(exc))
         _bm_pending_until = 0.0
-        _sync_bm_camera_need()
-        return
-    if now - _bm_pending_last_try < _BM_RETRY_GAP_S:
-        return
-    _bm_pending_last_try = now
-    ok, detail = _place_world_black_market()
-    if ok:
-        _bm_log(detail)
-        _bm_pending_until = 0.0
-        _sync_bm_camera_need()
-        return
+    _sync_bm_camera_need()
 
 
 def _ensure_bm_tick() -> None:
@@ -2795,70 +2673,28 @@ def _sync_bm_camera_need() -> None:
 
 
 def spawn_black_market() -> dict[str, Any]:
-    """Call Squiggs' real Spawn Black Market button when that SDK is installed.
-
-    Their EXE action is ``black_market(action=spawn)``: clear purchase cooldown,
-    then ``spawn_io`` twice with ``oak_dual IO_VendingMachine_BlackMarket``.
-    Direct find_object of the PersistentLevel dump fails until oak_spawnai has
-    streamed that template, which is why MSBT-only duplicate never appeared.
-    """
-    global _bm_pending_until, _bm_pending_last_try
-    host_ok, host_msg = _challenge_is_host()
+    """Create an independent native machine using an MSBT-owned spawner."""
+    global _bm_pending_until, _bm_owned_spawner, _bm_spawn_world
+    host_ok, _host_msg = _challenge_is_host()
     if not host_ok:
         return {"ok": False, "message": "Spawn Black Market is host / listen only."}
-
-    idx = get_selected_player_index()
+    if _bm_pending_until > time.monotonic():
+        return {"ok": True, "pending": True, "message": "Black Market is still loading."}
+    pawn, loc, rot = _bm_pawn_and_pose()
+    if pawn is None or loc is None or rot is None:
+        return {"ok": False, "message": "Selected player must be in the world."}
     try:
-        from Squ1ggsBoostingTools.bridge_actions_extended import black_market as _sq_black_market
+        _bm_owned_spawner = _new_black_market_spawner(pawn, loc, rot)
+        _bm_spawn_world = _bm_obj_path(pawn).split(":")[0]
+        _ensure_bm_tick()
+        _bm_pending_until = time.monotonic() + 15.0
+        _sync_bm_camera_need()
     except Exception as exc:
-        _bm_log(f"Squiggs black_market unavailable: {exc!r}")
-        _sq_black_market = None
-
-    if callable(_sq_black_market):
-        spawn_payload = {"action": "spawn"}
-        if idx is not None:
-            spawn_payload["player_index"] = int(idx)
-        try:
-            spawned = _sq_black_market(spawn_payload)
-        except Exception as exc:
-            spawned = {"ok": False, "message": repr(exc)}
-        msg = str((spawned or {}).get("message") or spawned)
-        _bm_log(f"squiggs black_market spawn: {msg}")
-        if isinstance(spawned, dict) and spawned.get("ok"):
-            return {
-                "ok": True,
-                "message": f"Spawn Black Market {msg}",
-                "actor": _BM_WORLD_NAME,
-            }
-        _bm_log("squiggs spawn failed; falling back to MSBT duplicate")
-
-    _ensure_bm_tick()
-    ok, detail = _place_world_black_market()
-    if ok:
         _bm_pending_until = 0.0
         _sync_bm_camera_need()
-        _bm_log(detail)
-        return {
-            "ok": True,
-            "message": f"Spawn Black Market {detail}.",
-            "actor": _BM_WORLD_NAME,
-            "machines": 1,
-        }
-
-    _bm_pending_until = time.monotonic() + _BM_RETRY_WINDOW_S
-    _bm_pending_last_try = 0.0
-    _sync_bm_camera_need()
-    _bm_log(f"queued PersistentLevel duplicate ({detail})")
-    return {
-        "ok": True,
-        "message": (
-            "Spawn Black Market is placing Maurice's shop. "
-            "It should appear in front of you in a second."
-        ),
-        "actor": _BM_WORLD_NAME,
-        "machines": 0,
-        "pending": True,
-    }
+        return {"ok": False, "message": f"Black Market spawn failed: {exc}"}
+    return {"ok": True, "pending": True, "machines": 0,
+            "message": "Black Market is loading in front of the selected player."}
 
 
 def black_market_clear_cooldown() -> dict[str, Any]:
@@ -3761,7 +3597,7 @@ def max_all_for_party_indices(raw_indices: object) -> dict[str, Any]:
             detail += f"; …and {len(player_lines) - 6} more"
         return {
             "ok": False,
-            "message": f"Max All failed for all {len(indices)} player(s). {detail}",
+            "message": f"Max All did not fully complete for {len(indices)} player(s). {detail}",
             "ok_count": ok_count,
             "fail_count": fail_count,
             "players": len(indices),

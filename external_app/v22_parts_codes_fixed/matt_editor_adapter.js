@@ -16,7 +16,8 @@
     players: [],
     selectedTarget: "",
     selectedTargetLabel: "",
-    bridgeOnline: false
+    bridgeOnline: false,
+    sending: false
   };
 
   function isEmbeddedShellMode() {
@@ -303,7 +304,7 @@
     for (var j = 0; j < sendButtons.length; j += 1) {
       var mode = sendButtons[j].getAttribute("data-msbt-deliver-mode") || "";
       var modeReady = mode !== "selected" || !!state.selectedTarget;
-      sendButtons[j].disabled = !modeReady;
+      sendButtons[j].disabled = !modeReady || state.sending;
       sendButtons[j].style.opacity = modeReady ? "1" : ".55";
       sendButtons[j].style.cursor = modeReady ? "pointer" : "not-allowed";
     }
@@ -419,11 +420,8 @@
   }
 
   function prepareSerialForDelivery() {
-    if (!state.stale) {
-      var ready = currentSerial();
-      if (ready) return ready;
-    }
-
+    // Generated outputs change through .value/textContent, without input events.
+    // Re-read them at the point of sending instead of trusting the preview cache.
     var previousSerial = state.pendingSerial || state.confirmedSerial || "";
     state.detected = collectDetectedSerials();
     state.pendingSerial = "";
@@ -464,6 +462,7 @@
   }
 
   async function deliver(mode) {
+    if (state.sending) return;
     var serial = prepareSerialForDelivery();
     if (!serial) {
       setStatus("No confirmed item serial is ready to send. Build or select an item first.", false);
@@ -480,7 +479,8 @@
       var ok = window.confirm("Send this generated item" + copiesNote + " to " + destination + "?");
       if (!ok) return;
     }
-    setStatus("Sending item through MSBT bridge" + (copies > 1 ? " (" + copies + " copies)" : "") + "...", true);
+    state.sending = true;
+    refreshPreview("Sending item" + copiesNote + "...", true);
     try {
       var response = await fetch("/msbt/deliver", {
         method: "POST",
@@ -495,9 +495,18 @@
       });
       var data = await response.json();
       var message = responseMessage(data, data.ok ? "Delivery requested." : "Delivery failed.");
-      setStatus(message, data.ok !== false && response.ok);
+      if (data.ok === true && response.ok) {
+        state.pendingSerial = "";
+        state.confirmedSerial = "";
+        state.detected = [];
+        state.stale = true;
+      }
+      refreshPreview(message, data.ok === true && response.ok);
     } catch (err) {
       setStatus("Delivery failed: " + err, false);
+    } finally {
+      state.sending = false;
+      refreshPreview("", true);
     }
   }
 
@@ -578,6 +587,7 @@
 
     handle.addEventListener("pointerdown", function (event) {
       if (event.button !== 0) return;
+      if (event.target.closest("button")) return;
       event.preventDefault();
       var rect = panel.getBoundingClientRect();
       dragState = {
@@ -611,6 +621,8 @@
       "bottom:14px",
       "z-index:2147483647",
       "width:360px",
+      "box-sizing:border-box",
+      "border-radius:10px",
       "max-width:calc(100vw - 28px)",
       "background:#090d17",
       "border:1px solid #00d4ff",
@@ -642,14 +654,35 @@
     title.style.cssText = "color:#00d4ff;font-weight:800;font-size:12px;";
     dragHandle.appendChild(title);
 
-    var dragHint = document.createElement("div");
-    dragHint.textContent = "Drag";
-    dragHint.style.cssText = "color:#9fb3d9;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;";
-    dragHandle.appendChild(dragHint);
+    var collapseBtn = document.createElement("button");
+    collapseBtn.type = "button";
+    collapseBtn.id = "msbt-delivery-toggle";
+    collapseBtn.style.cssText = "background:#172033;color:#d7def5;border:1px solid #475569;border-radius:6px;padding:5px 10px;cursor:pointer;font-size:12px;";
+    dragHandle.appendChild(collapseBtn);
     panel.appendChild(dragHandle);
 
+    var content = document.createElement("div");
+    content.id = "msbt-delivery-content";
+    content.style.cssText = "max-height:calc(100vh - 100px);overflow-y:auto;";
+    var collapsed = false;
+    try { collapsed = window.localStorage.getItem("msbt-delivery-collapsed") === "true"; } catch (err) {}
+    function applyCollapsed() {
+      content.hidden = collapsed;
+      collapseBtn.textContent = collapsed ? "Expand" : "Minimize";
+      collapseBtn.setAttribute("aria-expanded", String(!collapsed));
+      collapseBtn.setAttribute("aria-controls", content.id);
+      panel.style.width = collapsed ? "220px" : "360px";
+      dragHandle.style.marginBottom = collapsed ? "-10px" : "8px";
+      window.dispatchEvent(new Event("resize"));
+    }
+    collapseBtn.addEventListener("click", function () {
+      collapsed = !collapsed;
+      try { window.localStorage.setItem("msbt-delivery-collapsed", String(collapsed)); } catch (err) {}
+      applyCollapsed();
+    });
+
     var hint = document.createElement("div");
-    hint.textContent = "MSBT sends only the final @U item serial. Build an item, choose a target, then Send. If more than one serial is detected, choose which one to send.";
+    hint.textContent = "Build an item, choose a player, then send. Drag the header to move this panel.";
     hint.style.cssText = "color:#9fb3d9;font-size:11px;margin-bottom:8px;line-height:1.35;";
     panel.appendChild(hint);
 
@@ -686,7 +719,7 @@
     targetDisplay.style.cssText = "font-size:10px;color:#ffcc33;line-height:1.3;";
     targetBox.appendChild(targetDisplay);
     var targetHint = document.createElement("div");
-    targetHint.textContent = "Send to Selected Player uses the target selected here. All and Non-Host do not require a selected target.";
+    targetHint.textContent = "All Players and Guests use the current party.";
     targetHint.style.cssText = "font-size:10px;color:#9fb3d9;line-height:1.3;margin-top:4px;";
     targetBox.appendChild(targetHint);
     panel.appendChild(targetBox);
@@ -779,9 +812,9 @@
 
     var row = document.createElement("div");
     row.style.cssText = "display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:6px;";
-    row.appendChild(button("Send to Selected Player", "selected", "#b36bff"));
-    row.appendChild(button("Send to All Players", "all", "#ffcc33"));
-    row.appendChild(button("Send to Non-Host Players", "nonhost", "#00d4ff"));
+    row.appendChild(button("Send to Player", "selected", "#b36bff"));
+    row.appendChild(button("All Players", "all", "#ffcc33"));
+    row.appendChild(button("Guests", "nonhost", "#00d4ff"));
     panel.appendChild(row);
 
     var statusRow = document.createElement("div");
@@ -799,7 +832,13 @@
     statusRow.appendChild(statusBtn);
     panel.appendChild(statusRow);
 
+    // Keep the header accessible while the body collapses or scrolls.
+    Array.from(panel.children).forEach(function (child) {
+      if (child !== dragHandle) content.appendChild(child);
+    });
+    panel.appendChild(content);
     document.body.appendChild(panel);
+    applyCollapsed();
     makeDeliveryPanelDraggable(panel, dragHandle);
     renderTargetSection();
     refreshPreview("", false);
