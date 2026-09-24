@@ -2247,12 +2247,16 @@ async function loadMovementSettings() {
   }
 }
 
+let movementSaveRevision = 0;
+
 async function saveMovementSettings(message = "Saved current movement values as the movement preset.") {
   if (!window.msbt || typeof window.msbt.saveMovementSettings !== "function") {
     setMovementSavedSummary("Movement preset storage is unavailable in this shell.", "warning");
     return null;
   }
+  const revision = ++movementSaveRevision;
   const result = await window.msbt.saveMovementSettings(movementSettingsPayload());
+  if (revision !== movementSaveRevision) return result;
   const data = result && result.data ? result.data : {};
   if (result && result.ok) {
     state.movementSavedPreset = hasMovementPreset(data.preset) ? data.preset : currentMovementPreset();
@@ -2510,7 +2514,12 @@ function syncBoostingRaritySlidersFromBridge(data, { force = false } = {}) {
     : null;
   if (!weights || !Object.keys(weights).length) return false;
 
+  // Keep the restored draft while establishing the first bridge revision.
   const revRaw = Number(data.rarity_revision);
+  if (!force && state.rarityBridgeRevision == null && state.rarityRememberOnStart && state.raritySavedPreset) {
+    if (Number.isFinite(revRaw)) state.rarityBridgeRevision = revRaw;
+    return false;
+  }
   const hasRev = Number.isFinite(revRaw);
   if (!force && hasRev && state.rarityBridgeRevision != null && Number(state.rarityBridgeRevision) === revRaw) {
     return false;
@@ -2597,12 +2606,16 @@ async function loadRaritySettings() {
   }
 }
 
+let raritySaveRevision = 0;
+
 async function saveRaritySettings(message = "Saved current rarity sliders as the rarity preset.") {
   if (!window.msbt || typeof window.msbt.saveRaritySettings !== "function") {
     setLine(els.rarityStatus, "Rarity preset storage is unavailable in this shell.", "warning");
     return null;
   }
+  const revision = ++raritySaveRevision;
   const result = await window.msbt.saveRaritySettings(raritySettingsPayload());
+  if (revision !== raritySaveRevision) return result;
   const data = result && result.data ? result.data : {};
   if (result && result.ok) {
     state.raritySavedPreset = hasRarityPreset(data.preset) ? data.preset : currentRarityPreset();
@@ -15175,6 +15188,7 @@ async function persistWalkthroughSettings(extra = {}) {
   walkthroughState.dontShowAgain = dontShowAgain;
   await window.msbt.saveWalkthroughSettings({
     dismissed: Boolean(extra.dismissed),
+    appVersion: currentAppVersionString(),
     dontShowAgain
   });
 }
@@ -15250,7 +15264,7 @@ function openWalkthroughModal() {
   if (!nodes.modal) return false;
   walkthroughState.active = true;
   suppressTourCollidingChrome();
-  if (nodes.dontShow) nodes.dontShow.checked = false;
+  if (nodes.dontShow) nodes.dontShow.checked = walkthroughState.dontShowAgain;
   nodes.modal.classList.remove("hidden");
   renderWalkthroughStep();
   return true;
@@ -15267,6 +15281,7 @@ function beginNamedTour(mode, steps, { force = false, activity = "" } = {}) {
 }
 
 async function startMainTutorial({ force = false } = {}) {
+  if (!force && !shouldAutoShowMainTutorial()) return;
   walkthroughState.chooserSession = false;
   beginNamedTour("main", TUTORIAL_TOURS.main, {
     force,
@@ -15341,6 +15356,18 @@ async function maybeStartWalkthrough() {
       await refreshVersionInfo();
     } catch {
       /* continue with fallback version */
+    }
+  }
+  if (window.msbt && typeof window.msbt.loadWalkthroughSettings === "function") {
+    const result = await window.msbt.loadWalkthroughSettings();
+    if (result && result.ok && result.data) {
+      const saved = result.data;
+      walkthroughState.dontShowAgain = Boolean(saved.dontShowAgain);
+      // Migrate explicit opt-outs from files written before version tracking.
+      if ((saved.dismissed || saved.dontShowAgain) &&
+          (saved.appVersion === currentAppVersionString() || (!saved.appVersion && saved.dontShowAgain))) {
+        markMainTutorialSeen(currentAppVersionString());
+      }
     }
   }
   if (!shouldAutoShowMainTutorial()) return;

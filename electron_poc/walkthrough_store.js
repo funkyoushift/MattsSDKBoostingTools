@@ -1,5 +1,6 @@
 const fs = require("fs/promises");
 const path = require("path");
+const { queueSettingsWrite } = require("./settings_write_queue");
 
 const WALKTHROUGH_VERSION = 1;
 const WALKTHROUGH_FILENAME = "walkthrough_settings.json";
@@ -12,6 +13,7 @@ function emptyWalkthroughSettings() {
   return {
     version: WALKTHROUGH_VERSION,
     dismissed: false,
+    appVersion: "",
     dontShowAgain: false,
     updated_at: ""
   };
@@ -30,7 +32,8 @@ function normalizeWalkthroughSettingsPayload(payload) {
     data: {
       version: WALKTHROUGH_VERSION,
       dismissed: normalizeBoolean(source.dismissed),
-      dontShowAgain: normalizeBoolean(source.dontShowAgain || source.dont_show_again),
+      appVersion: String(source.appVersion || "").trim(),
+      dontShowAgain: normalizeBoolean(source.dontShowAgain ?? source.dont_show_again),
       updated_at: updatedAt || new Date().toISOString()
     },
     warnings: []
@@ -57,11 +60,17 @@ async function readWalkthroughSettings(filePath) {
   }
 }
 
-async function writeWalkthroughSettings(filePath, payload) {
+function writeWalkthroughSettings(filePath, payload) {
+  return queueSettingsWrite(filePath, () => writeWalkthroughSettingsNow(filePath, payload));
+}
+
+async function writeWalkthroughSettingsNow(filePath, payload) {
   const normalized = normalizeWalkthroughSettingsPayload(payload);
   normalized.data.updated_at = new Date().toISOString();
   await fs.mkdir(path.dirname(filePath), { recursive: true });
-  await fs.writeFile(filePath, `${JSON.stringify(normalized.data, null, 2)}\n`, "utf8");
+  const tempPath = `${filePath}.tmp`;
+  await fs.writeFile(tempPath, `${JSON.stringify(normalized.data, null, 2)}\n`, "utf8");
+  await fs.rename(tempPath, filePath);
   return { ok: true, data: normalized.data, warnings: normalized.warnings };
 }
 

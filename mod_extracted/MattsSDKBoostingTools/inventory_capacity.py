@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import json
+import os
+import tempfile
 import threading
 import time
 import atexit
@@ -104,6 +106,10 @@ def _settings_path_for_read() -> Path:
 
 
 def _settings_path_for_write() -> Path:
+    # Update the file that reads use; a fallback behind an older file is invisible.
+    existing = _settings_path_for_read()
+    if existing.exists():
+        return existing
     for path in _candidate_settings_paths():
         try:
             path.parent.mkdir(parents=True, exist_ok=True)
@@ -117,6 +123,11 @@ def _settings_path_for_write() -> Path:
 
 
 def load_inventory_settings() -> dict[str, Any]:
+    with _settings_lock:
+        return _load_inventory_settings_locked()
+
+
+def _load_inventory_settings_locked() -> dict[str, Any]:
     settings = dict(_DEFAULT_SETTINGS)
     path = _settings_path_for_read()
     try:
@@ -142,12 +153,28 @@ def save_inventory_settings(*, auto_inventory_sizes: bool | None = None, backpac
             settings["bank_size"] = clamp_container_size(bank_size, _DEFAULT_BANK_SIZE)
         path = _settings_path_for_write()
         try:
-            path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_text(json.dumps(settings, indent=2, sort_keys=True), encoding="utf-8")
+            _write_settings_atomic(path, settings)
         except Exception as exc:
             _log(f"Could not save inventory settings: {exc!r}")
+            raise
         return settings
 
+
+
+def _write_settings_atomic(path: Path, settings: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temp_path = None
+    try:
+        with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=path.parent,
+                                         prefix=path.name + ".", suffix=".tmp", delete=False) as stream:
+            temp_path = Path(stream.name)
+            json.dump(settings, stream, indent=2, sort_keys=True)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(temp_path, path)
+    finally:
+        if temp_path is not None:
+            temp_path.unlink(missing_ok=True)
 
 
 def save_extra_settings(**extra: Any) -> dict[str, Any]:
@@ -157,10 +184,10 @@ def save_extra_settings(**extra: Any) -> dict[str, Any]:
         settings.update(extra)
         path = _settings_path_for_write()
         try:
-            path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_text(json.dumps(settings, indent=2, sort_keys=True), encoding="utf-8")
+            _write_settings_atomic(path, settings)
         except Exception as exc:
             _log(f"Could not save extra settings: {exc!r}")
+            raise
         return settings
 
 def _log(msg: str) -> None:

@@ -1,5 +1,6 @@
 const fs = require("fs/promises");
 const path = require("path");
+const { queueSettingsWrite } = require("./settings_write_queue");
 
 const RARITY_SETTINGS_VERSION = 1;
 const RARITY_SETTINGS_FILENAME = "rarity_settings.json";
@@ -55,7 +56,7 @@ function normalizeRaritySettingsPayload(payload) {
     data: {
       version: RARITY_SETTINGS_VERSION,
       preset: normalizeRarityPreset(source.preset),
-      rememberOnStart: normalizeBoolean(source.rememberOnStart || source.remember_on_start),
+      rememberOnStart: normalizeBoolean(source.rememberOnStart ?? source.remember_on_start),
       updated_at: updatedAt || new Date().toISOString()
     },
     warnings: []
@@ -95,7 +96,11 @@ async function readRaritySettings(filePath) {
   }
 }
 
-async function writeRaritySettings(filePath, payload) {
+function writeRaritySettings(filePath, payload) {
+  return queueSettingsWrite(filePath, () => writeRaritySettingsNow(filePath, payload));
+}
+
+async function writeRaritySettingsNow(filePath, payload) {
   const normalized = normalizeRaritySettingsPayload({
     ...(payload || {}),
     updated_at: new Date().toISOString()

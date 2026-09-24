@@ -1,5 +1,6 @@
 const fs = require("fs/promises");
 const path = require("path");
+const { queueSettingsWrite } = require("./settings_write_queue");
 
 const MOVEMENT_SETTINGS_VERSION = 1;
 const MOVEMENT_SETTINGS_FILENAME = "movement_settings.json";
@@ -75,7 +76,7 @@ function normalizeMovementSettingsPayload(payload) {
     data: {
       version: MOVEMENT_SETTINGS_VERSION,
       preset,
-      autoApplyOnStart: normalizeBoolean(source.autoApplyOnStart || source.auto_apply_on_load),
+      autoApplyOnStart: normalizeBoolean(source.autoApplyOnStart ?? source.auto_apply_on_load),
       updated_at: updatedAt || new Date().toISOString()
     },
     warnings: []
@@ -115,7 +116,11 @@ async function readMovementSettings(filePath) {
   }
 }
 
-async function writeMovementSettings(filePath, payload) {
+function writeMovementSettings(filePath, payload) {
+  return queueSettingsWrite(filePath, () => writeMovementSettingsNow(filePath, payload));
+}
+
+async function writeMovementSettingsNow(filePath, payload) {
   const normalized = normalizeMovementSettingsPayload({
     ...(payload || {}),
     updated_at: new Date().toISOString()
