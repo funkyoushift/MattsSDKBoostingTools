@@ -5,7 +5,7 @@ import time
 from collections import deque
 
 
-BOOSTS = ("level", "spec", "sdu", "cash", "eridium", "keys", "challenges", "loot")
+BOOSTS = ("level", "spec", "sdu", "cash", "eridium", "keys", "challenges", "uvhm", "cosmetics", "loot")
 
 
 class Lobby:
@@ -217,6 +217,8 @@ class Game:
 
     def cancel(self, job):
         a = self.backend()
+        job.pop("uvhm_plan", None)
+        job.pop("uvhm_next_at", None)
         seq = job.pop("serial_job", None)
         if seq is not None:
             a.serial_rewards._pending_serial_delivery_sequences[:] = [s for s in a.serial_rewards._pending_serial_delivery_sequences if s is not seq]
@@ -263,6 +265,33 @@ class Game:
         elif step == "keys":
             results = [a._give_currency_to_pc(pc, f"vaultcard{i}", a.MAX_WALLET_AMOUNT) for i in range(1, 6)]
             ok = all(results)
+        elif step == "cosmetics":
+            pc.ServerActivateDevPerk(4)
+            return {"ok": True, "message": "All Customs + Hovers requested; guest save not confirmed."}
+        elif step == "uvhm":
+            # Use the existing tier plan and pacing, but keep this guest's work
+            # private: the manual queue can add targets or be replaced/resumed.
+            if a.uvh_boost_status()["active"]:
+                return None
+            now = time.monotonic()
+            if now < job.get("uvhm_next_at", 0):
+                return None
+            if "uvhm_plan" not in job:
+                plan = a._uvh_build_plan(list(range(len(a.UVH_RANKS))))
+                if not plan:
+                    return {"ok": False, "message": "No UVHM tier steps available."}
+                job["uvhm_plan"] = deque(plan)
+            plan = job["uvhm_plan"]
+            if not plan:
+                job.pop("uvhm_plan", None)
+                job.pop("uvhm_next_at", None)
+                return {"ok": True, "message": "UVHM 1–7 steps sent; guest save not confirmed."}
+            _label, challenge, delay = plan[0]
+            pc.ServerIncrementChallengeForPlayer(challenge, 1)
+            plan.popleft()
+            # Also wait after the last tier before allowing auto-kick.
+            job["uvhm_next_at"] = now + delay
+            return None
         elif step == "challenges":
             if "challenge_owned" in job:
                 if job["challenge_owned"] is not a._challenge_queue:

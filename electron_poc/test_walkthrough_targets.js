@@ -160,7 +160,7 @@ async function auditWalkthroughs() {
   );
   assert.deepStrictEqual(
     result.tourInventory.structured,
-    { main: 12, layout: 7, "quick-menu-setup": 8 },
+    { afk: 10, main: 12, layout: 7, "quick-menu-setup": 8 },
     "structured walkthrough inventory changed; audit the new/removed steps"
   );
   assert.deepStrictEqual(
@@ -184,6 +184,28 @@ async function auditWalkthroughs() {
     `panel widths must match their column span:\n${JSON.stringify(result.grid.widthErrors, null, 2)}`
   );
   console.log(`walkthrough target audit passed (${result.checked} highlighted steps)`);
+  await win.loadFile(path.join(__dirname, "renderer.html"), { query: { nosplash: "1" } });
+  await new Promise(resolve => setTimeout(resolve, 750));
+  const afk = await win.webContents.executeJavaScript(`(async () => {
+    window.MsbtWorkspace.open("boosting", "afk");
+    document.getElementById("afkWalkthroughBtn").click();
+    const mode = walkthroughState.mode;
+    const rows = [];
+    for (let i = 0; i < TUTORIAL_TOURS.afk.length; i++) {
+      await new Promise(resolve => setTimeout(resolve, 80));
+      const step = currentWalkthroughSteps()[walkthroughState.step];
+      const target = document.getElementById(step.target);
+      const rect = target.getBoundingClientRect();
+      rows.push({ title: step.title, visible: rect.width > 0 && rect.height > 0 });
+      if (i + 1 < TUTORIAL_TOURS.afk.length) walkthroughNext();
+    }
+    return { mode, rows, lootOpen: document.getElementById("afkLootDetails").open };
+  })()`, true);
+  assert.strictEqual(afk.mode, "afk", "AFK walkthrough button must start its own tour");
+  assert.strictEqual(afk.rows.length, 10);
+  assert.deepStrictEqual(afk.rows.filter(row => !row.visible), [], "AFK targets must remain visible across workspace navigation");
+  assert.strictEqual(afk.lootOpen, true, "Loot tutorial must open its collapsed section");
+  console.log("AFK launch button and all 10 workspace steps passed");
   win.destroy();
 }
 

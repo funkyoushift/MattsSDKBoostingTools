@@ -30,6 +30,9 @@ app.whenReady().then(async () => {
     const catalogCodes = document.getElementById('afkCodes').value;
     const savedCodes = JSON.parse(localStorage.getItem('msbt.afk-lobby.v1')).codes;
     const kickDefaultOff = !document.getElementById('afkAutoKick').checked;
+    const newOptions = ['uvhm', 'cosmetics'].map(key => document.querySelector('[data-afk-boost="'+key+'"]'));
+    const newDefaultsOff = newOptions.every(node => node && !node.checked);
+    newOptions.forEach(node => { node.checked = true; });
     document.getElementById('afkAutoKick').checked = true;
     document.getElementById('afkStart').click();
     await new Promise(resolve=>setTimeout(resolve,30));
@@ -48,7 +51,7 @@ app.whenReady().then(async () => {
     panel.scrollIntoView();
     document.getElementById('afkCloseShift').click();
     await new Promise(resolve => setTimeout(resolve, 20));
-    return {calls,codes,catalogCodes,savedCodes,kickDefaultOff,unchangedWhileRunning,locked,unlocked,stopEnabled,hasSduLabel:panel.textContent.includes('3,225')};
+    return {calls,codes,catalogCodes,savedCodes,kickDefaultOff,newDefaultsOff,unchangedWhileRunning,locked,unlocked,stopEnabled,hasSduLabel:panel.textContent.includes('3,225')};
   })()`);
   assert.equal(results.codes, "@Ufixture");
   assert.equal(results.catalogCodes, "@Ufixture\n@UCatalogAlpha\n@UCatalogBeta\n@UCatalogAlpha");
@@ -59,6 +62,9 @@ app.whenReady().then(async () => {
   assert.equal(results.calls[0].payload.loot, true);
   assert.equal(results.calls[0].payload.auto_accept, true);
   assert(results.kickDefaultOff);
+  assert(results.newDefaultsOff);
+  assert.equal(results.calls[0].payload.challenges, false);
+  for (const key of ['uvhm', 'cosmetics']) assert.equal(results.calls[0].payload[key], true);
   assert.equal(results.calls[0].payload.auto_kick, true);
   assert.equal(results.calls[1].action, "afk_lobby_stop");
   assert.equal(results.calls[2].action, "shift_overlay_control");

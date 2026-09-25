@@ -198,6 +198,7 @@
     <section id="tab-boosting" class="tab-panel active" data-msbt-layout-tab="boosting">
       <section id="afkLobbyPanel" class="panel cyan" data-msbt-panel="afk-lobby" data-msbt-span="12" data-msbt-title="AFK Boost Lobby">
         <h2>AFK Boost Lobby</h2>
+        <button id="afkWalkthroughBtn" type="button" class="secondary">AFK Lobby walkthrough</button>
         <p>Host a joinable lobby and leave the SHiFT menu open. Auto-accept requires this menu and captures game controls; close SHiFT to resume playing. Every guest receives your selections once loaded, including guests already present when you press Start. Rejoining runs them again.</p>
         <div class="button-row wrap">
           <label><input type="checkbox" data-afk-boost="level" checked> Max level</label>
@@ -206,13 +207,15 @@
           <label><input type="checkbox" data-afk-boost="cash" checked> Max cash</label>
           <label><input type="checkbox" data-afk-boost="eridium" checked> Max Eridium</label>
           <label><input type="checkbox" data-afk-boost="keys" checked> Max vault card keys · cards 1–5</label>
-          <label><input type="checkbox" data-afk-boost="challenges"> Complete challenges</label>
+          <label><input type="checkbox" data-afk-boost="challenges"> Complete non-UVHM challenges</label>
+          <label><input type="checkbox" data-afk-boost="uvhm"> UVHM 1–7</label>
+          <label><input type="checkbox" data-afk-boost="cosmetics"> All Customs + Hovers</label>
           <label><input type="checkbox" data-afk-boost="loot"> Send selected loot</label>
         </div>
         <label><input id="afkAutoAccept" type="checkbox" checked> Auto-accept SHiFT friends while running</label>
         <label><input id="afkAutoKick" type="checkbox"> Auto-kick when boosts finish (15-second wait after loot)</label>
-        <p class="muted-line">The existing auto-accepter also declines incoming game invites. Challenges use the existing non-UVHM challenge list.</p>
-        <details>
+        <p class="muted-line">The auto-accepter also declines incoming game invites. UVHM 1–7 is separate from challenges. All Customs + Hovers uses the same action as the Boosting tab button.</p>
+        <details id="afkLootDetails">
           <summary>Loot from bookmarks or item codes</summary>
           <label for="afkBookmarks">Saved bookmarks</label>
           <select id="afkBookmarks" class="list-select" multiple size="5"></select>

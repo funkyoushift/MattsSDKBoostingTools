@@ -13631,6 +13631,7 @@ function wireEvents() {
   }
   applyBoostMobileNoticeVisibility();
 
+  document.getElementById("afkWalkthroughBtn")?.addEventListener("click", () => startAfkTutorial());
   const walkthroughNextBtn = document.getElementById("walkthroughNextBtn");
   const walkthroughBackBtn = document.getElementById("walkthroughBackBtn");
   const walkthroughSkipBtn = document.getElementById("walkthroughSkipBtn");
@@ -13668,6 +13669,97 @@ const MAIN_TAB_CHOICES = [
  * Tour ids: main | layout | quick-menu-setup | tab:<tabId> (via TAB_TUTORIALS)
  */
 const TUTORIAL_TOURS = {
+  afk: [
+  {
+    "title": "Set up your AFK lobby",
+    "body": "Close Borderlands 4 before running the installer. It includes MSBT, the SHiFT PAK, and the stable SDK/mod manager for a fresh installation. Existing SDK builds, including beta builds, are preserved. Launch the game, load your character, host a joinable lobby, and check the app connection. This walkthrough only explains the controls; it does not start boosts.",
+    "tab": "boosting",
+    "target": "afkLobbyPanel",
+    "revealPanels": [
+      "afk-lobby"
+    ]
+  },
+  {
+    "title": "Choose what every guest receives",
+    "body": "Select the boosts you want before starting. Every guest gets the selected boosts once loaded, regardless of existing progress. Guests already present are included; rejoining starts another run. The host is excluded. SDUs always use 3,225. Non-UVHM challenges, UVHM 1–7, and All Customs + Hovers have separate checkboxes. All Customs + Hovers applies the same cosmetics and vehicle unlock action as the Boosting tab button. The two new options default off. A finished queue does not confirm the guest saved every unlock or reached 100% completion.",
+    "tab": "boosting",
+    "target": "afkLobbyPanel",
+    "revealPanels": [
+      "afk-lobby"
+    ]
+  },
+  {
+    "title": "Add loot from Item Catalog",
+    "body": "In Item Catalog, select the items you want and click Add to AFK. The item detail also has Add This to AFK. Return to Boosting → AFK Lobby to review the list. Adding codes alone does not enable delivery: select Send selected loot before Start.",
+    "tab": "bl4-codes",
+    "target": "bl4AddToAfkBtn"
+  },
+  {
+    "title": "Add loot from bookmarks",
+    "body": "Open Loot from bookmarks or item codes. Click Refresh bookmarks, select the saved bookmarks you want, then Add selected to loot. Review the resulting codes below.",
+    "tab": "boosting",
+    "target": "afkBookmarks",
+    "revealPanels": [
+      "afk-lobby"
+    ],
+    "revealDetails": "#afkLootDetails"
+  },
+  {
+    "title": "Review item codes",
+    "body": "Paste one item code per line. Repeat a line to request extra copies. There is no overall line limit. Codes keep their item levels. Select Send selected loot to include this list in each guest’s boost. Large lists take longer to deliver.",
+    "tab": "boosting",
+    "target": "afkCodes",
+    "revealPanels": [
+      "afk-lobby"
+    ],
+    "revealDetails": "#afkLootDetails"
+  },
+  {
+    "title": "Run the SHiFT auto-accepter",
+    "body": "Enable this option and leave the in-game SHiFT menu open. After Start, check that the status says connected and running. The accepter also declines incoming game invites. SHiFT captures gameplay controls while open; background acceptance while playing is not supported.",
+    "tab": "boosting",
+    "target": "afkAutoAccept",
+    "revealPanels": [
+      "afk-lobby"
+    ]
+  },
+  {
+    "title": "Optional auto-kick",
+    "body": "Enable this before Start if you want guests removed after all selected operations finish successfully. Loot delivery adds a 15-second settling wait after the last package finishes. Failed boosts prevent automatic kicking. Guest save persistence is not independently verified.",
+    "tab": "boosting",
+    "target": "afkAutoKick",
+    "revealPanels": [
+      "afk-lobby"
+    ]
+  },
+  {
+    "title": "Start and monitor",
+    "body": "Press Start AFK Lobby when your selections are ready. Settings lock while it runs. Watch the SHiFT connection, waiting guests, and per-player results below. The queue continues if the desktop panel closes. A new game session starts with AFK disabled.",
+    "tab": "boosting",
+    "target": "afkStart",
+    "revealPanels": [
+      "afk-lobby"
+    ]
+  },
+  {
+    "title": "Stop or change selections",
+    "body": "Press Stop AFK Lobby before editing your selections. Stop cancels unfinished AFK work; it cannot undo boosts already applied. Review the changes and press Start again when ready.",
+    "tab": "boosting",
+    "target": "afkStop",
+    "revealPanels": [
+      "afk-lobby"
+    ]
+  },
+  {
+    "title": "Return to playing",
+    "body": "Close SHiFT / restore controls closes the native SHiFT menu so you can control the game. Closing SHiFT stops its accepter. To end the whole AFK session, also use Stop AFK Lobby. Replay this guide anytime with the AFK Lobby walkthrough button.",
+    "tab": "boosting",
+    "target": "afkCloseShift",
+    "revealPanels": [
+      "afk-lobby"
+    ]
+  }
+],
   /** First-run / post-update: brief overview of what the app does */
   main: [
     {
@@ -14419,6 +14511,7 @@ function reopenMainChooser() {
 }
 
 function walkthroughModeLabel() {
+  if (walkthroughState.mode === "afk") return "AFK Lobby";
   if (walkthroughState.mode === "layout") return "Layout editor";
   if (walkthroughState.mode === "quick-menu-setup") return "Quick Menu setup";
   if (walkthroughState.mode === "tab") {
@@ -14871,6 +14964,10 @@ function walkthroughNeedsLayoutToolbar(step) {
 
 function prepareWalkthroughTarget(step) {
   if (!step) return;
+  if (step.revealDetails) {
+    const details = document.querySelector(step.revealDetails);
+    if (details) details.open = true;
+  }
   walkthroughState._didRevealPanels = false;
   if (walkthroughNeedsLayoutToolbar(step)
       && window.MsbtPanelLayout
@@ -15100,6 +15197,11 @@ function renderWalkthroughChoices() {
     className: "secondary walkthrough-choice-featured",
     onClick: () => launchWalkthroughAfterMainChoice((opts) => startQuickMenuSetupTutorial({ force: true, ...opts }))
   });
+  appendWalkthroughChoiceButton(deep, {
+    label: "AFK Lobby",
+    className: "secondary walkthrough-choice-featured",
+    onClick: () => launchWalkthroughAfterMainChoice((opts) => startAfkTutorial(opts))
+  });
   choices.appendChild(deep);
 
   const tabs = document.createElement("div");
@@ -15309,6 +15411,11 @@ function startQuickMenuSetupTutorial({ force = true, fromChooser = false } = {})
   });
 }
 
+function startAfkTutorial({ fromChooser = false } = {}) {
+  if (!fromChooser) walkthroughState.chooserSession = false;
+  beginNamedTour("afk", TUTORIAL_TOURS.afk, { force: true, activity: "AFK Lobby walkthrough started." });
+}
+
 function startTabTutorial(tabId, { fromChooser = false } = {}) {
   const id = String(tabId || "").trim();
   // ★ Quick Menu Walkthrough launches the full QM setup tour (no redundant tab-only tour).
@@ -15330,6 +15437,7 @@ function startTabTutorial(tabId, { fromChooser = false } = {}) {
 }
 
 /** Hook used by panel layout Walkthrough buttons / View menu */
+window.msbtStartAfkTutorial = startAfkTutorial;
 window.msbtStartTabTutorial = startTabTutorial;
 window.msbtStartMainTutorial = startMainTutorial;
 window.msbtStartLayoutTutorial = startLayoutTutorial;

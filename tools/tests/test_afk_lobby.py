@@ -241,3 +241,67 @@ def test_guest_leaving_during_loot_settle_is_never_kicked(monkeypatch):
     ticks(lobby, 2); assert lobby.current["kick_after"] == 115.0
     game.rows = []; clock[0] += 16; ticks(lobby)
     assert game.kicked == [] and lobby.current is None
+
+
+def test_new_boosts_are_independent_and_opt_in():
+    for selected in ("challenges", "uvhm", "cosmetics"):
+        game = FakeGame(); lobby = module.Lobby(game)
+        assert lobby.start({selected: True})["ok"]
+        game.rows = [row("guest")]; ticks(lobby)
+        assert game.calls == [(selected, "guest", 1)]
+
+
+def test_uvhm_guest_plan_pacing_final_settle_and_manual_queue(monkeypatch):
+    clock = [100.0]; monkeypatch.setattr(module.time, "monotonic", lambda: clock[0])
+    calls = []; indices_seen = []; manual = [True]
+    game = module.Game()
+    pc = SimpleNamespace(ServerIncrementChallengeForPlayer=lambda *args: calls.append(args))
+    game.backend = lambda: SimpleNamespace(
+        uvh_boost_status=lambda: {"active": manual[0]}, UVH_RANKS=list(range(7)),
+        _uvh_build_plan=lambda indices: indices_seen.append(indices) or [("1", "first", .3), ("7", "final", .3)])
+    job = {"pc": pc, "token": "guest"}
+    assert game.step("uvhm", job, {}) is None and not calls
+    manual[0] = False
+    assert game.step("uvhm", job, {}) is None
+    assert indices_seen == [list(range(7))] and calls == [("first", 1)]
+    assert game.step("uvhm", job, {}) is None and len(calls) == 1
+    clock[0] += 1
+    assert game.step("uvhm", job, {}) is None and calls[-1] == ("final", 1)
+    assert game.step("uvhm", job, {}) is None
+    clock[0] += 1
+    assert game.step("uvhm", job, {})["ok"]
+
+
+def test_uvhm_failure_keeps_guest_and_continues_other_boosts():
+    game = FakeGame(); adapter = module.Game()
+    def fail(*_): raise RuntimeError("RPC failed")
+    adapter.backend = lambda: SimpleNamespace(uvh_boost_status=lambda: {"active": False},
+        UVH_RANKS=[1], _uvh_build_plan=lambda _: [("1", "first", .3)])
+    original_step = game.step
+    game.step = lambda step, job, config: adapter.step(step, job, config) if step == "uvhm" else original_step(step, job, config)
+    game.cancel = adapter.cancel
+    lobby = module.Lobby(game)
+    lobby.start({"uvhm": True, "loot": True, "auto_kick": True})
+    game.rows = [dict(row("guest"), pc=SimpleNamespace(ServerIncrementChallengeForPlayer=fail))]
+    ticks(lobby)
+    assert game.kicked == [] and game.calls == [("loot", "guest", 1)]
+    assert not lobby.history[0]["results"][0]["ok"]
+
+
+def test_cancel_discards_private_uvhm_without_touching_manual_work():
+    game = module.Game(); game.backend = lambda: SimpleNamespace()
+    job = {"uvhm_plan": deque([1]), "uvhm_next_at": 200}
+    game.cancel(job)
+    assert job == {}
+
+
+def test_customs_and_hovers_matches_boosting_button_and_targets_guest():
+    calls = []; game = module.Game()
+    pc = SimpleNamespace(ServerActivateDevPerk=lambda code: calls.append(code))
+    game.backend = lambda: SimpleNamespace()
+    job = {"pc": pc, "token": "guest"}
+    assert game.step("cosmetics", job, {})["ok"] and calls == [4]
+    html = (FILE.parents[2] / "electron_poc/renderer.html").read_text(encoding="utf-8")
+    assert '<button data-action="devperk_4">All Customs + Hovers</button>' in html
+    assert 'data-afk-boost="cosmetics"> All Customs + Hovers' in html
+    assert 'data-afk-boost="vehicles"' not in html
