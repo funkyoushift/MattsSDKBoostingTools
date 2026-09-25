@@ -201,6 +201,18 @@ $ElectronUnpackedZipName = "MSBT-Portable-v$PackageVersion-win-x64.zip"
 $ElectronUnpackedZip = Join-Path $ElectronDist $ElectronUnpackedZipName
 Assert-ReleaseFile $ElectronUnpackedZip
 $ElectronAssets += $ElectronUnpackedZip
+$PakName = 'pakchunk90-Windows_90_P.pak'
+$PakSource = Join-Path $RepoRoot "tools\third_party\afk_shift\$PakName"
+$BundledOak = Join-Path $ElectronDist 'win-unpacked\resources\oak2\oak2-sdk.zip'
+$BundledPak = Join-Path $ElectronDist "win-unpacked\resources\afk_shift\$PakName"
+Assert-ReleaseFile $BundledOak
+Assert-ReleaseFile $BundledPak
+if ((Get-ReleaseFileSha256 $BundledOak) -ne '602675446abed184169fa158be3c8bc81777a71203581e4a248eca8a3d00b5c7') {
+    throw 'Bundled SDK runtime hash mismatch.'
+}
+if ((Get-ReleaseFileSha256 $BundledPak) -ne (Get-ReleaseFileSha256 $PakSource)) {
+    throw 'Bundled AFK PAK hash mismatch.'
+}
 $SdkMod = Join-Path $RepoRoot 'MattsSDKBoostingTools.sdkmod'
 $EmbeddedSdkMod = Join-Path $ElectronDist 'win-unpacked\resources\sdkmod\MattsSDKBoostingTools.sdkmod'
 Assert-ReleaseFile $SdkMod

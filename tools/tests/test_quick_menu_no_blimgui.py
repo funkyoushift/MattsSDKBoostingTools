@@ -223,6 +223,7 @@ def test_external_bridge_does_not_import_blimgui_panel():
         "drop_player_lock": {"enabled": False},
     }
     ba._sdk_diagnostics = lambda: {}
+    ba.afk_lobby_status = lambda: {"enabled": False}
     sys.modules["MattsSDKBoostingTools.backend_actions"] = ba
     bridge = _load_module("MattsSDKBoostingTools.external_bridge", "external_bridge.py")
     source = (PKG / "external_bridge.py").read_text(encoding="utf-8")

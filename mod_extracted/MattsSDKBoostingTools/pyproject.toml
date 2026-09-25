@@ -1,12 +1,12 @@
 ﻿[project]
 name = "MattsSDKBoostingTools"
-version = "2.13.1"
+version = "2.14.0"
 authors = [{ name = "Matt" }]
 description = "Boosting-focused SDK mod with native Quick Menu, external bridge, and optional BLImGui fallback."
 
 [tool.sdkmod]
 name = "MattsSDKBoostingTools"
 license = { name = "MIT", url = "https://opensource.org/license/mit" }
-version = "2.13.1"
+version = "2.14.0"
 coop_support = "Unknown"
 

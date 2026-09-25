@@ -134,6 +134,7 @@ $ElectronSemver = Get-ElectronSemverVersion
 $ElectronVersion = Get-PublicReleaseVersion
 Assert-ReleaseManifestVersion $ElectronVersion
 Assert-GzoCatalogImages -CatalogPath $SourceGzoCatalog -Label "Source GZO catalog"
+Invoke-Checked "node" @((Join-Path $RepoRoot "tools\prepare_game_bundle.js"))
 
 Push-Location $RepoRoot
 try {
@@ -209,6 +210,10 @@ if (-not (Test-Path $UnpackedRoot)) {
 $RequiredPackageFiles = @(
     "resources\python\python.exe",
     "resources\sdkmod\MattsSDKBoostingTools.sdkmod",
+    "resources\oak2\oak2-sdk.zip",
+    "resources\oak2\NOTICE.txt",
+    "resources\afk_shift\pakchunk90-Windows_90_P.pak",
+    "resources\afk_shift\manifest.json",
     "resources\sdkmods\ActorScriptDeployer\__init__.py",
     "resources\releases\latest.json",
     "resources\app-update.yml",

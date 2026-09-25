@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="ui-designer.css">
   <link rel="stylesheet" href="vendor/gridstack/gridstack.min.css">
   <link rel="stylesheet" href="workspace.css">
+  <link rel="stylesheet" href="afk_lobby.css">
 </head>
 <body>
   <div id="msbtBootSplash" class="msbt-boot-splash" role="dialog" aria-modal="true" aria-labelledby="msbtBootSplashTitle">
@@ -195,6 +196,46 @@
 
   <main class="tab-shell">
     <section id="tab-boosting" class="tab-panel active" data-msbt-layout-tab="boosting">
+      <section id="afkLobbyPanel" class="panel cyan" data-msbt-panel="afk-lobby" data-msbt-span="12" data-msbt-title="AFK Boost Lobby">
+        <h2>AFK Boost Lobby</h2>
+        <p>Host a joinable lobby and leave the SHiFT menu open. Auto-accept requires this menu and captures game controls; close SHiFT to resume playing. Every guest receives your selections once loaded, including guests already present when you press Start. Rejoining runs them again.</p>
+        <div class="button-row wrap">
+          <label><input type="checkbox" data-afk-boost="level" checked> Max level</label>
+          <label><input type="checkbox" data-afk-boost="spec" checked> Max specialization</label>
+          <label><input type="checkbox" data-afk-boost="sdu" checked> Max SDUs · 3,225</label>
+          <label><input type="checkbox" data-afk-boost="cash" checked> Max cash</label>
+          <label><input type="checkbox" data-afk-boost="eridium" checked> Max Eridium</label>
+          <label><input type="checkbox" data-afk-boost="keys" checked> Max vault card keys · cards 1–5</label>
+          <label><input type="checkbox" data-afk-boost="challenges"> Complete challenges</label>
+          <label><input type="checkbox" data-afk-boost="loot"> Send selected loot</label>
+        </div>
+        <label><input id="afkAutoAccept" type="checkbox" checked> Auto-accept SHiFT friends while running</label>
+        <label><input id="afkAutoKick" type="checkbox"> Auto-kick when boosts finish (15-second wait after loot)</label>
+        <p class="muted-line">The existing auto-accepter also declines incoming game invites. Challenges use the existing non-UVHM challenge list.</p>
+        <details>
+          <summary>Loot from bookmarks or item codes</summary>
+          <label for="afkBookmarks">Saved bookmarks</label>
+          <select id="afkBookmarks" class="list-select" multiple size="5"></select>
+          <div class="button-row wrap">
+            <button id="afkLoadBookmarks" type="button">Refresh bookmarks</button>
+            <button id="afkAddBookmarks" type="button">Add selected to loot</button>
+          </div>
+          <p id="afkBookmarkNote" class="muted-line"></p>
+          <label for="afkCodes">Loot to send on every join · one code per line; repeat a line for extra copies</label>
+          <textarea id="afkCodes" rows="5" placeholder="Paste item codes, or add bookmarks above"></textarea>
+          <p class="muted-line">Codes retain their item levels. Selections are saved on this PC.</p>
+        </details>
+        <div class="button-row wrap">
+          <button id="afkStart" type="button" disabled>Start AFK Lobby</button>
+          <button id="afkStop" type="button" class="danger" disabled>Stop AFK Lobby</button>
+          <button id="afkCloseShift" type="button">Close SHiFT / restore controls</button>
+        </div>
+        <div id="afkStatus" class="status-line" role="status">Connecting to the game…</div>
+        <div id="afkShiftStatus" class="muted-line"></div>
+        <div id="afkQueue" class="muted-line"></div>
+        <pre id="afkLog" style="max-height:240px;overflow:auto;white-space:pre-wrap"></pre>
+      </section>
+
       <section id="boostUpdateNotice" class="update-notice hidden" aria-live="polite">
         <div class="update-notice-copy">
           <h2 id="boostUpdateTitle">Update Available</h2>
@@ -397,7 +438,7 @@
 
       <section class="panel gold" data-msbt-panel="boost-challenges" data-msbt-span="12" data-msbt-title="Challenges">
         <h2>Challenges</h2>
-        <p class="muted-line">Writes permanent challenge progress. Host / solo only. Backup your save. Complete All is every non-UVHM catalog row (UVH 1–7 is its own Boosting panel).</p>
+        <p class="muted-line">Writes permanent challenge progress. Host / solo only. Backup your save. Sends the non-UVH catalog; UVH 1–7 is separate. Queue progress is not verified in-game completion.</p>
         <div class="grid two compact">
           <label>
             Category
@@ -425,7 +466,7 @@
         <div class="button-row wrap">
           <button id="challengeCompleteSelectedBtn" type="button">Complete Selected</button>
           <button id="challengeCompleteCategoryBtn" type="button">Complete Category</button>
-          <button id="challengeCompleteAllBtn" type="button" class="danger">Complete All Challenges</button>
+          <button id="challengeCompleteAllBtn" type="button" class="danger">Complete Non-UVH Challenges</button>
           <button id="challengeCancelBtn" type="button">Cancel</button>
           <button id="challengeStatusBtn" type="button">Refresh Status</button>
         </div>
@@ -1036,6 +1077,7 @@
               <button type="button" data-msbt-bridge-refresh class="secondary">Refresh Status</button>
               <button id="bl4ValidateBtn">Validate Selected Code</button>
               <button id="bl4ImportSelectedBtn">Save Selected to Bookmarks</button>
+              <button id="bl4AddToAfkBtn" type="button" title="Append selected item codes to the AFK loot list">Add to AFK</button>
             </div>
           </div>
           <div id="bl4Status" class="status-line warning">Loading BL4 Codes catalog...</div>
@@ -1191,6 +1233,7 @@
                 <button id="bl4CopyBreakdownBtn">Copy Parts Breakdown</button>
                 <button id="bl4CopySerialBtn">Copy Serial</button>
                 <button id="bl4BookmarkBtn">Bookmark This</button>
+                <button id="bl4AddThisToAfkBtn" type="button">Add This to AFK</button>
                 <button id="bl4OpenLootlemonBtn">Open Lootlemon</button>
               </div>
             </aside>
@@ -2653,5 +2696,6 @@
   <script src="gzo_codes_form.js"></script>
   <script src="workspace.js"></script>
   <script src="renderer.js"></script>
+  <script src="afk_lobby.js"></script>
 </body>
 </html>

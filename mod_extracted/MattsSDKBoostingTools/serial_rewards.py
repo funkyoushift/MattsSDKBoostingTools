@@ -1717,7 +1717,20 @@ def _process_pending_serial_delivery_sequences() -> None:
     for seq in list(_pending_serial_delivery_sequences):
         try:
             chunks = list(seq.get("chunks") or [])
-            targets = _serial_delivery_current_targets(seq)
+            if "afk_player_state" in seq:
+                world, gs = _gbc_session_world_and_gamestate()
+                indices = [i for i, ps in enumerate(getattr(gs, "PlayerArray", []) or []) if ps == seq["afk_player_state"]]
+                if not indices:
+                    _set_serial_delivery_status("AFK loot stopped: guest left the lobby.", log=True)
+                    continue
+                old_index = seq["targets"][0]
+                new_index = indices[0]
+                if old_index != new_index and old_index in seq.get("before_counts", {}):
+                    seq["before_counts"] = {new_index: seq["before_counts"][old_index]}
+                seq["targets"] = indices
+                targets = indices
+            else:
+                targets = _serial_delivery_current_targets(seq)
             scope_label = str(seq.get("scope_label") or "targeted players")
             idx = int(seq.get("index") or 0)
             stage = str(seq.get("stage") or "deliver")
@@ -1812,6 +1825,10 @@ def _process_pending_serial_delivery_sequences() -> None:
                     remaining.append(seq)
                     continue
                 if attempts >= _SERIAL_DELIVERY_PATCH_MAX_ATTEMPTS:
+                    if "afk_player_state" in seq:
+                        seq["afk_error"] = "Loot patch timed out; delivery stopped and auto-kick withheld."
+                        _set_serial_delivery_status(seq["afk_error"], hold_sec=30.0, log=True)
+                        continue
                     _set_serial_delivery_status(
                         f"Serial delivery {idx + 1}/{len(chunks)}: patch timeout {patched}/{total}; waiting {_SERIAL_DELIVERY_PRE_OPEN_DELAY_SEC:.2f} sec before forced open",
                         hold_sec=30.0,

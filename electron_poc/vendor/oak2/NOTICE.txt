@@ -1,0 +1,10 @@
+Official unmodified oak2-sdk.zip v0.3
+SHA256: 602675446abed184169fa158be3c8bc81777a71203581e4a248eca8a3d00b5c7
+Release: https://github.com/bl-sdk/oak2-mod-manager/releases/tag/v0.3
+Manager source: https://github.com/bl-sdk/oak2-mod-manager/tree/77ec7de7471c76958842f321b12a54ebf896b36c
+pyunrealsdk v1.10.0 source: https://github.com/bl-sdk/pyunrealsdk/tree/c72c5558
+unrealsdk v3.2.0 source: https://github.com/bl-sdk/unrealsdk/tree/b1852aa4
+These components are LGPL-3.0; full LGPL and GPL texts are adjacent.
+Their original headers and notices remain in the archive. No SDK binaries are modified.
+Python source and license: https://www.python.org/downloads/source/
+Keybinds and stub licenses remain inside oak2-sdk.zip.

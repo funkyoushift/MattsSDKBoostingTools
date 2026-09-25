@@ -53,12 +53,18 @@ Those dependencies use Apache License 2.0. The APK build copies MSBT's license,
 this notice, and the complete Apache 2.0 text into its `assets/licenses/`
 directory.
 
-## Downloaded, not vendored
+## Bundled SDK and AFK SHiFT menu
 
-MSBT can download the official unmodified `oak2-sdk.zip` release of
-[oak2-mod-manager](https://github.com/bl-sdk/oak2-mod-manager). It is cached in
-the user's application-data directory rather than stored in this repository.
-oak2-mod-manager is LGPL-3.0 and retains the license files in its own release.
+The installer includes the unmodified official oak2-mod-manager v0.3 release
+archive (SDK, Python runtime, and mod manager). Existing SDK installations are
+preserved, including beta and nightly builds. Full license texts and pinned
+upstream source links are included in resources/oak2/NOTICE.txt and adjacent
+license files. These components are not relicensed as MIT.
+
+The AFK SHiFT PAK is the maintainer-provided pakchunk90 menu mod with the MSBT
+AFK bridge and floating controls appended. Its source hash is recorded in
+resources/afk_shift/manifest.json. Game-owned SHiFT resources are not MSBT code
+and are not relicensed as MIT.
 
 ## Reference-only projects
 

@@ -1,0 +1,23 @@
+#afkLobbyPanel { grid-column: 1 / -1; }
+#afkLobbyPanel > .button-row:first-of-type {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 12px;
+  margin: 18px 0;
+}
+#afkLobbyPanel label:has(input[type="checkbox"]) {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+}
+#afkLobbyPanel input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  min-height: 0;
+  margin: 0;
+  flex: 0 0 18px;
+}
+#afkLobbyPanel details { margin: 16px 0; }
+#afkLobbyPanel summary { cursor: pointer; margin-bottom: 12px; }
+#afkLobbyPanel textarea { width: 100%; box-sizing: border-box; }

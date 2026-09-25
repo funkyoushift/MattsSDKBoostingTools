@@ -1322,6 +1322,13 @@ def _sdk_diagnostics(refresh: bool = False) -> dict[str, Any]:
 
 def clear_uobject_caches() -> None:
     """Release cached UObject controller references before travel/unload."""
+    from .afk_lobby import lobby
+    if lobby.current:
+        lobby.game.cancel(lobby.current)
+    lobby.current = None
+    lobby.queue.clear()
+    lobby.seen.clear()
+    lobby.world = None
     _uvh_targets.clear()
     _challenge_targets.clear()
 
@@ -4221,8 +4228,8 @@ def uvh_boost_tick() -> None:
 
 # Drain catalog grants on the UMG tick. Large amounts are sent in one RPC;
 # if that RPC fails we retry in 250-sized chunks so the SUM still reaches the goal.
-_CHALLENGE_STEP_DELAY_SECONDS = 0.0
-_CHALLENGE_BATCH_SIZE = 64
+_CHALLENGE_STEP_DELAY_SECONDS = 0.10
+_CHALLENGE_BATCH_SIZE = 4
 _CHALLENGE_CHUNK_AMOUNT = 250
 _CHALLENGE_STATUS_EVERY = 50
 _challenge_catalog_cache: list[tuple[str, int]] | None = None
@@ -4235,6 +4242,8 @@ _challenge_total_steps = 0
 _challenge_ok = 0
 _challenge_failed = 0
 _challenge_granted: set[str] = set()
+_challenge_granted_by_target: dict[Any, set[str]] = {}
+_challenge_attempts: dict[str, int] = {}
 
 # MIT-reimplemented category filters (behavior inspired by SQBT; no GPL imports).
 _CHALLENGE_CATEGORY_LABELS: tuple[str, ...] = (
@@ -4481,7 +4490,7 @@ def challenge_catalog_list(payload: dict[str, Any] | None = None) -> dict[str, A
     }
 
 
-def _challenge_queue_start(rows: list[tuple[str, int]], *, label: str = "Challenges") -> dict[str, Any]:
+def _challenge_queue_start(rows: list[tuple[str, int]], *, label: str = "Challenges", targets: list[Any] | None = None) -> dict[str, Any]:
     """Shared queue start used by complete-all / selected / category."""
     global _challenge_queue, _challenge_targets, _challenge_next_at, _challenge_running, _challenge_total_steps
     global _challenge_ok, _challenge_failed, _challenge_granted
@@ -4499,7 +4508,7 @@ def _challenge_queue_start(rows: list[tuple[str, int]], *, label: str = "Challen
     if get_pc() is None:
         _challenge_set_status("Cannot start: load into a character first.")
         return {"ok": False, "message": _challenge_last_status}
-    targets = _uvh_discover_controllers()
+    targets = _uvh_discover_controllers() if targets is None else targets
     if not targets:
         _challenge_set_status("Cannot start: no live players found.")
         return {"ok": False, "message": _challenge_last_status}
@@ -4512,6 +4521,8 @@ def _challenge_queue_start(rows: list[tuple[str, int]], *, label: str = "Challen
     _challenge_ok = 0
     _challenge_failed = 0
     _challenge_granted = set()
+    _challenge_granted_by_target.clear()
+    _challenge_attempts.clear()
     _challenge_next_at = time.monotonic()
     _challenge_running = True
     _challenge_set_status(
@@ -4639,6 +4650,7 @@ def _challenge_progress_payload() -> dict[str, Any]:
         "ok_count": _challenge_ok,
         "failed_count": _challenge_failed,
         "percent": percent,
+        "completion_verified": False,
         "players": len(_challenge_targets),
     }
 
@@ -4655,7 +4667,7 @@ def _challenge_finish_reconcile(live_targets: list[Any]) -> str:
         return f"objective reconcile skipped: {exc!r}"
     for controller in live_targets:
         try:
-            notes.append(reconcile_after_bulk(controller, _challenge_granted))
+            notes.append(reconcile_after_bulk(controller, _challenge_granted_by_target.get(controller, set())))
         except Exception as exc:
             notes.append(f"reconcile failed: {exc!r}")
     return "; ".join(notes) if notes else ""
@@ -4683,7 +4695,7 @@ def complete_challenges_tick() -> None:
     last_grant_amount = 1
     last_sent = 0
     batch_delay = _CHALLENGE_STEP_DELAY_SECONDS
-    for _ in range(max(1, int(_CHALLENGE_BATCH_SIZE))):
+    for _ in range(min(len(_challenge_queue), max(1, int(_CHALLENGE_BATCH_SIZE)))):
         if not _challenge_queue:
             break
         challenge, amount = _challenge_queue.popleft()
@@ -4691,24 +4703,35 @@ def complete_challenges_tick() -> None:
         sent = 0
         last_error = ""
         for controller in live_targets:
+            granted = _challenge_granted_by_target.setdefault(controller, set())
+            if challenge in granted:
+                sent += 1
+                continue
             try:
                 _challenge_increment_one(controller, challenge, grant_amount)
+                granted.add(challenge)
                 sent += 1
             except Exception as exc:
                 last_error = f"{type(exc).__name__}: {exc}"
         last_challenge = challenge
         last_grant_amount = grant_amount
         last_sent = sent
-        if sent:
+        if sent == len(_challenge_targets):
             _challenge_ok += 1
             _challenge_granted.add(challenge)
         else:
-            _challenge_failed += 1
-            _challenge_set_status(
-                f"Skipped rejected {challenge}"
-                + (f" ({last_error})" if last_error else "")
-                + f"; continuing ({_challenge_failed} skipped)."
-            )
+            attempts = _challenge_attempts.get(challenge, 0) + 1
+            _challenge_attempts[challenge] = attempts
+            if attempts < 3:
+                _challenge_queue.append((challenge, amount))
+                _challenge_set_status(f"Retrying {challenge}: sent to {sent}/{len(_challenge_targets)} players; attempt {attempts}/3.")
+            else:
+                _challenge_failed += 1
+                _challenge_set_status(
+                    f"Incomplete {challenge}: sent to {sent}/{len(_challenge_targets)} players after 3 attempts"
+                    + (f" ({last_error})" if last_error else " (player unavailable)")
+                    + f"; continuing ({_challenge_failed} incomplete)."
+                )
         batch_delay = max(batch_delay, _challenge_delay_for_amount(grant_amount))
 
     _challenge_next_at = time.monotonic() + batch_delay
@@ -4727,7 +4750,7 @@ def complete_challenges_tick() -> None:
     _challenge_targets.clear()
     extra = f" {reconcile_note}" if reconcile_note else ""
     _challenge_set_status(
-        f"Challenges finished. {done}/{_challenge_total_steps} "
+        f"Challenge sending finished (guest completion unverified). {done}/{_challenge_total_steps} "
         f"(ok {_challenge_ok}, fail {_challenge_failed}). "
         f"Final {last_challenge} -> {last_sent}/{len(live_targets)} player(s).{extra}"
     )
@@ -7603,3 +7626,36 @@ def _cmd_msbt_probe_challenge_apis(_args: Any = None) -> None:
     except Exception:
         pass
     _challenge_set_status(str(result.get("message") or "Challenge API probe finished."))
+
+
+# AFK remains behind backend_actions for all callers.
+def afk_lobby_start(payload=None):
+    from .afk_lobby import lobby
+    return lobby.start(payload or {})
+
+
+def afk_lobby_stop():
+    from .afk_lobby import lobby
+    return lobby.stop()
+
+
+def afk_lobby_status():
+    from .afk_lobby import lobby
+    return lobby.status()
+
+
+def afk_lobby_tick():
+    from .afk_lobby import lobby
+    from . import shift_overlay
+    shift_overlay.tick()
+    lobby.tick()
+
+
+def afk_social_probe():
+    from .afk_social import probe
+    return probe()
+
+
+def shift_overlay_control(payload):
+    from .shift_overlay import control
+    return control(str(payload.get("mode", "toggle")))

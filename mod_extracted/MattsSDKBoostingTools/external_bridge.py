@@ -26,6 +26,8 @@ except Exception:  # pragma: no cover - only available in-game
 
 _HOST = "127.0.0.1"
 _PORT = 49774
+_afk_shift_seen = 0.0
+_afk_shift_running = False
 _LAN_ROUTES_DENIED = ("/layout", "/resource/")
 _DEVICE_HEADER = "x-msbt-device"
 MAX_QUEUE_DEPTH = 64
@@ -681,6 +683,14 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
             _normalize_quick_menu_bridge_payload(action, payload),
             record=True,
         )
+    if action == "shift_overlay_control":
+        return backend_actions.shift_overlay_control(payload)
+    if action == "afk_social_probe":
+        return backend_actions.afk_social_probe()
+    if action == "afk_lobby_start":
+        return backend_actions.afk_lobby_start(payload)
+    if action == "afk_lobby_stop":
+        return backend_actions.afk_lobby_stop()
     if action == "refresh_players":
         backend_actions.refresh_players()
         return {"ok": True, "message": "Refreshed party/player list.", "status": _status()}
@@ -1041,6 +1051,7 @@ def _status() -> dict[str, Any]:
         "last_drop": backend_status.get("last_drop"),
         "drop_player_lock": backend_status.get("drop_player_lock") or {"enabled": False},
         "serial_delivery": backend_status.get("serial_delivery", {}),
+        "afk_lobby": dict(backend_actions.afk_lobby_status(), shift_connected=time.monotonic() - _afk_shift_seen < 10, shift_running=_afk_shift_running),
         "challenge_bulk": backend_status.get("challenge_bulk") or {},
         "itempool_bulk": backend_status.get("itempool_bulk") or {},
         "uvh_boost": backend_status.get("uvh_boost") or {},
@@ -1128,6 +1139,10 @@ def _process_pending_actions(
                 and quick_menu.quick_menu_registry.get_layout_revision()
                 != quick_menu.STATE.layout_revision):
             quick_menu.load_layout()
+    except Exception as exc:
+        _last_error = repr(exc)
+    try:
+        backend_actions.afk_lobby_tick()
     except Exception as exc:
         _last_error = repr(exc)
     try:
@@ -1330,6 +1345,8 @@ class _Handler(BaseHTTPRequestHandler):
         return
 
     def _cors_origin(self) -> str:
+        if _request_path(self).split("?", 1)[0] == "/afk_shift" and _is_loopback_ip(_request_ip(self)):
+            return "*"  # Cohtml opaque origin; exposes only the AFK flag.
         ip = _request_ip(self)
         if _is_loopback_ip(ip):
             return "http://127.0.0.1"
@@ -1384,7 +1401,13 @@ class _Handler(BaseHTTPRequestHandler):
                     "message": "Phone not paired. Open in-game Phone Pairing and scan the QR.",
                 })
             return
-        if path.startswith("/status"):
+        if path.split("?", 1)[0] == "/afk_shift":
+            if not _is_loopback_ip(_request_ip(self)):
+                self._send(404, {"ok": False})
+                return
+            afk = _get_status_snapshot().get("afk_lobby", {})
+            self._send(200, {"ok": True, "auto_accept": bool(afk.get("auto_accept"))})
+        elif path.startswith("/status"):
             self._send(200, _get_status_snapshot())
         elif path.startswith("/quick_menu"):
             data = backend_actions.get_quick_menu_layout()
@@ -1442,7 +1465,20 @@ class _Handler(BaseHTTPRequestHandler):
         self._send(200 if result.get("ok") else 401, result)
 
     def do_POST(self) -> None:
+        global _afk_shift_seen, _afk_shift_running
         path = _request_path(self)
+        if path.split("?", 1)[0] == "/afk_shift":
+            if not _is_loopback_ip(_request_ip(self)):
+                self._send(404, {"ok": False})
+                return
+            try:
+                report = self._read_json_body()
+                _afk_shift_running = report.get("running") is True
+                _afk_shift_seen = time.monotonic()
+                self._send(200, {"ok": True})
+            except Exception:
+                self._send(400, {"ok": False})
+            return
         if path.startswith("/mobile/enroll"):
             self._handle_enroll()
             return
@@ -1658,6 +1694,9 @@ def stop_bridge() -> None:
     global _executing_rid, _generation
     global _status_snapshot, _status_snapshot_at
     _generation += 1
+    backend_actions.afk_lobby_stop()
+    from . import shift_overlay
+    shift_overlay.stop()
     try:
         mobile_lan.set_rebind_callback(None)
         mobile_lan.stop_hosts_discovery()

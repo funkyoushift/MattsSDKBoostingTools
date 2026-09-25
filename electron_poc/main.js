@@ -1279,6 +1279,13 @@ async function installBundledSdkMods(rawPath = "", options = {}) {
     ? await sdkModsPathInfo(rawPath, "", { allowMissing: Boolean(options && options.allowMissing) })
     : await autoDetectSdkModsPathInfo({ allowMissing: Boolean(options && options.allowMissing) });
   if (!info.ok) return info;
+  const resourceRoot = app.isPackaged ? process.resourcesPath : path.join(__dirname, "vendor");
+  const runtime = await oak2Install.installOak2FromCache(app.getPath("userData"), info.gameRoot, {
+    bundledZip: path.join(resourceRoot, "oak2", "oak2-sdk.zip")
+  });
+  if (!runtime.ok) return runtime;
+  const pakRoot = app.isPackaged ? path.join(process.resourcesPath, "afk_shift") : path.join(__dirname, "..", "tools", "third_party", "afk_shift");
+  const pak = await require("./pak_install").installPak(pakRoot, info.gameRoot);
   await fs.mkdir(info.path, { recursive: true });
   await fs.copyFile(BUNDLED_SDKMOD_PATH, info.destination);
   await fs.rm(info.actorScriptDeployerDestination, { recursive: true, force: true });
@@ -1300,6 +1307,7 @@ async function installBundledSdkMods(rawPath = "", options = {}) {
     installedSdkmod: await installedSdkmodInfo(info.destination, bundled.sha256),
     installedActorScriptDeployer: await installedActorScriptDeployerInfo(info.actorScriptDeployerDestination),
     enabledMods: enabled,
+    runtime, pak,
     oak2: refreshed.oak2,
     requiredMods: refreshed.requiredMods,
     gameWasRunning,
@@ -2703,7 +2711,7 @@ app.whenReady().then(() => {
     return;
   }
   if (INSTALL_SDKMODS_AND_EXIT) {
-    installBundledSdkMods("", { allowMissing: true, allowGameRunning: true })
+    installBundledSdkMods(process.argv.find(a => a.startsWith("--sdk-mods-path="))?.slice("--sdk-mods-path=".length) || "", { allowMissing: true })
       .then((result) => {
         console.log(JSON.stringify(result, null, 2));
         app.exit(result.ok ? 0 : 2);

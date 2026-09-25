@@ -20,7 +20,7 @@
 
   document.body.classList.add("msbt-workspace");
   const groups = [
-    ["Character & Boosting", [["boosting", "Boosting"], ["boosting", "Levels & XP", "levels"], ["boosting", "Currency", "currency"], ["boosting", "Unlocks & Capacity", "capacity"], ["boosting", "Challenges & UVH", "challenges"]]],
+    ["Character & Boosting", [["boosting", "Boosting"], ["boosting", "AFK Lobby", "afk"], ["boosting", "Levels & XP", "levels"], ["boosting", "Currency", "currency"], ["boosting", "Unlocks & Capacity", "capacity"], ["boosting", "Challenges & UVH", "challenges"]]],
     ["Items & Inventory", [["inventory", "Inventory"], ["bl4-codes", "Item Catalog"], ["serial-tools", "Saved Items", "saved"], ["boosting", "Give Items", "rewards"], ["boosting", "Ground Loot & Vendors", "loot"], ["boosting", "Rarity Weights", "rarity"], ["item-pool", "Random Loot Pools"]]],
     ["Spawning & Waves", [["dev-spawner", "Spawn Enemies & Objects"], ["hoard-builder", "Hoard Builder"], ["combat-vehicle", "Vehicles", "vehicles"]]],
     ["Movement & World", [["player-movement", "Movement"], ["player-movement", "Teleport & World", "world"], ["map-travel", "Map Travel"], ["boosting", "Camera", "camera"]]],
@@ -31,6 +31,7 @@
   const sections = {
     boosting: [
       ["overview", "Quick Actions", ["boost-essentials"]],
+      ["afk", "AFK Lobby", ["afk-lobby"]],
       ["levels", "Levels & XP", ["boost-levels", "boost-combat-xp"]],
       ["currency", "Currency", ["boost-currency"]],
       ["capacity", "Unlocks & Capacity", ["boost-unlocks", "boost-inventory"]],

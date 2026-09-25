@@ -3,7 +3,7 @@
 /**
  * oak2-mod-manager v0.3 detect / download / install helpers for MSBT Electron.
  *
- * Official unmodified release asset is cached under Electron userData (not vendored in git).
+ * Official unmodified release asset is bundled for offline installation; download remains a fallback.
  * LGPL-3.0: https://github.com/bl-sdk/oak2-mod-manager
  */
 
@@ -307,7 +307,8 @@ function parseOak2DisplayVersion(tomlText) {
 function oak2VersionLooksLikeRequired(displayVersion) {
   const value = String(displayVersion || "").trim();
   if (!value) return false;
-  return /^0\.3(\b|[^\d])/i.test(value) || value.toLowerCase().startsWith("0.3");
+  const match = value.match(/^(\d+)\.(\d+)(?:\.(\d+))?(?=$|[^\d])/);
+  return Boolean(match && (Number(match[1]) > 0 || Number(match[2]) >= 3));
 }
 
 async function fileExists(filePath) {
@@ -357,8 +358,8 @@ async function writeOak2LicenseNotice(userDataPath) {
     `Official release asset: ${OAK2_DOWNLOAD_URL}`,
     `Install guide: ${OAK2_INSTALL_GUIDE_URL}`,
     "",
-    "MSBT downloads the official unmodified oak2-sdk.zip release asset and caches it under",
-    "this app's userData folder. oak2-mod-manager is LGPL-3.0; see the upstream LICENSE",
+    "MSBT bundles the official unmodified oak2-sdk.zip release asset; downloaded copies use",
+    "this app's userData folder. oak2-mod-manager is LGPL-3.0; see the bundled/upstream LICENSE",
     "and https://www.gnu.org/licenses/ for GPL/LGPL terms.",
     ""
   ].join("\n");
@@ -563,6 +564,12 @@ async function ensureOak2ZipCached(userDataPath, options = {}) {
   await fs.mkdir(caches.root, { recursive: true });
   await writeOak2LicenseNotice(userDataPath);
 
+  if (options.bundledZip) {
+    const hash = await sha256File(options.bundledZip);
+    if (hash !== OAK2_SHA256) throw new Error("Bundled SDK failed SHA-256 verification.");
+    return { ok: true, bundled: true, path: options.bundledZip, sha256: hash };
+  }
+
   const force = Boolean(options.forceDownload);
   if (!force && (await fileExists(caches.zipPath))) {
     const hash = await sha256File(caches.zipPath);
@@ -708,6 +715,17 @@ async function installOak2FromCache(userDataPath, gameRoot, options = {}) {
   }
   if (!(await fileExists(root))) {
     return { ok: false, gameRoot: root, message: `Borderlands 4 folder does not exist: ${root}` };
+  }
+
+  // A display version alone cannot identify independently updated SDK DLLs or
+  // nightly manager builds. Never merge the bundled runtime over an existing one.
+  const existing = await inspectOak2Install(root);
+  if (Object.values(existing.markers).some(Boolean)) {
+    return { ok: existing.present, preserved: true, gameRoot: root,
+      sdkModsPath: existing.sdkModsPath, oak2: existing,
+      message: existing.present
+        ? `Existing SDK/mod manager preserved (${existing.displayVersion || "unrecognized build"}).`
+        : "Incomplete SDK installation preserved. Repair it using its original SDK release; MSBT did not overwrite it." };
   }
 
   const dryRun = Boolean(options.dryRun);

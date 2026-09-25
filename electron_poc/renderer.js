@@ -3770,6 +3770,7 @@ function applyBridgeStatusResult(result, options = {}) {
     fingerprints.serialDelivery = serialFingerprint;
     updateSerialDeliveryProgress(data.serial_delivery || {});
   }
+  if (window.msbtAfkRender) window.msbtAfkRender(data);
   if (data.challenge_bulk) {
     updateChallengeBulkProgress(data.challenge_bulk);
     if (data.challenge_bulk.active) startChallengeStatusPoll();
