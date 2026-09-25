@@ -975,6 +975,7 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
             "local",
             override_level,
             payload.get("serial_level") or payload.get("code_delivery_level") or 70,
+            bulk_loot_password=payload.get("bulk_loot_password"),
         )
     if action in ("give_serial_selected", "give_serial_all"):
         override_level = str(payload.get("serial_override_level") or "false").lower() in ("1", "true", "yes", "on")
@@ -983,6 +984,7 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
             "all" if action.endswith("all") else "selected",
             override_level,
             payload.get("serial_level") or payload.get("code_delivery_level") or 70,
+            bulk_loot_password=payload.get("bulk_loot_password"),
         )
     if action == "give_serial_nonhost":
         override_level = str(payload.get("serial_override_level") or "false").lower() in ("1", "true", "yes", "on")
@@ -991,6 +993,7 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
             "nonhost",
             override_level,
             payload.get("serial_level") or payload.get("code_delivery_level") or 70,
+            bulk_loot_password=payload.get("bulk_loot_password"),
         )
     if action == "read_equipped_serials":
         return backend_actions.read_equipped_serials(payload.get("target_player"))

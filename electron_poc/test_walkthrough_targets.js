@@ -160,7 +160,7 @@ async function auditWalkthroughs() {
   );
   assert.deepStrictEqual(
     result.tourInventory.structured,
-    { afk: 10, main: 12, layout: 7, "quick-menu-setup": 8 },
+    { afk: 11, main: 12, layout: 7, "quick-menu-setup": 8 },
     "structured walkthrough inventory changed; audit the new/removed steps"
   );
   assert.deepStrictEqual(
@@ -202,10 +202,10 @@ async function auditWalkthroughs() {
     return { mode, rows, lootOpen: document.getElementById("afkLootDetails").open };
   })()`, true);
   assert.strictEqual(afk.mode, "afk", "AFK walkthrough button must start its own tour");
-  assert.strictEqual(afk.rows.length, 10);
+  assert.strictEqual(afk.rows.length, 11);
   assert.deepStrictEqual(afk.rows.filter(row => !row.visible), [], "AFK targets must remain visible across workspace navigation");
   assert.strictEqual(afk.lootOpen, true, "Loot tutorial must open its collapsed section");
-  console.log("AFK launch button and all 10 workspace steps passed");
+  console.log("AFK launch button and all 11 workspace steps passed");
   win.destroy();
 }
 

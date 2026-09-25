@@ -1625,7 +1625,9 @@ def _is_local_only_serial_target(player_indices: List[int]) -> bool:
     except Exception:
         return False
 
-def _queue_serial_delivery_sequence(serials: List[str], player_indices: List[int], *, scope_label: str, mode: str | None = None) -> None:
+def _queue_serial_delivery_sequence(serials: List[str], player_indices: List[int], *, scope_label: str, mode: str | None = None, bulk_authorized: bool = False) -> None:
+    if len(serials) > 70 and not bulk_authorized:
+        raise PermissionError("Sending more than 70 items requires password authorization.")
     mode_key = _serial_delivery_mode_key(mode)
     max_serials = _serial_delivery_max_serials_per_chunk(mode_key)
     post_open_delay = _clamp_serial_delivery_delay(_serial_delivery_post_open_delay(mode_key))
@@ -1874,6 +1876,7 @@ def _do_give_serial_to_player_indices(
     *,
     scope_label: str = "selected players",
     mode: str | None = None,
+    bulk_authorized: bool = False,
 ) -> None:
     """
     Queue party-safe serial delivery without blocking the host.
@@ -1883,7 +1886,7 @@ def _do_give_serial_to_player_indices(
     miss rewards or disconnect.  Keep the public helper name for existing callers,
     but route through the tick-driven verifier/sequence instead.
     """
-    _queue_serial_delivery_sequence(serials, player_indices, scope_label=scope_label, mode=mode)
+    _queue_serial_delivery_sequence(serials, player_indices, scope_label=scope_label, mode=mode, bulk_authorized=bulk_authorized)
     return
 
     if not serials:

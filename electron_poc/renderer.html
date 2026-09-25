@@ -212,6 +212,12 @@
           <label><input type="checkbox" data-afk-boost="cosmetics"> All Customs + Hovers</label>
           <label><input type="checkbox" data-afk-boost="loot"> Send selected loot</label>
         </div>
+        <label for="afkLootMode">Loot amount per guest</label>
+        <select id="afkLootMode">
+          <option value="all">Send all selected items · password above 70</option>
+          <option value="random70">Send 70 random items per guest</option>
+        </select>
+        <p class="muted-line">Random mode draws up to 70 entries from your AFK loot list for each guest. In Item Catalog, filter and select your items, then use Add to AFK. Smaller lists send all entries. This limits items sent per join, not the guest’s total backpack contents. Rejoining draws again.</p>
         <label><input id="afkAutoAccept" type="checkbox" checked> Auto-accept SHiFT friends while running</label>
         <label><input id="afkAutoKick" type="checkbox"> Auto-kick when boosts finish (15-second wait after loot)</label>
         <p class="muted-line">The auto-accepter also declines incoming game invites. UVHM 1–7 is separate from challenges. All Customs + Hovers uses the same action as the Boosting tab button.</p>
@@ -224,7 +230,7 @@
             <button id="afkAddBookmarks" type="button">Add selected to loot</button>
           </div>
           <p id="afkBookmarkNote" class="muted-line"></p>
-          <label for="afkCodes">Loot to send on every join · one code per line; repeat a line for extra copies</label>
+          <label for="afkCodes">Loot pool · one code per line; repeated lines are extra copies</label>
           <textarea id="afkCodes" rows="5" placeholder="Paste item codes, or add bookmarks above"></textarea>
           <p class="muted-line">Codes retain their item levels. Selections are saved on this PC.</p>
         </details>

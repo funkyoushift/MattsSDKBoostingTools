@@ -918,11 +918,53 @@ function humanActionLabel(action) {
     .join(" ");
 }
 
+function requestBackpackPassword(kind = "backpack") {
+  return new Promise((resolve) => {
+    const dialog = document.createElement("dialog");
+    dialog.id = "backpackPasswordDialog";
+    const form = document.createElement("form");
+    form.method = "dialog";
+    const title = document.createElement("h3");
+    title.textContent = kind === "bulk_loot" ? "Unlock more than 70 items" : "Unlock guest backpack action";
+    const label = document.createElement("label");
+    label.textContent = kind === "bulk_loot" ? "Sending more than 70 items requires the password. This does not check existing backpack contents." : "Password required for Empty/Drop Backpack on non-host players.";
+    const input = document.createElement("input");
+    input.type = "password";
+    input.autocomplete = "off";
+    input.setAttribute("aria-label", "Action password");
+    const submit = document.createElement("button");
+    submit.type = "submit"; submit.textContent = kind === "bulk_loot" ? "Authorize delivery" : "Apply to selected player";
+    const cancel = document.createElement("button");
+    cancel.type = "button"; cancel.textContent = "Cancel";
+    let password = null;
+    form.addEventListener("submit", (event) => {
+      event.preventDefault(); password = input.value; dialog.close();
+    });
+    cancel.addEventListener("click", () => dialog.close());
+    dialog.addEventListener("close", () => {
+      input.value = ""; dialog.remove(); resolve(password);
+    }, { once: true });
+    label.append(input); form.append(title, label, submit, cancel);
+    dialog.append(form); document.body.append(dialog); dialog.showModal(); input.focus();
+  });
+}
+
 async function runAction(action, payload = {}, outNode = els.boostOutput, timeoutMs = 30000) {
   const label = humanActionLabel(action);
   appendActivity(`Sending ${label}...`);
   setOutput(outNode, `Sending ${label}...`);
-  const result = await bridgeAction(action, payload, timeoutMs);
+  let result = await bridgeAction(action, payload, timeoutMs);
+  const response = result && result.data !== undefined ? result.data : result;
+  if (response?.password_required && (response.password_kind === "bulk_loot" || ["chaos_empty_backpack", "chaos_drop_backpack", "chaos_drop_backpack_targeted"].includes(action))) {
+    const password = await requestBackpackPassword(response.password_kind);
+    if (password !== null) {
+      result = await bridgeAction(action, response.password_kind === "bulk_loot"
+        ? { ...payload, bulk_loot_password: password }
+        : { ...payload, backpack_password: password, backpack_expected_target: response.backpack_target }, timeoutMs);
+    } else {
+      result = { ok: false, message: "Backpack action cancelled." };
+    }
+  }
   // Prefer the bridge action payload. The IPC wrapper is often `{ ok: true, data: { ok: false, ... } }`
   // when HTTP succeeded but the in-game handler rejected the command.
   setOutput(outNode, result && result.data !== undefined ? result.data : result);
@@ -13713,6 +13755,13 @@ const TUTORIAL_TOURS = {
       "afk-lobby"
     ],
     "revealDetails": "#afkLootDetails"
+  },
+  {
+    "title": "Choose how much loot each guest receives",
+    "body": "Choose Send 70 random items per guest to draw up to 70 entries from your AFK loot pool on each join. Filter and select items in Item Catalog, then Add to AFK to build the pool. Smaller pools send every entry. Repeated codes remain extra copies. Send all selected items keeps unlimited delivery, but sending more than 70 requires the password each time you start AFK. This limits new items sent, not total backpack contents, and does not change guest inventory visibility.",
+    "tab": "boosting",
+    "target": "afkLootMode",
+    "revealPanels": ["afk-lobby"]
   },
   {
     "title": "Run the SHiFT auto-accepter",

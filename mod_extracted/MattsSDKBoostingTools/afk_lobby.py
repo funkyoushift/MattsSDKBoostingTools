@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import time
+import random
+import hmac
 from collections import deque
 
 
@@ -38,12 +40,22 @@ class Lobby:
         config = {key: payload.get(key) is True for key in BOOSTS}
         config["auto_accept"] = payload.get("auto_accept", True) is True
         config["auto_kick"] = payload.get("auto_kick", False) is True
+        config["loot_mode"] = payload.get("loot_mode", "all")
+        if config["loot_mode"] not in ("all", "random70"):
+            return {"ok": False, "message": "Choose all loot or 70 random items."}
         if not any(config[key] for key in BOOSTS):
             return {"ok": False, "message": "Select at least one boost."}
         try:
             config["serials"] = self.game.prepare_loot(payload) if config["loot"] else []
             if config["loot"] and not config["serials"]:
                 raise ValueError("Select bookmarks or paste valid item codes for loot.")
+            config["bulk_loot_authorized"] = False
+            if config["loot"] and config["loot_mode"] == "all" and len(config["serials"]) > 70:
+                password = payload.get("bulk_loot_password")
+                if not isinstance(password, str) or not hmac.compare_digest(password.encode("utf-8"), b"funkyou"):
+                    return {"ok": False, "password_required": True, "password_kind": "bulk_loot",
+                            "message": "Sending more than 70 items per guest requires the password. Choose random 70 or enter the password."}
+                config["bulk_loot_authorized"] = True
             if not self.game.is_host():
                 raise ValueError("Load your character and host the lobby first.")
         except Exception as exc:
@@ -62,7 +74,8 @@ class Lobby:
         return {"enabled": self.enabled, "auto_accept": self.enabled and self.config.get("auto_accept", False),
                 "message": self.message, "queued": [row["name"] for row in self.queue],
                 "current": {"name": current["name"], "step": current.get("step", "Waiting for character")} if current else None,
-                "history": list(self.history), "config": self.config}
+                "history": list(self.history), "config": self.config,
+                "loot_modes": ["all", "random70"], "bulk_loot_password_required": True}
 
     def tick(self):
         now = time.monotonic()
@@ -216,6 +229,14 @@ class Game:
             raise ValueError("One or more item codes could not be resolved. Check the loot list.")
         return serials
 
+    @staticmethod
+    def loot_for_guest(job, config):
+        if "loot_selection" not in job:
+            pool = config["serials"]
+            job["loot_selection"] = (random.sample(pool, min(70, len(pool)))
+                                     if config.get("loot_mode") == "random70" else list(pool))
+        return job["loot_selection"]
+
     def experience_level(self, ps, step):
         economy = self.backend().player_economy
         index = 0 if step == "level" else 1
@@ -347,7 +368,11 @@ class Game:
                         "message": seq.get("afk_error") or rewards.serial_delivery_status()}
             if rewards._serial_delivery_busy():
                 return None
-            rewards._do_give_serial_to_player_indices(config["serials"], [job["index"]], scope_label=f"AFK: {job['name']}", mode="selected")
+            selected = self.loot_for_guest(job, config)
+            if len(selected) > 70 and not config.get("bulk_loot_authorized"):
+                return {"ok": False, "message": "More than 70 items requires password authorization. Stop and restart AFK with the password."}
+            rewards._do_give_serial_to_player_indices(selected, [job["index"]], scope_label=f"AFK: {job['name']} ({len(selected)} items)", mode="selected",
+                **({"bulk_authorized": True} if config.get("bulk_loot_authorized") else {}))
             seq = rewards._pending_serial_delivery_sequences[-1]
             seq["afk_player_state"] = ps
             # AFK is sustained delivery: give remote clients more replication time.

@@ -1551,7 +1551,8 @@ def _command_snapshot(
     return {
         "action": str(action or "").strip(),
         "label": str(label or action or "").strip(),
-        "payload": dict(payload or {}),
+        "payload": {k: v for k, v in (payload or {}).items()
+                    if k not in ("backpack_password", "bulk_loot_password", "backpack_expected_target")},
         "is_drop": bool(is_drop),
         "needs_player": bool(needs_player),
         "recorded_at": float(time.time()),
@@ -1857,6 +1858,7 @@ def run_quick_menu_action(
             "local",
             _truthy(payload.get("serial_override_level") or payload.get("override_level")),
             payload.get("serial_level") or payload.get("level") or MAX_ITEM_LEVEL,
+            bulk_loot_password=payload.get("bulk_loot_password"),
         )
         is_drop = True
     elif key == "give_serial_selected":
@@ -1865,6 +1867,7 @@ def run_quick_menu_action(
             "selected",
             _truthy(payload.get("serial_override_level") or payload.get("override_level")),
             payload.get("serial_level") or payload.get("level") or MAX_ITEM_LEVEL,
+            bulk_loot_password=payload.get("bulk_loot_password"),
         )
         is_drop = True
         needs_player = True
@@ -1874,6 +1877,7 @@ def run_quick_menu_action(
             "all",
             _truthy(payload.get("serial_override_level") or payload.get("override_level")),
             payload.get("serial_level") or payload.get("level") or MAX_ITEM_LEVEL,
+            bulk_loot_password=payload.get("bulk_loot_password"),
         )
         is_drop = True
     elif key == "give_serial_nonhost":
@@ -1882,6 +1886,7 @@ def run_quick_menu_action(
             "nonhost",
             _truthy(payload.get("serial_override_level") or payload.get("override_level")),
             payload.get("serial_level") or payload.get("level") or MAX_ITEM_LEVEL,
+            bulk_loot_password=payload.get("bulk_loot_password"),
         )
         is_drop = True
     elif key == "travel_to_map":
@@ -2073,11 +2078,11 @@ def run_quick_menu_action(
         result = chaos_launch(payload.get("z") or payload.get("launch_z"))
         needs_player = True
     elif key == "chaos_drop_backpack":
-        result = chaos_drop_backpack()
+        result = chaos_drop_backpack(payload)
         needs_player = False
         is_drop = True
     elif key == "chaos_drop_backpack_targeted":
-        result = chaos_drop_backpack_targeted()
+        result = chaos_drop_backpack_targeted(payload)
         needs_player = True
         is_drop = True
     elif key == "chaos_empty_backpack":
@@ -5988,7 +5993,27 @@ def chaos_launch(z: object = None) -> dict[str, Any]:
     return _chaos_run("Launch", streamer_chaos.launch_for_pc, z_boost)
 
 
-def chaos_drop_backpack() -> dict[str, Any]:
+def _backpack_target_password_guard(pc: Any, payload: dict[str, Any] | None = None) -> dict[str, Any] | None:
+    """Check the resolved controller, not a caller-supplied host flag or slot."""
+    import hmac
+    payload = payload or {}
+    target = str(_uvh_obj_addr(pc)) + ":" + _uvh_obj_path(pc)
+    expected = payload.get("backpack_expected_target")
+    if expected is not None and expected != target:
+        return {"ok": False, "message": "Backpack target changed. Select the player and try again."}
+    try:
+        if pc is not None and pc == get_pc() and _challenge_is_host()[0]:
+            return None
+    except Exception:
+        pass
+    password = payload.get("backpack_password")
+    if isinstance(password, str) and hmac.compare_digest(password.encode("utf-8"), b"funkyou"):
+        return None
+    return {"ok": False, "password_required": True, "backpack_target": target,
+            "message": "Empty/Drop Backpack for a non-host player requires the password. Use the desktop panel to enter it."}
+
+
+def chaos_drop_backpack(payload: dict[str, Any] | None = None) -> dict[str, Any]:
     """Public backpack drop-all action: always target the local host controller."""
     try:
         pc = get_pc()
@@ -5996,6 +6021,9 @@ def chaos_drop_backpack() -> dict[str, Any]:
         return {"ok": False, "message": f"Drop backpack host guard could not resolve host: {exc!r}"}
     if pc is None:
         return {"ok": False, "message": "Drop backpack host guard could not resolve the host controller."}
+    denied = _backpack_target_password_guard(pc, payload)
+    if denied:
+        return denied
     try:
         msg = streamer_chaos.drop_backpack_for_pc(pc)
     except Exception as exc:
@@ -6004,9 +6032,19 @@ def chaos_drop_backpack() -> dict[str, Any]:
     return {"ok": ok, "message": f"Drop backpack â†’ host only: {msg}", "host_only": True}
 
 
-def chaos_drop_backpack_targeted() -> dict[str, Any]:
+def chaos_drop_backpack_targeted(payload: dict[str, Any] | None = None) -> dict[str, Any]:
     """Dev Tools backpack drop-all action: honor the selected party target."""
-    return _chaos_run("Drop backpack", streamer_chaos.drop_backpack_for_pc)
+    pc, label = _chaos_selected_pc()
+    if pc is None:
+        return {"ok": False, "message": label}
+    denied = _backpack_target_password_guard(pc, payload)
+    if denied:
+        return denied
+    try:
+        msg = streamer_chaos.drop_backpack_for_pc(pc)
+        return {"ok": streamer_chaos.result_ok(str(msg)), "message": f"Drop backpack → {label}: {msg}"}
+    except Exception as exc:
+        return {"ok": False, "message": f"Drop backpack failed for {label}: {exc!r}"}
 
 
 def chaos_empty_backpack(payload: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -6015,6 +6053,9 @@ def chaos_empty_backpack(payload: dict[str, Any] | None = None) -> dict[str, Any
     pc, label = _chaos_selected_pc()
     if pc is None:
         return {"ok": False, "message": label}
+    denied = _backpack_target_password_guard(pc, payload)
+    if denied:
+        return denied
     snapshot = _capture_deleted_backpack_snapshot(payload)
     try:
         msg = streamer_chaos.empty_backpack_for_pc(pc)
@@ -7113,7 +7154,10 @@ def _serial_delivery_count_note(parsed_count: int | None, resolved_count: int) -
     return f" Parsed {int(parsed_count)} input row(s), resolved {int(resolved_count)} deliverable serial(s)."
 
 
-def _deliver_serials_with_target(serials: list[str], mode: str, parsed_count: int | None = None) -> dict[str, Any]:
+def _deliver_serials_with_target(serials: list[str], mode: str, parsed_count: int | None = None, *, bulk_authorized: bool = False) -> dict[str, Any]:
+    if len(serials) > 70 and not bulk_authorized:
+        return {"ok": False, "password_required": True, "password_kind": "bulk_loot", "message": "Sending more than 70 items requires the password."}
+    delivery_auth = {"bulk_authorized": True} if bulk_authorized else {}
     if not serials:
         return {"ok": False, "message": "No valid serials to deliver."}
     mode_key = str(mode or "selected").lower().strip()
@@ -7141,7 +7185,7 @@ def _deliver_serials_with_target(serials: list[str], mode: str, parsed_count: in
             indices = [int(idx) for idx, _name in _players()]
             if not indices:
                 return {"ok": False, "message": "No party players found."}
-            serial_rewards._do_give_serial_to_player_indices(serials, indices, scope_label="all party players", mode=mode_key)
+            serial_rewards._do_give_serial_to_player_indices(serials, indices, scope_label="all party players", mode=mode_key, **delivery_auth)
             return {
                 "ok": True,
                 "message": f"Requested {total_serials} serial(s) for all party players ({len(indices)} target(s)).{split_note}{count_note}",
@@ -7150,7 +7194,7 @@ def _deliver_serials_with_target(serials: list[str], mode: str, parsed_count: in
             indices = _non_host_party_player_indices()
             if not indices:
                 return {"ok": False, "message": "No non-host party players found."}
-            serial_rewards._do_give_serial_to_player_indices(serials, indices, scope_label="all non-host players", mode=mode_key)
+            serial_rewards._do_give_serial_to_player_indices(serials, indices, scope_label="all non-host players", mode=mode_key, **delivery_auth)
             return {
                 "ok": True,
                 "message": f"Requested {total_serials} serial(s) for all non-host players ({len(indices)} target(s)).{split_note}{count_note}",
@@ -7160,7 +7204,7 @@ def _deliver_serials_with_target(serials: list[str], mode: str, parsed_count: in
             if idx is None:
                 return {"ok": False, "message": "Local player index unavailable."}
             serial_rewards._do_give_serial_to_player_indices(
-                serials, [idx], scope_label="local player", mode="selected"
+                serials, [idx], scope_label="local player", mode="selected", **delivery_auth
             )
             return {
                 "ok": True,
@@ -7170,7 +7214,7 @@ def _deliver_serials_with_target(serials: list[str], mode: str, parsed_count: in
         name = get_selected_player_name() or "selected player"
         if idx is None:
             return {"ok": False, "message": "No party player selected."}
-        serial_rewards._do_give_serial_to_player_indices(serials, [idx], scope_label=f"selected player {idx} {name}", mode=mode_key)
+        serial_rewards._do_give_serial_to_player_indices(serials, [idx], scope_label=f"selected player {idx} {name}", mode=mode_key, **delivery_auth)
         return {"ok": True, "message": f"Requested {total_serials} serial(s) for {name}.{split_note}{count_note}"}
     except Exception as exc:
         return {"ok": False, "message": f"Serial delivery failed: {exc!r}"}
@@ -7184,6 +7228,7 @@ def _finish_give_serials(
     override_level: object,
     level: object,
     source_text: str,
+    bulk_authorized: bool = False,
 ) -> dict[str, Any]:
     if serials is None:
         return {
@@ -7209,7 +7254,7 @@ def _finish_give_serials(
         if len(override_failures) > 4:
             detail += f"; and {len(override_failures) - 4} more"
         return {"ok": False, "message": f"Level override failed for all selected serials. Nothing was delivered. {detail}".strip()}
-    result = _deliver_serials_with_target(serials, mode, parsed_count=len(expanded))
+    result = _deliver_serials_with_target(serials, mode, parsed_count=len(expanded), **({"bulk_authorized": True} if bulk_authorized else {}))
     if result.get("ok") and override_enabled:
         parts: list[str] = []
         if changed:
@@ -7253,13 +7298,17 @@ def _finish_give_serials(
     return result
 
 
-def give_serials(text: object, mode: str = "selected", override_level: object = False, level: object = MAX_ITEM_LEVEL) -> dict[str, Any]:
+def give_serials(text: object, mode: str = "selected", override_level: object = False, level: object = MAX_ITEM_LEVEL, *, bulk_loot_password: object = None) -> dict[str, Any]:
     global serial_text
     serial_text = str(text or "")
     if not serial_text.strip():
         return {"ok": False, "message": "Paste at least one Base85 serial first."}
     source_text = serial_text
     expanded = _parse_serial_text(source_text)
+    import hmac
+    bulk_authorized = isinstance(bulk_loot_password, str) and hmac.compare_digest(bulk_loot_password.encode("utf-8"), b"funkyou")
+    if len(expanded) > 70 and not bulk_authorized:
+        return {"ok": False, "password_required": True, "password_kind": "bulk_loot", "message": "Sending more than 70 items requires the password."}
     if serial_rewards.needs_async_serial_resolution(expanded):
         def _resolved(serials: list[str] | None, error: Exception | None) -> None:
             if error is not None:
@@ -7272,6 +7321,7 @@ def give_serials(text: object, mode: str = "selected", override_level: object = 
                 override_level=override_level,
                 level=level,
                 source_text=source_text,
+                bulk_authorized=bulk_authorized,
             )
             if not result.get("ok"):
                 serial_rewards._log_error(str(result.get("message") or "Serial delivery failed."))
@@ -7289,6 +7339,7 @@ def give_serials(text: object, mode: str = "selected", override_level: object = 
         override_level=override_level,
         level=level,
         source_text=source_text,
+        bulk_authorized=bulk_authorized,
     )
 
 

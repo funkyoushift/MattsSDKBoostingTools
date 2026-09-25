@@ -15,6 +15,7 @@
       ...options.map((node) => [node.dataset.afkBoost, node.checked]),
       ["auto_accept", byId("afkAutoAccept").checked],
       ["auto_kick", byId("afkAutoKick").checked],
+      ["loot_mode", byId("afkLootMode").value],
       ["codes", byId("afkCodes").value]
     ]);
   }
@@ -25,6 +26,7 @@
     options.forEach((node) => { node.checked = config[node.dataset.afkBoost] === true; });
     byId("afkAutoAccept").checked = config.auto_accept !== false;
     byId("afkAutoKick").checked = config.auto_kick === true;
+    byId("afkLootMode").value = config.loot_mode === "random70" ? "random70" : "all";
     if (typeof config.codes === "string") byId("afkCodes").value = config.codes;
     else if (Array.isArray(config.serials)) byId("afkCodes").value = config.serials.join("\n");
   }
@@ -57,9 +59,23 @@
     busy = true;
     render({ afk_lobby: lastStatus });
     try {
+      if (action === "afk_lobby_start" && payload.loot && payload.loot_mode === "random70"
+          && !lastStatus?.loot_modes?.includes("random70")) {
+        throw new Error("Install the updated SDK mod and restart Borderlands 4 before using random 70 loot.");
+      }
+      if (action === "afk_lobby_start" && payload.loot && payload.loot_mode === "all"
+          && !lastStatus?.bulk_loot_password_required) {
+        throw new Error("Install the updated SDK mod and restart Borderlands 4 before using password-protected loot delivery.");
+      }
       save();
-      const response = await bridgeAction(action, payload, 30000);
-      const result = response && response.data !== undefined ? response.data : response;
+      let response = await bridgeAction(action, payload, 30000);
+      let result = response && response.data !== undefined ? response.data : response;
+      if (result?.password_required && result.password_kind === "bulk_loot") {
+        const password = await requestBackpackPassword("bulk_loot");
+        if (password === null) throw new Error("AFK start cancelled.");
+        response = await bridgeAction(action, { ...payload, bulk_loot_password: password }, 30000);
+        result = response && response.data !== undefined ? response.data : response;
+      }
       if (!result || result.ok === false) throw new Error(result && result.message || "AFK command failed.");
       if (result.afk_lobby) render({ afk_lobby: { ...lastStatus, ...result.afk_lobby } });
       await bridgeStatus({ quiet: true });

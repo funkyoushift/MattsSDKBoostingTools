@@ -150,6 +150,69 @@ def test_loot_has_no_500_code_cap_and_preserves_duplicates_and_case():
     assert game.prepare_loot({"codes": "\n".join(codes)}) == codes
 
 
+def test_random_loot_is_seventy_from_pool_and_fixed_per_guest(monkeypatch):
+    rng = module.random.Random(12)
+    monkeypatch.setattr(module.random, "sample", rng.sample)
+    pool = [f"serial-{i}" for i in range(952)]
+    config = {"serials": pool, "loot_mode": "random70"}
+    first_job = {}; first = module.Game.loot_for_guest(first_job, config)
+    second = module.Game.loot_for_guest({}, config)
+    assert len(first) == len(set(first)) == 70
+    assert set(first).issubset(pool) and set(second).issubset(pool)
+    assert first != second
+    assert module.Game.loot_for_guest(first_job, config) is first
+    assert pool == [f"serial-{i}" for i in range(952)]
+
+
+def test_random_small_pools_and_unlimited_preserve_copies():
+    small = ["@UCase", "@Ucase", "@UCase"]
+    assert sorted(module.Game.loot_for_guest({}, {"serials": small, "loot_mode": "random70"})) == sorted(small)
+    large = small * 1000
+    assert module.Game.loot_for_guest({}, {"serials": large, "loot_mode": "all"}) == large
+    assert module.Game.loot_for_guest({}, {"serials": large}) == large
+
+
+def test_loot_mode_validation_and_legacy_default():
+    lobby = module.Lobby(FakeGame())
+    assert not lobby.start({"loot": True, "loot_mode": "bad"})["ok"]
+    assert lobby.start({"loot": True})["ok"] and lobby.config["loot_mode"] == "all"
+
+
+def test_over_seventy_needs_password_and_cannot_reuse_authorization():
+    game = FakeGame(); game.prepare_loot = lambda _: [str(i) for i in range(71)]
+    lobby = module.Lobby(game)
+    for extra in ({}, {"bulk_loot_password": "bad"}, {"bulk_loot_authorized": True}):
+        assert lobby.start({"loot": True, **extra})["password_required"]
+        assert not lobby.enabled
+    assert lobby.start({"loot": True, "bulk_loot_password": "funkyou"})["ok"]
+    assert lobby.config["bulk_loot_authorized"]
+    assert "bulk_loot_password" not in lobby.config
+    lobby.stop()
+    assert lobby.start({"loot": True})["password_required"]
+    assert lobby.start({"loot": True, "loot_mode": "random70"})["ok"]
+    assert not lobby.config["bulk_loot_authorized"]
+    lobby.stop(); game.prepare_loot = lambda _: [str(i) for i in range(70)]
+    assert lobby.start({"loot": True})["ok"]
+
+
+def test_random_delivery_sends_only_selection_and_does_not_resend():
+    calls = []; sequences = []
+    def send(serials, indices, **kwargs):
+        calls.append((serials, indices))
+        sequences.append({"chunks": [serials], "index": 0})
+    rewards = SimpleNamespace(_pending_serial_delivery_sequences=sequences,
+        _serial_delivery_busy=lambda: False, _do_give_serial_to_player_indices=send,
+        serial_delivery_status=lambda: "finished")
+    game = module.Game(); game.backend = lambda: SimpleNamespace(serial_rewards=rewards)
+    job = {"pc": "guest", "token": "ps", "index": 2, "name": "Guest"}
+    config = {"serials": [str(i) for i in range(952)], "loot_mode": "random70"}
+    assert game.step("loot", job, config) is None
+    assert len(calls) == 1 and len(calls[0][0]) == 70 and calls[0][1] == [2]
+    assert game.step("loot", job, config) is None and len(calls) == 1
+    sequences[0]["index"] = 1; sequences.clear()
+    assert game.step("loot", job, config)["ok"] and len(calls) == 1
+
+
 def test_sdu_uses_existing_max_helper_and_keys_target_only_guest():
     calls = []
     game = module.Game()
