@@ -228,6 +228,11 @@ foreach ($relativePath in $RequiredPackageFiles) {
 }
 $PackagedGzoCatalog = Join-Path $UnpackedRoot "resources\external_app\v22_parts_codes_fixed\resources\MattsSDKBoostingTools_gzo_codes.json"
 Assert-GzoCatalogImages -CatalogPath $PackagedGzoCatalog -Label "Packaged GZO catalog"
+$SmokeProcess = Start-Process -FilePath (Join-Path $UnpackedRoot 'MattsSDKBoostingTools.exe') -ArgumentList '--smoke' -WindowStyle Hidden -PassThru -Wait -RedirectStandardOutput (Join-Path $OutputRoot 'smoke.log') -RedirectStandardError (Join-Path $OutputRoot 'smoke-error.log')
+if ($SmokeProcess.ExitCode -ne 0) {
+    Get-Content -LiteralPath (Join-Path $OutputRoot 'smoke.log')
+    throw "Packaged app startup check failed with exit code $($SmokeProcess.ExitCode)."
+}
 Push-Location $ElectronRoot
 try {
     Invoke-Checked "node.exe" @("test_updater_packaging.js")

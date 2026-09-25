@@ -1,8 +1,10 @@
 # AFK Lobby local test
 
 Source: isolated `codex/afk-boost-lobby` branch based on the installed 2.13.1 source.
-No version bump or public release. The build preserves all other installed SDK
-members and all other entries in the supplied SHiFT PAK.
+These scripts preserve the historical local-test workflow. The public v2.14.0
+installer uses tools/prepare_game_bundle.js and the tracked PAK under
+tools/third_party/afk_shift instead. Do not use a stale local-test manifest to
+replace a public release. The checks below describe the original test stage.
 
 ## Test flow
 

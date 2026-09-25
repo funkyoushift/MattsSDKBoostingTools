@@ -228,6 +228,8 @@ Add-Type -AssemblyName System.IO.Compression.FileSystem
 $portableArchive = [System.IO.Compression.ZipFile]::OpenRead($ElectronUnpackedZip)
 try {
     $portableRoot = "MSBT-Portable-v$PackageVersion-win-x64/resources/"
+    Assert-PortableEmbeddedFile $portableArchive ($portableRoot + 'oak2/oak2-sdk.zip') (Get-ReleaseFileSha256 $BundledOak)
+    Assert-PortableEmbeddedFile $portableArchive ($portableRoot + "afk_shift/$PakName") (Get-ReleaseFileSha256 $BundledPak)
     Assert-PortableEmbeddedFile $portableArchive ($portableRoot + 'sdkmod/MattsSDKBoostingTools.sdkmod') $sdkSha256
     $manifestSha256 = Get-ReleaseFileSha256 $PackagedManifestPath
     Assert-PortableEmbeddedFile $portableArchive ($portableRoot + 'releases/latest.json') $manifestSha256
