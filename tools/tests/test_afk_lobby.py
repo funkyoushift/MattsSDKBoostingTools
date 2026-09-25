@@ -251,6 +251,59 @@ def test_new_boosts_are_independent_and_opt_in():
         assert game.calls == [(selected, "guest", 1)]
 
 
+def test_join_waits_twenty_seconds_for_same_character(monkeypatch):
+    clock = [100.0]; monkeypatch.setattr(module.time, "monotonic", lambda: clock[0])
+    game = module.Game()
+    assert not game.character_ready("ps", "pc", "pawn")
+    clock[0] += 5
+    assert not game.character_ready("ps", "pc", "pawn")
+    clock[0] += 14.9
+    assert not game.character_ready("ps", "pc", "pawn")
+    clock[0] += .1
+    assert game.character_ready("ps", "pc", "pawn")
+    # A replacement pawn must start a fresh wait even without a null frame.
+    assert not game.character_ready("ps", "pc", "replacement")
+    clock[0] += 20
+    assert game.character_ready("ps", "pc", "replacement")
+    assert not game.character_ready("ps", None, None)
+    assert not game.character_ready("ps", "pc", "replacement")
+
+
+def test_world_loss_discards_join_timer():
+    game = module.Game()
+    game.character_ready("ps", "pc", "pawn")
+    game.backend = lambda: SimpleNamespace(_gbc_session_world_and_gamestate=lambda: (None, None))
+    assert game.roster() == (None, [])
+    assert game.ready_since == {}
+
+
+def test_progression_must_load_before_join_delay_starts(monkeypatch):
+    clock = [100.0]; monkeypatch.setattr(module.time, "monotonic", lambda: clock[0])
+    class State:
+        ExperienceState = []
+    ps = State(); pools = []
+    pawn = SimpleNamespace(GbxProgressionManager=SimpleNamespace(
+        ProgressPointsContainer=SimpleNamespace(PointsAcquiredPerPool=pools)))
+    game = module.Game()
+    def ready():
+        return game.character_ready(ps, "pc", pawn if game.progression_loaded(ps, pawn) else None)
+    assert not ready()
+    clock[0] += 90
+    assert not ready()  # a long-lived loading pawn cannot bypass the gate
+    pools.extend([0, 0, 0])
+    assert not ready()  # XP data still absent
+    ps.ExperienceState = [object(), object()]
+    assert not ready()
+    clock[0] += 20
+    assert ready()
+    pools.clear()
+    assert not ready()  # loading resumes: discard the old countdown
+    pools.extend([0, 0, 3225])
+    assert not ready()
+    clock[0] += 20
+    assert ready()  # already-max SDUs do not skip the unconditional run
+
+
 def test_uvhm_guest_plan_pacing_final_settle_and_manual_queue(monkeypatch):
     clock = [100.0]; monkeypatch.setattr(module.time, "monotonic", lambda: clock[0])
     calls = []; indices_seen = []; manual = [True]

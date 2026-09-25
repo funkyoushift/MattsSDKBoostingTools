@@ -7,6 +7,8 @@ _bindings = []
 _release_at = []
 _last_action = -10.0
 _owner = None
+_closing = False
+_seen_visible = False
 _capture_next = 0.0
 _capture_status = {}
 _message = "F10: toggle SHiFT overlay. F11: release game input."
@@ -48,7 +50,7 @@ def _restore_capture():
 
 
 def control(mode="toggle"):
-    global _last_action, _owner, _release_at, _message
+    global _last_action, _owner, _release_at, _message, _closing, _seen_visible
     try:
         now = time.monotonic()
         if mode == "toggle" and now - _last_action < .35:
@@ -63,13 +65,16 @@ def control(mode="toggle"):
         if mode == "close" or (mode == "toggle" and lib.IsVisible()):
             _restore_capture()
             lib.Close()
-            _release_at = []
-            _owner = None
+            _owner = pc
+            _closing = True
+            _release_at = [now + .25, now + .75, now + 1.5]
             release()
-            _message = "SHiFT closed; game input restored."
+            _message = "SHiFT closing; restoring game input after shutdown."
         elif mode in ("toggle", "open"):
             lib.Open(0)
             _owner = pc
+            _closing = False
+            _seen_visible = False
             # UI activation may apply its input mode on a following frame.
             _release_at = [now + .25, now + .75, now + 1.5]
             _message = "SHiFT opened directly; restoring gameplay input."
@@ -90,7 +95,7 @@ def control(mode="toggle"):
 
 
 def tick():
-    global _release_at, _owner, _message, _capture_next
+    global _release_at, _owner, _message, _capture_next, _closing, _seen_visible
     if not _bindings:
         for name, key, mode in (("MSBT SHiFT overlay", "F10", "toggle"),
                                 ("MSBT SHiFT release input", "F11", "release")):
@@ -99,11 +104,25 @@ def tick():
             _bindings.append(bind)
     if _owner is not None and get_pc() != _owner:
         _release_at = []; _owner = None
+        _closing = False; _seen_visible = False
         _restore_capture()
+    if _owner is not None:
+        try:
+            visible = bool(library().IsVisible())
+            if visible:
+                _seen_visible = True
+            elif _seen_visible and not _closing:
+                # Escape/native Back bypasses control("close").
+                _restore_capture()
+                _closing = True
+                now = time.monotonic()
+                _release_at = [now, now + .25, now + .75, now + 1.5]
+        except Exception:
+            pass
     if _owner is not None and time.monotonic() >= _capture_next:
         _capture_next = time.monotonic() + 1.0
         try:
-            if library().IsVisible():
+            if not _closing and library().IsVisible():
                 from . import shift_capture
                 _capture_status.update(shift_capture.enable())
         except Exception as exc:
@@ -118,16 +137,21 @@ def tick():
         _release_at.pop(0)
         try:
             release()
-            _message = "Gameplay input requested; SHiFT remains open."
+            _message = "SHiFT closed; game input restored." if _closing else "Gameplay input requested; SHiFT remains open."
         except Exception as exc:
             _release_at = []
             _message = str(exc)
+        if _closing and not _release_at:
+            _owner = None
+            _closing = False
+            _seen_visible = False
 
 
 def stop():
-    global _release_at, _owner
+    global _release_at, _owner, _closing, _seen_visible
     _restore_capture()
     for binding in _bindings:
         binding.disable()
     _bindings.clear()
     _release_at = []; _owner = None
+    _closing = False; _seen_visible = False

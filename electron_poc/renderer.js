@@ -13681,7 +13681,7 @@ const TUTORIAL_TOURS = {
   },
   {
     "title": "Choose what every guest receives",
-    "body": "Select the boosts you want before starting. Every guest gets the selected boosts once loaded, regardless of existing progress. Guests already present are included; rejoining starts another run. The host is excluded. SDUs always use 3,225. Non-UVHM challenges, UVHM 1–7, and All Customs + Hovers have separate checkboxes. All Customs + Hovers applies the same cosmetics and vehicle unlock action as the Boosting tab button. The two new options default off. A finished queue does not confirm the guest saved every unlock or reached 100% completion.",
+    "body": "Select the boosts you want before starting. Every guest gets the selected boosts after their character and progression data stay loaded for 20 seconds, regardless of existing progress. Guests already present are included; rejoining starts another run. The host is excluded. SDUs always use 3,225. Non-UVHM challenges, UVHM 1–7, and All Customs + Hovers have separate checkboxes. All Customs + Hovers applies the same cosmetics and vehicle unlock action as the Boosting tab button. The two new options default off. A finished queue does not confirm the guest saved every unlock or reached 100% completion.",
     "tab": "boosting",
     "target": "afkLobbyPanel",
     "revealPanels": [

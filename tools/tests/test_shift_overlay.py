@@ -54,7 +54,7 @@ def test_capture_restore_failure_cannot_trap_menu_or_bindings(monkeypatch):
     m.control('open');m.tick()
     assert m.control('close')['ok']
     assert calls[-2:]==[('close',),('release',)]
-    assert m._owner is None and not m._release_at
+    assert m._owner is not None and m._release_at
     m.stop()
     assert not m._bindings
 
@@ -67,3 +67,31 @@ def test_travel_clears_owner_after_startup_releases_finished(monkeypatch):
     monkeypatch.setattr(m,'get_pc',lambda:None)
     now[0]+=5;m.tick()
     assert m._owner is None and not m._release_at
+
+
+def test_close_releases_again_after_native_shutdown_then_stops(monkeypatch):
+    m,calls,now,_,_=setup_overlay(monkeypatch)
+    assert m.control('close')['ok']
+    for delta in (.25,.75,1.5,3,4):
+        now[0]=100+delta; m.tick()
+    assert calls == [('close',)] + [('release',)] * 4
+    assert m._owner is None and not m._release_at
+
+
+def test_native_back_close_restores_input(monkeypatch):
+    m,calls,now,_,_=setup_overlay(monkeypatch)
+    visible=[True]; m.library().IsVisible=lambda:visible[0]
+    m.control('open'); m.tick()
+    visible[0]=False; now[0]+=2; m.tick()
+    assert calls[-1] == ('release',) and m._closing
+    for delta in (.25,.75,1.5):
+        now[0]=102+delta; m.tick()
+    assert m._owner is None
+
+
+def test_delayed_close_does_not_steal_quick_menu_focus(monkeypatch):
+    m,calls,now,q,_=setup_overlay(monkeypatch)
+    m.control('close'); q.STATE.is_open=True
+    now[0]+=1; m.tick()
+    assert calls == [('close',),('release',)]
+    assert not m._release_at and m._owner is None

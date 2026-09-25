@@ -6,6 +6,7 @@ from collections import deque
 
 
 BOOSTS = ("level", "spec", "sdu", "cash", "eridium", "keys", "challenges", "uvhm", "cosmetics", "loot")
+JOIN_SETTLE_SECONDS = 20.0
 
 
 class Lobby:
@@ -143,6 +144,29 @@ class Lobby:
 class Game:
     def __init__(self):
         self.ready_since = {}
+        self.ready_world = None
+
+    def character_ready(self, ps, pc, pawn):
+        if pc is None or pawn is None:
+            self.ready_since.pop(ps, None)
+            return False
+        now = time.monotonic()
+        previous = self.ready_since.get(ps)
+        if previous is None or previous[0] != pc or previous[1] != pawn:
+            self.ready_since[ps] = (pc, pawn, now)
+            return False
+        return now - previous[2] >= JOIN_SETTLE_SECONDS
+
+    @staticmethod
+    def progression_loaded(ps, pawn):
+        # The host can see a pawn before the guest's save data arrives. These
+        # are the same containers used by the existing XP and SDU actions.
+        # Check initialization only, never whether the guest needs a boost.
+        try:
+            pools = pawn.GbxProgressionManager.ProgressPointsContainer.PointsAcquiredPerPool
+            return len(pools) > 2 and len(ps.ExperienceState) >= 2
+        except Exception:
+            return False
 
     @staticmethod
     def backend():
@@ -156,6 +180,9 @@ class Game:
     def roster(self):
         a = self.backend()
         world, gs = a._gbc_session_world_and_gamestate()
+        if world != self.ready_world or world is None or gs is None:
+            self.ready_since.clear()
+            self.ready_world = world
         if world is None or gs is None:
             return None, []
         from .party_helpers import _gbc_resolve_player_display_name
@@ -170,13 +197,12 @@ class Game:
             if pc == local:
                 continue
             present.append(ps)
-            ready = pc is not None and a.player_economy._target_character_for_pc(pc) is not None
-            # A pawn can appear before progression/replication has initialized.
-            if ready:
-                since = self.ready_since.setdefault(ps, time.monotonic())
-                ready = time.monotonic() - since >= 5.0
-            else:
-                self.ready_since.pop(ps, None)
+            pawn = a.player_economy._target_character_for_pc(pc) if pc is not None else None
+            if not self.progression_loaded(ps, pawn):
+                pawn = None
+            # Loading can replace a pawn without an intervening empty roster.
+            # Give this exact character time to initialize progression/replication.
+            ready = self.character_ready(ps, pc, pawn)
             rows.append({"token": ps, "pc": pc, "index": index,
                          "name": _gbc_resolve_player_display_name(ps), "ready": ready})
         self.ready_since = {ps: since for ps, since in self.ready_since.items() if ps in present}
