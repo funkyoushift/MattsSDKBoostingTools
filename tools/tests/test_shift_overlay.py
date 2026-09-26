@@ -95,3 +95,30 @@ def test_delayed_close_does_not_steal_quick_menu_focus(monkeypatch):
     now[0]+=1; m.tick()
     assert calls == [('close',),('release',)]
     assert not m._release_at and m._owner is None
+
+
+def test_native_menu_recording_needs_no_f10_or_input_release(monkeypatch):
+    m,calls,now,_,_=setup_overlay(monkeypatch)
+    capture=sys.modules['overlay_test.shift_capture']
+    checks=[];visible=[True]
+    m.library().IsVisible=lambda:visible[0]
+    capture.enable=lambda:checks.append('enable') or {'capture_affinity':0}
+    capture.restore=lambda:checks.append('restore')
+    m.tick()
+    assert checks==['enable'] and m._owner is None and calls==[]
+    now[0]+=.1;m.tick();assert checks==['enable']
+    now[0]+=.2;m.tick();assert checks==['enable','enable']
+    visible[0]=False;now[0]+=.3;m.tick()
+    assert checks[-1]=='restore' and calls==[]
+
+
+def test_recording_failure_retries_without_touching_game_input(monkeypatch):
+    m,calls,now,_,_=setup_overlay(monkeypatch)
+    capture=sys.modules['overlay_test.shift_capture']
+    m.library().IsVisible=lambda:True
+    def fail():raise OSError('temporary capture error')
+    capture.enable=fail;m.tick()
+    assert 'error' in m._capture_status and not calls
+    capture.enable=lambda:{'capture_affinity':0}
+    now[0]+=.3;m.tick()
+    assert m._capture_status=={'capture_affinity':0} and not calls

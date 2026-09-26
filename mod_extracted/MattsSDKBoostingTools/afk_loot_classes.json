@@ -1,0 +1,2092 @@
+{
+  "sources": [
+    {
+      "file": "external_app/v22_parts_codes_fixed/matt_editor/LegitItems/Nexus-Data-inv0.json",
+      "sha256": "d3c64c305ce4bdb0f9ef662a0ca4c851c3a414fbd46d7d5018d69840b47838be"
+    },
+    {
+      "file": "external_app/v22_parts_codes_fixed/matt_editor/LegitItems/Nexus-Data-inv4.json",
+      "sha256": "cc587bf4f0e63ba9aa8b36c22c05b6be0990a28482a58f3915fabfa291863d80"
+    },
+    {
+      "file": "external_app/v22_parts_codes_fixed/matt_editor/LegitItems/Nexus-Data-inv6.json",
+      "sha256": "f4f37de3e8fd3f290d1672efe33f00df87a5158a3b6344e7ffb674020b8fc0ce"
+    }
+  ],
+  "roots": {
+    "86": {
+      "root": "ammo",
+      "class": null
+    },
+    "87": {
+      "root": "ammo_assaultrifle",
+      "class": null
+    },
+    "88": {
+      "root": "ammo_pistol",
+      "class": null
+    },
+    "89": {
+      "root": "ammo_shotgun",
+      "class": null
+    },
+    "90": {
+      "root": "ammo_smg",
+      "class": null
+    },
+    "91": {
+      "root": "ammo_sniperrifle",
+      "class": null
+    },
+    "237": {
+      "root": "armor_shield",
+      "class": null
+    },
+    "234": {
+      "root": "classmod",
+      "class": "unknown_class"
+    },
+    "82": {
+      "root": "currency_eridium",
+      "class": null
+    },
+    "81": {
+      "root": "currency_eridium_singlestack",
+      "class": null
+    },
+    "83": {
+      "root": "currency_money",
+      "class": null
+    },
+    "84": {
+      "root": "currency_money_singlestack",
+      "class": null
+    },
+    "238": {
+      "root": "default_repair_kit",
+      "class": null
+    },
+    "247": {
+      "root": "enhancement",
+      "class": null
+    },
+    "235": {
+      "root": "gadget",
+      "class": null
+    },
+    "245": {
+      "root": "grenade_gadget",
+      "class": null
+    },
+    "92": {
+      "root": "health",
+      "class": null
+    },
+    "252": {
+      "root": "health_booster_pickup",
+      "class": null
+    },
+    "244": {
+      "root": "heavy_weapon_gadget",
+      "class": null
+    },
+    "28": {
+      "root": "inv_echologdefault",
+      "class": null
+    },
+    "249": {
+      "root": "magazine_refresher",
+      "class": null
+    },
+    "93": {
+      "root": "mission_pickup",
+      "class": null
+    },
+    "250": {
+      "root": "overshield_booster_pickup",
+      "class": null
+    },
+    "251": {
+      "root": "power_booster_pickup",
+      "class": null
+    },
+    "243": {
+      "root": "repair_kit",
+      "class": null
+    },
+    "246": {
+      "root": "shield",
+      "class": null
+    },
+    "236": {
+      "root": "shield_armor_pickup",
+      "class": null
+    },
+    "253": {
+      "root": "shield_booster_pickup",
+      "class": null
+    },
+    "1": {
+      "root": "weapon",
+      "class": null
+    },
+    "276": {
+      "root": "weapon_ar",
+      "class": null
+    },
+    "257": {
+      "root": "weapon_ps",
+      "class": null
+    },
+    "260": {
+      "root": "weapon_sg",
+      "class": null
+    },
+    "258": {
+      "root": "weapon_sm",
+      "class": null
+    },
+    "262": {
+      "root": "weapon_sr",
+      "class": null
+    },
+    "239": {
+      "root": "weapon_vehicle_mg",
+      "class": null
+    },
+    "240": {
+      "root": "weapon_vehicle_rl",
+      "class": null
+    },
+    "419": {
+      "root": "weapon_dahlmech_emp",
+      "class": null
+    },
+    "471": {
+      "root": "weapon_dahlmech_energygun",
+      "class": null
+    },
+    "177": {
+      "root": "invdef_brokenships_dronepiecepickup",
+      "class": null
+    },
+    "188": {
+      "root": "invdef_pickup_zanzibolt",
+      "class": null
+    },
+    "380": {
+      "root": "weapon_ai_custombase",
+      "class": null
+    },
+    "284": {
+      "root": "atl_enhancement",
+      "class": null
+    },
+    "296": {
+      "root": "bor_enhancement",
+      "class": null
+    },
+    "353": {
+      "root": "bor_hover_drive",
+      "class": null
+    },
+    "352": {
+      "root": "bor_hover_drive_rank_01",
+      "class": null
+    },
+    "351": {
+      "root": "bor_hover_drive_rank_02",
+      "class": null
+    },
+    "350": {
+      "root": "bor_hover_drive_rank_03",
+      "class": null
+    },
+    "349": {
+      "root": "bor_hover_drive_rank_04",
+      "class": null
+    },
+    "348": {
+      "root": "bor_hover_drive_rank_05",
+      "class": null
+    },
+    "275": {
+      "root": "bor_hw",
+      "class": null
+    },
+    "274": {
+      "root": "bor_repair_kit",
+      "class": null
+    },
+    "7": {
+      "root": "bor_sg",
+      "class": null
+    },
+    "300": {
+      "root": "bor_shield",
+      "class": null
+    },
+    "19": {
+      "root": "bor_sm",
+      "class": null
+    },
+    "23": {
+      "root": "bor_sr",
+      "class": null
+    },
+    "305": {
+      "root": "bor_terminal_barrier",
+      "class": null
+    },
+    "335": {
+      "root": "bor_turret_gadget",
+      "class": null
+    },
+    "278": {
+      "root": "borg_grenade_gadget",
+      "class": null
+    },
+    "254": {
+      "root": "classmod_dark_siren",
+      "class": "Char_DarkSiren"
+    },
+    "256": {
+      "root": "classmod_exo_soldier",
+      "class": "Char_ExoSoldier"
+    },
+    "259": {
+      "root": "classmod_gravitar",
+      "class": "Char_Gravitar"
+    },
+    "255": {
+      "root": "classmod_paladin",
+      "class": "Char_Paladin"
+    },
+    "286": {
+      "root": "cov_enhancement",
+      "class": null
+    },
+    "80": {
+      "root": "currency_eridium_multistack",
+      "class": null
+    },
+    "397": {
+      "root": "currency_money_smallamount",
+      "class": null
+    },
+    "85": {
+      "root": "currency_money_triplestack",
+      "class": null
+    },
+    "13": {
+      "root": "dad_ar",
+      "class": null
+    },
+    "299": {
+      "root": "dad_enhancement",
+      "class": null
+    },
+    "270": {
+      "root": "dad_grenade_gadget",
+      "class": null
+    },
+    "366": {
+      "root": "dad_hover_drive",
+      "class": null
+    },
+    "365": {
+      "root": "dad_hover_drive_rank_01",
+      "class": null
+    },
+    "364": {
+      "root": "dad_hover_drive_rank_02",
+      "class": null
+    },
+    "363": {
+      "root": "dad_hover_drive_rank_03",
+      "class": null
+    },
+    "362": {
+      "root": "dad_hover_drive_rank_04",
+      "class": null
+    },
+    "361": {
+      "root": "dad_hover_drive_rank_05",
+      "class": null
+    },
+    "2": {
+      "root": "dad_ps",
+      "class": null
+    },
+    "277": {
+      "root": "dad_repair_kit",
+      "class": null
+    },
+    "8": {
+      "root": "dad_sg",
+      "class": null
+    },
+    "312": {
+      "root": "dad_shield",
+      "class": null
+    },
+    "20": {
+      "root": "dad_sm",
+      "class": null
+    },
+    "307": {
+      "root": "dad_terminal_combat",
+      "class": null
+    },
+    "360": {
+      "root": "dad_turret_gadget",
+      "class": null
+    },
+    "144": {
+      "root": "def_sumofhisparts_antenna",
+      "class": null
+    },
+    "145": {
+      "root": "def_sumofhisparts_arms",
+      "class": null
+    },
+    "146": {
+      "root": "def_sumofhisparts_eye",
+      "class": null
+    },
+    "148": {
+      "root": "def_sumofhisparts_shell",
+      "class": null
+    },
+    "147": {
+      "root": "def_sumofhisparts_wheel",
+      "class": null
+    },
+    "248": {
+      "root": "energy_shield",
+      "class": null
+    },
+    "301": {
+      "root": "hover_drive",
+      "class": null
+    },
+    "302": {
+      "root": "hover_drive_tests",
+      "class": null
+    },
+    "264": {
+      "root": "hyp_enhancement",
+      "class": null
+    },
+    "230": {
+      "root": "inv_echologdefault_modified_terry",
+      "class": null
+    },
+    "62": {
+      "root": "invdef_accesscard",
+      "class": null
+    },
+    "152": {
+      "root": "invdef_cop_pickup_keycard",
+      "class": null
+    },
+    "154": {
+      "root": "invdef_cop_pickup_mask",
+      "class": null
+    },
+    "157": {
+      "root": "invdef_cop_pickup_portrait",
+      "class": null
+    },
+    "159": {
+      "root": "invdef_cop_pickup_voicemodule",
+      "class": null
+    },
+    "116": {
+      "root": "invdef_efm1_ripperexplosive",
+      "class": null
+    },
+    "209": {
+      "root": "invdef_htbripperpbj_grossingredient",
+      "class": null
+    },
+    "226": {
+      "root": "invdef_io_pickup_antenna",
+      "class": null
+    },
+    "169": {
+      "root": "invdef_io_pickup_beer",
+      "class": null
+    },
+    "192": {
+      "root": "invdef_io_pickup_books",
+      "class": null
+    },
+    "129": {
+      "root": "invdef_io_pickup_catglands",
+      "class": null
+    },
+    "189": {
+      "root": "invdef_io_pickup_computercore",
+      "class": null
+    },
+    "111": {
+      "root": "invdef_io_pickup_controlcircuit",
+      "class": null
+    },
+    "162": {
+      "root": "invdef_io_pickup_drinkcan01",
+      "class": null
+    },
+    "161": {
+      "root": "invdef_io_pickup_drinkcan02",
+      "class": null
+    },
+    "160": {
+      "root": "invdef_io_pickup_drinkcan03",
+      "class": null
+    },
+    "135": {
+      "root": "invdef_io_pickup_dronerocket",
+      "class": null
+    },
+    "130": {
+      "root": "invdef_io_pickup_electrobomb",
+      "class": null
+    },
+    "221": {
+      "root": "invdef_io_pickup_ltbolt",
+      "class": null
+    },
+    "139": {
+      "root": "invdef_io_pickup_machinepart",
+      "class": null
+    },
+    "178": {
+      "root": "invdef_io_pickup_missiletail",
+      "class": null
+    },
+    "195": {
+      "root": "invdef_io_pickup_orderpowercore",
+      "class": null
+    },
+    "196": {
+      "root": "invdef_io_pickup_ripperkey",
+      "class": null
+    },
+    "203": {
+      "root": "invdef_io_pickup_synthhead",
+      "class": null
+    },
+    "168": {
+      "root": "invdef_io_pickup_takeoutbox",
+      "class": null
+    },
+    "109": {
+      "root": "invdef_io_pickup_thresheregg",
+      "class": null
+    },
+    "114": {
+      "root": "invdef_io_pickup_thresherfood",
+      "class": null
+    },
+    "125": {
+      "root": "invdef_io_pickup_transponderpack",
+      "class": null
+    },
+    "228": {
+      "root": "invdef_io_pickup_vehiclepowercore",
+      "class": null
+    },
+    "58": {
+      "root": "invdef_key",
+      "class": null
+    },
+    "181": {
+      "root": "invdef_lifecoach_viberockpickup",
+      "class": null
+    },
+    "110": {
+      "root": "invdef_ms_pickup_transponder",
+      "class": null
+    },
+    "60": {
+      "root": "invdef_package",
+      "class": null
+    },
+    "202": {
+      "root": "invdef_pickup_mountains3_brucecore",
+      "class": null
+    },
+    "205": {
+      "root": "invdef_pickup_mountains3_lictorbolt",
+      "class": null
+    },
+    "53": {
+      "root": "invdef_pitchfork",
+      "class": null
+    },
+    "54": {
+      "root": "invdef_scythe",
+      "class": null
+    },
+    "55": {
+      "root": "invdef_shovel",
+      "class": null
+    },
+    "138": {
+      "root": "invdef_sl1_pickup_explosives",
+      "class": null
+    },
+    "136": {
+      "root": "invdef_sl1_pickup_toy",
+      "class": null
+    },
+    "121": {
+      "root": "invdef_twwh_votivepickup",
+      "class": null
+    },
+    "118": {
+      "root": "invdef_wni_chairmaterialpickup",
+      "class": null
+    },
+    "59": {
+      "root": "inventorydef_elpisoxygenkit",
+      "class": null
+    },
+    "27": {
+      "root": "jak_ar",
+      "class": null
+    },
+    "268": {
+      "root": "jak_enhancement",
+      "class": null
+    },
+    "267": {
+      "root": "jak_grenade_gadget",
+      "class": null
+    },
+    "334": {
+      "root": "jak_hover_drive",
+      "class": null
+    },
+    "333": {
+      "root": "jak_hover_drive_rank_01",
+      "class": null
+    },
+    "332": {
+      "root": "jak_hover_drive_rank_02",
+      "class": null
+    },
+    "331": {
+      "root": "jak_hover_drive_rank_03",
+      "class": null
+    },
+    "330": {
+      "root": "jak_hover_drive_rank_04",
+      "class": null
+    },
+    "329": {
+      "root": "jak_hover_drive_rank_05",
+      "class": null
+    },
+    "3": {
+      "root": "jak_ps",
+      "class": null
+    },
+    "265": {
+      "root": "jak_repair_kit",
+      "class": null
+    },
+    "9": {
+      "root": "jak_sg",
+      "class": null
+    },
+    "306": {
+      "root": "jak_shield",
+      "class": null
+    },
+    "24": {
+      "root": "jak_sr",
+      "class": null
+    },
+    "309": {
+      "root": "jak_terminal_combat",
+      "class": null
+    },
+    "373": {
+      "root": "jak_turret_gadget",
+      "class": null
+    },
+    "271": {
+      "root": "mal_enhancement",
+      "class": null
+    },
+    "263": {
+      "root": "mal_grenade_gadget",
+      "class": null
+    },
+    "318": {
+      "root": "mal_hover_drive",
+      "class": null
+    },
+    "317": {
+      "root": "mal_hover_drive_rank_01",
+      "class": null
+    },
+    "316": {
+      "root": "mal_hover_drive_rank_02",
+      "class": null
+    },
+    "315": {
+      "root": "mal_hover_drive_rank_03",
+      "class": null
+    },
+    "314": {
+      "root": "mal_hover_drive_rank_04",
+      "class": null
+    },
+    "313": {
+      "root": "mal_hover_drive_rank_05",
+      "class": null
+    },
+    "289": {
+      "root": "mal_hw",
+      "class": null
+    },
+    "266": {
+      "root": "mal_repair_kit",
+      "class": null
+    },
+    "10": {
+      "root": "mal_sg",
+      "class": null
+    },
+    "279": {
+      "root": "mal_shield",
+      "class": null
+    },
+    "21": {
+      "root": "mal_sm",
+      "class": null
+    },
+    "25": {
+      "root": "mal_sr",
+      "class": null
+    },
+    "319": {
+      "root": "mal_terminal_healing",
+      "class": null
+    },
+    "374": {
+      "root": "mal_turret_gadget",
+      "class": null
+    },
+    "15": {
+      "root": "ord_ar",
+      "class": null
+    },
+    "281": {
+      "root": "ord_enhancement",
+      "class": null
+    },
+    "272": {
+      "root": "ord_grenade_gadget",
+      "class": null
+    },
+    "372": {
+      "root": "ord_hover_drive",
+      "class": null
+    },
+    "371": {
+      "root": "ord_hover_drive_rank_01",
+      "class": null
+    },
+    "370": {
+      "root": "ord_hover_drive_rank_02",
+      "class": null
+    },
+    "369": {
+      "root": "ord_hover_drive_rank_03",
+      "class": null
+    },
+    "368": {
+      "root": "ord_hover_drive_rank_04",
+      "class": null
+    },
+    "367": {
+      "root": "ord_hover_drive_rank_05",
+      "class": null
+    },
+    "4": {
+      "root": "ord_ps",
+      "class": null
+    },
+    "285": {
+      "root": "ord_repair_kit",
+      "class": null
+    },
+    "293": {
+      "root": "ord_shield",
+      "class": null
+    },
+    "26": {
+      "root": "ord_sr",
+      "class": null
+    },
+    "322": {
+      "root": "ord_terminal_healing",
+      "class": null
+    },
+    "326": {
+      "root": "ord_turret_gadget",
+      "class": null
+    },
+    "143": {
+      "root": "pickup_bioengineeredseed",
+      "class": null
+    },
+    "142": {
+      "root": "pickup_bioengineeredseed_irradiated",
+      "class": null
+    },
+    "207": {
+      "root": "pickup_devicepart_whatlurksbeneath",
+      "class": null
+    },
+    "194": {
+      "root": "pickup_explosive_oldraymondpart1",
+      "class": null
+    },
+    "233": {
+      "root": "pickup_transmitter_resistance",
+      "class": null
+    },
+    "14": {
+      "root": "ted_ar",
+      "class": null
+    },
+    "292": {
+      "root": "ted_enhancement",
+      "class": null
+    },
+    "311": {
+      "root": "ted_grenade_gadget",
+      "class": null
+    },
+    "347": {
+      "root": "ted_hover_drive",
+      "class": null
+    },
+    "346": {
+      "root": "ted_hover_drive_rank_01",
+      "class": null
+    },
+    "345": {
+      "root": "ted_hover_drive_rank_02",
+      "class": null
+    },
+    "344": {
+      "root": "ted_hover_drive_rank_03",
+      "class": null
+    },
+    "343": {
+      "root": "ted_hover_drive_rank_04",
+      "class": null
+    },
+    "342": {
+      "root": "ted_hover_drive_rank_05",
+      "class": null
+    },
+    "290": {
+      "root": "ted_repair_kit",
+      "class": null
+    },
+    "11": {
+      "root": "ted_sg",
+      "class": null
+    },
+    "287": {
+      "root": "ted_shield",
+      "class": null
+    },
+    "325": {
+      "root": "ted_terminal_barrier",
+      "class": null
+    },
+    "377": {
+      "root": "ted_turret_gadget",
+      "class": null
+    },
+    "294": {
+      "root": "terminal_gadget",
+      "class": null
+    },
+    "280": {
+      "root": "terminal_gadget_barrier",
+      "class": null
+    },
+    "295": {
+      "root": "terminal_gadget_combat",
+      "class": null
+    },
+    "297": {
+      "root": "terminal_gadget_healing",
+      "class": null
+    },
+    "17": {
+      "root": "tor_ar",
+      "class": null
+    },
+    "303": {
+      "root": "tor_enhancement",
+      "class": null
+    },
+    "298": {
+      "root": "tor_grenade_gadget",
+      "class": null
+    },
+    "341": {
+      "root": "tor_hover_drive",
+      "class": null
+    },
+    "340": {
+      "root": "tor_hover_drive_rank_01",
+      "class": null
+    },
+    "339": {
+      "root": "tor_hover_drive_rank_02",
+      "class": null
+    },
+    "338": {
+      "root": "tor_hover_drive_rank_03",
+      "class": null
+    },
+    "337": {
+      "root": "tor_hover_drive_rank_04",
+      "class": null
+    },
+    "336": {
+      "root": "tor_hover_drive_rank_05",
+      "class": null
+    },
+    "273": {
+      "root": "tor_hw",
+      "class": null
+    },
+    "6": {
+      "root": "tor_ps",
+      "class": null
+    },
+    "261": {
+      "root": "tor_repair_kit",
+      "class": null
+    },
+    "12": {
+      "root": "tor_sg",
+      "class": null
+    },
+    "321": {
+      "root": "tor_shield",
+      "class": null
+    },
+    "327": {
+      "root": "tor_terminal_combat",
+      "class": null
+    },
+    "378": {
+      "root": "tor_turret_gadget",
+      "class": null
+    },
+    "288": {
+      "root": "turret_gadget",
+      "class": null
+    },
+    "376": {
+      "root": "turret_weapon_basic",
+      "class": null
+    },
+    "379": {
+      "root": "turret_weapon_beam",
+      "class": null
+    },
+    "304": {
+      "root": "turret_weapon_chaingun",
+      "class": null
+    },
+    "308": {
+      "root": "turret_weapon_longrifle",
+      "class": null
+    },
+    "320": {
+      "root": "turret_weapon_rocketlauncher",
+      "class": null
+    },
+    "324": {
+      "root": "turret_weapon_shotgun",
+      "class": null
+    },
+    "18": {
+      "root": "vla_ar",
+      "class": null
+    },
+    "310": {
+      "root": "vla_enhancement",
+      "class": null
+    },
+    "291": {
+      "root": "vla_grenade_gadget",
+      "class": null
+    },
+    "359": {
+      "root": "vla_hover_drive",
+      "class": null
+    },
+    "358": {
+      "root": "vla_hover_drive_rank_01",
+      "class": null
+    },
+    "357": {
+      "root": "vla_hover_drive_rank_02",
+      "class": null
+    },
+    "356": {
+      "root": "vla_hover_drive_rank_03",
+      "class": null
+    },
+    "355": {
+      "root": "vla_hover_drive_rank_04",
+      "class": null
+    },
+    "354": {
+      "root": "vla_hover_drive_rank_05",
+      "class": null
+    },
+    "282": {
+      "root": "vla_hw",
+      "class": null
+    },
+    "269": {
+      "root": "vla_repair_kit",
+      "class": null
+    },
+    "283": {
+      "root": "vla_shield",
+      "class": null
+    },
+    "22": {
+      "root": "vla_sm",
+      "class": null
+    },
+    "16": {
+      "root": "vla_sr",
+      "class": null
+    },
+    "328": {
+      "root": "vla_terminal_barrier",
+      "class": null
+    },
+    "323": {
+      "root": "vla_turret_gadget",
+      "class": null
+    },
+    "375": {
+      "root": "weapon_gadget_turret",
+      "class": null
+    },
+    "50": {
+      "root": "inv_contractitem_base",
+      "class": null
+    },
+    "41": {
+      "root": "inv_contractitem_batwing",
+      "class": null
+    },
+    "47": {
+      "root": "inv_contractitem_creepparts",
+      "class": null
+    },
+    "140": {
+      "root": "invdef_agd_pickup_zadrakeycard",
+      "class": null
+    },
+    "197": {
+      "root": "invdef_board",
+      "class": null
+    },
+    "51": {
+      "root": "invdef_booster",
+      "class": null
+    },
+    "174": {
+      "root": "invdef_brokenships2_zanegiftpickup",
+      "class": null
+    },
+    "173": {
+      "root": "invdef_brokenships2_zanegiftpickup2",
+      "class": null
+    },
+    "172": {
+      "root": "invdef_brokenships2_zanegiftpickup3",
+      "class": null
+    },
+    "106": {
+      "root": "invdef_broomba",
+      "class": null
+    },
+    "150": {
+      "root": "invdef_city1_b_ordonitepickup",
+      "class": null
+    },
+    "151": {
+      "root": "invdef_cop_pickup_boatbomb",
+      "class": null
+    },
+    "231": {
+      "root": "invdef_digidongle",
+      "class": null
+    },
+    "52": {
+      "root": "invdef_drillkey",
+      "class": null
+    },
+    "218": {
+      "root": "invdef_dynamite",
+      "class": null
+    },
+    "115": {
+      "root": "invdef_efm1_detonatorpickup",
+      "class": null
+    },
+    "186": {
+      "root": "invdef_efm2_damagedusb",
+      "class": null
+    },
+    "214": {
+      "root": "invdef_efm2_pangospitpickup",
+      "class": null
+    },
+    "104": {
+      "root": "invdef_genconstructor",
+      "class": null
+    },
+    "105": {
+      "root": "invdef_geniviv",
+      "class": null
+    },
+    "103": {
+      "root": "invdef_genivivcore",
+      "class": null
+    },
+    "198": {
+      "root": "invdef_hoop",
+      "class": null
+    },
+    "217": {
+      "root": "invdef_io_pickup_beacons",
+      "class": null
+    },
+    "117": {
+      "root": "invdef_io_pickup_bmb_bolts_dropped",
+      "class": null
+    },
+    "153": {
+      "root": "invdef_io_pickup_grasslandscommanderbolt",
+      "class": null
+    },
+    "428": {
+      "root": "invdef_io_pickup_passwordlog",
+      "class": null
+    },
+    "201": {
+      "root": "invdef_io_pickup_rations",
+      "class": null
+    },
+    "213": {
+      "root": "invdef_io_pickup_relic",
+      "class": null
+    },
+    "166": {
+      "root": "invdef_io_pickup_scoutslog01",
+      "class": null
+    },
+    "165": {
+      "root": "invdef_io_pickup_scoutslog02",
+      "class": null
+    },
+    "211": {
+      "root": "invdef_io_pickup_shatcommanderbolt",
+      "class": null
+    },
+    "183": {
+      "root": "invdef_io_pickup_toolbox",
+      "class": null
+    },
+    "204": {
+      "root": "invdef_io_pickup_underconstructionlog",
+      "class": null
+    },
+    "227": {
+      "root": "invdef_pickup_efpmole_moledevice",
+      "class": null
+    },
+    "141": {
+      "root": "invdef_pickup_epilogue_sirenitem",
+      "class": null
+    },
+    "100": {
+      "root": "invdef_pickup_firstrepkit_intro",
+      "class": null
+    },
+    "101": {
+      "root": "invdef_pickup_grapplebox_intro",
+      "class": null
+    },
+    "128": {
+      "root": "invdef_pickup_hof_nahelibolt",
+      "class": null
+    },
+    "206": {
+      "root": "invdef_pickup_mfaction1_augermask",
+      "class": null
+    },
+    "210": {
+      "root": "invdef_pickup_mfaction2_cashcase",
+      "class": null
+    },
+    "208": {
+      "root": "invdef_pickup_mfaction2_crackeddevice",
+      "class": null
+    },
+    "225": {
+      "root": "invdef_pickup_mfaction3_brutepart1",
+      "class": null
+    },
+    "224": {
+      "root": "invdef_pickup_mfaction3_brutepart2",
+      "class": null
+    },
+    "223": {
+      "root": "invdef_pickup_mfaction3_brutepart3",
+      "class": null
+    },
+    "222": {
+      "root": "invdef_pickup_mfaction3_brutepart4",
+      "class": null
+    },
+    "126": {
+      "root": "invdef_pickup_mfaction4_flashdrive",
+      "class": null
+    },
+    "122": {
+      "root": "invdef_pickup_mfaction4_lictordrive",
+      "class": null
+    },
+    "403": {
+      "root": "invdef_pickup_mfaction4_lictordrive_child",
+      "class": null
+    },
+    "124": {
+      "root": "invdef_pickup_mfaction4_lictorvirus",
+      "class": null
+    },
+    "182": {
+      "root": "invdef_sfl_pickup_bolt_callis",
+      "class": null
+    },
+    "185": {
+      "root": "invdef_sfl_pickup_bolt_lictor",
+      "class": null
+    },
+    "190": {
+      "root": "invdef_sfl_pickup_bolt_sol",
+      "class": null
+    },
+    "127": {
+      "root": "invdef_vendpicture",
+      "class": null
+    },
+    "155": {
+      "root": "invdef_yatlc_materialburdenspickup",
+      "class": null
+    },
+    "212": {
+      "root": "io_pickup_device_balloon",
+      "class": null
+    },
+    "401": {
+      "root": "io_pickup_flat_kairos",
+      "class": null
+    },
+    "400": {
+      "root": "io_pickup_powercell",
+      "class": null
+    },
+    "5": {
+      "root": "ted_ps",
+      "class": null
+    },
+    "402": {
+      "root": "classmod_corpohacker",
+      "class": "Char_CorpoHacker"
+    },
+    "404": {
+      "root": "classmod_robodealer",
+      "class": "Char_RoboDealer"
+    },
+    "445": {
+      "root": "health_booster_pickup_healthraiser",
+      "class": null
+    },
+    "466": {
+      "root": "inv_contractitem_dahljetpack",
+      "class": null
+    },
+    "468": {
+      "root": "inv_contractitem_scavgrenade",
+      "class": null
+    },
+    "444": {
+      "root": "inv_dbd_pickup_driftwood",
+      "class": null
+    },
+    "458": {
+      "root": "inv_h3t_pickup_accesscard",
+      "class": null
+    },
+    "442": {
+      "root": "inv_m3_pickup_glowleaf",
+      "class": null
+    },
+    "422": {
+      "root": "inv_sc_pickup_suggarathegg",
+      "class": null
+    },
+    "529": {
+      "root": "invdef_bp4_pickup_kratchblood",
+      "class": null
+    },
+    "530": {
+      "root": "invdef_bp4_pickup_motoroil",
+      "class": null
+    },
+    "531": {
+      "root": "invdef_bp4_pickup_ordertech",
+      "class": null
+    },
+    "525": {
+      "root": "invdef_bp4_pickup_radablasthead",
+      "class": null
+    },
+    "455": {
+      "root": "invdef_dbd_dogtag_austin",
+      "class": null
+    },
+    "454": {
+      "root": "invdef_dbd_dogtag_cooper",
+      "class": null
+    },
+    "456": {
+      "root": "invdef_dbd_dogtag_hays",
+      "class": null
+    },
+    "453": {
+      "root": "invdef_dbd_dogtag_samuels",
+      "class": null
+    },
+    "457": {
+      "root": "invdef_dbd_dogtag_turner",
+      "class": null
+    },
+    "452": {
+      "root": "invdef_dbd_pickup_dahlkeycard",
+      "class": null
+    },
+    "447": {
+      "root": "invdef_guarded_signpickup",
+      "class": null
+    },
+    "522": {
+      "root": "invdef_h1_pickup_ziplinedevice",
+      "class": null
+    },
+    "431": {
+      "root": "invdef_h3_hotel_handpickup",
+      "class": null
+    },
+    "437": {
+      "root": "invdef_h3_lava_bathhousekey",
+      "class": null
+    },
+    "432": {
+      "root": "invdef_h3_logistics_handpickup",
+      "class": null
+    },
+    "502": {
+      "root": "invdef_h3t_pickup_managerelenaarm",
+      "class": null
+    },
+    "512": {
+      "root": "invdef_harmmain2b_jrmanagerhand",
+      "class": null
+    },
+    "446": {
+      "root": "invdef_harmmain3spa_brainbomb",
+      "class": null
+    },
+    "520": {
+      "root": "invdef_harmmain3spa_managerhand",
+      "class": null
+    },
+    "461": {
+      "root": "invdef_io_pickup_bomb",
+      "class": null
+    },
+    "488": {
+      "root": "invdef_io_pickup_bottle",
+      "class": null
+    },
+    "433": {
+      "root": "invdef_io_pickup_dahlbadarm1",
+      "class": null
+    },
+    "434": {
+      "root": "invdef_io_pickup_dahlbadarm2",
+      "class": null
+    },
+    "435": {
+      "root": "invdef_io_pickup_dahlbadarm3",
+      "class": null
+    },
+    "410": {
+      "root": "invdef_io_pickup_dahlbeefyarms",
+      "class": null
+    },
+    "409": {
+      "root": "invdef_io_pickup_dahlbeefylegs",
+      "class": null
+    },
+    "406": {
+      "root": "invdef_io_pickup_dahlkeycard",
+      "class": null
+    },
+    "412": {
+      "root": "invdef_io_pickup_dahlogarms",
+      "class": null
+    },
+    "411": {
+      "root": "invdef_io_pickup_dahloglegs",
+      "class": null
+    },
+    "413": {
+      "root": "invdef_io_pickup_dahltorso",
+      "class": null
+    },
+    "489": {
+      "root": "invdef_io_pickup_digizanehead",
+      "class": null
+    },
+    "425": {
+      "root": "invdef_io_pickup_gifts",
+      "class": null
+    },
+    "415": {
+      "root": "invdef_io_pickup_keepsake1",
+      "class": null
+    },
+    "416": {
+      "root": "invdef_io_pickup_keepsake2",
+      "class": null
+    },
+    "436": {
+      "root": "invdef_io_pickup_keepsake3",
+      "class": null
+    },
+    "424": {
+      "root": "invdef_io_pickup_keystone",
+      "class": null
+    },
+    "427": {
+      "root": "invdef_io_pickup_lights",
+      "class": null
+    },
+    "487": {
+      "root": "invdef_io_pickup_paperscrap",
+      "class": null
+    },
+    "426": {
+      "root": "invdef_io_pickup_picture",
+      "class": null
+    },
+    "513": {
+      "root": "invdef_io_pickup_rottenorder",
+      "class": null
+    },
+    "486": {
+      "root": "invdef_io_pickup_spatialawareness_circuitboard",
+      "class": null
+    },
+    "460": {
+      "root": "invdef_io_pickup_staff",
+      "class": null
+    },
+    "417": {
+      "root": "invdef_io_pickup_towel",
+      "class": null
+    },
+    "449": {
+      "root": "invdef_m3_pickup_keystone",
+      "class": null
+    },
+    "414": {
+      "root": "invdef_m3_plantroot",
+      "class": null
+    },
+    "451": {
+      "root": "invdef_m4_pickup_dahlkeycard_powercore",
+      "class": null
+    },
+    "450": {
+      "root": "invdef_m4_pickup_dahlkeycard_warroom",
+      "class": null
+    },
+    "526": {
+      "root": "invdef_pickup_davebomb_awardwinning",
+      "class": null
+    },
+    "527": {
+      "root": "invdef_pickup_davebomb_custommade",
+      "class": null
+    },
+    "443": {
+      "root": "invdef_pickup_gumpyhat",
+      "class": null
+    },
+    "505": {
+      "root": "invdef_pickup_harmonyhand",
+      "class": null
+    },
+    "517": {
+      "root": "invdef_pickup_mip_bagofbombs",
+      "class": null
+    },
+    "518": {
+      "root": "invdef_pickup_shittyrock",
+      "class": null
+    },
+    "516": {
+      "root": "invdef_pickup_tu_echodevice",
+      "class": null
+    },
+    "423": {
+      "root": "invdef_sc_pickup_heart",
+      "class": null
+    },
+    "440": {
+      "root": "invdef_si_explosivebarrelpickup",
+      "class": null
+    },
+    "441": {
+      "root": "invdef_si_projectorpickup",
+      "class": null
+    },
+    "483": {
+      "root": "invdef_tu_creaturecage",
+      "class": null
+    },
+    "515": {
+      "root": "invdef_tu_pickup_digicore",
+      "class": null
+    },
+    "528": {
+      "root": "invdev_pickup_fertilizer",
+      "class": null
+    },
+    "490": {
+      "root": "projectile_count_booster",
+      "class": null
+    },
+    "388": {
+      "root": "weapon_gunship_maingun",
+      "class": null
+    },
+    "523": {
+      "root": "currency_money_slotmachine_singlestack",
+      "class": null
+    },
+    "467": {
+      "root": "inv_contractitem_dahlhelmet",
+      "class": null
+    },
+    "469": {
+      "root": "inv_contractitem_kraggoncore",
+      "class": null
+    },
+    "511": {
+      "root": "inv_contractitem_rip_mask",
+      "class": null
+    },
+    "510": {
+      "root": "inv_contractitem_rip_satchel",
+      "class": null
+    },
+    "509": {
+      "root": "inv_contractitem_ted_hand",
+      "class": null
+    },
+    "508": {
+      "root": "inv_contractitem_ted_legpack",
+      "class": null
+    },
+    "462": {
+      "root": "inv_echologdefault_cello",
+      "class": null
+    },
+    "430": {
+      "root": "invdef_h3_hotel_captureflag",
+      "class": null
+    },
+    "496": {
+      "root": "invdef_h3_lava_duckyhand",
+      "class": null
+    },
+    "429": {
+      "root": "invdef_h3_lava_missionpickup",
+      "class": null
+    },
+    "438": {
+      "root": "invdef_h4_fl4keye",
+      "class": null
+    },
+    "439": {
+      "root": "invdef_h4_temp_fl4kvirus",
+      "class": null
+    },
+    "481": {
+      "root": "invdef_harmmain2_mrchewcollar",
+      "class": null
+    },
+    "519": {
+      "root": "invdef_harmmain3_safecode",
+      "class": null
+    },
+    "476": {
+      "root": "invdef_pickup_sc_buskermoney",
+      "class": null
+    },
+    "514": {
+      "root": "invdef_si_pickup_detonator",
+      "class": null
+    },
+    "448": {
+      "root": "invdef_vmuf_festivalmaterialspickup",
+      "class": null
+    },
+    "473": {
+      "root": "invdef_vmuf_pickup_borrowedturrets",
+      "class": null
+    },
+    "465": {
+      "root": "invdef_vmuf_pickup_lytfestposter",
+      "class": null
+    },
+    "463": {
+      "root": "invdef_vmuf_pickup_microphone",
+      "class": null
+    },
+    "464": {
+      "root": "invdef_vmuf_pickup_tenttape",
+      "class": null
+    },
+    "507": {
+      "root": "pickup_cos_shieldbooster",
+      "class": null
+    },
+    "472": {
+      "root": "weapon_dahlgrunt_crashflamer",
+      "class": null
+    },
+    "405": {
+      "root": "weapon_dahlgrunt_laserrifle",
+      "class": null
+    },
+    "407": {
+      "root": "weapon_dahlgrunt_shoulderlaserrifle",
+      "class": null
+    },
+    "408": {
+      "root": "weapon_dahlgrunt_sprayer",
+      "class": null
+    },
+    "418": {
+      "root": "weapon_dahlmech_chaingun",
+      "class": null
+    },
+    "420": {
+      "root": "weapon_dahlmech_flamespitter",
+      "class": null
+    },
+    "459": {
+      "root": "weapon_dahlmech_flamespitterunderbarrel",
+      "class": null
+    },
+    "421": {
+      "root": "weapon_dahlmech_grenadelauncher",
+      "class": null
+    },
+    "382": {
+      "root": "weapon_missionturret_chaingun",
+      "class": null
+    },
+    "385": {
+      "root": "weapon_ripperturret_flamethrower",
+      "class": null
+    },
+    "386": {
+      "root": "weapon_ripperturret_rocket",
+      "class": null
+    },
+    "392": {
+      "root": "weapon_splicearm_launcher",
+      "class": null
+    },
+    "504": {
+      "root": "weapon_tediorearmy_framesprayerl",
+      "class": null
+    },
+    "503": {
+      "root": "weapon_tediorearmy_framesprayerr",
+      "class": null
+    },
+    "474": {
+      "root": "weapon_tediorearmy_sprayer",
+      "class": null
+    },
+    "506": {
+      "root": "weapon_tedioredigishotgun",
+      "class": null
+    },
+    "475": {
+      "root": "weapon_tedioreglider_flamethrower",
+      "class": null
+    },
+    "521": {
+      "root": "weapon_tedioreglider_rapidlaser",
+      "class": null
+    },
+    "477": {
+      "root": "weapon_tedioregliderarm_rocketlauncher",
+      "class": null
+    },
+    "478": {
+      "root": "weapon_tedioreglidercore_rocketlauncher",
+      "class": null
+    },
+    "479": {
+      "root": "weapon_tedioreturret_gatemission4",
+      "class": null
+    },
+    "480": {
+      "root": "weapon_tedioreturret_mg",
+      "class": null
+    },
+    "484": {
+      "root": "weapon_tedioreturret_microplasticsmg",
+      "class": null
+    },
+    "482": {
+      "root": "weapon_tedioreturret_rapidlaser",
+      "class": null
+    },
+    "485": {
+      "root": "weapon_tedioreturret_rocketlauncher",
+      "class": null
+    },
+    "470": {
+      "root": "weapon_turret_dahlchaingun",
+      "class": null
+    },
+    "491": {
+      "root": "weapon_uberhead",
+      "class": null
+    },
+    "42": {
+      "root": "inv_contractitem_batkidney",
+      "class": null
+    },
+    "40": {
+      "root": "inv_contractitem_beastbone",
+      "class": null
+    },
+    "39": {
+      "root": "inv_contractitem_beasthorn",
+      "class": null
+    },
+    "48": {
+      "root": "inv_contractitem_bloodpack",
+      "class": null
+    },
+    "38": {
+      "root": "inv_contractitem_bottle",
+      "class": null
+    },
+    "37": {
+      "root": "inv_contractitem_catheart",
+      "class": null
+    },
+    "36": {
+      "root": "inv_contractitem_cattail",
+      "class": null
+    },
+    "44": {
+      "root": "inv_contractitem_creepbrain",
+      "class": null
+    },
+    "34": {
+      "root": "inv_contractitem_cybercore",
+      "class": null
+    },
+    "35": {
+      "root": "inv_contractitem_droneparts",
+      "class": null
+    },
+    "33": {
+      "root": "inv_contractitem_firerod",
+      "class": null
+    },
+    "32": {
+      "root": "inv_contractitem_ingot",
+      "class": null
+    },
+    "46": {
+      "root": "inv_contractitem_pangolinparts",
+      "class": null
+    },
+    "49": {
+      "root": "inv_contractitem_poster",
+      "class": null
+    },
+    "31": {
+      "root": "inv_contractitem_powertools",
+      "class": null
+    },
+    "393": {
+      "root": "inv_contractitem_powertools_a",
+      "class": null
+    },
+    "242": {
+      "root": "inv_contractitem_powertools_b",
+      "class": null
+    },
+    "241": {
+      "root": "inv_contractitem_powertools_c",
+      "class": null
+    },
+    "45": {
+      "root": "inv_contractitem_sparkplug",
+      "class": null
+    },
+    "30": {
+      "root": "inv_contractitem_thresherbrain",
+      "class": null
+    },
+    "29": {
+      "root": "inv_contractitem_thresherliver",
+      "class": null
+    },
+    "43": {
+      "root": "inv_contractitem_tools",
+      "class": null
+    },
+    "396": {
+      "root": "inv_contractitem_tools_a",
+      "class": null
+    },
+    "395": {
+      "root": "inv_contractitem_tools_b",
+      "class": null
+    },
+    "394": {
+      "root": "inv_contractitem_tools_c",
+      "class": null
+    },
+    "170": {
+      "root": "invdef_bfr_pickup_bolt",
+      "class": null
+    },
+    "216": {
+      "root": "invdef_boosterplaceable",
+      "class": null
+    },
+    "102": {
+      "root": "invdef_broombaplaceable",
+      "class": null
+    },
+    "220": {
+      "root": "invdef_commanderdoor_boltkey",
+      "class": null
+    },
+    "112": {
+      "root": "invdef_efm1_boomstickpickup",
+      "class": null
+    },
+    "184": {
+      "root": "invdef_efm2_creepmeatpickup",
+      "class": null
+    },
+    "132": {
+      "root": "invdef_efm3_emppickup_part1",
+      "class": null
+    },
+    "133": {
+      "root": "invdef_efm3_emppickup_part2",
+      "class": null
+    },
+    "131": {
+      "root": "invdef_efm3_emppickup_part3",
+      "class": null
+    },
+    "137": {
+      "root": "invdef_efm3_pickup_empcomplete",
+      "class": null
+    },
+    "229": {
+      "root": "invdef_efpagri_cratepickup",
+      "class": null
+    },
+    "107": {
+      "root": "invdef_genconstruct",
+      "class": null
+    },
+    "215": {
+      "root": "invdef_io_pickup_reactorpart",
+      "class": null
+    },
+    "200": {
+      "root": "invdef_io_pickup_towerbolt",
+      "class": null
+    },
+    "398": {
+      "root": "invdef_thesupply_shammylog",
+      "class": null
+    },
+    "199": {
+      "root": "invdef_vaultpowerorb",
+      "class": null
+    },
+    "149": {
+      "root": "newitem",
+      "class": null
+    },
+    "232": {
+      "root": "inv_event_helpnpc_key",
+      "class": null
+    },
+    "387": {
+      "root": "weapon_brute_facelaser",
+      "class": null
+    },
+    "390": {
+      "root": "weapon_meathead_chaingun",
+      "class": null
+    },
+    "391": {
+      "root": "weapon_meathead_flamethrower",
+      "class": null
+    },
+    "383": {
+      "root": "weapon_meathead_rocket",
+      "class": null
+    },
+    "389": {
+      "root": "weapon_orderdrone",
+      "class": null
+    },
+    "381": {
+      "root": "weapon_soldier_sprayer",
+      "class": null
+    },
+    "399": {
+      "root": "weapon_splicespiderjumbo_rocketgun",
+      "class": null
+    },
+    "384": {
+      "root": "weapon_turret_chaingun",
+      "class": null
+    },
+    "77": {
+      "root": "invdef_crawler_vehiclepart_demo",
+      "class": null
+    },
+    "75": {
+      "root": "invdef_crawler_vehiclepart_gra_1",
+      "class": null
+    },
+    "74": {
+      "root": "invdef_crawler_vehiclepart_gra_2",
+      "class": null
+    },
+    "69": {
+      "root": "invdef_crawler_vehiclepart_gra_3",
+      "class": null
+    },
+    "68": {
+      "root": "invdef_crawler_vehiclepart_gra_4",
+      "class": null
+    },
+    "73": {
+      "root": "invdef_crawler_vehiclepart_mt_1",
+      "class": null
+    },
+    "71": {
+      "root": "invdef_crawler_vehiclepart_mt_2",
+      "class": null
+    },
+    "72": {
+      "root": "invdef_crawler_vehiclepart_mt_3",
+      "class": null
+    },
+    "70": {
+      "root": "invdef_crawler_vehiclepart_mt_4",
+      "class": null
+    },
+    "76": {
+      "root": "invdef_crawler_vehiclepart_parent",
+      "class": null
+    },
+    "67": {
+      "root": "invdef_crawler_vehiclepart_sha_1",
+      "class": null
+    },
+    "66": {
+      "root": "invdef_crawler_vehiclepart_sha_2",
+      "class": null
+    },
+    "65": {
+      "root": "invdef_crawler_vehiclepart_sha_3",
+      "class": null
+    },
+    "64": {
+      "root": "invdef_crawler_vehiclepart_sha_4",
+      "class": null
+    },
+    "63": {
+      "root": "invdef_dronebrain",
+      "class": null
+    },
+    "56": {
+      "root": "invdef_gardenseeds",
+      "class": null
+    },
+    "134": {
+      "root": "invdef_io_pickup_convoybomb",
+      "class": null
+    },
+    "156": {
+      "root": "invdef_io_pickup_detonator",
+      "class": null
+    },
+    "219": {
+      "root": "invdef_io_pickup_giftbag",
+      "class": null
+    },
+    "193": {
+      "root": "invdef_io_pickup_glidepack",
+      "class": null
+    },
+    "171": {
+      "root": "invdef_io_pickup_guidescore",
+      "class": null
+    },
+    "191": {
+      "root": "invdef_io_pickup_intel",
+      "class": null
+    },
+    "163": {
+      "root": "invdef_io_pickup_missilebody",
+      "class": null
+    },
+    "175": {
+      "root": "invdef_io_pickup_missilecone",
+      "class": null
+    },
+    "180": {
+      "root": "invdef_io_pickup_missilelaunchsystem",
+      "class": null
+    },
+    "176": {
+      "root": "invdef_io_pickup_missilemiddle",
+      "class": null
+    },
+    "61": {
+      "root": "invdef_missiontemp_pickup",
+      "class": null
+    },
+    "57": {
+      "root": "invdef_oxygencanister",
+      "class": null
+    },
+    "179": {
+      "root": "invdef_pickup_bolt",
+      "class": null
+    },
+    "108": {
+      "root": "invdef_pickup_thebossdrive",
+      "class": null
+    },
+    "113": {
+      "root": "invdef_rocketmonters_catchtainerpickup",
+      "class": null
+    },
+    "120": {
+      "root": "invdef_twwh_cavebombpickup",
+      "class": null
+    },
+    "158": {
+      "root": "invdef_yatlc_trachbagpickup",
+      "class": null
+    },
+    "164": {
+      "root": "invdef_yatlc_trashcanlidpickup",
+      "class": null
+    },
+    "167": {
+      "root": "invdef_yatlc_trashcanpickup",
+      "class": null
+    },
+    "187": {
+      "root": "inventorydef_elpis_ozkit",
+      "class": null
+    },
+    "78": {
+      "root": "inventorydef_fishing_legendaryfish",
+      "class": null
+    },
+    "79": {
+      "root": "inventorydef_fishing_rarefish",
+      "class": null
+    },
+    "123": {
+      "root": "invdef_io_pickup_fueltank",
+      "class": null
+    },
+    "119": {
+      "root": "invdef_io_pickup_ignitionsource",
+      "class": null
+    }
+  },
+  "player_class_source": {
+    "file": "C:\\Users\\mwenn\\Desktop\\MSBT_Codex_Work\\sdk-control-lab\\tmp\\body-usmap-schema.json",
+    "sha256": "b75eee943c1cdca78fd2ef692c3df398b1ddbdbc2850e6c5c4a9cb3a58ba5afe",
+    "schema": "GbxPlayerState",
+    "property": {
+      "name": "ReplicatedCharacterDef",
+      "schema_index": 5,
+      "array_dim": 1,
+      "type": "NameProperty",
+      "file_offset": 1809880,
+      "encoded_bytes": "0500019193000005"
+    },
+    "live_guest_verified": false
+  }
+}

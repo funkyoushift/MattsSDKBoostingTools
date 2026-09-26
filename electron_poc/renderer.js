@@ -13747,6 +13747,14 @@ const TUTORIAL_TOURS = {
     "revealDetails": "#afkLootDetails"
   },
   {
+    "title": "Set guaranteed items",
+    "body": "Add the gun, shield, or other items every guest should receive. Paste codes here, use Add selected to guaranteed items for bookmarks, or Add to AFK guaranteed items in Item Catalog. Two guaranteed items leave 68 random slots. Class-mod rules apply to both lists. An item in this list is not drawn again from the random pool; repeat a guaranteed line for extra copies. More than 70 guaranteed items requires the password.",
+    "tab": "boosting",
+    "target": "afkGuaranteedCodes",
+    "revealPanels": ["afk-lobby"],
+    "revealDetails": "#afkLootDetails"
+  },
+  {
     "title": "Review item codes",
     "body": "Paste one item code per line. Repeat a line to request extra copies. There is no overall line limit. Codes keep their item levels. Select Send selected loot to include this list in each guest’s boost. Large lists take longer to deliver.",
     "tab": "boosting",
@@ -13758,7 +13766,7 @@ const TUTORIAL_TOURS = {
   },
   {
     "title": "Choose how much loot each guest receives",
-    "body": "Choose Send 70 random items per guest to draw up to 70 entries from your AFK loot pool on each join. Filter and select items in Item Catalog, then Add to AFK to build the pool. Smaller pools send every entry. Repeated codes remain extra copies. Send all selected items keeps unlimited delivery, but sending more than 70 requires the password each time you start AFK. This limits new items sent, not total backpack contents, and does not change guest inventory visibility.",
+    "body": "Choose Guaranteed items + random fill to send up to 70 total items on each join. Filter and select items in Item Catalog, then Add to AFK to build the pool. Smaller pools send every entry. Add must-have items to Guaranteed items first; random mode fills only the remaining slots up to 70. Guaranteed items are not drawn again from the random pool. Other characters’ class mods are excluded in both modes. Random mode reserves one of the 70 slots for a matching class mod when available. Repeated codes remain extra copies. Send all selected items keeps unlimited delivery, but sending more than 70 requires the password each time you start AFK. This limits new items sent, not total backpack contents, and does not change guest inventory visibility.",
     "tab": "boosting",
     "target": "afkLootMode",
     "revealPanels": ["afk-lobby"]

@@ -30,7 +30,14 @@ def release_fixture(tmp_path):
         path.write_bytes(content if isinstance(content, bytes) else content.encode())
         return path
 
-    write("tools/publish_github_release.ps1", (ROOT / "tools/publish_github_release.ps1").read_bytes())
+    oak = b"synthetic SDK runtime"
+    pak = b"synthetic AFK PAK"
+    publisher = (ROOT / "tools/publish_github_release.ps1").read_text()
+    publisher = publisher.replace("602675446abed184169fa158be3c8bc81777a71203581e4a248eca8a3d00b5c7", hashlib.sha256(oak).hexdigest())
+    write("tools/publish_github_release.ps1", publisher)
+    write("dist_electron/win-unpacked/resources/oak2/oak2-sdk.zip", oak)
+    write("dist_electron/win-unpacked/resources/afk_shift/pakchunk90-Windows_90_P.pak", pak)
+    write("tools/third_party/afk_shift/pakchunk90-Windows_90_P.pak", pak)
     write("electron_poc/package.json", json.dumps({"version": "2.11.0"}))
     shutil.copytree(yaml_module, tmp_path / "electron_poc/node_modules/js-yaml")
     sdk = b"test SDK archive bytes"
@@ -50,6 +57,8 @@ def release_fixture(tmp_path):
     portable = tmp_path / "dist_electron/MSBT-Portable-v2.11.0-win-x64.zip"
     with zipfile.ZipFile(portable, "w") as archive:
         prefix = "MSBT-Portable-v2.11.0-win-x64/resources/"
+        archive.writestr(prefix + "oak2/oak2-sdk.zip", oak)
+        archive.writestr(prefix + "afk_shift/pakchunk90-Windows_90_P.pak", pak)
         archive.writestr(prefix + "sdkmod/MattsSDKBoostingTools.sdkmod", sdk)
         archive.writestr(prefix + "releases/latest.json", manifest)
         archive.writestr(prefix + "app-update.yml", app_update)

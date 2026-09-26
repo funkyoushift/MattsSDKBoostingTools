@@ -21,6 +21,7 @@ class FakeGame:
     def is_host(self): return True
     def roster(self): return self.world, self.rows
     def prepare_loot(self, payload): return ["serial"]
+    def classify_loot(self, serials): return [None] * len(serials)
     def step(self, step, job, config):
         if self.wait: return None
         self.calls.append((step, job["token"], job["index"]))
@@ -152,7 +153,7 @@ def test_loot_has_no_500_code_cap_and_preserves_duplicates_and_case():
 
 def test_random_loot_is_seventy_from_pool_and_fixed_per_guest(monkeypatch):
     rng = module.random.Random(12)
-    monkeypatch.setattr(module.random, "sample", rng.sample)
+    monkeypatch.setattr(module, "_loot_rng", SimpleNamespace(sample=rng.sample))
     pool = [f"serial-{i}" for i in range(952)]
     config = {"serials": pool, "loot_mode": "random70"}
     first_job = {}; first = module.Game.loot_for_guest(first_job, config)
@@ -162,6 +163,21 @@ def test_random_loot_is_seventy_from_pool_and_fixed_per_guest(monkeypatch):
     assert first != second
     assert module.Game.loot_for_guest(first_job, config) is first
     assert pool == [f"serial-{i}" for i in range(952)]
+
+
+def test_guest_draws_ignore_other_mods_reseeding_random(monkeypatch):
+    def shared_random_used(*_):
+        raise AssertionError("Must not use the shared random generator")
+    monkeypatch.setattr(module.random, "sample", shared_random_used)
+    config = {"serials": [f"item-{i}" for i in range(956)], "loot_mode": "random70"}
+    jobs = [{} for _ in range(32)]
+    for job in jobs:
+        module.random.seed(1)
+        selected = module.Game.loot_for_guest(job, config)
+        assert len(selected) == 70 and len(set(selected)) == 70
+        assert module.Game.loot_for_guest(job, config) is selected
+    assert len({job["loot_selection_id"] for job in jobs}) == 32
+    assert len(config["serials"]) == 956
 
 
 def test_random_small_pools_and_unlimited_preserve_copies():
@@ -421,3 +437,20 @@ def test_customs_and_hovers_matches_boosting_button_and_targets_guest():
     assert '<button data-action="devperk_4">All Customs + Hovers</button>' in html
     assert 'data-afk-boost="cosmetics"> All Customs + Hovers' in html
     assert 'data-afk-boost="vehicles"' not in html
+
+
+def test_guaranteed_counts_and_combined_password_boundary():
+ game=FakeGame(); game.prepare_loot=lambda payload: payload.get('codes','').splitlines()
+ lobby=module.Lobby(game)
+ codes='\n'.join(str(i) for i in range(69))
+ fixed='fixed1\nfixed2'
+ assert lobby.start({'loot':True,'codes':codes,'guaranteed_codes':fixed})['password_required']
+ assert lobby.start({'loot':True,'codes':codes,'guaranteed_codes':fixed,'loot_mode':'random70'})['ok']
+ assert lobby.config['guaranteed_serials']==['fixed1','fixed2']
+ lobby.stop()
+ assert lobby.start({'loot':True,'codes':'','guaranteed_codes':fixed,'loot_mode':'random70'})['ok']
+ lobby.stop()
+ over='\n'.join(str(i) for i in range(71))
+ assert lobby.start({'loot':True,'guaranteed_codes':over,'loot_mode':'random70'})['password_required']
+ assert lobby.start({'loot':True,'guaranteed_codes':over,'loot_mode':'random70','bulk_loot_password':'funkyou'})['ok']
+ assert lobby.config['bulk_loot_authorized']

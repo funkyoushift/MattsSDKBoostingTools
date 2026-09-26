@@ -11,6 +11,7 @@ _closing = False
 _seen_visible = False
 _capture_next = 0.0
 _capture_status = {}
+_capture_active = False
 _message = "F10: toggle SHiFT overlay. F11: release game input."
 
 
@@ -41,10 +42,12 @@ def release():
 
 
 def _restore_capture():
+    global _capture_active
     # Recording support must never prevent the native menu from closing.
     try:
         from . import shift_capture
         shift_capture.restore()
+        _capture_active = False
     except Exception as exc:
         _capture_status["error"] = str(exc)
 
@@ -94,6 +97,25 @@ def control(mode="toggle"):
         return {"ok": False, "message": _message}
 
 
+def _record_visible_menu():
+    """Recording is independent of F10 ownership and player input restoration."""
+    global _capture_next, _capture_active
+    now = time.monotonic()
+    if now < _capture_next:
+        return
+    _capture_next = now + .25
+    try:
+        if library().IsVisible():
+            from . import shift_capture
+            _capture_status.clear()
+            _capture_status.update(shift_capture.enable())
+            _capture_active = True
+        elif _capture_active:
+            _restore_capture()
+    except Exception as exc:
+        _capture_status["error"] = str(exc)
+
+
 def tick():
     global _release_at, _owner, _message, _capture_next, _closing, _seen_visible
     if not _bindings:
@@ -119,14 +141,7 @@ def tick():
                 _release_at = [now, now + .25, now + .75, now + 1.5]
         except Exception:
             pass
-    if _owner is not None and time.monotonic() >= _capture_next:
-        _capture_next = time.monotonic() + 1.0
-        try:
-            if not _closing and library().IsVisible():
-                from . import shift_capture
-                _capture_status.update(shift_capture.enable())
-        except Exception as exc:
-            _capture_status["error"] = str(exc)
+    _record_visible_menu()
     if not _release_at:
         return
     if get_pc() != _owner:

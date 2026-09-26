@@ -16,6 +16,7 @@
       ["auto_accept", byId("afkAutoAccept").checked],
       ["auto_kick", byId("afkAutoKick").checked],
       ["loot_mode", byId("afkLootMode").value],
+      ["guaranteed_codes", byId("afkGuaranteedCodes").value],
       ["codes", byId("afkCodes").value]
     ]);
   }
@@ -29,10 +30,13 @@
     byId("afkLootMode").value = config.loot_mode === "random70" ? "random70" : "all";
     if (typeof config.codes === "string") byId("afkCodes").value = config.codes;
     else if (Array.isArray(config.serials)) byId("afkCodes").value = config.serials.join("\n");
+    byId("afkGuaranteedCodes").value = typeof config.guaranteed_codes === "string"
+      ? config.guaranteed_codes : (config.guaranteed_serials || []).join("\n");
   }
   try { const saved = JSON.parse(localStorage.getItem(storageKey) || "null"); if (saved) apply(saved); } catch (_) { /* defaults */ }
   panel.addEventListener("change", save);
   byId("afkCodes").addEventListener("input", save);
+  byId("afkGuaranteedCodes").addEventListener("input", save);
 
   function render(data) {
     const afk = data && data.afk_lobby;
@@ -42,7 +46,7 @@
     loaded = Boolean(afk);
     byId("afkStart").disabled = busy || running || !afk;
     byId("afkStop").disabled = busy || !running;
-    panel.querySelectorAll("input,textarea,select,#afkAddBookmarks,#afkLoadBookmarks").forEach((node) => { node.disabled = running || busy; });
+    panel.querySelectorAll("input,textarea,select,#afkAddBookmarks,#afkAddGuaranteedBookmarks,#afkLoadBookmarks").forEach((node) => { node.disabled = running || busy; });
     byId("afkStatus").textContent = afk ? afk.message : "AFK lobby is not connected. Install the bundled game files and restart Borderlands 4.";
     byId("afkShiftStatus").textContent = afk && afk.shift_connected
       ? `SHiFT menu connected · Auto-accepter ${afk.shift_running ? "running" : "stopped"}`
@@ -59,6 +63,10 @@
     busy = true;
     render({ afk_lobby: lastStatus });
     try {
+      if (action === "afk_lobby_start" && payload.loot && payload.guaranteed_codes?.trim()
+          && !lastStatus?.guaranteed_loot_supported) {
+        throw new Error("Install the updated SDK mod and restart Borderlands 4 before using guaranteed items.");
+      }
       if (action === "afk_lobby_start" && payload.loot && payload.loot_mode === "random70"
           && !lastStatus?.loot_modes?.includes("random70")) {
         throw new Error("Install the updated SDK mod and restart Borderlands 4 before using random 70 loot.");
@@ -85,7 +93,7 @@
       busy = false;
       byId("afkStart").disabled = running || !lastStatus;
       byId("afkStop").disabled = !running;
-      panel.querySelectorAll("input,textarea,select,#afkAddBookmarks,#afkLoadBookmarks").forEach((node) => { node.disabled = running; });
+      panel.querySelectorAll("input,textarea,select,#afkAddBookmarks,#afkAddGuaranteedBookmarks,#afkLoadBookmarks").forEach((node) => { node.disabled = running; });
     }
   }
   byId("afkStart").addEventListener("click", () => run("afk_lobby_start", selection()));
@@ -105,24 +113,26 @@
     byId("afkBookmarkNote").textContent = rows.length ? "Select bookmarks, then Add selected to loot." : "No saved bookmarks yet. You can paste item codes below.";
   }
   byId("afkLoadBookmarks").addEventListener("click", () => bookmarks().catch((error) => { byId("afkBookmarkNote").textContent = error.message; }));
-  function appendLoot(codes) {
+  function appendLoot(codes, guaranteed = false) {
     if (running || busy) return { ok: false, message: "Stop AFK Lobby before changing its loot list." };
     if (!codes.length) return { ok: false, message: "Select an item first." };
-    byId("afkCodes").value = [byId("afkCodes").value.trim(), ...codes].filter(Boolean).join("\n");
+    const target = byId(guaranteed ? "afkGuaranteedCodes" : "afkCodes");
+    target.value = [target.value.trim(), ...codes].filter(Boolean).join("\n");
     panel.querySelector('[data-afk-boost="loot"]').checked = true;
     save();
-    return { ok: true, message: `Added ${codes.length} item code(s) to AFK loot. Review them in Boosting → AFK Lobby.` };
+    return { ok: true, message: `Added ${codes.length} item code(s) to AFK ${guaranteed ? "guaranteed items" : "loot pool"}. Review them in Boosting → AFK Lobby.` };
   }
-  function addCatalogLoot(entries) {
+  function addCatalogLoot(entries, guaranteed = false) {
     const rows = bl4ValidSerialEntries(entries);
     if (rows.length !== entries.length) {
       setBl4Status("One or more selected items have invalid codes. Nothing added to AFK.", "warning");
       return;
     }
-    const result = appendLoot(rows.map((row) => row.serial));
+    const result = appendLoot(rows.map((row) => row.serial), guaranteed);
     setBl4Status(result.message, result.ok ? "ok" : "warning");
   }
   byId("bl4AddToAfkBtn").addEventListener("click", () => addCatalogLoot(bl4SelectedEntries()));
+  byId("bl4AddGuaranteedAfkBtn").addEventListener("click", () => addCatalogLoot(bl4SelectedEntries(), true));
   byId("bl4AddThisToAfkBtn").addEventListener("click", () => {
     const row = activeBl4Entry();
     addCatalogLoot(row ? [row] : []);
@@ -131,6 +141,10 @@
     const codes = [...byId("afkBookmarks").selectedOptions].map((option) => option.value);
     const result = appendLoot(codes);
     byId("afkBookmarkNote").textContent = result.message;
+  });
+  byId("afkAddGuaranteedBookmarks").addEventListener("click", () => {
+    const codes = [...byId("afkBookmarks").selectedOptions].map((option) => option.value);
+    byId("afkBookmarkNote").textContent = appendLoot(codes, true).message;
   });
   bookmarks().catch(() => {});
   render(null);

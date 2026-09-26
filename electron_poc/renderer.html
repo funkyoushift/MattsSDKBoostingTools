@@ -215,9 +215,9 @@
         <label for="afkLootMode">Loot amount per guest</label>
         <select id="afkLootMode">
           <option value="all">Send all selected items · password above 70</option>
-          <option value="random70">Send 70 random items per guest</option>
+          <option value="random70">Guaranteed items + random fill · up to 70</option>
         </select>
-        <p class="muted-line">Random mode draws up to 70 entries from your AFK loot list for each guest. In Item Catalog, filter and select your items, then use Add to AFK. Smaller lists send all entries. This limits items sent per join, not the guest’s total backpack contents. Rejoining draws again.</p>
+        <p class="muted-line">Random mode sends compatible guaranteed items first, then fills remaining slots up to 70 from your loot pool. In Item Catalog, filter and select your items, then use Add to AFK. Smaller pools send the available entries. This limits items sent per join, not the guest’s total backpack contents. Rejoining draws again. Class mods are limited to the guest’s character in both modes; random mode includes at least one matching class mod when the pool has one.</p>
         <label><input id="afkAutoAccept" type="checkbox" checked> Auto-accept SHiFT friends while running</label>
         <label><input id="afkAutoKick" type="checkbox"> Auto-kick when boosts finish (15-second wait after loot)</label>
         <p class="muted-line">The auto-accepter also declines incoming game invites. UVHM 1–7 is separate from challenges. All Customs + Hovers uses the same action as the Boosting tab button.</p>
@@ -228,8 +228,12 @@
           <div class="button-row wrap">
             <button id="afkLoadBookmarks" type="button">Refresh bookmarks</button>
             <button id="afkAddBookmarks" type="button">Add selected to loot</button>
+            <button id="afkAddGuaranteedBookmarks" type="button">Add selected to guaranteed items</button>
           </div>
           <p id="afkBookmarkNote" class="muted-line"></p>
+          <label for="afkGuaranteedCodes">Guaranteed items · included in every delivery</label>
+          <textarea id="afkGuaranteedCodes" rows="4" placeholder="Paste the gun, shield, or other item codes every guest should receive"></textarea>
+          <p class="muted-line">Guaranteed items count toward the 70 total. Two guaranteed items leave 68 random slots. Class-mod restrictions apply to both lists. Items already guaranteed are not drawn again from the random pool; repeat a guaranteed line for extra copies.</p>
           <label for="afkCodes">Loot pool · one code per line; repeated lines are extra copies</label>
           <textarea id="afkCodes" rows="5" placeholder="Paste item codes, or add bookmarks above"></textarea>
           <p class="muted-line">Codes retain their item levels. Selections are saved on this PC.</p>
@@ -1087,6 +1091,7 @@
               <button id="bl4ValidateBtn">Validate Selected Code</button>
               <button id="bl4ImportSelectedBtn">Save Selected to Bookmarks</button>
               <button id="bl4AddToAfkBtn" type="button" title="Append selected item codes to the AFK loot list">Add to AFK</button>
+              <button id="bl4AddGuaranteedAfkBtn" type="button">Add to AFK guaranteed items</button>
             </div>
           </div>
           <div id="bl4Status" class="status-line warning">Loading BL4 Codes catalog...</div>

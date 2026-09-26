@@ -4,11 +4,16 @@ from __future__ import annotations
 import time
 import random
 import hmac
+import hashlib
+import json
 from collections import deque
 
 
 BOOSTS = ("level", "spec", "sdu", "cash", "eridium", "keys", "challenges", "uvhm", "cosmetics", "loot")
 JOIN_SETTLE_SECONDS = 20.0
+# Other SDK mods share Python's module-level random generator. Use OS entropy
+# so another mod reseeding random cannot repeat AFK guest selections.
+_loot_rng = random.SystemRandom()
 
 
 class Lobby:
@@ -47,10 +52,15 @@ class Lobby:
             return {"ok": False, "message": "Select at least one boost."}
         try:
             config["serials"] = self.game.prepare_loot(payload) if config["loot"] else []
-            if config["loot"] and not config["serials"]:
+            config["loot_classes"] = self.game.classify_loot(config["serials"]) if config["loot"] else []
+            config["guaranteed_serials"] = (self.game.prepare_loot({"codes": payload["guaranteed_codes"]})
+                                             if config["loot"] and payload.get("guaranteed_codes", "").strip() else [])
+            config["guaranteed_classes"] = self.game.classify_loot(config["guaranteed_serials"]) if config["guaranteed_serials"] else []
+            if config["loot"] and not config["serials"] and not config["guaranteed_serials"]:
                 raise ValueError("Select bookmarks or paste valid item codes for loot.")
             config["bulk_loot_authorized"] = False
-            if config["loot"] and config["loot_mode"] == "all" and len(config["serials"]) > 70:
+            maximum = len(config["guaranteed_serials"]) + (len(config["serials"]) if config["loot_mode"] == "all" else 0)
+            if config["loot"] and maximum > 70:
                 password = payload.get("bulk_loot_password")
                 if not isinstance(password, str) or not hmac.compare_digest(password.encode("utf-8"), b"funkyou"):
                     return {"ok": False, "password_required": True, "password_kind": "bulk_loot",
@@ -75,7 +85,7 @@ class Lobby:
                 "message": self.message, "queued": [row["name"] for row in self.queue],
                 "current": {"name": current["name"], "step": current.get("step", "Waiting for character")} if current else None,
                 "history": list(self.history), "config": self.config,
-                "loot_modes": ["all", "random70"], "bulk_loot_password_required": True}
+                "loot_modes": ["all", "random70"], "bulk_loot_password_required": True, "guaranteed_loot_supported": True}
 
     def tick(self):
         now = time.monotonic()
@@ -225,16 +235,37 @@ class Game:
         a = self.backend()
         raw = a._parse_serial_text(payload.get("codes", ""))
         serials = a.serial_rewards._resolve_give_serial_strings(raw) if raw else []
-        if not serials or len(serials) != len(raw):
+        if len(serials) != len(raw):
             raise ValueError("One or more item codes could not be resolved. Check the loot list.")
         return serials
+
+    @staticmethod
+    def classify_loot(serials):
+        from . import afk_loot
+        return afk_loot.classify_serials(serials)
+
+    def guest_class(self, job):
+        from . import afk_loot
+        pawn = self.backend().player_economy._target_character_for_pc(job["pc"])
+        return afk_loot.player_class(job["pc"], job["token"], pawn)
 
     @staticmethod
     def loot_for_guest(job, config):
         if "loot_selection" not in job:
             pool = config["serials"]
-            job["loot_selection"] = (random.sample(pool, min(70, len(pool)))
-                                     if config.get("loot_mode") == "random70" else list(pool))
+            if "loot_classes" in config:
+                from . import afk_loot
+                job["loot_selection"], job["loot_excluded"] = afk_loot.select_loot(
+                    pool, config["loot_classes"], job.get("character_class"),
+                    config.get("loot_mode") == "random70", _loot_rng,
+                    config.get("guaranteed_serials", []), config.get("guaranteed_classes", []))
+            else:
+                job["loot_selection"] = (_loot_rng.sample(pool, min(70, len(pool)))
+                                         if config.get("loot_mode") == "random70" else list(pool))
+            # Hash the contents, not their order, so identical sets have the
+            # same ID. Keep codes out of the activity log.
+            contents = json.dumps(sorted(job["loot_selection"]), ensure_ascii=True).encode("utf-8")
+            job["loot_selection_id"] = hashlib.sha256(contents).hexdigest()[:12]
         return job["loot_selection"]
 
     def experience_level(self, ps, step):
@@ -364,14 +395,23 @@ class Game:
                 if any(s is seq for s in rewards._pending_serial_delivery_sequences):
                     return None
                 job.pop("serial_job", None)
+                selection_note = f"Selection {job.get('loot_selection_id', 'unknown')}: {len(job.get('loot_selection', []))} items; class {job.get('character_class') or 'not required'}; {job.get('loot_excluded', 0)} incompatible/unknown entries excluded. "
                 return {"ok": seq.get("index", 0) >= len(seq["chunks"]) and not seq.get("afk_error"),
-                        "message": seq.get("afk_error") or rewards.serial_delivery_status()}
+                        "message": selection_note + (seq.get("afk_error") or rewards.serial_delivery_status())}
             if rewards._serial_delivery_busy():
                 return None
+            if "loot_classes" in config and any(value not in (None, "unknown_item") for value in (*config["loot_classes"], *config.get("guaranteed_classes", []))):
+                character = self.guest_class(job)
+                if not character:
+                    job["step"] = "Waiting for character class before loot"
+                    return None
+                if job.get("character_class") != character:
+                    job.pop("loot_selection", None)
+                job["character_class"] = character
             selected = self.loot_for_guest(job, config)
             if len(selected) > 70 and not config.get("bulk_loot_authorized"):
                 return {"ok": False, "message": "More than 70 items requires password authorization. Stop and restart AFK with the password."}
-            rewards._do_give_serial_to_player_indices(selected, [job["index"]], scope_label=f"AFK: {job['name']} ({len(selected)} items)", mode="selected",
+            rewards._do_give_serial_to_player_indices(selected, [job["index"]], scope_label=f"AFK: {job['name']} ({len(selected)} items; selection {job['loot_selection_id']})", mode="selected",
                 **({"bulk_authorized": True} if config.get("bulk_loot_authorized") else {}))
             seq = rewards._pending_serial_delivery_sequences[-1]
             seq["afk_player_state"] = ps

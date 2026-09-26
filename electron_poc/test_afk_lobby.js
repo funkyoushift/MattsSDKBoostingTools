@@ -16,7 +16,7 @@ app.whenReady().then(async () => {
       return {ok:true,data:{ok:true,afk_lobby:{enabled:action==='afk_lobby_start',message:action==='afk_lobby_start'?'Running':'Stopped',config:payload,history:[]}}};
     };
     bridgeStatus = async () => {};
-    window.msbtAfkRender({afk_lobby:{enabled:false,message:'Stopped',loot_modes:['all','random70'],history:[],shift_connected:true,shift_running:false}});
+    window.msbtAfkRender({afk_lobby:{enabled:false,message:'Stopped',loot_modes:['all','random70'],guaranteed_loot_supported:true,history:[],shift_connected:true,shift_running:false}});
     document.getElementById('afkLoadBookmarks').click();
     await new Promise(resolve=>setTimeout(resolve,30));
     document.getElementById('afkBookmarks').options[0].selected = true;
@@ -27,6 +27,8 @@ app.whenReady().then(async () => {
     state.bl4ActiveId = 'a';
     document.getElementById('bl4AddToAfkBtn').click();
     document.getElementById('bl4AddThisToAfkBtn').click();
+    document.getElementById('bl4AddGuaranteedAfkBtn').click();
+    const guaranteedCodes = document.getElementById('afkGuaranteedCodes').value;
     const catalogCodes = document.getElementById('afkCodes').value;
     const savedCodes = JSON.parse(localStorage.getItem('msbt.afk-lobby.v1')).codes;
     const kickDefaultOff = !document.getElementById('afkAutoKick').checked;
@@ -43,10 +45,10 @@ app.whenReady().then(async () => {
     document.getElementById('afkStart').click();
     await new Promise(resolve=>setTimeout(resolve,30));
     const oldSdkBlocked = calls.length === 0 && document.getElementById('afkStatus').textContent.includes('updated SDK');
-    window.msbtAfkRender({afk_lobby:{enabled:false,message:'Ready',loot_modes:['all','random70'],history:[]}});
+    window.msbtAfkRender({afk_lobby:{enabled:false,message:'Ready',loot_modes:['all','random70'],guaranteed_loot_supported:true,history:[]}});
     document.getElementById('afkStart').click();
     await new Promise(resolve=>setTimeout(resolve,30));
-    const locked = document.getElementById('afkCodes').disabled && lootMode.disabled;
+    const locked = document.getElementById('afkCodes').disabled && lootMode.disabled && document.getElementById('afkGuaranteedCodes').disabled;
     const stopEnabled = !document.getElementById('afkStop').disabled;
     document.getElementById('bl4AddToAfkBtn').click();
     const unchangedWhileRunning = document.getElementById('afkCodes').value === catalogCodes;
@@ -61,7 +63,7 @@ app.whenReady().then(async () => {
     panel.scrollIntoView();
     document.getElementById('afkCloseShift').click();
     await new Promise(resolve => setTimeout(resolve, 20));
-    return {oldSdkBlocked,unlimitedDefault,savedMode,calls,codes,catalogCodes,savedCodes,kickDefaultOff,newDefaultsOff,unchangedWhileRunning,locked,unlocked,stopEnabled,hasSduLabel:panel.textContent.includes('3,225')};
+    return {guaranteedCodes,oldSdkBlocked,unlimitedDefault,savedMode,calls,codes,catalogCodes,savedCodes,kickDefaultOff,newDefaultsOff,unchangedWhileRunning,locked,unlocked,stopEnabled,hasSduLabel:panel.textContent.includes('3,225')};
   })()`);
   assert.equal(results.codes, "@Ufixture");
   assert.equal(results.catalogCodes, "@Ufixture\n@UCatalogAlpha\n@UCatalogBeta\n@UCatalogAlpha");
@@ -77,6 +79,8 @@ app.whenReady().then(async () => {
   assert(results.oldSdkBlocked);
   assert.equal(results.savedMode, 'random70');
   assert.equal(results.calls[0].payload.loot_mode, 'random70');
+  assert.equal(results.guaranteedCodes, '@UCatalogAlpha\n@UCatalogBeta');
+  assert.equal(results.calls[0].payload.guaranteed_codes, results.guaranteedCodes);
   assert.equal(results.calls[0].payload.challenges, false);
   for (const key of ['uvhm', 'cosmetics']) assert.equal(results.calls[0].payload[key], true);
   assert.equal(results.calls[0].payload.auto_kick, true);
