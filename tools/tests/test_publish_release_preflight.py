@@ -40,6 +40,7 @@ def release_fixture(tmp_path):
     write("tools/third_party/afk_shift/pakchunk90-Windows_90_P.pak", pak)
     write("electron_poc/package.json", json.dumps({"version": "2.11.0"}))
     shutil.copytree(yaml_module, tmp_path / "electron_poc/node_modules/js-yaml")
+    write("dist_setup/MSBT-Setup.exe", b"setup")
     sdk = b"test SDK archive bytes"
     installer = b"test installer bytes"
     manifest = json.dumps({"package_version": "2.11.0", "sdkmod_version": "2.11.0", "mobile_apk_version": "1.1.0"})

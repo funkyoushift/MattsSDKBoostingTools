@@ -535,7 +535,11 @@ function configureAutoUpdater() {
 
   let updaterModule = null;
   try {
-    updaterModule = require("electron-updater");
+    const { PersistentUpdater, findSetup } = require("./persistent_updater");
+    const setupPath = findSetup(process.resourcesPath);
+    updaterModule = setupPath
+      ? { autoUpdater: new PersistentUpdater({ setupPath, app, isNewer: isNewerPublicVersion }) }
+      : require("electron-updater");
   } catch (error) {
     const failure = packagedLoadFailure(error);
     updateState({

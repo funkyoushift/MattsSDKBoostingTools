@@ -13402,7 +13402,8 @@ function wireEvents() {
     window.msbt.openExternal("https://github.com/funkyoushift/MattsSDKBoostingTools");
   });
   [
-    ["streamlabsBtn", "https://streamlabs.com/funkyoushift/tip"],
+    ["developmentSupportBtn", "https://www.funkyoushift.com/donate.html"],
+    ["streamlabsBtn", "https://www.funkyoushift.com/donate.html"],
     ["mattmabKofiBtn", "https://ko-fi.com/mattmab"],
     ["funkPoweredMark", "https://www.funkyoushift.com"],
     ["funkyoushiftSiteBtn", "https://www.funkyoushift.com"],
@@ -14289,7 +14290,7 @@ const TAB_TUTORIALS = {
     },
     {
       title: "Support Mattmab",
-      body: "If Matt Editor helps you, consider supporting Mattmab on Ko-fi. The button below opens his page in your browser.",
+      body: "FunkYouSHiFT maintains MSBT; use Support Development above to help fund updates. Matt created the original editor and foundation. You can also support his other work below.",
       tab: "matt-editor",
       target: "loadEditorBtn",
       links: [
@@ -15586,7 +15587,7 @@ async function maybeStartWalkthrough() {
 
 const BOOT_WELCOME_DISMISS_KEY = "msbt.bootWelcome.dismissed.v2";
 const BOOT_WELCOME_DISCORD_URL = "https://discord.gg/4hGKAHdvp6";
-const BOOT_WELCOME_TIP_URL = "https://streamlabs.com/funkyoushift/tip";
+const BOOT_WELCOME_TIP_URL = "https://www.funkyoushift.com/donate.html";
 
 function isBootWelcomeDismissed() {
   try {

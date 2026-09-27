@@ -191,6 +191,9 @@ if ([string]$PackagedManifest.package_version -ne $PackageVersion) {
 $Manifest = $PackagedManifest
 
 $ElectronAssets = @($ElectronInstaller)
+$PersistentSetup = Join-Path $RepoRoot "dist_setup\MSBT-Setup.exe"
+Assert-ReleaseFile $PersistentSetup
+$ElectronAssets += $PersistentSetup
 $blockMap = "$ElectronInstaller.blockmap"
 if (Test-Path $blockMap) {
     $ElectronAssets += $blockMap

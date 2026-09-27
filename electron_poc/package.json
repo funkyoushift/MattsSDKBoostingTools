@@ -1,12 +1,13 @@
 {
   "name": "matts-sdk-boosting-tools",
-  "version": "2.17.4",
+  "version": "2.17.5",
   "private": true,
   "description": "Desktop app for Matt's SDK Boosting Tools.",
   "author": "FunkYouSHiFT",
   "license": "MIT",
   "main": "main.js",
   "scripts": {
+    "test:persistent-updater": "node test_persistent_updater.js",
     "test:settings": "node --check settings_write_queue.js && electron test_settings_persistence.js && node test_settings_restart.js",
     "start": "electron .",
     "smoke": "electron . --smoke",
@@ -45,6 +46,7 @@
       "!node_modules/.cache/**",
       "!*.log",
       "!vendor/python/**",
+      "!vendor/setup/**",
       "!vendor/*.zip",
       "!vendor/_python_extract/**",
       "!test_*.js",
@@ -54,6 +56,10 @@
       "!vendor/oak2/**"
     ],
     "extraResources": [
+      {
+        "from": "vendor/setup/MSBT-Setup.exe",
+        "to": "setup/MSBT-Setup.exe"
+      },
       {
         "from": "vendor/python",
         "to": "python",

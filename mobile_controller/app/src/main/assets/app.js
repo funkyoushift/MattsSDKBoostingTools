@@ -2610,3 +2610,12 @@ state.activity=read(STORE.activity,[]);setLiveEnabled();initBookmarks();loadMove
 syncAboutVersion();
 requestUpdateCheck({quiet:true,reason:'launch'});
 if(hasSavedPairing())void connectGateway({quiet:true});
+
+$('supportDevelopmentBtn')?.addEventListener('click',()=>{
+  const url='https://www.funkyoushift.com/donate.html';
+  if(window.MSBTAssets&&typeof window.MSBTAssets.openExternalUrl==='function'){
+    window.MSBTAssets.openExternalUrl(url);
+  }else{
+    window.open(url,'_blank','noopener,noreferrer');
+  }
+});

@@ -51,6 +51,11 @@ jobs:
         with:
           python-version: "3.13"
 
+      - name: Set up installer build tools
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
       - name: Install Electron dependencies
         working-directory: electron_poc
         run: npm ci
@@ -77,6 +82,7 @@ jobs:
         run: |
           $version = (Get-Content -Raw .\electron_poc\package.json | ConvertFrom-Json).version
           $required = @(
+            ".\dist_setup\MSBT-Setup.exe",
             ".\dist_electron\MSBT-Installer-v$version.exe",
             ".\dist_electron\MSBT-Installer-v$version.exe.blockmap",
             ".\dist_electron\latest.yml",
@@ -176,6 +182,7 @@ jobs:
           $notesPath = Join-Path $env:RUNNER_TEMP "msbt_release_notes.md"
           Set-Content -Path $notesPath -Value $notes -Encoding UTF8
           $assets = @(
+            ".\dist_setup\MSBT-Setup.exe",
             ".\dist_electron\MSBT-Installer-v$version.exe",
             ".\dist_electron\MSBT-Installer-v$version.exe.blockmap",
             ".\dist_electron\latest.yml",

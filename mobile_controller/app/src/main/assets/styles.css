@@ -407,3 +407,5 @@ button.ghost{min-height:36px;padding:6px 10px;font-size:12px;background:#152033;
 
 .appbar [data-language-selector] { width: 116px; min-height: 36px; padding: 6px 8px; font-size: 13px; flex: 0 0 116px; }
 @media (max-width: 480px) { .appbar .brand span { display: none; } }
+
+.mobile-support{display:block;width:100%;min-height:38px;margin:0 0 8px;border:1px solid #e99b36;border-radius:10px;background:#34210d;color:#ffd28d;font-size:13px;font-weight:700;}

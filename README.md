@@ -1,8 +1,10 @@
 # Matt's SDK Boosting Tools (MSBT)
 
+**[Support MSBT Development](https://www.funkyoushift.com/donate.html)** — FunkYouSHiFT now develops and maintains MSBT. Your support helps fund ongoing updates, fixes, and new features. PayPal, Cash App, and Venmo are available on the support page.
+
 MSBT is a Borderlands 4 boosting and item toolkit: a standalone Windows app outside the game, plus a small SDK mod that talks to Borderlands 4 while you play. Use it for currency/XP/SDU helpers, serial delivery, BL4 code browsing, Mattmab’s save/profile/item editor, Dev Spawner, map travel, movement tools, and more.
 
-**Current release: [v2.16.0](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.16.0)** — Remote mobile AFK control, adjustable loot size, bookmark subfolders, guest counters, and six language choices for AFK controls.
+**Current release: [v2.17.5](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.17.5)** — Reusable installer and prominent support links on desktop and Android.
 
 This project is **unofficial**. It is not affiliated with, endorsed by, or connected to Gearbox, 2K, or the Borderlands franchise owners.
 
@@ -249,7 +251,7 @@ Huge thanks to the people who built pieces of this, shared data, and helped prov
 | Who | What |
 | --- | --- |
 | **Mattmab** | Original toolset, save/editor work, and the foundation this project grew from. [Ko-fi](https://ko-fi.com/mattmab) · [legit-builder](https://github.com/mattmab/legit-builder) |
-| **FunkYouSHiFT** | Current maintainer: Electron app, bridge, SDK v0.3 migration, packaging/releases. [Site](https://www.funkyoushift.com/) · [Twitch](https://www.twitch.tv/funkyoushift/) · [YouTube](https://www.youtube.com/@Funkyoushift) · [Tip](https://streamlabs.com/funkyoushift/tip) |
+| **FunkYouSHiFT** | Current maintainer: Electron app, bridge, SDK v0.3 migration, packaging/releases. [Site](https://www.funkyoushift.com/) · [Twitch](https://www.twitch.tv/funkyoushift/) · [YouTube](https://www.youtube.com/@Funkyoushift) · [Support development](https://www.funkyoushift.com/donate.html) |
 | **BLImGui / Borderlands ImGui** | Original in-game UI framework used by the early MSBT panel. Credited separately — not a Mattmab project. |
 | **apple1417 / BL SDK community** | oak2 / UnrealSDK ecosystem and tooling that make mods like this possible. [oak2-mod-manager](https://github.com/bl-sdk/oak2-mod-manager) · [Mod DB](https://bl-sdk.github.io/oak2-mod-db/) |
 | **Ynot / GZO** | BL4 Codes site, catalog/API, and community code pipeline. [GZO Codes](https://save-editor.be/GZO/Borderlands4/Codes.html) · [GZO hub](https://save-editor.be/GZO/) · [Discord](https://discord.gg/4hGKAHdvp6) |
@@ -270,7 +272,7 @@ Third-party notices and license details for bundled/adapted pieces: [docs/THIRD_
 - [GZO Borderlands 4 Codes](https://save-editor.be/GZO/Borderlands4/Codes.html)
 - [Lootlemon](https://www.lootlemon.com/)
 - [FunkYouSHiFT site](https://www.funkyoushift.com/) · [Tools](https://www.funkyoushift.com/borderlands-resources.html)
-- [Tip FunkYouSHiFT](https://streamlabs.com/funkyoushift/tip) · [Donate to Mattmab](https://ko-fi.com/mattmab)
+- [Support current MSBT development](https://www.funkyoushift.com/donate.html) · [Support Matt’s other work](https://ko-fi.com/mattmab)
 - [Report issues](https://github.com/funkyoushift/MattsSDKBoostingTools/issues)
 
 ---

@@ -134,6 +134,7 @@ $ElectronSemver = Get-ElectronSemverVersion
 $ElectronVersion = Get-PublicReleaseVersion
 Assert-ReleaseManifestVersion $ElectronVersion
 Assert-GzoCatalogImages -CatalogPath $SourceGzoCatalog -Label "Source GZO catalog"
+Invoke-Checked "powershell.exe" @("-NoProfile", "-ExecutionPolicy", "Bypass", "-File", (Join-Path $RepoRoot "tools\build_persistent_installer.ps1"))
 Invoke-Checked "node" @((Join-Path $RepoRoot "tools\prepare_game_bundle.js"))
 
 Push-Location $RepoRoot

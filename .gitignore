@@ -106,3 +106,9 @@ mobile_controller/debug-signing/*.keystore.b64
 # SQBT vs MSBT compare extract (local only)
 _compare_sqbt/
 
+# Reusable installer build outputs
+installer/bin/
+installer/obj/
+dist_setup/
+electron_poc/vendor/setup/
+
