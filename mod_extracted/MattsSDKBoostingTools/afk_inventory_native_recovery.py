@@ -18,6 +18,8 @@ class NativeAdapter:
 
     def preflight(self, original):
         a = self.game.backend()
+        if not original['rows']:
+            return {'ok':False,'message':'An empty capture cannot prove the guest inventory is loaded; nothing cleared'}
         if not self.game.is_host() or (a.afk_lobby_status()['enabled'] and not self.allow_afk):
             return {'ok':False, 'message':'Host the game and stop AFK before the recovery test'}
         if any(r['quantity'] != 1 for r in original['rows']):

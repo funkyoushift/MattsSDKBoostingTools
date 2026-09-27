@@ -92,6 +92,7 @@ def test_dead_slots_after_successful_clear_defer_verification_to_restore(monkeyp
 def test_stack_and_active_delivery_preflight_reject_before_clear(monkeypatch):
     native,clock=load(monkeypatch);original=snapshot(row())
     game,player,calls,seqs,roster=game_for(original);adapter=native.NativeAdapter(game,player,'world')
+    assert not adapter.preflight(snapshot())['ok']
     original['rows'][0]['quantity']=2
     assert not adapter.preflight(original)['ok']
     original['rows'][0]['quantity']=1;seqs.append({})

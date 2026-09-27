@@ -439,6 +439,8 @@ class Game:
             if not status['ok']:
                 return {'ok':False,'message':status['error']}
             original = capture.snapshot()
+            if not original['rows']:
+                return {'ok':False,'message':'Empty inventory capture is unverified; no boosts or cleanup applied'}
             if any(r['quantity'] != 1 for r in original['rows']):
                 return {'ok':False,'message':'Stacked inventory restoration is unsupported; no boosts applied'}
             selected = []
