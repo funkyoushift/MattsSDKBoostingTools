@@ -30,6 +30,7 @@
     loot: ['Send selected loot','Enviar botín seleccionado','Envoyer le butin sélectionné','Enviar saque selecionado',"Ausgewählte Beute senden","Geselecteerde buit sturen"],
     auto_accept: ['Auto-accept SHiFT friends','Aceptar amigos de SHiFT automáticamente','Accepter automatiquement les amis SHiFT','Aceitar amigos SHiFT automaticamente',"SHiFT-Freundesanfragen automatisch annehmen","SHiFT-vriendschapsverzoeken automatisch accepteren"],
     auto_kick: ['Kick after everyone on the connection finishes','Expulsar cuando terminen todos los jugadores de la conexión','Expulser quand tous les joueurs de la connexion ont terminé','Expulsar quando todos os jogadores da conexão terminarem',"Entfernen, sobald alle Spieler dieser Verbindung fertig sind","Verwijderen zodra alle spelers op deze verbinding klaar zijn"],
+    cleanup_rewards: ['Clean reward loot and return originals','Limpiar recompensas y devolver los objetos originales','Nettoyer les récompenses et rendre les objets originaux','Limpar recompensas e devolver os itens originais','Belohnungsbeute entfernen und ursprüngliche Gegenstände zurückgeben','Beloningsbuit opruimen en oorspronkelijke items teruggeven'],
     counts: ['Guest joins: {session} this session · {lifetime} lifetime','Entradas: {session} en esta sesión · {lifetime} en total','Arrivées : {session} cette session · {lifetime} au total','Entradas: {session} nesta sessão · {lifetime} no total',"Gastbeitritte: {session} in dieser Sitzung · {lifetime} insgesamt","Deelnames: {session} deze sessie · {lifetime} in totaal"],
     unavailable: ['unavailable','no disponible','indisponible','indisponível',"nicht verfügbar","niet beschikbaar"]
   };
@@ -59,7 +60,7 @@
   const ids={afkStart:'start',afkMobileStart:'start',afkStop:'stop',afkMobileStop:'stop',afkShiftOpen:'openShift',afkShiftClose:'closeShift',afkCloseShift:'restore',walkthroughHeaderBtn:'walkthroughs',afkWalkthroughBtn:'afkWalkthrough',afkPull:'pull',afkLoadBookmarks:'refresh',afkAddBookmarks:'addPool',afkAddGuaranteedBookmarks:'addFixed',bookmarkCreateFolderBtn:'createFolder',bookmarkMoveFolderBtn:'moveFolder'};
   Object.entries(ids).forEach(([id,key])=>{const el=document.getElementById(id);if(el)el.dataset.i18n=key;});
   document.querySelectorAll('[data-afk-boost],[data-afk]').forEach(el=>labelText(el.closest('label'),el.dataset.afkBoost||el.dataset.afk));
-  [['afkAutoAccept','auto_accept'],['afkAutoKick','auto_kick'],['afkCount','count'],['afkRandomCount','count']].forEach(([id,key])=>labelText(document.getElementById(id)?.closest('label'),key));
+  [['afkAutoAccept','auto_accept'],['afkAutoKick','auto_kick'],['afkCleanupRewards','cleanup_rewards'],['afkCount','count'],['afkRandomCount','count']].forEach(([id,key])=>labelText(document.getElementById(id)?.closest('label'),key));
   ['bookmarkGroup','bookmarkFolderPath'].forEach(id=>{const el=document.querySelector('label[for="'+id+'"]');if(el)el.dataset.i18n='folder';});
   document.querySelectorAll('#afkMode option,#afkLootMode option').forEach(el=>{el.dataset.i18n=el.value==='all'?'all':'random';});
   document.querySelectorAll('[data-language-selector]').forEach(el=>{el.addEventListener('change',()=>setLanguage(el.value));});

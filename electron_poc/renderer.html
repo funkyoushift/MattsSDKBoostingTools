@@ -224,6 +224,8 @@
           <label>Random delivery size <input id="afkRandomCount" type="number" min="1" step="1" value="70"></label>
           <p class="muted-line">Guaranteed items count toward this total. If they exceed it, all compatible guaranteed items still arrive. More than 70 requires the password.</p>
         <label><input id="afkAutoKick" type="checkbox"> Auto-kick when boosts finish (15-second wait after loot)</label>
+        <label><input id="afkCleanupRewards" type="checkbox"> Clean challenge / UVHM reward loot and return original items</label>
+        <p class="muted-line">Saves the guest’s original items, opens reward packages, clears the backpack, sends your selected serial loot, then returns the originals. Duplicates are preserved. Equipped slots and favorite/junk flags are not restored. Password required once per AFK session. Auto-kick waits for both deliveries to be verified. Backpacks with stacked items are left untouched.</p>
         <p class="muted-line">The auto-accepter also declines incoming game invites. UVHM 1–7 is separate from challenges. All Customs + Hovers uses the same action as the Boosting tab button.</p>
         <details id="afkLootDetails">
           <summary>Loot from bookmarks or item codes</summary>

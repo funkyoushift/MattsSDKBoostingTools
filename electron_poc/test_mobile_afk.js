@@ -10,12 +10,12 @@ app.whenReady().then(async()=>{
  const result=await win.webContents.executeJavaScript(`(async()=>{
  const check=(v,m)=>{if(!v)throw Error(m);};stopStatusPolling();window.alert=()=>{};
  state.online=true;state.bridgeOnline=true;
- const afk={enabled:false,message:'Ready',guaranteed_loot_supported:true,bulk_loot_password_required:true,random_count_supported:true,config:{level:true,loot:true,loot_mode:'random70',serials:['@UPool'],guaranteed_serials:['@UFixed']}};
+ const afk={enabled:false,message:'Ready',cleanup_rewards_supported:true,guaranteed_loot_supported:true,bulk_loot_password_required:true,random_count_supported:true,config:{level:true,loot:true,loot_mode:'random70',serials:['@UPool'],guaranteed_serials:['@UFixed']}};
  mobileAfk.render({afk_lobby:afk});$('afkPull').click();check($('afkFixed').value==='@UFixed','pull guaranteed');
  state.codes=[{id:'gun',serial:'@UGun'}];state.selectedCodes=new Set(['gun']);document.querySelector('[data-afk-add="catalog:fixed"]').click();check($('afkFixed').value.includes('@UGun'),'catalog add');
- $('afkCount').value='35';
+ $('afkCount').value='35';document.querySelector('[data-afk=cleanup_rewards]').checked=true;
  let sent=[];gatewayAction=async(action,payload)=>{sent.push({action,payload});return {ok:true,data:{ok:true}};};gatewayFetch=async()=>({ok:true,data:{ok:true,name:'PC',players:[],afk_lobby:{...afk,enabled:true}}});
- await $('afkMobileStart').onclick();check(sent[0].action==='afk_lobby_start'&&sent[0].payload.guaranteed_codes.includes('@UGun')&&sent[0].payload.random_count===35,'start payload');check($('afkFields').disabled,'running lock');
+ await $('afkMobileStart').onclick();check(sent[0].action==='afk_lobby_start'&&sent[0].payload.guaranteed_codes.includes('@UGun')&&sent[0].payload.random_count===35,'start payload');check(sent[0].payload.cleanup_rewards===true,'cleanup payload');check($('afkFields').disabled,'running lock');
  await $('afkMobileStop').onclick();check(sent[1].action==='afk_lobby_stop','stop');
  state.online=false;mobileAfk.connectionChanged();check($('afkMobileStop').disabled,'offline lock');
  const secret='a'.repeat(64);const pair=parsePairingPayload(JSON.stringify({v:3,relay:'https://msbt-afk-relay.screename53.workers.dev',room:secret,token:secret,key:secret}));check(pair.v===3,'remote QR');

@@ -7680,8 +7680,82 @@ def _cmd_msbt_probe_challenge_apis(_args: Any = None) -> None:
 
 
 # AFK remains behind backend_actions for all callers.
+_afk_inventory_audit = None
+_afk_inventory_recovery = None
+_afk_inventory_recovery_adapter = None
+_afk_inventory_recovery_next_tick = 0.0
+
+
+def afk_inventory_audit(payload=None):
+    """Explicit read-only inventory capture; never enables cleanup."""
+    global _afk_inventory_audit, _afk_inventory_recovery, _afk_inventory_recovery_adapter
+    from .afk_lobby import lobby
+    from .afk_inventory_capture import Audit
+    payload = payload or {}
+    if payload.get('mode') == 'recovery_status':
+        job = _afk_inventory_recovery
+        return {'ok':True, 'phase':job.record['phase'] if job else 'idle',
+                'message':job.record['error'] if job else '',
+                'verification':job.record['verification'] if job else None,
+                'can_kick':job.can_kick if job else False,
+                'backup':str(job.path) if job else None}
+    if payload.get('mode') == 'recovery_start':
+        import hmac
+        import os
+        from pathlib import Path
+        from .afk_inventory_recovery import Recovery
+        from .afk_inventory_native_recovery import NativeAdapter
+        password = payload.get('backpack_password')
+        if not isinstance(password, str) or not hmac.compare_digest(password.encode('utf-8'), b'funkyou'):
+            return {'ok':False,'message':'Backpack password required','password_required':True}
+        if _afk_inventory_recovery is not None and not _afk_inventory_recovery.can_kick:
+            return {'ok':False,'message':'A recovery already exists; inspect its backup before retrying'}
+        audit = _afk_inventory_audit
+        j = audit.job if audit else None
+        if not j or j['id'] != payload.get('audit_id') or j['phase'] != 'complete':
+            return {'ok':False,'message':'A complete capture for this guest session is required'}
+        if lobby.enabled:
+            return {'ok':False,'message':'Stop AFK before the recovery test'}
+        original = j['baseline'] or j['capture'].snapshot()
+        adapter = NativeAdapter(lobby.game,j['token'],j['world'])
+        preflight = adapter.preflight(original)
+        if not preflight['ok']:
+            return preflight
+        directory = Path(os.environ['LOCALAPPDATA']) / 'MattsSDKBoostingTools' / 'inventory-recovery'
+        if Recovery.unfinished(directory):
+            return {'ok':False,'message':'A saved recovery needs review; another clear will not be started'}
+        # First live round-trip deliberately includes no new loot. It verifies
+        # original-only restoration before enabling the full AFK pipeline.
+        job = Recovery(directory, original, player_token=j['token'],world_token=j['world'],
+                       guest_name=j['name'],restore_metadata=False)
+        _afk_inventory_recovery_adapter = adapter
+        _afk_inventory_recovery = job
+        return {'ok':True,'phase':job.record['phase'],'backup':str(job.path),
+                'message':'Original-item round-trip queued; no auto-kick or new loot'}
+    if payload.get("mode") == "apis":
+        from .afk_inventory_capture import inventory_api_names
+        return inventory_api_names()
+    if payload.get("mode") == "restore_apis":
+        from .afk_inventory_capture import restoration_api_schema
+        return restoration_api_schema()
+    if _afk_inventory_audit is None:
+        _afk_inventory_audit = Audit(lobby.game.roster, lambda: lobby.enabled)
+    mode = payload.get("mode", "status")
+    if mode == "start":
+        return _afk_inventory_audit.start(payload.get("player_index"))
+    return _afk_inventory_audit.control(mode, payload.get("audit_id"))
+
+
 def afk_lobby_start(payload=None):
     from .afk_lobby import lobby
+    import os
+    from pathlib import Path
+    from .afk_inventory_recovery import Recovery
+    if _afk_inventory_recovery is not None and not _afk_inventory_recovery.can_kick:
+        return {'ok':False,'message':'Inventory recovery is unfinished; AFK start and auto-kick are blocked'}
+    recovery_root = Path(os.environ.get('LOCALAPPDATA', str(Path.home()))) / 'MattsSDKBoostingTools' / 'inventory-recovery'
+    if Recovery.unfinished(recovery_root):
+        return {'ok':False,'message':'A saved inventory recovery needs review before AFK can start'}
     return lobby.start(payload or {})
 
 
@@ -7696,10 +7770,19 @@ def afk_lobby_status():
 
 
 def afk_lobby_tick():
+    global _afk_inventory_recovery_next_tick
     from .afk_lobby import lobby
     from . import shift_overlay
     shift_overlay.tick()
     lobby.tick()
+    if _afk_inventory_audit is not None:
+        _afk_inventory_audit.tick()
+    recovery = _afk_inventory_recovery
+    if recovery is not None and time.monotonic() >= _afk_inventory_recovery_next_tick:
+        _afk_inventory_recovery_next_tick = time.monotonic()+.25
+        world, rows = lobby.game.roster()
+        target = next((r for r in rows if r['token'] == recovery.player_token and r['ready']), None)
+        recovery.advance(target['token'] if target else None,world,_afk_inventory_recovery_adapter)
 
 
 def afk_social_probe():

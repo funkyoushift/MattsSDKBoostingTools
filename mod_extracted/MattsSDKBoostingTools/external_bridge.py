@@ -168,6 +168,7 @@ _QUEUE_PRESERVING_ACTIONS = frozenset({
     "read_equipped_serials",
     "read_backpack_serials",
     "read_inventory",
+    "afk_inventory_audit",
     "copy_read_serial",
     "copy_all_read_serials",
     # Live Boost Mods status polls must not cancel a pending enable/disable.
@@ -663,6 +664,10 @@ def _normalize_quick_menu_bridge_payload(action: str, payload: dict[str, Any]) -
 
 def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[str, Any]:
     payload = payload or {}
+    if action == "afk_inventory_audit":
+        # The audit pins its own explicit guest identity. Do not change the
+        # shared manual target through the generic target_player preamble.
+        return backend_actions.afk_inventory_audit(payload)
     if action not in quick_menu_registry.ASSIGNABLE_ACTIONS and action != "set_target_player":
         target = payload.get("target_player")
         if target is not None and str(target).strip():

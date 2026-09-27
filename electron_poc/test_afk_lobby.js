@@ -36,6 +36,7 @@ app.whenReady().then(async () => {
     const newDefaultsOff = newOptions.every(node => node && !node.checked);
     newOptions.forEach(node => { node.checked = true; });
     document.getElementById('afkAutoKick').checked = true;
+    document.getElementById('afkCleanupRewards').checked = true;
     const lootMode = document.getElementById('afkLootMode');
     const unlimitedDefault = lootMode.value === 'all';
     lootMode.value = 'random70';
@@ -45,7 +46,7 @@ app.whenReady().then(async () => {
     document.getElementById('afkStart').click();
     await new Promise(resolve=>setTimeout(resolve,30));
     const oldSdkBlocked = calls.length === 0 && document.getElementById('afkStatus').textContent.includes('updated SDK');
-    window.msbtAfkRender({afk_lobby:{enabled:false,message:'Ready',loot_modes:['all','random70'],guaranteed_loot_supported:true,history:[]}});
+    window.msbtAfkRender({afk_lobby:{enabled:false,message:'Ready',cleanup_rewards_supported:true,loot_modes:['all','random70'],guaranteed_loot_supported:true,history:[]}});
     document.getElementById('afkStart').click();
     await new Promise(resolve=>setTimeout(resolve,30));
     const locked = document.getElementById('afkCodes').disabled && lootMode.disabled && document.getElementById('afkGuaranteedCodes').disabled;
@@ -84,6 +85,7 @@ app.whenReady().then(async () => {
   assert.equal(results.calls[0].payload.challenges, false);
   for (const key of ['uvhm', 'cosmetics']) assert.equal(results.calls[0].payload[key], true);
   assert.equal(results.calls[0].payload.auto_kick, true);
+  assert.equal(results.calls[0].payload.cleanup_rewards, true);
   assert.equal(results.calls[1].action, "afk_lobby_stop");
   assert.equal(results.calls[2].action, "shift_overlay_control");
   assert.equal(results.calls[2].payload.mode, "close");

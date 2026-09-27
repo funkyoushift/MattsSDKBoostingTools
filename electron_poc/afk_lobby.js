@@ -15,6 +15,7 @@
       ...options.map((node) => [node.dataset.afkBoost, node.checked]),
       ["auto_accept", byId("afkAutoAccept").checked],
       ["auto_kick", byId("afkAutoKick").checked],
+      ["cleanup_rewards", byId("afkCleanupRewards").checked],
       ["loot_mode", byId("afkLootMode").value],
       ["random_count", Number(byId("afkRandomCount").value)],
       ["guaranteed_codes", byId("afkGuaranteedCodes").value],
@@ -28,6 +29,7 @@
     options.forEach((node) => { node.checked = config[node.dataset.afkBoost] === true; });
     byId("afkAutoAccept").checked = config.auto_accept !== false;
     byId("afkAutoKick").checked = config.auto_kick === true;
+    byId("afkCleanupRewards").checked = config.cleanup_rewards === true;
     byId("afkLootMode").value = config.loot_mode === "random70" ? "random70" : "all";
     byId("afkRandomCount").value = config.random_count || 70;
     if (typeof config.codes === "string") byId("afkCodes").value = config.codes;
@@ -68,6 +70,9 @@
     busy = true;
     render({ afk_lobby: lastStatus });
     try {
+      if (action === 'afk_lobby_start' && payload.cleanup_rewards && !lastStatus?.cleanup_rewards_supported) {
+        throw new Error('Install the updated SDK before using reward cleanup.');
+      }
       if (action === "afk_lobby_start" && payload.loot && payload.guaranteed_codes?.trim()
           && !lastStatus?.guaranteed_loot_supported) {
         throw new Error("Install the updated SDK mod and restart Borderlands 4 before using guaranteed items.");
@@ -87,10 +92,10 @@
       save();
       let response = await bridgeAction(action, payload, 30000);
       let result = response && response.data !== undefined ? response.data : response;
-      if (result?.password_required && result.password_kind === "bulk_loot") {
-        const password = await requestBackpackPassword("bulk_loot");
+      if (result?.password_required && ["bulk_loot", "backpack_cleanup"].includes(result.password_kind)) {
+        const password = await requestBackpackPassword(result.password_kind);
         if (password === null) throw new Error("AFK start cancelled.");
-        response = await bridgeAction(action, { ...payload, bulk_loot_password: password }, 30000);
+        response = await bridgeAction(action, { ...payload, bulk_loot_password: password, backpack_password: password }, 30000);
         result = response && response.data !== undefined ? response.data : response;
       }
       if (!result || result.ok === false) throw new Error(result && result.message || "AFK command failed.");

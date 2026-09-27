@@ -51,6 +51,14 @@ class Lobby:
         config = {key: payload.get(key) is True for key in BOOSTS}
         config["auto_accept"] = payload.get("auto_accept", True) is True
         config["auto_kick"] = payload.get("auto_kick", False) is True
+        config['cleanup_rewards'] = payload.get('cleanup_rewards') is True
+        if config['cleanup_rewards']:
+            password = payload.get('backpack_password') or payload.get('bulk_loot_password')
+            if not isinstance(password, str) or not hmac.compare_digest(password.encode('utf-8'), b'funkyou'):
+                return {'ok':False,'password_required':True,'password_kind':'backpack_cleanup',
+                        'message':'Reward cleanup clears guest backpacks and requires the password once per AFK session.'}
+            if not (config['challenges'] or config['uvhm']):
+                return {'ok':False,'message':'Select challenges or UVHM to use reward cleanup.'}
         config["loot_mode"] = payload.get("loot_mode", "all")
         if config["loot_mode"] not in ("all", "random70"):
             return {"ok": False, "message": "Choose all loot or a random selection."}
@@ -109,7 +117,8 @@ class Lobby:
                 "history": list(self.history), "config": self.config,
                 "session_joins": self.session_joins, "lifetime_joins": self.lifetime_joins, "counter_error": self.counter_error,
                 "awaiting_kick": [job["name"] for job in self.completed if not job.get("kick_attempted") and not job.get("failed")],
-                "loot_modes": ["all", "random70"], "bulk_loot_password_required": True, "random_count_supported": True, "guaranteed_loot_supported": True}
+                "loot_modes": ["all", "random70"], "bulk_loot_password_required": True, "random_count_supported": True, "guaranteed_loot_supported": True,
+                'cleanup_rewards_supported':True}
 
     def tick(self):
         now = time.monotonic()
@@ -147,7 +156,10 @@ class Lobby:
         for row in rows:
             if row["token"] not in self.seen:
                 self.seen.append(row["token"])
-                self.queue.append(dict(row, steps=deque(key for key in BOOSTS if self.config[key]), results=[]))
+                steps = [key for key in BOOSTS if self.config[key]]
+                if self.config.get('cleanup_rewards'):
+                    steps = ['inventory_capture'] + [key for key in steps if key != 'loot'] + ['inventory_recovery']
+                self.queue.append(dict(row, steps=deque(steps), results=[]))
         if self.current and self.current["token"] not in tokens:
             self.game.cancel(self.current)
             self.history.appendleft({"name": self.current["name"], "message": "Left lobby; unfinished steps cancelled."})
@@ -177,7 +189,7 @@ class Lobby:
             message = "Finished with errors; player kept in lobby" if failed else "All selected actions finished"
             record = {"name": job["name"], "message": message, "results": job["results"]}
             if self.config.get("auto_kick"):
-                job["kick_after"] = now + (15.0 if self.config.get("loot") else 0.0)
+                job["kick_after"] = now + (15.0 if self.config.get("loot") or self.config.get('cleanup_rewards') else 0.0)
                 job["failed"] = failed
                 job["record"] = record
                 self.completed.append(job)
@@ -197,7 +209,10 @@ class Lobby:
             result = {"ok": False, "message": str(exc)}
         if result is not None:
             job["results"].append(dict(result, step=step))
-            job["steps"].popleft()
+            if step == 'inventory_capture' and not result['ok']:
+                job['steps'].clear()
+            else:
+                job["steps"].popleft()
 
     def _flush_kicks(self, rows, now):
         if not self.config.get("auto_kick"):
@@ -384,6 +399,12 @@ class Game:
 
     def cancel(self, job):
         a = self.backend()
+        recovery = job.get('inventory_recovery')
+        if recovery and not recovery.can_kick and not recovery.cancel_before_clear():
+            # Finish an already-started return even if the operator stops AFK.
+            # Departed guests fail identity checks and retain their journal.
+            a._afk_inventory_recovery = recovery
+            a._afk_inventory_recovery_adapter = job['inventory_adapter']
         job.pop("uvhm_plan", None)
         job.pop("uvhm_next_at", None)
         seq = job.pop("serial_job", None)
@@ -397,7 +418,54 @@ class Game:
         a = self.backend()
         pc, ps = job["pc"], job["token"]
         ok = False
-        if step in ("level", "spec"):
+        if step == 'inventory_capture':
+            import os
+            from pathlib import Path
+            from .afk_inventory_capture import Capture
+            from .afk_inventory_recovery import Recovery
+            from .afk_inventory_native_recovery import NativeAdapter
+            directory = Path(os.environ['LOCALAPPDATA']) / 'MattsSDKBoostingTools' / 'inventory-recovery'
+            if Recovery.unfinished(directory):
+                return {'ok':False,'message':'A previous inventory recovery needs review; no boosts applied'}
+            capture = job.get('inventory_capture')
+            if capture is None:
+                capture = job['inventory_capture'] = Capture(ps)
+                job['capture_deadline'] = time.monotonic()+300
+            if time.monotonic() >= job['capture_deadline']:
+                return {'ok':False,'message':'Original inventory capture timed out; no boosts applied'}
+            status = capture.step(ps)
+            if not status['done']:
+                return None
+            if not status['ok']:
+                return {'ok':False,'message':status['error']}
+            original = capture.snapshot()
+            if any(r['quantity'] != 1 for r in original['rows']):
+                return {'ok':False,'message':'Stacked inventory restoration is unsupported; no boosts applied'}
+            selected = []
+            if config.get('loot'):
+                if any(value not in (None,'unknown_item') for value in (*config.get('loot_classes',[]),*config.get('guaranteed_classes',[]))):
+                    character = self.guest_class(job)
+                    if not character:
+                        return None
+                    job['character_class'] = character
+                selected = self.loot_for_guest(job,config)
+                if len(selected)>70 and not config.get('bulk_loot_authorized'):
+                    return {'ok':False,'message':'New loot above 70 requires password authorization'}
+            world,_rows = self.roster()
+            job['inventory_recovery'] = Recovery(directory,original,player_token=ps,world_token=world,
+                guest_name=job['name'],delivery_serials=selected,restore_metadata=False)
+            job['inventory_adapter'] = NativeAdapter(self,ps,world,allow_afk=True,open_rewards=True)
+            return {'ok':True,'message':f"Saved {len(original['rows'])} original inventory entries"}
+        elif step == 'inventory_recovery':
+            recovery = job['inventory_recovery']
+            world,_rows = self.roster()
+            recovery.advance(ps,world,job['inventory_adapter'])
+            if recovery.record['phase'] == 'blocked':
+                return {'ok':False,'message':recovery.record['error']+'; backup retained and kick blocked'}
+            if not recovery.can_kick:
+                return None
+            return {'ok':True,'message':'Reward loot cleared; selected loot and all original items verified'}
+        elif step in ("level", "spec"):
             now = time.monotonic()
             state = job.setdefault("experience_attempts", {}).setdefault(step, {"started": now})
             target = a.MAX_PLAYER_LEVEL if step == "level" else a.MAX_SPEC_LEVEL
