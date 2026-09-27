@@ -37,7 +37,7 @@ GRID_ROWS = quick_menu_registry.GRID_ROWS
 DOCK_W = 700.0
 DOCK_X = DESIGN_W - DOCK_W
 HEADER_H = 168.0
-CELL_W = 210.0
+CELL_W = 220.0
 CELL_H = 56.0
 CELL_GAP_X = 8.0
 CELL_GAP_Y = 6.0
@@ -60,8 +60,8 @@ SCALE_SUBTITLE = 0.36
 SCALE_BTN = 0.46
 SCALE_BTN_HEADER = 0.42
 SCALE_SLOT = 0.38
-SCALE_BODY = 0.34
-SCALE_HINT = 0.30
+SCALE_BODY = 0.36
+SCALE_HINT = 0.34
 SCALE_MODAL_TITLE = 0.48
 SCALE_MODAL_BTN = 0.42
 C_OUTLINE = (0.02, 0.02, 0.02, 1.0)
@@ -949,22 +949,9 @@ class NativeUMG:
         center: bool = False,
         tint: tuple[float, float, float, float] = C_TEXT,
     ) -> Any:
-        # Dual-pass cardinal halo so labels stay readable even when native
-        # FontOutlineSettings is ignored; fill pass also gets SetFont outline.
-        for ox, oy in TEXT_OUTLINE_OFFSETS:
-            self._text_block(
-                parent,
-                value,
-                x + ox,
-                y + oy,
-                w,
-                h,
-                scale=scale,
-                z=z,
-                center=center,
-                tint=C_TEXT_OUTLINE,
-                outline=False,
-            )
+        # One native TextBlock per label. FontOutlineSettings + the built-in
+        # shadow keep text readable without the old four duplicate halo widgets,
+        # which made the menu heavier and could make small text look fuzzy.
         return self._text_block(
             parent,
             value,
@@ -1012,7 +999,7 @@ class NativeUMG:
         try_call(widget, "SetIsEnabled", bool(enabled))
         try_call(widget, "SetRenderOpacity", 0.03 if enabled else 0.01)
         # Azzy pads labels ~8/10 inside the hit rect so larger type stays readable.
-        self.text(
+        label_widget = self.text(
             parent,
             label,
             x + 8,
@@ -1023,6 +1010,10 @@ class NativeUMG:
             z=layer + 2,
             center=True,
         )
+        # Long action names should wrap inside their own tile rather than bleed
+        # into the next column. These setters are best-effort across SDK builds.
+        try_call(label_widget, "SetAutoWrapText", True)
+        try_call(label_widget, "SetWrapTextAt", sx(max(24.0, w - 20.0)))
         STATE.buttons.append(
             ButtonRef(
                 widget,
@@ -1966,7 +1957,7 @@ def rebuild_ui() -> None:
     mode = "EDIT" if STATE.edit_mode else "RUN"
     lock = backend_actions.get_drop_player_lock()
     lock_txt = f"Lock {lock.get('name') or 'ON'}" if lock.get("enabled") else "Lock OFF"
-    tab_label = "INV" if STATE.main_tab == "inventory" else f"P{STATE.page + 1}/{MAX_PAGES}"
+    tab_label = "INV" if STATE.main_tab == "inventory" else f"PAGE {STATE.page + 1}/{MAX_PAGES}"
     factory.text(
         root,
         f"{mode} | {tab_label} | {lock_txt} | {STATE.window_scale:.2f}x | {theme_label(STATE.theme_id)}",
@@ -1994,8 +1985,9 @@ def rebuild_ui() -> None:
     party = backend_actions.refresh_players()
     party_by_index = {int(p.get("index", -1)): p for p in party}
     selected_idx = backend_actions.get_selected_player_index()
-    slot_w = 74.0
+    inner_w = pw - 24.0
     slot_gap = 6.0
+    slot_w = (inner_w - slot_gap * 4.0) / 5.0
     slot_x = px + 12
     for slot_i in range(4):
         present = slot_i in party_by_index
@@ -2008,7 +2000,7 @@ def rebuild_ui() -> None:
             fill = C_SLOT_EMPTY
         label = f"P{slot_i + 1}"
         if present:
-            name = str(party_by_index[slot_i].get("name") or "")[:6]
+            name = str(party_by_index[slot_i].get("name") or "")[:10]
             if name:
                 label = f"P{slot_i + 1}:{name}"
 
@@ -2030,10 +2022,10 @@ def rebuild_ui() -> None:
         slot_x += slot_w + slot_gap
     factory.button(
         root,
-        "PAll",
+        "AUTO",
         slot_x,
         player_y,
-        70,
+        slot_w,
         36,
         _toggle_header_player_all,
         fill=_with_alpha(C_BTN_GOLD if selected_idx is not None else C_BTN_MUTED, opacity),
@@ -2042,14 +2034,16 @@ def rebuild_ui() -> None:
 
     tab_y = py + 162
     tab_x = px + 12
+    tab_gap = 6.0
+    tab_w = (pw - 24.0 - tab_gap * MAX_PAGES) / (MAX_PAGES + 1.0)
     for page_i in range(MAX_PAGES):
         fill = C_BTN_GOLD if STATE.main_tab == "actions" and page_i == STATE.page else C_BTN_MUTED
 
         def _make_page(i: int = page_i) -> Callable[[], None]:
             return lambda: _set_page(i)
 
-        factory.button(root, f"P{page_i + 1}", tab_x, tab_y, 64, BTN_H_TAB, _make_page(), fill=_with_alpha(fill, opacity), scale=SCALE_BTN_HEADER)
-        tab_x += 70
+        factory.button(root, f"PG{page_i + 1}", tab_x, tab_y, tab_w, BTN_H_TAB, _make_page(), fill=_with_alpha(fill, opacity), scale=SCALE_BTN_HEADER)
+        tab_x += tab_w + tab_gap
 
     inv_fill = C_BTN_GOLD if STATE.main_tab == "inventory" else C_BTN_MUTED
     factory.button(
@@ -2057,7 +2051,7 @@ def rebuild_ui() -> None:
         "INV",
         tab_x,
         tab_y,
-        64,
+        tab_w,
         BTN_H_TAB,
         lambda: _open_inventory_tab(refresh=False),
         fill=_with_alpha(inv_fill, opacity),
@@ -2070,19 +2064,25 @@ def rebuild_ui() -> None:
         footer_y = quick_menu_inventory.render_tab(factory, root, px, py, pw, opacity)
     else:
         tool_y = tab_y + 48
-        factory.button(root, "Pin Last", px + 12, tool_y, 130, BTN_H_TOOL, lambda: pin_last_command(), fill=_with_alpha(C_BTN_GOLD, opacity), scale=SCALE_BTN)
-        factory.button(root, "Lock", px + 150, tool_y, 90, BTN_H_TOOL, toggle_drop_lock, fill=_with_alpha(C_BTN, opacity), scale=SCALE_BTN)
-        factory.button(root, "Target", px + 248, tool_y, 100, BTN_H_TOOL, lambda: _begin_player_pick("target"), fill=_with_alpha(C_BTN, opacity), scale=SCALE_BTN)
+        tool_gap = 8.0
+        tool_w = (pw - 24.0 - tool_gap * 3.0) / 4.0
+        tool_x = px + 12
+        factory.button(root, "Pin Last", tool_x, tool_y, tool_w, BTN_H_TOOL, lambda: pin_last_command(), fill=_with_alpha(C_BTN_GOLD, opacity), scale=SCALE_BTN)
+        tool_x += tool_w + tool_gap
+        factory.button(root, "Lock", tool_x, tool_y, tool_w, BTN_H_TOOL, toggle_drop_lock, fill=_with_alpha(C_BTN, opacity), scale=SCALE_BTN)
+        tool_x += tool_w + tool_gap
+        factory.button(root, "Target", tool_x, tool_y, tool_w, BTN_H_TOOL, lambda: _begin_player_pick("target"), fill=_with_alpha(C_BTN, opacity), scale=SCALE_BTN)
 
         def _refresh_ui() -> None:
             _run_action("refresh_players")
             rebuild_ui()
 
-        factory.button(root, "Refresh", px + 356, tool_y, 110, BTN_H_TOOL, _refresh_ui, fill=_with_alpha(C_BTN_MUTED, opacity), scale=SCALE_BTN)
+        tool_x += tool_w + tool_gap
+        factory.button(root, "Refresh", tool_x, tool_y, tool_w, BTN_H_TOOL, _refresh_ui, fill=_with_alpha(C_BTN_MUTED, opacity), scale=SCALE_BTN)
 
         selected_name = backend_actions.get_selected_player_name() or "(none)"
         selected_idx = backend_actions.get_selected_player_index()
-        target_txt = f"Target: {selected_idx}: {selected_name}" if selected_idx is not None else "Target: (none)"
+        target_txt = f"Target: P{int(selected_idx) + 1}: {selected_name}" if selected_idx is not None else "Target: (none)"
         last = backend_actions.get_last_command()
         last_txt = f"Last: {last.get('label')}" if last else "Last: (none)"
         drop = backend_actions.get_last_drop()
@@ -2414,8 +2414,8 @@ def _open_inventory_tab(*, refresh: bool = False) -> None:
 
 def _render_player_pick(factory: NativeUMG, root: Any) -> None:
     factory.modal_blocker(root)
-    factory.border(root, panel_x() + 12, 120, panel_w() - 24, 780, _with_alpha(C_DOCK, 1.0), MODAL_PANEL_Z)
-    factory.border(root, panel_x() + 12, 120, panel_w() - 24, 64, _with_alpha(C_HEADER, 1.0), MODAL_CONTENT_Z)
+    factory.border(root, panel_x() + 12, panel_y() + 120, panel_w() - 24, 780, _with_alpha(C_DOCK, 1.0), MODAL_PANEL_Z)
+    factory.border(root, panel_x() + 12, panel_y() + 120, panel_w() - 24, 64, _with_alpha(C_HEADER, 1.0), MODAL_CONTENT_Z)
     purpose = STATE.player_pick_purpose or ("repeat" if STATE.pending_repeat else "lock")
     title = {
         "repeat": "Select player for repeat last drop",
@@ -2427,7 +2427,7 @@ def _render_player_pick(factory: NativeUMG, root: Any) -> None:
         root,
         title,
         panel_x() + 24,
-        130,
+        panel_y() + 130,
         panel_w() - 48,
         44,
         scale=SCALE_MODAL_TITLE,
@@ -2435,7 +2435,7 @@ def _render_player_pick(factory: NativeUMG, root: Any) -> None:
         center=True,
     )
     players = backend_actions.refresh_players()
-    scroll = factory.scroll_box(root, panel_x() + 24, 200, panel_w() - 48, 600, z=MODAL_CONTENT_Z)
+    scroll = factory.scroll_box(root, panel_x() + 24, panel_y() + 200, panel_w() - 48, 600, z=MODAL_CONTENT_Z)
     if not players:
         row = factory.scroll_row(scroll, panel_w() - 64, 56)
         factory.text(row, "No party players found.", 8, 10, panel_w() - 80, 36, scale=SCALE_BTN, z=1, center=True)
@@ -2453,7 +2453,7 @@ def _render_player_pick(factory: NativeUMG, root: Any) -> None:
         row = factory.scroll_row(scroll, panel_w() - 64, 68)
         factory.button(
             row,
-            f"{idx}: {name}",
+            f"P{idx + 1}: {name}",
             0,
             4,
             panel_w() - 72,
@@ -2476,7 +2476,7 @@ def _render_player_pick(factory: NativeUMG, root: Any) -> None:
         root,
         "Cancel",
         panel_x() + (panel_w() - 200) / 2,
-        820,
+        panel_y() + 820,
         200,
         52,
         _cancel,
@@ -2489,8 +2489,8 @@ def _render_player_pick(factory: NativeUMG, root: Any) -> None:
 def _render_serial_pick(factory: NativeUMG, root: Any) -> None:
     """Copyable list of the last equipped / backpack serial read."""
     factory.modal_blocker(root)
-    factory.border(root, panel_x() + 12, 120, panel_w() - 24, 780, _with_alpha(C_DOCK, 1.0), MODAL_PANEL_Z)
-    factory.border(root, panel_x() + 12, 120, panel_w() - 24, 64, _with_alpha(C_HEADER, 1.0), MODAL_CONTENT_Z)
+    factory.border(root, panel_x() + 12, panel_y() + 120, panel_w() - 24, 780, _with_alpha(C_DOCK, 1.0), MODAL_PANEL_Z)
+    factory.border(root, panel_x() + 12, panel_y() + 120, panel_w() - 24, 64, _with_alpha(C_HEADER, 1.0), MODAL_CONTENT_Z)
     bundle = backend_actions.get_last_read_serials()
     title = str(bundle.get("title") or "Read serials")
     entries = list(bundle.get("entries") or [])
@@ -2498,14 +2498,14 @@ def _render_serial_pick(factory: NativeUMG, root: Any) -> None:
         root,
         f"{title} — tap to copy",
         panel_x() + 24,
-        130,
+        panel_y() + 130,
         panel_w() - 48,
         44,
         scale=SCALE_MODAL_TITLE,
         z=MODAL_CONTENT_Z + 1,
         center=True,
     )
-    scroll = factory.scroll_box(root, panel_x() + 24, 200, panel_w() - 48, 540, z=MODAL_CONTENT_Z)
+    scroll = factory.scroll_box(root, panel_x() + 24, panel_y() + 200, panel_w() - 48, 540, z=MODAL_CONTENT_Z)
     if not entries:
         row = factory.scroll_row(scroll, panel_w() - 64, 56)
         factory.text(row, "No serials cached.", 8, 10, panel_w() - 80, 36, scale=SCALE_BTN, z=1, center=True)
@@ -2551,7 +2551,7 @@ def _render_serial_pick(factory: NativeUMG, root: Any) -> None:
         root,
         "Copy All",
         panel_x() + 24,
-        760,
+        panel_y() + 760,
         (panel_w() - 64) / 2,
         52,
         _copy_all,
@@ -2563,7 +2563,7 @@ def _render_serial_pick(factory: NativeUMG, root: Any) -> None:
         root,
         "Close",
         panel_x() + 24 + (panel_w() - 64) / 2 + 16,
-        760,
+        panel_y() + 760,
         (panel_w() - 64) / 2,
         52,
         _close,
@@ -2575,20 +2575,20 @@ def _render_serial_pick(factory: NativeUMG, root: Any) -> None:
 
 def _render_action_pick(factory: NativeUMG, root: Any) -> None:
     factory.modal_blocker(root)
-    factory.border(root, panel_x() + 12, 100, panel_w() - 24, 820, _with_alpha(C_DOCK, 1.0), MODAL_PANEL_Z)
-    factory.border(root, panel_x() + 12, 100, panel_w() - 24, 60, _with_alpha(C_HEADER, 1.0), MODAL_CONTENT_Z)
+    factory.border(root, panel_x() + 12, panel_y() + 100, panel_w() - 24, 820, _with_alpha(C_DOCK, 1.0), MODAL_PANEL_Z)
+    factory.border(root, panel_x() + 12, panel_y() + 100, panel_w() - 24, 60, _with_alpha(C_HEADER, 1.0), MODAL_CONTENT_Z)
     factory.text(
         root,
         "Assign action to slot",
         panel_x() + 24,
-        110,
+        panel_y() + 110,
         panel_w() - 48,
         40,
         scale=SCALE_MODAL_TITLE,
         z=MODAL_CONTENT_Z + 1,
         center=True,
     )
-    scroll = factory.scroll_box(root, panel_x() + 24, 174, panel_w() - 48, 620, z=MODAL_CONTENT_Z)
+    scroll = factory.scroll_box(root, panel_x() + 24, panel_y() + 174, panel_w() - 48, 620, z=MODAL_CONTENT_Z)
     for action in PICKER_ACTIONS:
         label = str(ACTION_CATALOG.get(action, {}).get("basic") or action)
 
@@ -2614,7 +2614,7 @@ def _render_action_pick(factory: NativeUMG, root: Any) -> None:
             root,
             "Pin Last Here",
             panel_x() + 24,
-            812,
+            panel_y() + 812,
             240,
             52,
             lambda: pin_last_command(STATE.selected_slot),
@@ -2631,7 +2631,7 @@ def _render_action_pick(factory: NativeUMG, root: Any) -> None:
         root,
         "Cancel",
         panel_x() + panel_w() - 210,
-        812,
+        panel_y() + 812,
         180,
         52,
         _cancel,
@@ -2644,20 +2644,20 @@ def _render_action_pick(factory: NativeUMG, root: Any) -> None:
 
 def _render_theme_pick(factory: NativeUMG, root: Any) -> None:
     factory.modal_blocker(root)
-    factory.border(root, panel_x() + 12, 100, panel_w() - 24, 820, _with_alpha(C_DOCK, 1.0), MODAL_PANEL_Z)
-    factory.border(root, panel_x() + 12, 100, panel_w() - 24, 60, _with_alpha(C_HEADER, 1.0), MODAL_CONTENT_Z)
+    factory.border(root, panel_x() + 12, panel_y() + 100, panel_w() - 24, 820, _with_alpha(C_DOCK, 1.0), MODAL_PANEL_Z)
+    factory.border(root, panel_x() + 12, panel_y() + 100, panel_w() - 24, 60, _with_alpha(C_HEADER, 1.0), MODAL_CONTENT_Z)
     factory.text(
         root,
         "Choose theme",
         panel_x() + 24,
-        110,
+        panel_y() + 110,
         panel_w() - 48,
         40,
         scale=SCALE_MODAL_TITLE,
         z=MODAL_CONTENT_Z + 1,
         center=True,
     )
-    scroll = factory.scroll_box(root, panel_x() + 24, 174, panel_w() - 48, 620, z=MODAL_CONTENT_Z)
+    scroll = factory.scroll_box(root, panel_x() + 24, panel_y() + 174, panel_w() - 48, 620, z=MODAL_CONTENT_Z)
     for tid in THEME_IDS:
         label = theme_label(tid)
         selected = tid == STATE.theme_id
@@ -2689,7 +2689,7 @@ def _render_theme_pick(factory: NativeUMG, root: Any) -> None:
         root,
         "Cancel",
         panel_x() + (panel_w() - 200) / 2,
-        812,
+        panel_y() + 812,
         200,
         52,
         _cancel,
@@ -2706,13 +2706,13 @@ def _render_label_edit(factory: NativeUMG, root: Any) -> None:
     if slot is None:
         return
     factory.modal_blocker(root)
-    factory.border(root, panel_x() + 20, 160, panel_w() - 40, 640, _with_alpha(C_DOCK, 1.0), MODAL_PANEL_Z)
-    factory.border(root, panel_x() + 20, 160, panel_w() - 40, 60, _with_alpha(C_HEADER, 1.0), MODAL_CONTENT_Z)
+    factory.border(root, panel_x() + 20, panel_y() + 160, panel_w() - 40, 640, _with_alpha(C_DOCK, 1.0), MODAL_PANEL_Z)
+    factory.border(root, panel_x() + 20, panel_y() + 160, panel_w() - 40, 60, _with_alpha(C_HEADER, 1.0), MODAL_CONTENT_Z)
     factory.text(
         root,
         f"Edit slot {STATE.selected_slot + 1}",
         panel_x() + 32,
-        172,
+        panel_y() + 172,
         panel_w() - 64,
         40,
         scale=SCALE_MODAL_TITLE,
@@ -2723,7 +2723,7 @@ def _render_label_edit(factory: NativeUMG, root: Any) -> None:
         root,
         f"Label: {slot_label(slot)}",
         panel_x() + 32,
-        236,
+        panel_y() + 236,
         panel_w() - 64,
         32,
         scale=SCALE_BTN,
@@ -2741,7 +2741,7 @@ def _render_label_edit(factory: NativeUMG, root: Any) -> None:
         root,
         hot_txt,
         panel_x() + 32,
-        272,
+        panel_y() + 272,
         panel_w() - 64,
         28,
         scale=SCALE_BODY,
@@ -2760,7 +2760,7 @@ def _render_label_edit(factory: NativeUMG, root: Any) -> None:
         root,
         "Cycle Label",
         panel_x() + 40,
-        316,
+        panel_y() + 316,
         panel_w() - 80,
         52,
         _cycle,
@@ -2774,7 +2774,7 @@ def _render_label_edit(factory: NativeUMG, root: Any) -> None:
         root,
         bind_label,
         panel_x() + 40,
-        380,
+        panel_y() + 380,
         (panel_w() - 96) / 2,
         52,
         (cancel_hotkey_listen if STATE.hotkey_listen else begin_hotkey_listen),
@@ -2786,7 +2786,7 @@ def _render_label_edit(factory: NativeUMG, root: Any) -> None:
         root,
         "Clear Hotkey",
         panel_x() + 40 + (panel_w() - 96) / 2 + 16,
-        380,
+        panel_y() + 380,
         (panel_w() - 96) / 2,
         52,
         clear_selected_hotkey,
@@ -2799,7 +2799,7 @@ def _render_label_edit(factory: NativeUMG, root: Any) -> None:
         root,
         "Clear Slot",
         panel_x() + 40,
-        448,
+        panel_y() + 448,
         (panel_w() - 96) / 2,
         52,
         clear_selected_slot,
@@ -2811,7 +2811,7 @@ def _render_label_edit(factory: NativeUMG, root: Any) -> None:
         root,
         "Swap With…",
         panel_x() + 40 + (panel_w() - 96) / 2 + 16,
-        448,
+        panel_y() + 448,
         (panel_w() - 96) / 2,
         52,
         arm_swap_selected,
@@ -2824,7 +2824,7 @@ def _render_label_edit(factory: NativeUMG, root: Any) -> None:
             root,
             "Pin Last Over This",
             panel_x() + 40,
-            516,
+            panel_y() + 516,
             panel_w() - 80,
             52,
             lambda: pin_last_command(STATE.selected_slot),
@@ -2843,7 +2843,7 @@ def _render_label_edit(factory: NativeUMG, root: Any) -> None:
         root,
         "Done",
         panel_x() + (panel_w() - 200) / 2,
-        588,
+        panel_y() + 588,
         200,
         52,
         _done,

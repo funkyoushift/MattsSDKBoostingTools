@@ -1,4 +1,4 @@
-﻿"""Matt's SDK Boosting Tools â€” boosting-focused SDK mod."""
+"""Matt's SDK Boosting Tools â€” boosting-focused SDK mod."""
 
 from __future__ import annotations
 
@@ -36,7 +36,7 @@ from .mobile_pairing import (
     start_mobile_pairing,
 )
 
-__version__: str = "2.17.3"
+__version__: str = "2.17.4"
 __version_info__: tuple[int, int, int] = (2, 12, 2)
 
 _panel_keybinds = []

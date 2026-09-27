@@ -1852,8 +1852,22 @@ def _process_pending_serial_delivery_sequences() -> None:
                 continue
 
             if stage == "open":
+                if now < float(seq.get("open_retry_after") or 0.0):
+                    remaining.append(seq)
+                    continue
                 _set_serial_delivery_status(f"Serial delivery {idx + 1}/{len(chunks)}: opening reward packages", hold_sec=30.0, log=True)
-                _open_all_live_reward_packages()
+                opened = _open_all_live_reward_packages()
+                if "afk_player_state" in seq and not opened:
+                    started = seq.setdefault("open_wait_started", now)
+                    if now - started >= 30.0:
+                        seq["afk_error"] = "Reward packages could not be opened after 30 seconds; delivery incomplete and auto-kick withheld."
+                        _set_serial_delivery_status(seq["afk_error"], hold_sec=30.0, log=True)
+                        continue
+                    seq["open_retry_after"] = now + 2.0
+                    remaining.append(seq)
+                    continue
+                seq.pop("open_wait_started", None)
+                seq.pop("open_retry_after", None)
                 post_open_delay = seq.get("post_open_delay")
                 if post_open_delay is None:
                     post_open_delay = _serial_delivery_post_open_delay(seq.get("mode"))

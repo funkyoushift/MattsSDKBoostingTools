@@ -183,6 +183,8 @@ class Lobby:
         if not job["steps"]:
             failed = any(not result["ok"] for result in job["results"])
             message = "Finished with errors; player kept in lobby" if failed else "All selected actions finished"
+            if any(result.get('cleanup_skipped') for result in job['results']):
+                message += "; reward cleanup skipped, original backpack untouched"
             record = {"name": job["name"], "message": message, "results": job["results"]}
             if self.config.get("auto_kick"):
                 job["kick_after"] = now + (15.0 if self.config.get("loot") or self.config.get('cleanup_rewards') else 0.0)
@@ -204,11 +206,17 @@ class Lobby:
             self.game.cancel(job)
             result = {"ok": False, "message": str(exc)}
         if result is not None:
-            job["results"].append(dict(result, step=step))
             if step == 'inventory_capture' and not result['ok']:
-                job['steps'].clear()
+                # Nothing has been cleared yet. Preserve the backpack and run
+                # the ordinary boost/loot path rather than dropping every step.
+                result = dict(result, ok=True, cleanup_skipped=True,
+                              message="Reward cleanup skipped; original backpack untouched. "
+                                      + result.get('message', '')
+                                      + ". Continuing selected boosts and loot without cleanup.")
+                job['steps'] = deque(key for key in BOOSTS if self.config[key])
             else:
                 job["steps"].popleft()
+            job["results"].append(dict(result, step=step))
 
     def _flush_kicks(self, rows, now):
         if not self.config.get("auto_kick"):

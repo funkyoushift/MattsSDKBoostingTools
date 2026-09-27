@@ -8,7 +8,6 @@
         var style = document.createElement('style');
         style.textContent = 'html.msbt-shift-floating,html.msbt-shift-floating body{background:transparent!important;}' +
             'html.msbt-shift-floating #body_container{position:fixed!important;transform:scale(.42)!important;transform-origin:0 0!important;width:100vw!important;height:100vh!important;left:var(--msbt-float-x)!important;top:var(--msbt-float-y)!important;}' +
-            'html.msbt-shift-floating #shift_mini_panel{display:none!important;}' +
             '#msbt-shift-float-bar{position:fixed;right:12px;top:12px;z-index:20050;background:#101c22;color:white;border:1px solid #3ecf6b;padding:10px;font:16px sans-serif;}' +
             '#msbt-shift-float-bar button{background:#29434e;color:white;border:1px solid #70929e;margin-left:8px;padding:7px;cursor:pointer;}' +
             '#msbt-shift-float-drag{cursor:move;display:inline-block;padding:7px;}' +
@@ -17,6 +16,13 @@
         var bar = document.createElement('div'); bar.id = 'msbt-shift-float-bar';
         bar.innerHTML = '<span id="msbt-shift-float-drag">SHiFT • drag here</span><span id="msbt-shift-float-status"></span><button id="msbt-shift-float-accept">Start accepter</button><button id="msbt-shift-float-toggle">Full menu</button>';
         document.body.appendChild(bar);
+        // Mini Panel owns its own visibility and remains usable in either layout.
+        if (window.ShiftMiniPanel) {
+            var manage = document.createElement('button');
+            manage.textContent = 'Manage SHiFT';
+            manage.onclick = function () { window.ShiftMiniPanel.show(); };
+            bar.appendChild(manage);
+        }
         var floating = true, x = 12, y = 70, drag = null;
         function place() {
             x = Math.max(0, Math.min(x, window.innerWidth * .58));

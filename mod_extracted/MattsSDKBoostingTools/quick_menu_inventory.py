@@ -15,10 +15,10 @@ _UI = None
 
 def _bind_quick_menu() -> None:
     global _STATE, _COLORS, _UI
-    if _STATE is not None:
-        return
     from . import quick_menu
 
+    # Theme globals in quick_menu are reassigned when the user changes theme.
+    # Refresh this lightweight view every render instead of caching stale tuples.
     _STATE = quick_menu.STATE
     _COLORS = {
         "dock": quick_menu.C_DOCK,
@@ -39,6 +39,7 @@ def _bind_quick_menu() -> None:
         "show_toast": quick_menu.show_toast,
         "set_status_from_result": quick_menu._set_status_from_result,
         "panel_x": quick_menu.panel_x,
+        "panel_y": quick_menu.panel_y,
         "panel_w": quick_menu.panel_w,
         "SCALE_BTN": quick_menu.SCALE_BTN,
         "SCALE_BODY": quick_menu.SCALE_BODY,
@@ -197,6 +198,9 @@ def apply_inventory_result(result: dict[str, Any]) -> None:
     st.inv_backpack = [dict(e) for e in list(inv.get("backpack") or [])]
     st.inv_truncated = bool(inv.get("truncated"))
     st.inv_page = 0
+    # A refresh replaces the backing entries; do not leave a stale item selected.
+    st.inv_selected_key = ""
+    st.inv_selected_entry = None
     st.inv_reading = str(result.get("reading") or result.get("message") or "")[:120]
     if st.inv_give_target is None:
         idx = backend_actions.get_selected_player_index()
@@ -298,8 +302,14 @@ def render_tab(factory: Any, root: Any, px: float, py: float, pw: float, opacity
     tab_y = py + 162
     y = tab_y + 48
 
-    def _btn(label: str, x: float, y0: float, w: float, h: float, action: Callable[[], None], fill: tuple, scale: float = ui["SCALE_BTN"]) -> None:
-        factory.button(root, label, x, y0, w, h, action, fill=alpha(fill, opacity), scale=scale)
+    def _btn(
+        label: str, x: float, y0: float, w: float, h: float, action: Callable[[], None],
+        fill: tuple, scale: float = ui["SCALE_BTN"], enabled: bool = True,
+    ) -> None:
+        factory.button(
+            root, label, x, y0, w, h, action, fill=alpha(fill, opacity),
+            scale=scale, enabled=enabled,
+        )
 
     _btn("Refresh", px + 12, y, 110, ui["BTN_H_TOOL"], refresh_inventory, c["gold"])
     _btn("Actions", px + 130, y, 100, ui["BTN_H_TOOL"], lambda: _switch_actions(), c["muted"])
@@ -318,25 +328,26 @@ def render_tab(factory: Any, root: Any, px: float, py: float, pw: float, opacity
                 by_slot[slot_i] = entry
         except Exception:
             pass
-    ex = px + 12
-    for slot_i, slot_label in EQUIP_SLOTS:
+    equip_cols = 5
+    equip_gap = 6.0
+    equip_w = (pw - 24.0 - equip_gap * (equip_cols - 1)) / equip_cols
+    for pos, (slot_i, slot_label) in enumerate(EQUIP_SLOTS):
         entry = by_slot.get(slot_i)
-        label = display_name(entry)[:14] if entry else slot_label
+        label = display_name(entry)[:18] if entry else slot_label
         fill = rarity_fill(entry, c["slot_empty"] if entry is None else c["slot"])
         if entry and entry_key(entry) == st.inv_selected_key:
             fill = c["slot_sel"]
 
         def _pick(e: dict[str, Any] | None = entry) -> Callable[[], None]:
-            return lambda: select_entry(e) if e else ui["rebuild_ui"]()
+            return lambda: select_entry(e) if e else None
 
-        _btn(label, ex, y, 78, 44, _pick(), fill, scale=0.28)
-        ex += 82
-        if ex > px + pw - 90:
-            ex = px + 12
-            y += 48
-    y += 52
+        row_i, col_i = divmod(pos, equip_cols)
+        ex = px + 12 + col_i * (equip_w + equip_gap)
+        ey = y + row_i * 48
+        _btn(label, ex, ey, equip_w, 42, _pick(), fill, scale=0.27, enabled=entry is not None)
+    y += 100
 
-    # Sort + category
+    # Sort + category — exact-width rows so the dock does not look left-heavy.
     dir_label = "↓" if str(st.inv_sort_dir or "desc") != "asc" else "↑"
 
     def _toggle_dir() -> None:
@@ -344,8 +355,12 @@ def render_tab(factory: Any, root: Any, px: float, py: float, pw: float, opacity
         st.inv_page = 0
         ui["rebuild_ui"]()
 
-    _btn(dir_label, px + 12, y, 36, 34, _toggle_dir, c["muted"], scale=0.36)
-    sx = px + 54
+    sort_gap = 4.0
+    sort_count = 1 + len(SORT_OPTIONS)
+    sort_w = (pw - 24.0 - sort_gap * (sort_count - 1)) / sort_count
+    sort_x = px + 12
+    _btn(dir_label, sort_x, y, sort_w, 34, _toggle_dir, c["muted"], scale=0.34)
+    sort_x += sort_w + sort_gap
     for sort_key, sort_label in SORT_OPTIONS:
         active = str(st.inv_sort or "recent") == sort_key
 
@@ -357,13 +372,15 @@ def render_tab(factory: Any, root: Any, px: float, py: float, pw: float, opacity
 
             return _go
 
-        _btn(sort_label, sx, y, 72, 34, _set_sort(), c["gold"] if active else c["btn"], scale=0.26)
-        sx += 76
-    y += 40
-    sx = px + 12
-    for cat in CATEGORIES:
+        _btn(sort_label, sort_x, y, sort_w, 34, _set_sort(), c["gold"] if active else c["btn"], scale=0.26)
+        sort_x += sort_w + sort_gap
+    y += 42
+
+    cat_cols = 4
+    cat_gap = 4.0
+    cat_w = (pw - 24.0 - cat_gap * (cat_cols - 1)) / cat_cols
+    for pos, cat in enumerate(CATEGORIES):
         active = str(st.inv_category or "All") == cat
-        w = 62 if cat != "Enhancements" else 78
         label = cat.replace("Enhancements", "Enh").replace("Class Mods", "COM")
 
         def _set_cat(cn: str = cat) -> Callable[[], None]:
@@ -374,12 +391,11 @@ def render_tab(factory: Any, root: Any, px: float, py: float, pw: float, opacity
 
             return _go
 
-        _btn(label, sx, y, w, 32, _set_cat(), c["gold"] if active else c["muted"], scale=0.24)
-        sx += w + 4
-        if sx > px + pw - 70:
-            sx = px + 12
-            y += 36
-    y += 38
+        row_i, col_i = divmod(pos, cat_cols)
+        cx = px + 12 + col_i * (cat_w + cat_gap)
+        cy = y + row_i * 36
+        _btn(label, cx, cy, cat_w, 32, _set_cat(), c["gold"] if active else c["muted"], scale=0.25)
+    y += 76
 
     filtered = filtered_backpack()
     page_size = max(INV_LIST_COLS, int(st.inv_page_size or 16))
@@ -465,19 +481,28 @@ def render_tab(factory: Any, root: Any, px: float, py: float, pw: float, opacity
         st.inv_page = min(max_page, int(st.inv_page) + 1)
         ui["rebuild_ui"]()
 
-    _btn("Prev", px + 12, y, 80, ui["BTN_H_TOOL"], _prev, c["muted"] if not prev_disabled else c["slot_empty"])
+    nav_w = 120.0
+    nav_gap = 8.0
+    page_w = pw - 24.0 - nav_w * 2.0 - nav_gap * 2.0
+    _btn(
+        "Prev", px + 12, y, nav_w, ui["BTN_H_TOOL"], _prev,
+        c["muted"] if not prev_disabled else c["slot_empty"], enabled=not prev_disabled,
+    )
     factory.text(
         root,
         f"Page {st.inv_page + 1}/{max_page + 1}",
-        px + 100,
+        px + 12 + nav_w + nav_gap,
         y + 6,
-        120,
+        page_w,
         24,
         scale=ui["SCALE_HINT"],
         z=5,
         center=True,
     )
-    _btn("Next", px + 230, y, 80, ui["BTN_H_TOOL"], _next, c["muted"] if not next_disabled else c["slot_empty"])
+    _btn(
+        "Next", px + pw - 12 - nav_w, y, nav_w, ui["BTN_H_TOOL"], _next,
+        c["muted"] if not next_disabled else c["slot_empty"], enabled=not next_disabled,
+    )
     return y + 52
 
 
@@ -506,16 +531,17 @@ def render_detail_modal(factory: Any, root: Any) -> None:
         st.modal = ""
         return
     px = ui["panel_x"]()
+    py = ui["panel_y"]()
     pw = ui["panel_w"]()
     factory.modal_blocker(root)
-    factory.border(root, px + 12, 120, pw - 24, 780, ui["with_alpha"](c["dock"], 1.0), ui["MODAL_PANEL_Z"])
-    factory.border(root, px + 12, 120, pw - 24, 64, ui["with_alpha"](c["header"], 1.0), ui["MODAL_CONTENT_Z"])
+    factory.border(root, px + 12, py + 120, pw - 24, 780, ui["with_alpha"](c["dock"], 1.0), ui["MODAL_PANEL_Z"])
+    factory.border(root, px + 12, py + 120, pw - 24, 64, ui["with_alpha"](c["header"], 1.0), ui["MODAL_CONTENT_Z"])
     title = display_name(entry)
     factory.text(
         root,
         title[:48],
         px + 24,
-        130,
+        py + 130,
         pw - 48,
         44,
         scale=ui["SCALE_MODAL_TITLE"],
@@ -529,12 +555,12 @@ def render_detail_modal(factory: Any, root: Any) -> None:
         str(entry.get("manufacturer") or ""),
     ]
     meta = " · ".join(b for b in meta_bits if b)
-    factory.text(root, meta[:80], px + 24, 188, pw - 48, 24, scale=ui["SCALE_BODY"], z=ui["MODAL_CONTENT_Z"] + 1, tint=c["text_dim"])
+    factory.text(root, meta[:80], px + 24, py + 188, pw - 48, 24, scale=ui["SCALE_BODY"], z=ui["MODAL_CONTENT_Z"] + 1, tint=c["text_dim"])
     serial = str(entry.get("serial") or "")
     short = serial if len(serial) <= 36 else (serial[:16] + "…" + serial[-14:])
-    factory.text(root, short, px + 24, 218, pw - 48, 48, scale=0.22, z=ui["MODAL_CONTENT_Z"] + 1)
+    factory.text(root, short, px + 24, py + 218, pw - 48, 54, scale=0.28, z=ui["MODAL_CONTENT_Z"] + 1)
 
-    factory.text(root, "Give to", px + 24, 280, 80, 22, scale=ui["SCALE_BODY"], z=ui["MODAL_CONTENT_Z"] + 1)
+    factory.text(root, "Give to", px + 24, py + 280, 80, 22, scale=ui["SCALE_BODY"], z=ui["MODAL_CONTENT_Z"] + 1)
     party = backend_actions.refresh_players()
     gx = px + 24
     for p in party:
@@ -561,7 +587,7 @@ def render_detail_modal(factory: Any, root: Any) -> None:
             root,
             label,
             gx,
-            304,
+            py + 304,
             74,
             36,
             _set_give(),
@@ -571,7 +597,7 @@ def render_detail_modal(factory: Any, root: Any) -> None:
         )
         gx += 78
 
-    factory.text(root, f"Multiplier: {int(st.inv_multiplier or 1)}", px + 24, 352, 160, 22, scale=ui["SCALE_BODY"], z=ui["MODAL_CONTENT_Z"] + 1)
+    factory.text(root, f"Multiplier: {int(st.inv_multiplier or 1)}", px + 24, py + 352, 160, 22, scale=ui["SCALE_BODY"], z=ui["MODAL_CONTENT_Z"] + 1)
 
     def _mul(delta: int) -> Callable[[], None]:
         def _go() -> None:
@@ -580,10 +606,10 @@ def render_detail_modal(factory: Any, root: Any) -> None:
 
         return _go
 
-    factory.button(root, "-", px + 190, 348, 40, 36, _mul(-1), fill=c["muted"], scale=0.36, modal_only=True)
-    factory.button(root, "+", px + 236, 348, 40, 36, _mul(1), fill=c["muted"], scale=0.36, modal_only=True)
-    factory.button(root, "x5", px + 282, 348, 44, 36, lambda: _set_mul(5), fill=c["btn"], scale=0.30, modal_only=True)
-    factory.button(root, "x10", px + 332, 348, 48, 36, lambda: _set_mul(10), fill=c["btn"], scale=0.30, modal_only=True)
+    factory.button(root, "-", px + 190, py + 348, 40, 36, _mul(-1), fill=c["muted"], scale=0.36, modal_only=True)
+    factory.button(root, "+", px + 236, py + 348, 40, 36, _mul(1), fill=c["muted"], scale=0.36, modal_only=True)
+    factory.button(root, "x5", px + 282, py + 348, 44, 36, lambda: _set_mul(5), fill=c["btn"], scale=0.30, modal_only=True)
+    factory.button(root, "x10", px + 332, py + 348, 48, 36, lambda: _set_mul(10), fill=c["btn"], scale=0.30, modal_only=True)
 
     def _set_mul(v: int) -> None:
         st.inv_multiplier = max(1, min(50, int(v)))
@@ -593,7 +619,7 @@ def render_detail_modal(factory: Any, root: Any) -> None:
         root,
         "Send to Game",
         px + 24,
-        400,
+        py + 400,
         pw - 48,
         52,
         _give_selected_entry,
@@ -605,7 +631,7 @@ def render_detail_modal(factory: Any, root: Any) -> None:
         root,
         "Copy Serial",
         px + 24,
-        462,
+        py + 462,
         (pw - 64) / 2,
         48,
         _copy_selected_serial,
@@ -622,7 +648,7 @@ def render_detail_modal(factory: Any, root: Any) -> None:
         root,
         "Close",
         px + 24 + (pw - 64) / 2 + 16,
-        462,
+        py + 462,
         (pw - 64) / 2,
         48,
         _close,

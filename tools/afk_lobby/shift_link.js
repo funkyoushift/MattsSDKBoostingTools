@@ -14,6 +14,8 @@
                 if (request.status !== 200 || !window.ShiftFriendAutomation) return;
                 var data = JSON.parse(request.responseText);
                 if (data.ok !== true) return;
+                // v4.4 keeps manual preferences separate from MSBT's AFK policy.
+                if (ShiftFriendAutomation.setAfkManaged) ShiftFriendAutomation.setAfkManaged(data.auto_accept === true);
                 if (data.auto_accept === true) {
                     controlled = true;
                     try { window.localStorage.setItem("msbt_afk_managed", "1"); } catch (_) {}

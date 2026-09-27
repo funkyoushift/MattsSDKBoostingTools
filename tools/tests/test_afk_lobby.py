@@ -52,13 +52,17 @@ def test_cleanup_needs_no_password_and_composes_originals_with_selected_loot():
     assert 'backpack_password' not in lobby.config
 
 
-def test_cleanup_capture_failure_does_not_boost_or_kick():
+def test_cleanup_capture_failure_falls_back_without_clearing_backpack():
     game=FakeGame();lobby=module.Lobby(game)
-    assert lobby.start({'challenges':True,'cleanup_rewards':True,'auto_kick':True})['ok']
-    game.step=lambda *args:{'ok':False,'message':'unreadable original'}
-    game.rows=[row('guest')];ticks(lobby,8)
-    assert not game.calls and not game.kicked
-    assert len(lobby.history[0]['results'])==1
+    assert lobby.start({'level':True,'challenges':True,'loot':True,'cleanup_rewards':True,'auto_kick':True})['ok']
+    normal_step=game.step
+    game.step=lambda step,*args: ({'ok':False,'message':'unreadable original'}
+                                 if step=='inventory_capture' else normal_step(step,*args))
+    game.rows=[row('guest')];ticks(lobby,12)
+    assert [call[0] for call in game.calls]==['level','challenges','loot']
+    assert not game.kicked  # existing loot settlement delay remains in force
+    assert lobby.history[0]['results'][0]['cleanup_skipped']
+    assert all(result['ok'] for result in lobby.history[0]['results'])
 
 
 def test_cleanup_password_only_applies_to_more_than_seventy_new_items():
