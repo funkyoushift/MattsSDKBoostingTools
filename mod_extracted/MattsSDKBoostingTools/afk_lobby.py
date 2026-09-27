@@ -53,10 +53,6 @@ class Lobby:
         config["auto_kick"] = payload.get("auto_kick", False) is True
         config['cleanup_rewards'] = payload.get('cleanup_rewards') is True
         if config['cleanup_rewards']:
-            password = payload.get('backpack_password') or payload.get('bulk_loot_password')
-            if not isinstance(password, str) or not hmac.compare_digest(password.encode('utf-8'), b'funkyou'):
-                return {'ok':False,'password_required':True,'password_kind':'backpack_cleanup',
-                        'message':'Reward cleanup clears guest backpacks and requires the password once per AFK session.'}
             if not (config['challenges'] or config['uvhm']):
                 return {'ok':False,'message':'Select challenges or UVHM to use reward cleanup.'}
         config["loot_mode"] = payload.get("loot_mode", "all")

@@ -926,9 +926,9 @@ function requestBackpackPassword(kind = "backpack") {
     const form = document.createElement("form");
     form.method = "dialog";
     const title = document.createElement("h3");
-    title.textContent = kind === "backpack_cleanup" ? "Authorize AFK reward cleanup" : kind === "bulk_loot" ? "Unlock more than 70 items" : "Unlock guest backpack action";
+    title.textContent = kind === "bulk_loot" ? "Unlock more than 70 items" : "Unlock guest backpack action";
     const label = document.createElement("label");
-    label.textContent = kind === "backpack_cleanup" ? "Authorizes backpack cleanup and original-item return for this AFK session. The password is not saved." : kind === "bulk_loot" ? "Sending more than 70 items requires the password. This does not check existing backpack contents." : "Password required for Empty/Drop Backpack on non-host players.";
+    label.textContent = kind === "bulk_loot" ? "Sending more than 70 items requires the password. This does not check existing backpack contents." : "Password required for Empty/Drop Backpack on non-host players.";
     const input = document.createElement("input");
     input.type = "password";
     input.autocomplete = "off";
@@ -13835,7 +13835,7 @@ const TUTORIAL_TOURS = {
   },
   {
     "title": "Start and monitor",
-    "body": "Optional reward cleanup saves originals, applies challenge/UVHM boosts, opens reward packages, clears the backpack, sends selected serial loot, then returns originals. Enter the password once per session. Duplicates are preserved; equipment and favorite flags are not restored. Verification holds auto-kick until both deliveries are accounted for. Backpacks with stacked items are skipped. Press Start AFK Lobby when your selections are ready. Settings lock while it runs. Watch the SHiFT connection, waiting guests, and per-player results below. The queue continues if the desktop panel closes. A new game session starts with AFK disabled.",
+    "body": "Optional reward cleanup saves originals, applies challenge/UVHM boosts, opens reward packages, clears the backpack, sends selected serial loot, then returns originals. Cleanup and returning originals need no password; only sending more than 70 new items requires it. Duplicates are preserved; equipment and favorite flags are not restored. Verification holds auto-kick until both deliveries are accounted for. Backpacks with stacked items are skipped. Press Start AFK Lobby when your selections are ready. Settings lock while it runs. Watch the SHiFT connection, waiting guests, and per-player results below. The queue continues if the desktop panel closes. A new game session starts with AFK disabled.",
     "tab": "boosting",
     "target": "afkStart",
     "revealPanels": [

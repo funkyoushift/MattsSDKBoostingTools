@@ -11,7 +11,7 @@
     <label><input type="checkbox" data-afk="auto_accept" checked> Auto-accept SHiFT friends</label>
     <label><input type="checkbox" data-afk="auto_kick"> Kick after delivery finishes</label>
     <label><input type="checkbox" data-afk="cleanup_rewards"> Clean reward loot and return original items</label>
-    <p class="muted">For challenges / UVHM. Clears reward loot, sends selected serials, then returns originals. Equipment and favorite flags are not restored. Password once per session. Stacked-item backpacks are left untouched.</p>
+    <p class="muted">For challenges / UVHM. Clears reward loot, sends selected serials, then returns originals. Equipment and favorite flags are not restored. No password for cleanup or returning originals. Sending over 70 new items requires it. Stacked-item backpacks are left untouched.</p>
     <label>Loot delivery<select id="afkMode"><option value="random70">Guaranteed items + random fill</option><option value="all">All items · password above 70</option></select></label>
     <label>Random delivery size<input id="afkCount" type="number" min="1" step="1" value="70"></label><p class="muted">Guaranteed items count toward this total. If they exceed it, all compatible guaranteed items still arrive. More than 70 requires the password.</p><label>Guaranteed items<textarea id="afkFixed" rows="4" placeholder="One item code per line"></textarea></label>
     <label>Random / full pool<textarea id="afkPool" rows="5" placeholder="One item code per line"></textarea></label>
@@ -19,7 +19,7 @@
     <div class="button-grid"><button data-afk-add="catalog:pool">Catalog selection → pool</button><button data-afk-add="catalog:fixed">Catalog selection → guaranteed</button><button data-afk-add="bookmarks:pool">Bookmarks → pool</button><button data-afk-add="bookmarks:fixed">Bookmarks → guaranteed</button></div></fieldset></details>
     <div class="button-grid"><button id="afkMobileStart" class="primary">Start AFK Lobby</button><button id="afkMobileStop" class="danger">Stop AFK Lobby</button><button id="afkShiftOpen">Open SHiFT</button><button id="afkShiftClose">Close SHiFT</button></div>
     <p id="afkMobileShift"></p><p id="afkMobileQueue"></p><p id="afkMobileCounts"></p><pre id="afkMobileLog" style="white-space:pre-wrap;overflow-wrap:anywhere"></pre>
-    <dialog id="afkPasswordDialog"><form method="dialog"><h3>Authorize AFK backpack / loot actions</h3><label>Password<input id="afkPassword" type="password" autocomplete="off"></label><p>Required once when starting this AFK session. Never saved on this phone.</p><button value="cancel">Cancel</button><button value="unlock">Unlock</button></form></dialog>`;
+    <dialog id="afkPasswordDialog"><form method="dialog"><h3>Authorize delivery above 70 items</h3><label>Password<input id="afkPassword" type="password" autocomplete="off"></label><p>Required once when starting this AFK session. Never saved on this phone.</p><button value="cancel">Cancel</button><button value="unlock">Unlock</button></form></dialog>`;
   const el = id => document.getElementById(id);
   panel.insertBefore(el('afkMobileStart').parentElement,el('afkOptions'));
   const key = 'msbt.mobile.afk.v1';
@@ -68,9 +68,9 @@
       if(action==='afk_lobby_start'&&payload.loot&&(!status?.guaranteed_loot_supported||!status?.bulk_loot_password_required))throw Error('Update the PC SDK mod before starting loot delivery from this phone.');
       if(action==='afk_lobby_start'&&payload.loot&&payload.loot_mode==='random70'&&payload.random_count!==70&&!status?.random_count_supported)throw Error('Update the PC SDK mod before changing random delivery size.');
       save();let result=await gatewayAction(action,payload);
-      if(result.data?.password_required&&['bulk_loot','backpack_cleanup'].includes(result.data.password_kind)) {
+      if(result.data?.password_required&&result.data.password_kind==='bulk_loot') {
         const value=await password();if(value===null)throw Error('Start cancelled.');
-        result=await gatewayAction(action,{...payload,bulk_loot_password:value,backpack_password:value});
+        result=await gatewayAction(action,{...payload,bulk_loot_password:value});
       }
       if(!result.ok)throw Error(result.data?.message||'Command failed.');
       // A timeout/queued response is not a confirmed start or stop. Read PC state.

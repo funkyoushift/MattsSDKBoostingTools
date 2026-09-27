@@ -92,10 +92,10 @@
       save();
       let response = await bridgeAction(action, payload, 30000);
       let result = response && response.data !== undefined ? response.data : response;
-      if (result?.password_required && ["bulk_loot", "backpack_cleanup"].includes(result.password_kind)) {
+      if (result?.password_required && result.password_kind === "bulk_loot") {
         const password = await requestBackpackPassword(result.password_kind);
         if (password === null) throw new Error("AFK start cancelled.");
-        response = await bridgeAction(action, { ...payload, bulk_loot_password: password, backpack_password: password }, 30000);
+        response = await bridgeAction(action, { ...payload, bulk_loot_password: password }, 30000);
         result = response && response.data !== undefined ? response.data : response;
       }
       if (!result || result.ok === false) throw new Error(result && result.message || "AFK command failed.");

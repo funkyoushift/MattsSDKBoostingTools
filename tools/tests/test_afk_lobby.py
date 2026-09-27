@@ -42,11 +42,10 @@ def ticks(lobby, count=10):
         lobby.tick()
 
 
-def test_cleanup_requires_password_and_composes_originals_with_selected_loot():
+def test_cleanup_needs_no_password_and_composes_originals_with_selected_loot():
     game=FakeGame();lobby=module.Lobby(game)
     config={'challenges':True,'uvhm':True,'loot':True,'cleanup_rewards':True,'auto_kick':True}
-    assert lobby.start(config)['password_kind']=='backpack_cleanup'
-    assert lobby.start(dict(config,backpack_password='funkyou'))['ok']
+    assert lobby.start(config)['ok']
     game.rows=[row('guest')];ticks(lobby,8)
     assert [c[0] for c in game.calls]==['inventory_capture','challenges','uvhm','inventory_recovery']
     assert not game.kicked
@@ -55,11 +54,26 @@ def test_cleanup_requires_password_and_composes_originals_with_selected_loot():
 
 def test_cleanup_capture_failure_does_not_boost_or_kick():
     game=FakeGame();lobby=module.Lobby(game)
-    assert lobby.start({'challenges':True,'cleanup_rewards':True,'backpack_password':'funkyou','auto_kick':True})['ok']
+    assert lobby.start({'challenges':True,'cleanup_rewards':True,'auto_kick':True})['ok']
     game.step=lambda *args:{'ok':False,'message':'unreadable original'}
     game.rows=[row('guest')];ticks(lobby,8)
     assert not game.calls and not game.kicked
     assert len(lobby.history[0]['results'])==1
+
+
+def test_cleanup_password_only_applies_to_more_than_seventy_new_items():
+    game=FakeGame();lobby=module.Lobby(game)
+    base={'challenges':True,'cleanup_rewards':True}
+    assert lobby.start(base)['ok']
+    lobby.stop()
+    game.prepare_loot=lambda _:['@UItem']*70
+    assert lobby.start(dict(base,loot=True))['ok']
+    lobby.stop()
+    game.prepare_loot=lambda _:['@UItem']*71
+    denied=lobby.start(dict(base,loot=True))
+    assert denied['password_required'] and denied['password_kind']=='bulk_loot'
+    assert not lobby.start(dict(base,loot=True,backpack_password='funkyou'))['ok']
+    assert lobby.start(dict(base,loot=True,bulk_loot_password='funkyou'))['ok']
 
 
 def test_each_join_runs_once_and_rejoining_runs_again():
