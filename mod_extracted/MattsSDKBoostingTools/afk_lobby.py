@@ -421,22 +421,26 @@ class Game:
             from .afk_inventory_recovery import Recovery
             from .afk_inventory_native_recovery import NativeAdapter
             directory = Path(os.environ['LOCALAPPDATA']) / 'MattsSDKBoostingTools' / 'inventory-recovery'
-            if Recovery.unfinished(directory):
-                return {'ok':False,'message':'A previous inventory recovery needs review; no boosts applied'}
             capture = job.get('inventory_capture')
             if capture is None:
                 capture = job['inventory_capture'] = Capture(ps)
                 job['capture_deadline'] = time.monotonic()+300
             if time.monotonic() >= job['capture_deadline']:
                 return {'ok':False,'message':'Original inventory capture timed out; no boosts applied'}
+            if time.monotonic() < job.get('capture_retry_after', 0):
+                return None
             status = capture.step(ps)
             if not status['done']:
                 return None
-            if not status['ok']:
-                return {'ok':False,'message':status['error']}
-            original = capture.snapshot()
-            if not original['rows']:
-                return {'ok':False,'message':'Empty inventory capture is unverified; no boosts or cleanup applied'}
+            original = capture.snapshot() if status['ok'] else None
+            if not status['ok'] or not original['rows']:
+                if job.get('capture_retries', 0) < 5:
+                    job['capture_retries'] = job.get('capture_retries', 0) + 1
+                    job['inventory_capture'] = Capture(ps)
+                    job['capture_retry_after'] = time.monotonic() + 2
+                    return None
+                return {'ok':False,'message':status['error'] if not status['ok'] else
+                        'Inventory is still empty after loading retries; no boosts or cleanup applied'}
             if any(r['quantity'] != 1 for r in original['rows']):
                 return {'ok':False,'message':'Stacked inventory restoration is unsupported; no boosts applied'}
             selected = []

@@ -187,3 +187,30 @@ output/inventory-audits/corrected-recovery-receipt.json and the durable journal.
 This proves the original-only automatic round-trip in this session. New-loot
 composition, automatic AFK integration and persistence after this particular
 run are not yet verified.
+
+
+## Automatic recovery follow-up (v2.17.3)
+
+Cleanup now retries failed or still-empty initial captures up to five times with
+2-second gaps, and retries unstable pre-clear/delivery/final captures up to five
+times. A busy preflight waits up to 60 seconds. Existing operation deadlines
+remain in force; all work stays on the game tick.
+
+For serial-only restoration, final verification compares the captured inventory
+against originals plus the selected new loot. A deficit must agree across two
+stable captures separated by five seconds before repair sends only missing
+copies. Up to three repair deliveries are allowed, each followed by fresh capture.
+Interrupted original returns also proceed to this verification/repair stage.
+Successful reconciliation clears the earlier delivery error and permits normal
+settlement/auto-kick. Extra items are not silently discarded or called success.
+
+No repair repeats the backpack clear, replays all boosts, changes player identity,
+or replays an interrupted journal after process restart. Disconnects or exhausted
+retries preserve the lists, keep the failed guest out of auto-kick, and allow other
+guests to proceed. Removed the remaining historical-journal guard from the per-guest
+capture step as well as the already-removed lobby-start guard.
+
+Validation: 121 offline checks passed, including partial delivery, interrupted
+return, duplicate counts, late arrivals, retry exhaustion, player replacement, and
+continued capture with an old failed journal. No live inventory mutation was used
+for this follow-up.

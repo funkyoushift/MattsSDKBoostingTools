@@ -179,6 +179,8 @@ class Recovery:
             if phase == 'prepared':
                 result = adapter.preflight(deepcopy(self.record['original']))
                 if result.get('ok') is not True:
+                    if result.get('retry') is True:
+                        return
                     self._block(result.get('message', 'Native restoration is not verified'))
                     return
                 operation = 'clear'
@@ -190,6 +192,10 @@ class Recovery:
                     if phase == 'deliver_pending':
                         self.record['delivery_error'] = result.get('message', 'Selected loot delivery failed')
                         result = {'ok':True,'snapshot':{'ok':True,'phase':'complete','rows':[]}}
+                    elif phase == 'restore_pending' and not self.record['restore_metadata']:
+                        # Verification can repair an interrupted return from a
+                        # fresh capture without repeating clear or all items.
+                        self.record['restore_error'] = result.get('message', 'Original return interrupted')
                     else:
                         self._block(result.get('message', 'Recovery operation failed'))
                         return
@@ -228,6 +234,14 @@ class Recovery:
                 elif operation == 'verify':
                     check = verify_restored(self.record['original'], self.record['delivered'], result['snapshot'],
                                             restore_metadata=self.record['restore_metadata'])
+                    if not self.record['restore_metadata']:
+                        expected = item_counts(self.record['original']) + Counter(self.record['delivery_serials'])
+                        actual = item_counts(result['snapshot'])
+                        check = {'ok':actual == expected, 'missing_rows':sum((expected-actual).values()),
+                                 'unexpected_rows':sum((actual-expected).values())}
+                        self.record['repair_attempts'] = result.get('repair_attempts', 0)
+                        if check['ok'] and result.get('delivery_reconciled') is True:
+                            self.record.pop('delivery_error', None)
                     self.record['verification'] = check
                     if self.record.get('delivery_error'):
                         self._block(self.record['delivery_error'] + '; originals returned, kick blocked')

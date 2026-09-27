@@ -3,6 +3,7 @@ import sys
 from copy import deepcopy
 from pathlib import Path
 from types import ModuleType, SimpleNamespace as NS
+import pytest
 
 from test_afk_inventory_recovery import module as recovery, row, snapshot
 
@@ -119,3 +120,130 @@ def test_combined_native_flow_returns_originals_plus_selected_serials(tmp_path,m
     assert job.can_kick
     assert recovery.item_counts(player.snapshot)=={'@UDuplicate':4,'@UNew':2}
     assert [c[1] for c in calls if isinstance(c,tuple)]==[selected,['@UDuplicate','@UDuplicate']]
+
+
+@pytest.mark.parametrize('repair_succeeds', [True, False])
+def test_automatic_repair_only_sends_missing_copies_and_is_bounded(tmp_path, monkeypatch, repair_succeeds):
+    native, clock = load(monkeypatch)
+    original = snapshot(row(handle=1), row(handle=2), row(handle=3))
+    game, player, calls, seqs, roster = game_for(original)
+    adapter = native.NativeAdapter(game, player, 'world')
+    job = recovery.Recovery(tmp_path, original, player_token=player, world_token='world',
+        guest_name='Guest', delivery_serials=['@UNew', '@UNew'], restore_metadata=False)
+    handle = 100
+    sends = 0
+    for _ in range(100):
+        job.advance(player, 'world', adapter)
+        for seq in list(seqs):
+            sends += 1
+            # The first new-loot delivery and original return each lose one copy.
+            serials = seq['chunks'][0]
+            delivered = serials[:-1] if sends <= 2 else (serials if repair_succeeds else [])
+            for serial in delivered:
+                player.snapshot['rows'].append(row(serial, handle)); handle += 1
+            seq['index'] = len(seq['chunks']); seqs.remove(seq)
+        clock[0] += 4
+        if job.record['phase'] in ('blocked', 'complete'):
+            break
+    assert calls.count('clear') == 1
+    retries = [c[1] for c in calls if isinstance(c, tuple)][2:]
+    assert len(retries) == (1 if repair_succeeds else 3)
+    assert all(sorted(items) == ['@UDuplicate', '@UNew'] for items in retries)
+    assert job.can_kick is repair_succeeds
+    assert job.record['phase'] == ('complete' if repair_succeeds else 'blocked')
+    if repair_succeeds:
+        assert recovery.item_counts(player.snapshot) == {'@UDuplicate': 3, '@UNew': 2}
+        assert 'delivery_error' not in job.record
+
+
+def test_unstable_capture_retries_then_succeeds_without_resending(monkeypatch):
+    native, clock = load(monkeypatch)
+    original = snapshot(row())
+    game, player, calls, seqs, roster = game_for(original)
+    adapter = native.NativeAdapter(game, player, 'world')
+    token = adapter.begin('verify', {'original': original, 'delivery_serials': [],
+                                   'restore_metadata': False}, player, 'world')
+    token['capture'] = NS(step=lambda _: {'done': True, 'ok': False, 'error': 'Inventory contents changed'})
+    assert adapter.poll(token, player, 'world') is None
+    clock[0] = 3
+    assert adapter.poll(token, player, 'world')['delivery_reconciled']
+    assert calls == []
+
+
+def test_late_arrival_cancels_deficit_retry_and_disconnect_never_targets_replacement(monkeypatch):
+    native, clock = load(monkeypatch)
+    original = snapshot(row())
+    game, player, calls, seqs, roster = game_for(original)
+    adapter = native.NativeAdapter(game, player, 'world')
+    record = {'original': original, 'delivery_serials': ['@UNew'], 'restore_metadata': False}
+    token = adapter.begin('verify', record, player, 'world')
+    assert adapter.poll(token, player, 'world') is None
+    player.snapshot['rows'].append(row('@UNew', 10)); clock[0] = 6
+    assert adapter.poll(token, player, 'world')['delivery_reconciled']
+    assert calls == []
+    roster[0]['token'] = object()
+    with pytest.raises(RuntimeError):
+        adapter.poll(token, player, 'world')
+    assert calls == []
+
+
+def test_historical_recovery_does_not_block_next_guest_capture(tmp_path, monkeypatch):
+    native, clock = load(monkeypatch)
+    package = native.__package__
+    monkeypatch.setitem(sys.modules, package+'.afk_inventory_native_recovery', native)
+    path = Path(native.__file__).with_name('afk_lobby.py')
+    spec = importlib.util.spec_from_file_location(package+'.afk_lobby', path)
+    lobby = importlib.util.module_from_spec(spec); spec.loader.exec_module(lobby)
+    monkeypatch.setenv('LOCALAPPDATA', str(tmp_path))
+    directory = tmp_path / 'MattsSDKBoostingTools/inventory-recovery'
+    old = recovery.Recovery(directory, snapshot(row()), player_token=1, world_token=2, guest_name='Left')
+    old._block('Disconnected')
+    game, player, calls, seqs, roster = game_for(snapshot(row()))
+    instance = lobby.Game(); instance.backend = game.backend; instance.roster = game.roster
+    job = {'pc':roster[0]['pc'], 'token':player, 'name':'Next guest'}
+    assert instance.step('inventory_capture', job, {})['ok']
+    assert recovery.Recovery.inspect(old.path)['phase'] == 'blocked'
+
+
+def test_read_retries_are_bounded_and_busy_preflight_expires(monkeypatch):
+    native, clock = load(monkeypatch)
+    original = snapshot(row())
+    game, player, calls, seqs, roster = game_for(original)
+    adapter = native.NativeAdapter(game, player, 'world')
+    token = adapter.begin('verify', {'original':original, 'delivery_serials':[],
+                                    'restore_metadata':False}, player, 'world')
+    for attempt in range(6):
+        token['capture'] = NS(step=lambda _: {'done':True, 'ok':False, 'error':'Unstable'})
+        result = adapter.poll(token, player, 'world')
+        assert (result is None) is (attempt < 5)
+        clock[0] += 3
+    assert not result['ok'] and calls == []
+    seqs.append({})
+    assert adapter.preflight(original)['retry']
+    clock[0] += 61
+    assert not adapter.preflight(original)['retry']
+
+
+def test_interrupted_original_return_is_repaired_without_second_clear(tmp_path, monkeypatch):
+    native, clock = load(monkeypatch)
+    original = snapshot(row(handle=1), row(handle=2))
+    game, player, calls, seqs, roster = game_for(original)
+    adapter = native.NativeAdapter(game, player, 'world')
+    job = recovery.Recovery(tmp_path, original, player_token=player, world_token='world',
+        guest_name='Guest', restore_metadata=False)
+    sends = 0
+    for _ in range(60):
+        job.advance(player, 'world', adapter)
+        for seq in list(seqs):
+            sends += 1
+            if sends == 1:
+                seq['afk_error'] = 'Interrupted'
+            else:
+                for i, serial in enumerate(seq['chunks'][0]):
+                    player.snapshot['rows'].append(row(serial, 100+i))
+                seq['index'] = len(seq['chunks'])
+            seqs.remove(seq)
+        clock[0] += 4
+        if job.can_kick: break
+    assert job.can_kick and calls.count('clear') == 1
+    assert sends == 2 and recovery.item_counts(player.snapshot) == {'@UDuplicate':2}

@@ -1,5 +1,6 @@
-"""Explicit, password-protected recovery test adapter. Not automatic AFK cleanup."""
+"""Tick-driven inventory recovery with bounded read retries and missing-item repair."""
 import time
+from collections import Counter
 from .afk_inventory_capture import Capture
 from .afk_inventory_recovery import item_counts
 
@@ -25,7 +26,10 @@ class NativeAdapter:
         if any(r['quantity'] != 1 for r in original['rows']):
             return {'ok':False, 'message':'Stacked-item restoration is not yet verified; nothing cleared'}
         if a.serial_rewards._serial_delivery_busy() or a.complete_challenges_status()['active'] or a.uvh_boost_status()['active']:
-            return {'ok':False, 'message':'Wait for existing boosts and deliveries to finish'}
+            if not hasattr(self, '_preflight_deadline'):
+                self._preflight_deadline = time.monotonic() + 60
+            return {'ok':False, 'retry':time.monotonic() < self._preflight_deadline,
+                    'message':'Waiting for existing boosts and deliveries to finish'}
         self.target()
         return {'ok':True}
 
@@ -62,11 +66,33 @@ class NativeAdapter:
             token['capture'] = Capture(player)
         return token
 
+    def retry_capture(self, token, player):
+        if token.get('read_retries', 0) >= 5:
+            return False
+        token['read_retries'] = token.get('read_retries', 0) + 1
+        token['capture'] = Capture(player)
+        token['settle_until'] = time.monotonic() + 2
+        return True
+
     def poll(self, token, player, world):
         row = self.target()
         if time.monotonic() > token['deadline']:
             return {'ok':False, 'message':'Recovery timed out; backup retained and kick blocked'}
         operation = token['operation']
+        if operation == 'verify' and self.game.backend().serial_rewards._serial_delivery_busy():
+            # Captures taken during an unrelated or timed-out send are stale.
+            token['capture'] = Capture(player)
+            token['settle_until'] = time.monotonic() + 5
+            return None
+        if operation == 'verify' and 'repair_sequence' in token:
+            rewards = self.game.backend().serial_rewards
+            seq = token['repair_sequence']
+            if any(s is seq for s in rewards._pending_serial_delivery_sequences):
+                return None
+            # Even interrupted sends are recaptured, never blindly replayed.
+            token.pop('repair_sequence')
+            token['capture'] = Capture(player)
+            token['settle_until'] = time.monotonic() + 5
         if operation in ('deliver','restore'):
             seq = token.get('sequence')
             if seq is not None:
@@ -97,6 +123,8 @@ class NativeAdapter:
                 # Final duplicate-preserving verification decides success.
                 return {'ok':True,'snapshot':None,'clear_submitted':True,
                         'readback_error':status['error']}
+            if self.retry_capture(token, player):
+                return None
             return {'ok':False,'message':status['error']}
         snapshot = capture.snapshot()
         if operation == 'clear' and token['phase'] == 'before_clear':
@@ -105,6 +133,8 @@ class NativeAdapter:
             a = self.game.backend()
             if ((a.afk_lobby_status()['enabled'] and not self.allow_afk) or a.serial_rewards._serial_delivery_busy()
                     or a.complete_challenges_status()['active'] or a.uvh_boost_status()['active']):
+                if self.retry_capture(token, player):
+                    return None
                 return {'ok':False,'message':'Another operation started; nothing deleted'}
             message = a.streamer_chaos.empty_backpack_for_pc(row['pc'])
             if not a.streamer_chaos.result_ok(str(message)):
@@ -118,4 +148,33 @@ class NativeAdapter:
             # duplicate new serials in the intentional delivery snapshot.
             retained = {(r['handle'],r['instance_id']) for r in token['record']['retained']['rows']}
             snapshot['rows'] = [r for r in snapshot['rows'] if (r['handle'],r['instance_id']) not in retained]
+        if operation == 'verify' and token['record'].get('restore_metadata') is False:
+            expected = item_counts(token['record']['original']) + Counter(token['record']['delivery_serials'])
+            actual = item_counts(snapshot)
+            missing = expected - actual
+            if missing:
+                # Require a second stable capture after settling before sending
+                # a deficit. Late replication must not produce duplicate gear.
+                if token.get('confirmed_missing') != missing:
+                    token['confirmed_missing'] = missing
+                    token['capture'] = Capture(player)
+                    token['settle_until'] = time.monotonic() + 5
+                    return None
+                rewards = self.game.backend().serial_rewards
+                if rewards._serial_delivery_busy():
+                    token['capture'] = Capture(player)
+                    token['settle_until'] = time.monotonic() + 2
+                    return None
+                if token.get('repair_attempts', 0) < 3:
+                    token['repair_attempts'] = token.get('repair_attempts', 0) + 1
+                    token.pop('confirmed_missing', None)
+                    rewards._do_give_serial_to_player_indices(list(missing.elements()),[row['index']],
+                        scope_label='Inventory recovery retry',mode='selected',bulk_authorized=True)
+                    seq = rewards._pending_serial_delivery_sequences[-1]
+                    seq['afk_player_state'] = player
+                    seq['post_open_delay'] = max(float(seq.get('post_open_delay',0)),3.0)
+                    token['repair_sequence'] = seq
+                    return None
+            return {'ok':True,'snapshot':snapshot,'delivery_reconciled':actual == expected,
+                    'repair_attempts':token.get('repair_attempts', 0)}
         return {'ok':True,'snapshot':snapshot}
