@@ -16,4 +16,3 @@ app.whenReady().then(async()=>{
  }
  console.log('PASS desktop/mobile language choices, placeholders, preference persistence and unchanged serials/controls');app.exit(0);
 }).catch(e=>{console.error(e);app.exit(1)});
-

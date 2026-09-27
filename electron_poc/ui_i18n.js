@@ -66,4 +66,3 @@
   window.msbtI18n={t,setLanguage,apply,locales,rows,get language(){return language}};
   apply();
 })();
-
