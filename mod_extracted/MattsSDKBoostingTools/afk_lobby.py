@@ -24,6 +24,11 @@ class Lobby:
         self.seen = []
         self.queue = deque()
         self.current = None
+        self.completed = []
+        self.session_joins = 0
+        self.lifetime_joins = None
+        self.counter_error = ""
+        self.counted = []
         self.history = deque(maxlen=40)
         self.world = None
         self.next_tick = 0.0
@@ -35,6 +40,7 @@ class Lobby:
         self.enabled = False
         self.current = None
         self.queue.clear()
+        self.completed.clear()
         self.seen.clear()
         self.message = "Stopped. Already applied boosts are kept."
         return {"ok": True, "message": self.message, "afk_lobby": self.status()}
@@ -47,10 +53,14 @@ class Lobby:
         config["auto_kick"] = payload.get("auto_kick", False) is True
         config["loot_mode"] = payload.get("loot_mode", "all")
         if config["loot_mode"] not in ("all", "random70"):
-            return {"ok": False, "message": "Choose all loot or 70 random items."}
+            return {"ok": False, "message": "Choose all loot or a random selection."}
         if not any(config[key] for key in BOOSTS):
             return {"ok": False, "message": "Select at least one boost."}
         try:
+            count = payload.get("random_count", 70)
+            if isinstance(count, bool) or not str(count).isdigit() or int(count) < 1:
+                raise ValueError("Random delivery size must be a positive whole number.")
+            config["random_count"] = int(count)
             config["serials"] = self.game.prepare_loot(payload) if config["loot"] else []
             config["loot_classes"] = self.game.classify_loot(config["serials"]) if config["loot"] else []
             config["guaranteed_serials"] = (self.game.prepare_loot({"codes": payload["guaranteed_codes"]})
@@ -60,11 +70,13 @@ class Lobby:
                 raise ValueError("Select bookmarks or paste valid item codes for loot.")
             config["bulk_loot_authorized"] = False
             maximum = len(config["guaranteed_serials"]) + (len(config["serials"]) if config["loot_mode"] == "all" else 0)
+            if config["loot_mode"] == "random70":
+                maximum = max(len(config["guaranteed_serials"]), min(config["random_count"], len(config["guaranteed_serials"]) + len(config["serials"])))
             if config["loot"] and maximum > 70:
                 password = payload.get("bulk_loot_password")
                 if not isinstance(password, str) or not hmac.compare_digest(password.encode("utf-8"), b"funkyou"):
                     return {"ok": False, "password_required": True, "password_kind": "bulk_loot",
-                            "message": "Sending more than 70 items per guest requires the password. Choose random 70 or enter the password."}
+                            "message": "Sending more than 70 items per guest requires the password. Choose 70 or fewer items or enter the password."}
                 config["bulk_loot_authorized"] = True
             if not self.game.is_host():
                 raise ValueError("Load your character and host the lobby first.")
@@ -72,6 +84,9 @@ class Lobby:
             return {"ok": False, "message": str(exc)}
         self.stop()
         self.config = config
+        self.session_joins = 0
+        self.counted = []
+        self._load_counter()
         self.world = None
         self.history.clear()
         self.enabled = True
@@ -79,13 +94,22 @@ class Lobby:
         self.message = "Running. Waiting for guests."
         return {"ok": True, "message": self.message, "afk_lobby": self.status()}
 
+    def _load_counter(self):
+        if self.lifetime_joins is None and not self.counter_error:
+            try:
+                self.lifetime_joins = getattr(self.game, "load_join_count", lambda: 0)()
+            except Exception as exc:
+                self.counter_error = str(exc)
     def status(self):
+        self._load_counter()
         current = self.current
         return {"enabled": self.enabled, "auto_accept": self.enabled and self.config.get("auto_accept", False),
                 "message": self.message, "queued": [row["name"] for row in self.queue],
                 "current": {"name": current["name"], "step": current.get("step", "Waiting for character")} if current else None,
                 "history": list(self.history), "config": self.config,
-                "loot_modes": ["all", "random70"], "bulk_loot_password_required": True, "guaranteed_loot_supported": True}
+                "session_joins": self.session_joins, "lifetime_joins": self.lifetime_joins, "counter_error": self.counter_error,
+                "awaiting_kick": [job["name"] for job in self.completed if not job.get("kick_attempted") and not job.get("failed")],
+                "loot_modes": ["all", "random70"], "bulk_loot_password_required": True, "random_count_supported": True, "guaranteed_loot_supported": True}
 
     def tick(self):
         now = time.monotonic()
@@ -98,12 +122,26 @@ class Lobby:
                 self.game.cancel(self.current)
             self.current = None
             self.queue.clear()
+            self.completed.clear()
             self.seen.clear()
             self.world = world
         if world is None or not self.game.is_host():
             self.message = "Waiting for the host's world."
             return
         tokens = [row["token"] for row in rows]
+        self.counted = [token for token in self.counted if token in tokens]
+        for token in tokens:
+            if token not in self.counted:
+                self.counted.append(token)
+                self.session_joins += 1
+                if self.lifetime_joins is not None:
+                    self.lifetime_joins += 1
+                    try:
+                        getattr(self.game, "save_join_count", lambda count: None)(self.lifetime_joins)
+                        self.counter_error = ""
+                    except Exception as exc:
+                        self.counter_error = str(exc)
+        self.completed = [job for job in self.completed if job["token"] in tokens]
         self.seen = [token for token in self.seen if token in tokens]
         self.queue = deque(row for row in self.queue if row["token"] in tokens)
         for row in rows:
@@ -114,6 +152,7 @@ class Lobby:
             self.game.cancel(self.current)
             self.history.appendleft({"name": self.current["name"], "message": "Left lobby; unfinished steps cancelled."})
             self.current = None
+        self._flush_kicks(rows, now)
         if not self.current:
             # A guest still loading must not block other ready guests.
             for job in self.queue:
@@ -124,6 +163,8 @@ class Lobby:
                     break
         if not self.current:
             self.message = "Waiting for joining characters." if self.queue else "Running. Waiting for guests."
+            if not self.queue and any(not j.get("kick_attempted") and not j.get("failed") for j in self.completed):
+                self.message = "Waiting for loot settlement and all connection members before auto-kick."
             return
         job = self.current
         row = next(row for row in rows if row["token"] == job["token"])
@@ -134,21 +175,16 @@ class Lobby:
         if not job["steps"]:
             failed = any(not result["ok"] for result in job["results"])
             message = "Finished with errors; player kept in lobby" if failed else "All selected actions finished"
-            if self.config.get("auto_kick") and not failed:
-                if self.config.get("loot"):
-                    deadline = job.setdefault("kick_after", now + 15.0)
-                    if now < deadline:
-                        job["step"] = "Waiting for loot to settle"
-                        self.message = f"{job['name']}: loot sent; kicking in {max(1, int(deadline - now + 0.999))}s"
-                        return
-                try:
-                    result = self.game.kick(job)
-                except Exception as exc:
-                    result = {"ok": False, "message": str(exc)}
-                job["results"].append(dict(result, step="auto_kick"))
-                message += "; kick requested" if result["ok"] else "; kick failed"
-            self.history.appendleft({"name": job["name"], "message": message,
-                                     "results": job["results"]})
+            record = {"name": job["name"], "message": message, "results": job["results"]}
+            if self.config.get("auto_kick"):
+                job["kick_after"] = now + (15.0 if self.config.get("loot") else 0.0)
+                job["failed"] = failed
+                job["record"] = record
+                self.completed.append(job)
+                if not failed:
+                    record["message"] += "; waiting for connection members and loot settlement"
+            self.history.appendleft(record)
+            self._flush_kicks(rows, now)
             self.current = None
             return
         step = job["steps"][0]
@@ -163,11 +199,64 @@ class Lobby:
             job["results"].append(dict(result, step=step))
             job["steps"].popleft()
 
+    def _flush_kicks(self, rows, now):
+        if not self.config.get("auto_kick"):
+            return
+        unknown = any(row.get("connection") is None for row in rows)
+        for job in self.completed:
+            if job.get("kick_attempted") or job.get("failed"):
+                continue
+            row = next((r for r in rows if r["token"] == job["token"]), None)
+            if row is None:
+                continue
+            members = rows if unknown else [r for r in rows if r.get("connection") == row.get("connection")]
+            done = []
+            for member in members:
+                finished = next((j for j in self.completed if j["token"] == member["token"]), None)
+                if finished is None or finished.get("failed") or now < finished["kick_after"]:
+                    break
+                done.append(finished)
+            else:
+                # Unknown grouping uses a lobby-wide barrier but still requests
+                # each guest's kick; known shared connections need only one.
+                targets = [job] if unknown else done
+                for target in targets:
+                    target["kick_attempted"] = True
+                try:
+                    result = self.game.kick(dict(job, pc=row["pc"], index=row["index"]))
+                except Exception as exc:
+                    result = {"ok": False, "message": str(exc)}
+                for target in targets:
+                    target["results"].append(dict(result, step="auto_kick"))
+                    target["record"]["message"] = "All selected actions finished; " + ("connection kick requested" if result["ok"] else "kick failed")
+
+
 
 class Game:
     def __init__(self):
         self.ready_since = {}
         self.ready_world = None
+
+    def load_join_count(self):
+        from .afk_join_stats import JoinStats
+        self.join_stats = JoinStats()
+        return self.join_stats.load()
+
+    def save_join_count(self, count):
+        self.join_stats.save(count)
+
+    @staticmethod
+    def connection_root(pc):
+        # Native schema: PlayerController.NetConnection (1661696),
+        # ChildConnection.Parent (1594386), NetConnection.Children (1648275).
+        try:
+            connection = pc.NetConnection
+            if connection is None:
+                return None
+            parent = getattr(connection, "Parent", None)
+            return parent if parent is not None else connection
+        except Exception:
+            return None
 
     def character_ready(self, ps, pc, pawn):
         if pc is None or pawn is None:
@@ -227,7 +316,7 @@ class Game:
             # Give this exact character time to initialize progression/replication.
             ready = self.character_ready(ps, pc, pawn)
             rows.append({"token": ps, "pc": pc, "index": index,
-                         "name": _gbc_resolve_player_display_name(ps), "ready": ready})
+                         "name": _gbc_resolve_player_display_name(ps), "ready": ready, "connection": self.connection_root(pc)})
         self.ready_since = {ps: since for ps, since in self.ready_since.items() if ps in present}
         return world, rows
 
@@ -258,9 +347,9 @@ class Game:
                 job["loot_selection"], job["loot_excluded"] = afk_loot.select_loot(
                     pool, config["loot_classes"], job.get("character_class"),
                     config.get("loot_mode") == "random70", _loot_rng,
-                    config.get("guaranteed_serials", []), config.get("guaranteed_classes", []))
+                    config.get("guaranteed_serials", []), config.get("guaranteed_classes", []), config.get("random_count", 70))
             else:
-                job["loot_selection"] = (_loot_rng.sample(pool, min(70, len(pool)))
+                job["loot_selection"] = (_loot_rng.sample(pool, min(config.get("random_count", 70), len(pool)))
                                          if config.get("loot_mode") == "random70" else list(pool))
             # Hash the contents, not their order, so identical sets have the
             # same ID. Keep codes out of the activity log.

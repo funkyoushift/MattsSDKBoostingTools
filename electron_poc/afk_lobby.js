@@ -16,6 +16,7 @@
       ["auto_accept", byId("afkAutoAccept").checked],
       ["auto_kick", byId("afkAutoKick").checked],
       ["loot_mode", byId("afkLootMode").value],
+      ["random_count", Number(byId("afkRandomCount").value)],
       ["guaranteed_codes", byId("afkGuaranteedCodes").value],
       ["codes", byId("afkCodes").value]
     ]);
@@ -28,6 +29,7 @@
     byId("afkAutoAccept").checked = config.auto_accept !== false;
     byId("afkAutoKick").checked = config.auto_kick === true;
     byId("afkLootMode").value = config.loot_mode === "random70" ? "random70" : "all";
+    byId("afkRandomCount").value = config.random_count || 70;
     if (typeof config.codes === "string") byId("afkCodes").value = config.codes;
     else if (Array.isArray(config.serials)) byId("afkCodes").value = config.serials.join("\n");
     byId("afkGuaranteedCodes").value = typeof config.guaranteed_codes === "string"
@@ -52,6 +54,9 @@
       ? `SHiFT menu connected · Auto-accepter ${afk.shift_running ? "running" : "stopped"}`
       : "SHiFT menu not connected. Open the SHiFT menu after installing the bundled game files.";
     byId("afkQueue").textContent = afk && afk.queued && afk.queued.length ? `Waiting: ${afk.queued.join(", ")}` : "No guests waiting.";
+    byId("afkJoinCounts").textContent = afk?.session_joins != null
+      ? (window.msbtI18n ? window.msbtI18n.t("counts", {session: afk.session_joins, lifetime: afk.lifetime_joins ?? window.msbtI18n.t("unavailable")}) : `Guest joins: ${afk.session_joins} this session · ${afk.lifetime_joins ?? "unavailable"} lifetime`) + (afk.counter_error ? " · Lifetime count could not be saved: " + afk.counter_error : "")
+      : "Join counters require the updated SDK mod.";
     byId("afkLog").textContent = afk && afk.history && afk.history.length
       ? afk.history.map((entry) => `${entry.name}: ${entry.message}\n${(entry.results || []).map((r) => `  ${r.step}: ${r.ok ? "OK" : "FAILED"} — ${r.message}`).join("\n")}`).join("\n\n")
       : "Each join gets one full run. Rejoining gets another run.";
@@ -74,6 +79,10 @@
       if (action === "afk_lobby_start" && payload.loot && payload.loot_mode === "all"
           && !lastStatus?.bulk_loot_password_required) {
         throw new Error("Install the updated SDK mod and restart Borderlands 4 before using password-protected loot delivery.");
+      }
+      if(action === "afk_lobby_start" && payload.loot && payload.loot_mode === "random70"
+          && payload.random_count !== 70 && !lastStatus?.random_count_supported) {
+        throw new Error("Install the updated SDK mod before changing random delivery size.");
       }
       save();
       let response = await bridgeAction(action, payload, 30000);

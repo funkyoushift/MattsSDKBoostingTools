@@ -317,7 +317,7 @@ def test_guest_leaving_during_loot_settle_is_never_kicked(monkeypatch):
     clock = [100.0]; monkeypatch.setattr(module.time, "monotonic", lambda: clock[0])
     game = FakeGame(); lobby = module.Lobby(game)
     lobby.start({"loot": True, "auto_kick": True}); game.rows = [row("guest")]
-    ticks(lobby, 2); assert lobby.current["kick_after"] == 115.0
+    ticks(lobby, 2); assert lobby.completed[0]["kick_after"] == 115.0
     game.rows = []; clock[0] += 16; ticks(lobby)
     assert game.kicked == [] and lobby.current is None
 
@@ -454,3 +454,91 @@ def test_guaranteed_counts_and_combined_password_boundary():
  assert lobby.start({'loot':True,'guaranteed_codes':over,'loot_mode':'random70'})['password_required']
  assert lobby.start({'loot':True,'guaranteed_codes':over,'loot_mode':'random70','bulk_loot_password':'funkyou'})['ok']
  assert lobby.config['bulk_loot_authorized']
+
+def test_adjustable_random_count_password_and_validation():
+ game=FakeGame();game.prepare_loot=lambda payload:payload.get('codes','').splitlines()
+ lobby=module.Lobby(game);payload={'loot':True,'codes':'\n'.join(str(i) for i in range(100)),'loot_mode':'random70'}
+ for bad in (0,-1,1.5,True,'oops'):
+  assert not lobby.start({**payload,'random_count':bad})['ok']
+ assert lobby.start({**payload,'random_count':35})['ok'];assert lobby.config['random_count']==35
+ lobby.stop()
+ assert lobby.start({**payload,'random_count':85})['password_required']
+ assert lobby.start({**payload,'random_count':85,'bulk_loot_password':'funkyou'})['ok']
+ assert lobby.config['bulk_loot_authorized'] and lobby.config['random_count']==85
+
+
+def test_shared_connection_waits_for_loading_member_and_both_settle(monkeypatch):
+    clock = [100.0]; monkeypatch.setattr(module.time, 'monotonic', lambda: clock[0])
+    game = FakeGame(); lobby = module.Lobby(game)
+    lobby.start({'loot': True, 'auto_kick': True})
+    game.rows = [dict(row('first'), connection='shared'), dict(row('second', 2, False), connection='shared')]
+    ticks(lobby); clock[0] += 20; ticks(lobby)
+    assert not game.kicked and lobby.current is None
+    game.rows[1]['ready'] = True; ticks(lobby)
+    assert [call[1] for call in game.calls] == ['first', 'second']
+    assert not game.kicked
+    clock[0] += 15; ticks(lobby)
+    assert game.kicked == ['first']
+    assert all(j['kick_attempted'] for j in lobby.completed)
+
+
+def test_unknown_connection_waits_for_every_guest():
+    game = FakeGame(); lobby = module.Lobby(game)
+    lobby.start({'level': True, 'auto_kick': True})
+    game.rows = [row('first'), row('second', 2, False)]
+    ticks(lobby); assert not game.kicked
+    game.rows[1]['ready'] = True; ticks(lobby)
+    assert game.kicked == ['first', 'second']
+
+
+def test_failed_shared_guest_prevents_connection_kick():
+    game = FakeGame(); lobby = module.Lobby(game)
+    game.step = lambda step, job, config: {'ok': job['token'] != 'failed', 'message': 'result'}
+    lobby.start({'level': True, 'auto_kick': True})
+    game.rows = [dict(row('ready'), connection='shared'), dict(row('failed', 2), connection='shared')]
+    ticks(lobby); assert not game.kicked
+    assert len(lobby.history) == 2
+
+
+def test_new_member_during_settlement_delays_kick_and_reordered_slot_is_used(monkeypatch):
+    clock = [100.0]; monkeypatch.setattr(module.time, 'monotonic', lambda: clock[0])
+    game = FakeGame(); lobby = module.Lobby(game); indices = []
+    game.kick = lambda job: indices.append(job['index']) or {'ok': True, 'message': 'done'}
+    lobby.start({'loot': True, 'auto_kick': True})
+    game.rows = [dict(row('first'), connection='shared')]; ticks(lobby)
+    game.rows[0]['index'] = 3
+    game.rows.append(dict(row('new', 2, False), connection='shared'))
+    clock[0] += 16; ticks(lobby); assert not indices
+    game.rows.pop(); ticks(lobby); assert indices == [3]
+
+
+def test_counters_count_rejoins_reset_session_and_keep_lifetime():
+    game = FakeGame(); saved = []; game.load_join_count = lambda: 12
+    game.save_join_count = saved.append
+    lobby = module.Lobby(game)
+    assert lobby.status()['lifetime_joins'] == 12
+    lobby.start({'level': True})
+    game.rows = [row('one'), row('two', 2, False)]; ticks(lobby)
+    assert lobby.session_joins == 2 and lobby.lifetime_joins == 14
+    game.rows = [row('two', 1, False)]; ticks(lobby)
+    game.rows.append(row('one', 2)); ticks(lobby)
+    assert lobby.session_joins == 3 and saved == [13, 14, 15]
+    lobby.stop(); lobby.start({'level': True}); ticks(lobby)
+    assert lobby.session_joins == 2 and lobby.lifetime_joins == 17
+
+
+def test_counter_read_failure_never_overwrites_original():
+    game = FakeGame(); saved = []
+    def fail(): raise ValueError('corrupt file')
+    game.load_join_count = fail; game.save_join_count = saved.append
+    lobby = module.Lobby(game); lobby.start({'level': True})
+    game.rows = [row('one')]; ticks(lobby)
+    assert lobby.session_joins == 1 and lobby.lifetime_joins is None
+    assert lobby.status()['counter_error'] == 'corrupt file' and not saved
+
+
+def test_connection_roots_use_native_parent_and_unknown_fallback():
+    parent = SimpleNamespace()
+    assert module.Game.connection_root(SimpleNamespace(NetConnection=SimpleNamespace(Parent=parent))) is parent
+    assert module.Game.connection_root(SimpleNamespace(NetConnection=parent)) is parent
+    assert module.Game.connection_root(SimpleNamespace()) is None

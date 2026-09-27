@@ -47,6 +47,11 @@ function setLiveEnabled(){
     else if(!state.online)riskStatus.textContent='Enabled. Connect to the game (or desktop gateway) to fire spawn actions (buttons are tappable).';
     else riskStatus.textContent='Enabled and connected. Spawn actions are ready.';
   }
+  if(state.connection.remote){
+    $$('[data-live],[data-live-optional],.player-target').forEach(node=>{node.disabled=true;});
+    ['invRefresh','invEquipped','invBackpack','travelMapGo','travelStationGo','poolSpawn','invSendSelected','runSelectedMovement'].forEach(id=>{if($(id))$(id).disabled=true;});
+  }
+
 }
 function playerValue(player){const index=player&&player.index;const name=player&&player.name?String(player.name):'';if(index===null||index===undefined||index==='')return name;return name?`${index}|${name}`:String(index)}
 function playerLabel(player){const index=player&&player.index;const name=player&&player.name?String(player.name):'';if(index===null||index===undefined||index==='')return name||'Unknown player';return `${index} | ${name||'Unknown player'}`}
@@ -89,9 +94,11 @@ function ensureDeviceToken(){
   return token;
 }
 function hasSavedPairing(){
+  if(state.connection.remote)return true;
   return Boolean(text(state.connection.address)&&(text(state.connection.deviceToken)||text(state.connection.pairingCode)||text(state.connection.enrollNonce)));
 }
 function updateConnectionChrome(){
+  if(window.mobileAfk)window.mobileAfk.connectionChanged();
   const badge=$('connectionBadge');
   const paired=hasSavedPairing();
   badge.textContent=state.online?'ONLINE':(paired?'SAVED':'OFFLINE');
@@ -103,6 +110,7 @@ function updateConnectionChrome(){
   $('homeStatusText').textContent=state.online
     ? (state.bridgeOnline?'Live actions are enabled. The desktop app is optional.':'Reachable on this Wi‑Fi. Launch Borderlands 4 with the MSBT SDK mod for live game actions.')
     : 'Offline tools stay usable. Scan the in-game Pair QR (msbt_mobile_pair) or the desktop Mobile Gateway QR.';
+  if(state.connection.remote){$('homeStatusText').textContent='Remote AFK control. Keep desktop MSBT and Borderlands 4 running.';$('desktopStatus').textContent='Required for remote AFK';}
   $('targetSummary').textContent=targetDisplay(state.selectedTarget);
   setLiveEnabled();
 }
@@ -130,6 +138,7 @@ function showScreen(name,{scroll=true}={}){
 }
 $$('[data-goto-screen]').forEach((button)=>button.addEventListener('click',()=>showScreen(button.dataset.gotoScreen)));
 const APP_FINDER=[
+  {title:'AFK Lobby',hint:'Automatic boosts and guest results',aliases:'afk lobby random guaranteed loot kick accept',screen:'afk'},
   {title:'Home',hint:'Status and pairing',aliases:'status pair qr connect',screen:'home'},
   {title:'Boost',hint:'Max, UVH, serials, rarity',aliases:'max all cash uvh serial rarity',screen:'boost'},
   {title:'Instant Drops',hint:'Boost live toggle',aliases:'instant drops loot',screen:'boost',focus:'instantDropsToggleBtn'},
@@ -908,6 +917,7 @@ $$('.player-target').forEach((select)=>{
 });
 
 async function gatewayFetch(route,{method='GET',payload=null,timeoutMs=15000,requirePairing=true}={}){
+  if(state.connection.remote)return window.mobileRemote.request(route,{method,payload,timeoutMs});
   const base=gatewayBase();
   if(!base)throw new Error('Enter a PC address first.');
   const pairingCode=text(state.connection.pairingCode);
@@ -988,6 +998,7 @@ function applyStatus(data){
   if(fromStatus&&!state.pendingTarget&&!state.targetInvalidated)write(STORE.target,{target:fromStatus});
   if(data&&data.last_command)state.quickLastCommand=data.last_command;
   applyLiveModsFromStatus(data);
+  if(window.mobileAfk)window.mobileAfk.render(data);
   if(Array.isArray(data&&data.location_bookmarks))renderXyzBookmarks(data.location_bookmarks);
   fillPlayerSelects();
   updateConnectionChrome();
@@ -995,6 +1006,7 @@ function applyStatus(data){
 }
 
 async function connectGateway({quiet=false, hostCandidates=null}={}){
+  if(state.connection.remote)return window.mobileRemote.connect();
   ensureDeviceToken();
   state.connection={
     name:text($('pcName')&&$('pcName').value)||state.connection.name||'',
@@ -1195,6 +1207,7 @@ function parsePairingPayload(raw){
     }
   }
   if(!data||typeof data!=='object')throw new Error('QR is not an MSBT pairing code.');
+  if(Number(data.v)===3)return window.mobileRemote.validate(data);
   const version=Number(data.v);
   const hosts=Array.isArray(data.hosts)
     ? data.hosts.map((host)=>text(host)).filter(Boolean)
@@ -1224,6 +1237,8 @@ function parsePairingPayload(raw){
   };
 }
 async function applyPairingPayload(payload){
+  if(payload.v===3)return window.mobileRemote.pair(payload);
+  delete state.connection.remote;
   if($('pcName'))$('pcName').value=payload.name||'';
   if($('pcAddress'))$('pcAddress').value=payload.hosts[0]||'';
   if($('pcPort'))$('pcPort').value=payload.port||(payload.v===2?'49774':'49775');

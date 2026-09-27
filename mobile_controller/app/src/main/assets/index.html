@@ -11,7 +11,8 @@
   <div class="chrome-top">
     <header class="appbar">
       <div class="brand"><strong>MSBT</strong><span>Mobile Controller</span></div>
-      <span id="connectionBadge" class="badge offline">OFFLINE</span>
+      <select data-language-selector aria-label="Language / Idioma" title="AFK controls and bookmark folders; other screens and game messages remain in English"><option value="en">English</option><option value="es">Español</option><option value="fr">Français</option><option value="pt-BR">Português</option><option value="de">Deutsch</option><option value="nl">Nederlands</option></select>
+        <span id="connectionBadge" class="badge offline">OFFLINE</span>
     </header>
     <div class="session-strip">
       <span><b>PC</b> <span id="pcSummary">Not paired</span></span>
@@ -53,7 +54,7 @@
       <article class="card">
         <p class="eyebrow">JUMP TO</p>
         <div class="tool-grid home-jump">
-          <button type="button" data-goto-screen="boost">Boost</button>
+          <button type="button" data-goto-screen="afk">AFK Lobby</button><button type="button" data-goto-screen="boost">Boost</button>
           <button type="button" data-goto-screen="quick">Quick Menu</button>
           <button type="button" data-goto-screen="codes">BL4 Codes</button>
           <button type="button" data-goto-screen="inventory">Inventory</button>
@@ -68,6 +69,7 @@
       <article class="card notice"><p class="eyebrow">FEEDBACK</p><p>Send feedback and full-screen screenshots to FunkYouSHiFT on Discord. Include phone make/model and Android version.</p></article>
     </section>
 
+    <section data-screen="afk" class="screen"><h2>AFK Lobby</h2><article class="card" id="mobileAfkPanel"></article></section>
     <section data-screen="boost" class="screen">
       <h2>Boost</h2>
       <article class="card target-card">
@@ -572,12 +574,16 @@
     <button data-nav="pools"><span class="nav-icon">≡</span><span>Pools</span></button>
     <button data-nav="hoard"><span class="nav-icon">⚔</span><span>Hoard</span></button>
     <button data-nav="spawn"><span class="nav-icon">◉</span><span>Spawn</span></button>
-    <button data-nav="more"><span class="nav-icon">•••</span><span>More</span></button>
+    <button data-nav="afk"><span class="nav-icon">AFK</span><span>Lobby</span></button><button data-nav="more"><span class="nav-icon">•••</span><span>More</span></button>
   </nav>
   <script src="jsQR.min.js"></script>
   <script src="gzo_dlc_contract.js"></script>
   <script src="gzo_codes_form.js"></script>
+  <script src="remote_crypto.js"></script><script src="remote.js"></script>
   <script src="app.js"></script>
   <script src="parity.js"></script>
+
+  <script src="afk.js"></script>
+<script src="ui_i18n.js"></script>
 </body>
 </html>

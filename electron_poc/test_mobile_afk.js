@@ -1,0 +1,32 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),os=require('node:os'),path=require('node:path');
+const {app,BrowserWindow}=require('electron');
+app.whenReady().then(async()=>{
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'msbt-mobile-afk-'));
+ fs.cpSync(path.resolve(__dirname,'../mobile_controller/app/src/main/assets'),dir,{recursive:true});
+ for(const file of ['gzo_codes_form.js','gzo_dlc_contract.js'])fs.copyFileSync(path.join(__dirname,file),path.join(dir,file));
+ const win=new BrowserWindow({show:false,width:420,height:900,webPreferences:{sandbox:true,contextIsolation:true,partition:'mobile-afk-test'}});
+ win.webContents.session.webRequest.onBeforeRequest({urls:['http://*/*','https://*/*']},(_d,cb)=>cb({cancel:true}));
+ await win.loadFile(path.join(dir,'index.html'));
+ const result=await win.webContents.executeJavaScript(`(async()=>{
+ const check=(v,m)=>{if(!v)throw Error(m);};stopStatusPolling();window.alert=()=>{};
+ state.online=true;state.bridgeOnline=true;
+ const afk={enabled:false,message:'Ready',guaranteed_loot_supported:true,bulk_loot_password_required:true,random_count_supported:true,config:{level:true,loot:true,loot_mode:'random70',serials:['@UPool'],guaranteed_serials:['@UFixed']}};
+ mobileAfk.render({afk_lobby:afk});$('afkPull').click();check($('afkFixed').value==='@UFixed','pull guaranteed');
+ state.codes=[{id:'gun',serial:'@UGun'}];state.selectedCodes=new Set(['gun']);document.querySelector('[data-afk-add="catalog:fixed"]').click();check($('afkFixed').value.includes('@UGun'),'catalog add');
+ $('afkCount').value='35';
+ let sent=[];gatewayAction=async(action,payload)=>{sent.push({action,payload});return {ok:true,data:{ok:true}};};gatewayFetch=async()=>({ok:true,data:{ok:true,name:'PC',players:[],afk_lobby:{...afk,enabled:true}}});
+ await $('afkMobileStart').onclick();check(sent[0].action==='afk_lobby_start'&&sent[0].payload.guaranteed_codes.includes('@UGun')&&sent[0].payload.random_count===35,'start payload');check($('afkFields').disabled,'running lock');
+ await $('afkMobileStop').onclick();check(sent[1].action==='afk_lobby_stop','stop');
+ state.online=false;mobileAfk.connectionChanged();check($('afkMobileStop').disabled,'offline lock');
+ const secret='a'.repeat(64);const pair=parsePairingPayload(JSON.stringify({v:3,relay:'https://msbt-afk-relay.screename53.workers.dev',room:secret,token:secret,key:secret}));check(pair.v===3,'remote QR');
+ let blocked=false;try{mobileRemote.validate({...pair,relay:'http://evil.test'});}catch{blocked=true;}check(blocked,'untrusted relay accepted');
+ const payload={codes:'x'.repeat(300000)};const sealed=await msbtRemoteCrypto.seal(secret,payload,'context');const clear=await msbtRemoteCrypto.open(secret,sealed,'context');check(clear.codes===payload.codes,'large browser crypto');
+ state.online=true;state.bridgeOnline=true;updateConnectionChrome();mobileAfk.render({afk_lobby:afk});
+ check(showScreen('afk')&&document.querySelector('[data-screen=afk]').classList.contains('active'),'AFK navigation');return {width:innerWidth,body:document.body.scrollWidth};
+ })()`);
+ assert.ok(result.body<=result.width+2,JSON.stringify(result));
+ fs.mkdirSync(path.resolve(__dirname,'../output/mobile-remote'),{recursive:true});
+ await new Promise(resolve=>setTimeout(resolve,250));
+ fs.writeFileSync(path.resolve(__dirname,'../output/mobile-remote/afk-preview.png'),(await win.webContents.capturePage()).toPNG());
+ console.log('PASS mobile AFK controls, PC settings, loot selection, offline locks, remote pairing, large encrypted payloads and narrow layout');win.destroy();app.exit(0);
+}).catch(error=>{console.error(error);app.exit(1);});

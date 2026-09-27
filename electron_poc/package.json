@@ -1,6 +1,6 @@
 {
   "name": "matts-sdk-boosting-tools",
-  "version": "2.15.0",
+  "version": "2.16.0",
   "private": true,
   "description": "Desktop app for Matt's SDK Boosting Tools.",
   "author": "FunkYouSHiFT",
@@ -27,7 +27,9 @@
     "test:native-card-inputs": "node --check native_item_sources.js && node --check native_stat_context.js && node --check native_stat_modifiers.js && node test_native_item_sources.js && node test_native_card_stats.js",
     "test:native-card-render": "node --check native_card_protocol.js && node --check native_card_adapter.js && node --check native_card_model.js && electron test_native_card_render.js",
     "test:native-equipment-cards": "node --check native_equipment_card.js && node --check serial_card_stats.js && electron test_native_equipment_cards.js",
-    "test:responsive": "node --check workspace.js && electron test_responsive_workspace.js"
+    "test:responsive": "node --check workspace.js && electron test_responsive_workspace.js",
+    "test:mobile-remote": "node --check remote_afk.js && node --check remote_crypto.js && electron test_mobile_afk.js",
+    "test:afk-followups": "electron test_bookmark_folders.js && electron test_ui_i18n.js && electron test_afk_lobby.js && electron test_mobile_afk.js"
   },
   "build": {
     "appId": "com.funkyoushift.msbt",
@@ -156,6 +158,7 @@
     "lodash.escaperegexp": "^4.1.2",
     "lodash.isequal": "^4.5.0",
     "qrcode": "^1.5.4",
-    "tiny-typed-emitter": "^2.1.0"
+    "tiny-typed-emitter": "^2.1.0",
+    "ws": "^8.21.3"
   }
 }

@@ -117,3 +117,9 @@ See `BETA_TESTING.md` and the `test_kit/` folder for older tester notes. New ins
 The GitHub Actions workflow `.github/workflows/mobile-beta-build.yml` is a legacy beta pipeline. Public APKs ship on the main GitHub Release with desktop MSBT.
 
 The APK catalog assets are generated from the same checked-in resources used by desktop MSBT so the multi-megabyte source catalogs are not duplicated under `mobile_controller/`.
+
+## Built-in remote AFK (local test build)
+
+In desktop MSBT, open **Mobile Gateway → Enable remote AFK**, then scan its private QR using the phone Pair QR scanner. No VPN app or port forwarding is required. Keep desktop MSBT and Borderlands 4 running. The phone AFK screen supports start/stop, boost options, guaranteed/random pools, auto-kick, SHiFT open/close and results. Use **Disable & revoke pairing** on the PC to remove access. Other mobile tools continue to use their existing local connection; the remote connection is limited to AFK.
+
+A cellular-data test on the physical phone remains required. See `../remote_relay/README.md` for service operation and validation.

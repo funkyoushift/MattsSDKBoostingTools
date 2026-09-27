@@ -21,3 +21,5 @@
 #afkLobbyPanel details { margin: 16px 0; }
 #afkLobbyPanel summary { cursor: pointer; margin-bottom: 12px; }
 #afkLobbyPanel textarea { width: 100%; box-sizing: border-box; }
+
+.header-actions [data-language-selector] { width: 120px; min-width: 100px; font-size: 13px; }

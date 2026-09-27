@@ -47,7 +47,9 @@ def player_class(pc, ps, pawn):
     return None
 
 
-def select_loot(serials, classes, character, random_mode, rng, guaranteed=(), guaranteed_classes=()):
+def select_loot(serials, classes, character, random_mode, rng, guaranteed=(), guaranteed_classes=(), random_count=70):
+    if isinstance(random_count, bool) or not isinstance(random_count, int) or random_count < 1:
+        raise ValueError("Random delivery size must be a positive whole number.")
     if len(serials) != len(classes) or len(guaranteed) != len(guaranteed_classes):
         raise ValueError("AFK loot classifications do not match the pool. Restart AFK.")
     restricted = any(value not in (None, "unknown_item") for value in (*classes, *guaranteed_classes))
@@ -66,7 +68,7 @@ def select_loot(serials, classes, character, random_mode, rng, guaranteed=(), gu
     if not random_mode:
         indices = eligible
     else:
-        count = min(max(0, 70 - len(fixed)), len(eligible))
+        count = min(max(0, random_count - len(fixed)), len(eligible))
         if matching and not fixed_has_class_mod:
             if count == 0:
                 raise ValueError("Guaranteed items leave no slot for a matching class mod. Remove one guaranteed item or include a matching class mod in that list.")

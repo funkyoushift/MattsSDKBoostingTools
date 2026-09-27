@@ -53,6 +53,8 @@
           <input id="appOpacity" type="range" min="35" max="100" value="100">
           <output id="appOpacityValue" for="appOpacity">100%</output>
         </div>
+        <select data-language-selector aria-label="Language / Idioma" title="AFK controls and bookmark folders; other screens and game messages remain in English"><option value="en">English</option><option value="es">Español</option><option value="fr">Français</option><option value="pt-BR">Português</option><option value="de">Deutsch</option><option value="nl">Nederlands</option></select>
+        <button id="walkthroughHeaderBtn" class="header-btn" type="button">Walkthroughs</button>
         <button id="statusBtn" class="header-btn">Status</button>
         <button id="updateBtn" class="header-btn">Updates</button>
       </div>
@@ -215,10 +217,12 @@
         <label for="afkLootMode">Loot amount per guest</label>
         <select id="afkLootMode">
           <option value="all">Send all selected items · password above 70</option>
-          <option value="random70">Guaranteed items + random fill · up to 70</option>
+          <option value="random70">Guaranteed items + random fill</option>
         </select>
-        <p class="muted-line">Random mode sends compatible guaranteed items first, then fills remaining slots up to 70 from your loot pool. In Item Catalog, filter and select your items, then use Add to AFK. Smaller pools send the available entries. This limits items sent per join, not the guest’s total backpack contents. Rejoining draws again. Class mods are limited to the guest’s character in both modes; random mode includes at least one matching class mod when the pool has one.</p>
+        <p class="muted-line">Random mode sends compatible guaranteed items first, then fills remaining slots up to your selected delivery size from your loot pool. In Item Catalog, filter and select your items, then use Add to AFK. Smaller pools send the available entries. This limits items sent per join, not the guest’s total backpack contents. Rejoining draws again. Class mods are limited to the guest’s character in both modes; random mode includes at least one matching class mod when the pool has one.</p>
         <label><input id="afkAutoAccept" type="checkbox" checked> Auto-accept SHiFT friends while running</label>
+          <label>Random delivery size <input id="afkRandomCount" type="number" min="1" step="1" value="70"></label>
+          <p class="muted-line">Guaranteed items count toward this total. If they exceed it, all compatible guaranteed items still arrive. More than 70 requires the password.</p>
         <label><input id="afkAutoKick" type="checkbox"> Auto-kick when boosts finish (15-second wait after loot)</label>
         <p class="muted-line">The auto-accepter also declines incoming game invites. UVHM 1–7 is separate from challenges. All Customs + Hovers uses the same action as the Boosting tab button.</p>
         <details id="afkLootDetails">
@@ -233,7 +237,7 @@
           <p id="afkBookmarkNote" class="muted-line"></p>
           <label for="afkGuaranteedCodes">Guaranteed items · included in every delivery</label>
           <textarea id="afkGuaranteedCodes" rows="4" placeholder="Paste the gun, shield, or other item codes every guest should receive"></textarea>
-          <p class="muted-line">Guaranteed items count toward the 70 total. Two guaranteed items leave 68 random slots. Class-mod restrictions apply to both lists. Items already guaranteed are not drawn again from the random pool; repeat a guaranteed line for extra copies.</p>
+          <p class="muted-line">Guaranteed items count toward your selected total. For example, two guaranteed items in a 70-item delivery leave 68 random slots. Class-mod restrictions apply to both lists. Items already guaranteed are not drawn again from the random pool; repeat a guaranteed line for extra copies.</p>
           <label for="afkCodes">Loot pool · one code per line; repeated lines are extra copies</label>
           <textarea id="afkCodes" rows="5" placeholder="Paste item codes, or add bookmarks above"></textarea>
           <p class="muted-line">Codes retain their item levels. Selections are saved on this PC.</p>
@@ -246,6 +250,7 @@
         <div id="afkStatus" class="status-line" role="status">Connecting to the game…</div>
         <div id="afkShiftStatus" class="muted-line"></div>
         <div id="afkQueue" class="muted-line"></div>
+        <div id="afkJoinCounts" class="muted-line"></div>
         <pre id="afkLog" style="max-height:240px;overflow:auto;white-space:pre-wrap"></pre>
       </section>
 
@@ -824,13 +829,20 @@
                 <input id="bookmarkSearch" type="search" autocomplete="off" spellcheck="false" placeholder="name, group, serial...">
               </label>
               <label>
-                Groups
+                Folders (includes subfolders)
                 <select id="bookmarkGroupFilter">
                   <option value="All">All</option>
                 </select>
               </label>
             </div>
             <div id="bookmarkCount" class="status-line">0 shown / 0 saved</div>
+            <label for="bookmarkFolderPath">Folder path</label>
+            <input id="bookmarkFolderPath" type="text" maxlength="180" placeholder="Weapons / Shotguns">
+            <div class="button-row wrap">
+              <button id="bookmarkCreateFolderBtn">Create folder</button>
+              <button id="bookmarkMoveFolderBtn">Move selected to folder</button>
+            </div>
+            <p class="muted-line">Use / for subfolders. Select a parent folder to browse all items inside it.</p>
             <div class="button-row wrap">
               <label class="selection-mode-toggle" title="When on, clicking a bookmark adds or removes it from the selection">
                 <input id="bookmarkMultiSelectToggle" type="checkbox">
@@ -850,8 +862,8 @@
             <h3>Details</h3>
             <label for="bookmarkName">Name</label>
             <input id="bookmarkName" type="text" autocomplete="off" placeholder="Bookmark name">
-            <label for="bookmarkGroup">Group</label>
-            <input id="bookmarkGroup" type="text" autocomplete="off" value="Default">
+            <label for="bookmarkGroup">Folder path</label>
+            <input id="bookmarkGroup" type="text" autocomplete="off" value="Default" placeholder="Weapons / Shotguns">
             <label for="bookmarkSerial">Serial</label>
             <textarea id="bookmarkSerial" spellcheck="false" placeholder="@U..."></textarea>
             <div class="button-row wrap">
@@ -2390,6 +2402,7 @@
       <div class="mobile-gateway-fixed">
         <h2>Mobile Gateway</h2>
         <p class="muted-line">Pair phones on the same Wi‑Fi here. Game actions stay on this PC, and only approved commands pass through. This page stays fixed so the pairing QR remains visible.</p>
+        <article class="card"><h3>Remote AFK · away from home</h3><p>Enable here, then scan this QR in MSBT Mobile. No VPN or router setup. Keep MSBT and Borderlands 4 running on this PC. Remote access controls AFK only.</p><button id="remoteAfkEnable">Enable remote AFK</button><button id="remoteAfkDisable">Disable &amp; revoke pairing</button><p id="remoteAfkStatus">Remote access is off.</p><img id="remoteAfkQr" hidden width="280" height="280" alt="Private remote AFK pairing QR"><p>Keep this QR private. Disabling access invalidates it. Enable remote access again after restarting MSBT.</p></article>
         <div id="mobileGatewaySummary" class="status-line warning">Loading mobile gateway…</div>
         <div class="mobile-gateway-pair-grid">
           <div class="mobile-gateway-qr-block">
@@ -2711,5 +2724,7 @@
   <script src="workspace.js"></script>
   <script src="renderer.js"></script>
   <script src="afk_lobby.js"></script>
+<script src="remote_afk_ui.js"></script>
+<script src="ui_i18n.js"></script>
 </body>
 </html>

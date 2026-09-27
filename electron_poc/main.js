@@ -1,4 +1,4 @@
-const { app, BrowserWindow, dialog, ipcMain, screen, shell, Menu, nativeTheme, protocol } = require("electron");
+const { app, BrowserWindow, dialog, ipcMain, screen, shell, Menu, nativeTheme, protocol, safeStorage } = require("electron");
 const {registerNativeCardSchemes,installNativeCardProtocol} = require("./native_card_protocol");
 registerNativeCardSchemes(protocol);
 
@@ -805,6 +805,26 @@ async function startMobileGateway() {
     };
   }
 }
+
+const remoteAfk = require("./remote_afk").createRemoteAfk({
+  load: async () => {
+    try { const bytes=await fs.readFile(path.join(app.getPath("userData"),"remote-afk.enc"));
+      if(!safeStorage.isEncryptionAvailable())throw new Error("Windows credential encryption unavailable");
+      return JSON.parse(safeStorage.decryptString(bytes));
+    } catch(error) { if(error.code==='ENOENT')return null;throw error; }
+  },
+  save: async config => {
+    const file=path.join(app.getPath("userData"),"remote-afk.enc");
+    if(!config){await fs.rm(file,{force:true});return;}
+    if(!safeStorage.isEncryptionAvailable())throw new Error("Windows credential encryption unavailable");
+    await fs.writeFile(file,safeStorage.encryptString(JSON.stringify(config)));
+  },
+  bridge: (route,payload) => requestBridge({path:route,method:payload?'POST':'GET',payload,timeoutMs:25000})
+});
+ipcMain.handle("remoteAfk:info",()=>remoteAfk.info());
+ipcMain.handle("remoteAfk:start",async()=>{try{return await remoteAfk.start();}catch(error){return {enabled:false,lastError:error.message};}});
+ipcMain.handle("remoteAfk:stop",()=>remoteAfk.stop());
+ipcMain.handle("remoteAfk:qr",async()=>{const QRCode=require("qrcode");return QRCode.toDataURL(JSON.stringify(remoteAfk.pairing()),{width:280,margin:2});});
 
 ipcMain.handle("mobileGateway:getInfo", async () => mobileGateway.info());
 ipcMain.handle("mobileGateway:start", async () => startMobileGateway());
@@ -2750,6 +2770,7 @@ app.on("window-all-closed", () => {
 });
 
 app.on("before-quit", () => {
+  remoteAfk.shutdown();
   mobileGateway.stop().catch(() => {});
   if (pythonHelperWorker) pythonHelperWorker.stop();
   if (hostProcessIsAlive()) {

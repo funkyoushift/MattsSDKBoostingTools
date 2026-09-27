@@ -108,3 +108,15 @@ def test_catalog_codes_with_unsupported_payloads_classify_by_header(monkeypatch)
  assert checked>0
  with pytest.raises(ValueError,match='AFK item code 1'):
   module.classify_serials(['@U'])
+
+def test_adjustable_random_count_keeps_fixed_and_class_rules():
+ pool=['siren','exo']+[f'gun{i}' for i in range(100)]
+ classes=['Char_DarkSiren','Char_ExoSoldier']+[None]*100
+ for count in (1,10,35,70,85):
+  fixed=[] if count==1 else ['shield','gun0']
+  selected,_=m.select_loot(pool,classes,'Char_DarkSiren',True,random.Random(count),fixed,[None]*len(fixed),count)
+  assert len(selected)==count and 'siren' in selected and 'exo' not in selected
+  assert selected[:len(fixed)]==fixed
+  assert len(selected)==len(set(selected))
+ with pytest.raises(ValueError,match='positive whole'):
+  m.select_loot(['gun'],[None],None,True,random.Random(),random_count=0)

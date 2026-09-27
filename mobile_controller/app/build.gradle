@@ -10,8 +10,8 @@ android {
         applicationId 'com.funkyoushift.msbt.mobile'
         minSdk 28
         targetSdk 35
-        versionCode 25
-        versionName '1.2.0'
+        versionCode 26
+        versionName '1.3.0'
     }
 
     def betaKeystore = file('../debug-signing/msbt-mobile-debug.keystore')

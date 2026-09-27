@@ -1,0 +1,19 @@
+# AFK and mobile follow-up work
+
+Requested by Matt on 2026-09-26. Current priority: complete built-in remote mobile AFK control without an extra VPN app.
+
+- IMPLEMENTED: persistent Walkthroughs header button in both layouts. Live chooser opens with 17 choices.
+- IMPLEMENTED LOCALLY: adjustable random delivery count on desktop and mobile, with password protection above 70 and guaranteed-pool/class-mod rules. SDK test build installed after verifying the game was closed; live game validation remains pending.
+- PARTIAL: saved English, Spanish, French, Portuguese, German and Dutch language choices on desktop/mobile for AFK controls and bookmark-folder actions. Translation dictionaries are bundled; no runtime translation service receives user data. Remaining app screens, walkthrough bodies and game messages are still English. Full translation coverage and language review remain pending.
+- Preserve the backpack a guest arrived with while cleaning up unwanted challenge/UVHM reward loot before intentional serial delivery. Verify native snapshot/restore fidelity and failure recovery first. Do not clear inventory until a complete usable snapshot exists or kick after a failed restoration. Test reward packages and inventory synchronization separately. Preserve guest backpack authorization.
+- IMPLEMENTED LOCALLY: named bookmark folders and nested subfolders, including empty folders, moving selected entries and parent-folder browsing. Existing flat groups and serials are preserved; legacy callers preserve empty folders. The inspected legacy Tkinter code stores flat group strings, so hierarchy extends that compatible format.
+- IMPLEMENTED LOCALLY, LIVE TEST PENDING: shared-connection kick barrier. Finished guests leave the processing queue so other members can receive boosts. Every observed member must finish successfully and complete the loot settlement wait before the connection is kicked. Unknown connections use a lobby-wide completion barrier. Extracted PlayerController.NetConnection and ChildConnection.Parent fields support grouping; real split-screen verification remains required. Future inventory restoration must join this completion barrier.
+- IMPLEMENTED LOCALLY: session and lifetime guest-join counters on desktop/mobile. Session resets on Start; each observed guest (including guests already present at Start) counts once, each rejoin counts again, and split-screen players count separately. Lifetime count is atomically saved under %LOCALAPPDATA%/MattsSDKBoostingTools/afk_join_stats.json. Corrupt files are preserved and an error is shown; no player identities are stored.
+
+These are tracked requirements, not implemented claims.
+
+Remote mobile validation on 2026-09-27: installed the updated APK over the older phone build via USB; paired it to desktop; successfully read live AFK status with phone Wi-Fi disabled, then restored Wi-Fi.
+
+Backpack investigation: existing read_inventory_for_player_state deduplicates serials, silently skips unreadable rows, and caps reads. Existing deletion backup also mixes equipped and backpack items and keys restoration by party slot. These paths cannot prove a complete, identity-safe backup. Automated reward cleanup is NOT enabled; native item identity, flags/stack fidelity, complete reads and restoration verification still need implementation and live tests.
+
+Local test installation on 2026-09-27: Python syntax and 65 Python tests passed; full desktop check, AFK follow-up UI tests and mobile parity passed. SDK package installed with a verified backup while Borderlands was closed. Desktop restarted and remote relay reconnected. Updated Android test APK installed over the existing app by USB; language controls and saved remote pairing verified. No public version change or release.

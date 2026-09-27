@@ -397,3 +397,13 @@ button.ghost{min-height:36px;padding:6px 10px;font-size:12px;background:#152033;
 @media(min-height:820px){
   .panel-scroll{max-height:min(52vh,480px)}
 }
+
+/* AFK controls use compact touch-friendly rows. */
+#mobileAfkPanel label:has(input[type="checkbox"]) { display:flex; align-items:center; gap:12px; min-height:44px; }
+#mobileAfkPanel input[type="checkbox"] { width:22px; height:22px; margin:0; flex:none; }
+#mobileAfkPanel fieldset { border:0; padding:12px 0; min-width:0; }
+#mobileAfkPanel summary { padding:16px 0; cursor:pointer; font-weight:700; }
+#mobileAfkPanel textarea { width:100%; box-sizing:border-box; }
+
+.appbar [data-language-selector] { width: 116px; min-height: 36px; padding: 6px 8px; font-size: 13px; flex: 0 0 116px; }
+@media (max-width: 480px) { .appbar .brand span { display: none; } }

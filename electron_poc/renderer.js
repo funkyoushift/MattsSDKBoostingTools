@@ -597,6 +597,7 @@ const state = {
   bookmarkLastValidation: null,
   bookmarkStatusWarnings: [],
   bookmarks: [],
+  bookmarkFolders: [],
   bookmarkVisibleRows: [],
   confirmedSerial: "",
   deletedBackpackSerials: [],
@@ -5084,15 +5085,53 @@ function bookmarkSearchText(row) {
 }
 
 function bookmarkGroups() {
-  return Array.from(new Set(state.bookmarks.map((row) => row.group || "Default"))).sort((a, b) => a.localeCompare(b));
+  const groups = new Set();
+  [...state.bookmarkFolders, ...state.bookmarks.map(row => row.group || "Default")].forEach(group => {
+    groups.add(group);
+    const parts = group.split("/");
+    while (parts.length > 1) { parts.pop(); groups.add(parts.join("/").trim()); }
+  });
+  return Array.from(groups).sort((a, b) => a.localeCompare(b));
+}
+
+function bookmarkInFolder(group, folder) {
+  const parts = value => String(value || "Default").split("/").map(part => part.trim());
+  const row = parts(group), parent = parts(folder);
+  return parent.length <= row.length && parent.every((part, index) => part === row[index]);
+}
+
+async function manageBookmarkFolder(moveSelection = false) {
+  const input = document.getElementById("bookmarkFolderPath");
+  const parts = input.value.split("/").map(part => part.trim().replace(/\s+/g, " "));
+  const folder = parts.join(" / ");
+  if (!parts.length || parts.some(part => !part) || folder === "All" || folder.length > 180) {
+    setBookmarkStatus("Enter a folder name or path, such as Weapons / Shotguns. All is reserved for browsing.", "warning");
+    return;
+  }
+  const selected = moveSelection ? bookmarkSelectedEntries() : [];
+  if (moveSelection && !selected.length) {
+    setBookmarkStatus("Select bookmarks to move first.", "warning");
+    return;
+  }
+  const oldFolders = state.bookmarkFolders.slice(), oldBookmarks = state.bookmarks.slice();
+  const ids = new Set(selected.map(row => row.id));
+  state.bookmarkFolders = Array.from(new Set([...state.bookmarkFolders, folder]));
+  if (moveSelection) state.bookmarks = state.bookmarks.map(row => ids.has(row.id) ? {...row, group: folder, updated_at: bookmarkNow()} : row);
+  try {
+    const saved = await persistSerialBookmarks(moveSelection ? `Moved ${selected.length} bookmark(s) to ${folder}.` : `Created folder: ${folder}.`);
+    if (!saved) { state.bookmarkFolders = oldFolders; state.bookmarks = oldBookmarks; renderBookmarks(); return; }
+    els.bookmarkGroupFilter.value = folder;
+    setTextValue(els.bookmarkGroup, folder);
+    renderBookmarks();
+  } catch (error) {
+    state.bookmarkFolders = oldFolders; state.bookmarks = oldBookmarks; renderBookmarks();
+    setBookmarkStatus(`Folder could not be saved: ${error.message}`, "bad");
+  }
 }
 
 function bookmarkGroupCounts() {
   const counts = new Map([["All", state.bookmarks.length]]);
-  state.bookmarks.forEach((row) => {
-    const group = row.group || "Default";
-    counts.set(group, (counts.get(group) || 0) + 1);
-  });
+  bookmarkGroups().forEach(group => counts.set(group, state.bookmarks.filter(row => bookmarkInFolder(row.group, group)).length));
   return counts;
 }
 
@@ -5158,7 +5197,7 @@ function filteredBookmarks() {
   const group = getValue(els.bookmarkGroupFilter) || state.bookmarkFilterGroup || "All";
   state.bookmarkFilterGroup = group;
   return state.bookmarks.filter((row) => {
-    const groupOk = group === "All" || (row.group || "Default") === group;
+    const groupOk = group === "All" || bookmarkInFolder(row.group, group);
     const queryOk = !query || bookmarkSearchText(row).includes(query);
     return groupOk && queryOk;
   });
@@ -5250,7 +5289,7 @@ function selectBookmark(id, options = {}) {
 }
 
 async function persistSerialBookmarks(successMessage) {
-  const result = await window.msbt.saveSerialBookmarks({ version: 1, bookmarks: state.bookmarks });
+  const result = await window.msbt.saveSerialBookmarks({ version: 1, bookmarks: state.bookmarks, folders: state.bookmarkFolders });
   if (!result || !result.ok) {
     setBookmarkStatus(result && result.message ? result.message : "Serial bookmarks could not be saved.", "bad");
     return false;
@@ -5258,6 +5297,7 @@ async function persistSerialBookmarks(successMessage) {
   state.bookmarks = Array.isArray(result.data && result.data.bookmarks)
     ? result.data.bookmarks.map(normalizeBookmarkForRenderer)
     : [];
+  state.bookmarkFolders = result.data?.folders || state.bookmarkFolders;
   const validIds = new Set(state.bookmarks.map((row) => row.id));
   state.bookmarkCheckedIds = new Set(Array.from(state.bookmarkCheckedIds).filter((id) => validIds.has(id)));
   if (state.bookmarkActiveId && !activeBookmark()) state.bookmarkActiveId = "";
@@ -5283,6 +5323,7 @@ async function loadSerialBookmarks() {
     ? result.data.bookmarks.map(normalizeBookmarkForRenderer)
     : [];
   state.bookmarkCheckedIds.clear();
+  state.bookmarkFolders = result.data?.folders || [];
   const warnings = Array.isArray(result.warnings) ? result.warnings : [];
   renderBookmarks();
   if (state.bookmarks.length && !state.bookmarkActiveId) {
@@ -13059,6 +13100,8 @@ function wireEvents() {
   els.bookmarkGroupFilter.addEventListener("change", renderBookmarks);
   els.bookmarkNewBtn.addEventListener("click", clearBookmarkForm);
   els.bookmarkImportBtn.addEventListener("click", importBookmarkFromSerialTools);
+  document.getElementById("bookmarkCreateFolderBtn").addEventListener("click", () => manageBookmarkFolder(false));
+  document.getElementById("bookmarkMoveFolderBtn").addEventListener("click", () => manageBookmarkFolder(true));
   els.bookmarkSaveBtn.addEventListener("click", saveBookmark);
   els.bookmarkDuplicateBtn.addEventListener("click", duplicateBookmark);
   els.bookmarkDeleteBtn.addEventListener("click", deleteBookmark);
@@ -13677,6 +13720,7 @@ function wireEvents() {
   const walkthroughNextBtn = document.getElementById("walkthroughNextBtn");
   const walkthroughBackBtn = document.getElementById("walkthroughBackBtn");
   const walkthroughSkipBtn = document.getElementById("walkthroughSkipBtn");
+  document.getElementById("walkthroughHeaderBtn")?.addEventListener("click", () => reopenMainChooser());
   const walkthroughReplayBtn = document.getElementById("walkthroughReplayBtn");
   if (walkthroughNextBtn) walkthroughNextBtn.addEventListener("click", () => walkthroughNext());
   if (walkthroughBackBtn) walkthroughBackBtn.addEventListener("click", () => walkthroughBack());

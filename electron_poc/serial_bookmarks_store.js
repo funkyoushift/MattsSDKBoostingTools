@@ -11,7 +11,7 @@ function bookmarksFilePath(userDataPath) {
 }
 
 function emptyBookmarks() {
-  return { version: BOOKMARKS_VERSION, bookmarks: [] };
+  return { version: BOOKMARKS_VERSION, bookmarks: [], folders: [] };
 }
 
 function normalizeText(value, fallback = "", maxLength = 4096) {
@@ -119,7 +119,10 @@ function normalizeBookmarksPayload(payload, now = new Date().toISOString()) {
   });
 
   return {
-    data: { version: BOOKMARKS_VERSION, bookmarks },
+    data: { version: BOOKMARKS_VERSION, bookmarks, folders: Array.from(new Set([
+      ...(Array.isArray(payload?.folders) ? payload.folders.filter(value => typeof value === "string").map(normalizeGroup) : []),
+      ...bookmarks.map(row => row.group)
+    ])) },
     warnings
   };
 }
@@ -149,6 +152,11 @@ async function readBookmarks(filePath) {
 }
 
 async function writeBookmarks(filePath, payload) {
+  // Older desktop/mobile callers know only bookmarks. Preserve empty folders.
+  if (!Array.isArray(payload?.folders)) {
+    const previous = await readBookmarks(filePath);
+    payload = { bookmarks: rawBookmarkList(payload), folders: previous.data.folders || [] };
+  }
   const normalized = normalizeBookmarksPayload(payload);
   const directory = path.dirname(filePath);
   const tempPath = `${filePath}.tmp`;
