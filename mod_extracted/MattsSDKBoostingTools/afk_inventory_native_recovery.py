@@ -152,7 +152,9 @@ class NativeAdapter:
             expected = item_counts(token['record']['original']) + Counter(token['record']['delivery_serials'])
             actual = item_counts(snapshot)
             missing = expected - actual
-            if missing:
+            if missing and not (actual - expected):
+                # A changed serial representation can look both missing and
+                # unexpected. Never resend that ambiguous inventory as a deficit.
                 # Require a second stable capture after settling before sending
                 # a deficit. Late replication must not produce duplicate gear.
                 if token.get('confirmed_missing') != missing:

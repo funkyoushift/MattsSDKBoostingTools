@@ -6,6 +6,7 @@ Interrupted operations are never automatically replayed after a process restart.
 """
 from collections import Counter
 from copy import deepcopy
+from datetime import datetime, timezone
 import hashlib
 import json
 import os
@@ -162,7 +163,42 @@ class Recovery:
     def _block(self, reason):
         self.record['phase'] = 'blocked'
         self.record['error'] = reason
+        self.record['reviewed_at_utc'] = datetime.now(timezone.utc).isoformat()
         self._save()
+        self.export_review()
+
+    def export_review(self):
+        """Human-readable evidence for later repair, never a replay request."""
+        folder = self.path.parent / 'saved-item-lists' / self.path.stem
+        folder.mkdir(parents=True, exist_ok=True)
+        final = self.record.get('final_snapshot')
+        expected = item_counts(self.record['original']) + Counter(self.record['delivery_serials'])
+        lines = [
+            'Player: ' + self.record['guest_name'],
+            'UTC: ' + self.record.get('reviewed_at_utc', ''),
+            'Result: ' + self.record.get('error', ''),
+            'AFK queue continues. This guest was not verified for automatic kick.',
+            'Recovery evidence: ' + str(self.path),
+            'Original items: original-backpack.txt',
+            'Selected loot: selected-new-loot.txt',
+            'Automatic deficit repair attempts: ' + str(self.record.get('repair_attempts', 0)),
+        ]
+        if final:
+            actual = item_counts(final)
+            for name, counts in (('observed-final-backpack', actual),
+                                 ('unmatched-expected', expected - actual),
+                                 ('unmatched-observed', actual - expected)):
+                (folder / (name + '.txt')).write_text(
+                    '\n'.join(counts.elements()) + '\n', encoding='utf-8')
+            lines += ['Unmatched expected: ' + str(sum((expected-actual).values())),
+                      'Unmatched observed: ' + str(sum((actual-expected).values()))]
+        else:
+            lines.append('Final inventory readback unavailable; arrival is unknown.')
+        lines += ['Unmatched serials are NOT proven missing items. The game may change serial representation.',
+                  'Check the player inventory before any resend. Do not clear or resend the entire backup blindly.']
+        path = folder / 'RECOVERY-REVIEW.txt'
+        path.write_text('\n'.join(lines) + '\n', encoding='utf-8')
+        return path
 
     def advance(self, player_token, world_token, adapter):
         if self.record['phase'] in ('blocked', 'complete', 'cancelled_before_clear'):
@@ -232,6 +268,7 @@ class Recovery:
                 elif operation == 'restore':
                     operation = 'verify'
                 elif operation == 'verify':
+                    self.record['final_snapshot'] = deepcopy(result['snapshot'])
                     check = verify_restored(self.record['original'], self.record['delivered'], result['snapshot'],
                                             restore_metadata=self.record['restore_metadata'])
                     if not self.record['restore_metadata']:
@@ -244,7 +281,7 @@ class Recovery:
                             self.record.pop('delivery_error', None)
                     self.record['verification'] = check
                     if self.record.get('delivery_error'):
-                        self._block(self.record['delivery_error'] + '; originals returned, kick blocked')
+                        self._block(self.record['delivery_error'] + '; final inventory unverified, kick blocked')
                         return
                     if not check['ok']:
                         self._block('Original inventory restoration did not match; auto-kick blocked')

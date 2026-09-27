@@ -74,6 +74,24 @@ class Adapter:
                                        'restore':snapshot(), 'verify':self.final}[token]}
 
 
+def test_failed_verification_exports_evidence_without_claiming_originals_returned(tmp_path):
+    job = module.Recovery(tmp_path, snapshot(row('@UOriginal')), player_token=1,
+                          world_token=2, guest_name='Guest', delivery_serials=['@UNew'],
+                          restore_metadata=False)
+    adapter = Adapter(job.record['original'], ['@UDifferent'])
+    adapter.final = snapshot(row('@UDifferent'))
+    for _ in range(6):
+        job.advance(1, 2, adapter)
+    assert job.record['phase'] == 'blocked' and not job.can_kick
+    assert 'originals returned' not in job.record['error']
+    folder = tmp_path / 'saved-item-lists' / job.path.stem
+    assert 'AFK queue continues' in (folder / 'RECOVERY-REVIEW.txt').read_text()
+    assert (folder / 'original-backpack.txt').read_text().splitlines() == ['@UOriginal']
+    assert (folder / 'unmatched-expected.txt').read_text().splitlines() == ['@UOriginal', '@UNew']
+    assert (folder / 'unmatched-observed.txt').read_text().splitlines() == ['@UDifferent']
+    assert module.Recovery.inspect(job.path)['final_snapshot'] == adapter.final
+
+
 def test_exact_originals_and_selected_loot_restore_before_kick(tmp_path):
     original=snapshot(row(handle=1,equip=0),row(handle=2),row(handle=3))
     selected=['@UNew','@UNew']

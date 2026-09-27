@@ -33,6 +33,7 @@ class Lobby:
         self.world = None
         self.next_tick = 0.0
         self.message = "Stopped."
+        self.shared_completed = []
 
     def stop(self):
         if self.current:
@@ -42,6 +43,7 @@ class Lobby:
         self.queue.clear()
         self.completed.clear()
         self.seen.clear()
+        self.shared_completed.clear()
         self.message = "Stopped. Already applied boosts are kept."
         return {"ok": True, "message": self.message, "afk_lobby": self.status()}
 
@@ -129,11 +131,19 @@ class Lobby:
             self.queue.clear()
             self.completed.clear()
             self.seen.clear()
+            self.shared_completed.clear()
             self.world = world
         if world is None or not self.game.is_host():
             self.message = "Waiting for the host's world."
             return
         tokens = [row["token"] for row in rows]
+        def still_ready(member):
+            return any(row['token'] == member['token'] and row['pc'] == member['pc']
+                       and row['ready'] for row in rows)
+        self.shared_completed = [entry for entry in self.shared_completed if still_ready(entry)]
+        if self.current and self.current.get('shared_run'):
+            run = self.current['shared_run']
+            run['members'] = [member for member in run['members'] if still_ready(member)]
         self.counted = [token for token in self.counted if token in tokens]
         for token in tokens:
             if token not in self.counted:
@@ -200,23 +210,57 @@ class Lobby:
         step = job["steps"][0]
         job["step"] = step
         self.message = f"{job['name']}: {step}"
+        if step in ('challenges', 'uvhm'):
+            if any(entry['token'] == job['token'] and entry['pc'] == job['pc']
+                   and entry['step'] == step for entry in self.shared_completed):
+                job['results'].append({'ok': True, 'step': step, 'shared_run': True,
+                                       'message': 'Present and ready for a complete successful lobby run; duplicate skipped. Guest save not confirmed.'})
+                job['steps'].popleft()
+                return
+            if 'shared_run' not in job:
+                # Back up other ready guests before the lobby-wide rewards start.
+                # Late/loading guests are not credited for this run.
+                for pending in self.queue:
+                    member = next((r for r in rows if r['token'] == pending['token'] and r['ready']), None)
+                    if member is None or not pending['steps'] or pending['steps'][0] != 'inventory_capture':
+                        continue
+                    pending.update(member)
+                    self.message = f"Backing up {pending['name']} before shared {step}"
+                    try:
+                        captured = self.game.step('inventory_capture', pending, self.config)
+                    except Exception as exc:
+                        captured = {'ok': False, 'message': str(exc)}
+                    if captured is not None:
+                        self._finish_step(pending, 'inventory_capture', captured)
+                    return
+                job['shared_run'] = {'step': step, 'members': [
+                    {'token': r['token'], 'pc': r['pc']} for r in rows if r['ready']]}
         try:
             result = self.game.step(step, job, self.config)
         except Exception as exc:
             self.game.cancel(job)
             result = {"ok": False, "message": str(exc)}
         if result is not None:
-            if step == 'inventory_capture' and not result['ok']:
-                # Nothing has been cleared yet. Preserve the backpack and run
-                # the ordinary boost/loot path rather than dropping every step.
-                result = dict(result, ok=True, cleanup_skipped=True,
-                              message="Reward cleanup skipped; original backpack untouched. "
-                                      + result.get('message', '')
-                                      + ". Continuing selected boosts and loot without cleanup.")
-                job['steps'] = deque(key for key in BOOSTS if self.config[key])
-            else:
-                job["steps"].popleft()
-            job["results"].append(dict(result, step=step))
+            run = job.pop('shared_run', None)
+            if run and result['ok']:
+                for member in run['members']:
+                    if not any(entry['token'] == member['token'] and entry['pc'] == member['pc']
+                               and entry['step'] == run['step'] for entry in self.shared_completed):
+                        self.shared_completed.append(dict(member, step=run['step']))
+            self._finish_step(job, step, result)
+
+    def _finish_step(self, job, step, result):
+        if step == 'inventory_capture' and not result['ok']:
+            # Nothing has been cleared yet. Preserve the backpack and run
+            # the ordinary boost/loot path rather than dropping every step.
+            result = dict(result, ok=True, cleanup_skipped=True,
+                          message="Reward cleanup skipped; original backpack untouched. "
+                                  + result.get('message', '')
+                                  + ". Continuing selected boosts and loot without cleanup.")
+            job['steps'] = deque(key for key in BOOSTS if self.config[key])
+        else:
+            job["steps"].popleft()
+        job["results"].append(dict(result, step=step))
 
     def _flush_kicks(self, rows, now):
         if not self.config.get("auto_kick"):
@@ -471,7 +515,9 @@ class Game:
             world,_rows = self.roster()
             recovery.advance(ps,world,job['inventory_adapter'])
             if recovery.record['phase'] == 'blocked':
-                return {'ok':False,'message':recovery.record['error']+'; backup retained and kick blocked'}
+                report = recovery.path.parent / 'saved-item-lists' / recovery.path.stem / 'RECOVERY-REVIEW.txt'
+                return {'ok':False, 'recovery_report':str(report),
+                        'message':recovery.record['error']+'; AFK continues; manual repair report: '+str(report)}
             if not recovery.can_kick:
                 return None
             return {'ok':True,'message':'Reward loot cleared; selected loot and all original items verified'}
@@ -530,7 +576,7 @@ class Game:
             if not plan:
                 job.pop("uvhm_plan", None)
                 job.pop("uvhm_next_at", None)
-                return {"ok": True, "message": "UVHM 1–7 steps sent; guest save not confirmed."}
+                return {"ok": True, "message": "UVHM 1â€“7 steps sent; guest save not confirmed."}
             _label, challenge, delay = plan[0]
             pc.ServerIncrementChallengeForPlayer(challenge, 1)
             plan.popleft()

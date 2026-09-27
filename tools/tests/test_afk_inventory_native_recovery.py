@@ -156,6 +156,20 @@ def test_automatic_repair_only_sends_missing_copies_and_is_bounded(tmp_path, mon
         assert 'delivery_error' not in job.record
 
 
+def test_ambiguous_missing_and_unexpected_items_are_not_resent(monkeypatch):
+    native, clock = load(monkeypatch)
+    original = snapshot(row())
+    game, player, calls, seqs, roster = game_for(original)
+    player.snapshot = snapshot(row(), row('@UChangedRepresentation', 2))
+    adapter = native.NativeAdapter(game, player, 'world')
+    token = adapter.begin('verify', {'original': original, 'delivery_serials': ['@URequested'],
+                                   'restore_metadata': False}, player, 'world')
+    result = adapter.poll(token, player, 'world')
+    assert result['ok'] and not result['delivery_reconciled']
+    assert result['repair_attempts'] == 0
+    assert calls == [] and seqs == []
+
+
 def test_unstable_capture_retries_then_succeeds_without_resending(monkeypatch):
     native, clock = load(monkeypatch)
     original = snapshot(row())

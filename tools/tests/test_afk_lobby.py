@@ -65,6 +65,25 @@ def test_cleanup_capture_failure_falls_back_without_clearing_backpack():
     assert all(result['ok'] for result in lobby.history[0]['results'])
 
 
+def test_failed_recovery_keeps_report_and_advances_to_next_guest():
+    game = FakeGame(); lobby = module.Lobby(game)
+    normal_step = game.step
+    def step(action, job, config):
+        result = normal_step(action, job, config)
+        if action == 'inventory_recovery' and job['token'] == 'first':
+            return dict(ok=False, message='Manual repair report saved', recovery_report='report.txt')
+        return result
+    game.step = step
+    assert lobby.start(dict(challenges=True, cleanup_rewards=True, auto_kick=True))['ok']
+    game.rows = [row('first'), row('second', 2)]
+    ticks(lobby, 30)
+    assert ('inventory_recovery', 'second', 2) in game.calls
+    assert lobby.current is None
+    assert any(result.get('recovery_report') == 'report.txt'
+               for history in lobby.history for result in history['results'])
+    assert 'first' not in game.kicked
+
+
 def test_cleanup_password_only_applies_to_more_than_seventy_new_items():
     game=FakeGame();lobby=module.Lobby(game)
     base={'challenges':True,'cleanup_rewards':True}
@@ -89,6 +108,84 @@ def test_each_join_runs_once_and_rejoining_runs_again():
     game.rows = []; ticks(lobby)
     game.rows = [row("guest")]; ticks(lobby)
     assert len(game.calls) == 4
+
+
+def test_shared_runs_once_but_other_boosts_and_loot_run_for_every_guest():
+    game=FakeGame(); lobby=module.Lobby(game)
+    lobby.start({'level':True,'challenges':True,'uvhm':True,'loot':True})
+    game.rows=[row('a'),row('b',2),row('c',3)];ticks(lobby,40)
+    for step in ('challenges','uvhm'):
+        assert len([c for c in game.calls if c[0]==step])==1
+    for step in ('level','loot'):
+        assert {c[1] for c in game.calls if c[0]==step}=={'a','b','c'}
+
+
+def test_late_join_does_not_get_partial_challenge_credit_but_gets_full_uvhm_credit():
+    game=FakeGame(); lobby=module.Lobby(game)
+    lobby.start({'challenges':True,'uvhm':True})
+    game.rows=[row('a')];game.wait=True;ticks(lobby,1)
+    game.rows.append(row('late',2));game.wait=False;ticks(lobby,20)
+    assert [c for c in game.calls if c[0]=='challenges']==[('challenges','a',1),('challenges','late',2)]
+    assert len([c for c in game.calls if c[0]=='uvhm'])==1
+
+
+def test_shared_member_disconnect_and_rejoin_during_run_is_not_credited():
+    game=FakeGame(); lobby=module.Lobby(game)
+    lobby.start({'challenges':True});game.rows=[row('a'),row('b',2)]
+    game.wait=True;ticks(lobby,1)
+    game.rows=[row('a')];ticks(lobby,1)
+    game.rows.append(row('b',2));game.wait=False;ticks(lobby,20)
+    assert len(game.calls)==2
+
+
+def test_loading_member_is_not_credited_even_if_ready_at_finish():
+    game=FakeGame();lobby=module.Lobby(game)
+    lobby.start({'challenges':True});game.rows=[row('a'),row('b',2,False)]
+    game.wait=True;ticks(lobby,1)
+    game.rows[1]['ready']=True;game.wait=False;ticks(lobby,20)
+    assert len(game.calls)==2
+
+
+def test_failed_shared_run_gives_no_credit_to_other_guest():
+    game=FakeGame();lobby=module.Lobby(game)
+    lobby.start({'challenges':True});game.rows=[row('a'),row('b',2)]
+    original=game.step
+    def step(key,job,config):
+        result=original(key,job,config)
+        return dict(result,ok=job['token']!='a')
+    game.step=step;ticks(lobby,20)
+    assert len(game.calls)==2
+
+
+def test_shared_rewards_wait_for_every_ready_backpack_capture():
+    game=FakeGame();lobby=module.Lobby(game)
+    lobby.start({'challenges':True,'uvhm':True,'cleanup_rewards':True,'loot':True})
+    game.rows=[row('a'),row('b',2)];ticks(lobby,30)
+    assert game.calls[:3]==[('inventory_capture','a',1),('inventory_capture','b',2),('challenges','a',1)]
+    assert {c[1] for c in game.calls if c[0]=='inventory_recovery'}=={'a','b'}
+    assert len([c for c in game.calls if c[0]=='uvhm'])==1
+
+
+def test_shared_capture_failure_preserves_fallback_loot_for_that_guest():
+    game=FakeGame();lobby=module.Lobby(game)
+    lobby.start({'challenges':True,'cleanup_rewards':True,'loot':True})
+    original=game.step
+    def step(key,job,config):
+        if key=='inventory_capture' and job['token']=='b': return {'ok':False,'message':'unreadable'}
+        return original(key,job,config)
+    game.step=step;game.rows=[row('a'),row('b',2)];ticks(lobby,30)
+    assert ('inventory_recovery','b',2) not in game.calls
+    assert ('loot','b',2) in game.calls
+    assert len([c for c in game.calls if c[0]=='challenges'])==1
+
+
+def test_shared_credit_does_not_survive_world_change_or_afk_restart():
+    game=FakeGame();lobby=module.Lobby(game)
+    config={'challenges':True};lobby.start(config);game.rows=[row('a'),row('b',2)];ticks(lobby,20)
+    game.world='next';ticks(lobby,20)
+    assert len(game.calls)==2
+    lobby.stop();lobby.start(config);ticks(lobby,20)
+    assert len(game.calls)==3
 
 
 def test_loading_guest_does_not_block_ready_guest_or_duplicate():
