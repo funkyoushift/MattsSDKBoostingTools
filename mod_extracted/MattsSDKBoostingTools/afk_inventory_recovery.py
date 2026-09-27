@@ -1,6 +1,6 @@
-"""Durable clear/deliver/restore transaction; native adapter not yet enabled.
+"""Durable clear/deliver/restore transaction with saved item lists.
 
-The adapter must prove clear scope and restoration metadata support before use.
+Failed transactions retain evidence without blocking future AFK sessions.
 No Unreal calls live here. Advance only on the game tick with a pinned identity.
 Interrupted operations are never automatically replayed after a process restart.
 """
@@ -86,6 +86,29 @@ class Recovery:
                        "restore_metadata": restore_metadata, "error": "", "verification": None,
                        "restart_replay_allowed": False}
         self._save()
+        self.export_lists()
+
+    def export_lists(self):
+        """Keep paste-ready originals and intended new loot separate for support.
+
+        Export before mutation so even a crash leaves a usable original list.
+        These are backups, never automatic redelivery instructions.
+        """
+        folder = self.path.parent / 'saved-item-lists' / self.path.stem
+        folder.mkdir(parents=True, exist_ok=True)
+        original = [row['serial'] for row in self.record['original']['rows']
+                    for _ in range(row['quantity'])]
+        for name, serials in (('original-backpack.txt', original),
+                              ('selected-new-loot.txt', self.record['delivery_serials'])):
+            (folder / name).write_text('\n'.join(serials) + ('\n' if serials else ''), encoding='utf-8')
+        (folder / 'README.txt').write_text(
+            'Player: ' + self.record['guest_name'] + '\n'
+            'Original backpack: ' + str(len(original)) + ' items.\n'
+            'Selected new loot: ' + str(len(self.record['delivery_serials'])) + ' items.\n'
+            'These lists preserve duplicates and serial case. They do not prove what arrived.\n'
+            'Keep the recovery JSON as evidence. Check with the player before resending to avoid duplicates.\n',
+            encoding='utf-8')
+        return folder
 
     def _save(self):
         self.path.parent.mkdir(parents=True, exist_ok=True)
@@ -112,7 +135,7 @@ class Recovery:
 
     @staticmethod
     def unfinished(directory):
-        """Block a fresh AFK start if a prior process left uncertain recovery."""
+        """Find unresolved evidence for diagnostic review, not AFK startup."""
         for path in sorted(Path(directory).glob('*.json')):
             try:
                 record = Recovery.inspect(path)

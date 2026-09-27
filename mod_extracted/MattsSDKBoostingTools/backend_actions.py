@@ -7748,14 +7748,12 @@ def afk_inventory_audit(payload=None):
 
 def afk_lobby_start(payload=None):
     from .afk_lobby import lobby
-    import os
-    from pathlib import Path
-    from .afk_inventory_recovery import Recovery
-    if _afk_inventory_recovery is not None and not _afk_inventory_recovery.can_kick:
-        return {'ok':False,'message':'Inventory recovery is unfinished; AFK start and auto-kick are blocked'}
-    recovery_root = Path(os.environ.get('LOCALAPPDATA', str(Path.home()))) / 'MattsSDKBoostingTools' / 'inventory-recovery'
-    if Recovery.unfinished(recovery_root):
-        return {'ok':False,'message':'A saved inventory recovery needs review before AFK can start'}
+    # Only a live operation owns the delivery queue. Historical failures retain
+    # their backups, but must not prevent other guests from receiving boosts.
+    if (_afk_inventory_recovery is not None and
+            _afk_inventory_recovery.record['phase'] not in
+            ('blocked', 'complete', 'cancelled_before_clear')):
+        return {'ok':False,'message':'Inventory recovery is still running; wait for the item return to finish'}
     return lobby.start(payload or {})
 
 

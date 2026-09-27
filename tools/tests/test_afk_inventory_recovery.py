@@ -21,6 +21,37 @@ def snapshot(*rows):
     return dict(ok=True, phase='complete', rows=list(rows))
 
 
+def test_saved_lists_preserve_duplicates_case_and_separate_new_loot(tmp_path):
+    job = module.Recovery(tmp_path, snapshot(row('@UCase', 1), row('@UCase', 2)),
+                          player_token=1, world_token=2, guest_name='Guest',
+                          delivery_serials=['@UNew'])
+    job._block('Guest disconnected')
+    folder = tmp_path / 'saved-item-lists' / job.path.stem
+    assert (folder / 'original-backpack.txt').read_text().splitlines() == ['@UCase', '@UCase']
+    assert (folder / 'selected-new-loot.txt').read_text().splitlines() == ['@UNew']
+    assert module.Recovery.inspect(job.path)['phase'] == 'blocked'
+    assert not job.can_kick
+
+
+@pytest.mark.parametrize('phase,allowed', [(None, True), ('blocked', True),
+    ('complete', True), ('cancelled_before_clear', True), ('prepared', False),
+    ('clear_pending', False), ('restore_pending', False), ('verify_pending', False)])
+def test_afk_start_only_waits_for_live_recovery(phase, allowed):
+    import ast
+    from types import SimpleNamespace
+    source = path.with_name('backend_actions.py').read_text(encoding='utf-8')
+    function = next(n for n in ast.parse(source).body if isinstance(n, ast.FunctionDef)
+                    and n.name == 'afk_lobby_start')
+    # Supply the lobby without importing game-only dependencies.
+    function.body = [n for n in function.body if not isinstance(n, ast.ImportFrom)]
+    calls = []
+    namespace = dict(lobby=SimpleNamespace(start=lambda payload: calls.append(payload) or {'ok': True}),
+                     _afk_inventory_recovery=None if phase is None else SimpleNamespace(record={'phase': phase}))
+    exec(compile(ast.Module(body=[function], type_ignores=[]), '<afk-start>', 'exec'), namespace)
+    assert namespace['afk_lobby_start']({'cleanup_rewards': True})['ok'] is allowed
+    assert bool(calls) is allowed
+
+
 class Adapter:
     def __init__(self, original, selected=()):
         self.operations = []
