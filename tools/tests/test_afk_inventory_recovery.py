@@ -271,3 +271,35 @@ def test_item_only_recovery_accepts_retained_originals_not_reward_junk(tmp_path)
         adapter.poll=lambda *args:{'ok':True,'snapshot':retained}
         job.advance(1,2,adapter);job.advance(1,2,adapter)
         assert (adapter.operations[-1] if expected=='deliver' else job.record['phase'])==expected
+
+
+@pytest.mark.parametrize('missing_original,interrupted,extra,allowed', [
+    (False,False,False,True),(True,False,False,False),
+    (False,True,False,False),(False,False,True,False)])
+def test_review_kick_requires_originals_finished_delivery_and_expected_count(tmp_path,missing_original,interrupted,extra,allowed):
+    original=snapshot(row('@UOriginal'))
+    job=module.Recovery(tmp_path,original,player_token=1,world_token=2,
+                        guest_name='Guest',delivery_serials=['@UNew'],restore_metadata=False)
+    adapter=Adapter(original,['@UChanged'])
+    if missing_original: adapter.final=snapshot(row('@UChanged'))
+    if extra: adapter.final['rows'].append(row('@UExtra',9000))
+    if interrupted: adapter.fail='deliver'
+    for _ in range(6): job.advance(1,2,adapter)
+    assert job.record.get('review_kick_allowed',False) is allowed
+    assert not job.can_kick
+    assert (tmp_path/'saved-item-lists'/job.path.stem/'RECOVERY-REVIEW.txt').is_file()
+
+
+def test_completed_delivery_with_failed_readback_allows_review_kick_after_original_return(tmp_path):
+    original=snapshot(row('@UOriginal'))
+    job=module.Recovery(tmp_path,original,player_token=1,world_token=2,
+                        guest_name='Guest',delivery_serials=['@UNew'],restore_metadata=False)
+    adapter=Adapter(original,['@UChanged'])
+    normal_poll=adapter.poll
+    adapter.poll=lambda token,*args: (dict(ok=False,delivery_finished=True,message='Unreadable dead slot')
+                                     if token=='deliver' else normal_poll(token,*args))
+    for _ in range(6): job.advance(1,2,adapter)
+    assert job.record['delivery_finished'] and job.record['review_kick_allowed']
+    assert job.record['delivery_error']=='Unreadable dead slot'
+    assert job.record['phase']=='blocked' and not job.can_kick
+    assert job.record['verification']==dict(ok=False,missing_rows=1,unexpected_rows=1)

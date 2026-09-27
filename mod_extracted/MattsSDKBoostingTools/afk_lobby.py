@@ -11,6 +11,15 @@ from collections import deque
 
 BOOSTS = ("level", "spec", "sdu", "cash", "eridium", "keys", "challenges", "uvhm", "cosmetics", "loot")
 JOIN_SETTLE_SECONDS = 20.0
+STEP_LABELS = {'inventory_capture':'Saving original backpack', 'level':'Setting level',
+               'spec':'Setting specialization rank', 'sdu':'Setting SDUs to 3225',
+               'cash':'Setting cash', 'eridium':'Setting Eridium', 'keys':'Setting keys',
+               'challenges':'Completing challenges', 'uvhm':'Unlocking UVHM 1-7',
+               'cosmetics':'Unlocking cosmetics and vehicles', 'loot':'Delivering selected loot'}
+RECOVERY_LABELS = {'prepared':'Preparing reward cleanup', 'clear_pending':'Clearing reward clutter',
+                   'deliver_pending':'Delivering selected loot', 'restore_pending':'Returning original backpack',
+                   'verify_pending':'Checking backpack return', 'blocked':'Saving repair report',
+                   'complete':'Backpack return verified'}
 # Other SDK mods share Python's module-level random generator. Use OS entropy
 # so another mod reseeding random cannot repeat AFK guest selections.
 _loot_rng = random.SystemRandom()
@@ -37,7 +46,7 @@ class Lobby:
 
     def stop(self):
         if self.current:
-            self.game.cancel(self.current)
+            self._interrupt_job(self.current, 'Operator stopped AFK; unfinished work saved for review.')
         self.enabled = False
         self.current = None
         self.queue.clear()
@@ -126,7 +135,7 @@ class Lobby:
         world, rows = self.game.roster()
         if world != self.world:
             if self.current:
-                self.game.cancel(self.current)
+                self._interrupt_job(self.current, 'World changed; unfinished work saved for review.')
             self.current = None
             self.queue.clear()
             self.completed.clear()
@@ -167,8 +176,7 @@ class Lobby:
                     steps = ['inventory_capture'] + [key for key in steps if key != 'loot'] + ['inventory_recovery']
                 self.queue.append(dict(row, steps=deque(steps), results=[]))
         if self.current and self.current["token"] not in tokens:
-            self.game.cancel(self.current)
-            self.history.appendleft({"name": self.current["name"], "message": "Left lobby; unfinished steps cancelled."})
+            self._interrupt_job(self.current, 'Left lobby; unfinished steps cancelled.')
             self.current = None
         self._flush_kicks(rows, now)
         if not self.current:
@@ -181,35 +189,32 @@ class Lobby:
                     break
         if not self.current:
             self.message = "Waiting for joining characters." if self.queue else "Running. Waiting for guests."
-            if not self.queue and any(not j.get("kick_attempted") and not j.get("failed") for j in self.completed):
+            if not self.queue and any(not j.get("kick_attempted") for j in self.completed):
                 self.message = "Waiting for loot settlement and all connection members before auto-kick."
             return
         job = self.current
         row = next(row for row in rows if row["token"] == job["token"])
         if not row["ready"]:
+            if now - job.setdefault('not_ready_since', now) >= 120:
+                self.game.cancel(job)
+                job['results'].append({'ok':False, 'step':job.get('step', 'ready'),
+                                       'message':'Character remained unavailable for 120 seconds; unfinished work saved for review.'})
+                job['steps'].clear()
+                self._complete_job(job, rows, now)
+                return
             self.message = f"Waiting for {job['name']}'s character."
             return
+        job.pop('not_ready_since', None)
         job.update(row)
         if not job["steps"]:
-            failed = any(not result["ok"] for result in job["results"])
-            message = "Finished with errors; player kept in lobby" if failed else "All selected actions finished"
-            if any(result.get('cleanup_skipped') for result in job['results']):
-                message += "; reward cleanup skipped, original backpack untouched"
-            record = {"name": job["name"], "message": message, "results": job["results"]}
-            if self.config.get("auto_kick"):
-                job["kick_after"] = now + (15.0 if self.config.get("loot") or self.config.get('cleanup_rewards') else 0.0)
-                job["failed"] = failed
-                job["record"] = record
-                self.completed.append(job)
-                if not failed:
-                    record["message"] += "; waiting for connection members and loot settlement"
-            self.history.appendleft(record)
-            self._flush_kicks(rows, now)
-            self.current = None
+            self._complete_job(job, rows, now)
             return
         step = job["steps"][0]
         job["step"] = step
-        self.message = f"{job['name']}: {step}"
+        recovery = job.get('inventory_recovery')
+        label = (RECOVERY_LABELS.get(recovery.record['phase'], 'Checking backpack')
+                 if step == 'inventory_recovery' and recovery else STEP_LABELS.get(step, step))
+        self.message = f"{job['name']}: {label}"
         if step in ('challenges', 'uvhm'):
             if any(entry['token'] == job['token'] and entry['pc'] == job['pc']
                    and entry['step'] == step for entry in self.shared_completed):
@@ -238,7 +243,7 @@ class Lobby:
         try:
             result = self.game.step(step, job, self.config)
         except Exception as exc:
-            self.game.cancel(job)
+            getattr(self.game, 'cancel_step', lambda job, step: self.game.cancel(job))(job, step)
             result = {"ok": False, "message": str(exc)}
         if result is not None:
             run = job.pop('shared_run', None)
@@ -249,8 +254,50 @@ class Lobby:
                         self.shared_completed.append(dict(member, step=run['step']))
             self._finish_step(job, step, result)
 
+    def _interrupt_job(self, job, reason):
+        self.game.cancel(job)
+        job['results'].append({'ok':False, 'step':job.get('step','ready'), 'message':reason})
+        job['record'] = {'name':job['name'], 'message':reason, 'results':job['results'],
+                         'unfinished_steps':list(job['steps'])}
+        self._save_report(job)
+        self.history.appendleft(job['record'])
+
+    def _complete_job(self, job, rows, now):
+        failed = any(not result['ok'] for result in job['results'])
+        message = 'Run ended with errors; review details' if failed else 'All selected actions finished'
+        if any(result.get('cleanup_skipped') for result in job['results']):
+            message += '; reward cleanup skipped, original backpack untouched'
+        record = {'name':job['name'], 'message':message, 'results':job['results']}
+        job['record'] = record
+        if self.config.get('auto_kick'):
+            job['kick_after'] = now + (15.0 if self.config.get('loot') or self.config.get('cleanup_rewards') else 0.0)
+            job['failed'] = failed
+            self.completed.append(job)
+            record['message'] += '; auto-kick pending settlement and connection members'
+        self._save_report(job)
+        self.history.appendleft(record)
+        self._flush_kicks(rows, now)
+        self.current = None
+
+    def _save_report(self, job):
+        try:
+            save = getattr(self.game, 'save_run_report', None)
+            if save:
+                job['record']['report_path'] = save(job)
+        except Exception as exc:
+            job['record']['report_error'] = 'Could not save run report: ' + str(exc)
+
     def _finish_step(self, job, step, result):
-        if step == 'inventory_capture' and not result['ok']:
+        if step == 'inventory_recovery' and not result['ok'] and result.get('nothing_cleared'):
+            # Selected boosts already ran. Do not repeat lobby-wide challenges
+            # or omit loot just because cleanup stopped before deletion.
+            job['steps'].popleft()
+            if self.config.get('loot'):
+                job['steps'].appendleft('loot')
+            result = dict(result, ok=True, cleanup_skipped=True,
+                          message='Cleanup skipped before deletion; original backpack untouched. '
+                                  'Continuing selected loot. ' + result.get('message', ''))
+        elif step == 'inventory_capture' and not result['ok']:
             # Nothing has been cleared yet. Preserve the backpack and run
             # the ordinary boost/loot path rather than dropping every step.
             result = dict(result, ok=True, cleanup_skipped=True,
@@ -267,7 +314,7 @@ class Lobby:
             return
         unknown = any(row.get("connection") is None for row in rows)
         for job in self.completed:
-            if job.get("kick_attempted") or job.get("failed"):
+            if job.get("kick_attempted"):
                 continue
             row = next((r for r in rows if r["token"] == job["token"]), None)
             if row is None:
@@ -276,26 +323,52 @@ class Lobby:
             done = []
             for member in members:
                 finished = next((j for j in self.completed if j["token"] == member["token"]), None)
-                if finished is None or finished.get("failed") or now < finished["kick_after"]:
+                if finished is None or now < finished["kick_after"]:
                     break
                 done.append(finished)
             else:
                 # Unknown grouping uses a lobby-wide barrier but still requests
                 # each guest's kick; known shared connections need only one.
                 targets = [job] if unknown else done
-                for target in targets:
-                    target["kick_attempted"] = True
                 try:
                     result = self.game.kick(dict(job, pc=row["pc"], index=row["index"]))
                 except Exception as exc:
                     result = {"ok": False, "message": str(exc)}
                 for target in targets:
+                    target['kick_attempts'] = target.get('kick_attempts', 0) + 1
+                    target['kick_attempted'] = bool(result['ok']) or target['kick_attempts'] >= 3
+                    if not result['ok']:
+                        target['kick_after'] = now + 5.0
                     target["results"].append(dict(result, step="auto_kick"))
-                    target["record"]["message"] = "All selected actions finished; " + ("connection kick requested" if result["ok"] else "kick failed")
+                    prefix = ('Run ended with errors; needs review; ' if any(
+                        not r['ok'] and r.get('step') != 'auto_kick' for r in target['results']) else 'All selected actions finished; ')
+                    target["record"]["message"] = prefix + (
+                        "connection kick requested" if result["ok"] else
+                        "kick failed after 3 attempts; player kept" if target['kick_attempted'] else "retrying kick in 5 seconds")
+                    self._save_report(target)
 
 
 
 class Game:
+    @staticmethod
+    def save_run_report(job):
+        import os
+        import uuid
+        from pathlib import Path
+        from datetime import datetime, timezone
+        folder = Path(os.environ['LOCALAPPDATA']) / 'MattsSDKBoostingTools' / 'afk-run-reports'
+        folder.mkdir(parents=True, exist_ok=True)
+        path = Path(job.setdefault('run_report_path', str(folder / (uuid.uuid4().hex + '.json'))))
+        recovery = job.get('inventory_recovery')
+        report = dict(job['record'], updated_at_utc=datetime.now(timezone.utc).isoformat(),
+                      recovery_backup=str(recovery.path) if recovery else None,
+                      selected_loot=list(job.get('loot_selection', [])),
+                      guest_save_verified=False)
+        temporary = path.with_suffix('.tmp')
+        temporary.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding='utf-8')
+        os.replace(temporary, path)
+        return str(path)
+
     def __init__(self):
         self.ready_since = {}
         self.ready_world = None
@@ -439,9 +512,6 @@ class Game:
         row = next((row for row in rows if row["token"] == job["token"]), None)
         if row is None:
             return {"ok": False, "message": "Guest already left."}
-        for step, expected in job.get("expected_experience", {}).items():
-            if self.experience_level(job["token"], step) != expected:
-                return {"ok": False, "message": f"{step} no longer reads {expected}; player kept for retry."}
         ok = a._kick_party_player_by_index(row["index"], "AFK boosting complete")
         return {"ok": bool(ok), "message": "Boosting finished; kick requested." if ok else "Kick failed."}
 
@@ -453,6 +523,12 @@ class Game:
             # Departed guests fail identity checks and retain their journal.
             a._afk_inventory_recovery = recovery
             a._afk_inventory_recovery_adapter = job['inventory_adapter']
+        self.cancel_step(job, None)
+
+    def cancel_step(self, job, step):
+        # A failed boost must not transfer the same prepared recovery to the
+        # background while the lobby still owns and will advance it.
+        a = self.backend()
         job.pop("uvhm_plan", None)
         job.pop("uvhm_next_at", None)
         seq = job.pop("serial_job", None)
@@ -517,7 +593,9 @@ class Game:
             if recovery.record['phase'] == 'blocked':
                 report = recovery.path.parent / 'saved-item-lists' / recovery.path.stem / 'RECOVERY-REVIEW.txt'
                 return {'ok':False, 'recovery_report':str(report),
-                        'message':recovery.record['error']+'; AFK continues; manual repair report: '+str(report)}
+                        'review_kick_allowed':recovery.record.get('review_kick_allowed') is True and report.is_file(),
+                        'nothing_cleared':recovery.record.get('nothing_cleared') is True,
+                        'message':recovery.record['error'].replace('kick blocked', 'repair needed')+'; AFK continues; manual repair report: '+str(report)}
             if not recovery.can_kick:
                 return None
             return {'ok':True,'message':'Reward loot cleared; selected loot and all original items verified'}
@@ -616,6 +694,8 @@ class Game:
             if "loot_classes" in config and any(value not in (None, "unknown_item") for value in (*config["loot_classes"], *config.get("guaranteed_classes", []))):
                 character = self.guest_class(job)
                 if not character:
+                    if time.monotonic() - job.setdefault('loot_class_wait', time.monotonic()) >= 30:
+                        return {'ok':False, 'message':'Character class unavailable after 30 seconds; loot not sent, saved for review.'}
                     job["step"] = "Waiting for character class before loot"
                     return None
                 if job.get("character_class") != character:

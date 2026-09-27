@@ -84,6 +84,64 @@ def test_failed_recovery_keeps_report_and_advances_to_next_guest():
     assert 'first' not in game.kicked
 
 
+def test_preclear_failure_delivers_selected_loot_without_repeating_boosts():
+    game=FakeGame(); lobby=module.Lobby(game)
+    normal=game.step
+    def step(action, job, config):
+        result=normal(action, job, config)
+        return dict(ok=False, nothing_cleared=True, message='Read failed') if action=='inventory_recovery' else result
+    game.step=step
+    lobby.start(dict(level=True, challenges=True, loot=True, cleanup_rewards=True))
+    game.rows=[row('guest')]; ticks(lobby,20)
+    assert [c[0] for c in game.calls] == ['inventory_capture','level','challenges','inventory_recovery','loot']
+    assert all(r['ok'] for r in lobby.history[0]['results'])
+
+
+def test_kick_retries_are_bounded_and_spaced(monkeypatch):
+    clock=[100.0]; monkeypatch.setattr(module.time,'monotonic',lambda:clock[0])
+    game=FakeGame(); lobby=module.Lobby(game); attempts=[]
+    game.kick=lambda job: attempts.append(job['token']) or dict(ok=False,message='Not yet')
+    lobby.start(dict(level=True, auto_kick=True)); game.rows=[row('guest')]
+    ticks(lobby); assert len(attempts)==1
+    ticks(lobby); assert len(attempts)==1
+    clock[0]+=5; ticks(lobby); assert len(attempts)==2
+    clock[0]+=5; ticks(lobby); assert len(attempts)==3
+    clock[0]+=50; ticks(lobby); assert len(attempts)==3
+
+
+def test_unavailable_current_guest_does_not_hold_queue_forever(monkeypatch):
+    clock=[100.0]; monkeypatch.setattr(module.time,'monotonic',lambda:clock[0])
+    game=FakeGame(); lobby=module.Lobby(game)
+    lobby.start(dict(level=True,sdu=True)); game.rows=[row('first'),row('second',2)]
+    ticks(lobby,1); game.rows[0]['ready']=False; ticks(lobby,1)
+    clock[0]+=121; ticks(lobby,10)
+    assert 'first' in game.cancelled
+    assert ('sdu','second',2) in game.calls
+    assert any('unavailable' in r['message'] for h in lobby.history for r in h['results'])
+
+
+def test_run_report_retains_selection_and_failure(tmp_path,monkeypatch):
+    monkeypatch.setenv('LOCALAPPDATA',str(tmp_path))
+    import json
+    job=dict(record=dict(name='guest',message='Needs review',results=[dict(ok=False,step='loot')]),
+             loot_selection=['@UOne','@UOne'])
+    path=module.Game.save_run_report(job)
+    saved=json.loads(Path(path).read_text(encoding='utf-8'))
+    assert saved['selected_loot']==['@UOne','@UOne'] and not saved['guest_save_verified']
+    assert module.Game.save_run_report(job)==path
+
+
+def test_boost_exception_does_not_transfer_owned_recovery_to_background():
+    game=module.Game()
+    backend=SimpleNamespace(_afk_inventory_recovery=None)
+    game.backend=lambda:backend
+    recovery=object()
+    job={'inventory_recovery':recovery,'uvhm_plan':deque(['step'])}
+    game.cancel_step(job,'uvhm')
+    assert backend._afk_inventory_recovery is None
+    assert job['inventory_recovery'] is recovery and 'uvhm_plan' not in job
+
+
 def test_cleanup_password_only_applies_to_more_than_seventy_new_items():
     game=FakeGame();lobby=module.Lobby(game)
     base={'challenges':True,'cleanup_rewards':True}
@@ -227,7 +285,7 @@ def test_failure_does_not_skip_remaining_selected_actions():
     game.step = step
     lobby.start({"level": True, "sdu": True}); game.rows = [row("g")]; ticks(lobby)
     assert game.calls == [("sdu", "g", 1)]
-    assert lobby.history[0]["message"].startswith("Finished with errors")
+    assert lobby.history[0]["message"].startswith("Run ended with errors")
 
 
 def test_auto_kick_waits_for_last_step_and_is_optional(monkeypatch):
@@ -438,14 +496,17 @@ def test_experience_waits_retries_and_requires_delayed_readback(monkeypatch):
     assert not game.step("level", job, {})["ok"]
 
 
-def test_kick_withheld_if_experience_changes_after_loot():
+def test_kick_is_not_blocked_by_changed_experience():
     game = module.Game(); calls = []
     game.is_host = lambda: True
     game.roster = lambda: ("world", [row("guest")])
     game.experience_level = lambda *_: 1
-    game.backend = lambda: SimpleNamespace(_kick_party_player_by_index=lambda *args: calls.append(args))
-    assert not game.kick({"token": "guest", "expected_experience": {"level": 70}})["ok"]
-    assert calls == []
+    repairs = []
+    game.backend = lambda: SimpleNamespace(_kick_party_player_by_index=lambda *args: calls.append(args) or True,
+        _set_experience_on_ps=lambda *args: repairs.append(args))
+    assert game.kick({"token": "guest", "expected_experience": {"level": 70}})["ok"]
+    assert calls == [(1, "AFK boosting complete")]
+    assert repairs == []
 
 
 def test_guest_leaving_during_loot_settle_is_never_kicked(monkeypatch):
@@ -626,12 +687,12 @@ def test_unknown_connection_waits_for_every_guest():
     assert game.kicked == ['first', 'second']
 
 
-def test_failed_shared_guest_prevents_connection_kick():
+def test_failed_shared_guest_does_not_block_finished_connection_kick():
     game = FakeGame(); lobby = module.Lobby(game)
     game.step = lambda step, job, config: {'ok': job['token'] != 'failed', 'message': 'result'}
     lobby.start({'level': True, 'auto_kick': True})
     game.rows = [dict(row('ready'), connection='shared'), dict(row('failed', 2), connection='shared')]
-    ticks(lobby); assert not game.kicked
+    ticks(lobby); assert game.kicked == ['ready']
     assert len(lobby.history) == 2
 
 
@@ -677,3 +738,35 @@ def test_connection_roots_use_native_parent_and_unknown_fallback():
     assert module.Game.connection_root(SimpleNamespace(NetConnection=SimpleNamespace(Parent=parent))) is parent
     assert module.Game.connection_root(SimpleNamespace(NetConnection=parent)) is parent
     assert module.Game.connection_root(SimpleNamespace()) is None
+
+
+def test_review_only_guest_can_kick_after_saved_report(monkeypatch):
+    clock=[100.0];monkeypatch.setattr(module.time,'monotonic',lambda:clock[0])
+    game=FakeGame();lobby=module.Lobby(game)
+    game.save_run_report=lambda job:'saved-report.json'
+    game.step=lambda *args:dict(ok=False,review_kick_allowed=True,message='New loot review')
+    lobby.start(dict(loot=True,auto_kick=True));game.rows=[row('guest')]
+    ticks(lobby);assert not game.kicked
+    clock[0]+=16;ticks(lobby);assert game.kicked==['guest']
+    assert 'needs review' in lobby.history[0]['message']
+
+
+def test_review_kick_does_not_require_saved_report():
+    game=FakeGame();lobby=module.Lobby(game)
+    game.step=lambda *args:dict(ok=False,review_kick_allowed=True,message='New loot review')
+    lobby.start(dict(level=True,auto_kick=True));game.rows=[row('guest')]
+    ticks(lobby);assert game.kicked == ['guest'] and lobby.completed[0]['failed']
+
+
+def test_any_terminal_errors_and_report_write_failure_still_auto_kick(monkeypatch):
+    clock=[100.0];monkeypatch.setattr(module.time,'monotonic',lambda:clock[0])
+    game=FakeGame();lobby=module.Lobby(game)
+    game.step=lambda *args:dict(ok=False,message='Original return unverified')
+    def report(job):raise OSError('disk full')
+    game.save_run_report=report
+    lobby.start(dict(loot=True,auto_kick=True));game.rows=[row('guest')]
+    ticks(lobby);assert not game.kicked
+    clock[0]+=16;ticks(lobby)
+    assert game.kicked==['guest']
+    assert 'disk full' in lobby.history[0]['report_error']
+    assert not lobby.history[0]['results'][0]['ok']

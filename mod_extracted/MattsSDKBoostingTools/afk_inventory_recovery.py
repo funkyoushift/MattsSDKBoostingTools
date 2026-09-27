@@ -177,7 +177,9 @@ class Recovery:
             'Player: ' + self.record['guest_name'],
             'UTC: ' + self.record.get('reviewed_at_utc', ''),
             'Result: ' + self.record.get('error', ''),
-            'AFK queue continues. This guest was not verified for automatic kick.',
+            ('AFK queue continues. Auto-kick allowed with new loot unverified; originals matched and delivery finished.'
+             if self.record.get('review_kick_allowed') else
+             'AFK queue continues. This guest was not verified for automatic kick.'),
             'Recovery evidence: ' + str(self.path),
             'Original items: original-backpack.txt',
             'Selected loot: selected-new-loot.txt',
@@ -217,6 +219,7 @@ class Recovery:
                 if result.get('ok') is not True:
                     if result.get('retry') is True:
                         return
+                    self.record['nothing_cleared'] = True
                     self._block(result.get('message', 'Native restoration is not verified'))
                     return
                 operation = 'clear'
@@ -225,7 +228,10 @@ class Recovery:
                 if result is None:
                     return
                 if result.get('ok') is not True:
+                    if phase == 'clear_pending' and result.get('nothing_cleared') is True:
+                        self.record['nothing_cleared'] = True
                     if phase == 'deliver_pending':
+                        self.record['delivery_finished'] = result.get('delivery_finished') is True
                         self.record['delivery_error'] = result.get('message', 'Selected loot delivery failed')
                         result = {'ok':True,'snapshot':{'ok':True,'phase':'complete','rows':[]}}
                     elif phase == 'restore_pending' and not self.record['restore_metadata']:
@@ -258,12 +264,13 @@ class Recovery:
                     self.record['retained'] = deepcopy(retained)
                     operation = 'deliver'
                 elif operation == 'deliver':
+                    self.record.setdefault('delivery_finished', True)
                     _rows(result['snapshot'])
                     self.record['delivered'] = deepcopy(result['snapshot'])
                     # Adapter must confirm the intended serial multiplicity too.
                     actual = Counter(r['serial'] for r in result['snapshot']['rows'])
                     if actual != Counter(self.record['delivery_serials']):
-                        self.record['delivery_error'] = 'Delivered loot does not match the selected items'
+                        self.record.setdefault('delivery_error', 'Delivered loot does not match the selected items')
                     operation = 'restore'
                 elif operation == 'restore':
                     operation = 'verify'
@@ -280,11 +287,24 @@ class Recovery:
                         if check['ok'] and result.get('delivery_reconciled') is True:
                             self.record.pop('delivery_error', None)
                     self.record['verification'] = check
+                    # Operator policy: a settled delivery with every original
+                    # returned may finish with a new-loot review report.
+                    # This is not verification of the requested loot or save.
+                    original_counts = item_counts(self.record['original'])
+                    final_counts = item_counts(result['snapshot'])
+                    self.record['review_kick_allowed'] = (
+                        not self.record['restore_metadata']
+                        and self.record.get('delivery_finished') is True
+                        and not (original_counts - final_counts)
+                        and sum(final_counts.values()) == sum(original_counts.values()) + len(self.record['delivery_serials']))
                     if self.record.get('delivery_error'):
-                        self._block(self.record['delivery_error'] + '; final inventory unverified, kick blocked')
+                        self._block(self.record['delivery_error'] + (
+                            '; originals matched; new loot unverified; report saved for review'
+                            if self.record['review_kick_allowed'] else '; final inventory unverified, kick blocked'))
                         return
                     if not check['ok']:
-                        self._block('Original inventory restoration did not match; auto-kick blocked')
+                        self._block('New loot requires review; originals matched' if self.record['review_kick_allowed']
+                                    else 'Original inventory restoration did not match; auto-kick blocked')
                         return
                     self.record['phase'] = 'complete'
                     self._save()

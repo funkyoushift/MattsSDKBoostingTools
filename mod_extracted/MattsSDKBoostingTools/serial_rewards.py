@@ -961,6 +961,20 @@ def _open_all_live_reward_packages() -> int:
     return opened
 
 
+def _open_target_reward_packages(targets) -> int:
+    """Use the same resolved manager as targeted package patching."""
+    opened = 0
+    for index in targets:
+        try:
+            manager = _manager_for_player_index(index)
+            if manager is not None:
+                manager.Server_OpenAllPackages()
+                opened += 1
+        except Exception as exc:
+            _log_warning(f'AFK target reward open failed for index {index}: {exc!r}')
+    return opened
+
+
 def _serial_delivery_char_count(serials: List[str]) -> int:
     return sum(len(str(s or "").strip()) for s in serials if str(s or "").strip())
 
@@ -1723,6 +1737,7 @@ def _process_pending_serial_delivery_sequences() -> None:
                 world, gs = _gbc_session_world_and_gamestate()
                 indices = [i for i, ps in enumerate(getattr(gs, "PlayerArray", []) or []) if ps == seq["afk_player_state"]]
                 if not indices:
+                    seq['afk_error'] = 'Guest left before delivery completed.'
                     _set_serial_delivery_status("AFK loot stopped: guest left the lobby.", log=True)
                     continue
                 old_index = seq["targets"][0]
@@ -1856,8 +1871,9 @@ def _process_pending_serial_delivery_sequences() -> None:
                     remaining.append(seq)
                     continue
                 _set_serial_delivery_status(f"Serial delivery {idx + 1}/{len(chunks)}: opening reward packages", hold_sec=30.0, log=True)
-                opened = _open_all_live_reward_packages()
-                if "afk_player_state" in seq and not opened:
+                opened = (_open_target_reward_packages(targets) if 'afk_player_state' in seq
+                          else _open_all_live_reward_packages())
+                if "afk_player_state" in seq and opened != len(targets):
                     started = seq.setdefault("open_wait_started", now)
                     if now - started >= 30.0:
                         seq["afk_error"] = "Reward packages could not be opened after 30 seconds; delivery incomplete and auto-kick withheld."
@@ -1879,7 +1895,11 @@ def _process_pending_serial_delivery_sequences() -> None:
                 continue
 
             _set_serial_delivery_status(f"Serial delivery dropped: unknown stage {stage!r}", hold_sec=20.0, log=True)
+            if 'afk_player_state' in seq:
+                seq['afk_error'] = f'Unexpected delivery stage: {stage!r}'
         except Exception as exc:
+            if 'afk_player_state' in seq:
+                seq['afk_error'] = 'Delivery stopped: ' + str(exc)
             _set_serial_delivery_status(f"Serial delivery sequence tick failed: {exc!r}", hold_sec=20.0, log=True)
     _pending_serial_delivery_sequences[:] = remaining
 

@@ -40,8 +40,8 @@ class NativeAdapter:
             token['capture'] = Capture(player)
             token['phase'] = 'before_clear'
             if self.open_rewards:
-                self.game.backend().serial_rewards._open_all_live_reward_packages()
-                token['settle_until'] = time.monotonic()+5
+                token['open_before_clear'] = True
+                token['open_deadline'] = time.monotonic()+30
         elif operation in ('deliver','restore'):
             serials = list(record['delivery_serials'])
             if operation == 'restore':
@@ -77,8 +77,24 @@ class NativeAdapter:
     def poll(self, token, player, world):
         row = self.target()
         if time.monotonic() > token['deadline']:
-            return {'ok':False, 'message':'Recovery timed out; backup retained and kick blocked'}
+            return {'ok':False, 'nothing_cleared':token['operation'] == 'clear' and not token.get('clear_attempted'),
+                    'delivery_finished':token.get('delivery_finished') is True,
+                    'message':'Recovery timed out; backup retained and kick blocked'}
         operation = token['operation']
+        if token.get('open_before_clear'):
+            now = time.monotonic()
+            if now < token.get('open_retry_after', 0):
+                return None
+            opened = self.game.backend().serial_rewards._open_target_reward_packages([row['index']])
+            if opened != 1:
+                if now >= token['open_deadline']:
+                    return {'ok':False, 'nothing_cleared':True,
+                            'message':'Guest reward manager unavailable; cleanup skipped before deletion'}
+                token['open_retry_after'] = now+2
+                return None
+            token.pop('open_before_clear')
+            token['settle_until'] = now+5
+            return None
         if operation == 'verify' and self.game.backend().serial_rewards._serial_delivery_busy():
             # Captures taken during an unrelated or timed-out send are stale.
             token['capture'] = Capture(player)
@@ -102,6 +118,7 @@ class NativeAdapter:
                 if seq.get('afk_error') or seq.get('index',0) < len(seq['chunks']):
                     return {'ok':False, 'message':'Recovery delivery was interrupted; backup retained'}
                 token.pop('sequence')
+                token['delivery_finished'] = True
                 token['settle_until'] = time.monotonic()+3
             if time.monotonic() < token['settle_until']:
                 return None
@@ -125,17 +142,20 @@ class NativeAdapter:
                         'readback_error':status['error']}
             if self.retry_capture(token, player):
                 return None
-            return {'ok':False,'message':status['error']}
+            return {'ok':False,'nothing_cleared':operation == 'clear' and not token.get('clear_attempted'),
+                    'delivery_finished':token.get('delivery_finished') is True,
+                    'message':status['error']}
         snapshot = capture.snapshot()
         if operation == 'clear' and token['phase'] == 'before_clear':
             if item_counts(token['record']['original']) - item_counts(snapshot):
-                return {'ok':False,'message':'Original items changed before clear; nothing deleted'}
+                return {'ok':False,'nothing_cleared':True,'message':'Original items changed before clear; nothing deleted'}
             a = self.game.backend()
             if ((a.afk_lobby_status()['enabled'] and not self.allow_afk) or a.serial_rewards._serial_delivery_busy()
                     or a.complete_challenges_status()['active'] or a.uvh_boost_status()['active']):
                 if self.retry_capture(token, player):
                     return None
-                return {'ok':False,'message':'Another operation started; nothing deleted'}
+                return {'ok':False,'nothing_cleared':True,'message':'Another operation started; nothing deleted'}
+            token['clear_attempted'] = True
             message = a.streamer_chaos.empty_backpack_for_pc(row['pc'])
             if not a.streamer_chaos.result_ok(str(message)):
                 return {'ok':False,'message':str(message)}

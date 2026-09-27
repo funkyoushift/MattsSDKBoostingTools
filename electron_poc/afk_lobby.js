@@ -60,7 +60,7 @@
       ? (window.msbtI18n ? window.msbtI18n.t("counts", {session: afk.session_joins, lifetime: afk.lifetime_joins ?? window.msbtI18n.t("unavailable")}) : `Guest joins: ${afk.session_joins} this session · ${afk.lifetime_joins ?? "unavailable"} lifetime`) + (afk.counter_error ? " · Lifetime count could not be saved: " + afk.counter_error : "")
       : "Join counters require the updated SDK mod.";
     byId("afkLog").textContent = afk && afk.history && afk.history.length
-      ? afk.history.map((entry) => `${entry.name}: ${entry.message}\n${(entry.results || []).map((r) => `  ${r.step}: ${r.ok ? "OK" : "FAILED"} — ${r.message}`).join("\n")}`).join("\n\n")
+      ? afk.history.map((entry) => `${entry.name}: ${entry.message}\n${entry.report_path ? `Saved report: ${entry.report_path}\n` : ""}${entry.report_error ? `${entry.report_error}\n` : ""}${(entry.results || []).map((r) => `  ${r.step}: ${r.cleanup_skipped ? "SKIPPED" : r.ok ? "OK" : "NEEDS REVIEW"} — ${r.message}`).join("\n")}`).join("\n\n")
       : "Each join gets one full run. Rejoining gets another run.";
   }
   window.msbtAfkRender = render;

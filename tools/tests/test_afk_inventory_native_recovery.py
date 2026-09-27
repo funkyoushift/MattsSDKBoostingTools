@@ -68,6 +68,31 @@ def test_native_clear_captures_first_and_restores_only_missing_duplicates(monkey
     clock[0]=12;assert adapter.poll(restore,player,'world')['ok']
 
 
+def test_cleanup_requires_target_reward_open_before_clear(monkeypatch):
+    native,clock=load(monkeypatch); original=snapshot(row())
+    game,player,calls,seqs,roster=game_for(original)
+    opens=[]
+    game.backend().serial_rewards._open_target_reward_packages=lambda targets: opens.append(targets) or 0
+    adapter=native.NativeAdapter(game,player,'world',open_rewards=True)
+    token=adapter.begin('clear',{'original':original},player,'world')
+    assert adapter.poll(token,player,'world') is None
+    clock[0]=31
+    result=adapter.poll(token,player,'world')
+    assert not result['ok'] and result['nothing_cleared']
+    assert calls==[] and opens==[[1],[1]]
+
+
+def test_failed_clear_call_never_claims_nothing_deleted(monkeypatch):
+    native,clock=load(monkeypatch); original=snapshot(row())
+    game,player,calls,seqs,roster=game_for(original)
+    game.backend().streamer_chaos.empty_backpack_for_pc=lambda _: 'Unknown clear result'
+    adapter=native.NativeAdapter(game,player,'world')
+    token=adapter.begin('clear',{'original':original},player,'world')
+    result=adapter.poll(token,player,'world')
+    assert not result['ok'] and not result.get('nothing_cleared')
+    assert token['clear_attempted']
+
+
 def test_missing_original_prevents_clear(monkeypatch):
     native,clock=load(monkeypatch);original=snapshot(row(),row(handle=2))
     game,player,calls,seqs,roster=game_for(original)
@@ -261,3 +286,26 @@ def test_interrupted_original_return_is_repaired_without_second_clear(tmp_path, 
         if job.can_kick: break
     assert job.can_kick and calls.count('clear') == 1
     assert sends == 2 and recovery.item_counts(player.snapshot) == {'@UDuplicate':2}
+
+
+@pytest.mark.parametrize('interrupted', [False, True])
+def test_completed_send_is_separate_from_failed_delivery_readback(monkeypatch, interrupted):
+    native, clock=load(monkeypatch)
+    original=snapshot(row())
+    game,player,calls,seqs,roster=game_for(original)
+    adapter=native.NativeAdapter(game,player,'world')
+    record={'original':original,'retained':snapshot(),'delivery_serials':['@UNew']}
+    token=adapter.begin('deliver',record,player,'world')
+    seqs[0]['index']=0 if interrupted else 1
+    seqs.clear()
+    first=adapter.poll(token,player,'world')
+    if interrupted:
+        assert not first['ok'] and not first.get('delivery_finished')
+        return
+    assert first is None
+    token['capture']=NS(step=lambda _:dict(done=True,ok=False,error='Unreadable dead slot'))
+    token['read_retries']=5
+    clock[0]=4
+    result=adapter.poll(token,player,'world')
+    assert not result['ok'] and result['delivery_finished']
+    assert len([c for c in calls if isinstance(c,tuple)])==1

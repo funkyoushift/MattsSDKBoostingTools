@@ -36,7 +36,7 @@ from .mobile_pairing import (
     start_mobile_pairing,
 )
 
-__version__: str = "2.17.5"
+__version__: str = "2.17.6"
 __version_info__: tuple[int, int, int] = (2, 12, 2)
 
 _panel_keybinds = []
