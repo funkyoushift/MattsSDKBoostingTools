@@ -222,7 +222,8 @@ assert.match(html, /id="msbtBootSplash"/);
 assert.match(html, /branding\/fu-logo\.png/);
 assert.match(html, /id="bootWelcomeDontShow"/);
 assert.match(html, /Join the Discord for support/);
-assert.match(html, /Leave a tip/);
+assert.match(html, /id="bootWelcomeTipBtn"[^>]*>Support Development/);
+assert.match(html, /id="developmentSupportBtn"/);
 assert.doesNotMatch(html, /branding\/msbt-together-splash\.png/);
 assert.match(html, /Powered by Funk/);
 [
