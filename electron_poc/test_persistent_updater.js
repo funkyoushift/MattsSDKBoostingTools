@@ -2,7 +2,7 @@ const assert = require("assert/strict");
 const { EventEmitter } = require("events");
 const { PersistentUpdater } = require("./persistent_updater");
 (async () => {
-  let quit = false;
+  let quit = false; let spawnOptions;
   const calls = [];
   const child = new EventEmitter(); child.unref = () => {};
   const updater = new PersistentUpdater({
@@ -11,7 +11,7 @@ const { PersistentUpdater } = require("./persistent_updater");
     app: { getVersion: () => "2.15.0", quit: () => { quit = true; } },
     isNewer: (a, b) => a !== b,
     run: (exe, args, options, done) => { calls.push(args); done(null, JSON.stringify({ ok: true, version: "2.15.1" }), ""); },
-    start: (exe, args) => { calls.push(args); return child; }
+    start: (exe, args, options) => { spawnOptions=options; calls.push(args); return child; }
   });
   let status = "";
   updater.on("update-available", () => { status = "available"; });
@@ -20,6 +20,7 @@ const { PersistentUpdater } = require("./persistent_updater");
   assert.throws(() => updater.quitAndInstall(), /Download/);
   await updater.downloadUpdate(); assert.equal(status, "downloaded");
   updater.quitAndInstall(); assert.equal(quit, false);
+  assert.equal(spawnOptions.cwd, require("path").dirname("C:\\MSBT\\MSBT-Update.exe"));
   child.emit("spawn"); assert.equal(quit, true);
   assert.deepEqual(calls.map(c => c[0]), ["--check", "--download", "--apply"]);
   assert.equal(calls[2][2], String(process.pid));

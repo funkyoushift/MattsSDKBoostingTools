@@ -206,6 +206,10 @@ public sealed class Engine
             && Version.TryParse(release.Tag.TrimStart('v'), out var incoming) && incoming < installed)
             throw new IOException("The installed version is newer than GitHub's latest release. Downgrades are not automatic.");
         RejectRunningApp();
+        // A runner launched by Electron may inherit app/ as its working directory.
+        // Windows then locks that directory against the replacement below.
+        Directory.CreateDirectory(Root);
+        Directory.SetCurrentDirectory(Root);
         string stage = Path.Combine(Root, "stage-" + Guid.NewGuid().ToString("N"));
         try
         {

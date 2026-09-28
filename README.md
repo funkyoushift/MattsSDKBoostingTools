@@ -4,7 +4,7 @@
 
 MSBT is a Borderlands 4 boosting and item toolkit: a standalone Windows app outside the game, plus a small SDK mod that talks to Borderlands 4 while you play. Use it for currency/XP/SDU helpers, serial delivery, BL4 code browsing, Mattmab’s save/profile/item editor, Dev Spawner, map travel, movement tools, and more.
 
-**Current release: [v2.17.8](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.17.8)** — Direct backpack delivery, persistent password unlock, and duplicate-preserving Undo backups.
+**Current release: [v2.17.9](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.17.9)** — Updater installation lock fix; includes direct delivery and Undo improvements.
 
 This project is **unofficial**. It is not affiliated with, endorsed by, or connected to Gearbox, 2K, or the Borderlands franchise owners.
 

@@ -3,6 +3,7 @@ using System.IO.Compression;
 using System.Security.Cryptography;
 using System.Text.Json;
 
+string originalDirectory = Environment.CurrentDirectory;
 int passed = 0;
 void Check(bool value, string name) { if (!value) throw new Exception(name); passed++; Console.WriteLine("PASS " + name); }
 void Reject(Action action, string name) { try { action(); } catch (Exception ex) when (ex is InvalidDataException or IOException) { passed++; Console.WriteLine("PASS " + name); return; } throw new Exception("Expected rejection: " + name); }
@@ -62,7 +63,9 @@ try
     var next = Fixture("2.15.1");
     Reject(() => engine.Apply(next, () => throw new IOException("simulated rename failure")), "failed replacement reports failure");
     Check(File.ReadAllText(Path.Combine(engine.AppDir, Engine.Executable)) == "2.15.0", "failed replacement restores old app");
+    Directory.SetCurrentDirectory(engine.AppDir);
     engine.Apply(next);
+    Check(Environment.CurrentDirectory == engine.Root, "inherited app working directory released before replacement");
     Check(File.ReadAllText(Path.Combine(engine.AppDir, Engine.Executable)) == "2.15.1", "update swaps in new app");
     Check(File.ReadAllText(Path.Combine(engine.Root, "previous", Engine.Executable)) == "2.15.0", "previous version retained");
     File.AppendAllText(zip, "corrupt");
@@ -86,4 +89,4 @@ try
     Reject(() => engine.Apply(valid), "unowned installation preserved");
     Console.WriteLine($"{passed} installer checks passed.");
 }
-finally { Directory.Delete(temp, true); }
+finally { Directory.SetCurrentDirectory(originalDirectory); Directory.Delete(temp, true); }

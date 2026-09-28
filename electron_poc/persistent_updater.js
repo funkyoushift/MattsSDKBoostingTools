@@ -56,7 +56,8 @@ class PersistentUpdater extends EventEmitter {
   }
   quitAndInstall() {
     if (!this.ready) throw new Error("Download the update first.");
-    const child = this.start(this.prepare(this.setupPath), ["--apply", "--wait-pid", String(process.pid)], { detached: true, stdio: "ignore" });
+    const runner = this.prepare(this.setupPath);
+    const child = this.start(runner, ["--apply", "--wait-pid", String(process.pid)], { cwd: path.dirname(runner), detached: true, stdio: "ignore" });
     child.once("error", error => this.emit("error", error));
     child.once("spawn", () => { child.unref(); this.app.quit(); });
   }
