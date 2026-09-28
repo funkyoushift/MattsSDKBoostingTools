@@ -152,7 +152,7 @@ def load_functions(names, **namespace):
     return ns
 
 
-def test_shared_app_qm_afk_route_defaults_to_direct_and_restore_can_use_rewards():
+def test_shared_routes_and_legacy_reward_keyword_always_use_direct():
     calls=[]
     ns=load_functions({'_do_give_serial_to_player_indices'},
         _queue_direct_delivery=lambda *a,**k:calls.append(('direct',a,k)),
@@ -160,7 +160,7 @@ def test_shared_app_qm_afk_route_defaults_to_direct_and_restore_can_use_rewards(
         _active_serial_delivery_progress={'method':'direct'})
     ns['_do_give_serial_to_player_indices'](['@Ua'],[1,2],bulk_authorized=True)
     ns['_do_give_serial_to_player_indices'](['@Ub'],[1],delivery_method='rewards',bulk_authorized=True)
-    assert [x[0] for x in calls]==['direct','rewards']
+    assert [x[0] for x in calls]==['direct','direct']
     assert calls[0][1][1]==[1,2] and calls[0][2]['bulk_authorized'] is True
 
 
@@ -261,3 +261,11 @@ def test_partition_limit_is_per_item_not_total_list_size():
     assert accepted == serials and rejected == []
     accepted, rejected = delivery.partition_serials(['@U'+'x'*8191, '@Ué', None])
     assert accepted == [] and len(rejected) == 3
+
+
+def test_legacy_queue_entry_cannot_create_reward_packages():
+    calls=[]
+    ns=load_functions({'_queue_serial_delivery_sequence'},
+        _queue_direct_delivery=lambda *a,**k:calls.append((a,k)))
+    ns['_queue_serial_delivery_sequence'](['@Ua'],[1],scope_label='legacy',mode='selected')
+    assert calls[0][0]==(['@Ua'],[1])

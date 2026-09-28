@@ -1726,6 +1726,10 @@ def _queue_direct_delivery(serials, player_indices, *, scope_label, mode, bulk_a
 
 
 def _queue_serial_delivery_sequence(serials: List[str], player_indices: List[int], *, scope_label: str, mode: str | None = None, bulk_authorized: bool = False) -> None:
+    # Compatibility entry point: old callers also use direct backpack insertion.
+    return _queue_direct_delivery(serials, player_indices, scope_label=scope_label,
+                                  mode=mode, bulk_authorized=bulk_authorized or _installation_authorized())
+
     if len(serials) > 70 and not bulk_authorized:
         raise PermissionError("Sending more than 70 items requires password authorization.")
     mode_key = _serial_delivery_mode_key(mode)
@@ -2026,15 +2030,11 @@ def _do_give_serial_to_player_indices(
     but route through the tick-driven verifier/sequence instead.
     """
     bulk_authorized = bulk_authorized or _installation_authorized()
-    if delivery_method == 'direct':
-        return _queue_direct_delivery(serials, player_indices, scope_label=scope_label, mode=mode, bulk_authorized=bulk_authorized)
-    elif delivery_method == 'rewards':
-        # Original-inventory recovery keeps its independently tested return path.
-        _active_serial_delivery_progress.pop('method', None)
-        _queue_serial_delivery_sequence(serials, player_indices, scope_label=scope_label, mode=mode, bulk_authorized=bulk_authorized)
-    else:
+    if delivery_method not in ('direct', 'rewards'):
         raise ValueError('Unknown inventory delivery method')
-    return
+    # Accept the old keyword for callers, but never create reward packages.
+    return _queue_direct_delivery(serials, player_indices, scope_label=scope_label,
+                                  mode=mode, bulk_authorized=bulk_authorized)
 
     if not serials:
         _log_error("No serial strings after parsing (comma-separated non-empty segments).")
@@ -2458,8 +2458,7 @@ def _do_give_serial_chunk(
 @command(
     "Give_Serial",
     description=(
-        "Grant the next generic loyalty reward package (rotates Daedalus→Jakobs→…→Vladof; Ripper uses Borg id), "
-        "then set serial(s) on the newest reward package (each GbxRewardsManager, or one player with index/name). "
+        "Add serial items directly to target backpacks using paced, identity-pinned delivery. "
         "Base85 @U… tokens may be separate args or whitespace-separated. Deserialized human lines (digits, 0,1,60|…) "
         "must be one double-quoted token each; they are converted to Base85 locally, with HTTP "
         "(GENIE_SERIALIZE_API_URL) only if local encode fails. "

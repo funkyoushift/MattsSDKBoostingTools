@@ -316,7 +316,7 @@ UI_LAYOUT: dict[str, Any] = {
                 {"id":"max_player_level","label":"MAX PLAYER 70","accent":"cyan"},
                 {"id":"max_spec_level","label":"MAX SPEC 701","accent":"purple"}
             ]},
-            {"id":"serial_rewards","label":"SERIAL REWARDS","accent":"purple","text":"Paste one or more serials below, or Read Equipped / Backpack from the selected party target (P1–P4). Host can read a guest's equipped gear. Rewards use GiveRewardAllPlayers then patch serials onto target packages. Ground/dropped serials are not supported.","fields":[
+            {"id":"serial_rewards","label":"SERIAL REWARDS","accent":"purple","text":"Paste one or more serials below, or Read Equipped / Backpack from the selected party target (P1–P4). Host can read a guest's equipped gear. Items are added directly to target backpacks with paced delivery. Ground/dropped serials are not supported.","fields":[
                 {"id":"serial_text","label":"Serial Input","type":"multiline","default":""},
                 {"id":"serial_override_level","label":"Override delivery level?","type":"choice","choices":["false","true"],"default":"false"},
                 {"id":"serial_level","label":"Level","type":"int","default":70}

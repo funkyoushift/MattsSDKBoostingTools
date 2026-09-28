@@ -3,6 +3,7 @@ import time
 from collections import Counter
 from .afk_inventory_capture import Capture
 from .afk_inventory_recovery import item_counts
+from .direct_delivery import partition_serials
 
 
 class NativeAdapter:
@@ -21,6 +22,9 @@ class NativeAdapter:
         a = self.game.backend()
         if not original['rows']:
             return {'ok':False,'message':'An empty capture cannot prove the guest inventory is loaded; nothing cleared'}
+        _, rejected = partition_serials([r['serial'] for r in original['rows']])
+        if rejected:
+            return {'ok':False, 'message':'Original inventory includes unsupported direct-delivery codes; nothing cleared'}
         if not self.game.is_host() or (a.afk_lobby_status()['enabled'] and not self.allow_afk):
             return {'ok':False, 'message':'Host the game and stop AFK before the recovery test'}
         if any(r['quantity'] != 1 for r in original['rows']):
@@ -63,11 +67,10 @@ class NativeAdapter:
                     raise RuntimeError('Another delivery started; recovery will not replace it')
                 row = self.target()
                 rewards._do_give_serial_to_player_indices(serials,[row['index']],
-                    scope_label='Inventory recovery test',mode='selected',bulk_authorized=True,
-                    **({'delivery_method':'rewards'} if operation == 'restore' else {}))
+                    scope_label='Inventory ' + operation,mode='selected',bulk_authorized=True,
+                    delivery_method='direct')
                 seq = rewards._pending_serial_delivery_sequences[-1]
                 seq['afk_player_state'] = player
-                seq['post_open_delay'] = max(float(seq.get('post_open_delay',0)),3.0)
                 token['sequence'] = seq
             token['settle_until'] = time.monotonic()+3
         else:
@@ -202,7 +205,6 @@ class NativeAdapter:
                         scope_label='Inventory recovery retry',mode='selected',bulk_authorized=True)
                     seq = rewards._pending_serial_delivery_sequences[-1]
                     seq['afk_player_state'] = player
-                    seq['post_open_delay'] = max(float(seq.get('post_open_delay',0)),3.0)
                     token['repair_sequence'] = seq
                     return None
             return {'ok':True,'snapshot':snapshot,'delivery_reconciled':actual == expected,

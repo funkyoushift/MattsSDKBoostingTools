@@ -19,6 +19,9 @@ def load(monkeypatch):
     capture=ModuleType(package+'.afk_inventory_capture');capture.Capture=Capture
     monkeypatch.setitem(sys.modules,capture.__name__,capture)
     path=Path(__file__).resolve().parents[2]/'mod_extracted/MattsSDKBoostingTools/afk_inventory_native_recovery.py'
+    direct_spec=importlib.util.spec_from_file_location(package+'.direct_delivery',path.with_name('direct_delivery.py'))
+    direct=importlib.util.module_from_spec(direct_spec);direct_spec.loader.exec_module(direct)
+    monkeypatch.setitem(sys.modules,package+'.direct_delivery',direct)
     spec=importlib.util.spec_from_file_location(package+'.native',path)
     module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
     clock=[0.0];monkeypatch.setattr(module,'time',NS(monotonic=lambda:clock[0]))
@@ -32,6 +35,7 @@ def game_for(original):
         calls.append('clear');player.snapshot=snapshot(*player.snapshot['rows'][:1])
         return 'empty backpack OK'
     def send(serials,indices,**kwargs):
+        assert kwargs.get('delivery_method', 'direct') == 'direct'
         calls.append(('send',list(serials),indices))
         seqs.append({'index':0,'chunks':[list(serials)]})
     rewards=NS(_serial_delivery_busy=lambda:bool(seqs),_pending_serial_delivery_sequences=seqs,
@@ -309,3 +313,12 @@ def test_completed_send_is_separate_from_failed_delivery_readback(monkeypatch, i
     result=adapter.poll(token,player,'world')
     assert not result['ok'] and result['delivery_finished']
     assert len([c for c in calls if isinstance(c,tuple)])==1
+
+
+def test_unrestorable_original_is_rejected_before_clear(monkeypatch):
+    native,clock=load(monkeypatch)
+    original=snapshot(row(serial='@U'+'x'*9000))
+    game,player,calls,seqs,roster=game_for(original)
+    result=native.NativeAdapter(game,player,'world').preflight(original)
+    assert not result['ok'] and 'nothing cleared' in result['message']
+    assert not calls

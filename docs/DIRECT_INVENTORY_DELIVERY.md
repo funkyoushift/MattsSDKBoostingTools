@@ -3,9 +3,10 @@
 The app, mobile bridge, native Quick Menu, bookmarks/catalog send buttons, and
 AFK selected loot use the shared `serial_rewards._do_give_serial_to_player_indices`
 entry point. Its default is now direct backpack insertion. The name remains for
-compatibility. Original-inventory **returns** retain the previously tested reward
-route (`delivery_method='rewards'`); cleanup still opens existing challenge reward
-packages before clearing. This change does not replace the recovery journal or
+compatibility. Original-inventory **returns** also use direct insertion. The legacy
+`delivery_method='rewards'` keyword and old queue entry point are compatibility
+aliases for direct insertion. Cleanup still opens game-generated challenge reward
+packages before clearing; it does not create packages to send or restore items. This change does not replace the recovery journal or
 change the user's selected boosts, class rules, guaranteed pool, or >70 password.
 
 ## Timing and completion
