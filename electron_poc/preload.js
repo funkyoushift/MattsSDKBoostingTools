@@ -1,6 +1,8 @@
 const { contextBridge, ipcRenderer, webUtils } = require("electron");
 
 contextBridge.exposeInMainWorld("msbt", {
+  communityFolders: (operation, payload) => ipcRenderer.invoke('app:communityFolders', operation, payload),
+  openDeveloperPortal: () => ipcRenderer.invoke('app:openDeveloperPortal'),
   bridgeRequest: (args) => ipcRenderer.invoke("bridge:request", args),
   browseSdkMods: () => ipcRenderer.invoke("app:browseSdkMods"),
   detectSdkMods: () => ipcRenderer.invoke("app:detectSdkMods"),

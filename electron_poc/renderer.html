@@ -57,6 +57,7 @@
         <button id="walkthroughHeaderBtn" class="header-btn" type="button">Walkthroughs</button>
         <button id="developmentSupportBtn" class="header-btn support-link featured" type="button">Support Development</button>
         <button id="statusBtn" class="header-btn">Status</button>
+        <button id="developerPortalHeaderBtn" class="header-btn" type="button">Developer portal</button>
         <button id="updateBtn" class="header-btn">Updates</button>
       </div>
       <details class="support-panel" aria-label="Support and follow links">
@@ -824,11 +825,66 @@
             <p>Browse saved serial folders, check individual rows or whole folders, then deliver the checked items from the footer.</p>
           </div>
           <div class="button-row wrap">
+            <button id="communityOpenBtn">Community folders</button>
             <button id="bookmarkNewBtn">+ New Serial</button>
             <button id="bookmarkImportBtn">Import</button>
           </div>
         </div>
         <div id="bookmarkStatus" class="status-line warning">Loading serial bookmarks...</div>
+        <details id="communityFoldersPanel">
+          <summary>Community folders · browse, share, and import drop lists</summary>
+          <p>Preview approved folders, then import a copy into your bookmarks. Importing never sends items to the game. Creator names are supplied by the submitter.</p>
+          <div id="communityStatus" class="status-line" role="status">Open the library to browse shared folders.</div>
+          <div class="button-row wrap">
+            <input id="communitySearch" aria-label="Search community folders" placeholder="Folder title or creator" maxlength="100">
+            <button id="communitySearchBtn">Search library</button>
+            <input id="communityLink" aria-label="Community folder link" placeholder="Paste a shared folder link or ID">
+            <button id="communityLinkBtn">Open shared folder</button>
+            <button id="communityMineBtn">My submissions</button>
+          </div>
+          <div class="grid two">
+            <div>
+              <div id="communityResults" class="bookmark-list" style="min-height:120px;max-height:280px;overflow:auto"></div>
+              <button id="communityMoreBtn" hidden>Next page</button>
+            </div>
+            <div>
+              <h3 id="communityPreviewTitle">Select a folder</h3>
+              <p id="communityPreviewDescription"></p>
+              <p id="communityPreviewCount"></p>
+              <div id="communityPreviewItems" class="bookmark-list" style="min-height:120px;max-height:280px;overflow:auto"></div>
+              <button id="communityPreviewMore" hidden>Show more items</button>
+              <label for="communityDestination">Import as a new bookmark folder</label>
+              <input id="communityDestination" maxlength="80" placeholder="Folder name">
+              <div class="button-row wrap">
+                <button id="communityImportBtn" disabled>Import to bookmarks</button>
+                <button id="communityCopyBtn" disabled>Copy share link</button>
+                <button id="communityWithdrawBtn" hidden>Withdraw my submission</button>
+              </div>
+              <p>Existing folders are preserved. Imported names get a numbered suffix if needed. Then select the new folder in AFK Lobby to add it to either delivery pool.</p>
+              <div id="communityReviewActions" hidden>
+                <label for="communityReviewNote">Review note (visible to the submitter)</label>
+                <textarea id="communityReviewNote" maxlength="1000"></textarea>
+                <button id="communityApproveBtn">Approve for public library</button>
+                <button id="communityRejectBtn">Reject / remove from public library</button>
+              </div>
+            </div>
+          </div>
+          <details><summary>Submit one of my folders</summary>
+            <label for="communitySubmitFolder">Bookmark folder (includes subfolders)</label>
+            <select id="communitySubmitFolder"><option value="">Choose a folder</option></select>
+            <div class="grid two">
+              <label>Public title<input id="communitySubmitTitle" maxlength="80"></label>
+              <label>Your display name<input id="communitySubmitCreator" maxlength="80"></label>
+            </div>
+            <label for="communitySubmitDescription">Description</label>
+            <textarea id="communitySubmitDescription" maxlength="2000" placeholder="What is this list for? Which character or build?"></textarea>
+            <p id="communitySubmitCount"></p>
+            <label><input type="checkbox" id="communitySubmitConsent">Share this folder's item names, codes, and subfolders publicly after approval. I have permission to share them.</label>
+            <button id="communitySubmitBtn">Submit for approval</button>
+            <p>Only the selected folder is submitted. Lobby settings, account details, and other bookmarks stay on your PC. Keep this PC's MSBT user-data backup to retain access to your submission keys.</p>
+          </details>
+          <button id="communityDeveloperPortal">Developer portal - sign in / create account</button>
+        </details>
 
         <div class="grid bookmark-grid">
           <section class="bookmark-browser">
@@ -2747,5 +2803,7 @@
   <script src="afk_lobby.js"></script>
 <script src="remote_afk_ui.js"></script>
 <script src="ui_i18n.js"></script>
+<script src="community_folders_contract.js"></script>
+<script src="community_folders_ui.js"></script>
 </body>
 </html>

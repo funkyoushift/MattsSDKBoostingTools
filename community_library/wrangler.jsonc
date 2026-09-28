@@ -1,0 +1,50 @@
+{
+  "name": "msbt-community-library",
+  "main": "worker.js",
+  "compatibility_date": "2026-09-28",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "rules": [
+    {
+      "type": "Text",
+      "globs": [
+        "**/*.html"
+      ],
+      "fallthrough": true
+    }
+  ],
+  "d1_databases": [
+    {
+      "binding": "LIBRARY",
+      "database_name": "msbt-community-library",
+      "database_id": "dd3aa9d1-da6a-45a6-9d75-6d0495759ffd"
+    }
+  ],
+  "ratelimits": [
+    {
+      "name": "READ_RATE",
+      "namespace_id": "1002",
+      "simple": {
+        "limit": 120,
+        "period": 60
+      }
+    },
+    {
+      "name": "WRITE_RATE",
+      "namespace_id": "1003",
+      "simple": {
+        "limit": 6,
+        "period": 60
+      }
+    }
+  ],
+  "observability": {
+    "enabled": false
+  },
+  "vars": {
+    "PUBLIC_ORIGIN": "https://msbt-community-library.screename53.workers.dev"
+  },
+  "workers_dev": true,
+  "preview_urls": false
+}

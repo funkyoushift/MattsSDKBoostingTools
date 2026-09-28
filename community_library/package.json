@@ -1,0 +1,1 @@
+{"name":"msbt-community-library","private":true,"type":"module","scripts":{"test":"node --test test_*.mjs","check":"wrangler deploy --dry-run"},"devDependencies":{"esbuild":"^0.28.2","miniflare":"^5.20260926.0-alpha","wrangler":"^4.141.0"},"dependencies":{"better-auth":"^1.7.6"}}

@@ -37,6 +37,8 @@ sealed class SetupForm : Form
     readonly Label status = new() { AutoSize = false, Dock = DockStyle.Fill, Padding = new Padding(20), Text = "Install or update MSBT from the latest official GitHub release.\n\nYour saved settings are kept. Borderlands 4 is never stopped.\n\nInstallation: " + Engine.DefaultRoot };
     readonly Button install = new() { Text = "Install / Update", AutoSize = true };
     readonly Button launch = new() { Text = "Open MSBT", AutoSize = true, Enabled = false };
+    readonly Button gameFolder = new() { Text = "Choose game folder", AutoSize = true };
+    string? selectedGameRoot;
     readonly int? waitPid;
     readonly bool uninstall;
     bool busy;
@@ -47,7 +49,15 @@ sealed class SetupForm : Form
         Text = "MSBT Setup"; Width = 610; Height = 290; StartPosition = FormStartPosition.CenterScreen;
         MinimumSize = Size;
         var buttons = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 60, Padding = new Padding(15) };
-        buttons.Controls.Add(install); buttons.Controls.Add(launch);
+        buttons.Controls.Add(install); buttons.Controls.Add(launch); buttons.Controls.Add(gameFolder);
+        gameFolder.Visible = !uninstall;
+        gameFolder.Click += (_, _) => {
+            using var picker = new FolderBrowserDialog { Description = "Choose the Borderlands 4 folder containing OakGame", UseDescriptionForTitle = true };
+            if (picker.ShowDialog(this) == DialogResult.OK) {
+                selectedGameRoot = picker.SelectedPath;
+                Report("Game folder selected: " + selectedGameRoot + "\n\nUse Install / Update to complete app and game setup.");
+            }
+        };
         Controls.Add(status); Controls.Add(buttons);
         if (uninstall) { install.Text = "Uninstall MSBT"; status.Text = "Remove the MSBT app? Saved settings and installed game mods will be kept."; }
         install.Click += async (_, _) => await Run();
@@ -65,7 +75,7 @@ sealed class SetupForm : Form
     void Report(string text) { if (InvokeRequired) BeginInvoke(() => status.Text = text); else status.Text = text; }
     async Task Run()
     {
-        busy = true; install.Enabled = false; launch.Enabled = false;
+        busy = true; install.Enabled = false; launch.Enabled = false; gameFolder.Enabled = false;
         try
         {
             var engine = new Engine(Engine.DefaultRoot, Report);
@@ -89,13 +99,14 @@ sealed class SetupForm : Form
                 if (!waitPid.HasValue) await engine.Download(release);
                 await Task.Run(() => engine.Apply(release));
                 engine.Register(Environment.ProcessPath!, release.Tag);
-                Report("MSBT " + release.Tag + " is installed. Use Open MSBT to continue.\n\nIf game mods need updating, use the app's SDK mod install action.\nYour saved settings are kept.");
+                await engine.InstallGameIntegration(selectedGameRoot);
+                Report("MSBT " + release.Tag + " and its game integration are installed. Use Open MSBT to continue.\n\nExisting SDK/mod-manager installations and your saved settings are kept.");
                 launch.Enabled = true;
             }
             Result = 0;
         }
         catch (Exception error) { Result = 1; Report("Setup could not finish: " + error.Message + "\n\nYou can retry with this same installer."); }
-        finally { busy = false; install.Enabled = true; }
+        finally { busy = false; install.Enabled = true; gameFolder.Enabled = true; }
         // Restart-and-install is a complete handoff; interactive Setup still offers Open MSBT.
         if (Result == 0 && waitPid.HasValue && !uninstall && launch.Enabled) launch.PerformClick();
     }

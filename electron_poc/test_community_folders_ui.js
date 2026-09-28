@@ -1,0 +1,52 @@
+const {app,BrowserWindow}=require('electron');
+const assert=require('node:assert/strict');
+const path=require('node:path');
+const fs=require('node:fs');
+app.disableHardwareAcceleration();
+app.whenReady().then(async()=>{
+ const win=new BrowserWindow({width:1400,height:1000,show:false,webPreferences:{partition:'community-ui-'+process.pid}});
+ await win.loadFile(path.join(__dirname,'renderer.html'),{query:{nosplash:'1'}});
+ const result=await win.webContents.executeJavaScript(`(async()=>{
+  const check=(v,m)=>{if(!v)throw Error(m)},$=id=>document.getElementById(id);
+  await runBootSplash();
+  const idle=async()=>{for(let i=0;i<100&&$('communityFoldersPanel').getAttribute('aria-busy')==='true';i++)await new Promise(r=>setTimeout(r,10));};
+  state.bookmarks=[{id:'old',name:'Keep me',serial:'@UKeep',group:'Mine'},{id:'a',name:'A',serial:'@UAbCd',group:'Builds / Vex'},{id:'b',name:'B',serial:'@UAbCd',group:'Builds / Vex / Shields'}];state.bookmarkFolders=['Mine','Builds / Vex','Builds / Vex / Shields'];renderBookmarks();
+  let sent,imported=false,calls=[];
+  const folder={version:1,title:'Vex starter',creator:'Community tester',description:'Gun and shield drop list',folders:['','Shields'],items:[{name:'<img src=x onerror=alert(1)>',folder:'',serial:'@UAbCd'},{name:'Shield',folder:'Shields',serial:'@UAbCd'}]};
+  window.msbt=window.msbt||{};
+  window.msbt.communityFolders=async(op,p)=>{calls.push(op);
+   if(op==='info')return {ok:true,endpoint:'https://library.example'};
+   if(op==='list')return {ok:true,next:null,folders:[{id:'demo',title:folder.title,creator:folder.creator,item_count:2,status:'approved'}]};
+   if(op==='get')return {ok:true,id:'demo',status:'approved',digest:'test',folder};
+   if(op==='submit'){sent=p.folder;return {ok:true,status:'pending',id:'pending-demo'};}
+   if(op==='import'){imported=true;return {ok:true,imported:2,destination:'Vex starter',data:window.communityFolderContract.importFolder(folder,{bookmarks:state.bookmarks,folders:state.bookmarkFolders},()=>crypto.randomUUID())};}
+   if(op==='mine')return {ok:true,submissions:[{id:'pending-demo',title:'My build',status:'pending'}]};
+   if(op==='status')return {ok:true,id:'pending-demo',status:'pending',digest:'test',folder};
+   throw Error('Unexpected operation '+op);
+  };
+  (window.MsbtWorkspace?.enabled ? window.MsbtWorkspace.open('serial-tools','saved') : switchTab('serial-tools'));$('communityOpenBtn').click();await idle();
+  check($('communityFoldersPanel').open,'community panel opens');check($('communityResults').textContent.includes('Vex starter'),'public results');
+  $('communityResults').querySelector('button').click();await idle();
+  check(!$('communityImportBtn').disabled,'approved import enabled');check(!$('communityPreviewItems').querySelector('img'),'untrusted title rendered as text');check(!imported,'preview never imports');
+  $('communityImportBtn').click();await idle();check(imported,'explicit import');check(state.bookmarks.length===5,'append preserves original');check(state.bookmarks[0].serial==='@UKeep','original unchanged');
+  $('communitySubmitFolder').value='Builds / Vex';$('communitySubmitFolder').dispatchEvent(new Event('change'));
+  $('communitySubmitTitle').value='My build';$('communitySubmitCreator').value='Tester';
+  $('communitySubmitBtn').click();await idle();check(!sent,'consent required');
+  $('communitySubmitConsent').checked=true;$('communitySubmitBtn').click();await idle();
+  check(sent.items.length===2,'selected subtree only');check(sent.items[0].serial===sent.items[1].serial,'duplicates preserved');check(sent.items[1].folder==='Shields','subfolder preserved');check(!JSON.stringify(sent).includes('@UKeep'),'unselected bookmark not sent');
+  $('communityMineBtn').click();await idle();$('communityResults').querySelector('button').click();await idle();check($('communityImportBtn').disabled,'pending cannot import');check($('communityCopyBtn').disabled,'pending has no public share');
+  check(!calls.some(x=>/boost|deliver|afk/.test(x)),'no game actions');
+  const afkBrowse=document.getElementById('afkBookmarkFolder').nextElementSibling;
+  afkBrowse.click();await idle();check(state.activeTab==='serial-tools','AFK shortcut targets the real saved-items tab');
+  $('communitySearchBtn').click();await idle();$('communityResults').querySelector('button').click();await idle();
+  $('communityFoldersPanel').scrollIntoView({block:'start'});
+  return {operations:calls.length,bookmarks:state.bookmarks.length};
+ })()`);
+ assert.equal(result.bookmarks,5);
+ win.showInactive();
+ await new Promise(resolve=>setTimeout(resolve,500));
+ await win.webContents.executeJavaScript(`(async()=>{await endWalkthrough({skipped:true,quiet:true});(window.MsbtWorkspace?.enabled ? window.MsbtWorkspace.open('serial-tools','saved') : switchTab('serial-tools'));document.getElementById('communityFoldersPanel').scrollIntoView({block:'start'});})()`);
+ await new Promise(resolve=>setTimeout(resolve,250));
+ const out=path.join(__dirname,'..','output','community-folders-review');fs.mkdirSync(out,{recursive:true});fs.writeFileSync(path.join(out,'community-folders.png'),(await win.webContents.capturePage()).toPNG());
+ console.log('PASS community UI: consent, selected subtree, safe preview, pending privacy, append-only import, no game actions');win.destroy();app.exit(0);
+}).catch(e=>{console.error(e);app.exit(1)});

@@ -35,6 +35,44 @@ public sealed class Engine
         return new FileStream(Path.Combine(Root, "setup.lock"), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
     }
 
+    public ProcessStartInfo GameSetupStartInfo(string? gameRoot = null)
+    {
+        var start = new ProcessStartInfo(Path.Combine(AppDir, Executable)) {
+            WorkingDirectory = AppDir, UseShellExecute = false, CreateNoWindow = true,
+            RedirectStandardOutput = true, RedirectStandardError = true
+        };
+        start.ArgumentList.Add("--install-sdkmods-and-exit");
+        if (!string.IsNullOrWhiteSpace(gameRoot)) start.ArgumentList.Add("--sdk-mods-path=" + Path.Combine(Path.GetFullPath(gameRoot), "sdk_mods"));
+        start.Environment.Remove("ELECTRON_RUN_AS_NODE");
+        return start;
+    }
+
+    public async Task InstallGameIntegration(string? gameRoot = null)
+    {
+        report("Installing the MSBT game mod, AFK SHiFT PAK, and missing SDK/mod manager...");
+        var start = GameSetupStartInfo(gameRoot);
+        using var process = Process.Start(start) ?? throw new IOException("Could not start game setup.");
+        var output = process.StandardOutput.ReadToEndAsync();
+        var errors = process.StandardError.ReadToEndAsync();
+        await process.WaitForExitAsync();
+        string stdout = await output, stderr = await errors;
+        string receipt = Path.Combine(Root, "game-setup.log");
+        await File.WriteAllTextAsync(receipt, DateTimeOffset.UtcNow.ToString("O") + "\nExit: " + process.ExitCode + "\n" + stdout + "\n" + stderr);
+        int exitCode = process.ExitCode;
+        if (exitCode != 0 && (stdout.Contains("EACCES") || stdout.Contains("EPERM") || stderr.Contains("EACCES") || stderr.Contains("EPERM")))
+        {
+            report("Windows permission is required to install game files. Please approve the Windows prompt.");
+            var elevated = new ProcessStartInfo(start.FileName) { WorkingDirectory = AppDir, UseShellExecute = true, Verb = "runas", WindowStyle = ProcessWindowStyle.Hidden };
+            foreach (string argument in start.ArgumentList) elevated.ArgumentList.Add(argument);
+            using var retry = Process.Start(elevated) ?? throw new IOException("Could not start elevated game setup.");
+            await retry.WaitForExitAsync();
+            exitCode = retry.ExitCode;
+            await File.AppendAllTextAsync(receipt, "\nElevated retry exit: " + exitCode);
+        }
+        if (exitCode != 0)
+            throw new IOException("The desktop app is installed, but game setup did not finish. Close Borderlands 4 and retry this installer. Details: " + receipt);
+    }
+
     public static Release ParseRelease(string json)
     {
         using var doc = JsonDocument.Parse(json);
@@ -165,7 +203,7 @@ public sealed class Engine
             if (relative.EndsWith('/')) Directory.CreateDirectory(target);
             else { Directory.CreateDirectory(Path.GetDirectoryName(target)!); entry.ExtractToFile(target, false); }
         }
-        foreach (string required in new[] { Executable, "resources/app.asar", "resources/python/python.exe", "resources/sdkmod/MattsSDKBoostingTools.sdkmod", "resources/sdkmods/ActorScriptDeployer/__init__.py", "resources/releases/latest.json" })
+        foreach (string required in new[] { Executable, "resources/app.asar", "resources/python/python.exe", "resources/sdkmod/MattsSDKBoostingTools.sdkmod", "resources/sdkmods/ActorScriptDeployer/__init__.py", "resources/releases/latest.json", "resources/oak2/oak2-sdk.zip", "resources/afk_shift/manifest.json", "resources/afk_shift/pakchunk90-Windows_90_P.pak" })
             if (!File.Exists(Path.Combine(destination, required))) throw new InvalidDataException("Package is missing " + required);
         using var manifest = JsonDocument.Parse(File.ReadAllText(Path.Combine(destination, "resources/releases/latest.json")));
         if (manifest.RootElement.GetProperty("package_version").GetString() != tag[1..])

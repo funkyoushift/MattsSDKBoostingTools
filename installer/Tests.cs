@@ -3,6 +3,14 @@ using System.IO.Compression;
 using System.Security.Cryptography;
 using System.Text.Json;
 
+if (args.Contains("--install-sdkmods-and-exit"))
+{
+    bool fail = File.Exists(Path.Combine(AppContext.BaseDirectory, "simulate-failure"));
+    Console.WriteLine(fail ? "Simulated game setup failure" : "Simulated game setup success");
+    Environment.Exit(fail ? 2 : 0);
+    return;
+}
+
 string originalDirectory = Environment.CurrentDirectory;
 int passed = 0;
 void Check(bool value, string name) { if (!value) throw new Exception(name); passed++; Console.WriteLine("PASS " + name); }
@@ -38,6 +46,9 @@ try
     Reject(() => Engine.ParseRelease(Metadata(url: "https://example.org/payload.zip")), "foreign download rejected");
     Reject(() => Engine.ParseRelease(Metadata().Replace("\"prerelease\":false", "\"prerelease\":true")), "prerelease rejected");
     var engine = new Engine(Path.Combine(temp, "install"));
+    var gameSetup = engine.GameSetupStartInfo();
+    Check(gameSetup.FileName == Path.Combine(engine.AppDir, Engine.Executable) && gameSetup.ArgumentList.SequenceEqual(new[] { "--install-sdkmods-and-exit" }), "installer invokes bundled game setup");
+    Check(!gameSetup.UseShellExecute && gameSetup.CreateNoWindow && gameSetup.RedirectStandardOutput && gameSetup.RedirectStandardError && !gameSetup.Environment.ContainsKey("ELECTRON_RUN_AS_NODE"), "game setup runs as Electron with captured diagnostics");
     using var gate = engine.Lock();
     Reject(() => { using var second = engine.Lock(); }, "concurrent install rejected");
     Directory.CreateDirectory(engine.Cache);
@@ -48,7 +59,7 @@ try
         using (var archive = ZipFile.Open(zip, ZipArchiveMode.Create))
         {
             string root = "MSBT-Portable-v" + version + "-win-x64/";
-            foreach (string required in new[] { Engine.Executable, "resources/app.asar", "resources/python/python.exe", "resources/sdkmod/MattsSDKBoostingTools.sdkmod", "resources/sdkmods/ActorScriptDeployer/__init__.py", "resources/releases/latest.json" })
+            foreach (string required in new[] { Engine.Executable, "resources/app.asar", "resources/python/python.exe", "resources/sdkmod/MattsSDKBoostingTools.sdkmod", "resources/sdkmods/ActorScriptDeployer/__init__.py", "resources/releases/latest.json", "resources/oak2/oak2-sdk.zip", "resources/afk_shift/manifest.json", "resources/afk_shift/pakchunk90-Windows_90_P.pak" })
             {
                 using var writer = new StreamWriter(archive.CreateEntry(root + required).Open());
                 writer.Write(required.EndsWith("latest.json") ? JsonSerializer.Serialize(new { package_version = version }) : version);
@@ -87,6 +98,17 @@ try
     File.Delete(Path.Combine(engine.AppDir, ".msbt-managed"));
     var valid = Fixture("2.15.2");
     Reject(() => engine.Apply(valid), "unowned installation preserved");
+    var helperEngine = new Engine(Path.Combine(temp, "helper-test"));
+    Directory.CreateDirectory(helperEngine.AppDir);
+    foreach (string name in new[] { "SetupTests.dll", "SetupTests.deps.json", "SetupTests.runtimeconfig.json" })
+        File.Copy(Path.Combine(AppContext.BaseDirectory, name), Path.Combine(helperEngine.AppDir, name));
+    File.Copy(Path.Combine(AppContext.BaseDirectory, "SetupTests.exe"), Path.Combine(helperEngine.AppDir, Engine.Executable));
+    await helperEngine.InstallGameIntegration();
+    Check(File.ReadAllText(Path.Combine(helperEngine.Root, "game-setup.log")).Contains("Simulated game setup success"), "real helper subprocess completion recorded");
+    File.WriteAllText(Path.Combine(helperEngine.AppDir, "simulate-failure"), "1");
+    bool failed = false;
+    try { await helperEngine.InstallGameIntegration(); } catch (IOException) { failed = true; }
+    Check(failed && File.ReadAllText(Path.Combine(helperEngine.Root, "game-setup.log")).Contains("Exit: 2"), "failed game helper cannot report setup success");
     Console.WriteLine($"{passed} installer checks passed.");
 }
 finally { Directory.SetCurrentDirectory(originalDirectory); Directory.Delete(temp, true); }

@@ -1603,14 +1603,59 @@ ipcMain.handle("app:loadSerialBookmarks", async () => {
 ipcMain.handle("app:loadInventorySnapshot", () => inventorySnapshotStore.loadSnapshot(app.getPath("userData")));
 ipcMain.handle("app:saveInventorySnapshot", (_event, payload) => inventorySnapshotStore.saveSnapshot(app.getPath("userData"), payload));
 
-ipcMain.handle("app:saveSerialBookmarks", async (_event, payload) => {
+let bookmarkWriteQueue = Promise.resolve();
+function queueBookmarkWrite(action) {
+  const next = bookmarkWriteQueue.then(action, action);
+  bookmarkWriteQueue = next.catch(() => {});
+  return next;
+}
+let communityClient;
+let developerPortalWindow;
+ipcMain.handle('app:openDeveloperPortal', async () => {
+  const origin = getCommunityClient().endpoint;
+  if (developerPortalWindow && !developerPortalWindow.isDestroyed()) { developerPortalWindow.focus(); return {ok:true}; }
+  developerPortalWindow = new BrowserWindow({width:1150,height:850,title:'MSBT Developer Portal',
+    webPreferences:{partition:'persist:msbt-developer-portal',nodeIntegration:false,contextIsolation:true,sandbox:true}});
+  developerPortalWindow.webContents.setWindowOpenHandler(()=>({action:'deny'}));
+  developerPortalWindow.webContents.on('will-navigate',(event,url)=>{if(new URL(url).origin!==origin)event.preventDefault();});
+  developerPortalWindow.webContents.session.setPermissionRequestHandler((_contents,_permission,callback)=>callback(false));
+  try { await developerPortalWindow.loadURL(origin+'/portal'); return {ok:true}; }
+  catch { developerPortalWindow.close(); return {ok:false,message:'Developer portal is not online yet. Please try again later.'}; }
+});
+function getCommunityClient() {
+  if (!communityClient) communityClient = require('./community_folders_client').createCommunityClient({
+    userData:app.getPath('userData'),safeStorage,
+    ...(!app.isPackaged && process.env.MSBT_TEST_COMMUNITY_URL ? {endpoint:process.env.MSBT_TEST_COMMUNITY_URL} : {})
+  });
+  return communityClient;
+}
+ipcMain.handle('app:communityFolders', async (_event, operation, payload = {}) => {
+  try {
+    if (operation === 'import') {
+      // Re-fetch by ID from the fixed service; never import renderer-supplied remote contents.
+      const remote = await getCommunityClient().dispatch('get', {id:payload.id});
+      if (remote.digest !== payload.digest) throw Error('The folder changed. Preview it again before importing.');
+      return await queueBookmarkWrite(async () => {
+        const file = bookmarksFilePath(app.getPath('userData'));
+        const previous = await readBookmarks(file);
+        if (!previous.ok || previous.warnings?.length) throw Error('Your bookmarks need review before a community import. Existing data was not changed.');
+        const merged = require('./community_folders_contract').importFolder(remote.folder, previous.data,
+          () => 'bm_' + require('node:crypto').randomUUID(), payload.destination);
+        const result = await writeBookmarks(file, merged);
+        return {...result,destination:merged.destination,imported:remote.folder.items.length};
+      });
+    }
+    return await getCommunityClient().dispatch(operation,payload);
+  } catch (error) { return {ok:false,message:error.message || 'Community folders are unavailable.'}; }
+});
+ipcMain.handle("app:saveSerialBookmarks", async (_event, payload) => queueBookmarkWrite(async () => {
   const filePath = bookmarksFilePath(app.getPath("userData"));
   try {
     return await writeBookmarks(filePath, payload || {});
   } catch (error) {
     return { ok: false, message: String(error && error.message ? error.message : error) };
   }
-});
+}));
 
 ipcMain.handle("app:loadMovementSettings", async () => {
   const filePath = movementSettingsFilePath(app.getPath("userData"));
