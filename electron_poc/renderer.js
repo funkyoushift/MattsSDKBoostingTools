@@ -10439,6 +10439,9 @@ async function enrichBl4EntriesOffline(entries) {
       next.name = resolvedName;
     }
     if (card.rarity) next.rarity = card.rarity;
+    // Keep the character when the card replaces Siren/Paladin/etc. with Classmod.
+    next.character_class = card.character_class || entry.character_class ||
+      (gzoForm().isClassmodCatalogItem(entry) ? entry.type : "");
     if (card.item_type) next.type = card.item_type;
     if (card.manufacturer && !next.manufacturer) next.manufacturer = card.manufacturer;
     if (card.element) {

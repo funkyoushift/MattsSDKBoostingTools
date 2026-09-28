@@ -49,6 +49,7 @@
     if (running && !loaded) apply(afk.config || {});
     loaded = Boolean(afk);
     byId("afkStart").disabled = busy || running || !afk;
+    byId("afkTestHost").disabled = busy || running || !afk?.host_test_supported;
     byId("afkStop").disabled = busy || !running;
     panel.querySelectorAll("input,textarea,select,#afkAddBookmarks,#afkAddGuaranteedBookmarks,#afkLoadBookmarks").forEach((node) => { node.disabled = running || busy; });
     byId("afkStatus").textContent = afk ? afk.message : "AFK lobby is not connected. Install the bundled game files and restart Borderlands 4.";
@@ -70,6 +71,9 @@
     busy = true;
     render({ afk_lobby: lastStatus });
     try {
+      if (payload.test_host && !lastStatus?.host_test_supported) {
+        throw new Error('Install the updated SDK before testing AFK on yourself.');
+      }
       if (action === 'afk_lobby_start' && payload.cleanup_rewards && !lastStatus?.cleanup_rewards_supported) {
         throw new Error('Install the updated SDK before using reward cleanup.');
       }
@@ -106,11 +110,13 @@
     } finally {
       busy = false;
       byId("afkStart").disabled = running || !lastStatus;
+      byId("afkTestHost").disabled = running || !lastStatus?.host_test_supported;
       byId("afkStop").disabled = !running;
       panel.querySelectorAll("input,textarea,select,#afkAddBookmarks,#afkAddGuaranteedBookmarks,#afkLoadBookmarks").forEach((node) => { node.disabled = running; });
     }
   }
   byId("afkStart").addEventListener("click", () => run("afk_lobby_start", selection()));
+  byId("afkTestHost").addEventListener("click", () => run("afk_lobby_start", {...selection(), test_host: true}));
   byId("afkStop").addEventListener("click", () => run("afk_lobby_stop"));
   byId("afkCloseShift").addEventListener("click", () => run("shift_overlay_control", { mode: "close" }));
   async function bookmarks() {

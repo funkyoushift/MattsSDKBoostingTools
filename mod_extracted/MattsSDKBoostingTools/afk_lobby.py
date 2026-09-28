@@ -60,8 +60,12 @@ class Lobby:
         if self.enabled:
             return {"ok": False, "message": "Stop AFK Lobby before changing its selections."}
         config = {key: payload.get(key) is True for key in BOOSTS}
+        config['test_host'] = payload.get('test_host') is True
         config["auto_accept"] = payload.get("auto_accept", True) is True
         config["auto_kick"] = payload.get("auto_kick", False) is True
+        if config['test_host']:
+            config['auto_accept'] = False
+            config['auto_kick'] = False
         config['cleanup_rewards'] = payload.get('cleanup_rewards') is True
         if config['cleanup_rewards']:
             if not (config['challenges'] or config['uvhm']):
@@ -99,6 +103,7 @@ class Lobby:
             return {"ok": False, "message": str(exc)}
         self.stop()
         self.config = config
+        self.game.test_host = config['test_host']
         self.session_joins = 0
         self.counted = []
         self._load_counter()
@@ -106,7 +111,7 @@ class Lobby:
         self.history.clear()
         self.enabled = True
         self.next_tick = 0
-        self.message = "Running. Waiting for guests."
+        self.message = "Host test: waiting for your character." if config['test_host'] else "Running. Waiting for guests."
         return {"ok": True, "message": self.message, "afk_lobby": self.status()}
 
     def _load_counter(self):
@@ -125,7 +130,7 @@ class Lobby:
                 "session_joins": self.session_joins, "lifetime_joins": self.lifetime_joins, "counter_error": self.counter_error,
                 "awaiting_kick": [job["name"] for job in self.completed if not job.get("kick_attempted") and not job.get("failed")],
                 "loot_modes": ["all", "random70"], "bulk_loot_password_required": True, "random_count_supported": True, "guaranteed_loot_supported": True,
-                'cleanup_rewards_supported':True}
+                'cleanup_rewards_supported':True, 'host_test_supported':True}
 
     def tick(self):
         now = time.monotonic()
@@ -154,7 +159,7 @@ class Lobby:
             run = self.current['shared_run']
             run['members'] = [member for member in run['members'] if still_ready(member)]
         self.counted = [token for token in self.counted if token in tokens]
-        for token in tokens:
+        for token in ([] if self.config.get('test_host') else tokens):
             if token not in self.counted:
                 self.counted.append(token)
                 self.session_joins += 1
@@ -278,6 +283,11 @@ class Lobby:
         self.history.appendleft(record)
         self._flush_kicks(rows, now)
         self.current = None
+
+        if self.config.get('test_host'):
+            self.enabled = False
+            self.queue.clear()
+            self.message = 'Host test finished. ' + record['message'] + '; host is not kicked.'
 
     def _save_report(self, job):
         try:
@@ -439,10 +449,11 @@ class Game:
         rows = []
         present = []
         for index, ps in enumerate(getattr(gs, "PlayerArray", []) or []):
-            if ps is None or ps == local_ps:
+            host_test = getattr(self, 'test_host', False)
+            if ps is None or (ps != local_ps if host_test else ps == local_ps):
                 continue
-            pc = a._gbc_find_pc_for_player_state(ps, world)
-            if pc == local:
+            pc = local if host_test else a._gbc_find_pc_for_player_state(ps, world)
+            if pc == local and not host_test:
                 continue
             present.append(ps)
             pawn = a.player_economy._target_character_for_pc(pc) if pc is not None else None
@@ -506,6 +517,8 @@ class Game:
 
     def kick(self, job):
         a = self.backend()
+        if getattr(self, 'test_host', False):
+            return {'ok': False, 'message': 'The host cannot be auto-kicked.'}
         if not self.is_host():
             return {"ok": False, "message": "Not hosting; kick skipped."}
         _world, rows = self.roster()
@@ -573,7 +586,7 @@ class Game:
                 return {'ok':False,'message':'Stacked inventory restoration is unsupported; no boosts applied'}
             selected = []
             if config.get('loot'):
-                if any(value not in (None,'unknown_item') for value in (*config.get('loot_classes',[]),*config.get('guaranteed_classes',[]))):
+                if any(value not in (None,'unknown_item') for value in config.get('loot_classes',[])):
                     character = self.guest_class(job)
                     if not character:
                         return None
@@ -691,7 +704,7 @@ class Game:
                         "message": selection_note + (seq.get("afk_error") or rewards.serial_delivery_status())}
             if rewards._serial_delivery_busy():
                 return None
-            if "loot_classes" in config and any(value not in (None, "unknown_item") for value in (*config["loot_classes"], *config.get("guaranteed_classes", []))):
+            if "loot_classes" in config and any(value not in (None, "unknown_item") for value in config["loot_classes"]):
                 character = self.guest_class(job)
                 if not character:
                     if time.monotonic() - job.setdefault('loot_class_wait', time.monotonic()) >= 30:

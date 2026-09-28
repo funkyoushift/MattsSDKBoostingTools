@@ -171,7 +171,7 @@
   function isClassmodCatalogItem(item) {
     const itemType = text(item && item.type).toLowerCase();
     const itemCategory = text(item && item.category).toLowerCase();
-    const character = text(item && item.character_class).toLowerCase();
+    const character = canonicalClassType(item && item.character_class).toLowerCase();
     return (
       itemCategory === "classmod" ||
       itemCategory === "class mod" ||
@@ -187,11 +187,11 @@
   function classmodSearchAliases(item) {
     if (!isClassmodCatalogItem(item)) return "";
     const itemType = text(item && item.type).toLowerCase();
-    const character = text(item && item.character_class).toLowerCase();
+    const character = canonicalClassType(item && item.character_class).toLowerCase();
     const aliases = CLASSMOD_TYPE_SEARCH_ALIASES[itemType]
       || CLASSMOD_TYPE_SEARCH_ALIASES[character]
       || [];
-    return aliases.join(" ");
+    return ["class mod class mods classmod classmods", ...aliases].join(" ");
   }
 
   function rowManufacturer(row) {
@@ -235,7 +235,7 @@
     }
     const mappedClassmodType = CLASSMOD_FILTER_TO_TYPE[wanted];
     if (mappedClassmodType) {
-      const character = text(item && item.character_class).toLowerCase();
+      const character = canonicalClassType(item && item.character_class).toLowerCase();
       return itemType === mappedClassmodType || character === mappedClassmodType;
     }
     const aliases = TYPE_ALIASES[wanted] || [wanted];

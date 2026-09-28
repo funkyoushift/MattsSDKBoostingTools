@@ -42,6 +42,60 @@ def ticks(lobby, count=10):
         lobby.tick()
 
 
+def test_host_test_runs_once_no_kick_accept_or_join_count():
+    game = FakeGame()
+    game.rows = [row('host', index=0)]
+    lobby = module.Lobby(game)
+    assert lobby.start({'test_host':True, 'level':True, 'loot':True,
+                        'auto_accept':True, 'auto_kick':True})['ok']
+    assert game.test_host
+    assert not lobby.config['auto_accept'] and not lobby.config['auto_kick']
+    ticks(lobby, 30)
+    assert game.calls == [('level','host',0), ('loot','host',0)]
+    assert not lobby.enabled and not game.kicked
+    assert lobby.session_joins == 0 and lobby.lifetime_joins == 0
+    assert 'Host test finished' in lobby.message
+    assert lobby.start({'level':True})['ok']
+    assert not game.test_host
+
+
+def test_host_test_cleanup_uses_same_steps_and_stops_on_completion():
+    game = FakeGame()
+    game.rows = [row('host', index=0)]
+    lobby = module.Lobby(game)
+    assert lobby.start({'test_host':True, 'challenges':True, 'loot':True,
+                        'cleanup_rewards':True, 'auto_kick':True})['ok']
+    ticks(lobby, 30)
+    assert [c[0] for c in game.calls] == ['inventory_capture','challenges','inventory_recovery']
+    assert not lobby.enabled and not game.kicked
+
+
+def test_real_roster_selects_only_local_character_in_host_test(monkeypatch):
+    import sys
+    import types
+    helpers = types.ModuleType('afk_host_test.party_helpers')
+    helpers._gbc_resolve_player_display_name = lambda ps: ps
+    monkeypatch.setitem(sys.modules, helpers.__name__, helpers)
+    monkeypatch.setattr(module, '__package__', 'afk_host_test')
+    local = SimpleNamespace(PlayerState='host')
+    remote = SimpleNamespace(PlayerState='guest')
+    game = module.Game()
+    game.backend = lambda: SimpleNamespace(
+        _gbc_session_world_and_gamestate=lambda: ('world', SimpleNamespace(PlayerArray=['host','guest'])),
+        get_pc=lambda:local,
+        _gbc_find_pc_for_player_state=lambda ps,world:local if ps=='host' else remote,
+        player_economy=SimpleNamespace(_target_character_for_pc=lambda pc:'pawn'))
+    game.progression_loaded = lambda ps,pawn:True
+    game.character_ready = lambda ps,pc,pawn:True
+    game.connection_root = lambda pc:None
+    assert [r['token'] for r in game.roster()[1]] == ['guest']
+    game.test_host = True
+    rows = game.roster()[1]
+    assert len(rows) == 1 and rows[0]['token'] == 'host' and rows[0]['index'] == 0
+    assert rows[0]['pc'] is local
+    assert not game.kick(rows[0])['ok']
+
+
 def test_cleanup_needs_no_password_and_composes_originals_with_selected_loot():
     game=FakeGame();lobby=module.Lobby(game)
     config={'challenges':True,'uvhm':True,'loot':True,'cleanup_rewards':True,'auto_kick':True}

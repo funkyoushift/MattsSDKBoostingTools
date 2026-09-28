@@ -64,6 +64,11 @@ app.whenReady().then(async () => {
     panel.scrollIntoView();
     document.getElementById('afkCloseShift').click();
     await new Promise(resolve => setTimeout(resolve, 20));
+    if (!document.getElementById('afkTestHost').disabled) throw new Error('Old SDK must not offer host test');
+    window.msbtAfkRender({afk_lobby:{enabled:false,host_test_supported:true,cleanup_rewards_supported:true,loot_modes:['all','random70'],guaranteed_loot_supported:true,history:[]}});
+    document.getElementById('afkTestHost').click();
+    await new Promise(resolve => setTimeout(resolve, 30));
+    if (!document.getElementById('afkTestHost').disabled) throw new Error('Host test must lock while running');
     return {guaranteedCodes,oldSdkBlocked,unlimitedDefault,savedMode,calls,codes,catalogCodes,savedCodes,kickDefaultOff,newDefaultsOff,unchangedWhileRunning,locked,unlocked,stopEnabled,hasSduLabel:panel.textContent.includes('3,225')};
   })()`);
   assert.equal(results.codes, "@Ufixture");
@@ -89,6 +94,10 @@ app.whenReady().then(async () => {
   assert.equal(results.calls[1].action, "afk_lobby_stop");
   assert.equal(results.calls[2].action, "shift_overlay_control");
   assert.equal(results.calls[2].payload.mode, "close");
+  assert.equal(results.calls[3].action, 'afk_lobby_start');
+  assert.equal(results.calls[3].payload.test_host, true);
+  assert.equal(results.calls[3].payload.codes, results.catalogCodes);
+  assert.equal(results.calls[3].payload.guaranteed_codes, results.guaranteedCodes);
   assert(results.locked && results.unlocked && results.stopEnabled && results.hasSduLabel);
   const out = path.join(__dirname, "../output/afk-lobby");
   fs.mkdirSync(out, { recursive: true });

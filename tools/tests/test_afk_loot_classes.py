@@ -59,10 +59,10 @@ def test_guaranteed_class_mod_counts_toward_class_rule_and_total():
  fixed=['siren','exo','shield']
  fixed_classes=['Char_DarkSiren','Char_ExoSoldier',None]
  selected,_=m.select_loot(pool,classes,'Char_DarkSiren',True,random.Random(3),fixed,fixed_classes)
- assert len(selected)==70 and selected[:2]==['siren','shield']
- assert selected.count('siren')==1 and 'exo' not in selected
+ assert len(selected)==70 and selected[:3]==['siren','exo','shield']
+ assert selected.count('siren')==1 and selected.count('exo')==1
  selected,_=m.select_loot(pool,classes,'Char_DarkSiren',False,random.Random(3),fixed,fixed_classes)
- assert len(selected)==102 and selected.count('siren')==1 and 'exo' not in selected
+ assert len(selected)==103 and selected.count('siren')==1 and selected.count('exo')==1
 
 
 def test_guaranteed_only_and_short_pool_do_not_invent_filler():
@@ -120,3 +120,20 @@ def test_adjustable_random_count_keeps_fixed_and_class_rules():
   assert len(selected)==len(set(selected))
  with pytest.raises(ValueError,match='positive whole'):
   m.select_loot(['gun'],[None],None,True,random.Random(),random_count=0)
+
+
+def test_guaranteed_wrong_class_overrides_filter_but_pool_stays_restricted():
+ for random_mode in (True, False):
+  selected,_=m.select_loot(['siren','exo','paladin','gun'],
+   ['Char_DarkSiren','Char_ExoSoldier','Char_Paladin',None],
+   'Char_DarkSiren',random_mode,random.Random(1),['exo','exo'],
+   ['Char_ExoSoldier','Char_ExoSoldier'],random_count=4)
+  assert selected[:2]==['exo','exo']
+  assert 'siren' in selected and 'paladin' not in selected
+  assert len(selected)==4
+
+
+def test_guaranteed_only_does_not_require_character_lookup():
+ selected,_=m.select_loot([],[],None,True,random.Random(),
+  ['other','unknown'],['Char_ExoSoldier','unknown_item'])
+ assert selected==['other','unknown']

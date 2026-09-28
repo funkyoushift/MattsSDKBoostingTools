@@ -220,10 +220,10 @@
           <option value="all">Send all selected items · password above 70</option>
           <option value="random70">Guaranteed items + random fill</option>
         </select>
-        <p class="muted-line">Random mode sends compatible guaranteed items first, then fills remaining slots up to your selected delivery size from your loot pool. In Item Catalog, filter and select your items, then use Add to AFK. Smaller pools send the available entries. This limits items sent per join, not the guest’s total backpack contents. Rejoining draws again. Class mods are limited to the guest’s character in both modes; random mode includes at least one matching class mod when the pool has one.</p>
+        <p class="muted-line">Random mode sends all guaranteed items first, then fills remaining slots up to your selected delivery size from your loot pool. In Item Catalog, filter and select your items, then use Add to AFK. Smaller pools send the available entries. This limits items sent per join, not the guest’s total backpack contents. Rejoining draws again. Class mods are limited to the guest’s character in both modes; random mode includes at least one matching class mod when the pool has one.</p>
         <label><input id="afkAutoAccept" type="checkbox" checked> Auto-accept SHiFT friends while running</label>
           <label>Random delivery size <input id="afkRandomCount" type="number" min="1" step="1" value="70"></label>
-          <p class="muted-line">Guaranteed items count toward this total. If they exceed it, all compatible guaranteed items still arrive. More than 70 requires the password.</p>
+          <p class="muted-line">Guaranteed items count toward this total. If they exceed it, all guaranteed items still arrive. More than 70 requires the password.</p>
         <label><input id="afkAutoKick" type="checkbox"> Auto-kick when boosts finish (15-second wait after loot)</label>
         <label><input id="afkCleanupRewards" type="checkbox"> Clean challenge / UVHM reward loot and return original items</label>
         <p class="muted-line">Saves the guest’s original items, opens reward packages, clears the backpack, sends your selected serial loot, then returns the originals. Duplicates are preserved. Equipped slots and favorite/junk flags are not restored. Cleanup and returning originals need no password. Sending more than 70 new items still requires it. Auto-kick waits for both deliveries to be verified. Backpacks with stacked items are left untouched.</p>
@@ -240,13 +240,14 @@
           <p id="afkBookmarkNote" class="muted-line"></p>
           <label for="afkGuaranteedCodes">Guaranteed items · included in every delivery</label>
           <textarea id="afkGuaranteedCodes" rows="4" placeholder="Paste the gun, shield, or other item codes every guest should receive"></textarea>
-          <p class="muted-line">Guaranteed items count toward your selected total. For example, two guaranteed items in a 70-item delivery leave 68 random slots. Class-mod restrictions apply to both lists. Items already guaranteed are not drawn again from the random pool; repeat a guaranteed line for extra copies.</p>
+          <p class="muted-line">Guaranteed items count toward your selected total. For example, two guaranteed items in a 70-item delivery leave 68 random slots. Guaranteed items override the class filter, including class mods for other characters. Class filtering still applies to the random pool. Items already guaranteed are not drawn again from the random pool; repeat a guaranteed line for extra copies.</p>
           <label for="afkCodes">Loot pool · one code per line; repeated lines are extra copies</label>
           <textarea id="afkCodes" rows="5" placeholder="Paste item codes, or add bookmarks above"></textarea>
           <p class="muted-line">Codes retain their item levels. Selections are saved on this PC.</p>
         </details>
         <div class="button-row wrap">
           <button id="afkStart" type="button" disabled>Start AFK Lobby</button>
+          <button id="afkTestHost" type="button" disabled title="Runs selected boosts, loot and cleanup once on your host character. No auto-accept or auto-kick. Challenge and UVHM actions still affect the lobby.">Test selected boosts on me</button>
           <button id="afkStop" type="button" class="danger" disabled>Stop AFK Lobby</button>
           <button id="afkCloseShift" type="button">Close SHiFT / restore controls</button>
         </div>

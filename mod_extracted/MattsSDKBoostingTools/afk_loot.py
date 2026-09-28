@@ -52,12 +52,12 @@ def select_loot(serials, classes, character, random_mode, rng, guaranteed=(), gu
         raise ValueError("Random delivery size must be a positive whole number.")
     if len(serials) != len(classes) or len(guaranteed) != len(guaranteed_classes):
         raise ValueError("AFK loot classifications do not match the pool. Restart AFK.")
-    restricted = any(value not in (None, "unknown_item") for value in (*classes, *guaranteed_classes))
+    restricted = any(value not in (None, "unknown_item") for value in classes)
     if restricted and not character:
         raise ValueError("Waiting for the guest's character class; no loot sent.")
     def compatible(value):
         return value is None or value == character and character is not None
-    fixed_indices = [i for i, value in enumerate(guaranteed_classes) if compatible(value)]
+    fixed_indices = list(range(len(guaranteed)))  # Explicit guarantees override pool class restrictions.
     fixed = [guaranteed[i] for i in fixed_indices]
     fixed_codes = set(fixed)
     eligible = [i for i, value in enumerate(classes) if compatible(value) and serials[i] not in fixed_codes]
