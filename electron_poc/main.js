@@ -1896,6 +1896,20 @@ ipcMain.handle("app:getTutorialCopy", async () => {
   }
 });
 
+ipcMain.handle("app:saveNativeCardScreenshot", async (event, card) => {
+  try {
+    const shot = await require("./native_card_capture").captureNativeCard(BrowserWindow, card);
+    if (!shot?.ok || !shot.base64) return {ok:false,message:shot?.message || 'Card capture failed.'};
+    const choice = await dialog.showSaveDialog(BrowserWindow.fromWebContents(event.sender), {
+      title:'Save item card screenshot', defaultPath:'MSBT-item-card.png',
+      filters:[{name:'PNG image',extensions:['png']}]
+    });
+    if (choice.canceled || !choice.filePath) return {ok:false,cancelled:true};
+    await fsSync.promises.writeFile(choice.filePath, Buffer.from(shot.base64,'base64'));
+    return {ok:true,path:choice.filePath};
+  } catch (error) { return {ok:false,message:String(error.message || error)}; }
+});
+
 ipcMain.handle("app:captureNativeCard", async (_event, card) => {
   try {
     return await require("./native_card_capture").captureNativeCard(BrowserWindow, card);

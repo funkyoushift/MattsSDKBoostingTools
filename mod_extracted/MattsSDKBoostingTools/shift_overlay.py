@@ -46,14 +46,14 @@ def _restore_capture():
     # Recording support must never prevent the native menu from closing.
     try:
         from . import shift_capture
-        shift_capture.restore()
-        _capture_active = False
+        _capture_status.clear()
+        _capture_status.update(shift_capture.restore() or {})
     except Exception as exc:
         _capture_status["error"] = str(exc)
 
 
 def control(mode="toggle"):
-    global _last_action, _owner, _release_at, _message, _closing, _seen_visible
+    global _last_action, _owner, _release_at, _message, _closing, _seen_visible, _capture_active
     try:
         now = time.monotonic()
         if mode == "toggle" and now - _last_action < .35:
@@ -66,14 +66,16 @@ def control(mode="toggle"):
             raise RuntimeError("Close the Quick Menu first.")
         lib = library()
         if mode == "close" or (mode == "toggle" and lib.IsVisible()):
-            _restore_capture()
+            _capture_active = True
             lib.Close()
+            _restore_capture()
             _owner = pc
             _closing = True
             _release_at = [now + .25, now + .75, now + 1.5]
             release()
             _message = "SHiFT closing; restoring game input after shutdown."
         elif mode in ("toggle", "open"):
+            _capture_active = True
             lib.Open(0)
             _owner = pc
             _closing = False
@@ -82,6 +84,7 @@ def control(mode="toggle"):
             _release_at = [now + .25, now + .75, now + 1.5]
             _message = "SHiFT opened directly; restoring gameplay input."
         elif mode == "record":
+            _capture_active = True
             from . import shift_capture
             _capture_status.update(shift_capture.enable())
             _message = "Game window recording enabled."
@@ -105,13 +108,15 @@ def _record_visible_menu():
         return
     _capture_next = now + .25
     try:
-        if library().IsVisible():
+        # Once SHiFT has been used, continue checking the owned game window.
+        # Native open/close may apply exclusion after the visibility transition.
+        if not _capture_active:
+            _capture_active = bool(library().IsVisible())
+        if _capture_active:
             from . import shift_capture
+            result = shift_capture.enable()
             _capture_status.clear()
-            _capture_status.update(shift_capture.enable())
-            _capture_active = True
-        elif _capture_active:
-            _restore_capture()
+            _capture_status.update(result)
     except Exception as exc:
         _capture_status["error"] = str(exc)
 
@@ -163,8 +168,10 @@ def tick():
 
 
 def stop():
-    global _release_at, _owner, _closing, _seen_visible
-    _restore_capture()
+    global _release_at, _owner, _closing, _seen_visible, _capture_active
+    if _capture_active:
+        _restore_capture()
+    _capture_active = False
     for binding in _bindings:
         binding.disable()
     _bindings.clear()

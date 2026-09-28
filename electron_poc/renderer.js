@@ -5101,7 +5101,8 @@ function bookmarkInFolder(group, folder) {
 }
 
 async function manageBookmarkFolder(moveSelection = false) {
-  const input = document.getElementById("bookmarkFolderPath");
+  const input = document.getElementById(moveSelection ? "bookmarkFolderPath" : "bookmarkNewFolderPath");
+  if (moveSelection && !input.value) { setBookmarkStatus("Choose an existing destination folder.", "warning"); return; }
   const parts = input.value.split("/").map(part => part.trim().replace(/\s+/g, " "));
   const folder = parts.join(" / ");
   if (!parts.length || parts.some(part => !part) || folder === "All" || folder.length > 180) {
@@ -5121,6 +5122,8 @@ async function manageBookmarkFolder(moveSelection = false) {
     const saved = await persistSerialBookmarks(moveSelection ? `Moved ${selected.length} bookmark(s) to ${folder}.` : `Created folder: ${folder}.`);
     if (!saved) { state.bookmarkFolders = oldFolders; state.bookmarks = oldBookmarks; renderBookmarks(); return; }
     els.bookmarkGroupFilter.value = folder;
+    document.getElementById("bookmarkFolderPath").value = folder;
+    if (!moveSelection) document.getElementById("bookmarkNewFolderPath").value = "";
     setTextValue(els.bookmarkGroup, folder);
     renderBookmarks();
   } catch (error) {
@@ -5190,6 +5193,11 @@ function renderBookmarkGroupFilter() {
     ? previous
     : "All";
   els.bookmarkGroupFilter.value = state.bookmarkFilterGroup;
+  const destination = document.getElementById('bookmarkFolderPath');
+  const previousDestination = destination.value;
+  destination.replaceChildren(new Option('Choose an existing folder', ''));
+  bookmarkGroups().forEach(folder => destination.add(new Option(folder, folder)));
+  destination.value = bookmarkGroups().includes(previousDestination) ? previousDestination : '';
 }
 
 function filteredBookmarks() {
@@ -5253,6 +5261,7 @@ function renderBookmarks() {
 }
 
 function clearBookmarkForm() {
+  clearBookmarkPreview();
   state.bookmarkActiveId = "";
   setTextValue(els.bookmarkName, "");
   setTextValue(els.bookmarkGroup, "Default");
@@ -5286,6 +5295,7 @@ function selectBookmark(id, options = {}) {
   invalidateBookmarkConfirmation("Bookmark loaded. Validate / Confirm Serial before sending.");
   setBookmarkStatus(`Selected bookmark: ${row.name || "Untitled Serial"}`, "ok");
   renderBookmarks();
+  void previewBookmarkCard();
 }
 
 async function persistSerialBookmarks(successMessage) {
@@ -5304,6 +5314,7 @@ async function persistSerialBookmarks(successMessage) {
   renderBookmarks();
   const warning = Array.isArray(result.warnings) && result.warnings.length ? ` ${result.warnings.join(" ")}` : "";
   setBookmarkStatus(`${successMessage}${warning}`, warning ? "warning" : "ok");
+  window.dispatchEvent(new Event("msbt-bookmarks-changed"));
   return true;
 }
 
@@ -5347,45 +5358,148 @@ function bookmarkFormRecord(existing = null) {
   };
 }
 
-async function saveBookmark() {
-  const serial = getValue(els.bookmarkSerial);
-  const validation = serialValidationMessage(serial);
-  if (validation) {
-    setBookmarkStatus(`Cannot save bookmark: ${validation}`, "bad");
-    invalidateBookmarkConfirmation("Fix the serial before validating or sending.");
-    return;
+async function bookmarkGeneratedTitles(serials, existingId = '') {
+  // Only exact, case-sensitive catalog matches supply an item name.
+  const catalogNames = new Map();
+  let catalog = state.bl4Entries || [];
+  if (!catalog.length && window.msbt?.loadBl4Catalog) {
+    try { const loaded = await window.msbt.loadBl4Catalog(); if (loaded?.ok) catalog = loaded.entries || []; } catch (_) {}
   }
-  const previous = state.bookmarks.slice();
-  const existing = activeBookmark();
-  const record = normalizeBookmarkForRenderer(bookmarkFormRecord(existing));
-  if (existing) {
-    state.bookmarks = state.bookmarks.map((row) => (row.id === existing.id ? record : row));
-  } else {
-    state.bookmarks = [...state.bookmarks, record];
+  for (const row of catalog) {
+    if (row.serial && String(row.name || '').trim() && !catalogNames.has(row.serial)) catalogNames.set(row.serial, String(row.name).trim());
   }
-  state.bookmarkActiveId = record.id;
-  invalidateBookmarkConfirmation("Bookmark saved. Validate / Confirm Serial before sending.");
-  const saved = await persistSerialBookmarks(existing ? "Bookmark updated." : "Bookmark added.");
-  if (!saved) {
-    state.bookmarks = previous;
-    renderBookmarks();
+  const unresolved = serials.filter(serial => !catalogNames.has(serial));
+  const cards = await resolveOfflineCardMap(unresolved);
+  for (const [serial, card] of cards) {
+    if (card?.meta_ok && String(card.display_name || '').trim()) catalogNames.set(serial, String(card.display_name).trim());
   }
+  const used = new Set(state.bookmarks.filter(row => row.id !== existingId).map(row => row.name));
+  let next = 1;
+  return serials.map(serial => {
+    const known = catalogNames.get(serial);
+    let title;
+    if (known) {
+      title = known; let copy = 2;
+      while (used.has(title)) title = `${known} (${copy++})`;
+    } else {
+      do { title = `Saved item ${next++}`; } while (used.has(title));
+    }
+    used.add(title); return title;
+  });
 }
 
-async function deleteBookmark() {
-  const row = activeBookmark();
-  if (!row) {
-    setBookmarkStatus("Select a bookmark to delete.", "warning");
+let bookmarkSaveBusy = false;
+async function saveBookmark() {
+  if (bookmarkSaveBusy) return;
+  const text = getValue(els.bookmarkSerial);
+  const serials = text.split(/\s+/).filter(Boolean);
+  const invalid = serials.findIndex(serial => serialValidationMessage(serial) || serial.length > 20000);
+  if (!serials.length || invalid >= 0) {
+    setBookmarkStatus(!serials.length ? 'Paste one or more @U item codes.' : `Cannot save: code ${invalid + 1} is invalid or exceeds bookmark storage size. Nothing was added.`, 'bad');
     return;
   }
+  const bulk = serials.length > 1;
+  const previous = state.bookmarks.slice(), previousActive = state.bookmarkActiveId;
+  const existing = bulk ? null : activeBookmark();
+  const base = bookmarkFormRecord(existing);
+  const providedName = getValue(els.bookmarkName);
+  bookmarkSaveBusy = true;
+  els.bookmarkSaveBtn.disabled = true;
+  try {
+  const generatedTitles = providedName ? [] : await bookmarkGeneratedTitles(serials, existing?.id);
+  const records = serials.map((serial, index) => normalizeBookmarkForRenderer({
+    ...base, id: bulk ? bookmarkId() : base.id, serial,
+    name: providedName ? (bulk ? `${providedName} ${index + 1}` : providedName) : generatedTitles[index]
+  }));
+    state.bookmarks = existing ? state.bookmarks.map(row => row.id === existing.id ? records[0] : row) : [...state.bookmarks, ...records];
+    if (!await persistSerialBookmarks(bulk ? `Added ${records.length} bookmarks to ${base.group}.` : existing ? 'Bookmark updated.' : 'Bookmark added.')) throw Error('Bookmarks could not be saved.');
+    if (bulk) {
+      state.bookmarkActiveId = '';
+      state.bookmarkCheckedIds = new Set(records.map(row => row.id));
+      setTextValue(els.bookmarkSerial, '');
+    } else { state.bookmarkActiveId = records[0].id; setTextValue(els.bookmarkName, records[0].name); }
+    invalidateBookmarkConfirmation('Bookmarks saved. Validate / Confirm Serial before sending.');
+    renderBookmarks();
+  } catch (error) {
+    state.bookmarks = previous; state.bookmarkActiveId = previousActive;
+    renderBookmarks(); setBookmarkStatus(`Save failed: ${error.message}. Your pasted codes are still in the box.`, 'bad');
+  } finally { bookmarkSaveBusy = false; els.bookmarkSaveBtn.disabled = false; }
+}
+
+let bookmarkCardRevision = 0;
+let bookmarkPreviewCard = null;
+function clearBookmarkPreview() {
+  bookmarkCardRevision++;
+  bookmarkPreviewCard = null;
+  document.getElementById('bookmarkCardHost').replaceChildren();
+  document.getElementById('bookmarkScreenshotBtn').disabled = true;
+}
+async function previewBookmarkCard() {
+  clearBookmarkPreview();
+  const revision = bookmarkCardRevision;
+  const serial = getValue(els.bookmarkSerial);
+  const status = document.getElementById('bookmarkCardStatus');
+  if (serialValidationMessage(serial)) { status.textContent = 'Select one saved item to preview its card.'; return; }
+  status.textContent = 'Resolving item with the inventory card system…';
+  try {
+    const cards = await resolveOfflineCardMap([serial]);
+    if (revision !== bookmarkCardRevision || serial !== getValue(els.bookmarkSerial)) return;
+    const card = cards.get(serial);
+    if (!card?.meta_ok) { status.textContent = 'The inventory resolver could not identify this item. Its code is unchanged.'; return; }
+    bookmarkPreviewCard = card;
+    fillBl4ItemCard(document.getElementById('bookmarkCardHost'), card);
+    status.textContent = 'Inventory item-card preview. The original item code remains in the box above.';
+    document.getElementById('bookmarkScreenshotBtn').disabled = false;
+  } catch (error) { if (revision === bookmarkCardRevision) status.textContent = error.message; }
+}
+async function saveBookmarkScreenshot() {
+  if (!bookmarkPreviewCard) return;
+  const button = document.getElementById('bookmarkScreenshotBtn');
+  button.disabled = true;
+  try {
+    const result = await window.msbt.saveNativeCardScreenshot(bookmarkPreviewCard);
+    if (!result?.cancelled) document.getElementById('bookmarkCardStatus').textContent = result?.ok ? `Screenshot saved: ${result.path}` : result?.message || 'Screenshot could not be saved.';
+  } catch (error) { document.getElementById('bookmarkCardStatus').textContent = error.message; }
+  finally { button.disabled = !bookmarkPreviewCard; }
+}
+async function fillMissingBookmarkNames() {
+  if (bookmarkSaveBusy) return;
+  const rows = state.bookmarks.filter(row => /^(Saved item \d+|Untitled Serial(?: \d+)?)$/.test(row.name));
+  if (!rows.length) { setBookmarkStatus('No generated placeholder names to replace.', 'ok'); return; }
+  bookmarkSaveBusy = true;
   const previous = state.bookmarks.slice();
-  state.bookmarks = state.bookmarks.filter((item) => item.id !== row.id);
-  clearBookmarkForm();
-  const saved = await persistSerialBookmarks(`Deleted bookmark: ${row.name || "Untitled Serial"}.`);
-  if (!saved) {
-    state.bookmarks = previous;
-    state.bookmarkActiveId = row.id;
-    selectBookmark(row.id);
+  try {
+    const names = await bookmarkGeneratedTitles(rows.map(row => row.serial));
+    const replacements = new Map(rows.map((row,i) => [row.id,names[i]]).filter(([,name]) => !/^Saved item \d+$/.test(name)));
+    state.bookmarks = state.bookmarks.map(row => replacements.has(row.id) ? {...row,name:replacements.get(row.id)} : row);
+    if (!await persistSerialBookmarks(`Named ${replacements.size} items; ${rows.length-replacements.size} still unresolved.`)) throw Error('Could not save item names.');
+    if (activeBookmark()) setTextValue(els.bookmarkName, activeBookmark().name);
+  } catch (error) { state.bookmarks = previous; renderBookmarks(); setBookmarkStatus(error.message, 'bad'); }
+  finally { bookmarkSaveBusy = false; }
+}
+
+async function deleteBookmark(folder = false) {
+  const group = els.bookmarkGroupFilter.value;
+  if (folder && (!group || group === 'All')) {
+    setBookmarkStatus('Choose a folder to delete first.', 'warning'); return;
+  }
+  const selected = folder ? state.bookmarks.filter(row => bookmarkInFolder(row.group, group)) : bookmarkSelectedEntries();
+  if (!folder && !selected.length) { setBookmarkStatus('Select bookmarks to delete.', 'warning'); return; }
+  const label = folder ? `folder "${group}", its subfolders, and ${selected.length} bookmark(s)` : `${selected.length} selected bookmark(s)`;
+  if (!window.confirm(`Delete ${label}? This does not remove items from the game or from saved AFK loot lists.`)) return;
+  const previous = state.bookmarks.slice(), folders = state.bookmarkFolders.slice();
+  const checked = new Set(state.bookmarkCheckedIds), active = state.bookmarkActiveId;
+  const ids = new Set(selected.map(row => row.id));
+  state.bookmarks = state.bookmarks.filter(row => !ids.has(row.id));
+  if (folder) state.bookmarkFolders = state.bookmarkFolders.filter(name => !bookmarkInFolder(name, group));
+  try {
+    if (!await persistSerialBookmarks(`Deleted ${label}.`)) throw Error('Bookmarks could not be saved.');
+    if (ids.has(active)) clearBookmarkForm();
+    window.dispatchEvent(new Event('msbt-bookmarks-changed'));
+  } catch (error) {
+    state.bookmarks = previous; state.bookmarkFolders = folders;
+    state.bookmarkCheckedIds = checked; state.bookmarkActiveId = active;
+    renderBookmarks(); setBookmarkStatus(`Deletion was not saved: ${error.message}`, 'bad');
   }
 }
 
@@ -13106,8 +13220,13 @@ function wireEvents() {
   document.getElementById("bookmarkCreateFolderBtn").addEventListener("click", () => manageBookmarkFolder(false));
   document.getElementById("bookmarkMoveFolderBtn").addEventListener("click", () => manageBookmarkFolder(true));
   els.bookmarkSaveBtn.addEventListener("click", saveBookmark);
+  document.getElementById('bookmarkResolveNamesBtn').addEventListener('click', fillMissingBookmarkNames);
+  document.getElementById('bookmarkPreviewBtn').addEventListener('click', previewBookmarkCard);
+  document.getElementById('bookmarkScreenshotBtn').addEventListener('click', saveBookmarkScreenshot);
+  els.bookmarkSerial.addEventListener('input', clearBookmarkPreview);
   els.bookmarkDuplicateBtn.addEventListener("click", duplicateBookmark);
-  els.bookmarkDeleteBtn.addEventListener("click", deleteBookmark);
+  els.bookmarkDeleteBtn.addEventListener("click", () => deleteBookmark());
+  document.getElementById("bookmarkDeleteFolderBtn").addEventListener("click", () => deleteBookmark(true));
   if (els.bookmarkMultiSelectToggle) {
     els.bookmarkMultiSelectToggle.addEventListener("change", () => {
       state.bookmarkMultiSelect = Boolean(els.bookmarkMultiSelectToggle.checked);

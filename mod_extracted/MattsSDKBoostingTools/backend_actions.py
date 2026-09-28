@@ -7772,6 +7772,16 @@ def afk_inventory_audit(payload=None):
     return _afk_inventory_audit.control(mode, payload.get("audit_id"))
 
 
+def afk_config_upload(payload=None):
+    from .afk_config_upload import handle
+    return handle(payload or {})
+
+
+def afk_lobby_start_uploaded(payload=None):
+    from .afk_config_upload import consume
+    return afk_lobby_start(consume(payload or {}))
+
+
 def afk_lobby_start(payload=None):
     from .afk_lobby import lobby
     # Only a live operation owns the delivery queue. Historical failures retain

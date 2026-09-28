@@ -130,7 +130,8 @@ class Lobby:
                 "session_joins": self.session_joins, "lifetime_joins": self.lifetime_joins, "counter_error": self.counter_error,
                 "awaiting_kick": [job["name"] for job in self.completed if not job.get("kick_attempted") and not job.get("failed")],
                 "loot_modes": ["all", "random70"], "bulk_loot_password_required": True, "random_count_supported": True, "guaranteed_loot_supported": True,
-                'cleanup_rewards_supported':True, 'host_test_supported':True}
+                'cleanup_rewards_supported':True, 'host_test_supported':True,
+                'config_upload_supported': True}
 
     def tick(self):
         now = time.monotonic()

@@ -694,6 +694,10 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
         return backend_actions.afk_social_probe()
     if action == "afk_lobby_start":
         return backend_actions.afk_lobby_start(payload)
+    if action == "afk_config_upload":
+        return backend_actions.afk_config_upload(payload)
+    if action == "afk_lobby_start_uploaded":
+        return backend_actions.afk_lobby_start_uploaded(payload)
     if action == "afk_lobby_stop":
         return backend_actions.afk_lobby_stop()
     if action == "refresh_players":

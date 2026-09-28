@@ -14,7 +14,7 @@
             '#msbt-shift-float-status{display:inline-block;margin-left:8px;}';
         document.head.appendChild(style);
         var bar = document.createElement('div'); bar.id = 'msbt-shift-float-bar';
-        bar.innerHTML = '<span id="msbt-shift-float-drag">SHiFT • drag here</span><span id="msbt-shift-float-status"></span><button id="msbt-shift-float-accept">Start accepter</button><button id="msbt-shift-float-toggle">Full menu</button>';
+        bar.innerHTML = '<span id="msbt-shift-float-drag">SHiFT • drag here</span><span id="msbt-shift-float-status"></span><button id="msbt-shift-float-accept">Start accepter</button><label for="msbt-shift-size"> Size </label><select id="msbt-shift-size"><option value="0.42">Compact</option><option value="0.7">Medium</option><option value="1">Regular</option></select><button id="msbt-shift-float-toggle">Regular size</button>';
         document.body.appendChild(bar);
         // Mini Panel owns its own visibility and remains usable in either layout.
         if (window.ShiftMiniPanel) {
@@ -23,10 +23,13 @@
             manage.onclick = function () { window.ShiftMiniPanel.show(); };
             bar.appendChild(manage);
         }
-        var floating = true, x = 12, y = 70, drag = null;
+        var scale = .42;
+        try { var saved = Number(localStorage.getItem('msbt.shift.size')); if ([.42,.7,1].indexOf(saved) >= 0) scale = saved; } catch (_) {}
+        var floating = scale < 1, x = 12, y = 70, drag = null;
+        var size = document.getElementById('msbt-shift-size');
         function place() {
-            x = Math.max(0, Math.min(x, window.innerWidth * .58));
-            y = Math.max(50, Math.min(y, window.innerHeight * .58));
+            x = Math.max(0, Math.min(x, window.innerWidth * (1-scale)));
+            y = Math.max(50, Math.min(y, window.innerHeight * (1-scale)));
             // Inline important properties avoid depending on CSS variable support in Cohtml.
             root.style.setProperty('left', x + 'px', 'important');
             root.style.setProperty('top', y + 'px', 'important');
@@ -36,12 +39,18 @@
             bar.style.right = floating ? 'auto' : '12px';
         }
         function apply() {
+            floating = scale < 1;
+            size.value = String(scale);
+            try { localStorage.setItem('msbt.shift.size', String(scale)); } catch (_) {}
             document.documentElement.classList.toggle('msbt-shift-floating', floating);
-            document.getElementById('msbt-shift-float-toggle').textContent = floating ? 'Full menu' : 'Floating menu';
+            if (floating) root.style.setProperty('transform', 'scale('+scale+')', 'important');
+            else root.style.removeProperty('transform');
+            document.getElementById('msbt-shift-float-toggle').textContent = floating ? 'Regular size' : 'Compact size';
             if (floating) place();
             else { root.style.removeProperty('left'); root.style.removeProperty('top'); bar.style.left='';bar.style.top='12px';bar.style.right='12px'; }
         }
-        document.getElementById('msbt-shift-float-toggle').onclick = function () { floating = !floating; apply(); };
+        document.getElementById('msbt-shift-float-toggle').onclick = function () { scale = floating ? 1 : .42; apply(); };
+        size.onchange = function () { scale = Number(size.value); apply(); };
         document.getElementById('msbt-shift-float-accept').onclick = function () {
             var a = window.ShiftFriendAutomation;
             if (!a) return;

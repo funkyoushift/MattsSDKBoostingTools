@@ -9,6 +9,8 @@
   let busy = false;
   let lastStatus = null;
   let loaded = false;
+  let edits = 0;
+  let savedAt = 0;
 
   function selection() {
     return Object.fromEntries([
@@ -23,7 +25,14 @@
     ]);
   }
   function save() {
-    try { localStorage.setItem(storageKey, JSON.stringify(selection())); } catch (_) { /* session still usable */ }
+    edits++;
+    const config = selection();
+    config.saved_at = savedAt = Math.max(Date.now(), savedAt + 1);
+    let fallbackSaved = false;
+    try { localStorage.setItem(storageKey, JSON.stringify(config)); fallbackSaved = true; } catch (_) { /* IndexedDB handles larger lists. */ }
+    window.msbtAfkConfigStore.save(config).catch(error => {
+      if (!fallbackSaved) byId('afkStatus').textContent = `Could not save AFK lists: ${error.message}. Keep this window open and copy your lists before closing.`;
+    });
   }
   function apply(config) {
     options.forEach((node) => { node.checked = config[node.dataset.afkBoost] === true; });
@@ -37,7 +46,10 @@
     byId("afkGuaranteedCodes").value = typeof config.guaranteed_codes === "string"
       ? config.guaranteed_codes : (config.guaranteed_serials || []).join("\n");
   }
-  try { const saved = JSON.parse(localStorage.getItem(storageKey) || "null"); if (saved) apply(saved); } catch (_) { /* defaults */ }
+  try { const saved = JSON.parse(localStorage.getItem(storageKey) || "null"); if (saved) { savedAt = saved.saved_at || 0; apply(saved); } } catch (_) { /* defaults */ }
+  window.msbtAfkConfigStore.load().then(saved => {
+    if (saved && (saved.saved_at || 0) >= savedAt && edits === 0 && !running && !busy) { savedAt = saved.saved_at || 0; apply(saved); }
+  }).catch(() => { /* Existing localStorage settings remain available. */ });
   panel.addEventListener("change", save);
   byId("afkCodes").addEventListener("input", save);
   byId("afkGuaranteedCodes").addEventListener("input", save);
@@ -51,7 +63,7 @@
     byId("afkStart").disabled = busy || running || !afk;
     byId("afkTestHost").disabled = busy || running || !afk?.host_test_supported;
     byId("afkStop").disabled = busy || !running;
-    panel.querySelectorAll("input,textarea,select,#afkAddBookmarks,#afkAddGuaranteedBookmarks,#afkLoadBookmarks").forEach((node) => { node.disabled = running || busy; });
+    panel.querySelectorAll("input,textarea,select,#afkAddBookmarks,#afkAddGuaranteedBookmarks,#afkLoadBookmarks,#afkAddFolder,#afkAddGuaranteedFolder").forEach((node) => { node.disabled = running || busy; });
     byId("afkStatus").textContent = afk ? afk.message : "AFK lobby is not connected. Install the bundled game files and restart Borderlands 4.";
     byId("afkShiftStatus").textContent = afk && afk.shift_connected
       ? `SHiFT menu connected · Auto-accepter ${afk.shift_running ? "running" : "stopped"}`
@@ -94,12 +106,14 @@
         throw new Error("Install the updated SDK mod before changing random delivery size.");
       }
       save();
-      let response = await bridgeAction(action, payload, 30000);
+      const send = (data) => window.msbtAfkConfigSend(action, data,
+        (name, body) => bridgeAction(name, body, 30000), lastStatus?.config_upload_supported);
+      let response = await send(payload);
       let result = response && response.data !== undefined ? response.data : response;
       if (result?.password_required && result.password_kind === "bulk_loot") {
         const password = await requestBackpackPassword(result.password_kind);
         if (password === null) throw new Error("AFK start cancelled.");
-        response = await bridgeAction(action, { ...payload, bulk_loot_password: password }, 30000);
+        response = await send({ ...payload, bulk_loot_password: password });
         result = response && response.data !== undefined ? response.data : response;
       }
       if (!result || result.ok === false) throw new Error(result && result.message || "AFK command failed.");
@@ -112,25 +126,53 @@
       byId("afkStart").disabled = running || !lastStatus;
       byId("afkTestHost").disabled = running || !lastStatus?.host_test_supported;
       byId("afkStop").disabled = !running;
-      panel.querySelectorAll("input,textarea,select,#afkAddBookmarks,#afkAddGuaranteedBookmarks,#afkLoadBookmarks").forEach((node) => { node.disabled = running; });
+      panel.querySelectorAll("input,textarea,select,#afkAddBookmarks,#afkAddGuaranteedBookmarks,#afkLoadBookmarks,#afkAddFolder,#afkAddGuaranteedFolder").forEach((node) => { node.disabled = running; });
     }
   }
   byId("afkStart").addEventListener("click", () => run("afk_lobby_start", selection()));
   byId("afkTestHost").addEventListener("click", () => run("afk_lobby_start", {...selection(), test_host: true}));
   byId("afkStop").addEventListener("click", () => run("afk_lobby_stop"));
   byId("afkCloseShift").addEventListener("click", () => run("shift_overlay_control", { mode: "close" }));
-  async function bookmarks() {
-    const result = await window.msbt.loadSerialBookmarks();
-    const rows = result && result.data && result.data.bookmarks || [];
-    const select = byId("afkBookmarks");
+  let bookmarkRows = [];
+  function folderRows() {
+    const folder = byId('afkBookmarkFolder').value;
+    return bookmarkRows.filter(row => !folder || bookmarkInFolder(row.group, folder));
+  }
+  function renderBookmarkItems() {
+    const rows = folderRows();
+    const select = byId('afkBookmarks');
     select.replaceChildren();
-    rows.forEach((row) => {
-      const option = document.createElement("option");
+    rows.forEach(row => {
+      const option = document.createElement('option');
       option.value = row.serial;
-      option.textContent = `${row.group || "Default"} · ${row.name || "Unnamed item"}`;
+      option.textContent = `${row.group || 'Default'} · ${row.name || 'Unnamed item'}`;
       select.appendChild(option);
     });
-    byId("afkBookmarkNote").textContent = rows.length ? "Select bookmarks, then Add selected to loot." : "No saved bookmarks yet. You can paste item codes below.";
+    byId('afkBookmarkNote').textContent = `${rows.length} bookmark(s) in this view. Select individual items or add the whole folder, including subfolders.`;
+  }
+  async function bookmarks() {
+    const result = await window.msbt.loadSerialBookmarks();
+    if (!result?.ok) throw Error(result?.message || 'Could not load bookmarks.');
+    bookmarkRows = result.data?.bookmarks || [];
+    const folders = new Set(result.data?.folders || []);
+    bookmarkRows.forEach(row => folders.add(row.group || 'Default'));
+    [...folders].forEach(folder => {
+      const parts = folder.split('/').map(part => part.trim());
+      while (parts.length > 1) { parts.pop(); folders.add(parts.join(' / ')); }
+    });
+    const select = byId('afkBookmarkFolder'), previous = select.value;
+    select.replaceChildren(new Option('All folders', ''));
+    [...folders].sort((a,b) => a.localeCompare(b)).forEach(folder => select.add(new Option(folder, folder)));
+    select.value = folders.has(previous) ? previous : '';
+    renderBookmarkItems();
+  }
+  byId('afkBookmarkFolder').addEventListener('change', renderBookmarkItems);
+  window.addEventListener('msbt-bookmarks-changed', () => bookmarks().catch(error => { byId('afkBookmarkNote').textContent = error.message; }));
+  for (const [id, guaranteed] of [['afkAddFolder', false], ['afkAddGuaranteedFolder', true]]) {
+    byId(id).addEventListener('click', () => {
+      if (!byId('afkBookmarkFolder').value) { byId('afkBookmarkNote').textContent = 'Choose a folder first.'; return; }
+      byId('afkBookmarkNote').textContent = appendLoot(folderRows().map(row => row.serial), guaranteed).message;
+    });
   }
   byId("afkLoadBookmarks").addEventListener("click", () => bookmarks().catch((error) => { byId("afkBookmarkNote").textContent = error.message; }));
   function appendLoot(codes, guaranteed = false) {

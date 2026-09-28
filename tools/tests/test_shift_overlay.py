@@ -109,7 +109,8 @@ def test_native_menu_recording_needs_no_f10_or_input_release(monkeypatch):
     now[0]+=.1;m.tick();assert checks==['enable']
     now[0]+=.2;m.tick();assert checks==['enable','enable']
     visible[0]=False;now[0]+=.3;m.tick()
-    assert checks[-1]=='restore' and calls==[]
+    assert checks[-1]=='enable' and calls==[]
+    now[0]+=2;m.tick();assert checks[-1]=='enable' and m._capture_active
 
 
 def test_recording_failure_retries_without_touching_game_input(monkeypatch):

@@ -30,6 +30,7 @@ contextBridge.exposeInMainWorld("msbt", {
   },
   serialToolsConvert: (text) => ipcRenderer.invoke("app:serialToolsConvert", text),
   serialCardResolve: (payload) => ipcRenderer.invoke("app:serialCardResolve", payload || {}),
+  saveNativeCardScreenshot: (card) => ipcRenderer.invoke("app:saveNativeCardScreenshot", card),
   captureNativeCard: (card) => ipcRenderer.invoke("app:captureNativeCard", card),
   serialDecodeCheck: (text) => ipcRenderer.invoke("app:serialDecodeCheck", text),
   validatorBasic: (text) => ipcRenderer.invoke("app:validatorBasic", text),

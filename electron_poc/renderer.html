@@ -230,12 +230,16 @@
         <p class="muted-line">The auto-accepter also declines incoming game invites. UVHM 1–7 is separate from challenges. All Customs + Hovers uses the same action as the Boosting tab button.</p>
         <details id="afkLootDetails">
           <summary>Loot from bookmarks or item codes</summary>
-          <label for="afkBookmarks">Saved bookmarks</label>
+          <label for="afkBookmarkFolder">Bookmark folder (includes subfolders)</label>
+          <select id="afkBookmarkFolder"><option value="">All folders</option></select>
+          <label for="afkBookmarks">Saved bookmarks · select one or more items</label>
           <select id="afkBookmarks" class="list-select" multiple size="5"></select>
           <div class="button-row wrap">
             <button id="afkLoadBookmarks" type="button">Refresh bookmarks</button>
             <button id="afkAddBookmarks" type="button">Add selected to loot</button>
             <button id="afkAddGuaranteedBookmarks" type="button">Add selected to guaranteed items</button>
+            <button id="afkAddFolder" type="button">Add folder to loot pool</button>
+            <button id="afkAddGuaranteedFolder" type="button">Add folder to guaranteed items</button>
           </div>
           <p id="afkBookmarkNote" class="muted-line"></p>
           <label for="afkGuaranteedCodes">Guaranteed items · included in every delivery</label>
@@ -841,13 +845,16 @@
               </label>
             </div>
             <div id="bookmarkCount" class="status-line">0 shown / 0 saved</div>
-            <label for="bookmarkFolderPath">Folder path</label>
-            <input id="bookmarkFolderPath" type="text" maxlength="180" placeholder="Weapons / Shotguns">
+            <label for="bookmarkFolderPath">Move selected bookmarks to folder</label>
+            <select id="bookmarkFolderPath"><option value="">Choose an existing folder</option></select>
             <div class="button-row wrap">
-              <button id="bookmarkCreateFolderBtn">Create folder</button>
               <button id="bookmarkMoveFolderBtn">Move selected to folder</button>
+              <button id="bookmarkDeleteFolderBtn" class="danger">Delete folder and contents</button>
             </div>
-            <p class="muted-line">Use / for subfolders. Select a parent folder to browse all items inside it.</p>
+            <label for="bookmarkNewFolderPath">New folder name</label>
+            <input id="bookmarkNewFolderPath" type="text" maxlength="180" placeholder="Weapons / Shotguns">
+            <button id="bookmarkCreateFolderBtn" type="button">Create folder</button>
+            <p class="muted-line">Choose existing folders from the dropdowns. Use / in a new folder name to create subfolders.</p>
             <div class="button-row wrap">
               <label class="selection-mode-toggle" title="When on, clicking a bookmark adds or removes it from the selection">
                 <input id="bookmarkMultiSelectToggle" type="checkbox">
@@ -866,21 +873,28 @@
           <section class="bookmark-editor">
             <h3>Details</h3>
             <label for="bookmarkName">Name</label>
-            <input id="bookmarkName" type="text" autocomplete="off" placeholder="Bookmark name">
+            <input id="bookmarkName" type="text" autocomplete="off" placeholder="Optional — leave blank to generate titles">
             <label for="bookmarkGroup">Folder path</label>
             <input id="bookmarkGroup" type="text" autocomplete="off" value="Default" placeholder="Weapons / Shotguns">
-            <label for="bookmarkSerial">Serial</label>
-            <textarea id="bookmarkSerial" spellcheck="false" placeholder="@U..."></textarea>
+            <label for="bookmarkSerial">Item codes · paste one or many</label>
+            <textarea id="bookmarkSerial" spellcheck="false" placeholder="Paste @U codes, one per line"></textarea>
             <div class="button-row wrap">
-              <button id="bookmarkSaveBtn">Save</button>
+              <button id="bookmarkSaveBtn">Save item(s)</button>
               <button id="bookmarkDuplicateBtn">Duplicate</button>
-              <button id="bookmarkDeleteBtn" class="danger">Delete</button>
+              <button id="bookmarkDeleteBtn" class="danger">Delete selected bookmarks</button>
               <button id="bookmarkCopyBtn">Copy Serial</button>
+              <button id="bookmarkResolveNamesBtn" type="button">Fill missing item names</button>
             </div>
             <div class="button-row wrap">
               <button id="bookmarkValidateBtn">Validate / Confirm Active</button>
             </div>
             <div id="bookmarkValidationStatus" class="status-line warning">No confirmed serial yet.</div>
+            <div class="button-row wrap">
+              <button id="bookmarkPreviewBtn" type="button">Preview item card</button>
+              <button id="bookmarkScreenshotBtn" type="button" disabled>Save card screenshot</button>
+            </div>
+            <div id="bookmarkCardStatus" class="muted-line">Select a bookmark to view its inventory-style item card. Pasted lists are saved as separate items first.</div>
+            <div id="bookmarkCardHost"></div>
             <label for="bookmarkTargetSelect">Named player</label>
             <div class="target-row">
               <select id="bookmarkTargetSelect">
@@ -2728,6 +2742,8 @@
   <script src="gzo_codes_form.js"></script>
   <script src="workspace.js"></script>
   <script src="renderer.js"></script>
+  <script src="afk_config_upload.js"></script>
+  <script src="afk_config_store.js"></script>
   <script src="afk_lobby.js"></script>
 <script src="remote_afk_ui.js"></script>
 <script src="ui_i18n.js"></script>

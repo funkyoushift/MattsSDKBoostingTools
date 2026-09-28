@@ -3,7 +3,6 @@ import ctypes
 from ctypes import wintypes
 import os
 
-_saved = {}
 
 
 def _api():
@@ -39,7 +38,6 @@ def enable():
     if not api.GetWindowDisplayAffinity(hwnd, ctypes.byref(previous)):
         raise ctypes.WinError(ctypes.get_last_error())
     if previous.value:
-        _saved.setdefault(hwnd, previous.value)
         if not api.SetWindowDisplayAffinity(hwnd, 0):
             raise ctypes.WinError(ctypes.get_last_error())
     current = wintypes.DWORD()
@@ -49,10 +47,5 @@ def enable():
 
 
 def restore():
-    if not _saved: return
-    api, _ = _api()
-    for hwnd, previous in list(_saved.items()):
-        pid = wintypes.DWORD()
-        api.GetWindowThreadProcessId(hwnd, ctypes.byref(pid))
-        if pid.value == os.getpid(): api.SetWindowDisplayAffinity(hwnd, previous)
-    _saved.clear()
+    """Closing SHiFT must not reinstate a previously observed capture exclusion."""
+    return enable()

@@ -10,11 +10,12 @@ app.whenReady().then(async()=>{
  const r=await w.webContents.executeJavaScript(`(()=>{
  const root=document.getElementById('body_container'),toggle=document.getElementById('msbt-shift-float-toggle'),accept=document.getElementById('msbt-shift-float-accept');
  const small=root.getBoundingClientRect().width,viewport=innerWidth,transparent=getComputedStyle(document.body).backgroundColor;
+ const size=document.getElementById('msbt-shift-size');size.value='0.7';size.dispatchEvent(new Event('change'));const medium=root.getBoundingClientRect().width;size.value='0.42';size.dispatchEvent(new Event('change'));
  accept.click();const started=running;toggle.click();const full=root.getBoundingClientRect().width;toggle.click();
  document.getElementById('msbt-shift-float-drag').dispatchEvent(new MouseEvent('mousedown',{clientX:20,clientY:20,bubbles:true}));
  document.dispatchEvent(new MouseEvent('mousemove',{clientX:80,clientY:100,bubbles:true}));document.dispatchEvent(new MouseEvent('mouseup'));
- return {small,viewport,transparent,started,full,moved:root.getBoundingClientRect().left};})()`);
- assert(Math.abs(r.small/r.viewport-.42)<.001);assert.equal(r.full,r.viewport);assert.equal(r.transparent,'rgba(0, 0, 0, 0)');assert(r.started);assert(r.moved>12);
+ return {small,medium,viewport,transparent,started,full,moved:root.getBoundingClientRect().left};})()`);
+ assert(Math.abs(r.small/r.viewport-.42)<.001);assert.equal(r.full,r.viewport);assert(Math.abs(r.medium/r.viewport-.7)<.001);assert.equal(r.transparent,'rgba(0, 0, 0, 0)');assert(r.started);assert(r.moved>12);
  console.log('PASS floating SHiFT: compact/full size, transparency, drag, accepter stays active');w.destroy();app.exit(0);
 }).catch(e=>{console.error(e);app.exit(1)});
 
