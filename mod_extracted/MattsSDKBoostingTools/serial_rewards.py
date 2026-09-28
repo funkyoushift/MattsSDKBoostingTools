@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from .install_authorization import authorized as _installation_authorized
+
 import argparse
 import json
 import os
@@ -1419,6 +1421,8 @@ def clear_delivery_state() -> None:
     with _serial_resolution_lock:
         _serial_resolution_results.clear()
     _pending_serial_patch_jobs.clear()
+    for seq in _pending_serial_delivery_sequences:
+        _cancel_direct_sequence(seq, 'World travel interrupted delivery; review saved item report.')
     _pending_serial_delivery_sequences.clear()
     _set_serial_delivery_tick(False)
     _set_active_serial_delivery_progress(
@@ -1495,7 +1499,7 @@ def serial_delivery_progress() -> dict[str, Any]:
     read-only so UI polling never mutates the delivery state machine.
     """
     active_snapshot = dict(_active_serial_delivery_progress)
-    if bool(active_snapshot.get("active", False)):
+    if bool(active_snapshot.get("active", False)) or active_snapshot.get('method') == 'direct':
         return active_snapshot
     if not _pending_serial_delivery_sequences:
         msg = ""
@@ -1639,6 +1643,88 @@ def _is_local_only_serial_target(player_indices: List[int]) -> bool:
     except Exception:
         return False
 
+_native_direct_inventory = None
+
+
+def _direct_native():
+    global _native_direct_inventory
+    if _native_direct_inventory is None:
+        from .direct_inventory import NativeInventory
+        _native_direct_inventory = NativeInventory()
+    return _native_direct_inventory
+
+
+def _direct_token(world, pc):
+    if world is None or pc is None or pc.PlayerState is None or pc.Pawn is None:
+        raise RuntimeError('Target character is not loaded')
+    return {key:int(value._get_address()) for key,value in
+            (('world',world),('controller',pc),('state',pc.PlayerState),('pawn',pc.Pawn))}
+
+
+def _resolve_direct_target(target):
+    world, gs = _gbc_session_world_and_gamestate()
+    token = target['token']
+    if world is None or int(world._get_address()) != token['world']:
+        raise RuntimeError('Original world is no longer loaded')
+    states = [ps for ps in (getattr(gs, 'PlayerArray', None) or [])
+              if ps is not None and int(ps._get_address()) == token['state']]
+    if len(states) != 1:
+        raise RuntimeError('Original player left; no replacement player will be targeted')
+    pc = _gbc_find_pc_for_player_state(states[0], world)
+    if _direct_token(world, pc) != token:
+        raise RuntimeError('Original character changed or unloaded')
+    return pc
+
+
+def _direct_delivery_preflight(player_index):
+    world, _gs = _gbc_session_world_and_gamestate()
+    pc = _pc_for_player_index(player_index)
+    token = _direct_token(world, pc)
+    _direct_native().validate_controller(pc)
+    return token
+
+
+def _cancel_direct_sequence(seq, reason):
+    delivery = seq.get('direct_delivery')
+    if delivery is not None and not delivery.done:
+        seq['afk_error'] = reason
+        try:
+            delivery.cancel(reason)
+        except Exception as exc:
+            _log_warning(f'Direct delivery cancellation report failed: {exc!r}')
+
+
+def _queue_direct_delivery(serials, player_indices, *, scope_label, mode, bulk_authorized):
+    global _active_serial_delivery_progress
+    from .direct_delivery import Delivery, Journal, chunks_for, partition_serials
+    if len(serials) > 70 and not bulk_authorized:
+        raise PermissionError('Sending more than 70 items requires password authorization.')
+    if _pending_serial_delivery_sequences or _pending_serial_patch_jobs:
+        raise RuntimeError('A delivery is still running; wait until it finishes before sending another list.')
+    requested = list(serials)
+    serials, rejected = partition_serials(requested)
+    chunks = chunks_for(serials)
+    if not chunks:
+        raise ValueError(f'No supported item codes to deliver; {len(rejected)} rejected. ' + '; '.join(f"Item {r['index'] + 1}: {r['reason']}" for r in rejected[:3]))
+    targets = [{'name':_player_name_for_index(i) or f'Player {i}', 'token':_direct_delivery_preflight(i)}
+               for i in dict.fromkeys(int(value) for value in player_indices)]
+    if not targets:
+        raise ValueError('No loaded players selected')
+    journal = Journal(requested, targets, scope_label, rejected=rejected)
+    rejected_indices = {r['index'] for r in rejected}
+    journal.event('filtered', accepted_count=len(serials), accepted_indices=[i for i in range(len(requested)) if i not in rejected_indices], rejected=rejected)
+    delivery = Delivery(serials, targets, _resolve_direct_target, _direct_native().add, journal, rejected=rejected)
+    seq = {'direct_delivery':delivery, 'chunks':chunks, 'serials':list(serials),
+           'targets':list(player_indices), 'scope_label':scope_label, 'mode':mode,
+           'index':0, 'stage':'deliver', 'report_path':str(journal.path)}
+    _pending_serial_delivery_sequences.append(seq)
+    _active_serial_delivery_progress = delivery.progress(scope_label)
+    _gbc_run_session_timer_from_give_serial()
+    _set_serial_delivery_tick(True)
+    return {'queued_count':len(serials), 'skipped_count':len(rejected),
+            'skipped_items':rejected, 'report_path':str(journal.path)}
+
+
 def _queue_serial_delivery_sequence(serials: List[str], player_indices: List[int], *, scope_label: str, mode: str | None = None, bulk_authorized: bool = False) -> None:
     if len(serials) > 70 and not bulk_authorized:
         raise PermissionError("Sending more than 70 items requires password authorization.")
@@ -1726,12 +1812,27 @@ def _queue_serial_delivery_sequence(serials: List[str], player_indices: List[int
 
 
 def _process_pending_serial_delivery_sequences() -> None:
+    global _active_serial_delivery_progress
     if not _pending_serial_delivery_sequences:
         return
     remaining: List[dict[str, Any]] = []
     now = time.time()
     for seq in list(_pending_serial_delivery_sequences):
         try:
+            delivery = seq.get('direct_delivery')
+            if delivery is not None:
+                delivery.step()
+                seq['stage'] = 'settling' if all(t['sent'] == len(delivery.serials) for t in delivery.targets) else 'deliver'
+                seq['index'] = (len(seq['chunks']) if delivery.done and not delivery.error
+                                else min(len(seq['chunks']) - 1, min(t['chunk'] for t in delivery.targets)))
+                if delivery.error:
+                    seq['afk_error'] = delivery.error
+                _active_serial_delivery_progress = delivery.progress(seq['scope_label'])
+                if not delivery.done:
+                    remaining.append(seq)
+                else:
+                    _set_serial_delivery_status(_active_serial_delivery_progress['message'], hold_sec=30, log=True)
+                continue
             chunks = list(seq.get("chunks") or [])
             if "afk_player_state" in seq:
                 world, gs = _gbc_session_world_and_gamestate()
@@ -1898,6 +1999,9 @@ def _process_pending_serial_delivery_sequences() -> None:
             if 'afk_player_state' in seq:
                 seq['afk_error'] = f'Unexpected delivery stage: {stage!r}'
         except Exception as exc:
+            if seq.get('direct_delivery') is not None:
+                _cancel_direct_sequence(seq, 'Delivery stopped: ' + str(exc))
+                _active_serial_delivery_progress = seq['direct_delivery'].progress(seq['scope_label'])
             if 'afk_player_state' in seq:
                 seq['afk_error'] = 'Delivery stopped: ' + str(exc)
             _set_serial_delivery_status(f"Serial delivery sequence tick failed: {exc!r}", hold_sec=20.0, log=True)
@@ -1911,6 +2015,7 @@ def _do_give_serial_to_player_indices(
     scope_label: str = "selected players",
     mode: str | None = None,
     bulk_authorized: bool = False,
+    delivery_method: str = 'direct',
 ) -> None:
     """
     Queue party-safe serial delivery without blocking the host.
@@ -1920,7 +2025,15 @@ def _do_give_serial_to_player_indices(
     miss rewards or disconnect.  Keep the public helper name for existing callers,
     but route through the tick-driven verifier/sequence instead.
     """
-    _queue_serial_delivery_sequence(serials, player_indices, scope_label=scope_label, mode=mode, bulk_authorized=bulk_authorized)
+    bulk_authorized = bulk_authorized or _installation_authorized()
+    if delivery_method == 'direct':
+        return _queue_direct_delivery(serials, player_indices, scope_label=scope_label, mode=mode, bulk_authorized=bulk_authorized)
+    elif delivery_method == 'rewards':
+        # Original-inventory recovery keeps its independently tested return path.
+        _active_serial_delivery_progress.pop('method', None)
+        _queue_serial_delivery_sequence(serials, player_indices, scope_label=scope_label, mode=mode, bulk_authorized=bulk_authorized)
+    else:
+        raise ValueError('Unknown inventory delivery method')
     return
 
     if not serials:

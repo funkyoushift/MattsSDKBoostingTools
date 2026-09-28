@@ -21,6 +21,8 @@ def _load_bridge():
     sys.modules["MattsSDKBoostingTools"] = pkg
 
     ba = types.ModuleType("MattsSDKBoostingTools.backend_actions")
+    ba.set_target_player = lambda *a, **k: {"ok": True}
+    ba.afk_lobby_status = lambda: {"enabled": False}
     ba.get_status = lambda **_kwargs: {"players": [], "selected_player": "", "serial_delivery": {}}
     ba._sdk_diagnostics = lambda: {}
     sys.modules["MattsSDKBoostingTools.backend_actions"] = ba

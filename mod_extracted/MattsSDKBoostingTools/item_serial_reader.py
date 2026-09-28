@@ -1091,6 +1091,7 @@ def read_equipped_serials_for_player_state(
     *,
     player_name: str = "",
     player_index: int | None = None,
+    preserve_duplicates: bool = False,
 ) -> list[dict[str, Any]]:
     """Return equipped backpack rows that expose a readable @U serial."""
     rows = _backpack_items_for_player_state(ps)
@@ -1113,7 +1114,7 @@ def read_equipped_serials_for_player_state(
         if entry is None:
             continue
         serial = entry["serial"]
-        if serial in seen:
+        if serial in seen and not preserve_duplicates:
             continue
         seen.add(serial)
         found.append(entry)
@@ -1259,10 +1260,10 @@ def read_inventory_for_player_state(
         ps,
         player_name=player_name,
         player_index=player_index,
+        preserve_duplicates=True,
     )
     rows = _backpack_items_for_player_state(ps)
     backpack: list[dict[str, Any]] = []
-    seen = {str(e.get("serial") or "") for e in equipped}
     cap = max(1, int(backpack_limit))
     scanned = 0
     for index, row in enumerate(rows):
@@ -1283,10 +1284,6 @@ def read_inventory_for_player_state(
         )
         if entry is None:
             continue
-        serial = entry["serial"]
-        if serial in seen:
-            continue
-        seen.add(serial)
         backpack.append(entry)
 
     who = player_name or (f"P{int(player_index) + 1}" if player_index is not None else "player")

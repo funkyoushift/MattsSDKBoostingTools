@@ -226,7 +226,7 @@
           <p class="muted-line">Guaranteed items count toward this total. If they exceed it, all guaranteed items still arrive. More than 70 requires the password.</p>
         <label><input id="afkAutoKick" type="checkbox"> Auto-kick when boosts finish (15-second wait after loot)</label>
         <label><input id="afkCleanupRewards" type="checkbox"> Clean challenge / UVHM reward loot and return original items</label>
-        <p class="muted-line">Saves the guest’s original items, opens reward packages, clears the backpack, sends your selected serial loot, then returns the originals. Duplicates are preserved. Equipped slots and favorite/junk flags are not restored. Cleanup and returning originals need no password. Sending more than 70 new items still requires it. Auto-kick waits for both deliveries to be verified. Backpacks with stacked items are left untouched.</p>
+        <p class="muted-line">Saves the guest’s original items, opens reward packages, clears the backpack, delivers selected loot directly in paced chunks, then returns the originals. Duplicates are preserved. Equipped slots and favorite/junk flags are not restored. Cleanup and returning originals need no password. Sending more than 70 new items still requires it. Auto-kick follows delivery settlement; issues are saved in a report for review. Backpacks with stacked items are left untouched.</p>
         <p class="muted-line">The auto-accepter also declines incoming game invites. UVHM 1–7 is separate from challenges. All Customs + Hovers uses the same action as the Boosting tab button.</p>
         <details id="afkLootDetails">
           <summary>Loot from bookmarks or item codes</summary>
@@ -650,6 +650,7 @@
       <div class="grid two">
         <section class="panel purple" data-msbt-panel="boost-serial" data-msbt-span="6" data-msbt-title="Serial Rewards">
           <h2>Serial Rewards</h2>
+          <p class="muted-line">Item codes now deliver directly to backpacks without reward packages. All selected players progress together, with pauses based on code size. Keep guests connected until delivery finishes settling. Progress shows items submitted; it does not verify their saves.</p>
           <p>Paste one or more @U or deserialized serials, then choose who receives them. The game must be connected for delivery.</p>
           <label for="boostSerialText">Serial Input</label>
           <textarea id="boostSerialText" spellcheck="false" placeholder="@U... or 7, 0, 1, 70| deserialized text"></textarea>

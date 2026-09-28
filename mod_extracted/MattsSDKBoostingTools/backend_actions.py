@@ -5,6 +5,8 @@ external-bridge state needed by headless bridge actions.
 """
 from __future__ import annotations
 
+from .install_authorization import authorized as _installation_authorized
+
 import argparse
 import hashlib
 import importlib
@@ -6007,7 +6009,7 @@ def _backpack_target_password_guard(pc: Any, payload: dict[str, Any] | None = No
     except Exception:
         pass
     password = payload.get("backpack_password")
-    if isinstance(password, str) and hmac.compare_digest(password.encode("utf-8"), b"funkyou"):
+    if _installation_authorized(password):
         return None
     return {"ok": False, "password_required": True, "backpack_target": target,
             "message": "Empty/Drop Backpack for a non-host player requires the password. Use the desktop panel to enter it."}
@@ -6057,6 +6059,12 @@ def chaos_empty_backpack(payload: dict[str, Any] | None = None) -> dict[str, Any
     if denied:
         return denied
     snapshot = _capture_deleted_backpack_snapshot(payload)
+    if snapshot.get('read_error') or snapshot.get('target') != _backpack_snapshot_target(pc):
+        return {'ok':False, 'message':'Inventory capture failed or target changed; nothing cleared. ' + str(snapshot.get('read_error') or '')}
+    try:
+        captured = _store_deleted_backpack_snapshot(snapshot)
+    except Exception as exc:
+        return {'ok':False, 'message':f'Could not save the undo backup; nothing cleared: {exc}'}
     try:
         msg = streamer_chaos.empty_backpack_for_pc(pc)
     except Exception as exc:
@@ -6066,10 +6074,8 @@ def chaos_empty_backpack(payload: dict[str, Any] | None = None) -> dict[str, Any
             "deleted_backpack": _deleted_backpack_status(),
         }
     ok = streamer_chaos.result_ok(str(msg))
-    captured = 0
     extra = ""
     if ok:
-        captured = _store_deleted_backpack_snapshot(snapshot)
         extra = (
             f" captured {captured} serial(s) for undo (backpack + equipped)"
             if captured
@@ -6082,7 +6088,9 @@ def chaos_empty_backpack(payload: dict[str, Any] | None = None) -> dict[str, Any
             extra += " Quit Borderlands 4 fully, then recopy MattsSDKBoostingTools.sdkmod while the game is closed."
     return {
         "ok": ok,
-        "message": f"Empty backpack â†’ {label}: {msg}{extra}",
+        "message": f"Empty backpack → {label}: {msg}{extra}. Guest save persistence is not verified.",
+        "guest_save_verified": False,
+        "backup_path": str(snapshot.get("backup_path") or ""),
         "deleted_backpack": _deleted_backpack_status(),
         "captured_count": captured,
         "serials": list(snapshot.get("serials") or []) if captured else [],
@@ -6123,11 +6131,9 @@ def _serials_from_payload(payload: dict[str, Any] | None) -> list[str]:
     elif isinstance(raw, (list, tuple)):
         values.extend(str(item).strip() for item in raw if str(item).strip())
     out: list[str] = []
-    seen: set[str] = set()
     for item in values:
-        if not item.startswith("@U") or item in seen:
+        if not item.startswith("@U"):
             continue
-        seen.add(item)
         out.append(item)
         if len(out) >= _BACKPACK_DELETE_CAP:
             break
@@ -6138,11 +6144,12 @@ def _capture_deleted_backpack_snapshot(payload: dict[str, Any] | None = None) ->
     """Read live equipped+backpack serials for the selected player.
 
     Live inventory is the snapshot of what EmptyContainer will actually wipe.
-    Electron payload serials are a fallback only if that read fails, so a stale
-    panel list cannot accumulate across empties and restore extra items.
+    Never substitute stale Electron rows for a failed live read. Preserve duplicate
+    serials because separate physical items can have identical codes.
     """
     payload = payload or {}
     refresh_players()
+    capture_pc, _ = _chaos_selected_pc()
     idx = get_selected_player_index()
     name = get_selected_player_name() or ""
     serials: list[str] = []
@@ -6163,22 +6170,23 @@ def _capture_deleted_backpack_snapshot(payload: dict[str, Any] | None = None) ->
             player_name=name or f"Player {idx}",
             backpack_limit=max(_BACKPACK_DELETE_CAP, 2000),
         )
+        if snapshot.get('truncated'):
+            raise ValueError('Inventory capture was truncated')
         rows = list(snapshot.get("equipped") or []) + list(snapshot.get("backpack") or [])
-        seen: set[str] = set()
+        if len(rows) > _BACKPACK_DELETE_CAP:
+            raise ValueError("Inventory exceeds the complete undo capture limit")
         for entry in rows:
             serial = str((entry or {}).get("serial") or "").strip()
-            if not serial.startswith("@U") or serial in seen:
-                continue
-            seen.add(serial)
+            if not serial.startswith("@U"):
+                raise ValueError("An inventory entry has no restorable code")
             serials.append(serial)
             if len(serials) >= _BACKPACK_DELETE_CAP:
                 break
     except Exception as exc:
         read_error = f"{type(exc).__name__}: {exc}"
         serials = []
-    if not serials:
-        serials = _serials_from_payload(payload)
     return {
+        "target": _backpack_snapshot_target(capture_pc),
         "index": int(idx),
         "name": name or f"P{int(idx) + 1}",
         "serials": serials,
@@ -6187,23 +6195,31 @@ def _capture_deleted_backpack_snapshot(payload: dict[str, Any] | None = None) ->
     }
 
 
+def _backpack_snapshot_target(pc):
+    return str(_uvh_obj_addr(pc)) + ':' + _uvh_obj_path(pc)
+
+
 def _store_deleted_backpack_snapshot(snapshot: dict[str, Any] | None) -> int:
-    if not snapshot:
+    """Persist the exact multiset before deletion, retaining older disk backups."""
+    import json
+    import os
+    import uuid
+    from pathlib import Path
+    if not snapshot or snapshot.get('index') is None:
         return 0
-    idx = snapshot.get("index")
-    if idx is None:
-        return 0
-    serials = [str(item).strip() for item in (snapshot.get("serials") or []) if str(item).strip()]
-    key = int(idx)
+    serials = list(snapshot.get('serials') or [])
     if not serials:
-        _backpack_delete_memory.pop(key, None)
-        return 0
-    _backpack_delete_memory[key] = {
-        "index": key,
-        "name": str(snapshot.get("name") or f"P{key + 1}"),
-        "serials": serials,
-        "count": len(serials),
-    }
+        return 0  # An empty second capture must not discard the previous undo.
+    directory = Path(os.environ['LOCALAPPDATA']) / 'MattsSDKBoostingTools' / 'backpack-backups'
+    directory.mkdir(parents=True, exist_ok=True)
+    path = directory / (uuid.uuid4().hex + '.json')
+    entry = dict(snapshot, serials=serials, count=len(serials), backup_path=str(path))
+    with path.open('x', encoding='utf-8') as stream:
+        json.dump(entry, stream, ensure_ascii=False)
+        stream.flush()
+        os.fsync(stream.fileno())
+    snapshot['backup_path'] = str(path)
+    _backpack_delete_memory[int(snapshot['index'])] = entry
     return len(serials)
 
 
@@ -6214,9 +6230,15 @@ def chaos_undo_empty_backpack(payload: dict[str, Any] | None = None) -> dict[str
     if pc is None:
         return {"ok": False, "message": label, "deleted_backpack": _deleted_backpack_status()}
     idx = get_selected_player_index()
+    entry = None
     serials: list[str] = []
     if idx is not None and int(idx) in _backpack_delete_memory:
-        serials = list(_backpack_delete_memory[int(idx)].get("serials") or [])
+        entry = _backpack_delete_memory[int(idx)]
+        if entry.get('target') != _backpack_snapshot_target(pc):
+            return {'ok':False, 'message':'The saved backpack belongs to a different player session. Backup retained for manual recovery.', 'backup_path':entry.get('backup_path', '')}
+        if entry.get('restore_queued'):
+            return {'ok':False, 'message':'Undo was already queued. Backup retained; check the delivery report before sending it again.', 'report_path':entry.get('restore_report', ''), 'backup_path':entry.get('backup_path', '')}
+        serials = list(entry.get("serials") or [])
     if not serials:
         serials = _serials_from_payload(payload)
     serials = [str(item).strip() for item in serials if str(item).strip().startswith("@U")]
@@ -6226,9 +6248,15 @@ def chaos_undo_empty_backpack(payload: dict[str, Any] | None = None) -> dict[str
             "message": "No deleted backpack memory to restore. Empty Backpack first after inventory refresh.",
             "deleted_backpack": _deleted_backpack_status(),
         }
-    result = _deliver_serials_with_target(serials, "selected")
-    if result.get("ok") and idx is not None:
-        _backpack_delete_memory.pop(int(idx), None)
+    import hmac
+    password = payload.get('bulk_loot_password')
+    authorized = _installation_authorized(password)
+    result = _deliver_serials_with_target(serials, "selected", bulk_authorized=authorized)
+    if result.get("ok") and entry is not None:
+        entry['restore_queued'] = True
+        entry['restore_report'] = str(serial_rewards.serial_delivery_progress().get('report_path') or '')
+    if entry is not None:
+        result['backup_path'] = str(entry.get('backup_path') or '')
     result["deleted_backpack"] = _deleted_backpack_status()
     if result.get("ok"):
         result["message"] = (
@@ -7155,6 +7183,7 @@ def _serial_delivery_count_note(parsed_count: int | None, resolved_count: int) -
 
 
 def _deliver_serials_with_target(serials: list[str], mode: str, parsed_count: int | None = None, *, bulk_authorized: bool = False) -> dict[str, Any]:
+    bulk_authorized = bulk_authorized or _installation_authorized()
     if len(serials) > 70 and not bulk_authorized:
         return {"ok": False, "password_required": True, "password_kind": "bulk_loot", "message": "Sending more than 70 items requires the password."}
     delivery_auth = {"bulk_authorized": True} if bulk_authorized else {}
@@ -7169,53 +7198,50 @@ def _deliver_serials_with_target(serials: list[str], mode: str, parsed_count: in
         mode_key = "selected"
     total_serials = len(serials)
     chunk_mode = "selected" if mode_key == "local" else mode_key
-    chunks = serial_rewards._serial_delivery_chunks(serials, chunk_mode)
-    max_per_chunk = serial_rewards._serial_delivery_max_serials_per_chunk(chunk_mode)
-    delay = serial_rewards._serial_delivery_post_open_delay(chunk_mode)
-    estimated_wait = max(0.0, (len(chunks) - 1) * float(delay or 0.0)) if chunks else 0.0
-    split_note = (
-        f" Submitting {total_serials} serial(s) in {len(chunks)} chunk(s), "
-        f"max {max_per_chunk} serial(s) per chunk, delay {delay:.2f}s."
-    ) if chunks else ""
-    if estimated_wait >= 10.0:
-        split_note += f" Large delivery queued; estimated throttle wait is about {estimated_wait:.0f}s."
+    split_note = (' Direct to backpack, paced by item-code size for all selected players. '
+                  'Includes a final settling wait; guest saves are not verified by host progress.')
     count_note = _serial_delivery_count_note(parsed_count, total_serials)
+    def queue_note(receipt):
+        if not isinstance(receipt, dict) or not receipt.get('skipped_count'):
+            return ''
+        return (f" Queued {receipt['queued_count']} supported item(s); skipped {receipt['skipped_count']} unsupported code(s). "
+                f"Details and original codes saved in {receipt['report_path']}.")
     try:
         if mode_key == "all":
             indices = [int(idx) for idx, _name in _players()]
             if not indices:
                 return {"ok": False, "message": "No party players found."}
-            serial_rewards._do_give_serial_to_player_indices(serials, indices, scope_label="all party players", mode=mode_key, **delivery_auth)
+            receipt = serial_rewards._do_give_serial_to_player_indices(serials, indices, scope_label="all party players", mode=mode_key, **delivery_auth)
             return {
                 "ok": True,
-                "message": f"Requested {total_serials} serial(s) for all party players ({len(indices)} target(s)).{split_note}{count_note}",
+                "message": f"Requested {total_serials} serial(s) for all party players ({len(indices)} target(s)).{split_note}{count_note}{queue_note(receipt)}",
             }
         if mode_key == "nonhost":
             indices = _non_host_party_player_indices()
             if not indices:
                 return {"ok": False, "message": "No non-host party players found."}
-            serial_rewards._do_give_serial_to_player_indices(serials, indices, scope_label="all non-host players", mode=mode_key, **delivery_auth)
+            receipt = serial_rewards._do_give_serial_to_player_indices(serials, indices, scope_label="all non-host players", mode=mode_key, **delivery_auth)
             return {
                 "ok": True,
-                "message": f"Requested {total_serials} serial(s) for all non-host players ({len(indices)} target(s)).{split_note}{count_note}",
+                "message": f"Requested {total_serials} serial(s) for all non-host players ({len(indices)} target(s)).{split_note}{count_note}{queue_note(receipt)}",
             }
         if mode_key == "local":
             idx = _local_party_index()
             if idx is None:
                 return {"ok": False, "message": "Local player index unavailable."}
-            serial_rewards._do_give_serial_to_player_indices(
+            receipt = serial_rewards._do_give_serial_to_player_indices(
                 serials, [idx], scope_label="local player", mode="selected", **delivery_auth
             )
             return {
                 "ok": True,
-                "message": f"Requested {total_serials} serial(s) for local player.{split_note}{count_note}",
+                "message": f"Requested {total_serials} serial(s) for local player.{split_note}{count_note}{queue_note(receipt)}",
             }
         idx = get_selected_player_index()
         name = get_selected_player_name() or "selected player"
         if idx is None:
             return {"ok": False, "message": "No party player selected."}
-        serial_rewards._do_give_serial_to_player_indices(serials, [idx], scope_label=f"selected player {idx} {name}", mode=mode_key, **delivery_auth)
-        return {"ok": True, "message": f"Requested {total_serials} serial(s) for {name}.{split_note}{count_note}"}
+        receipt = serial_rewards._do_give_serial_to_player_indices(serials, [idx], scope_label=f"selected player {idx} {name}", mode=mode_key, **delivery_auth)
+        return {"ok": True, "message": f"Requested {total_serials} serial(s) for {name}.{split_note}{count_note}{queue_note(receipt)}"}
     except Exception as exc:
         return {"ok": False, "message": f"Serial delivery failed: {exc!r}"}
 
@@ -7306,7 +7332,7 @@ def give_serials(text: object, mode: str = "selected", override_level: object = 
     source_text = serial_text
     expanded = _parse_serial_text(source_text)
     import hmac
-    bulk_authorized = isinstance(bulk_loot_password, str) and hmac.compare_digest(bulk_loot_password.encode("utf-8"), b"funkyou")
+    bulk_authorized = _installation_authorized(bulk_loot_password)
     if len(expanded) > 70 and not bulk_authorized:
         return {"ok": False, "password_required": True, "password_kind": "bulk_loot", "message": "Sending more than 70 items requires the password."}
     if serial_rewards.needs_async_serial_resolution(expanded):
@@ -7706,7 +7732,7 @@ def afk_inventory_audit(payload=None):
         from .afk_inventory_recovery import Recovery
         from .afk_inventory_native_recovery import NativeAdapter
         password = payload.get('backpack_password')
-        if not isinstance(password, str) or not hmac.compare_digest(password.encode('utf-8'), b'funkyou'):
+        if not _installation_authorized(password):
             return {'ok':False,'message':'Backpack password required','password_required':True}
         if _afk_inventory_recovery is not None and not _afk_inventory_recovery.can_kick:
             return {'ok':False,'message':'A recovery already exists; inspect its backup before retrying'}

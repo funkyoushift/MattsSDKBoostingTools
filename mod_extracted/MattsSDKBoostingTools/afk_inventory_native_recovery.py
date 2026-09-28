@@ -30,7 +30,14 @@ class NativeAdapter:
                 self._preflight_deadline = time.monotonic() + 60
             return {'ok':False, 'retry':time.monotonic() < self._preflight_deadline,
                     'message':'Waiting for existing boosts and deliveries to finish'}
-        self.target()
+        row = self.target()
+        # Reject unsupported native builds before any destructive cleanup.
+        preflight = getattr(a.serial_rewards, '_direct_delivery_preflight', None)
+        if preflight is not None:
+            try:
+                preflight(row['index'])
+            except Exception as exc:
+                return {'ok':False, 'message':f'Direct delivery unavailable; nothing cleared: {exc}'}
         return {'ok':True}
 
     def begin(self, operation, record, player, world):
@@ -56,7 +63,8 @@ class NativeAdapter:
                     raise RuntimeError('Another delivery started; recovery will not replace it')
                 row = self.target()
                 rewards._do_give_serial_to_player_indices(serials,[row['index']],
-                    scope_label='Inventory recovery test',mode='selected',bulk_authorized=True)
+                    scope_label='Inventory recovery test',mode='selected',bulk_authorized=True,
+                    **({'delivery_method':'rewards'} if operation == 'restore' else {}))
                 seq = rewards._pending_serial_delivery_sequences[-1]
                 seq['afk_player_state'] = player
                 seq['post_open_delay'] = max(float(seq.get('post_open_delay',0)),3.0)

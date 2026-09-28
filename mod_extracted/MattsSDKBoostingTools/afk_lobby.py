@@ -93,7 +93,7 @@ class Lobby:
                 maximum = max(len(config["guaranteed_serials"]), min(config["random_count"], len(config["guaranteed_serials"]) + len(config["serials"])))
             if config["loot"] and maximum > 70:
                 password = payload.get("bulk_loot_password")
-                if not isinstance(password, str) or not hmac.compare_digest(password.encode("utf-8"), b"funkyou"):
+                if not self.game.authorize_bulk_loot(password):
                     return {"ok": False, "password_required": True, "password_kind": "bulk_loot",
                             "message": "Sending more than 70 items per guest requires the password. Choose 70 or fewer items or enter the password."}
                 config["bulk_loot_authorized"] = True
@@ -467,6 +467,9 @@ class Game:
         self.ready_since = {ps: since for ps, since in self.ready_since.items() if ps in present}
         return world, rows
 
+    def authorize_bulk_loot(self, password=None):
+        return self.backend()._installation_authorized(password)
+
     def prepare_loot(self, payload):
         a = self.backend()
         raw = a._parse_serial_text(payload.get("codes", ""))
@@ -546,6 +549,9 @@ class Game:
         job.pop("uvhm_next_at", None)
         seq = job.pop("serial_job", None)
         if seq is not None:
+            cancel_direct = getattr(a.serial_rewards, '_cancel_direct_sequence', None)
+            if cancel_direct:
+                cancel_direct(seq, 'AFK step interrupted; remaining items retained in the delivery report.')
             a.serial_rewards._pending_serial_delivery_sequences[:] = [s for s in a.serial_rewards._pending_serial_delivery_sequences if s is not seq]
         owned = job.pop("challenge_owned", None)
         if owned is not None and owned is a._challenge_queue:
@@ -721,8 +727,8 @@ class Game:
                 **({"bulk_authorized": True} if config.get("bulk_loot_authorized") else {}))
             seq = rewards._pending_serial_delivery_sequences[-1]
             seq["afk_player_state"] = ps
-            # AFK is sustained delivery: give remote clients more replication time.
-            seq["post_open_delay"] = max(float(seq.get("post_open_delay", 0)), 3.0)
+            if 'direct_delivery' not in seq:
+                seq["post_open_delay"] = max(float(seq.get("post_open_delay", 0)), 3.0)
             job["serial_job"] = seq
             return None
         return {"ok": bool(ok), "message": "Applied" if ok else "Action reported failure"}

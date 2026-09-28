@@ -18,7 +18,7 @@ def _load_backpack_functions():
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name in wanted
     ]
     module = ast.Module(body=functions, type_ignores=[])
-    namespace = {"_uvh_obj_addr": lambda pc: id(pc), "_uvh_obj_path": lambda pc: "pc", "_challenge_is_host": lambda: (True, "host")}
+    namespace = {"_installation_authorized": lambda password=None: password == "funkyou", "_uvh_obj_addr": lambda pc: id(pc), "_uvh_obj_path": lambda pc: "pc", "_challenge_is_host": lambda: (True, "host")}
     exec(compile(module, str(BACKEND), "exec"), namespace)
     return namespace
 
@@ -40,7 +40,7 @@ def test_public_drop_all_backpack_always_uses_host_controller():
     assert calls == [host_pc]
 
 
-def test_guest_drop_requires_password_and_does_not_unlock_future_calls():
+def test_guest_drop_respects_authorization_provider_and_host_bypass():
     funcs = _load_backpack_functions(); host = object(); guest = object(); calls = []
     funcs["get_pc"] = lambda: host
     funcs["_chaos_selected_pc"] = lambda: (guest, "Guest")

@@ -18,6 +18,7 @@ class FakeGame:
         self.cancelled = []
         self.wait = False
         self.kicked = []
+    def authorize_bulk_loot(self, password=None): return password == 'funkyou'
     def is_host(self): return True
     def roster(self): return self.world, self.rows
     def prepare_loot(self, payload): return ["serial"]

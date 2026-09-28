@@ -234,7 +234,7 @@ def empty_backpack_for_pc(pc: Any) -> str:
 
         ptr = FGbxDefPtr("Backpack", type="InventoryContainerDef")
         empty_fn(pc, ptr)
-        return "empty backpack OK"
+        return "empty backpack clear submitted (guest save unverified)"
     except Exception as exc:
         return f"empty ERR {exc!r}"
 
