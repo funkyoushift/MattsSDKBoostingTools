@@ -5,11 +5,17 @@ app.disableHardwareAcceleration();
 app.whenReady().then(async()=>{
  const win=new BrowserWindow({show:false,webPreferences:{partition:'bulk-bookmarks-'+process.pid}});
  await win.loadFile(path.join(__dirname,'renderer.html'),{query:{nosplash:'1'}});
+ if (process.argv[2]) {
+   const codes=require('fs').readFileSync(process.argv[2],'utf8').trim().split(/\s+/);
+   await win.webContents.executeJavaScript('window.bookmarkFixture='+JSON.stringify(codes));
+ }
  const result=await win.webContents.executeJavaScript(`(async()=>{
   const check=(v,m)=>{if(!v)throw Error(m)};
   window.msbt=window.msbt||{};
   window.msbt.saveSerialBookmarks=async data=>({ok:true,data:JSON.parse(JSON.stringify(data))});
   state.bookmarks=[{id:'old',name:'Old',serial:'@Uold',group:'Default'}];state.bookmarkActiveId='old';
+  state.bookmarkFolders=['Builds / Vex'];renderBookmarks();
+  check(els.bookmarkGroup.tagName==='SELECT','save destination is dropdown');
   els.bookmarkName.value='Starter';els.bookmarkGroup.value='Builds / Vex';
   els.bookmarkSerial.value=Array(976).fill('@UMixedCase').join('\\r\\n');
   await saveBookmark();
@@ -46,6 +52,14 @@ app.whenReady().then(async()=>{
   state.bookmarks.push({id:'repair',name:'Saved item 999',serial:'@UDecoded',group:'Default'});
   await fillMissingBookmarkNames();check(state.bookmarks.find(row=>row.id==='repair').name.startsWith('Resolved Shield'),'repair existing placeholders');
   check(state.bookmarks[1].name==='Starter 1','repair preserves custom names');
+  if(window.bookmarkFixture){
+    const before=state.bookmarks.length;
+    els.bookmarkName.value='Fixture';els.bookmarkSerial.value=window.bookmarkFixture.join('\\n');
+    await saveBookmark();
+    check(state.bookmarks.length===before+window.bookmarkFixture.length,'actual input all saved');
+    check(state.bookmarks.slice(before).every((row,i)=>row.serial===window.bookmarkFixture[i]),'actual codes preserved exactly');
+    check(document.getElementById('bookmarkStatus').textContent.includes('cannot be sent'),'oversized delivery warning');
+  }
   return true;
  })()`);
  assert(result);win.destroy();console.log('PASS bulk bookmark paste 976 entries, duplicate preservation, atomic validation, rollback and single edit');app.exit(0);

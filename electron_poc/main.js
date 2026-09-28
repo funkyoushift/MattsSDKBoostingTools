@@ -538,7 +538,14 @@ function configureAutoUpdater() {
     const { PersistentUpdater, findSetup } = require("./persistent_updater");
     const setupPath = findSetup(process.resourcesPath);
     updaterModule = setupPath
-      ? { autoUpdater: new PersistentUpdater({ setupPath, app, isNewer: isNewerPublicVersion }) }
+      ? { autoUpdater: new PersistentUpdater({ setupPath, app, isNewer: isNewerPublicVersion,
+          installedVersions: () => {
+            try {
+              const manifest = JSON.parse(fsSync.readFileSync(LOCAL_MANIFEST_PATH, 'utf8'));
+              return [app.getVersion(), manifest.package_version, manifest.resources_version].filter(version => /^\d+\.\d+\.\d+(?:\.\d+)?$/.test(String(version || '')));
+            } catch (_) { return [app.getVersion()]; }
+          }
+        }) }
       : require("electron-updater");
   } catch (error) {
     const failure = packagedLoadFailure(error);
@@ -2693,8 +2700,14 @@ ipcMain.handle("app:quitAndInstallUpdate", async () => {
   if (!configureAutoUpdater()) {
     return { ok: false, message: latestUpdateState.message || "Electron updater failed to load.", state: latestUpdateState };
   }
-  autoUpdater.quitAndInstall(false, true);
-  return { ok: true, message: "Restarting to install update." };
+  try {
+    await autoUpdater.quitAndInstall(false, true);
+    return { ok: true, message: "Restarting to install update." };
+  } catch (error) {
+    const message = `Could not start the installer: ${error.message || error}. Close any old MSBT Setup window and retry.`;
+    updateState({ status: "downloaded", message, error: String(error.message || error) });
+    return { ok: false, message };
+  }
 });
 
 ipcMain.handle("app:saveReportFile", async (_event, text) => {

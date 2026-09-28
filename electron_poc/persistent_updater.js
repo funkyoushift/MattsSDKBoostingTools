@@ -7,7 +7,8 @@ function prepareRunner(setupPath) {
   if (!process.env.LOCALAPPDATA) throw new Error("Windows local application data folder is unavailable.");
   const folder = path.join(process.env.LOCALAPPDATA, "Programs", "MSBT");
   fs.mkdirSync(folder, { recursive: true });
-  const runner = path.join(folder, "MSBT-Update.exe");
+  const runFolder = fs.mkdtempSync(path.join(folder, "update-"));
+  const runner = path.join(runFolder, "MSBT-Update.exe");
   // Run outside app/: Windows must be able to replace the entire app directory.
   fs.copyFileSync(setupPath, runner);
   return runner;
@@ -15,9 +16,9 @@ function prepareRunner(setupPath) {
 
 // The exact same setup binary handles first install and every subsequent update.
 class PersistentUpdater extends EventEmitter {
-  constructor({ setupPath, app, isNewer, run = execFile, start = spawn, prepare = prepareRunner }) {
+  constructor({ setupPath, app, isNewer, run = execFile, start = spawn, prepare = prepareRunner, installedVersions = () => [app.getVersion()] }) {
     super();
-    Object.assign(this, { setupPath, app, isNewer, run, start, prepare });
+    Object.assign(this, { setupPath, app, isNewer, run, start, prepare, installedVersions });
     this.ready = false;
     this.busy = false;
   }
@@ -39,7 +40,7 @@ class PersistentUpdater extends EventEmitter {
     const info = await this.invoke("--check");
     if (this.ready && info.version !== this.info.version) this.ready = false;
     this.info = info;
-    this.emit(this.ready ? "update-downloaded" : this.isNewer(info.version, this.app.getVersion()) ? "update-available" : "update-not-available", info);
+    this.emit(this.ready ? "update-downloaded" : (!this.isNewer(this.app.getVersion(), info.version) && this.installedVersions().some(version => this.isNewer(info.version, version))) ? "update-available" : "update-not-available", info);
     return { updateInfo: info };
   }
   async downloadUpdate() {
@@ -57,9 +58,11 @@ class PersistentUpdater extends EventEmitter {
   quitAndInstall() {
     if (!this.ready) throw new Error("Download the update first.");
     const runner = this.prepare(this.setupPath);
-    const child = this.start(runner, ["--apply", "--wait-pid", String(process.pid)], { cwd: path.dirname(runner), detached: true, stdio: "ignore" });
-    child.once("error", error => this.emit("error", error));
-    child.once("spawn", () => { child.unref(); this.app.quit(); });
+    return new Promise((resolve, reject) => {
+      const child = this.start(runner, ["--apply", "--wait-pid", String(process.pid)], { cwd: path.dirname(runner), detached: true, stdio: "ignore" });
+      child.once("error", reject);
+      child.once("spawn", () => { child.unref(); resolve(); this.app.quit(); });
+    });
   }
 }
 
@@ -67,4 +70,4 @@ function findSetup(resourcesPath) {
   const setup = path.join(resourcesPath, "setup", "MSBT-Setup.exe");
   return fs.existsSync(setup) ? setup : null;
 }
-module.exports = { PersistentUpdater, findSetup };
+module.exports = { PersistentUpdater, findSetup, prepareRunner };

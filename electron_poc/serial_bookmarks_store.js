@@ -53,7 +53,7 @@ function normalizeBookmarkRecord(record, now = new Date().toISOString(), fallbac
     id,
     name: normalizeName(source.name || source.title),
     group: normalizeGroup(source.group || source.category),
-    serial: normalizeText(source.serial, "", 20000),
+    serial: String(source.serial || "").replace(/\r\n/g, "\n").trim(),
     created_at: createdAt,
     updated_at: updatedAt
   };

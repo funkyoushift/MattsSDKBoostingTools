@@ -34,6 +34,8 @@ app.whenReady().then(async()=>{
     check(bookmarkGroups().includes('Builds / Vex'),'ancestor');
     document.getElementById('bookmarkNewFolderPath').value='Another / Empty';await manageBookmarkFolder(false);
     check(persisted.folders.includes('Another / Empty'),'empty folder saved');
+    check([...els.bookmarkGroup.options].some(o=>o.value==='Another / Empty'),'new folder available as save destination');
+    els.bookmarkGroup.value='Another / Empty';renderBookmarks();check(els.bookmarkGroup.value==='Another / Empty','preserve chosen save destination');
     window.confirm=()=>true;
     window.msbt.loadSerialBookmarks=async()=>({ok:true,data:{bookmarks:state.bookmarks,folders:state.bookmarkFolders}});
     await bookmarksForTest();

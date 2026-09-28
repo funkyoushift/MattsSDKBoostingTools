@@ -5198,6 +5198,10 @@ function renderBookmarkGroupFilter() {
   destination.replaceChildren(new Option('Choose an existing folder', ''));
   bookmarkGroups().forEach(folder => destination.add(new Option(folder, folder)));
   destination.value = bookmarkGroups().includes(previousDestination) ? previousDestination : '';
+  const savedFolder = els.bookmarkGroup.value || activeBookmark()?.group || 'Default';
+  const saveFolders = [...new Set(['Default', ...bookmarkGroups()])];
+  els.bookmarkGroup.replaceChildren(...saveFolders.map(folder => new Option(folder, folder)));
+  els.bookmarkGroup.value = saveFolders.includes(savedFolder) ? savedFolder : 'Default';
 }
 
 function filteredBookmarks() {
@@ -5368,7 +5372,7 @@ async function bookmarkGeneratedTitles(serials, existingId = '') {
   for (const row of catalog) {
     if (row.serial && String(row.name || '').trim() && !catalogNames.has(row.serial)) catalogNames.set(row.serial, String(row.name).trim());
   }
-  const unresolved = serials.filter(serial => !catalogNames.has(serial));
+  const unresolved = serials.filter(serial => !catalogNames.has(serial) && serial.length <= 8192);
   const cards = await resolveOfflineCardMap(unresolved);
   for (const [serial, card] of cards) {
     if (card?.meta_ok && String(card.display_name || '').trim()) catalogNames.set(serial, String(card.display_name).trim());
@@ -5393,9 +5397,9 @@ async function saveBookmark() {
   if (bookmarkSaveBusy) return;
   const text = getValue(els.bookmarkSerial);
   const serials = text.split(/\s+/).filter(Boolean);
-  const invalid = serials.findIndex(serial => serialValidationMessage(serial) || serial.length > 20000);
+  const invalid = serials.findIndex(serial => serialValidationMessage(serial));
   if (!serials.length || invalid >= 0) {
-    setBookmarkStatus(!serials.length ? 'Paste one or more @U item codes.' : `Cannot save: code ${invalid + 1} is invalid or exceeds bookmark storage size. Nothing was added.`, 'bad');
+    setBookmarkStatus(!serials.length ? 'Paste one or more @U item codes.' : `Cannot save: code ${invalid + 1} is not a single @U code. Nothing was added.`, 'bad');
     return;
   }
   const bulk = serials.length > 1;
@@ -5420,6 +5424,8 @@ async function saveBookmark() {
     } else { state.bookmarkActiveId = records[0].id; setTextValue(els.bookmarkName, records[0].name); }
     invalidateBookmarkConfirmation('Bookmarks saved. Validate / Confirm Serial before sending.');
     renderBookmarks();
+    const oversized = serials.filter(serial => serial.length > 8192).length;
+    if (oversized) setBookmarkStatus(`Saved ${records.length} bookmark(s) without truncation. ${oversized} code(s) exceed the 8,192-character delivery limit and cannot be sent.`, 'warning');
   } catch (error) {
     state.bookmarks = previous; state.bookmarkActiveId = previousActive;
     renderBookmarks(); setBookmarkStatus(`Save failed: ${error.message}. Your pasted codes are still in the box.`, 'bad');
@@ -5439,6 +5445,7 @@ async function previewBookmarkCard() {
   const revision = bookmarkCardRevision;
   const serial = getValue(els.bookmarkSerial);
   const status = document.getElementById('bookmarkCardStatus');
+  if (serial.length > 8192) { status.textContent = 'This full code is saved, but exceeds the 8,192-character direct-delivery limit. Card preview is unavailable.'; return; }
   if (serialValidationMessage(serial)) { status.textContent = 'Select one saved item to preview its card.'; return; }
   status.textContent = 'Resolving item with the inventory card system…';
   try {
@@ -7819,9 +7826,13 @@ async function downloadElectronUpdate() {
 async function installDownloadedElectronUpdate() {
   const confirmed = window.confirm("Restart Matt's SDK Boosting Tools now and install the downloaded update?");
   if (!confirmed) return;
-  const result = await window.msbt.installDownloadedUpdate();
-  setOutput(els.updateOutput, result);
-  setLine(els.updateSummary, result.message || "Install request finished.", result.ok ? "ok" : "bad");
+  try {
+    const result = await window.msbt.installDownloadedUpdate();
+    setOutput(els.updateOutput, result);
+    setLine(els.updateSummary, result.message || "Install request finished.", result.ok ? "ok" : "bad");
+  } catch (error) {
+    setLine(els.updateSummary, `Could not start the installer: ${error.message || error}`, "bad");
+  }
 }
 
 async function detectSdkModsFolder() {

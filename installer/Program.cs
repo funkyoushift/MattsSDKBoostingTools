@@ -51,7 +51,13 @@ sealed class SetupForm : Form
         Controls.Add(status); Controls.Add(buttons);
         if (uninstall) { install.Text = "Uninstall MSBT"; status.Text = "Remove the MSBT app? Saved settings and installed game mods will be kept."; }
         install.Click += async (_, _) => await Run();
-        launch.Click += (_, _) => { Process.Start(new ProcessStartInfo(Path.Combine(Engine.DefaultRoot, "app", Engine.Executable)) { UseShellExecute = true }); Close(); };
+        launch.Click += (_, _) => {
+            try {
+                string appDir = Path.Combine(Engine.DefaultRoot, "app");
+                Process.Start(new ProcessStartInfo(Path.Combine(appDir, Engine.Executable)) { UseShellExecute = true, WorkingDirectory = appDir });
+                Close();
+            } catch (Exception error) { Report("MSBT was installed, but could not reopen: " + error.Message); }
+        };
         Shown += async (_, _) => { if (waitPid.HasValue) await Run(); };
         FormClosing += (_, e) => { if (busy) e.Cancel = true; };
     }
@@ -90,5 +96,7 @@ sealed class SetupForm : Form
         }
         catch (Exception error) { Result = 1; Report("Setup could not finish: " + error.Message + "\n\nYou can retry with this same installer."); }
         finally { busy = false; install.Enabled = true; }
+        // Restart-and-install is a complete handoff; interactive Setup still offers Open MSBT.
+        if (Result == 0 && waitPid.HasValue && !uninstall && launch.Enabled) launch.PerformClick();
     }
 }
