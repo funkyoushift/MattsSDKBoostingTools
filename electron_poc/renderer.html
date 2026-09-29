@@ -905,7 +905,7 @@
 <input id="bookmarkNewFolderPath" maxlength="180" placeholder="Weapons / Shotguns" type="text"/>
 <button id="bookmarkCreateFolderBtn" type="button">Create folder</button>
 <p class="muted-line">Choose existing folders from the dropdowns. Use / in a new folder name to create subfolders.</p>
-</details></aside><div class="saved-items-list"><div class="button-row wrap"><button id="bookmarkNewBtn">+ Add item codes</button><button id="bookmarkImportBtn">Import</button></div>
+</details></aside><div class="saved-items-list"><div class="button-row wrap"><button id="bookmarkNewBtn">+ Add item codes</button><button id="bookmarkImportBtn">Import codes</button><button id="saveItemsImportOpen">Import from save</button></div>
 <div class="grid two compact">
 <label>
                 Search
@@ -929,6 +929,20 @@
 <button id="bookmarkCopySelectedBtn">Copy Selected Serials</button>
 </div>
 <p class="muted-line selection-mode-help">Select Multiple makes each normal click add or remove a bookmark. Ctrl/Cmd and Shift shortcuts still work.</p>
+<section id="saveItemsImportPanel" hidden class="saved-folder-tools">
+<h3>Import backpack and equipped items</h3>
+<p>Reads a local character save. Lost Loot is excluded; the original file stays unchanged.</p>
+<button id="saveItemsChoose">Choose .yaml or .sav</button>
+<div id="saveItemsAccountRow" hidden><label>Save owner's Steam or Epic account ID<input id="saveItemsAccount" autocomplete="off"></label><button id="saveItemsDecode">Preview save</button></div>
+<p id="saveItemsPreview" role="status">Choose a save to preview its items.</p>
+<div id="saveItemsDestination" hidden>
+<label>Destination<select id="saveItemsMode"><option value="new">Create new folder</option><option value="existing">Add to existing folder</option></select></label>
+<label id="saveItemsNewLabel">New folder name<input id="saveItemsNew" maxlength="180"></label>
+<label id="saveItemsExistingLabel" hidden>Existing folder<select id="saveItemsExisting"></select></label>
+<label class="saved-level-toggle"><input type="checkbox" id="saveItemsSkip">Skip duplicate codes</label>
+<button id="saveItemsCommit">Import items</button></div>
+<button id="saveItemsCancel">Close</button>
+</section>
 <div class="bookmark-list" id="bookmarkRows">
 <div class="dev-empty-row">No saved bookmarks yet.</div>
 </div>
@@ -2815,5 +2829,6 @@
 <script src="ui_i18n.js"></script>
 <script src="community_folders_contract.js"></script>
 <script src="community_folders_ui.js"></script>
+<script src="save_items_import_ui.js"></script>
 </body>
 </html>

@@ -103,6 +103,19 @@ app.whenReady().then(async()=>{
  }
  assert.ok(heights[0].local>heights[1].local && heights[0].community>heights[1].community,'tall screens get taller lists');
  assert.ok(heights[3].local<=360,'small windows retain bounded scroll area');
+ // A stalled embedded document must recover to a readable resolved card.
+ await win.webContents.executeJavaScript(`{
+  const host=document.createElement('div');host.id='stalledSavedCard';host.className='saved-item-card';document.body.append(host);
+  fillBl4ItemCard(host,{meta_ok:true,display_name:'Recovered shield',item_type:'Shield',level:70,rarity:'Legendary'});
+  const frame=host.querySelector('iframe');
+  if(frame.loading!=='eager')throw Error('Saved cards must not add a second lazy-loading gate');
+  frame.srcdoc='<html><body></body></html>';
+ }`);
+ await new Promise(resolve=>setTimeout(resolve,8500));
+ const recovered=await win.webContents.executeJavaScript(`({frame:!!document.querySelector('#stalledSavedCard iframe'),text:document.getElementById('stalledSavedCard').textContent})`);
+ assert.equal(recovered.frame,false,'stalled card replaced');
+ assert.match(recovered.text,/Recovered shield/,'fallback includes resolved item name');
+ console.log('PASS stalled imported card recovers to readable details');
  console.log('PASS adaptive Saved Items heights at 2560, 1920, 1280, 800 and 480 pixels');
  console.log('PASS community UI: consent, selected subtree, safe preview, pending privacy, append-only import, no game actions');win.destroy();app.exit(0);
 }).catch(e=>{console.error(e);app.exit(1)});

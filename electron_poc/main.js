@@ -1648,6 +1648,49 @@ ipcMain.handle('app:communityFolders', async (_event, operation, payload = {}) =
     return await getCommunityClient().dispatch(operation,payload);
   } catch (error) { return {ok:false,message:error.message || 'Community folders are unavailable.'}; }
 });
+// Keep previews in the main process; commit only the selected, decoded snapshot.
+const saveItemPreviews = new Map();
+ipcMain.handle('app:previewSaveItems', async (event, payload = {}) => {
+ try {
+  let staged = saveItemPreviews.get(event.sender.id);
+  if (!payload.retry) {
+   const pick = await dialog.showOpenDialog({title:'Import items from a character save',properties:['openFile'],filters:[{name:'BL4 character saves',extensions:['sav','yaml','yml']}]});
+   if(pick.canceled||!pick.filePaths.length)return {ok:false,canceled:true};
+   const file=await readSaveFilePayload(pick.filePaths[0]);if(!file.ok)return file;
+   staged={file};saveItemPreviews.set(event.sender.id,staged);
+  }
+  if(!staged)throw Error('Choose a save file first.');
+  staged.preview=null;
+  const account=String(payload.account||steamIdFromSavePath(staged.file.path)||'').trim();
+  let text;
+  if(path.extname(staged.file.name).toLowerCase()==='.sav'){
+   if(!/^(?:[0-9]{17}|[a-fA-F0-9]{32})$/.test(account))return {ok:false,needsAccount:true,message:'Enter the Steam or Epic account ID used by this save.'};
+   const result=await new Promise((resolve,reject)=>{
+    const child=require('node:child_process').execFile(process.execPath,[path.join(EXTERNAL_APP_DIR,'matt_editor_blcrypt.js')],{env:{...process.env,ELECTRON_RUN_AS_NODE:'1'},windowsHide:true,timeout:90000,maxBuffer:64*1024*1024},(error,stdout)=>{
+     if(error)return reject(Error('Could not decode this save. Check its account ID.'));
+     try{resolve(JSON.parse(stdout));}catch{reject(Error('The local save decoder returned an invalid response.'));}
+    });
+    child.stdin.on('error',()=>{});child.stdin.end(JSON.stringify({command:'decrypt',steamid:account,sav_data:staged.file.base64}));
+   });
+   if(!result.success)throw Error('Could not decode this save. Check its account ID. '+(result.error||''));
+   text=result.yaml_content;
+  }else text=Buffer.from(staged.file.base64,'base64').toString('utf8');
+  staged.preview=require('./save_items_import').extract(text);
+  return {ok:true,file:staged.file.name,...staged.preview,items:undefined};
+ }catch(error){return {ok:false,message:error.message,needsAccount:saveItemPreviews.get(event.sender.id)?.file.name.toLowerCase().endsWith('.sav')};}
+});
+ipcMain.handle('app:commitSaveItems', async (event,payload={})=>queueBookmarkWrite(async()=>{
+ try{
+  const staged=saveItemPreviews.get(event.sender.id);if(!staged?.preview)throw Error('Preview a save before importing.');
+  const file=bookmarksFilePath(app.getPath('userData')),previous=await readBookmarks(file);
+  if(!previous.ok||previous.warnings?.length)throw Error('Existing bookmarks need review. Nothing was changed.');
+  const merged=require('./save_items_import').merge(previous.data,staged.preview,payload);
+  const result=await writeBookmarks(file,merged.data);if(!result.ok)return result;
+  saveItemPreviews.delete(event.sender.id);
+  return {...result,imported:merged.imported,skipped:merged.skipped,destination:merged.destination};
+ }catch(error){return {ok:false,message:error.message};}
+}));
+
 ipcMain.handle("app:saveSerialBookmarks", async (_event, payload) => queueBookmarkWrite(async () => {
   const filePath = bookmarksFilePath(app.getPath("userData"));
   try {

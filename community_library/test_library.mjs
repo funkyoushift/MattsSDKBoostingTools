@@ -53,6 +53,7 @@ test('real local D1: privacy, moderation, large payload, retry and safe local im
     const request=async(route,method='GET',payload)=>mf.dispatchFetch(origin+route,{method,headers:{Origin:origin,...(cookie?{Cookie:cookie}:{}),...(payload?{'Content-Type':'application/json'}:{})},body:payload?JSON.stringify(payload):undefined});
     const signup=await request('/api/auth/sign-up/email','POST',{name:'Owner',email:'owner@example.test',password:'Test-only-strong-password-123!'});
     assert.equal(signup.status,200,await signup.clone().text());
+    assert(signup.headers.getSetCookie().some(c=>/session_token=.*Max-Age=2592000/i.test(c)), 'remembered sign-in has a persistent 30-day cookie');
     cookie=signup.headers.getSetCookie().map(c=>c.split(';')[0]).join('; ');
     const owner=(await signup.json()).user;
     assert.equal((await request('/review')).status,401,'new account cannot review');

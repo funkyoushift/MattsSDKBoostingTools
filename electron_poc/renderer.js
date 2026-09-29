@@ -10867,7 +10867,9 @@ function fillBl4ItemCard(host, entry) {
     const frame = document.createElement("iframe");
     frame.className = "native-game-card-frame";
     frame.title = invDisplayName(entry);
-    frame.loading = "lazy";
+    // Saved Items already waits for visibility before creating this frame.
+    // A second lazy gate can leave its embedded document blank after grid relayout.
+    frame.loading = host.classList.contains('saved-item-card') ? 'eager' : 'lazy';
     frame.tabIndex = -1;
     frame.setAttribute("sandbox","allow-scripts");
     frame.setAttribute("scrolling","no");
@@ -10882,6 +10884,15 @@ function fillBl4ItemCard(host, entry) {
     frame.src = "msbt-card://inventory/card.html";
     // Detached cards acquire their browsing context after insertion.
     queueMicrotask(register);
+    if (host.classList.contains('saved-item-card')) {
+      const fallback = () => {
+        if (!host.isConnected || !host.contains(frame) || frame.dataset.rendered === 'true') return;
+        host.classList.remove('native-game-card');
+        fillLegacyBl4ItemCard(host, entry);
+      };
+      frame.addEventListener('error', fallback, {once:true});
+      setTimeout(fallback, 8000);
+    }
     const note = document.createElement("div");
     note.className = "bl4-card-stats-status native-game-card-status";
     note.textContent = entry.name_status === "partial" ? "Partial name · details still being validated" : "Card details still being validated";

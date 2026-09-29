@@ -45,6 +45,8 @@ contextBridge.exposeInMainWorld("msbt", {
   loadSerialBookmarks: () => ipcRenderer.invoke("app:loadSerialBookmarks"),
   loadInventorySnapshot: () => ipcRenderer.invoke("app:loadInventorySnapshot"),
   saveInventorySnapshot: (payload) => ipcRenderer.invoke("app:saveInventorySnapshot", payload),
+  previewSaveItems: (payload) => ipcRenderer.invoke('app:previewSaveItems', payload),
+  commitSaveItems: (payload) => ipcRenderer.invoke('app:commitSaveItems', payload),
   saveSerialBookmarks: (payload) => ipcRenderer.invoke("app:saveSerialBookmarks", payload),
   loadMovementSettings: () => ipcRenderer.invoke("app:loadMovementSettings"),
   saveMovementSettings: (payload) => ipcRenderer.invoke("app:saveMovementSettings", payload),

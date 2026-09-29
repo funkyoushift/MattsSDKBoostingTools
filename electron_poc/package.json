@@ -1,12 +1,13 @@
 {
   "name": "matts-sdk-boosting-tools",
-  "version": "2.19.2",
+  "version": "2.20.0",
   "private": true,
   "description": "Desktop app for Matt's SDK Boosting Tools.",
   "author": "FunkYouSHiFT",
   "license": "MIT",
   "main": "main.js",
   "scripts": {
+    "test:save-import": "node test_save_items_import.js && electron test_save_items_import_ui.js",
     "test:community": "electron test_community_folders_ui.js && electron test_developer_portal.js",
     "test:persistent-updater": "node test_persistent_updater.js",
     "test:settings": "node --check settings_write_queue.js && electron test_settings_persistence.js && node test_settings_restart.js",

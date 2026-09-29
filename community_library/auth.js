@@ -5,7 +5,7 @@ export function authOptions(env) {
     database:env.LIBRARY, secret:env.AUTH_SECRET, baseURL:env.PUBLIC_ORIGIN,
     trustedOrigins:[env.PUBLIC_ORIGIN],
     emailAndPassword:{enabled:true,minPasswordLength:12,maxPasswordLength:128,revokeSessionsOnPasswordReset:true},
-    session:{expiresIn:60*60*8,updateAge:60*30,cookieCache:{enabled:false}},
+    session:{expiresIn:60*60*24*30,updateAge:60*60*24,cookieCache:{enabled:false}},
     rateLimit:{enabled:true,storage:'database',window:60,max:60},
     advanced:{ipAddress:{ipAddressHeaders:['cf-connecting-ip']},useSecureCookies:env.PUBLIC_ORIGIN.startsWith('https:')},
     logger:{level:'error'}
