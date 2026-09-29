@@ -1,8 +1,8 @@
-# MSBT Mobile Controller
+# Borderlands 4 Modding Tools — Mobile Controller
 
-Android companion controller for Matt's SDK Boosting Tools.
+Android companion controller for **Borderlands 4 Modding Tools — Powered by Funk** (formerly Matt's SDK Boosting Tools / MSBT).
 
-Package ID: `com.funkyoushift.msbt.mobile`
+Package ID: `com.funkyoushift.msbt.mobile` (retained for upgrade/data compatibility)
 
 Current release: `1.0.0` (public; install over older mobile betas to keep local data)
 
