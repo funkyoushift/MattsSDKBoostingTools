@@ -1,6 +1,6 @@
 # Remote AFK persistence and reserved-port repair
 
-Local candidate only; versions remain desktop/SDK 2.20.0 and Android 1.4.2 (29). Do not replace already-published same-version assets. Prepare a coordinated new version only when publication is explicitly authorized.
+Shipping in desktop/SDK v2.21.0 and Android v1.4.3 (30), following Martin's successful local review and explicit release approval. Older published assets remain unchanged.
 
 ## Behavior
 
@@ -20,4 +20,4 @@ The rebrand retains Mattmab credit. Repository slug, app IDs, executable, profil
 
 Python syntax and bridge lifecycle/Quick Menu regression checks; real sockets for denied-port fallback and stale-instance rejection; unrelated-server/action routing and LAN fallback tests; remote restore, offline enable, renewal, reconnect, revoke and shutdown-race tests; phone retry/cancellation and desktop tray/sleep/login tests; SHiFT link tests; desktop checks, settings restart and mobile parity/UI checks. Live hosted relay tested only against a mock game bridge for encryption, allowlist, replay rejection, auth and revocation.
 
-Before publication, Martin must verify the updated SDK and PAK in the active Steam game installation after a normal game restart, real phone control over cellular, window-close/reopen and PC sign-in recovery, and a real guest join/rejoin. Offline tests and a mocked hosted relay do not prove those live-game behaviors. Do not launch the retained Epic installation.
+Martin confirmed the installed candidate works before authorizing publication. The local review checklist covered the updated SDK and PAK in the active Steam game installation after a normal game restart, real phone control over cellular, window-close/reopen and PC sign-in recovery, and a real guest join/rejoin. Offline tests and a mocked hosted relay do not prove those live-game behaviors. Do not launch the retained Epic installation.

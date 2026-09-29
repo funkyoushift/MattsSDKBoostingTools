@@ -4,7 +4,7 @@ Android companion controller for **Borderlands 4 Modding Tools — Powered by Fu
 
 Package ID: `com.funkyoushift.msbt.mobile` (retained for upgrade/data compatibility)
 
-Current release: `1.0.0` (public; install over older mobile betas to keep local data)
+Current release: `1.4.3` (public; install over older mobile betas to keep local data)
 
 ## Phone download (static link)
 
@@ -53,7 +53,7 @@ Useful without a PC connection:
 
 ## Live pairing
 
-Desktop MSBT on this branch starts a **Mobile Gateway** on LAN port `49775` that proxies to the localhost SDK bridge (`127.0.0.1:49774`). The in-game bridge is not opened to all interfaces.
+The desktop **Mobile Gateway** uses LAN port `49775` (fallback `27877` or `27878`) and proxies to the verified localhost SDK bridge. The in-game bridge is not opened to all interfaces.
 
 1. PC: run desktop MSBT + Borderlands 4 with MSBT loaded.
 2. PC: **Mobile Gateway tab** — show the QR (or note LAN IP + pairing code).
@@ -108,7 +108,7 @@ Public downloads are GitHub Release links (APK on Latest + desktop installer). S
 Shipped APK names:
 
 - `MSBT-Mobile-Controller.apk` (rolling, always current)
-- `MSBT-Mobile-Controller-1.0.0.apk` (versioned)
+- `MSBT-Mobile-Controller-1.4.3.apk` (versioned)
 
 See `BETA_TESTING.md` and the `test_kit/` folder for older tester notes. New installs should use Latest.
 
@@ -123,3 +123,9 @@ The APK catalog assets are generated from the same checked-in resources used by 
 In desktop MSBT, open **Mobile Gateway → Enable remote AFK**, then scan its private QR using the phone Pair QR scanner. No VPN app or port forwarding is required. Keep desktop MSBT and Borderlands 4 running. The phone AFK screen supports start/stop, boost options, guaranteed/random pools, auto-kick, SHiFT open/close and results. Use **Disable & revoke pairing** on the PC to remove access. Other mobile tools continue to use their existing local connection; the remote connection is limited to AFK.
 
 A cellular-data test on the physical phone remains required. See `../remote_relay/README.md` for service operation and validation.
+
+## v2.21.0 desktop / v1.4.3 Android
+
+Remote AFK retains pairing across desktop restarts, renews the relay connection, and reconnects automatically. Closing the enabled desktop panel keeps it in the tray; Windows sign-in restores it. Keep the PC and game running. Pair with the Remote AFK QR for cellular/off-network AFK controls; full controls still use LAN pairing. Disable remote access to revoke the pairing.
+
+The bridge tries ports 49774, 27874–27876; the desktop gateway tries 49775, 27877–27878. Use the port shown in the current pairing QR. Desktop and phone verify discovered endpoints before actions. Existing app IDs, settings, SDK names, updater targets, and download filenames remain compatible. Original project credit: Mattmab.

@@ -90,3 +90,9 @@ BLImGui remains optional. ActorScriptDeployer is bundled as a folder-form SDK mo
 - The Electron build bundles a portable Python runtime for local serial, validator, and Matt editor helper code.
 - Installer/update behavior is release-backed, but every new update should still be tested from GitHub Releases before announcing it broadly.
 - Some deep editor and Dev Spawner workflows are still being polished in Electron.
+
+## v2.21.0 desktop / v1.4.3 Android
+
+Remote AFK retains pairing across desktop restarts, renews the relay connection, and reconnects automatically. Closing the enabled desktop panel keeps it in the tray; Windows sign-in restores it. Keep the PC and game running. Pair with the Remote AFK QR for cellular/off-network AFK controls; full controls still use LAN pairing. Disable remote access to revoke the pairing.
+
+The bridge tries ports 49774, 27874–27876; the desktop gateway tries 49775, 27877–27878. Use the port shown in the current pairing QR. Desktop and phone verify discovered endpoints before actions. Existing app IDs, settings, SDK names, updater targets, and download filenames remain compatible. Original project credit: Mattmab.
