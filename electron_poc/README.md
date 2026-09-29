@@ -1,6 +1,6 @@
-# MSBT Electron App
+# Borderlands 4 Modding Tools — Electron App
 
-This folder contains the Electron desktop app for Matt's SDK Boosting Tools. It replaces the older Tkinter app while keeping the same SDK bridge boundary: Electron talks to the game only through the local MSBT HTTP bridge.
+This folder contains the Electron desktop app for **Borderlands 4 Modding Tools — Powered by Funk**. The project was formerly known as Matt's SDK Boosting Tools (MSBT). Compatibility-sensitive internal identifiers still use `MSBT`; Electron talks to the game through the existing local MSBT HTTP bridge.
 
 Current Electron priorities are tracked in [../docs/ELECTRON_ROADMAP.md](../docs/ELECTRON_ROADMAP.md).
 
