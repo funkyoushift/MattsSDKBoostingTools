@@ -5303,7 +5303,7 @@ body.msbt-density-compact .activity-card {
 .saved-level-toggle input[type="checkbox"] { width: 18px; height: 18px; margin: 0; }
 #savedSendBtn { width: 100%; margin-top: 12px; padding: 12px; background: #245a70; border-color: #79d9ff; color: white; }
 #savedSendBtn:disabled { opacity: .45; }
-#bookmarkRows .bookmark-row.checked { background: #23485b; border-color: #79d9ff; box-shadow: inset 3px 0 #79d9ff; }
+#bookmarkRows .bookmark-row.checked { background: var(--select-fill); border-color: var(--select); box-shadow: inset 3px 0 var(--select); }
 
 .saved-library-tools { margin: 12px 0; padding: 8px 0; }
 .saved-library-tools summary { cursor: pointer; color: #8cdbf2; }
@@ -5320,7 +5320,7 @@ body.msbt-density-compact .activity-card {
   background: #0d1420; color: #e7edf5;
 }
 #bookmarkRows .saved-card-tile.checked, #communityPreviewItems .saved-card-tile:has(input:checked) {
-  border-color: #58cef0; box-shadow: 0 0 0 2px #58cef055;
+  border-color: var(--select); box-shadow: 0 0 0 2px var(--select-fill);
 }
 .saved-card-tile .bookmark-title { white-space: normal; overflow-wrap: anywhere; }
 .saved-card-tile .bookmark-group { display: none; }
