@@ -16,6 +16,12 @@ from pathlib import Path
 from typing import Any, Callable
 
 _PORT = 49774
+
+
+def set_bridge_port(port: int) -> None:
+    """The listener supplies the actual port for enrollment responses and QR codes."""
+    global _PORT
+    _PORT = int(port)
 INSTALL_URL = "https://www.funkyoushift.com/MattsSDKBoostingTools/mobile-install.html"
 _STATE_NAME = "mobile_lan.json"
 _LOCK = threading.RLock()

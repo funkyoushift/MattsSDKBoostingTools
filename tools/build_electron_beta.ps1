@@ -126,6 +126,9 @@ function Assert-GzoCatalogImages {
 if (-not (Test-Path $NodeModules)) {
     throw "Electron dependencies are missing. Run 'npm.cmd install' inside electron_poc first."
 }
+if ((Get-Item -LiteralPath $NodeModules).Attributes -band [IO.FileAttributes]::ReparsePoint) {
+    throw "Release builds require local dependencies, not a shared junction. Run npm ci in electron_poc with its own node_modules."
+}
 if (-not (Test-Path $PrepareElectronPython)) {
     throw "Portable Python prep script is missing: $PrepareElectronPython"
 }
@@ -226,6 +229,25 @@ foreach ($relativePath in $RequiredPackageFiles) {
     if (-not (Test-Path $fullPath)) {
         throw "Electron package is missing required runtime file: $relativePath"
     }
+}
+# Exercise the shipped dependency graph without development modules masking omissions.
+$PreviousElectronNodeMode = $env:ELECTRON_RUN_AS_NODE
+try {
+    $env:ELECTRON_RUN_AS_NODE = '1'
+    foreach ($audit in @('runtime', 'assets')) {
+        $auditScript = Join-Path $RepoRoot "tools\test_packaged_$audit.cjs"
+        $auditArgs = if ($audit -eq 'runtime') { @($auditScript, (Join-Path $UnpackedRoot 'resources\app.asar')) } else { @($auditScript, $RepoRoot, (Join-Path $UnpackedRoot 'resources')) }
+        $auditOut = Join-Path $OutputRoot "health-$audit.json"
+        $auditErr = Join-Path $OutputRoot "health-$audit-error.log"
+        $auditProcess = Start-Process -FilePath (Join-Path $UnpackedRoot 'MattsSDKBoostingTools.exe') -ArgumentList ($auditArgs | ForEach-Object { '"' + $_ + '"' }) -WindowStyle Hidden -Wait -PassThru -RedirectStandardOutput $auditOut -RedirectStandardError $auditErr
+        Get-Content -LiteralPath $auditOut
+        if ($auditProcess.ExitCode -ne 0) {
+            Get-Content -LiteralPath $auditErr
+            throw "Packaged $audit health check failed. Do not publish this build."
+        }
+    }
+} finally {
+    if ($null -eq $PreviousElectronNodeMode) { Remove-Item Env:ELECTRON_RUN_AS_NODE -ErrorAction SilentlyContinue } else { $env:ELECTRON_RUN_AS_NODE = $PreviousElectronNodeMode }
 }
 $PackagedGzoCatalog = Join-Path $UnpackedRoot "resources\external_app\v22_parts_codes_fixed\resources\MattsSDKBoostingTools_gzo_codes.json"
 Assert-GzoCatalogImages -CatalogPath $PackagedGzoCatalog -Label "Packaged GZO catalog"

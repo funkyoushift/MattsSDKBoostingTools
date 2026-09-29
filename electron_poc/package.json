@@ -32,7 +32,8 @@
     "test:native-equipment-cards": "node --check native_equipment_card.js && node --check serial_card_stats.js && electron test_native_equipment_cards.js",
     "test:responsive": "node --check workspace.js && electron test_responsive_workspace.js",
     "test:mobile-remote": "node --check remote_afk.js && node --check remote_crypto.js && electron test_mobile_afk.js",
-    "test:afk-followups": "electron test_bookmark_folders.js && electron test_ui_i18n.js && electron test_afk_lobby.js && electron test_mobile_afk.js"
+    "test:afk-followups": "electron test_bookmark_folders.js && electron test_ui_i18n.js && electron test_afk_lobby.js && electron test_mobile_afk.js",
+    "test:remote-resilience": "node test_remote_persistence.js && node test_bridge_discovery.js && node test_remote_background.js && node test_phone_reconnect.js && node ../tools/afk_lobby/test_shift_link.js"
   },
   "build": {
     "appId": "com.funkyoushift.msbt",

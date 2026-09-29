@@ -8,6 +8,8 @@ from __future__ import annotations
 
 import copy
 import json
+import os
+from pathlib import Path
 import threading
 import time
 import uuid
@@ -26,6 +28,30 @@ except Exception:  # pragma: no cover - only available in-game
 
 _HOST = "127.0.0.1"
 _PORT = 49774
+BRIDGE_PORTS = (49774, 27874, 27875, 27876)
+_instance_id = uuid.uuid4().hex
+
+
+def _endpoint_file() -> Path:
+    return Path(os.environ.get("LOCALAPPDATA") or Path.home() / "AppData" / "Local") / "MSBT" / "bridge-endpoint.json"
+
+
+def _publish_endpoint() -> None:
+    target = _endpoint_file()
+    target.parent.mkdir(parents=True, exist_ok=True)
+    pending = target.with_suffix(f".{_instance_id}.tmp")
+    pending.write_text(json.dumps({"service": "msbt-sdk-bridge", "protocol": 1,
+        "host": "127.0.0.1", "port": _PORT, "instance": _instance_id, "pid": os.getpid()}), encoding="utf-8")
+    os.replace(pending, target)
+
+
+def _clear_endpoint() -> None:
+    try:
+        target = _endpoint_file()
+        if json.loads(target.read_text(encoding="utf-8")).get("instance") == _instance_id:
+            target.unlink(missing_ok=True)
+    except (OSError, ValueError):
+        pass
 _afk_shift_seen = 0.0
 _afk_shift_running = False
 _LAN_ROUTES_DENIED = ("/layout", "/resource/")
@@ -1329,6 +1355,9 @@ def _lan_route_denied(path: str) -> bool:
 def _authorized_request(handler: Any) -> tuple[bool, str]:
     ip = _request_ip(handler)
     path = _request_path(handler)
+    instance = _request_header(handler, "x-msbt-instance")
+    if instance and instance != _instance_id:
+        return False, ip
     if _is_loopback_ip(ip):
         return True, ip
     if path.startswith("/mobile/ping"):
@@ -1379,7 +1408,7 @@ class _Handler(BaseHTTPRequestHandler):
             self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
             self.send_header(
                 "Access-Control-Allow-Headers",
-                "Content-Type, X-MSBT-Device, X-MSBT-Pairing-Code, X-MSBT-Enroll",
+                "Content-Type, X-MSBT-Device, X-MSBT-Pairing-Code, X-MSBT-Enroll, X-MSBT-Instance",
             )
             self.end_headers()
             self.wfile.write(body)
@@ -1395,6 +1424,13 @@ class _Handler(BaseHTTPRequestHandler):
     def do_GET(self) -> None:
         path = _request_path(self)
         allowed, _ip = _authorized_request(self)
+        if path == "/bridge-info":
+            if not _is_loopback_ip(_ip):
+                self._send(404, {"ok": False})
+                return
+            self._send(200, {"service": "msbt-sdk-bridge", "protocol": 1,
+                "instance": _instance_id, "port": _PORT, "started": _started})
+            return
         if path.startswith("/mobile/ping"):
             self._send(200, {
                 "ok": True,
@@ -1402,6 +1438,7 @@ class _Handler(BaseHTTPRequestHandler):
                 "port": _PORT,
                 "lan_enabled": mobile_lan.lan_enabled(),
                 "direct": True,
+                "instance": _instance_id,
             })
             return
         if not allowed:
@@ -1418,7 +1455,8 @@ class _Handler(BaseHTTPRequestHandler):
                 self._send(404, {"ok": False})
                 return
             afk = _get_status_snapshot().get("afk_lobby", {})
-            self._send(200, {"ok": True, "auto_accept": bool(afk.get("auto_accept"))})
+            self._send(200, {"ok": True, "service": "msbt-sdk-bridge", "instance": _instance_id,
+                "auto_accept": bool(afk.get("auto_accept"))})
         elif path.startswith("/status"):
             self._send(200, _get_status_snapshot())
         elif path.startswith("/quick_menu"):
@@ -1617,6 +1655,7 @@ def _stop_http_listen(*, join: bool = True) -> None:
     server = _server
     thread = _thread
     _started = False
+    _clear_endpoint()
     try:
         if server is not None:
             if thread is not None and thread.is_alive():
@@ -1633,18 +1672,45 @@ def _stop_http_listen(*, join: bool = True) -> None:
     _thread = None
 
 
+def _bridge_startup_log(message: str, *, failed: bool = False) -> None:
+    """Startup must be diagnosable even when HTTP status is unreachable."""
+    text = f"[MSBT External Bridge] {message}"
+    try:
+        from unrealsdk import logging
+        (logging.error if failed else logging.info)(text)
+    except Exception:
+        print(text)
+
+
 def _start_http_listen() -> None:
-    global _server, _thread, _started, _last_error, _HOST
+    global _server, _thread, _started, _last_error, _HOST, _PORT, _instance_id
     host = _listen_host()
     _HOST = host
-    server = ThreadingHTTPServer((host, _PORT), _Handler)
+    _instance_id = uuid.uuid4().hex
+    failures = []
+    for port in BRIDGE_PORTS:
+        try:
+            server = ThreadingHTTPServer((host, port), _Handler)
+            _PORT = port
+            break
+        except OSError as exc:
+            failures.append(f"{host}:{port}: {exc!r}")
+            _bridge_startup_log(f"Port unavailable at {host}:{port}: {exc!r}", failed=True)
+    else:
+        raise OSError("No bridge port available. " + "; ".join(failures))
     server.allow_reuse_address = True
     thread = threading.Thread(target=server.serve_forever, name="MSBTExternalBridge", daemon=True)
     thread.start()
     _server = server
     _thread = thread
     _started = True
+    mobile_lan.set_bridge_port(_PORT)
+    try:
+        _publish_endpoint()
+    except OSError as exc:
+        _bridge_startup_log(f"Endpoint discovery file could not be written: {exc!r}", failed=True)
     _log(f"external bridge listening on http://{host}:{_PORT}")
+    _bridge_startup_log(f"Listening on http://{host}:{_PORT}")
     if host == "0.0.0.0":
         _log(
             "LAN listen on. Windows Firewall may prompt on first bind; "
@@ -1670,6 +1736,7 @@ def rebind_http() -> None:
             except Exception as exc:
                 _last_error = repr(exc)
                 _log(f"bridge rebind failed: {exc!r}")
+                _bridge_startup_log(f"Rebind failed at {_HOST}:{_PORT}: {exc!r}", failed=True)
 
     threading.Thread(target=_run, daemon=True, name="MSBTBridgeRebind").start()
 
@@ -1692,11 +1759,13 @@ def start_bridge() -> None:
     except OSError as exc:
         # Port already open usually means another copy/reload already started it.
         _last_error = repr(exc)
+        _bridge_startup_log(f"Startup failed at {_HOST}:{_PORT}: {exc!r}", failed=True)
         _started = False
         _unregister_tick_hook()
         _stop_http_listen()
     except Exception as exc:
         _last_error = repr(exc)
+        _bridge_startup_log(f"Startup failed at {_HOST}:{_PORT}: {exc!r}", failed=True)
         _started = False
         _unregister_tick_hook()
         _stop_http_listen()

@@ -1,4 +1,4 @@
-const { app, BrowserWindow, dialog, ipcMain, screen, shell, Menu, nativeTheme, protocol, safeStorage } = require("electron");
+const { app, BrowserWindow, dialog, ipcMain, screen, shell, Menu, nativeTheme, protocol, safeStorage, Tray, nativeImage, powerSaveBlocker, powerMonitor } = require("electron");
 const { PRODUCT_NAME, applyProductIdentity } = require("./product_identity");
 applyProductIdentity(app);
 const {registerNativeCardSchemes,installNativeCardProtocol} = require("./native_card_protocol");
@@ -112,10 +112,13 @@ const execFileAsync = promisify(execFile);
 const SOURCE_ROOT = path.resolve(__dirname, "..");
 const RESOURCE_ROOT = app.isPackaged ? process.resourcesPath : SOURCE_ROOT;
 const DEFAULT_BRIDGE = "http://127.0.0.1:49774";
+const bridgeClient = require("./bridge_client").createBridgeClient();
 const MOBILE_PAIRING_FILE = () => path.join(app.getPath("userData"), "mobile_gateway_pairing.json");
 const mobileGateway = createMobileGateway({
   port: MOBILE_GATEWAY_PORT,
   bridgeBase: DEFAULT_BRIDGE,
+  bridgeInfo: () => bridgeClient.info(),
+  requestBridge: args => requestBridge(args),
   pairingCode: generatePairingCode(),
   prepareGzo: async (payload) => {
     const serial = String(payload.serial || "").trim();
@@ -156,6 +159,10 @@ const CODES_API = "https://save-editor.be/GZO/Borderlands4/codes/api.php";
 const SMOKE_MODE = process.argv.includes("--smoke");
 const FORCE_TOUR = process.argv.includes("--force-tour");
 const INSTALL_SDKMODS_AND_EXIT = process.argv.includes("--install-sdkmods-and-exit");
+if (app.isPackaged && !SMOKE_MODE && !INSTALL_SDKMODS_AND_EXIT) {
+  if (!app.requestSingleInstanceLock()) app.quit();
+  app.on("second-instance",()=>remoteBackground.show());
+}
 const MATT_EDITOR_INDEX = path.join(
   RESOURCE_ROOT,
   "external_app",
@@ -709,7 +716,9 @@ function createWindow() {
     windowOptions.x = savedBounds.x;
     windowOptions.y = savedBounds.y;
   }
+  if (process.argv.includes("--remote-afk-background")) windowOptions.show = false;
   const win = new BrowserWindow(windowOptions);
+  remoteBackground.bind(win);
   Menu.setApplicationMenu(null);
   win.setMenuBarVisibility(false);
   if (typeof win.setMenu === "function") win.setMenu(null);
@@ -751,29 +760,7 @@ function createWindow() {
 }
 
 async function requestBridge({ method = "GET", path: route = "/status", payload = null, timeoutMs = 8000 }) {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeoutMs);
-  try {
-    const body = payload === null || payload === undefined ? undefined : JSON.stringify(payload);
-    const response = await fetch(DEFAULT_BRIDGE + route, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body,
-      signal: controller.signal
-    });
-    const text = await response.text();
-    let data;
-    try {
-      data = text ? JSON.parse(text) : {};
-    } catch {
-      data = { ok: response.ok, message: text };
-    }
-    return { ok: response.ok, status: response.status, data };
-  } catch (error) {
-    return { ok: false, status: 0, data: { ok: false, message: String(error && error.message ? error.message : error) } };
-  } finally {
-    clearTimeout(timer);
-  }
+  return bridgeClient.request({method, path:route, payload, timeoutMs});
 }
 
 ipcMain.handle("bridge:request", async (_event, args) => requestBridge(args || {}));
@@ -820,7 +807,10 @@ async function startMobileGateway() {
   }
 }
 
+const remoteBackground = require("./remote_background").createRemoteBackground({app,BrowserWindow,Tray,Menu,nativeImage,powerSaveBlocker,
+  iconPath:path.join(__dirname,"branding","fu-logo.png"),onDisable:()=>remoteAfk.stop()});
 const remoteAfk = require("./remote_afk").createRemoteAfk({
+  onChange: info => remoteBackground.update(info),
   load: async () => {
     try { const bytes=await fs.readFile(path.join(app.getPath("userData"),"remote-afk.enc"));
       if(!safeStorage.isEncryptionAvailable())throw new Error("Windows credential encryption unavailable");
@@ -831,7 +821,9 @@ const remoteAfk = require("./remote_afk").createRemoteAfk({
     const file=path.join(app.getPath("userData"),"remote-afk.enc");
     if(!config){await fs.rm(file,{force:true});return;}
     if(!safeStorage.isEncryptionAvailable())throw new Error("Windows credential encryption unavailable");
-    await fs.writeFile(file,safeStorage.encryptString(JSON.stringify(config)));
+    await fs.mkdir(path.dirname(file),{recursive:true});
+    await fs.writeFile(file+".tmp",safeStorage.encryptString(JSON.stringify(config)));
+    await fs.rename(file+".tmp",file);
   },
   bridge: (route,payload) => requestBridge({path:route,method:payload?'POST':'GET',payload,timeoutMs:25000})
 });
@@ -2868,6 +2860,8 @@ app.whenReady().then(() => {
   configureAutoUpdater();
   installNativeCardProtocol(protocol);
   createWindow();
+  remoteAfk.restore().then(info=>{if(!info.enabled)remoteBackground.show();}).catch(error=>{console.error("[MSBT Remote] Restore failed:",error.message);remoteBackground.show();});
+  powerMonitor.on("resume",()=>remoteAfk.reconnect());
   // Quiet startup auto-check: never blocks UI; offline keeps last-good cache.
   softRefreshDataCatalogs({ quiet: true })
     .then((result) => {
@@ -2886,7 +2880,7 @@ app.whenReady().then(() => {
 });
 
 app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") {
+  if (process.platform !== "darwin" && !remoteAfk.info().enabled) {
     app.quit();
   }
 });

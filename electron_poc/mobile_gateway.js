@@ -131,7 +131,7 @@ function proxyToBridge(bridgeBase, method, route, bodyBuffer, timeoutMs) {
 }
 
 function createMobileGateway(options = {}) {
-  const port = Number(options.port) > 0 ? Number(options.port) : DEFAULT_PORT;
+  let port = Number(options.port) > 0 ? Number(options.port) : DEFAULT_PORT;
   const bridgeBase = String(options.bridgeBase || DEFAULT_BRIDGE).replace(/\/$/, "");
   let pairingCode = String(options.pairingCode || generatePairingCode()).trim() || generatePairingCode();
   let server = null;
@@ -154,10 +154,16 @@ function createMobileGateway(options = {}) {
           return "";
         }
       })(),
-      bridgeBase,
+      bridgeBase: options.bridgeInfo ? options.bridgeInfo() : bridgeBase,
       startedAt,
       lastError: lastError || ""
     };
+  }
+
+  async function forward(method, route, body, timeoutMs) {
+    if (!options.requestBridge) return proxyToBridge(bridgeBase,method,route,body,timeoutMs);
+    const result = await options.requestBridge({method,path:route,payload:body ? JSON.parse(body.toString("utf8")) : null,timeoutMs});
+    return {statusCode:result.status || 503,headers:{"content-type":"application/json"},body:Buffer.from(JSON.stringify(result.data))};
   }
 
   function setPairingCode(nextCode) {
@@ -247,7 +253,7 @@ function createMobileGateway(options = {}) {
     const allowedGet = pathname === "/status" || pathname === "/quick_menu" || pathname.startsWith("/status?") || pathname.startsWith("/quick_menu?");
     const allowedPost = pathname === "/action" || pathname.startsWith("/action?");
     if (method === "GET" && allowedGet) {
-      const upstream = await proxyToBridge(bridgeBase, "GET", pathname + requestUrl.search, null, 10000);
+      const upstream = await forward("GET", pathname + requestUrl.search, null, 10000);
       res.writeHead(upstream.statusCode, {
         "Content-Type": upstream.headers["content-type"] || "application/json; charset=utf-8",
         "Access-Control-Allow-Origin": "*",
@@ -269,7 +275,7 @@ function createMobileGateway(options = {}) {
       }
       let timeoutMs = 45000;
       try { const request = JSON.parse(body.toString("utf8")); if (request.action === "max_all") timeoutMs = 185000; } catch {}
-      const upstream = await proxyToBridge(bridgeBase, "POST", pathname + requestUrl.search, body, timeoutMs);
+      const upstream = await forward("POST", pathname + requestUrl.search, body, timeoutMs);
       res.writeHead(upstream.statusCode, {
         "Content-Type": upstream.headers["content-type"] || "application/json; charset=utf-8",
         "Access-Control-Allow-Origin": "*",
@@ -295,17 +301,22 @@ function createMobileGateway(options = {}) {
           sendJson(res, 500, { ok: false, message: lastError });
         });
       });
+      const listenPorts=[port,27877,27878];
+      let listenIndex=0;
       next.on("error", (error) => {
+        if (["EADDRINUSE","EACCES"].includes(error.code) && ++listenIndex < listenPorts.length) { next.listen(listenPorts[listenIndex],"0.0.0.0"); return; }
         lastError = String(error && error.message ? error.message : error);
         server = null;
         reject(error);
       });
-      next.listen(port, "0.0.0.0", () => {
+      next.once("listening", () => {
+        port = next.address().port;
         server = next;
         startedAt = new Date().toISOString();
         lastError = "";
         resolve(info());
       });
+      next.listen(port,"0.0.0.0");
     });
   }
 

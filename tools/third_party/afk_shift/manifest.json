@@ -1,5 +1,5 @@
 {
-  "sha256": "50b4dfe9e7af47b7b6382651c2ed4443909b24816964b08d6f211da1074becd7",
+  "sha256": "25edaac6e014ece56116f8d1d09e6b1ff978466eec668000c16fcbcfd931bfc6",
   "source": "Azalea SHiFT v4.4 UX source with MSBT AFK policy and floating controls",
   "source_archive_sha256": "3e31ba6dfb91f014627df7cb9c453a34c8d13d2b49e1c6855bb8955f36ded440",
   "entries_verified": 192,
@@ -205,5 +205,11 @@
     "libs/jquery-3.4": "libs/jquery-3.4.1.min.js"
   },
   "optional_sdk_installed": false,
-  "validation": "Offline payload round-trip; live game pending"
+  "validation": "Offline payload round-trip; live game pending",
+  "bridge_ports": [
+    49774,
+    27874,
+    27875,
+    27876
+  ]
 }

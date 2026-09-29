@@ -100,8 +100,11 @@ def test_stale_tick_generation_does_not_process_queue():
     assert "stale" not in bridge._results
 
 
-def test_stop_bridge_clears_runtime_state():
+def test_stop_bridge_clears_runtime_state(monkeypatch):
     bridge = _load_bridge()
+    overlay = types.ModuleType("MattsSDKBoostingTools.shift_overlay")
+    overlay.stop = lambda: None
+    monkeypatch.setitem(sys.modules, "MattsSDKBoostingTools.shift_overlay", overlay)
     bridge._started = True
     bridge._tick_registered = True
     bridge._queue.append({"id": "queued"})
@@ -145,3 +148,23 @@ def test_bridge_request_limits_exist():
     assert bridge.RESULT_TTL_SECONDS == 60.0
     assert bridge.MAX_BODY_BYTES == 2 * 1024 * 1024
     assert bridge.MAX_CLIENT_TIMEOUT_SECONDS == 30.0
+
+
+def test_startup_failure_reaches_sdk_log_when_http_is_unavailable(monkeypatch):
+    bridge = _load_bridge()
+    messages = []
+    monkeypatch.setattr(sys.modules["unrealsdk"], "logging", types.SimpleNamespace(
+        error=messages.append, info=messages.append), raising=False)
+    bridge._register_tick_hook = lambda: None
+    bridge._unregister_tick_hook = lambda: None
+    bridge.mobile_lan.load = lambda: None
+    for failure in (OSError(10013, "Access denied"), RuntimeError("Listener failed")):
+        def fail():
+            raise failure
+        bridge._start_http_listen = fail
+        bridge.start_bridge()
+        assert not bridge._started
+        assert bridge._last_error == repr(failure)
+        assert "Startup failed" in messages[-1]
+        assert "49774" in messages[-1]
+        assert repr(failure) in messages[-1]

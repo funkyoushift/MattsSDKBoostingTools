@@ -3498,7 +3498,7 @@ function formatMobileGatewayDetails(info, preferredHost = "") {
     "",
     "Easiest: open Borderlands 4 Modding Tools Mobile → More → Connection Settings → Scan QR to pair.",
     "Manual: enter address, port, and pairing code, then Save → Connect / Test.",
-    "Phone and PC must be on the same Wi‑Fi. Allow Windows Firewall for MSBT on port 49775 if prompted.",
+    `Phone and PC must be on the same Wi‑Fi. Allow Windows Firewall for MSBT on port ${payload.port} if prompted.`,
     "Keep Borderlands 4 running with the MSBT SDK mod so live actions can reach the game.",
     "",
     `QR payload: ${JSON.stringify(payload)}`

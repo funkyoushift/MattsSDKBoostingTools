@@ -916,6 +916,14 @@ $$('.player-target').forEach((select)=>{
   select.addEventListener('change',()=>onTargetSelectChange(select));
 });
 
+function verifiedMobilePing(result){
+  const data=result.data||{};
+  if(!result.ok||data.ok!==true||data.port!==Number(state.connection.port))throw Error('This port is not a verified game bridge or desktop gateway.');
+  if(data.service==='msbt-mobile-gateway')return false;
+  if(data.direct===true&&data.name==='MattsSDKBoostingTools external bridge')return true;
+  throw Error('This port is not a verified game bridge or desktop gateway.');
+}
+
 async function gatewayFetch(route,{method='GET',payload=null,timeoutMs=15000,requirePairing=true}={}){
   if(state.connection.remote)return window.mobileRemote.request(route,{method,payload,timeoutMs});
   const base=gatewayBase();
@@ -929,7 +937,12 @@ async function gatewayFetch(route,{method='GET',payload=null,timeoutMs=15000,req
   const timer=setTimeout(()=>controller.abort(),timeoutMs);
   try{
     const headers={'Content-Type':'application/json',Accept:'application/json'};
-    if(token)headers['X-MSBT-Device']=token;
+    if(token&&route!=='/mobile/ping')headers['X-MSBT-Device']=token;
+    if(method==='POST'){
+      const ping=await gatewayFetch('/mobile/ping',{requirePairing:false,timeoutMs:5000});
+      const direct=verifiedMobilePing(ping);
+      if(direct&&/^[a-f0-9]{32}$/.test(ping.data.instance||''))headers['X-MSBT-Instance']=ping.data.instance;
+    }
     if(requirePairing&&pairingCode)headers['X-MSBT-Pairing-Code']=pairingCode;
     const response=await fetch(`${base}${route}`,{method,headers,body:payload==null?undefined:JSON.stringify(payload),signal:controller.signal});
     const raw=await response.text();
@@ -937,7 +950,7 @@ async function gatewayFetch(route,{method='GET',payload=null,timeoutMs=15000,req
     try{data=raw?JSON.parse(raw):{}}catch{data={ok:response.ok,message:raw}}
     return {ok:response.ok&&data.ok!==false,status:response.status,data};
   }catch(error){
-    const message=error&&error.name==='AbortError'?'Connection timed out.':'Could not reach the game on this Wi‑Fi. Firewall allowing port 49774? Overlay LAN listen on? Desktop gateway on 49775 is a fallback.';
+    const message=error&&error.name==='AbortError'?'Connection timed out.':'Could not reach the game on this Wi‑Fi. Check LAN pairing and the port shown by the game or desktop gateway.';
     throw new Error(message);
   }finally{clearTimeout(timer)}
 }
@@ -1037,6 +1050,7 @@ async function connectGateway({quiet=false, hostCandidates=null}={}){
   pushPort(state.connection.port||'49774');
   pushPort('49774');
   pushPort('49775');
+  ['27874','27875','27876','27877','27878'].forEach(pushPort);
   let lastError='Could not reach the game bridge.';
   for(let i=0;i<hosts.length;i+=1){
     const host=hosts[i];
@@ -1050,7 +1064,7 @@ async function connectGateway({quiet=false, hostCandidates=null}={}){
       try{
         const ping=await gatewayFetch('/mobile/ping',{requirePairing:false,timeoutMs:5000});
         if(!ping.ok&&ping.status)throw new Error((ping.data&&ping.data.message)||'Ping failed.');
-        const direct=Boolean(ping.data&&ping.data.direct)&&ping.data.service!=='msbt-mobile-gateway';
+        const direct=verifiedMobilePing(ping);
         state.connection.viaGateway=!direct;
         if(direct&&text(state.connection.enrollNonce)){
           const enroll=await gatewayFetch('/mobile/enroll',{
@@ -1104,6 +1118,7 @@ async function connectGateway({quiet=false, hostCandidates=null}={}){
 }
 
 function disconnectGateway(){
+  window.mobileRemote?.suspend();
   stopStatusPolling();
   state.online=false;state.bridgeOnline=false;state.players=[];
   fillPlayerSelects();updateConnectionChrome();
@@ -1113,20 +1128,27 @@ function disconnectGateway(){
 
 function startStatusPolling(){
   stopStatusPolling();
+  const generation=state.pollGeneration;
+  let pending=false;
   state.pollTimer=window.setInterval(async()=>{
-    if(!state.online||state.busy)return;
+    if(!state.online||state.busy||pending)return;
+    pending=true;
     try{
       const epoch=state.targetEpoch||0;
       const status=await gatewayFetch('/status',{timeoutMs:8000});
+      if(generation!==state.pollGeneration)return;
+      if(!status.ok||status.data?.ok===false)throw Error('Game unavailable');
       if(epoch===(state.targetEpoch||0))applyStatus(status.data||{});
     }catch{
+      if(generation!==state.pollGeneration)return;
       state.online=false;state.bridgeOnline=false;updateConnectionChrome();
-      $('connectionStatus').textContent='Lost connection. Tap Connect / Test to retry.';
+      $('connectionStatus').textContent=state.connection.remote?'Connection lost — reconnecting automatically.':'Lost connection. Tap Connect / Test to retry.';
       stopStatusPolling();
-    }
+      if(state.connection.remote)window.mobileRemote.scheduleReconnect();
+    }finally{pending=false;}
   },5000);
 }
-function stopStatusPolling(){if(state.pollTimer){window.clearInterval(state.pollTimer);state.pollTimer=null}}
+function stopStatusPolling(){state.pollGeneration=(state.pollGeneration||0)+1;if(state.pollTimer){window.clearInterval(state.pollTimer);state.pollTimer=null}}
 
 function loadConnection(){
   state.connection=read(STORE.connection,{});
