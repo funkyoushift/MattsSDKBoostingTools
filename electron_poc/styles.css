@@ -5329,3 +5329,27 @@ body.msbt-density-compact .activity-card {
 .saved-item-card { min-height: 160px; width: 100%; margin-top: 8px; }
 .saved-card-tile .native-game-card-frame { pointer-events: none; }
 .saved-card-tile details { font-size: 12px; }
+
+/* Give tall windows more browsing room without imposing desktop heights on small ones. */
+#bookmarkRows { max-height: clamp(280px, calc(100dvh - 460px), 1400px); }
+#communityResults, #communityPreviewItems {
+  min-height: 120px; max-height: clamp(280px, calc(100dvh - 560px), 1300px);
+  overflow: auto; align-content: start;
+}
+#communityFoldersPanel > .grid.two {
+  grid-template-columns: clamp(240px, 24vw, 380px) minmax(0, 1fr);
+  align-items: start;
+}
+.saved-folder-nav { max-height: clamp(240px, calc(100dvh - 440px), 1400px); }
+#bookmarkRows, #communityPreviewItems {
+  grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr));
+}
+@media (max-width: 1100px) {
+  #bookmarkRows, #communityPreviewItems { max-height: 60dvh; }
+  #communityResults { max-height: 40dvh; }
+  .saved-folder-nav { max-height: 45dvh; }
+}
+@media (max-width: 700px) {
+  #communityFoldersPanel > .grid.two { grid-template-columns: minmax(0, 1fr); }
+  .saved-folder-nav, #communityResults { max-height: 180px; }
+}

@@ -93,5 +93,16 @@ app.whenReady().then(async()=>{
  await new Promise(resolve=>setTimeout(resolve,200));
  const rendered=await win.webContents.executeJavaScript(`document.querySelectorAll('#bookmarkRows iframe[data-rendered="true"]').length`);assert.equal(rendered,2,'native cards actually render');
  fs.writeFileSync(path.join(out,'saved-items.png'),(await win.webContents.capturePage()).toPNG());
+ const heights=[];
+ for (const [width,height] of [[2560,1440],[1920,1080],[1280,720],[800,600],[480,800]]) {
+  win.setContentSize(width,height);
+  await new Promise(resolve=>setTimeout(resolve,80));
+  const layout=await win.webContents.executeJavaScript(`({local:parseFloat(getComputedStyle(document.getElementById('bookmarkRows')).maxHeight),community:parseFloat(getComputedStyle(document.getElementById('communityPreviewItems')).maxHeight),width:innerWidth,overflow:document.documentElement.scrollWidth>innerWidth+2})`);
+  assert.equal(layout.overflow,false,`Saved Items overflow at ${width}x${height}`);
+  heights.push(layout);
+ }
+ assert.ok(heights[0].local>heights[1].local && heights[0].community>heights[1].community,'tall screens get taller lists');
+ assert.ok(heights[3].local<=360,'small windows retain bounded scroll area');
+ console.log('PASS adaptive Saved Items heights at 2560, 1920, 1280, 800 and 480 pixels');
  console.log('PASS community UI: consent, selected subtree, safe preview, pending privacy, append-only import, no game actions');win.destroy();app.exit(0);
 }).catch(e=>{console.error(e);app.exit(1)});
