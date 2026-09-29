@@ -821,174 +821,175 @@
         </div>
       </section>
 
-      <section class="panel purple" data-msbt-panel="serial-bookmarks" data-msbt-span="12" data-msbt-title="Serial Bookmarks" data-msbt-resize="1">
-        <div class="section-heading">
-          <div>
-            <h2>Serial Bookmarks</h2>
-            <p>Keep your own item folders, discover community drop lists, or share a folder for approval.</p>
-          </div>
-          <div class="button-row wrap">
-            <button id="savedItemsLocalBtn" type="button" aria-pressed="true">My saved items</button>
-            <button id="communityOpenBtn" type="button" aria-pressed="false">Community library</button>
-            <button id="savedItemsShareBtn" type="button">Share a folder</button>
-            <button id="bookmarkNewBtn">+ Add item codes</button>
-            <button id="bookmarkImportBtn">Import</button>
-          </div>
-        </div>
-        <div id="bookmarkStatus" class="status-line warning">Loading serial bookmarks...</div>
-        <details id="communityFoldersPanel" hidden>
-          <summary>Community library</summary>
-          <h3>Discover community drop lists</h3>
-          <p>Browse approved folders and save a copy to My saved items. No account is needed. Importing does not send items to the game.</p>
-          <div id="communityStatus" class="status-line" role="status">Open the library to browse shared folders.</div>
-          <div class="button-row wrap">
-            <input id="communitySearch" aria-label="Search community folders" placeholder="Folder title or creator" maxlength="100">
-            <button id="communitySearchBtn">Search library</button>
-            <input id="communityLink" aria-label="Community folder link" placeholder="Paste a shared folder link or ID">
-            <button id="communityLinkBtn">Open shared folder</button>
-            <button id="communityMineBtn">My submissions</button>
-          </div>
-          <div class="grid two">
-            <div>
-              <div id="communityResults" class="bookmark-list" style="min-height:120px;max-height:280px;overflow:auto"></div>
-              <button id="communityMoreBtn" hidden>Next page</button>
-            </div>
-            <div>
-              <h3 id="communityPreviewTitle">Select a folder</h3>
-              <p id="communityPreviewDescription"></p>
-              <p id="communityPreviewCount"></p>
-              <div id="communityPreviewItems" class="bookmark-list" style="min-height:120px;max-height:280px;overflow:auto"></div>
-              <button id="communityPreviewMore" hidden>Show more items</button>
-              <label for="communityDestination">Import as a new bookmark folder</label>
-              <input id="communityDestination" maxlength="80" placeholder="Folder name">
-              <div class="button-row wrap">
-                <button id="communityImportBtn" disabled>Save folder to My saved items</button>
-                <button id="communityCopyBtn" disabled>Copy share link</button>
-                <button id="communityWithdrawBtn" hidden>Withdraw my submission</button>
-              </div>
-              <p>Existing folders are preserved. Imported names get a numbered suffix if needed. Then select the new folder in AFK Lobby to add it to either delivery pool.</p>
-              <div id="communityReviewActions" hidden>
-                <label for="communityReviewNote">Review note (visible to the submitter)</label>
-                <textarea id="communityReviewNote" maxlength="1000"></textarea>
-                <button id="communityApproveBtn">Approve for public library</button>
-                <button id="communityRejectBtn">Reject / remove from public library</button>
-              </div>
-            </div>
-          </div>
-          <details id="communitySubmitPanel"><summary>Share one of my folders · approval required</summary>
-            <label for="communitySubmitFolder">Bookmark folder (includes subfolders)</label>
-            <select id="communitySubmitFolder"><option value="">Choose a folder</option></select>
-            <div class="grid two">
-              <label>Public title<input id="communitySubmitTitle" maxlength="80"></label>
-              <label>Your display name<input id="communitySubmitCreator" maxlength="80"></label>
-            </div>
-            <label for="communitySubmitDescription">Description</label>
-            <textarea id="communitySubmitDescription" maxlength="2000" placeholder="What is this list for? Which character or build?"></textarea>
-            <p id="communitySubmitCount"></p>
-            <label><input type="checkbox" id="communitySubmitConsent">Share this folder's item names, codes, and subfolders publicly after approval. I have permission to share them.</label>
-            <button id="communitySubmitBtn">Submit for approval</button>
-            <p>Only the selected folder is submitted. Lobby settings, account details, and other bookmarks stay on your PC. Keep this PC's MSBT user-data backup to retain access to your submission keys.</p>
-          </details>
-          <button id="communityDeveloperPortal">Developer portal - sign in / create account</button>
-        </details>
+<section class="panel purple" data-msbt-panel="serial-bookmarks" data-msbt-resize="1" data-msbt-span="12" data-msbt-title="Serial Bookmarks">
+<div class="section-heading">
+<div>
+<h2>Serial Bookmarks</h2>
+<p>Choose a folder, select items, then send.</p>
+</div>
+<div class="button-row wrap">
+<button aria-pressed="true" id="savedItemsLocalBtn" type="button">My saved items</button>
+<button aria-pressed="false" id="communityOpenBtn" type="button">Community library</button>
+<button id="savedItemsShareBtn" type="button">Share a folder</button>
+</div>
+</div>
+<div class="saved-items-shell"><div class="saved-items-main"><div class="status-line warning" id="bookmarkStatus">Loading serial bookmarks...</div><details hidden="" id="communityFoldersPanel">
+<summary>Community library</summary>
+<h3>Discover community drop lists</h3>
+<p>Select items from an approved folder to send them, or save a local copy.</p>
+<div class="status-line" id="communityStatus" role="status">Open the library to browse shared folders.</div>
+<div class="button-row wrap">
+<input aria-label="Search community folders" id="communitySearch" maxlength="100" placeholder="Folder title or creator"/>
+<button id="communitySearchBtn">Search library</button>
 
-        <div id="savedItemsLocalPanel" class="grid bookmark-grid">
-          <section class="bookmark-browser">
-            <div class="grid two compact">
-              <label>
+
+
+</div><details class="saved-library-tools"><summary>Open a shared link or check my submissions</summary><input aria-label="Community folder link" id="communityLink" placeholder="Paste a shared folder link or ID"/><button id="communityLinkBtn">Open shared folder</button><button id="communityMineBtn">My submissions</button></details>
+<div class="grid two">
+<div>
+<div class="bookmark-list" id="communityResults" style="min-height:120px;max-height:280px;overflow:auto"></div>
+<button hidden="" id="communityMoreBtn">Next page</button>
+</div>
+<div>
+<h3 id="communityPreviewTitle">Select a folder</h3>
+<p id="communityPreviewDescription"></p>
+<p id="communityPreviewCount"></p>
+<div class="button-row wrap">
+<button id="communitySelectAll" type="button">Select all items</button>
+<button id="communityClearSelection" type="button">Clear selection</button>
+<button id="communityCopySelected" type="button">Copy selected codes</button>
+</div>
+<p id="communitySelectedCount" role="status">0 selected</p>
+<div class="bookmark-list" id="communityPreviewItems" style="min-height:120px;max-height:280px;overflow:auto"></div>
+<button hidden="" id="communityPreviewMore">Show more items</button>
+<details class="saved-library-tools"><summary>Save a local copy or share this folder</summary><label for="communityDestination">Import as a new bookmark folder</label><input id="communityDestination" maxlength="80" placeholder="Folder name"/><div class="button-row wrap">
+<button disabled="" id="communityImportBtn">Save folder to My saved items</button>
+<button disabled="" id="communityCopyBtn">Copy share link</button>
+<button hidden="" id="communityWithdrawBtn">Withdraw my submission</button>
+</div><p>Existing folders are preserved. Imported names get a numbered suffix if needed. Then select the new folder in AFK Lobby to add it to either delivery pool.</p></details>
+
+
+
+<div hidden="" id="communityReviewActions">
+<label for="communityReviewNote">Review note (visible to the submitter)</label>
+<textarea id="communityReviewNote" maxlength="1000"></textarea>
+<button id="communityApproveBtn">Approve for public library</button>
+<button id="communityRejectBtn">Reject / remove from public library</button>
+</div>
+</div>
+</div>
+<details id="communitySubmitPanel"><summary>Share one of my folders · approval required</summary>
+<label for="communitySubmitFolder">Bookmark folder (includes subfolders)</label>
+<select id="communitySubmitFolder"><option value="">Choose a folder</option></select>
+<div class="grid two">
+<label>Public title<input id="communitySubmitTitle" maxlength="80"/></label>
+<label>Your display name<input id="communitySubmitCreator" maxlength="80"/></label>
+</div>
+<label for="communitySubmitDescription">Description</label>
+<textarea id="communitySubmitDescription" maxlength="2000" placeholder="What is this list for? Which character or build?"></textarea>
+<p id="communitySubmitCount"></p>
+<label><input id="communitySubmitConsent" type="checkbox"/>Share this folder's item names, codes, and subfolders publicly after approval. I have permission to share them.</label>
+<button id="communitySubmitBtn">Submit for approval</button>
+<p>Only the selected folder is submitted. Lobby settings, account details, and other bookmarks stay on your PC. Keep this PC's MSBT user-data backup to retain access to your submission keys.</p>
+</details>
+<button id="communityDeveloperPortal">Developer portal - sign in / create account</button>
+</details><div class="grid bookmark-grid" id="savedItemsLocalPanel">
+<section class="bookmark-browser"><aside class="saved-folder-rail"><h3>Folders</h3><div aria-label="Local folders" class="saved-folder-nav" id="bookmarkFolderNav"></div><details class="saved-folder-tools"><summary>Manage folders</summary>
+<label for="bookmarkFolderPath">Move selected bookmarks to folder</label>
+<select id="bookmarkFolderPath"><option value="">Choose an existing folder</option></select>
+<div class="button-row wrap">
+<button id="bookmarkMoveFolderBtn">Move selected to folder</button>
+<button class="danger" id="bookmarkDeleteFolderBtn">Delete folder and contents</button>
+</div>
+<label for="bookmarkNewFolderPath">New folder name</label>
+<input id="bookmarkNewFolderPath" maxlength="180" placeholder="Weapons / Shotguns" type="text"/>
+<button id="bookmarkCreateFolderBtn" type="button">Create folder</button>
+<p class="muted-line">Choose existing folders from the dropdowns. Use / in a new folder name to create subfolders.</p>
+</details></aside><div class="saved-items-list"><div class="button-row wrap"><button id="bookmarkNewBtn">+ Add item codes</button><button id="bookmarkImportBtn">Import</button></div>
+<div class="grid two compact">
+<label>
                 Search
-                <input id="bookmarkSearch" type="search" autocomplete="off" spellcheck="false" placeholder="name, group, serial...">
-              </label>
-              <label>
+                <input autocomplete="off" id="bookmarkSearch" placeholder="name, group, serial..." spellcheck="false" type="search"/>
+</label>
+<label class="saved-folder-dropdown">
                 Folders (includes subfolders)
                 <select id="bookmarkGroupFilter">
-                  <option value="All">All</option>
-                </select>
-              </label>
-            </div>
-            <div id="bookmarkCount" class="status-line">0 shown / 0 saved</div>
-            <details class="saved-folder-tools"><summary>Organize folders · create, move or delete</summary>
-            <label for="bookmarkFolderPath">Move selected bookmarks to folder</label>
-            <select id="bookmarkFolderPath"><option value="">Choose an existing folder</option></select>
-            <div class="button-row wrap">
-              <button id="bookmarkMoveFolderBtn">Move selected to folder</button>
-              <button id="bookmarkDeleteFolderBtn" class="danger">Delete folder and contents</button>
-            </div>
-            <label for="bookmarkNewFolderPath">New folder name</label>
-            <input id="bookmarkNewFolderPath" type="text" maxlength="180" placeholder="Weapons / Shotguns">
-            <button id="bookmarkCreateFolderBtn" type="button">Create folder</button>
-            <p class="muted-line">Choose existing folders from the dropdowns. Use / in a new folder name to create subfolders.</p>
-            </details>
-            <div class="button-row wrap">
-              <label class="selection-mode-toggle" title="When on, clicking a bookmark adds or removes it from the selection">
-                <input id="bookmarkMultiSelectToggle" type="checkbox">
-                <span>Select Multiple</span>
-              </label>
-              <button id="bookmarkSelectAllBtn">Select All</button>
-              <button id="bookmarkClearSelectedBtn">Clear Selection</button>
-              <button id="bookmarkCopySelectedBtn">Copy Selected Serials</button>
-            </div>
-            <p class="muted-line selection-mode-help">Select Multiple makes each normal click add or remove a bookmark. Ctrl/Cmd and Shift shortcuts still work.</p>
-            <div id="bookmarkRows" class="bookmark-list">
-              <div class="dev-empty-row">No saved bookmarks yet.</div>
-            </div>
-          </section>
-
-          <section class="bookmark-editor">
-            <h3>Add or edit items</h3>
-            <label for="bookmarkName">Name</label>
-            <input id="bookmarkName" type="text" autocomplete="off" placeholder="Optional — leave blank to generate titles">
-            <label for="bookmarkGroup">Folder path</label>
-            <select id="bookmarkGroup"><option value="Default">Default</option></select>
-            <label for="bookmarkSerial">Item codes · paste one or many</label>
-            <textarea id="bookmarkSerial" spellcheck="false" placeholder="Paste @U codes, one per line"></textarea>
-            <div class="button-row wrap">
-              <button id="bookmarkSaveBtn">Save item(s)</button>
-              <button id="bookmarkDuplicateBtn">Duplicate</button>
-              <button id="bookmarkDeleteBtn" class="danger">Delete selected bookmarks</button>
-              <button id="bookmarkCopyBtn">Copy Serial</button>
-              <button id="bookmarkResolveNamesBtn" type="button">Fill missing item names</button>
-            </div>
-            <div class="button-row wrap">
-              <button id="bookmarkValidateBtn">Validate / Confirm Active</button>
-            </div>
-            <div id="bookmarkValidationStatus" class="status-line warning">No confirmed serial yet.</div>
-            <div class="button-row wrap">
-              <button id="bookmarkPreviewBtn" type="button">Preview item card</button>
-              <button id="bookmarkScreenshotBtn" type="button" disabled>Save card screenshot</button>
-            </div>
-            <div id="bookmarkCardStatus" class="muted-line">Select a bookmark to view its inventory-style item card. Pasted lists are saved as separate items first.</div>
-            <div id="bookmarkCardHost"></div>
-            <h3>Deliver selected items</h3>
-            <label for="bookmarkTargetSelect">Named player</label>
-            <div class="target-row">
-              <select id="bookmarkTargetSelect">
-                <option value="">No players loaded</option>
-              </select>
-              <button id="bookmarkRefreshPlayersBtn" class="hidden">Refresh Players</button>
-              <button id="bookmarkSetTargetBtn" class="hidden">Set Target</button>
-            </div>
-            <div id="bookmarkTargetSummary" class="status-line warning">Named player: none</div>
-            <label for="bookmarkSerialCopies">Copies</label>
-            <input id="bookmarkSerialCopies" type="number" min="1" max="50" value="1" title="How many copies of each selected bookmark serial to deliver">
-            <div class="status-line warning">Delivery sends checked bookmark rows. If nothing is checked, the active row is used.</div>
-            <div class="button-row wrap">
-              <button data-bookmark-send-mode="local">Local</button>
-              <button data-bookmark-send-mode="selected">Named Player</button>
-              <button data-bookmark-send-mode="all">All Players</button>
-              <button data-bookmark-send-mode="nonhost">Other Players</button>
-            </div>
-            <div class="button-row wrap qm-serial-pin-row">
-              <button id="bookmarkQmLocalBtn" type="button" class="qm-pin-button" data-qm-serial-source="bookmark" data-qm-serial-mode="local">+ QM Local</button>
-              <button id="bookmarkQmSelectedBtn" type="button" class="qm-pin-button" data-qm-serial-source="bookmark" data-qm-serial-mode="selected">+ QM Named Player</button>
-              <button id="bookmarkQmAllBtn" type="button" class="qm-pin-button" data-qm-serial-source="bookmark" data-qm-serial-mode="all">+ QM All</button>
-              <button id="bookmarkQmNonhostBtn" type="button" class="qm-pin-button" data-qm-serial-source="bookmark" data-qm-serial-mode="nonhost">+ QM Other Players</button>
-            </div>
-            <p class="muted-line">Use the gold <strong>+ QM</strong> buttons to pin the currently checked bookmark serial(s) into the Quick Menu.</p>
-            <pre id="bookmarkOutput">No bookmark delivery sent yet.</pre>
-          </section>
-        </div>
-      </section>
+<option value="All">All</option>
+</select>
+</label>
+</div>
+<div class="status-line" id="bookmarkCount">0 shown / 0 saved</div>
+<div class="button-row wrap">
+<label class="selection-mode-toggle" title="When on, clicking a bookmark adds or removes it from the selection">
+<input id="bookmarkMultiSelectToggle" type="checkbox"/>
+<span>Select Multiple</span>
+</label>
+<button id="bookmarkSelectAllBtn">Select All</button>
+<button id="bookmarkClearSelectedBtn">Clear Selection</button>
+<button id="bookmarkCopySelectedBtn">Copy Selected Serials</button>
+</div>
+<p class="muted-line selection-mode-help">Select Multiple makes each normal click add or remove a bookmark. Ctrl/Cmd and Shift shortcuts still work.</p>
+<div class="bookmark-list" id="bookmarkRows">
+<div class="dev-empty-row">No saved bookmarks yet.</div>
+</div>
+</div></section>
+<details class="bookmark-editor" id="savedItemEditor">
+<summary>Item details and code editor</summary>
+<label for="bookmarkName">Name</label>
+<input autocomplete="off" id="bookmarkName" placeholder="Optional — leave blank to generate titles" type="text"/>
+<label for="bookmarkGroup">Save item(s) in folder</label>
+<select id="bookmarkGroup"><option value="Default">Default</option></select>
+<label for="bookmarkSerial">Item codes · paste one or many</label>
+<textarea id="bookmarkSerial" placeholder="Paste @U codes, one per line" spellcheck="false"></textarea>
+<div class="button-row wrap">
+<button id="bookmarkSaveBtn">Save item(s)</button>
+<button id="bookmarkDuplicateBtn">Duplicate</button>
+<button class="danger" id="bookmarkDeleteBtn">Delete selected bookmarks</button>
+<button id="bookmarkCopyBtn">Copy Serial</button>
+<button id="bookmarkResolveNamesBtn" type="button">Fill missing item names</button>
+</div>
+<div class="button-row wrap">
+<button id="bookmarkValidateBtn">Validate / Confirm Active</button>
+</div>
+<div class="status-line warning" id="bookmarkValidationStatus">No confirmed serial yet.</div>
+<div class="button-row wrap">
+<button id="bookmarkPreviewBtn" type="button">Preview item card</button>
+<button disabled="" id="bookmarkScreenshotBtn" type="button">Save card screenshot</button>
+</div>
+<div class="muted-line" id="bookmarkCardStatus">Select a bookmark to view its inventory-style item card. Pasted lists are saved as separate items first.</div>
+<div id="bookmarkCardHost"></div>
+</details>
+</div></div><section class="saved-delivery" id="savedItemsDelivery">
+<h3>Deliver selected items</h3>
+<p id="savedDeliverySelection" role="status">Select items from a local or community folder.</p>
+<label class="saved-level-toggle"><input id="bookmarkOverrideLevel" type="checkbox"/> Override item level</label>
+<label>Item level <input id="bookmarkDeliveryLevel" max="70" min="1" step="1" type="number" value="70"/></label>
+<label for="bookmarkTargetSelect">Named player</label>
+<div class="target-row">
+<select id="bookmarkTargetSelect">
+<option value="">No players loaded</option>
+</select>
+<button class="hidden" id="bookmarkRefreshPlayersBtn">Refresh Players</button>
+<button class="hidden" id="bookmarkSetTargetBtn">Set Target</button>
+</div>
+<div class="status-line warning" id="bookmarkTargetSummary">Named player: none</div>
+<label for="bookmarkSerialCopies">Copies</label>
+<input id="bookmarkSerialCopies" max="50" min="1" title="How many copies of each selected bookmark serial to deliver" type="number" value="1"/>
+<p class="muted-line">Sends the selection from the view you are using. Saved codes are unchanged by a level override.</p>
+<label for="savedSendMode">Send to</label><select id="savedSendMode"><option value="local">Me</option><option value="selected">Named player</option><option value="all">Everyone in the lobby</option><option value="nonhost">Guests only</option></select><button disabled="" id="savedSendBtn" type="button">Send selected items</button><div class="button-row wrap" hidden="">
+<button data-bookmark-send-mode="local">Send to me</button>
+<button data-bookmark-send-mode="selected">Send to player</button>
+<button data-bookmark-send-mode="all">Send to everyone</button>
+<button data-bookmark-send-mode="nonhost">Send to guests</button>
+</div>
+<details class="saved-send-advanced"><summary>Quick Menu shortcuts</summary><div class="button-row wrap qm-serial-pin-row">
+<button class="qm-pin-button" data-qm-serial-mode="local" data-qm-serial-source="bookmark" id="bookmarkQmLocalBtn" type="button">+ QM Local</button>
+<button class="qm-pin-button" data-qm-serial-mode="selected" data-qm-serial-source="bookmark" id="bookmarkQmSelectedBtn" type="button">+ QM Named Player</button>
+<button class="qm-pin-button" data-qm-serial-mode="all" data-qm-serial-source="bookmark" id="bookmarkQmAllBtn" type="button">+ QM All</button>
+<button class="qm-pin-button" data-qm-serial-mode="nonhost" data-qm-serial-source="bookmark" id="bookmarkQmNonhostBtn" type="button">+ QM Other Players</button>
+</div><p class="muted-line">Use the gold <strong>+ QM</strong> buttons to pin the currently checked bookmark serial(s) into the Quick Menu.</p></details>
+<pre id="bookmarkOutput">No bookmark delivery sent yet.</pre>
+</section></div></section>
 
       <section class="panel purple" data-msbt-panel="serial-validator" data-msbt-span="12" data-msbt-title="Validator" data-msbt-resize="1">
         <h2>Validator</h2>

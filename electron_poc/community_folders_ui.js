@@ -2,6 +2,14 @@
   const $=id=>document.getElementById(id), panel=$('communityFoldersPanel');
   if(!panel)return;
   let busy=false,selected=null,mode='public',next=null,shown=0,endpoint='';
+  const checked = new Set();
+  $('savedSendBtn').addEventListener('click',()=>sendBookmarkSerial($('savedSendMode').value));
+  function updateSendOptions(){const named=$('savedSendMode').value==='selected';$('bookmarkTargetSelect').closest('.target-row').hidden=!named;document.querySelector('label[for=bookmarkTargetSelect]').hidden=!named;$('bookmarkTargetSummary').hidden=!named;$('bookmarkDeliveryLevel').closest('label').hidden=!$('bookmarkOverrideLevel').checked;}
+  $('savedSendMode').addEventListener('change',updateSendOptions);$('bookmarkOverrideLevel').addEventListener('change',updateSendOptions);updateSendOptions();
+  state.bookmarkMultiSelect=true;$('bookmarkMultiSelectToggle').checked=true;
+  for(const id of ['bookmarkNewBtn','bookmarkImportBtn'])$(id).addEventListener('click',()=>{$('savedItemEditor').open=true;$('savedItemEditor').scrollIntoView({block:'nearest'});});
+  window.msbtCommunitySelection = () => panel.hidden ? null : !selected || selected.status !== 'approved' ? [] : selected.folder.items.flatMap((item,index) => checked.has(index) ? [{...item,group:selected.folder.title}] : []);
+  function selectionChanged(){ $('communitySelectedCount').textContent = `${checked.size} / ${selected?.folder.items.length || 0} selected`;renderSavedDeliverySelection(); }
   const message=(text,bad=false)=>{$('communityStatus').textContent=text;$('communityStatus').className='status-line '+(bad?'bad':'ok');};
   async function call(action,payload){if(!window.msbt?.communityFolders)throw Error('Restart the updated desktop app to use community folders.');const result=await window.msbt.communityFolders(action,payload);if(!result?.ok)throw Error(result?.message||'The online library is unavailable.');return result;}
   async function run(fn){if(busy)return;busy=true;panel.setAttribute('aria-busy','true');try{await fn();}catch(e){message(e.message,true);}finally{busy=false;panel.removeAttribute('aria-busy');}}
@@ -11,10 +19,16 @@
     select.value=previous;countSubmission();
   }
   function countSubmission(){const folder=$('communitySubmitFolder').value;const count=state.bookmarks.filter(row=>folder&&bookmarkInFolder(row.group,folder)).length;$('communitySubmitCount').textContent=folder?`${count} item entries will be shared, including duplicates and subfolders.`:'Choose a folder to see its item count.';}
-  function clearPreview(){selected=null;$('communityPreviewTitle').textContent='Select a folder';$('communityPreviewDescription').textContent='';$('communityPreviewCount').textContent='';$('communityPreviewItems').replaceChildren();$('communityImportBtn').disabled=true;$('communityCopyBtn').disabled=true;$('communityWithdrawBtn').hidden=true;$('communityReviewActions').hidden=true;$('communityPreviewMore').hidden=true;}
+  function clearPreview(){selected=null;checked.clear();selectionChanged();$('communityPreviewTitle').textContent='Select a folder';$('communityPreviewDescription').textContent='';$('communityPreviewCount').textContent='';discardSavedCards($('communityPreviewItems'));$('communityPreviewItems').replaceChildren();$('communityImportBtn').disabled=true;$('communityCopyBtn').disabled=true;$('communityWithdrawBtn').hidden=true;$('communityReviewActions').hidden=true;$('communityPreviewMore').hidden=true;}
   function items(){
     const end=Math.min(shown+100,selected.folder.items.length),host=$('communityPreviewItems');
-    for(const item of selected.folder.items.slice(shown,end)){const row=document.createElement('details'),title=document.createElement('summary'),code=document.createElement('pre');title.textContent=(item.folder?item.folder+' / ':'')+item.name;code.textContent=item.serial;code.style.cssText='white-space:pre-wrap;overflow-wrap:anywhere;max-height:180px;overflow:auto';row.append(title,code);host.append(row);}
+    for(let index=shown;index<end;index++){
+      const item=selected.folder.items[index], row=document.createElement('div'), label=document.createElement('label'), box=document.createElement('input'), details=document.createElement('details'), title=document.createElement('summary'), code=document.createElement('pre');
+      row.className='community-item-row saved-card-tile';box.type='checkbox';box.dataset.itemIndex=String(index);box.checked=checked.has(index);box.disabled=selected.status!=='approved';
+      box.addEventListener('change',()=>{box.checked?checked.add(index):checked.delete(index);selectionChanged();});
+      label.append(box,document.createTextNode((item.folder?item.folder+' / ':'')+item.name));title.textContent='Show item code';code.textContent=item.serial;
+      code.style.cssText='white-space:pre-wrap;overflow-wrap:anywhere;max-height:180px;overflow:auto';details.append(title,code);label.append(savedItemCard(item));row.append(label,details);host.append(row);
+    }
     shown=end;$('communityPreviewMore').hidden=shown>=selected.folder.items.length;
   }
   async function preview(id,source){
@@ -25,7 +39,7 @@
     $('communityPreviewCount').textContent=`${data.folder.items.length} item entries · ${data.status}${data.oversized_count?` · ${data.oversized_count} oversized codes cannot currently be delivered`:''}${data.review_note?' · Review: '+data.review_note:''}`;
     $('communityDestination').value=data.folder.title;$('communityImportBtn').disabled=data.status!=='approved';$('communityCopyBtn').disabled=data.status!=='approved';
     $('communityWithdrawBtn').hidden=source!=='mine'||data.status==='withdrawn';$('communityReviewActions').hidden=source!=='review'||data.status==='withdrawn';$('communityReviewNote').value=data.review_note||'';
-    shown=0;items();message('Preview loaded. Import creates a separate local copy.');
+    shown=0;items();selectionChanged();message('Preview loaded. Import creates a separate local copy.');
   }
   function results(rows,source){
     const host=$('communityResults');host.replaceChildren();
@@ -44,6 +58,7 @@
     $('savedItemsLocalBtn').setAttribute('aria-pressed',String(!active));
     $('communityOpenBtn').setAttribute('aria-pressed',String(active));
     if(active)folders();
+    renderSavedDeliverySelection();
   }
   $('savedItemsLocalBtn').addEventListener('click',()=>showLibrary(false));
   $('communityOpenBtn').addEventListener('click',()=>{showLibrary(true);run(async()=>{const info=await call('info');endpoint=info.endpoint;mode='public';await browse();});});
@@ -52,6 +67,9 @@
   $('communitySearchBtn').addEventListener('click',()=>run(async()=>{mode='public';await browse();}));
   $('communityMoreBtn').addEventListener('click',()=>run(()=>browse(next||0)));
   $('communityLinkBtn').addEventListener('click',()=>run(()=>preview($('communityLink').value,'public')));
+  $('communitySelectAll').addEventListener('click',()=>{if(!selected||selected.status!=='approved')return;selected.folder.items.forEach((_,i)=>checked.add(i));panel.querySelectorAll('[data-item-index]').forEach(box=>{box.checked=true;});selectionChanged();});
+  $('communityClearSelection').addEventListener('click',()=>{checked.clear();panel.querySelectorAll('[data-item-index]').forEach(box=>{box.checked=false;});selectionChanged();});
+  $('communityCopySelected').addEventListener('click',()=>run(async()=>{const rows=window.msbtCommunitySelection()||[];if(!rows.length)throw Error('Select items first.');await navigator.clipboard.writeText(rows.map(row=>row.serial).join('\n'));message(`Copied ${rows.length} item codes.`);}));
   $('communityPreviewMore').addEventListener('click',()=>{if(selected)items();});
   $('communityMineBtn').addEventListener('click',()=>run(async()=>{clearPreview();const data=await call('mine');next=null;$('communityMoreBtn').hidden=true;results(data.submissions,'mine');message('Select a submission to refresh its status. A sending entry can be safely retried.');}));
   $('communitySubmitFolder').addEventListener('change',()=>{countSubmission();if(!$('communitySubmitTitle').value)$('communitySubmitTitle').value=$('communitySubmitFolder').value.split('/').at(-1).trim();});

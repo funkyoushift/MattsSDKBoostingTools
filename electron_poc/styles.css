@@ -5262,3 +5262,70 @@ body.msbt-density-compact .activity-card {
 #communityStatus + .button-row input { min-width: 0; margin: 0; }
 #communityMineBtn { justify-self: start; }
 @media (max-width: 650px) { #communityStatus + .button-row { grid-template-columns: 1fr; } }
+
+.saved-folder-nav { display: flex; flex-wrap: wrap; gap: 6px; max-height: 180px; overflow: auto; margin: 12px 0; }
+.saved-folder-nav button[aria-pressed="true"] { border-color: #79d9ff; background: #304b68; }
+.saved-delivery { margin-top: 20px; border-top: 1px solid #56687e; padding-top: 16px; }
+.saved-delivery > input, .saved-delivery > select { max-width: 420px; }
+.community-item-row { padding: 10px; border-bottom: 1px solid #465366; }
+.community-item-row label { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.community-item-row input[type="checkbox"] { width: auto; flex: 0 0 auto; }
+.community-item-row details { margin-left: 26px; }
+
+/* Saved Items task layout: folders, items, then a shared send panel. */
+.saved-items-shell { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 20px; align-items: start; }
+.saved-items-main, .saved-items-list { min-width: 0; }
+.msbt-workspace .workspace-panels #savedItemsLocalPanel, #savedItemsLocalPanel { display: block; }
+#savedItemsLocalPanel .bookmark-browser { display: grid; grid-template-columns: 240px minmax(0,1fr); gap: 16px; }
+.saved-folder-rail { border-right: 1px solid #465366; padding-right: 12px; }
+.saved-folder-rail h3 { margin: 0 0 10px; }
+.saved-folder-nav { display: flex; flex-direction: column; flex-wrap: nowrap; max-height: 420px; }
+.saved-folder-nav button { flex: 0 0 auto; height: auto; min-height: 42px; line-height: 1.4; padding: 10px 12px; white-space: normal; text-align: left; overflow-wrap: anywhere; overflow: visible; }
+.saved-folder-dropdown { display: none !important; }
+.saved-items-list .grid.two { display: block; }
+.saved-items-list .selection-mode-toggle, .saved-items-list .selection-mode-help { display: none; }
+.saved-items-list .bookmark-serial { display: none; }
+#bookmarkRows { max-height: 520px; overflow: auto; }
+#savedItemEditor { margin-top: 16px; padding: 12px; border: 1px solid #465366; border-radius: 8px; }
+#savedItemEditor > summary { cursor: pointer; font-weight: 600; }
+.saved-delivery { margin: 0; padding: 16px; border: 1px solid #465366; border-radius: 10px; background: #151c28; position: sticky; top: 12px; }
+.saved-delivery h3 { margin-top: 0; }
+.saved-delivery .button-row:not(.qm-serial-pin-row) { display: grid; grid-template-columns: 1fr; }
+.saved-delivery #bookmarkOutput { max-height: 130px; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; }
+.saved-send-advanced { margin-top: 16px; }
+.saved-send-advanced summary { cursor: pointer; }
+#communityFoldersPanel > .grid.two { grid-template-columns: minmax(160px, .8fr) minmax(0,1.2fr); }
+#communityFoldersPanel > h3 { font-size: 18px; }
+@media (max-width: 1100px) { .saved-items-shell { grid-template-columns: 1fr; } .saved-delivery { position: static; } .saved-delivery .button-row:not(.qm-serial-pin-row) { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+@media (max-width: 700px) { #savedItemsLocalPanel .bookmark-browser, #communityFoldersPanel > .grid.two { grid-template-columns: 1fr; } .saved-folder-rail { border-right: 0; } .saved-folder-nav { max-height: 150px; } }
+
+.saved-level-toggle { display: flex; align-items: center; gap: 8px; }
+.saved-level-toggle input[type="checkbox"] { width: 18px; height: 18px; margin: 0; }
+#savedSendBtn { width: 100%; margin-top: 12px; padding: 12px; background: #245a70; border-color: #79d9ff; color: white; }
+#savedSendBtn:disabled { opacity: .45; }
+#bookmarkRows .bookmark-row.checked { background: #23485b; border-color: #79d9ff; box-shadow: inset 3px 0 #79d9ff; }
+
+.saved-library-tools { margin: 12px 0; padding: 8px 0; }
+.saved-library-tools summary { cursor: pointer; color: #8cdbf2; }
+
+/* Use the same Inventory card bodies in local and shared folders. */
+#bookmarkRows, #communityPreviewItems {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  align-items: start; gap: 12px; padding: 8px; min-width: 0;
+}
+#bookmarkRows .saved-card-tile, #communityPreviewItems .saved-card-tile {
+  display: flex; flex-direction: column; align-items: stretch; gap: 8px;
+  min-width: 0; height: auto; padding: 8px; text-align: left;
+  white-space: normal; border: 1px solid #34485e; border-radius: 8px;
+  background: #0d1420; color: #e7edf5;
+}
+#bookmarkRows .saved-card-tile.checked, #communityPreviewItems .saved-card-tile:has(input:checked) {
+  border-color: #58cef0; box-shadow: 0 0 0 2px #58cef055;
+}
+.saved-card-tile .bookmark-title { white-space: normal; overflow-wrap: anywhere; }
+.saved-card-tile .bookmark-group { display: none; }
+#communityPreviewItems .saved-card-tile label { display: block; cursor: pointer; overflow-wrap: anywhere; }
+#communityPreviewItems .saved-card-tile input { margin-right: 8px; }
+.saved-item-card { min-height: 160px; width: 100%; margin-top: 8px; }
+.saved-card-tile .native-game-card-frame { pointer-events: none; }
+.saved-card-tile details { font-size: 12px; }

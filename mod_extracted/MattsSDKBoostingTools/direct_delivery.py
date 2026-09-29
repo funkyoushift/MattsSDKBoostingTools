@@ -10,7 +10,7 @@ from pathlib import Path
 CHARACTER_BUDGET = 8192
 CHUNK_PAUSE = 0.75
 ITEM_GAP = 0.008
-SETTLE_SECONDS = 30.0
+SETTLE_SECONDS = 3.0
 
 
 def partition_serials(serials):

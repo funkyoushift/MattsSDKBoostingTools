@@ -1397,7 +1397,7 @@ function quickMenuSerialPayload() {
 }
 
 function quickMenuBookmarkSerialPayload() {
-  const entries = typeof bookmarkSelectedEntries === "function" ? bookmarkSelectedEntries() : [];
+  const entries = typeof savedDeliveryEntries === "function" ? savedDeliveryEntries() : [];
   const serials = typeof bookmarkSerialLinesForEntries === "function"
     ? bookmarkSerialLinesForEntries(entries)
     : [];
@@ -1405,13 +1405,13 @@ function quickMenuBookmarkSerialPayload() {
   const expanded = expandSerialTextCopies(serials.join("\n"), copies, "Serial Bookmarks");
   return {
     serial_text: expanded.text || "",
-    serial_override_level: false,
-    serial_level: 70
+    serial_override_level: document.getElementById("bookmarkOverrideLevel").checked,
+    serial_level: getInt("bookmarkDeliveryLevel", 1, 70, 70)
   };
 }
 
 function quickMenuBookmarkSerialLabel() {
-  const entries = typeof bookmarkSelectedEntries === "function" ? bookmarkSelectedEntries() : [];
+  const entries = typeof savedDeliveryEntries === "function" ? savedDeliveryEntries() : [];
   if (!entries.length) return "Bookmark Serial";
   if (entries.length === 1) return String(entries[0].name || "Bookmark Serial").slice(0, 48);
   return `${entries.length} Bookmarks`.slice(0, 48);
@@ -5139,10 +5139,31 @@ function bookmarkGroupCounts() {
 }
 
 function bookmarkSelectedEntries() {
-  const checked = state.bookmarks.filter((row) => state.bookmarkCheckedIds.has(row.id));
-  if (checked.length) return checked;
+  const visible = filteredBookmarks();
+  const checked = visible.filter((row) => state.bookmarkCheckedIds.has(row.id));
+  if (checked.length || state.bookmarkMultiSelect) return checked;
   const active = activeBookmark();
-  return active ? [active] : [];
+  return active && visible.some(row => row.id === active.id) ? [active] : [];
+}
+
+function savedDeliveryEntries() {
+  const online = window.msbtCommunitySelection?.();
+  return online === null || online === undefined ? bookmarkSelectedEntries() : online;
+}
+function renderSavedDeliverySelection() {
+  const node = document.getElementById('savedDeliverySelection');
+  const send = document.getElementById('savedSendBtn');
+  if (send) send.disabled = savedDeliveryEntries().length === 0;
+  if (node) node.textContent = `${savedDeliveryEntries().length} item(s) selected · ${document.getElementById('communityFoldersPanel')?.hidden === false ? 'Community library' : 'My saved items'}`;
+}
+function openBookmarkFolder(folder) {
+  state.bookmarkFilterGroup = folder;
+  els.bookmarkGroupFilter.value = folder;
+  els.bookmarkSearch.value = '';
+  state.bookmarkCheckedIds.clear();
+  state.bookmarkSelectionAnchor = '';
+  clearBookmarkForm();
+  setBookmarkStatus(`Opened ${folder}. Select items below.`, 'ok');
 }
 
 function bookmarkSerialLinesForEntry(row) {
@@ -5215,14 +5236,74 @@ function filteredBookmarks() {
   });
 }
 
+// Saved folders share Inventory's resolver and card renderer. Resolve only visible tiles.
+const savedCardCache = new Map();
+const savedCardPending = new Map();
+let savedCardTimer = null;
+const savedCardObserver = new IntersectionObserver(entries => {
+  for (const entry of entries) if (entry.isIntersecting) {
+    savedCardObserver.unobserve(entry.target);
+    const {serial, name} = entry.target.dataset;
+    const targets = savedCardPending.get(serial) || [];
+    targets.push({host: entry.target, name});
+    savedCardPending.set(serial, targets);
+    if (!savedCardTimer) savedCardTimer = setTimeout(flushSavedCards, 30);
+  }
+}, {rootMargin: '200px'});
+async function flushSavedCards() {
+  const batch = [...savedCardPending.entries()].slice(0, 40);
+  batch.forEach(([serial]) => savedCardPending.delete(serial));
+  try {
+    const cards = await resolveOfflineCardMap(batch.map(([serial]) => serial));
+    for (const [serial, targets] of batch) {
+      const card = cards.get(serial);
+      if (card?.meta_ok) {
+        if (savedCardCache.size >= 2000) savedCardCache.delete(savedCardCache.keys().next().value);
+        savedCardCache.set(serial, card);
+      }
+      for (const {host} of targets) if (host.isConnected) {
+        if (card?.meta_ok) fillBl4ItemCard(host, card);
+        else host.textContent = 'Card unavailable · original code preserved';
+      }
+    }
+  } finally {
+    savedCardTimer = savedCardPending.size ? setTimeout(flushSavedCards, 30) : null;
+  }
+}
+function savedItemCard(item) {
+  const host = document.createElement('div');
+  host.className = 'saved-item-card';
+  host.dataset.serial = item.serial;
+  host.dataset.name = item.name || 'Saved item';
+  const cached = savedCardCache.get(item.serial);
+  if (cached) fillBl4ItemCard(host, cached);
+  else if (item.serial.length > 8192) host.textContent = 'Code too large for card preview · original preserved';
+  else { host.textContent = 'Loading item card…'; savedCardObserver.observe(host); }
+  return host;
+}
+function discardSavedCards(host) {
+  host.querySelectorAll('.saved-item-card').forEach(card => savedCardObserver.unobserve(card));
+}
+
 function renderBookmarks() {
   renderBookmarkGroupFilter();
   const rows = filteredBookmarks();
+  const nav = document.getElementById('bookmarkFolderNav');
+  if (nav) {
+    nav.replaceChildren();
+    for (const folder of ['All', ...bookmarkGroups()]) {
+      const button = document.createElement('button');button.type = 'button';
+      button.textContent = folder;button.setAttribute('aria-pressed', String(folder === state.bookmarkFilterGroup));
+      button.addEventListener('click', () => openBookmarkFolder(folder));nav.append(button);
+    }
+  }
+  renderSavedDeliverySelection();
   state.bookmarkVisibleRows = rows;
   const selectedCount = bookmarkSelectedEntries().length;
   setLine(els.bookmarkCount, `${rows.length} shown / ${state.bookmarks.length} saved | ${selectedCount} selected`, rows.length ? "ok" : "warning");
 
   if (!els.bookmarkRows) return;
+  discardSavedCards(els.bookmarkRows);
   els.bookmarkRows.innerHTML = "";
   if (!state.bookmarks.length) {
     const empty = document.createElement("div");
@@ -5243,7 +5324,7 @@ function renderBookmarks() {
     const button = document.createElement("button");
     button.type = "button";
     const checked = state.bookmarkCheckedIds.has(row.id);
-    button.className = `bookmark-row${row.id === state.bookmarkActiveId ? " active" : ""}${checked ? " checked" : ""}`;
+    button.className = `bookmark-row saved-card-tile${row.id === state.bookmarkActiveId ? " active" : ""}${checked ? " checked" : ""}`;
     button.addEventListener("click", (event) => selectBookmark(row.id, { selectionEvent: event }));
 
     const main = document.createElement("span");
@@ -5259,7 +5340,8 @@ function renderBookmarks() {
     group.className = "bookmark-group";
     group.textContent = row.group || "Default";
 
-    button.append(main, group);
+    button.setAttribute("aria-pressed", String(checked));
+    button.append(main, savedItemCard(row), group);
     els.bookmarkRows.appendChild(button);
   });
 }
@@ -5556,6 +5638,7 @@ function selectAllVisibleBookmarks() {
 }
 
 function clearBookmarkSelection() {
+  state.bookmarkActiveId = "";
   state.bookmarkCheckedIds.clear();
   state.bookmarkSelectionAnchor = "";
   renderBookmarks();
@@ -5613,7 +5696,7 @@ async function validateBookmarkSerial() {
 }
 
 async function sendBookmarkSerial(mode) {
-  const entries = bookmarkSelectedEntries();
+  const entries = savedDeliveryEntries();
   if (!entries.length) {
     const message = "Select one or more saved serial bookmarks first.";
     setOutput(els.bookmarkOutput, message);
@@ -5658,7 +5741,7 @@ async function sendBookmarkSerial(mode) {
     els.bookmarkOutput,
     `Sending Serial Bookmarks delivery:\nDestination: ${destination}\nBookmark rows: ${entries.length}\nUnique serials: ${serials.length}\nCopies: ${copies}\nTotal delivered: ${expanded.totalCount || serials.length}\n${entries.map((row) => `${row.name || "Untitled Serial"} | ${row.group || "Default"}`).join("\n")}`
   );
-  const result = await sendSerialPayload(mode, expanded.text, false, 70, els.bookmarkOutput, 1, "Serial Bookmarks");
+  const result = await sendSerialPayload(mode, expanded.text, document.getElementById("bookmarkOverrideLevel").checked, getInt("bookmarkDeliveryLevel", 1, 70, 70), els.bookmarkOutput, 1, "Saved Items");
   if (!result) return;
   const message = actionSucceeded(result)
     ? resultMessage(result)
@@ -13225,7 +13308,7 @@ function wireEvents() {
   wireInventoryEvents();
 
   els.bookmarkSearch.addEventListener("input", renderBookmarks);
-  els.bookmarkGroupFilter.addEventListener("change", renderBookmarks);
+  els.bookmarkGroupFilter.addEventListener("change", () => openBookmarkFolder(els.bookmarkGroupFilter.value));
   els.bookmarkNewBtn.addEventListener("click", clearBookmarkForm);
   els.bookmarkImportBtn.addEventListener("click", importBookmarkFromSerialTools);
   document.getElementById("bookmarkCreateFolderBtn").addEventListener("click", () => manageBookmarkFolder(false));

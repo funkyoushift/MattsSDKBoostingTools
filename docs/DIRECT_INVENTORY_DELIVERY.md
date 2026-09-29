@@ -17,7 +17,7 @@ change the user's selected boosts, class rules, guaranteed pool, or >70 password
   players, round-robin; at least 8 ms after each insertion before another.
 - Each player pauses 0.75 seconds after a chunk. Another player can progress
   during that pause. No sleeps or background-thread Unreal calls.
-- Each player settles for 30 seconds after their final insertion. The queue stays
+- Each player settles for 3 seconds after their final insertion. The queue stays
   active through settlement so AFK does not treat an unfinished send as complete.
 - Progress means **submitted**, never guest-save verification. A selected guest
   leaving/changing characters fails that target without sending to their replacement.
