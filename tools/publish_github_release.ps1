@@ -99,12 +99,12 @@ function Get-ElectronPackageVersion {
 function Get-ReleaseTitle {
     param([Parameter(Mandatory=$true)][string]$Version)
     if ($Version -match '^(\d+\.\d+\.\d+)-beta\.(\d+)$') {
-        return "Matt's SDK Boosting Tools v$($Matches[1]) Beta $($Matches[2])"
+        return "Borderlands 4 Modding Tools v$($Matches[1]) Beta $($Matches[2]) — Powered by Funk"
     }
     if ($Version -match '^(\d+\.\d+\.\d+)-alpha\.(\d+)$') {
-        return "Matt's SDK Boosting Tools v$($Matches[1]) Alpha $($Matches[2])"
+        return "Borderlands 4 Modding Tools v$($Matches[1]) Alpha $($Matches[2]) — Powered by Funk"
     }
-    return "Matt's SDK Boosting Tools v$Version"
+    return "Borderlands 4 Modding Tools v$Version — Powered by Funk"
 }
 
 function Test-PrereleaseVersion {
