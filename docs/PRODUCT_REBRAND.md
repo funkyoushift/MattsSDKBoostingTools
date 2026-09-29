@@ -4,8 +4,9 @@ Public identity: **Borderlands 4 Modding Tools — Powered by Funk**.
 Original project and editor: **Mattmab (Matt)**. FunkYouSHiFT maintains this project.
 
 This change continues the six public-branding commits ending at `1480604`.
-Desktop/SDK version remains `2.20.0`; Android remains `1.4.2`, version code `29`.
-It does not publish a release or change the release asset contract.
+The initial local review used desktop/SDK `2.20.0` and Android `1.4.2` (29).
+The approved public release is desktop/SDK `2.21.0` and Android `1.4.3` (30);
+the release asset contract is unchanged.
 
 ## Display changes
 

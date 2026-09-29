@@ -1,11 +1,11 @@
-# MSBT Mobile Controller — Open Android Beta
+# Borderlands 4 Modding Tools — Android testing
 
-# Historical tester notes. Current public APK is 1.0.0 on GitHub Latest:
+# Historical tester notes. Current public APK is 1.4.3 on GitHub Latest:
 # https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Mobile-Controller.apk
 
-**Recommended build: `1.0.0`** on GitHub Latest. Older `0.1.0-beta.*` builds should install over with the public APK.
+**Recommended build: `1.4.3`** on GitHub Latest. Older `0.1.0-beta.*` builds should install over with the public APK.
 
-Open beta layout + **live LAN pairing**. Use desktop **MSBT v2.3.1+** ([Latest](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest)) for Mobile Gateway / QR.
+Open beta layout + **live LAN pairing**. Use desktop **Borderlands 4 Modding Tools v2.21.0+** ([Latest](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest)) for Mobile Gateway / QR.
 
 ## Tester package
 
@@ -14,9 +14,9 @@ Ship testers:
 1. **Install page** (recommended on phone):  
    https://www.funkyoushift.com/MattsSDKBoostingTools/mobile-install.html  
    Direct APK:  
-   https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/mobile-beta/MSBT-Mobile-Controller.apk  
-   Testers should confirm **More → About** shows **`0.1.0-beta.15`** (or newer).
-2. **Test kit zip** — `MSBT-Mobile-Beta-Test-Kit-0.1.0-beta.15.zip` from the same [mobile-beta](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/mobile-beta) prerelease.
+   https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Mobile-Controller.apk  
+   Testers should confirm **More → About** shows **`1.4.3`** (or newer).
+2. **Archived beta test kit** (historical reference, not the current APK) — `MSBT-Mobile-Beta-Test-Kit-0.1.0-beta.15.zip` from the same [mobile-beta](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/mobile-beta) prerelease.
 
 Kit source lives in `mobile_controller/test_kit/`:
 
@@ -32,7 +32,7 @@ Kit source lives in `mobile_controller/test_kit/`:
 ## Fast path
 
 1. Install/update the APK from the install page (or direct APK link).
-2. PC: desktop **MSBT v2.3.1+** ([Latest](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest)) + BL4 in-world with MSBT.
+2. PC: desktop **Borderlands 4 Modding Tools v2.21.0+** ([Latest](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest)) + BL4 in-world with MSBT.
 3. PC: **Mobile Gateway tab** (QR + address / `49775` / pairing code).
 4. Phone: **More → Connection Settings** → **Scan QR to pair** (or manual Save → Connect).
 5. Try Boost → **MAX CASH**, QM → **Pull From PC** + tap a slot, then work through `CHECKLIST.md`.

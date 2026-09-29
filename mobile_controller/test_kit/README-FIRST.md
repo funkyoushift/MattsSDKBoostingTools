@@ -1,3 +1,5 @@
+> Archived beta test-kit instructions. For the current Android v1.4.3 app and Remote AFK setup, use [the mobile README](../README.md) and [the live install page](https://www.funkyoushift.com/MattsSDKBoostingTools/mobile-install.html).
+
 # MSBT Mobile Controller — Open Beta Test Kit
 
 **Current recommended build: `0.1.0-beta.15`** (verified working for live pairing + core tabs).
