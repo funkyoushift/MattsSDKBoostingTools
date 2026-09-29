@@ -20,6 +20,8 @@
       ["cleanup_rewards", byId("afkCleanupRewards").checked],
       ["loot_mode", byId("afkLootMode").value],
       ["random_count", Number(byId("afkRandomCount").value)],
+      ["serial_override_level", byId("afkItemLevelOverride").checked],
+      ["serial_level", Number(byId("afkItemLevel").value)],
       ["guaranteed_codes", byId("afkGuaranteedCodes").value],
       ["codes", byId("afkCodes").value]
     ]);
@@ -41,6 +43,8 @@
     byId("afkCleanupRewards").checked = config.cleanup_rewards === true;
     byId("afkLootMode").value = config.loot_mode === "random70" ? "random70" : "all";
     byId("afkRandomCount").value = config.random_count || 70;
+    byId("afkItemLevelOverride").checked = config.serial_override_level === true;
+    byId("afkItemLevel").value = config.serial_level || 70;
     if (typeof config.codes === "string") byId("afkCodes").value = config.codes;
     else if (Array.isArray(config.serials)) byId("afkCodes").value = config.serials.join("\n");
     byId("afkGuaranteedCodes").value = typeof config.guaranteed_codes === "string"
@@ -104,6 +108,9 @@
       if(action === "afk_lobby_start" && payload.loot && payload.loot_mode === "random70"
           && payload.random_count !== 70 && !lastStatus?.random_count_supported) {
         throw new Error("Install the updated SDK mod before changing random delivery size.");
+      }
+      if (action === 'afk_lobby_start' && payload.loot && payload.serial_override_level && !lastStatus?.item_level_override_supported) {
+        throw new Error('Install the updated SDK mod and restart Borderlands 4 before overriding AFK item levels.');
       }
       save();
       const send = (data) => window.msbtAfkConfigSend(action, data,

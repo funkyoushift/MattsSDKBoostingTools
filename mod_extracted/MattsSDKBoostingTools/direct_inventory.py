@@ -1,7 +1,7 @@
 """Build-gated native inventory insertion. Call only from the game thread.
 
-Recovered against Steam build 25372571; see docs/DIRECT_INVENTORY_DELIVERY.md.
-Never use these offsets without all four full-function byte gates passing.
+Recovered against Steam 25372571 and Epic 4845623; see docs/DIRECT_INVENTORY_DELIVERY.md.
+Never bind an address until every gate for its complete profile passes.
 """
 from __future__ import annotations
 
@@ -16,6 +16,30 @@ GATES = (
     (0x12E8E74, 22, '44645cf9f58a57466dd40e044c9d7044acee0700bc6ca3bc23d60b53fda8f66f'),
     (0x12E8E8A, 1873, 'a0099f4889e57f7f5e3706d4f1f97a4dabd47053c6f4b835412a2f4f8161ba84'),
 )
+
+
+EPIC_GATES = (
+    (0x88E204, 739, '7c6fee112ab96aea95271e007a39903dae8250f28cbb3477af4f177e98297f4e'),
+    GATES[1],
+    (0x12E6842, 22, GATES[2][2]),
+    (0x12E6858, 1873, '30848b99a52c78da3335d1fbf8dec5c2405dbce5cf37d4316b572768eb5cc6dc'),
+    # Native caller initializes the same identity layout and calls these routines.
+    (0x890DA0, 139, '6c105b5ca28b686cf393721aca5dc6be888990c425f23978a31490afe351dbb1'),
+    (0x9F1B230, 16, '33a19b30e4619e9461a715728eac41c86fa995b3aa49597a39b6a83085a1264d'),
+)
+PROFILES = (('steam-25372571', GATES), ('epic-4845623', EPIC_GATES))
+
+
+def select_profile(read_rva):
+    """Match one complete profile; never mix addresses from different builds."""
+    for name, gates in PROFILES:
+        try:
+            if all(hashlib.sha256(read_rva(rva, size)).hexdigest() == digest
+                   for rva, size, digest in gates):
+                return name, gates
+        except (ValueError, OSError):
+            continue
+    raise RuntimeError('This game build is not supported by direct inventory delivery; no items sent.')
 
 
 class FString(C.Structure):
@@ -40,16 +64,15 @@ class NativeInventory:
         kernel.VirtualQuery.argtypes = [C.c_void_p, C.POINTER(MemoryInfo), C.c_size_t]
         kernel.VirtualQuery.restype = C.c_size_t
         self.query = kernel.VirtualQuery
-        for rva, size, digest in GATES:
-            if hashlib.sha256(self.read(self.base + rva, size)).hexdigest() != digest:
-                raise RuntimeError('This game build is not supported by direct inventory delivery; no items sent.')
+        self.profile, gates = select_profile(lambda rva, size: self.read(self.base + rva, size))
+        construct_rva, destroy_rva, self.insert_rva = (gate[0] for gate in gates[:3])
         import unrealsdk
         self.flags = int(unrealsdk.find_enum('EInventoryItemFlags').AllowOverflow)
         if self.flags != 8:
             raise RuntimeError('Native inventory flags changed; no items sent.')
-        self.construct = C.CFUNCTYPE(C.c_bool, C.c_void_p, C.POINTER(FString))(self.base + 0x88E2A4)
-        self.destroy = C.CFUNCTYPE(None, C.c_void_p)(self.base + 0x369D14)
-        self.insert = C.CFUNCTYPE(None, C.c_void_p, C.c_void_p, C.c_int32, C.c_int32, C.c_int32)(self.base + 0x12E8E74)
+        self.construct = C.CFUNCTYPE(C.c_bool, C.c_void_p, C.POINTER(FString))(self.base + construct_rva)
+        self.destroy = C.CFUNCTYPE(None, C.c_void_p)(self.base + destroy_rva)
+        self.insert = C.CFUNCTYPE(None, C.c_void_p, C.c_void_p, C.c_int32, C.c_int32, C.c_int32)(self.base + self.insert_rva)
 
     def read(self, ptr, size):
         info = MemoryInfo()
@@ -64,7 +87,7 @@ class NativeInventory:
 
     def validate_controller(self, pc):
         interface = int(pc._get_address()) + 0xE38
-        if self.u64(self.u64(interface) + 0x30) != self.base + 0x12E8E74:
+        if self.u64(self.u64(interface) + 0x30) != self.base + self.insert_rva:
             raise RuntimeError('Inventory owner interface changed')
         if self.read(interface - 0xCC0, 1) != b'\x03':
             raise RuntimeError('Direct inventory delivery requires host authority')

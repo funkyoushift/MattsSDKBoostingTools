@@ -78,3 +78,34 @@ with zero-based rejected indices and reasons; the `filtered` event maps queued
 indices to original request indices. No code is truncated or automatically
 rerouted through rewards. An entirely unsupported request fails before queueing.
 Native insertion errors still stop that target without an uncertain retry.
+
+## Epic candidate (2026-09-28)
+
+Installed Epic manifest: `Oak2-RE_Games_Oak2_Patch_Epic-4845623`.
+Analyzed `OakGame/Binaries/Win64/Borderlands4.exe`, SHA-256
+`764a4bb5403a2619a0be627de5a738e23ea021e8672f7f0e7a536697d4a06719`.
+The root-level EXE is a launcher and is not the analyzed executable.
+
+The Epic profile uses constructor RVA `0x88E204` (739 bytes), destructor
+`0x369D14` (184 bytes), insertion thunk `0x12E6842` (22 bytes), and insertion
+body `0x12E6858` (1873 bytes). Exact gate hashes are in `EPIC_GATES`.
+Constructor and insertion body have respectively 189 and 424 instructions,
+matching the Steam functions; differences are relative code/data references.
+This structural comparison is not a live game or guest-save verification.
+The destructor and insertion thunk are byte-identical to Steam. The thunk checks
+`[rcx-0xCC0] == 3` then adjusts `rcx` by `-0xE38`, confirming the authority
+and controller-interface layout used by the existing code. Runtime vtable slot
+`0x30` must still resolve to the selected profile's exact insertion thunk.
+
+Epic native caller `0x890DA0..0x890E2A` (139 bytes) initializes the same identity
+fields, calls the constructor at `0x890E15`, and calls the destructor on failure
+at `0x890E26`. Its initializer constant at `0x9F1B230` is
+`0000000080000000ffffffff00000000`. Both caller and constant are additional
+Epic gates. No function is bound unless one complete profile matches; addresses
+from different profiles are never combined. Existing Steam gates are unchanged.
+
+Read-only executable validation is reproducible with
+`tools/verify_inventory_profiles.py --steam <Steam Win64 EXE> --epic <Epic Win64 EXE>`.
+Both actual binaries match, and changing any one gate causes rejection. Queue and
+Quick Menu offline regressions pass. Epic live insertion, return/undo, and guest
+save persistence still require testing; this is not yet a public compatibility claim.

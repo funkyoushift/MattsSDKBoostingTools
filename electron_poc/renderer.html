@@ -216,6 +216,9 @@
           <label><input type="checkbox" data-afk-boost="cosmetics"> All Customs + Hovers</label>
           <label><input type="checkbox" data-afk-boost="loot"> Send selected loot</label>
         </div>
+        <label><input id="afkItemLevelOverride" type="checkbox"> Override delivered item levels</label>
+        <label>Item level <input id="afkItemLevel" type="number" min="1" max="70" step="1" value="70"></label>
+        <p class="muted-line">Applies to the loot pool and guaranteed items. Original backpack items keep their levels. Stop and restart AFK to apply changes.</p>
         <label for="afkLootMode">Loot amount per guest</label>
         <select id="afkLootMode">
           <option value="all">Send all selected items · password above 70</option>
@@ -248,7 +251,7 @@
           <p class="muted-line">Guaranteed items count toward your selected total. For example, two guaranteed items in a 70-item delivery leave 68 random slots. Guaranteed items override the class filter, including class mods for other characters. Class filtering still applies to the random pool. Items already guaranteed are not drawn again from the random pool; repeat a guaranteed line for extra copies.</p>
           <label for="afkCodes">Loot pool · one code per line; repeated lines are extra copies</label>
           <textarea id="afkCodes" rows="5" placeholder="Paste item codes, or add bookmarks above"></textarea>
-          <p class="muted-line">Codes retain their item levels. Selections are saved on this PC.</p>
+          <p class="muted-line">Codes retain their item levels unless override is enabled. Selections are saved on this PC.</p>
         </details>
         <div class="button-row wrap">
           <button id="afkStart" type="button" disabled>Start AFK Lobby</button>
@@ -822,18 +825,21 @@
         <div class="section-heading">
           <div>
             <h2>Serial Bookmarks</h2>
-            <p>Browse saved serial folders, check individual rows or whole folders, then deliver the checked items from the footer.</p>
+            <p>Keep your own item folders, discover community drop lists, or share a folder for approval.</p>
           </div>
           <div class="button-row wrap">
-            <button id="communityOpenBtn">Community folders</button>
-            <button id="bookmarkNewBtn">+ New Serial</button>
+            <button id="savedItemsLocalBtn" type="button" aria-pressed="true">My saved items</button>
+            <button id="communityOpenBtn" type="button" aria-pressed="false">Community library</button>
+            <button id="savedItemsShareBtn" type="button">Share a folder</button>
+            <button id="bookmarkNewBtn">+ Add item codes</button>
             <button id="bookmarkImportBtn">Import</button>
           </div>
         </div>
         <div id="bookmarkStatus" class="status-line warning">Loading serial bookmarks...</div>
-        <details id="communityFoldersPanel">
-          <summary>Community folders · browse, share, and import drop lists</summary>
-          <p>Preview approved folders, then import a copy into your bookmarks. Importing never sends items to the game. Creator names are supplied by the submitter.</p>
+        <details id="communityFoldersPanel" hidden>
+          <summary>Community library</summary>
+          <h3>Discover community drop lists</h3>
+          <p>Browse approved folders and save a copy to My saved items. No account is needed. Importing does not send items to the game.</p>
           <div id="communityStatus" class="status-line" role="status">Open the library to browse shared folders.</div>
           <div class="button-row wrap">
             <input id="communitySearch" aria-label="Search community folders" placeholder="Folder title or creator" maxlength="100">
@@ -856,7 +862,7 @@
               <label for="communityDestination">Import as a new bookmark folder</label>
               <input id="communityDestination" maxlength="80" placeholder="Folder name">
               <div class="button-row wrap">
-                <button id="communityImportBtn" disabled>Import to bookmarks</button>
+                <button id="communityImportBtn" disabled>Save folder to My saved items</button>
                 <button id="communityCopyBtn" disabled>Copy share link</button>
                 <button id="communityWithdrawBtn" hidden>Withdraw my submission</button>
               </div>
@@ -869,7 +875,7 @@
               </div>
             </div>
           </div>
-          <details><summary>Submit one of my folders</summary>
+          <details id="communitySubmitPanel"><summary>Share one of my folders · approval required</summary>
             <label for="communitySubmitFolder">Bookmark folder (includes subfolders)</label>
             <select id="communitySubmitFolder"><option value="">Choose a folder</option></select>
             <div class="grid two">
@@ -886,7 +892,7 @@
           <button id="communityDeveloperPortal">Developer portal - sign in / create account</button>
         </details>
 
-        <div class="grid bookmark-grid">
+        <div id="savedItemsLocalPanel" class="grid bookmark-grid">
           <section class="bookmark-browser">
             <div class="grid two compact">
               <label>
@@ -901,6 +907,7 @@
               </label>
             </div>
             <div id="bookmarkCount" class="status-line">0 shown / 0 saved</div>
+            <details class="saved-folder-tools"><summary>Organize folders · create, move or delete</summary>
             <label for="bookmarkFolderPath">Move selected bookmarks to folder</label>
             <select id="bookmarkFolderPath"><option value="">Choose an existing folder</option></select>
             <div class="button-row wrap">
@@ -911,13 +918,14 @@
             <input id="bookmarkNewFolderPath" type="text" maxlength="180" placeholder="Weapons / Shotguns">
             <button id="bookmarkCreateFolderBtn" type="button">Create folder</button>
             <p class="muted-line">Choose existing folders from the dropdowns. Use / in a new folder name to create subfolders.</p>
+            </details>
             <div class="button-row wrap">
               <label class="selection-mode-toggle" title="When on, clicking a bookmark adds or removes it from the selection">
                 <input id="bookmarkMultiSelectToggle" type="checkbox">
                 <span>Select Multiple</span>
               </label>
               <button id="bookmarkSelectAllBtn">Select All</button>
-              <button id="bookmarkClearSelectedBtn" class="danger">Clear Selection</button>
+              <button id="bookmarkClearSelectedBtn">Clear Selection</button>
               <button id="bookmarkCopySelectedBtn">Copy Selected Serials</button>
             </div>
             <p class="muted-line selection-mode-help">Select Multiple makes each normal click add or remove a bookmark. Ctrl/Cmd and Shift shortcuts still work.</p>
@@ -927,7 +935,7 @@
           </section>
 
           <section class="bookmark-editor">
-            <h3>Details</h3>
+            <h3>Add or edit items</h3>
             <label for="bookmarkName">Name</label>
             <input id="bookmarkName" type="text" autocomplete="off" placeholder="Optional — leave blank to generate titles">
             <label for="bookmarkGroup">Folder path</label>
@@ -951,6 +959,7 @@
             </div>
             <div id="bookmarkCardStatus" class="muted-line">Select a bookmark to view its inventory-style item card. Pasted lists are saved as separate items first.</div>
             <div id="bookmarkCardHost"></div>
+            <h3>Deliver selected items</h3>
             <label for="bookmarkTargetSelect">Named player</label>
             <div class="target-row">
               <select id="bookmarkTargetSelect">

@@ -25,7 +25,7 @@ app.whenReady().then(async()=>{
    throw Error('Unexpected operation '+op);
   };
   (window.MsbtWorkspace?.enabled ? window.MsbtWorkspace.open('serial-tools','saved') : switchTab('serial-tools'));$('communityOpenBtn').click();await idle();
-  check($('communityFoldersPanel').open,'community panel opens');check($('communityResults').textContent.includes('Vex starter'),'public results');
+  check($('communityFoldersPanel').open && !$('communityFoldersPanel').hidden,'community panel opens');check($('savedItemsLocalPanel').hidden,'local items hidden while browsing');$('savedItemsLocalBtn').click();check(!$('savedItemsLocalPanel').hidden && $('communityFoldersPanel').hidden,'local navigation');$('savedItemsShareBtn').click();check($('communitySubmitPanel').open && !$('communityFoldersPanel').hidden,'share shortcut');$('communityOpenBtn').click();await idle();check($('communityResults').textContent.includes('Vex starter'),'public results');
   $('communityResults').querySelector('button').click();await idle();
   check(!$('communityImportBtn').disabled,'approved import enabled');check(!$('communityPreviewItems').querySelector('img'),'untrusted title rendered as text');check(!imported,'preview never imports');
   $('communityImportBtn').click();await idle();check(imported,'explicit import');check(state.bookmarks.length===5,'append preserves original');check(state.bookmarks[0].serial==='@UKeep','original unchanged');
@@ -45,8 +45,11 @@ app.whenReady().then(async()=>{
  assert.equal(result.bookmarks,5);
  win.showInactive();
  await new Promise(resolve=>setTimeout(resolve,500));
- await win.webContents.executeJavaScript(`(async()=>{await endWalkthrough({skipped:true,quiet:true});(window.MsbtWorkspace?.enabled ? window.MsbtWorkspace.open('serial-tools','saved') : switchTab('serial-tools'));document.getElementById('communityFoldersPanel').scrollIntoView({block:'start'});})()`);
+ await win.webContents.executeJavaScript(`(async()=>{await endWalkthrough({skipped:true,quiet:true});(window.MsbtWorkspace?.enabled ? window.MsbtWorkspace.open('serial-tools','saved') : switchTab('serial-tools'));document.querySelector('[data-msbt-panel="serial-bookmarks"]').scrollIntoView({block:'start'});})()`);
  await new Promise(resolve=>setTimeout(resolve,250));
  const out=path.join(__dirname,'..','output','community-folders-review');fs.mkdirSync(out,{recursive:true});fs.writeFileSync(path.join(out,'community-folders.png'),(await win.webContents.capturePage()).toPNG());
+ await win.webContents.executeJavaScript(`document.getElementById('savedItemsLocalBtn').click();document.querySelector('[data-msbt-panel="serial-bookmarks"]').scrollIntoView({block:'start'});`);
+ await new Promise(resolve=>setTimeout(resolve,200));
+ fs.writeFileSync(path.join(out,'saved-items.png'),(await win.webContents.capturePage()).toPNG());
  console.log('PASS community UI: consent, selected subtree, safe preview, pending privacy, append-only import, no game actions');win.destroy();app.exit(0);
 }).catch(e=>{console.error(e);app.exit(1)});

@@ -16,7 +16,7 @@ app.whenReady().then(async () => {
       return {ok:true,data:{ok:true,afk_lobby:{enabled:action==='afk_lobby_start',message:action==='afk_lobby_start'?'Running':'Stopped',config:payload,history:[]}}};
     };
     bridgeStatus = async () => {};
-    window.msbtAfkRender({afk_lobby:{enabled:false,message:'Stopped',loot_modes:['all','random70'],guaranteed_loot_supported:true,history:[],shift_connected:true,shift_running:false}});
+    window.msbtAfkRender({afk_lobby:{enabled:false,message:'Stopped',loot_modes:['all','random70'],guaranteed_loot_supported:true,item_level_override_supported:true,history:[],shift_connected:true,shift_running:false}});
     document.getElementById('afkLoadBookmarks').click();
     await new Promise(resolve=>setTimeout(resolve,30));
     document.getElementById('afkBookmarks').options[0].selected = true;
@@ -39,6 +39,9 @@ app.whenReady().then(async () => {
     document.getElementById('afkCleanupRewards').checked = true;
     const lootMode = document.getElementById('afkLootMode');
     const unlimitedDefault = lootMode.value === 'all';
+    if (document.getElementById('afkItemLevelOverride').checked) throw Error('Override must default off');
+    document.getElementById('afkItemLevelOverride').checked = true;
+    document.getElementById('afkItemLevel').value = '35';
     lootMode.value = 'random70';
     lootMode.dispatchEvent(new Event('change', {bubbles:true}));
     const savedMode = JSON.parse(localStorage.getItem('msbt.afk-lobby.v1')).loot_mode;
@@ -46,7 +49,7 @@ app.whenReady().then(async () => {
     document.getElementById('afkStart').click();
     await new Promise(resolve=>setTimeout(resolve,30));
     const oldSdkBlocked = calls.length === 0 && document.getElementById('afkStatus').textContent.includes('updated SDK');
-    window.msbtAfkRender({afk_lobby:{enabled:false,message:'Ready',cleanup_rewards_supported:true,loot_modes:['all','random70'],guaranteed_loot_supported:true,history:[]}});
+    window.msbtAfkRender({afk_lobby:{enabled:false,message:'Ready',cleanup_rewards_supported:true,loot_modes:['all','random70'],guaranteed_loot_supported:true,item_level_override_supported:true,history:[]}});
     document.getElementById('afkStart').click();
     await new Promise(resolve=>setTimeout(resolve,30));
     const locked = document.getElementById('afkCodes').disabled && lootMode.disabled && document.getElementById('afkGuaranteedCodes').disabled;
@@ -65,7 +68,7 @@ app.whenReady().then(async () => {
     document.getElementById('afkCloseShift').click();
     await new Promise(resolve => setTimeout(resolve, 20));
     if (!document.getElementById('afkTestHost').disabled) throw new Error('Old SDK must not offer host test');
-    window.msbtAfkRender({afk_lobby:{enabled:false,host_test_supported:true,cleanup_rewards_supported:true,loot_modes:['all','random70'],guaranteed_loot_supported:true,history:[]}});
+    window.msbtAfkRender({afk_lobby:{enabled:false,host_test_supported:true,cleanup_rewards_supported:true,loot_modes:['all','random70'],guaranteed_loot_supported:true,item_level_override_supported:true,history:[]}});
     document.getElementById('afkTestHost').click();
     await new Promise(resolve => setTimeout(resolve, 30));
     if (!document.getElementById('afkTestHost').disabled) throw new Error('Host test must lock while running');
@@ -76,6 +79,8 @@ app.whenReady().then(async () => {
   assert.equal(results.savedCodes, results.catalogCodes);
   assert(results.unchangedWhileRunning);
   assert.equal(results.calls[0].action, "afk_lobby_start");
+  assert.equal(results.calls[0].payload.serial_override_level, true);
+  assert.equal(results.calls[0].payload.serial_level, 35);
   assert.equal(results.calls[0].payload.sdu, true);
   assert.equal(results.calls[0].payload.loot, true);
   assert.equal(results.calls[0].payload.auto_accept, true);

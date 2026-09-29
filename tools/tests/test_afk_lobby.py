@@ -825,3 +825,38 @@ def test_any_terminal_errors_and_report_write_failure_still_auto_kick(monkeypatc
     assert game.kicked==['guest']
     assert 'disk full' in lobby.history[0]['report_error']
     assert not lobby.history[0]['results'][0]['ok']
+
+
+def test_item_level_override_reaches_both_pools_and_is_saved():
+    game = FakeGame()
+    prepared = []
+    game.prepare_loot = lambda p: prepared.append(dict(p)) or ['serial']
+    lobby = module.Lobby(game)
+    assert lobby.start({'loot':True, 'codes':'pool', 'guaranteed_codes':'guaranteed',
+                        'serial_override_level':True, 'serial_level':35})['ok']
+    assert len(prepared) == 2
+    assert all(p['serial_override_level'] and p['serial_level'] == 35 for p in prepared)
+    assert lobby.config['serial_level'] == 35
+    assert lobby.config['serial_override_level'] is True
+
+
+def test_item_level_override_rejects_invalid_levels_before_preparing():
+    for level in (0,71,True,1.5,'bad'):
+        game=FakeGame()
+        game.prepare_loot=lambda p: (_ for _ in ()).throw(AssertionError('prepared invalid level'))
+        result=module.Lobby(game).start({'loot':True,'serial_override_level':True,'serial_level':level})
+        assert not result['ok'] and 'Item level' in result['message']
+
+
+def test_item_level_override_uses_existing_rewriter_and_fails_without_partial_list():
+    import pytest
+    game=module.Game()
+    backend=SimpleNamespace(_parse_serial_text=lambda s:s.splitlines(),
+        serial_rewards=SimpleNamespace(_resolve_give_serial_strings=lambda s:s),
+        _serials_with_level_override=lambda s,enabled,level:([f'{x}-L{level}' for x in s],len(s),[]))
+    game.backend=lambda:backend
+    assert game.prepare_loot({'codes':'A\nA','serial_override_level':True,'serial_level':35}) == ['A-L35','A-L35']
+    assert game.prepare_loot({'codes':'A\nA'}) == ['A','A']
+    backend._serials_with_level_override=lambda *a:(['A'],1,['serial #2 invalid'])
+    with pytest.raises(ValueError,match='Could not override item level'):
+        game.prepare_loot({'codes':'A\nB','serial_override_level':True,'serial_level':35})

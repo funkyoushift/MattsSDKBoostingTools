@@ -269,3 +269,37 @@ def test_legacy_queue_entry_cannot_create_reward_packages():
         _queue_direct_delivery=lambda *a,**k:calls.append((a,k)))
     ns['_queue_serial_delivery_sequence'](['@Ua'],[1],scope_label='legacy',mode='selected')
     assert calls[0][0]==(['@Ua'],[1])
+
+def test_complete_profile_selection_and_rejection(monkeypatch):
+    import hashlib
+    spec = importlib.util.spec_from_file_location('native_profile_test', SDK / 'direct_inventory.py')
+    native = importlib.util.module_from_spec(spec); spec.loader.exec_module(native)
+    steam = ((10, 3, hashlib.sha256(b'one').hexdigest()), (20, 3, hashlib.sha256(b'two').hexdigest()))
+    epic = ((30, 3, hashlib.sha256(b'tri').hexdigest()), (40, 3, hashlib.sha256(b'for').hexdigest()))
+    monkeypatch.setattr(native, 'PROFILES', (('steam', steam), ('epic', epic)))
+    assert native.select_profile(lambda r,n: {10:b'one',20:b'two'}.get(r,b'bad')) == ('steam',steam)
+    assert native.select_profile(lambda r,n: {30:b'tri',40:b'for'}.get(r,b'bad')) == ('epic',epic)
+    # One valid gate from each profile must never authorize a mixed build.
+    with pytest.raises(RuntimeError, match='no items sent'):
+        native.select_profile(lambda r,n: {10:b'one',40:b'for'}.get(r,b'bad'))
+    for bad_rva, _, _ in epic:
+        with pytest.raises(RuntimeError, match='no items sent'):
+            native.select_profile(lambda r,n: b'bad' if r == bad_rva else {30:b'tri',40:b'for'}.get(r,b'bad'))
+    with pytest.raises(RuntimeError, match='no items sent'):
+        native.select_profile(lambda r,n: (_ for _ in ()).throw(ValueError('unreadable')))
+
+
+def test_epic_controller_validation_uses_selected_thunk(monkeypatch):
+    spec = importlib.util.spec_from_file_location('native_controller_test', SDK / 'direct_inventory.py')
+    native = importlib.util.module_from_spec(spec); spec.loader.exec_module(native)
+    instance = object.__new__(native.NativeInventory)
+    instance.base = 0x140000000
+    instance.insert_rva = native.EPIC_GATES[2][0]
+    pc = SimpleNamespace(_get_address=lambda:0x1000)
+    interface = 0x1000 + 0xE38
+    monkeypatch.setattr(instance, 'u64', lambda p: 0x5000 if p == interface else instance.base + instance.insert_rva)
+    monkeypatch.setattr(instance, 'read', lambda p,n:b'\x03')
+    assert instance.validate_controller(pc) == interface
+    monkeypatch.setattr(instance, 'u64', lambda p: 0x5000 if p == interface else instance.base + native.GATES[2][0])
+    with pytest.raises(RuntimeError, match='interface changed'):
+        instance.validate_controller(pc)

@@ -37,7 +37,17 @@
     clearPreview();const data=await call(mode==='review'?'reviewList':'list',{q:$('communitySearch').value,offset});
     next=data.next;$('communityMoreBtn').hidden=next==null;results(data.folders,mode);message(`${data.folders.length} folder(s) on this page.`);
   }
-  $('communityOpenBtn').addEventListener('click',()=>{panel.open=true;panel.scrollIntoView({block:'start'});folders();run(async()=>{const info=await call('info');endpoint=info.endpoint;mode='public';await browse();});});
+  function showLibrary(active){
+    panel.hidden=!active;panel.open=active;
+    $('savedItemsLocalPanel').hidden=active;
+    for(const id of ['bookmarkStatus','bookmarkNewBtn','bookmarkImportBtn'])$(id).hidden=active;
+    $('savedItemsLocalBtn').setAttribute('aria-pressed',String(!active));
+    $('communityOpenBtn').setAttribute('aria-pressed',String(active));
+    if(active)folders();
+  }
+  $('savedItemsLocalBtn').addEventListener('click',()=>showLibrary(false));
+  $('communityOpenBtn').addEventListener('click',()=>{showLibrary(true);run(async()=>{const info=await call('info');endpoint=info.endpoint;mode='public';await browse();});});
+  $('savedItemsShareBtn').addEventListener('click',()=>{showLibrary(true);$('communitySubmitPanel').open=true;$('communitySubmitPanel').scrollIntoView({block:'start'});$('communitySubmitFolder').focus({preventScroll:true});});
   panel.addEventListener('toggle',()=>{if(panel.open)folders();});
   $('communitySearchBtn').addEventListener('click',()=>run(async()=>{mode='public';await browse();}));
   $('communityMoreBtn').addEventListener('click',()=>run(()=>browse(next||0)));

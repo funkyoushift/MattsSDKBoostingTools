@@ -76,13 +76,18 @@ class Lobby:
         if not any(config[key] for key in BOOSTS):
             return {"ok": False, "message": "Select at least one boost."}
         try:
+            config["serial_override_level"] = payload.get("serial_override_level") is True
+            item_level = payload.get("serial_level", 70)
+            if config["serial_override_level"] and (isinstance(item_level, bool) or not str(item_level).isdigit() or not 1 <= int(item_level) <= 70):
+                raise ValueError("Item level must be a whole number from 1 to 70.")
+            config["serial_level"] = int(item_level) if config["serial_override_level"] else 70
             count = payload.get("random_count", 70)
             if isinstance(count, bool) or not str(count).isdigit() or int(count) < 1:
                 raise ValueError("Random delivery size must be a positive whole number.")
             config["random_count"] = int(count)
             config["serials"] = self.game.prepare_loot(payload) if config["loot"] else []
             config["loot_classes"] = self.game.classify_loot(config["serials"]) if config["loot"] else []
-            config["guaranteed_serials"] = (self.game.prepare_loot({"codes": payload["guaranteed_codes"]})
+            config["guaranteed_serials"] = (self.game.prepare_loot({**payload, "codes": payload["guaranteed_codes"]})
                                              if config["loot"] and payload.get("guaranteed_codes", "").strip() else [])
             config["guaranteed_classes"] = self.game.classify_loot(config["guaranteed_serials"]) if config["guaranteed_serials"] else []
             if config["loot"] and not config["serials"] and not config["guaranteed_serials"]:
@@ -131,7 +136,7 @@ class Lobby:
                 "awaiting_kick": [job["name"] for job in self.completed if not job.get("kick_attempted") and not job.get("failed")],
                 "loot_modes": ["all", "random70"], "bulk_loot_password_required": True, "random_count_supported": True, "guaranteed_loot_supported": True,
                 'cleanup_rewards_supported':True, 'host_test_supported':True,
-                'config_upload_supported': True}
+                'config_upload_supported': True, 'item_level_override_supported': True}
 
     def tick(self):
         now = time.monotonic()
@@ -477,6 +482,10 @@ class Game:
         serials = a.serial_rewards._resolve_give_serial_strings(raw) if raw else []
         if len(serials) != len(raw):
             raise ValueError("One or more item codes could not be resolved. Check the loot list.")
+        if payload.get("serial_override_level") is True:
+            serials, _changed, failures = a._serials_with_level_override(serials, True, int(payload.get("serial_level", 70)))
+            if failures:
+                raise ValueError("Could not override item level: " + "; ".join(failures[:3]))
         return serials
 
     @staticmethod
