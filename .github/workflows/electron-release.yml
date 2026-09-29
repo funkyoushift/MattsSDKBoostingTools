@@ -110,11 +110,11 @@ jobs:
           # /releases/latest/download/latest.json.
           $isPrerelease = $version -match '-alpha\.\d+$'
           if ($version -match '^(\d+\.\d+\.\d+)-beta\.(\d+)$') {
-            $title = "Matt's SDK Boosting Tools v$($Matches[1]) Beta $($Matches[2])"
+            $title = "Borderlands 4 Modding Tools v$($Matches[1]) Beta $($Matches[2]) — Powered by Funk"
           } elseif ($version -match '^(\d+\.\d+\.\d+)-alpha\.(\d+)$') {
-            $title = "Matt's SDK Boosting Tools v$($Matches[1]) Alpha $($Matches[2])"
+            $title = "Borderlands 4 Modding Tools v$($Matches[1]) Alpha $($Matches[2]) — Powered by Funk"
           } else {
-            $title = "Matt's SDK Boosting Tools v$version"
+            $title = "Borderlands 4 Modding Tools v$version — Powered by Funk"
           }
           $buildDate = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
           $notesFile = ".\docs\releases\RELEASE_NOTES_v$version.md"
