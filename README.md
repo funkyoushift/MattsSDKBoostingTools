@@ -1,8 +1,10 @@
-# Matt's SDK Boosting Tools (MSBT)
+# Borderlands 4 Modding Tools
 
-**[Support MSBT Development](https://www.funkyoushift.com/donate.html)** — FunkYouSHiFT now develops and maintains MSBT. Your support helps fund ongoing updates, fixes, and new features. PayPal, Cash App, and Venmo are available on the support page.
+### Powered by Funk
 
-MSBT is a Borderlands 4 boosting and item toolkit: a standalone Windows app outside the game, plus a small SDK mod that talks to Borderlands 4 while you play. Use it for currency/XP/SDU helpers, serial delivery, BL4 code browsing, Mattmab’s save/profile/item editor, Dev Spawner, map travel, movement tools, and more.
+**[Support Borderlands 4 Modding Tools development](https://www.funkyoushift.com/donate.html)** — Developed and maintained by **FunkYouSHiFT** under the **Powered by Funk** product branding. Your support helps fund ongoing updates, fixes, and new features. PayPal, Cash App, and Venmo are available on the support page.
+
+**Borderlands 4 Modding Tools** is a free all-in-one BL4 modding toolkit for Windows, combining a standalone desktop app with an in-game SDK bridge. It includes Borderlands 4 boosting tools, item spawning, save and item workflows, inventory tools, serial delivery, BL4 item codes, Dev Spawner, map travel, player movement, AFK lobby tools, a mobile controller, and more.
 
 **Current release: [v2.20.0](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.20.0)** — Import backpack and equipped items from Borderlands 4 `.yaml` or `.sav` character files into Saved Items, with import preview, duplicate handling, and improved item-card fallback. This release also improves trusted-device sign-in for the developer portal.
 
@@ -52,7 +54,7 @@ Site / tools: [FunkYouSHiFT.com](https://www.funkyoushift.com/) · [Tools page](
 
 ---
 
-## What MSBT does
+## Borderlands 4 modding tools and features
 
 In plain terms, the Electron app is the control panel. The SDK mod does the live work in-game.
 
@@ -164,13 +166,15 @@ Also use the on-screen **Close F7** button. Prefer F7 for normal open/close; use
 
 ---
 
-## Why this project exists
+## Project history
 
 Mattmab put the original toolset together: homemade SDK pieces plus community mods that fit Borderlands 4 boosting and item work. That first version lived **inside** the game through **BLImGui** (Borderlands ImGui) — a separate in-game UI framework, not Mattmab’s project. It worked, but running a full panel inside the engine was heavy; it competed with the game for the same resources.
 
 That stack targeted **oak2-mod-manager v0.2**. When **v0.3** landed, a lot of old hooks and assumptions stopped lining up. Matt also had personal stuff going on and stepped back.
 
-**FunkYouSHiFT** picked the project up to:
+The project began as **Matt's SDK Boosting Tools (MSBT)**, created by Mattmab. **FunkYouSHiFT** later took over active development. Since then, the project has been substantially rebuilt and expanded beyond the original boosting-focused toolset. The current product is **Borderlands 4 Modding Tools — Powered by Funk**.
+
+The modern project:
 
 - move the main UI **out** of the game engine
 - rebuild it as a standalone **Electron** app
@@ -209,7 +213,7 @@ More architecture detail for developers: [docs/BLIMGUI_REPLACEMENT_ARCHITECTURE.
    - `MattsSDKBoostingTools.sdkmod`
    - `ActorScriptDeployer/` (needed for Dev Spawner)
 4. Launch **Borderlands 4** with the SDK loaded.
-5. Launch **Matt's SDK Boosting Tools**.
+5. Launch **Borderlands 4 Modding Tools**.
 6. Hit **Refresh Status**, pick a target player if you need one, then use the tools.
 
 If Steam/BL4 is in a non-standard place, open the **Updates** tab, browse to your `sdk_mods` folder, and run **Install / Update SDK Mod**.
@@ -273,7 +277,7 @@ Third-party notices and license details for bundled/adapted pieces: [docs/THIRD_
 - [GZO Borderlands 4 Codes](https://save-editor.be/GZO/Borderlands4/Codes.html)
 - [Lootlemon](https://www.lootlemon.com/)
 - [FunkYouSHiFT site](https://www.funkyoushift.com/) · [Tools](https://www.funkyoushift.com/borderlands-resources.html)
-- [Support current MSBT development](https://www.funkyoushift.com/donate.html) · [Support Matt’s other work](https://ko-fi.com/mattmab)
+- [Support Borderlands 4 Modding Tools development](https://www.funkyoushift.com/donate.html) · [Support Matt’s other work](https://ko-fi.com/mattmab)
 - [Report issues](https://github.com/funkyoushift/MattsSDKBoostingTools/issues)
 
 ---
@@ -314,7 +318,7 @@ Repo layout in short (see [`docs/PROJECT_MAP.md`](docs/PROJECT_MAP.md) for neste
 
 MSBT's original code is released under the [MIT License](LICENSE).
 
-Bundled and adapted third-party code, community catalogs, game-derived data, and artwork remain under their own licenses or permission grants. See [Third-Party Notices](docs/THIRD_PARTY_NOTICES.md) for the source-by-source scope; the MSBT MIT license does not relicense those materials.
+Bundled and adapted third-party code, community catalogs, game-derived data, and artwork remain under their own licenses or permission grants. See [Third-Party Notices](docs/THIRD_PARTY_NOTICES.md) for the source-by-source scope; the project's MIT license does not relicense those materials.
 
 Again: **not** official Gearbox / 2K / Borderlands software.
 
