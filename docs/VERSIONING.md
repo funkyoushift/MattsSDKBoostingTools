@@ -1,6 +1,6 @@
 # Versioning and GitHub Releases
 
-Matt's SDK Boosting Tools uses Semantic Versioning for public Electron releases.
+Borderlands 4 Modding Tools uses Semantic Versioning for public Electron releases. The legacy `MSBT` identifiers and asset names remain in place where required for update and install compatibility.
 
 ## Public Version Format
 
@@ -43,11 +43,13 @@ Build timestamps and commit SHAs may appear only as secondary build information.
 
 Use these title patterns:
 
-- Stable: `Matt's SDK Boosting Tools v1.0.0`
-- Beta: `Matt's SDK Boosting Tools v1.1.1 Beta 1`
-- Alpha: `Matt's SDK Boosting Tools v1.1.1 Alpha 1`
+- Stable: `Borderlands 4 Modding Tools v1.0.0 — Powered by Funk`
+- Beta: `Borderlands 4 Modding Tools v1.1.1 Beta 1 — Powered by Funk`
+- Alpha: `Borderlands 4 Modding Tools v1.1.1 Alpha 1 — Powered by Funk`
 
 ## Asset Names
+
+For compatibility, public release assets currently retain the established `MSBT` filenames. Do not rename them until the updater/installer migration is deliberately implemented and tested.
 
 Use these Windows asset names:
 
