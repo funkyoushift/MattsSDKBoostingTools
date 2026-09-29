@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="color-scheme" content="dark only">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Matt's SDK Boosting Tools</title>
+  <title>Borderlands 4 Modding Tools — Powered by Funk</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="ui-designer.css">
   <link rel="stylesheet" href="vendor/gridstack/gridstack.min.css">
@@ -33,11 +33,12 @@
   <header class="app-header">
     <div class="header-brand">
       <div class="header-brand-row">
-        <h1>Matt's SDK Boosting Tools</h1>
+        <h1>Borderlands 4 Modding Tools</h1>
         <button id="funkPoweredMark" class="funk-powered-mark" type="button" title="FunkYouSHiFT">
           <img src="branding/fu-logo.png" alt="">
           <span>Powered by Funk</span>
         </button>
+        <p class="muted-line">Original project and editor by Mattmab (Matt).</p>
         <p id="appVersionLine" class="muted-line header-version">…</p>
       </div>
     </div>
@@ -66,7 +67,7 @@
           <span class="support-summary-hint">Tip · Donate · Discord · GitHub · Mobile</span>
         </summary>
         <div class="support-links">
-          <button id="streamlabsBtn" class="support-link featured">Support MSBT Development</button>
+          <button id="streamlabsBtn" class="support-link featured">Support Borderlands 4 Modding Tools Development</button>
           <button id="mattmabKofiBtn" class="support-link">Support Matt’s other work</button>
           <button id="funkyoushiftSiteBtn" class="support-link">Discord / Site</button>
           <button id="gzoDiscordBtn" class="support-link">GZO Discord</button>
@@ -114,7 +115,7 @@
   <section id="startupOak2Modal" class="modal-shell hidden" role="dialog" aria-modal="true" aria-labelledby="startupOak2Title">
     <div class="modal-card">
       <h2 id="startupOak2Title">oak2-mod-manager v0.3 not found</h2>
-      <p id="startupOak2Message">MSBT needs the Borderlands 4 SDK (oak2-mod-manager v0.3). You can keep using offline tools now, or install the SDK Manager from Updates.</p>
+      <p id="startupOak2Message">Borderlands 4 Modding Tools needs the Borderlands 4 SDK (oak2-mod-manager v0.3). You can keep using offline tools now, or install the SDK Manager from Updates.</p>
       <p class="status-line warning">Close Borderlands 4 before installing. Writing under Program Files may prompt for admin approval. oak2 is LGPL-3.0 from bl-sdk.</p>
       <div class="button-row wrap">
         <button id="startupOak2InstallBtn">Install SDK Manager</button>
@@ -127,7 +128,7 @@
   <section id="startupUpdateModal" class="modal-shell hidden" role="dialog" aria-modal="true" aria-labelledby="startupUpdateTitle">
     <div class="modal-card update-modal">
       <h2 id="startupUpdateTitle">Update Available</h2>
-      <p id="startupUpdateMessage">A newer MSBT update is available.</p>
+      <p id="startupUpdateMessage">A newer Borderlands 4 Modding Tools update is available.</p>
       <p id="startupUpdateRestartNote" class="status-line warning">
         If the SDK mod updates, close and restart Borderlands 4 before testing live actions.
       </p>
@@ -143,20 +144,20 @@
 
   <section id="mobileAnnounceModal" class="modal-shell hidden" role="dialog" aria-modal="true" aria-labelledby="mobileAnnounceTitle">
     <div class="modal-card mobile-announce-modal">
-      <h2 id="mobileAnnounceTitle">MSBT Mobile Controller</h2>
+      <h2 id="mobileAnnounceTitle">Borderlands 4 Modding Tools — Powered by Funk — Mobile Controller</h2>
       <p id="mobileAnnounceMessage">
         Control Boost, Codes, Quick Menu, and more from your phone on the same Wi‑Fi.
         This QR opens the <strong>install page</strong> (not pairing). After install, pair with a
         different QR under the <strong>Mobile Gateway</strong> tab.
       </p>
       <div class="mobile-announce-grid">
-        <img id="mobileAnnounceQr" class="mobile-announce-qr" alt="QR code to open the MSBT Mobile install page" width="220" height="220">
+        <img id="mobileAnnounceQr" class="mobile-announce-qr" alt="QR code to open the mobile install page" width="220" height="220">
         <div class="mobile-announce-side">
           <p class="muted-line">Android 9+ · install over a previous build to keep pairing data</p>
           <ol class="mobile-announce-steps">
             <li>Scan this QR → phone install page → <strong>Download APK</strong></li>
             <li>Open the finished download and allow install if prompted</li>
-            <li>In MSBT open the <strong>Mobile Gateway</strong> tab</li>
+            <li>In Borderlands 4 Modding Tools open the <strong>Mobile Gateway</strong> tab</li>
             <li>On the phone: <strong>Scan QR to pair</strong> (pairing QR, not this one)</li>
           </ol>
           <div class="button-row wrap">
@@ -180,7 +181,7 @@
     <div class="modal-card walkthrough-modal">
       <div class="walkthrough-modal-body">
         <div class="walkthrough-progress" id="walkthroughProgress" aria-live="polite"></div>
-        <h2 id="walkthroughTitle">Welcome to MSBT</h2>
+        <h2 id="walkthroughTitle">Welcome to Borderlands 4 Modding Tools</h2>
         <p id="walkthroughBody">A short overview of the main tabs and what they do.</p>
         <div id="walkthroughLinks" class="walkthrough-links hidden"></div>
         <p id="walkthroughSdkNote" class="status-line warning hidden"></p>
@@ -269,7 +270,7 @@
       <section id="boostUpdateNotice" class="update-notice hidden" aria-live="polite">
         <div class="update-notice-copy">
           <h2 id="boostUpdateTitle">Update Available</h2>
-          <p id="boostUpdateMessage">A newer MSBT build is available.</p>
+          <p id="boostUpdateMessage">A newer Borderlands 4 Modding Tools build is available.</p>
         </div>
         <div class="button-row wrap">
           <button id="boostUpdateDownloadBtn">Download Desktop App Update</button>
@@ -778,7 +779,7 @@
             <button id="quickMenuSaveSlotBtn">Save Slot</button>
             <button id="quickMenuClearSlotBtn" class="danger">Clear Slot</button>
           </div>
-          <p class="muted-line">Use the small <strong>+ QM</strong> buttons throughout MSBT to send a supported command here with its current values.</p>
+          <p class="muted-line">Use the small <strong>+ QM</strong> buttons throughout Borderlands 4 Modding Tools to send a supported command here with its current values.</p>
           <pre id="quickMenuEditorOutput">No Quick Menu edit sent yet.</pre>
         </section>
       </div>
@@ -890,7 +891,7 @@
 <p id="communitySubmitCount"></p>
 <label><input id="communitySubmitConsent" type="checkbox"/>Share this folder's item names, codes, and subfolders publicly after approval. I have permission to share them.</label>
 <button id="communitySubmitBtn">Submit for approval</button>
-<p>Only the selected folder is submitted. Lobby settings, account details, and other bookmarks stay on your PC. Keep this PC's MSBT user-data backup to retain access to your submission keys.</p>
+<p>Only the selected folder is submitted. Lobby settings, account details, and other bookmarks stay on your PC. Keep this PC's Borderlands 4 Modding Tools user-data backup to retain access to your submission keys.</p>
 </details>
 <button id="communityDeveloperPortal">Developer portal - sign in / create account</button>
 </details><div class="grid bookmark-grid" id="savedItemsLocalPanel">
@@ -1425,7 +1426,7 @@
         <div class="section-heading">
           <div>
             <h2>Matt Editor</h2>
-            <p>Full save editor and item creator. Build or edit items and saves, then use the editor's MSBT Delivery controls to send the final @U serial.</p>
+            <p>Full save editor and item creator. Build or edit items and saves, then use the editor's Borderlands 4 Modding Tools Delivery controls to send the final @U serial.</p>
             <div id="editorTabStatus" class="status-line">Opening the bundled editor in this tab…</div>
           </div>
           <div class="button-row">
@@ -2321,7 +2322,7 @@
           <div class="button-row wrap">
             <button data-movement-action="movement_apply_fly_speed">Apply Fly Speed</button>
           </div>
-          <p class="muted-line">BL4 ignores MaxFlySpeed. Apply Fly Speed uses the same walk/accel fields as Apply Movement, so flying actually gets faster. Landing restores your previous walk speed. Works while already flying (MSBT or Bonk noclip).</p>
+          <p class="muted-line">BL4 ignores MaxFlySpeed. Apply Fly Speed uses the same walk/accel fields as Apply Movement, so flying actually gets faster. Landing restores your previous walk speed. Works while already flying (Borderlands 4 Modding Tools or Bonk noclip).</p>
           <div class="button-grid">
             <button data-movement-action="movement_super_dash">Super Dash</button>
             <button data-movement-action="movement_super_dash_toggle">Super Dash Toggle</button>
@@ -2501,13 +2502,13 @@
       <div class="mobile-gateway-fixed">
         <h2>Mobile Gateway</h2>
         <p class="muted-line">Pair phones on the same Wi‑Fi here. Game actions stay on this PC, and only approved commands pass through. This page stays fixed so the pairing QR remains visible.</p>
-        <article class="card"><h3>Remote AFK · away from home</h3><p>Enable here, then scan this QR in MSBT Mobile. No VPN or router setup. Keep MSBT and Borderlands 4 running on this PC. Remote access controls AFK only.</p><button id="remoteAfkEnable">Enable remote AFK</button><button id="remoteAfkDisable">Disable &amp; revoke pairing</button><p id="remoteAfkStatus">Remote access is off.</p><img id="remoteAfkQr" hidden width="280" height="280" alt="Private remote AFK pairing QR"><p>Keep this QR private. Disabling access invalidates it. Enable remote access again after restarting MSBT.</p></article>
+        <article class="card"><h3>Remote AFK · away from home</h3><p>Enable here, then scan this QR in Borderlands 4 Modding Tools Mobile. No VPN or router setup. Keep Borderlands 4 Modding Tools and Borderlands 4 running on this PC. Remote access controls AFK only.</p><button id="remoteAfkEnable">Enable remote AFK</button><button id="remoteAfkDisable">Disable &amp; revoke pairing</button><p id="remoteAfkStatus">Remote access is off.</p><img id="remoteAfkQr" hidden width="280" height="280" alt="Private remote AFK pairing QR"><p>Keep this QR private. Disabling access invalidates it. Enable remote access again after restarting Borderlands 4 Modding Tools.</p></article>
         <div id="mobileGatewaySummary" class="status-line warning">Loading mobile gateway…</div>
         <div class="mobile-gateway-pair-grid">
           <div class="mobile-gateway-qr-block">
-            <p class="muted-line"><strong>Scan with MSBT Mobile</strong></p>
+            <p class="muted-line"><strong>Scan with Borderlands 4 Modding Tools Mobile</strong></p>
             <img id="mobileGatewayQr" class="mobile-gateway-qr" alt="Mobile pairing QR code" width="280" height="280">
-            <p class="muted-line">Open MSBT Mobile → More → Connection Settings → <strong>Scan QR to pair</strong>.</p>
+            <p class="muted-line">Open Borderlands 4 Modding Tools Mobile → More → Connection Settings → <strong>Scan QR to pair</strong>.</p>
             <label for="mobileGatewayHostSelect">QR uses this PC address</label>
             <select id="mobileGatewayHostSelect">
               <option value="">Detecting…</option>
@@ -2524,7 +2525,7 @@
             </div>
           </div>
         </div>
-        <pre id="mobileGatewayDetails">Scan the QR in MSBT Mobile, or enter the PC address, port 49775, and pairing code manually.</pre>
+        <pre id="mobileGatewayDetails">Scan the QR in Borderlands 4 Modding Tools Mobile, or enter the PC address, port 49775, and pairing code manually.</pre>
       </div>
     </section>
 
@@ -2532,7 +2533,7 @@
       <section class="report-page">
         <div class="report-form">
           <h2>Report an Issue to the Developer</h2>
-          <p>Use this tab to send bugs or feature requests to the MSBT developer (FunkYouSHiFT) on GitHub. The app builds a clean report, opens a GitHub issue draft, then you can attach screenshots or logs before submitting.</p>
+          <p>Use this tab to send bugs or feature requests to the Borderlands 4 Modding Tools developer (FunkYouSHiFT) on GitHub. The app builds a clean report, opens a GitHub issue draft, then you can attach screenshots or logs before submitting.</p>
           <label for="reportKind">Report Type</label>
           <select id="reportKind">
             <option value="bug">Report Bug</option>
@@ -2665,7 +2666,7 @@
       <div class="section-heading">
         <div>
           <h2 id="gzoSubmitTitle">Submit a code</h2>
-          <p>Share legit or modded gear. Uploads go to a <strong>pending queue</strong> (<code>codes/Pending/...</code>). A developer publishes them to the live <code>codes/Legit/</code> or <code>codes/Modded/</code> lists after review. Paste a Base85 <code>@U</code> serial to deserialize, preview an MSBT item card, and auto-fill fields we can decode.</p>
+          <p>Share legit or modded gear. Uploads go to a <strong>pending queue</strong> (<code>codes/Pending/...</code>). A developer publishes them to the live <code>codes/Legit/</code> or <code>codes/Modded/</code> lists after review. Paste a Base85 <code>@U</code> serial to deserialize, preview an Borderlands 4 Modding Tools item card, and auto-fill fields we can decode.</p>
         </div>
         <button id="gzoSubmitCloseBtn" type="button" class="secondary">Close</button>
       </div>

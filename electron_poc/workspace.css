@@ -14,7 +14,7 @@ body.msbt-workspace {
 .msbt-workspace .workspace-section-hidden { display: none !important; }
 .workspace-shell { display: grid; grid-template-columns: 224px minmax(0, 1fr); flex: 1; min-height: 0; min-width: 0; }
 .workspace-sidebar { min-width: 0; overflow: auto; padding: 22px 14px; border-right: 1px solid var(--line); background: var(--header-bg); }
-.workspace-brand { color: var(--cyan); font-size: 26px; letter-spacing: 2px; font-weight: 700; padding: 0 12px 20px; }
+.workspace-brand { color: var(--cyan); font-size: 18px; line-height: 1.25; letter-spacing: 0; font-weight: 700; padding: 0 12px 20px; }
 .workspace-sidebar details { border: 0; padding: 0; margin: 4px 0 14px; }
 .workspace-sidebar summary { padding: 10px 8px; font-size: 13px; color: var(--text); cursor: pointer; overflow-wrap: anywhere; }
 .workspace-sidebar button { display: block; width: 100%; text-align: left; border: 1px solid transparent; background: transparent; color: var(--muted); font-weight: 400; font-size: 13px; padding: 10px 12px; margin: 3px 0; white-space: normal; }

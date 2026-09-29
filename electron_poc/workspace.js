@@ -61,7 +61,8 @@
   side.setAttribute("aria-label", "Workspaces");
   const brand = document.createElement("div");
   brand.className = "workspace-brand";
-  brand.textContent = "MSBT";
+  brand.textContent = "Borderlands 4 Modding Tools";
+  brand.title = "Borderlands 4 Modding Tools — Powered by Funk";
   side.append(brand);
   const close = document.createElement("button");
   close.className = "workspace-close";

@@ -93,8 +93,8 @@ if challenge_api_probe_enabled():
     _extra_commands.append(_cmd_msbt_probe_challenge_apis)
 
 build_mod(
-    name="MattsSDKBoostingTools",
-    author="Matt",
+    name="Borderlands 4 Modding Tools — Powered by Funk",
+    author="FunkYouSHiFT; original project by Mattmab (Matt)",
     description=(
         "Boosting-focused SDK mod with a native UMG Quick Menu and external bridge "
         "(no BLImGui required). Legacy BLImGui panel remains an optional fallback if installed. "

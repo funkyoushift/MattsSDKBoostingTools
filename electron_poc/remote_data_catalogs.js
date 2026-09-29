@@ -832,7 +832,7 @@ function applyTutorialCopyOverlay(tourMap, copyPayload) {
       const idx = Number(patch.index);
       if (!Number.isInteger(idx) || idx < 0 || !steps[idx]) continue;
       if (typeof patch.title === "string" && patch.title.trim()) {
-        steps[idx].title = patch.title;
+        steps[idx].title = patch.title === "Welcome to MSBT" ? "Welcome to Borderlands 4 Modding Tools" : patch.title;
         applied += 1;
       }
       if (typeof patch.body === "string" && patch.body.trim()) {

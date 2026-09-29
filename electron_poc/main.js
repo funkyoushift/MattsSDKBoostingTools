@@ -1,4 +1,6 @@
 const { app, BrowserWindow, dialog, ipcMain, screen, shell, Menu, nativeTheme, protocol, safeStorage } = require("electron");
+const { PRODUCT_NAME, applyProductIdentity } = require("./product_identity");
+applyProductIdentity(app);
 const {registerNativeCardSchemes,installNativeCardProtocol} = require("./native_card_protocol");
 registerNativeCardSchemes(protocol);
 
@@ -686,6 +688,7 @@ async function fetchLatestManifest() {
 function createWindow() {
   const savedBounds = ensureWindowOnScreen(readWindowState());
   const windowOptions = {
+    title: PRODUCT_NAME,
     width: savedBounds.width,
     height: savedBounds.height,
     minWidth: DEFAULT_WINDOW_BOUNDS.minWidth,
@@ -993,7 +996,7 @@ async function exportUserDataBackup() {
     `MSBT-Electron-User-Data-Backup-${backupTimestamp()}.json`
   );
   const result = await dialog.showSaveDialog({
-    title: "Export MSBT saved data backup",
+    title: "Export saved data backup",
     defaultPath,
     filters: [
       { name: "MSBT JSON backup", extensions: ["json"] }
@@ -1614,7 +1617,7 @@ let developerPortalWindow;
 ipcMain.handle('app:openDeveloperPortal', async () => {
   const origin = getCommunityClient().endpoint;
   if (developerPortalWindow && !developerPortalWindow.isDestroyed()) { developerPortalWindow.focus(); return {ok:true}; }
-  developerPortalWindow = new BrowserWindow({width:1150,height:850,title:'MSBT Developer Portal',
+  developerPortalWindow = new BrowserWindow({width:1150,height:850,title:'Borderlands 4 Modding Tools — Developer Portal',
     webPreferences:{partition:'persist:msbt-developer-portal',nodeIntegration:false,contextIsolation:true,sandbox:true}});
   developerPortalWindow.webContents.setWindowOpenHandler(()=>({action:'deny'}));
   developerPortalWindow.webContents.on('will-navigate',(event,url)=>{if(new URL(url).origin!==origin)event.preventDefault();});
@@ -2802,7 +2805,7 @@ ipcMain.handle("app:saveReportFile", async (_event, text) => {
   const content = String(text || "").slice(0, 64000);
   if (!content.trim()) return { ok: false, message: "Report is empty." };
   const result = await dialog.showSaveDialog({
-    title: "Save MSBT report",
+    title: "Save Borderlands 4 Modding Tools report",
     defaultPath: `MSBT_Report_${new Date().toISOString().slice(0, 10)}.md`,
     filters: [
       { name: "Markdown", extensions: ["md"] },

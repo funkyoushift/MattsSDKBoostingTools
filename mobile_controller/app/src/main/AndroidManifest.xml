@@ -9,7 +9,7 @@
 
     <application
         android:allowBackup="true"
-        android:label="MSBT Mobile Controller"
+        android:label="Borderlands 4 Modding Tools — Powered by Funk"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
         <activity

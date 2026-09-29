@@ -12,6 +12,8 @@ public record Release(string Tag, string Name, string Url, long Size, string Sha
 
 public sealed class Engine
 {
+    public const string ProductName = "Borderlands 4 Modding Tools — Powered by Funk";
+    public const string LegacyShortcutName = "Matt's SDK Boosting Tools";
     public const string Repository = "funkyoushift/MattsSDKBoostingTools";
     public const string Executable = "MattsSDKBoostingTools.exe";
     public static string DefaultRoot => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Programs", "MSBT");
@@ -49,7 +51,7 @@ public sealed class Engine
 
     public async Task InstallGameIntegration(string? gameRoot = null)
     {
-        report("Installing the MSBT game mod, AFK SHiFT PAK, and missing SDK/mod manager...");
+        report("Installing the Borderlands 4 Modding Tools game mod, AFK SHiFT PAK, and missing SDK/mod manager...");
         var start = GameSetupStartInfo(gameRoot);
         using var process = Process.Start(start) ?? throw new IOException("Could not start game setup.");
         var output = process.StandardOutput.ReadToEndAsync();
@@ -99,7 +101,7 @@ public sealed class Engine
 
     public async Task<Release> Latest()
     {
-        report("Checking the latest MSBT release...");
+        report("Checking the latest Borderlands 4 Modding Tools release...");
         using var req = new HttpRequestMessage(HttpMethod.Get, $"https://api.github.com/repos/{Repository}/releases/latest");
         req.Headers.UserAgent.ParseAdd("MSBT-Persistent-Setup/1.0");
         req.Headers.Accept.ParseAdd("application/vnd.github+json");
@@ -273,9 +275,9 @@ public sealed class Engine
             {
                 string? location = process.MainModule?.FileName;
                 if (location != null && location.StartsWith(AppDir + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))
-                    throw new IOException("Close MSBT before installing the update, then try again.");
+                    throw new IOException("Close Borderlands 4 Modding Tools before installing the update, then try again.");
             }
-            catch (System.ComponentModel.Win32Exception) { throw new IOException("Could not verify whether MSBT is closed. Close MSBT and retry."); }
+            catch (System.ComponentModel.Win32Exception) { throw new IOException("Could not verify whether the desktop app is closed. Close Borderlands 4 Modding Tools and retry."); }
         }
     }
 
@@ -289,15 +291,16 @@ public sealed class Engine
         dynamic shell = Activator.CreateInstance(shellType)!;
         foreach (string folder in new[] { Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), Environment.GetFolderPath(Environment.SpecialFolder.Programs) })
         {
-            dynamic shortcut = shell.CreateShortcut(Path.Combine(folder, "Matt's SDK Boosting Tools.lnk"));
+            dynamic shortcut = shell.CreateShortcut(Path.Combine(folder, ProductName + ".lnk"));
             shortcut.TargetPath = Path.Combine(AppDir, Executable);
             shortcut.WorkingDirectory = AppDir;
             shortcut.Save();
             System.Runtime.InteropServices.Marshal.FinalReleaseComObject(shortcut);
+            RemoveOwnedShortcut(shell, Path.Combine(folder, LegacyShortcutName + ".lnk"));
         }
         System.Runtime.InteropServices.Marshal.FinalReleaseComObject(shell);
         using var key = Registry.CurrentUser.CreateSubKey(@"Software\Microsoft\Windows\CurrentVersion\Uninstall\MSBTPersistent");
-        key.SetValue("DisplayName", "Matt's SDK Boosting Tools");
+        key.SetValue("DisplayName", ProductName);
         key.SetValue("DisplayVersion", version.TrimStart('v'));
         key.SetValue("Publisher", "FunkYouSHiFT");
         key.SetValue("InstallLocation", Root);
@@ -305,6 +308,15 @@ public sealed class Engine
         key.SetValue("UninstallString", "\"" + localSetup + "\" --uninstall");
         key.SetValue("NoModify", 1, RegistryValueKind.DWord);
         key.SetValue("NoRepair", 1, RegistryValueKind.DWord);
+    }
+
+    public void RemoveOwnedShortcut(dynamic shell, string link)
+    {
+        if (!File.Exists(link)) return;
+        dynamic shortcut = shell.CreateShortcut(link);
+        string target = shortcut.TargetPath;
+        System.Runtime.InteropServices.Marshal.FinalReleaseComObject(shortcut);
+        if (target.Equals(Path.Combine(AppDir, Executable), StringComparison.OrdinalIgnoreCase)) File.Delete(link);
     }
 
     public void Uninstall()
@@ -318,15 +330,11 @@ public sealed class Engine
         dynamic shell = Activator.CreateInstance(shellType)!;
         foreach (string folder in new[] { Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), Environment.GetFolderPath(Environment.SpecialFolder.Programs) })
         {
-            string link = Path.Combine(folder, "Matt's SDK Boosting Tools.lnk");
-            if (!File.Exists(link)) continue;
-            dynamic shortcut = shell.CreateShortcut(link);
-            string target = shortcut.TargetPath;
-            System.Runtime.InteropServices.Marshal.FinalReleaseComObject(shortcut);
-            if (target.Equals(Path.Combine(AppDir, Executable), StringComparison.OrdinalIgnoreCase)) File.Delete(link);
+            RemoveOwnedShortcut(shell, Path.Combine(folder, ProductName + ".lnk"));
+            RemoveOwnedShortcut(shell, Path.Combine(folder, LegacyShortcutName + ".lnk"));
         }
         System.Runtime.InteropServices.Marshal.FinalReleaseComObject(shell);
         Registry.CurrentUser.DeleteSubKeyTree(@"Software\Microsoft\Windows\CurrentVersion\Uninstall\MSBTPersistent", false);
-        report("MSBT removed. Saved settings and game mods were kept. The reusable Setup remains available.");
+        report("Borderlands 4 Modding Tools removed. Saved settings and game mods were kept. The reusable Setup remains available.");
     }
 }

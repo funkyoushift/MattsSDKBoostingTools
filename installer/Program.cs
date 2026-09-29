@@ -34,9 +34,9 @@ static class Program
 
 sealed class SetupForm : Form
 {
-    readonly Label status = new() { AutoSize = false, Dock = DockStyle.Fill, Padding = new Padding(20), Text = "Install or update MSBT from the latest official GitHub release.\n\nYour saved settings are kept. Borderlands 4 is never stopped.\n\nInstallation: " + Engine.DefaultRoot };
+    readonly Label status = new() { AutoSize = false, Dock = DockStyle.Fill, Padding = new Padding(20), Text = "Install or update Borderlands 4 Modding Tools from the latest official GitHub release.\n\nYour saved settings are kept. Borderlands 4 is never stopped.\n\nInstallation: " + Engine.DefaultRoot };
     readonly Button install = new() { Text = "Install / Update", AutoSize = true };
-    readonly Button launch = new() { Text = "Open MSBT", AutoSize = true, Enabled = false };
+    readonly Button launch = new() { Text = "Open Borderlands 4 Modding Tools", AutoSize = true, Enabled = false };
     readonly Button gameFolder = new() { Text = "Choose game folder", AutoSize = true };
     string? selectedGameRoot;
     readonly int? waitPid;
@@ -46,7 +46,7 @@ sealed class SetupForm : Form
     public SetupForm(int? waitPid, bool uninstall)
     {
         this.waitPid = waitPid; this.uninstall = uninstall;
-        Text = "MSBT Setup"; Width = 610; Height = 290; StartPosition = FormStartPosition.CenterScreen;
+        Text = "Borderlands 4 Modding Tools — Powered by Funk — Setup"; Width = 800; Height = 340; StartPosition = FormStartPosition.CenterScreen;
         MinimumSize = Size;
         var buttons = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 60, Padding = new Padding(15) };
         buttons.Controls.Add(install); buttons.Controls.Add(launch); buttons.Controls.Add(gameFolder);
@@ -59,14 +59,14 @@ sealed class SetupForm : Form
             }
         };
         Controls.Add(status); Controls.Add(buttons);
-        if (uninstall) { install.Text = "Uninstall MSBT"; status.Text = "Remove the MSBT app? Saved settings and installed game mods will be kept."; }
+        if (uninstall) { install.Text = "Uninstall Borderlands 4 Modding Tools"; status.Text = "Remove the Borderlands 4 Modding Tools app? Saved settings and installed game mods will be kept."; }
         install.Click += async (_, _) => await Run();
         launch.Click += (_, _) => {
             try {
                 string appDir = Path.Combine(Engine.DefaultRoot, "app");
                 Process.Start(new ProcessStartInfo(Path.Combine(appDir, Engine.Executable)) { UseShellExecute = true, WorkingDirectory = appDir });
                 Close();
-            } catch (Exception error) { Report("MSBT was installed, but could not reopen: " + error.Message); }
+            } catch (Exception error) { Report("Borderlands 4 Modding Tools was installed, but could not reopen: " + error.Message); }
         };
         Shown += async (_, _) => { if (waitPid.HasValue) await Run(); };
         FormClosing += (_, e) => { if (busy) e.Cancel = true; };
@@ -82,7 +82,7 @@ sealed class SetupForm : Form
             using var gate = engine.Lock();
             if (waitPid.HasValue)
             {
-                Report("Waiting for MSBT to close...");
+                Report("Waiting for Borderlands 4 Modding Tools to close...");
                 Process? parent = null;
                 try { parent = Process.GetProcessById(waitPid.Value); } catch (ArgumentException) { }
                 if (parent != null)
@@ -100,14 +100,14 @@ sealed class SetupForm : Form
                 await Task.Run(() => engine.Apply(release));
                 engine.Register(Environment.ProcessPath!, release.Tag);
                 await engine.InstallGameIntegration(selectedGameRoot);
-                Report("MSBT " + release.Tag + " and its game integration are installed. Use Open MSBT to continue.\n\nExisting SDK/mod-manager installations and your saved settings are kept.");
+                Report("Borderlands 4 Modding Tools " + release.Tag + " and its game integration are installed. Use Open Borderlands 4 Modding Tools to continue.\n\nExisting SDK/mod-manager installations and your saved settings are kept.");
                 launch.Enabled = true;
             }
             Result = 0;
         }
         catch (Exception error) { Result = 1; Report("Setup could not finish: " + error.Message + "\n\nYou can retry with this same installer."); }
         finally { busy = false; install.Enabled = true; gameFolder.Enabled = true; }
-        // Restart-and-install is a complete handoff; interactive Setup still offers Open MSBT.
+        // Restart-and-install is a complete handoff; interactive Setup still offers Open Borderlands 4 Modding Tools.
         if (Result == 0 && waitPid.HasValue && !uninstall && launch.Enabled) launch.PerformClick();
     }
 }

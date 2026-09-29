@@ -131,7 +131,7 @@ async function auditWalkthroughs() {
     assert.ok(result.mainTitles[patch.index], `tutorial overlay index ${patch.index} is out of range`);
     assert.strictEqual(
       result.mainTitles[patch.index],
-      patch.title,
+      patch.title === "Welcome to MSBT" ? "Welcome to Borderlands 4 Modding Tools" : patch.title,
       `tutorial overlay "${patch.title}" points at "${result.mainTitles[patch.index]}"`
     );
   }

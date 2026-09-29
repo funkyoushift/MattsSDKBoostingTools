@@ -110,7 +110,7 @@ function updateConnectionChrome(){
   $('homeStatusText').textContent=state.online
     ? (state.bridgeOnline?'Live actions are enabled. The desktop app is optional.':'Reachable on this Wi‑Fi. Launch Borderlands 4 with the MSBT SDK mod for live game actions.')
     : 'Offline tools stay usable. Scan the in-game Pair QR (msbt_mobile_pair) or the desktop Mobile Gateway QR.';
-  if(state.connection.remote){$('homeStatusText').textContent='Remote AFK control. Keep desktop MSBT and Borderlands 4 running.';$('desktopStatus').textContent='Required for remote AFK';}
+  if(state.connection.remote){$('homeStatusText').textContent='Remote AFK control. Keep the desktop app and Borderlands 4 running.';$('desktopStatus').textContent='Required for remote AFK';}
   $('targetSummary').textContent=targetDisplay(state.selectedTarget);
   setLiveEnabled();
 }
@@ -502,7 +502,7 @@ function renderBookmarks(){
   if($('bookmarkSelectionSummary'))$('bookmarkSelectionSummary').textContent=`${state.selectedBookmarks.size} selected · ${list.length} shown`;
 }
 async function pullDesktopBookmarks({quiet=false}={}){
-  if(!state.online){if(!quiet)alert('Connect to desktop MSBT first.');return false}
+  if(!state.online){if(!quiet)alert('Connect to the desktop app first.');return false}
   try{
     const result=await gatewayFetch('/mobile/bookmarks',{timeoutMs:60000});
     if(!result.ok)throw new Error((result.data&&result.data.message)||`HTTP ${result.status}`);
@@ -511,7 +511,7 @@ async function pullDesktopBookmarks({quiet=false}={}){
     state.selectedBookmarks=new Set();
     write(STORE.bookmarks,state.bookmarks);
     renderBookmarks();
-    const message=`Pulled ${state.bookmarks.length} serial bookmark(s) from desktop MSBT.`;
+    const message=`Pulled ${state.bookmarks.length} serial bookmark(s) from the desktop app.`;
     if($('bookmarkStatus'))$('bookmarkStatus').textContent=message;
     if(!quiet)logActivity(message);
     return true;
@@ -605,7 +605,7 @@ function mapBridgeQuickMenu(snapshot){
   return{version:Number(snapshot&&snapshot.version)||1,baseRevision:String(layout.revision||snapshot.revision||now()),localRevision:now(),dirty:false,pages};
 }
 async function pullQuickMenuFromPc({quiet=false}={}){
-  if(!state.online){if(!quiet)alert('Connect to desktop MSBT first.');return false}
+  if(!state.online){if(!quiet)alert('Connect to the desktop app first.');return false}
   try{
     const result=await gatewayFetch('/quick_menu',{timeoutMs:12000});
     if(result.status===502)throw new Error('Game bridge offline. Launch Borderlands 4 with MSBT for live Quick Menu.');
@@ -1071,7 +1071,7 @@ async function connectGateway({quiet=false, hostCandidates=null}={}){
         const status=await gatewayFetch('/status',{timeoutMs:8000,requirePairing:!direct});
         if(status.status===401)throw new Error(direct
           ?'Phone not paired. Open in-game Phone Pairing and scan the Pair QR.'
-          :'Invalid pairing code. Scan the QR again or copy the current code from desktop MSBT → Mobile Gateway tab.');
+          :'Invalid pairing code. Scan the QR again or copy the current code from the desktop app → Mobile Gateway tab.');
         if(status.status===0)throw new Error((status.data&&status.data.message)||'Could not reach the game.');
         if(!status.ok&&status.status!==502)throw new Error((status.data&&status.data.message)||`HTTP ${status.status}.`);
         state.online=true;
@@ -1223,7 +1223,7 @@ function parsePairingPayload(raw){
       code:''
     };
   }
-  if(version!==1)throw new Error('Unsupported pairing QR version. Update MSBT Mobile.');
+  if(version!==1)throw new Error('Unsupported pairing QR version. Update Borderlands 4 Modding Tools Mobile.');
   const code=text(data.code||data.pairingCode);
   const port=text(data.port)||'49775';
   if(!code)throw new Error('Pairing QR is missing the pairing code.');
@@ -1380,7 +1380,7 @@ window.__msbtNativeQr=function(result){
     return;
   }
   if(result.denied){
-    $('connectionStatus').textContent='Camera permission denied. Enable Camera for MSBT Mobile, or enter pairing details manually.';
+    $('connectionStatus').textContent='Camera permission denied. Enable Camera for Borderlands 4 Modding Tools Mobile, or enter pairing details manually.';
     return;
   }
   if(result.cancelled){
@@ -1397,7 +1397,7 @@ async function startWebQrScanner(){
   showQrScanOverlay();
   const allowed=await waitForCameraPermission();
   if(!allowed){
-    setQrScanStatus('Camera permission denied. Enable Camera for MSBT Mobile, or enter pairing details manually.');
+    setQrScanStatus('Camera permission denied. Enable Camera for Borderlands 4 Modding Tools Mobile, or enter pairing details manually.');
     return;
   }
   try{
@@ -1638,7 +1638,7 @@ async function runLiveAction(button){
 }
 
 function renderActivity(){const rows=$('activityRows');if(!rows)return;if(!state.activity.length){rows.innerHTML='<small class="muted">No activity yet.</small>';return}rows.innerHTML=state.activity.slice(0,30).map(item=>`<div><small class="muted">${esc(new Date(item.at).toLocaleString())}</small><br>${esc(item.message)}</div>`).join('')}
-$('copyFeedbackTemplate').addEventListener('click',async()=>{const template=`MSBT MOBILE FEEDBACK\n\nPhone make/model:\nAndroid version:\nMSBT Mobile version: ${state.update.currentVersion||FALLBACK_APP_VERSION}\nDesktop MSBT version (if connected):\n\nScreen/feature:\nWhat I expected:\nWhat happened:\nSteps to reproduce:\nDoes it happen every time? Yes / No / Sometimes\n\nScreenshots attached: Yes / No\nAnything else:`;try{await navigator.clipboard.writeText(template);alert('Feedback template copied. Send it with screenshots to FunkYouSHiFT in Discord.')}catch{prompt('Copy this feedback template:',template)}});
+$('copyFeedbackTemplate').addEventListener('click',async()=>{const template=`MSBT MOBILE FEEDBACK\n\nPhone make/model:\nAndroid version:\nBorderlands 4 Modding Tools Mobile version: ${state.update.currentVersion||FALLBACK_APP_VERSION}\nDesktop app version (if connected):\n\nScreen/feature:\nWhat I expected:\nWhat happened:\nSteps to reproduce:\nDoes it happen every time? Yes / No / Sometimes\n\nScreenshots attached: Yes / No\nAnything else:`;try{await navigator.clipboard.writeText(template);alert('Feedback template copied. Send it with screenshots to FunkYouSHiFT in Discord.')}catch{prompt('Copy this feedback template:',template)}});
 
 function appVersionFromNative(){
   try{
@@ -1663,7 +1663,7 @@ function showUpdateBanner(show){
   banner.classList.toggle('hidden',!show);
   if(!show)return;
   if($('updateBannerText')){
-    $('updateBannerText').textContent=`MSBT Mobile ${state.update.availableVersion} is available (you have ${state.update.currentVersion}).`;
+    $('updateBannerText').textContent=`Borderlands 4 Modding Tools Mobile ${state.update.availableVersion} is available (you have ${state.update.currentVersion}).`;
   }
   if($('updateBannerMeta')){
     $('updateBannerMeta').textContent='Download installs over this app and keeps local pairing data.';
@@ -1835,7 +1835,7 @@ function applyInventoryResult(data,fallbackEquipped,fallbackBackpack){
   logActivity(message);
 }
 async function refreshInventory(mode='all'){
-  if(!state.online){alert('Connect to desktop MSBT first.');return}
+  if(!state.online){alert('Connect to the desktop app first.');return}
   if(state.busy)return;
   if(window.runParityScopedAction && await runParityScopedAction(button))return;
   state.busy=true;setLiveEnabled();
@@ -2551,7 +2551,7 @@ if($('devAcceptRisk'))$('devAcceptRisk').addEventListener('click',()=>{
   setLiveEnabled();
   const msg=state.online
     ? 'Dev Spawner enabled. Spawn / Barrel Logo actions are unlocked.'
-    : 'Dev Spawner enabled. Connect to desktop MSBT before firing spawn actions.';
+    : 'Dev Spawner enabled. Connect to the desktop app before firing spawn actions.';
   if($('devSpawnerOutput'))$('devSpawnerOutput').textContent=msg;
   logActivity(msg);
 });

@@ -109,6 +109,25 @@ try
     bool failed = false;
     try { await helperEngine.InstallGameIntegration(); } catch (IOException) { failed = true; }
     Check(failed && File.ReadAllText(Path.Combine(helperEngine.Root, "game-setup.log")).Contains("Exit: 2"), "failed game helper cannot report setup success");
+    // Real Windows shell links in a disposable folder; no registry or desktop writes.
+    dynamic linkShell = Activator.CreateInstance(Type.GetTypeFromProgID("WScript.Shell")!)!;
+    foreach (string name in new[] { Engine.LegacyShortcutName, Engine.ProductName })
+    {
+        string link = Path.Combine(temp, name + ".lnk");
+        dynamic owned = linkShell.CreateShortcut(link);
+        owned.TargetPath = Path.Combine(helperEngine.AppDir, Engine.Executable);
+        owned.Save();
+        System.Runtime.InteropServices.Marshal.FinalReleaseComObject(owned);
+        helperEngine.RemoveOwnedShortcut(linkShell, link);
+        Check(!File.Exists(link), "remove owned shortcut: " + name);
+        dynamic other = linkShell.CreateShortcut(link);
+        other.TargetPath = Path.Combine(temp, "other-install", Engine.Executable);
+        other.Save();
+        System.Runtime.InteropServices.Marshal.FinalReleaseComObject(other);
+        helperEngine.RemoveOwnedShortcut(linkShell, link);
+        Check(File.Exists(link), "preserve another installation shortcut: " + name);
+    }
+    System.Runtime.InteropServices.Marshal.FinalReleaseComObject(linkShell);
     Console.WriteLine($"{passed} installer checks passed.");
 }
 finally { Directory.SetCurrentDirectory(originalDirectory); Directory.Delete(temp, true); }

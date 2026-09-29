@@ -4,17 +4,17 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#070a12">
-  <title>MSBT Mobile Controller</title>
+  <title>Borderlands 4 Modding Tools — Powered by Funk — Mobile Controller</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div class="chrome-top">
     <header class="appbar">
-      <div class="brand"><strong>MSBT</strong><span>Mobile Controller</span></div>
+      <div class="brand"><strong>Borderlands 4 Modding Tools</strong><span>Powered by Funk · Mobile Controller</span></div>
       <select data-language-selector aria-label="Language / Idioma" title="AFK controls and bookmark folders; other screens and game messages remain in English"><option value="en">English</option><option value="es">Español</option><option value="fr">Français</option><option value="pt-BR">Português</option><option value="de">Deutsch</option><option value="nl">Nederlands</option></select>
         <span id="connectionBadge" class="badge offline">OFFLINE</span>
     </header>
-    <button id="supportDevelopmentBtn" class="mobile-support" type="button" aria-label="Support MSBT development by FunkYouSHiFT">Support MSBT Development</button>
+    <button id="supportDevelopmentBtn" class="mobile-support" type="button" aria-label="Support development by FunkYouSHiFT">Support Borderlands 4 Modding Tools Development</button>
     <div class="session-strip">
       <span><b>PC</b> <span id="pcSummary">Not paired</span></span>
       <span><b>Target</b> <span id="targetSummary">None</span></span>
@@ -26,7 +26,7 @@
     <div id="updateBanner" class="update-banner hidden" role="status" aria-live="polite">
       <div class="update-banner-copy">
         <p class="eyebrow">UPDATE AVAILABLE</p>
-        <p id="updateBannerText">A newer MSBT Mobile APK is ready.</p>
+        <p id="updateBannerText">A newer Borderlands 4 Modding Tools Mobile APK is ready.</p>
         <small id="updateBannerMeta" class="muted"></small>
       </div>
       <div class="update-banner-actions">
@@ -48,7 +48,7 @@
         </div>
       </div>
       <div class="grid two">
-        <article class="card"><span>Desktop MSBT</span><strong id="desktopStatus">Optional</strong></article>
+        <article class="card"><span>Desktop Borderlands 4 Modding Tools</span><strong id="desktopStatus">Optional</strong></article>
         <article class="card"><span>Game bridge</span><strong id="bridgeStatus">Offline</strong></article>
       </div>
       <article class="card"><p class="eyebrow">RECENT RESULT</p><p id="recentResult">No live actions yet.</p></article>
@@ -137,7 +137,7 @@
         <button id="quickPullPc" data-live-optional>Pull From Game</button>
         <button id="quickResolve" disabled>Resolve Sync</button>
       </div>
-      <small class="muted">Tap an assigned slot to fire it. Turn Edit Mode on to assign, rename, clear, or pin commands like desktop MSBT.</small>
+      <small class="muted">Tap an assigned slot to fire it. Turn Edit Mode on to assign, rename, clear, or pin commands like desktop Borderlands 4 Modding Tools.</small>
       <article class="card" id="quickEditorCard">
         <p class="eyebrow">SELECTED SLOT</p>
         <small id="quickSelectedSummary" class="muted">Select a slot in Edit Mode.</small>
@@ -197,7 +197,7 @@
           </div>
         </div>
         <label>Target<select id="bookmarkTarget" class="player-target" disabled><option value="">No connection</option></select></label>
-        <div class="row"><button id="pullDesktopBookmarks" data-live-optional>Pull From MSBT</button><button id="saveBookmark">Save Local</button><button id="deleteBookmark">Delete</button></div>
+        <div class="row"><button id="pullDesktopBookmarks" data-live-optional>Pull From Borderlands 4 Modding Tools</button><button id="saveBookmark">Save Local</button><button id="deleteBookmark">Delete</button></div>
         <div class="fields two"><label>Name<input id="bookmarkName"></label><label>Group<input id="bookmarkGroup"></label></div>
         <textarea id="bookmarkSerial" placeholder="@U serial"></textarea>
         <div class="fields two"><label>Override level<select id="bookmarkOverride"><option value="no">Keep item level</option><option value="yes">Set level</option></select></label><label>Item level<input id="bookmarkLevel" value="70" inputmode="numeric"></label></div><div class="button-row-wrap"><button id="bookmarkUseBoost">Use in Boost Sender</button><button id="bookmarkSendSelected" data-live data-action="give_serial_selected" data-serial-source="bookmark">Named Player</button></div>
@@ -215,7 +215,7 @@
           <p class="eyebrow">MAPS / STATIONS</p>
         </div>
         <label>Target<select id="travelTarget" class="player-target" disabled><option value="">No connection</option></select></label>
-        <p class="muted">Pick a map, then a travel station on that map — same flow as desktop MSBT.</p>
+        <p class="muted">Pick a map, then a travel station on that map — same flow as desktop Borderlands 4 Modding Tools.</p>
         <label>Search maps<input id="travelMapSearch" type="search" placeholder="world, fortress, raid…"></label>
         <div id="travelMapSummary" class="muted">Loading maps…</div>
         <div id="travelMapRows" class="list compact panel-scroll"></div>
@@ -351,7 +351,7 @@
         <div class="panel-head">
           <p class="eyebrow">WAVES / RUN</p>
         </div>
-        <p class="muted">Build waves on this phone even while offline. Apply / Start talks to the game when you are paired. Same plan format as desktop MSBT.</p>
+        <p class="muted">Build waves on this phone even while offline. Apply / Start talks to the game when you are paired. Same plan format as desktop Borderlands 4 Modding Tools.</p>
         <small id="hoardPlanSummary" class="muted">1 empty wave</small>
         <div class="row wrap hoard-wave-tabs" id="hoardWaveTabs"></div>
         <div class="button-row-wrap">
@@ -407,7 +407,7 @@
       <h2>Dev Spawner</h2>
       <article class="card notice">
         <p class="eyebrow">EXPERIMENTAL</p>
-        <p class="muted">Same ASD tools as desktop MSBT. Can crash the game, corrupt saves, or affect lobby players. Use Clear ASD Spawns after heavy spawning.</p>
+        <p class="muted">Same ASD tools as desktop Borderlands 4 Modding Tools. Can crash the game, corrupt saves, or affect lobby players. Use Clear ASD Spawns after heavy spawning.</p>
         <label class="check"><input type="checkbox" id="devRiskCheck"> I understand the risk</label>
         <button id="devAcceptRisk" type="button">Enable Dev Spawner This Session</button>
         <small id="devRiskStatus" class="muted">Check the box, then tap Enable. Spawn actions also need a live PC connection.</small>
@@ -527,8 +527,8 @@
       <article id="feedbackPanel" class="card hidden"><p class="eyebrow">FEEDBACK</p><p>Send feedback to FunkYouSHiFT in Discord.</p><p class="muted">Please include phone make/model, Android version, what screen you were on, what you expected, what happened, and full-screen screenshots. For layout issues, capture the whole screen including navigation.</p><button id="copyFeedbackTemplate">Copy Feedback Template</button></article>
       <article id="aboutPanel" class="card hidden">
         <p class="eyebrow">ABOUT</p>
-        <p><strong>MSBT Mobile Controller</strong><br>Android <span id="aboutVersion">1.0.0</span></p>
-        <p class="muted">Companion controller for Matt's SDK Boosting Tools. Live game actions talk to the in-game SDK bridge. The desktop app is optional. Use the search bar to jump to Boost, Quick Menu, Inventory, XYZ bookmarks, Hoard, and more.</p>
+        <p><strong>Borderlands 4 Modding Tools — Powered by Funk — Mobile Controller</strong><br>Android <span id="aboutVersion">1.0.0</span></p>
+        <p class="muted">Companion controller for Borderlands 4 Modding Tools — Powered by Funk. Original project and editor by Mattmab (Matt). Live game actions talk to the in-game SDK bridge. The desktop app is optional. Use the search bar to jump to Boost, Quick Menu, Inventory, XYZ bookmarks, Hoard, and more.</p>
         <p id="aboutUpdateStatus" class="muted">Update check idle.</p>
         <div class="button-row-wrap">
           <button type="button" id="checkUpdatesBtn">Check for updates</button>

@@ -3488,7 +3488,7 @@ function formatMobileGatewayDetails(info, preferredHost = "") {
   const addresses = payload.hosts;
   const primary = addresses[0] || "(no LAN IPv4 detected — check Wi‑Fi)";
   const lines = [
-    "MSBT Mobile Gateway pairing",
+    "Borderlands 4 Modding Tools Mobile Gateway pairing",
     "",
     `PC name: ${payload.name}`,
     `PC address: ${primary}`,
@@ -3496,7 +3496,7 @@ function formatMobileGatewayDetails(info, preferredHost = "") {
     `Gateway port: ${payload.port}`,
     `Pairing code: ${payload.code || "------"}`,
     "",
-    "Easiest: open MSBT Mobile → More → Connection Settings → Scan QR to pair.",
+    "Easiest: open Borderlands 4 Modding Tools Mobile → More → Connection Settings → Scan QR to pair.",
     "Manual: enter address, port, and pairing code, then Save → Connect / Test.",
     "Phone and PC must be on the same Wi‑Fi. Allow Windows Firewall for MSBT on port 49775 if prompted.",
     "Keep Borderlands 4 running with the MSBT SDK mod so live actions can reach the game.",
@@ -3551,7 +3551,7 @@ async function renderMobileGatewayQr(info, preferredHost = "") {
   const result = await window.msbt.mobileGatewayMakeQr(JSON.stringify(payload));
   if (result && result.ok && result.dataUrl) {
     els.mobileGatewayQr.src = result.dataUrl;
-    els.mobileGatewayQr.alt = "Scan with MSBT Mobile to pair";
+    els.mobileGatewayQr.alt = "Scan with Borderlands 4 Modding Tools Mobile to pair";
   } else {
     els.mobileGatewayQr.removeAttribute("src");
     els.mobileGatewayQr.alt = (result && result.message) || "Could not render pairing QR";
@@ -3583,7 +3583,7 @@ async function refreshMobileGatewayInfo({ startIfNeeded = false } = {}) {
   if (info.enabled) {
     setLine(
       els.mobileGatewaySummary,
-      `Gateway online on port ${info.port}. Scan the QR in MSBT Mobile (code ${info.pairingCode}).`,
+      `Gateway online on port ${info.port}. Scan the QR in Borderlands 4 Modding Tools Mobile (code ${info.pairingCode}).`,
       "ok"
     );
   } else {
@@ -3649,7 +3649,7 @@ async function renderMobileAnnounceQr() {
   const result = await window.msbt.mobileGatewayMakeQr(MOBILE_INSTALL_URL);
   if (result && result.ok && result.dataUrl) {
     els.mobileAnnounceQr.src = result.dataUrl;
-    els.mobileAnnounceQr.alt = "Scan to open the MSBT Mobile install page";
+    els.mobileAnnounceQr.alt = "Scan to open the Borderlands 4 Modding Tools Mobile install page";
   } else {
     els.mobileAnnounceQr.removeAttribute("src");
     els.mobileAnnounceQr.alt = (result && result.message) || "Could not render install QR";
@@ -7636,7 +7636,7 @@ function updateNoticeInfo(info) {
     return {
       kind: "downloaded",
       title: "Desktop App Update Ready",
-      message: `The desktop app update has downloaded. Restart MSBT to install it. ${restartGameNote}`,
+      message: `The desktop app update has downloaded. Restart the desktop app to install it. ${restartGameNote}`,
       showDownload: false,
       showInstall: true,
       showInstaller: false,
@@ -7683,10 +7683,10 @@ function updateNoticeInfo(info) {
     const sameVersionRebuild = Boolean(data.packageBuildChanged && localPackageVersion === remotePackageVersion);
     return {
       kind: "package",
-      title: "MSBT Package Update Available",
+      title: "Borderlands 4 Modding Tools Update Available",
       message: sameVersionRebuild
-        ? `A newer rebuild of MSBT ${localPackageVersion} is available. Update the Desktop App and Game SDK Mod together. ${restartGameNote}`
-        : `A newer MSBT package is available: ${localPackageVersion} → ${remotePackageVersion}. Update the Desktop App and Game SDK Mod together. ${restartGameNote}`,
+        ? `A newer rebuild of Borderlands 4 Modding Tools ${localPackageVersion} is available. Update the Desktop App and Game SDK Mod together. ${restartGameNote}`
+        : `A newer Borderlands 4 Modding Tools package is available: ${localPackageVersion} → ${remotePackageVersion}. Update the Desktop App and Game SDK Mod together. ${restartGameNote}`,
       showDownload: updaterStatus === "available",
       showInstall: updaterStatus === "downloaded",
       showInstaller: true,
@@ -7720,7 +7720,7 @@ function renderBoostUpdateNotice(info) {
   els.boostUpdateNotice.classList.remove("hidden");
   els.boostUpdateNotice.dataset.kind = notice.kind || "";
   setLine(els.boostUpdateTitle, notice.title || "Update Available");
-  setLine(els.boostUpdateMessage, notice.message || "A newer MSBT update is available.");
+  setLine(els.boostUpdateMessage, notice.message || "A newer Borderlands 4 Modding Tools update is available.");
   if (els.boostUpdateDownloadBtn) els.boostUpdateDownloadBtn.classList.toggle("hidden", !notice.showDownload);
   if (els.boostUpdateInstallBtn) els.boostUpdateInstallBtn.classList.toggle("hidden", !notice.showInstall);
   if (els.boostUpdateOpenInstallerBtn) els.boostUpdateOpenInstallerBtn.classList.toggle("hidden", !notice.showInstaller);
@@ -7744,7 +7744,7 @@ function renderStartupUpdateModal(notice) {
   els.startupUpdateModal.classList.remove("hidden");
   els.startupUpdateModal.dataset.kind = notice.kind || "";
   setLine(els.startupUpdateTitle, notice.title || "Update Available");
-  setLine(els.startupUpdateMessage, notice.message || "A newer MSBT update is available.");
+  setLine(els.startupUpdateMessage, notice.message || "A newer Borderlands 4 Modding Tools update is available.");
   if (els.startupUpdateDownloadBtn) els.startupUpdateDownloadBtn.classList.toggle("hidden", !notice.showDownload);
   if (els.startupUpdateInstallBtn) els.startupUpdateInstallBtn.classList.toggle("hidden", !notice.showInstall);
   if (els.startupUpdateInstallerBtn) els.startupUpdateInstallerBtn.classList.toggle("hidden", !notice.showInstaller);
@@ -7890,7 +7890,7 @@ async function checkUpdates(options = {}) {
     const sameVersionRebuild = Boolean(result.packageBuildChanged && localVersion === remoteVersion);
     setLine(
       els.updateSummary,
-      sameVersionRebuild ? `MSBT package rebuild available for ${localVersion}` : `SDK/resources update available: ${localVersion} -> ${remoteVersion}`,
+      sameVersionRebuild ? `Desktop package rebuild available for ${localVersion}` : `SDK/resources update available: ${localVersion} -> ${remoteVersion}`,
       "warning"
     );
   } else {
@@ -7907,7 +7907,7 @@ async function downloadElectronUpdate() {
 }
 
 async function installDownloadedElectronUpdate() {
-  const confirmed = window.confirm("Restart Matt's SDK Boosting Tools now and install the downloaded update?");
+  const confirmed = window.confirm("Restart Borderlands 4 Modding Tools now and install the downloaded update?");
   if (!confirmed) return;
   try {
     const result = await window.msbt.installDownloadedUpdate();
@@ -14092,7 +14092,7 @@ const TUTORIAL_TOURS = {
   /** First-run / post-update: brief overview of what the app does */
   main: [
     {
-      title: "Welcome to MSBT",
+      title: "Welcome to Borderlands 4 Modding Tools",
       body: "Live actions need Borderlands 4, the SDK Manager, the MSBT Game SDK Mod, and this Desktop App. Use Refresh Status to check the game connection.\n\nSerial conversion and validation work offline. Boosting, spawning, travel, and delivery need the game connected.\n\nOpen Updates to install the SDK Manager and Game SDK Mod.",
       tab: "boosting",
       target: "statusBtn",
@@ -14297,7 +14297,7 @@ async function applyRemoteTutorialCopy() {
         if (!Number.isInteger(idx) || idx < 0 || !steps[idx]) continue;
         // Allowlist: title/body text only — never target selectors, links, or actions from remote JSON.
         if (typeof patch.title === "string" && patch.title.trim()) {
-          steps[idx].title = patch.title;
+          steps[idx].title = patch.title === "Welcome to MSBT" ? "Welcome to Borderlands 4 Modding Tools" : patch.title;
           applied += 1;
         }
         if (typeof patch.body === "string" && patch.body.trim()) {
@@ -14517,7 +14517,7 @@ const TAB_TUTORIALS = {
     },
     {
       title: "Support Mattmab",
-      body: "FunkYouSHiFT maintains MSBT; use Support Development above to help fund updates. Matt created the original editor and foundation. You can also support his other work below.",
+      body: "FunkYouSHiFT maintains Borderlands 4 Modding Tools; use Support Development above to help fund updates. Mattmab (Matt) created the original project, editor and foundation. You can also support his other work below.",
       tab: "matt-editor",
       target: "loadEditorBtn",
       links: [
@@ -14718,7 +14718,7 @@ const TAB_TUTORIALS = {
   "mobile-gateway": [
     {
       title: "Pairing QR",
-      body: "This tab is the pairing QR (same Wi‑Fi as the PC) — not the install QR. Install the APK from Support → Mobile App or GitHub Releases first, then scan here from MSBT Mobile → More → Connection Settings → Scan QR to pair. The tab stays fixed so the pairing QR remains fully visible.",
+      body: "This tab is the pairing QR (same Wi‑Fi as the PC) — not the install QR. Install the APK from Support → Mobile App or GitHub Releases first, then scan here from Borderlands 4 Modding Tools Mobile → More → Connection Settings → Scan QR to pair. The tab stays fixed so the pairing QR remains fully visible.",
       tab: "mobile-gateway",
       targetSel: "#tab-mobile-gateway .mobile-gateway-qr"
     },

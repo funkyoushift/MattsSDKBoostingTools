@@ -10,6 +10,9 @@
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
     <AssemblyName>MSBT-Setup</AssemblyName>
+    <Product>Borderlands 4 Modding Tools — Powered by Funk</Product>
+    <Title>Borderlands 4 Modding Tools — Powered by Funk — Setup</Title>
+    <Description>Install or update Borderlands 4 Modding Tools. Original project by Mattmab.</Description>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>

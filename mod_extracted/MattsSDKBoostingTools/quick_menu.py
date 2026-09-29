@@ -1953,7 +1953,7 @@ def rebuild_ui() -> None:
     factory.border(root, px - 6, py, 6, DESIGN_H, _with_alpha(C_EDGE, 1.0), 1)
     factory.border(root, px, py, pw, DESIGN_H, _with_alpha(C_DOCK, opacity), 2)
     factory.border(root, px, py, pw, HEADER_H, _with_alpha(C_HEADER, opacity), 3)
-    factory.text(root, "MSBT Quick Menu", px + 12, py + 8, 280, 36, scale=SCALE_TITLE, z=4)
+    factory.text(root, "Borderlands 4 Modding Tools", px + 12, py + 8, 440, 36, scale=SCALE_TITLE, z=4)
     mode = "EDIT" if STATE.edit_mode else "RUN"
     lock = backend_actions.get_drop_player_lock()
     lock_txt = f"Lock {lock.get('name') or 'ON'}" if lock.get("enabled") else "Lock OFF"
@@ -3323,7 +3323,7 @@ quick_menu_toggle = keybind(
     "MSBT Quick Menu",
     "F7",
     callback=toggle_panel,
-    display_name="MSBT Quick Menu",
+    display_name="Borderlands 4 Modding Tools Quick Menu",
     description="Open or close the native UMG Quick Menu. Also polled while open so F7 can close under UI focus.",
 )
 
@@ -3331,7 +3331,7 @@ quick_menu_unstuck_key = keybind(
     "MSBT Quick Menu Unstuck",
     "F6",
     callback=unstuck,
-    display_name="MSBT Quick Menu Unstuck",
+    display_name="Borderlands 4 Modding Tools Quick Menu Unstuck",
     description=(
         "Force-close Quick Menu and restore normal mouse/look/move input if the cursor "
         "gets stuck on screen after the menu."
