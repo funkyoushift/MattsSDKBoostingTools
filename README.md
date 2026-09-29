@@ -4,7 +4,7 @@
 
 MSBT is a Borderlands 4 boosting and item toolkit: a standalone Windows app outside the game, plus a small SDK mod that talks to Borderlands 4 while you play. Use it for currency/XP/SDU helpers, serial delivery, BL4 code browsing, Mattmab’s save/profile/item editor, Dev Spawner, map travel, movement tools, and more.
 
-**Current release: [v2.20.0](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.20.0)** — Large AFK lists, bookmark management and item cards, and SHiFT recording and size controls.
+**Current release: [v2.20.0](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.20.0)** — Import backpack and equipped items from Borderlands 4 `.yaml` or `.sav` character files into Saved Items, with import preview, duplicate handling, and improved item-card fallback. This release also improves trusted-device sign-in for the developer portal.
 
 This project is **unofficial**. It is not affiliated with, endorsed by, or connected to Gearbox, 2K, or the Borderlands franchise owners.
 
@@ -16,16 +16,16 @@ This project is **unofficial**. It is not affiliated with, endorsed by, or conne
 
 ## Download & install (start here)
 
-**Windows installer (recommended): [Download `MSBT-Installer-v2.16.0.exe`](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Installer-v2.16.0.exe)**
+**Windows installer (recommended): [Download `MSBT-Installer-v2.20.0.exe`](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Installer-v2.20.0.exe)**
 
 On the [latest release page](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest), this is the exact file to click under **Assets**. Do not choose `latest.json`, `latest.yml`, or the `.blockmap` file; those are updater files.
 
-[![Installer downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Installer-v2.16.0.exe?label=Download%20Windows%20installer&color=2ea44f)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Installer-v2.16.0.exe)
-[![Portable downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Portable-v2.16.0-win-x64.zip?label=Download%20portable%20ZIP&color=0969da)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Portable-v2.16.0-win-x64.zip)
+[![Installer downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Installer-v2.20.0.exe?label=Download%20Windows%20installer&color=2ea44f)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Installer-v2.20.0.exe)
+[![Portable downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Portable-v2.20.0-win-x64.zip?label=Download%20portable%20ZIP&color=0969da)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Portable-v2.20.0-win-x64.zip)
 [![Android APK downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Mobile-Controller.apk?label=Download%20Android%20APK&color=e8a23a)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Mobile-Controller.apk)
 
 - [All GitHub releases](https://github.com/funkyoushift/MattsSDKBoostingTools/releases)
-- Exact installer file: `MSBT-Installer-v2.16.0.exe`
+- Exact installer file: `MSBT-Installer-v2.20.0.exe`
 
 **Portable option:** if you do not want an installer, download the portable ZIP instead (`MSBT-Portable-v…-win-x64.zip`), extract it, and run the app from that folder.
 
@@ -64,6 +64,7 @@ In plain terms, the Electron app is the control panel. The SDK mod does the live
 - **Inventory** — live equipped + backpack browser in the Electron app and on F7 **INV**; GZO names, sort/filter, party player picker, **Send to Game** with separate Give-to target and multiplier
 - **Boosting** — cash, Eridium, XP/spec, SDU, inventory size helpers, **Drop All (Backpack)**, rarity drop weights, lobby targeting (selected / all / non-host), UVH booster controls, and **experimental Late Join Character** (host picker; P2 persist not confirmed)
 - **Serial tools** — paste, validate, bookmark, and deliver `@U` item serials
+- **Saved Items / Save Import** — import backpack and equipped items from character `.yaml` or `.sav` files into a new or existing Saved Items folder; preview character/level/item counts first, keep duplicates or skip codes already present, and leave the source save unchanged
 - **BL4 Codes** — search/browse a merged local catalog (GZO image cards, Lootlemon references, custom/static codes), then deliver from a sticky delivery panel
 - **Matt Editor** — hosted Mattmab save/profile/item editor workflow with MSBT delivery buttons
 - **Item Pool Spawning** — browse and spawn from item pools through the bridge
