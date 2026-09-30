@@ -22,12 +22,20 @@ app.whenReady().then(async()=>{
   check(bookmarkSelectedEntries().length===0,'switch clears old folder selection');
   $('bookmarkSelectAllBtn').click();check(bookmarkSelectedEntries().length===2,'select all local');
   $('bookmarkClearSelectedBtn').click();check(bookmarkSelectedEntries().length===0,'clear means no delivery');
-  let sent,imported=false,calls=[];
+  let sent,imported=false,calls=[],queries=[],releaseSearch=null,delaySearch=false,paginated=false,failPage=false,pageRequests=[];
   const folder={version:1,title:'Vex starter',creator:'Community tester',description:'Gun and shield drop list',folders:['','Shields'],items:[{name:'<img src=x onerror=alert(1)>',folder:'',serial:'@UAbCd'},{name:'Shield',folder:'Shields',serial:'@UAbCd'}]};
   window.msbt=window.msbt||{};
   window.msbt.communityFolders=async(op,p)=>{calls.push(op);
    if(op==='info')return {ok:true,endpoint:'https://library.example'};
-   if(op==='list')return {ok:true,next:null,folders:[{id:'demo',title:folder.title,creator:folder.creator,item_count:2,status:'approved'}]};
+   if(op==='list'){
+    queries.push(p.q);
+    pageRequests.push({...p});
+    if(failPage){failPage=false;return {ok:false,message:'Page unavailable'};}
+    if(delaySearch){delaySearch=false;await new Promise(resolve=>{releaseSearch=resolve;});}
+    if(paginated)return {ok:true,next:p.offset===0?25:p.offset===25?50:null,folders:[{id:'page-'+p.offset,title:'Page at '+p.offset,status:'approved'}]};
+    const match=!p.q||[folder.title,folder.creator].some(x=>x.toLowerCase().includes(p.q.toLowerCase()));
+    return {ok:true,next:null,folders:match?[{id:'demo',title:folder.title,creator:folder.creator,item_count:2,status:'approved'}]:[]};
+   }
    if(op==='get')return {ok:true,id:'demo',status:'approved',digest:'test',folder};
    if(op==='submit'){sent=p.folder;return {ok:true,status:'pending',id:'pending-demo'};}
    if(op==='import'){imported=true;return {ok:true,imported:2,destination:'Vex starter',data:window.communityFolderContract.importFolder(folder,{bookmarks:state.bookmarks,folders:state.bookmarkFolders},()=>crypto.randomUUID())};}
@@ -37,6 +45,33 @@ app.whenReady().then(async()=>{
   };
   (window.MsbtWorkspace?.enabled ? window.MsbtWorkspace.open('serial-tools','saved') : switchTab('serial-tools'));$('communityOpenBtn').click();await idle();
   check($('communityFoldersPanel').open && !$('communityFoldersPanel').hidden,'community panel opens');check($('savedItemsLocalPanel').hidden,'local items hidden while browsing');$('savedItemsLocalBtn').click();check(!$('savedItemsLocalPanel').hidden && $('communityFoldersPanel').hidden,'local navigation');$('savedItemsShareBtn').click();check($('communitySubmitPanel').open && !$('communityFoldersPanel').hidden,'share shortcut');$('communityOpenBtn').click();await idle();check($('communityResults').textContent.includes('Vex starter'),'public results');
+  $('communitySearch').value='  Vex  ';$('communitySearch').dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',bubbles:true}));await idle();
+  check(queries.at(-1)==='Vex'&&$('communityResults').textContent.includes('Vex starter'),'Enter searches and trims spaces');
+  $('communitySearch').value='missing';$('communitySearch').dispatchEvent(new Event('input'));await new Promise(r=>setTimeout(r,300));await idle();
+  check($('communityResults').textContent==='No folders found.','typing filters results');
+  delaySearch=true;$('communitySearch').value='old';$('communitySearchBtn').click();
+  $('communitySearch').value='Community tester';$('communitySearchBtn').click();
+  releaseSearch();await idle();
+  check(queries.at(-1)==='Community tester'&&$('communityResults').textContent.includes('Vex starter'),'search during loading is retained');
+  $('communitySearch').value='';$('communitySearch').dispatchEvent(new Event('input'));await new Promise(r=>setTimeout(r,300));await idle();
+  check(queries.at(-1)===''&&$('communityResults').querySelector('button'),'clearing search restores folders');
+  paginated=true;$('communitySearch').value='Vex';$('communitySearchBtn').click();await idle();
+  check(!$('communityPagination').hidden&&$('communityPreviousBtn').disabled&&!$('communityMoreBtn').disabled,'first page navigation');
+  $('communityMoreBtn').click();await idle();$('communityMoreBtn').click();await idle();
+  check(pageRequests.at(-1).offset===50&&$('communityMoreBtn').disabled&&!$('communityPreviousBtn').disabled,'last page navigation');
+  $('communitySearch').value='unsubmitted';
+  failPage=true;$('communityPreviousBtn').click();await idle();
+  check($('communityResults').textContent.includes('Page at 50'),'failed page retains current results');
+  $('communityPreviousBtn').click();await idle();
+  check(pageRequests.at(-1).offset===25&&pageRequests.at(-1).q==='Vex','previous retries correct page with active query');
+  $('communityPreviousBtn').click();await idle();
+  check(pageRequests.at(-1).offset===0&&pageRequests.at(-1).q==='Vex'&&$('communityPreviousBtn').disabled,'previous reaches first page without changing search');
+  $('communityMoreBtn').click();await idle();$('communitySearch').value='new';$('communitySearchBtn').click();await idle();
+  check(pageRequests.at(-1).offset===0&&$('communityPreviousBtn').disabled,'new search resets pagination');
+  $('communityMoreBtn').click();await idle();$('communityMineBtn').click();await idle();
+  check($('communityPagination').hidden,'submissions hide pagination');
+  paginated=false;$('communitySearch').value='';$('communitySearchBtn').click();await idle();
+  check($('communityPagination').hidden,'single page hides pagination');
   $('communityResults').querySelector('button').click();await idle();
   check(!$('communityImportBtn').disabled,'approved import enabled');check(!$('communityPreviewItems').querySelector('img'),'untrusted title rendered as text');check(!imported,'preview never imports');
   const boxes=$('communityPreviewItems').querySelectorAll('input[type=checkbox]');
@@ -84,6 +119,8 @@ app.whenReady().then(async()=>{
   return {operations:calls.length,bookmarks:state.bookmarks.length};
  })()`);
  assert.equal(result.bookmarks,5);
+ console.log('PASS community pagination: next, previous, first/last page, failed request retry, query retention, search reset, submissions; search and folder selection/import/delivery wiring.');
+ if(process.argv.includes('--functional-only')){win.destroy();app.exit(0);return;}
  win.showInactive();
  await new Promise(resolve=>setTimeout(resolve,500));
  await win.webContents.executeJavaScript(`(async()=>{await endWalkthrough({skipped:true,quiet:true});(window.MsbtWorkspace?.enabled ? window.MsbtWorkspace.open('serial-tools','saved') : switchTab('serial-tools'));document.querySelector('[data-msbt-panel="serial-bookmarks"]').scrollIntoView({block:'start'});})()`);

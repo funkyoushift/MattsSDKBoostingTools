@@ -2,6 +2,7 @@
   const $=id=>document.getElementById(id), panel=$('communityFoldersPanel');
   if(!panel)return;
   let busy=false,selected=null,mode='public',next=null,shown=0,endpoint='';
+  let searchTimer=null,searchPending=false,activeQuery='',pageOffsets=[0];
   const checked = new Set();
   $('savedSendBtn').addEventListener('click',()=>sendBookmarkSerial($('savedSendMode').value));
   function updateSendOptions(){const named=$('savedSendMode').value==='selected';$('bookmarkTargetSelect').closest('.target-row').hidden=!named;document.querySelector('label[for=bookmarkTargetSelect]').hidden=!named;$('bookmarkTargetSummary').hidden=!named;$('bookmarkDeliveryLevel').closest('label').hidden=!$('bookmarkOverrideLevel').checked;}
@@ -12,7 +13,12 @@
   function selectionChanged(){ $('communitySelectedCount').textContent = `${checked.size} / ${selected?.folder.items.length || 0} selected`;renderSavedDeliverySelection(); }
   const message=(text,bad=false)=>{$('communityStatus').textContent=text;$('communityStatus').className='status-line '+(bad?'bad':'ok');};
   async function call(action,payload){if(!window.msbt?.communityFolders)throw Error('Restart the updated desktop app to use community folders.');const result=await window.msbt.communityFolders(action,payload);if(!result?.ok)throw Error(result?.message||'The online library is unavailable.');return result;}
-  async function run(fn){if(busy)return;busy=true;panel.setAttribute('aria-busy','true');try{await fn();}catch(e){message(e.message,true);}finally{busy=false;panel.removeAttribute('aria-busy');}}
+  async function run(fn){if(busy)return;busy=true;panel.setAttribute('aria-busy','true');try{await fn();}catch(e){message(e.message,true);}finally{busy=false;panel.removeAttribute('aria-busy');if(searchPending){searchPending=false;search();}}}
+  function search(){
+    clearTimeout(searchTimer);
+    if(busy){searchPending=true;return;}
+    run(async()=>{mode='public';await browse();});
+  }
   function folders(){
     const select=$('communitySubmitFolder'),previous=select.value;
     select.replaceChildren(new Option('Choose a folder',''),...bookmarkGroups().map(x=>new Option(x,x)));
@@ -47,9 +53,16 @@
     for(const row of rows){const button=document.createElement('button');button.type='button';button.style.cssText='display:block;width:100%;text-align:left;margin:6px 0';button.textContent=`${row.title}${row.creator?' — '+row.creator:''}${row.item_count!=null?' · '+row.item_count+' items':''}${row.status?' · '+row.status:''}`;
       button.addEventListener('click',()=>run(async()=>{if(source==='mine'&&row.status==='sending'){await call('retry',{id:row.id});}await preview(row.id,source);}));host.append(button);}
   }
-  async function browse(offset=0){
-    clearPreview();const data=await call(mode==='review'?'reviewList':'list',{q:$('communitySearch').value,offset});
-    next=data.next;$('communityMoreBtn').hidden=next==null;results(data.folders,mode);message(`${data.folders.length} folder(s) on this page.`);
+  async function browse(offset=0,direction='reset'){
+    const query=direction==='reset'?$('communitySearch').value.trim():activeQuery;
+    const data=await call(mode==='review'?'reviewList':'list',{q:query,offset});
+    clearPreview();activeQuery=query;
+    pageOffsets=direction==='next'?[...pageOffsets,offset]:direction==='previous'?pageOffsets.slice(0,-1):[offset];
+    next=data.next;
+    $('communityPagination').hidden=pageOffsets.length===1&&next==null;
+    $('communityPreviousBtn').disabled=pageOffsets.length===1;
+    $('communityMoreBtn').disabled=next==null;
+    results(data.folders,mode);message(`${data.folders.length} folder(s) on this page.`);
   }
   function showLibrary(active){
     panel.hidden=!active;panel.open=active;
@@ -64,14 +77,17 @@
   $('communityOpenBtn').addEventListener('click',()=>{showLibrary(true);run(async()=>{const info=await call('info');endpoint=info.endpoint;mode='public';await browse();});});
   $('savedItemsShareBtn').addEventListener('click',()=>{showLibrary(true);$('communitySubmitPanel').open=true;$('communitySubmitPanel').scrollIntoView({block:'start'});$('communitySubmitFolder').focus({preventScroll:true});});
   panel.addEventListener('toggle',()=>{if(panel.open)folders();});
-  $('communitySearchBtn').addEventListener('click',()=>run(async()=>{mode='public';await browse();}));
-  $('communityMoreBtn').addEventListener('click',()=>run(()=>browse(next||0)));
+  $('communitySearchBtn').addEventListener('click',search);
+  $('communitySearch').addEventListener('keydown',event=>{if(event.key==='Enter'&&!event.isComposing){event.preventDefault();search();}});
+  $('communitySearch').addEventListener('input',()=>{clearTimeout(searchTimer);searchTimer=setTimeout(search,250);});
+  $('communityMoreBtn').addEventListener('click',()=>{if(next!=null)run(()=>browse(next,'next'));});
+  $('communityPreviousBtn').addEventListener('click',()=>{if(pageOffsets.length>1)run(()=>browse(pageOffsets[pageOffsets.length-2],'previous'));});
   $('communityLinkBtn').addEventListener('click',()=>run(()=>preview($('communityLink').value,'public')));
   $('communitySelectAll').addEventListener('click',()=>{if(!selected||selected.status!=='approved')return;selected.folder.items.forEach((_,i)=>checked.add(i));panel.querySelectorAll('[data-item-index]').forEach(box=>{box.checked=true;});selectionChanged();});
   $('communityClearSelection').addEventListener('click',()=>{checked.clear();panel.querySelectorAll('[data-item-index]').forEach(box=>{box.checked=false;});selectionChanged();});
   $('communityCopySelected').addEventListener('click',()=>run(async()=>{const rows=window.msbtCommunitySelection()||[];if(!rows.length)throw Error('Select items first.');await navigator.clipboard.writeText(rows.map(row=>row.serial).join('\n'));message(`Copied ${rows.length} item codes.`);}));
   $('communityPreviewMore').addEventListener('click',()=>{if(selected)items();});
-  $('communityMineBtn').addEventListener('click',()=>run(async()=>{clearPreview();const data=await call('mine');next=null;$('communityMoreBtn').hidden=true;results(data.submissions,'mine');message('Select a submission to refresh its status. A sending entry can be safely retried.');}));
+  $('communityMineBtn').addEventListener('click',()=>run(async()=>{clearPreview();const data=await call('mine');next=null;pageOffsets=[0];$('communityPagination').hidden=true;results(data.submissions,'mine');message('Select a submission to refresh its status. A sending entry can be safely retried.');}));
   $('communitySubmitFolder').addEventListener('change',()=>{countSubmission();if(!$('communitySubmitTitle').value)$('communitySubmitTitle').value=$('communitySubmitFolder').value.split('/').at(-1).trim();});
   $('communitySubmitBtn').addEventListener('click',()=>run(async()=>{
     if(!$('communitySubmitConsent').checked)throw Error('Confirm that you want to share the selected folder.');

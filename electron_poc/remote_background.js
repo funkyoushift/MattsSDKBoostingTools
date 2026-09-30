@@ -22,8 +22,14 @@ function createRemoteBackground({app,BrowserWindow,Tray,Menu,nativeImage,powerSa
       tray?.destroy();tray=null;
     }
   }
-  function bind(win){win.on('close',event=>{if(enabled&&!quitting){event.preventDefault();win.hide();}});}
-  app.on('before-quit',()=>{quitting=true;});
+  // Closing the desktop must release its files for Setup, even when remote
+  // access is enabled. Minimize keeps remote access running; X exits.
+  function bind(win){win.on('close',event=>{if(!quitting){event.preventDefault();app.quit();}});}
+  app.on('before-quit',()=>{
+    quitting=true;
+    if(blocker!==null){powerSaveBlocker.stop(blocker);blocker=null;}
+    tray?.destroy();tray=null;
+  });
   return {update,bind,show,enabled:()=>enabled};
 }
 module.exports={createRemoteBackground};
