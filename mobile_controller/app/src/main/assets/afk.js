@@ -95,5 +95,6 @@
     panel.querySelector('[data-afk="loot"]').checked=true;save();message(`Added ${rows.length} selected items.`);
   };});
   window.mobileAfk={render,connectionChanged:()=>{lock();if(!state.online)message('Disconnected. The PC lobby continues running; reconnect to control it.');}};
+  window.addEventListener("msbt-language-change",()=>render({afk_lobby:status}));
   lock();
 })();

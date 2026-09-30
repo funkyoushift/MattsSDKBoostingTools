@@ -65,5 +65,8 @@
   document.querySelectorAll('#afkMode option,#afkLootMode option').forEach(el=>{el.dataset.i18n=el.value==='all'?'all':'random';});
   document.querySelectorAll('[data-language-selector]').forEach(el=>{el.addEventListener('change',()=>setLanguage(el.value));});
   window.msbtI18n={t,setLanguage,apply,locales,rows,get language(){return language}};
+  window.addEventListener('storage', event => {
+    if(event.key===storageKey){language=locales.includes(event.newValue)?event.newValue:'en';apply();window.dispatchEvent(new Event('msbt-language-change'));}
+  });
   apply();
 })();

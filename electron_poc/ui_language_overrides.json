@@ -1,0 +1,290 @@
+[
+  [
+    "Saved Items",
+    "Objetos guardados",
+    "Objets enregistrés",
+    "Itens salvos",
+    "Gespeicherte Gegenstände",
+    "Opgeslagen voorwerpen"
+  ],
+  [
+    "My saved items",
+    "Mis objetos guardados",
+    "Mes objets enregistrés",
+    "Meus itens salvos",
+    "Meine gespeicherten Gegenstände",
+    "Mijn opgeslagen voorwerpen"
+  ],
+  [
+    "Community library",
+    "Biblioteca de la comunidad",
+    "Bibliothèque communautaire",
+    "Biblioteca da comunidade",
+    "Community-Bibliothek",
+    "Communitybibliotheek"
+  ],
+  [
+    "Import from save",
+    "Importar desde una partida guardada",
+    "Importer depuis une sauvegarde",
+    "Importar de um jogo salvo",
+    "Aus Spielstand importieren",
+    "Uit opgeslagen spel importeren"
+  ],
+  [
+    "Import codes",
+    "Importar códigos",
+    "Importer des codes",
+    "Importar códigos",
+    "Codes importieren",
+    "Codes importeren"
+  ],
+  [
+    "Share a folder",
+    "Compartir una carpeta",
+    "Partager un dossier",
+    "Compartilhar uma pasta",
+    "Ordner teilen",
+    "Map delen"
+  ],
+  [
+    "Folders",
+    "Carpetas",
+    "Dossiers",
+    "Pastas",
+    "Ordner",
+    "Mappen"
+  ],
+  [
+    "Manage folders",
+    "Administrar carpetas",
+    "Gérer les dossiers",
+    "Gerenciar pastas",
+    "Ordner verwalten",
+    "Mappen beheren"
+  ],
+  [
+    "Select All",
+    "Seleccionar todo",
+    "Tout sélectionner",
+    "Selecionar tudo",
+    "Alle auswählen",
+    "Alles selecteren"
+  ],
+  [
+    "Clear Selection",
+    "Quitar selección",
+    "Effacer la sélection",
+    "Limpar seleção",
+    "Auswahl aufheben",
+    "Selectie wissen"
+  ],
+  [
+    "Send selected items",
+    "Enviar objetos seleccionados",
+    "Envoyer les objets sélectionnés",
+    "Enviar itens selecionados",
+    "Ausgewählte Gegenstände senden",
+    "Geselecteerde voorwerpen sturen"
+  ],
+  [
+    "Override item level",
+    "Cambiar el nivel de los objetos",
+    "Modifier le niveau des objets",
+    "Alterar nível dos itens",
+    "Gegenstandslevel ändern",
+    "Voorwerpniveau wijzigen"
+  ],
+  [
+    "Inventory",
+    "Inventario",
+    "Inventaire",
+    "Inventário",
+    "Inventar",
+    "Inventaris"
+  ],
+  [
+    "Item Catalog",
+    "Catálogo de objetos",
+    "Catalogue d’objets",
+    "Catálogo de itens",
+    "Gegenstandskatalog",
+    "Voorwerpcatalogus"
+  ],
+  [
+    "Boosting",
+    "Mejoras",
+    "Améliorations",
+    "Melhorias",
+    "Boosts",
+    "Boosts"
+  ],
+  [
+    "Give Items",
+    "Dar objetos",
+    "Donner des objets",
+    "Dar itens",
+    "Gegenstände vergeben",
+    "Voorwerpen geven"
+  ],
+  [
+    "Character & Boosting",
+    "Personaje y mejoras",
+    "Personnage et améliorations",
+    "Personagem e melhorias",
+    "Charakter und Boosts",
+    "Personage en boosts"
+  ],
+  [
+    "Items & Inventory",
+    "Objetos e inventario",
+    "Objets et inventaire",
+    "Itens e inventário",
+    "Gegenstände und Inventar",
+    "Voorwerpen en inventaris"
+  ],
+  [
+    "Shortcuts & Settings",
+    "Accesos directos y ajustes",
+    "Raccourcis et paramètres",
+    "Atalhos e configurações",
+    "Verknüpfungen und Einstellungen",
+    "Snelkoppelingen en instellingen"
+  ],
+  [
+    "Developer portal",
+    "Portal de desarrolladores",
+    "Portail de développement",
+    "Portal de desenvolvedores",
+    "Entwicklerportal",
+    "Ontwikkelaarsportaal"
+  ],
+  [
+    "Updates",
+    "Actualizaciones",
+    "Mises à jour",
+    "Atualizações",
+    "Updates",
+    "Updates"
+  ],
+  [
+    "Refresh Status",
+    "Actualizar estado",
+    "Actualiser l’état",
+    "Atualizar status",
+    "Status aktualisieren",
+    "Status vernieuwen"
+  ],
+  [
+    "Save",
+    "Guardar",
+    "Enregistrer",
+    "Salvar",
+    "Speichern",
+    "Opslaan"
+  ],
+  [
+    "Cancel",
+    "Cancelar",
+    "Annuler",
+    "Cancelar",
+    "Abbrechen",
+    "Annuleren"
+  ],
+  [
+    "Close",
+    "Cerrar",
+    "Fermer",
+    "Fechar",
+    "Schließen",
+    "Sluiten"
+  ],
+  [
+    "Search",
+    "Buscar",
+    "Rechercher",
+    "Pesquisar",
+    "Suchen",
+    "Zoeken"
+  ],
+  [
+    "Backpack",
+    "Mochila",
+    "Sac à dos",
+    "Mochila",
+    "Rucksack",
+    "Rugzak"
+  ],
+  [
+    "Equipped",
+    "Equipado",
+    "Équipé",
+    "Equipado",
+    "Ausgerüstet",
+    "Uitgerust"
+  ],
+  [
+    "View",
+    "Vista",
+    "Affichage",
+    "Exibir",
+    "Ansicht",
+    "Weergave"
+  ],
+  [
+    "Items & serials",
+    "Objetos y códigos",
+    "Objets et codes",
+    "Itens e códigos",
+    "Gegenstände und Codes",
+    "Voorwerpen en codes"
+  ],
+  [
+    "Serial Converter",
+    "Conversor de códigos",
+    "Convertisseur de codes",
+    "Conversor de códigos",
+    "Codekonverter",
+    "Codeconversie"
+  ],
+  [
+    "Validate Items",
+    "Validar objetos",
+    "Valider les objets",
+    "Validar itens",
+    "Gegenstände prüfen",
+    "Voorwerpen controleren"
+  ],
+  [
+    "+ Add item codes",
+    "+ Añadir códigos de objetos",
+    "+ Ajouter des codes d’objets",
+    "+ Adicionar códigos de itens",
+    "+ Gegenstandscodes hinzufügen",
+    "+ Voorwerpcodes toevoegen"
+  ],
+  [
+    "Deliver selected items",
+    "Entregar objetos seleccionados",
+    "Distribuer les objets sélectionnés",
+    "Entregar itens selecionados",
+    "Ausgewählte Gegenstände vergeben",
+    "Geselecteerde voorwerpen afleveren"
+  ],
+  [
+    "Choose a folder, select items, then send.",
+    "Elige una carpeta, selecciona los objetos y envíalos.",
+    "Choisissez un dossier, sélectionnez des objets, puis envoyez-les.",
+    "Escolha uma pasta, selecione os itens e envie.",
+    "Ordner wählen, Gegenstände auswählen und senden.",
+    "Kies een map, selecteer voorwerpen en verstuur ze."
+  ],
+  [
+    "Find saved items, convert serials, and validate gear.",
+    "Busca objetos guardados, convierte códigos y valida equipo.",
+    "Retrouvez des objets enregistrés, convertissez des codes et validez l’équipement.",
+    "Encontre itens salvos, converta códigos e valide equipamentos.",
+    "Gespeicherte Gegenstände finden, Codes konvertieren und Ausrüstung prüfen.",
+    "Vind opgeslagen voorwerpen, converteer codes en controleer uitrusting."
+  ]
+]

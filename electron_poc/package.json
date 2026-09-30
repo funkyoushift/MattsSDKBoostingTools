@@ -7,6 +7,7 @@
   "license": "MIT",
   "main": "main.js",
   "scripts": {
+    "test:languages": "node --check ui_localization.js && node --check ui_language_catalog.js && electron test_ui_i18n.js && electron test_ui_languages_full.js",
     "test:save-import": "node test_save_items_import.js && electron test_save_items_import_ui.js",
     "test:community": "electron test_community_folders_ui.js && electron test_developer_portal.js",
     "test:persistent-updater": "node test_persistent_updater.js",

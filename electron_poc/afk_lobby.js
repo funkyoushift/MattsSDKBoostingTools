@@ -216,5 +216,6 @@
     byId("afkBookmarkNote").textContent = appendLoot(codes, true).message;
   });
   bookmarks().catch(() => {});
+  window.addEventListener("msbt-language-change", () => render({afk_lobby:lastStatus}));
   render(null);
 })();

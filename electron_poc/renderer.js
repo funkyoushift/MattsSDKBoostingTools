@@ -2587,7 +2587,7 @@ function syncBoostingRaritySlidersFromBridge(data, { force = false } = {}) {
   if (hasRev) state.rarityBridgeRevision = revRaw;
   if (changed && els.rarityStatus) {
     const note = "Synced from in-game Quick Menu / bridge.";
-    if (!String(els.rarityStatus.textContent || "").includes("Sending")) {
+    if (!String(window.MsbtTranslateUi?.originalText(els.rarityStatus) ?? els.rarityStatus.textContent ?? "").includes("Sending")) {
       setLine(els.rarityStatus, note, "ok");
     }
   }
@@ -4325,7 +4325,7 @@ function updateChallengeListFromResult(result) {
     els.challengeListSelect.appendChild(opt);
   });
   const count = Number(data && data.count != null ? data.count : entries.length);
-  if (els.challengeStatus && !String(els.challengeStatus.textContent || "").includes("Confirm")) {
+  if (els.challengeStatus && !String(window.MsbtTranslateUi?.originalText(els.challengeStatus) ?? els.challengeStatus.textContent ?? "").includes("Confirm")) {
     setLine(els.challengeStatus, `${count} challenge(s) listed.`, count ? "ok" : "warning");
   }
 }
@@ -5968,7 +5968,7 @@ function fillBl4Filter(selectNode, values, currentValue = "All") {
   const existingValues = Array.from(selectNode.options).map((option) => String(option.value || ""));
   const sameOptions = existingValues.length === nextValues.length
     && existingValues.every((value, index) => value === nextValues[index].value)
-    && Array.from(selectNode.options).every((option, index) => option.textContent === nextValues[index].label);
+    && Array.from(selectNode.options).every((option, index) => (window.MsbtTranslateUi?.originalText(option) ?? option.textContent) === nextValues[index].label);
   // Soft-update: wiping filter <select>s during catalog refresh steals focus from
   // Search the same way named-player rebuilds did during Max All waits.
   if (sameOptions) {
@@ -5996,7 +5996,7 @@ function fillBl4CreatorFilter(creators = []) {
   const existingValues = Array.from(els.bl4CreatorFilter.options).map((option) => String(option.value || ""));
   const sameOptions = existingValues.length === nextValues.length
     && existingValues.every((value, index) => value === nextValues[index].value)
-    && Array.from(els.bl4CreatorFilter.options).every((option, index) => option.textContent === nextValues[index].label);
+    && Array.from(els.bl4CreatorFilter.options).every((option, index) => (window.MsbtTranslateUi?.originalText(option) ?? option.textContent) === nextValues[index].label);
   if (sameOptions) {
     if (document.activeElement === els.bl4CreatorFilter) return;
     els.bl4CreatorFilter.value = nextValues.some((option) => option.value === previous) ? previous : "All";
