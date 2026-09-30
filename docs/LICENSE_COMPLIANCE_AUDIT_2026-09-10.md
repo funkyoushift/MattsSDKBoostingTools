@@ -2,6 +2,13 @@
 
 Date: 2026-09-10
 
+> **Historical audit — provenance conclusions corrected on 2026-09-30.**
+> The Squ1ggs module/data-origin conclusions below are superseded by
+> [the attribution review](ATTRIBUTION_REVIEW_2026-09-30.md). The original
+> comparison established overlap, not original authorship or direction of reuse.
+> License notices are retained. Runtime bundling and upstream license descriptions
+> below describe the audit date, not necessarily current releases.
+
 Status: **Core corrections implemented and verified in local artifacts.**
 
 This is an engineering provenance review, not legal advice.

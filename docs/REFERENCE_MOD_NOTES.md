@@ -1,8 +1,10 @@
 # Reference Mod Notes
 
 This file records GPL/reference-only mods and earlier source-review notes. It is
-not the complete import record. MIT-licensed Squ1ggs code was in fact adapted
-into MSBT and is documented in `THIRD_PARTY_NOTICES.md` and the oak2 audit.
+not the complete import record. Specific Squ1ggs-related adaptations and
+inspiration are documented in `THIRD_PARTY_NOTICES.md`. The September 10 audit
+overstated provenance by treating overlap as directional reuse; its scope is
+corrected in [the September 30 review](ATTRIBUTION_REVIEW_2026-09-30.md).
 
 Public catalog reference:
 
@@ -61,7 +63,9 @@ Useful patterns:
 
 MSBT use:
 
-- Movement and related shared helpers were adapted into the shipped SDK code.
+- Movement work used this project as a reference/adaptation source. This does
+  not establish Squ1ggs as the original author of every matching shared helper;
+  several matching blocks already occur in MSBT's July baseline.
 - Additional provenance is recorded in `docs/THIRD_PARTY_NOTICES.md`.
 
 Because this mod is MIT, adaptation is permitted, but Squ1ggs' copyright and

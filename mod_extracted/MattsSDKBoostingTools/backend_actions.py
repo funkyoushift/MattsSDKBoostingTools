@@ -259,6 +259,8 @@ _uvh_next_at = 0.0
 _uvh_running = False
 _uvh_paused_queue: deque[tuple[str, str, float]] = deque()
 _uvh_paused_targets: list[Any] = []
+# UVHM discovery credit: PyrexBLJ; workflow: Azalea Asvail with FunkYouSHiFT assistance.
+# Challenge-path discovery credit: Matt. See docs/ATTRIBUTION_REVIEW_2026-09-30.md.
 _uvh_last_status = "Ready. UVH tier boosts are based on Azzy UVH Booster by Azalea Asvail."
 _DEV_SPAWNER_SAFE_TOKEN = re.compile(r"^[A-Za-z0-9_./:-]+$")
 _DEV_SPAWNER_SAFE_STATE_LIST = re.compile(r"^[A-Za-z0-9_,./:-]+$")

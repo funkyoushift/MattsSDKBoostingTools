@@ -2,6 +2,13 @@
 
 Date: 2026-09-10
 
+> **Historical audit — provenance conclusions corrected on 2026-09-30.**
+> The Squ1ggs module/data-origin conclusions below are superseded by
+> [the attribution review](ATTRIBUTION_REVIEW_2026-09-30.md). The original
+> comparison established overlap, not original authorship or direction of reuse.
+> License notices are retained. Runtime bundling and upstream license descriptions
+> below describe the audit date, not necessarily current releases.
+
 Scope: all 34 entries published in the BL4
 [oak2 Mod Database](https://bl-sdk.github.io/oak2-mod-db/) at site commit
 `eaf46a8796b16a6f96d1637cba796c1ddd986216`, their linked `pyproject.toml`
@@ -11,7 +18,7 @@ This is an engineering provenance review, not legal advice. A source comparison
 can detect copied text/code, but cannot prove that independently written code
 never used the same ideas.
 
-## Result
+## Historical result (origin claims superseded)
 
 - MSBT contains substantial copied or adapted material from Squ1ggs' MIT
   sources. Earlier MSBT notices understated that scope and earlier planning
@@ -73,7 +80,7 @@ No material exact source match or named runtime dependency was found for:
 They require no MSBT distribution notice while they remain neither copied nor
 bundled.
 
-## Squ1ggs-derived scope observed
+## Historical overlap list (not a verified Squ1ggs-origin list)
 
 The comparison found substantial exact or near-exact lineage in these shipped
 areas:

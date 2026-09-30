@@ -261,16 +261,20 @@ Huge thanks to the people who built pieces of this, shared data, and helped prov
 
 | Who | What |
 | --- | --- |
-| **Mattmab** | Original toolset, save/editor work, and the foundation this project grew from. [Ko-fi](https://ko-fi.com/mattmab) · [legit-builder](https://github.com/mattmab/legit-builder) |
-| **FunkYouSHiFT** | Current maintainer: Electron app, bridge, SDK v0.3 migration, packaging/releases. [Site](https://www.funkyoushift.com/) · [Twitch](https://www.twitch.tv/funkyoushift/) · [YouTube](https://www.youtube.com/@Funkyoushift) · [Support development](https://www.funkyoushift.com/donate.html) |
+| **Mattmab** | Original toolset, save/editor work, challenge-path discoveries, and the foundation this project grew from. [Original MSBT source](https://github.com/mattmab/MattsSDKBoostingTools) · [Ko-fi](https://ko-fi.com/mattmab) · [legit-builder](https://github.com/mattmab/legit-builder) |
+| **FunkYouSHiFT** | Current maintainer: Electron app, bridge, SDK v0.3 migration, AFK workflows, community folders, save imports, translations, packaging/releases, and assistance with the UVHM workflow. [Site](https://www.funkyoushift.com/) · [Twitch](https://www.twitch.tv/funkyoushift/) · [YouTube](https://www.youtube.com/@Funkyoushift) · [Support development](https://www.funkyoushift.com/donate.html) |
 | **BLImGui / Borderlands ImGui** | Original in-game UI framework used by the early MSBT panel. Credited separately — not a Mattmab project. |
 | **apple1417 / BL SDK community** | oak2 / UnrealSDK ecosystem and tooling that make mods like this possible. [oak2-mod-manager](https://github.com/bl-sdk/oak2-mod-manager) · [Mod DB](https://bl-sdk.github.io/oak2-mod-db/) |
 | **Ynot / GZO** | BL4 Codes site, catalog/API, and community code pipeline. [GZO Codes](https://save-editor.be/GZO/Borderlands4/Codes.html) · [GZO hub](https://save-editor.be/GZO/) · [Discord](https://discord.gg/4hGKAHdvp6) |
 | **Levin / Lootlemon** | Lootlemon item/code references used in the catalog. [Lootlemon](https://www.lootlemon.com/) |
-| **Azalea Asvail** | Azzy UVH Booster workflow adapted into the Boosting tab (MIT). Source credits **Pyrex** for UVH6/UVH7 challenge paths. |
-| **RDP / Squ1ggs** (Ryan David Picton) | MIT-licensed SDK helpers, standalone mods, and data adapted across movement, travel, serials, economy, inventory, legit building, spawning, vault-card, and related game-side features. [Bl4SDKmods source](https://github.com/Squ1ggs/Bl4SDKmods) |
+| **Azalea Asvail** | Azzy UVH Booster workflow adapted into MSBT, with help from FunkYouSHiFT. [Public project and download](https://github.com/AzaleaAsvailAMW/amw-Uvhbooster) |
+| **PyrexBLJ** | Discovery of earlier UVHM paths used by the boosting workflow. [Public developer profile and projects](https://github.com/PyrexBLJ) |
+| **Matt / ActorScriptDeployer** | Actor Script Deployer provides the standard Dev Spawner backend; MSBT adds integration and fixes. [Bundled source and author metadata](tools/third_party/sdk_mods/ActorScriptDeployer/pyproject.toml) |
+| **RDP / Squ1ggs** | Public code and patterns used in movement/teleport and combat/resource/vehicle tuning work; inspiration for location bookmarks and the compact Dev Spawner layout. Actor Script Deployer is credited separately above. [Public mods and source](https://github.com/Squ1ggs/Bl4SDKmods) |
 | **Azzarock, Frag Em All, Tobgun1, Crayons82.0** | Testing, feedback, item data, and community reports that caught real breakage. |
 | **Everyone else** | Item-code authors and players who published lists, filed bugs, and shared serials — a lot of this only works because of public community work. |
+
+Credit distinguishes discoveries, implementations, and interface inspiration. Evidence and maintainer-supplied history are recorded in [Attribution review](docs/ATTRIBUTION_REVIEW_2026-09-30.md).
 
 Third-party notices and license details for bundled/adapted pieces: [docs/THIRD_PARTY_NOTICES.md](docs/THIRD_PARTY_NOTICES.md).
 
