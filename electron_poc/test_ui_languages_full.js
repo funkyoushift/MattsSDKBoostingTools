@@ -1,10 +1,11 @@
 const assert=require('node:assert/strict'),path=require('node:path'),fs=require('node:fs');const {app,BrowserWindow}=require('electron');
 app.disableHardwareAcceleration();app.on('window-all-closed',()=>{});
 const locales=['en','es','fr','pt-BR','de','nl','en-AU'];
+const desktopRoot=process.env.MSBT_UI_TEST_ROOT||__dirname;
 app.whenReady().then(async()=>{
  for(const file of ['renderer.html','../mobile_controller/app/src/main/assets/index.html']){
   const win=new BrowserWindow({show:false,width:1200,height:900,webPreferences:{partition:'language-'+Math.random(),backgroundThrottling:false}});
-  await win.loadFile(path.join(__dirname,file),{query:{nosplash:'1'}});
+  await win.loadFile(path.join(file==='renderer.html'?desktopRoot:__dirname,file),{query:{nosplash:'1'}});
   const count=await win.webContents.executeJavaScript(`Object.keys(window.MsbtLanguageCatalog).length`);assert.ok(count>2000);
   for(const locale of locales){
    const result=await win.webContents.executeJavaScript(`(async()=>{
