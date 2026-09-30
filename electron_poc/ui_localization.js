@@ -29,7 +29,7 @@
   });
   function translated(source){
     if(Object.hasOwn(catalog,source))return lookup(source);
-    for(const [pattern,values]of countFormats){const match=source.match(pattern);if(match)return values[window.msbtI18n.locales.indexOf(language())].replace(/\{(\d+)\}/g,(_,i)=>lookup(match[Number(i)]));}
+    for(const [pattern,values]of countFormats){const match=source.match(pattern);if(match)return (values[window.msbtI18n.locales.indexOf(language())]||values[0]).replace(/\{(\d+)\}/g,(_,i)=>lookup(match[Number(i)]));}
     for(const template of templates){const match=source.match(template.pattern);if(match){const values={};template.indices.forEach((id,i)=>{values[id]=match[i+1];});return lookup(template.key).replace(/\{(\d+)\}/g,(_,id)=>values[id]);}}
     return source;
   }

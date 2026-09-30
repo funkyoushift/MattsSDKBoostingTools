@@ -34,7 +34,16 @@
     counts: ['Guest joins: {session} this session · {lifetime} lifetime','Entradas: {session} en esta sesión · {lifetime} en total','Arrivées : {session} cette session · {lifetime} au total','Entradas: {session} nesta sessão · {lifetime} no total',"Gastbeitritte: {session} in dieser Sitzung · {lifetime} insgesamt","Deelnames: {session} deze sessie · {lifetime} in totaal"],
     unavailable: ['unavailable','no disponible','indisponible','indisponível',"nicht verfügbar","niet beschikbaar"]
   };
-  const locales = ['en','es','fr','pt-BR','de','nl'];
+  const locales = ['en','es','fr','pt-BR','de','nl','en-AU'];
+  // Reuse the reviewed terminology in both explicit AFK labels and general UI text.
+  // Named substitutions (session/lifetime) keep their original values.
+  for (const values of Object.values(rows)) {
+    const reviewed=window.MsbtLanguageCatalog?.[values[0]];
+    if(window.MsbtReviewedLanguageKeys?.includes(values[0])) {
+      for(let i=1;i<6;i++)if(reviewed?.[locales[i]])values[i]=reviewed[locales[i]];
+    }
+    values.push(reviewed?.['en-AU']||values[0]);
+  }
   const storageKey = 'msbt.ui.language.v1';
   let language = 'en';
   try { const saved = localStorage.getItem(storageKey); if(locales.includes(saved))language=saved; } catch {}

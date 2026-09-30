@@ -1,0 +1,3880 @@
+[
+  {
+    "keys": [
+      "Max All",
+      "MAX ALL",
+      "max all",
+      "QUICK MAX"
+    ],
+    "translations": {
+      "es": "Llevar todo al máximo",
+      "fr": "Tout augmenter au maximum",
+      "pt-BR": "Aumentar tudo ao máximo",
+      "de": "Alles maximieren",
+      "nl": "Alles maximaliseren"
+    }
+  },
+  {
+    "keys": [
+      "Max Cash",
+      "MAX CASH",
+      "Max cash"
+    ],
+    "translations": {
+      "es": "Dinero al máximo",
+      "fr": "Argent au maximum",
+      "pt-BR": "Dinheiro no máximo",
+      "de": "Geld maximieren",
+      "nl": "Geld maximaliseren"
+    }
+  },
+  {
+    "keys": [
+      "Max Player Level",
+      "Max Character Level",
+      "MAX PLAYER"
+    ],
+    "translations": {
+      "es": "Subir al nivel máximo",
+      "fr": "Passer au niveau maximal",
+      "pt-BR": "Subir ao nível máximo",
+      "de": "Auf Höchstlevel setzen",
+      "nl": "Op het hoogste niveau instellen"
+    }
+  },
+  {
+    "keys": [
+      "Max Player 70"
+    ],
+    "translations": {
+      "es": "Subir al nivel 70",
+      "fr": "Passer au niveau 70",
+      "pt-BR": "Subir ao nível 70",
+      "de": "Auf Level 70 setzen",
+      "nl": "Op niveau 70 instellen"
+    }
+  },
+  {
+    "keys": [
+      "Max level"
+    ],
+    "translations": {
+      "es": "Nivel al máximo",
+      "fr": "Niveau au maximum",
+      "pt-BR": "Nível no máximo",
+      "de": "Level maximieren",
+      "nl": "Niveau maximaliseren"
+    }
+  },
+  {
+    "keys": [
+      "Max Spec 701",
+      "Set Spec 701"
+    ],
+    "translations": {
+      "es": "Especialización al rango 701",
+      "fr": "Spécialisation au rang 701",
+      "pt-BR": "Especialização no grau 701",
+      "de": "Spezialisierung auf Rang 701 setzen",
+      "nl": "Specialisatie op rang 701 instellen"
+    }
+  },
+  {
+    "keys": [
+      "MAX SPEC",
+      "Max Specialization Level",
+      "Max specialization",
+      "Max specialization rank"
+    ],
+    "translations": {
+      "es": "Especialización al máximo",
+      "fr": "Spécialisation au maximum",
+      "pt-BR": "Especialização no máximo",
+      "de": "Spezialisierung maximieren",
+      "nl": "Specialisatie maximaliseren"
+    }
+  },
+  {
+    "keys": [
+      "Max Eridium",
+      "MAX ERIDIUM"
+    ],
+    "translations": {
+      "es": "Eridio al máximo",
+      "fr": "Éridium au maximum",
+      "pt-BR": "Erídio no máximo",
+      "de": "Eridium maximieren",
+      "nl": "Eridium maximaliseren"
+    }
+  },
+  {
+    "keys": [
+      "Max SDU",
+      "MAX SDU"
+    ],
+    "translations": {
+      "es": "SDU al máximo",
+      "fr": "SDU au maximum",
+      "pt-BR": "SDUs no máximo",
+      "de": "SDUs maximieren",
+      "nl": "SDU’s maximaliseren"
+    }
+  },
+  {
+    "keys": [
+      "Max SDUs · 3,225"
+    ],
+    "translations": {
+      "es": "SDU al máximo · 3225",
+      "fr": "SDU au maximum · 3225",
+      "pt-BR": "SDUs no máximo · 3225",
+      "de": "SDUs maximieren · 3225",
+      "nl": "SDU’s maximaliseren · 3225"
+    }
+  },
+  {
+    "keys": [
+      "Max keys"
+    ],
+    "translations": {
+      "es": "Llaves al máximo",
+      "fr": "Clés au maximum",
+      "pt-BR": "Chaves no máximo",
+      "de": "Schlüssel maximieren",
+      "nl": "Sleutels maximaliseren"
+    }
+  },
+  {
+    "keys": [
+      "Max Step Height"
+    ],
+    "translations": {
+      "es": "Altura máxima de escalón",
+      "fr": "Hauteur maximale des marches",
+      "pt-BR": "Altura máxima de degrau",
+      "de": "Maximale Stufenhöhe",
+      "nl": "Maximale opstaphoogte"
+    }
+  },
+  {
+    "keys": [
+      "Repair Kit Max Charges"
+    ],
+    "translations": {
+      "es": "Cargas máximas del kit de reparación",
+      "fr": "Charges maximales du kit de réparation",
+      "pt-BR": "Cargas máximas do kit de reparo",
+      "de": "Maximale Reparaturkit-Ladungen",
+      "nl": "Maximaal aantal reparatiesetladingen"
+    }
+  },
+  {
+    "keys": [
+      "Max {0} waves on the phone editor."
+    ],
+    "translations": {
+      "es": "El editor del móvil admite hasta {0} oleadas.",
+      "fr": "L’éditeur mobile accepte au maximum {0} vagues.",
+      "pt-BR": "O editor no celular aceita até {0} ondas.",
+      "de": "Im mobilen Editor sind höchstens {0} Wellen möglich.",
+      "nl": "De mobiele editor ondersteunt maximaal {0} golven."
+    }
+  },
+  {
+    "keys": [
+      "Apply"
+    ],
+    "translations": {
+      "es": "Aplicar",
+      "fr": "Appliquer",
+      "pt-BR": "Aplicar",
+      "de": "Anwenden",
+      "nl": "Toepassen"
+    }
+  },
+  {
+    "keys": [
+      "Apply Now"
+    ],
+    "translations": {
+      "es": "Aplicar ahora",
+      "fr": "Appliquer maintenant",
+      "pt-BR": "Aplicar agora",
+      "de": "Jetzt anwenden",
+      "nl": "Nu toepassen"
+    }
+  },
+  {
+    "keys": [
+      "Apply Once"
+    ],
+    "translations": {
+      "es": "Aplicar una vez",
+      "fr": "Appliquer une fois",
+      "pt-BR": "Aplicar uma vez",
+      "de": "Einmal anwenden",
+      "nl": "Eenmaal toepassen"
+    }
+  },
+  {
+    "keys": [
+      "Apply Saved"
+    ],
+    "translations": {
+      "es": "Aplicar ajustes guardados",
+      "fr": "Appliquer les réglages enregistrés",
+      "pt-BR": "Aplicar configurações salvas",
+      "de": "Gespeicherte Einstellungen anwenden",
+      "nl": "Opgeslagen instellingen toepassen"
+    }
+  },
+  {
+    "keys": [
+      "Apply is what counts"
+    ],
+    "translations": {
+      "es": "Pulsa Aplicar para activar los cambios",
+      "fr": "Cliquez sur Appliquer pour activer les modifications",
+      "pt-BR": "Clique em Aplicar para ativar as alterações",
+      "de": "Änderungen mit „Anwenden“ aktivieren",
+      "nl": "Klik op Toepassen om wijzigingen te activeren"
+    }
+  },
+  {
+    "keys": [
+      "Apply All Party",
+      "Apply to All Party"
+    ],
+    "translations": {
+      "es": "Aplicar a todos los jugadores del grupo",
+      "fr": "Appliquer à tous les joueurs du groupe",
+      "pt-BR": "Aplicar a todos os jogadores do grupo",
+      "de": "Auf alle Gruppenmitglieder anwenden",
+      "nl": "Op alle groepsleden toepassen"
+    }
+  },
+  {
+    "keys": [
+      "Apply to Target"
+    ],
+    "translations": {
+      "es": "Aplicar al jugador objetivo",
+      "fr": "Appliquer au joueur ciblé",
+      "pt-BR": "Aplicar ao jogador-alvo",
+      "de": "Auf den Zielspieler anwenden",
+      "nl": "Op de doelspeler toepassen"
+    }
+  },
+  {
+    "keys": [
+      "Apply Scope",
+      "Scope",
+      "Boost scope"
+    ],
+    "translations": {
+      "es": "Jugadores afectados",
+      "fr": "Joueurs concernés",
+      "pt-BR": "Jogadores afetados",
+      "de": "Betroffene Spieler",
+      "nl": "Betrokken spelers"
+    }
+  },
+  {
+    "keys": [
+      "Connection & Scope",
+      "Connection & scope"
+    ],
+    "translations": {
+      "es": "Conexión y jugadores afectados",
+      "fr": "Connexion et joueurs concernés",
+      "pt-BR": "Conexão e jogadores afetados",
+      "de": "Verbindung und betroffene Spieler",
+      "nl": "Verbinding en betrokken spelers"
+    }
+  },
+  {
+    "keys": [
+      "Set for Scope"
+    ],
+    "translations": {
+      "es": "Aplicar a los jugadores elegidos",
+      "fr": "Appliquer aux joueurs choisis",
+      "pt-BR": "Aplicar aos jogadores escolhidos",
+      "de": "Auf gewählte Spieler anwenden",
+      "nl": "Op gekozen spelers toepassen"
+    }
+  },
+  {
+    "keys": [
+      "Players & action scope"
+    ],
+    "translations": {
+      "es": "Jugadores y alcance de las acciones",
+      "fr": "Joueurs et portée des actions",
+      "pt-BR": "Jogadores e alcance das ações",
+      "de": "Spieler und Geltungsbereich der Aktionen",
+      "nl": "Spelers en bereik van acties"
+    }
+  },
+  {
+    "keys": [
+      "Boost",
+      "Boosting"
+    ],
+    "translations": {
+      "es": "Mejoras de personaje",
+      "fr": "Améliorations du personnage",
+      "pt-BR": "Melhorias do personagem",
+      "de": "Charakterverbesserungen",
+      "nl": "Personageverbeteringen"
+    }
+  },
+  {
+    "keys": [
+      "Character & Boosting"
+    ],
+    "translations": {
+      "es": "Personaje y mejoras",
+      "fr": "Personnage et améliorations",
+      "pt-BR": "Personagem e melhorias",
+      "de": "Charakter und Verbesserungen",
+      "nl": "Personage en verbeteringen"
+    }
+  },
+  {
+    "keys": [
+      "AFK Boost Lobby"
+    ],
+    "translations": {
+      "es": "Sala AFK de mejoras automáticas",
+      "fr": "Salon AFK d’améliorations automatiques",
+      "pt-BR": "Sala AFK de melhorias automáticas",
+      "de": "AFK-Lobby für automatische Verbesserungen",
+      "nl": "AFK-lobby voor automatische verbeteringen"
+    }
+  },
+  {
+    "keys": [
+      "Boosting Result"
+    ],
+    "translations": {
+      "es": "Resultado de las mejoras",
+      "fr": "Résultat des améliorations",
+      "pt-BR": "Resultado das melhorias",
+      "de": "Ergebnis der Charakterverbesserungen",
+      "nl": "Resultaat van de personageverbeteringen"
+    }
+  },
+  {
+    "keys": [
+      "Boosts and loot settings"
+    ],
+    "translations": {
+      "es": "Ajustes de mejoras y botín",
+      "fr": "Réglages des améliorations et du butin",
+      "pt-BR": "Configurações de melhorias e itens",
+      "de": "Einstellungen für Verbesserungen und Beute",
+      "nl": "Instellingen voor verbeteringen en buit"
+    }
+  },
+  {
+    "keys": [
+      "Boost scope: Local"
+    ],
+    "translations": {
+      "es": "Mejoras para: jugador local",
+      "fr": "Améliorations pour : joueur local",
+      "pt-BR": "Melhorias para: jogador local",
+      "de": "Verbesserungen für: lokalen Spieler",
+      "nl": "Verbeteringen voor: lokale speler"
+    }
+  },
+  {
+    "keys": [
+      "Party & Combat",
+      "Party & gameplay"
+    ],
+    "translations": {
+      "es": "Grupo y combate",
+      "fr": "Groupe et combat",
+      "pt-BR": "Grupo e combate",
+      "de": "Gruppe und Kampf",
+      "nl": "Groep en gevechten"
+    }
+  },
+  {
+    "keys": [
+      "Party & Chaos"
+    ],
+    "translations": {
+      "es": "Grupo y caos",
+      "fr": "Groupe et chaos",
+      "pt-BR": "Grupo e caos",
+      "de": "Gruppe und Chaos",
+      "nl": "Groep en chaos"
+    }
+  },
+  {
+    "keys": [
+      "Party player"
+    ],
+    "translations": {
+      "es": "Jugador del grupo",
+      "fr": "Joueur du groupe",
+      "pt-BR": "Jogador do grupo",
+      "de": "Gruppenmitglied",
+      "nl": "Groepslid"
+    }
+  },
+  {
+    "keys": [
+      "Other party member",
+      "other party member"
+    ],
+    "translations": {
+      "es": "Otro jugador del grupo",
+      "fr": "Autre joueur du groupe",
+      "pt-BR": "Outro jogador do grupo",
+      "de": "Anderes Gruppenmitglied",
+      "nl": "Ander groepslid"
+    }
+  },
+  {
+    "keys": [
+      "Choose party target"
+    ],
+    "translations": {
+      "es": "Elegir jugador del grupo",
+      "fr": "Choisir un joueur du groupe",
+      "pt-BR": "Escolher jogador do grupo",
+      "de": "Gruppenmitglied wählen",
+      "nl": "Groepslid kiezen"
+    }
+  },
+  {
+    "keys": [
+      "Attack Party"
+    ],
+    "translations": {
+      "es": "Atacar a los jugadores del grupo",
+      "fr": "Attaquer les joueurs du groupe",
+      "pt-BR": "Atacar os jogadores do grupo",
+      "de": "Gruppenmitglieder angreifen",
+      "nl": "Groepsleden aanvallen"
+    }
+  },
+  {
+    "keys": [
+      "Attack Me"
+    ],
+    "translations": {
+      "es": "Atacarme",
+      "fr": "M’attaquer",
+      "pt-BR": "Atacar a mim",
+      "de": "Mich angreifen",
+      "nl": "Mij aanvallen"
+    }
+  },
+  {
+    "keys": [
+      "Party Reveal Map"
+    ],
+    "translations": {
+      "es": "Revelar el mapa para el grupo",
+      "fr": "Révéler la carte pour le groupe",
+      "pt-BR": "Revelar o mapa para o grupo",
+      "de": "Karte für die Gruppe aufdecken",
+      "nl": "Kaart voor de groep onthullen"
+    }
+  },
+  {
+    "keys": [
+      "Abort Party Reveal"
+    ],
+    "translations": {
+      "es": "Detener la revelación del mapa del grupo",
+      "fr": "Arrêter la révélation de la carte du groupe",
+      "pt-BR": "Parar a revelação do mapa do grupo",
+      "de": "Kartenaufdeckung für die Gruppe abbrechen",
+      "nl": "Onthullen van de groepskaart stoppen"
+    }
+  },
+  {
+    "keys": [
+      "Teleport party"
+    ],
+    "translations": {
+      "es": "Teletransportar al grupo",
+      "fr": "Téléporter le groupe",
+      "pt-BR": "Teletransportar o grupo",
+      "de": "Gruppe teleportieren",
+      "nl": "Groep teleporteren"
+    }
+  },
+  {
+    "keys": [
+      "Teleport Target → Party"
+    ],
+    "translations": {
+      "es": "Teletransportar al objetivo hacia el grupo",
+      "fr": "Téléporter la cible vers le groupe",
+      "pt-BR": "Teletransportar o alvo até o grupo",
+      "de": "Ziel zur Gruppe teleportieren",
+      "nl": "Doel naar de groep teleporteren"
+    }
+  },
+  {
+    "keys": [
+      "Kick Player"
+    ],
+    "translations": {
+      "es": "Expulsar al jugador",
+      "fr": "Expulser le joueur",
+      "pt-BR": "Expulsar jogador",
+      "de": "Spieler aus der Lobby entfernen",
+      "nl": "Speler uit de lobby verwijderen"
+    }
+  },
+  {
+    "keys": [
+      "Kick after delivery finishes"
+    ],
+    "translations": {
+      "es": "Expulsar al finalizar la entrega",
+      "fr": "Expulser après la livraison",
+      "pt-BR": "Expulsar após a entrega",
+      "de": "Nach der Lieferung aus der Lobby entfernen",
+      "nl": "Na levering uit de lobby verwijderen"
+    }
+  },
+  {
+    "keys": [
+      "Optional auto-kick"
+    ],
+    "translations": {
+      "es": "Expulsión automática opcional",
+      "fr": "Expulsion automatique facultative",
+      "pt-BR": "Expulsão automática opcional",
+      "de": "Optionales automatisches Entfernen",
+      "nl": "Optioneel automatisch verwijderen"
+    }
+  },
+  {
+    "keys": [
+      "Auto-kick when boosts finish (15-second wait after loot)"
+    ],
+    "translations": {
+      "es": "Expulsar al terminar las mejoras (esperar 15 s tras el botín)",
+      "fr": "Expulser après les améliorations (attente de 15 s après le butin)",
+      "pt-BR": "Expulsar após as melhorias (espera de 15 s após os itens)",
+      "de": "Nach den Verbesserungen entfernen (15 s Wartezeit nach Beute)",
+      "nl": "Na de verbeteringen verwijderen (15 s wachten na buit)"
+    }
+  },
+  {
+    "keys": [
+      "Named Player",
+      "Named player",
+      "named player"
+    ],
+    "translations": {
+      "es": "Jugador elegido",
+      "fr": "Joueur choisi",
+      "pt-BR": "Jogador escolhido",
+      "de": "Gewählter Spieler",
+      "nl": "Gekozen speler"
+    }
+  },
+  {
+    "keys": [
+      "Named player: none"
+    ],
+    "translations": {
+      "es": "Jugador elegido: ninguno",
+      "fr": "Joueur choisi : aucun",
+      "pt-BR": "Jogador escolhido: nenhum",
+      "de": "Gewählter Spieler: keiner",
+      "nl": "Gekozen speler: geen"
+    }
+  },
+  {
+    "keys": [
+      "Discover community drop lists"
+    ],
+    "translations": {
+      "es": "Explorar listas de objetos de la comunidad",
+      "fr": "Découvrir les listes d’objets de la communauté",
+      "pt-BR": "Explorar listas de itens da comunidade",
+      "de": "Gegenstandslisten der Community entdecken",
+      "nl": "Voorwerplijsten van de community ontdekken"
+    }
+  },
+  {
+    "keys": [
+      "Dedicated drop"
+    ],
+    "translations": {
+      "es": "Botín exclusivo de una fuente",
+      "fr": "Butin propre à une source",
+      "pt-BR": "Item exclusivo de uma fonte",
+      "de": "Quellenspezifische Beute",
+      "nl": "Buit uit een specifieke bron"
+    }
+  },
+  {
+    "keys": [
+      "Last drop: {0}"
+    ],
+    "translations": {
+      "es": "Última entrega: {0}",
+      "fr": "Dernière distribution : {0}",
+      "pt-BR": "Última entrega: {0}",
+      "de": "Letzte Gegenstandsausgabe: {0}",
+      "nl": "Laatste uitgifte: {0}"
+    }
+  },
+  {
+    "keys": [
+      "Repeat Last Drop"
+    ],
+    "translations": {
+      "es": "Repetir la última entrega",
+      "fr": "Répéter la dernière distribution",
+      "pt-BR": "Repetir a última entrega",
+      "de": "Letzte Gegenstandsausgabe wiederholen",
+      "nl": "Laatste uitgifte herhalen"
+    }
+  },
+  {
+    "keys": [
+      "Repeating last drop..."
+    ],
+    "translations": {
+      "es": "Repitiendo la última entrega...",
+      "fr": "Répétition de la dernière distribution...",
+      "pt-BR": "Repetindo a última entrega...",
+      "de": "Letzte Gegenstandsausgabe wird wiederholt...",
+      "nl": "Laatste uitgifte wordt herhaald..."
+    }
+  },
+  {
+    "keys": [
+      "Drop All Backpack (Host)"
+    ],
+    "translations": {
+      "es": "Soltar todos los objetos de la mochila del anfitrión",
+      "fr": "Déposer tous les objets du sac à dos de l’hôte",
+      "pt-BR": "Largar todos os itens da mochila do anfitrião",
+      "de": "Alle Rucksackgegenstände des Hosts fallen lassen",
+      "nl": "Alle rugzakvoorwerpen van de host laten vallen"
+    }
+  },
+  {
+    "keys": [
+      "Drop All Backpack (Target Scope)"
+    ],
+    "translations": {
+      "es": "Soltar los objetos de las mochilas elegidas",
+      "fr": "Déposer les objets des sacs à dos ciblés",
+      "pt-BR": "Largar os itens das mochilas selecionadas",
+      "de": "Gegenstände der gewählten Rucksäcke fallen lassen",
+      "nl": "Voorwerpen uit gekozen rugzakken laten vallen"
+    }
+  },
+  {
+    "keys": [
+      "Ground Loot"
+    ],
+    "translations": {
+      "es": "Botín en el suelo",
+      "fr": "Butin au sol",
+      "pt-BR": "Itens no chão",
+      "de": "Beute am Boden",
+      "nl": "Buit op de grond"
+    }
+  },
+  {
+    "keys": [
+      "Ground Loot & Vendors"
+    ],
+    "translations": {
+      "es": "Botín en el suelo y vendedores",
+      "fr": "Butin au sol et marchands",
+      "pt-BR": "Itens no chão e vendedores",
+      "de": "Bodenbeute und Händler",
+      "nl": "Grondbuit en handelaren"
+    }
+  },
+  {
+    "keys": [
+      "Loot & Vendors"
+    ],
+    "translations": {
+      "es": "Botín y vendedores",
+      "fr": "Butin et marchands",
+      "pt-BR": "Itens e vendedores",
+      "de": "Beute und Händler",
+      "nl": "Buit en handelaren"
+    }
+  },
+  {
+    "keys": [
+      "Loot amount per guest"
+    ],
+    "translations": {
+      "es": "Cantidad de objetos por invitado",
+      "fr": "Nombre d’objets par invité",
+      "pt-BR": "Quantidade de itens por convidado",
+      "de": "Anzahl Gegenstände pro Gast",
+      "nl": "Aantal voorwerpen per gast"
+    }
+  },
+  {
+    "keys": [
+      "Pull Loot",
+      "Pull Loot Here"
+    ],
+    "translations": {
+      "es": "Traer el botín aquí",
+      "fr": "Amener le butin ici",
+      "pt-BR": "Trazer os itens para cá",
+      "de": "Beute hierher holen",
+      "nl": "Buit hierheen halen"
+    }
+  },
+  {
+    "keys": [
+      "Cleanup loot between waves"
+    ],
+    "translations": {
+      "es": "Retirar el botín entre oleadas",
+      "fr": "Retirer le butin entre les vagues",
+      "pt-BR": "Remover os itens entre as ondas",
+      "de": "Beute zwischen den Wellen entfernen",
+      "nl": "Buit tussen golven verwijderen"
+    }
+  },
+  {
+    "keys": [
+      "Hide Ground Loot"
+    ],
+    "translations": {
+      "es": "Ocultar el botín en el suelo",
+      "fr": "Masquer le butin au sol",
+      "pt-BR": "Ocultar os itens no chão",
+      "de": "Bodenbeute ausblenden",
+      "nl": "Grondbuit verbergen"
+    }
+  },
+  {
+    "keys": [
+      "Legit",
+      "Legit (game-standard)"
+    ],
+    "translations": {
+      "es": "Conforme a las reglas del juego",
+      "fr": "Conforme aux règles du jeu",
+      "pt-BR": "Dentro das regras do jogo",
+      "de": "Nach Spielregeln gültig",
+      "nl": "Volgens de spelregels geldig"
+    }
+  },
+  {
+    "keys": [
+      "Legit items"
+    ],
+    "translations": {
+      "es": "Objetos conformes a las reglas del juego",
+      "fr": "Objets conformes aux règles du jeu",
+      "pt-BR": "Itens dentro das regras do jogo",
+      "de": "Nach Spielregeln gültige Gegenstände",
+      "nl": "Voorwerpen volgens de spelregels"
+    }
+  },
+  {
+    "keys": [
+      "Legit or modded",
+      "Legit or modded catalog"
+    ],
+    "translations": {
+      "es": "Objetos normales o modificados",
+      "fr": "Objets standard ou modifiés",
+      "pt-BR": "Itens normais ou modificados",
+      "de": "Reguläre oder modifizierte Gegenstände",
+      "nl": "Standaard of aangepaste voorwerpen"
+    }
+  },
+  {
+    "keys": [
+      "Modded",
+      "Modded / non-legit",
+      "Modded / non-legit gear"
+    ],
+    "translations": {
+      "es": "Objetos modificados",
+      "fr": "Objets modifiés",
+      "pt-BR": "Itens modificados",
+      "de": "Modifizierte Gegenstände",
+      "nl": "Aangepaste voorwerpen"
+    }
+  },
+  {
+    "keys": [
+      "Non-obtainable"
+    ],
+    "translations": {
+      "es": "No obtenible en el juego normal",
+      "fr": "Impossible à obtenir en jeu normal",
+      "pt-BR": "Não obtido no jogo normal",
+      "de": "Im regulären Spiel nicht erhältlich",
+      "nl": "Niet verkrijgbaar in het normale spel"
+    }
+  },
+  {
+    "keys": [
+      "Item Pool",
+      "item pool",
+      "loot pool"
+    ],
+    "translations": {
+      "es": "Conjunto de botín posible",
+      "fr": "Ensemble de butin possible",
+      "pt-BR": "Conjunto de itens possíveis",
+      "de": "Auswahl möglicher Beute",
+      "nl": "Verzameling mogelijke buit"
+    }
+  },
+  {
+    "keys": [
+      "Item Pools",
+      "Pools"
+    ],
+    "translations": {
+      "es": "Conjuntos de botín posible",
+      "fr": "Ensembles de butin possible",
+      "pt-BR": "Conjuntos de itens possíveis",
+      "de": "Beutesammlungen",
+      "nl": "Buitverzamelingen"
+    }
+  },
+  {
+    "keys": [
+      "Random Loot Pools"
+    ],
+    "translations": {
+      "es": "Conjuntos de botín aleatorio",
+      "fr": "Ensembles de butin aléatoire",
+      "pt-BR": "Conjuntos de itens aleatórios",
+      "de": "Zufällige Beutesammlungen",
+      "nl": "Willekeurige buitverzamelingen"
+    }
+  },
+  {
+    "keys": [
+      "Spawn",
+      "Spawn in"
+    ],
+    "translations": {
+      "es": "Generar en el juego",
+      "fr": "Faire apparaître en jeu",
+      "pt-BR": "Gerar no jogo",
+      "de": "Im Spiel erzeugen",
+      "nl": "In het spel laten verschijnen"
+    }
+  },
+  {
+    "keys": [
+      "Spawn Actor"
+    ],
+    "translations": {
+      "es": "Generar entidad del juego",
+      "fr": "Faire apparaître une entité du jeu",
+      "pt-BR": "Gerar entidade do jogo",
+      "de": "Spielobjekt erzeugen",
+      "nl": "Spelobject laten verschijnen"
+    }
+  },
+  {
+    "keys": [
+      "Actor"
+    ],
+    "translations": {
+      "es": "Entidad del juego",
+      "fr": "Entité du jeu",
+      "pt-BR": "Entidade do jogo",
+      "de": "Spielobjekt",
+      "nl": "Spelobject"
+    }
+  },
+  {
+    "keys": [
+      "Actor browser",
+      "ACTOR BROWSER"
+    ],
+    "translations": {
+      "es": "Explorador de entidades del juego",
+      "fr": "Explorateur d’entités du jeu",
+      "pt-BR": "Explorador de entidades do jogo",
+      "de": "Spielobjektbrowser",
+      "nl": "Spelobjecten verkennen"
+    }
+  },
+  {
+    "keys": [
+      "Actor Details",
+      "Selected actor details"
+    ],
+    "translations": {
+      "es": "Detalles de la entidad",
+      "fr": "Détails de l’entité",
+      "pt-BR": "Detalhes da entidade",
+      "de": "Spielobjektdetails",
+      "nl": "Spelobjectgegevens"
+    }
+  },
+  {
+    "keys": [
+      "Spawn Selected Actor"
+    ],
+    "translations": {
+      "es": "Generar entidad seleccionada",
+      "fr": "Faire apparaître l’entité sélectionnée",
+      "pt-BR": "Gerar entidade selecionada",
+      "de": "Gewähltes Spielobjekt erzeugen",
+      "nl": "Geselecteerd spelobject laten verschijnen"
+    }
+  },
+  {
+    "keys": [
+      "Spawn Item Pool",
+      "Spawn from pool",
+      "SPAWN FROM POOL"
+    ],
+    "translations": {
+      "es": "Generar objetos de un conjunto de botín",
+      "fr": "Générer des objets d’un ensemble de butin",
+      "pt-BR": "Gerar itens de um conjunto de itens possíveis",
+      "de": "Gegenstände aus einer Beutesammlung erzeugen",
+      "nl": "Voorwerpen uit een buitverzameling genereren"
+    }
+  },
+  {
+    "keys": [
+      "Spawn Leg/Epic Loot",
+      "Spawn Legendary/Epic Loot"
+    ],
+    "translations": {
+      "es": "Generar botín legendario o épico",
+      "fr": "Générer du butin légendaire ou épique",
+      "pt-BR": "Gerar itens lendários ou épicos",
+      "de": "Legendäre oder epische Beute erzeugen",
+      "nl": "Legendarische of epische buit genereren"
+    }
+  },
+  {
+    "keys": [
+      "Spawn Selected"
+    ],
+    "translations": {
+      "es": "Generar selección en el juego",
+      "fr": "Faire apparaître la sélection en jeu",
+      "pt-BR": "Gerar seleção no jogo",
+      "de": "Auswahl im Spiel erzeugen",
+      "nl": "Selectie in het spel laten verschijnen"
+    }
+  },
+  {
+    "keys": [
+      "Spawn Selected Pool"
+    ],
+    "translations": {
+      "es": "Generar botín del conjunto elegido",
+      "fr": "Générer du butin de l’ensemble choisi",
+      "pt-BR": "Gerar itens do conjunto escolhido",
+      "de": "Beute aus gewählter Sammlung erzeugen",
+      "nl": "Buit uit de gekozen verzameling genereren"
+    }
+  },
+  {
+    "keys": [
+      "Spawn All Filtered"
+    ],
+    "translations": {
+      "es": "Generar todos los resultados del filtro",
+      "fr": "Faire apparaître tous les résultats du filtre",
+      "pt-BR": "Gerar todos os resultados do filtro",
+      "de": "Alle gefilterten Ergebnisse erzeugen",
+      "nl": "Alle gefilterde resultaten laten verschijnen"
+    }
+  },
+  {
+    "keys": [
+      "Spawn {0}"
+    ],
+    "translations": {
+      "es": "Generar {0} en el juego",
+      "fr": "Faire apparaître {0} en jeu",
+      "pt-BR": "Gerar {0} no jogo",
+      "de": "{0} im Spiel erzeugen",
+      "nl": "{0} in het spel laten verschijnen"
+    }
+  },
+  {
+    "keys": [
+      "Spawn near"
+    ],
+    "translations": {
+      "es": "Generar cerca de",
+      "fr": "Faire apparaître près de",
+      "pt-BR": "Gerar perto de",
+      "de": "Erzeugen in der Nähe von",
+      "nl": "Laten verschijnen bij"
+    }
+  },
+  {
+    "keys": [
+      "Spawn near you"
+    ],
+    "translations": {
+      "es": "Generar cerca de ti",
+      "fr": "Faire apparaître près de vous",
+      "pt-BR": "Gerar perto de você",
+      "de": "In deiner Nähe erzeugen",
+      "nl": "Bij jou laten verschijnen"
+    }
+  },
+  {
+    "keys": [
+      "Spawn points"
+    ],
+    "translations": {
+      "es": "Puntos de aparición",
+      "fr": "Points d’apparition",
+      "pt-BR": "Pontos de surgimento",
+      "de": "Spawnpunkte",
+      "nl": "Spawnpunten"
+    }
+  },
+  {
+    "keys": [
+      "Spawn distance"
+    ],
+    "translations": {
+      "es": "Distancia de aparición",
+      "fr": "Distance d’apparition",
+      "pt-BR": "Distância de surgimento",
+      "de": "Spawnentfernung",
+      "nl": "Spawnafstand"
+    }
+  },
+  {
+    "keys": [
+      "Spawn Anchor"
+    ],
+    "translations": {
+      "es": "Punto de referencia de aparición",
+      "fr": "Point de référence d’apparition",
+      "pt-BR": "Referência de surgimento",
+      "de": "Bezugspunkt für Spawns",
+      "nl": "Referentiepunt voor spawns"
+    }
+  },
+  {
+    "keys": [
+      "Harvest Spawn Points"
+    ],
+    "translations": {
+      "es": "Recopilar puntos de aparición",
+      "fr": "Recueillir les points d’apparition",
+      "pt-BR": "Coletar pontos de surgimento",
+      "de": "Spawnpunkte erfassen",
+      "nl": "Spawnpunten verzamelen"
+    }
+  },
+  {
+    "keys": [
+      "Harvest here (current map cell)"
+    ],
+    "translations": {
+      "es": "Recopilar aquí (zona actual del mapa)",
+      "fr": "Recueillir ici (zone actuelle de la carte)",
+      "pt-BR": "Coletar aqui (área atual do mapa)",
+      "de": "Hier erfassen (aktueller Kartenbereich)",
+      "nl": "Hier verzamelen (huidig kaartgebied)"
+    }
+  },
+  {
+    "keys": [
+      "Activate Last Spawn"
+    ],
+    "translations": {
+      "es": "Activar la última entidad generada",
+      "fr": "Activer la dernière entité apparue",
+      "pt-BR": "Ativar a última entidade gerada",
+      "de": "Zuletzt erzeugtes Spielobjekt aktivieren",
+      "nl": "Laatst verschenen spelobject activeren"
+    }
+  },
+  {
+    "keys": [
+      "Favorite spawn strip"
+    ],
+    "translations": {
+      "es": "Barra de favoritos de aparición",
+      "fr": "Barre des apparitions favorites",
+      "pt-BR": "Barra de favoritos de surgimento",
+      "de": "Favoritenleiste für Spawns",
+      "nl": "Favorietenbalk voor spawns"
+    }
+  },
+  {
+    "keys": [
+      "Couch raid, boss dump…"
+    ],
+    "translations": {
+      "es": "Incursión cooperativa, grupo de jefes…",
+      "fr": "Raid en coopération, groupe de boss…",
+      "pt-BR": "Incursão cooperativa, grupo de chefes…",
+      "de": "Koop-Raid, Bossgruppe…",
+      "nl": "Coöpraid, groep eindbazen…"
+    }
+  },
+  {
+    "keys": [
+      "Boss ring, trash clear…"
+    ],
+    "translations": {
+      "es": "Círculo de jefes, eliminar enemigos menores…",
+      "fr": "Cercle de boss, élimination des ennemis ordinaires…",
+      "pt-BR": "Círculo de chefes, eliminar inimigos comuns…",
+      "de": "Bossring, normale Gegner beseitigen…",
+      "nl": "Ring van eindbazen, gewone vijanden opruimen…"
+    }
+  },
+  {
+    "keys": [
+      "Hoard",
+      "Hoard Builder"
+    ],
+    "translations": {
+      "es": "Oleadas de enemigos",
+      "fr": "Vagues d’ennemis",
+      "pt-BR": "Ondas de inimigos",
+      "de": "Gegnerwellen",
+      "nl": "Vijandgolven"
+    }
+  },
+  {
+    "keys": [
+      "Hoard Status"
+    ],
+    "translations": {
+      "es": "Estado de las oleadas",
+      "fr": "État des vagues",
+      "pt-BR": "Status das ondas",
+      "de": "Wellenstatus",
+      "nl": "Golfstatus"
+    }
+  },
+  {
+    "keys": [
+      "Hoard wave list"
+    ],
+    "translations": {
+      "es": "Lista de oleadas de enemigos",
+      "fr": "Liste des vagues d’ennemis",
+      "pt-BR": "Lista de ondas de inimigos",
+      "de": "Gegnerwellenliste",
+      "nl": "Lijst met vijandgolven"
+    }
+  },
+  {
+    "keys": [
+      "Start Hoard",
+      "▶ Start Hoard"
+    ],
+    "translations": {
+      "es": "Iniciar oleadas",
+      "fr": "Lancer les vagues",
+      "pt-BR": "Iniciar ondas",
+      "de": "Wellen starten",
+      "nl": "Golven starten"
+    }
+  },
+  {
+    "keys": [
+      "Stop Hoard"
+    ],
+    "translations": {
+      "es": "Detener oleadas",
+      "fr": "Arrêter les vagues",
+      "pt-BR": "Parar ondas",
+      "de": "Wellen stoppen",
+      "nl": "Golven stoppen"
+    }
+  },
+  {
+    "keys": [
+      "Clear Hoard"
+    ],
+    "translations": {
+      "es": "Eliminar enemigos de las oleadas",
+      "fr": "Supprimer les ennemis des vagues",
+      "pt-BR": "Remover inimigos das ondas",
+      "de": "Wellengegner entfernen",
+      "nl": "Vijanden uit golven verwijderen"
+    }
+  },
+  {
+    "keys": [
+      "Five steps to a safe hoard"
+    ],
+    "translations": {
+      "es": "Cinco pasos para preparar oleadas seguras",
+      "fr": "Cinq étapes pour préparer des vagues sûres",
+      "pt-BR": "Cinco passos para preparar ondas seguras",
+      "de": "Fünf Schritte für sichere Gegnerwellen",
+      "nl": "Vijf stappen voor veilige vijandgolven"
+    }
+  },
+  {
+    "keys": [
+      "Aggro",
+      "Aggro Mode",
+      "Aggro behavior"
+    ],
+    "translations": {
+      "es": "Comportamiento de ataque",
+      "fr": "Comportement d’attaque",
+      "pt-BR": "Comportamento de ataque",
+      "de": "Angriffsverhalten",
+      "nl": "Aanvalsgedrag"
+    }
+  },
+  {
+    "keys": [
+      "Re-Aggro Spawned Actors"
+    ],
+    "translations": {
+      "es": "Reactivar el ataque de las entidades generadas",
+      "fr": "Réactiver l’attaque des entités apparues",
+      "pt-BR": "Reativar o ataque das entidades geradas",
+      "de": "Erzeugte Spielobjekte erneut angreifen lassen",
+      "nl": "Verschenen spelobjecten opnieuw laten aanvallen"
+    }
+  },
+  {
+    "keys": [
+      "Bulk Progress"
+    ],
+    "translations": {
+      "es": "Progreso del lote",
+      "fr": "Progression du lot",
+      "pt-BR": "Progresso do lote",
+      "de": "Stapelverarbeitungsfortschritt",
+      "nl": "Voortgang van de batch"
+    }
+  },
+  {
+    "keys": [
+      "Challenge bulk"
+    ],
+    "translations": {
+      "es": "Desafíos en lote",
+      "fr": "Défis par lot",
+      "pt-BR": "Desafios em lote",
+      "de": "Herausforderungen stapelweise",
+      "nl": "Uitdagingen in batches"
+    }
+  },
+  {
+    "keys": [
+      "Item pool bulk"
+    ],
+    "translations": {
+      "es": "Conjuntos de botín en lote",
+      "fr": "Ensembles de butin par lot",
+      "pt-BR": "Conjuntos de itens em lote",
+      "de": "Beutesammlungen stapelweise",
+      "nl": "Buitverzamelingen in batches"
+    }
+  },
+  {
+    "keys": [
+      "Cancel Bulk Spawn"
+    ],
+    "translations": {
+      "es": "Cancelar generación por lotes",
+      "fr": "Annuler les apparitions par lot",
+      "pt-BR": "Cancelar geração em lote",
+      "de": "Stapelerzeugung abbrechen",
+      "nl": "Genereren in batches annuleren"
+    }
+  },
+  {
+    "keys": [
+      "Pin Last Command"
+    ],
+    "translations": {
+      "es": "Añadir la última acción al menú rápido",
+      "fr": "Ajouter la dernière action au menu rapide",
+      "pt-BR": "Adicionar a última ação ao menu rápido",
+      "de": "Letzte Aktion zum Schnellmenü hinzufügen",
+      "nl": "Laatste actie aan snelmenu toevoegen"
+    }
+  },
+  {
+    "keys": [
+      "Pin / Repeat From MSBT"
+    ],
+    "translations": {
+      "es": "Guardar o repetir acciones de MSBT",
+      "fr": "Enregistrer ou répéter des actions de MSBT",
+      "pt-BR": "Salvar ou repetir ações do MSBT",
+      "de": "MSBT-Aktionen speichern oder wiederholen",
+      "nl": "MSBT-acties opslaan of herhalen"
+    }
+  },
+  {
+    "keys": [
+      "Pin and Repeat Commands"
+    ],
+    "translations": {
+      "es": "Guardar y repetir acciones",
+      "fr": "Enregistrer et répéter des actions",
+      "pt-BR": "Salvar e repetir ações",
+      "de": "Aktionen speichern und wiederholen",
+      "nl": "Acties opslaan en herhalen"
+    }
+  },
+  {
+    "keys": [
+      "Pin with + QM"
+    ],
+    "translations": {
+      "es": "Añadir al menú rápido con + QM",
+      "fr": "Ajouter au menu rapide avec + QM",
+      "pt-BR": "Adicionar ao menu rápido com + QM",
+      "de": "Mit + QM zum Schnellmenü hinzufügen",
+      "nl": "Met + QM aan snelmenu toevoegen"
+    }
+  },
+  {
+    "keys": [
+      "+ QM pin"
+    ],
+    "translations": {
+      "es": "+ QM: guardar acceso directo",
+      "fr": "+ QM : enregistrer le raccourci",
+      "pt-BR": "+ QM: salvar atalho",
+      "de": "+ QM: Verknüpfung speichern",
+      "nl": "+ QM: snelkoppeling opslaan"
+    }
+  },
+  {
+    "keys": [
+      "Pin Last Command to Selected Slot"
+    ],
+    "translations": {
+      "es": "Guardar la última acción en la casilla elegida",
+      "fr": "Enregistrer la dernière action dans l’emplacement choisi",
+      "pt-BR": "Salvar a última ação no espaço escolhido",
+      "de": "Letzte Aktion auf gewähltem Platz speichern",
+      "nl": "Laatste actie in gekozen vak opslaan"
+    }
+  },
+  {
+    "keys": [
+      "Pin {0} with the current settings."
+    ],
+    "translations": {
+      "es": "Guardar {0} con los ajustes actuales.",
+      "fr": "Enregistrer {0} avec les réglages actuels.",
+      "pt-BR": "Salvar {0} com as configurações atuais.",
+      "de": "{0} mit den aktuellen Einstellungen speichern.",
+      "nl": "{0} met de huidige instellingen opslaan."
+    }
+  },
+  {
+    "keys": [
+      "Pinned {0} to page {1}, slot {2}."
+    ],
+    "translations": {
+      "es": "Se guardó {0} en la página {1}, casilla {2}.",
+      "fr": "{0} enregistré sur la page {1}, emplacement {2}.",
+      "pt-BR": "{0} salvo na página {1}, espaço {2}.",
+      "de": "{0} auf Seite {1}, Platz {2} gespeichert.",
+      "nl": "{0} op pagina {1}, vak {2} opgeslagen."
+    }
+  },
+  {
+    "keys": [
+      "Pinned {0} to slot {1}."
+    ],
+    "translations": {
+      "es": "Se guardó {0} en la casilla {1}.",
+      "fr": "{0} enregistré dans l’emplacement {1}.",
+      "pt-BR": "{0} salvo no espaço {1}.",
+      "de": "{0} auf Platz {1} gespeichert.",
+      "nl": "{0} in vak {1} opgeslagen."
+    }
+  },
+  {
+    "keys": [
+      "Pinning {0} to page {1}, slot {2}..."
+    ],
+    "translations": {
+      "es": "Guardando {0} en la página {1}, casilla {2}...",
+      "fr": "Enregistrement de {0} sur la page {1}, emplacement {2}...",
+      "pt-BR": "Salvando {0} na página {1}, espaço {2}...",
+      "de": "{0} wird auf Seite {1}, Platz {2} gespeichert...",
+      "nl": "{0} wordt op pagina {1}, vak {2} opgeslagen..."
+    }
+  },
+  {
+    "keys": [
+      "Slot"
+    ],
+    "translations": {
+      "es": "Casilla",
+      "fr": "Emplacement",
+      "pt-BR": "Espaço",
+      "de": "Platz",
+      "nl": "Vak"
+    }
+  },
+  {
+    "keys": [
+      "Selected Slot",
+      "SELECTED SLOT"
+    ],
+    "translations": {
+      "es": "Casilla elegida",
+      "fr": "Emplacement choisi",
+      "pt-BR": "Espaço escolhido",
+      "de": "Gewählter Platz",
+      "nl": "Gekozen vak"
+    }
+  },
+  {
+    "keys": [
+      "Clear Slot"
+    ],
+    "translations": {
+      "es": "Vaciar casilla",
+      "fr": "Vider l’emplacement",
+      "pt-BR": "Limpar espaço",
+      "de": "Platz leeren",
+      "nl": "Vak leegmaken"
+    }
+  },
+  {
+    "keys": [
+      "Slot {0}"
+    ],
+    "translations": {
+      "es": "Casilla {0}",
+      "fr": "Emplacement {0}",
+      "pt-BR": "Espaço {0}",
+      "de": "Platz {0}",
+      "nl": "Vak {0}"
+    }
+  },
+  {
+    "keys": [
+      "Slot {0}{1}"
+    ],
+    "translations": {
+      "es": "Casilla {0}{1}",
+      "fr": "Emplacement {0}{1}",
+      "pt-BR": "Espaço {0}{1}",
+      "de": "Platz {0}{1}",
+      "nl": "Vak {0}{1}"
+    }
+  },
+  {
+    "keys": [
+      "Slot cleared."
+    ],
+    "translations": {
+      "es": "Casilla vaciada.",
+      "fr": "Emplacement vidé.",
+      "pt-BR": "Espaço limpo.",
+      "de": "Platz geleert.",
+      "nl": "Vak leeggemaakt."
+    }
+  },
+  {
+    "keys": [
+      "Pull From Game",
+      "Pull from game to load commands"
+    ],
+    "translations": {
+      "es": "Cargar acciones del juego",
+      "fr": "Charger les actions du jeu",
+      "pt-BR": "Carregar ações do jogo",
+      "de": "Aktionen aus dem Spiel laden",
+      "nl": "Acties uit het spel laden"
+    }
+  },
+  {
+    "keys": [
+      "Pull From Borderlands 4 Modding Tools"
+    ],
+    "translations": {
+      "es": "Cargar desde Borderlands 4 Modding Tools",
+      "fr": "Charger depuis Borderlands 4 Modding Tools",
+      "pt-BR": "Carregar do Borderlands 4 Modding Tools",
+      "de": "Aus Borderlands 4 Modding Tools laden",
+      "nl": "Uit Borderlands 4 Modding Tools laden"
+    }
+  },
+  {
+    "keys": [
+      "Pushing plan…"
+    ],
+    "translations": {
+      "es": "Enviando el plan al juego…",
+      "fr": "Envoi du plan au jeu…",
+      "pt-BR": "Enviando o plano ao jogo…",
+      "de": "Plan wird an das Spiel gesendet…",
+      "nl": "Plan wordt naar het spel gestuurd…"
+    }
+  },
+  {
+    "keys": [
+      "Override Level",
+      "Override level",
+      "Override item level"
+    ],
+    "translations": {
+      "es": "Cambiar el nivel del objeto",
+      "fr": "Changer le niveau de l’objet",
+      "pt-BR": "Alterar o nível do item",
+      "de": "Gegenstandslevel ändern",
+      "nl": "Voorwerpniveau wijzigen"
+    }
+  },
+  {
+    "keys": [
+      "Override delivered item levels"
+    ],
+    "translations": {
+      "es": "Cambiar el nivel de los objetos enviados",
+      "fr": "Changer le niveau des objets envoyés",
+      "pt-BR": "Alterar o nível dos itens enviados",
+      "de": "Level gelieferter Gegenstände ändern",
+      "nl": "Niveau van geleverde voorwerpen wijzigen"
+    }
+  },
+  {
+    "keys": [
+      "Class Override"
+    ],
+    "translations": {
+      "es": "Elegir otra clase",
+      "fr": "Choisir une autre classe",
+      "pt-BR": "Escolher outra classe",
+      "de": "Andere Klasse festlegen",
+      "nl": "Andere klasse kiezen"
+    }
+  },
+  {
+    "keys": [
+      "Serial",
+      "BL4 serial",
+      "@U serial"
+    ],
+    "translations": {
+      "es": "Código de objeto",
+      "fr": "Code d’objet",
+      "pt-BR": "Código de item",
+      "de": "Gegenstandscode",
+      "nl": "Voorwerpcode"
+    }
+  },
+  {
+    "keys": [
+      "@U... or decoded human serial"
+    ],
+    "translations": {
+      "es": "Código @U... o código de objeto decodificado",
+      "fr": "Code @U... ou code d’objet décodé",
+      "pt-BR": "Código @U... ou código de item decodificado",
+      "de": "@U... oder dekodierter Gegenstandscode",
+      "nl": "@U... of gedecodeerde voorwerpcode"
+    }
+  },
+  {
+    "keys": [
+      "Serial Bookmarks",
+      "Serial Marks",
+      "serial bookmarks"
+    ],
+    "translations": {
+      "es": "Códigos de objetos guardados",
+      "fr": "Codes d’objets enregistrés",
+      "pt-BR": "Códigos de itens salvos",
+      "de": "Gespeicherte Gegenstandscodes",
+      "nl": "Opgeslagen voorwerpcodes"
+    }
+  },
+  {
+    "keys": [
+      "Serial Tools",
+      "serial tools"
+    ],
+    "translations": {
+      "es": "Herramientas de códigos de objetos",
+      "fr": "Outils de codes d’objets",
+      "pt-BR": "Ferramentas de códigos de itens",
+      "de": "Werkzeuge für Gegenstandscodes",
+      "nl": "Hulpmiddelen voor voorwerpcodes"
+    }
+  },
+  {
+    "keys": [
+      "Serial Delivery",
+      "Serial delivery",
+      "SERIAL SENDER"
+    ],
+    "translations": {
+      "es": "Entrega mediante códigos de objetos",
+      "fr": "Envoi par codes d’objets",
+      "pt-BR": "Entrega por códigos de itens",
+      "de": "Lieferung per Gegenstandscode",
+      "nl": "Levering via voorwerpcodes"
+    }
+  },
+  {
+    "keys": [
+      "Serial Input"
+    ],
+    "translations": {
+      "es": "Entrada de códigos de objetos",
+      "fr": "Saisie de codes d’objets",
+      "pt-BR": "Entrada de códigos de itens",
+      "de": "Gegenstandscodes eingeben",
+      "nl": "Voorwerpcodes invoeren"
+    }
+  },
+  {
+    "keys": [
+      "Serial Rewards"
+    ],
+    "translations": {
+      "es": "Recompensas mediante códigos de objetos",
+      "fr": "Récompenses par codes d’objets",
+      "pt-BR": "Recompensas por códigos de itens",
+      "de": "Belohnungen per Gegenstandscode",
+      "nl": "Beloningen via voorwerpcodes"
+    }
+  },
+  {
+    "keys": [
+      "Bookmark Serial"
+    ],
+    "translations": {
+      "es": "Guardar código de objeto",
+      "fr": "Enregistrer le code d’objet",
+      "pt-BR": "Salvar código de item",
+      "de": "Gegenstandscode speichern",
+      "nl": "Voorwerpcode opslaan"
+    }
+  },
+  {
+    "keys": [
+      "Bookmark serial"
+    ],
+    "translations": {
+      "es": "Código del objeto guardado",
+      "fr": "Code de l’objet enregistré",
+      "pt-BR": "Código do item salvo",
+      "de": "Code des gespeicherten Gegenstands",
+      "nl": "Code van het opgeslagen voorwerp"
+    }
+  },
+  {
+    "keys": [
+      "Copy Serial"
+    ],
+    "translations": {
+      "es": "Copiar código de objeto",
+      "fr": "Copier le code d’objet",
+      "pt-BR": "Copiar código de item",
+      "de": "Gegenstandscode kopieren",
+      "nl": "Voorwerpcode kopiëren"
+    }
+  },
+  {
+    "keys": [
+      "Copy Selected Serials"
+    ],
+    "translations": {
+      "es": "Copiar códigos seleccionados",
+      "fr": "Copier les codes sélectionnés",
+      "pt-BR": "Copiar códigos selecionados",
+      "de": "Ausgewählte Codes kopieren",
+      "nl": "Geselecteerde codes kopiëren"
+    }
+  },
+  {
+    "keys": [
+      "Copy Visible Serials"
+    ],
+    "translations": {
+      "es": "Copiar códigos visibles",
+      "fr": "Copier les codes visibles",
+      "pt-BR": "Copiar códigos visíveis",
+      "de": "Sichtbare Codes kopieren",
+      "nl": "Zichtbare codes kopiëren"
+    }
+  },
+  {
+    "keys": [
+      "No serial"
+    ],
+    "translations": {
+      "es": "Sin código de objeto",
+      "fr": "Aucun code d’objet",
+      "pt-BR": "Sem código de item",
+      "de": "Kein Gegenstandscode",
+      "nl": "Geen voorwerpcode"
+    }
+  },
+  {
+    "keys": [
+      "No serial selected."
+    ],
+    "translations": {
+      "es": "No se ha seleccionado ningún código de objeto.",
+      "fr": "Aucun code d’objet sélectionné.",
+      "pt-BR": "Nenhum código de item selecionado.",
+      "de": "Kein Gegenstandscode ausgewählt.",
+      "nl": "Geen voorwerpcode geselecteerd."
+    }
+  },
+  {
+    "keys": [
+      "Untitled Serial"
+    ],
+    "translations": {
+      "es": "Código de objeto sin nombre",
+      "fr": "Code d’objet sans nom",
+      "pt-BR": "Código de item sem nome",
+      "de": "Unbenannter Gegenstandscode",
+      "nl": "Naamloze voorwerpcode"
+    }
+  },
+  {
+    "keys": [
+      "One serial per line"
+    ],
+    "translations": {
+      "es": "Un código de objeto por línea",
+      "fr": "Un code d’objet par ligne",
+      "pt-BR": "Um código de item por linha",
+      "de": "Ein Gegenstandscode pro Zeile",
+      "nl": "Eén voorwerpcode per regel"
+    }
+  },
+  {
+    "keys": [
+      "Serial copied.",
+      "Confirmed serial copied."
+    ],
+    "translations": {
+      "es": "Código de objeto copiado.",
+      "fr": "Code d’objet copié.",
+      "pt-BR": "Código de item copiado.",
+      "de": "Gegenstandscode kopiert.",
+      "nl": "Voorwerpcode gekopieerd."
+    }
+  },
+  {
+    "keys": [
+      "Serial confirmed and ready."
+    ],
+    "translations": {
+      "es": "Código de objeto confirmado y listo.",
+      "fr": "Code d’objet confirmé et prêt.",
+      "pt-BR": "Código de item confirmado e pronto.",
+      "de": "Gegenstandscode bestätigt und bereit.",
+      "nl": "Voorwerpcode bevestigd en klaar."
+    }
+  },
+  {
+    "keys": [
+      "Serial converted locally."
+    ],
+    "translations": {
+      "es": "Código de objeto convertido localmente.",
+      "fr": "Code d’objet converti localement.",
+      "pt-BR": "Código de item convertido localmente.",
+      "de": "Gegenstandscode lokal konvertiert.",
+      "nl": "Voorwerpcode lokaal omgezet."
+    }
+  },
+  {
+    "keys": [
+      "Serial changed; confirmation cleared."
+    ],
+    "translations": {
+      "es": "El código cambió; hay que confirmarlo de nuevo.",
+      "fr": "Le code a changé ; une nouvelle confirmation est nécessaire.",
+      "pt-BR": "O código mudou; é preciso confirmar novamente.",
+      "de": "Code geändert; erneute Bestätigung erforderlich.",
+      "nl": "Code gewijzigd; opnieuw bevestigen vereist."
+    }
+  },
+  {
+    "keys": [
+      "Serial validation failed."
+    ],
+    "translations": {
+      "es": "No se pudo validar el código de objeto.",
+      "fr": "La validation du code d’objet a échoué.",
+      "pt-BR": "Falha ao validar o código de item.",
+      "de": "Validierung des Gegenstandscodes fehlgeschlagen.",
+      "nl": "Voorwerpcode kon niet worden gevalideerd."
+    }
+  },
+  {
+    "keys": [
+      "Serial must start with @U."
+    ],
+    "translations": {
+      "es": "El código de objeto debe empezar por @U.",
+      "fr": "Le code d’objet doit commencer par @U.",
+      "pt-BR": "O código de item deve começar com @U.",
+      "de": "Der Gegenstandscode muss mit @U beginnen.",
+      "nl": "De voorwerpcode moet met @U beginnen."
+    }
+  },
+  {
+    "keys": [
+      "Serial must be exactly one @U Base85 value."
+    ],
+    "translations": {
+      "es": "Introduce un solo código de objeto @U en Base85.",
+      "fr": "Saisissez un seul code d’objet @U en Base85.",
+      "pt-BR": "Insira um único código de item @U em Base85.",
+      "de": "Genau einen @U-Gegenstandscode in Base85 eingeben.",
+      "nl": "Voer precies één @U-voorwerpcode in Base85 in."
+    }
+  },
+  {
+    "keys": [
+      "Serial normalize failed."
+    ],
+    "translations": {
+      "es": "No se pudo normalizar el formato del código.",
+      "fr": "Impossible de normaliser le format du code.",
+      "pt-BR": "Não foi possível normalizar o formato do código.",
+      "de": "Codeformat konnte nicht normalisiert werden.",
+      "nl": "Codeformaat kon niet worden genormaliseerd."
+    }
+  },
+  {
+    "keys": [
+      "Serial text contains an invalid value."
+    ],
+    "translations": {
+      "es": "El código contiene un valor no válido.",
+      "fr": "Le code contient une valeur non valide.",
+      "pt-BR": "O código contém um valor inválido.",
+      "de": "Der Code enthält einen ungültigen Wert.",
+      "nl": "De code bevat een ongeldige waarde."
+    }
+  },
+  {
+    "keys": [
+      "Give serial failed."
+    ],
+    "translations": {
+      "es": "No se pudo entregar el objeto mediante su código.",
+      "fr": "Impossible d’envoyer l’objet à partir de son code.",
+      "pt-BR": "Não foi possível entregar o item pelo código.",
+      "de": "Gegenstand konnte nicht per Code geliefert werden.",
+      "nl": "Voorwerp kon niet via de code worden geleverd."
+    }
+  },
+  {
+    "keys": [
+      "Serial delivery is running..."
+    ],
+    "translations": {
+      "es": "Entrega de objetos en curso...",
+      "fr": "Envoi des objets en cours...",
+      "pt-BR": "Entrega de itens em andamento...",
+      "de": "Gegenstände werden geliefert...",
+      "nl": "Voorwerpen worden geleverd..."
+    }
+  },
+  {
+    "keys": [
+      "Serial delivery status updated."
+    ],
+    "translations": {
+      "es": "Estado de la entrega de objetos actualizado.",
+      "fr": "État de l’envoi des objets actualisé.",
+      "pt-BR": "Status da entrega de itens atualizado.",
+      "de": "Lieferstatus der Gegenstände aktualisiert.",
+      "nl": "Leveringsstatus van voorwerpen bijgewerkt."
+    }
+  },
+  {
+    "keys": [
+      "Serial bookmark delivery cancelled."
+    ],
+    "translations": {
+      "es": "Se canceló la entrega de objetos guardados.",
+      "fr": "Envoi des objets enregistrés annulé.",
+      "pt-BR": "Entrega dos itens salvos cancelada.",
+      "de": "Lieferung gespeicherter Gegenstände abgebrochen.",
+      "nl": "Levering van opgeslagen voorwerpen geannuleerd."
+    }
+  },
+  {
+    "keys": [
+      "Serial bookmarks could not be loaded."
+    ],
+    "translations": {
+      "es": "No se pudieron cargar los códigos guardados.",
+      "fr": "Impossible de charger les codes enregistrés.",
+      "pt-BR": "Não foi possível carregar os códigos salvos.",
+      "de": "Gespeicherte Codes konnten nicht geladen werden.",
+      "nl": "Opgeslagen codes konden niet worden geladen."
+    }
+  },
+  {
+    "keys": [
+      "Serial bookmarks could not be saved."
+    ],
+    "translations": {
+      "es": "No se pudieron guardar los códigos de objetos.",
+      "fr": "Impossible d’enregistrer les codes d’objets.",
+      "pt-BR": "Não foi possível salvar os códigos de itens.",
+      "de": "Gegenstandscodes konnten nicht gespeichert werden.",
+      "nl": "Voorwerpcodes konden niet worden opgeslagen."
+    }
+  },
+  {
+    "keys": [
+      "Loading serial bookmarks..."
+    ],
+    "translations": {
+      "es": "Cargando códigos de objetos guardados...",
+      "fr": "Chargement des codes d’objets enregistrés...",
+      "pt-BR": "Carregando códigos de itens salvos...",
+      "de": "Gespeicherte Gegenstandscodes werden geladen...",
+      "nl": "Opgeslagen voorwerpcodes worden geladen..."
+    }
+  },
+  {
+    "keys": [
+      "Generating item card from serial..."
+    ],
+    "translations": {
+      "es": "Generando ficha del objeto a partir del código...",
+      "fr": "Génération de la fiche d’objet à partir du code...",
+      "pt-BR": "Gerando ficha do item a partir do código...",
+      "de": "Gegenstandskarte wird aus dem Code erzeugt...",
+      "nl": "Voorwerpkaart wordt uit de code gegenereerd..."
+    }
+  },
+  {
+    "keys": [
+      "Serial changed. Generating a new item card..."
+    ],
+    "translations": {
+      "es": "El código cambió. Generando una nueva ficha...",
+      "fr": "Le code a changé. Génération d’une nouvelle fiche...",
+      "pt-BR": "O código mudou. Gerando uma nova ficha...",
+      "de": "Code geändert. Neue Gegenstandskarte wird erzeugt...",
+      "nl": "Code gewijzigd. Nieuwe voorwerpkaart wordt gegenereerd..."
+    }
+  },
+  {
+    "keys": [
+      "Serial changed. Validate / Confirm Serial before sending."
+    ],
+    "translations": {
+      "es": "El código cambió. Valídalo y confírmalo antes de enviarlo.",
+      "fr": "Le code a changé. Validez et confirmez-le avant l’envoi.",
+      "pt-BR": "O código mudou. Valide e confirme antes de enviar.",
+      "de": "Code geändert. Vor dem Senden validieren und bestätigen.",
+      "nl": "Code gewijzigd. Valideer en bevestig vóór verzending."
+    }
+  },
+  {
+    "keys": [
+      "Open in Serial Tools"
+    ],
+    "translations": {
+      "es": "Abrir en herramientas de códigos",
+      "fr": "Ouvrir dans les outils de codes",
+      "pt-BR": "Abrir nas ferramentas de códigos",
+      "de": "In Codewerkzeugen öffnen",
+      "nl": "In codehulpmiddelen openen"
+    }
+  },
+  {
+    "keys": [
+      "Opened serial in Serial Tools."
+    ],
+    "translations": {
+      "es": "Código abierto en las herramientas de códigos.",
+      "fr": "Code ouvert dans les outils de codes.",
+      "pt-BR": "Código aberto nas ferramentas de códigos.",
+      "de": "Code in den Codewerkzeugen geöffnet.",
+      "nl": "Code in de codehulpmiddelen geopend."
+    }
+  },
+  {
+    "keys": [
+      "Sending {0} BL4 serial(s) to {1}..."
+    ],
+    "translations": {
+      "es": "Enviando {0} códigos de objetos BL4 a {1}...",
+      "fr": "Envoi de {0} codes d’objets BL4 à {1}...",
+      "pt-BR": "Enviando {0} códigos de itens BL4 para {1}...",
+      "de": "{0} BL4-Gegenstandscodes werden an {1} gesendet...",
+      "nl": "{0} BL4-voorwerpcodes worden naar {1} gestuurd..."
+    }
+  },
+  {
+    "keys": [
+      "Sending {0} bookmarked serial(s) to {1}..."
+    ],
+    "translations": {
+      "es": "Enviando {0} códigos guardados a {1}...",
+      "fr": "Envoi de {0} codes enregistrés à {1}...",
+      "pt-BR": "Enviando {0} códigos salvos para {1}...",
+      "de": "{0} gespeicherte Codes werden an {1} gesendet...",
+      "nl": "{0} opgeslagen codes worden naar {1} gestuurd..."
+    }
+  },
+  {
+    "keys": [
+      "Copied {0} {1} serial(s)."
+    ],
+    "translations": {
+      "es": "Códigos copiados: {0} {1}.",
+      "fr": "Codes copiés : {0} {1}.",
+      "pt-BR": "Códigos copiados: {0} {1}.",
+      "de": "Codes kopiert: {0} {1}.",
+      "nl": "Codes gekopieerd: {0} {1}."
+    }
+  },
+  {
+    "keys": [
+      "Deserialized",
+      "Deserialized Output",
+      "Deserialized output"
+    ],
+    "translations": {
+      "es": "Código decodificado",
+      "fr": "Code décodé",
+      "pt-BR": "Código decodificado",
+      "de": "Dekodierter Code",
+      "nl": "Gedecodeerde code"
+    }
+  },
+  {
+    "keys": [
+      "Fill deserialized"
+    ],
+    "translations": {
+      "es": "Rellenar con el código decodificado",
+      "fr": "Remplir avec le code décodé",
+      "pt-BR": "Preencher com o código decodificado",
+      "de": "Dekodierten Code einfügen",
+      "nl": "Gedecodeerde code invullen"
+    }
+  },
+  {
+    "keys": [
+      "@U Serialized Output",
+      "@U serialized output"
+    ],
+    "translations": {
+      "es": "Código codificado @U",
+      "fr": "Code encodé @U",
+      "pt-BR": "Código codificado @U",
+      "de": "Kodierter @U-Code",
+      "nl": "Gecodeerde @U-code"
+    }
+  },
+  {
+    "keys": [
+      "name, group, serial..."
+    ],
+    "translations": {
+      "es": "nombre, carpeta, código...",
+      "fr": "nom, dossier, code...",
+      "pt-BR": "nome, pasta, código...",
+      "de": "Name, Ordner, Code...",
+      "nl": "naam, map, code..."
+    }
+  },
+  {
+    "keys": [
+      "name, type, manufacturer, serial…"
+    ],
+    "translations": {
+      "es": "nombre, tipo, fabricante, código…",
+      "fr": "nom, type, fabricant, code…",
+      "pt-BR": "nome, tipo, fabricante, código…",
+      "de": "Name, Typ, Hersteller, Code…",
+      "nl": "naam, type, fabrikant, code…"
+    }
+  },
+  {
+    "keys": [
+      "Instant Drops",
+      "instant drops"
+    ],
+    "translations": {
+      "es": "Soltar objetos sin mantener pulsado",
+      "fr": "Déposer les objets sans appui long",
+      "pt-BR": "Largar itens sem segurar o botão",
+      "de": "Gegenstände ohne Gedrückthalten ablegen",
+      "nl": "Voorwerpen laten vallen zonder ingedrukt houden"
+    }
+  },
+  {
+    "keys": [
+      "Instant Holds",
+      "instant holds"
+    ],
+    "translations": {
+      "es": "Acciones sin mantener pulsado",
+      "fr": "Actions sans appui long",
+      "pt-BR": "Ações sem segurar o botão",
+      "de": "Aktionen ohne Gedrückthalten",
+      "nl": "Acties zonder ingedrukt houden"
+    }
+  },
+  {
+    "keys": [
+      "Free For All"
+    ],
+    "translations": {
+      "es": "Todos contra todos",
+      "fr": "Chacun pour soi",
+      "pt-BR": "Todos contra todos",
+      "de": "Jeder gegen jeden",
+      "nl": "Iedereen tegen iedereen"
+    }
+  },
+  {
+    "keys": [
+      "Down Player"
+    ],
+    "translations": {
+      "es": "Derribar al jugador",
+      "fr": "Mettre le joueur à terre",
+      "pt-BR": "Derrubar jogador",
+      "de": "Spieler kampfunfähig machen",
+      "nl": "Speler neerslaan"
+    }
+  },
+  {
+    "keys": [
+      "Burst"
+    ],
+    "translations": {
+      "es": "Lote de aparición",
+      "fr": "Lot d’apparition",
+      "pt-BR": "Lote de surgimento",
+      "de": "Spawnpaket",
+      "nl": "Spawnbatch"
+    }
+  },
+  {
+    "keys": [
+      "Enemies per burst"
+    ],
+    "translations": {
+      "es": "Enemigos por lote",
+      "fr": "Ennemis par lot",
+      "pt-BR": "Inimigos por lote",
+      "de": "Gegner pro Spawnpaket",
+      "nl": "Vijanden per spawnbatch"
+    }
+  },
+  {
+    "keys": [
+      "Stagger"
+    ],
+    "translations": {
+      "es": "Intervalo entre apariciones",
+      "fr": "Intervalle entre les apparitions",
+      "pt-BR": "Intervalo entre surgimentos",
+      "de": "Abstand zwischen Spawns",
+      "nl": "Interval tussen spawns"
+    }
+  },
+  {
+    "keys": [
+      "Stagger (seconds)"
+    ],
+    "translations": {
+      "es": "Intervalo entre apariciones (segundos)",
+      "fr": "Intervalle entre les apparitions (secondes)",
+      "pt-BR": "Intervalo entre surgimentos (segundos)",
+      "de": "Abstand zwischen Spawns (Sekunden)",
+      "nl": "Interval tussen spawns (seconden)"
+    }
+  },
+  {
+    "keys": [
+      "Crit"
+    ],
+    "translations": {
+      "es": "Impacto crítico",
+      "fr": "Coup critique",
+      "pt-BR": "Acerto crítico",
+      "de": "Kritischer Treffer",
+      "nl": "Kritieke treffer"
+    }
+  },
+  {
+    "keys": [
+      "Damage Dealt Mult"
+    ],
+    "translations": {
+      "es": "Multiplicador de daño infligido",
+      "fr": "Multiplicateur de dégâts infligés",
+      "pt-BR": "Multiplicador de dano causado",
+      "de": "Multiplikator für verursachten Schaden",
+      "nl": "Vermenigvuldiger voor toegebrachte schade"
+    }
+  },
+  {
+    "keys": [
+      "Damage Taken Mult"
+    ],
+    "translations": {
+      "es": "Multiplicador de daño recibido",
+      "fr": "Multiplicateur de dégâts subis",
+      "pt-BR": "Multiplicador de dano recebido",
+      "de": "Multiplikator für erlittenen Schaden",
+      "nl": "Vermenigvuldiger voor ontvangen schade"
+    }
+  },
+  {
+    "keys": [
+      "Magazine"
+    ],
+    "translations": {
+      "es": "Cargador",
+      "fr": "Chargeur",
+      "pt-BR": "Carregador",
+      "de": "Magazin",
+      "nl": "Magazijn"
+    }
+  },
+  {
+    "keys": [
+      "Repkit"
+    ],
+    "translations": {
+      "es": "Kit de reparación",
+      "fr": "Kit de réparation",
+      "pt-BR": "Kit de reparo",
+      "de": "Reparaturkit",
+      "nl": "Reparatieset"
+    }
+  },
+  {
+    "keys": [
+      "Repkits"
+    ],
+    "translations": {
+      "es": "Kits de reparación",
+      "fr": "Kits de réparation",
+      "pt-BR": "Kits de reparo",
+      "de": "Reparaturkits",
+      "nl": "Reparatiesets"
+    }
+  },
+  {
+    "keys": [
+      "Repair Kit Cooldown (s)"
+    ],
+    "translations": {
+      "es": "Tiempo de reutilización del kit (s)",
+      "fr": "Temps de recharge du kit (s)",
+      "pt-BR": "Tempo de recarga do kit (s)",
+      "de": "Abklingzeit des Reparaturkits (s)",
+      "nl": "Wachttijd voor reparatieset (s)"
+    }
+  },
+  {
+    "keys": [
+      "Clear BM Cooldown"
+    ],
+    "translations": {
+      "es": "Eliminar espera del mercado negro",
+      "fr": "Supprimer l’attente du marché noir",
+      "pt-BR": "Remover espera do mercado negro",
+      "de": "Wartezeit des Schwarzmarkts aufheben",
+      "nl": "Wachttijd van de zwarte markt opheffen"
+    }
+  },
+  {
+    "keys": [
+      "Unstar"
+    ],
+    "translations": {
+      "es": "Quitar de favoritos",
+      "fr": "Retirer des favoris",
+      "pt-BR": "Remover dos favoritos",
+      "de": "Aus Favoriten entfernen",
+      "nl": "Uit favorieten verwijderen"
+    }
+  },
+  {
+    "keys": [
+      "farm spot"
+    ],
+    "translations": {
+      "es": "lugar para conseguir botín",
+      "fr": "lieu de collecte de butin",
+      "pt-BR": "local para obter itens",
+      "de": "Ort zum Beutesammeln",
+      "nl": "plek om buit te verzamelen"
+    }
+  },
+  {
+    "keys": [
+      "e.g. farm spot"
+    ],
+    "translations": {
+      "es": "p. ej., lugar para conseguir botín",
+      "fr": "p. ex., lieu de collecte de butin",
+      "pt-BR": "ex.: local para obter itens",
+      "de": "z. B. Ort zum Beutesammeln",
+      "nl": "bijv. plek om buit te verzamelen"
+    }
+  },
+  {
+    "keys": [
+      "Dash Speed"
+    ],
+    "translations": {
+      "es": "Velocidad de impulso rápido",
+      "fr": "Vitesse de ruée",
+      "pt-BR": "Velocidade de impulso rápido",
+      "de": "Dash-Geschwindigkeit",
+      "nl": "Dashsnelheid"
+    }
+  },
+  {
+    "keys": [
+      "Apply Glide / Dash"
+    ],
+    "translations": {
+      "es": "Aplicar ajustes de planeo e impulso",
+      "fr": "Appliquer les réglages de vol plané et de ruée",
+      "pt-BR": "Aplicar configurações de voo planado e impulso",
+      "de": "Gleit- und Dash-Einstellungen anwenden",
+      "nl": "Zweef- en dashinstellingen toepassen"
+    }
+  },
+  {
+    "keys": [
+      "Glide Boost",
+      "Gliding Boost"
+    ],
+    "translations": {
+      "es": "Impulso de planeo",
+      "fr": "Accélération en vol plané",
+      "pt-BR": "Impulso de voo planado",
+      "de": "Gleitbeschleunigung",
+      "nl": "Zweefversnelling"
+    }
+  },
+  {
+    "keys": [
+      "Glide Speed",
+      "Gliding Speed"
+    ],
+    "translations": {
+      "es": "Velocidad de planeo",
+      "fr": "Vitesse de vol plané",
+      "pt-BR": "Velocidade de voo planado",
+      "de": "Gleitgeschwindigkeit",
+      "nl": "Zweefsnelheid"
+    }
+  },
+  {
+    "keys": [
+      "Glide Air Control",
+      "Gliding Air Control"
+    ],
+    "translations": {
+      "es": "Control durante el planeo",
+      "fr": "Contrôle en vol plané",
+      "pt-BR": "Controle durante o voo planado",
+      "de": "Steuerung beim Gleiten",
+      "nl": "Besturing tijdens zweven"
+    }
+  },
+  {
+    "keys": [
+      "Glide / Dash / Vault"
+    ],
+    "translations": {
+      "es": "Planeo, impulso y salto de obstáculos",
+      "fr": "Vol plané, ruée et franchissement",
+      "pt-BR": "Voo planado, impulso e transposição",
+      "de": "Gleiten, Dash und Hindernisse überwinden",
+      "nl": "Zweven, dash en obstakels overbruggen"
+    }
+  },
+  {
+    "keys": [
+      "Zero Vault Cooldown",
+      "Zero Vault CD"
+    ],
+    "translations": {
+      "es": "Eliminar coste de superar obstáculos",
+      "fr": "Supprimer le coût du franchissement",
+      "pt-BR": "Remover custo de transpor obstáculos",
+      "de": "Kosten beim Überwinden von Hindernissen aufheben",
+      "nl": "Kosten voor obstakels overbruggen opheffen"
+    }
+  },
+  {
+    "keys": [
+      "Zero vault on apply",
+      "Set vault power costs to 0 on apply"
+    ],
+    "translations": {
+      "es": "Eliminar coste de superar obstáculos al aplicar",
+      "fr": "Supprimer le coût du franchissement lors de l’application",
+      "pt-BR": "Remover custo de transpor obstáculos ao aplicar",
+      "de": "Beim Anwenden Kosten für Hindernisüberwindung aufheben",
+      "nl": "Bij toepassen kosten voor obstakels overbruggen opheffen"
+    }
+  },
+  {
+    "keys": [
+      "Noclip"
+    ],
+    "translations": {
+      "es": "Atravesar paredes (noclip)",
+      "fr": "Traverser les murs (noclip)",
+      "pt-BR": "Atravessar paredes (noclip)",
+      "de": "Durch Wände bewegen (Noclip)",
+      "nl": "Door muren bewegen (noclip)"
+    }
+  },
+  {
+    "keys": [
+      "Toggle Noclip"
+    ],
+    "translations": {
+      "es": "Activar/desactivar atravesar paredes",
+      "fr": "Activer/désactiver la traversée des murs",
+      "pt-BR": "Ativar/desativar atravessar paredes",
+      "de": "Bewegung durch Wände ein-/ausschalten",
+      "nl": "Door muren bewegen aan/uit"
+    }
+  },
+  {
+    "keys": [
+      "Toggle Force Fly"
+    ],
+    "translations": {
+      "es": "Activar/desactivar vuelo forzado",
+      "fr": "Activer/désactiver le vol forcé",
+      "pt-BR": "Ativar/desativar voo forçado",
+      "de": "Erzwungenes Fliegen ein-/ausschalten",
+      "nl": "Geforceerd vliegen aan/uit"
+    }
+  },
+  {
+    "keys": [
+      "Toggle Lock Player"
+    ],
+    "translations": {
+      "es": "Activar/desactivar bloqueo del jugador",
+      "fr": "Activer/désactiver le blocage du joueur",
+      "pt-BR": "Ativar/desativar bloqueio do jogador",
+      "de": "Spielersperre ein-/ausschalten",
+      "nl": "Spelervergrendeling aan/uit"
+    }
+  },
+  {
+    "keys": [
+      "Toggle Debug Cam"
+    ],
+    "translations": {
+      "es": "Activar/desactivar cámara de depuración",
+      "fr": "Activer/désactiver la caméra de débogage",
+      "pt-BR": "Ativar/desativar câmera de depuração",
+      "de": "Debug-Kamera ein-/ausschalten",
+      "nl": "Debugcamera aan/uit"
+    }
+  },
+  {
+    "keys": [
+      "Toggle No Target"
+    ],
+    "translations": {
+      "es": "Activar/desactivar que los enemigos te ignoren",
+      "fr": "Activer/désactiver le fait d’être ignoré par les ennemis",
+      "pt-BR": "Ativar/desativar ser ignorado pelos inimigos",
+      "de": "Ignorieren durch Gegner ein-/ausschalten",
+      "nl": "Negeren door vijanden aan/uit"
+    }
+  },
+  {
+    "keys": [
+      "No Target"
+    ],
+    "translations": {
+      "es": "Ignorado por los enemigos",
+      "fr": "Ignoré par les ennemis",
+      "pt-BR": "Ignorado pelos inimigos",
+      "de": "Von Gegnern ignoriert",
+      "nl": "Genegeerd door vijanden"
+    }
+  },
+  {
+    "keys": [
+      "Toggle Selected"
+    ],
+    "translations": {
+      "es": "Activar/desactivar salto infinito para los elegidos",
+      "fr": "Activer/désactiver les sauts infinis pour les joueurs choisis",
+      "pt-BR": "Ativar/desativar salto infinito para os escolhidos",
+      "de": "Endloses Springen für gewählte Spieler umschalten",
+      "nl": "Oneindig springen voor gekozen spelers aan/uit"
+    }
+  },
+  {
+    "keys": [
+      "Super Dash Toggle"
+    ],
+    "translations": {
+      "es": "Activar/desactivar superimpulso",
+      "fr": "Activer/désactiver la super ruée",
+      "pt-BR": "Ativar/desativar superimpulso",
+      "de": "Super-Dash ein-/ausschalten",
+      "nl": "Superdash aan/uit"
+    }
+  },
+  {
+    "keys": [
+      "Super Dash"
+    ],
+    "translations": {
+      "es": "Superimpulso",
+      "fr": "Super ruée",
+      "pt-BR": "Superimpulso",
+      "de": "Super-Dash",
+      "nl": "Superdash"
+    }
+  },
+  {
+    "keys": [
+      "Azzy Dash Toggle"
+    ],
+    "translations": {
+      "es": "Activar/desactivar impulso de Azzy",
+      "fr": "Activer/désactiver la ruée d’Azzy",
+      "pt-BR": "Ativar/desativar impulso do Azzy",
+      "de": "Azzy-Dash ein-/ausschalten",
+      "nl": "Azzy-dash aan/uit"
+    }
+  },
+  {
+    "keys": [
+      "Apply Wall / Step"
+    ],
+    "translations": {
+      "es": "Aplicar ajustes de paredes y escalones",
+      "fr": "Appliquer les réglages des murs et des marches",
+      "pt-BR": "Aplicar configurações de paredes e degraus",
+      "de": "Wand- und Stufeneinstellungen anwenden",
+      "nl": "Muur- en opstapinstellingen toepassen"
+    }
+  },
+  {
+    "keys": [
+      "Host Clear Fog"
+    ],
+    "translations": {
+      "es": "Quitar niebla como anfitrión",
+      "fr": "Retirer le brouillard en tant qu’hôte",
+      "pt-BR": "Remover neblina como anfitrião",
+      "de": "Nebel als Host entfernen",
+      "nl": "Mist als host verwijderen"
+    }
+  },
+  {
+    "keys": [
+      "Stack panels (center drop)"
+    ],
+    "translations": {
+      "es": "Agrupar paneles arrastrándolos al centro",
+      "fr": "Regrouper les panneaux en les déposant au centre",
+      "pt-BR": "Agrupar painéis arrastando para o centro",
+      "de": "Bedienfelder durch Ablegen in der Mitte gruppieren",
+      "nl": "Panelen groeperen door ze in het midden neer te zetten"
+    }
+  },
+  {
+    "keys": [
+      "Walkthrough",
+      "Walkthroughs"
+    ],
+    "translations": {
+      "es": "Guías de uso",
+      "fr": "Guides d’utilisation",
+      "pt-BR": "Guias de uso",
+      "de": "Bedienungsanleitungen",
+      "nl": "Gebruiksaanwijzingen"
+    }
+  },
+  {
+    "keys": [
+      "Could not resolve local host player."
+    ],
+    "translations": {
+      "es": "No se pudo identificar al jugador anfitrión local.",
+      "fr": "Impossible d’identifier le joueur hôte local.",
+      "pt-BR": "Não foi possível identificar o jogador anfitrião local.",
+      "de": "Lokaler Host-Spieler konnte nicht ermittelt werden.",
+      "nl": "Lokale hostspeler kon niet worden gevonden."
+    }
+  },
+  {
+    "keys": [
+      "Could not apply the named party player."
+    ],
+    "translations": {
+      "es": "No se pudo seleccionar al jugador del grupo indicado.",
+      "fr": "Impossible de sélectionner le joueur du groupe indiqué.",
+      "pt-BR": "Não foi possível selecionar o jogador do grupo indicado.",
+      "de": "Angegebenes Gruppenmitglied konnte nicht ausgewählt werden.",
+      "nl": "Opgegeven groepslid kon niet worden geselecteerd."
+    }
+  },
+  {
+    "keys": [
+      "No party player selected."
+    ],
+    "translations": {
+      "es": "No se ha seleccionado ningún jugador del grupo.",
+      "fr": "Aucun joueur du groupe sélectionné.",
+      "pt-BR": "Nenhum jogador do grupo selecionado.",
+      "de": "Kein Gruppenmitglied ausgewählt.",
+      "nl": "Geen groepslid geselecteerd."
+    }
+  },
+  {
+    "keys": [
+      "Instant Drops: On"
+    ],
+    "translations": {
+      "es": "Soltar objetos sin mantener pulsado: activado",
+      "fr": "Déposer les objets sans appui long: activé",
+      "pt-BR": "Largar itens sem segurar o botão: ativado",
+      "de": "Gegenstände ohne Gedrückthalten ablegen: ein",
+      "nl": "Voorwerpen laten vallen zonder ingedrukt houden: aan"
+    }
+  },
+  {
+    "keys": [
+      "Instant Drops: Off"
+    ],
+    "translations": {
+      "es": "Soltar objetos sin mantener pulsado: desactivado",
+      "fr": "Déposer les objets sans appui long: désactivé",
+      "pt-BR": "Largar itens sem segurar o botão: desativado",
+      "de": "Gegenstände ohne Gedrückthalten ablegen: aus",
+      "nl": "Voorwerpen laten vallen zonder ingedrukt houden: uit"
+    }
+  },
+  {
+    "keys": [
+      "Instant Drops: {0}"
+    ],
+    "translations": {
+      "es": "Soltar objetos sin mantener pulsado: {0}",
+      "fr": "Déposer les objets sans appui long: {0}",
+      "pt-BR": "Largar itens sem segurar o botão: {0}",
+      "de": "Gegenstände ohne Gedrückthalten ablegen: {0}",
+      "nl": "Voorwerpen laten vallen zonder ingedrukt houden: {0}"
+    }
+  },
+  {
+    "keys": [
+      "Instant Holds: On"
+    ],
+    "translations": {
+      "es": "Acciones sin mantener pulsado: activado",
+      "fr": "Actions sans appui long: activé",
+      "pt-BR": "Ações sem segurar o botão: ativado",
+      "de": "Aktionen ohne Gedrückthalten: ein",
+      "nl": "Acties zonder ingedrukt houden: aan"
+    }
+  },
+  {
+    "keys": [
+      "Instant Holds: Off"
+    ],
+    "translations": {
+      "es": "Acciones sin mantener pulsado: desactivado",
+      "fr": "Actions sans appui long: désactivé",
+      "pt-BR": "Ações sem segurar o botão: desativado",
+      "de": "Aktionen ohne Gedrückthalten: aus",
+      "nl": "Acties zonder ingedrukt houden: uit"
+    }
+  },
+  {
+    "keys": [
+      "Instant Holds: {0}"
+    ],
+    "translations": {
+      "es": "Acciones sin mantener pulsado: {0}",
+      "fr": "Actions sans appui long: {0}",
+      "pt-BR": "Ações sem segurar o botão: {0}",
+      "de": "Aktionen ohne Gedrückthalten: {0}",
+      "nl": "Acties zonder ingedrukt houden: {0}"
+    }
+  },
+  {
+    "keys": [
+      "Actor Search",
+      "Search actors"
+    ],
+    "translations": {
+      "es": "Buscar entidades del juego",
+      "fr": "Rechercher des entités du jeu",
+      "pt-BR": "Buscar entidades do jogo",
+      "de": "Spielobjekte suchen",
+      "nl": "Spelobjecten zoeken"
+    }
+  },
+  {
+    "keys": [
+      "Search actor catalog"
+    ],
+    "translations": {
+      "es": "Buscar en el catálogo de entidades",
+      "fr": "Rechercher dans le catalogue d’entités",
+      "pt-BR": "Buscar no catálogo de entidades",
+      "de": "Spielobjektkatalog durchsuchen",
+      "nl": "Spelobjectcatalogus doorzoeken"
+    }
+  },
+  {
+    "keys": [
+      "Actor key",
+      "Exact actor key"
+    ],
+    "translations": {
+      "es": "Identificador de entidad",
+      "fr": "Identifiant d’entité",
+      "pt-BR": "Identificador de entidade",
+      "de": "Spielobjektkennung",
+      "nl": "Spelobject-ID"
+    }
+  },
+  {
+    "keys": [
+      "Actor picker"
+    ],
+    "translations": {
+      "es": "Selector de entidades",
+      "fr": "Sélecteur d’entités",
+      "pt-BR": "Seletor de entidades",
+      "de": "Spielobjektauswahl",
+      "nl": "Spelobjectkiezer"
+    }
+  },
+  {
+    "keys": [
+      "Selected Actor"
+    ],
+    "translations": {
+      "es": "Entidad seleccionada",
+      "fr": "Entité sélectionnée",
+      "pt-BR": "Entidade selecionada",
+      "de": "Ausgewähltes Spielobjekt",
+      "nl": "Geselecteerd spelobject"
+    }
+  },
+  {
+    "keys": [
+      "Selected actor: {0}"
+    ],
+    "translations": {
+      "es": "Entidad seleccionada: {0}",
+      "fr": "Entité sélectionnée : {0}",
+      "pt-BR": "Entidade selecionada: {0}",
+      "de": "Ausgewähltes Spielobjekt: {0}",
+      "nl": "Geselecteerd spelobject: {0}"
+    }
+  },
+  {
+    "keys": [
+      "Actor catalog not loaded yet."
+    ],
+    "translations": {
+      "es": "El catálogo de entidades aún no está cargado.",
+      "fr": "Le catalogue d’entités n’est pas encore chargé.",
+      "pt-BR": "O catálogo de entidades ainda não foi carregado.",
+      "de": "Spielobjektkatalog noch nicht geladen.",
+      "nl": "Spelobjectcatalogus is nog niet geladen."
+    }
+  },
+  {
+    "keys": [
+      "Actor catalog unavailable."
+    ],
+    "translations": {
+      "es": "Catálogo de entidades no disponible.",
+      "fr": "Catalogue d’entités indisponible.",
+      "pt-BR": "Catálogo de entidades indisponível.",
+      "de": "Spielobjektkatalog nicht verfügbar.",
+      "nl": "Spelobjectcatalogus niet beschikbaar."
+    }
+  },
+  {
+    "keys": [
+      "Actor catalog unavailable: {0}"
+    ],
+    "translations": {
+      "es": "Catálogo de entidades no disponible: {0}",
+      "fr": "Catalogue d’entités indisponible : {0}",
+      "pt-BR": "Catálogo de entidades indisponível: {0}",
+      "de": "Spielobjektkatalog nicht verfügbar: {0}",
+      "nl": "Spelobjectcatalogus niet beschikbaar: {0}"
+    }
+  },
+  {
+    "keys": [
+      "Loading actor catalog...",
+      "Loading actor catalog…"
+    ],
+    "translations": {
+      "es": "Cargando catálogo de entidades…",
+      "fr": "Chargement du catalogue d’entités…",
+      "pt-BR": "Carregando catálogo de entidades…",
+      "de": "Spielobjektkatalog wird geladen…",
+      "nl": "Spelobjectcatalogus wordt geladen…"
+    }
+  },
+  {
+    "keys": [
+      "(click actors to add)"
+    ],
+    "translations": {
+      "es": "(haz clic en las entidades para añadirlas)",
+      "fr": "(cliquez sur les entités pour les ajouter)",
+      "pt-BR": "(clique nas entidades para adicionar)",
+      "de": "(Zum Hinzufügen auf Spielobjekte klicken)",
+      "nl": "(klik op spelobjecten om ze toe te voegen)"
+    }
+  },
+  {
+    "keys": [
+      "(pick actors)"
+    ],
+    "translations": {
+      "es": "(elige entidades)",
+      "fr": "(choisissez des entités)",
+      "pt-BR": "(escolha entidades)",
+      "de": "(Spielobjekte wählen)",
+      "nl": "(kies spelobjecten)"
+    }
+  },
+  {
+    "keys": [
+      "all actors"
+    ],
+    "translations": {
+      "es": "todas las entidades",
+      "fr": "toutes les entités",
+      "pt-BR": "todas as entidades",
+      "de": "alle Spielobjekte",
+      "nl": "alle spelobjecten"
+    }
+  },
+  {
+    "keys": [
+      "empty — click actors below"
+    ],
+    "translations": {
+      "es": "vacío: haz clic en las entidades de abajo",
+      "fr": "vide : cliquez sur les entités ci-dessous",
+      "pt-BR": "vazio: clique nas entidades abaixo",
+      "de": "leer – unten auf Spielobjekte klicken",
+      "nl": "leeg — klik hieronder op spelobjecten"
+    }
+  },
+  {
+    "keys": [
+      "Use Selected Actor"
+    ],
+    "translations": {
+      "es": "Usar entidad seleccionada",
+      "fr": "Utiliser l’entité sélectionnée",
+      "pt-BR": "Usar entidade selecionada",
+      "de": "Ausgewähltes Spielobjekt verwenden",
+      "nl": "Geselecteerd spelobject gebruiken"
+    }
+  },
+  {
+    "keys": [
+      "ASD actors"
+    ],
+    "translations": {
+      "es": "Entidades de ASD",
+      "fr": "Entités ASD",
+      "pt-BR": "Entidades do ASD",
+      "de": "ASD-Spielobjekte",
+      "nl": "ASD-spelobjecten"
+    }
+  },
+  {
+    "keys": [
+      "ASD reported a spawned actor."
+    ],
+    "translations": {
+      "es": "ASD indicó que se generó una entidad.",
+      "fr": "ASD a signalé l’apparition d’une entité.",
+      "pt-BR": "O ASD informou que uma entidade foi gerada.",
+      "de": "ASD meldete ein erzeugtes Spielobjekt.",
+      "nl": "ASD meldde een verschenen spelobject."
+    }
+  },
+  {
+    "keys": [
+      "Add actors to one or more waves."
+    ],
+    "translations": {
+      "es": "Añade entidades a una o varias oleadas.",
+      "fr": "Ajoutez des entités à une ou plusieurs vagues.",
+      "pt-BR": "Adicione entidades a uma ou mais ondas.",
+      "de": "Spielobjekte zu einer oder mehreren Wellen hinzufügen.",
+      "nl": "Voeg spelobjecten aan een of meer golven toe."
+    }
+  },
+  {
+    "keys": [
+      "Clear Spawned Actors"
+    ],
+    "translations": {
+      "es": "Eliminar entidades generadas",
+      "fr": "Supprimer les entités générées",
+      "pt-BR": "Remover entidades geradas",
+      "de": "Erzeugte Spielobjekte entfernen",
+      "nl": "Gegenereerde spelobjecten verwijderen"
+    }
+  },
+  {
+    "keys": [
+      "Cache Live Actor"
+    ],
+    "translations": {
+      "es": "Guardar en caché una entidad activa",
+      "fr": "Mettre en cache une entité active",
+      "pt-BR": "Armazenar entidade ativa no cache",
+      "de": "Aktives Spielobjekt zwischenspeichern",
+      "nl": "Actief spelobject in cache opslaan"
+    }
+  },
+  {
+    "keys": [
+      "Save Nearby Actor Template"
+    ],
+    "translations": {
+      "es": "Guardar plantilla de entidad cercana",
+      "fr": "Enregistrer un modèle d’entité proche",
+      "pt-BR": "Salvar modelo de entidade próxima",
+      "de": "Vorlage eines nahen Spielobjekts speichern",
+      "nl": "Sjabloon van nabij spelobject opslaan"
+    }
+  },
+  {
+    "keys": [
+      "Select an actor first.",
+      "Select an actor from the browser first."
+    ],
+    "translations": {
+      "es": "Primero elige una entidad del explorador.",
+      "fr": "Choisissez d’abord une entité dans l’explorateur.",
+      "pt-BR": "Primeiro escolha uma entidade no explorador.",
+      "de": "Zuerst ein Spielobjekt im Browser auswählen.",
+      "nl": "Kies eerst een spelobject in de browser."
+    }
+  },
+  {
+    "keys": [
+      "Select an actor before adding it to My Favorites."
+    ],
+    "translations": {
+      "es": "Selecciona una entidad antes de añadirla a Mis favoritos.",
+      "fr": "Sélectionnez une entité avant de l’ajouter à Mes favoris.",
+      "pt-BR": "Selecione uma entidade antes de adicionar aos Meus favoritos.",
+      "de": "Vor dem Hinzufügen zu den Favoriten ein Spielobjekt auswählen.",
+      "nl": "Selecteer een spelobject voordat je het aan Mijn favorieten toevoegt."
+    }
+  },
+  {
+    "keys": [
+      "Select from actor browser"
+    ],
+    "translations": {
+      "es": "Elegir del explorador de entidades",
+      "fr": "Choisir dans l’explorateur d’entités",
+      "pt-BR": "Escolher no explorador de entidades",
+      "de": "Im Spielobjektbrowser auswählen",
+      "nl": "In de spelobjectbrowser kiezen"
+    }
+  },
+  {
+    "keys": [
+      "Selected wave is empty — add actors first."
+    ],
+    "translations": {
+      "es": "La oleada elegida está vacía; añade entidades primero.",
+      "fr": "La vague choisie est vide ; ajoutez d’abord des entités.",
+      "pt-BR": "A onda escolhida está vazia; adicione entidades primeiro.",
+      "de": "Gewählte Welle ist leer – zuerst Spielobjekte hinzufügen.",
+      "nl": "Gekozen golf is leeg — voeg eerst spelobjecten toe."
+    }
+  },
+  {
+    "keys": [
+      "New wave {0}: {1} selected actor type(s){2}."
+    ],
+    "translations": {
+      "es": "Nueva oleada {0}: {1} tipos de entidad elegidos{2}.",
+      "fr": "Nouvelle vague {0} : {1} types d’entités choisis{2}.",
+      "pt-BR": "Nova onda {0}: {1} tipos de entidade escolhidos{2}.",
+      "de": "Neue Welle {0}: {1} ausgewählte Spielobjekttypen{2}.",
+      "nl": "Nieuwe golf {0}: {1} gekozen spelobjecttypen{2}."
+    }
+  },
+  {
+    "keys": [
+      "Wave {0}: added {1} selected actor type(s) × {2}{3}."
+    ],
+    "translations": {
+      "es": "Oleada {0}: añadidos {1} tipos de entidad × {2}{3}.",
+      "fr": "Vague {0} : ajout de {1} types d’entités × {2}{3}.",
+      "pt-BR": "Onda {0}: adicionados {1} tipos de entidade × {2}{3}.",
+      "de": "Welle {0}: {1} Spielobjekttypen × {2}{3} hinzugefügt.",
+      "nl": "Golf {0}: {1} spelobjecttypen × {2}{3} toegevoegd."
+    }
+  },
+  {
+    "keys": [
+      "All pools"
+    ],
+    "translations": {
+      "es": "Todos los conjuntos de botín",
+      "fr": "Tous les ensembles de butin",
+      "pt-BR": "Todos os conjuntos de itens",
+      "de": "Alle Beutesammlungen",
+      "nl": "Alle buitverzamelingen"
+    }
+  },
+  {
+    "keys": [
+      "Find pools"
+    ],
+    "translations": {
+      "es": "Buscar conjuntos de botín",
+      "fr": "Rechercher des ensembles de butin",
+      "pt-BR": "Buscar conjuntos de itens",
+      "de": "Beutesammlungen suchen",
+      "nl": "Buitverzamelingen zoeken"
+    }
+  },
+  {
+    "keys": [
+      "Random / full pool"
+    ],
+    "translations": {
+      "es": "Selección aleatoria o conjunto completo",
+      "fr": "Sélection aléatoire ou ensemble complet",
+      "pt-BR": "Seleção aleatória ou conjunto completo",
+      "de": "Zufallsauswahl oder gesamte Sammlung",
+      "nl": "Willekeurige selectie of volledige verzameling"
+    }
+  },
+  {
+    "keys": [
+      "Bookmarks → pool"
+    ],
+    "translations": {
+      "es": "Objetos guardados → conjunto de botín",
+      "fr": "Objets enregistrés → ensemble de butin",
+      "pt-BR": "Itens salvos → conjunto de itens",
+      "de": "Gespeicherte Gegenstände → Beutesammlung",
+      "nl": "Opgeslagen voorwerpen → buitverzameling"
+    }
+  },
+  {
+    "keys": [
+      "Catalog selection → pool"
+    ],
+    "translations": {
+      "es": "Selección del catálogo → conjunto de botín",
+      "fr": "Sélection du catalogue → ensemble de butin",
+      "pt-BR": "Seleção do catálogo → conjunto de itens",
+      "de": "Katalogauswahl → Beutesammlung",
+      "nl": "Catalogusselectie → buitverzameling"
+    }
+  },
+  {
+    "keys": [
+      "Automatic Backpack and Bank Size for Party"
+    ],
+    "translations": {
+      "es": "Capacidad automática de mochila y banco para el grupo",
+      "fr": "Capacité automatique du sac à dos et de la banque pour le groupe",
+      "pt-BR": "Capacidade automática de mochila e banco para o grupo",
+      "de": "Automatische Rucksack- und Bankkapazität für die Gruppe",
+      "nl": "Automatische rugzak- en bankcapaciteit voor de groep"
+    }
+  },
+  {
+    "keys": [
+      "Backpack / Bank Size"
+    ],
+    "translations": {
+      "es": "Capacidad de mochila y banco",
+      "fr": "Capacité du sac à dos et de la banque",
+      "pt-BR": "Capacidade da mochila e do banco",
+      "de": "Rucksack- und Bankkapazität",
+      "nl": "Rugzak- en bankcapaciteit"
+    }
+  },
+  {
+    "keys": [
+      "Bank Size"
+    ],
+    "translations": {
+      "es": "Capacidad del banco",
+      "fr": "Capacité de la banque",
+      "pt-BR": "Capacidade do banco",
+      "de": "Bankkapazität",
+      "nl": "Bankcapaciteit"
+    }
+  },
+  {
+    "keys": [
+      "Spawning & Waves"
+    ],
+    "translations": {
+      "es": "Generación y oleadas",
+      "fr": "Apparitions et vagues",
+      "pt-BR": "Geração e ondas",
+      "de": "Spawns und Wellen",
+      "nl": "Spawns en golven"
+    }
+  },
+  {
+    "keys": [
+      "Standard Spawning"
+    ],
+    "translations": {
+      "es": "Generación normal",
+      "fr": "Apparitions standard",
+      "pt-BR": "Geração normal",
+      "de": "Normales Erzeugen",
+      "nl": "Standaard genereren"
+    }
+  },
+  {
+    "keys": [
+      "Plan is saved on this phone. Connect to apply or start."
+    ],
+    "translations": {
+      "es": "El plan está guardado en este móvil. Conéctate para aplicarlo o iniciarlo.",
+      "fr": "Le plan est enregistré sur ce téléphone. Connectez-vous pour l’appliquer ou le lancer.",
+      "pt-BR": "O plano está salvo neste celular. Conecte para aplicar ou iniciar.",
+      "de": "Der Plan ist auf diesem Telefon gespeichert. Zum Anwenden oder Starten verbinden.",
+      "nl": "Het plan is op deze telefoon opgeslagen. Maak verbinding om het toe te passen of te starten."
+    }
+  },
+  {
+    "keys": [
+      "Loaded saved rarity sliders. Drops stay unchanged until you click Apply.",
+      "Saved rarity sliders loaded. Drops stay unchanged until you click Apply."
+    ],
+    "translations": {
+      "es": "Ajustes de rareza cargados. El botín no cambia hasta que pulses Aplicar.",
+      "fr": "Réglages de rareté chargés. Le butin ne change pas avant de cliquer sur Appliquer.",
+      "pt-BR": "Configurações de raridade carregadas. Os itens não mudam até clicar em Aplicar.",
+      "de": "Seltenheitseinstellungen geladen. Beute bleibt unverändert, bis du auf „Anwenden“ klickst.",
+      "nl": "Zeldzaamheidsinstellingen geladen. Buit blijft ongewijzigd tot je op Toepassen klikt."
+    }
+  },
+  {
+    "keys": [
+      "Rarity Drop Weights",
+      "Rarity drop weights",
+      "Rarity Weights"
+    ],
+    "translations": {
+      "es": "Pesos de probabilidad por rareza",
+      "fr": "Pondérations des probabilités par rareté",
+      "pt-BR": "Pesos de probabilidade por raridade",
+      "de": "Gewichtungen der Seltenheitschancen",
+      "nl": "Weging van kansen per zeldzaamheid"
+    }
+  },
+  {
+    "keys": [
+      "Checking {0} BL4 serial(s) for level override..."
+    ],
+    "translations": {
+      "es": "Comprobando si se puede cambiar el nivel de {0} códigos BL4...",
+      "fr": "Vérification du changement de niveau pour {0} codes BL4...",
+      "pt-BR": "Verificando alteração de nível para {0} códigos BL4...",
+      "de": "Leveländerung für {0} BL4-Codes wird geprüft...",
+      "nl": "Niveauwijziging voor {0} BL4-codes wordt gecontroleerd..."
+    }
+  },
+  {
+    "keys": [
+      "Cleared Boosting serial input.",
+      "Cleared local serial input."
+    ],
+    "translations": {
+      "es": "Entrada de códigos de objetos vaciada.",
+      "fr": "Saisie de codes d’objets effacée.",
+      "pt-BR": "Entrada de códigos de itens limpa.",
+      "de": "Eingabe der Gegenstandscodes geleert.",
+      "nl": "Invoer van voorwerpcodes gewist."
+    }
+  },
+  {
+    "keys": [
+      "Cleared Serial Tools."
+    ],
+    "translations": {
+      "es": "Campos de las herramientas de códigos vaciados.",
+      "fr": "Champs des outils de codes effacés.",
+      "pt-BR": "Campos das ferramentas de códigos limpos.",
+      "de": "Felder der Codewerkzeuge geleert.",
+      "nl": "Velden van de codehulpmiddelen gewist."
+    }
+  },
+  {
+    "keys": [
+      "Deleted serial bookmark."
+    ],
+    "translations": {
+      "es": "Código guardado eliminado.",
+      "fr": "Code enregistré supprimé.",
+      "pt-BR": "Código salvo excluído.",
+      "de": "Gespeicherter Code gelöscht.",
+      "nl": "Opgeslagen code verwijderd."
+    }
+  },
+  {
+    "keys": [
+      "Detected one serial from the editor."
+    ],
+    "translations": {
+      "es": "Se detectó un código de objeto en el editor.",
+      "fr": "Un code d’objet a été détecté dans l’éditeur.",
+      "pt-BR": "Um código de item foi detectado no editor.",
+      "de": "Ein Gegenstandscode im Editor erkannt.",
+      "nl": "Eén voorwerpcode in de editor gevonden."
+    }
+  },
+  {
+    "keys": [
+      "Multiple serials detected. Pick one before sending."
+    ],
+    "translations": {
+      "es": "Se detectaron varios códigos. Elige uno antes de enviar.",
+      "fr": "Plusieurs codes détectés. Choisissez-en un avant l’envoi.",
+      "pt-BR": "Vários códigos detectados. Escolha um antes de enviar.",
+      "de": "Mehrere Codes erkannt. Vor dem Senden einen auswählen.",
+      "nl": "Meerdere codes gevonden. Kies er één vóór verzending."
+    }
+  },
+  {
+    "keys": [
+      "No @U serial is confirmed."
+    ],
+    "translations": {
+      "es": "No hay ningún código @U confirmado.",
+      "fr": "Aucun code @U confirmé.",
+      "pt-BR": "Nenhum código @U confirmado.",
+      "de": "Kein @U-Code bestätigt.",
+      "nl": "Geen @U-code bevestigd."
+    }
+  },
+  {
+    "keys": [
+      "Use exactly one serial, not multiple lines."
+    ],
+    "translations": {
+      "es": "Introduce un solo código de objeto, no varias líneas.",
+      "fr": "Saisissez un seul code d’objet, pas plusieurs lignes.",
+      "pt-BR": "Insira apenas um código de item, não várias linhas.",
+      "de": "Genau einen Gegenstandscode eingeben, nicht mehrere Zeilen.",
+      "nl": "Voer precies één voorwerpcode in, niet meerdere regels."
+    }
+  },
+  {
+    "keys": [
+      "No single @U serial is ready to send. Build an item or paste one serial first."
+    ],
+    "translations": {
+      "es": "No hay un código @U listo. Crea un objeto o pega un código primero.",
+      "fr": "Aucun code @U n’est prêt. Créez un objet ou collez un code d’abord.",
+      "pt-BR": "Nenhum código @U está pronto. Crie um item ou cole um código primeiro.",
+      "de": "Kein @U-Code bereit. Zuerst einen Gegenstand erstellen oder einen Code einfügen.",
+      "nl": "Geen @U-code gereed. Maak eerst een voorwerp of plak een code."
+    }
+  },
+  {
+    "keys": [
+      "Local serial converter is not available in this build."
+    ],
+    "translations": {
+      "es": "El conversor local de códigos no está disponible en esta versión.",
+      "fr": "Le convertisseur local de codes n’est pas disponible dans cette version.",
+      "pt-BR": "O conversor local de códigos não está disponível nesta versão.",
+      "de": "Lokaler Codekonverter ist in dieser Version nicht verfügbar.",
+      "nl": "Lokale codeconversie is niet beschikbaar in deze versie."
+    }
+  },
+  {
+    "keys": [
+      "Serial Tools input is empty."
+    ],
+    "translations": {
+      "es": "El campo de las herramientas de códigos está vacío.",
+      "fr": "Le champ des outils de codes est vide.",
+      "pt-BR": "O campo das ferramentas de códigos está vazio.",
+      "de": "Das Eingabefeld der Codewerkzeuge ist leer.",
+      "nl": "Het invoerveld van de codehulpmiddelen is leeg."
+    }
+  },
+  {
+    "keys": [
+      "Serial bookmark storage is not available in this app build."
+    ],
+    "translations": {
+      "es": "No se pueden guardar códigos en esta versión de la aplicación.",
+      "fr": "L’enregistrement des codes est indisponible dans cette version.",
+      "pt-BR": "Não é possível salvar códigos nesta versão do aplicativo.",
+      "de": "Codes können in dieser App-Version nicht gespeichert werden.",
+      "nl": "Codes opslaan is niet beschikbaar in deze appversie."
+    }
+  },
+  {
+    "keys": [
+      "Serial staged. Send can auto-confirm one serial."
+    ],
+    "translations": {
+      "es": "Código preparado. Al enviar, se puede confirmar automáticamente un único código.",
+      "fr": "Code prêt. L’envoi peut confirmer automatiquement un code unique.",
+      "pt-BR": "Código preparado. O envio pode confirmar automaticamente um único código.",
+      "de": "Code vorbereitet. Beim Senden kann ein einzelner Code automatisch bestätigt werden.",
+      "nl": "Code voorbereid. Verzenden kan één code automatisch bevestigen."
+    }
+  },
+  {
+    "keys": [
+      "Serial auto-confirmed for delivery."
+    ],
+    "translations": {
+      "es": "Código confirmado automáticamente para la entrega.",
+      "fr": "Code confirmé automatiquement pour l’envoi.",
+      "pt-BR": "Código confirmado automaticamente para entrega.",
+      "de": "Code automatisch für die Lieferung bestätigt.",
+      "nl": "Code automatisch bevestigd voor levering."
+    }
+  },
+  {
+    "keys": [
+      "Validate one serial or a pasted list. Runs locally in the app."
+    ],
+    "translations": {
+      "es": "Valida un código de objeto o una lista pegada. Se ejecuta localmente.",
+      "fr": "Validez un code d’objet ou une liste collée. Le traitement est local.",
+      "pt-BR": "Valide um código de item ou uma lista colada. O processamento é local.",
+      "de": "Einen Gegenstandscode oder eine eingefügte Liste lokal prüfen.",
+      "nl": "Controleer één voorwerpcode of een geplakte lijst lokaal."
+    }
+  },
+  {
+    "keys": [
+      "Validating serial locally...",
+      "Validating active BL4 serial locally..."
+    ],
+    "translations": {
+      "es": "Validando código de objeto localmente...",
+      "fr": "Validation locale du code d’objet...",
+      "pt-BR": "Validando código de item localmente...",
+      "de": "Gegenstandscode wird lokal geprüft...",
+      "nl": "Voorwerpcode wordt lokaal gecontroleerd..."
+    }
+  },
+  {
+    "keys": [
+      "No party players found. Refresh Status first."
+    ],
+    "translations": {
+      "es": "No se encontraron jugadores del grupo. Actualiza el estado primero.",
+      "fr": "Aucun joueur du groupe trouvé. Actualisez d’abord l’état.",
+      "pt-BR": "Nenhum jogador do grupo encontrado. Atualize o status primeiro.",
+      "de": "Keine Gruppenmitglieder gefunden. Zuerst den Status aktualisieren.",
+      "nl": "Geen groepsleden gevonden. Vernieuw eerst de status."
+    }
+  },
+  {
+    "keys": [
+      "No party players found. Refresh Status while in a session."
+    ],
+    "translations": {
+      "es": "No se encontraron jugadores del grupo. Actualiza el estado dentro de una partida.",
+      "fr": "Aucun joueur du groupe trouvé. Actualisez l’état pendant une partie.",
+      "pt-BR": "Nenhum jogador do grupo encontrado. Atualize o status durante uma sessão.",
+      "de": "Keine Gruppenmitglieder gefunden. Status während einer Sitzung aktualisieren.",
+      "nl": "Geen groepsleden gevonden. Vernieuw de status tijdens een sessie."
+    }
+  },
+  {
+    "keys": [
+      "Could not resolve party indices for scoped Max All."
+    ],
+    "translations": {
+      "es": "No se pudieron identificar los jugadores para llevar sus valores al máximo.",
+      "fr": "Impossible d’identifier les joueurs dont les valeurs doivent être maximisées.",
+      "pt-BR": "Não foi possível identificar os jogadores para maximizar seus valores.",
+      "de": "Spieler für das Maximieren der Werte konnten nicht ermittelt werden.",
+      "nl": "Spelers voor het maximaliseren van waarden konden niet worden bepaald."
+    }
+  },
+  {
+    "keys": [
+      "Max All is already running."
+    ],
+    "translations": {
+      "es": "La acción de llevar todo al máximo ya está en curso.",
+      "fr": "La maximisation de toutes les valeurs est déjà en cours.",
+      "pt-BR": "A ação de maximizar tudo já está em andamento.",
+      "de": "Maximierung aller Werte läuft bereits.",
+      "nl": "Het maximaliseren van alle waarden is al bezig."
+    }
+  },
+  {
+    "keys": [
+      "Players Only"
+    ],
+    "translations": {
+      "es": "Congelar el mundo excepto los jugadores",
+      "fr": "Figer le monde sauf les joueurs",
+      "pt-BR": "Congelar o mundo exceto os jogadores",
+      "de": "Welt außer Spielern einfrieren",
+      "nl": "Wereld bevriezen behalve spelers"
+    }
+  },
+  {
+    "keys": [
+      "Find Boost, QM, XYZ, Hoard…"
+    ],
+    "translations": {
+      "es": "Buscar mejoras, QM, XYZ, oleadas…",
+      "fr": "Rechercher améliorations, QM, XYZ, vagues…",
+      "pt-BR": "Buscar melhorias, QM, XYZ, ondas…",
+      "de": "Verbesserungen, QM, XYZ, Wellen suchen…",
+      "nl": "Verbeteringen, QM, XYZ, golven zoeken…"
+    }
+  },
+  {
+    "keys": [
+      "Find Instant Drops, XYZ, Hoard…"
+    ],
+    "translations": {
+      "es": "Buscar soltar sin mantener pulsado, XYZ, oleadas…",
+      "fr": "Rechercher dépôt sans appui long, XYZ, vagues…",
+      "pt-BR": "Buscar largar sem segurar, XYZ, ondas…",
+      "de": "Ablegen ohne Gedrückthalten, XYZ, Wellen suchen…",
+      "nl": "Laten vallen zonder ingedrukt houden, XYZ, golven zoeken…"
+    }
+  },
+  {
+    "keys": [
+      "No last drop recorded yet."
+    ],
+    "translations": {
+      "es": "Aún no se ha registrado ninguna entrega.",
+      "fr": "Aucune distribution enregistrée pour l’instant.",
+      "pt-BR": "Nenhuma entrega registrada ainda.",
+      "de": "Noch keine Gegenstandsausgabe erfasst.",
+      "nl": "Nog geen uitgifte geregistreerd."
+    }
+  },
+  {
+    "keys": [
+      "No last command to pin. Run a live action first.",
+      "No last command to pin. Run an MSBT action first."
+    ],
+    "translations": {
+      "es": "No hay ninguna acción para guardar. Ejecuta una acción en el juego primero.",
+      "fr": "Aucune action à enregistrer. Exécutez d’abord une action en jeu.",
+      "pt-BR": "Não há ação para salvar. Execute uma ação no jogo primeiro.",
+      "de": "Keine Aktion zum Speichern vorhanden. Zuerst eine Spielaktion ausführen.",
+      "nl": "Geen actie om op te slaan. Voer eerst een spelactie uit."
+    }
+  },
+  {
+    "keys": [
+      "Pin failed."
+    ],
+    "translations": {
+      "es": "No se pudo guardar la acción en el menú rápido.",
+      "fr": "Impossible d’enregistrer l’action dans le menu rapide.",
+      "pt-BR": "Não foi possível salvar a ação no menu rápido.",
+      "de": "Aktion konnte nicht im Schnellmenü gespeichert werden.",
+      "nl": "Actie kon niet in het snelmenu worden opgeslagen."
+    }
+  },
+  {
+    "keys": [
+      "Could not apply hoard plan."
+    ],
+    "translations": {
+      "es": "No se pudo aplicar el plan de oleadas.",
+      "fr": "Impossible d’appliquer le plan des vagues.",
+      "pt-BR": "Não foi possível aplicar o plano de ondas.",
+      "de": "Wellenplan konnte nicht angewendet werden.",
+      "nl": "Golfplan kon niet worden toegepast."
+    }
+  },
+  {
+    "keys": [
+      "Hoard Builder quick guide"
+    ],
+    "translations": {
+      "es": "Guía rápida de oleadas de enemigos",
+      "fr": "Guide rapide des vagues d’ennemis",
+      "pt-BR": "Guia rápido de ondas de inimigos",
+      "de": "Kurzanleitung für Gegnerwellen",
+      "nl": "Snelgids voor vijandgolven"
+    }
+  },
+  {
+    "keys": [
+      "Open Hoard Builder wave runner"
+    ],
+    "translations": {
+      "es": "Abrir el editor y control de oleadas",
+      "fr": "Ouvrir l’éditeur et le contrôleur de vagues",
+      "pt-BR": "Abrir editor e controle de ondas",
+      "de": "Welleneditor und Ablaufsteuerung öffnen",
+      "nl": "Golfeditor en golfbesturing openen"
+    }
+  },
+  {
+    "keys": [
+      "No hoard action yet."
+    ],
+    "translations": {
+      "es": "Aún no se han ejecutado acciones de oleadas.",
+      "fr": "Aucune action sur les vagues pour l’instant.",
+      "pt-BR": "Nenhuma ação de ondas ainda.",
+      "de": "Noch keine Wellenaktion ausgeführt.",
+      "nl": "Nog geen golfactie uitgevoerd."
+    }
+  },
+  {
+    "keys": [
+      "Actor-key-derived label"
+    ],
+    "translations": {
+      "es": "Nombre obtenido del identificador de entidad",
+      "fr": "Nom dérivé de l’identifiant d’entité",
+      "pt-BR": "Nome derivado do identificador de entidade",
+      "de": "Aus der Spielobjektkennung abgeleiteter Name",
+      "nl": "Naam afgeleid van spelobject-ID"
+    }
+  },
+  {
+    "keys": [
+      "raw actor key"
+    ],
+    "translations": {
+      "es": "identificador interno de entidad",
+      "fr": "identifiant interne d’entité",
+      "pt-BR": "identificador interno de entidade",
+      "de": "interne Spielobjektkennung",
+      "nl": "interne spelobject-ID"
+    }
+  },
+  {
+    "keys": [
+      "Show only your saved My Favorites in the actor list."
+    ],
+    "translations": {
+      "es": "Mostrar solo las entidades guardadas en Mis favoritos.",
+      "fr": "Afficher uniquement les entités enregistrées dans Mes favoris.",
+      "pt-BR": "Mostrar apenas entidades salvas em Meus favoritos.",
+      "de": "Nur unter „Meine Favoriten“ gespeicherte Spielobjekte anzeigen.",
+      "nl": "Alleen spelobjecten uit Mijn favorieten tonen."
+    }
+  },
+  {
+    "keys": [
+      "Filter the same actor list to packaged boss character picks."
+    ],
+    "translations": {
+      "es": "Filtrar la lista para mostrar solo los jefes incluidos.",
+      "fr": "Filtrer la liste pour afficher uniquement les boss inclus.",
+      "pt-BR": "Filtrar a lista para mostrar apenas os chefes incluídos.",
+      "de": "Liste auf die enthaltenen Bossfiguren eingrenzen.",
+      "nl": "Lijst beperken tot de meegeleverde eindbazen."
+    }
+  },
+  {
+    "keys": [
+      "No @U serial found in the Matt Editor. Build or serialize an item first.",
+      "No @U serial found in the editor yet. Build or serialize an item first."
+    ],
+    "translations": {
+      "es": "No se encontró un código @U en el editor. Primero crea un objeto o genera su código.",
+      "fr": "Aucun code @U trouvé dans l’éditeur. Créez d’abord un objet ou générez son code.",
+      "pt-BR": "Nenhum código @U encontrado no editor. Primeiro crie um item ou gere seu código.",
+      "de": "Kein @U-Code im Editor gefunden. Zuerst einen Gegenstand erstellen oder seinen Code erzeugen.",
+      "nl": "Geen @U-code in de editor gevonden. Maak eerst een voorwerp of genereer de code ervan."
+    }
+  },
+  {
+    "keys": [
+      "Select one or more saved serial bookmarks first."
+    ],
+    "translations": {
+      "es": "Selecciona primero uno o varios códigos guardados.",
+      "fr": "Sélectionnez d’abord un ou plusieurs codes enregistrés.",
+      "pt-BR": "Selecione primeiro um ou mais códigos salvos.",
+      "de": "Zuerst einen oder mehrere gespeicherte Codes auswählen.",
+      "nl": "Selecteer eerst een of meer opgeslagen codes."
+    }
+  },
+  {
+    "keys": [
+      "Bookmark loaded. Validate / Confirm Serial before sending."
+    ],
+    "translations": {
+      "es": "Objeto guardado cargado. Valida y confirma el código antes de enviar.",
+      "fr": "Objet enregistré chargé. Validez et confirmez le code avant l’envoi.",
+      "pt-BR": "Item salvo carregado. Valide e confirme o código antes de enviar.",
+      "de": "Gespeicherten Gegenstand geladen. Code vor dem Senden prüfen und bestätigen.",
+      "nl": "Opgeslagen voorwerp geladen. Controleer en bevestig de code vóór verzending."
+    }
+  },
+  {
+    "keys": [
+      "Bookmarks saved. Validate / Confirm Serial before sending."
+    ],
+    "translations": {
+      "es": "Objetos guardados. Valida y confirma los códigos antes de enviar.",
+      "fr": "Objets enregistrés. Validez et confirmez les codes avant l’envoi.",
+      "pt-BR": "Itens salvos. Valide e confirme os códigos antes de enviar.",
+      "de": "Gegenstände gespeichert. Codes vor dem Senden prüfen und bestätigen.",
+      "nl": "Voorwerpen opgeslagen. Controleer en bevestig de codes vóór verzending."
+    }
+  },
+  {
+    "keys": [
+      "Bookmark serial must be one valid @U serial."
+    ],
+    "translations": {
+      "es": "El objeto guardado debe contener un único código @U válido.",
+      "fr": "L’objet enregistré doit contenir un seul code @U valide.",
+      "pt-BR": "O item salvo deve conter um único código @U válido.",
+      "de": "Der gespeicherte Gegenstand muss genau einen gültigen @U-Code enthalten.",
+      "nl": "Het opgeslagen voorwerp moet precies één geldige @U-code bevatten."
+    }
+  },
+  {
+    "keys": [
+      "Confirmed for delivery. Editing the serials will invalidate confirmation."
+    ],
+    "translations": {
+      "es": "Entrega confirmada. Si editas los códigos, tendrás que confirmar de nuevo.",
+      "fr": "Envoi confirmé. Toute modification des codes nécessitera une nouvelle confirmation.",
+      "pt-BR": "Entrega confirmada. Alterar os códigos exigirá nova confirmação.",
+      "de": "Lieferung bestätigt. Nach Codeänderungen ist eine erneute Bestätigung erforderlich.",
+      "nl": "Levering bevestigd. Na wijzigingen aan codes moet je opnieuw bevestigen."
+    }
+  },
+  {
+    "keys": [
+      "Content pack is detected when the serial is decoded; manual override is available."
+    ],
+    "translations": {
+      "es": "El paquete de contenido se detecta al decodificar el código. También puedes elegirlo manualmente.",
+      "fr": "Le pack de contenu est détecté lors du décodage. Vous pouvez aussi le choisir manuellement.",
+      "pt-BR": "O pacote de conteúdo é detectado ao decodificar o código. Você também pode escolhê-lo manualmente.",
+      "de": "Das Inhaltspaket wird beim Dekodieren erkannt. Es kann auch manuell gewählt werden.",
+      "nl": "Het inhoudspakket wordt bij het decoderen herkend. Je kunt het ook handmatig kiezen."
+    }
+  },
+  {
+    "keys": [
+      "Could not generate an item card from this serial."
+    ],
+    "translations": {
+      "es": "No se pudo generar una ficha de objeto con este código.",
+      "fr": "Impossible de générer une fiche d’objet avec ce code.",
+      "pt-BR": "Não foi possível gerar uma ficha de item com este código.",
+      "de": "Aus diesem Code konnte keine Gegenstandskarte erzeugt werden.",
+      "nl": "Er kon geen voorwerpkaart uit deze code worden gegenereerd."
+    }
+  },
+  {
+    "keys": [
+      "New bookmark staged. Add one @U serial, save, then validate before sending."
+    ],
+    "translations": {
+      "es": "Nuevo objeto preparado. Añade un código @U, guarda y valida antes de enviar.",
+      "fr": "Nouvel objet préparé. Ajoutez un code @U, enregistrez, puis validez avant l’envoi.",
+      "pt-BR": "Novo item preparado. Adicione um código @U, salve e valide antes de enviar.",
+      "de": "Neuen Eintrag vorbereitet. Einen @U-Code hinzufügen, speichern und vor dem Senden prüfen.",
+      "nl": "Nieuw voorwerp voorbereid. Voeg een @U-code toe, sla op en controleer vóór verzending."
+    }
+  },
+  {
+    "keys": [
+      "Serial changed while preparing submission. Review the new card and submit again."
+    ],
+    "translations": {
+      "es": "El código cambió durante la preparación. Revisa la nueva ficha y vuelve a enviarla.",
+      "fr": "Le code a changé pendant la préparation. Vérifiez la nouvelle fiche et renvoyez-la.",
+      "pt-BR": "O código mudou durante a preparação. Revise a nova ficha e envie novamente.",
+      "de": "Code während der Vorbereitung geändert. Neue Karte prüfen und erneut einreichen.",
+      "nl": "Code gewijzigd tijdens voorbereiding. Controleer de nieuwe kaart en dien opnieuw in."
+    }
+  },
+  {
+    "keys": [
+      "No item card for this serial."
+    ],
+    "translations": {
+      "es": "No hay ficha de objeto para este código.",
+      "fr": "Aucune fiche d’objet pour ce code.",
+      "pt-BR": "Não há ficha de item para este código.",
+      "de": "Keine Gegenstandskarte für diesen Code.",
+      "nl": "Geen voorwerpkaart voor deze code."
+    }
+  },
+  {
+    "keys": [
+      "No item card for this serial yet. Fill deserialized first."
+    ],
+    "translations": {
+      "es": "Aún no hay ficha. Rellena primero el código decodificado.",
+      "fr": "Pas encore de fiche. Remplissez d’abord le code décodé.",
+      "pt-BR": "Ainda não há ficha. Preencha primeiro o código decodificado.",
+      "de": "Noch keine Karte. Zuerst den dekodierten Code einfügen.",
+      "nl": "Nog geen kaart. Vul eerst de gedecodeerde code in."
+    }
+  },
+  {
+    "keys": [
+      "Load the Mattmab editor before detecting a serial."
+    ],
+    "translations": {
+      "es": "Carga el editor Mattmab antes de buscar un código de objeto.",
+      "fr": "Chargez l’éditeur Mattmab avant de rechercher un code d’objet.",
+      "pt-BR": "Carregue o editor Mattmab antes de buscar um código de item.",
+      "de": "Vor der Codesuche den Mattmab-Editor laden.",
+      "nl": "Laad de Mattmab-editor voordat je een voorwerpcode zoekt."
+    }
+  },
+  {
+    "keys": [
+      "Loaded bookmark serial into Boost sender."
+    ],
+    "translations": {
+      "es": "Código guardado cargado en el panel de entrega.",
+      "fr": "Code enregistré chargé dans le panneau d’envoi.",
+      "pt-BR": "Código salvo carregado no painel de entrega.",
+      "de": "Gespeicherten Code ins Lieferfeld geladen.",
+      "nl": "Opgeslagen code in het leveringspaneel geladen."
+    }
+  },
+  {
+    "keys": [
+      "Pull loads desktop Serial Bookmarks over the Mobile Gateway."
+    ],
+    "translations": {
+      "es": "Esta acción carga los códigos guardados del PC mediante la pasarela móvil.",
+      "fr": "Cette action charge les codes enregistrés du PC via la passerelle mobile.",
+      "pt-BR": "Esta ação carrega os códigos salvos do PC pelo gateway móvel.",
+      "de": "Diese Aktion lädt gespeicherte PC-Codes über das mobile Gateway.",
+      "nl": "Deze actie laadt opgeslagen pc-codes via de mobiele gateway."
+    }
+  },
+  {
+    "keys": [
+      "Used when Override level is Yes"
+    ],
+    "translations": {
+      "es": "Se usa al activar el cambio de nivel",
+      "fr": "Utilisé lorsque le changement de niveau est activé",
+      "pt-BR": "Usado quando a alteração de nível está ativada",
+      "de": "Wird bei aktivierter Leveländerung verwendet",
+      "nl": "Wordt gebruikt wanneer niveauwijziging is ingeschakeld"
+    }
+  },
+  {
+    "keys": [
+      "Sliders/fields are UI-only until Apply Now (or any Apply Movement Settings). Scope Local / All / Others chooses who receives the apply. Save/Load Preset and Fast/Moon/etc. only change the form until you apply through the bridge."
+    ],
+    "translations": {
+      "es": "Los controles solo cambian el formulario hasta que pulses Aplicar ahora o Aplicar ajustes de movimiento. Elige a quién afectar: jugador local, todos u otros. Guardar o cargar ajustes y elegir preajustes como Rápido o Luna no cambia el juego hasta que los apliques mediante la conexión.",
+      "fr": "Les contrôles modifient uniquement le formulaire jusqu’à ce que vous cliquiez sur Appliquer maintenant ou Appliquer les paramètres de mouvement. Choisissez les joueurs concernés : local, tous ou autres. Enregistrer, charger ou choisir un préréglage comme Rapide ou Lune ne modifie pas le jeu tant que vous ne l’appliquez pas via la connexion.",
+      "pt-BR": "Os controles só alteram o formulário até clicar em Aplicar agora ou Aplicar configurações de movimento. Escolha os jogadores afetados: local, todos ou outros. Salvar, carregar ou escolher predefinições como Rápido ou Lua não altera o jogo até aplicar pela conexão.",
+      "de": "Regler und Felder ändern zunächst nur das Formular. Erst „Jetzt anwenden“ oder „Bewegungseinstellungen anwenden“ überträgt die Werte ins Spiel. Wähle die betroffenen Spieler: lokal, alle oder andere. Speichern, Laden und Voreinstellungen wie Schnell oder Mond ändern ohne Anwenden nichts im Spiel.",
+      "nl": "Schuifregelaars en velden wijzigen alleen het formulier tot je Nu toepassen of Bewegingsinstellingen toepassen kiest. Kies de betrokken spelers: lokaal, alle of andere. Opslaan, laden en voorinstellingen zoals Snel of Maan veranderen het spel pas wanneer je ze via de verbinding toepast."
+    }
+  },
+  {
+    "keys": [
+      "Build sequenced ASD enemy waves: click actors to fill each wave, press Start Hoard, then clear the board — the next wave starts automatically. Stop pauses advance; Clear Spawns wipes ASD. Same actor catalog as Dev Spawner."
+    ],
+    "translations": {
+      "es": "Prepara oleadas de enemigos con ASD: selecciona entidades para cada oleada e inicia las oleadas. La siguiente empieza al eliminar los enemigos de la actual. Detener pausa el avance; Eliminar entidades generadas retira las entidades de ASD. Usa el mismo catálogo que el generador de desarrollo.",
+      "fr": "Préparez des vagues d’ennemis avec ASD : choisissez les entités de chaque vague et lancez les vagues. La suivante démarre quand les ennemis actuels sont éliminés. Arrêter suspend la progression ; Supprimer les entités générées retire les entités ASD. Le catalogue est le même que celui du générateur de développement.",
+      "pt-BR": "Prepare ondas de inimigos com ASD: escolha entidades para cada onda e inicie as ondas. A próxima começa quando os inimigos atuais forem eliminados. Parar pausa o avanço; Remover entidades geradas remove as entidades do ASD. O catálogo é o mesmo do gerador de desenvolvimento.",
+      "de": "Erstelle ASD-Gegnerwellen: Wähle Spielobjekte für jede Welle und starte die Wellen. Nach dem Besiegen aller Gegner beginnt die nächste Welle automatisch. Stoppen pausiert den Ablauf; Erzeugte Spielobjekte entfernen räumt ASD-Objekte auf. Der Katalog entspricht dem des Entwickler-Spawners.",
+      "nl": "Stel ASD-vijandgolven samen: kies spelobjecten voor elke golf en start de golven. De volgende golf begint zodra de huidige vijanden verslagen zijn. Stoppen pauzeert de voortgang; Gegenereerde spelobjecten verwijderen ruimt ASD-objecten op. De catalogus is dezelfde als die van de ontwikkelaarsspawner."
+    }
+  },
+  {
+    "keys": [
+      "Inventory read still queued — wait for serial delivery to finish, unpause in-game, then press Refresh Inventory again."
+    ],
+    "translations": {
+      "es": "La lectura del inventario sigue en cola. Espera a que termine la entrega de objetos, reanuda el juego y vuelve a pulsar Actualizar inventario.",
+      "fr": "La lecture de l’inventaire est toujours en attente. Attendez la fin de l’envoi des objets, reprenez le jeu, puis cliquez à nouveau sur Actualiser l’inventaire.",
+      "pt-BR": "A leitura do inventário ainda está na fila. Aguarde a entrega dos itens terminar, retome o jogo e clique em Atualizar inventário novamente.",
+      "de": "Inventarlesen wartet noch. Warte auf das Ende der Gegenstandslieferung, beende die Spielpause und klicke erneut auf „Inventar aktualisieren“.",
+      "nl": "Het uitlezen van de inventaris staat nog in de wachtrij. Wacht tot de levering klaar is, haal het spel uit de pauzestand en klik opnieuw op Inventaris vernieuwen."
+    }
+  }
+]
