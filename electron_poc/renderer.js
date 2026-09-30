@@ -14116,7 +14116,7 @@ const TUTORIAL_TOURS = {
     },
     {
       title: "Boosting",
-      body: "This is the main live lobby tab. Use Local / All / Other players, or pick a named party member, for public boosts, then Essentials, Ground Loot, Chests & Vendors, UVH, Combat & Cheats, Challenges, rarity weights, backpack/bank size, and serial rewards. Drop All Backpack and Reset Skill Tree are host-only. Kick lives next to the named roster. Most buttons need the game connected.",
+      body: "This is the main live lobby tab. Use Local / All / Other players, or pick a named party member, for public boosts, then Essentials, Ground Loot, Chests & Vendors, UVH, Combat & Cheats, Challenges, rarity weights, backpack/bank size, and serial rewards. Drop All Backpack affects your own character; Reset Skill Tree is host-only. Kick lives next to the named roster. Most buttons need the game connected.",
       tab: "boosting",
       targetSel: "#tab-boosting [data-msbt-panel='boost-target']",
       revealPanels: ["boost-target", "boost-essentials"]
@@ -14320,14 +14320,14 @@ const TAB_TUTORIALS = {
   boosting: [
     {
       title: "Connection & scope",
-      body: "Use Status in the header or Refresh Status in this panel until the game connection is green. Local / All / Other players / Named Player apply to public boosts, XP, currency, backpack/bank changes, and Shinies Deliver. Pick a named party member for Kick and one-player targeting. Drop All Backpack and Reset Skill Tree remain host-only.",
+      body: "Use Status in the header or Refresh Status in this panel until the game connection is green. Local / All / Other players / Named Player apply to public boosts, XP, currency, backpack/bank changes, and Shinies Deliver. Pick a named party member for Kick and one-player targeting. Drop All Backpack affects your own character; Reset Skill Tree remains host-only.",
       tab: "boosting",
       targetSel: "#tab-boosting [data-msbt-panel='boost-target']",
       revealPanels: ["boost-target"]
     },
     {
       title: "Essentials",
-      body: "Essentials is the frequent-action home: Max All, host-only Drop All Backpack, Shinies Drop/targeted Deliver, All Customs, Super Dash, Instant Drops / Instant Holds, and Third Person camera. Instant Drops and Holds support direct oak2 hotkeys plus gold + QM pins for F7 slots and slot hotkeys.",
+      body: "Essentials is the frequent-action home: Max All, Drop My Backpack, Shinies Drop/targeted Deliver, All Customs, Super Dash, Instant Drops / Instant Holds, and Third Person camera. Instant Drops and Holds support direct oak2 hotkeys plus gold + QM pins for F7 slots and slot hotkeys.",
       tab: "boosting",
       targetSel: "#tab-boosting [data-msbt-panel='boost-essentials']",
       revealPanels: ["boost-essentials"]
@@ -14383,7 +14383,7 @@ const TAB_TUTORIALS = {
     },
     {
       title: "Backpack / Bank Size",
-      body: "This panel changes capacities only. Drop All Backpack lives in Essentials and always affects the host. Auto keeps sizes applied as players load.",
+      body: "This panel changes capacities only. Drop My Backpack lives in Essentials and always affects your own character. Auto keeps sizes applied as players load.",
       tab: "boosting",
       targetSel: "#tab-boosting [data-msbt-panel='boost-inventory']",
       revealPanels: ["boost-inventory"]
@@ -14477,7 +14477,7 @@ const TAB_TUTORIALS = {
     },
     {
       title: "Capacity note",
-      body: "Open Bank Anywhere is here with inventory browsing. Capacity changes live on Boosting → Backpack / Bank Size; host-only Drop All Backpack lives in Boosting → Essentials.",
+      body: "Open Bank Anywhere is here with inventory browsing. Capacity changes live on Boosting → Backpack / Bank Size; Drop My Backpack lives in Boosting → Essentials.",
       tab: "inventory",
       targetSel: "#tab-inventory .inv-root"
     }

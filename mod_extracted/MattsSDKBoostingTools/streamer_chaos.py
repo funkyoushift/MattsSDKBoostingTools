@@ -240,6 +240,9 @@ def empty_backpack_for_pc(pc: Any) -> str:
 
 
 def drop_backpack_for_pc(pc: Any) -> str:
+    if pc is not None and int(pc.Role) == 2:
+        from .serial_rewards import _direct_native
+        return _direct_native().guest(pc).drop_backpack(pc)
     pawn = _pawn_from_pc(pc)
     statics = _inventory_statics()
     if pc is None or pawn is None or statics is None:

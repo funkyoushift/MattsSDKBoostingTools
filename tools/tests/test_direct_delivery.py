@@ -295,7 +295,7 @@ def test_epic_controller_validation_uses_selected_thunk(monkeypatch):
     instance = object.__new__(native.NativeInventory)
     instance.base = 0x140000000
     instance.insert_rva = native.EPIC_GATES[2][0]
-    pc = SimpleNamespace(_get_address=lambda:0x1000)
+    pc = SimpleNamespace(_get_address=lambda:0x1000, Role=3)
     interface = 0x1000 + 0xE38
     monkeypatch.setattr(instance, 'u64', lambda p: 0x5000 if p == interface else instance.base + instance.insert_rva)
     monkeypatch.setattr(instance, 'read', lambda p,n:b'\x03')

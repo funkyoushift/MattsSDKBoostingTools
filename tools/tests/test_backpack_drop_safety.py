@@ -81,3 +81,16 @@ def test_dispatch_keeps_public_and_dev_action_ids_separate():
     source = BACKEND.read_text(encoding="utf-8")
     assert 'elif key == "chaos_drop_backpack":\n        result = chaos_drop_backpack(payload)' in source
     assert 'elif key == "chaos_drop_backpack_targeted":\n        result = chaos_drop_backpack_targeted(payload)' in source
+
+
+def test_public_guest_drop_targets_only_local_without_remote_password_bypass():
+    funcs = _load_backpack_functions()
+    local = SimpleNamespace(Role=2)
+    calls = []
+    funcs['get_pc'] = lambda: local
+    funcs['_challenge_is_host'] = lambda: (False, 'client')
+    funcs['streamer_chaos'] = SimpleNamespace(drop_backpack_for_pc=lambda pc: calls.append(pc) or 'OK', result_ok=lambda _:True)
+    result = funcs['chaos_drop_backpack']()
+    assert result['ok'] and result['local_only'] and not result['host_only']
+    assert calls == [local]
+    assert funcs['_backpack_target_password_guard'](local)['password_required']

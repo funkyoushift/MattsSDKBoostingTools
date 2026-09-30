@@ -6018,14 +6018,14 @@ def _backpack_target_password_guard(pc: Any, payload: dict[str, Any] | None = No
 
 
 def chaos_drop_backpack(payload: dict[str, Any] | None = None) -> dict[str, Any]:
-    """Public backpack drop-all action: always target the local host controller."""
+    """Public backpack drop-all action: always target your own local controller."""
     try:
         pc = get_pc()
     except Exception as exc:
         return {"ok": False, "message": f"Drop backpack host guard could not resolve host: {exc!r}"}
     if pc is None:
         return {"ok": False, "message": "Drop backpack host guard could not resolve the host controller."}
-    denied = _backpack_target_password_guard(pc, payload)
+    denied = None if int(getattr(pc, "Role", 3)) == 2 else _backpack_target_password_guard(pc, payload)
     if denied:
         return denied
     try:
@@ -6033,7 +6033,7 @@ def chaos_drop_backpack(payload: dict[str, Any] | None = None) -> dict[str, Any]
     except Exception as exc:
         return {"ok": False, "message": f"Drop backpack failed for host: {exc!r}"}
     ok = streamer_chaos.result_ok(str(msg))
-    return {"ok": ok, "message": f"Drop backpack â†’ host only: {msg}", "host_only": True}
+    return {"ok": ok, "message": f"Drop backpack → your character: {msg}", "host_only": int(getattr(pc, "Role", 3)) == 3, "local_only": True}
 
 
 def chaos_drop_backpack_targeted(payload: dict[str, Any] | None = None) -> dict[str, Any]:

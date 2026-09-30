@@ -85,7 +85,17 @@ class NativeInventory:
     def u64(self, ptr):
         return struct.unpack('<Q', self.read(ptr, 8))[0]
 
+    def guest(self, pc):
+        from .guest_inventory import GuestInventory, require_local_guest
+        require_local_guest(pc)
+        if not hasattr(self, '_guest'):
+            self._guest = GuestInventory(self)
+        return self._guest
+
     def validate_controller(self, pc):
+        if int(pc.Role) == 2:
+            self.guest(pc)
+            return None
         interface = int(pc._get_address()) + 0xE38
         if self.u64(self.u64(interface) + 0x30) != self.base + self.insert_rva:
             raise RuntimeError('Inventory owner interface changed')
@@ -122,6 +132,9 @@ class NativeInventory:
                 raise RuntimeError('Constructed serial differs from requested serial')
             # Native call copies the identity. No reward creation, inventory clear,
             # equipment rewrite, or backpack-capacity modification is involved.
-            self.insert(interface, address, self.flags, -1, 0)
+            if interface is None:
+                self.guest(pc).transaction(pc, identity_address=address)
+            else:
+                self.insert(interface, address, self.flags, -1, 0)
         finally:
             self.destroy(address)
