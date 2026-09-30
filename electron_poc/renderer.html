@@ -856,7 +856,11 @@
 </div>
 <div>
 <h3 id="communityPreviewTitle">Select a folder</h3>
-<p id="communityPreviewDescription"></p>
+<p id="communityPreviewCreator"></p>
+<details id="communityPreviewNotes" hidden open>
+<summary>Folder notes</summary>
+<p id="communityPreviewDescription" style="white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.5;max-height:18rem;overflow:auto"></p>
+</details>
 <p id="communityPreviewCount"></p>
 <div class="button-row wrap">
 <button id="communitySelectAll" type="button">Select all items</button>
@@ -889,8 +893,8 @@
 <label>Public title<input id="communitySubmitTitle" maxlength="80"/></label>
 <label>Your display name<input id="communitySubmitCreator" maxlength="80"/></label>
 </div>
-<label for="communitySubmitDescription">Description</label>
-<textarea id="communitySubmitDescription" maxlength="2000" placeholder="What is this list for? Which character or build?"></textarea>
+<label for="communitySubmitDescription">Folder notes</label>
+<textarea id="communitySubmitDescription" maxlength="2000" placeholder="Explain the build, required gear, setup steps, or anything users should know."></textarea>
 <p id="communitySubmitCount"></p>
 <label><input id="communitySubmitConsent" type="checkbox"/>Share this folder's item names, codes, and subfolders publicly after approval. I have permission to share them.</label>
 <button id="communitySubmitBtn">Submit for approval</button>

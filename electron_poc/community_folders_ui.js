@@ -25,7 +25,7 @@
     select.value=previous;countSubmission();
   }
   function countSubmission(){const folder=$('communitySubmitFolder').value;const count=state.bookmarks.filter(row=>folder&&bookmarkInFolder(row.group,folder)).length;$('communitySubmitCount').textContent=folder?`${count} item entries will be shared, including duplicates and subfolders.`:'Choose a folder to see its item count.';}
-  function clearPreview(){selected=null;checked.clear();selectionChanged();$('communityPreviewTitle').textContent='Select a folder';$('communityPreviewDescription').textContent='';$('communityPreviewCount').textContent='';discardSavedCards($('communityPreviewItems'));$('communityPreviewItems').replaceChildren();$('communityImportBtn').disabled=true;$('communityCopyBtn').disabled=true;$('communityWithdrawBtn').hidden=true;$('communityReviewActions').hidden=true;$('communityPreviewMore').hidden=true;}
+  function clearPreview(){$('communityPreviewCreator').textContent='';$('communityPreviewNotes').hidden=true;selected=null;checked.clear();selectionChanged();$('communityPreviewTitle').textContent='Select a folder';$('communityPreviewDescription').textContent='';$('communityPreviewCount').textContent='';discardSavedCards($('communityPreviewItems'));$('communityPreviewItems').replaceChildren();$('communityImportBtn').disabled=true;$('communityCopyBtn').disabled=true;$('communityWithdrawBtn').hidden=true;$('communityReviewActions').hidden=true;$('communityPreviewMore').hidden=true;}
   function items(){
     const end=Math.min(shown+100,selected.folder.items.length),host=$('communityPreviewItems');
     for(let index=shown;index<end;index++){
@@ -41,7 +41,10 @@
     clearPreview();message('Loading folder preview…');
     const data=await call(source==='review'?'reviewGet':source==='mine'?'status':'get',{id});selected={...data,source};
     $('communityPreviewTitle').textContent=data.folder.title;
-    $('communityPreviewDescription').textContent=`Submitted by ${data.folder.creator}. ${data.folder.description}`;
+    $('communityPreviewCreator').textContent=`Submitted by ${data.folder.creator}.`;
+    $('communityPreviewDescription').textContent=data.folder.description || '';
+    $('communityPreviewNotes').hidden=!data.folder.description?.trim();
+    $('communityPreviewNotes').open=true;
     $('communityPreviewCount').textContent=`${data.folder.items.length} item entries · ${data.status}${data.oversized_count?` · ${data.oversized_count} oversized codes cannot currently be delivered`:''}${data.review_note?' · Review: '+data.review_note:''}`;
     $('communityDestination').value=data.folder.title;$('communityImportBtn').disabled=data.status!=='approved';$('communityCopyBtn').disabled=data.status!=='approved';
     $('communityWithdrawBtn').hidden=source!=='mine'||data.status==='withdrawn';$('communityReviewActions').hidden=source!=='review'||data.status==='withdrawn';$('communityReviewNote').value=data.review_note||'';
@@ -104,6 +107,47 @@
   $('communityDeveloperPortal').addEventListener('click',()=>run(async()=>{const result=await window.msbt.openDeveloperPortal();if(!result.ok)throw Error(result.message);}));
   $('developerPortalHeaderBtn').addEventListener('click',async()=>{try{const result=await window.msbt.openDeveloperPortal();if(!result.ok)window.alert(result.message);}catch{window.alert('Developer portal could not open. Please restart the updated desktop app.');}});
   window.addEventListener('msbt-bookmarks-changed',folders);
-  const afkButton=document.createElement('button');afkButton.type='button';afkButton.textContent='Browse community folders';afkButton.addEventListener('click',()=>{(window.MsbtWorkspace?.enabled ? window.MsbtWorkspace.open('serial-tools','saved') : switchTab('serial-tools'));$('communityOpenBtn').click();});
-  $('afkBookmarkFolder')?.insertAdjacentElement('afterend',afkButton);
+  // Browse approved folders in place; reuse AFK's persistence and running-session guard.
+  const afkPicker=document.createElement('details');afkPicker.id='afkCommunityPicker';
+  afkPicker.innerHTML=`<summary>Community folders</summary>
+    <label for="afkCommunitySearch">Search community folders</label>
+    <div class="button-row wrap"><input id="afkCommunitySearch" type="search" placeholder="Folder title or creator"><button id="afkCommunitySearchBtn" type="button">Search library</button></div>
+    <label for="afkCommunityFolder">Choose a community folder</label><select id="afkCommunityFolder"><option value="">Choose a folder</option></select>
+    <div class="button-row wrap"><button id="afkCommunityPrevious" type="button" disabled>Previous</button><button id="afkCommunityNext" type="button" disabled>Next</button></div>
+    <div class="button-row wrap"><button id="afkCommunityAdd" type="button" disabled>Add folder to loot pool</button><button id="afkCommunityGuaranteed" type="button" disabled>Add folder to guaranteed items</button></div>
+    <p id="afkCommunityNote" class="muted-line" role="status">Choose a folder to copy its item codes into an AFK list. No local bookmark import is needed.</p>`;
+  $('afkBookmarkFolder')?.insertAdjacentElement('afterend',afkPicker);
+  let afkBusy=false,afkNext=null,afkPages=[0],afkQuery='';
+  const afkNote=text=>{$('afkCommunityNote').textContent=text;};
+  function afkControls(){
+    for(const id of ['afkCommunitySearchBtn','afkCommunityPrevious','afkCommunityNext','afkCommunityAdd','afkCommunityGuaranteed'])$(id).disabled=afkBusy;
+    $('afkCommunityPrevious').disabled=afkBusy||afkPages.length===1;
+    $('afkCommunityNext').disabled=afkBusy||afkNext==null;
+    $('afkCommunityAdd').disabled=$('afkCommunityGuaranteed').disabled=afkBusy||!$('afkCommunityFolder').value;
+  }
+  async function afkRun(fn){if(afkBusy)return;afkBusy=true;afkPicker.setAttribute('aria-busy','true');afkControls();try{await fn();}catch(error){afkNote(error.message);}finally{afkBusy=false;afkPicker.removeAttribute('aria-busy');afkControls();}}
+  async function afkBrowse(direction='reset'){
+    const offset=direction==='next'?afkNext:direction==='previous'?afkPages.at(-2):0;
+    const query=direction==='reset'?$('afkCommunitySearch').value.trim():afkQuery;
+    const data=await call('list',{q:query,offset});
+    afkQuery=query;afkNext=data.next;afkPages=direction==='next'?[...afkPages,offset]:direction==='previous'?afkPages.slice(0,-1):[0];
+    const select=$('afkCommunityFolder');select.replaceChildren(new Option('Choose a folder',''));
+    for(const row of data.folders)select.add(new Option(`${row.title}${row.creator?' — '+row.creator:''}${row.item_count!=null?' · '+row.item_count+' items':''}`,row.id));
+    afkNote(data.folders.length?'Choose a folder, then add it to the loot pool or guaranteed items.':'No folders found.');
+  }
+  afkPicker.addEventListener('toggle',()=>{if(afkPicker.open&&$('afkCommunityFolder').options.length===1)afkRun(()=>afkBrowse());});
+  $('afkCommunitySearchBtn').addEventListener('click',()=>afkRun(()=>afkBrowse()));
+  $('afkCommunitySearch').addEventListener('keydown',event=>{if(event.key==='Enter'&&!event.isComposing){event.preventDefault();afkRun(()=>afkBrowse());}});
+  $('afkCommunityFolder').addEventListener('change',afkControls);
+  $('afkCommunityPrevious').addEventListener('click',()=>afkRun(()=>afkBrowse('previous')));
+  $('afkCommunityNext').addEventListener('click',()=>afkRun(()=>afkBrowse('next')));
+  for(const [id,guaranteed] of [['afkCommunityAdd',false],['afkCommunityGuaranteed',true]])$(id).addEventListener('click',()=>afkRun(async()=>{
+    const id=$('afkCommunityFolder').value;if(!id)throw Error('Choose a folder first.');
+    const data=await call('get',{id});
+    if(data.status!=='approved')throw Error('Only approved community folders can be added.');
+    const codes=data.folder.items.map(item=>item.serial);
+    if(!codes.length||codes.some(code=>typeof code!=='string'||!code.trim()))throw Error('This folder has missing item codes. Nothing added.');
+    const result=window.msbtAfkAppendLoot(codes,guaranteed);
+    afkNote(result.ok?`Added ${codes.length} item code(s) from “${data.folder.title}” to ${guaranteed?'guaranteed items':'the loot pool'}.`:result.message);
+  }));
 })();
