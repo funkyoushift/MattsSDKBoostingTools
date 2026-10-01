@@ -40,6 +40,11 @@ test('real local D1: privacy, moderation, large payload, retry and safe local im
     for(let i=0;i<2;i++){const res=await wr('POST');assert(res.ok);assert.equal(res.headers.get('Access-Control-Allow-Origin'),webOrigin);}
     assert.equal((await (await wr('GET')).json()).status,'pending');assert.equal((await mf.dispatchFetch('http://local/folders/'+webId)).status,404);assert((await wr('DELETE')).ok);
     await db.prepare('DELETE FROM folder_chunks WHERE folder_id=?').bind(webId).run();await db.prepare('DELETE FROM folders WHERE id=?').bind(webId).run();
+    for(const limit of ['0','101','1.5','bad'])assert.equal((await mf.dispatchFetch('http://local/folders?limit='+limit)).status,400);
+    const pagingIds=Array.from({length:61},()=>crypto.randomUUID());
+    await db.batch(pagingIds.map(id=>db.prepare("INSERT INTO folders(id,title,creator,description,item_count,oversized_count,digest,owner_hash,status,created_at) VALUES(?,'Paging','Test','',1,0,'digest','owner','approved','2026-10-01')").bind(id)));
+    for(const limit of [25,50,100]){const data=await (await mf.dispatchFetch('http://local/folders?limit='+limit)).json();assert.equal(data.folders.length,Math.min(limit,61));assert.equal(data.next,limit<61?limit:null);if(data.next){const second=await(await mf.dispatchFetch('http://local/folders?limit='+limit+'&offset='+data.next)).json();assert(!second.folders.some(x=>data.folders.some(y=>y.id===x.id)));}}
+    await db.batch(pagingIds.map(id=>db.prepare('DELETE FROM folders WHERE id=?').bind(id)));
     let loseResponse=true;
     const fetcher=async(url,options)=>{const result=await mf.dispatchFetch(url,options);if(loseResponse&&new URL(url).pathname==='/submissions'){loseResponse=false;throw Error('Simulated lost response');}return result;};
     const safeStorage={isEncryptionAvailable:()=>true,encryptString:s=>Buffer.from(s).reverse(),decryptString:b=>Buffer.from(b).reverse().toString()};

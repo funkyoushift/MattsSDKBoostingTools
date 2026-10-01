@@ -64,11 +64,13 @@ async function handleRequest(request,env) {
     if(request.method==='GET'&&(path==='/folders'||path==='/review')) {
       const q=(url.searchParams.get('q')||'').slice(0,100);
       const offset=Number(url.searchParams.get('offset')||0);
+      const limit=Number(url.searchParams.get('limit')||25);
+      if(!Number.isInteger(limit)||limit<1||limit>100)return json({ok:false,message:'Page size must be between 1 and 100.'},400);
       if(!Number.isInteger(offset)||offset<0||offset>100000)return json({ok:false,message:'Invalid page.'},400);
       const status=reviewer?(url.searchParams.get('status')||'pending'):'approved';
       if(!['pending','approved','rejected','withdrawn'].includes(status))return json({ok:false,message:'Invalid status.'},400);
-      const rows=await env.LIBRARY.prepare(`SELECT ${publicColumns}${reviewer?',review_note':''} FROM folders WHERE status=? AND (instr(lower(title),lower(?))>0 OR instr(lower(creator),lower(?))>0) ORDER BY created_at DESC,id LIMIT 26 OFFSET ?`).bind(status,q,q,offset).all();
-      return json({ok:true,folders:rows.results.slice(0,25),next:rows.results.length>25?offset+25:null});
+      const rows=await env.LIBRARY.prepare(`SELECT ${publicColumns}${reviewer?',review_note':''} FROM folders WHERE status=? AND (instr(lower(title),lower(?))>0 OR instr(lower(creator),lower(?))>0) ORDER BY created_at DESC,id LIMIT ? OFFSET ?`).bind(status,q,q,limit+1,offset).all();
+      return json({ok:true,folders:rows.results.slice(0,limit),next:rows.results.length>limit?offset+limit:null});
     }
     if(path==='/submissions'&&request.method==='POST') {
       const authorization=token(request);if(!/^[a-f0-9]{64}$/.test(authorization))return json({ok:false,message:'Invalid submission key.'},401);
