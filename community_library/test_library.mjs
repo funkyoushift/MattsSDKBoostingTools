@@ -40,6 +40,10 @@ test('real local D1: privacy, moderation, large payload, retry and safe local im
     const id=mine.submissions[0].id;
     assert.equal((await client.dispatch('list')).folders.length,0);
     assert.equal((await mf.dispatchFetch('http://local/folders/'+id)).status,404);
+    const privatePublicApi=await mf.dispatchFetch('http://local/api/v1/folders/'+id,{headers:{Origin:'https://another-app.example'}});
+    assert.equal(privatePublicApi.status,404);
+    assert.equal(privatePublicApi.headers.get('Access-Control-Allow-Origin'),'*');
+    assert.equal((await (await mf.dispatchFetch('http://local/api/v1/folders')).json()).folders.length,0);
     assert.equal((await mf.dispatchFetch('http://local/share/'+id)).status,404);
     assert.equal((await mf.dispatchFetch('http://local/submissions/'+id)).status,404);
     assert.equal((await mf.dispatchFetch('http://local/review/'+id)).status,401);
@@ -63,6 +67,33 @@ test('real local D1: privacy, moderation, large payload, retry and safe local im
     await review(id,'approved');
     const got=await client.dispatch('get',{id});assert.deepEqual(got.folder,folder);assert(!('owner_hash'in got));assert(!('review_note'in got));
     assert.equal((await client.dispatch('list',{q:'Vex'})).folders.length,1);
+    const publicList=await mf.dispatchFetch('http://local/api/v1/folders?q=Vex',{headers:{Origin:'https://another-app.example'}});
+    assert.equal(publicList.headers.get('Access-Control-Allow-Origin'),'*');
+    assert.equal(publicList.headers.get('Access-Control-Allow-Credentials'),null);
+    assert.equal((await publicList.json()).folders.length,1);
+    const publicDetail=await (await mf.dispatchFetch('http://local/api/v1/folders/'+id)).json();
+    assert.deepEqual(publicDetail.folder,folder);
+    assert.equal(publicDetail.digest,got.digest);
+    assert(!('owner_hash' in publicDetail));assert(!('review_note' in publicDetail));
+    for(const method of ['POST','PUT','DELETE'])assert.equal((await mf.dispatchFetch('http://local/api/v1/folders/'+id,{method})).status,405);
+    const preflight=await mf.dispatchFetch('http://local/api/v1/folders',{method:'OPTIONS',headers:{Origin:'https://another-app.example','Access-Control-Request-Method':'GET'}});
+    assert.equal(preflight.status,204);assert.equal(preflight.headers.get('Access-Control-Allow-Origin'),'*');
+    assert.equal((await mf.dispatchFetch('http://local/api/v1/review')).status,404);
+    assert.equal((await mf.dispatchFetch('http://local/api/v1/submissions/'+id)).status,404);
+    const spec=await (await mf.dispatchFetch('http://local/api/v1/openapi.json')).json();
+    assert.equal(spec.openapi,'3.1.0');assert(spec.paths['/folders/{id}']);
+    for(const origin of ['https://www.funkyoushift.com','https://funkyoushift.com','https://funkyoushift.github.io']) {
+      for(const route of ['/folders','/folders/'+id]) {
+        const response=await mf.dispatchFetch('http://local'+route,{headers:{Origin:origin}});
+        assert.equal(response.headers.get('Access-Control-Allow-Origin'),origin);
+        assert.equal(response.headers.get('Access-Control-Allow-Credentials'),null);
+      }
+    }
+    for(const route of ['/review','/submissions/'+id,'/portal/api/me']) {
+      assert.equal((await mf.dispatchFetch('http://local'+route,{headers:{Origin:'https://www.funkyoushift.com'}})).headers.get('Access-Control-Allow-Origin'),null);
+    }
+    assert.equal((await mf.dispatchFetch('http://local/folders',{headers:{Origin:'https://untrusted.example'}})).headers.get('Access-Control-Allow-Origin'),null);
+    assert.equal((await mf.dispatchFetch('http://local/submissions',{method:'POST',headers:{Origin:'https://www.funkyoushift.com'}})).headers.get('Access-Control-Allow-Origin'),null);
     await assert.rejects(client.dispatch('get',{id:'https://evil.test/folders/'+id}),/not an MSBT/);
     assert.equal((await mf.dispatchFetch('http://local/share/'+id)).status,200);
     await review(id,'rejected');

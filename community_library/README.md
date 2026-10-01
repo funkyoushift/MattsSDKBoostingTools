@@ -20,7 +20,7 @@ Password changes are supported. Email verification and forgotten-password recove
 - D1 stores payloads in small chunks in an atomic batch; lists larger than the old 2 MiB bridge ceiling work.
 - Codes are format-checked, not proven legitimate or safe to equip. Oversized codes remain visible as not currently deliverable. Reviewers see that count before approval.
 - Public reads and writes have separate rate limits. A full pending queue rejects further uploads explicitly.
-- Public pages and search return only approved entries. The service ignores supplied URLs and extra metadata. Share pages escape all user text. No CORS wildcard or generic fetch proxy is provided.
+- Public pages and search return only approved entries. The service ignores supplied URLs and extra metadata. Share pages escape all user text. The public v1 read API allows anonymous browser access from any origin; private routes have no wildcard CORS. No generic fetch proxy is provided.
 - Imported copies do not change when their source is later rejected or withdrawn. User bookmarks are never deleted by catalog moderation.
 
 ## Development and deployment
@@ -33,3 +33,25 @@ Password changes are supported. Email verification and forgotten-password recove
 6. Create the owner's account through Developer portal, verify their account ID, then insert that ID with role `owner` in the `team` table using authenticated operator access. Test account creation, role revocation, editing, deletion, and pending → approved → imported → withdrawn with clearly labeled test folders. Never publish a user's private folder as a test.
 
 Desktop local integration uses `MSBT_TEST_COMMUNITY_URL=http://127.0.0.1:8789` only in an unpackaged app. Production builds ignore that override. Do not publish desktop/APK releases without a separate release request.
+
+## Website access
+
+The website's `/community/` page uses anonymous GET requests to `/folders` and
+`/folders/:id`. Only `https://www.funkyoushift.com`, `https://funkyoushift.com`,
+and `https://funkyoushift.github.io` receive public-read CORS headers. No cookies,
+submission writes, private ownership routes, or moderation routes are exposed
+cross-origin. Deploy this service update before publishing the website page.
+The page verifies each folder digest before enabling copy/download actions.
+
+## Public integration API
+
+`GET /api/v1/folders?q=...&offset=0` and `GET /api/v1/folders/:id` expose the
+same approved data as the legacy public routes. These two versioned routes have
+anonymous wildcard CORS, no credential sharing, and no write operations.
+`GET /api/v1/openapi.json` documents the contract. OPTIONS supports public GET
+preflight only. Existing SDK/desktop URLs remain supported. Admin authentication,
+role assignment, submissions and moderation are not part of this public API.
+
+Website documentation at `/community/api.html` includes a downloadable integration
+kit and dependency-free JavaScript/Python clients. No npm or PyPI publication is
+required. The clients verify folder digests and preserve serial case/duplicates.

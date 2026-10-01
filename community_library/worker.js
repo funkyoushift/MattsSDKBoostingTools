@@ -1,6 +1,7 @@
 import contract from '../electron_poc/community_folders_contract.js';
 import {portal} from './portal.js';
 import {identity,allowed} from './auth.js';
+import openapi from './openapi.json';
 const publicColumns='id,title,creator,description,item_count,oversized_count,digest,status,created_at,reviewed_at';
 const json=(data,status=200)=>Response.json(data,{status,headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
 const hash=async value=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(value)))].map(x=>x.toString(16).padStart(2,'0')).join('');
@@ -20,7 +21,31 @@ function chunks(text) {
   return result;
 }
 const escape=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const publicOrigins = new Set(['https://www.funkyoushift.com','https://funkyoushift.com','https://funkyoushift.github.io']);
 export default {async fetch(request,env) {
+  const path = new URL(request.url).pathname;
+  const versioned = path==='/api/v1/folders' || /^\/api\/v1\/folders\/[0-9a-f-]+$/i.test(path);
+  if(path==='/api/v1/openapi.json' && request.method==='GET')return Response.json(openapi,{headers:{'Access-Control-Allow-Origin':'*','Cache-Control':'public, max-age=300'}});
+  if(versioned && request.method==='OPTIONS')return new Response(null,{status:204,headers:{'Access-Control-Allow-Origin':'*','Access-Control-Allow-Methods':'GET, OPTIONS','Access-Control-Max-Age':'600'}});
+  if(versioned && request.method!=='GET')return json({ok:false,message:'The public API is read-only.'},405);
+  let routed=request;
+  if(versioned){const url=new URL(request.url);url.pathname=path.slice('/api/v1'.length);routed=new Request(url,request);}
+  const response = await handleRequest(routed,env);
+  if(versioned && request.method==='GET') {
+    const headers=new Headers(response.headers);
+    headers.set('Access-Control-Allow-Origin','*');
+    return new Response(response.body,{status:response.status,headers});
+  }
+  // Only anonymous, public folder reads can be accessed by the website.
+  if(request.method==='GET' && (path==='/folders' || /^\/folders\/[0-9a-f-]+$/i.test(path)) && publicOrigins.has(request.headers.get('Origin'))) {
+    const headers = new Headers(response.headers);
+    headers.set('Access-Control-Allow-Origin',request.headers.get('Origin'));
+    headers.set('Vary','Origin');
+    return new Response(response.body,{status:response.status,headers});
+  }
+  return response;
+}};
+async function handleRequest(request,env) {
   try {
     const url=new URL(request.url),path=url.pathname;
     if(path==='/health'&&request.method==='GET') return json({ok:true,service:'MSBT community folders',version:1});
@@ -94,4 +119,4 @@ export default {async fetch(request,env) {
     if(error instanceof SyntaxError || error.status || !String(error.message).match(/D1_|SQLITE|database/i))return json({ok:false,message:String(error.message).slice(0,240)},error.status||400);
     return json({ok:false,message:'The library is temporarily unavailable. Please try again.'},503);
   }
-}};
+}
