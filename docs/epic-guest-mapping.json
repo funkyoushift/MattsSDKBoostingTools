@@ -1,0 +1,151 @@
+{
+  "epic_sha256": "764a4bb5403a2619a0be627de5a738e23ea021e8672f7f0e7a536697d4a06719",
+  "functions": [
+    {
+      "name": "initialize",
+      "steam_rva": 92278004,
+      "size": 176,
+      "epic_matches": [
+        92347916
+      ],
+      "rva": 92347916,
+      "sha256": "9551f8a5aa55dc10eee3505eacbae3d921be88f93923f2c8fb2c4c8e8eeaa188"
+    },
+    {
+      "name": "copy_identity",
+      "steam_rva": 7338990,
+      "size": 471,
+      "epic_matches": [
+        7338990
+      ],
+      "rva": 7338990,
+      "sha256": "bcd7af3bd5339f1d21b990ad37311aa4a35de01d5e212262ad086c3111e0f1ef"
+    },
+    {
+      "name": "destroy_identity",
+      "steam_rva": 3579156,
+      "size": 184,
+      "epic_matches": [
+        3579156
+      ],
+      "rva": 3579156,
+      "sha256": "69745be40196a35f3df4aa98c5f0453fbd12018fd71925dc5fe0d3d76a91c559"
+    },
+    {
+      "name": "destroy_transaction",
+      "steam_rva": 105779922,
+      "size": 44,
+      "epic_matches": [
+        105813370
+      ],
+      "rva": 105813370,
+      "sha256": "873fa825bd9d555163b6f1101241048ad3a0c50986472154c18d163d80a0b3b9"
+    },
+    {
+      "name": "validate",
+      "steam_rva": 98605076,
+      "size": 909,
+      "epic_matches": [
+        98656758
+      ],
+      "rva": 98656758,
+      "sha256": "71c3ebcdefeb99474b35030044e7d04b401bccf14991fe530a21152b72912a5e"
+    },
+    {
+      "name": "evidence_0",
+      "steam_rva": 19828340,
+      "size": 22,
+      "epic_matches": [
+        19818562
+      ],
+      "rva": 19818562,
+      "sha256": "44645cf9f58a57466dd40e044c9d7044acee0700bc6ca3bc23d60b53fda8f66f"
+    },
+    {
+      "name": "evidence_1",
+      "steam_rva": 98177860,
+      "size": 47,
+      "epic_matches": [
+        98231710
+      ],
+      "rva": 98231710,
+      "sha256": "79786c3ecc132798e65f6b95c2023afef3c5094aa885b742da56a85aa2304bc9"
+    },
+    {
+      "name": "evidence_2",
+      "steam_rva": 98177908,
+      "size": 64,
+      "epic_matches": [
+        98231758,
+        142356410
+      ],
+      "rva": 98231758,
+      "sha256": "4d8018284a0a55500844d99980a214b55af435208ab41795338607aa8d74f4b9"
+    },
+    {
+      "name": "evidence_3",
+      "steam_rva": 98605076,
+      "size": 909,
+      "epic_matches": [
+        98656758
+      ],
+      "rva": 98656758,
+      "sha256": "71c3ebcdefeb99474b35030044e7d04b401bccf14991fe530a21152b72912a5e"
+    },
+    {
+      "name": "evidence_4",
+      "steam_rva": 64708632,
+      "size": 395,
+      "epic_matches": [
+        64665264
+      ],
+      "rva": 64665264,
+      "sha256": "8088f12190c8c29359d42585532a33c3e786286730b82ea43dc4081d74bd3ef3"
+    },
+    {
+      "name": "evidence_5",
+      "steam_rva": 102962020,
+      "size": 2095,
+      "epic_matches": [
+        102996038
+      ],
+      "rva": 102996038,
+      "sha256": "11d8e3cfe7ad11091770dadf664509181ebd62a897650248f6daf1d41aa4d2e2"
+    },
+    {
+      "name": "drop_handler",
+      "steam_rva": 22482466,
+      "size": 660,
+      "epic_matches": [
+        22465850
+      ],
+      "rva": 22465850,
+      "sha256": "e8cfa1683db732ead66b76c47d30dab2281c719c6568950a1c064fd958f4c64f"
+    },
+    {
+      "name": "drop_spawn",
+      "steam_rva": 103125735,
+      "size": 765,
+      "epic_matches": [
+        103159737
+      ],
+      "rva": 103159737,
+      "sha256": "87ce3a042491a6182a3f66133fc6df02d233d67fed687df835e99527e79e5a12"
+    }
+  ],
+  "vtable_evidence": [
+    {
+      "vtable_slot_rva": 186380928,
+      "implementation": 98231758
+    },
+    {
+      "vtable_slot_rva": 191620544,
+      "implementation": 98231758
+    },
+    {
+      "vtable_slot_rva": 194473744,
+      "implementation": 98231758
+    }
+  ],
+  "drop_call_verified": true
+}

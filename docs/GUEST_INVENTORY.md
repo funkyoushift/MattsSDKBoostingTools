@@ -1,6 +1,6 @@
 # Local guest backpack delivery and drop
 
-Included in v2.24.0. Guest native transactions are restricted to the local controller on Steam build 25372571. Epic guest support is not validated and is rejected. Existing host insertion and spill paths remain unchanged.
+Included in v2.24.0. Guest native transactions are restricted to the local controller on Steam build 25372571 and Epic build 4845623. Epic is mapped from installed executable code, not live-tested. Existing host insertion and spill paths remain unchanged.
 
 ## Native evidence
 
@@ -22,4 +22,9 @@ Consenting Riverduck87 host, FunkYouShiFT guest, throwaway character, fresh The 
 
 ## Routing and limits
 
-Delivery keeps the existing queue, cancellation, target tokens, and bulk authorization. Guest delivery rejects other controllers. Public Drop My Backpack uses local controller only; remote target and empty-backpack password rules are unchanged. Dropping submits requests together and reports submission, not server confirmation. No automatic mutation retry. Offline tests cover local-only guard, unsupported build, full snapshot preflight, and existing host routing.
+Delivery keeps the existing queue, cancellation, target tokens, and bulk authorization. Guest delivery rejects other controllers. Public Drop My Backpack uses local controller only; remote target and empty-backpack password rules are unchanged. Dropping submits requests together and reports submission, not server confirmation. No automatic mutation retry. Offline tests cover local-only guard, unsupported or mismatched build, full snapshot preflight, and existing host routing.
+
+
+## Epic mapping
+
+Epic executable SHA-256: 764a4bb5403a2619a0be627de5a738e23ea021e8672f7f0e7a536697d4a06719. Each function matched the Steam instruction sequence after masking relative branch/call addresses and RIP-relative relocation fields. Transaction offsets, operation constants, and non-relative immediates were preserved. The duplicate implementation signature was resolved using three vtables with the verified validation function followed by the same implementation. The mapped drop handler calls the mapped pickup spawn routine. Full function byte hashes gate the separate Epic profile. See epic-guest-mapping.json for exact RVAs, sizes, hashes, and vtable evidence. This is recovered static code evidence; Epic was not launched and runtime success is not established.

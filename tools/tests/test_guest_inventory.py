@@ -21,8 +21,8 @@ def test_only_loaded_local_guest(monkeypatch):
     local.Pawn = None
     with pytest.raises(RuntimeError): m.require_local_guest(local)
 
-def test_epic_guest_fails_before_binding():
-    with pytest.raises(RuntimeError): m.GuestInventory(SimpleNamespace(profile='epic-4845623'))
+def test_unknown_guest_build_fails_before_binding():
+    with pytest.raises(RuntimeError): m.GuestInventory(SimpleNamespace(profile='unknown'))
 
 def test_drop_validates_entire_snapshot_before_submitting(monkeypatch):
     local=pc()
@@ -39,3 +39,13 @@ def test_drop_validates_entire_snapshot_before_submitting(monkeypatch):
     local.PlayerState.BackpackItems.items.append(row(4,quantity=2))
     with pytest.raises(RuntimeError): instance.drop_backpack(local)
     assert calls==[]
+
+
+def test_complete_profile_required(monkeypatch):
+    for profile in ('steam-25372571', 'epic-4845623'):
+        gates=((10,3,__import__('hashlib').sha256(b'abc').hexdigest()),)
+        monkeypatch.setitem(m.PROFILES,profile,gates)
+        engine=SimpleNamespace(profile=profile,base=100,read=lambda addr,size:b'abc' if addr==110 and size==3 else b'bad')
+        assert m.select_gates(engine)==gates
+        engine.read=lambda addr,size:b'bad'
+        with pytest.raises(RuntimeError):m.select_gates(engine)
