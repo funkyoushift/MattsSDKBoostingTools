@@ -31,6 +31,15 @@ test('real local D1: privacy, moderation, large payload, retry and safe local im
     const db=await mf.getD1Database('LIBRARY');
     const schema=await fs.readFile(new URL('./schema.sql',import.meta.url),'utf8')+';'+await fs.readFile(new URL('./auth-schema.sql',import.meta.url),'utf8');
     await db.batch(schema.split(';').filter(s=>s.trim()).map(s=>db.prepare(s)));
+    const webOrigin='https://www.funkyoushift.com';
+    const pf=await mf.dispatchFetch('http://local/submissions',{method:'OPTIONS',headers:{Origin:webOrigin}});
+    assert.equal(pf.status,204);assert.equal(pf.headers.get('Access-Control-Allow-Origin'),webOrigin);assert.match(pf.headers.get('Access-Control-Allow-Headers'),/Authorization/);
+    assert.equal((await mf.dispatchFetch('http://local/submissions',{method:'POST',headers:{Origin:'https://evil.example'}})).status,403);
+    const webId=crypto.randomUUID(),webKey=crypto.randomBytes(32).toString('hex');
+    const wr=method=>mf.dispatchFetch('http://local/submissions'+(method==='POST'?'':'/'+webId),{method,headers:{Origin:webOrigin,Authorization:'Bearer '+webKey,'Content-Type':'application/json'},body:method==='POST'?JSON.stringify({id:webId,folder}):undefined});
+    for(let i=0;i<2;i++){const res=await wr('POST');assert(res.ok);assert.equal(res.headers.get('Access-Control-Allow-Origin'),webOrigin);}
+    assert.equal((await (await wr('GET')).json()).status,'pending');assert.equal((await mf.dispatchFetch('http://local/folders/'+webId)).status,404);assert((await wr('DELETE')).ok);
+    await db.prepare('DELETE FROM folder_chunks WHERE folder_id=?').bind(webId).run();await db.prepare('DELETE FROM folders WHERE id=?').bind(webId).run();
     let loseResponse=true;
     const fetcher=async(url,options)=>{const result=await mf.dispatchFetch(url,options);if(loseResponse&&new URL(url).pathname==='/submissions'){loseResponse=false;throw Error('Simulated lost response');}return result;};
     const safeStorage={isEncryptionAvailable:()=>true,encryptString:s=>Buffer.from(s).reverse(),decryptString:b=>Buffer.from(b).reverse().toString()};
@@ -89,11 +98,11 @@ test('real local D1: privacy, moderation, large payload, retry and safe local im
         assert.equal(response.headers.get('Access-Control-Allow-Credentials'),null);
       }
     }
-    for(const route of ['/review','/submissions/'+id,'/portal/api/me']) {
+    for(const route of ['/review','/portal/api/me']) {
       assert.equal((await mf.dispatchFetch('http://local'+route,{headers:{Origin:'https://www.funkyoushift.com'}})).headers.get('Access-Control-Allow-Origin'),null);
     }
     assert.equal((await mf.dispatchFetch('http://local/folders',{headers:{Origin:'https://untrusted.example'}})).headers.get('Access-Control-Allow-Origin'),null);
-    assert.equal((await mf.dispatchFetch('http://local/submissions',{method:'POST',headers:{Origin:'https://www.funkyoushift.com'}})).headers.get('Access-Control-Allow-Origin'),null);
+    assert.equal((await mf.dispatchFetch('http://local/submissions',{method:'POST',headers:{Origin:'https://www.funkyoushift.com'}})).status,401);
     await assert.rejects(client.dispatch('get',{id:'https://evil.test/folders/'+id}),/not an MSBT/);
     assert.equal((await mf.dispatchFetch('http://local/share/'+id)).status,200);
     await review(id,'rejected');

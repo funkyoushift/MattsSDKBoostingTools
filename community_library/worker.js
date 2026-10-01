@@ -24,6 +24,10 @@ const escape=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&g
 const publicOrigins = new Set(['https://www.funkyoushift.com','https://funkyoushift.com','https://funkyoushift.github.io']);
 export default {async fetch(request,env) {
   const path = new URL(request.url).pathname;
+  const submission = path==='/submissions' || /^\/submissions\/[0-9a-f-]+$/i.test(path);
+  const origin=request.headers.get('Origin');
+  if(submission && origin && !publicOrigins.has(origin) && origin!==env.PUBLIC_ORIGIN)return json({ok:false,message:'Invalid request origin.'},403);
+  if(submission && request.method==='OPTIONS')return new Response(null,{status:204,headers:{...(publicOrigins.has(origin)?{'Access-Control-Allow-Origin':origin}:{}),'Vary':'Origin','Access-Control-Allow-Methods':'GET, POST, DELETE, OPTIONS','Access-Control-Allow-Headers':'Authorization, Content-Type','Access-Control-Max-Age':'600'}});
   const versioned = path==='/api/v1/folders' || /^\/api\/v1\/folders\/[0-9a-f-]+$/i.test(path);
   if(path==='/api/v1/openapi.json' && request.method==='GET')return Response.json(openapi,{headers:{'Access-Control-Allow-Origin':'*','Cache-Control':'public, max-age=300'}});
   if(versioned && request.method==='OPTIONS')return new Response(null,{status:204,headers:{'Access-Control-Allow-Origin':'*','Access-Control-Allow-Methods':'GET, OPTIONS','Access-Control-Max-Age':'600'}});
@@ -36,7 +40,8 @@ export default {async fetch(request,env) {
     headers.set('Access-Control-Allow-Origin','*');
     return new Response(response.body,{status:response.status,headers});
   }
-  // Only anonymous, public folder reads can be accessed by the website.
+  if(submission && publicOrigins.has(origin)){const headers=new Headers(response.headers);headers.set('Access-Control-Allow-Origin',origin);headers.set('Vary','Origin');return new Response(response.body,{status:response.status,headers});}
+  // Public folder reads are available to the website.
   if(request.method==='GET' && (path==='/folders' || /^\/folders\/[0-9a-f-]+$/i.test(path)) && publicOrigins.has(request.headers.get('Origin'))) {
     const headers = new Headers(response.headers);
     headers.set('Access-Control-Allow-Origin',request.headers.get('Origin'));
