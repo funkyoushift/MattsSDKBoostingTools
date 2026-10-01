@@ -27,12 +27,12 @@ def release_fixture(tmp_path):
     def write(relative, content):
         path = tmp_path / relative
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_bytes(content if isinstance(content, bytes) else content.encode())
+        path.write_bytes(content if isinstance(content, bytes) else content.encode('utf-8-sig' if path.suffix == '.ps1' else 'utf-8'))
         return path
 
     oak = b"synthetic SDK runtime"
     pak = b"synthetic AFK PAK"
-    publisher = (ROOT / "tools/publish_github_release.ps1").read_text()
+    publisher = (ROOT / "tools/publish_github_release.ps1").read_text(encoding='utf-8-sig')
     publisher = publisher.replace("602675446abed184169fa158be3c8bc81777a71203581e4a248eca8a3d00b5c7", hashlib.sha256(oak).hexdigest())
     write("tools/publish_github_release.ps1", publisher)
     write("dist_electron/win-unpacked/resources/oak2/oak2-sdk.zip", oak)
@@ -97,7 +97,7 @@ if ($env:TEST_DRAFT -eq '1') { $options.Draft = $true }
                    TEMP=str(tmp_path), TMP=str(tmp_path))
         result = subprocess.run([shell_override or shell, "-NoProfile", "-File", str(driver)], text=True,
                                 capture_output=True, env=env, timeout=45)
-        calls = [json.loads(line) for line in (tmp_path / "gh.jsonl").read_text().splitlines()] if (tmp_path / "gh.jsonl").exists() else []
+        calls = [json.loads(line) for line in (tmp_path / "gh.jsonl").read_text(encoding='utf-8-sig').splitlines()] if (tmp_path / "gh.jsonl").exists() else []
         return result, calls
     return tmp_path, run
 
