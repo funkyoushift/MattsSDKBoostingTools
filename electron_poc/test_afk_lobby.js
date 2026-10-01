@@ -68,7 +68,23 @@ app.whenReady().then(async () => {
     document.getElementById('afkCloseShift').click();
     await new Promise(resolve => setTimeout(resolve, 20));
     if (!document.getElementById('afkTestHost').disabled) throw new Error('Old SDK must not offer host test');
-    window.msbtAfkRender({afk_lobby:{enabled:false,host_test_supported:true,cleanup_rewards_supported:true,loot_modes:['all','random70'],guaranteed_loot_supported:true,item_level_override_supported:true,history:[]}});
+    const amounts = {level:30,spec:50,cash:1250,eridium:100,keys:5};
+    for (const [key, value] of Object.entries(amounts)) {
+      const group = document.querySelector('[data-afk-boost="'+key+'"]').closest('.afk-amount');
+      const slider = group.querySelector('[type="range"]'), number = group.querySelector('[type="number"]');
+      slider.value = value; slider.dispatchEvent(new Event('input', {bubbles:true}));
+      if (Number(number.value) !== value) throw Error('Slider did not update exact amount: '+key);
+      number.dispatchEvent(new Event('change', {bubbles:true}));
+    }
+    document.getElementById('afkStart').click();
+    await new Promise(resolve => setTimeout(resolve, 30));
+    if (calls.length !== 3 || !document.getElementById('afkStatus').textContent.includes('custom AFK boost amounts')) throw Error('Old SDK accepted custom amounts');
+    const savedAmounts = JSON.parse(localStorage.getItem('msbt.afk-lobby.v1'));
+    for (const [key, value] of Object.entries(amounts)) if(savedAmounts[key+'_amount'] !== value) throw Error('Amount was not saved: '+key);
+    await window.msbtAfkConfigStore.save(savedAmounts);
+    const durableAmounts = await window.msbtAfkConfigStore.load();
+    for (const [key, value] of Object.entries(amounts)) if(durableAmounts[key+'_amount'] !== value) throw Error('Amount lost in durable store: '+key);
+    window.msbtAfkRender({afk_lobby:{enabled:false,boost_amounts_supported:true,host_test_supported:true,cleanup_rewards_supported:true,loot_modes:['all','random70'],guaranteed_loot_supported:true,item_level_override_supported:true,history:[]}});
     document.getElementById('afkTestHost').click();
     await new Promise(resolve => setTimeout(resolve, 30));
     if (!document.getElementById('afkTestHost').disabled) throw new Error('Host test must lock while running');
@@ -101,6 +117,7 @@ app.whenReady().then(async () => {
   assert.equal(results.calls[2].payload.mode, "close");
   assert.equal(results.calls[3].action, 'afk_lobby_start');
   assert.equal(results.calls[3].payload.test_host, true);
+  for (const [key,value] of Object.entries({level:30,spec:50,cash:1250,eridium:100,keys:5})) assert.equal(results.calls[3].payload[key+'_amount'], value);
   assert.equal(results.calls[3].payload.codes, results.catalogCodes);
   assert.equal(results.calls[3].payload.guaranteed_codes, results.guaranteedCodes);
   assert(results.locked && results.unlocked && results.stopEnabled && results.hasSduLabel);

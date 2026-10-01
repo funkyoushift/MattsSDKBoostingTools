@@ -33,6 +33,38 @@ class FakeGame:
         return {"ok": True, "message": "kick requested"}
 
 
+def test_custom_amount_validation_and_legacy_defaults():
+    lobby = module.Lobby(FakeGame())
+    assert lobby.start({'cash': True, 'cash_amount': 1250, 'level_amount': 30})['ok']
+    assert lobby.config['cash_amount'] == 1250
+    assert lobby.config['level_amount'] == 30
+    assert lobby.config['keys_amount'] == 2147483647
+    lobby.stop()
+    for value in (0, -1, True, 1.5, 'bad', 2147483648):
+        assert not lobby.start({'cash': True, 'cash_amount': value})['ok']
+
+
+def test_custom_amounts_reach_targeted_actions():
+    calls = []
+    game = module.Game()
+    game.backend = lambda: SimpleNamespace(
+        MAX_PLAYER_LEVEL=70, MAX_SPEC_LEVEL=701, MAX_WALLET_AMOUNT=2147483647,
+        _give_currency_to_pc=lambda pc, kind, amount: calls.append((pc, kind, amount)) or True,
+        _set_experience_on_ps=lambda ps, track, amount: calls.append((ps, track, amount)))
+    game.experience_level = lambda ps, step: 4
+    config = {'level_amount': 30, 'spec_amount': 50, 'cash_amount': 1250,
+              'eridium_amount': 100, 'keys_amount': 5}
+    for step in ('level', 'spec', 'cash', 'eridium', 'keys'):
+        game.step(step, {'pc': 'guest-pc', 'token': 'guest-ps'}, config)
+    assert calls == [('guest-ps', 'player', 30), ('guest-ps', 'specialization', 50),
+                     ('guest-pc', 'cash', 1250), ('guest-pc', 'eridium', 100)] + [
+                     ('guest-pc', f'vaultcard{i}', 5) for i in range(1, 6)]
+    calls.clear()
+    game.experience_level = lambda ps, step: 60
+    assert game.step('level', {'pc': 'guest-pc', 'token': 'guest-ps'}, config)['ok']
+    assert not calls
+
+
 def row(token, index=1, ready=True):
     return {"token": token, "index": index, "ready": ready, "name": str(token), "pc": token}
 

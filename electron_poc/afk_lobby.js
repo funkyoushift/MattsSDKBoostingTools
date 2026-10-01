@@ -4,6 +4,32 @@
   const panel = byId("afkLobbyPanel");
   if (!panel) return;
   const options = [...panel.querySelectorAll("[data-afk-boost]")];
+  const amountLimits = {level: 70, spec: 701, cash: 2147483647, eridium: 2147483647, keys: 2147483647};
+  const amountLabels = {level: 'Target character level', spec: 'Target specialization level', cash: 'Cash added per join', eridium: 'Eridium added per join', keys: 'Keys added per card (1–5) per join'};
+  const amountInputs = {};
+  for (const [key, maximum] of Object.entries(amountLimits)) {
+    const checkbox = options.find(node => node.dataset.afkBoost === key);
+    const label = checkbox.parentElement;
+    label.lastChild.textContent = ' ' + amountLabels[key];
+    const group = document.createElement('div');
+    group.className = 'afk-amount';
+    label.replaceWith(group);
+    group.append(label);
+    const controls = document.createElement('div');
+    controls.className = 'afk-amount-controls';
+    const slider = document.createElement('input');
+    const number = document.createElement('input');
+    slider.type = 'range'; number.type = 'number';
+    for (const input of [slider, number]) {
+      input.min = '1'; input.max = String(maximum); input.step = '1'; input.value = String(maximum);
+      input.setAttribute('aria-label', amountLabels[key]);
+    }
+    slider.addEventListener('input', () => { number.value = slider.value; });
+    number.addEventListener('input', () => { slider.value = number.value; });
+    controls.append(slider, number);
+    group.append(controls);
+    amountInputs[key] = {slider, number};
+  }
   const storageKey = "msbt.afk-lobby.v1";
   let running = false;
   let busy = false;
@@ -15,6 +41,7 @@
   function selection() {
     return Object.fromEntries([
       ...options.map((node) => [node.dataset.afkBoost, node.checked]),
+      ...Object.entries(amountInputs).map(([key, {number}]) => [key + '_amount', Number(number.value)]),
       ["auto_accept", byId("afkAutoAccept").checked],
       ["auto_kick", byId("afkAutoKick").checked],
       ["cleanup_rewards", byId("afkCleanupRewards").checked],
@@ -37,6 +64,9 @@
     });
   }
   function apply(config) {
+    for (const [key, {slider, number}] of Object.entries(amountInputs)) {
+      slider.value = number.value = config[key + '_amount'] ?? amountLimits[key];
+    }
     options.forEach((node) => { node.checked = config[node.dataset.afkBoost] === true; });
     byId("afkAutoAccept").checked = config.auto_accept !== false;
     byId("afkAutoKick").checked = config.auto_kick === true;
@@ -87,6 +117,13 @@
     busy = true;
     render({ afk_lobby: lastStatus });
     try {
+      if (action === 'afk_lobby_start') {
+        for (const [key, maximum] of Object.entries(amountLimits)) {
+          const value = payload[key + '_amount'];
+          if (!Number.isInteger(value) || value < 1 || value > maximum) throw new Error(`${amountLabels[key]} must be a whole number from 1 to ${maximum.toLocaleString()}.`);
+          if (payload[key] && value !== maximum && !lastStatus?.boost_amounts_supported) throw new Error('Install the updated SDK mod and restart Borderlands 4 before using custom AFK boost amounts.');
+        }
+      }
       if (payload.test_host && !lastStatus?.host_test_supported) {
         throw new Error('Install the updated SDK before testing AFK on yourself.');
       }

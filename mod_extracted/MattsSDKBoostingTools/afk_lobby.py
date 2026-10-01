@@ -10,6 +10,8 @@ from collections import deque
 
 
 BOOSTS = ("level", "spec", "sdu", "cash", "eridium", "keys", "challenges", "uvhm", "cosmetics", "loot")
+AMOUNT_LIMITS = {"level": 70, "spec": 701, "cash": 2147483647,
+                 "eridium": 2147483647, "keys": 2147483647}
 JOIN_SETTLE_SECONDS = 20.0
 STEP_LABELS = {'inventory_capture':'Saving original backpack', 'level':'Setting level',
                'spec':'Setting specialization rank', 'sdu':'Setting SDUs to 3225',
@@ -76,6 +78,11 @@ class Lobby:
         if not any(config[key] for key in BOOSTS):
             return {"ok": False, "message": "Select at least one boost."}
         try:
+            for key, maximum in AMOUNT_LIMITS.items():
+                value = payload.get(key + "_amount", maximum)
+                if isinstance(value, bool) or not str(value).isdigit() or not 1 <= int(value) <= maximum:
+                    raise ValueError(f"{key} amount must be a whole number from 1 to {maximum}.")
+                config[key + "_amount"] = int(value)
             config["serial_override_level"] = payload.get("serial_override_level") is True
             item_level = payload.get("serial_level", 70)
             if config["serial_override_level"] and (isinstance(item_level, bool) or not str(item_level).isdigit() or not 1 <= int(item_level) <= 70):
@@ -136,7 +143,8 @@ class Lobby:
                 "awaiting_kick": [job["name"] for job in self.completed if not job.get("kick_attempted") and not job.get("failed")],
                 "loot_modes": ["all", "random70"], "bulk_loot_password_required": True, "random_count_supported": True, "guaranteed_loot_supported": True,
                 'cleanup_rewards_supported':True, 'host_test_supported':True,
-                'config_upload_supported': True, 'item_level_override_supported': True}
+                'config_upload_supported': True, 'item_level_override_supported': True,
+                'boost_amounts_supported': True}
 
     def tick(self):
         now = time.monotonic()
@@ -631,7 +639,11 @@ class Game:
         elif step in ("level", "spec"):
             now = time.monotonic()
             state = job.setdefault("experience_attempts", {}).setdefault(step, {"started": now})
-            target = a.MAX_PLAYER_LEVEL if step == "level" else a.MAX_SPEC_LEVEL
+            target = config.get(step + "_amount", a.MAX_PLAYER_LEVEL if step == "level" else a.MAX_SPEC_LEVEL)
+            if "check_after" not in state:
+                actual = self.experience_level(ps, step)
+                if actual is not None and actual >= target:
+                    return {"ok": True, "message": f"Already at or above target {target}; level unchanged."}
             if "check_after" in state:
                 if now < state["check_after"]:
                     return None
@@ -659,9 +671,9 @@ class Game:
                     return None
                 return {"ok": False, "message": "SDU data/write unavailable after 30 seconds; player kept in lobby."}
         elif step in ("cash", "eridium"):
-            ok = a._give_currency_to_pc(pc, step, a.MAX_WALLET_AMOUNT)
+            ok = a._give_currency_to_pc(pc, step, config.get(step + "_amount", a.MAX_WALLET_AMOUNT))
         elif step == "keys":
-            results = [a._give_currency_to_pc(pc, f"vaultcard{i}", a.MAX_WALLET_AMOUNT) for i in range(1, 6)]
+            results = [a._give_currency_to_pc(pc, f"vaultcard{i}", config.get("keys_amount", a.MAX_WALLET_AMOUNT)) for i in range(1, 6)]
             ok = all(results)
         elif step == "cosmetics":
             pc.ServerActivateDevPerk(4)
