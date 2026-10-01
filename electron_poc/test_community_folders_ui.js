@@ -22,7 +22,7 @@ app.whenReady().then(async()=>{
   check(bookmarkSelectedEntries().length===0,'switch clears old folder selection');
   $('bookmarkSelectAllBtn').click();check(bookmarkSelectedEntries().length===2,'select all local');
   $('bookmarkClearSelectedBtn').click();check(bookmarkSelectedEntries().length===0,'clear means no delivery');
-  let sent,imported=false,calls=[],queries=[],releaseSearch=null,delaySearch=false,paginated=false,failPage=false,pageRequests=[];
+  let sent,imported=false,presentations=[],calls=[],queries=[],releaseSearch=null,delaySearch=false,paginated=false,failPage=false,pageRequests=[];
   const folder={version:1,title:'Vex starter',creator:'Community tester',description:'Gun and shield drop list',folders:['','Shields'],items:[{name:'<img src=x onerror=alert(1)>',folder:'',serial:'@UAbCd'},{name:'Shield',folder:'Shields',serial:'@UAbCd'}]};
   window.msbt=window.msbt||{};
   window.msbt.communityFolders=async(op,p)=>{calls.push(op);
@@ -36,7 +36,7 @@ app.whenReady().then(async()=>{
     const match=!p.q||[folder.title,folder.creator].some(x=>x.toLowerCase().includes(p.q.toLowerCase()));
     return {ok:true,next:null,folders:match?[{id:'demo',title:folder.title,creator:folder.creator,item_count:2,status:'approved'}]:[]};
    }
-   if(op==='get')return {ok:true,id:'demo',status:'approved',digest:'test',folder};
+   if(op==='get')return {ok:true,id:'demo',status:'approved',digest:'test',folder,presentations};
    if(op==='submit'){sent=p.folder;return {ok:true,status:'pending',id:'pending-demo'};}
    if(op==='import'){imported=true;return {ok:true,imported:2,destination:'Vex starter',data:window.communityFolderContract.importFolder(folder,{bookmarks:state.bookmarks,folders:state.bookmarkFolders},()=>crypto.randomUUID())};}
    if(op==='mine')return {ok:true,submissions:[{id:'pending-demo',title:'My build',status:'pending'}]};
@@ -110,7 +110,7 @@ app.whenReady().then(async()=>{
   check(sent.items.length===2,'selected subtree only');check(sent.items[0].serial===sent.items[1].serial,'duplicates preserved');check(sent.items[1].folder==='Shields','subfolder preserved');check(!JSON.stringify(sent).includes('@UKeep'),'unselected bookmark not sent');
   $('communityMineBtn').click();await idle();$('communityResults').querySelector('button').click();await idle();check($('communityImportBtn').disabled,'pending cannot import');check($('communityCopyBtn').disabled,'pending has no public share');
   check(!calls.some(x=>/boost|deliver|afk/.test(x)),'no game actions');
-  // Both sources use the exact Inventory renderer; cached resolution must preserve codes.
+  // Local cards remain supported; community preview uses real screenshots and explicit missing-image text.
   savedCardCache.set('@UAbCd', {meta_ok:true,display_name:'Resolved test shield',item_type:'Shield',level:70,rarity:'Legendary'});
   $('savedItemsLocalBtn').click();openBookmarkFolder('Builds / Vex');
   check($('bookmarkRows').querySelectorAll('.saved-item-card.bl4-item-card').length===2,'local inventory cards');
@@ -140,8 +140,12 @@ app.whenReady().then(async()=>{
   check(pageRequests.at(-1).offset===25&&pageRequests.at(-1).q==='Vex','AFK search pagination');
   $('afkCommunityPrevious').click();await afkIdle();check(pageRequests.at(-1).offset===0,'AFK previous page');
   paginated=false;$('communityOpenBtn').click();await idle();
+  presentations=[{title:'GZO fixture title',title_source:'GZO exact code match',image_source:'GZO exact code match',image_url:'https://save-editor.be/GZO/fixture.png'},null];
   $('communitySearchBtn').click();await idle();$('communityResults').querySelector('button').click();await idle();
-  check($('communityPreviewItems').querySelectorAll('.saved-item-card.bl4-item-card').length===2,'community inventory cards');
+  check($('communityPreviewItems').querySelectorAll('.saved-item-card.bl4-item-card').length===0,'community does not use generated cards');
+  check($('communityPreviewItems').querySelectorAll('img').length===1,'community uses supplied screenshot');
+  check($('communityPreviewItems').textContent.includes('GZO fixture title'),'GZO title shown');
+  check($('communityPreviewItems').textContent.includes('No screenshot available'),'unmatched item has honest fallback');
   $('communityFoldersPanel').scrollIntoView({block:'start'});
   return {operations:calls.length,bookmarks:state.bookmarks.length};
  })()`);

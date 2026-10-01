@@ -23,7 +23,7 @@ test('folder exports and imports preserve duplicates, hierarchy, and existing da
 });
 
 test('real local D1: privacy, moderation, large payload, retry and safe local import data',async()=>{
-  const compiled=await build({entryPoints:[new URL('./worker.js',import.meta.url).pathname.replace(/^\/([A-Za-z]:)/,'$1')],bundle:true,format:'esm',write:false,platform:'browser',external:['node:*'],loader:{'.html':'text'}});
+  const compiled=await build({entryPoints:[new URL('./worker.js',import.meta.url).pathname.replace(/^\/([A-Za-z]:)/,'$1')],bundle:true,format:'esm',write:false,platform:'browser',external:['node:*'],loader:{'.html':'text','.txt':'text'}});
   const admin=crypto.randomBytes(32).toString('hex');
   const mf=new Miniflare(convertV4MiniflareOptions({workers:[{name:'library',modules:true,script:compiled.outputFiles[0].text,compatibilityDate:'2026-09-28',compatibilityFlags:['nodejs_compat'],d1Databases:{LIBRARY:'library'},bindings:{AUTH_SECRET:admin,PUBLIC_ORIGIN:'http://127.0.0.1:8789'}}]}));
   const dir=await fs.mkdtemp(path.join(os.tmpdir(),'msbt-community-'));
@@ -31,6 +31,20 @@ test('real local D1: privacy, moderation, large payload, retry and safe local im
     const db=await mf.getD1Database('LIBRARY');
     const schema=await fs.readFile(new URL('./schema.sql',import.meta.url),'utf8')+';'+await fs.readFile(new URL('./auth-schema.sql',import.meta.url),'utf8');
     await db.batch(schema.split(';').filter(s=>s.trim()).map(s=>db.prepare(s)));
+    const webOrigin='https://www.funkyoushift.com';
+    const pf=await mf.dispatchFetch('http://local/submissions',{method:'OPTIONS',headers:{Origin:webOrigin}});
+    assert.equal(pf.status,204);assert.equal(pf.headers.get('Access-Control-Allow-Origin'),webOrigin);assert.match(pf.headers.get('Access-Control-Allow-Headers'),/Authorization/);
+    assert.equal((await mf.dispatchFetch('http://local/submissions',{method:'POST',headers:{Origin:'https://evil.example'}})).status,403);
+    const webId=crypto.randomUUID(),webKey=crypto.randomBytes(32).toString('hex');
+    const wr=method=>mf.dispatchFetch('http://local/submissions'+(method==='POST'?'':'/'+webId),{method,headers:{Origin:webOrigin,Authorization:'Bearer '+webKey,'Content-Type':'application/json'},body:method==='POST'?JSON.stringify({id:webId,folder}):undefined});
+    for(let i=0;i<2;i++){const res=await wr('POST');assert(res.ok);assert.equal(res.headers.get('Access-Control-Allow-Origin'),webOrigin);}
+    assert.equal((await (await wr('GET')).json()).status,'pending');assert.equal((await mf.dispatchFetch('http://local/folders/'+webId)).status,404);assert((await wr('DELETE')).ok);
+    await db.prepare('DELETE FROM folder_chunks WHERE folder_id=?').bind(webId).run();await db.prepare('DELETE FROM folders WHERE id=?').bind(webId).run();
+    for(const limit of ['0','101','1.5','bad'])assert.equal((await mf.dispatchFetch('http://local/folders?limit='+limit)).status,400);
+    const pagingIds=Array.from({length:61},()=>crypto.randomUUID());
+    await db.batch(pagingIds.map(id=>db.prepare("INSERT INTO folders(id,title,creator,description,item_count,oversized_count,digest,owner_hash,status,created_at) VALUES(?,'Paging','Test','',1,0,'digest','owner','approved','2026-10-01')").bind(id)));
+    for(const limit of [25,50,100]){const data=await (await mf.dispatchFetch('http://local/folders?limit='+limit)).json();assert.equal(data.folders.length,Math.min(limit,61));assert.equal(data.next,limit<61?limit:null);if(data.next){const second=await(await mf.dispatchFetch('http://local/folders?limit='+limit+'&offset='+data.next)).json();assert(!second.folders.some(x=>data.folders.some(y=>y.id===x.id)));}}
+    await db.batch(pagingIds.map(id=>db.prepare('DELETE FROM folders WHERE id=?').bind(id)));
     let loseResponse=true;
     const fetcher=async(url,options)=>{const result=await mf.dispatchFetch(url,options);if(loseResponse&&new URL(url).pathname==='/submissions'){loseResponse=false;throw Error('Simulated lost response');}return result;};
     const safeStorage={isEncryptionAvailable:()=>true,encryptString:s=>Buffer.from(s).reverse(),decryptString:b=>Buffer.from(b).reverse().toString()};
@@ -40,6 +54,10 @@ test('real local D1: privacy, moderation, large payload, retry and safe local im
     const id=mine.submissions[0].id;
     assert.equal((await client.dispatch('list')).folders.length,0);
     assert.equal((await mf.dispatchFetch('http://local/folders/'+id)).status,404);
+    const privatePublicApi=await mf.dispatchFetch('http://local/api/v1/folders/'+id,{headers:{Origin:'https://another-app.example'}});
+    assert.equal(privatePublicApi.status,404);
+    assert.equal(privatePublicApi.headers.get('Access-Control-Allow-Origin'),'*');
+    assert.equal((await (await mf.dispatchFetch('http://local/api/v1/folders')).json()).folders.length,0);
     assert.equal((await mf.dispatchFetch('http://local/share/'+id)).status,404);
     assert.equal((await mf.dispatchFetch('http://local/submissions/'+id)).status,404);
     assert.equal((await mf.dispatchFetch('http://local/review/'+id)).status,401);
@@ -58,11 +76,62 @@ test('real local D1: privacy, moderation, large payload, retry and safe local im
     const owner=(await signup.json()).user;
     assert.equal((await request('/review')).status,401,'new account cannot review');
     await db.prepare("INSERT INTO team(user_id,role) VALUES(?,'owner')").bind(owner.id).run();
+    // Screenshots use the same ownership and moderation boundary as the loadout.
+    const mediaId=crypto.randomUUID(),mediaKey=crypto.randomBytes(32).toString('hex'),imageId=crypto.randomUUID();
+    const uploadFolder=await mf.dispatchFetch(origin+'/submissions',{method:'POST',headers:{Authorization:'Bearer '+mediaKey,'Content-Type':'application/json'},body:JSON.stringify({id:mediaId,folder})});
+    const mediaDigest=(await uploadFolder.json()).digest;
+    const jpg=await fs.readFile(new URL('./fixtures/screenshot.jpg',import.meta.url));
+    const screenshot={id:imageId,serial:folder.items[0].serial,data:jpg.toString('base64')};
+    const uploadImages=(payload,key=mediaKey)=>mf.dispatchFetch(origin+'/submissions/'+mediaId+'/images',{method:'POST',headers:{Origin:'https://www.funkyoushift.com',Authorization:'Bearer '+key,'Content-Type':'application/json'},body:JSON.stringify({digest:mediaDigest,media_revision:0,images:[screenshot],...payload})});
+    assert.equal((await uploadImages({},'f'.repeat(64))).status,403);
+    assert.equal((await uploadImages({images:[{...screenshot,serial:folder.items[0].serial.toLowerCase()}]})).status,400);
+    assert.equal((await uploadImages({images:[{...screenshot,data:Buffer.from('<svg/>').toString('base64')}]})).status,400);
+    const imageResult=await uploadImages({});assert.equal(imageResult.status,200,await imageResult.clone().text());assert.equal((await imageResult.json()).media_revision,1);
+    assert.equal((await (await uploadImages({})).json()).media_revision,1,'lost-response retry does not duplicate images or bump revision');
+    assert.equal((await mf.dispatchFetch(origin+'/images/'+imageId)).status,404);
+    const privateImage=await mf.dispatchFetch(origin+'/images/'+imageId,{headers:{Authorization:'Bearer '+mediaKey}});assert.equal(privateImage.status,200);assert.deepEqual(Buffer.from(await privateImage.arrayBuffer()),jpg);
+    assert.equal((await request('/review/'+mediaId,'POST',{status:'approved',digest:mediaDigest,media_revision:0})).status,409,'review must include current screenshots');
+    assert.equal((await request('/review/'+mediaId,'POST',{status:'approved',digest:mediaDigest,media_revision:1})).status,200);
+    assert.equal((await mf.dispatchFetch(origin+'/images/'+imageId)).headers.get('Content-Type'),'image/jpeg');
+    const withImage=await(await mf.dispatchFetch(origin+'/folders/'+mediaId)).json();assert.equal(withImage.images[0].serial_hash,crypto.createHash('sha256').update(screenshot.serial).digest('hex'));assert.equal(withImage.item_details[withImage.images[0].serial_hash].image_url,origin+'/images/'+imageId);
+    const changedImage={...screenshot,id:crypto.randomUUID()};
+    assert.equal((await uploadImages({media_revision:1,images:[changedImage]})).status,200);
+    assert.equal((await mf.dispatchFetch(origin+'/folders/'+mediaId)).status,404,'replacing image requires approval again');
+    assert.equal((await mf.dispatchFetch(origin+'/images/'+imageId)).status,404,'replaced image is gone');
+    assert.equal((await request('/review/'+mediaId,'POST',{status:'approved',digest:mediaDigest,media_revision:1})).status,409);
+    await db.prepare('DELETE FROM item_images WHERE folder_id=?').bind(mediaId).run();await db.prepare('DELETE FROM folder_chunks WHERE folder_id=?').bind(mediaId).run();await db.prepare('DELETE FROM folders WHERE id=?').bind(mediaId).run();
     const review=async(id,status,note='Reviewed')=>{const r=await request('/review/'+id);const data=await r.json();const out=await request('/review/'+id,'POST',{status,note,digest:data.digest});if(!out.ok)throw Error((await out.json()).message);return out.json();};
     assert.equal((await (await request('/review')).json()).folders.length,1);
     await review(id,'approved');
     const got=await client.dispatch('get',{id});assert.deepEqual(got.folder,folder);assert(!('owner_hash'in got));assert(!('review_note'in got));
     assert.equal((await client.dispatch('list',{q:'Vex'})).folders.length,1);
+    const publicList=await mf.dispatchFetch('http://local/api/v1/folders?q=Vex',{headers:{Origin:'https://another-app.example'}});
+    assert.equal(publicList.headers.get('Access-Control-Allow-Origin'),'*');
+    assert.equal(publicList.headers.get('Access-Control-Allow-Credentials'),null);
+    assert.equal((await publicList.json()).folders.length,1);
+    const publicDetail=await (await mf.dispatchFetch('http://local/api/v1/folders/'+id)).json();
+    assert.deepEqual(publicDetail.folder,folder);
+    assert.equal(publicDetail.digest,got.digest);
+    assert(!('owner_hash' in publicDetail));assert(!('review_note' in publicDetail));
+    for(const method of ['POST','PUT','DELETE'])assert.equal((await mf.dispatchFetch('http://local/api/v1/folders/'+id,{method})).status,405);
+    const preflight=await mf.dispatchFetch('http://local/api/v1/folders',{method:'OPTIONS',headers:{Origin:'https://another-app.example','Access-Control-Request-Method':'GET'}});
+    assert.equal(preflight.status,204);assert.equal(preflight.headers.get('Access-Control-Allow-Origin'),'*');
+    assert.equal((await mf.dispatchFetch('http://local/api/v1/review')).status,404);
+    assert.equal((await mf.dispatchFetch('http://local/api/v1/submissions/'+id)).status,404);
+    const spec=await (await mf.dispatchFetch('http://local/api/v1/openapi.json')).json();
+    assert.equal(spec.openapi,'3.1.0');assert(spec.paths['/folders/{id}']);
+    for(const origin of ['https://www.funkyoushift.com','https://funkyoushift.com','https://funkyoushift.github.io']) {
+      for(const route of ['/folders','/folders/'+id]) {
+        const response=await mf.dispatchFetch('http://local'+route,{headers:{Origin:origin}});
+        assert.equal(response.headers.get('Access-Control-Allow-Origin'),origin);
+        assert.equal(response.headers.get('Access-Control-Allow-Credentials'),null);
+      }
+    }
+    for(const route of ['/review','/portal/api/me']) {
+      assert.equal((await mf.dispatchFetch('http://local'+route,{headers:{Origin:'https://www.funkyoushift.com'}})).headers.get('Access-Control-Allow-Origin'),null);
+    }
+    assert.equal((await mf.dispatchFetch('http://local/folders',{headers:{Origin:'https://untrusted.example'}})).headers.get('Access-Control-Allow-Origin'),null);
+    assert.equal((await mf.dispatchFetch('http://local/submissions',{method:'POST',headers:{Origin:'https://www.funkyoushift.com'}})).status,401);
     await assert.rejects(client.dispatch('get',{id:'https://evil.test/folders/'+id}),/not an MSBT/);
     assert.equal((await mf.dispatchFetch('http://local/share/'+id)).status,200);
     await review(id,'rejected');

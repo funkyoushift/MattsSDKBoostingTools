@@ -29,11 +29,11 @@
   function items(){
     const end=Math.min(shown+100,selected.folder.items.length),host=$('communityPreviewItems');
     for(let index=shown;index<end;index++){
-      const item=selected.folder.items[index], row=document.createElement('div'), label=document.createElement('label'), box=document.createElement('input'), details=document.createElement('details'), title=document.createElement('summary'), code=document.createElement('pre');
+      const original=selected.folder.items[index],presentation=selected.presentations?.[index],item={...original,name:presentation?.title||original.name}, row=document.createElement('div'), label=document.createElement('label'), box=document.createElement('input'), details=document.createElement('details'), title=document.createElement('summary'), code=document.createElement('pre');
       row.className='community-item-row saved-card-tile';box.type='checkbox';box.dataset.itemIndex=String(index);box.checked=checked.has(index);box.disabled=selected.status!=='approved';
       box.addEventListener('change',()=>{box.checked?checked.add(index):checked.delete(index);selectionChanged();});
       label.append(box,document.createTextNode((item.folder?item.folder+' / ':'')+item.name));title.textContent='Show item code';code.textContent=item.serial;
-      code.style.cssText='white-space:pre-wrap;overflow-wrap:anywhere;max-height:180px;overflow:auto';details.append(title,code);label.append(savedItemCard(item));row.append(label,details);host.append(row);
+      code.style.cssText='white-space:pre-wrap;overflow-wrap:anywhere;max-height:180px;overflow:auto';details.append(title,code);row.append(label);const media=document.createElement('div');media.className='community-item-photo';if(presentation?.image_url){const image=document.createElement('img');image.src=presentation.image_url;image.alt=item.name+' screenshot';image.loading='lazy';image.referrerPolicy='no-referrer';image.style.cssText='width:100%;max-height:380px;object-fit:contain;border-radius:8px';image.onerror=()=>{media.textContent='Screenshot unavailable; item code is preserved.';};media.append(image);const credit=document.createElement('small');credit.textContent=presentation.image_source;media.append(credit);}else media.textContent='No screenshot available for this exact code.';if(presentation?.title_source==='GZO exact code match'){const credit=document.createElement('small');credit.textContent='GZO title · exact code match'+(original.name!==item.name?' · Saved label: '+original.name:'');row.append(credit);}row.append(media,details);host.append(row);
     }
     shown=end;$('communityPreviewMore').hidden=shown>=selected.folder.items.length;
   }

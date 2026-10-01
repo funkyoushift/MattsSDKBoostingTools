@@ -9,7 +9,7 @@
     {
       "type": "Text",
       "globs": [
-        "**/*.html"
+        "**/*.html", "**/*.txt"
       ],
       "fallthrough": true
     }

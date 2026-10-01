@@ -27,6 +27,8 @@ app.whenReady().then(async()=>{
     document.getElementById('bookmarkNewFolderPath').value='Builds / Vex / Starter';
     await manageBookmarkFolder(false);
     check(document.getElementById('bookmarkFolderPath').tagName==='SELECT','existing folders use dropdown');
+    // Creating a folder navigates there; select the source again before moving.
+    els.bookmarkGroupFilter.value='Weapons';renderBookmarks();state.bookmarkCheckedIds=new Set(['a']);
     document.getElementById('bookmarkFolderPath').value='Builds / Vex / Starter';
     await manageBookmarkFolder(true);
     check(persisted.bookmarks[0].group==='Builds / Vex / Starter','move');
