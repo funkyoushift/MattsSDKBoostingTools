@@ -1636,6 +1636,8 @@ ipcMain.handle('app:communityFolders', async (_event, operation, payload = {}) =
         if (!previous.ok || previous.warnings?.length) throw Error('Your bookmarks need review before a community import. Existing data was not changed.');
         const merged = require('./community_folders_contract').importFolder(remote.folder, previous.data,
           () => 'bm_' + require('node:crypto').randomUUID(), payload.destination);
+        const importedRows=merged.bookmarks.slice(previous.data.bookmarks.length);
+        importedRows.forEach((row,index)=>{const presentation=remote.presentations?.[index];if(!presentation)return;row.source_name=row.name;row.name=presentation.title;row.name_source=presentation.title_source;if(presentation.image_url){row.image_url=presentation.image_url;row.image_source=presentation.image_source;row.image_serial_hash=presentation.serial_hash;}});
         const result = await writeBookmarks(file, merged);
         return {...result,destination:merged.destination,imported:remote.folder.items.length};
       });

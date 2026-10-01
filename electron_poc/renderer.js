@@ -5064,6 +5064,11 @@ function normalizeBookmarkForRenderer(row = {}) {
     notes: String(row.notes || "").trim(),
     mattmab_validator: String(row.mattmab_validator || row.mattmab_result || "").trim(),
     mattmab_validator_detail: String(row.mattmab_validator_detail || "").trim(),
+    image_url: String(row.image_url || ''),
+    image_source: String(row.image_source || ''),
+    image_serial_hash: String(row.image_serial_hash || ''),
+    source_name: String(row.source_name || ''),
+    name_source: String(row.name_source || ''),
     decoded_identity: row.decoded_identity && typeof row.decoded_identity === "object" && !Array.isArray(row.decoded_identity)
       ? { ...row.decoded_identity }
       : {},
@@ -5275,6 +5280,11 @@ function savedItemCard(item) {
   host.className = 'saved-item-card';
   host.dataset.serial = item.serial;
   host.dataset.name = item.name || 'Saved item';
+  if(item.image_url&&item.image_serial_hash){
+    host.textContent='Loading screenshot…';
+    crypto.subtle.digest('SHA-256',new TextEncoder().encode(item.serial)).then(bytes=>{const hash=Array.from(new Uint8Array(bytes),x=>x.toString(16).padStart(2,'0')).join('');const url=new URL(item.image_url);if(hash!==item.image_serial_hash||url.protocol!=='https:'||!((url.hostname==='save-editor.be'&&url.pathname.startsWith('/GZO/'))||(url.hostname==='msbt-community-library.screename53.workers.dev'&&/^\/images\/[0-9a-f-]+$/i.test(url.pathname)))){host.textContent='Screenshot does not match this code.';return;}const image=document.createElement('img');image.src=url.href;image.alt=item.name+' screenshot';image.loading='lazy';image.referrerPolicy='no-referrer';image.style.cssText='width:100%;max-height:380px;object-fit:contain';image.onerror=()=>{host.textContent='Screenshot unavailable.';};const credit=document.createElement('small');credit.textContent=item.image_source||'Item screenshot';host.replaceChildren(image,credit);}).catch(()=>{host.textContent='Screenshot unavailable.';});return host;
+  }
+  if(item.source==='Community folder'){host.textContent='No screenshot available for this exact code.';return host;}
   const cached = savedCardCache.get(item.serial);
   if (cached) fillBl4ItemCard(host, cached);
   else if (item.serial.length > 8192) host.textContent = 'Code too large for card preview · original preserved';

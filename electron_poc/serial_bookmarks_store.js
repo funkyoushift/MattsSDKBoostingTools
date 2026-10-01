@@ -69,6 +69,11 @@ function normalizeBookmarkRecord(record, now = new Date().toISOString(), fallbac
     "url",
     "tags",
     "notes",
+    "source_name",
+    "name_source",
+    "image_url",
+    "image_source",
+    "image_serial_hash",
     "mattmab_validator",
     "mattmab_validator_detail"
   ].forEach((key) => {

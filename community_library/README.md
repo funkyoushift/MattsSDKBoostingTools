@@ -55,3 +55,13 @@ role assignment, submissions and moderation are not part of this public API.
 Website documentation at `/community/api.html` includes a downloadable integration
 kit and dependency-free JavaScript/Python clients. No npm or PyPI publication is
 required. The clients verify folder digests and preserve serial case/duplicates.
+
+## Screenshots and GZO titles
+
+Apply `image-schema.sql` once to an existing database before deploying this update (new databases use `schema.sql`). Item screenshots are separate from canonical folder JSON and its digest. Uploads are JPEG, at most 512 KiB and 2000 pixels per side, up to 20 per loadout. The website accepts PNG/JPEG/WebP and resizes them. Images remain private until approval; replacing/removing an image returns the loadout to pending. Review requests include `media_revision` so an old preview cannot approve new images.
+
+`GET /folders/:id` and `/api/v1/folders/:id` return `images` and `item_details`, keyed by SHA-256 of the complete case-sensitive UTF-8 serial. Details include available GZO title, creator/source, and screenshot URL. Uploaded screenshots take priority. These fields do not change the folder digest. Desktop imports preserve the saved label as `source_name` and bind images to `image_serial_hash`; changed codes cannot retain an unrelated picture.
+
+`POST /submissions/:id/images` accepts the same private ownership bearer key (or an editor's same-origin portal session), JSON `{digest, media_revision, images:[{id,serial,data}], remove:[]}`. Each `id` is UUIDv4; `data` is base64 JPEG without a data-URL prefix. Reuse IDs and payloads when retrying. Fetch current submission status for its revision. `GET /images/:id` serves approved images publicly, otherwise only the owner/reviewer. Do not put ownership keys in image URLs.
+
+Refresh the GZO snapshot with `node refresh_gzo_images.mjs [website-index-path]`. Exact full-code hashes only; conflicting titles and images are omitted independently. GZO supplies presentation metadata, not proof of native game item-card behavior. Missing matches retain saved names. Screenshot links in imported copies remain online references and can become unavailable if the source is withdrawn.

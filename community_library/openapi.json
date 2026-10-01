@@ -130,6 +130,52 @@
                         },
                         "folder": {
                           "$ref": "#/components/schemas/Folder"
+                        },
+                        "images": {
+                          "type": "array",
+                          "description": "Uploaded screenshots, keyed by SHA-256 of exact UTF-8 item serial.",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "serial_hash": {
+                                "type": "string"
+                              },
+                              "content_hash": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        },
+                        "item_details": {
+                          "type": "object",
+                          "description": "Optional presentation metadata keyed by SHA-256 of the complete case-sensitive serial. Uploaded image takes priority; GZO title and fallback image require an exact match. Excluded from canonical folder digest.",
+                          "additionalProperties": {
+                            "type": "object",
+                            "properties": {
+                              "title": {
+                                "type": "string"
+                              },
+                              "title_source": {
+                                "type": "string"
+                              },
+                              "creator": {
+                                "type": "string"
+                              },
+                              "source_url": {
+                                "type": "string"
+                              },
+                              "image_url": {
+                                "type": "string"
+                              },
+                              "image_source": {
+                                "type": "string"
+                              }
+                            }
+                          }
                         }
                       }
                     }

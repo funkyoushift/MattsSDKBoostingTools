@@ -17,14 +17,24 @@ function createCommunityClient({userData,safeStorage,fetcher=fetch,endpoint=DEFA
   async function request(route,{method='GET',secret,body}={}) {
     const response=await fetcher(url.origin+route,{method,headers:{...(body?{'Content-Type':'application/json'}:{}),...(secret?{Authorization:'Bearer '+secret}:{})},body:body?JSON.stringify(body):undefined,signal:AbortSignal.timeout(60000),redirect:'error'});
     const reader=response.body.getReader(),parts=[];let bytes=0;
-    try{while(true){const {done,value}=await reader.read();if(done)break;bytes+=value.length;if(bytes>contract.MAX_BYTES+262144){await reader.cancel();throw Error('The library returned an oversized response.');}parts.push(Buffer.from(value));}}finally{reader.releaseLock();}
+    try{while(true){const {done,value}=await reader.read();if(done)break;bytes+=value.length;if(bytes>contract.MAX_BYTES+2*1024*1024){await reader.cancel();throw Error('The library returned an oversized response.');}parts.push(Buffer.from(value));}}finally{reader.releaseLock();}
     let data;try{data=JSON.parse(Buffer.concat(parts).toString('utf8'));}catch{throw Error('The online library did not return valid folder data.');}
     if(!response.ok||!data.ok)throw Error(data.message||`Library request failed (${response.status}).`);
     if(data.folder){data.folder=contract.normalize(data.folder);const digest=crypto.createHash('sha256').update(JSON.stringify(data.folder)).digest('hex');if(digest!==data.digest)throw Error('Folder integrity check failed. Nothing was imported.');}
+    if(data.folder){data.presentations=data.folder.items.map(item=>{const serialHash=crypto.createHash('sha256').update(item.serial).digest('hex'),raw=data.item_details?.[serialHash];if(!raw)return null;let image='';try{const parsed=new URL(raw.image_url);if(parsed.protocol==='https:'&&((parsed.origin===url.origin&&/^\/images\/[0-9a-f-]+$/i.test(parsed.pathname))||(parsed.hostname==='save-editor.be'&&parsed.pathname.startsWith('/GZO/'))))image=parsed.href;}catch{}return {serial_hash:serialHash,title:raw.title_source==='GZO'&&typeof raw.title==='string'?raw.title.slice(0,180):item.name,title_source:raw.title_source==='GZO'?'GZO exact code match':'Saved item name',image_url:image,image_source:String(raw.image_source||'').slice(0,80)};});}
+    // Pending owner previews fetch protected images in the main process; never expose the ownership key to the renderer.
+    if(secret&&data.folder&&data.status!=='approved')for(const view of data.presentations||[]){
+      if(!view?.image_url?.startsWith(url.origin+'/images/'))continue;
+      const image=await fetcher(view.image_url,{headers:{Authorization:'Bearer '+secret},signal:AbortSignal.timeout(30000),redirect:'error'});
+      if(!image.ok||image.headers.get('Content-Type')!=='image/jpeg'){view.image_url='';continue;}
+      const reader=image.body.getReader(),chunks=[];let size=0;
+      try{while(true){const {done,value}=await reader.read();if(done)break;size+=value.length;if(size>524288){await reader.cancel();throw Error('Screenshot exceeds download limit.');}chunks.push(Buffer.from(value));}}finally{reader.releaseLock();}
+      view.image_url='data:image/jpeg;base64,'+Buffer.concat(chunks).toString('base64');
+    }
     return data;
   }
   return {endpoint:url.origin,async dispatch(operation,payload={}) {
-    if(operation==='list')return request('/folders?'+new URLSearchParams({q:String(payload.q||'').slice(0,100),offset:String(payload.offset||0)}));
+    if(operation==='list')return request('/folders?'+new URLSearchParams({q:String(payload.q||'').slice(0,100),offset:String(payload.offset||0),limit:String(payload.limit||100)}));
     if(operation==='get')return request('/folders/'+id(payload.id));
     if(operation==='info'){const d=await load();return {ok:true,endpoint:url.origin};}
     if(operation==='mine'){const d=await load();return {ok:true,submissions:d.submissions.map(({secret,folder,...row})=>row)};}

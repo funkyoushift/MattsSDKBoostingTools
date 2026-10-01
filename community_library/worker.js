@@ -2,6 +2,8 @@ import contract from '../electron_poc/community_folders_contract.js';
 import {portal} from './portal.js';
 import {identity,allowed} from './auth.js';
 import openapi from './openapi.json';
+import gzoImages from './gzo-images.json';
+import {media,imageList} from './media.js';
 const publicColumns='id,title,creator,description,item_count,oversized_count,digest,status,created_at,reviewed_at';
 const json=(data,status=200)=>Response.json(data,{status,headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
 const hash=async value=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(value)))].map(x=>x.toString(16).padStart(2,'0')).join('');
@@ -24,7 +26,7 @@ const escape=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&g
 const publicOrigins = new Set(['https://www.funkyoushift.com','https://funkyoushift.com','https://funkyoushift.github.io']);
 export default {async fetch(request,env) {
   const path = new URL(request.url).pathname;
-  const submission = path==='/submissions' || /^\/submissions\/[0-9a-f-]+$/i.test(path);
+  const submission = path==='/submissions' || /^\/submissions\/[0-9a-f-]+(?:\/images)?$/i.test(path);
   const origin=request.headers.get('Origin');
   if(submission && origin && !publicOrigins.has(origin) && origin!==env.PUBLIC_ORIGIN)return json({ok:false,message:'Invalid request origin.'},403);
   if(submission && request.method==='OPTIONS')return new Response(null,{status:204,headers:{...(publicOrigins.has(origin)?{'Access-Control-Allow-Origin':origin}:{}),'Vary':'Origin','Access-Control-Allow-Methods':'GET, POST, DELETE, OPTIONS','Access-Control-Allow-Headers':'Authorization, Content-Type','Access-Control-Max-Age':'600'}});
@@ -56,6 +58,8 @@ async function handleRequest(request,env) {
     if(path==='/health'&&request.method==='GET') return json({ok:true,service:'MSBT community folders',version:1});
     const limiter=request.method==='GET'||path.startsWith('/portal')||path.startsWith('/review')||path.startsWith('/api/auth/')?env.READ_RATE:env.WRITE_RATE;
     if(limiter && !(await limiter.limit({key:request.headers.get('CF-Connecting-IP') || 'local'})).success) return json({ok:false,message:'Too many requests. Please wait a minute.'},429);
+    const mediaResult=await media(request,env,{body,contract});if(mediaResult)return mediaResult;
+    if(path==='/gzo-images.json'&&request.method==='GET')return Response.json(gzoImages,{headers:{'Cache-Control':'public, max-age=3600'}});
     const portalResult=await portal(request,env,{body,chunks});if(portalResult)return portalResult;
     const person=path.startsWith('/review')?await identity(request,env):null;
     const reviewer=allowed(person,'review');
@@ -97,12 +101,14 @@ async function handleRequest(request,env) {
       if(kind==='review'&&request.method==='POST') {
         const input=await body(request,8192);
         if(!['approved','rejected'].includes(input.status))throw Error('Choose approve or reject.');
+        if(input.media_revision!==undefined&&input.media_revision!==row.media_revision)return json({ok:false,message:'Screenshots changed. Reload before reviewing.'},409);
+        if((input.media_revision||0)!==row.media_revision)return json({ok:false,message:'Reload to review the screenshots before publishing.'},409);
         if(input.digest!==row.digest)return json({ok:false,message:'Folder changed. Reload it before reviewing.'},409);
         if(row.status==='withdrawn')return json({ok:false,message:'The author withdrew this submission.'},409);
         const note=String(input.note||'').trim();if(note.length>1000)throw Error('Review note is too long.');
         const guard=crypto.randomUUID();
         await env.LIBRARY.batch([
-          env.LIBRARY.prepare("INSERT INTO mutation_guard(id,passed) SELECT ?,CASE WHEN EXISTS(SELECT 1 FROM folders WHERE id=? AND digest=? AND status!='withdrawn') AND EXISTS(SELECT 1 FROM team WHERE user_id=? AND role IN ('reviewer','editor','admin','owner')) THEN 1 ELSE 0 END").bind(guard,id,input.digest,person.id),
+          env.LIBRARY.prepare("INSERT INTO mutation_guard(id,passed) SELECT ?,CASE WHEN EXISTS(SELECT 1 FROM folders WHERE id=? AND digest=? AND media_revision=? AND status!='withdrawn') AND EXISTS(SELECT 1 FROM team WHERE user_id=? AND role IN ('reviewer','editor','admin','owner')) THEN 1 ELSE 0 END").bind(guard,id,input.digest,row.media_revision,person.id),
           env.LIBRARY.prepare('UPDATE folders SET status=?,review_note=?,reviewed_at=? WHERE id=?').bind(input.status,note,new Date().toISOString(),id),
           env.LIBRARY.prepare('INSERT INTO audit(id,actor,action,target,details,created_at) VALUES(?,?,?,?,?,?)').bind(crypto.randomUUID(),person.id,input.status,id,JSON.stringify({digest:row.digest,note}),new Date().toISOString()),
           env.LIBRARY.prepare('DELETE FROM mutation_guard WHERE id=?').bind(guard)
@@ -118,7 +124,9 @@ async function handleRequest(request,env) {
         const folder=JSON.parse(stored.results.map(c=>c.content).join(''));
         const {owner_hash,...metadata}=row;
         if(!own&&!reviewer)delete metadata.review_note;
-        return json({ok:true,...metadata,folder});
+        const images=await imageList(env.LIBRARY,id),item_details={};
+        await Promise.all([...new Set(folder.items.map(i=>i.serial))].map(async serial=>{const key=await hash(serial),gzo=gzoImages.images[key],uploaded=images.find(i=>i.serial_hash===key);if(gzo||uploaded)item_details[key]={...(gzo?.name?{title:gzo.name,title_source:'GZO',creator:gzo.creator,source_url:gzo.source}:{}),image_url:uploaded?env.PUBLIC_ORIGIN+'/images/'+uploaded.id:gzo?.url||'',image_source:uploaded?'Uploaded screenshot':gzo?.url?'GZO exact code match':''};}));
+        return json({ok:true,...metadata,folder,images,item_details});
       }
     }
     return json({ok:false,message:'Not found.'},404);

@@ -1,12 +1,14 @@
 import {createAuth,identity,allowed} from './auth.js';
 import contract from '../electron_poc/community_folders_contract.js';
 import page from './portal.html';
+import mediaClient from './media-client.txt';
+import {imageList} from './media.js';
 const json=(data,status=200)=>Response.json(data,{status,headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
 const hash=async text=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(text)))].map(x=>x.toString(16).padStart(2,'0')).join('');
 export async function portal(request,env,{body,chunks}) {
   const url=new URL(request.url),route=url.pathname;
   if(route.startsWith('/api/auth/'))return createAuth(env).handler(request);
-  if(route==='/portal') {const nonce=crypto.randomUUID();return new Response(page.replace('SCRIPT_NONCE',nonce),{headers:{'Content-Type':'text/html;charset=utf-8','Cache-Control':'no-store','Content-Security-Policy':`default-src 'none'; script-src 'nonce-${nonce}'; style-src 'unsafe-inline'; connect-src 'self'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'`}});}
+  if(route==='/portal') {const nonce=crypto.randomUUID();return new Response(page.replace('SCRIPT_NONCE',nonce).replace('MEDIA_CLIENT_SCRIPT',mediaClient),{headers:{'Content-Type':'text/html;charset=utf-8','Cache-Control':'no-store','Content-Security-Policy':`default-src 'none'; script-src 'nonce-${nonce}'; style-src 'unsafe-inline'; img-src 'self' blob: https://save-editor.be; connect-src 'self'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'`}});}
   if(!route.startsWith('/portal/api/'))return null;
   const person=await identity(request,env);
   if(!person)return json({ok:false,message:'Sign in to continue.'},401);
@@ -39,11 +41,13 @@ export async function portal(request,env,{body,chunks}) {
     if(!row||row.digest!==input.digest)return json({ok:false,message:'Folder changed. Reload it before editing.'},409);
     if(row.status==='withdrawn'&&action!=='delete')return json({ok:false,message:'The author withdrew this folder.'},409);
     const guard=gate(action),versionGuard=crypto.randomUUID();
-    const commands=[guard.statement,env.LIBRARY.prepare("INSERT INTO mutation_guard(id,passed) SELECT ?,CASE WHEN EXISTS(SELECT 1 FROM folders WHERE id=? AND digest=? AND (status!='withdrawn' OR ?='delete')) THEN 1 ELSE 0 END").bind(versionGuard,id,input.digest,action)];
+    const commands=[guard.statement,env.LIBRARY.prepare("INSERT INTO mutation_guard(id,passed) SELECT ?,CASE WHEN EXISTS(SELECT 1 FROM folders WHERE id=? AND digest=? AND media_revision=? AND (status!='withdrawn' OR ?='delete')) THEN 1 ELSE 0 END").bind(versionGuard,id,input.digest,row.media_revision,action)];
     if(action==='delete') {
-      commands.push(env.LIBRARY.prepare('DELETE FROM folder_chunks WHERE folder_id=?').bind(id),env.LIBRARY.prepare('DELETE FROM folders WHERE id=?').bind(id));
+      commands.push(env.LIBRARY.prepare('DELETE FROM item_images WHERE folder_id=?').bind(id),env.LIBRARY.prepare('DELETE FROM folder_chunks WHERE folder_id=?').bind(id),env.LIBRARY.prepare('DELETE FROM folders WHERE id=?').bind(id));
     } else {
       const folder=contract.normalize(input.folder),text=JSON.stringify(folder),digest=await hash(text);
+      const serialHashes=new Set(await Promise.all(folder.items.map(i=>hash(i.serial))));
+      for(const image of await imageList(env.LIBRARY,id))if(!serialHashes.has(image.serial_hash))commands.push(env.LIBRARY.prepare('DELETE FROM item_images WHERE id=?').bind(image.id));
       commands.push(env.LIBRARY.prepare("UPDATE folders SET title=?,creator=?,description=?,item_count=?,oversized_count=?,digest=?,status='pending',reviewed_at=NULL,review_note='Edited by team; needs approval' WHERE id=?").bind(folder.title,folder.creator,folder.description,folder.items.length,folder.items.filter(i=>i.serial.length>8192).length,digest,id),env.LIBRARY.prepare('DELETE FROM folder_chunks WHERE folder_id=?').bind(id));
       chunks(text).forEach((part,i)=>commands.push(env.LIBRARY.prepare('INSERT INTO folder_chunks(folder_id,sequence,content) VALUES(?,?,?)').bind(id,i,part)));
     }
