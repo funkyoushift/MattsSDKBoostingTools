@@ -6,9 +6,33 @@
   "design_height": 1080.0,
   "widgets": [
     {
-      "id": "qm_panel",
+      "id": "QM Page 1__edge",
       "kind": "border",
-      "label": "MSBT Quick Menu dock",
+      "label": "",
+      "x": 1214.0,
+      "y": 0.0,
+      "w": 6.0,
+      "h": 1080.0,
+      "colour": [
+        0.02,
+        0.8,
+        0.7,
+        1.0
+      ],
+      "text_scale": null,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 1",
+        "msbt_role": "chrome",
+        "role": "edge"
+      }
+    },
+    {
+      "id": "QM Page 1__dock",
+      "kind": "border",
+      "label": "MSBT Quick Menu",
       "x": 1220.0,
       "y": 0.0,
       "w": 700.0,
@@ -17,18 +41,44 @@
         0.08,
         0.08,
         0.12,
-        0.85
+        0.92
       ],
       "text_scale": null,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
       "meta": {
+        "screen": "QM Page 1",
+        "msbt_role": "chrome",
         "role": "panel"
       }
     },
     {
-      "id": "qm_title",
+      "id": "QM Page 1__header",
+      "kind": "border",
+      "label": "",
+      "x": 1220.0,
+      "y": 0.0,
+      "w": 700.0,
+      "h": 168.0,
+      "colour": [
+        0.12,
+        0.1,
+        0.18,
+        0.95
+      ],
+      "text_scale": null,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 1",
+        "msbt_role": "chrome",
+        "role": "header"
+      }
+    },
+    {
+      "id": "QM Page 1__title",
       "kind": "text",
       "label": "MSBT Quick Menu",
       "x": 1232.0,
@@ -41,12 +91,647 @@
         1.0,
         1.0
       ],
-      "text_scale": null,
+      "text_scale": 0.68,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
       "meta": {
+        "screen": "QM Page 1",
+        "msbt_role": "chrome",
         "role": "title"
+      }
+    },
+    {
+      "id": "QM Page 1__subtitle",
+      "kind": "text",
+      "label": "RUN | QM Page 1 | Lock OFF | 1.00x | MSBT Neon",
+      "x": 1232.0,
+      "y": 42.0,
+      "w": 676.0,
+      "h": 24.0,
+      "colour": [
+        0.75,
+        0.78,
+        0.82,
+        1.0
+      ],
+      "text_scale": 0.36,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 1",
+        "msbt_role": "chrome",
+        "role": "subtitle"
+      }
+    },
+    {
+      "id": "QM Page 1__hdr_0",
+      "kind": "button",
+      "label": "MOVE",
+      "x": 1232.0,
+      "y": 68.0,
+      "w": 72.0,
+      "h": 44.0,
+      "colour": [
+        0.1,
+        0.55,
+        0.48,
+        0.95
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 1",
+        "msbt_role": "chrome",
+        "role": "header_btn"
+      }
+    },
+    {
+      "id": "QM Page 1__hdr_1",
+      "kind": "button",
+      "label": "THEME",
+      "x": 1310.0,
+      "y": 68.0,
+      "w": 84.0,
+      "h": 44.0,
+      "colour": [
+        0.72,
+        0.55,
+        0.12,
+        0.95
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 1",
+        "msbt_role": "chrome",
+        "role": "header_btn"
+      }
+    },
+    {
+      "id": "QM Page 1__hdr_2",
+      "kind": "button",
+      "label": "-",
+      "x": 1400.0,
+      "y": 68.0,
+      "w": 40.0,
+      "h": 44.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 1",
+        "msbt_role": "chrome",
+        "role": "header_btn"
+      }
+    },
+    {
+      "id": "QM Page 1__hdr_3",
+      "kind": "button",
+      "label": "1.00x",
+      "x": 1446.0,
+      "y": 68.0,
+      "w": 72.0,
+      "h": 44.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 1",
+        "msbt_role": "chrome",
+        "role": "header_btn"
+      }
+    },
+    {
+      "id": "QM Page 1__hdr_4",
+      "kind": "button",
+      "label": "+",
+      "x": 1524.0,
+      "y": 68.0,
+      "w": 40.0,
+      "h": 44.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 1",
+        "msbt_role": "chrome",
+        "role": "header_btn"
+      }
+    },
+    {
+      "id": "QM Page 1__hdr_5",
+      "kind": "button",
+      "label": "RESET POS",
+      "x": 1570.0,
+      "y": 68.0,
+      "w": 110.0,
+      "h": 44.0,
+      "colour": [
+        0.1,
+        0.55,
+        0.48,
+        0.95
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 1",
+        "msbt_role": "chrome",
+        "role": "header_btn"
+      }
+    },
+    {
+      "id": "QM Page 1__hdr_6",
+      "kind": "button",
+      "label": "Edit",
+      "x": 1684.0,
+      "y": 68.0,
+      "w": 100.0,
+      "h": 44.0,
+      "colour": [
+        0.72,
+        0.55,
+        0.12,
+        0.95
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 1",
+        "msbt_role": "chrome",
+        "role": "header_btn"
+      }
+    },
+    {
+      "id": "QM Page 1__hdr_7",
+      "kind": "button",
+      "label": "Close F7",
+      "x": 1792.0,
+      "y": 68.0,
+      "w": 116.0,
+      "h": 44.0,
+      "colour": [
+        0.55,
+        0.12,
+        0.16,
+        0.95
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 1",
+        "msbt_role": "chrome",
+        "role": "header_btn"
+      }
+    },
+    {
+      "id": "QM Page 1__p0",
+      "kind": "button",
+      "label": "P1",
+      "x": 1232.0,
+      "y": 118.0,
+      "w": 74.0,
+      "h": 36.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.75
+      ],
+      "text_scale": 0.3,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 1",
+        "msbt_role": "chrome",
+        "role": "player_slot",
+        "player_slot": 0
+      }
+    },
+    {
+      "id": "QM Page 1__p1",
+      "kind": "button",
+      "label": "P2",
+      "x": 1312.0,
+      "y": 118.0,
+      "w": 74.0,
+      "h": 36.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.75
+      ],
+      "text_scale": 0.3,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 1",
+        "msbt_role": "chrome",
+        "role": "player_slot",
+        "player_slot": 1
+      }
+    },
+    {
+      "id": "QM Page 1__p2",
+      "kind": "button",
+      "label": "P3",
+      "x": 1392.0,
+      "y": 118.0,
+      "w": 74.0,
+      "h": 36.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.75
+      ],
+      "text_scale": 0.3,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 1",
+        "msbt_role": "chrome",
+        "role": "player_slot",
+        "player_slot": 2
+      }
+    },
+    {
+      "id": "QM Page 1__p3",
+      "kind": "button",
+      "label": "P4",
+      "x": 1472.0,
+      "y": 118.0,
+      "w": 74.0,
+      "h": 36.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.75
+      ],
+      "text_scale": 0.3,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 1",
+        "msbt_role": "chrome",
+        "role": "player_slot",
+        "player_slot": 3
+      }
+    },
+    {
+      "id": "QM Page 1__pall",
+      "kind": "button",
+      "label": "PAll",
+      "x": 1552.0,
+      "y": 118.0,
+      "w": 70.0,
+      "h": 36.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.34,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 1",
+        "msbt_role": "chrome",
+        "role": "player_all"
+      }
+    },
+    {
+      "id": "QM Page 1__tab_p0",
+      "kind": "button",
+      "label": "P1",
+      "x": 1232.0,
+      "y": 162.0,
+      "w": 64.0,
+      "h": 40.0,
+      "colour": [
+        0.72,
+        0.55,
+        0.12,
+        0.95
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 1",
+        "msbt_role": "chrome",
+        "role": "page_tab",
+        "page": 0
+      }
+    },
+    {
+      "id": "QM Page 1__tab_p1",
+      "kind": "button",
+      "label": "P2",
+      "x": 1302.0,
+      "y": 162.0,
+      "w": 64.0,
+      "h": 40.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 1",
+        "msbt_role": "chrome",
+        "role": "page_tab",
+        "page": 1
+      }
+    },
+    {
+      "id": "QM Page 1__tab_p2",
+      "kind": "button",
+      "label": "P3",
+      "x": 1372.0,
+      "y": 162.0,
+      "w": 64.0,
+      "h": 40.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 1",
+        "msbt_role": "chrome",
+        "role": "page_tab",
+        "page": 2
+      }
+    },
+    {
+      "id": "QM Page 1__tab_p3",
+      "kind": "button",
+      "label": "P4",
+      "x": 1442.0,
+      "y": 162.0,
+      "w": 64.0,
+      "h": 40.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 1",
+        "msbt_role": "chrome",
+        "role": "page_tab",
+        "page": 3
+      }
+    },
+    {
+      "id": "QM Page 1__tab_p4",
+      "kind": "button",
+      "label": "P5",
+      "x": 1512.0,
+      "y": 162.0,
+      "w": 64.0,
+      "h": 40.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 1",
+        "msbt_role": "chrome",
+        "role": "page_tab",
+        "page": 4
+      }
+    },
+    {
+      "id": "QM Page 1__tab_inv",
+      "kind": "button",
+      "label": "INV",
+      "x": 1582.0,
+      "y": 162.0,
+      "w": 64.0,
+      "h": 40.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 1",
+        "msbt_role": "chrome",
+        "role": "inv_tab"
+      }
+    },
+    {
+      "id": "QM Page 1__tool_0",
+      "kind": "button",
+      "label": "Pin Last",
+      "x": 1232.0,
+      "y": 210.0,
+      "w": 130.0,
+      "h": 42.0,
+      "colour": [
+        0.72,
+        0.55,
+        0.12,
+        0.95
+      ],
+      "text_scale": 0.46,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 1",
+        "msbt_role": "chrome",
+        "role": "tool_btn"
+      }
+    },
+    {
+      "id": "QM Page 1__tool_1",
+      "kind": "button",
+      "label": "Lock",
+      "x": 1370.0,
+      "y": 210.0,
+      "w": 90.0,
+      "h": 42.0,
+      "colour": [
+        0.1,
+        0.55,
+        0.48,
+        0.95
+      ],
+      "text_scale": 0.46,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 1",
+        "msbt_role": "chrome",
+        "role": "tool_btn"
+      }
+    },
+    {
+      "id": "QM Page 1__tool_2",
+      "kind": "button",
+      "label": "Target",
+      "x": 1468.0,
+      "y": 210.0,
+      "w": 100.0,
+      "h": 42.0,
+      "colour": [
+        0.1,
+        0.55,
+        0.48,
+        0.95
+      ],
+      "text_scale": 0.46,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 1",
+        "msbt_role": "chrome",
+        "role": "tool_btn"
+      }
+    },
+    {
+      "id": "QM Page 1__tool_3",
+      "kind": "button",
+      "label": "Refresh",
+      "x": 1576.0,
+      "y": 210.0,
+      "w": 110.0,
+      "h": 42.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.46,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 1",
+        "msbt_role": "chrome",
+        "role": "tool_btn"
+      }
+    },
+    {
+      "id": "QM Page 1__info_target",
+      "kind": "text",
+      "label": "Target: (none)",
+      "x": 1232.0,
+      "y": 258.0,
+      "w": 676.0,
+      "h": 22.0,
+      "colour": [
+        0.75,
+        0.78,
+        0.82,
+        1.0
+      ],
+      "text_scale": 0.34,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 1",
+        "msbt_role": "chrome",
+        "role": "info"
+      }
+    },
+    {
+      "id": "QM Page 1__info_last",
+      "kind": "text",
+      "label": "Last: (none) | Drop: (none)",
+      "x": 1232.0,
+      "y": 280.0,
+      "w": 676.0,
+      "h": 22.0,
+      "colour": [
+        0.75,
+        0.78,
+        0.82,
+        1.0
+      ],
+      "text_scale": 0.34,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 1",
+        "msbt_role": "chrome",
+        "role": "info"
       }
     },
     {
@@ -54,7 +739,7 @@
       "kind": "button",
       "label": "Max All",
       "x": 1232.0,
-      "y": 322.0,
+      "y": 308.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -63,7 +748,7 @@
         0.48,
         0.95
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -80,7 +765,7 @@
       "kind": "button",
       "label": "Max Currency",
       "x": 1450.0,
-      "y": 322.0,
+      "y": 308.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -89,7 +774,7 @@
         0.48,
         0.95
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -106,7 +791,7 @@
       "kind": "button",
       "label": "Max Eridium",
       "x": 1668.0,
-      "y": 322.0,
+      "y": 308.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -115,7 +800,7 @@
         0.48,
         0.95
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -132,7 +817,7 @@
       "kind": "button",
       "label": "Max SDU",
       "x": 1232.0,
-      "y": 384.0,
+      "y": 370.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -141,7 +826,7 @@
         0.48,
         0.95
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -156,9 +841,9 @@
     {
       "id": "qm_p0_s4",
       "kind": "button",
-      "label": "Drop All Shinies",
+      "label": "Drop Shinies",
       "x": 1450.0,
-      "y": 384.0,
+      "y": 370.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -167,7 +852,7 @@
         0.48,
         0.95
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -182,9 +867,9 @@
     {
       "id": "qm_p0_s5",
       "kind": "button",
-      "label": "Shiny Selected",
+      "label": "Shinies Selected",
       "x": 1668.0,
-      "y": 384.0,
+      "y": 370.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -193,7 +878,7 @@
         0.48,
         0.95
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -210,7 +895,7 @@
       "kind": "button",
       "label": "Open Chest",
       "x": 1232.0,
-      "y": 446.0,
+      "y": 432.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -219,7 +904,7 @@
         0.48,
         0.95
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -236,7 +921,7 @@
       "kind": "button",
       "label": "Close Chest",
       "x": 1450.0,
-      "y": 446.0,
+      "y": 432.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -245,7 +930,7 @@
         0.48,
         0.95
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -262,7 +947,7 @@
       "kind": "button",
       "label": "Open Bank",
       "x": 1668.0,
-      "y": 446.0,
+      "y": 432.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -271,7 +956,7 @@
         0.48,
         0.95
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -286,9 +971,9 @@
     {
       "id": "qm_p0_s9",
       "kind": "button",
-      "label": "Repeat Drop",
+      "label": "Repeat Last Drop",
       "x": 1232.0,
-      "y": 508.0,
+      "y": 494.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -297,7 +982,7 @@
         0.48,
         0.95
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -312,9 +997,9 @@
     {
       "id": "qm_p0_s10",
       "kind": "button",
-      "label": "P1 + Assign",
+      "label": "+ Assign",
       "x": 1450.0,
-      "y": 508.0,
+      "y": 494.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -323,7 +1008,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -338,9 +1023,9 @@
     {
       "id": "qm_p0_s11",
       "kind": "button",
-      "label": "P1 + Assign",
+      "label": "+ Assign",
       "x": 1668.0,
-      "y": 508.0,
+      "y": 494.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -349,7 +1034,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -364,9 +1049,9 @@
     {
       "id": "qm_p0_s12",
       "kind": "button",
-      "label": "P1 + Assign",
+      "label": "+ Assign",
       "x": 1232.0,
-      "y": 570.0,
+      "y": 556.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -375,7 +1060,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -390,9 +1075,9 @@
     {
       "id": "qm_p0_s13",
       "kind": "button",
-      "label": "P1 + Assign",
+      "label": "+ Assign",
       "x": 1450.0,
-      "y": 570.0,
+      "y": 556.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -401,7 +1086,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -416,9 +1101,9 @@
     {
       "id": "qm_p0_s14",
       "kind": "button",
-      "label": "P1 + Assign",
+      "label": "+ Assign",
       "x": 1668.0,
-      "y": 570.0,
+      "y": 556.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -427,7 +1112,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -442,9 +1127,9 @@
     {
       "id": "qm_p0_s15",
       "kind": "button",
-      "label": "P1 + Assign",
+      "label": "+ Assign",
       "x": 1232.0,
-      "y": 632.0,
+      "y": 618.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -453,7 +1138,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -468,9 +1153,9 @@
     {
       "id": "qm_p0_s16",
       "kind": "button",
-      "label": "P1 + Assign",
+      "label": "+ Assign",
       "x": 1450.0,
-      "y": 632.0,
+      "y": 618.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -479,7 +1164,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -494,9 +1179,9 @@
     {
       "id": "qm_p0_s17",
       "kind": "button",
-      "label": "P1 + Assign",
+      "label": "+ Assign",
       "x": 1668.0,
-      "y": 632.0,
+      "y": 618.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -505,7 +1190,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -520,9 +1205,9 @@
     {
       "id": "qm_p0_s18",
       "kind": "button",
-      "label": "P1 + Assign",
+      "label": "+ Assign",
       "x": 1232.0,
-      "y": 694.0,
+      "y": 680.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -531,7 +1216,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -546,9 +1231,9 @@
     {
       "id": "qm_p0_s19",
       "kind": "button",
-      "label": "P1 + Assign",
+      "label": "+ Assign",
       "x": 1450.0,
-      "y": 694.0,
+      "y": 680.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -557,7 +1242,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -572,9 +1257,9 @@
     {
       "id": "qm_p0_s20",
       "kind": "button",
-      "label": "P1 + Assign",
+      "label": "+ Assign",
       "x": 1668.0,
-      "y": 694.0,
+      "y": 680.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -583,7 +1268,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -596,20 +1281,869 @@
       }
     },
     {
-      "id": "qm_p1_s0",
-      "kind": "button",
-      "label": "P2 + Assign",
+      "id": "qm_p0_rarity",
+      "kind": "border",
+      "label": "Rarity panel (optional)",
       "x": 1232.0,
-      "y": 322.0,
-      "w": 210.0,
-      "h": 56.0,
+      "y": 746.0,
+      "w": 676.0,
+      "h": 230.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": null,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 1",
+        "page": 0,
+        "msbt_role": "rarity_panel"
+      }
+    },
+    {
+      "id": "qm_p0_rarity_btn_0",
+      "kind": "button",
+      "label": "Apply",
+      "x": 1240.0,
+      "y": 782.0,
+      "w": 150.0,
+      "h": 40.0,
+      "colour": [
+        0.72,
+        0.55,
+        0.12,
+        0.95
+      ],
+      "text_scale": 0.34,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 1",
+        "page": 0,
+        "msbt_role": "rarity_btn"
+      }
+    },
+    {
+      "id": "qm_p0_rarity_btn_1",
+      "kind": "button",
+      "label": "Reset",
+      "x": 1400.0,
+      "y": 782.0,
+      "w": 150.0,
+      "h": 40.0,
+      "colour": [
+        0.1,
+        0.55,
+        0.48,
+        0.95
+      ],
+      "text_scale": 0.34,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 1",
+        "page": 0,
+        "msbt_role": "rarity_btn"
+      }
+    },
+    {
+      "id": "qm_p0_rarity_btn_2",
+      "kind": "button",
+      "label": "Only Leg",
+      "x": 1560.0,
+      "y": 782.0,
+      "w": 150.0,
+      "h": 40.0,
+      "colour": [
+        0.1,
+        0.55,
+        0.48,
+        0.95
+      ],
+      "text_scale": 0.34,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 1",
+        "page": 0,
+        "msbt_role": "rarity_btn"
+      }
+    },
+    {
+      "id": "qm_p0_rarity_btn_3",
+      "kind": "button",
+      "label": "Only Pearl",
+      "x": 1720.0,
+      "y": 782.0,
+      "w": 150.0,
+      "h": 40.0,
+      "colour": [
+        0.1,
+        0.55,
+        0.48,
+        0.95
+      ],
+      "text_scale": 0.34,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 1",
+        "page": 0,
+        "msbt_role": "rarity_btn"
+      }
+    },
+    {
+      "id": "QM Page 2__edge",
+      "kind": "border",
+      "label": "",
+      "x": 1214.0,
+      "y": 0.0,
+      "w": 6.0,
+      "h": 1080.0,
+      "colour": [
+        0.02,
+        0.8,
+        0.7,
+        1.0
+      ],
+      "text_scale": null,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 2",
+        "msbt_role": "chrome",
+        "role": "edge"
+      }
+    },
+    {
+      "id": "QM Page 2__dock",
+      "kind": "border",
+      "label": "MSBT Quick Menu",
+      "x": 1220.0,
+      "y": 0.0,
+      "w": 700.0,
+      "h": 1080.0,
+      "colour": [
+        0.08,
+        0.08,
+        0.12,
+        0.92
+      ],
+      "text_scale": null,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 2",
+        "msbt_role": "chrome",
+        "role": "panel"
+      }
+    },
+    {
+      "id": "QM Page 2__header",
+      "kind": "border",
+      "label": "",
+      "x": 1220.0,
+      "y": 0.0,
+      "w": 700.0,
+      "h": 168.0,
+      "colour": [
+        0.12,
+        0.1,
+        0.18,
+        0.95
+      ],
+      "text_scale": null,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 2",
+        "msbt_role": "chrome",
+        "role": "header"
+      }
+    },
+    {
+      "id": "QM Page 2__title",
+      "kind": "text",
+      "label": "MSBT Quick Menu",
+      "x": 1232.0,
+      "y": 8.0,
+      "w": 280.0,
+      "h": 36.0,
+      "colour": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "text_scale": 0.68,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 2",
+        "msbt_role": "chrome",
+        "role": "title"
+      }
+    },
+    {
+      "id": "QM Page 2__subtitle",
+      "kind": "text",
+      "label": "RUN | QM Page 2 | Lock OFF | 1.00x | MSBT Neon",
+      "x": 1232.0,
+      "y": 42.0,
+      "w": 676.0,
+      "h": 24.0,
+      "colour": [
+        0.75,
+        0.78,
+        0.82,
+        1.0
+      ],
+      "text_scale": 0.36,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 2",
+        "msbt_role": "chrome",
+        "role": "subtitle"
+      }
+    },
+    {
+      "id": "QM Page 2__hdr_0",
+      "kind": "button",
+      "label": "MOVE",
+      "x": 1232.0,
+      "y": 68.0,
+      "w": 72.0,
+      "h": 44.0,
+      "colour": [
+        0.1,
+        0.55,
+        0.48,
+        0.95
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 2",
+        "msbt_role": "chrome",
+        "role": "header_btn"
+      }
+    },
+    {
+      "id": "QM Page 2__hdr_1",
+      "kind": "button",
+      "label": "THEME",
+      "x": 1310.0,
+      "y": 68.0,
+      "w": 84.0,
+      "h": 44.0,
+      "colour": [
+        0.72,
+        0.55,
+        0.12,
+        0.95
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 2",
+        "msbt_role": "chrome",
+        "role": "header_btn"
+      }
+    },
+    {
+      "id": "QM Page 2__hdr_2",
+      "kind": "button",
+      "label": "-",
+      "x": 1400.0,
+      "y": 68.0,
+      "w": 40.0,
+      "h": 44.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 2",
+        "msbt_role": "chrome",
+        "role": "header_btn"
+      }
+    },
+    {
+      "id": "QM Page 2__hdr_3",
+      "kind": "button",
+      "label": "1.00x",
+      "x": 1446.0,
+      "y": 68.0,
+      "w": 72.0,
+      "h": 44.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 2",
+        "msbt_role": "chrome",
+        "role": "header_btn"
+      }
+    },
+    {
+      "id": "QM Page 2__hdr_4",
+      "kind": "button",
+      "label": "+",
+      "x": 1524.0,
+      "y": 68.0,
+      "w": 40.0,
+      "h": 44.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 2",
+        "msbt_role": "chrome",
+        "role": "header_btn"
+      }
+    },
+    {
+      "id": "QM Page 2__hdr_5",
+      "kind": "button",
+      "label": "RESET POS",
+      "x": 1570.0,
+      "y": 68.0,
+      "w": 110.0,
+      "h": 44.0,
+      "colour": [
+        0.1,
+        0.55,
+        0.48,
+        0.95
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 2",
+        "msbt_role": "chrome",
+        "role": "header_btn"
+      }
+    },
+    {
+      "id": "QM Page 2__hdr_6",
+      "kind": "button",
+      "label": "Edit",
+      "x": 1684.0,
+      "y": 68.0,
+      "w": 100.0,
+      "h": 44.0,
+      "colour": [
+        0.72,
+        0.55,
+        0.12,
+        0.95
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 2",
+        "msbt_role": "chrome",
+        "role": "header_btn"
+      }
+    },
+    {
+      "id": "QM Page 2__hdr_7",
+      "kind": "button",
+      "label": "Close F7",
+      "x": 1792.0,
+      "y": 68.0,
+      "w": 116.0,
+      "h": 44.0,
+      "colour": [
+        0.55,
+        0.12,
+        0.16,
+        0.95
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 2",
+        "msbt_role": "chrome",
+        "role": "header_btn"
+      }
+    },
+    {
+      "id": "QM Page 2__p0",
+      "kind": "button",
+      "label": "P1",
+      "x": 1232.0,
+      "y": 118.0,
+      "w": 74.0,
+      "h": 36.0,
       "colour": [
         0.22,
         0.22,
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.3,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 2",
+        "msbt_role": "chrome",
+        "role": "player_slot",
+        "player_slot": 0
+      }
+    },
+    {
+      "id": "QM Page 2__p1",
+      "kind": "button",
+      "label": "P2",
+      "x": 1312.0,
+      "y": 118.0,
+      "w": 74.0,
+      "h": 36.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.75
+      ],
+      "text_scale": 0.3,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 2",
+        "msbt_role": "chrome",
+        "role": "player_slot",
+        "player_slot": 1
+      }
+    },
+    {
+      "id": "QM Page 2__p2",
+      "kind": "button",
+      "label": "P3",
+      "x": 1392.0,
+      "y": 118.0,
+      "w": 74.0,
+      "h": 36.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.75
+      ],
+      "text_scale": 0.3,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 2",
+        "msbt_role": "chrome",
+        "role": "player_slot",
+        "player_slot": 2
+      }
+    },
+    {
+      "id": "QM Page 2__p3",
+      "kind": "button",
+      "label": "P4",
+      "x": 1472.0,
+      "y": 118.0,
+      "w": 74.0,
+      "h": 36.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.75
+      ],
+      "text_scale": 0.3,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 2",
+        "msbt_role": "chrome",
+        "role": "player_slot",
+        "player_slot": 3
+      }
+    },
+    {
+      "id": "QM Page 2__pall",
+      "kind": "button",
+      "label": "PAll",
+      "x": 1552.0,
+      "y": 118.0,
+      "w": 70.0,
+      "h": 36.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.34,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 2",
+        "msbt_role": "chrome",
+        "role": "player_all"
+      }
+    },
+    {
+      "id": "QM Page 2__tab_p0",
+      "kind": "button",
+      "label": "P1",
+      "x": 1232.0,
+      "y": 162.0,
+      "w": 64.0,
+      "h": 40.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 2",
+        "msbt_role": "chrome",
+        "role": "page_tab",
+        "page": 0
+      }
+    },
+    {
+      "id": "QM Page 2__tab_p1",
+      "kind": "button",
+      "label": "P2",
+      "x": 1302.0,
+      "y": 162.0,
+      "w": 64.0,
+      "h": 40.0,
+      "colour": [
+        0.72,
+        0.55,
+        0.12,
+        0.95
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 2",
+        "msbt_role": "chrome",
+        "role": "page_tab",
+        "page": 1
+      }
+    },
+    {
+      "id": "QM Page 2__tab_p2",
+      "kind": "button",
+      "label": "P3",
+      "x": 1372.0,
+      "y": 162.0,
+      "w": 64.0,
+      "h": 40.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 2",
+        "msbt_role": "chrome",
+        "role": "page_tab",
+        "page": 2
+      }
+    },
+    {
+      "id": "QM Page 2__tab_p3",
+      "kind": "button",
+      "label": "P4",
+      "x": 1442.0,
+      "y": 162.0,
+      "w": 64.0,
+      "h": 40.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 2",
+        "msbt_role": "chrome",
+        "role": "page_tab",
+        "page": 3
+      }
+    },
+    {
+      "id": "QM Page 2__tab_p4",
+      "kind": "button",
+      "label": "P5",
+      "x": 1512.0,
+      "y": 162.0,
+      "w": 64.0,
+      "h": 40.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 2",
+        "msbt_role": "chrome",
+        "role": "page_tab",
+        "page": 4
+      }
+    },
+    {
+      "id": "QM Page 2__tab_inv",
+      "kind": "button",
+      "label": "INV",
+      "x": 1582.0,
+      "y": 162.0,
+      "w": 64.0,
+      "h": 40.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 2",
+        "msbt_role": "chrome",
+        "role": "inv_tab"
+      }
+    },
+    {
+      "id": "QM Page 2__tool_0",
+      "kind": "button",
+      "label": "Pin Last",
+      "x": 1232.0,
+      "y": 210.0,
+      "w": 130.0,
+      "h": 42.0,
+      "colour": [
+        0.72,
+        0.55,
+        0.12,
+        0.95
+      ],
+      "text_scale": 0.46,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 2",
+        "msbt_role": "chrome",
+        "role": "tool_btn"
+      }
+    },
+    {
+      "id": "QM Page 2__tool_1",
+      "kind": "button",
+      "label": "Lock",
+      "x": 1370.0,
+      "y": 210.0,
+      "w": 90.0,
+      "h": 42.0,
+      "colour": [
+        0.1,
+        0.55,
+        0.48,
+        0.95
+      ],
+      "text_scale": 0.46,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 2",
+        "msbt_role": "chrome",
+        "role": "tool_btn"
+      }
+    },
+    {
+      "id": "QM Page 2__tool_2",
+      "kind": "button",
+      "label": "Target",
+      "x": 1468.0,
+      "y": 210.0,
+      "w": 100.0,
+      "h": 42.0,
+      "colour": [
+        0.1,
+        0.55,
+        0.48,
+        0.95
+      ],
+      "text_scale": 0.46,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 2",
+        "msbt_role": "chrome",
+        "role": "tool_btn"
+      }
+    },
+    {
+      "id": "QM Page 2__tool_3",
+      "kind": "button",
+      "label": "Refresh",
+      "x": 1576.0,
+      "y": 210.0,
+      "w": 110.0,
+      "h": 42.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.46,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 2",
+        "msbt_role": "chrome",
+        "role": "tool_btn"
+      }
+    },
+    {
+      "id": "QM Page 2__info_target",
+      "kind": "text",
+      "label": "Target: (none)",
+      "x": 1232.0,
+      "y": 258.0,
+      "w": 676.0,
+      "h": 22.0,
+      "colour": [
+        0.75,
+        0.78,
+        0.82,
+        1.0
+      ],
+      "text_scale": 0.34,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 2",
+        "msbt_role": "chrome",
+        "role": "info"
+      }
+    },
+    {
+      "id": "QM Page 2__info_last",
+      "kind": "text",
+      "label": "Last: (none) | Drop: (none)",
+      "x": 1232.0,
+      "y": 280.0,
+      "w": 676.0,
+      "h": 22.0,
+      "colour": [
+        0.75,
+        0.78,
+        0.82,
+        1.0
+      ],
+      "text_scale": 0.34,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 2",
+        "msbt_role": "chrome",
+        "role": "info"
+      }
+    },
+    {
+      "id": "qm_p1_s0",
+      "kind": "button",
+      "label": "Fast Movement",
+      "x": 1232.0,
+      "y": 308.0,
+      "w": 210.0,
+      "h": 56.0,
+      "colour": [
+        0.1,
+        0.62,
+        0.48,
+        0.95
+      ],
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -617,25 +2151,25 @@
         "screen": "QM Page 2",
         "page": 1,
         "slot": 0,
-        "action": null,
+        "action": "movement_preset_fast",
         "msbt_role": "quick_menu_slot"
       }
     },
     {
       "id": "qm_p1_s1",
       "kind": "button",
-      "label": "P2 + Assign",
+      "label": "Very Fast Movement",
       "x": 1450.0,
-      "y": 322.0,
+      "y": 308.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
-        0.22,
-        0.22,
-        0.28,
-        0.75
+        0.1,
+        0.62,
+        0.48,
+        0.95
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -643,25 +2177,25 @@
         "screen": "QM Page 2",
         "page": 1,
         "slot": 1,
-        "action": null,
+        "action": "movement_preset_veryfast",
         "msbt_role": "quick_menu_slot"
       }
     },
     {
       "id": "qm_p1_s2",
       "kind": "button",
-      "label": "P2 + Assign",
+      "label": "Super Dash (MSBT)",
       "x": 1668.0,
-      "y": 322.0,
+      "y": 308.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
-        0.22,
-        0.22,
-        0.28,
-        0.75
+        0.1,
+        0.62,
+        0.48,
+        0.95
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -669,25 +2203,25 @@
         "screen": "QM Page 2",
         "page": 1,
         "slot": 2,
-        "action": null,
+        "action": "movement_super_dash",
         "msbt_role": "quick_menu_slot"
       }
     },
     {
       "id": "qm_p1_s3",
       "kind": "button",
-      "label": "P2 + Assign",
+      "label": "Super Dash Toggle (MSBT)",
       "x": 1232.0,
-      "y": 384.0,
+      "y": 370.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
-        0.22,
-        0.22,
-        0.28,
-        0.75
+        0.1,
+        0.62,
+        0.48,
+        0.95
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -695,25 +2229,25 @@
         "screen": "QM Page 2",
         "page": 1,
         "slot": 3,
-        "action": null,
+        "action": "movement_super_dash_toggle",
         "msbt_role": "quick_menu_slot"
       }
     },
     {
       "id": "qm_p1_s4",
       "kind": "button",
-      "label": "P2 + Assign",
+      "label": "Super Dash Fire (Azzy)",
       "x": 1450.0,
-      "y": 384.0,
+      "y": 370.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
-        0.22,
-        0.22,
-        0.28,
-        0.75
+        0.1,
+        0.62,
+        0.48,
+        0.95
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -721,25 +2255,25 @@
         "screen": "QM Page 2",
         "page": 1,
         "slot": 4,
-        "action": null,
+        "action": "movement_azzy_super_dash",
         "msbt_role": "quick_menu_slot"
       }
     },
     {
       "id": "qm_p1_s5",
       "kind": "button",
-      "label": "P2 + Assign",
+      "label": "Super Dash Toggle (Azzy)",
       "x": 1668.0,
-      "y": 384.0,
+      "y": 370.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
-        0.22,
-        0.22,
-        0.28,
-        0.75
+        0.1,
+        0.62,
+        0.48,
+        0.95
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -747,25 +2281,25 @@
         "screen": "QM Page 2",
         "page": 1,
         "slot": 5,
-        "action": null,
+        "action": "movement_azzy_super_dash_toggle",
         "msbt_role": "quick_menu_slot"
       }
     },
     {
       "id": "qm_p1_s6",
       "kind": "button",
-      "label": "P2 + Assign",
+      "label": "Inf Jump All ON",
       "x": 1232.0,
-      "y": 446.0,
+      "y": 432.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
-        0.22,
-        0.22,
-        0.28,
-        0.75
+        0.1,
+        0.62,
+        0.48,
+        0.95
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -773,25 +2307,25 @@
         "screen": "QM Page 2",
         "page": 1,
         "slot": 6,
-        "action": null,
+        "action": "movement_infinite_jump_all_on",
         "msbt_role": "quick_menu_slot"
       }
     },
     {
       "id": "qm_p1_s7",
       "kind": "button",
-      "label": "P2 + Assign",
+      "label": "Inf Jump All OFF",
       "x": 1450.0,
-      "y": 446.0,
+      "y": 432.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
-        0.22,
-        0.22,
-        0.28,
-        0.75
+        0.1,
+        0.62,
+        0.48,
+        0.95
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -799,25 +2333,25 @@
         "screen": "QM Page 2",
         "page": 1,
         "slot": 7,
-        "action": null,
+        "action": "movement_infinite_jump_all_off",
         "msbt_role": "quick_menu_slot"
       }
     },
     {
       "id": "qm_p1_s8",
       "kind": "button",
-      "label": "P2 + Assign",
+      "label": "Clear Loot (Hide)",
       "x": 1668.0,
-      "y": 446.0,
+      "y": 432.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
-        0.22,
-        0.22,
-        0.28,
-        0.75
+        0.1,
+        0.62,
+        0.48,
+        0.95
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -825,25 +2359,25 @@
         "screen": "QM Page 2",
         "page": 1,
         "slot": 8,
-        "action": null,
+        "action": "movement_hide_ground_loot",
         "msbt_role": "quick_menu_slot"
       }
     },
     {
       "id": "qm_p1_s9",
       "kind": "button",
-      "label": "P2 + Assign",
+      "label": "Clear Ground Loot",
       "x": 1232.0,
-      "y": 508.0,
+      "y": 494.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
-        0.22,
-        0.22,
-        0.28,
-        0.75
+        0.1,
+        0.62,
+        0.48,
+        0.95
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -851,25 +2385,25 @@
         "screen": "QM Page 2",
         "page": 1,
         "slot": 9,
-        "action": null,
+        "action": "movement_delete_ground_items",
         "msbt_role": "quick_menu_slot"
       }
     },
     {
       "id": "qm_p1_s10",
       "kind": "button",
-      "label": "P2 + Assign",
+      "label": "Pull Loot Here",
       "x": 1450.0,
-      "y": 508.0,
+      "y": 494.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
-        0.22,
-        0.22,
-        0.28,
-        0.75
+        0.1,
+        0.62,
+        0.48,
+        0.95
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -877,25 +2411,25 @@
         "screen": "QM Page 2",
         "page": 1,
         "slot": 10,
-        "action": null,
+        "action": "movement_pull_ground_loot",
         "msbt_role": "quick_menu_slot"
       }
     },
     {
       "id": "qm_p1_s11",
       "kind": "button",
-      "label": "P2 + Assign",
+      "label": "Zero Vault Costs",
       "x": 1668.0,
-      "y": 508.0,
+      "y": 494.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
-        0.22,
-        0.22,
-        0.28,
-        0.75
+        0.1,
+        0.62,
+        0.48,
+        0.95
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -903,16 +2437,16 @@
         "screen": "QM Page 2",
         "page": 1,
         "slot": 11,
-        "action": null,
+        "action": "movement_zero_vault",
         "msbt_role": "quick_menu_slot"
       }
     },
     {
       "id": "qm_p1_s12",
       "kind": "button",
-      "label": "P2 + Assign",
+      "label": "+ Assign",
       "x": 1232.0,
-      "y": 570.0,
+      "y": 556.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -921,7 +2455,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -936,9 +2470,9 @@
     {
       "id": "qm_p1_s13",
       "kind": "button",
-      "label": "P2 + Assign",
+      "label": "+ Assign",
       "x": 1450.0,
-      "y": 570.0,
+      "y": 556.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -947,7 +2481,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -962,9 +2496,9 @@
     {
       "id": "qm_p1_s14",
       "kind": "button",
-      "label": "P2 + Assign",
+      "label": "+ Assign",
       "x": 1668.0,
-      "y": 570.0,
+      "y": 556.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -973,7 +2507,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -988,9 +2522,9 @@
     {
       "id": "qm_p1_s15",
       "kind": "button",
-      "label": "P2 + Assign",
+      "label": "+ Assign",
       "x": 1232.0,
-      "y": 632.0,
+      "y": 618.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -999,7 +2533,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -1014,9 +2548,9 @@
     {
       "id": "qm_p1_s16",
       "kind": "button",
-      "label": "P2 + Assign",
+      "label": "+ Assign",
       "x": 1450.0,
-      "y": 632.0,
+      "y": 618.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -1025,7 +2559,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -1040,9 +2574,9 @@
     {
       "id": "qm_p1_s17",
       "kind": "button",
-      "label": "P2 + Assign",
+      "label": "+ Assign",
       "x": 1668.0,
-      "y": 632.0,
+      "y": 618.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -1051,7 +2585,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -1066,9 +2600,9 @@
     {
       "id": "qm_p1_s18",
       "kind": "button",
-      "label": "P2 + Assign",
+      "label": "+ Assign",
       "x": 1232.0,
-      "y": 694.0,
+      "y": 680.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -1077,7 +2611,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -1092,9 +2626,9 @@
     {
       "id": "qm_p1_s19",
       "kind": "button",
-      "label": "P2 + Assign",
+      "label": "+ Assign",
       "x": 1450.0,
-      "y": 694.0,
+      "y": 680.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -1103,7 +2637,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -1118,9 +2652,9 @@
     {
       "id": "qm_p1_s20",
       "kind": "button",
-      "label": "P2 + Assign",
+      "label": "+ Assign",
       "x": 1668.0,
-      "y": 694.0,
+      "y": 680.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -1129,7 +2663,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -1142,20 +2676,869 @@
       }
     },
     {
-      "id": "qm_p2_s0",
-      "kind": "button",
-      "label": "P3 + Assign",
+      "id": "qm_p1_rarity",
+      "kind": "border",
+      "label": "Rarity panel (optional)",
       "x": 1232.0,
-      "y": 322.0,
-      "w": 210.0,
-      "h": 56.0,
+      "y": 746.0,
+      "w": 676.0,
+      "h": 230.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": null,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 2",
+        "page": 1,
+        "msbt_role": "rarity_panel"
+      }
+    },
+    {
+      "id": "qm_p1_rarity_btn_0",
+      "kind": "button",
+      "label": "Apply",
+      "x": 1240.0,
+      "y": 782.0,
+      "w": 150.0,
+      "h": 40.0,
+      "colour": [
+        0.72,
+        0.55,
+        0.12,
+        0.95
+      ],
+      "text_scale": 0.34,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 2",
+        "page": 1,
+        "msbt_role": "rarity_btn"
+      }
+    },
+    {
+      "id": "qm_p1_rarity_btn_1",
+      "kind": "button",
+      "label": "Reset",
+      "x": 1400.0,
+      "y": 782.0,
+      "w": 150.0,
+      "h": 40.0,
+      "colour": [
+        0.1,
+        0.55,
+        0.48,
+        0.95
+      ],
+      "text_scale": 0.34,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 2",
+        "page": 1,
+        "msbt_role": "rarity_btn"
+      }
+    },
+    {
+      "id": "qm_p1_rarity_btn_2",
+      "kind": "button",
+      "label": "Only Leg",
+      "x": 1560.0,
+      "y": 782.0,
+      "w": 150.0,
+      "h": 40.0,
+      "colour": [
+        0.1,
+        0.55,
+        0.48,
+        0.95
+      ],
+      "text_scale": 0.34,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 2",
+        "page": 1,
+        "msbt_role": "rarity_btn"
+      }
+    },
+    {
+      "id": "qm_p1_rarity_btn_3",
+      "kind": "button",
+      "label": "Only Pearl",
+      "x": 1720.0,
+      "y": 782.0,
+      "w": 150.0,
+      "h": 40.0,
+      "colour": [
+        0.1,
+        0.55,
+        0.48,
+        0.95
+      ],
+      "text_scale": 0.34,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 2",
+        "page": 1,
+        "msbt_role": "rarity_btn"
+      }
+    },
+    {
+      "id": "QM Page 3__edge",
+      "kind": "border",
+      "label": "",
+      "x": 1214.0,
+      "y": 0.0,
+      "w": 6.0,
+      "h": 1080.0,
+      "colour": [
+        0.02,
+        0.8,
+        0.7,
+        1.0
+      ],
+      "text_scale": null,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 3",
+        "msbt_role": "chrome",
+        "role": "edge"
+      }
+    },
+    {
+      "id": "QM Page 3__dock",
+      "kind": "border",
+      "label": "MSBT Quick Menu",
+      "x": 1220.0,
+      "y": 0.0,
+      "w": 700.0,
+      "h": 1080.0,
+      "colour": [
+        0.08,
+        0.08,
+        0.12,
+        0.92
+      ],
+      "text_scale": null,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 3",
+        "msbt_role": "chrome",
+        "role": "panel"
+      }
+    },
+    {
+      "id": "QM Page 3__header",
+      "kind": "border",
+      "label": "",
+      "x": 1220.0,
+      "y": 0.0,
+      "w": 700.0,
+      "h": 168.0,
+      "colour": [
+        0.12,
+        0.1,
+        0.18,
+        0.95
+      ],
+      "text_scale": null,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 3",
+        "msbt_role": "chrome",
+        "role": "header"
+      }
+    },
+    {
+      "id": "QM Page 3__title",
+      "kind": "text",
+      "label": "MSBT Quick Menu",
+      "x": 1232.0,
+      "y": 8.0,
+      "w": 280.0,
+      "h": 36.0,
+      "colour": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "text_scale": 0.68,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 3",
+        "msbt_role": "chrome",
+        "role": "title"
+      }
+    },
+    {
+      "id": "QM Page 3__subtitle",
+      "kind": "text",
+      "label": "RUN | QM Page 3 | Lock OFF | 1.00x | MSBT Neon",
+      "x": 1232.0,
+      "y": 42.0,
+      "w": 676.0,
+      "h": 24.0,
+      "colour": [
+        0.75,
+        0.78,
+        0.82,
+        1.0
+      ],
+      "text_scale": 0.36,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 3",
+        "msbt_role": "chrome",
+        "role": "subtitle"
+      }
+    },
+    {
+      "id": "QM Page 3__hdr_0",
+      "kind": "button",
+      "label": "MOVE",
+      "x": 1232.0,
+      "y": 68.0,
+      "w": 72.0,
+      "h": 44.0,
+      "colour": [
+        0.1,
+        0.55,
+        0.48,
+        0.95
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 3",
+        "msbt_role": "chrome",
+        "role": "header_btn"
+      }
+    },
+    {
+      "id": "QM Page 3__hdr_1",
+      "kind": "button",
+      "label": "THEME",
+      "x": 1310.0,
+      "y": 68.0,
+      "w": 84.0,
+      "h": 44.0,
+      "colour": [
+        0.72,
+        0.55,
+        0.12,
+        0.95
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 3",
+        "msbt_role": "chrome",
+        "role": "header_btn"
+      }
+    },
+    {
+      "id": "QM Page 3__hdr_2",
+      "kind": "button",
+      "label": "-",
+      "x": 1400.0,
+      "y": 68.0,
+      "w": 40.0,
+      "h": 44.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 3",
+        "msbt_role": "chrome",
+        "role": "header_btn"
+      }
+    },
+    {
+      "id": "QM Page 3__hdr_3",
+      "kind": "button",
+      "label": "1.00x",
+      "x": 1446.0,
+      "y": 68.0,
+      "w": 72.0,
+      "h": 44.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 3",
+        "msbt_role": "chrome",
+        "role": "header_btn"
+      }
+    },
+    {
+      "id": "QM Page 3__hdr_4",
+      "kind": "button",
+      "label": "+",
+      "x": 1524.0,
+      "y": 68.0,
+      "w": 40.0,
+      "h": 44.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 3",
+        "msbt_role": "chrome",
+        "role": "header_btn"
+      }
+    },
+    {
+      "id": "QM Page 3__hdr_5",
+      "kind": "button",
+      "label": "RESET POS",
+      "x": 1570.0,
+      "y": 68.0,
+      "w": 110.0,
+      "h": 44.0,
+      "colour": [
+        0.1,
+        0.55,
+        0.48,
+        0.95
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 3",
+        "msbt_role": "chrome",
+        "role": "header_btn"
+      }
+    },
+    {
+      "id": "QM Page 3__hdr_6",
+      "kind": "button",
+      "label": "Edit",
+      "x": 1684.0,
+      "y": 68.0,
+      "w": 100.0,
+      "h": 44.0,
+      "colour": [
+        0.72,
+        0.55,
+        0.12,
+        0.95
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 3",
+        "msbt_role": "chrome",
+        "role": "header_btn"
+      }
+    },
+    {
+      "id": "QM Page 3__hdr_7",
+      "kind": "button",
+      "label": "Close F7",
+      "x": 1792.0,
+      "y": 68.0,
+      "w": 116.0,
+      "h": 44.0,
+      "colour": [
+        0.55,
+        0.12,
+        0.16,
+        0.95
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 3",
+        "msbt_role": "chrome",
+        "role": "header_btn"
+      }
+    },
+    {
+      "id": "QM Page 3__p0",
+      "kind": "button",
+      "label": "P1",
+      "x": 1232.0,
+      "y": 118.0,
+      "w": 74.0,
+      "h": 36.0,
       "colour": [
         0.22,
         0.22,
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.3,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 3",
+        "msbt_role": "chrome",
+        "role": "player_slot",
+        "player_slot": 0
+      }
+    },
+    {
+      "id": "QM Page 3__p1",
+      "kind": "button",
+      "label": "P2",
+      "x": 1312.0,
+      "y": 118.0,
+      "w": 74.0,
+      "h": 36.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.75
+      ],
+      "text_scale": 0.3,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 3",
+        "msbt_role": "chrome",
+        "role": "player_slot",
+        "player_slot": 1
+      }
+    },
+    {
+      "id": "QM Page 3__p2",
+      "kind": "button",
+      "label": "P3",
+      "x": 1392.0,
+      "y": 118.0,
+      "w": 74.0,
+      "h": 36.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.75
+      ],
+      "text_scale": 0.3,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 3",
+        "msbt_role": "chrome",
+        "role": "player_slot",
+        "player_slot": 2
+      }
+    },
+    {
+      "id": "QM Page 3__p3",
+      "kind": "button",
+      "label": "P4",
+      "x": 1472.0,
+      "y": 118.0,
+      "w": 74.0,
+      "h": 36.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.75
+      ],
+      "text_scale": 0.3,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 3",
+        "msbt_role": "chrome",
+        "role": "player_slot",
+        "player_slot": 3
+      }
+    },
+    {
+      "id": "QM Page 3__pall",
+      "kind": "button",
+      "label": "PAll",
+      "x": 1552.0,
+      "y": 118.0,
+      "w": 70.0,
+      "h": 36.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.34,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 3",
+        "msbt_role": "chrome",
+        "role": "player_all"
+      }
+    },
+    {
+      "id": "QM Page 3__tab_p0",
+      "kind": "button",
+      "label": "P1",
+      "x": 1232.0,
+      "y": 162.0,
+      "w": 64.0,
+      "h": 40.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 3",
+        "msbt_role": "chrome",
+        "role": "page_tab",
+        "page": 0
+      }
+    },
+    {
+      "id": "QM Page 3__tab_p1",
+      "kind": "button",
+      "label": "P2",
+      "x": 1302.0,
+      "y": 162.0,
+      "w": 64.0,
+      "h": 40.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 3",
+        "msbt_role": "chrome",
+        "role": "page_tab",
+        "page": 1
+      }
+    },
+    {
+      "id": "QM Page 3__tab_p2",
+      "kind": "button",
+      "label": "P3",
+      "x": 1372.0,
+      "y": 162.0,
+      "w": 64.0,
+      "h": 40.0,
+      "colour": [
+        0.72,
+        0.55,
+        0.12,
+        0.95
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 3",
+        "msbt_role": "chrome",
+        "role": "page_tab",
+        "page": 2
+      }
+    },
+    {
+      "id": "QM Page 3__tab_p3",
+      "kind": "button",
+      "label": "P4",
+      "x": 1442.0,
+      "y": 162.0,
+      "w": 64.0,
+      "h": 40.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 3",
+        "msbt_role": "chrome",
+        "role": "page_tab",
+        "page": 3
+      }
+    },
+    {
+      "id": "QM Page 3__tab_p4",
+      "kind": "button",
+      "label": "P5",
+      "x": 1512.0,
+      "y": 162.0,
+      "w": 64.0,
+      "h": 40.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 3",
+        "msbt_role": "chrome",
+        "role": "page_tab",
+        "page": 4
+      }
+    },
+    {
+      "id": "QM Page 3__tab_inv",
+      "kind": "button",
+      "label": "INV",
+      "x": 1582.0,
+      "y": 162.0,
+      "w": 64.0,
+      "h": 40.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 3",
+        "msbt_role": "chrome",
+        "role": "inv_tab"
+      }
+    },
+    {
+      "id": "QM Page 3__tool_0",
+      "kind": "button",
+      "label": "Pin Last",
+      "x": 1232.0,
+      "y": 210.0,
+      "w": 130.0,
+      "h": 42.0,
+      "colour": [
+        0.72,
+        0.55,
+        0.12,
+        0.95
+      ],
+      "text_scale": 0.46,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 3",
+        "msbt_role": "chrome",
+        "role": "tool_btn"
+      }
+    },
+    {
+      "id": "QM Page 3__tool_1",
+      "kind": "button",
+      "label": "Lock",
+      "x": 1370.0,
+      "y": 210.0,
+      "w": 90.0,
+      "h": 42.0,
+      "colour": [
+        0.1,
+        0.55,
+        0.48,
+        0.95
+      ],
+      "text_scale": 0.46,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 3",
+        "msbt_role": "chrome",
+        "role": "tool_btn"
+      }
+    },
+    {
+      "id": "QM Page 3__tool_2",
+      "kind": "button",
+      "label": "Target",
+      "x": 1468.0,
+      "y": 210.0,
+      "w": 100.0,
+      "h": 42.0,
+      "colour": [
+        0.1,
+        0.55,
+        0.48,
+        0.95
+      ],
+      "text_scale": 0.46,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 3",
+        "msbt_role": "chrome",
+        "role": "tool_btn"
+      }
+    },
+    {
+      "id": "QM Page 3__tool_3",
+      "kind": "button",
+      "label": "Refresh",
+      "x": 1576.0,
+      "y": 210.0,
+      "w": 110.0,
+      "h": 42.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.46,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 3",
+        "msbt_role": "chrome",
+        "role": "tool_btn"
+      }
+    },
+    {
+      "id": "QM Page 3__info_target",
+      "kind": "text",
+      "label": "Target: (none)",
+      "x": 1232.0,
+      "y": 258.0,
+      "w": 676.0,
+      "h": 22.0,
+      "colour": [
+        0.75,
+        0.78,
+        0.82,
+        1.0
+      ],
+      "text_scale": 0.34,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 3",
+        "msbt_role": "chrome",
+        "role": "info"
+      }
+    },
+    {
+      "id": "QM Page 3__info_last",
+      "kind": "text",
+      "label": "Last: (none) | Drop: (none)",
+      "x": 1232.0,
+      "y": 280.0,
+      "w": 676.0,
+      "h": 22.0,
+      "colour": [
+        0.75,
+        0.78,
+        0.82,
+        1.0
+      ],
+      "text_scale": 0.34,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 3",
+        "msbt_role": "chrome",
+        "role": "info"
+      }
+    },
+    {
+      "id": "qm_p2_s0",
+      "kind": "button",
+      "label": "Shinies All",
+      "x": 1232.0,
+      "y": 308.0,
+      "w": 210.0,
+      "h": 56.0,
+      "colour": [
+        0.1,
+        0.62,
+        0.48,
+        0.95
+      ],
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -1163,25 +3546,25 @@
         "screen": "QM Page 3",
         "page": 2,
         "slot": 0,
-        "action": null,
+        "action": "shiny_all",
         "msbt_role": "quick_menu_slot"
       }
     },
     {
       "id": "qm_p2_s1",
       "kind": "button",
-      "label": "P3 + Assign",
+      "label": "Shinies Non-Host",
       "x": 1450.0,
-      "y": 322.0,
+      "y": 308.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
-        0.22,
-        0.22,
-        0.28,
-        0.75
+        0.1,
+        0.62,
+        0.48,
+        0.95
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -1189,25 +3572,25 @@
         "screen": "QM Page 3",
         "page": 2,
         "slot": 1,
-        "action": null,
+        "action": "shiny_nonhost",
         "msbt_role": "quick_menu_slot"
       }
     },
     {
       "id": "qm_p2_s2",
       "kind": "button",
-      "label": "P3 + Assign",
+      "label": "Read Equipped Serials",
       "x": 1668.0,
-      "y": 322.0,
+      "y": 308.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
-        0.22,
-        0.22,
-        0.28,
-        0.75
+        0.1,
+        0.62,
+        0.48,
+        0.95
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -1215,25 +3598,25 @@
         "screen": "QM Page 3",
         "page": 2,
         "slot": 2,
-        "action": null,
+        "action": "read_equipped_serials",
         "msbt_role": "quick_menu_slot"
       }
     },
     {
       "id": "qm_p2_s3",
       "kind": "button",
-      "label": "P3 + Assign",
+      "label": "Read Backpack Serials",
       "x": 1232.0,
-      "y": 384.0,
+      "y": 370.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
-        0.22,
-        0.22,
-        0.28,
-        0.75
+        0.1,
+        0.62,
+        0.48,
+        0.95
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -1241,25 +3624,25 @@
         "screen": "QM Page 3",
         "page": 2,
         "slot": 3,
-        "action": null,
+        "action": "read_backpack_serials",
         "msbt_role": "quick_menu_slot"
       }
     },
     {
       "id": "qm_p2_s4",
       "kind": "button",
-      "label": "P3 + Assign",
+      "label": "Read Inventory",
       "x": 1450.0,
-      "y": 384.0,
+      "y": 370.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
-        0.22,
-        0.22,
-        0.28,
-        0.75
+        0.1,
+        0.62,
+        0.48,
+        0.95
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -1267,25 +3650,25 @@
         "screen": "QM Page 3",
         "page": 2,
         "slot": 4,
-        "action": null,
+        "action": "read_inventory",
         "msbt_role": "quick_menu_slot"
       }
     },
     {
       "id": "qm_p2_s5",
       "kind": "button",
-      "label": "P3 + Assign",
+      "label": "Inv Selected 1k",
       "x": 1668.0,
-      "y": 384.0,
+      "y": 370.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
-        0.22,
-        0.22,
-        0.28,
-        0.75
+        0.1,
+        0.62,
+        0.48,
+        0.95
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -1293,25 +3676,25 @@
         "screen": "QM Page 3",
         "page": 2,
         "slot": 5,
-        "action": null,
+        "action": "set_backpack_bank_selected",
         "msbt_role": "quick_menu_slot"
       }
     },
     {
       "id": "qm_p2_s6",
       "kind": "button",
-      "label": "P3 + Assign",
+      "label": "Inv All Party 1k",
       "x": 1232.0,
-      "y": 446.0,
+      "y": 432.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
-        0.22,
-        0.22,
-        0.28,
-        0.75
+        0.1,
+        0.62,
+        0.48,
+        0.95
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -1319,25 +3702,25 @@
         "screen": "QM Page 3",
         "page": 2,
         "slot": 6,
-        "action": null,
+        "action": "set_backpack_bank_all",
         "msbt_role": "quick_menu_slot"
       }
     },
     {
       "id": "qm_p2_s7",
       "kind": "button",
-      "label": "P3 + Assign",
+      "label": "Max Level",
       "x": 1450.0,
-      "y": 446.0,
+      "y": 432.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
-        0.22,
-        0.22,
-        0.28,
-        0.75
+        0.1,
+        0.62,
+        0.48,
+        0.95
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -1345,25 +3728,25 @@
         "screen": "QM Page 3",
         "page": 2,
         "slot": 7,
-        "action": null,
+        "action": "max_player_level",
         "msbt_role": "quick_menu_slot"
       }
     },
     {
       "id": "qm_p2_s8",
       "kind": "button",
-      "label": "P3 + Assign",
+      "label": "Max Spec",
       "x": 1668.0,
-      "y": 446.0,
+      "y": 432.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
-        0.22,
-        0.22,
-        0.28,
-        0.75
+        0.1,
+        0.62,
+        0.48,
+        0.95
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -1371,25 +3754,25 @@
         "screen": "QM Page 3",
         "page": 2,
         "slot": 8,
-        "action": null,
+        "action": "max_spec_level",
         "msbt_role": "quick_menu_slot"
       }
     },
     {
       "id": "qm_p2_s9",
       "kind": "button",
-      "label": "P3 + Assign",
+      "label": "Refresh Players",
       "x": 1232.0,
-      "y": 508.0,
+      "y": 494.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
-        0.22,
-        0.22,
-        0.28,
-        0.75
+        0.1,
+        0.62,
+        0.48,
+        0.95
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -1397,25 +3780,25 @@
         "screen": "QM Page 3",
         "page": 2,
         "slot": 9,
-        "action": null,
+        "action": "refresh_players",
         "msbt_role": "quick_menu_slot"
       }
     },
     {
       "id": "qm_p2_s10",
       "kind": "button",
-      "label": "P3 + Assign",
+      "label": "Kick Selected",
       "x": 1450.0,
-      "y": 508.0,
+      "y": 494.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
-        0.22,
-        0.22,
-        0.28,
-        0.75
+        0.1,
+        0.62,
+        0.48,
+        0.95
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -1423,16 +3806,16 @@
         "screen": "QM Page 3",
         "page": 2,
         "slot": 10,
-        "action": null,
+        "action": "kick_player",
         "msbt_role": "quick_menu_slot"
       }
     },
     {
       "id": "qm_p2_s11",
       "kind": "button",
-      "label": "P3 + Assign",
+      "label": "+ Assign",
       "x": 1668.0,
-      "y": 508.0,
+      "y": 494.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -1441,7 +3824,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -1456,9 +3839,9 @@
     {
       "id": "qm_p2_s12",
       "kind": "button",
-      "label": "P3 + Assign",
+      "label": "+ Assign",
       "x": 1232.0,
-      "y": 570.0,
+      "y": 556.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -1467,7 +3850,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -1482,9 +3865,9 @@
     {
       "id": "qm_p2_s13",
       "kind": "button",
-      "label": "P3 + Assign",
+      "label": "+ Assign",
       "x": 1450.0,
-      "y": 570.0,
+      "y": 556.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -1493,7 +3876,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -1508,9 +3891,9 @@
     {
       "id": "qm_p2_s14",
       "kind": "button",
-      "label": "P3 + Assign",
+      "label": "+ Assign",
       "x": 1668.0,
-      "y": 570.0,
+      "y": 556.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -1519,7 +3902,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -1534,9 +3917,9 @@
     {
       "id": "qm_p2_s15",
       "kind": "button",
-      "label": "P3 + Assign",
+      "label": "+ Assign",
       "x": 1232.0,
-      "y": 632.0,
+      "y": 618.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -1545,7 +3928,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -1560,9 +3943,9 @@
     {
       "id": "qm_p2_s16",
       "kind": "button",
-      "label": "P3 + Assign",
+      "label": "+ Assign",
       "x": 1450.0,
-      "y": 632.0,
+      "y": 618.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -1571,7 +3954,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -1586,9 +3969,9 @@
     {
       "id": "qm_p2_s17",
       "kind": "button",
-      "label": "P3 + Assign",
+      "label": "+ Assign",
       "x": 1668.0,
-      "y": 632.0,
+      "y": 618.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -1597,7 +3980,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -1612,9 +3995,9 @@
     {
       "id": "qm_p2_s18",
       "kind": "button",
-      "label": "P3 + Assign",
+      "label": "+ Assign",
       "x": 1232.0,
-      "y": 694.0,
+      "y": 680.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -1623,7 +4006,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -1638,9 +4021,9 @@
     {
       "id": "qm_p2_s19",
       "kind": "button",
-      "label": "P3 + Assign",
+      "label": "+ Assign",
       "x": 1450.0,
-      "y": 694.0,
+      "y": 680.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -1649,7 +4032,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -1664,9 +4047,9 @@
     {
       "id": "qm_p2_s20",
       "kind": "button",
-      "label": "P3 + Assign",
+      "label": "+ Assign",
       "x": 1668.0,
-      "y": 694.0,
+      "y": 680.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -1675,7 +4058,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -1688,20 +4071,869 @@
       }
     },
     {
-      "id": "qm_p3_s0",
-      "kind": "button",
-      "label": "P4 + Assign",
+      "id": "qm_p2_rarity",
+      "kind": "border",
+      "label": "Rarity panel (optional)",
       "x": 1232.0,
-      "y": 322.0,
-      "w": 210.0,
-      "h": 56.0,
+      "y": 746.0,
+      "w": 676.0,
+      "h": 230.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": null,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 3",
+        "page": 2,
+        "msbt_role": "rarity_panel"
+      }
+    },
+    {
+      "id": "qm_p2_rarity_btn_0",
+      "kind": "button",
+      "label": "Apply",
+      "x": 1240.0,
+      "y": 782.0,
+      "w": 150.0,
+      "h": 40.0,
+      "colour": [
+        0.72,
+        0.55,
+        0.12,
+        0.95
+      ],
+      "text_scale": 0.34,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 3",
+        "page": 2,
+        "msbt_role": "rarity_btn"
+      }
+    },
+    {
+      "id": "qm_p2_rarity_btn_1",
+      "kind": "button",
+      "label": "Reset",
+      "x": 1400.0,
+      "y": 782.0,
+      "w": 150.0,
+      "h": 40.0,
+      "colour": [
+        0.1,
+        0.55,
+        0.48,
+        0.95
+      ],
+      "text_scale": 0.34,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 3",
+        "page": 2,
+        "msbt_role": "rarity_btn"
+      }
+    },
+    {
+      "id": "qm_p2_rarity_btn_2",
+      "kind": "button",
+      "label": "Only Leg",
+      "x": 1560.0,
+      "y": 782.0,
+      "w": 150.0,
+      "h": 40.0,
+      "colour": [
+        0.1,
+        0.55,
+        0.48,
+        0.95
+      ],
+      "text_scale": 0.34,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 3",
+        "page": 2,
+        "msbt_role": "rarity_btn"
+      }
+    },
+    {
+      "id": "qm_p2_rarity_btn_3",
+      "kind": "button",
+      "label": "Only Pearl",
+      "x": 1720.0,
+      "y": 782.0,
+      "w": 150.0,
+      "h": 40.0,
+      "colour": [
+        0.1,
+        0.55,
+        0.48,
+        0.95
+      ],
+      "text_scale": 0.34,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 3",
+        "page": 2,
+        "msbt_role": "rarity_btn"
+      }
+    },
+    {
+      "id": "QM Page 4__edge",
+      "kind": "border",
+      "label": "",
+      "x": 1214.0,
+      "y": 0.0,
+      "w": 6.0,
+      "h": 1080.0,
+      "colour": [
+        0.02,
+        0.8,
+        0.7,
+        1.0
+      ],
+      "text_scale": null,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 4",
+        "msbt_role": "chrome",
+        "role": "edge"
+      }
+    },
+    {
+      "id": "QM Page 4__dock",
+      "kind": "border",
+      "label": "MSBT Quick Menu",
+      "x": 1220.0,
+      "y": 0.0,
+      "w": 700.0,
+      "h": 1080.0,
+      "colour": [
+        0.08,
+        0.08,
+        0.12,
+        0.92
+      ],
+      "text_scale": null,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 4",
+        "msbt_role": "chrome",
+        "role": "panel"
+      }
+    },
+    {
+      "id": "QM Page 4__header",
+      "kind": "border",
+      "label": "",
+      "x": 1220.0,
+      "y": 0.0,
+      "w": 700.0,
+      "h": 168.0,
+      "colour": [
+        0.12,
+        0.1,
+        0.18,
+        0.95
+      ],
+      "text_scale": null,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 4",
+        "msbt_role": "chrome",
+        "role": "header"
+      }
+    },
+    {
+      "id": "QM Page 4__title",
+      "kind": "text",
+      "label": "MSBT Quick Menu",
+      "x": 1232.0,
+      "y": 8.0,
+      "w": 280.0,
+      "h": 36.0,
+      "colour": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "text_scale": 0.68,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 4",
+        "msbt_role": "chrome",
+        "role": "title"
+      }
+    },
+    {
+      "id": "QM Page 4__subtitle",
+      "kind": "text",
+      "label": "RUN | QM Page 4 | Lock OFF | 1.00x | MSBT Neon",
+      "x": 1232.0,
+      "y": 42.0,
+      "w": 676.0,
+      "h": 24.0,
+      "colour": [
+        0.75,
+        0.78,
+        0.82,
+        1.0
+      ],
+      "text_scale": 0.36,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 4",
+        "msbt_role": "chrome",
+        "role": "subtitle"
+      }
+    },
+    {
+      "id": "QM Page 4__hdr_0",
+      "kind": "button",
+      "label": "MOVE",
+      "x": 1232.0,
+      "y": 68.0,
+      "w": 72.0,
+      "h": 44.0,
+      "colour": [
+        0.1,
+        0.55,
+        0.48,
+        0.95
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 4",
+        "msbt_role": "chrome",
+        "role": "header_btn"
+      }
+    },
+    {
+      "id": "QM Page 4__hdr_1",
+      "kind": "button",
+      "label": "THEME",
+      "x": 1310.0,
+      "y": 68.0,
+      "w": 84.0,
+      "h": 44.0,
+      "colour": [
+        0.72,
+        0.55,
+        0.12,
+        0.95
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 4",
+        "msbt_role": "chrome",
+        "role": "header_btn"
+      }
+    },
+    {
+      "id": "QM Page 4__hdr_2",
+      "kind": "button",
+      "label": "-",
+      "x": 1400.0,
+      "y": 68.0,
+      "w": 40.0,
+      "h": 44.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 4",
+        "msbt_role": "chrome",
+        "role": "header_btn"
+      }
+    },
+    {
+      "id": "QM Page 4__hdr_3",
+      "kind": "button",
+      "label": "1.00x",
+      "x": 1446.0,
+      "y": 68.0,
+      "w": 72.0,
+      "h": 44.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 4",
+        "msbt_role": "chrome",
+        "role": "header_btn"
+      }
+    },
+    {
+      "id": "QM Page 4__hdr_4",
+      "kind": "button",
+      "label": "+",
+      "x": 1524.0,
+      "y": 68.0,
+      "w": 40.0,
+      "h": 44.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 4",
+        "msbt_role": "chrome",
+        "role": "header_btn"
+      }
+    },
+    {
+      "id": "QM Page 4__hdr_5",
+      "kind": "button",
+      "label": "RESET POS",
+      "x": 1570.0,
+      "y": 68.0,
+      "w": 110.0,
+      "h": 44.0,
+      "colour": [
+        0.1,
+        0.55,
+        0.48,
+        0.95
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 4",
+        "msbt_role": "chrome",
+        "role": "header_btn"
+      }
+    },
+    {
+      "id": "QM Page 4__hdr_6",
+      "kind": "button",
+      "label": "Edit",
+      "x": 1684.0,
+      "y": 68.0,
+      "w": 100.0,
+      "h": 44.0,
+      "colour": [
+        0.72,
+        0.55,
+        0.12,
+        0.95
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 4",
+        "msbt_role": "chrome",
+        "role": "header_btn"
+      }
+    },
+    {
+      "id": "QM Page 4__hdr_7",
+      "kind": "button",
+      "label": "Close F7",
+      "x": 1792.0,
+      "y": 68.0,
+      "w": 116.0,
+      "h": 44.0,
+      "colour": [
+        0.55,
+        0.12,
+        0.16,
+        0.95
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 4",
+        "msbt_role": "chrome",
+        "role": "header_btn"
+      }
+    },
+    {
+      "id": "QM Page 4__p0",
+      "kind": "button",
+      "label": "P1",
+      "x": 1232.0,
+      "y": 118.0,
+      "w": 74.0,
+      "h": 36.0,
       "colour": [
         0.22,
         0.22,
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.3,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 4",
+        "msbt_role": "chrome",
+        "role": "player_slot",
+        "player_slot": 0
+      }
+    },
+    {
+      "id": "QM Page 4__p1",
+      "kind": "button",
+      "label": "P2",
+      "x": 1312.0,
+      "y": 118.0,
+      "w": 74.0,
+      "h": 36.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.75
+      ],
+      "text_scale": 0.3,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 4",
+        "msbt_role": "chrome",
+        "role": "player_slot",
+        "player_slot": 1
+      }
+    },
+    {
+      "id": "QM Page 4__p2",
+      "kind": "button",
+      "label": "P3",
+      "x": 1392.0,
+      "y": 118.0,
+      "w": 74.0,
+      "h": 36.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.75
+      ],
+      "text_scale": 0.3,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 4",
+        "msbt_role": "chrome",
+        "role": "player_slot",
+        "player_slot": 2
+      }
+    },
+    {
+      "id": "QM Page 4__p3",
+      "kind": "button",
+      "label": "P4",
+      "x": 1472.0,
+      "y": 118.0,
+      "w": 74.0,
+      "h": 36.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.75
+      ],
+      "text_scale": 0.3,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 4",
+        "msbt_role": "chrome",
+        "role": "player_slot",
+        "player_slot": 3
+      }
+    },
+    {
+      "id": "QM Page 4__pall",
+      "kind": "button",
+      "label": "PAll",
+      "x": 1552.0,
+      "y": 118.0,
+      "w": 70.0,
+      "h": 36.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.34,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 4",
+        "msbt_role": "chrome",
+        "role": "player_all"
+      }
+    },
+    {
+      "id": "QM Page 4__tab_p0",
+      "kind": "button",
+      "label": "P1",
+      "x": 1232.0,
+      "y": 162.0,
+      "w": 64.0,
+      "h": 40.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 4",
+        "msbt_role": "chrome",
+        "role": "page_tab",
+        "page": 0
+      }
+    },
+    {
+      "id": "QM Page 4__tab_p1",
+      "kind": "button",
+      "label": "P2",
+      "x": 1302.0,
+      "y": 162.0,
+      "w": 64.0,
+      "h": 40.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 4",
+        "msbt_role": "chrome",
+        "role": "page_tab",
+        "page": 1
+      }
+    },
+    {
+      "id": "QM Page 4__tab_p2",
+      "kind": "button",
+      "label": "P3",
+      "x": 1372.0,
+      "y": 162.0,
+      "w": 64.0,
+      "h": 40.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 4",
+        "msbt_role": "chrome",
+        "role": "page_tab",
+        "page": 2
+      }
+    },
+    {
+      "id": "QM Page 4__tab_p3",
+      "kind": "button",
+      "label": "P4",
+      "x": 1442.0,
+      "y": 162.0,
+      "w": 64.0,
+      "h": 40.0,
+      "colour": [
+        0.72,
+        0.55,
+        0.12,
+        0.95
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 4",
+        "msbt_role": "chrome",
+        "role": "page_tab",
+        "page": 3
+      }
+    },
+    {
+      "id": "QM Page 4__tab_p4",
+      "kind": "button",
+      "label": "P5",
+      "x": 1512.0,
+      "y": 162.0,
+      "w": 64.0,
+      "h": 40.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 4",
+        "msbt_role": "chrome",
+        "role": "page_tab",
+        "page": 4
+      }
+    },
+    {
+      "id": "QM Page 4__tab_inv",
+      "kind": "button",
+      "label": "INV",
+      "x": 1582.0,
+      "y": 162.0,
+      "w": 64.0,
+      "h": 40.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 4",
+        "msbt_role": "chrome",
+        "role": "inv_tab"
+      }
+    },
+    {
+      "id": "QM Page 4__tool_0",
+      "kind": "button",
+      "label": "Pin Last",
+      "x": 1232.0,
+      "y": 210.0,
+      "w": 130.0,
+      "h": 42.0,
+      "colour": [
+        0.72,
+        0.55,
+        0.12,
+        0.95
+      ],
+      "text_scale": 0.46,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 4",
+        "msbt_role": "chrome",
+        "role": "tool_btn"
+      }
+    },
+    {
+      "id": "QM Page 4__tool_1",
+      "kind": "button",
+      "label": "Lock",
+      "x": 1370.0,
+      "y": 210.0,
+      "w": 90.0,
+      "h": 42.0,
+      "colour": [
+        0.1,
+        0.55,
+        0.48,
+        0.95
+      ],
+      "text_scale": 0.46,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 4",
+        "msbt_role": "chrome",
+        "role": "tool_btn"
+      }
+    },
+    {
+      "id": "QM Page 4__tool_2",
+      "kind": "button",
+      "label": "Target",
+      "x": 1468.0,
+      "y": 210.0,
+      "w": 100.0,
+      "h": 42.0,
+      "colour": [
+        0.1,
+        0.55,
+        0.48,
+        0.95
+      ],
+      "text_scale": 0.46,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 4",
+        "msbt_role": "chrome",
+        "role": "tool_btn"
+      }
+    },
+    {
+      "id": "QM Page 4__tool_3",
+      "kind": "button",
+      "label": "Refresh",
+      "x": 1576.0,
+      "y": 210.0,
+      "w": 110.0,
+      "h": 42.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.46,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 4",
+        "msbt_role": "chrome",
+        "role": "tool_btn"
+      }
+    },
+    {
+      "id": "QM Page 4__info_target",
+      "kind": "text",
+      "label": "Target: (none)",
+      "x": 1232.0,
+      "y": 258.0,
+      "w": 676.0,
+      "h": 22.0,
+      "colour": [
+        0.75,
+        0.78,
+        0.82,
+        1.0
+      ],
+      "text_scale": 0.34,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 4",
+        "msbt_role": "chrome",
+        "role": "info"
+      }
+    },
+    {
+      "id": "QM Page 4__info_last",
+      "kind": "text",
+      "label": "Last: (none) | Drop: (none)",
+      "x": 1232.0,
+      "y": 280.0,
+      "w": 676.0,
+      "h": 22.0,
+      "colour": [
+        0.75,
+        0.78,
+        0.82,
+        1.0
+      ],
+      "text_scale": 0.34,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 4",
+        "msbt_role": "chrome",
+        "role": "info"
+      }
+    },
+    {
+      "id": "qm_p3_s0",
+      "kind": "button",
+      "label": "UVH Boost All",
+      "x": 1232.0,
+      "y": 308.0,
+      "w": 210.0,
+      "h": 56.0,
+      "colour": [
+        0.1,
+        0.62,
+        0.48,
+        0.95
+      ],
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -1709,25 +4941,25 @@
         "screen": "QM Page 4",
         "page": 3,
         "slot": 0,
-        "action": null,
+        "action": "uvh_boost_all",
         "msbt_role": "quick_menu_slot"
       }
     },
     {
       "id": "qm_p3_s1",
       "kind": "button",
-      "label": "P4 + Assign",
+      "label": "Cancel UVH",
       "x": 1450.0,
-      "y": 322.0,
+      "y": 308.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
-        0.22,
-        0.22,
-        0.28,
-        0.75
+        0.1,
+        0.62,
+        0.48,
+        0.95
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -1735,25 +4967,25 @@
         "screen": "QM Page 4",
         "page": 3,
         "slot": 1,
-        "action": null,
+        "action": "uvh_boost_cancel",
         "msbt_role": "quick_menu_slot"
       }
     },
     {
       "id": "qm_p3_s2",
       "kind": "button",
-      "label": "P4 + Assign",
+      "label": "Only Legendary",
       "x": 1668.0,
-      "y": 322.0,
+      "y": 308.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
-        0.22,
-        0.22,
-        0.28,
-        0.75
+        0.1,
+        0.62,
+        0.48,
+        0.95
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -1761,25 +4993,25 @@
         "screen": "QM Page 4",
         "page": 3,
         "slot": 2,
-        "action": null,
+        "action": "rarity_only_legendary",
         "msbt_role": "quick_menu_slot"
       }
     },
     {
       "id": "qm_p3_s3",
       "kind": "button",
-      "label": "P4 + Assign",
+      "label": "Only Pearlescent",
       "x": 1232.0,
-      "y": 384.0,
+      "y": 370.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
-        0.22,
-        0.22,
-        0.28,
-        0.75
+        0.1,
+        0.62,
+        0.48,
+        0.95
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -1787,25 +5019,25 @@
         "screen": "QM Page 4",
         "page": 3,
         "slot": 3,
-        "action": null,
+        "action": "rarity_only_pearlescent",
         "msbt_role": "quick_menu_slot"
       }
     },
     {
       "id": "qm_p3_s4",
       "kind": "button",
-      "label": "P4 + Assign",
+      "label": "Apply Rarity",
       "x": 1450.0,
-      "y": 384.0,
+      "y": 370.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
-        0.22,
-        0.22,
-        0.28,
-        0.75
+        0.1,
+        0.62,
+        0.48,
+        0.95
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -1813,25 +5045,25 @@
         "screen": "QM Page 4",
         "page": 3,
         "slot": 4,
-        "action": null,
+        "action": "rarity_apply",
         "msbt_role": "quick_menu_slot"
       }
     },
     {
       "id": "qm_p3_s5",
       "kind": "button",
-      "label": "P4 + Assign",
+      "label": "Reset Rarity",
       "x": 1668.0,
-      "y": 384.0,
+      "y": 370.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
-        0.22,
-        0.22,
-        0.28,
-        0.75
+        0.1,
+        0.62,
+        0.48,
+        0.95
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -1839,25 +5071,25 @@
         "screen": "QM Page 4",
         "page": 3,
         "slot": 5,
-        "action": null,
+        "action": "rarity_reset",
         "msbt_role": "quick_menu_slot"
       }
     },
     {
       "id": "qm_p3_s6",
       "kind": "button",
-      "label": "P4 + Assign",
+      "label": "Travel Map",
       "x": 1232.0,
-      "y": 446.0,
+      "y": 432.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
-        0.22,
-        0.22,
-        0.28,
-        0.75
+        0.1,
+        0.62,
+        0.48,
+        0.95
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -1865,25 +5097,25 @@
         "screen": "QM Page 4",
         "page": 3,
         "slot": 6,
-        "action": null,
+        "action": "travel_to_map",
         "msbt_role": "quick_menu_slot"
       }
     },
     {
       "id": "qm_p3_s7",
       "kind": "button",
-      "label": "P4 + Assign",
+      "label": "Travel Station",
       "x": 1450.0,
-      "y": 446.0,
+      "y": 432.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
-        0.22,
-        0.22,
-        0.28,
-        0.75
+        0.1,
+        0.62,
+        0.48,
+        0.95
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -1891,25 +5123,25 @@
         "screen": "QM Page 4",
         "page": 3,
         "slot": 7,
-        "action": null,
+        "action": "travel_to_station",
         "msbt_role": "quick_menu_slot"
       }
     },
     {
       "id": "qm_p3_s8",
       "kind": "button",
-      "label": "P4 + Assign",
+      "label": "Spawn Item Pool",
       "x": 1668.0,
-      "y": 446.0,
+      "y": 432.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
-        0.22,
-        0.22,
-        0.28,
-        0.75
+        0.1,
+        0.62,
+        0.48,
+        0.95
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -1917,25 +5149,25 @@
         "screen": "QM Page 4",
         "page": 3,
         "slot": 8,
-        "action": null,
+        "action": "spawn_itempool",
         "msbt_role": "quick_menu_slot"
       }
     },
     {
       "id": "qm_p3_s9",
       "kind": "button",
-      "label": "P4 + Assign",
+      "label": "Kill All Enemies",
       "x": 1232.0,
-      "y": 508.0,
+      "y": 494.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
-        0.22,
-        0.22,
-        0.28,
-        0.75
+        0.1,
+        0.62,
+        0.48,
+        0.95
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -1943,25 +5175,25 @@
         "screen": "QM Page 4",
         "page": 3,
         "slot": 9,
-        "action": null,
+        "action": "devperk_3",
         "msbt_role": "quick_menu_slot"
       }
     },
     {
       "id": "qm_p3_s10",
       "kind": "button",
-      "label": "P4 + Assign",
+      "label": "Spawn Leg/Epic Loot",
       "x": 1450.0,
-      "y": 508.0,
+      "y": 494.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
-        0.22,
-        0.22,
-        0.28,
-        0.75
+        0.1,
+        0.62,
+        0.48,
+        0.95
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -1969,16 +5201,16 @@
         "screen": "QM Page 4",
         "page": 3,
         "slot": 10,
-        "action": null,
+        "action": "devperk_7",
         "msbt_role": "quick_menu_slot"
       }
     },
     {
       "id": "qm_p3_s11",
       "kind": "button",
-      "label": "P4 + Assign",
+      "label": "+ Assign",
       "x": 1668.0,
-      "y": 508.0,
+      "y": 494.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -1987,7 +5219,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -2002,9 +5234,9 @@
     {
       "id": "qm_p3_s12",
       "kind": "button",
-      "label": "P4 + Assign",
+      "label": "+ Assign",
       "x": 1232.0,
-      "y": 570.0,
+      "y": 556.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -2013,7 +5245,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -2028,9 +5260,9 @@
     {
       "id": "qm_p3_s13",
       "kind": "button",
-      "label": "P4 + Assign",
+      "label": "+ Assign",
       "x": 1450.0,
-      "y": 570.0,
+      "y": 556.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -2039,7 +5271,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -2054,9 +5286,9 @@
     {
       "id": "qm_p3_s14",
       "kind": "button",
-      "label": "P4 + Assign",
+      "label": "+ Assign",
       "x": 1668.0,
-      "y": 570.0,
+      "y": 556.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -2065,7 +5297,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -2080,9 +5312,9 @@
     {
       "id": "qm_p3_s15",
       "kind": "button",
-      "label": "P4 + Assign",
+      "label": "+ Assign",
       "x": 1232.0,
-      "y": 632.0,
+      "y": 618.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -2091,7 +5323,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -2106,9 +5338,9 @@
     {
       "id": "qm_p3_s16",
       "kind": "button",
-      "label": "P4 + Assign",
+      "label": "+ Assign",
       "x": 1450.0,
-      "y": 632.0,
+      "y": 618.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -2117,7 +5349,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -2132,9 +5364,9 @@
     {
       "id": "qm_p3_s17",
       "kind": "button",
-      "label": "P4 + Assign",
+      "label": "+ Assign",
       "x": 1668.0,
-      "y": 632.0,
+      "y": 618.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -2143,7 +5375,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -2158,9 +5390,9 @@
     {
       "id": "qm_p3_s18",
       "kind": "button",
-      "label": "P4 + Assign",
+      "label": "+ Assign",
       "x": 1232.0,
-      "y": 694.0,
+      "y": 680.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -2169,7 +5401,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -2184,9 +5416,9 @@
     {
       "id": "qm_p3_s19",
       "kind": "button",
-      "label": "P4 + Assign",
+      "label": "+ Assign",
       "x": 1450.0,
-      "y": 694.0,
+      "y": 680.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -2195,7 +5427,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -2210,9 +5442,9 @@
     {
       "id": "qm_p3_s20",
       "kind": "button",
-      "label": "P4 + Assign",
+      "label": "+ Assign",
       "x": 1668.0,
-      "y": 694.0,
+      "y": 680.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -2221,7 +5453,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -2234,11 +5466,860 @@
       }
     },
     {
+      "id": "qm_p3_rarity",
+      "kind": "border",
+      "label": "Rarity panel (optional)",
+      "x": 1232.0,
+      "y": 746.0,
+      "w": 676.0,
+      "h": 230.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": null,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 4",
+        "page": 3,
+        "msbt_role": "rarity_panel"
+      }
+    },
+    {
+      "id": "qm_p3_rarity_btn_0",
+      "kind": "button",
+      "label": "Apply",
+      "x": 1240.0,
+      "y": 782.0,
+      "w": 150.0,
+      "h": 40.0,
+      "colour": [
+        0.72,
+        0.55,
+        0.12,
+        0.95
+      ],
+      "text_scale": 0.34,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 4",
+        "page": 3,
+        "msbt_role": "rarity_btn"
+      }
+    },
+    {
+      "id": "qm_p3_rarity_btn_1",
+      "kind": "button",
+      "label": "Reset",
+      "x": 1400.0,
+      "y": 782.0,
+      "w": 150.0,
+      "h": 40.0,
+      "colour": [
+        0.1,
+        0.55,
+        0.48,
+        0.95
+      ],
+      "text_scale": 0.34,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 4",
+        "page": 3,
+        "msbt_role": "rarity_btn"
+      }
+    },
+    {
+      "id": "qm_p3_rarity_btn_2",
+      "kind": "button",
+      "label": "Only Leg",
+      "x": 1560.0,
+      "y": 782.0,
+      "w": 150.0,
+      "h": 40.0,
+      "colour": [
+        0.1,
+        0.55,
+        0.48,
+        0.95
+      ],
+      "text_scale": 0.34,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 4",
+        "page": 3,
+        "msbt_role": "rarity_btn"
+      }
+    },
+    {
+      "id": "qm_p3_rarity_btn_3",
+      "kind": "button",
+      "label": "Only Pearl",
+      "x": 1720.0,
+      "y": 782.0,
+      "w": 150.0,
+      "h": 40.0,
+      "colour": [
+        0.1,
+        0.55,
+        0.48,
+        0.95
+      ],
+      "text_scale": 0.34,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 4",
+        "page": 3,
+        "msbt_role": "rarity_btn"
+      }
+    },
+    {
+      "id": "QM Page 5__edge",
+      "kind": "border",
+      "label": "",
+      "x": 1214.0,
+      "y": 0.0,
+      "w": 6.0,
+      "h": 1080.0,
+      "colour": [
+        0.02,
+        0.8,
+        0.7,
+        1.0
+      ],
+      "text_scale": null,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 5",
+        "msbt_role": "chrome",
+        "role": "edge"
+      }
+    },
+    {
+      "id": "QM Page 5__dock",
+      "kind": "border",
+      "label": "MSBT Quick Menu",
+      "x": 1220.0,
+      "y": 0.0,
+      "w": 700.0,
+      "h": 1080.0,
+      "colour": [
+        0.08,
+        0.08,
+        0.12,
+        0.92
+      ],
+      "text_scale": null,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 5",
+        "msbt_role": "chrome",
+        "role": "panel"
+      }
+    },
+    {
+      "id": "QM Page 5__header",
+      "kind": "border",
+      "label": "",
+      "x": 1220.0,
+      "y": 0.0,
+      "w": 700.0,
+      "h": 168.0,
+      "colour": [
+        0.12,
+        0.1,
+        0.18,
+        0.95
+      ],
+      "text_scale": null,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 5",
+        "msbt_role": "chrome",
+        "role": "header"
+      }
+    },
+    {
+      "id": "QM Page 5__title",
+      "kind": "text",
+      "label": "MSBT Quick Menu",
+      "x": 1232.0,
+      "y": 8.0,
+      "w": 280.0,
+      "h": 36.0,
+      "colour": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "text_scale": 0.68,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 5",
+        "msbt_role": "chrome",
+        "role": "title"
+      }
+    },
+    {
+      "id": "QM Page 5__subtitle",
+      "kind": "text",
+      "label": "RUN | QM Page 5 | Lock OFF | 1.00x | MSBT Neon",
+      "x": 1232.0,
+      "y": 42.0,
+      "w": 676.0,
+      "h": 24.0,
+      "colour": [
+        0.75,
+        0.78,
+        0.82,
+        1.0
+      ],
+      "text_scale": 0.36,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 5",
+        "msbt_role": "chrome",
+        "role": "subtitle"
+      }
+    },
+    {
+      "id": "QM Page 5__hdr_0",
+      "kind": "button",
+      "label": "MOVE",
+      "x": 1232.0,
+      "y": 68.0,
+      "w": 72.0,
+      "h": 44.0,
+      "colour": [
+        0.1,
+        0.55,
+        0.48,
+        0.95
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 5",
+        "msbt_role": "chrome",
+        "role": "header_btn"
+      }
+    },
+    {
+      "id": "QM Page 5__hdr_1",
+      "kind": "button",
+      "label": "THEME",
+      "x": 1310.0,
+      "y": 68.0,
+      "w": 84.0,
+      "h": 44.0,
+      "colour": [
+        0.72,
+        0.55,
+        0.12,
+        0.95
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 5",
+        "msbt_role": "chrome",
+        "role": "header_btn"
+      }
+    },
+    {
+      "id": "QM Page 5__hdr_2",
+      "kind": "button",
+      "label": "-",
+      "x": 1400.0,
+      "y": 68.0,
+      "w": 40.0,
+      "h": 44.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 5",
+        "msbt_role": "chrome",
+        "role": "header_btn"
+      }
+    },
+    {
+      "id": "QM Page 5__hdr_3",
+      "kind": "button",
+      "label": "1.00x",
+      "x": 1446.0,
+      "y": 68.0,
+      "w": 72.0,
+      "h": 44.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 5",
+        "msbt_role": "chrome",
+        "role": "header_btn"
+      }
+    },
+    {
+      "id": "QM Page 5__hdr_4",
+      "kind": "button",
+      "label": "+",
+      "x": 1524.0,
+      "y": 68.0,
+      "w": 40.0,
+      "h": 44.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 5",
+        "msbt_role": "chrome",
+        "role": "header_btn"
+      }
+    },
+    {
+      "id": "QM Page 5__hdr_5",
+      "kind": "button",
+      "label": "RESET POS",
+      "x": 1570.0,
+      "y": 68.0,
+      "w": 110.0,
+      "h": 44.0,
+      "colour": [
+        0.1,
+        0.55,
+        0.48,
+        0.95
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 5",
+        "msbt_role": "chrome",
+        "role": "header_btn"
+      }
+    },
+    {
+      "id": "QM Page 5__hdr_6",
+      "kind": "button",
+      "label": "Edit",
+      "x": 1684.0,
+      "y": 68.0,
+      "w": 100.0,
+      "h": 44.0,
+      "colour": [
+        0.72,
+        0.55,
+        0.12,
+        0.95
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 5",
+        "msbt_role": "chrome",
+        "role": "header_btn"
+      }
+    },
+    {
+      "id": "QM Page 5__hdr_7",
+      "kind": "button",
+      "label": "Close F7",
+      "x": 1792.0,
+      "y": 68.0,
+      "w": 116.0,
+      "h": 44.0,
+      "colour": [
+        0.55,
+        0.12,
+        0.16,
+        0.95
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 5",
+        "msbt_role": "chrome",
+        "role": "header_btn"
+      }
+    },
+    {
+      "id": "QM Page 5__p0",
+      "kind": "button",
+      "label": "P1",
+      "x": 1232.0,
+      "y": 118.0,
+      "w": 74.0,
+      "h": 36.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.75
+      ],
+      "text_scale": 0.3,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 5",
+        "msbt_role": "chrome",
+        "role": "player_slot",
+        "player_slot": 0
+      }
+    },
+    {
+      "id": "QM Page 5__p1",
+      "kind": "button",
+      "label": "P2",
+      "x": 1312.0,
+      "y": 118.0,
+      "w": 74.0,
+      "h": 36.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.75
+      ],
+      "text_scale": 0.3,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 5",
+        "msbt_role": "chrome",
+        "role": "player_slot",
+        "player_slot": 1
+      }
+    },
+    {
+      "id": "QM Page 5__p2",
+      "kind": "button",
+      "label": "P3",
+      "x": 1392.0,
+      "y": 118.0,
+      "w": 74.0,
+      "h": 36.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.75
+      ],
+      "text_scale": 0.3,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 5",
+        "msbt_role": "chrome",
+        "role": "player_slot",
+        "player_slot": 2
+      }
+    },
+    {
+      "id": "QM Page 5__p3",
+      "kind": "button",
+      "label": "P4",
+      "x": 1472.0,
+      "y": 118.0,
+      "w": 74.0,
+      "h": 36.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.75
+      ],
+      "text_scale": 0.3,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 5",
+        "msbt_role": "chrome",
+        "role": "player_slot",
+        "player_slot": 3
+      }
+    },
+    {
+      "id": "QM Page 5__pall",
+      "kind": "button",
+      "label": "PAll",
+      "x": 1552.0,
+      "y": 118.0,
+      "w": 70.0,
+      "h": 36.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.34,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 5",
+        "msbt_role": "chrome",
+        "role": "player_all"
+      }
+    },
+    {
+      "id": "QM Page 5__tab_p0",
+      "kind": "button",
+      "label": "P1",
+      "x": 1232.0,
+      "y": 162.0,
+      "w": 64.0,
+      "h": 40.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 5",
+        "msbt_role": "chrome",
+        "role": "page_tab",
+        "page": 0
+      }
+    },
+    {
+      "id": "QM Page 5__tab_p1",
+      "kind": "button",
+      "label": "P2",
+      "x": 1302.0,
+      "y": 162.0,
+      "w": 64.0,
+      "h": 40.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 5",
+        "msbt_role": "chrome",
+        "role": "page_tab",
+        "page": 1
+      }
+    },
+    {
+      "id": "QM Page 5__tab_p2",
+      "kind": "button",
+      "label": "P3",
+      "x": 1372.0,
+      "y": 162.0,
+      "w": 64.0,
+      "h": 40.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 5",
+        "msbt_role": "chrome",
+        "role": "page_tab",
+        "page": 2
+      }
+    },
+    {
+      "id": "QM Page 5__tab_p3",
+      "kind": "button",
+      "label": "P4",
+      "x": 1442.0,
+      "y": 162.0,
+      "w": 64.0,
+      "h": 40.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 5",
+        "msbt_role": "chrome",
+        "role": "page_tab",
+        "page": 3
+      }
+    },
+    {
+      "id": "QM Page 5__tab_p4",
+      "kind": "button",
+      "label": "P5",
+      "x": 1512.0,
+      "y": 162.0,
+      "w": 64.0,
+      "h": 40.0,
+      "colour": [
+        0.72,
+        0.55,
+        0.12,
+        0.95
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 5",
+        "msbt_role": "chrome",
+        "role": "page_tab",
+        "page": 4
+      }
+    },
+    {
+      "id": "QM Page 5__tab_inv",
+      "kind": "button",
+      "label": "INV",
+      "x": 1582.0,
+      "y": 162.0,
+      "w": 64.0,
+      "h": 40.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 5",
+        "msbt_role": "chrome",
+        "role": "inv_tab"
+      }
+    },
+    {
+      "id": "QM Page 5__tool_0",
+      "kind": "button",
+      "label": "Pin Last",
+      "x": 1232.0,
+      "y": 210.0,
+      "w": 130.0,
+      "h": 42.0,
+      "colour": [
+        0.72,
+        0.55,
+        0.12,
+        0.95
+      ],
+      "text_scale": 0.46,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 5",
+        "msbt_role": "chrome",
+        "role": "tool_btn"
+      }
+    },
+    {
+      "id": "QM Page 5__tool_1",
+      "kind": "button",
+      "label": "Lock",
+      "x": 1370.0,
+      "y": 210.0,
+      "w": 90.0,
+      "h": 42.0,
+      "colour": [
+        0.1,
+        0.55,
+        0.48,
+        0.95
+      ],
+      "text_scale": 0.46,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 5",
+        "msbt_role": "chrome",
+        "role": "tool_btn"
+      }
+    },
+    {
+      "id": "QM Page 5__tool_2",
+      "kind": "button",
+      "label": "Target",
+      "x": 1468.0,
+      "y": 210.0,
+      "w": 100.0,
+      "h": 42.0,
+      "colour": [
+        0.1,
+        0.55,
+        0.48,
+        0.95
+      ],
+      "text_scale": 0.46,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 5",
+        "msbt_role": "chrome",
+        "role": "tool_btn"
+      }
+    },
+    {
+      "id": "QM Page 5__tool_3",
+      "kind": "button",
+      "label": "Refresh",
+      "x": 1576.0,
+      "y": 210.0,
+      "w": 110.0,
+      "h": 42.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.46,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 5",
+        "msbt_role": "chrome",
+        "role": "tool_btn"
+      }
+    },
+    {
+      "id": "QM Page 5__info_target",
+      "kind": "text",
+      "label": "Target: (none)",
+      "x": 1232.0,
+      "y": 258.0,
+      "w": 676.0,
+      "h": 22.0,
+      "colour": [
+        0.75,
+        0.78,
+        0.82,
+        1.0
+      ],
+      "text_scale": 0.34,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 5",
+        "msbt_role": "chrome",
+        "role": "info"
+      }
+    },
+    {
+      "id": "QM Page 5__info_last",
+      "kind": "text",
+      "label": "Last: (none) | Drop: (none)",
+      "x": 1232.0,
+      "y": 280.0,
+      "w": 676.0,
+      "h": 22.0,
+      "colour": [
+        0.75,
+        0.78,
+        0.82,
+        1.0
+      ],
+      "text_scale": 0.34,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 5",
+        "msbt_role": "chrome",
+        "role": "info"
+      }
+    },
+    {
       "id": "qm_p4_s0",
       "kind": "button",
-      "label": "P5 + Assign",
+      "label": "+ Assign",
       "x": 1232.0,
-      "y": 322.0,
+      "y": 308.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -2247,7 +6328,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -2262,9 +6343,9 @@
     {
       "id": "qm_p4_s1",
       "kind": "button",
-      "label": "P5 + Assign",
+      "label": "+ Assign",
       "x": 1450.0,
-      "y": 322.0,
+      "y": 308.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -2273,7 +6354,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -2288,9 +6369,9 @@
     {
       "id": "qm_p4_s2",
       "kind": "button",
-      "label": "P5 + Assign",
+      "label": "+ Assign",
       "x": 1668.0,
-      "y": 322.0,
+      "y": 308.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -2299,7 +6380,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -2314,9 +6395,9 @@
     {
       "id": "qm_p4_s3",
       "kind": "button",
-      "label": "P5 + Assign",
+      "label": "+ Assign",
       "x": 1232.0,
-      "y": 384.0,
+      "y": 370.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -2325,7 +6406,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -2340,9 +6421,9 @@
     {
       "id": "qm_p4_s4",
       "kind": "button",
-      "label": "P5 + Assign",
+      "label": "+ Assign",
       "x": 1450.0,
-      "y": 384.0,
+      "y": 370.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -2351,7 +6432,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -2366,9 +6447,9 @@
     {
       "id": "qm_p4_s5",
       "kind": "button",
-      "label": "P5 + Assign",
+      "label": "+ Assign",
       "x": 1668.0,
-      "y": 384.0,
+      "y": 370.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -2377,7 +6458,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -2392,9 +6473,9 @@
     {
       "id": "qm_p4_s6",
       "kind": "button",
-      "label": "P5 + Assign",
+      "label": "+ Assign",
       "x": 1232.0,
-      "y": 446.0,
+      "y": 432.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -2403,7 +6484,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -2418,9 +6499,9 @@
     {
       "id": "qm_p4_s7",
       "kind": "button",
-      "label": "P5 + Assign",
+      "label": "+ Assign",
       "x": 1450.0,
-      "y": 446.0,
+      "y": 432.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -2429,7 +6510,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -2444,9 +6525,9 @@
     {
       "id": "qm_p4_s8",
       "kind": "button",
-      "label": "P5 + Assign",
+      "label": "+ Assign",
       "x": 1668.0,
-      "y": 446.0,
+      "y": 432.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -2455,7 +6536,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -2470,9 +6551,9 @@
     {
       "id": "qm_p4_s9",
       "kind": "button",
-      "label": "P5 + Assign",
+      "label": "+ Assign",
       "x": 1232.0,
-      "y": 508.0,
+      "y": 494.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -2481,7 +6562,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -2496,9 +6577,9 @@
     {
       "id": "qm_p4_s10",
       "kind": "button",
-      "label": "P5 + Assign",
+      "label": "+ Assign",
       "x": 1450.0,
-      "y": 508.0,
+      "y": 494.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -2507,7 +6588,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -2522,9 +6603,9 @@
     {
       "id": "qm_p4_s11",
       "kind": "button",
-      "label": "P5 + Assign",
+      "label": "+ Assign",
       "x": 1668.0,
-      "y": 508.0,
+      "y": 494.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -2533,7 +6614,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -2548,9 +6629,9 @@
     {
       "id": "qm_p4_s12",
       "kind": "button",
-      "label": "P5 + Assign",
+      "label": "+ Assign",
       "x": 1232.0,
-      "y": 570.0,
+      "y": 556.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -2559,7 +6640,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -2574,9 +6655,9 @@
     {
       "id": "qm_p4_s13",
       "kind": "button",
-      "label": "P5 + Assign",
+      "label": "+ Assign",
       "x": 1450.0,
-      "y": 570.0,
+      "y": 556.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -2585,7 +6666,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -2600,9 +6681,9 @@
     {
       "id": "qm_p4_s14",
       "kind": "button",
-      "label": "P5 + Assign",
+      "label": "+ Assign",
       "x": 1668.0,
-      "y": 570.0,
+      "y": 556.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -2611,7 +6692,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -2626,9 +6707,9 @@
     {
       "id": "qm_p4_s15",
       "kind": "button",
-      "label": "P5 + Assign",
+      "label": "+ Assign",
       "x": 1232.0,
-      "y": 632.0,
+      "y": 618.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -2637,7 +6718,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -2652,9 +6733,9 @@
     {
       "id": "qm_p4_s16",
       "kind": "button",
-      "label": "P5 + Assign",
+      "label": "+ Assign",
       "x": 1450.0,
-      "y": 632.0,
+      "y": 618.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -2663,7 +6744,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -2678,9 +6759,9 @@
     {
       "id": "qm_p4_s17",
       "kind": "button",
-      "label": "P5 + Assign",
+      "label": "+ Assign",
       "x": 1668.0,
-      "y": 632.0,
+      "y": 618.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -2689,7 +6770,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -2704,9 +6785,9 @@
     {
       "id": "qm_p4_s18",
       "kind": "button",
-      "label": "P5 + Assign",
+      "label": "+ Assign",
       "x": 1232.0,
-      "y": 694.0,
+      "y": 680.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -2715,7 +6796,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -2730,9 +6811,9 @@
     {
       "id": "qm_p4_s19",
       "kind": "button",
-      "label": "P5 + Assign",
+      "label": "+ Assign",
       "x": 1450.0,
-      "y": 694.0,
+      "y": 680.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -2741,7 +6822,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -2756,9 +6837,9 @@
     {
       "id": "qm_p4_s20",
       "kind": "button",
-      "label": "P5 + Assign",
+      "label": "+ Assign",
       "x": 1668.0,
-      "y": 694.0,
+      "y": 680.0,
       "w": 210.0,
       "h": 56.0,
       "colour": [
@@ -2767,7 +6848,7 @@
         0.28,
         0.75
       ],
-      "text_scale": null,
+      "text_scale": 0.38,
       "source_span": null,
       "arg_spans": {},
       "locked": false,
@@ -2778,7 +6859,873 @@
         "action": null,
         "msbt_role": "quick_menu_slot"
       }
+    },
+    {
+      "id": "qm_p4_rarity",
+      "kind": "border",
+      "label": "Rarity panel (optional)",
+      "x": 1232.0,
+      "y": 746.0,
+      "w": 676.0,
+      "h": 230.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": null,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 5",
+        "page": 4,
+        "msbt_role": "rarity_panel"
+      }
+    },
+    {
+      "id": "qm_p4_rarity_btn_0",
+      "kind": "button",
+      "label": "Apply",
+      "x": 1240.0,
+      "y": 782.0,
+      "w": 150.0,
+      "h": 40.0,
+      "colour": [
+        0.72,
+        0.55,
+        0.12,
+        0.95
+      ],
+      "text_scale": 0.34,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 5",
+        "page": 4,
+        "msbt_role": "rarity_btn"
+      }
+    },
+    {
+      "id": "qm_p4_rarity_btn_1",
+      "kind": "button",
+      "label": "Reset",
+      "x": 1400.0,
+      "y": 782.0,
+      "w": 150.0,
+      "h": 40.0,
+      "colour": [
+        0.1,
+        0.55,
+        0.48,
+        0.95
+      ],
+      "text_scale": 0.34,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 5",
+        "page": 4,
+        "msbt_role": "rarity_btn"
+      }
+    },
+    {
+      "id": "qm_p4_rarity_btn_2",
+      "kind": "button",
+      "label": "Only Leg",
+      "x": 1560.0,
+      "y": 782.0,
+      "w": 150.0,
+      "h": 40.0,
+      "colour": [
+        0.1,
+        0.55,
+        0.48,
+        0.95
+      ],
+      "text_scale": 0.34,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 5",
+        "page": 4,
+        "msbt_role": "rarity_btn"
+      }
+    },
+    {
+      "id": "qm_p4_rarity_btn_3",
+      "kind": "button",
+      "label": "Only Pearl",
+      "x": 1720.0,
+      "y": 782.0,
+      "w": 150.0,
+      "h": 40.0,
+      "colour": [
+        0.1,
+        0.55,
+        0.48,
+        0.95
+      ],
+      "text_scale": 0.34,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM Page 5",
+        "page": 4,
+        "msbt_role": "rarity_btn"
+      }
+    },
+    {
+      "id": "QM INV__edge",
+      "kind": "border",
+      "label": "",
+      "x": 1214.0,
+      "y": 0.0,
+      "w": 6.0,
+      "h": 1080.0,
+      "colour": [
+        0.02,
+        0.8,
+        0.7,
+        1.0
+      ],
+      "text_scale": null,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM INV",
+        "msbt_role": "chrome",
+        "role": "edge"
+      }
+    },
+    {
+      "id": "QM INV__dock",
+      "kind": "border",
+      "label": "MSBT Quick Menu",
+      "x": 1220.0,
+      "y": 0.0,
+      "w": 700.0,
+      "h": 1080.0,
+      "colour": [
+        0.08,
+        0.08,
+        0.12,
+        0.92
+      ],
+      "text_scale": null,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM INV",
+        "msbt_role": "chrome",
+        "role": "panel"
+      }
+    },
+    {
+      "id": "QM INV__header",
+      "kind": "border",
+      "label": "",
+      "x": 1220.0,
+      "y": 0.0,
+      "w": 700.0,
+      "h": 168.0,
+      "colour": [
+        0.12,
+        0.1,
+        0.18,
+        0.95
+      ],
+      "text_scale": null,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM INV",
+        "msbt_role": "chrome",
+        "role": "header"
+      }
+    },
+    {
+      "id": "QM INV__title",
+      "kind": "text",
+      "label": "MSBT Quick Menu",
+      "x": 1232.0,
+      "y": 8.0,
+      "w": 280.0,
+      "h": 36.0,
+      "colour": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "text_scale": 0.68,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM INV",
+        "msbt_role": "chrome",
+        "role": "title"
+      }
+    },
+    {
+      "id": "QM INV__subtitle",
+      "kind": "text",
+      "label": "RUN | QM INV | Lock OFF | 1.00x | MSBT Neon",
+      "x": 1232.0,
+      "y": 42.0,
+      "w": 676.0,
+      "h": 24.0,
+      "colour": [
+        0.75,
+        0.78,
+        0.82,
+        1.0
+      ],
+      "text_scale": 0.36,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM INV",
+        "msbt_role": "chrome",
+        "role": "subtitle"
+      }
+    },
+    {
+      "id": "QM INV__hdr_0",
+      "kind": "button",
+      "label": "MOVE",
+      "x": 1232.0,
+      "y": 68.0,
+      "w": 72.0,
+      "h": 44.0,
+      "colour": [
+        0.1,
+        0.55,
+        0.48,
+        0.95
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM INV",
+        "msbt_role": "chrome",
+        "role": "header_btn"
+      }
+    },
+    {
+      "id": "QM INV__hdr_1",
+      "kind": "button",
+      "label": "THEME",
+      "x": 1310.0,
+      "y": 68.0,
+      "w": 84.0,
+      "h": 44.0,
+      "colour": [
+        0.72,
+        0.55,
+        0.12,
+        0.95
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM INV",
+        "msbt_role": "chrome",
+        "role": "header_btn"
+      }
+    },
+    {
+      "id": "QM INV__hdr_2",
+      "kind": "button",
+      "label": "-",
+      "x": 1400.0,
+      "y": 68.0,
+      "w": 40.0,
+      "h": 44.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM INV",
+        "msbt_role": "chrome",
+        "role": "header_btn"
+      }
+    },
+    {
+      "id": "QM INV__hdr_3",
+      "kind": "button",
+      "label": "1.00x",
+      "x": 1446.0,
+      "y": 68.0,
+      "w": 72.0,
+      "h": 44.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM INV",
+        "msbt_role": "chrome",
+        "role": "header_btn"
+      }
+    },
+    {
+      "id": "QM INV__hdr_4",
+      "kind": "button",
+      "label": "+",
+      "x": 1524.0,
+      "y": 68.0,
+      "w": 40.0,
+      "h": 44.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM INV",
+        "msbt_role": "chrome",
+        "role": "header_btn"
+      }
+    },
+    {
+      "id": "QM INV__hdr_5",
+      "kind": "button",
+      "label": "RESET POS",
+      "x": 1570.0,
+      "y": 68.0,
+      "w": 110.0,
+      "h": 44.0,
+      "colour": [
+        0.1,
+        0.55,
+        0.48,
+        0.95
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM INV",
+        "msbt_role": "chrome",
+        "role": "header_btn"
+      }
+    },
+    {
+      "id": "QM INV__hdr_6",
+      "kind": "button",
+      "label": "Edit",
+      "x": 1684.0,
+      "y": 68.0,
+      "w": 100.0,
+      "h": 44.0,
+      "colour": [
+        0.72,
+        0.55,
+        0.12,
+        0.95
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM INV",
+        "msbt_role": "chrome",
+        "role": "header_btn"
+      }
+    },
+    {
+      "id": "QM INV__hdr_7",
+      "kind": "button",
+      "label": "Close F7",
+      "x": 1792.0,
+      "y": 68.0,
+      "w": 116.0,
+      "h": 44.0,
+      "colour": [
+        0.55,
+        0.12,
+        0.16,
+        0.95
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM INV",
+        "msbt_role": "chrome",
+        "role": "header_btn"
+      }
+    },
+    {
+      "id": "QM INV__p0",
+      "kind": "button",
+      "label": "P1",
+      "x": 1232.0,
+      "y": 118.0,
+      "w": 74.0,
+      "h": 36.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.75
+      ],
+      "text_scale": 0.3,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM INV",
+        "msbt_role": "chrome",
+        "role": "player_slot",
+        "player_slot": 0
+      }
+    },
+    {
+      "id": "QM INV__p1",
+      "kind": "button",
+      "label": "P2",
+      "x": 1312.0,
+      "y": 118.0,
+      "w": 74.0,
+      "h": 36.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.75
+      ],
+      "text_scale": 0.3,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM INV",
+        "msbt_role": "chrome",
+        "role": "player_slot",
+        "player_slot": 1
+      }
+    },
+    {
+      "id": "QM INV__p2",
+      "kind": "button",
+      "label": "P3",
+      "x": 1392.0,
+      "y": 118.0,
+      "w": 74.0,
+      "h": 36.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.75
+      ],
+      "text_scale": 0.3,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM INV",
+        "msbt_role": "chrome",
+        "role": "player_slot",
+        "player_slot": 2
+      }
+    },
+    {
+      "id": "QM INV__p3",
+      "kind": "button",
+      "label": "P4",
+      "x": 1472.0,
+      "y": 118.0,
+      "w": 74.0,
+      "h": 36.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.75
+      ],
+      "text_scale": 0.3,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM INV",
+        "msbt_role": "chrome",
+        "role": "player_slot",
+        "player_slot": 3
+      }
+    },
+    {
+      "id": "QM INV__pall",
+      "kind": "button",
+      "label": "PAll",
+      "x": 1552.0,
+      "y": 118.0,
+      "w": 70.0,
+      "h": 36.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.34,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM INV",
+        "msbt_role": "chrome",
+        "role": "player_all"
+      }
+    },
+    {
+      "id": "QM INV__tab_p0",
+      "kind": "button",
+      "label": "P1",
+      "x": 1232.0,
+      "y": 162.0,
+      "w": 64.0,
+      "h": 40.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM INV",
+        "msbt_role": "chrome",
+        "role": "page_tab",
+        "page": 0
+      }
+    },
+    {
+      "id": "QM INV__tab_p1",
+      "kind": "button",
+      "label": "P2",
+      "x": 1302.0,
+      "y": 162.0,
+      "w": 64.0,
+      "h": 40.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM INV",
+        "msbt_role": "chrome",
+        "role": "page_tab",
+        "page": 1
+      }
+    },
+    {
+      "id": "QM INV__tab_p2",
+      "kind": "button",
+      "label": "P3",
+      "x": 1372.0,
+      "y": 162.0,
+      "w": 64.0,
+      "h": 40.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM INV",
+        "msbt_role": "chrome",
+        "role": "page_tab",
+        "page": 2
+      }
+    },
+    {
+      "id": "QM INV__tab_p3",
+      "kind": "button",
+      "label": "P4",
+      "x": 1442.0,
+      "y": 162.0,
+      "w": 64.0,
+      "h": 40.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM INV",
+        "msbt_role": "chrome",
+        "role": "page_tab",
+        "page": 3
+      }
+    },
+    {
+      "id": "QM INV__tab_p4",
+      "kind": "button",
+      "label": "P5",
+      "x": 1512.0,
+      "y": 162.0,
+      "w": 64.0,
+      "h": 40.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM INV",
+        "msbt_role": "chrome",
+        "role": "page_tab",
+        "page": 4
+      }
+    },
+    {
+      "id": "QM INV__tab_inv",
+      "kind": "button",
+      "label": "INV",
+      "x": 1582.0,
+      "y": 162.0,
+      "w": 64.0,
+      "h": 40.0,
+      "colour": [
+        0.72,
+        0.55,
+        0.12,
+        0.95
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM INV",
+        "msbt_role": "chrome",
+        "role": "inv_tab"
+      }
+    },
+    {
+      "id": "qm_inv_body",
+      "kind": "border",
+      "label": "Inventory browser",
+      "x": 1232.0,
+      "y": 210.0,
+      "w": 676.0,
+      "h": 720.0,
+      "colour": [
+        0.22,
+        0.22,
+        0.28,
+        0.85
+      ],
+      "text_scale": null,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM INV",
+        "msbt_role": "inv_body"
+      }
+    },
+    {
+      "id": "qm_inv_title",
+      "kind": "text",
+      "label": "INV tab (placeholder \u2014 live F7 lists backpack serials)",
+      "x": 1244.0,
+      "y": 226.0,
+      "w": 652.0,
+      "h": 36.0,
+      "colour": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "text_scale": 0.42,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM INV",
+        "msbt_role": "inv_title"
+      }
+    },
+    {
+      "id": "qm_inv_btn_0",
+      "kind": "button",
+      "label": "Refresh Inv",
+      "x": 1244.0,
+      "y": 290.0,
+      "w": 300.0,
+      "h": 48.0,
+      "colour": [
+        0.1,
+        0.55,
+        0.48,
+        0.95
+      ],
+      "text_scale": 0.4,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM INV",
+        "msbt_role": "inv_btn"
+      }
+    },
+    {
+      "id": "qm_inv_btn_1",
+      "kind": "button",
+      "label": "Give Selected",
+      "x": 1564.0,
+      "y": 290.0,
+      "w": 300.0,
+      "h": 48.0,
+      "colour": [
+        0.1,
+        0.55,
+        0.48,
+        0.95
+      ],
+      "text_scale": 0.4,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM INV",
+        "msbt_role": "inv_btn"
+      }
+    },
+    {
+      "id": "qm_inv_btn_2",
+      "kind": "button",
+      "label": "Prev Page",
+      "x": 1244.0,
+      "y": 346.0,
+      "w": 300.0,
+      "h": 48.0,
+      "colour": [
+        0.1,
+        0.55,
+        0.48,
+        0.95
+      ],
+      "text_scale": 0.4,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM INV",
+        "msbt_role": "inv_btn"
+      }
+    },
+    {
+      "id": "qm_inv_btn_3",
+      "kind": "button",
+      "label": "Next Page",
+      "x": 1564.0,
+      "y": 346.0,
+      "w": 300.0,
+      "h": 48.0,
+      "colour": [
+        0.1,
+        0.55,
+        0.48,
+        0.95
+      ],
+      "text_scale": 0.4,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM INV",
+        "msbt_role": "inv_btn"
+      }
+    },
+    {
+      "id": "qm_inv_btn_4",
+      "kind": "button",
+      "label": "Back to Actions",
+      "x": 1244.0,
+      "y": 402.0,
+      "w": 300.0,
+      "h": 48.0,
+      "colour": [
+        0.1,
+        0.55,
+        0.48,
+        0.95
+      ],
+      "text_scale": 0.4,
+      "source_span": null,
+      "arg_spans": {},
+      "locked": false,
+      "meta": {
+        "screen": "QM INV",
+        "msbt_role": "inv_btn"
+      }
     }
   ],
-  "notes": "Synthetic MSBT Quick Menu layout for BL4 SDK Layout Builder. Not the live F7 UMG menu \u2014 edit boxes here, then port numbers back manually. Reference fork for Squ1ggs patterns: https://github.com/funkyoushift/Bl4SDKmods"
+  "notes": "Synthetic MSBT Quick Menu for BL4 SDK Layout Builder. Use the Screen dropdown (QM Page 1-5 / QM INV). Not the live F7 UMG menu \u2014 port coordinates back manually. Builder format: Azzy _button/_text/_border + _UI_TAB screens."
 }
