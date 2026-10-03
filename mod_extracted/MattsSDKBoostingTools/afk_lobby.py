@@ -9,15 +9,15 @@ import json
 from collections import deque
 
 
-BOOSTS = ("level", "spec", "sdu", "cash", "eridium", "keys", "challenges", "uvhm", "cosmetics", "loot")
+BOOSTS = ("level", "spec", "sdu", "cash", "eridium", "keys", "vault_levels", "challenges", "uvhm", "cosmetics", "loot")
 AMOUNT_LIMITS = {"level": 70, "spec": 701, "cash": 2147483647,
-                 "eridium": 2147483647, "keys": 2147483647}
+                 "eridium": 2147483647, "keys": 2147483647, "vault_levels": 9999}
 JOIN_SETTLE_SECONDS = 20.0
 STEP_LABELS = {'inventory_capture':'Saving original backpack', 'level':'Setting level',
                'spec':'Setting specialization rank', 'sdu':'Setting SDUs to 3225',
                'cash':'Setting cash', 'eridium':'Setting Eridium', 'keys':'Setting keys',
                'challenges':'Completing challenges', 'uvhm':'Unlocking UVHM 1-7',
-               'cosmetics':'Unlocking cosmetics and vehicles', 'loot':'Delivering selected loot'}
+               'vault_levels':'Setting vault card levels', 'cosmetics':'Unlocking cosmetics and vehicles', 'loot':'Delivering selected loot'}
 RECOVERY_LABELS = {'prepared':'Preparing reward cleanup', 'clear_pending':'Clearing reward clutter',
                    'deliver_pending':'Delivering selected loot', 'restore_pending':'Returning original backpack',
                    'verify_pending':'Checking backpack return', 'blocked':'Saving repair report',
@@ -78,6 +78,10 @@ class Lobby:
         if not any(config[key] for key in BOOSTS):
             return {"ok": False, "message": "Select at least one boost."}
         try:
+            names = payload.get("kick_exempt_names", "")
+            if not isinstance(names, str) or len(names) > 8192:
+                raise ValueError("Protected SHiFT names must be text, one name per line (up to 8,192 characters).")
+            config["kick_exempt_names"] = "\n".join(dict.fromkeys(name.strip() for name in names.splitlines() if name.strip()))
             for key, maximum in AMOUNT_LIMITS.items():
                 value = payload.get(key + "_amount", maximum)
                 if isinstance(value, bool) or not str(value).isdigit() or not 1 <= int(value) <= maximum:
@@ -144,7 +148,7 @@ class Lobby:
                 "loot_modes": ["all", "random70"], "bulk_loot_password_required": True, "random_count_supported": True, "guaranteed_loot_supported": True,
                 'cleanup_rewards_supported':True, 'host_test_supported':True,
                 'config_upload_supported': True, 'item_level_override_supported': True,
-                'boost_amounts_supported': True}
+                'boost_amounts_supported': True, 'kick_exempt_names_supported': True, 'vault_card_levels_supported': True}
 
     def tick(self):
         now = time.monotonic()
@@ -344,6 +348,12 @@ class Lobby:
             if row is None:
                 continue
             members = rows if unknown else [r for r in rows if r.get("connection") == row.get("connection")]
+            protected = {name.casefold() for name in self.config.get("kick_exempt_names", "").splitlines()}
+            if any(str(member.get("name", "")).strip().casefold() in protected for member in members):
+                job['kick_attempted'] = True
+                job['record']['message'] += '; player kept: protected SHiFT name or shared connection'
+                self._save_report(job)
+                continue
             done = []
             for member in members:
                 finished = next((j for j in self.completed if j["token"] == member["token"]), None)
@@ -527,7 +537,8 @@ class Game:
 
     def experience_level(self, ps, step):
         economy = self.backend().player_economy
-        index = 0 if step == "level" else 1
+        index = (int(step.rsplit("_", 1)[1]) + 1 if step.startswith("vaultcard_xp_")
+                 else 0 if step == "level" else 1)
         states = getattr(ps, "ExperienceState", [])
         row = states[index] if len(states) > index else None
         for token in economy._candidate_experience_tokens(index, row):
@@ -636,29 +647,29 @@ class Game:
             if not recovery.can_kick:
                 return None
             return {'ok':True,'message':'Reward loot cleared; selected loot and all original items verified'}
-        elif step in ("level", "spec"):
+        elif step in ("level", "spec", "vault_levels"):
             now = time.monotonic()
-            state = job.setdefault("experience_attempts", {}).setdefault(step, {"started": now})
-            target = config.get(step + "_amount", a.MAX_PLAYER_LEVEL if step == "level" else a.MAX_SPEC_LEVEL)
-            if "check_after" not in state:
-                actual = self.experience_level(ps, step)
+            tracks = ([f"vaultcard_xp_{i}" for i in range(1, 6)] if step == "vault_levels" else [step])
+            target = config.get(step + "_amount", AMOUNT_LIMITS[step])
+            pending = False
+            for track in tracks:
+                state = job.setdefault("experience_attempts", {}).setdefault(track, {"started": now})
+                if now < state.get("check_after", 0):
+                    pending = True
+                    continue
+                actual = self.experience_level(ps, track)
                 if actual is not None and actual >= target:
-                    return {"ok": True, "message": f"Already at or above target {target}; level unchanged."}
-            if "check_after" in state:
-                if now < state["check_after"]:
-                    return None
-                try:
-                    actual = self.experience_level(ps, step)
-                except Exception:
-                    actual = None
-                if actual == target:
-                    job.setdefault("expected_experience", {})[step] = target
-                    return {"ok": True, "message": f"Host readback confirmed {target} after settling; guest save not confirmed."}
+                    job.setdefault("expected_experience", {})[track] = actual
+                    continue
                 if now - state["started"] >= 30.0:
-                    return {"ok": False, "message": f"Expected {target}, host readback {actual}; player kept in lobby."}
-            a._set_experience_on_ps(ps, "player" if step == "level" else "specialization", target)
-            state["check_after"] = now + 2.0
-            return None
+                    return {"ok": False, "message": f"{track}: expected {target}, host readback {actual}; player kept in lobby."}
+                token = "player" if track == "level" else "specialization" if track == "spec" else track
+                a._set_experience_on_ps(ps, token, target)
+                state["check_after"] = now + 2.0
+                pending = True
+            if pending:
+                return None
+            return {"ok": True, "message": f"Host readback at or above target {target}; higher levels kept. Guest save not confirmed."}
         elif step == "sdu":
             now = time.monotonic()
             started = job.setdefault("sdu_started", now)

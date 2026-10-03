@@ -6017,21 +6017,36 @@ def _backpack_target_password_guard(pc: Any, payload: dict[str, Any] | None = No
             "message": "Empty/Drop Backpack for a non-host player requires the password. Use the desktop panel to enter it."}
 
 
+def _backpack_drop_log(message: str) -> None:
+    try:
+        from unrealsdk import logging
+        logging.info(f"[MSBT Backpack Drop] {message}")
+    except Exception:
+        pass
+
+
 def chaos_drop_backpack(payload: dict[str, Any] | None = None) -> dict[str, Any]:
     """Public backpack drop-all action: always target your own local controller."""
+    _backpack_drop_log('Local backpack drop requested.')
     try:
         pc = get_pc()
     except Exception as exc:
-        return {"ok": False, "message": f"Drop backpack host guard could not resolve host: {exc!r}"}
+        _backpack_drop_log(f'Local controller lookup failed: {exc!r}')
+        return {"ok": False, "message": f"Drop backpack could not resolve your character: {exc!r}"}
     if pc is None:
-        return {"ok": False, "message": "Drop backpack host guard could not resolve the host controller."}
+        _backpack_drop_log('Local controller unavailable.')
+        return {"ok": False, "message": "Drop backpack could not resolve your local controller."}
+    _backpack_drop_log(f'Local controller role={int(getattr(pc, "Role", -1))}.')
     denied = None if int(getattr(pc, "Role", 3)) == 2 else _backpack_target_password_guard(pc, payload)
     if denied:
+        _backpack_drop_log('Drop requires installation unlock.')
         return denied
     try:
         msg = streamer_chaos.drop_backpack_for_pc(pc)
     except Exception as exc:
-        return {"ok": False, "message": f"Drop backpack failed for host: {exc!r}"}
+        _backpack_drop_log(f'Failed: {exc!r}')
+        return {"ok": False, "message": f"Drop backpack failed for your character: {exc!r}"}
+    _backpack_drop_log(str(msg))
     ok = streamer_chaos.result_ok(str(msg))
     return {"ok": ok, "message": f"Drop backpack → your character: {msg}", "host_only": int(getattr(pc, "Role", 3)) == 3, "local_only": True}
 
@@ -6981,6 +6996,12 @@ def read_inventory(target_player: object | None = None) -> dict[str, Any]:
         "backpack_cap": int(snapshot.get("backpack_cap") or 0),
         "truncated": bool(snapshot.get("truncated")),
     }
+    try:
+        from .guest_inventory import backpack_diagnostics
+        local_pc = get_pc()
+        result["local_backpack_diagnostics"] = backpack_diagnostics(local_pc) if local_pc is not None else None
+    except Exception as exc:
+        result["local_backpack_diagnostics"] = {"error": str(exc)}
     if result.get("ok"):
         trunc = " (capped)" if snapshot.get("truncated") else ""
         result["message"] = (

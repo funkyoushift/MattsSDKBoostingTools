@@ -212,6 +212,7 @@
           <label><input type="checkbox" data-afk-boost="cash" checked> Max cash</label>
           <label><input type="checkbox" data-afk-boost="eridium" checked> Max Eridium</label>
           <label><input type="checkbox" data-afk-boost="keys" checked> Max vault card keys · cards 1–5</label>
+          <label><input type="checkbox" data-afk-boost="vault_levels"> Target vault card level · cards 1–5</label>
           <label><input type="checkbox" data-afk-boost="challenges"> Complete non-UVHM challenges</label>
           <label><input type="checkbox" data-afk-boost="uvhm"> UVHM 1–7</label>
           <label><input type="checkbox" data-afk-boost="cosmetics"> All Customs + Hovers</label>
@@ -231,6 +232,9 @@
           <label>Random delivery size <input id="afkRandomCount" type="number" min="1" step="1" value="70"></label>
           <p class="muted-line">Guaranteed items count toward this total. If they exceed it, all guaranteed items still arrive. More than 70 requires the password.</p>
         <label><input id="afkAutoKick" type="checkbox"> Auto-kick when boosts finish (15-second wait after loot)</label>
+        <label for="afkKickExemptNames">Never auto-kick these SHiFT names</label>
+        <textarea id="afkKickExemptNames" rows="3" placeholder="One exact SHiFT name per line"></textarea>
+        <p class="muted">These players still receive boosts. Letter case is ignored. Players sharing their connection are also kept.</p>
         <label><input id="afkCleanupRewards" type="checkbox"> Clean challenge / UVHM reward loot and return original items</label>
         <p class="muted-line">Saves the guest’s original items, opens reward packages, clears the backpack, delivers selected loot directly in paced chunks, then returns the originals. Duplicates are preserved. Equipped slots and favorite/junk flags are not restored. Cleanup and returning originals need no password. Sending more than 70 new items still requires it. Auto-kick follows delivery settlement; issues are saved in a report for review. Backpacks with stacked items are left untouched.</p>
         <p class="muted-line">The auto-accepter also declines incoming game invites. UVHM 1–7 is separate from challenges. All Customs + Hovers uses the same action as the Boosting tab button.</p>

@@ -4,8 +4,8 @@
   const panel = byId("afkLobbyPanel");
   if (!panel) return;
   const options = [...panel.querySelectorAll("[data-afk-boost]")];
-  const amountLimits = {level: 70, spec: 701, cash: 2147483647, eridium: 2147483647, keys: 2147483647};
-  const amountLabels = {level: 'Target character level', spec: 'Target specialization level', cash: 'Cash added per join', eridium: 'Eridium added per join', keys: 'Keys added per card (1–5) per join'};
+  const amountLimits = {level: 70, spec: 701, cash: 2147483647, eridium: 2147483647, keys: 2147483647, vault_levels: 9999};
+  const amountLabels = {level: 'Target character level', spec: 'Target specialization level', cash: 'Cash added per join', eridium: 'Eridium added per join', keys: 'Keys added per card (1–5) per join', vault_levels: 'Target vault card level (cards 1–5)'};
   const amountInputs = {};
   for (const [key, maximum] of Object.entries(amountLimits)) {
     const checkbox = options.find(node => node.dataset.afkBoost === key);
@@ -44,6 +44,7 @@
       ...Object.entries(amountInputs).map(([key, {number}]) => [key + '_amount', Number(number.value)]),
       ["auto_accept", byId("afkAutoAccept").checked],
       ["auto_kick", byId("afkAutoKick").checked],
+      ["kick_exempt_names", byId("afkKickExemptNames").value],
       ["cleanup_rewards", byId("afkCleanupRewards").checked],
       ["loot_mode", byId("afkLootMode").value],
       ["random_count", Number(byId("afkRandomCount").value)],
@@ -70,6 +71,7 @@
     options.forEach((node) => { node.checked = config[node.dataset.afkBoost] === true; });
     byId("afkAutoAccept").checked = config.auto_accept !== false;
     byId("afkAutoKick").checked = config.auto_kick === true;
+    byId("afkKickExemptNames").value = config.kick_exempt_names || "";
     byId("afkCleanupRewards").checked = config.cleanup_rewards === true;
     byId("afkLootMode").value = config.loot_mode === "random70" ? "random70" : "all";
     byId("afkRandomCount").value = config.random_count || 70;
@@ -87,6 +89,7 @@
   panel.addEventListener("change", save);
   byId("afkCodes").addEventListener("input", save);
   byId("afkGuaranteedCodes").addEventListener("input", save);
+  byId("afkKickExemptNames").addEventListener("input", save);
 
   function render(data) {
     const afk = data && data.afk_lobby;
@@ -145,6 +148,12 @@
       if(action === "afk_lobby_start" && payload.loot && payload.loot_mode === "random70"
           && payload.random_count !== 70 && !lastStatus?.random_count_supported) {
         throw new Error("Install the updated SDK mod before changing random delivery size.");
+      }
+      if (action === 'afk_lobby_start' && payload.vault_levels && !lastStatus?.vault_card_levels_supported) {
+        throw Error('Vault card levels require an updated SDK mod. AFK has not started.');
+      }
+      if (action === 'afk_lobby_start' && payload.auto_kick && payload.kick_exempt_names.trim() && !lastStatus?.kick_exempt_names_supported) {
+        throw Error('Protected SHiFT names require an updated SDK mod. Auto-kick has not started.');
       }
       if (action === 'afk_lobby_start' && payload.loot && payload.serial_override_level && !lastStatus?.item_level_override_supported) {
         throw new Error('Install the updated SDK mod and restart Borderlands 4 before overriding AFK item levels.');

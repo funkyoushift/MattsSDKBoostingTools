@@ -892,3 +892,59 @@ def test_item_level_override_uses_existing_rewriter_and_fails_without_partial_li
     backend._serials_with_level_override=lambda *a:(['A'],1,['serial #2 invalid'])
     with pytest.raises(ValueError,match='Could not override item level'):
         game.prepare_loot({'codes':'A\nB','serial_override_level':True,'serial_level':35})
+
+
+def test_protected_names_get_boosts_but_no_connection_kick():
+    game = FakeGame()
+    game.rows = [dict(row('friend'), name=' MyFriend ', connection='shared'),
+                 dict(row('split'), connection='shared'), dict(row('other'), connection='separate')]
+    lobby = module.Lobby(game)
+    assert lobby.start({'cash': True, 'auto_kick': True, 'kick_exempt_names': 'myfriend'})['ok']
+    ticks(lobby, 30)
+    assert {call[1] for call in game.calls} == {'friend', 'split', 'other'}
+    assert game.kicked == ['other']
+
+
+def test_protected_names_unknown_connection_never_kicks():
+    game = FakeGame()
+    game.rows = [row('friend'), row('other')]
+    lobby = module.Lobby(game)
+    assert lobby.start({'cash': True, 'auto_kick': True, 'kick_exempt_names': 'friend'})['ok']
+    ticks(lobby, 30)
+    assert not game.kicked
+
+
+def test_protected_names_match_whole_name_and_validate_input():
+    game = FakeGame()
+    game.rows = [dict(row('friend2'), connection='own')]
+    lobby = module.Lobby(game)
+    assert not lobby.start({'cash': True, 'kick_exempt_names': ['friend']})['ok']
+    assert lobby.start({'cash': True, 'auto_kick': True, 'kick_exempt_names': 'friend'})['ok']
+    ticks(lobby, 10)
+    assert game.kicked == ['friend2']
+
+
+def test_vault_card_levels_are_separate_from_keys_and_keep_higher_levels(monkeypatch):
+    clock = [100.0]
+    monkeypatch.setattr(module.time, 'monotonic', lambda: clock[0])
+    game = module.Game()
+    levels = {f'vaultcard_xp_{i}': 2 for i in range(1, 6)}
+    levels['vaultcard_xp_3'] = 300
+    calls = []
+    game.experience_level = lambda ps, track: levels[track]
+    game.backend = lambda: SimpleNamespace(_set_experience_on_ps=lambda ps, track, level: calls.append((ps,track,level)) or True)
+    job = {'pc': 'guest', 'token': 'guest-ps'}
+    assert game.step('vault_levels', job, {'vault_levels_amount': 100}) is None
+    assert calls == [('guest-ps', f'vaultcard_xp_{i}', 100) for i in (1,2,4,5)]
+    for i in (1,2,4,5): levels[f'vaultcard_xp_{i}'] = 100
+    clock[0] += 2
+    assert game.step('vault_levels', job, {'vault_levels_amount': 100})['ok']
+    assert levels['vaultcard_xp_3'] == 300
+
+
+def test_vault_levels_selection_and_bounds():
+    lobby = module.Lobby(FakeGame())
+    assert not lobby.start({'vault_levels': True, 'vault_levels_amount': 10000})['ok']
+    assert lobby.start({'vault_levels': True, 'vault_levels_amount': 50})['ok']
+    assert not lobby.config['keys']
+    assert lobby.config['vault_levels_amount'] == 50

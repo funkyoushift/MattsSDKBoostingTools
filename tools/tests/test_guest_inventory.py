@@ -49,3 +49,31 @@ def test_complete_profile_required(monkeypatch):
         assert m.select_gates(engine)==gates
         engine.read=lambda addr,size:b'bad'
         with pytest.raises(RuntimeError):m.select_gates(engine)
+
+
+def test_empty_snapshot_does_not_report_success(monkeypatch):
+    local = pc()
+    local.PlayerState = SimpleNamespace(BackpackItems=SimpleNamespace(items=[]))
+    monkeypatch.setitem(sys.modules, 'mods_base', SimpleNamespace(get_pc=lambda: local))
+    instance = object.__new__(m.GuestInventory)
+    calls = []
+    instance.transaction = lambda *args, **kwargs: calls.append(kwargs)
+    with pytest.raises(RuntimeError, match='no drop requests sent'):
+        instance.drop_backpack(local)
+    assert calls == []
+
+
+def test_negative_native_handles_are_not_discarded(monkeypatch):
+    local = pc()
+    monkeypatch.setitem(sys.modules, 'mods_base', SimpleNamespace(get_pc=lambda: local))
+    def row(handle, slot=-1):
+        return SimpleNamespace(InventoryItem=SimpleNamespace(Handle=SimpleNamespace(Handle=handle), EquipSlot=slot,
+            item=SimpleNamespace(State=SimpleNamespace(Quantity=1))))
+    local.PlayerState = SimpleNamespace(BackpackItems=SimpleNamespace(items=[
+        row(-2147483648), row(-2), row(-1), row(12, 0)]))
+    instance = object.__new__(m.GuestInventory)
+    calls = []
+    instance.transaction = lambda pc, handle, send=True: calls.append((handle,send))
+    assert m.backpack_diagnostics(local)['eligible_count'] == 2
+    instance.drop_backpack(local)
+    assert calls == [(-2147483648,False),(-2,False),(-2147483648,True),(-2,True)]

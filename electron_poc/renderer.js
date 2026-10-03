@@ -600,6 +600,7 @@ const state = {
   bookmarkFolders: [],
   bookmarkVisibleRows: [],
   confirmedSerial: "",
+  editorStagedSerial: "",
   deletedBackpackSerials: [],
   devActorPage: 0,
   devActiveCategory: "",
@@ -4708,13 +4709,15 @@ function collectEditorSerials() {
   }
   if (!doc) return [];
 
-  const ids = ["finalOutputBase85", "mi_finalOutputBase85", "serializedOutput", "bulkSerialOutput"];
+  // Only read generated output in the active editor. Hidden tabs and input
+  // codes may contain the previous item and are not delivery candidates.
+  const active = doc.querySelector('.tab-content.active') || doc;
+  const ids = ["finalOutputBase85", "mi_finalOutputBase85", "serializedOutput", "bulk-serial-output"];
   const chunks = ids.map((id) => {
     const element = doc.getElementById(id);
-    if (!element) return "";
+    if (!element || !active.contains(element)) return "";
     return element.value || element.textContent || "";
   });
-  chunks.push(doc.body ? doc.body.innerText || "" : "");
   return serialsFromText(chunks.join("\n"));
 }
 
@@ -4759,7 +4762,11 @@ function detectSerialFromEditor() {
     setLine(els.serialSummary, "No @U serial found in the editor yet. Build or serialize an item first.", "warning");
     return;
   }
-  els.serialInput.value = found[0];
+  if (found.length !== 1) {
+    setLine(els.serialSummary, "Multiple generated codes found. Paste the one you want to send.", "warning");
+    return;
+  }
+  els.serialInput.value = state.editorStagedSerial = found[0];
   state.confirmedSerial = "";
   updateSerialState(found.length > 1 ? `Detected ${found.length} serials; first one is staged.` : "Detected one serial from the editor.");
 }
@@ -4919,6 +4926,18 @@ function expandSerialTextCopies(serialText, copies, label = "Serial delivery") {
 }
 
 async function sendEditorSerial(mode) {
+  const staged = getValue(els.serialInput);
+  if (!staged || staged === state.editorStagedSerial) {
+    const current = collectEditorSerials();
+    if (current.length !== 1) {
+      state.confirmedSerial = "";
+      setOutput(els.deliveryOutput, current.length > 1
+        ? "Multiple generated codes found. Paste the one you want to send."
+        : "Generate the current item code in the editor before sending.");
+      return;
+    }
+    els.serialInput.value = state.editorStagedSerial = current[0];
+  }
   updateSerialState();
   let serial = state.confirmedSerial;
   if (!serial) {
@@ -4932,7 +4951,7 @@ async function sendEditorSerial(mode) {
   if (!serial) {
     const found = collectEditorSerials();
     if (found.length === 1) {
-      els.serialInput.value = found[0];
+      els.serialInput.value = state.editorStagedSerial = found[0];
       state.confirmedSerial = found[0];
       serial = found[0];
       setLine(els.serialSummary, "Detected and confirmed one editor serial for delivery.", "ok");

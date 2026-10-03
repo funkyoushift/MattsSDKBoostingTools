@@ -31,6 +31,25 @@ def require_local_guest(pc):
         raise RuntimeError('Guest inventory actions can only target your own loaded character.')
 
 
+def backpack_diagnostics(pc):
+    """Read local row metadata without binding native functions or submitting RPCs."""
+    result = {'role': int(pc.Role), 'rows': [], 'row_errors': [], 'eligible_count': 0, 'total_rows': 0, 'error_count': 0}
+    for index, source in enumerate(pc.PlayerState.BackpackItems.items):
+        result["total_rows"] += 1
+        try:
+            item = source.InventoryItem
+            handle, slot = int(item.Handle.Handle), int(item.EquipSlot)
+            quantity = int(item.item.State.Quantity)
+            if len(result['rows']) < 64:
+                result['rows'].append({'index': index, 'handle': handle, 'equip_slot': slot, 'quantity': quantity})
+            result['eligible_count'] += int(handle != -1 and slot == -1)
+        except Exception as exc:
+            result['error_count'] += 1
+            if len(result['row_errors']) < 8:
+                result['row_errors'].append({'index': index, 'error': str(exc)})
+    return result
+
+
 class GuestInventory:
     def __init__(self, engine):
         gates = select_gates(engine)
@@ -91,11 +110,15 @@ class GuestInventory:
 
     def drop_backpack(self, pc):
         require_local_guest(pc)
+        # Native operation 6 validates Handle != -1, not Handle >= 0.
+        # Steam 25372571: switch 0xb40b8f8, branch 0x5e098d4.
         rows = [row.InventoryItem for row in pc.PlayerState.BackpackItems.items
-                if int(row.InventoryItem.Handle.Handle) >= 0 and int(row.InventoryItem.EquipSlot) == -1]
+                if int(row.InventoryItem.Handle.Handle) != -1 and int(row.InventoryItem.EquipSlot) == -1]
         if any(int(row.item.State.Quantity) != 1 for row in rows):
             raise RuntimeError('Stacked inventory has not been validated for guest drop; nothing sent.')
         handles = [int(row.Handle.Handle) for row in rows]
+        if not handles:
+            raise RuntimeError(f'No eligible backpack items; no drop requests sent. Local snapshot: {backpack_diagnostics(pc)}')
         if len(set(handles)) != len(handles):
             raise RuntimeError('Duplicate inventory handles; nothing sent.')
         # Validate the full snapshot before the first mutation. Never retry a submitted drop.

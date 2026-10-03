@@ -28,3 +28,9 @@ Delivery keeps the existing queue, cancellation, target tokens, and bulk authori
 ## Epic mapping
 
 Epic executable SHA-256: 764a4bb5403a2619a0be627de5a738e23ea021e8672f7f0e7a536697d4a06719. Each function matched the Steam instruction sequence after masking relative branch/call addresses and RIP-relative relocation fields. Transaction offsets, operation constants, and non-relative immediates were preserved. The duplicate implementation signature was resolved using three vtables with the verified validation function followed by the same implementation. The mapped drop handler calls the mapped pickup spawn routine. Full function byte hashes gate the separate Epic profile. See epic-guest-mapping.json for exact RVAs, sizes, hashes, and vtable evidence. This is recovered static code evidence; Epic was not launched and runtime success is not established.
+
+## October 2 local correction (not released)
+
+The drop filter previously discarded every negative handle. Read-only inspection of the installed Steam executable (same SHA-256 recorded above) resolves operation 6 through switch table RVA `0xb40b8f8`, entry 5, to RVA `0x5e098d4`: bytes `83 79 04 ff 0f 84 bc 02 00 00` compare the source handle against `-1` and branch on equality. The filter now excludes that sentinel only. The full native transaction preflight still runs for every selected handle before any submission. Equipped items and stacks remain excluded/rejected as before.
+
+The reported failure reached the guest handler and returned success for zero submitted requests, while a separate selected-player inventory read found 17 backpack serials. The filter mismatch is confirmed from native code; whether it caused that particular runtime result awaits a new local guest snapshot. Zero eligible rows now return an error with bounded row diagnostics instead of success. Read Inventory also returns separate local-backpack diagnostics to distinguish selected-player reads from the local drop target.
