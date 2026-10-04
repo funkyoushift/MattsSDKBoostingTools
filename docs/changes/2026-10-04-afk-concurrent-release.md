@@ -25,3 +25,9 @@ The phone-side stale-count source fix remains in the prior development checkout.
 ## Deployment and follow-up
 
 Packaging, installer checks and publication verification will be recorded below. Keep the existing active lobby until it finishes; updating the installed SDK requires a later game restart to load the permanent release. Rolling back uses v2.27.0 desktop/SDK together. No inventory rollback/replay is performed. Remaining work: Android display fix with device validation, live three-guest validation and broader long-session observation.
+
+## Final pre-publication checks
+
+Final v2.28.0 installer and portable build passed: 31 installer checks; bundled runtime graph (48 packages); 2,984 packaged asset comparisons; real offline SDK-install preservation/partial-install/PAK verification; packaged startup smoke and updater integrity. Re-ran count/auth, per-guest UI, large-list reload and complete settings exit/restart against the final app.asar successfully. All AFK test files passed (227 checks). Additional guest/serial/bridge tests passed (20), and all four settings-disk checks passed in a separate process. Combining settings with unrelated tests exposed cached registry stubs; isolated execution resolved the test-only collision without production changes. The earlier targeted 204 checks overlap these suites and must not be added as a distinct total.
+
+Build metadata references source commit 103c134596858081e57cb74aff1f28e6f3c9fc50. A final rebuild embeds that exact metadata; do not stamp git_commit after packaging. Android 1.5.0 rolling/versioned files both match the prior public SHA256 391d9e4d531f998e90564eda9e8c417721cd7222f6ee104f1d5d968e49955b34. Publication assets and individual hashes are recorded in work/release-v2.28/assets.json and SHA256SUMS.txt.
