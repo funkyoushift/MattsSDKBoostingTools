@@ -1,0 +1,14 @@
+---
+description: Read and maintain durable MSBT change notes before re-researching features
+alwaysApply: true
+---
+
+# Project change notes
+
+- First read `docs/PROJECT_CHANGE_NOTES.md` and the relevant linked entry before broad codebase research.
+- Verify the current checkout, installed artifacts and runtime against dated evidence; do not treat historical notes as current proof.
+- For every meaningful fix/change, add or update a focused note with symptoms, evidenced root cause, files/components, exact behavior, validation and results, useful failed/rejected approaches, deployment/rollback and unresolved follow-ups.
+- Link the note from the index. Record source/offline checks separately from live gameplay and guest-save proof.
+- Preserve discoveries that prevent repeated research; do not dump logs, inventories, passwords or tokens into notes.
+- Example: AFK count investigation is in `docs/changes/2026-10-04-afk-delivery-count.md`; inspect it before changing random delivery, authorization or batching.
+- Keep notes current when later tests, installations or releases supersede earlier status. Never claim measured credit or cost savings without evidence.

@@ -6,7 +6,7 @@ app.whenReady().then(async () => {
   const win = new BrowserWindow({show:false, webPreferences:{partition:`afk-store-${process.pid}`}});
   await win.loadFile(path.join(__dirname, 'renderer.html'), {query:{nosplash:'1'}});
   await win.webContents.executeJavaScript(`(async () => {
-    const config = {guaranteed_codes: '@URepeated\\n'.repeat(650000), codes:'@UPool', saved_at:123, level_amount:30, spec_amount:50, cash_amount:1250, eridium_amount:100, keys_amount:5, vault_levels_amount:250, vault_levels:true, kick_exempt_names:'FriendOne\\nFriendTwo'};
+    const config = {guaranteed_codes: '@URepeated\\n'.repeat(650000), codes:'@UPool', random_count:500, saved_at:123, level_amount:30, spec_amount:50, cash_amount:1250, eridium_amount:100, keys_amount:5, vault_levels_amount:250, vault_levels:true, kick_exempt_names:'FriendOne\\nFriendTwo'};
     await window.msbtAfkConfigStore.save(config);
   })()`);
   await win.reload();
@@ -19,6 +19,7 @@ app.whenReady().then(async () => {
       for (const input of group.querySelectorAll('input:not([type="checkbox"])')) if(Number(input.value)!==config[key+'_amount']) throw Error('Reload lost '+key);
     }
     if(document.getElementById('afkKickExemptNames').value !== config.kick_exempt_names) throw Error('Protected names lost on reload');
+    if(Number(document.getElementById('afkRandomCount').value) !== 500) throw Error('Random delivery count lost on reload');
     if(!document.querySelector('[data-afk-boost="vault_levels"]').checked) throw Error('Vault levels selection lost');
     return {count:config.guaranteed_codes.split('\\n').length-1, pool:config.codes, stamp:config.saved_at};
   })()`);

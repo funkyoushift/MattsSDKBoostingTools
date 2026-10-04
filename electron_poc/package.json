@@ -1,8 +1,8 @@
 {
   "name": "matts-sdk-boosting-tools",
-  "version": "2.27.0",
+  "version": "2.28.0",
   "private": true,
-  "description": "Borderlands 4 Modding Tools — Powered by Funk.",
+  "description": "Borderlands 4 Modding Tools \u2014 Powered by Funk.",
   "author": "FunkYouSHiFT",
   "license": "MIT",
   "main": "main.js",
@@ -38,7 +38,7 @@
   },
   "build": {
     "appId": "com.funkyoushift.msbt",
-    "productName": "Borderlands 4 Modding Tools — Powered by Funk",
+    "productName": "Borderlands 4 Modding Tools \u2014 Powered by Funk",
     "executableName": "MattsSDKBoostingTools",
     "artifactName": "MSBT-Installer-v${version}.${ext}",
     "directories": {
@@ -140,7 +140,7 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "Borderlands 4 Modding Tools — Powered by Funk",
+      "shortcutName": "Borderlands 4 Modding Tools \u2014 Powered by Funk",
       "include": "build/install-sdkmods.nsh"
     },
     "publish": [

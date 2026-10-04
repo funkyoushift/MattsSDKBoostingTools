@@ -3,6 +3,9 @@
   const byId = (id) => document.getElementById(id);
   const panel = byId("afkLobbyPanel");
   if (!panel) return;
+  const guestProgress = document.createElement('div');
+  guestProgress.id = 'afkGuestProgress';
+  byId('afkQueue').insertAdjacentElement('beforebegin', guestProgress);
   const options = [...panel.querySelectorAll("[data-afk-boost]")];
   const amountLimits = {level: 70, spec: 701, cash: 2147483647, eridium: 2147483647, keys: 2147483647, vault_levels: 9999};
   const amountLabels = {level: 'Target character level', spec: 'Target specialization level', cash: 'Cash added per join', eridium: 'Eridium added per join', keys: 'Keys added per card (1–5) per join', vault_levels: 'Target vault card level (cards 1–5)'};
@@ -34,7 +37,6 @@
   let running = false;
   let busy = false;
   let lastStatus = null;
-  let loaded = false;
   let edits = 0;
   let savedAt = 0;
 
@@ -87,16 +89,16 @@
     if (saved && (saved.saved_at || 0) >= savedAt && edits === 0 && !running && !busy) { savedAt = saved.saved_at || 0; apply(saved); }
   }).catch(() => { /* Existing localStorage settings remain available. */ });
   panel.addEventListener("change", save);
-  byId("afkCodes").addEventListener("input", save);
-  byId("afkGuaranteedCodes").addEventListener("input", save);
-  byId("afkKickExemptNames").addEventListener("input", save);
+  // Count/amount edits must also beat an outstanding IndexedDB load before blur.
+  panel.addEventListener("input", save);
 
   function render(data) {
     const afk = data && data.afk_lobby;
     lastStatus = afk || null;
     running = Boolean(afk && afk.enabled);
-    if (running && !loaded) apply(afk.config || {});
-    loaded = Boolean(afk);
+    // The running SDK configuration is authoritative, including starts from
+    // another desktop/phone. Saved selections are only an idle editing draft.
+    if (running && afk.config) apply(afk.config);
     byId("afkStart").disabled = busy || running || !afk;
     byId("afkTestHost").disabled = busy || running || !afk?.host_test_supported;
     byId("afkStop").disabled = busy || !running;
@@ -105,7 +107,44 @@
     byId("afkShiftStatus").textContent = afk && afk.shift_connected
       ? `SHiFT menu connected · Auto-accepter ${afk.shift_running ? "running" : "stopped"}`
       : "SHiFT menu not connected. Open the SHiFT menu after installing the bundled game files.";
-    byId("afkQueue").textContent = afk && afk.queued && afk.queued.length ? `Waiting: ${afk.queued.join(", ")}` : "No guests waiting.";
+    guestProgress.replaceChildren();
+    const mode = document.createElement('div');
+    mode.textContent = !running ? 'AFK stopped' : afk.config?.concurrent_guests
+      ? 'Concurrent AFK · each guest has independent pacing'
+      : 'Sequential AFK · one guest at a time';
+    guestProgress.append(mode);
+    if (afk?.concurrency_pilot) {
+      const timer = document.createElement('div');
+      timer.textContent = afk.concurrency_pilot.phase === 'draining'
+        ? 'Concurrent test ending: finishing active guests before returning to sequential mode.'
+        : `Concurrent test: ${Math.ceil(afk.concurrency_pilot.remaining_seconds / 60)} minutes remaining; then returns to sequential mode.`;
+      guestProgress.append(timer);
+    }
+    const guests = running ? (afk.active_guests || (afk.current ? [afk.current] : [])) : [];
+    for (const guest of guests) {
+      const row = document.createElement('div');
+      const label = document.createElement('div');
+      const players = guest.delivery?.players || [];
+      const total = players.reduce((sum, player) => sum + (Number(player.total) || 0), 0);
+      const sent = players.reduce((sum, player) => sum + (Number(player.submitted) || 0), 0);
+      label.textContent = `${guest.name}: ${guest.step || 'Preparing'}${total ? ` · ${sent}/${total} item additions submitted` : ''}`;
+      row.append(label);
+      if (total) {
+        const bar = document.createElement('progress');
+        bar.max = total; bar.value = Math.min(sent, total);
+        bar.setAttribute('aria-label', `${guest.name}: item additions submitted`);
+        row.append(bar);
+        const detail = document.createElement('div');
+        detail.textContent = guest.delivery.last_error || (sent >= total ? 'Waiting for settlement / next step. Guest saves are not verified.' : 'Guest saves are not verified.');
+        row.append(detail);
+      }
+      guestProgress.append(row);
+    }
+    // Started concurrent jobs are parked in the SDK queue between ticks.
+    // Do not label those active guests as still waiting to start.
+    const activeNames = new Set(guests.map(guest => guest.name));
+    const waiting = (afk?.queued || []).filter(name => !activeNames.has(name));
+    byId("afkQueue").textContent = waiting.length ? `Waiting: ${waiting.join(", ")}` : "No guests waiting.";
     byId("afkJoinCounts").textContent = afk?.session_joins != null
       ? (window.msbtI18n ? window.msbtI18n.t("counts", {session: afk.session_joins, lifetime: afk.lifetime_joins ?? window.msbtI18n.t("unavailable")}) : `Guest joins: ${afk.session_joins} this session · ${afk.lifetime_joins ?? "unavailable"} lifetime`) + (afk.counter_error ? " · Lifetime count could not be saved: " + afk.counter_error : "")
       : "Join counters require the updated SDK mod.";

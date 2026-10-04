@@ -49,6 +49,9 @@ class Lobby:
     def stop(self):
         if self.current:
             self._interrupt_job(self.current, 'Operator stopped AFK; unfinished work saved for review.')
+        for job in self.queue:
+            if job.get('started'):
+                self._interrupt_job(job, 'Operator stopped AFK; unfinished work saved for review.')
         self.enabled = False
         self.current = None
         self.queue.clear()
@@ -69,6 +72,13 @@ class Lobby:
             config['auto_accept'] = False
             config['auto_kick'] = False
         config['cleanup_rewards'] = payload.get('cleanup_rewards') is True
+        # Normal guest delivery overlaps independent pacing by default. Cleanup
+        # and host testing retain exclusive orchestration; callers can opt out.
+        requested_concurrency = payload.get('concurrent_guests')
+        config['concurrent_guests'] = (requested_concurrency is True or
+            (requested_concurrency is None and not config['cleanup_rewards'] and not config['test_host']))
+        if config['concurrent_guests'] and (config['cleanup_rewards'] or config['test_host']):
+            return {'ok':False, 'message':'Concurrent AFK requires guest mode with reward cleanup disabled.'}
         if config['cleanup_rewards']:
             if not (config['challenges'] or config['uvhm']):
                 return {'ok':False,'message':'Select challenges or UVHM to use reward cleanup.'}
@@ -142,6 +152,11 @@ class Lobby:
         return {"enabled": self.enabled, "auto_accept": self.enabled and self.config.get("auto_accept", False),
                 "message": self.message, "queued": [row["name"] for row in self.queue],
                 "current": {"name": current["name"], "step": current.get("step", "Waiting for character")} if current else None,
+                "active_guests": [{"name": job['name'], "step": job.get('step', 'Starting'),
+                    "delivery": job['serial_job']['direct_delivery'].progress(job['name'])
+                        if job.get('serial_job', {}).get('direct_delivery') else None}
+                    for job in ([current] if current else []) + list(self.queue) if job.get('started')],
+                "concurrent_guests_supported": True,
                 "history": list(self.history), "config": self.config,
                 "session_joins": self.session_joins, "lifetime_joins": self.lifetime_joins, "counter_error": self.counter_error,
                 "awaiting_kick": [job["name"] for job in self.completed if not job.get("kick_attempted") and not job.get("failed")],
@@ -155,10 +170,25 @@ class Lobby:
         if not self.enabled or now < self.next_tick:
             return
         self.next_tick = now + 0.25
+        concurrent = self.config.get('concurrent_guests') and not self.config.get('cleanup_rewards')
+        advanced = set()
+        for _ in range(3 if concurrent else 1):
+            if concurrent and self.current:
+                self.current['started'] = True
+                self.queue.append(self.current)
+                self.current = None
+            self._tick_guest(now, advanced)
+            if not self.enabled:
+                break
+
+    def _tick_guest(self, now, advanced):
         world, rows = self.game.roster()
         if world != self.world:
             if self.current:
                 self._interrupt_job(self.current, 'World changed; unfinished work saved for review.')
+            for job in self.queue:
+                if job.get('started'):
+                    self._interrupt_job(job, 'World changed; unfinished work saved for review.')
             self.current = None
             self.queue.clear()
             self.completed.clear()
@@ -173,9 +203,10 @@ class Lobby:
             return any(row['token'] == member['token'] and row['pc'] == member['pc']
                        and row['ready'] for row in rows)
         self.shared_completed = [entry for entry in self.shared_completed if still_ready(entry)]
-        if self.current and self.current.get('shared_run'):
-            run = self.current['shared_run']
-            run['members'] = [member for member in run['members'] if still_ready(member)]
+        for active_job in ([self.current] if self.current else []) + list(self.queue):
+            if active_job.get('shared_run'):
+                run = active_job['shared_run']
+                run['members'] = [member for member in run['members'] if still_ready(member)]
         self.counted = [token for token in self.counted if token in tokens]
         for token in ([] if self.config.get('test_host') else tokens):
             if token not in self.counted:
@@ -190,7 +221,19 @@ class Lobby:
                         self.counter_error = str(exc)
         self.completed = [job for job in self.completed if job["token"] in tokens]
         self.seen = [token for token in self.seen if token in tokens]
-        self.queue = deque(row for row in self.queue if row["token"] in tokens)
+        for job in list(self.queue):
+            if job['token'] not in tokens:
+                if job.get('started'):
+                    self._interrupt_job(job, 'Left lobby; unfinished steps cancelled.')
+                self.queue.remove(job)
+            elif job.get('started'):
+                row = next(row for row in rows if row['token'] == job['token'])
+                if not row['ready']:
+                    if now - job.setdefault('not_ready_since', now) >= 120:
+                        self._interrupt_job(job, 'Character remained unavailable for 120 seconds; unfinished work saved for review.')
+                        self.queue.remove(job)
+                else:
+                    job.pop('not_ready_since', None)
         for row in rows:
             if row["token"] not in self.seen:
                 self.seen.append(row["token"])
@@ -206,9 +249,13 @@ class Lobby:
             # A guest still loading must not block other ready guests.
             for job in self.queue:
                 row = next(row for row in rows if row["token"] == job["token"])
-                if row["ready"]:
+                shared_owner = next((other for other in self.queue if other.get('shared_run')), None)
+                shared_blocked = (job['steps'] and job['steps'][0] in ('challenges', 'uvhm')
+                                  and shared_owner is not None and shared_owner is not job)
+                if row["ready"] and job['token'] not in advanced and not shared_blocked:
                     self.current = job
                     self.queue.remove(job)
+                    job['started'] = True
                     break
         if not self.current:
             self.message = "Waiting for joining characters." if self.queue else "Running. Waiting for guests."
@@ -216,6 +263,7 @@ class Lobby:
                 self.message = "Waiting for loot settlement and all connection members before auto-kick."
             return
         job = self.current
+        advanced.add(job['token'])
         row = next(row for row in rows if row["token"] == job["token"])
         if not row["ready"]:
             if now - job.setdefault('not_ready_since', now) >= 120:
@@ -739,9 +787,13 @@ class Game:
                     return None
                 job.pop("serial_job", None)
                 selection_note = f"Selection {job.get('loot_selection_id', 'unknown')}: {len(job.get('loot_selection', []))} items; class {job.get('character_class') or 'not required'}; {job.get('loot_excluded', 0)} incompatible/unknown entries excluded. "
+                delivery = seq.get('direct_delivery')
+                delivery_message = (delivery.progress(seq.get('scope_label', job['name']))['message']
+                                    if delivery else rewards.serial_delivery_status())
                 return {"ok": seq.get("index", 0) >= len(seq["chunks"]) and not seq.get("afk_error"),
-                        "message": selection_note + (seq.get("afk_error") or rewards.serial_delivery_status())}
-            if rewards._serial_delivery_busy():
+                        "message": selection_note + (seq.get("afk_error") or delivery_message)}
+            concurrent = config.get('concurrent_guests') and not config.get('cleanup_rewards')
+            if (not rewards._afk_direct_delivery_available() if concurrent else rewards._serial_delivery_busy()):
                 return None
             if "loot_classes" in config and any(value not in (None, "unknown_item") for value in config["loot_classes"]):
                 character = self.guest_class(job)
@@ -757,6 +809,7 @@ class Game:
             if len(selected) > 70 and not config.get("bulk_loot_authorized"):
                 return {"ok": False, "message": "More than 70 items requires password authorization. Stop and restart AFK with the password."}
             rewards._do_give_serial_to_player_indices(selected, [job["index"]], scope_label=f"AFK: {job['name']} ({len(selected)} items; selection {job['loot_selection_id']})", mode="selected",
+                **({'afk_concurrent': True} if concurrent else {}),
                 **({"bulk_authorized": True} if config.get("bulk_loot_authorized") else {}))
             seq = rewards._pending_serial_delivery_sequences[-1]
             seq["afk_player_state"] = ps
