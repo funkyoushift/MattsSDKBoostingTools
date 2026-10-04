@@ -407,7 +407,8 @@ def test_kick_re_resolves_guest_identity_after_slot_reorder():
     game = module.Game(); calls = []
     game.is_host = lambda: True
     game.roster = lambda: ("world", [row("other", 1), row("guest", 2)])
-    game.backend = lambda: SimpleNamespace(_kick_party_player_by_index=lambda index, reason: calls.append(index) or True)
+    game.backend = lambda: SimpleNamespace(_kick_party_player_by_index=lambda index, reason: calls.append(index) or True,
+        serial_rewards=SimpleNamespace(_pending_serial_delivery_sequences=[], _direct_delivery_preflight=lambda i:i))
     assert game.kick({"token": "guest", "index": 1})["ok"]
     assert calls == [2]
     assert not game.kick({"token": "gone", "index": 1})["ok"]
@@ -590,6 +591,7 @@ def test_kick_is_not_blocked_by_changed_experience():
     game.experience_level = lambda *_: 1
     repairs = []
     game.backend = lambda: SimpleNamespace(_kick_party_player_by_index=lambda *args: calls.append(args) or True,
+        serial_rewards=SimpleNamespace(_pending_serial_delivery_sequences=[], _direct_delivery_preflight=lambda i:i),
         _set_experience_on_ps=lambda *args: repairs.append(args))
     assert game.kick({"token": "guest", "expected_experience": {"level": 70}})["ok"]
     assert calls == [(1, "AFK boosting complete")]

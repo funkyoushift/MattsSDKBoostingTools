@@ -6271,7 +6271,7 @@ def chaos_undo_empty_backpack(payload: dict[str, Any] | None = None) -> dict[str
     result = _deliver_serials_with_target(serials, "selected", bulk_authorized=authorized)
     if result.get("ok") and entry is not None:
         entry['restore_queued'] = True
-        entry['restore_report'] = str(serial_rewards.serial_delivery_progress().get('report_path') or '')
+        entry['restore_report'] = str(result.get('report_path') or '')
     if entry is not None:
         result['backup_path'] = str(entry.get('backup_path') or '')
     result["deleted_backpack"] = _deleted_backpack_status()
@@ -7205,7 +7205,7 @@ def _serial_delivery_count_note(parsed_count: int | None, resolved_count: int) -
     return f" Parsed {int(parsed_count)} input row(s), resolved {int(resolved_count)} deliverable serial(s)."
 
 
-def _deliver_serials_with_target(serials: list[str], mode: str, parsed_count: int | None = None, *, bulk_authorized: bool = False) -> dict[str, Any]:
+def _deliver_serials_with_target(serials: list[str], mode: str, parsed_count: int | None = None, *, bulk_authorized: bool = False, target_snapshot=None) -> dict[str, Any]:
     bulk_authorized = bulk_authorized or _installation_authorized()
     if len(serials) > 70 and not bulk_authorized:
         return {"ok": False, "password_required": True, "password_kind": "bulk_loot", "message": "Sending more than 70 items requires the password."}
@@ -7230,6 +7230,23 @@ def _deliver_serials_with_target(serials: list[str], mode: str, parsed_count: in
         return (f" Queued {receipt['queued_count']} supported item(s); skipped {receipt['skipped_count']} unsupported code(s). "
                 f"Details and original codes saved in {receipt['report_path']}.")
     try:
+        if target_snapshot is not None:
+            current = []
+            for index, _name in _players():
+                try:
+                    current.append((int(index), serial_rewards._direct_delivery_preflight(int(index))))
+                except Exception:
+                    continue
+            indices = []
+            for token in target_snapshot:
+                match = next((index for index, candidate in current if candidate == token), None)
+                if match is None:
+                    raise RuntimeError('An original delivery target left or changed session during conversion; nothing queued.')
+                indices.append(match)
+            receipt = serial_rewards._do_give_serial_to_player_indices(serials, indices,
+                scope_label='originally selected players', mode=mode_key, **delivery_auth)
+            return {'ok':True, 'message':f'Requested {total_serials} serial(s) for {len(indices)} original target(s).{split_note}{count_note}{queue_note(receipt)}',
+                    'report_path':(receipt or {}).get('report_path', '')}
         if mode_key == "all":
             indices = [int(idx) for idx, _name in _players()]
             if not indices:
@@ -7238,6 +7255,7 @@ def _deliver_serials_with_target(serials: list[str], mode: str, parsed_count: in
             return {
                 "ok": True,
                 "message": f"Requested {total_serials} serial(s) for all party players ({len(indices)} target(s)).{split_note}{count_note}{queue_note(receipt)}",
+                "report_path": (receipt or {}).get('report_path', ''),
             }
         if mode_key == "nonhost":
             indices = _non_host_party_player_indices()
@@ -7247,6 +7265,7 @@ def _deliver_serials_with_target(serials: list[str], mode: str, parsed_count: in
             return {
                 "ok": True,
                 "message": f"Requested {total_serials} serial(s) for all non-host players ({len(indices)} target(s)).{split_note}{count_note}{queue_note(receipt)}",
+                "report_path": (receipt or {}).get('report_path', ''),
             }
         if mode_key == "local":
             idx = _local_party_index()
@@ -7258,13 +7277,15 @@ def _deliver_serials_with_target(serials: list[str], mode: str, parsed_count: in
             return {
                 "ok": True,
                 "message": f"Requested {total_serials} serial(s) for local player.{split_note}{count_note}{queue_note(receipt)}",
+                "report_path": (receipt or {}).get('report_path', ''),
             }
         idx = get_selected_player_index()
         name = get_selected_player_name() or "selected player"
         if idx is None:
             return {"ok": False, "message": "No party player selected."}
         receipt = serial_rewards._do_give_serial_to_player_indices(serials, [idx], scope_label=f"selected player {idx} {name}", mode=mode_key, **delivery_auth)
-        return {"ok": True, "message": f"Requested {total_serials} serial(s) for {name}.{split_note}{count_note}{queue_note(receipt)}"}
+        return {"ok": True, "message": f"Requested {total_serials} serial(s) for {name}.{split_note}{count_note}{queue_note(receipt)}",
+                "report_path": (receipt or {}).get('report_path', '')}
     except Exception as exc:
         return {"ok": False, "message": f"Serial delivery failed: {exc!r}"}
 
@@ -7278,6 +7299,7 @@ def _finish_give_serials(
     level: object,
     source_text: str,
     bulk_authorized: bool = False,
+    target_snapshot=None,
 ) -> dict[str, Any]:
     if serials is None:
         return {
@@ -7303,7 +7325,9 @@ def _finish_give_serials(
         if len(override_failures) > 4:
             detail += f"; and {len(override_failures) - 4} more"
         return {"ok": False, "message": f"Level override failed for all selected serials. Nothing was delivered. {detail}".strip()}
-    result = _deliver_serials_with_target(serials, mode, parsed_count=len(expanded), **({"bulk_authorized": True} if bulk_authorized else {}))
+    result = _deliver_serials_with_target(serials, mode, parsed_count=len(expanded),
+        **({'target_snapshot':target_snapshot} if target_snapshot is not None else {}),
+        **({"bulk_authorized": True} if bulk_authorized else {}))
     if result.get("ok") and override_enabled:
         parts: list[str] = []
         if changed:
@@ -7359,6 +7383,19 @@ def give_serials(text: object, mode: str = "selected", override_level: object = 
     if len(expanded) > 70 and not bulk_authorized:
         return {"ok": False, "password_required": True, "password_kind": "bulk_loot", "message": "Sending more than 70 items requires the password."}
     if serial_rewards.needs_async_serial_resolution(expanded):
+        # Conversion finishes later, after the operator may have selected another
+        # guest. Bind original identities now, then re-resolve their slots later.
+        mode_key = str(mode or 'selected').lower().strip()
+        indices = ([int(i) for i, _name in _players()] if mode_key == 'all' else
+                   _non_host_party_player_indices() if mode_key in ('nonhost', 'non_host', 'all_non_host') else
+                   [_local_party_index()] if mode_key in ('local', 'me', 'host') else
+                   [get_selected_player_index()])
+        try:
+            if not indices or any(i is None for i in indices):
+                raise ValueError('No loaded players selected')
+            target_snapshot = [serial_rewards._direct_delivery_preflight(int(i)) for i in indices]
+        except Exception as exc:
+            return {'ok':False, 'message':f'Cannot queue conversion for these players: {exc}'}
         def _resolved(serials: list[str] | None, error: Exception | None) -> None:
             if error is not None:
                 serial_rewards._log_error(f"Serial resolve failed: {error!r}")
@@ -7371,6 +7408,7 @@ def give_serials(text: object, mode: str = "selected", override_level: object = 
                 level=level,
                 source_text=source_text,
                 bulk_authorized=bulk_authorized,
+                target_snapshot=target_snapshot,
             )
             if not result.get("ok"):
                 serial_rewards._log_error(str(result.get("message") or "Serial delivery failed."))

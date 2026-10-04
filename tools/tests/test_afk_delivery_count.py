@@ -65,7 +65,7 @@ def test_count_survives_authorization_selection_and_all_batches(monkeypatch, cou
         sequences.append({'direct_delivery':engine, 'chunks':engine.chunks, 'index':0})
 
     rewards = SimpleNamespace(_pending_serial_delivery_sequences=sequences,
-        _afk_direct_delivery_available=lambda: not sequences,
+        _afk_direct_delivery_available=lambda index: not sequences,
         _serial_delivery_busy=lambda: bool(sequences), _do_give_serial_to_player_indices=send,
         serial_delivery_status=lambda: 'finished')
     game.backend = lambda: SimpleNamespace(serial_rewards=rewards)

@@ -68,7 +68,7 @@ class NativeAdapter:
                 row = self.target()
                 rewards._do_give_serial_to_player_indices(serials,[row['index']],
                     scope_label='Inventory ' + operation,mode='selected',bulk_authorized=True,
-                    delivery_method='direct')
+                    delivery_method='direct',exclusive=True)
                 seq = rewards._pending_serial_delivery_sequences[-1]
                 seq['afk_player_state'] = player
                 token['sequence'] = seq
@@ -202,7 +202,7 @@ class NativeAdapter:
                     token['repair_attempts'] = token.get('repair_attempts', 0) + 1
                     token.pop('confirmed_missing', None)
                     rewards._do_give_serial_to_player_indices(list(missing.elements()),[row['index']],
-                        scope_label='Inventory recovery retry',mode='selected',bulk_authorized=True)
+                        scope_label='Inventory recovery retry',mode='selected',bulk_authorized=True,exclusive=True)
                     seq = rewards._pending_serial_delivery_sequences[-1]
                     seq['afk_player_state'] = player
                     token['repair_sequence'] = seq

@@ -1500,18 +1500,23 @@ def serial_delivery_progress() -> dict[str, Any]:
     """
     active_snapshot = dict(_active_serial_delivery_progress)
     concurrent = [seq['direct_delivery'].progress(seq['scope_label'])
-                  for seq in _pending_serial_delivery_sequences if seq.get('afk_concurrent')]
+                  for seq in _pending_serial_delivery_sequences if seq.get('direct_delivery') is not None]
+    if len(concurrent) == 1:
+        return concurrent[0]
     if concurrent:
         snapshot = dict(concurrent[0])
         players = [player for progress in concurrent for player in progress['players']]
         sent = sum(player['submitted'] for player in players)
         total = sum(player['total'] for player in players)
-        message = f'Concurrent AFK: {sent}/{total} additions submitted across {len(players)} guests; each guest has independent pacing. Guest saves are not verified.'
-        snapshot.update(active=True, stage='deliver', players=players, deliveries=concurrent,
+        errors = '; '.join(progress['last_error'] for progress in concurrent if progress.get('last_error'))
+        message = f'Direct delivery: {sent}/{total} additions submitted across {len(players)} players. Guest saves are not verified.'
+        if errors:
+            message += ' ' + errors
+        snapshot.update(active=True, stage='settling' if sent == total else 'deliver', players=players, deliveries=concurrent,
                         total_serials=total, expected_targets=len(players),
                         total_chunks=sum(progress['total_chunks'] for progress in concurrent),
                         message=message, last_message=message, label=f'{sent}/{total}',
-                        target_label=f'{len(players)} AFK guests', fraction=min(.99, sent/max(1,total)),
+                        last_error=errors, target_label=f'{len(players)} players', fraction=min(.99, sent/max(1,total)),
                         percent=round(100*min(.99, sent/max(1,total))))
         return snapshot
     if bool(active_snapshot.get("active", False)) or active_snapshot.get('method') == 'direct':
@@ -1709,22 +1714,30 @@ def _cancel_direct_sequence(seq, reason):
             _log_warning(f'Direct delivery cancellation report failed: {exc!r}')
 
 
-def _afk_direct_delivery_available():
-    # AFK may overlap up to three independent single-guest sends. Each Delivery
-    # retains its own item/chunk/settlement clocks, all on the same game thread.
-    return (not _pending_serial_patch_jobs and len(_pending_serial_delivery_sequences) < 3
-            and all(seq.get('afk_concurrent') and seq.get('direct_delivery') is not None
-                    for seq in _pending_serial_delivery_sequences))
+def _afk_direct_delivery_available(player_index=None):
+    # Share admission across manual and AFK sends. The party has at most four
+    # targets (host + guests); recovery and sequential AFK retain exclusivity.
+    if (_pending_serial_patch_jobs or any(seq.get('exclusive') or seq.get('direct_delivery') is None
+                                         for seq in _pending_serial_delivery_sequences)):
+        return False
+    targets = [target for seq in _pending_serial_delivery_sequences for target in seq['direct_delivery'].targets]
+    if len(targets) >= 4:
+        return False
+    if player_index is None or not targets:
+        return True
+    token = _direct_delivery_preflight(player_index)
+    return not any(target['token'] == token for target in targets)
 
 
-def _queue_direct_delivery(serials, player_indices, *, scope_label, mode, bulk_authorized, afk_concurrent=False):
+def _queue_direct_delivery(serials, player_indices, *, scope_label, mode, bulk_authorized, afk_concurrent=False, exclusive=False):
     global _active_serial_delivery_progress
     from .direct_delivery import Delivery, Journal, chunks_for, partition_serials
     if len(serials) > 70 and not bulk_authorized:
         raise PermissionError('Sending more than 70 items requires password authorization.')
-    if ((not _afk_direct_delivery_available()) if afk_concurrent else
-            bool(_pending_serial_delivery_sequences or _pending_serial_patch_jobs)):
-        raise RuntimeError('A delivery is still running; wait until it finishes before sending another list.')
+    if (_pending_serial_patch_jobs or any(seq.get('exclusive') or seq.get('direct_delivery') is None
+                                         for seq in _pending_serial_delivery_sequences)
+            or (exclusive and _pending_serial_delivery_sequences)):
+        raise RuntimeError('An exclusive delivery is still running; wait until it finishes.')
     if afk_concurrent and len(player_indices) != 1:
         raise ValueError('Concurrent AFK delivery requires exactly one guest per request.')
     requested = list(serials)
@@ -1736,16 +1749,21 @@ def _queue_direct_delivery(serials, player_indices, *, scope_label, mode, bulk_a
                for i in dict.fromkeys(int(value) for value in player_indices)]
     if not targets:
         raise ValueError('No loaded players selected')
-    if afk_concurrent and any(targets[0]['token'] == target['token']
-            for seq in _pending_serial_delivery_sequences for target in seq['direct_delivery'].targets):
-        raise RuntimeError('This guest already has an active delivery.')
+    if any(target['token'] == other['token'] for i, target in enumerate(targets) for other in targets[:i]):
+        raise ValueError('Multiple selected slots resolve to the same player; nothing queued.')
+    active_targets = [target for seq in _pending_serial_delivery_sequences for target in seq['direct_delivery'].targets]
+    if any(target['token'] == active['token'] for target in targets for active in active_targets):
+        raise RuntimeError('A selected player already has a delivery still running. Select other players or wait; no part of this request was queued.')
+    if len(targets) + len(active_targets) > 4:
+        raise RuntimeError('Four player deliveries are already reserved; wait for a delivery to finish.')
     journal = Journal(requested, targets, scope_label, rejected=rejected)
     rejected_indices = {r['index'] for r in rejected}
     journal.event('filtered', accepted_count=len(serials), accepted_indices=[i for i in range(len(requested)) if i not in rejected_indices], rejected=rejected)
     delivery = Delivery(serials, targets, _resolve_direct_target, _direct_native().add, journal, rejected=rejected)
     seq = {'direct_delivery':delivery, 'chunks':chunks, 'serials':list(serials),
            'targets':list(player_indices), 'scope_label':scope_label, 'mode':mode,
-           'index':0, 'stage':'deliver', 'report_path':str(journal.path), 'afk_concurrent':bool(afk_concurrent)}
+           'index':0, 'stage':'deliver', 'report_path':str(journal.path), 'afk_concurrent':bool(afk_concurrent),
+           'exclusive':bool(exclusive)}
     _pending_serial_delivery_sequences.append(seq)
     _active_serial_delivery_progress = delivery.progress(scope_label)
     _gbc_run_session_timer_from_give_serial()
@@ -2050,6 +2068,7 @@ def _do_give_serial_to_player_indices(
     bulk_authorized: bool = False,
     delivery_method: str = 'direct',
     afk_concurrent: bool = False,
+    exclusive: bool = False,
 ) -> None:
     """
     Queue party-safe serial delivery without blocking the host.
@@ -2065,6 +2084,7 @@ def _do_give_serial_to_player_indices(
     # Accept the old keyword for callers, but never create reward packages.
     return _queue_direct_delivery(serials, player_indices, scope_label=scope_label,
                                   mode=mode, bulk_authorized=bulk_authorized,
+                                  **({'exclusive': True} if exclusive else {}),
                                   **({'afk_concurrent': True} if afk_concurrent else {}))
 
     if not serials:
@@ -2550,6 +2570,7 @@ def _cmd_give_serial(args: argparse.Namespace) -> None:
     if not expanded:
         _log_error("No serial strings after parsing (use commas between Base85 serials or quoted human lines).")
         return
+    target_snapshot = None
     def _resolved(serials: Optional[List[str]], error: Optional[Exception]) -> None:
         if error is not None:
             _log_error(f"Give_Serial: serialize failed: {error}")
@@ -2557,9 +2578,25 @@ def _cmd_give_serial(args: argparse.Namespace) -> None:
         if not serials:
             _log_error("No serial strings after resolving (empty list).")
             return
-        _do_give_serial(serials, all_players, serial_only_player_index=serial_only_index)
+        if target_snapshot is not None:
+            from . import backend_actions
+            result = backend_actions._deliver_serials_with_target(serials,
+                'all' if all_players else 'local', target_snapshot=target_snapshot)
+            if not result.get('ok'):
+                _log_error(result.get('message', 'Console serial delivery failed.'))
+        else:
+            _do_give_serial(serials, all_players, serial_only_player_index=serial_only_index)
 
     if needs_async_serial_resolution(expanded):
+        try:
+            indices = ([serial_only_index] if serial_only_index is not None else
+                       _all_party_player_indices_for_serial_delivery() if all_players else [0])
+            if not indices:
+                raise ValueError('No loaded players selected')
+            target_snapshot = [_direct_delivery_preflight(index) for index in indices]
+        except Exception as exc:
+            _log_error(f'Give_Serial: cannot queue conversion for these players: {exc}')
+            return
         _set_serial_delivery_status("Serial conversion queued in background.", hold_sec=30.0, log=True)
         queue_serial_resolution(expanded, _resolved)
         return

@@ -40,7 +40,10 @@
       current: value.current ?? value.delivered ?? null,
       total: value.total ?? null,
       failed: value.failed ?? null,
-      message: value.message || value.status || ""
+      message: value.message || value.status || "",
+      players: value.players || [],
+      stage: value.stage || "",
+      last_error: value.last_error || ""
     });
   }
 

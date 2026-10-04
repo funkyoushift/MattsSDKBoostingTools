@@ -4,6 +4,8 @@ Before re-researching a feature, read its entry below and any linked component n
 
 ## Changes
 
+- [2026-10-04: Concurrent manual and AFK delivery methods](changes/2026-10-04-concurrent-delivery-methods.md) — local implementation; independent manual/AFK requests to different targets, shared progress, conversion target snapshots, recovery exclusivity and kick protection. Not installed or published; live mixed-method validation remains open.
+
 - [2026-10-04: AFK concurrent release v2.28.0](changes/2026-10-04-afk-concurrent-release.md) — published; all 11 public asset hashes and public installer/reinstall/rollback checks passed. Permanent concurrent guest default, exclusive cleanup/host-test safeguards, desktop per-guest progress and authoritative count.
 
 - [2026-10-04: Concurrent AFK pacing pilot](changes/2026-10-04-afk-concurrent-pacing.md) — two overlapping live deliveries completed 500 each; both guests confirmed counts and persistence via Matt. Three-guest live validation remains open; see entry for deployment and rollback.

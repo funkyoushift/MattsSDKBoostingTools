@@ -26,7 +26,8 @@ def test_password_retry_authorizes_bulk_undo_and_keeps_backup(tmp_path, monkeypa
     ns['_store_deleted_backpack_snapshot'](snapshot)
     def send(serials,mode,bulk_authorized=False):
         calls.append((serials,bulk_authorized))
-        return {'ok':bulk_authorized,'password_required':not bulk_authorized,'password_kind':'bulk_loot'}
+        return {'ok':bulk_authorized,'password_required':not bulk_authorized,'password_kind':'bulk_loot',
+                'report_path':'own-report.jsonl'}
     ns['_deliver_serials_with_target']=send
     ns['serial_rewards']=NS(serial_delivery_progress=lambda:{'report_path':'report.jsonl'})
     assert ns['chaos_undo_empty_backpack']()['password_required']
@@ -34,6 +35,7 @@ def test_password_retry_authorizes_bulk_undo_and_keeps_backup(tmp_path, monkeypa
     assert ns['chaos_undo_empty_backpack']({'bulk_loot_password':'funkyou'})['ok']
     assert calls[-1]==(['@Ua']*71,True)
     assert ns['_backpack_delete_memory'][1]['serials']==['@Ua']*71
+    assert ns['_backpack_delete_memory'][1]['restore_report']=='own-report.jsonl'
     assert json.loads(Path(snapshot['backup_path']).read_text())['serials']==['@Ua']*71
     assert not ns['chaos_undo_empty_backpack']({'bulk_loot_password':'funkyou'})['ok']
     assert len(calls)==3

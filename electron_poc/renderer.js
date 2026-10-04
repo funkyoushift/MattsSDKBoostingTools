@@ -3361,8 +3361,9 @@ function describeSerialBulk(progress = {}) {
   const target = String(progress.target_label || progress.scope || "").trim();
   const delay = Number(progress.next_delay_seconds || progress.wait_remaining || 0);
   const metaParts = [];
-  if (totalChunks > 0 && currentChunk > 0) metaParts.push(`package ${currentChunk}/${totalChunks}`);
-  if (currentChunkSerials > 0) metaParts.push(`${currentChunkSerials} serial(s) in current package`);
+  const chunkLabel = progress.method === 'direct' ? 'batch' : 'package';
+  if (totalChunks > 0 && currentChunk > 0) metaParts.push(`${chunkLabel} ${currentChunk}/${totalChunks}`);
+  if (currentChunkSerials > 0) metaParts.push(`${currentChunkSerials} serial(s) in current ${chunkLabel}`);
   if (totalSerials > 0) metaParts.push(`${totalSerials} serial(s) total`);
   if (target) metaParts.push(target);
   if (delay > 0.05) metaParts.push(`next step in ${delay.toFixed(1)}s`);
@@ -3412,6 +3413,13 @@ function renderSharedBulkProgress() {
   }
   const panel = els.msbtBulkPanel || els.serialDeliveryPanel;
   if (!panel) return;
+  let playerRows = document.getElementById('serialDeliveryPlayers');
+  if (!playerRows) {
+    playerRows = document.createElement('div');
+    playerRows.id = 'serialDeliveryPlayers';
+    panel.appendChild(playerRows);
+  }
+  playerRows.replaceChildren();
   const jobs = [
     { key: "serial", data: state.bulkProgress.serial, view: describeSerialBulk(state.bulkProgress.serial) },
     { key: "challenge", data: state.bulkProgress.challenge, view: describeCountedBulk(state.bulkProgress.challenge, "Challenges", "Challenge bulk") },
@@ -3445,6 +3453,22 @@ function renderSharedBulkProgress() {
     message.className = `status-line ${view.kind || ""}`.trim();
   }
   if (meta) meta.textContent = view.meta || "";
+  if (shown.key === 'serial') {
+    for (const player of shown.data.players || []) {
+      const row = document.createElement('div');
+      const text = document.createElement('div');
+      const total = Math.max(1, Number(player.total) || 1);
+      const sent = Math.max(0, Math.min(total, Number(player.submitted) || 0));
+      const stage = player.error ? `Stopped: ${player.error}` : player.done ? 'Submitted' : sent === total ? 'Waiting for settlement' : 'Sending';
+      text.textContent = `${player.name || 'Player'}: ${sent}/${total} — ${stage}`;
+      const progress = document.createElement('progress');
+      progress.max = total;
+      progress.value = sent;
+      progress.setAttribute('aria-label', `${player.name || 'Player'} delivery`);
+      row.append(text, progress);
+      playerRows.appendChild(row);
+    }
+  }
 }
 
 function updateSerialDeliveryProgress(progress = {}) {

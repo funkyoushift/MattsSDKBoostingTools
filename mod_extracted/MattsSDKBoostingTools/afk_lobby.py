@@ -416,6 +416,10 @@ class Lobby:
                     result = self.game.kick(dict(job, pc=row["pc"], index=row["index"]))
                 except Exception as exc:
                     result = {"ok": False, "message": str(exc)}
+                if result.get('deferred'):
+                    for target in targets:
+                        target['kick_after'] = now + 15.0
+                    continue
                 for target in targets:
                     target['kick_attempts'] = target.get('kick_attempts', 0) + 1
                     target['kick_attempted'] = bool(result['ok']) or target['kick_attempts'] >= 3
@@ -605,6 +609,17 @@ class Game:
         row = next((row for row in rows if row["token"] == job["token"]), None)
         if row is None:
             return {"ok": False, "message": "Guest already left."}
+        # A later manual send must finish before AFK disconnects this connection.
+        # Unknown connection grouping conservatively protects every active send.
+        members = rows if any(r.get('connection') is None for r in rows) else [
+            r for r in rows if r.get('connection') == row.get('connection')]
+        rewards = a.serial_rewards
+        tokens = ([rewards._direct_delivery_preflight(member['index']) for member in members]
+                  if rewards._pending_serial_delivery_sequences else [])
+        if any(seq.get('direct_delivery') is None or any(t['token'] in tokens
+                for t in seq['direct_delivery'].targets)
+                for seq in rewards._pending_serial_delivery_sequences):
+            return {'ok':False, 'deferred':True, 'message':'Waiting for active delivery before auto-kick.'}
         ok = a._kick_party_player_by_index(row["index"], "AFK boosting complete")
         return {"ok": bool(ok), "message": "Boosting finished; kick requested." if ok else "Kick failed."}
 
@@ -793,7 +808,7 @@ class Game:
                 return {"ok": seq.get("index", 0) >= len(seq["chunks"]) and not seq.get("afk_error"),
                         "message": selection_note + (seq.get("afk_error") or delivery_message)}
             concurrent = config.get('concurrent_guests') and not config.get('cleanup_rewards')
-            if (not rewards._afk_direct_delivery_available() if concurrent else rewards._serial_delivery_busy()):
+            if (not rewards._afk_direct_delivery_available(job['index']) if concurrent else rewards._serial_delivery_busy()):
                 return None
             if "loot_classes" in config and any(value not in (None, "unknown_item") for value in config["loot_classes"]):
                 character = self.guest_class(job)
@@ -810,6 +825,7 @@ class Game:
                 return {"ok": False, "message": "More than 70 items requires password authorization. Stop and restart AFK with the password."}
             rewards._do_give_serial_to_player_indices(selected, [job["index"]], scope_label=f"AFK: {job['name']} ({len(selected)} items; selection {job['loot_selection_id']})", mode="selected",
                 **({'afk_concurrent': True} if concurrent else {}),
+                **({'exclusive': True} if not concurrent else {}),
                 **({"bulk_authorized": True} if config.get("bulk_loot_authorized") else {}))
             seq = rewards._pending_serial_delivery_sequences[-1]
             seq["afk_player_state"] = ps

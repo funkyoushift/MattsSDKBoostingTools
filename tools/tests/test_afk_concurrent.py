@@ -161,26 +161,25 @@ def test_independent_500_item_lists_finish_without_summed_target_delays(queues):
     assert clock.value-times[0][-1] >= delivery.SETTLE_SECONDS
 
 
-def test_admission_preserves_manual_exclusivity_unique_targets_and_three_guest_bound(queues):
+def test_admission_mixes_manual_afk_unique_targets_and_four_player_bound(queues):
     ns, queue, submitted, clock = queues
     queue(1, ['@UA'])
     with pytest.raises(RuntimeError, match='already has'):
         queue(1, ['@Uduplicate'])
-    with pytest.raises(RuntimeError, match='still running'):
-        queue(2, ['@Umanual'], concurrent=False)
-    queue(2, ['@UB']); queue(3, ['@UC'])
+    queue(2, ['@Umanual'], concurrent=False)
+    queue(3, ['@UC']); queue(0, ['@Uhost'], concurrent=False)
     assert not ns['_afk_direct_delivery_available']()
-    with pytest.raises(RuntimeError, match='still running'):
-        queue(4, ['@Ufourth'])
-    assert len(ns['_pending_serial_delivery_sequences']) == 3 and not submitted
+    with pytest.raises(RuntimeError, match='Four player'):
+        queue(4, ['@Ufifth'])
+    assert len(ns['_pending_serial_delivery_sequences']) == 4 and not submitted
 
 
-def test_existing_manual_send_blocks_concurrent_admission(queues):
+def test_existing_manual_send_only_blocks_its_own_target(queues):
     ns, queue, _, _ = queues
     queue(1, ['@UA'], concurrent=False)
-    assert not ns['_afk_direct_delivery_available']()
-    with pytest.raises(RuntimeError, match='still running'):
-        queue(2, ['@UB'])
+    assert ns['_afk_direct_delivery_available'](2)
+    assert not ns['_afk_direct_delivery_available'](1)
+    queue(2, ['@UB'])
 
 
 def test_one_target_failure_does_not_cancel_or_retarget_others(queues):
