@@ -4,7 +4,7 @@ Before re-researching a feature, read its entry below and any linked component n
 
 ## Changes
 
-- [2026-10-04: AFK concurrent release v2.28.0](changes/2026-10-04-afk-concurrent-release.md) — permanent concurrent guest default, exclusive cleanup/host-test safeguards, desktop per-guest progress and authoritative count; release validation and deployment status.
+- [2026-10-04: AFK concurrent release v2.28.0](changes/2026-10-04-afk-concurrent-release.md) — published; all 11 public asset hashes and public installer/reinstall/rollback checks passed. Permanent concurrent guest default, exclusive cleanup/host-test safeguards, desktop per-guest progress and authoritative count.
 
 - [2026-10-04: Concurrent AFK pacing pilot](changes/2026-10-04-afk-concurrent-pacing.md) — two overlapping live deliveries completed 500 each; both guests confirmed counts and persistence via Matt. Three-guest live validation remains open; see entry for deployment and rollback.
 - [2026-10-04: AFK shows 500 but sends 70](changes/2026-10-04-afk-delivery-count.md) — confirmed stale active-state display; desktop fixed and installed locally; active SDK configuration restored to 500 with persisted authorization. Includes data flow, tests, rollback and limits.
