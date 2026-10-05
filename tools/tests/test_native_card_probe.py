@@ -78,10 +78,12 @@ class ProbeTest(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, 'game thread'): self.run_probe()
         self.assertEqual(self.events, [])
 
-    def test_guests_prevent_native_construction(self):
+    def test_guests_allow_native_construction(self):
         self.party.append(object())
-        with self.assertRaisesRegex(RuntimeError, 'solo session'): self.run_probe()
-        self.assertEqual(self.events, [])
+        result=self.run_probe()
+        self.assertEqual(result['session_players'],2)
+        self.assertEqual(result['inventory_insertions'],0)
+        self.assertEqual(self.events[-2:],['0x8e1aa38','identity_destroy'])
 
     def test_success_destroys_model_before_identity(self):
         result = self.run_probe()
@@ -89,18 +91,17 @@ class ProbeTest(unittest.TestCase):
         self.assertEqual(result['stages'][-1], 'destroy_identity_complete')
         self.assertEqual(json.loads(self.output.read_text())['inventory_insertions'], 0)
 
-    def test_explicit_multiplayer_trial_retains_native_cleanup(self):
-        self.party.append(object())
-        result=self.run_probe(allow_multiplayer_trial=True,compare_self=False)
-        self.assertEqual(result['session_players'],2)
-        self.assertTrue(result['multiplayer_trial'])
+    def test_full_party_retains_native_cleanup(self):
+        self.party.extend([object(),object(),object()])
+        result=self.run_probe(compare_self=False)
+        self.assertEqual(result['session_players'],4)
         self.assertEqual(result['inventory_insertions'],0)
         self.assertEqual(self.events[-3:],['0x8e1aa38','identity_destroy','identity_destroy'])
 
-    def test_trial_does_not_bypass_world_or_thread_checks(self):
+    def test_no_world_prevents_construction(self):
         self.party.clear()
         with self.assertRaisesRegex(RuntimeError,'active game session'):
-            self.run_probe(allow_multiplayer_trial=True)
+            self.run_probe()
         self.assertEqual(self.events,[])
 
     def test_fill_failure_still_destroys_both(self):

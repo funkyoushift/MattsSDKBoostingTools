@@ -864,4 +864,29 @@
     }
   }
   window.addEventListener("hashchange", queueHashTabSwitch);
+  // Read generated output only. The editor writes textarea.value directly, so
+  // input events/MutationObserver alone cannot follow all part/level changes.
+  if (window.parent !== window) {
+    var lastCardOutput = "";
+    window.addEventListener('message', function (event) {
+      if (event.source === window.parent && event.data && event.data.msbtEditorCardRequest) lastCardOutput = "";
+    });
+    window.setInterval(function () {
+      var active = document.querySelector('.tab-content.active');
+      var codes = [];
+      if (active && !window.serializeCodeProcessing && !(window.serializeCodeQueue || []).length) {
+        ["finalOutputBase85", "mi_finalOutputBase85", "serializedOutput"].forEach(function (id) {
+          var field = byId(id);
+          if (!field || !active.contains(field)) return;
+          findBase85Serials(textFromElement(id)).forEach(function (serial) {
+            if (serial.length <= 8192 && codes.indexOf(serial) < 0 && codes.length < 100) codes.push(serial);
+          });
+        });
+      }
+      var payload = JSON.stringify({ tab: active ? active.id : "", serials: codes });
+      if (payload === lastCardOutput) return;
+      lastCardOutput = payload;
+      window.parent.postMessage({ msbtEditorCard: JSON.parse(payload) }, "*");
+    }, 200);
+  }
 })();

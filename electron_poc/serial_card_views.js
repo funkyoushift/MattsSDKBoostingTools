@@ -32,12 +32,4 @@
     const field=document.getElementById(id);
     addPreview(field,()=>String(field.value||'').split(/\s+/).filter(s=>s.startsWith('@U')));
   }
-  // The embedded editor already exposes its current serials to the delivery UI.
-  const editor=document.getElementById('tab-matt-editor')||document.querySelector('[data-msbt-layout-tab="matt-editor"]');
-  if(editor){
-    const anchor=document.createElement('div');editor.prepend(anchor);
-    const refresh=addPreview(anchor,()=>collectEditorSerials());
-    const button=document.createElement('button');button.type='button';button.textContent='Refresh editor item cards';
-    button.addEventListener('click',()=>{anchor.nextElementSibling.open=true;refresh();});anchor.append(button);
-  }
 })();

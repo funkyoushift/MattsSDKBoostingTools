@@ -1447,7 +1447,18 @@
             <button type="button" data-msbt-bridge-refresh class="secondary">Refresh Status</button>
           </div>
         </div>
-        <iframe id="editorFrame" title="Matt Editor"></iframe>
+        <div class="editor-live-workspace">
+          <iframe id="editorFrame" title="Matt Editor"></iframe>
+          <aside class="editor-live-card" aria-label="Live item card">
+            <h3>Live item card</h3>
+            <label><input id="editorCardAuto" type="checkbox" checked> Update as I edit</label>
+            <p class="muted">Follows the current item after edits settle. New cards need the game running.</p>
+            <select id="editorCardChoice" aria-label="Item to preview" hidden></select>
+            <button id="editorCardRefresh" type="button" class="secondary">Refresh card</button>
+            <div id="editorLiveCardStatus" role="status">Build or select an item to see its card.</div>
+            <div id="editorLiveCard"></div>
+          </aside>
+        </div>
       </section>
     </section>
 
@@ -2847,6 +2858,7 @@
 <script src="community_folders_contract.js"></script>
 <script src="community_folders_ui.js"></script>
 <script src="serial_card_views.js"></script>
+<script src="editor_live_card.js"></script>
 <script src="save_items_import_ui.js"></script>
 <script src="ui_localization.js"></script>
 </body>

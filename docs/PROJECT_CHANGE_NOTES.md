@@ -4,6 +4,8 @@ Before re-researching a feature, read its entry below and any linked component n
 
 ## Changes
 
+- [2026-10-05: Live editor cards and multiplayer generation](changes/2026-10-05-editor-live-cards.md) — automatic current-item preview, latest-output scheduling and removal of the solo-only policy at Matt's request; release verification below.
+
 - [2026-10-05: Firmware identity and static community cards](changes/2026-10-05-static-cards-and-firmware.md) — firmware audit, explicit unresolved input glyphs, GZO-name preservation, approved-folder image export, website previews and guarded multiplayer trial preparation.
 - [2026-10-04: Saved item card names](changes/2026-10-04-saved-card-names.md) — local saved/community headings follow resolved card names; original labels, creator credits and serials retained.
 - [2026-10-04: Expanded item cards and hover previews](changes/2026-10-04-expanded-card-layout.md) — local readable layout for overflowing modded stats/skills, cropped thumbnails, full zoomable preview, compact switch and cached-data redraw after layout updates.

@@ -55,7 +55,7 @@ app.whenReady().then(async()=>{
   await wait(()=>stale.querySelector('img'));check(stale.querySelectorAll('img').length===1&&stale.querySelector('img').alt==='GZO name','changed host must ignore old response');
   for(const id of ['boostSerialText','serialToolsSerialized','validatorBasicInput','validatorBulkInput','bl4Serial'])
     check(document.getElementById(id).nextElementSibling.classList.contains('serial-card-previews'),'missing preview '+id);
-  check(document.querySelector('#tab-matt-editor .serial-card-previews'),'editor preview');
+  check(document.querySelector('#tab-matt-editor #editorLiveCard')&&document.getElementById('editorCardAuto').checked,'automatic editor preview');
   let switches=0;
   window.msbt.nativeItemPreview=async(serial,wantImage,layout)=>{switches++;return {ok:true,serial,session:'same-session',widget:{Name:'Expanded'},image:{ok:true,layout:layout==='compact'?'compact':'expanded',base64:${JSON.stringify(png.toString('base64'))}}};};
   const expanded=document.createElement('div');host.append(expanded);fillBl4ItemCard(expanded,{serial:'@UExpanded'});
@@ -69,7 +69,7 @@ app.whenReady().then(async()=>{
   check(expanded.querySelectorAll('img').length===1&&expanded.textContent.includes('expanded layout'),'expanded image restored');
   window.msbt.nativeItemPreview=async()=>({ok:false,message:"RuntimeError('New game cards require a solo session; existing screenshots remain available')"});
   const unavailable=document.createElement('div');host.append(unavailable);fillBl4ItemCard(unavailable,{serial:'@UUncached'});
-  await wait(()=>unavailable.textContent.includes('No matching screenshot or cached card yet.'));
+  await wait(()=>unavailable.textContent.includes('Update the game mod and restart BL4'));
   check(!unavailable.textContent.includes('RuntimeError'),'raw solo exception leaked into card');
   return {upload:true,gzo:true,native:true,community:true,mismatch:true,stale:true,serialMenus:6,clearUnavailableMessage:true,layoutToggle:true,savedCardNames:true};
  })()`);

@@ -54,7 +54,7 @@
       image.onload=()=>{clearTimeout(timer);if(current()){host.insertBefore(image,marker);root.MSBTCardPreview?.attach(host,image,current);}resolve(image);};
       image.onerror=()=>{clearTimeout(timer);reject(new Error('Image unavailable'));};image.src=url;
     });
-    schedule(async()=>{
+    host.cardRequest=schedule(async()=>{
       if(!item?.serial?.startsWith('@U')||item.serial.length>8192)throw new Error('Card unavailable for this code · original preserved');
       let uploaded=null;
       try {uploaded=await screenshot(item);} catch {}
@@ -65,7 +65,7 @@
       if(existing?.image){try{await loadImage(existing.image,existing.itemCard?.name);if(current())marker.textContent='GZO item card';return;}catch{}}
       const reply=await root.msbt.nativeItemPreview(item.serial);
       if(!current())return;
-      if(!reply?.ok||!reply.image?.base64)throw new Error(reply?.message||'Open a supported BL4 solo session to generate this card.');
+      if(!reply?.ok||!reply.image?.base64)throw new Error(reply?.message||'Open a supported BL4 game session to generate this card.');
       let displayed=await loadImage('data:image/png;base64,'+reply.image.base64,reply.widget.Name);
       if(!current())return;
       // A missing/unreachable GZO image may use a native fallback, but it is
@@ -105,7 +105,7 @@
     }).catch(error=>{
       if(!current())return;
       marker.textContent=String(error.message).includes('New game cards require a solo session')
-        ? 'No matching screenshot or cached card yet. Generate this card in a solo session.'
+        ? 'Update the game mod and restart BL4 to generate new cards with guests. Existing cached cards remain available.'
         : error.message;
     });
     return host;

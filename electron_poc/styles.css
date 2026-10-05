@@ -4981,6 +4981,16 @@ body.msbt-density-compact .activity-card {
   overflow: hidden;
 }
 
+.editor-live-workspace {display:flex;flex:1;min-height:0;gap:12px;}
+.editor-live-workspace #editorFrame {flex:1;min-width:0;width:auto;}
+.editor-live-card {flex:0 0 290px;min-width:0;overflow:auto;padding:12px;border:1px solid var(--border-color,#343544);border-radius:10px;}
+.editor-live-card h3 {margin:0 0 8px;}
+.editor-live-card p,.editor-live-card [role=status] {font-size:12px;line-height:1.4;}
+.editor-live-card select {max-width:100%;margin:8px 0;}
+#editorLiveCard {margin-top:10px;}
+@media(max-width:1000px){.editor-live-card{flex-basis:230px;}}
+@media(max-width:720px){.editor-live-workspace{flex-direction:column;overflow:auto;}.editor-live-workspace #editorFrame{flex:none;min-height:60vh;}.editor-live-card{flex:none;overflow:visible;}}
+
 .editor-tab-content {
   display: flex;
   flex-direction: column;
