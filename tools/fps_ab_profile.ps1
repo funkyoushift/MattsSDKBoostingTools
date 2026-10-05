@@ -7,9 +7,9 @@ An "_disabled_" prefix does nothing. This script flips mods off the way the load
 actually understands, and records what it changed so Restore is exact.
 
   Baseline        SDK core only (mods_base + console_mod_menu + keybinds). No MSBT.
-  MsbtOnly        SDK core + MSBT + blimgui. How Matt normally plays.
-  MsbtNoBlimgui   SDK core + MSBT, blimgui off. Isolates the duplicate
-                  blimgui_panel Infinite Jump hooks.
+  MsbtOnly        SDK core + MSBT + blimgui, for compatibility comparisons.
+  MsbtNoBlimgui   SDK core + MSBT, blimgui off. MSBT's native Quick Menu
+                  and external bridge do not require blimgui.
   Restore         Undo everything this script disabled.
   Status          Show what currently loads.
 

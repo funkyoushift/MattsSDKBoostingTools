@@ -1,7 +1,6 @@
 """Central release point for UObject-adjacent caches during world travel."""
 from __future__ import annotations
 
-import sys
 import time
 from typing import Any
 
@@ -34,7 +33,7 @@ def _call(label: str, fn: Any) -> None:
 
 
 def clear_travel_caches() -> None:
-    """Release old-world wrappers without importing the optional BLImGui panel."""
+    """Release cached wrappers and pending actions from the previous world."""
     from . import backend_actions, golden_chest_keybinds, hoard_runner
     from . import instant_click_holds, movement_adjustments, no_fog_of_war
     from . import third_person_camera
@@ -50,10 +49,6 @@ def clear_travel_caches() -> None:
     _call("instant holds", instant_click_holds.clear_travel_backups)
     _call("fog", no_fog_of_war.clear_travel_backups)
     _call("third person", third_person_camera.clear_travel_backups)
-
-    panel = sys.modules.get(f"{__package__}.blimgui_panel")
-    if panel is not None:
-        _call("BLImGui", getattr(panel, "clear_travel_caches", None))
 
 
 def _world_package_name(*hook_args: Any, **hook_kwargs: Any) -> str:

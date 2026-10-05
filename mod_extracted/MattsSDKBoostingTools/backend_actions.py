@@ -260,7 +260,7 @@ _uvh_running = False
 _uvh_paused_queue: deque[tuple[str, str, float]] = deque()
 _uvh_paused_targets: list[Any] = []
 # UVHM discovery credit: PyrexBLJ; workflow: Azalea Asvail with FunkYouSHiFT assistance.
-# Challenge-path discovery credit: Matt. See docs/ATTRIBUTION_REVIEW_2026-09-30.md.
+# Challenge-path discovery credit: Matt. See contributor credits in README.md.
 _uvh_last_status = "Ready. UVH tier boosts are based on Azzy UVH Booster by Azalea Asvail."
 _DEV_SPAWNER_SAFE_TOKEN = re.compile(r"^[A-Za-z0-9_./:-]+$")
 _DEV_SPAWNER_SAFE_STATE_LIST = re.compile(r"^[A-Za-z0-9_,./:-]+$")
@@ -6621,54 +6621,10 @@ def get_rarity_revision() -> int:
     return int(_rarity_revision or 0)
 
 
-def _rarity_find_blimgui_panel() -> object | None:
-    for name in (f"{__package__}.blimgui_panel", "MattsSDKBoostingTools.blimgui_panel"):
-        panel = sys.modules.get(name)
-        if panel is not None:
-            return panel
-    return None
-
-
-def _rarity_sync_optional_blimgui(*, reset_auto_reapply: bool = False) -> None:
-    """Push backend weights into the optional BLImGui panel so both UIs stay aligned."""
-    panel = _rarity_find_blimgui_panel()
-    if panel is None:
-        return
-    if reset_auto_reapply:
-        try:
-            setattr(panel, "_rarity_auto_reapply", False)
-            setattr(panel, "_rarity_reapply_until", 0.0)
-            setattr(panel, "_rarity_reapply_next_try", 0.0)
-        except Exception:
-            pass
-    try:
-        panel_weights = getattr(panel, "_rarity_weights", None)
-        if isinstance(panel_weights, dict):
-            for key, _label, _fields in RARITY_ROWS:
-                panel_weights[key] = float(max(0.0, min(1.0, float(_rarity_weights.get(key, 1.0)))))
-    except Exception:
-        pass
-    try:
-        # Prefer backend save; still call panel saver when present so its status stays coherent.
-        save_settings = getattr(panel, "_rarity_save_settings", None)
-        if callable(save_settings):
-            save_settings()
-    except Exception:
-        pass
-
-
-def _rarity_sync_optional_blimgui_reset() -> None:
-    for key, _label, _fields in RARITY_ROWS:
-        _rarity_weights[key] = 1.0
-    _rarity_save_settings()
-    _rarity_sync_optional_blimgui(reset_auto_reapply=True)
-
-
 def _rarity_apply_current() -> dict[str, Any]:
     state = _rarity_state_for_gamestate(_rarity_current_gamestate())
     if state is None:
         _rarity_save_settings()
-        _rarity_sync_optional_blimgui()
         return {"ok": False, "message": "No GameState.RarityState found yet. Load into a world and try again."}
     _rarity_capture_baseline(state)
     writes = 0
@@ -6678,7 +6634,6 @@ def _rarity_apply_current() -> dict[str, Any]:
         writes += _rarity_set_float(_rarity_get_modifier(state, fields), target)
         parts.append(f"{label}={int(round(target * 100.0))}%")
     _rarity_save_settings()
-    _rarity_sync_optional_blimgui()
     return {"ok": True, "message": "Rarity drop weights applied: " + ", ".join(parts) + f". Writes: {writes}."}
 
 
@@ -6707,7 +6662,6 @@ def rarity_reset() -> dict[str, Any]:
         _rarity_weights[key] = 1.0
     if state is None:
         _rarity_save_settings()
-        _rarity_sync_optional_blimgui(reset_auto_reapply=True)
         return {"ok": False, "message": "No GameState.RarityState found yet. Rarity override state was cleared; load into a world and try again."}
     writes = 0
     parts: list[str] = []
@@ -6715,7 +6669,6 @@ def rarity_reset() -> dict[str, Any]:
         writes += _rarity_set_float(_rarity_get_modifier(state, fields), 1.0)
         parts.append(f"{label}=100%")
     _rarity_save_settings()
-    _rarity_sync_optional_blimgui(reset_auto_reapply=True)
     return {"ok": True, "message": "Rarity drop weights reset to 100% and live override is off: " + ", ".join(parts) + f". Writes: {writes}."}
 
 

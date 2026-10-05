@@ -49,9 +49,7 @@ MSBT_External_Beta.zip
 !docs/layout_builder/**
 !docs/layout_builder/*.sdkmod
 !releases/
-!releases/README.md
 !releases/latest.json
-!releases/QUICK_MENU_PREVIEW_NOTES.txt
 !releases/RELEASE_NOTES_*.md
 !releases/discord_media/**
 
@@ -105,6 +103,11 @@ mobile_controller/debug-signing/*.keystore.b64
 
 # SQBT vs MSBT compare extract (local only)
 _compare_sqbt/
+
+# Private attribution research and superseded preview material
+docs/attribution/
+docs/reference/legacy_tkinter/
+docs/releases/QUICK_MENU_PREVIEW_NOTES.txt
 
 # Reusable installer build outputs
 installer/bin/

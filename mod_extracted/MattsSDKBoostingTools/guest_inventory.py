@@ -1,6 +1,6 @@
 """Build-gated local guest transactions. Game thread only.
 
-See docs/GUEST_INVENTORY.md for native evidence and live-test limitations.
+The supported build profiles and verified function hashes are defined below.
 """
 import ctypes as C
 import hashlib

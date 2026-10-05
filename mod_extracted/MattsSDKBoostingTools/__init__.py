@@ -1,4 +1,4 @@
-"""Matt's SDK Boosting Tools â€” boosting-focused SDK mod."""
+"""Borderlands 4 Modding Tools SDK entry point; original project by Mattmab."""
 
 from __future__ import annotations
 
@@ -39,36 +39,6 @@ from .mobile_pairing import (
     start_mobile_pairing,
 )
 
-_panel_keybinds = []
-_panel_commands = []
-try:
-    from .blimgui_panel import (
-        _cmd_msbt_panel,
-        _cmd_msbt_hud_pill_test,
-        _cmd_msbt_imgui_join_safe,
-        _cmd_msbt_imgui_pause,
-        matts_sdk_boosting_tools_toggle,
-    )
-    _panel_keybinds.append(matts_sdk_boosting_tools_toggle)
-    _panel_commands.extend([
-        _cmd_msbt_panel,
-        _cmd_msbt_hud_pill_test,
-        _cmd_msbt_imgui_join_safe,
-        _cmd_msbt_imgui_pause,
-    ])
-except Exception as exc:
-    try:
-        from unrealsdk import logging
-        logging.warning(
-            f"[Matts SDK Boosting Tools] Legacy BLImGui panel unavailable; "
-            f"native Quick Menu + external bridge continue without it: {exc!r}"
-        )
-    except Exception:
-        print(
-            "[Matts SDK Boosting Tools] Legacy BLImGui panel unavailable; "
-            f"native Quick Menu + external bridge continue without it: {exc!r}"
-        )
-
 start_auto_inventory_worker()
 start_bridge()
 start_quick_menu()
@@ -97,13 +67,13 @@ build_mod(
     author="FunkYouSHiFT; original project by Mattmab (Matt)",
     description=(
         "Boosting-focused SDK mod with a native UMG Quick Menu and external bridge "
-        "(no BLImGui required). Legacy BLImGui panel remains an optional fallback if installed. "
+        "(no BLImGui required). "
         "Select current party players and run serial rewards, currency, experience, Max SDU, "
         "golden chest helpers, shiny drops, shiny serial reward packages, and inventory capacity tools."
     ),
     supported_games=Game.BL4,
     coop_support=CoopSupport.Unknown,
-    keybinds=_panel_keybinds + [
+    keybinds=[
         quick_menu_toggle,
         quick_menu_unstuck_key,
         mobile_pair_toggle,
@@ -112,6 +82,6 @@ build_mod(
         *ICH_KEYBINDS,
         *TPC_KEYBINDS,
     ],
-    commands=_panel_commands + _extra_commands,
+    commands=_extra_commands,
 )
 

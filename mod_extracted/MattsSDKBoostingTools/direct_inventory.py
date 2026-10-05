@@ -1,6 +1,6 @@
 """Build-gated native inventory insertion. Call only from the game thread.
 
-Recovered against Steam 25372571 and Epic 4845623; see docs/DIRECT_INVENTORY_DELIVERY.md.
+Recovered against Steam 25372571 and Epic 4845623; build gates are defined below.
 Never bind an address until every gate for its complete profile passes.
 """
 from __future__ import annotations

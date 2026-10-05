@@ -13,6 +13,7 @@
 
 ### Changed
 
+- Clarified vehicle preset instructions and repaired references to removed documentation.
 - Corrected attribution for the desktop interface and bridge; retained Squ1ggs’ code and helper credits.
 - Expanded Mattmab’s credits to name the original gameplay modules, Python helpers, and retained editor components.
 - Narrowed Squ1ggs’ credit to later helper additions and references; added Pyrex’s Bonk Utilities acknowledgment and source link.
@@ -21,5 +22,7 @@
 
 ### Removed
 
+- Retired BLImGui panel, its startup fallback, and unused panel synchronization code. The native F7 Quick Menu and desktop bridge remain the supported interfaces.
+- Superseded Quick Menu preview instructions, legacy Tkinter packaging scripts, internal attribution snapshot, and tracked editor-only guidance.
 - Outdated app screenshot embeds from the README.
 - The previous Markdown documentation outside the main README, including planning notes, handoffs, feature comparisons, and audit narratives.

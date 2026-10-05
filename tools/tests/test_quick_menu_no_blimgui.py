@@ -76,8 +76,7 @@ def _load_module(fullname: str, filename: str, *, extra_stubs: dict[str, dict] |
     assert "blimgui" not in getattr(module, "__dict__", {})
     source = (PKG / filename).read_text(encoding="utf-8", errors="replace")
     assert "import blimgui" not in source
-    assert "blimgui_panel" not in source or filename == "backend_actions.py"
-    # backend_actions may mention blimgui_panel only as an optional already-loaded sync target.
+    assert "blimgui_panel" not in source
     if filename == "backend_actions.py":
         assert "import blimgui" not in source
         assert "from .blimgui_panel" not in source
@@ -231,3 +230,74 @@ def test_external_bridge_does_not_import_blimgui_panel():
     assert "from .blimgui" not in source
     status = bridge._status()
     assert status["ok"] is True
+
+
+def test_sdk_entrypoint_starts_supported_interfaces_without_legacy_panel(monkeypatch):
+    import builtins
+
+    package = "_msbt_startup_test"
+    started = []
+    registrations = []
+    forbidden_attempts = []
+    original_import = builtins.__import__
+
+    def guarded_import(name, *args, **kwargs):
+        if "blimgui" in name:
+            forbidden_attempts.append(name)
+            raise ImportError(name)
+        return original_import(name, *args, **kwargs)
+
+    def install(name, **attrs):
+        module = types.ModuleType(name)
+        module.__dict__.update(attrs)
+        monkeypatch.setitem(sys.modules, name, module)
+
+    install("mods_base", Game=types.SimpleNamespace(BL4=4),
+            CoopSupport=types.SimpleNamespace(Unknown=0),
+            build_mod=lambda **kwargs: registrations.append(kwargs))
+    siblings = {
+        "golden_chest_keybinds": ["CLOSE_GOLDEN_CHEST_KEY", "OPEN_GOLDEN_CHEST_KEY"],
+        "instant_click_holds": ["ICH_KEYBINDS"],
+        "third_person_camera": ["TPC_KEYBINDS"],
+        "player_economy": ["_cmd_givecurrency", "_cmd_giveexperience"],
+        "serial_rewards": ["_cmd_give_serial"],
+        "runtime_cleanup": ["clear_travel_caches"],
+        "inventory_capacity": ["start_auto_inventory_worker"],
+        "external_bridge": ["start_bridge"],
+        "external_app_launcher": ["_cmd_msbt_external_app"],
+        "backend_actions": ["_cmd_msbt_complete_challenges", "_cmd_msbt_complete_challenges_cancel",
+                            "_cmd_msbt_fog", "_cmd_msbt_probe_challenge_apis", "challenge_api_probe_enabled"],
+        "quick_menu": ["_cmd_msbt_quick_menu", "_cmd_msbt_quick_menu_lock", "_cmd_msbt_quick_menu_pin",
+                       "_cmd_msbt_quick_menu_repeat", "_cmd_msbt_quick_menu_unstuck",
+                       "quick_menu_toggle", "quick_menu_unstuck_key", "start_quick_menu"],
+        "mobile_pairing": ["_cmd_msbt_mobile_pair", "mobile_pair_toggle", "start_mobile_pairing"],
+    }
+    for sibling, names in siblings.items():
+        attrs = {}
+        for name in names:
+            if name.startswith("start_"):
+                attrs[name] = lambda name=name: started.append(name)
+            elif name == "challenge_api_probe_enabled":
+                attrs[name] = lambda: False
+            elif name.endswith("KEYBINDS"):
+                attrs[name] = [name]
+            else:
+                attrs[name] = name
+        install(f"{package}.{sibling}", **attrs)
+
+    monkeypatch.setattr(builtins, "__import__", guarded_import)
+    spec = importlib.util.spec_from_file_location(package, PKG / "__init__.py",
+                                                 submodule_search_locations=[str(PKG)])
+    module = importlib.util.module_from_spec(spec)
+    monkeypatch.setitem(sys.modules, package, module)
+    spec.loader.exec_module(module)
+    assert forbidden_attempts == []
+    assert started == ["start_auto_inventory_worker", "start_bridge", "start_quick_menu", "start_mobile_pairing"]
+    assert len(registrations) == 1
+    registration = registrations[0]
+    assert registration["keybinds"] == ["quick_menu_toggle", "quick_menu_unstuck_key", "mobile_pair_toggle",
+                                         "OPEN_GOLDEN_CHEST_KEY", "CLOSE_GOLDEN_CHEST_KEY", "ICH_KEYBINDS", "TPC_KEYBINDS"]
+    assert len(registration["commands"]) == 13
+    assert "_cmd_msbt_quick_menu" in registration["commands"]
+    assert "_cmd_msbt_mobile_pair" in registration["commands"]
+    assert not (PKG / "blimgui_panel.py").exists()
