@@ -47,7 +47,7 @@
       const image=document.createElement('img');image.alt=name||item.name||'Item card';
       image.style.cssText='display:block;width:100%;height:auto';image.referrerPolicy='no-referrer';
       const timer=setTimeout(()=>{image.onload=image.onerror=null;image.src='';reject(new Error('Image timed out'));},10000);
-      image.onload=()=>{clearTimeout(timer);if(current())host.insertBefore(image,marker);resolve();};
+      image.onload=()=>{clearTimeout(timer);if(current()){host.insertBefore(image,marker);root.MSBTCardPreview?.attach(host,image,current);}resolve(image);};
       image.onerror=()=>{clearTimeout(timer);reject(new Error('Image unavailable'));};image.src=url;
     });
     schedule(async()=>{
@@ -62,10 +62,38 @@
       const reply=await root.msbt.nativeItemPreview(item.serial);
       if(!current())return;
       if(!reply?.ok||!reply.image?.base64)throw new Error(reply?.message||'Open a supported BL4 solo session to generate this card.');
-      await loadImage('data:image/png;base64,'+reply.image.base64,reply.widget.Name);
+      let displayed=await loadImage('data:image/png;base64,'+reply.image.base64,reply.widget.Name);
       if(!current())return;
-      marker.textContent=reply.offline?'Cached game card · previous session':reply.image.warnings?.length?'Game card · some artwork unavailable':'Game card · standalone stats';
+      const caption=reply.offline?'Cached game card · previous session':reply.image.warnings?.length?'Game card · some artwork unavailable':'Game card · standalone stats';
+      marker.textContent=caption+(reply.image.layout==='expanded'?' · expanded layout':'');
       marker.title='Uses the game’s card builder. Equipped firmware counts and comparison context are not included.';
+      if(reply.image.layout==='expanded'){
+        const button=document.createElement('button');button.type='button';button.textContent='Compact layout';
+        button.className='item-card-layout-toggle';
+        button.title='Switch layout without changing the item. Compact text may overflow for heavily modded items.';
+        let compact=null,expanded=true;
+        button.addEventListener('keydown',event=>event.stopPropagation());
+        button.addEventListener('click',async event=>{
+          event.stopPropagation();if(button.disabled||!current())return;button.disabled=true;
+          try{
+            if(expanded&&!compact){
+              const alternate=await root.msbt.nativeItemPreview(item.serial,true,'compact');
+              if(!alternate?.ok||!alternate.image?.base64)throw new Error(alternate?.message||'Compact layout unavailable');
+              // Refuse another session/item's data if the view changed while loading.
+              if(alternate.serial!==reply.serial||alternate.session!==reply.session)throw new Error('Card session changed. Reopen the card to switch layouts.');
+              compact=alternate.image;
+            }
+            if(!current())return;
+            const next=await loadImage('data:image/png;base64,'+(expanded?compact:reply.image).base64,reply.widget.Name);
+            if(!current())return;
+            displayed.remove();displayed=next;expanded=!expanded;
+            button.textContent=expanded?'Compact layout':'Expanded layout';
+            marker.textContent=caption+(expanded?' · expanded layout':'');
+          }catch(error){if(current())marker.textContent=error.message;}
+          finally{button.disabled=false;}
+        });
+        host.append(button);
+      }
       host.dispatchEvent(new CustomEvent('msbt-card-ready',{detail:reply}));
     }).catch(error=>{
       if(!current())return;

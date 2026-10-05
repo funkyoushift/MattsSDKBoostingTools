@@ -3336,6 +3336,18 @@ button.active-scope {
 
 /* Inventory item card — layout mirrors in-game card fields; chrome icons load from
    mined game uiresources when extracted (see tools/game_icon_extract item_card_chrome). */
+.item-card-thumbnail { max-height: 280px; object-fit: cover; object-position: top; }
+/* Inventory tile visuals historically ignored pointer input. These controls
+ * and the hover target must remain interactive within that selectable tile. */
+.item-card-thumbnail, .item-card-view-button, .item-card-layout-toggle { pointer-events: auto; }
+.item-card-popout { position: fixed; margin: 0; padding: 0; border: 1px solid #60717e; border-radius: 10px; background: #111923; color: #eef2f5; box-shadow: 0 12px 40px #000b; overflow: hidden; }
+.item-card-popout:popover-open { display: flex; flex-direction: column; }
+.item-card-popout-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 12px; flex: 0 0 auto; background: #192431; }
+.item-card-popout-toolbar label { display: flex; align-items: center; gap: 8px; }
+.item-card-popout-toolbar input { width: 110px; }
+.item-card-popout-scroll { overflow: auto; min-height: 0; overscroll-behavior: contain; }
+.item-card-popout-scroll img { display: block; width: 100%; max-width: none; height: auto; }
+.item-card-view-button, .item-card-layout-toggle { margin: 4px 4px 0 0; font-size: .8rem; padding: 3px 7px; }
 .bl4-item-card {
   position: relative;
   border: 1px solid rgba(180, 150, 70, 0.55);

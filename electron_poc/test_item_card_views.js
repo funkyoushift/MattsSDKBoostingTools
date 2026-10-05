@@ -33,11 +33,22 @@ app.whenReady().then(async()=>{
   for(const id of ['boostSerialText','serialToolsSerialized','validatorBasicInput','validatorBulkInput','bl4Serial'])
     check(document.getElementById(id).nextElementSibling.classList.contains('serial-card-previews'),'missing preview '+id);
   check(document.querySelector('#tab-matt-editor .serial-card-previews'),'editor preview');
+  let switches=0;
+  window.msbt.nativeItemPreview=async(serial,wantImage,layout)=>{switches++;return {ok:true,serial,session:'same-session',widget:{Name:'Expanded'},image:{ok:true,layout:layout==='compact'?'compact':'expanded',base64:${JSON.stringify(png.toString('base64'))}}};};
+  const expanded=document.createElement('div');host.append(expanded);fillBl4ItemCard(expanded,{serial:'@UExpanded'});
+  await wait(()=>expanded.querySelector('.item-card-layout-toggle'));
+  const toggle=expanded.querySelector('.item-card-layout-toggle');
+  let bubbled=false;expanded.addEventListener('click',()=>{bubbled=true});
+  toggle.click();await wait(()=>toggle.textContent==='Expanded layout');
+  check(expanded.querySelectorAll('img').length===1&&!bubbled,'layout switch must replace image without selecting item');
+  toggle.click();await wait(()=>toggle.textContent==='Compact layout');
+  check(switches===2,'repeat layout toggle must reuse both cached images');
+  check(expanded.querySelectorAll('img').length===1&&expanded.textContent.includes('expanded layout'),'expanded image restored');
   window.msbt.nativeItemPreview=async()=>({ok:false,message:"RuntimeError('New game cards require a solo session; existing screenshots remain available')"});
   const unavailable=document.createElement('div');host.append(unavailable);fillBl4ItemCard(unavailable,{serial:'@UUncached'});
   await wait(()=>unavailable.textContent.includes('No matching screenshot or cached card yet.'));
   check(!unavailable.textContent.includes('RuntimeError'),'raw solo exception leaked into card');
-  return {upload:true,gzo:true,native:true,community:true,mismatch:true,stale:true,serialMenus:6,clearUnavailableMessage:true};
+  return {upload:true,gzo:true,native:true,community:true,mismatch:true,stale:true,serialMenus:6,clearUnavailableMessage:true,layoutToggle:true};
  })()`);
  assert.equal(result.community,true);console.log(JSON.stringify(result));win.destroy();app.exit(0);
 }).catch(error=>{console.error(error);app.exit(1);});

@@ -816,9 +816,15 @@ async function resolvedNativePreview(serial,wantImage=true){
   }
   return localNativePreviewClient().getWithSnapshot(serial,{image:wantImage!==false});
 }
-ipcMain.handle('app:nativeItemPreview',async(_event,serial,wantImage=true)=>{
+ipcMain.handle('app:nativeItemPreview',async(_event,serial,wantImage=true,layout='auto')=>{
   try {
-    return {ok:true,...await resolvedNativePreview(serial,wantImage)};
+    if(!['auto','compact'].includes(layout))throw new Error('Unsupported card layout');
+    const result=await resolvedNativePreview(serial,wantImage);
+    // A layout switch uses the same exported game data, without rebuilding the
+    // item. The UI retains both images for subsequent toggles.
+    if(wantImage!==false&&layout==='compact'&&result.image?.layout==='expanded')
+      return {ok:true,...result,image:await nativePreviewCapture.capture(result.widget,{layout:'compact'})};
+    return {ok:true,...result};
   }
   catch(error){return {ok:false,message:error.message};}
 });

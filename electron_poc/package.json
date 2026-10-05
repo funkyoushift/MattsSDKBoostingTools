@@ -7,6 +7,7 @@
   "license": "MIT",
   "main": "main.js",
   "scripts": {
+    "test:card-layout": "node --test test_native_preview_client.js test_catalog_card_images.js && electron test_native_card_expanded.js && electron test_item_card_preview.js && electron test_item_card_views.js",
     "test:concurrent-delivery": "node test_poll_coordinator.js && electron test_concurrent_delivery_progress.js && electron test_afk_guest_progress.js",
     "test:languages": "node --check ui_localization.js && node --check ui_language_catalog.js && electron test_ui_i18n.js && electron test_ui_languages_full.js",
     "test:save-import": "node test_save_items_import.js && electron test_save_items_import_ui.js",

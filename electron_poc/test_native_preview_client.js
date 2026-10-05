@@ -21,7 +21,19 @@ test('offline snapshots retain exact serial and renderer identity without contac
   assert.equal((await offline.snapshot('@UCode')).offline,true);
   assert.equal(await offline.snapshot('@Ucode'),null);
   const changed=createNativePreviewClient({...options,renderRevision:'new-assets'});
-  assert.equal(await changed.snapshot('@UCode'),null);assert.equal(state.builds,1);
+  const renewed=await changed.snapshot('@UCode');
+  assert.equal(renewed.offline,true);assert.equal(renewed.renderRevision,'new-assets');
+  assert.equal(state.builds,1);assert.equal(state.renders,2);
+  await changed.snapshot('@UCode');assert.equal(state.renders,2);
+});
+
+test('concurrent offline layout refreshes share capture and preserve old session identity',async t=>{
+  const {client,options,state}=await setup(t);await client.connect();await client.get('@UCode');
+  const offline=createNativePreviewClient({...options,renderRevision:'expanded-layout',request:async()=>{throw Error('must not contact game');}});
+  const images=await Promise.all(Array.from({length:100},()=>offline.snapshot('@UCode')));
+  assert.equal(state.builds,1);assert.equal(state.renders,2);
+  assert.ok(images.every(x=>x.offline&&x.session==='a'.repeat(32)&&x.serial==='@UCode'));
+  assert.equal(await offline.snapshot('@Ucode'),null);
 });
 test('500 simultaneous refresh requests produce one preview and image; new client reuses disk',async t=>{
   const {state,client,options}=await setup(t);await client.connect();

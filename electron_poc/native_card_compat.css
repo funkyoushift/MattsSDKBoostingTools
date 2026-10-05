@@ -9,3 +9,14 @@ gbx-component, rarity-pips, elemental-damagetype, firmware-segments { display: b
 .item_card_manufacturer_bkg { height: auto; align-self: stretch; }
 .extended-passives .item_card_class_mod_passive_bkg { flex-wrap: wrap; gap: .5rem; }
 .extended-passives .item_card_class_mod_wrapper { flex: 0 0 calc(25% - .5rem); }
+/* User-approved readable alternative. These are MSBT layout choices, not
+ * native formatting rules. Compact mode keeps the extracted template. */
+.msbt-expanded-section { display: block; height: auto; min-height: 0; width: 100%; }
+.msbt-expanded-stats { width: 100%; font: 2rem Industry-Medium; color: #a0aeb1; }
+.msbt-expanded-stat { display: grid; grid-template-columns: 3.5rem minmax(0,1fr); gap: 1rem; padding: .7rem 0; border-bottom: .1rem solid #284450; }
+.msbt-expanded-icon { width: 3.5rem; height: 3.5rem; background-size: contain; background-position: center; background-repeat: no-repeat; }
+.msbt-expanded-stat-text { min-width: 0; overflow-wrap: anywhere; line-height: 1.3; }
+.msbt-expanded-label { color: #e4d9ce; font-family: Industry-DemiBold; }
+.msbt-expanded-value, .msbt-expanded-value p { white-space: normal; margin: 0; }
+.msbt-expanded-heading, .msbt-expanded-notice { font: 1.6rem Industry-Medium; color: #a0aeb1; padding: .6rem 0; }
+.msbt-expanded-notice { text-align: center; border-bottom: .1rem solid #284450; background: #0d1d26; color: #c2ced3; -webkit-text-stroke: 0; }

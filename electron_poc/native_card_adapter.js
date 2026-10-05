@@ -91,7 +91,50 @@ function bindNode(node, scope) {
   }
   for (const child of [...node.children]) bindNode(child, scope);
 }
-async function renderNativeCard(model, templates) {
+// Explicit MSBT presentation, not a recovered Cohtml font-fit algorithm.
+// Native data and row ordering remain untouched; only overflowing sections expand.
+function expandOverflowingSections(host, model) {
+  const card=host.querySelector('.item_card').getBoundingClientRect();
+  const overflowing=section=>[section,...section.querySelectorAll('[data-bind-value],[data-bind-markup]')].some(node=>{
+    const r=node.getBoundingClientRect();
+    return r.width>0&&r.height>0&&(r.left<card.left-1||r.right>card.right+1||node.scrollHeight>node.clientHeight+2);
+  });
+  const expanded=[];
+  const sections=[
+    ['.item_card_primary_stats','primary_stat_entries','Primary stats',false],
+    ['.item_card_class_mod_passive_bkg','primary_stat_entries','Skills',true],
+    ['.item_card_secondary_stats_augments','secondary_stat_entries','Item effects',false],
+    ['.item_card_enhancement .item_card_secondary_stats_enhance','secondary_stat_entries','Item effects',false]
+  ];
+  for(const [selector,field,title,skills] of sections){
+    const matches=[...host.querySelectorAll(selector)];
+    if(!matches.length||!matches.some(overflowing))continue;
+    // Enhancement rows are siblings inside one common section.
+    const section=selector.includes(' .')?matches[0].parentElement:matches[0];
+    const panel=document.createElement('div');panel.className='msbt-expanded-stats';
+    panel.dataset.statGroup=field;
+    const heading=document.createElement('div');heading.className='msbt-expanded-heading';heading.textContent=title;panel.append(heading);
+    for(const entry of model[field]){
+      const row=document.createElement('div');row.className='msbt-expanded-stat';
+      const icon=document.createElement('div');icon.className='msbt-expanded-icon';
+      if(entry.image)icon.style.backgroundImage=`url(${JSON.stringify(browserAssetUrl(entry.image))})`;
+      const content=document.createElement('div');content.className='msbt-expanded-stat-text';
+      const label=skills?entry.ident:entry.loc_text;
+      if(label){const name=document.createElement('div');name.className='msbt-expanded-label';name.textContent=label;content.append(name);}
+      const value=document.createElement('div');value.className='msbt-expanded-value';
+      value.innerHTML=MarkupMgr.ResolveMarkupText(safeMarkup(entry.value));content.append(value);
+      row.append(icon,content);panel.append(row);
+    }
+    section.replaceChildren(panel);section.classList.add('msbt-expanded-section');expanded.push(title);
+  }
+  if(expanded.length){
+    const note=document.createElement('div');note.className='msbt-expanded-notice';
+    note.textContent='Expanded layout · game data';
+    host.querySelector('.item_card').prepend(note);
+  }
+  return expanded;
+}
+async function renderNativeCard(model, templates, {layout='auto'}={}) {
   errors.length = 0;
   model = rewriteModelUrls(model);
   const host = document.getElementById("card-host");
@@ -122,6 +165,7 @@ async function renderNativeCard(model, templates) {
   card.Init(); card.DataModel = model; card.UpdateDamageType();
   await document.fonts.ready;
   for (const font of document.fonts) if (font.status === "error") errors.push(`Font failed: ${font.family}`);
+  const expandedSections=layout==='compact'?[]:expandOverflowingSections(host,model);
   // CSS backgrounds and border artwork are asynchronous too. Wait for every
   // computed resource before capture instead of accepting an incomplete frame.
   const imageUrls = new Set(), warnings = [...(model.artworkwarnings || [])];
@@ -138,7 +182,8 @@ async function renderNativeCard(model, templates) {
     image.src = url;
   })));
   await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-  return {errors, warnings, name:host.querySelector('.item_card_name')?.textContent || model.name,
+  return {errors, warnings, layout:expandedSections.length?'expanded':'compact', expandedSections,
+    name:host.querySelector('.item_card_name')?.textContent || model.name,
     width:host.querySelector('.item_card').getBoundingClientRect().width,
     height:host.querySelector('.item_card').getBoundingClientRect().height};
 }

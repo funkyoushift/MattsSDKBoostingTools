@@ -22,19 +22,19 @@ function makeCaptureWindow(BrowserWindow) {
 function createNativeWidgetCapture(BrowserWindow) {
   let win=null,tail=Promise.resolve(),closed=false;
   return {
-    capture(widget) {
+    capture(widget, options={}) {
       const model=require('./native_widget_card_model').fromNativeWidget(widget,{allowMissingArtwork:true});
       const job=tail.then(async()=>{
         if(closed)throw new Error('Native capture session is closed');
         if(!win||win.isDestroyed())win=makeCaptureWindow(BrowserWindow);
-        try {return await captureModel(BrowserWindow,model,win);}
+        try {return await captureModel(BrowserWindow,model,win,options);}
         catch(error) {
           // Chromium may lose the offscreen surface after many size changes.
           // Retry that capture once in a fresh window, with the same game data.
           if(!/UnknownVizError/.test(String(error?.message || error)))throw error;
           if(!win.isDestroyed())win.destroy();
           win=makeCaptureWindow(BrowserWindow);
-          return captureModel(BrowserWindow,model,win);
+          return captureModel(BrowserWindow,model,win,options);
         }
       });
       tail=job.catch(()=>{});return job;
@@ -43,12 +43,12 @@ function createNativeWidgetCapture(BrowserWindow) {
   };
 }
 
-async function captureModel(BrowserWindow, model, existingWindow=null) {
+async function captureModel(BrowserWindow, model, existingWindow=null, options={}) {
   const win = existingWindow || makeCaptureWindow(BrowserWindow);
   try {
     await win.loadURL("msbt-card://inventory/card.html");
     const render = () => win.webContents.executeJavaScript(
-      `renderNativeCard(${JSON.stringify(model)}, templates)`);
+      `renderNativeCard(${JSON.stringify(model)}, templates, ${JSON.stringify(options)})`);
     let result = await render();
     if (result.errors?.length) throw new Error(result.errors.join("; "));
     const height = Math.ceil(result.height);
@@ -87,7 +87,8 @@ async function captureModel(BrowserWindow, model, existingWindow=null) {
       png=nativeImage.createFromBitmap(Buffer.concat(rows.map(row=>row.bitmap)),{
         width:rows[0].width,height:rows.reduce((sum,row)=>sum+row.height,0)}).toPNG();
     }
-    return {ok:true, warnings:result.warnings || [], base64:png.toString("base64"), width:png.readUInt32BE(16),
+    return {ok:true, warnings:result.warnings || [], layout:result.layout, expandedSections:result.expandedSections,
+      base64:png.toString("base64"), width:png.readUInt32BE(16),
       height:png.readUInt32BE(20), cssWidth:546, cssHeight:height};
   } finally {
     if (!existingWindow && !win.isDestroyed()) win.destroy();

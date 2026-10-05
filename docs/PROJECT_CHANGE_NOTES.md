@@ -4,6 +4,9 @@ Before re-researching a feature, read its entry below and any linked component n
 
 ## Changes
 
+- [2026-10-04: Expanded item cards and hover previews](changes/2026-10-04-expanded-card-layout.md) — local readable layout for overflowing modded stats/skills, cropped thumbnails, full zoomable preview, compact switch and cached-data redraw after layout updates.
+- [2026-10-04: Cached cards during guest sessions](changes/2026-10-04-card-cache-solo-fallback.md) — local exact-serial previous-session fallback and readable unavailable message; generation safeguard retained.
+
 - [2026-10-04: Card helper reopening patch v2.29.1](changes/2026-10-04-card-window-reopen-patch.md) — tray and second launch target the main control panel; installed regular-profile Community Folder and restart checks passed.
 
 - [2026-10-04: Shared native-card release v2.29.0](changes/2026-10-04-shared-native-card-release.md) — published combined delivery/updater release with Community Folders and serial-menu previews, GZO/upload priority, guarded native service and offline snapshots; superseded by the reopening patch.

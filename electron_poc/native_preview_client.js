@@ -10,6 +10,8 @@ function createNativePreviewClient({request,capture,cacheDirectory,renderRevisio
   if(typeof renderRevision!=='string'||!renderRevision)throw new Error('Renderer revision is required');
   let scope=null,tail=Promise.resolve(),connectionGeneration=0;
   const pending=new Map();
+  const snapshotPending=new Map();
+  let widgetIndex=null;
   const action=(name,payload={})=>request({method:'POST',path:'/action',payload:{action:name,payload,timeout:15},timeoutMs:20000});
   async function connect(){
     const generation=++connectionGeneration;
@@ -105,7 +107,33 @@ function createNativePreviewClient({request,capture,cacheDirectory,renderRevisio
     job.then(()=>pending.delete(jobKey),()=>pending.delete(jobKey));
     return job;
   }
-  async function snapshot(serial){
+  async function previousWidget(serial){
+    // One bounded-file metadata scan per client, only when a rendered snapshot
+    // is missing. Older installs have session-specific widget files but no
+    // cross-session index. Never scan the much larger PNG-containing records.
+    if(!widgetIndex)widgetIndex=(async()=>{
+      const index=new Map(),directory=path.join(cacheDirectory,'widgets');
+      let files;try{files=await fs.readdir(directory);}catch(error){if(error.code==='ENOENT')return index;throw error;}
+      for(const name of files){
+        if(!/^[a-f0-9]{64}\.json$/.test(name))continue;
+        const file=path.join(directory,name);
+        try{
+          const stat=await fs.stat(file);if(stat.size>MAX_RECORD)continue;
+          const saved=JSON.parse(await fs.readFile(file,'utf8'));
+          if(saved.schema!==SCHEMA||!/^\w{32}$/.test(saved.session||'')||typeof saved.serial!=='string'||!saved.widget)continue;
+          if(name!==hash(JSON.stringify([SCHEMA,saved.session,saved.serial]))+'.json')continue;
+          if(!index.has(saved.serial)||index.get(saved.serial).time<stat.mtimeMs)index.set(saved.serial,{file,time:stat.mtimeMs});
+        }catch(error){if(!['ENOENT','SyntaxError'].includes(error.code||error.name))throw error;}
+      }
+      return index;
+    })();
+    const entry=(await widgetIndex).get(serial);if(!entry)return null;
+    if((await fs.stat(entry.file)).size>MAX_RECORD)return null;
+    const saved=JSON.parse(await fs.readFile(entry.file,'utf8'));
+    return saved.schema===SCHEMA&&saved.serial===serial&&saved.widget&&/^\w{32}$/.test(saved.session||'')&&
+      path.basename(entry.file)===hash(JSON.stringify([SCHEMA,saved.session,serial]))+'.json'?saved:null;
+  }
+  async function readSnapshot(serial){
     if(typeof serial!=='string'||!serial.startsWith('@U')||serial.length>8192)return null;
     try{
       const index=path.join(cacheDirectory,'snapshots',hash(JSON.stringify([SCHEMA,renderRevision,serial]))+'.json');
@@ -116,6 +144,32 @@ function createNativePreviewClient({request,capture,cacheDirectory,renderRevisio
       if(record.serial!==serial||record.schema!==SCHEMA||record.renderRevision!==renderRevision||!record.widget||!record.image?.ok)return null;
       return {...record,cached:true,offline:true};
     }catch{return null;}
+  }
+  async function snapshot(serial){
+    if(typeof serial!=='string'||!serial.startsWith('@U')||serial.length>8192||/[^\x20-\x7e]/.test(serial))return null;
+    if(snapshotPending.has(serial))return snapshotPending.get(serial);
+    const job=(async()=>{
+      const ready=await readSnapshot(serial);if(ready)return ready;
+      const saved=await previousWidget(serial);if(!saved)return null;
+      // Presentation updates can rerender immutable native data locally. They
+      // must not reconstruct the item or relabel old game data as current.
+      const image=await capture(saved.widget);
+      if(!image?.ok||typeof image.base64!=='string')throw new Error('Cached card image capture failed');
+      const record={...saved,renderRevision,image},data=JSON.stringify(record);
+      if(Buffer.byteLength(data)>MAX_RECORD)throw new Error('Native card cache entry is too large');
+      const key=hash(JSON.stringify([SCHEMA,saved.session,renderRevision,serial]));
+      const file=path.join(cacheDirectory,key+'.json');
+      const index=path.join(cacheDirectory,'snapshots',hash(JSON.stringify([SCHEMA,renderRevision,serial]))+'.json');
+      await fs.mkdir(path.dirname(index),{recursive:true});
+      for(const [target,contents] of [[file,data],[index,JSON.stringify({key})]]){
+        const temporary=target+'.'+crypto.randomUUID()+'.tmp';
+        try{await fs.writeFile(temporary,contents,{flag:'wx'});await fs.rename(temporary,target);}
+        finally{await fs.unlink(temporary).catch(error=>{if(error.code!=='ENOENT')throw error;});}
+      }
+      return {...record,cached:true,offline:true};
+    })();
+    snapshotPending.set(serial,job);
+    try{return await job;}finally{snapshotPending.delete(serial);}
   }
   async function getWithSnapshot(serial,options={}){
     try{return await get(serial,options);}
