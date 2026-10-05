@@ -4,6 +4,16 @@
 // still call the lifecycle methods on their base class during activation.
 class GbxCustomElement extends HTMLElement { Init() {} Activate() {} connectedCallback() {} }
 class Widget_OakHUDWidgetBase extends GbxCustomElement {}
+// Standalone images have no input-device/keybinding map. Preserve the native
+// action identifier as an explicitly unresolved prompt; never guess a key.
+// Attribute contract: extracted BL4 glyph_element.js:8, build 25372571.
+class UnresolvedCardGlyph extends HTMLElement {
+  static get observedAttributes() { return ['key','action','submap','hide_mkb','hide_gamepad','hidden_collapse','force_keyboard','force_gamepad','max_num_glyph','force_hold','hold_duration_override','disabled']; }
+  connectedCallback(){this.updateText();}
+  attributeChangedCallback(){this.updateText();}
+  updateText(){this.textContent='[input: '+(this.getAttribute('action')||this.getAttribute('key')||'unavailable')+']';}
+}
+customElements.define('gbx-glyph',UnresolvedCardGlyph);
 const TooltipMgr = {};
 // English defaults from the extracted gbxmain.js. No engine event bus offline.
 const LanguageSettings = {CurrentLangCode: "en", DisableNBSPMarkup: false};
@@ -169,6 +179,7 @@ async function renderNativeCard(model, templates, {layout='auto'}={}) {
   // CSS backgrounds and border artwork are asynchronous too. Wait for every
   // computed resource before capture instead of accepting an incomplete frame.
   const imageUrls = new Set(), warnings = [...(model.artworkwarnings || [])];
+  for(const glyph of host.querySelectorAll('gbx-glyph'))warnings.push('Input glyph unavailable: '+(glyph.getAttribute('action')||glyph.getAttribute('key')||'unknown'));
   for (const node of host.querySelectorAll("*")) {
     const style = getComputedStyle(node);
     for (const css of [style.backgroundImage, style.borderImageSource])

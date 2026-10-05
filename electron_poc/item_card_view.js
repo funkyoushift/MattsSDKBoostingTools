@@ -62,7 +62,7 @@
       if(uploaded){try {await loadImage(uploaded.image);if(current())marker.textContent=uploaded.source;return;}catch {}}
       const existing=await catalogImage(item.serial);
       if(!current())return;
-      if(existing?.image){try{await loadImage(existing.image,existing.itemCard?.name);if(current())marker.textContent='GZO item card';publishName(existing.itemCard?.name,'GZO card');return;}catch{}}
+      if(existing?.image){try{await loadImage(existing.image,existing.itemCard?.name);if(current())marker.textContent='GZO item card';return;}catch{}}
       const reply=await root.msbt.nativeItemPreview(item.serial);
       if(!current())return;
       if(!reply?.ok||!reply.image?.base64)throw new Error(reply?.message||'Open a supported BL4 solo session to generate this card.');

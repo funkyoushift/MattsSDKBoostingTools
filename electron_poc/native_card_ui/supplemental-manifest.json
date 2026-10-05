@@ -1,0 +1,46 @@
+{
+  "game_build": "25372571",
+  "source": "Installed game raw PNGs; no image modification",
+  "files": [
+    {
+      "file": "uiresources/_shared/assets/ico_ui_art_weapon_small/ico_art_item_card_grenade_borg_small.png",
+      "sha256": "e9f547421a3000f99e3041d2888f40c20cc203e2b86e39d2b20ea86aee2d87b0",
+      "source": "OakGame/Content/uiresources/_shared/assets/ico_ui_art_weapon_small/ico_art_item_card_grenade_borg_small.png"
+    },
+    {
+      "file": "uiresources/_shared/assets/ico_ui_art_weapon_small/ico_art_item_card_grenade_daedalus_small.png",
+      "sha256": "2fca9444e693d2ea2fd16321a472b77a9d2fd96cd44b18cb31bd27c4743df851",
+      "source": "OakGame/Content/uiresources/_shared/assets/ico_ui_art_weapon_small/ico_art_item_card_grenade_daedalus_small.png"
+    },
+    {
+      "file": "uiresources/_shared/assets/ico_ui_art_weapon_small/ico_art_item_card_grenade_jakobs_small.png",
+      "sha256": "ec672c9dd547051b6e1447adef61ce43731a185399e1178640a33becfa88bad3",
+      "source": "OakGame/Content/uiresources/_shared/assets/ico_ui_art_weapon_small/ico_art_item_card_grenade_jakobs_small.png"
+    },
+    {
+      "file": "uiresources/_shared/assets/ico_ui_art_weapon_small/ico_art_item_card_grenade_maliwan_small.png",
+      "sha256": "9783bc1bb2d1c3b6d4ac2ba679207cca9478a8c43a75c49e05d0951a84e1a5f6",
+      "source": "OakGame/Content/uiresources/_shared/assets/ico_ui_art_weapon_small/ico_art_item_card_grenade_maliwan_small.png"
+    },
+    {
+      "file": "uiresources/_shared/assets/ico_ui_art_weapon_small/ico_art_item_card_grenade_order_small.png",
+      "sha256": "9b87ea2dd4ab9c07cc2b257accd52e102ea64b95754d190ced74bf18d4738dd2",
+      "source": "OakGame/Content/uiresources/_shared/assets/ico_ui_art_weapon_small/ico_art_item_card_grenade_order_small.png"
+    },
+    {
+      "file": "uiresources/_shared/assets/ico_ui_art_weapon_small/ico_art_item_card_grenade_tediore_small.png",
+      "sha256": "0495c38fc604273b782de24ea146797438bcdc49fe85628ca54ef6579f9152c9",
+      "source": "OakGame/Content/uiresources/_shared/assets/ico_ui_art_weapon_small/ico_art_item_card_grenade_tediore_small.png"
+    },
+    {
+      "file": "uiresources/_shared/assets/ico_ui_art_weapon_small/ico_art_item_card_grenade_torgue_small.png",
+      "sha256": "c817f0967132546394d5431bc556fd0068420d3d4d7faef3d1d17fc5a24e112e",
+      "source": "OakGame/Content/uiresources/_shared/assets/ico_ui_art_weapon_small/ico_art_item_card_grenade_torgue_small.png"
+    },
+    {
+      "file": "uiresources/_shared/assets/ico_ui_art_weapon_small/ico_art_item_card_grenade_vladof_small.png",
+      "sha256": "382ad5cd28f96d69608f929612baba5edb4eabd8230e578caeceaebcc4f1563b",
+      "source": "OakGame/Content/uiresources/_shared/assets/ico_ui_art_weapon_small/ico_art_item_card_grenade_vladof_small.png"
+    }
+  ]
+}

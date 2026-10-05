@@ -22,7 +22,7 @@ WIDGET_GATES=(
 
 
 def project_default_widget(native, model, stage):
-    """Caller must verify WIDGET_GATES, game thread/profile and solo context."""
+    """Caller verifies WIDGET_GATES, game thread/profile and session/trial gate."""
     import unrealsdk
     owner_storage=C.create_string_buffer(0x3b0)
     owner=C.addressof(owner_storage)

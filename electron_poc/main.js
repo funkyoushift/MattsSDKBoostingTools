@@ -785,7 +785,7 @@ let nativePreviewClient=null,nativePreviewCapture=null,nativePreviewConnection=n
 function localNativePreviewClient() {
   if(!nativePreviewClient){
     const hash=require('node:crypto').createHash('sha256');
-    for(const file of ['native_card_ui/manifest.json','native_card_adapter.js','native_card_protocol.js','native_card_compat.css','native_widget_card_model.js','native_card_capture.js'])hash.update(fsSync.readFileSync(path.join(__dirname,file)));
+    for(const file of ['native_card_ui/manifest.json','native_card_ui/supplemental-manifest.json','native_card_adapter.js','native_card_protocol.js','native_card_compat.css','native_widget_card_model.js','native_card_capture.js'])hash.update(fsSync.readFileSync(path.join(__dirname,file)));
     nativePreviewCapture=require('./native_card_capture').createNativeWidgetCapture(BrowserWindow);
     nativePreviewClient=require('./native_preview_client').createNativePreviewClient({
       request:async args=>{const result=await requestBridge(args);return result.data;},

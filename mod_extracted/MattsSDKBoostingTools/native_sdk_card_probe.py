@@ -77,7 +77,7 @@ def fill_default_price(native, identity, model, stage):
     return price
 
 
-def run(serial, output, *, expected_game_thread, include_price=False, include_widget=False, compare_self=True, export_model=True):
+def run(serial, output, *, expected_game_thread, include_price=False, include_widget=False, compare_self=True, export_model=True, allow_multiplayer_trial=False):
     from MattsSDKBoostingTools.direct_inventory import NativeInventory, FString
     from MattsSDKBoostingTools.party_helpers import _gbc_session_world_and_gamestate
     kernel = C.WinDLL('kernel32', use_last_error=True)
@@ -86,11 +86,18 @@ def run(serial, output, *, expected_game_thread, include_price=False, include_wi
     if not expected_game_thread or actual_thread != expected_game_thread:
         raise RuntimeError('Must execute on the independently observed SDK game thread')
     _, game_state = _gbc_session_world_and_gamestate()
-    if game_state is None or len(game_state.PlayerArray) != 1:
+    player_count = len(game_state.PlayerArray) if game_state is not None else 0
+    if player_count < 1:
+        raise RuntimeError('New game cards require an active game session')
+    # Research-only opt-in. Production service deliberately never supplies it.
+    # Thread/build/hash/ownership gates below apply equally to a bounded trial.
+    if player_count != 1 and not allow_multiplayer_trial:
         raise RuntimeError('New game cards require a solo session; existing screenshots remain available')
     if not isinstance(serial, str) or not serial.startswith('@U') or not serial.isascii() or len(serial) > 8192:
         raise ValueError('Unsupported probe serial')
     output = Path(output) if output is not None else None
+    if allow_multiplayer_trial and output is None:
+        raise ValueError('Multiplayer trials require a new evidence filename')
     if output is not None and output.exists():
         raise FileExistsError('Use a new evidence filename')
     native = NativeInventory()
@@ -116,6 +123,7 @@ def run(serial, output, *, expected_game_thread, include_price=False, include_wi
     native_free = bind(0x20A8, C.c_void_p)
 
     report = dict(profile=native.profile, thread=actual_thread, serial=serial,
+                  session_players=player_count, multiplayer_trial=bool(allow_multiplayer_trial),
                   function_hashes=[dict(rva=hex(a), sha256=h) for a, _, h in active_gates],
                   stages=[], inventory_insertions=0, comparison='self' if compare_self else 'empty',
                   limitation='Single detached live SDK research probe; not complete UI binding or general safety proof')

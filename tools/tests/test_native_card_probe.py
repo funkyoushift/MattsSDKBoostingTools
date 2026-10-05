@@ -89,6 +89,20 @@ class ProbeTest(unittest.TestCase):
         self.assertEqual(result['stages'][-1], 'destroy_identity_complete')
         self.assertEqual(json.loads(self.output.read_text())['inventory_insertions'], 0)
 
+    def test_explicit_multiplayer_trial_retains_native_cleanup(self):
+        self.party.append(object())
+        result=self.run_probe(allow_multiplayer_trial=True,compare_self=False)
+        self.assertEqual(result['session_players'],2)
+        self.assertTrue(result['multiplayer_trial'])
+        self.assertEqual(result['inventory_insertions'],0)
+        self.assertEqual(self.events[-3:],['0x8e1aa38','identity_destroy','identity_destroy'])
+
+    def test_trial_does_not_bypass_world_or_thread_checks(self):
+        self.party.clear()
+        with self.assertRaisesRegex(RuntimeError,'active game session'):
+            self.run_probe(allow_multiplayer_trial=True)
+        self.assertEqual(self.events,[])
+
     def test_fill_failure_still_destroys_both(self):
         self.fill_error = True
         with self.assertRaisesRegex(RuntimeError, 'simulated fill'): self.run_probe()

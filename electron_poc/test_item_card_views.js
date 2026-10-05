@@ -21,7 +21,7 @@ app.whenReady().then(async()=>{
   const gzo=document.createElement('div'),gzoTitle=document.createElement('span');host.append(gzo,gzoTitle);
   bindSavedCardTitle(gzo,gzoTitle,{serial:'@UGzo',name:'Old GZO label'});fillBl4ItemCard(gzo,{serial:'@UGzo'});
   await wait(()=>gzo.querySelector('img'));check(native.length===0,'GZO must bypass native');
-  await wait(()=>gzoTitle.textContent==='GZO name');
+  check(gzoTitle.textContent==='Old GZO label','GZO items retain their existing saved title');
   check(gzoTitle.title.includes('Old GZO label'),'GZO keeps original label available');
   const generated=document.createElement('div');host.append(generated);fillBl4ItemCard(generated,{serial:'@UUnknown'});
   await wait(()=>generated.querySelector('img'));check(native.includes('@UUnknown'),'unknown uses native');

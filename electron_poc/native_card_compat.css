@@ -3,6 +3,8 @@
  * Paint the native outline behind the fill to avoid swallowing thin glyphs.
  */
 gbx-component, rarity-pips, elemental-damagetype, firmware-segments { display: block; }
+/* Explicit unresolved input prompt in a static image, not a guessed key icon. */
+gbx-glyph { display: inline; white-space: normal; overflow-wrap: anywhere; }
 .item_card_element1, .item_card_element2 { width: 100%; height: 100%; }
 .tooltip_text_shadow, .tooltip_text_shadow * { paint-order: stroke fill; }
 /* A percentage height in the auto-sized flex row collapses in Chromium. */

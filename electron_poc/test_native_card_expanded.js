@@ -47,6 +47,11 @@ app.whenReady().then(async()=>{
   fs.writeFileSync(path.join(output,key+'-expanded.png'),Buffer.from(captured.base64,'base64'));
   results.push({key,layout:captured.layout,height:captured.cssHeight,rows:model.primary_stat_entries.length});
  }
+ // Real native grenade text contains an input action. It must not discard the
+ // entire card or fabricate a keyboard/controller binding when none was exported.
+ const glyphWidget=require('./fixtures/native_widgets/inline-glyph.json');
+ const glyphReport=await win.webContents.executeJavaScript(`(async()=>{const model=${JSON.stringify(require('./native_widget_card_model').fromNativeWidget(glyphWidget,{allowMissingArtwork:true}))};const result=await renderNativeCard(model,templates);return {result,prompt:document.querySelector('gbx-glyph')?.textContent,firmware:document.querySelector('.firmware_name_cntr')?.textContent};})()`);
+ assert.deepEqual(glyphReport.result.errors,[]);assert.equal(glyphReport.prompt,'[input: action_gadget]');assert.equal(glyphReport.firmware,'Risky Boots');assert.ok(glyphReport.result.warnings.includes('Input glyph unavailable: action_gadget'));
  // User-controlled strings remain text even in the alternate markup layout.
  const safety=await win.webContents.executeJavaScript(`(async()=>{
  const model=${JSON.stringify(require('./native_widget_card_model').fromNativeWidget(require('./fixtures/native_widgets/draupner.json'),{allowMissingArtwork:true}))};
