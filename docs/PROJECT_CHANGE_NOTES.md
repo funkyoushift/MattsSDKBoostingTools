@@ -4,6 +4,10 @@ Before re-researching a feature, read its entry below and any linked component n
 
 ## Changes
 
+- [2026-10-05: Community-first README and full Mod Database review](changes/2026-10-05-community-first-readme.md) — rebuilt the README around named creators, removed stale screenshots, and checked 35 database entries including archived source.
+
+- [2026-10-05: Visible contributor credits](changes/2026-10-05-visible-contributor-credits.md) — verified current GitHub credits and added local desktop attribution beside documented Squ1ggs contributions; source-only, not released.
+
 - [2026-10-05: Live editor cards and multiplayer generation](changes/2026-10-05-editor-live-cards.md) — automatic current-item preview, latest-output scheduling and removal of the solo-only policy at Matt's request; release verification below.
 
 - [2026-10-05: Firmware identity and static community cards](changes/2026-10-05-static-cards-and-firmware.md) — firmware audit, explicit unresolved input glyphs, GZO-name preservation, approved-folder image export, website previews and guarded multiplayer trial preparation.

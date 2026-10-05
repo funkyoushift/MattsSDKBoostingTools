@@ -49,6 +49,25 @@ See [Attribution review](https://github.com/funkyoushift/MattsSDKBoostingTools/b
 for evidence, maintainer-provided history, and unresolved boundaries. No claim
 about the origin of another developer's entire project is intended.
 
+## Additional explicit community acknowledgments (2026-10-05)
+
+The current [BL4 Mod Database review](changes/2026-10-05-community-first-readme.md)
+identifies **juso and smugg** as BLImGui's authors. BLImGui supported MSBT's
+earlier in-game interface; the current Electron/native F7 UI does not require it.
+[Published entry](https://bl-sdk.github.io/oak2-mod-db/mods/blimgui/) and
+[source](https://github.com/juso40/blimgui).
+
+Squ1ggs' documented contribution also includes the SQBT-pattern spawn-anchor
+and re-aggro helpers in `spawn_helpers.py`, introduced by `a956860`. This
+acknowledgment complements the compact-layout credit and preserves Matt's
+separate Actor Script Deployer backend credit. It does not assign all spawning
+code or catalog data to either author.
+
+The Quick Menu source records Azzy UVH Booster as inspiration for move, resize,
+and theme controls. Credit Azalea for that interface contribution as well as
+her UVH workflow. The current database authors and license labels are captured
+in the linked review; historical audit labels describe their original dates.
+
 ## Desktop runtime and npm packages
 
 Electron and Chromium notices are emitted next to the packaged executable as
