@@ -1,8 +1,8 @@
 {
-  "package_version": "2.29.0",
-  "app_version": "2.29.0",
-  "sdkmod_version": "2.29.0",
-  "resources_version": "2.29.0",
+  "package_version": "2.29.1",
+  "app_version": "2.29.1",
+  "sdkmod_version": "2.29.1",
+  "resources_version": "2.29.1",
   "git_commit": "52acf13d1b7e008dbaf06c8f652f5268ce3ff9d0",
   "built_at_utc": "2026-10-05T01:53:43Z",
   "sdk_required": "oak2-mod-manager v0.3",
