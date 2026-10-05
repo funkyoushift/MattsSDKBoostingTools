@@ -1,0 +1,22 @@
+const assert = require('assert/strict');
+const path = require('path');
+const {selectSdkTarget, loadedSdkState} = require('./sdk_target');
+(async () => {
+  const steam=path.resolve('Steam/sdk_mods'), epic=path.resolve('Epic/sdk_mods');
+  const base={candidates:[epic,steam], normalize:p=>path.resolve(p), valid:async p=>[steam,epic].includes(p)};
+  assert.equal((await selectSdkTarget(base)).ok,false);
+  assert.equal((await selectSdkTarget({...base,explicit:steam,remembered:epic})).path,steam);
+  assert.equal((await selectSdkTarget({...base,running:[steam],remembered:epic})).path,steam);
+  assert.equal((await selectSdkTarget({...base,remembered:steam})).path,steam);
+  assert.equal((await selectSdkTarget({...base,explicit:'missing'})).ok,false);
+  assert.equal((await selectSdkTarget({...base,explicit:epic,running:[steam]})).runningMismatch,true);
+  assert.equal((await selectSdkTarget({...base,candidates:[epic]})).path,epic);
+  const installed={path:path.join(steam,'MattsSDKBoostingTools.sdkmod'),sha256:'new'};
+  const input={running:true,installed,target:{},runtime:{sdkmod_path:installed.path,sha256:'new',version:'2.28.0'}};
+  assert.equal(loadedSdkState(input).status,'current');
+  assert.equal(loadedSdkState({...input,runtime:{...input.runtime,sha256:'old'}}).status,'restart_required');
+  assert.equal(loadedSdkState({...input,runtime:null}).status,'unverified');
+  assert.equal(loadedSdkState({...input,runtime:{...input.runtime,sdkmod_path:epic}}).status,'wrong_installation');
+  assert.equal(loadedSdkState({...input,running:false}).status,'not_running');
+  console.log('PASS Steam/Epic selection, ambiguity, missing targets, loaded hash, restart and unknown old SDK');
+})().catch(error=>{console.error(error);process.exitCode=1;});

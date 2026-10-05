@@ -7649,7 +7649,7 @@ function renderUpdateCards(info) {
     updaterStatus === "available" || updaterStatus === "progress" ? "warning" : updaterStatus === "error" ? "bad" : updaterStatus === "downloaded" || updaterStatus === "none" ? "ok" : ""
   );
 
-  setLine(els.bundledSdkVersion, `Version: ${versionValue(data.sdkmodVersion || localManifest.sdkmod_version)}`);
+  setLine(els.bundledSdkVersion, `Bundled version: ${versionValue(data.sdkmodVersion || localManifest.sdkmod_version)}`);
   setLine(
     els.bundledSdkStatus,
     bundled.available ? `Bundled file: ready (${shortHash(bundled.sha256)})` : "Bundled file: missing from this app build.",
@@ -7658,8 +7658,8 @@ function renderUpdateCards(info) {
 
   setLine(
     els.installedSdkStatus,
-    installed.message || "Installed file: not detected yet.",
-    installedSdkKind(installed)
+    [installed.message || "Installed file: not detected yet.", data.loadedSdk?.message || 'Loaded game SDK has not been checked.'].join(' '),
+    data.loadedSdk && !['current','not_running'].includes(data.loadedSdk.status) ? 'warning' : installedSdkKind(installed)
   );
   setLine(
     els.installedSdkPath,
@@ -7874,7 +7874,10 @@ function renderVersionInfo(info) {
 
 async function refreshVersionInfo() {
   if (!window.msbt || typeof window.msbt.getVersionInfo !== "function") return null;
-  const info = await window.msbt.getVersionInfo();
+  const selectedPath = getValue(els.sdkModsPath);
+  const info = await window.msbt.getVersionInfo(selectedPath);
+  if (getValue(els.sdkModsPath) !== selectedPath) return null;
+  if (!selectedPath && info?.sdkTarget?.path) setTextValue(els.sdkModsPath, info.sdkTarget.path);
   renderVersionInfo(info);
   if (info && info.updateState) renderUpdateState(info.updateState);
   return info;
@@ -7915,7 +7918,7 @@ async function checkUpdates(options = {}) {
   const startup = Boolean(options && options.startup);
   setLine(els.updateSummary, "Checking GitHub Releases...", "warning");
   await refreshVersionInfo();
-  const result = await window.msbt.checkUpdates();
+  const result = await window.msbt.checkUpdates(getValue(els.sdkModsPath));
   setOutput(els.updateOutput, result);
   state.latestInstallerUrl = result.electronInstallerUrl || result.latestUrl || state.latestInstallerUrl;
   state.latestDownloadUrl = state.latestInstallerUrl;
@@ -7947,7 +7950,12 @@ async function checkUpdates(options = {}) {
       "warning"
     );
   } else {
-    setLine(els.updateSummary, `The Desktop App is up to date: ${localAppVersion}`, "ok");
+    const filesCurrent = result.installedSdkmod?.matchesBundled === true;
+    const runtimeCurrent = ['current', 'not_running'].includes(result.loadedSdk?.status);
+    setLine(els.updateSummary, `Desktop app is current: ${localAppVersion}. ` +
+      (!filesCurrent ? 'Selected game SDK still needs updating or checking.' :
+       !runtimeCurrent ? result.loadedSdk?.message || 'Running game SDK is not verified.' : result.loadedSdk.message),
+      filesCurrent && runtimeCurrent ? 'ok' : 'warning');
   }
 }
 
@@ -7963,7 +7971,7 @@ async function installDownloadedElectronUpdate() {
   const confirmed = window.confirm("Restart Borderlands 4 Modding Tools now and install the downloaded update?");
   if (!confirmed) return;
   try {
-    const result = await window.msbt.installDownloadedUpdate();
+    const result = await window.msbt.installDownloadedUpdate(getValue(els.sdkModsPath));
     setOutput(els.updateOutput, result);
     setLine(els.updateSummary, result.message || "Install request finished.", result.ok ? "ok" : "bad");
   } catch (error) {
@@ -8065,6 +8073,7 @@ async function recheckSdkStack() {
     });
   }
   setLine(els.sdkInstallSummary, result.message || "SDK stack re-check finished.", result.ok ? "ok" : "warning");
+  await refreshVersionInfo();
   return result;
 }
 
@@ -13648,6 +13657,9 @@ function wireEvents() {
     els.sdkModsPath.addEventListener("change", () => {
       const sdkModsPath = getValue(els.sdkModsPath);
       if (sdkModsPath) void rememberUserPaths({ sdkModsPath });
+      setLine(els.installedSdkStatus, 'Checking the selected installation…', 'warning');
+      setLine(els.installedSdkPath, sdkModsPath ? `Selected folder: ${sdkModsPath}` : 'No folder selected.');
+      void refreshVersionInfo();
     });
   }
   const installSdkModBtn = document.getElementById("installSdkModBtn");

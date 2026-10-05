@@ -23,10 +23,11 @@ static class Program
             }
             catch (Exception error) { Console.Error.WriteLine(error.Message); return 1; }
         }
-        bool apply = args.Length == 3 && args[0] == "--apply" && args[1] == "--wait-pid" && int.TryParse(args[2], out _);
+        bool apply = (args.Length == 3 || (args.Length == 5 && args[3] == "--game-root" && Path.IsPathFullyQualified(args[4])))
+            && args[0] == "--apply" && args[1] == "--wait-pid" && int.TryParse(args[2], out _);
         bool uninstall = args.SequenceEqual(new[] { "--uninstall" });
         if (args.Length != 0 && !apply && !uninstall) return 2;
-        using var form = new SetupForm(apply ? int.Parse(args[2]) : null, uninstall);
+        using var form = new SetupForm(apply ? int.Parse(args[2]) : null, uninstall, apply && args.Length == 5 ? args[4] : null);
         Application.Run(form);
         return form.Result;
     }
@@ -43,9 +44,10 @@ sealed class SetupForm : Form
     readonly bool uninstall;
     bool busy;
     public int Result { get; private set; }
-    public SetupForm(int? waitPid, bool uninstall)
+    public SetupForm(int? waitPid, bool uninstall, string? gameRoot = null)
     {
         this.waitPid = waitPid; this.uninstall = uninstall;
+        selectedGameRoot = gameRoot;
         Text = "Borderlands 4 Modding Tools — Powered by Funk — Setup"; Width = 800; Height = 340; StartPosition = FormStartPosition.CenterScreen;
         MinimumSize = Size;
         var buttons = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 60, Padding = new Padding(15) };

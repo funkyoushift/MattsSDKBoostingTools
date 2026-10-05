@@ -19,6 +19,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any, Callable
 
 from . import backend_actions, mobile_lan, perf_profile, quick_menu_registry
+from .runtime_identity import LOADED_SDK
 from .game_parameters import CURRENCY_KINDS, EXP_TRACKS, status_parameters
 
 try:
@@ -1076,6 +1077,7 @@ def _status() -> dict[str, Any]:
     return {
         "ok": True,
         "name": "MattsSDKBoostingTools external bridge",
+        "sdk_runtime": dict(LOADED_SDK),
         "host": _HOST,
         "port": _PORT,
         "started": _started,

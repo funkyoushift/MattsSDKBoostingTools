@@ -1103,25 +1103,27 @@ async function installedSdkmodInfo(destination, bundledHash = "") {
   };
 }
 
-async function detectInstalledSdkmodInfo(bundledHash = "") {
-  for (const candidate of bl4SdkModsCandidates()) {
-    const info = await sdkModsPathInfo(candidate, bundledHash);
-    if (info.ok || (info.installedSdkmod && info.installedSdkmod.available)) {
-      return { ...info.installedSdkmod, sdkModsPath: info.path };
-    }
+async function resolveSdkTarget(rawPath = '') {
+  let processes = [], queryFailed = false;
+  if (process.platform === 'win32') {
+    try {
+      const {stdout} = await execFileAsync('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command',
+        "@(Get-CimInstance Win32_Process -Filter \"Name='Borderlands4.exe'\" | Select-Object ExecutablePath) | ConvertTo-Json -Compress"],
+        {windowsHide:true, timeout:10000});
+      const rows = JSON.parse(stdout.trim() || '[]');
+      processes = Array.isArray(rows) ? rows : [rows];
+    } catch { queryFailed = true; }
   }
-  return {
-    available: false,
-    path: "",
-    sdkModsPath: "",
-    sha256: "",
-    status: "not_detected",
-    matchesBundled: false,
-    message: "No Borderlands 4 sdk_mods folder was auto-detected."
-  };
+  const prefs = await loadMattEditorPrefsData();
+  const running = processes.map(row => row.ExecutablePath).filter(Boolean).map(executable =>
+    path.join(path.dirname(path.dirname(path.dirname(path.dirname(executable)))), 'sdk_mods'));
+  const target = await require('./sdk_target').selectSdkTarget({explicit:rawPath, running,
+    remembered:prefs?.data?.sdkModsPath || '', candidates:bl4SdkModsCandidates(), normalize:normalizeSdkModsPath,
+    valid:folder => oak2Install.looksLikeBl4GameRoot(path.dirname(folder))});
+  return {...target, running:queryFailed || processes.length > 0, runningQueryFailed:queryFailed};
 }
 
-async function localVersionInfo() {
+async function localVersionInfo(rawPath = '') {
   let manifest = {};
   try {
     manifest = await readJsonFile(LOCAL_MANIFEST_PATH);
@@ -1130,14 +1132,20 @@ async function localVersionInfo() {
   }
   const bundledSdkmod = await bundledSdkmodInfo();
   const bundledActorScriptDeployer = await bundledActorScriptDeployerInfo();
-  const installedSdkmod = await detectInstalledSdkmodInfo(bundledSdkmod.sha256);
+  const sdkTarget = await resolveSdkTarget(rawPath);
+  const installedSdkmod = sdkTarget.ok
+    ? {...await installedSdkmodInfo(path.join(sdkTarget.path, 'MattsSDKBoostingTools.sdkmod'), bundledSdkmod.sha256), sdkModsPath:sdkTarget.path}
+    : {available:false, matchesBundled:false, status:'unverified', path:'', message:sdkTarget.message};
+  const bridge = sdkTarget.running ? await requestBridge({path:'/status', timeoutMs:1500}) : null;
+  const loadedSdk = require('./sdk_target').loadedSdkState({running:sdkTarget.running,
+    runtime:bridge?.ok ? bridge.data?.sdk_runtime : null, installed:installedSdkmod, target:sdkTarget});
   let oak2 = null;
   let requiredMods = null;
   try {
     const sdkModsPath = installedSdkmod && installedSdkmod.sdkModsPath
       ? installedSdkmod.sdkModsPath
       : "";
-    const detection = await detectOak2Status(sdkModsPath);
+    const detection = sdkModsPath ? await detectOak2Status(sdkModsPath) : {};
     oak2 = detection.oak2 || null;
     requiredMods = detection.requiredMods || null;
   } catch {
@@ -1173,11 +1181,12 @@ async function localVersionInfo() {
     bundledSdkmod,
     bundledActorScriptDeployer,
     installedSdkmod,
+    sdkTarget, loadedSdk,
     updateState: latestUpdateState
   };
 }
 
-ipcMain.handle("app:getVersionInfo", async () => localVersionInfo());
+ipcMain.handle("app:getVersionInfo", async (_event, rawPath) => localVersionInfo(rawPath));
 
 async function isBorderlandsRunning() {
   if (process.platform !== "win32") return false;
@@ -1242,17 +1251,8 @@ async function sdkModsPathInfo(rawPath, bundledHash = "", options = {}) {
 }
 
 async function autoDetectSdkModsPathInfo(options = {}) {
-  const candidates = bl4SdkModsCandidates();
-  for (const candidate of candidates) {
-    const info = await sdkModsPathInfo(candidate, "", options);
-    if (info.ok) return info;
-  }
-  return {
-    ok: false,
-    path: "",
-    candidates,
-    message: oak2Install.missingGameMessage()
-  };
+  const target = await resolveSdkTarget();
+  return target.ok ? sdkModsPathInfo(target.path, (await bundledSdkmodInfo()).sha256, options) : target;
 }
 
 ipcMain.handle("app:detectSdkMods", async () => {
@@ -1300,10 +1300,9 @@ async function installBundledSdkMods(rawPath = "", options = {}) {
   if (gameWasRunning && !allowGameRunning) {
     return { ok: false, message: "Borderlands4.exe is running. Close the game before installing or updating the SDK mod." };
   }
-  const hasPath = Boolean(String(rawPath || "").trim());
-  const info = hasPath
-    ? await sdkModsPathInfo(rawPath, "", { allowMissing: Boolean(options && options.allowMissing) })
-    : await autoDetectSdkModsPathInfo({ allowMissing: Boolean(options && options.allowMissing) });
+  const target = await resolveSdkTarget(rawPath);
+  if (!target.ok) return target;
+  const info = await sdkModsPathInfo(target.path, "", { allowMissing: Boolean(options && options.allowMissing) });
   if (!info.ok) return info;
   const resourceRoot = app.isPackaged ? process.resourcesPath : path.join(__dirname, "vendor");
   const runtime = await oak2Install.installOak2FromCache(app.getPath("userData"), info.gameRoot, {
@@ -1323,6 +1322,10 @@ async function installBundledSdkMods(rawPath = "", options = {}) {
   const enabled = await oak2Install.enableRequiredMods(info.path);
   const bundled = await bundledSdkmodInfo();
   const refreshed = await sdkModsPathInfo(info.path, bundled.sha256, { allowMissing: true });
+  if (!refreshed.installedSdkmod?.matchesBundled || !enabled.ok || !pak.installed) {
+    return {ok:false, path:info.path, installedSdkmod:refreshed.installedSdkmod,
+      message:'Game integration verification failed. The update is not complete.', runtime, pak, enabledMods:enabled};
+  }
   return {
     ok: true,
     path: info.path,
@@ -1344,7 +1347,9 @@ async function installBundledSdkMods(rawPath = "", options = {}) {
 }
 
 async function detectOak2Status(rawPath = "") {
-  const gameRoot = await oak2Install.resolveGameRoot(rawPath);
+  const target = await resolveSdkTarget(rawPath);
+  if (!target.ok) return target;
+  const gameRoot = target.gameRoot;
   if (!gameRoot) {
     return {
       ok: false,
@@ -1368,7 +1373,8 @@ async function detectOak2Status(rawPath = "") {
     hasOak2: Boolean(oak2.ok),
     sdkPresent: Boolean(oak2.ok),
     requiredMods,
-    message: oak2.message
+    ok:Boolean(oak2.ok && pathInfo.installedSdkmod?.matchesBundled && requiredMods?.mods?.every(mod => mod.installed && mod.enabled)),
+    message: pathInfo.installedSdkmod?.matchesBundled ? oak2.message : 'Game SDK needs updating in this installation.'
   };
 }
 
@@ -1378,7 +1384,9 @@ async function installOak2SdkManager(rawPath = "", options = {}) {
   if (gameWasRunning && !allowGameRunning) {
     return { ok: false, message: "Borderlands4.exe is running. Close the game before installing oak2-mod-manager." };
   }
-  const gameRoot = await oak2Install.resolveGameRoot(rawPath);
+  const target = await resolveSdkTarget(rawPath);
+  if (!target.ok) return target;
+  const gameRoot = target.gameRoot;
   if (!gameRoot) {
     return {
       ok: false,
@@ -2681,8 +2689,8 @@ ipcMain.handle("app:mattEditorUrl", async () => {
   }
 });
 
-ipcMain.handle("app:checkUpdates", async () => {
-  const versionInfo = await localVersionInfo();
+ipcMain.handle("app:checkUpdates", async (_event, rawPath) => {
+  const versionInfo = await localVersionInfo(rawPath);
   const local = versionInfo.localManifest || {};
 
   try {
@@ -2723,6 +2731,7 @@ ipcMain.handle("app:checkUpdates", async () => {
       packageVersion: versionInfo.packageVersion,
       sdkmodVersion: versionInfo.sdkmodVersion,
       resourcesVersion: versionInfo.resourcesVersion,
+      sdkTarget:versionInfo.sdkTarget, loadedSdk:versionInfo.loadedSdk,
       sdkRequired: versionInfo.sdkRequired,
       sdkRequiredUrl: versionInfo.sdkRequiredUrl,
       bundledSdkmod: versionInfo.bundledSdkmod,
@@ -2778,7 +2787,7 @@ ipcMain.handle("app:downloadUpdate", async () => {
   }
 });
 
-ipcMain.handle("app:quitAndInstallUpdate", async () => {
+ipcMain.handle("app:quitAndInstallUpdate", async (_event, rawPath) => {
   if (latestUpdateState.status !== "downloaded") {
     return { ok: false, message: "No downloaded Electron update is ready to install." };
   }
@@ -2786,6 +2795,10 @@ ipcMain.handle("app:quitAndInstallUpdate", async () => {
     return { ok: false, message: latestUpdateState.message || "Electron updater failed to load.", state: latestUpdateState };
   }
   try {
+    const target = await resolveSdkTarget(rawPath);
+    if (!target.ok) return target;
+    if (target.running) return {ok:false, message:'Close Borderlands 4 before updating so the desktop and selected game files can be updated together.'};
+    autoUpdater.gameRoot = target.gameRoot;
     await autoUpdater.quitAndInstall(false, true);
     return { ok: true, message: "Restarting to install update." };
   } catch (error) {

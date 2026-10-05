@@ -59,7 +59,9 @@ class PersistentUpdater extends EventEmitter {
     if (!this.ready) throw new Error("Download the update first.");
     const runner = this.prepare(this.setupPath);
     return new Promise((resolve, reject) => {
-      const child = this.start(runner, ["--apply", "--wait-pid", String(process.pid)], { cwd: path.dirname(runner), detached: true, stdio: "ignore" });
+      const args = ["--apply", "--wait-pid", String(process.pid)];
+      if (this.gameRoot) args.push('--game-root', this.gameRoot);
+      const child = this.start(runner, args, { cwd: path.dirname(runner), detached: true, stdio: "ignore" });
       child.once("error", reject);
       child.once("spawn", () => { child.unref(); resolve(); this.app.quit(); });
     });

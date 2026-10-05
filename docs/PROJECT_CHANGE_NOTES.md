@@ -4,6 +4,8 @@ Before re-researching a feature, read its entry below and any linked component n
 
 ## Changes
 
+- [2026-10-04: Updater checked and updated the wrong game installation](changes/2026-10-04-updater-game-target.md) — Steam/Epic target mismatch confirmed in installer receipt; local desktop/updater correction installed, Steam SDK repaired to bundled v2.28.0 with matching hash. Loaded-game identity support is source-only until a future SDK build.
+
 - [2026-10-04: Concurrent manual and AFK delivery methods](changes/2026-10-04-concurrent-delivery-methods.md) — local implementation; independent manual/AFK requests to different targets, shared progress, conversion target snapshots, recovery exclusivity and kick protection. Not installed or published; live mixed-method validation remains open.
 
 - [2026-10-04: AFK concurrent release v2.28.0](changes/2026-10-04-afk-concurrent-release.md) — published; all 11 public asset hashes and public installer/reinstall/rollback checks passed. Permanent concurrent guest default, exclusive cleanup/host-test safeguards, desktop per-guest progress and authoritative count.
