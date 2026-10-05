@@ -37,6 +37,8 @@ templates/data remain unchanged. The real cached grenade is a regression fixture
 GZO lookup no longer emits saved-title replacement events. Native card names still
 replace user labels on non-GZO bookmarks/community items; original labels remain
 in tooltips/search/storage. GZO metadata behavior outside that change is retained.
+An unavailable GZO screenshot can fall back to a native image without replacing
+the GZO title; the shared-view browser regression covers that error path.
 
 ## Website export and UI
 

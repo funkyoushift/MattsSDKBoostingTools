@@ -68,7 +68,9 @@
       if(!reply?.ok||!reply.image?.base64)throw new Error(reply?.message||'Open a supported BL4 solo session to generate this card.');
       let displayed=await loadImage('data:image/png;base64,'+reply.image.base64,reply.widget.Name);
       if(!current())return;
-      publishName(reply.widget.Name,'Game card');
+      // A missing/unreachable GZO image may use a native fallback, but it is
+      // still a catalog item and keeps its existing saved title.
+      if(!existing&&!/gzo/i.test(item.image_source||''))publishName(reply.widget.Name,'Game card');
       const caption=reply.offline?'Cached game card · previous session':reply.image.warnings?.length?'Game card · some artwork unavailable':'Game card · standalone stats';
       marker.textContent=caption+(reply.image.layout==='expanded'?' · expanded layout':'');
       marker.title='Uses the game’s card builder. Equipped firmware counts and comparison context are not included.';

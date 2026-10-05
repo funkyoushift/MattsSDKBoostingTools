@@ -5,12 +5,12 @@ app.whenReady().then(async()=>{
  const win=new BrowserWindow({show:false,width:1600,height:1000,webPreferences:{partition:'card-views-'+process.pid}});
  // No external image or API calls in this test.
  const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Wl6LksAAAAASUVORK5CYII=','base64');
- await win.webContents.session.protocol.handle('https',()=>new Response(png,{headers:{'Content-Type':'image/png'}}));
+ await win.webContents.session.protocol.handle('https',request=>request.url.endsWith('/missing.png')?new Response('',{status:404}):new Response(png,{headers:{'Content-Type':'image/png'}}));
  await win.loadFile(path.join(__dirname,'renderer.html'),{query:{nosplash:'1'}});
  const result=await win.webContents.executeJavaScript(`(async()=>{
   const check=(v,m)=>{if(!v)throw Error(m);};
   let native=[],lookups=[];
-  window.msbt={...(window.msbt||{}),itemCardImages:async serials=>{lookups.push(...serials);return {items:serials.filter(s=>s==='@UGzo').map(serial=>({serial,image:'https://save-editor.be/GZO/known.png',itemCard:{name:'GZO name'}}))};},
+  window.msbt={...(window.msbt||{}),itemCardImages:async serials=>{lookups.push(...serials);return {items:serials.filter(s=>s==='@UGzo'||s==='@UGzoBroken').map(serial=>({serial,image:'https://save-editor.be/GZO/'+(serial==='@UGzoBroken'?'missing':'known')+'.png',itemCard:{name:'GZO name'}}))};},
     nativeItemPreview:async serial=>{native.push(serial);return {ok:true,widget:{Name:'Native '+serial},image:{ok:true,base64:${JSON.stringify(png.toString('base64'))}}};}};
   const wait=async fn=>{for(let i=0;i<150;i++){if(fn())return;await new Promise(r=>setTimeout(r,20));}throw Error('Timed out waiting for card');};
   const host=document.createElement('div');document.body.prepend(host);
@@ -23,6 +23,10 @@ app.whenReady().then(async()=>{
   await wait(()=>gzo.querySelector('img'));check(native.length===0,'GZO must bypass native');
   check(gzoTitle.textContent==='Old GZO label','GZO items retain their existing saved title');
   check(gzoTitle.title.includes('Old GZO label'),'GZO keeps original label available');
+  const brokenGzo=document.createElement('div'),brokenTitle=document.createElement('span');host.append(brokenGzo,brokenTitle);
+  bindSavedCardTitle(brokenGzo,brokenTitle,{serial:'@UGzoBroken',name:'Preserved GZO title'});fillBl4ItemCard(brokenGzo,{serial:'@UGzoBroken'});
+  await wait(()=>brokenGzo.querySelector('img'));check(native.includes('@UGzoBroken'),'unavailable GZO screenshot uses native fallback');
+  check(brokenTitle.textContent==='Preserved GZO title','native fallback must not rename a GZO item');
   const generated=document.createElement('div');host.append(generated);fillBl4ItemCard(generated,{serial:'@UUnknown'});
   await wait(()=>generated.querySelector('img'));check(native.includes('@UUnknown'),'unknown uses native');
   // Real shared lazy tile used by both local saved folders and Community Folders.
