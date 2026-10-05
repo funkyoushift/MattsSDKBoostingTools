@@ -18,9 +18,9 @@ The **Actor Script Deployer** bundled with this project credits **Matt** in its 
 
 **Explore his work:** [Original MSBT](https://github.com/mattmab/MattsSDKBoostingTools) · [Legit Builder](https://github.com/mattmab/legit-builder) · [Bundled Actor Script Deployer and author metadata](tools/third_party/sdk_mods/ActorScriptDeployer/pyproject.toml)
 
-### RDP / Squ1ggs — movement, teleport, tuning, and interface inspiration
+### RDP / Squ1ggs — movement, teleport, tuning, and spawn helpers
 
-Squ1ggs’ public mods and SDK research contributed code and patterns used in our movement, player-to-player teleport, combat/resource tuning, and vehicle tuning work. Our spawn-anchor and re-aggro helpers also draw on SQBT patterns. His tools inspired our location-bookmark workflow and compact Dev Spawner layout. These contributions sit alongside Matt’s Actor Script Deployer backend and deserve their own recognition.
+Squ1ggs’ public mods and SDK research contributed code and patterns used in our movement, player-to-player teleport, combat/resource tuning, and vehicle tuning work. Our spawn-anchor and re-aggro helpers also draw on SQBT patterns. These contributions sit alongside Matt’s Actor Script Deployer backend and deserve their own recognition.
 
 That work includes investigating game behavior, finding useful controls, and publishing implementations that others can learn from and build on. We thank Squ1ggs for those contributions and for sharing his tools with the community. Integrating that work into MSBT does not transfer its authorship to us.
 
@@ -91,6 +91,8 @@ We also thank the maintainers of **Electron, Chromium, Python, GridStack, js-yam
 **Azzarock, Frag Em All, Tobgun1, Crayons82.0**, and the wider testing community have contributed testing, reports, feedback, and item data. Save creators, build authors, item-code contributors, and community-library authors deserve credit for their individual submissions as well; sharing or importing their work does not transfer authorship to MSBT.
 
 ## Our role and our responsibility
+
+Matt’s original in-game menu caused major frame drops, which led us to move the mod’s controls outside the game. We designed our own bridge and built an external app. We later moved that app to Electron to match Matt’s editor. That desktop interface and bridge were our development work.
 
 FunkYouSHiFT maintains this version of the project. Our work includes bringing components together, building desktop and mobile workflows, updating integrations for SDK changes, improving reliability, testing, and packaging. That work sits alongside the original creators’ contributions. It does not replace them.
 

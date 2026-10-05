@@ -111,5 +111,3 @@ installer/bin/
 installer/obj/
 dist_setup/
 electron_poc/vendor/setup/
-
-

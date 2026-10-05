@@ -9,6 +9,8 @@
 
 ### Changed
 
+- Corrected attribution for the desktop interface and bridge; retained Squ1ggs’ code and helper credits.
+
 - Replaced the README with contributor acknowledgments and brief installation guidance.
 - Updated packaging to use the plain-text notices file.
 

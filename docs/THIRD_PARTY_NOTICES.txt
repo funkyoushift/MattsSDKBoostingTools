@@ -9,7 +9,7 @@ with direct permission. The editor's ISC notice remains in
 external_app/v22_parts_codes_fixed/matt_editor/LICENSE_MATTMAB_ISC.txt.
 
 RDP / Squ1ggs: documented movement, teleport, combat/resource/vehicle and
-spawn-helper adaptations; bookmark and spawner-layout inspiration. MIT notice:
+spawn-helper adaptations. MIT notice:
 Copyright (c) 2026 Squ1ggs. Full LICENSE_SQU1GGS_MIT.txt is retained in both
 mod_extracted/MattsSDKBoostingTools and external_app/v22_parts_codes_fixed.
 Source: https://github.com/Squ1ggs/Bl4SDKmods
