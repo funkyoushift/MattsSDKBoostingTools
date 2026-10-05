@@ -6,7 +6,7 @@
 
 **Borderlands 4 Modding Tools** is a free all-in-one BL4 modding toolkit for Windows, combining a standalone desktop app with an in-game SDK bridge. It includes Borderlands 4 boosting tools, item spawning, save and item workflows, inventory tools, serial delivery, BL4 item codes, Dev Spawner, map travel, player movement, AFK lobby tools, a mobile controller, and more.
 
-**Current release: [v2.30.0](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.30.0)** — Item cards across desktop menus and Community Folders, concurrent delivery improvements, and game-targeted SDK updates. [Release notes](docs/releases/RELEASE_NOTES_v2.30.0.md).
+**Current release: [v2.30.0](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.30.0)** — Live editor item cards, expanded zoomable previews, preserved GZO names, and card generation with guests. [Release notes](docs/releases/RELEASE_NOTES_v2.30.0.md).
 
 This project is **unofficial**. It is not affiliated with, endorsed by, or connected to Gearbox, 2K, or the Borderlands franchise owners.
 

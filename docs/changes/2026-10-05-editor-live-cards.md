@@ -35,3 +35,23 @@ full-page catalog checks. The live-editor browser test uses the real adapter in
 a cross-origin frame and verifies coalescing, stale-result rejection, one active
 render, bulk choice, pause/manual refresh, hidden-tab behavior and origin checks.
 Package/install/public-release verification is recorded below when completed.
+
+## v2.30.0 packaged verification
+
+The final installer/portable build passed the complete source-check script,
+31 persistent-installer checks, 48 runtime dependency checks, 3,252 source-to-package
+file comparisons, packaged startup and updater checks. All 3,261 bundled GZO rows
+retain image URLs. SDK archive probe/widget/version files match source bytes.
+
+An isolated packaged app loaded the actual bundled editor over its separate
+localhost frame. Its normal Parse Code action loaded Vindictive Gatherer, then
+Accelerated Nadir Clarity. The live panel followed each item, displayed the
+expected name/image, and preserved both exact generated serials. Repeating after
+restarting the packaged app reused cached cards. A visual check corrected the
+automatic-update checkbox to the standard compact control before the final build.
+The first rebuild encountered locked files in the test app; closing only that
+isolated app allowed the successful rebuild. Game and regular app were untouched.
+
+Private evidence: `output/release-230-checks/editor-live.json`, `editor-live.png`,
+`asset-hashes.json`, and `output/card-followup/release-230-build-final.log`.
+Android 1.5.0 APKs are byte-identical to v2.29.1's published assets.
