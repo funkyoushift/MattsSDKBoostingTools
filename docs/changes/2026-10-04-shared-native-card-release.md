@@ -1,6 +1,6 @@
 # Shared desktop item cards and combined release candidate
 
-User-authorized combined release from `codex/concurrent-delivery-methods` f3f100d, integrating its AFK/manual delivery and updater changes with the local native-card trial. Isolated worktree: `native-cards-release/working`. Candidate version 2.29.0; publication is pending validation.
+User-authorized combined release from `codex/concurrent-delivery-methods` f3f100d, integrating its AFK/manual delivery and updater changes with the local native-card trial. Isolated worktree: `native-cards-release/working`. Version 2.29.0; local release validation completed before publication.
 
 ## Problem and behavior
 
@@ -19,14 +19,17 @@ Steam 25372571 executable SHA256 `9c3afb7dc6a550a6c2e817846cd2c40ff11e066dc6aefe
 
 This is standalone card output, not equipped-loadout/comparison parity. New native generation remains limited to the supported solo game context. Missing artwork is labeled. Chromium/Cohtml font-fit differences, extreme modded skill layouts, multiplayer generation and broad lifetime safety remain unresolved. Historical 818/818 image coverage is a trial result, not proof of perfect visual parity or every possible item.
 
-## Validation so far
+## Validation
 
 - Focused native cache, identity and priority tests pass, including duplicate demand, case/level distinctions, renderer-only cache invalidation, offline snapshots and changed sessions. The actual serial decoder test covers firmware, scalar/list equivalence, header changes, ordering and duplicates.
 - Real Electron shared-view test passes for uploaded/GZO/native priority, missing Community images, mismatched screenshot hashes, stale responses and serial-menu coverage. Community browse/search/pagination/import/consent/selection tests and responsive layouts pass.
 - Native render/capture and GZO submission UI tests pass. Concurrent delivery/AFK progress tests pass. 38 AFK/runtime tests, nine native guard/cleanup tests, and startup/no-BLImGui checks pass. These are offline tests, not new guest-save evidence.
-- First packaged build passed source checks and runtime dependency checks. Asset audit correctly stopped it over an excluded Python test bytecode cache; packaging exclusions now explicitly exclude bytecode/cache directories. Rebuild pending.
-- Live normal startup (without a research monkeypatch) enabled the packaged service and generated three existing equipped items successfully. Inventory contained nine equipped and 865 backpack slots. Final corrected SDK identity/restart and packaged-app checks remain pending.
+- Final installer/portable build passed the full source check, 48 packaged runtime dependency checks and 3,242 packaged asset comparisons. All 3,261 catalog rows retain image URLs. The initial audit caught Python bytecode caches; explicit packaging exclusions fixed the mismatch before the successful build. All 31 persistent-installer checks passed.
+- Live normal startup (without a research monkeypatch) enabled the packaged service. The final source, embedded, installed and loaded SDK all match SHA256 `a5f1467c5f052addfdd0aa27218408af887e08dc69822fc0f8ec707781709372`, and the game reports 2.29.0 with BLImGui unavailable. Exact serial multisets for nine equipped and 865 backpack slots are unchanged after restarts and previews.
+- The actual packaged app in an isolated profile matched 503 of 818 unique inventory serials to GZO. A missing item produced an 819x897 native card. GZO and native images both populated the shared Community Folder view and were visually inspected there. This injected test view did not publish or modify remote folders.
+- Packaged close/reopen preserved the cached image and returned identical pixels. Game-side native builds remained at one throughout the packaged repeat/restart checks. Private receipts and screenshots are under `output/native-release-checks/` and are not release assets.
+- Android source and APK remain unchanged at 1.5.0; both APK filenames match the prior public asset digest. No new Android device test is claimed.
 
 ## Deployment and rollback
 
-The game was restarted only after both AFK guests had left, using prior user authorization. AFK was paused; its exact prior configuration and inventory are saved privately under `output/native-release-checks/`. The original Steam SDK archive is backed up there. The candidate SDK is installed locally for testing. Restore the original archive only with the game closed if verification fails; never replay item deliveries. Restore the prior AFK configuration after testing. No publication or website deployment has occurred yet. Generated cards in this change are local desktop cache, not a new website rendering service.
+The game was restarted only after both AFK guests had left, using prior user authorization. AFK was paused; its exact prior configuration and inventory are saved privately under `output/native-release-checks/`. The original Steam SDK archive is backed up there. The final SDK is installed and loaded locally. AFK was restored after testing, with every saved configuration field verified equal; deliveries were not replayed. Restore the original archive only with the game closed if rollback is needed. Generated cards in this change are local desktop cache, not a new website rendering service; no website deployment is included.
