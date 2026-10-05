@@ -4,7 +4,9 @@ Before re-researching a feature, read its entry below and any linked component n
 
 ## Changes
 
-- [2026-10-04: Shared native-card release candidate](changes/2026-10-04-shared-native-card-release.md) — Community Folders and serial-menu previews, GZO/upload priority, guarded packaged native service and offline snapshots; combined delivery/updater release validation in progress.
+- [2026-10-04: Card helper reopening patch v2.29.1](changes/2026-10-04-card-window-reopen-patch.md) — tray and second launch target the main control panel; installed regular-profile Community Folder and restart checks passed.
+
+- [2026-10-04: Shared native-card release v2.29.0](changes/2026-10-04-shared-native-card-release.md) — published combined delivery/updater release with Community Folders and serial-menu previews, GZO/upload priority, guarded native service and offline snapshots; superseded by the reopening patch.
 
 - [2026-10-04: Updater checked and updated the wrong game installation](changes/2026-10-04-updater-game-target.md) — Steam/Epic target mismatch confirmed in installer receipt; local desktop/updater correction installed, Steam SDK repaired to bundled v2.28.0 with matching hash. Loaded-game identity support is source-only until a future SDK build.
 
