@@ -38,7 +38,6 @@
           <img src="branding/fu-logo.png" alt="">
           <span>Powered by Funk</span>
         </button>
-        <p class="muted-line">Original project and editor by Mattmab (Matt).</p>
         <p id="appVersionLine" class="muted-line header-version">…</p>
       </div>
     </div>
@@ -56,7 +55,6 @@
         </div>
         <select data-language-selector aria-label="Language / Idioma" title="Interface language. Player names, item codes, saved names, and game logs stay unchanged."><option value="en">English</option><option value="es">Español</option><option value="fr">Français</option><option value="pt-BR">Português</option><option value="de">Deutsch</option><option value="nl">Nederlands</option><option value="en-AU">Australian slang (explicit)</option></select>
         <button id="walkthroughHeaderBtn" class="header-btn" type="button">Walkthroughs</button>
-        <button id="communityCreditsBtn" class="header-btn" type="button">Contributor Credits</button>
         <button id="developmentSupportBtn" class="header-btn support-link featured" type="button">Support Development</button>
         <button id="statusBtn" class="header-btn">Status</button>
         <button id="developerPortalHeaderBtn" class="header-btn" type="button">Developer portal</button>
@@ -65,17 +63,11 @@
       <details class="support-panel" aria-label="Support and follow links">
         <summary class="support-copy">
           <strong>Support</strong>
-          <span class="support-summary-hint">Tip · Donate · Discord · GitHub · Mobile</span>
+          <span class="support-summary-hint">Tip · Donate · GitHub · Mobile</span>
         </summary>
         <div class="support-links">
           <button id="streamlabsBtn" class="support-link featured">Support Borderlands 4 Modding Tools Development</button>
-          <button id="mattmabKofiBtn" class="support-link">Support Matt’s other work</button>
-          <button id="squ1ggsModsBtn" class="support-link">RDP / Squ1ggs — contributing mods &amp; source</button>
-          <button id="funkDiscordBtn" class="support-link">Funk’s Borderlands Trading Hub — FunkYouSHiFT</button>
           <button id="funkyoushiftSiteBtn" class="support-link">FunkYouSHiFT Website</button>
-          <button id="gzoDiscordBtn" class="support-link">GZO — Mattmab &amp; Ynot</button>
-          <button id="scootersDiscordBtn" class="support-link">Scooter’s Garage — Squ1ggs</button>
-          <button id="azaleaDiscordBtn" class="support-link">Azalea Asvail’s Modding World — GZO branch</button>
           <button id="gzoToolsBtn" class="support-link">Other Tools</button>
           <button id="twitchBtn" class="support-link">Twitch</button>
           <button id="youtubeBtn" class="support-link">YouTube</button>
@@ -103,6 +95,7 @@
     <button data-tab="mobile-gateway">Mobile Gateway</button>
     <button data-tab="report">Report to Dev</button>
     <button data-tab="updates">Updates</button>
+    <button data-tab="credits">Credits</button>
   </nav>
 
   <section id="msbtBulkProgress" class="serial-delivery-panel hidden" aria-live="polite">
@@ -320,7 +313,7 @@
             <button id="instantHoldsToggleBtn" type="button">Instant Holds: Off</button>
             <button id="thirdPersonToggleBtn" type="button">Third Person: Off</button>
           </div>
-          <p class="muted-line">Set or clear Instant Drops / Instant Holds / Third Person hotkeys in oak2’s Mods keybind UI. Use <strong>+ QM</strong> to pin a toggle to F7. Third Person is client-local (Renil / Epilow). Disable the standalone Third Person zip while this is on — double hooks can crash.</p>
+          <p class="muted-line">Set or clear Instant Drops / Instant Holds / Third Person hotkeys in oak2’s Mods keybind UI. Use <strong>+ QM</strong> to pin a toggle to F7. Third Person is client-local. Disable the standalone Third Person zip while this is on — double hooks can crash.</p>
           <div id="liveModsStatus" class="status-line compact-note">Combat XP / Instant Drops / Instant Holds / Third Person idle.</div>
         </section>
 
@@ -407,7 +400,6 @@
       <div class="grid two">
         <section class="panel gold" data-msbt-panel="boost-uvh" data-msbt-span="8" data-msbt-title="UVH 1–7">
           <h2>UVH 1–7</h2>
-          <p class="version-detail">Workflow adapted from Azalea Asvail’s Azzy UVH Booster, with FunkYouSHiFT assistance. Earlier UVHM-path discoveries: PyrexBLJ.</p>
           <p class="muted-line">UVH N runs tiers 1 through N for the live lobby. Cancel pauses remaining steps; Resume continues them.</p>
           <div class="button-grid compact-buttons">
             <button data-action="uvh_boost_tier_1">UVH 1</button>
@@ -480,7 +472,6 @@
 
       <section class="panel gold" data-msbt-panel="boost-challenges" data-msbt-span="12" data-msbt-title="Challenges">
         <h2>Challenges</h2>
-        <p class="version-detail">Challenge-path discoveries: Mattmab. Category filtering and non-UVHM completion behavior reference SQBT.</p>
         <p class="muted-line">Writes permanent challenge progress. Host / solo only. Backup your save. Sends the non-UVH catalog; UVH 1–7 is separate. Queue progress is not verified in-game completion.</p>
         <div class="grid two compact">
           <label>
@@ -739,7 +730,6 @@
       <div class="section-heading">
         <div>
           <h2>Quick Menu Editor</h2>
-          <p class="version-detail">Move, resize and theme controls were inspired by Azalea Asvail’s Azzy UVH Booster interface.</p>
           <p>Edit the in-game Quick Menu (F7): <strong>5 pages, 21 slots each</strong>. Move, resize, and theme the panel below.</p>
         </div>
         <div class="button-row wrap">
@@ -801,7 +791,6 @@
     <section id="tab-serial-tools" class="tab-panel" data-msbt-layout-tab="serial-tools">
       <section class="panel cyan" data-msbt-panel="serial-tools-main" data-msbt-span="12" data-msbt-title="Serial Tools" data-msbt-resize="1">
         <h2>Serial Tools</h2>
-        <p class="version-detail">Serial conversion helpers build on Mattmab’s original MSBT implementation.</p>
         <p>Convert @U serials here. Works offline — no game connection needed.</p>
         <label for="serialToolsInput">Input</label>
         <textarea id="serialToolsInput" spellcheck="false" placeholder="@U... or decoded human serial"></textarea>
@@ -1544,7 +1533,6 @@
         </div>
       </div>
 
-      <p class="version-detail">Spawning, placement, tracking and cleanup: Matt’s Actor Script Deployer, with MSBT integration and fixes. Later nearest-NPC anchor and re-aggro controls reference RDP / Squ1ggs’ mob-spawner helpers.</p>
       <div class="dev-spawner-fixed" data-dev-shell="fixed">
         <header class="dev-spawner-header">
           <div class="dev-status-strip" aria-label="Dev Spawner status">
@@ -2132,7 +2120,6 @@
     <section id="tab-map-travel" class="tab-panel" data-msbt-layout-tab="map-travel">
       <section class="panel pink" data-msbt-panel="travel-main" data-msbt-span="12" data-msbt-title="Map Travel" data-msbt-resize="1">
         <h2>Map Travel</h2>
-        <p class="version-detail">Original travel implementation and supplied travel data: Mattmab, with later MSBT integration and extensions.</p>
         <p>Select a map first, then choose a travel station on that map. Favorites can hold maps or stations in one list. Party Reveal uncovers guest maps (including console). Host Clear Fog fills this machine's tiles. Hide Fog is overlay-only on this client.</p>
         <div class="button-row wrap travel-primary-actions">
           <button type="button" data-msbt-bridge-refresh class="secondary">Refresh Status</button>
@@ -2221,7 +2208,6 @@
     <section id="tab-player-movement" class="tab-panel" data-msbt-layout-tab="player-movement">
       <section class="panel green" data-msbt-panel="move-presets" data-msbt-span="12" data-msbt-title="Presets / Save / Apply">
         <h2>Presets / Save / Apply</h2>
-        <p class="version-detail">Original movement helpers: Mattmab. Later Local / All / Others targeting helpers draw on RDP / Squ1ggs’ work. Gameplay utility reference: Pyrex’s Bonk Utilities.</p>
         <p>Adjust movement here, then choose Apply Now to send the visible values to the game.</p>
         <div class="button-row wrap">
           <button data-movement-action="movement_apply_all">Apply Now</button>
@@ -2367,7 +2353,6 @@
 
       <section class="panel cyan" data-msbt-panel="move-teleport" data-msbt-span="12" data-msbt-title="Teleport Selected Player">
         <h2>Teleport Selected Player</h2>
-        <p class="version-detail">Player-to-player teleport controls include code and patterns adapted from RDP / Squ1ggs’ public mods.</p>
         <p>Slot buttons move the Boosting target to that party slot. The buttons below move players between you and the selected player.</p>
         <div class="button-row wrap">
           <button data-movement-teleport-slot="0">To P1</button>
@@ -2433,7 +2418,6 @@
 
       <section class="panel purple" data-msbt-panel="combat-tuning" data-msbt-span="6" data-msbt-title="Combat / Resource Tuning" data-msbt-resize="1">
         <h2>Combat / Resource Tuning</h2>
-        <p class="version-detail">Combat and resource tuning includes code and patterns adapted from RDP / Squ1ggs’ public mods.</p>
         <p>Adjust damage, ammo, and repair kits. Continuous reapply is off by default; use Reapply After Travel if values reset.</p>
         <div class="grid three compact">
           <label>
@@ -2480,8 +2464,7 @@
 
       <section class="panel cyan" data-msbt-panel="vehicle-tuning" data-msbt-span="6" data-msbt-title="Vehicle Presets / Spawn" data-msbt-resize="1">
         <h2>Vehicle Presets / Spawn</h2>
-        <p class="version-detail">Vehicle tuning includes code and patterns adapted from RDP / Squ1ggs’ public mods. Vehicle presets are credited to mattmab below.</p>
-        <p>Vehicle presets by <strong>Mattmab</strong>, used with permission. Vehicle availability depends on the current map and unlocks. Spawning works most reliably as host or in solo play.</p>
+        <p>Vehicle availability depends on the current map and unlocks. Spawning works most reliably as host or in solo play.</p>
         <div class="grid two compact">
           <label>
             Preset
@@ -2696,6 +2679,146 @@
         <pre id="updateOutput">Checks GitHub Releases for available updates without installing anything.</pre>
         <p class="version-detail">oak2 attribution: <a class="inline-link" href="https://github.com/bl-sdk/oak2-mod-manager" id="oak2RepoLink">bl-sdk/oak2-mod-manager</a> (LGPL-3.0). See docs/THIRD_PARTY_NOTICES.txt.</p>
       </section>
+    </section>
+    <section id="tab-credits" class="tab-panel fixed-page-tab">
+      <article class="credits-page">
+        <h2>Credits</h2>
+        <p>This project builds on the code, research, tools, and support of the Borderlands modding community. Thank you to everyone whose work made it possible.</p>
+        <h3>Community Discords</h3>
+        <ul><li><a href="https://discord.gg/funksbth" data-credit-link>Funk’s Borderlands Trading Hub — FunkYouSHiFT</a></li><li><a href="https://discord.gg/wgjX48bksj" data-credit-link>GZO — Mattmab and Ynot</a></li><li><a href="https://discord.gg/sMUtqZG8Gt" data-credit-link>Scooter’s Garage — Squ1ggs</a></li><li><a href="https://discord.gg/CV8bc6z32E" data-credit-link>Azalea Asvail’s Modding World — Azalea’s branch of GZO</a></li></ul>
+        <h3>Mattmab / Matt / Galoob — the original foundation and editor</h3>
+        <p>Mattmab created the original MSBT toolset and its in-game menu. His code remains part of our player economy and boosting, serial conversion and reward delivery, movement, inventory capacity, party helpers, travel, item-pool spawning, shiny spawning, and developer tools. Our Python Legit Builder and external serial helpers also build on his implementations. This is a substantial part of the project&#x27;s foundation: moving these tools into new interfaces would not have been possible in the same form without the systems Matt built and shared.</p>
+        <p>Matt’s save/item editor and portable Legit Builder supplied the editor foundation, including retained interface styles, item parsing, part selection, data loading, and editor tabs. We also credit his challenge-path discoveries. The external control app and game bridge were developed by FunkYouSHiFT’s project; we later adopted Electron to match Matt’s editor.</p>
+        <p>The <strong>Actor Script Deployer</strong> bundled with this project is <strong>Matt’s spawning implementation</strong>, including actor creation, spawn placement and spacing, actor tracking, and cleanup. Our Dev Spawner controls and subsequent fixes build around that work. Its contribution deserves explicit recognition alongside the visible interface.</p>
+        <p><strong>Explore his work:</strong> <a href="https://github.com/mattmab/MattsSDKBoostingTools" data-credit-link>Original MSBT</a> · <a href="https://github.com/mattmab/legit-builder" data-credit-link>Legit Builder</a> · <a href="https://github.com/funkyoushift/MattsSDKBoostingTools/blob/main/tools/third_party/sdk_mods/ActorScriptDeployer/pyproject.toml" data-credit-link>Bundled Actor Script Deployer and author metadata</a></p>
+        <h3>RDP / Squ1ggs — targeting, teleport, tuning, and spawn-helper additions</h3>
+        <p>Squ1ggs’ public mods and SDK research informed later additions for Local / All / Others player targeting, player-to-player teleport, combat/resource tuning, and vehicle tuning. His mob-spawner code also supplied references for the later nearest-NPC anchor selection and re-aggro controls around Matt’s ASD backend. This credit covers those additional helpers and references, not ASD’s spawning, placement, tracking, or cleanup. GZO, Lootlemon, and Nexus data retain their separate source credits.</p>
+        <p>Our challenge-category filtering and non-UVHM completion behavior also used SQBT as a reference. Squ1ggs’ published implementations gave us concrete examples for expanding these controls and working with the SDK. We value the research, testing, and shared code behind those contributions, and credit both adapted material and documented inspiration.</p>
+        <p><strong>Explore his work:</strong> <a href="https://github.com/Squ1ggs/Bl4SDKmods" data-credit-link>Public mods and source</a> · <a href="https://github.com/Squ1ggs/Bl4SDKmods/tree/main/bl4_player_movement" data-credit-link>Player Movement</a> · <a href="https://github.com/Squ1ggs/Bl4SDKmods/tree/main/p2p_teleporter" data-credit-link>P2P Teleporter</a> · <a href="https://github.com/Squ1ggs/Bl4SDKmods/tree/main/damage_and_more" data-credit-link>Damage &amp; More</a> · <a href="https://github.com/Squ1ggs/Bl4SDKmods/tree/main/resources_and_cooldowns" data-credit-link>Resources &amp; Cooldowns</a> · <a href="https://github.com/Squ1ggs/Bl4SDKmods/tree/main/vehicle_movement" data-credit-link>Vehicle Movement</a> · <a href="https://github.com/Squ1ggs/Bl4SDKmods/tree/main/world_travel" data-credit-link>World Travel</a> · <a href="https://github.com/Squ1ggs/Bl4SDKmods/tree/main/mob_spawner" data-credit-link>Borderlands Mob Spawner</a></p>
+        <p><strong>Implementation references:</strong> <a href="https://github.com/funkyoushift/MattsSDKBoostingTools/commit/a956860" data-credit-link>MSBT&#x27;s later helper additions</a> · <a href="https://github.com/funkyoushift/MattsSDKBoostingTools/blob/main/mod_extracted/MattsSDKBoostingTools/backend_actions.py" data-credit-link>Challenge filtering</a></p>
+        <h3>Azalea Asvail / Azzy — UVH boosting and native-menu inspiration</h3>
+        <p>Azalea developed the <strong>Azzy UVH Booster</strong> workflow adapted into our boosting tools. Her native in-game interface also inspired the Quick Menu’s move, resize, and theme controls. Those are meaningful contributions to both what the tools do and how players use them.</p>
+        <p>FunkYouSHiFT assisted with the UVHM work, but Azalea’s workflow and interface contributions remain hers. Thank you for developing and sharing them.</p>
+        <p><strong>Explore her work:</strong> <a href="https://github.com/AzaleaAsvailAMW/amw-Uvhbooster" data-credit-link>Azzy UVH Booster — project, source, and downloads</a></p>
+        <p><strong>Documented in our source:</strong> <a href="https://github.com/funkyoushift/MattsSDKBoostingTools/blob/main/mod_extracted/MattsSDKBoostingTools/backend_actions.py" data-credit-link>UVH workflow credit</a> · <a href="https://github.com/funkyoushift/MattsSDKBoostingTools/blob/main/mod_extracted/MattsSDKBoostingTools/quick_menu.py" data-credit-link>Quick Menu inspiration</a></p>
+        <h3>PyrexBLJ / Pyrex — Bonk Utilities and UVHM discoveries</h3>
+        <p>Pyrex created <strong>Bonk Utilities</strong>, a gameplay-utility reference for god/demigod mode, noclip, time controls, no-target, ground-item cleanup, and developer-perk actions. Publishing those controls made useful game and SDK behavior available for other modders to study. We acknowledge that utility work separately from his earlier UVHM-path discoveries used by the boosting workflow. Azalea’s public project also acknowledges Pyrex.</p>
+        <p><strong>Explore his work:</strong> <a href="https://github.com/PyrexBLJ/BL4-SDK-Mods/tree/main/BonkUtilities" data-credit-link>Bonk Utilities — source</a> · <a href="https://bl-sdk.github.io/oak2-mod-db/mods/bonkutilities/" data-credit-link>Bonk Utilities — mod listing</a> · <a href="https://github.com/PyrexBLJ/BL4-SDK-Mods" data-credit-link>Pyrex’s BL4 SDK mods</a>. These acknowledgments do not mean every mod in his repository is bundled here.</p>
+        <h3>apple1417, Faultz, and the BL SDK contributors — the runtime that makes this possible</h3>
+        <p>The game-side tools depend on the <strong>BL SDK ecosystem</strong>, including oak2 Mod Manager, pyunrealsdk, and unrealsdk. apple1417’s work, alongside Faultz and the wider SDK contributors, makes it possible to load mods and interact with Borderlands 4 from Python. That infrastructure is a foundation of this project, not something MSBT created.</p>
+        <p>Thank you for the SDK, maintenance, documentation, and tools that make community modding possible.</p>
+        <p><strong>Explore their work:</strong> <a href="https://github.com/apple1417" data-credit-link>apple1417</a> · <a href="https://github.com/bl-sdk/oak2-mod-manager" data-credit-link>oak2 Mod Manager and contributors</a> · <a href="https://github.com/bl-sdk/pyunrealsdk" data-credit-link>pyunrealsdk</a> · <a href="https://github.com/bl-sdk/unrealsdk" data-credit-link>unrealsdk</a> · <a href="https://bl-sdk.github.io/oak2-mod-db/" data-credit-link>BL4 SDK Mod Database</a></p>
+        <h3>Renil / cnrenil — third-person camera</h3>
+        <p>Our third-person camera integration includes Renil’s <strong>Third Person Camera SDK</strong> controller. The distributed archive used by the project also credits <strong>Epilow</strong>, whose credit we retain. The camera work belongs to its creators; MSBT provides the surrounding integration and controls.</p>
+        <p><strong>Explore the original mod:</strong> <a href="https://www.nexusmods.com/borderlands4/mods/259" data-credit-link>Third Person Camera SDK</a></p>
+        <h3>glacierpiece — save encryption and decryption</h3>
+        <p>The save/profile encryption wrapper used through Mattmab’s editor was adapted from <strong>glacierpiece’s Borderlands 4 Save Utility</strong>. That work enables saves to be decoded and encoded for editing and belongs to its original author.</p>
+        <p><strong>Explore the project:</strong> <a href="https://github.com/glacierpiece/borderlands-4-save-utility" data-credit-link>Borderlands 4 Save Utility</a></p>
+        <h3>Cr4nkSt4r / Dominic — NCS tooling and supplied data</h3>
+        <p>Cr4nkSt4r’s <strong>NcsParser</strong> work and previously supplied Nexus tables contributed to the editor’s data foundation. Retained supplied data and overrides keep their attribution. Current locally extracted game tables are separately identified as game-derived data; the extraction tool is not claimed as our work.</p>
+        <p><strong>Explore the project:</strong> <a href="https://github.com/Cr4nkSt4r/Borderlands-4.NcsParser" data-credit-link>Borderlands-4.NcsParser</a></p>
+        <h3>Ynot / GZO and Levin / Lootlemon — item knowledge and catalogs</h3>
+        <p><strong>Ynot / GZO</strong> supplies community item-code resources, catalogs, part maps, and linked images used by our browsing workflows. <strong>Levin / Lootlemon</strong> supplies item information, code references, and links used in the catalog. Their research and ongoing curation make those workflows useful. Displaying their information inside this app does not make it our data.</p>
+        <p><strong>Visit the original resources:</strong> <a href="https://save-editor.be/GZO/Borderlands4/Codes.html" data-credit-link>GZO Borderlands 4 Codes</a> · <a href="https://save-editor.be/GZO/" data-credit-link>GZO hub</a> · <a href="https://www.lootlemon.com/" data-credit-link>Lootlemon</a></p>
+        <h3>juso and smugg — BLImGui / Borderlands ImGui</h3>
+        <p><strong>juso and smugg</strong> created <strong>BLImGui</strong>, the framework used by the earlier in-game interface. Their work gave SDK modders a way to build graphical controls and is part of this project’s history. The current desktop app and native F7 Quick Menu do not require BLImGui, but moving to a new interface does not erase that contribution.</p>
+        <p><strong>Explore their work:</strong> <a href="https://github.com/juso40/blimgui" data-credit-link>BLImGui source</a> · <a href="https://bl-sdk.github.io/oak2-mod-db/mods/blimgui/" data-credit-link>Published BL4 listing and author credits</a></p>
+        <h3>Research references and the wider modding community</h3>
+        <p>Our research notes acknowledge <strong>Yeti’s</strong> Dump Ping, Falling Menus, and Grapple Anywhere, <strong>FreepDryer’s</strong> Trash Seller, and <strong>apple1417’s</strong> obj_dump as references studied during development. We thank these authors for publishing their work. This acknowledgment describes research references; it does not claim that their implementations are bundled in MSBT.</p>
+        <p><strong>Explore their work:</strong> <a href="https://github.com/RedxYeti/yeti-bl4-sdk" data-credit-link>Yeti’s BL4 SDK mods</a> · <a href="https://github.com/FreepDryer/freepdryer-bl4-sdk-mods" data-credit-link>FreepDryer’s BL4 SDK mods</a> · <a href="https://github.com/apple1417/oak-sdk-mods" data-credit-link>apple1417’s SDK mods</a> · <a href="https://bl-sdk.github.io/oak2-mod-db/" data-credit-link>Browse the BL4 SDK Mod Database</a></p>
+        <h3>Framework maintainers, testers, and community creators</h3>
+        <p>We also thank the maintainers of <strong>Electron, Chromium, Python, GridStack, js-yaml, pako, Monaco, AndroidX, and ZXing</strong>, whose software supports the desktop, editor, and mobile tools. Their notices remain separate from our project license.</p>
+        <p><strong>Azzarock, Frag Em All, Tobgun1, Crayons82.0</strong>, and the wider testing community have contributed testing, reports, feedback, and item data. Save creators, build authors, item-code contributors, and community-library authors deserve credit for their individual submissions as well; sharing or importing their work does not transfer authorship to MSBT.</p>
+        <p><button id="mattmabKofiBtn" type="button">Support Matt’s other work</button></p>
+        <details class="credits-notices">
+          <summary>Third-party notices and licenses</summary>
+          <pre>THIRD-PARTY NOTICES
+
+MSBT&#x27;s project license does not replace the licenses or permissions of the
+components below. Original copyright and license files remain with the software.
+Contributor acknowledgments and public project links are in the root README.
+
+Mattmab / Galoob: original MSBT and in-game menu; player economy, serial
+conversion and reward delivery, movement, inventory, party, travel, item-pool
+and shiny spawning, developer tools, and Python Legit Builder implementations.
+His save/item editor and portable Legit Builder supplied retained editor styles,
+parsing, part selection, data loading and tab components. Incorporated with
+direct permission. The external control app and game bridge were developed by
+FunkYouSHiFT&#x27;s project. The editor&#x27;s ISC notice remains in
+external_app/v22_parts_codes_fixed/matt_editor/LICENSE_MATTMAB_ISC.txt.
+
+RDP / Squ1ggs: later player-targeting, P2P teleport, combat/resource tuning,
+vehicle tuning, nearest-NPC anchor and re-aggro adaptations and references. This credit
+does not assign Matt&#x27;s original gameplay modules or third-party catalogs to
+Squ1ggs. MIT notice:
+Copyright (c) 2026 Squ1ggs. Full LICENSE_SQU1GGS_MIT.txt is retained in both
+mod_extracted/MattsSDKBoostingTools and external_app/v22_parts_codes_fixed.
+Source: https://github.com/Squ1ggs/Bl4SDKmods
+
+SQBT also served as a behavior reference for challenge-category filtering and
+non-UVHM completion. This does not assign Matt&#x27;s challenge-path discoveries to
+Squ1ggs or claim the complete Challenge Ticker implementation is bundled.
+
+Azalea Asvail: Azzy UVH Booster workflow and native-menu inspiration. Reviewed
+source metadata declares MIT. PyrexBLJ is credited for earlier UVHM discoveries;
+Matt for challenge-path discoveries. FunkYouSHiFT assisted with the UVHM work.
+Source: https://github.com/AzaleaAsvailAMW/amw-Uvhbooster
+
+Pyrex: Bonk Utilities, a gameplay-utility reference for god/demigod mode, noclip,
+time controls, no-target, ground-item cleanup and developer-perk actions.
+Public source metadata declares MIT. This reference credit is separate from
+Pyrex&#x27;s UVHM discoveries and does not claim that the entire mod is bundled.
+Source: https://github.com/PyrexBLJ/BL4-SDK-Mods/tree/main/BonkUtilities
+
+Matt: Actor Script Deployer, including actor spawning, placement and spacing,
+tracking, and cleanup. It is the standard Dev Spawner backend. MIT notice remains
+in tools/third_party/sdk_mods/ActorScriptDeployer/LICENSE.
+
+Renil: Third Person Camera SDK controller; the incorporated archive also credits
+Epilow. Used under the author&#x27;s public modification/redistribution permission.
+This component is not represented as MSBT-authored or relicensed as MIT.
+Source: https://www.nexusmods.com/borderlands4/mods/259
+
+Dominic / Cr4nkSt4r: previously supplied Nexus data and retained overrides.
+The received MIT notice remains in the editor&#x27;s LegitItems/LICENSE_CR4NKST4R.txt.
+Current local game extractions are separately identified as game-owned data.
+Source: https://github.com/Cr4nkSt4r/Borderlands-4.NcsParser
+
+Ynot / GZO and Levin / Lootlemon: catalogs, references and linked images used
+with the respective owners&#x27; direct permission; not relicensed as MSBT code.
+Sources: https://save-editor.be/GZO/ and https://www.lootlemon.com/
+
+Glacierpiece: save encryption/decryption wrapper adapted through Mattmab&#x27;s
+editor. MIT, Copyright (c) 2025 glacierpiece. Full notice remains in
+external_app/v22_parts_codes_fixed/LICENSE_GLACIERPIECE_MIT.txt.
+Source: https://github.com/glacierpiece/borderlands-4-save-utility
+
+bl-sdk contributors, including apple1417 and Faultz: oak2 Mod Manager,
+pyunrealsdk and unrealsdk. The bundled official SDK retains its LGPL/GPL texts,
+Python license, and component notices. Pinned sources and archive hash are in
+electron_poc/vendor/oak2/NOTICE.txt. These components are not relicensed as MIT.
+Source: https://github.com/bl-sdk/oak2-mod-manager
+
+juso and smugg: BLImGui, the historical in-game UI framework, declared MIT.
+Source: https://github.com/juso40/blimgui
+
+GridStack / Alain Dumesny: MIT notice beside electron_poc/vendor/gridstack.
+js-yaml, pako and Monaco: retained notices beside the editor&#x27;s browser bundle
+in THIRD_PARTY_LICENSES.txt, including pako&#x27;s identified zlib portions.
+Electron and Chromium: distribution notices beside the packaged executable.
+Python: original runtime license retained. npm dependency licenses remain in
+the packaged application.
+
+AndroidX, JourneyApps ZXing Android Embedded, and ZXing Core: Apache License 2.0;
+the Android build retains the complete license in its license assets.
+
+Borderlands game data, artwork and SHiFT resources belong to Gearbox / 2K and
+other respective owners. They are not original MSBT code or relicensed as MIT.
+The AFK SHiFT package&#x27;s source hash remains in its manifest. This project is
+unofficial and claims no endorsement by these owners or credited contributors.
+</pre>
+        </details>
+      </article>
     </section>
   </main>
 

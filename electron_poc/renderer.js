@@ -13027,7 +13027,8 @@ const APP_FINDER_ALIASES = {
   "serial-tools": ["serial tools", "decode", "validator"],
   updates: ["update", "download", "version"],
   activity: ["activity log", "history"],
-  report: ["report", "feedback"]
+  report: ["report", "feedback"],
+  credits: ["credits", "contributors", "licenses", "community", "squiggs", "azalea", "pyrex"]
 };
 
 function collectAppFinderEntries() {
@@ -13696,20 +13697,21 @@ function wireEvents() {
     ["developmentSupportBtn", "https://www.funkyoushift.com/donate.html"],
     ["streamlabsBtn", "https://www.funkyoushift.com/donate.html"],
     ["mattmabKofiBtn", "https://ko-fi.com/mattmab"],
-    ["squ1ggsModsBtn", "https://github.com/Squ1ggs/Bl4SDKmods"],
-    ["communityCreditsBtn", "https://github.com/funkyoushift/MattsSDKBoostingTools#credits"],
     ["funkPoweredMark", "https://www.funkyoushift.com"],
     ["funkyoushiftSiteBtn", "https://www.funkyoushift.com"],
-    ["funkDiscordBtn", "https://discord.gg/funksbth"],
-    ["gzoDiscordBtn", "https://discord.gg/wgjX48bksj"],
-    ["scootersDiscordBtn", "https://discord.gg/sMUtqZG8Gt"],
-    ["azaleaDiscordBtn", "https://discord.gg/CV8bc6z32E"],
     ["gzoToolsBtn", "https://save-editor.be/GZO/"],
     ["twitchBtn", "https://www.twitch.tv/funkyoushift/"],
     ["youtubeBtn", "https://www.youtube.com/@Funkyoushift"]
   ].forEach(([buttonId, url]) => {
     const button = document.getElementById(buttonId);
     if (button) button.addEventListener("click", () => window.msbt.openExternal(url));
+  });
+
+  document.querySelectorAll("#tab-credits [data-credit-link]").forEach((link) => {
+    link.addEventListener("click", (event) => {
+      event.preventDefault();
+      window.msbt.openExternal(link.href);
+    });
   });
 
   const loadEditorBtn = document.getElementById("loadEditorBtn");
@@ -14585,10 +14587,10 @@ const TAB_TUTORIALS = {
       target: "loadEditorBtn"
     },
     {
-      title: "Support Mattmab",
-      body: "FunkYouSHiFT maintains Borderlands 4 Modding Tools; use Support Development above to help fund updates. Mattmab (Matt) created the original project, editor and foundation. You can also support his other work below.",
-      tab: "matt-editor",
-      target: "loadEditorBtn",
+      title: "Credits",
+      body: "Find contributor acknowledgments, original projects, community links, and third-party notices in the Credits tab.",
+      tab: "credits",
+      target: "mattmabKofiBtn",
       links: [
         {
           label: "Support Mattmab on Ko-fi",

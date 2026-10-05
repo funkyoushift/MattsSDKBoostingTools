@@ -26,7 +26,7 @@
     ["Movement & World", [["player-movement", "Movement"], ["player-movement", "Teleport & World", "world"], ["map-travel", "Map Travel"], ["boosting", "Camera", "camera"]]],
     ["Party & Combat", [["combat-vehicle", "Party & Chaos", "chaos"], ["combat-vehicle", "Combat Tuning", "combat"], ["boosting", "Combat Cheats", "combat"]]],
     ["Editors & Advanced", [["matt-editor", "Matt Editor"], ["serial-tools", "Serial Converter", "convert"], ["serial-tools", "Item Validation", "validate"], ["boosting", "Experimental Character Tools", "experimental"]]],
-    ["Shortcuts & Settings", [["quick-menu", "In-game F7 Menu"], ["mobile-gateway", "Mobile Pairing"], ["updates", "Updates"], ["activity", "Activity & Connection"], ["report", "Help & Report an Issue"]]]
+    ["Shortcuts & Settings", [["quick-menu", "In-game F7 Menu"], ["mobile-gateway", "Mobile Pairing"], ["updates", "Updates"], ["activity", "Activity & Connection"], ["report", "Help & Report an Issue"], ["credits", "Credits"]]]
   ];
   const sections = {
     boosting: [

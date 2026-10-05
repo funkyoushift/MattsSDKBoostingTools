@@ -5378,3 +5378,12 @@ body.msbt-density-compact .activity-card {
   #communityFoldersPanel > .grid.two { grid-template-columns: minmax(0, 1fr); }
   .saved-folder-nav, #communityResults { max-height: 180px; }
 }
+
+/* Contributor acknowledgments and bundled notices. */
+.credits-page { width: min(100%, 960px); margin: 0 auto; padding: 24px; line-height: 1.65; }
+.credits-page h3 { margin-top: 28px; }
+.credits-page a { color: #79d7ff; text-decoration: underline; overflow-wrap: anywhere; }
+.credits-page a:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+.credits-notices { margin: 24px 0; }
+.credits-notices summary { cursor: pointer; font-weight: 600; }
+.credits-notices pre { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 12px; line-height: 1.5; }

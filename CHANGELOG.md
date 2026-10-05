@@ -6,12 +6,14 @@
 
 - Prominent contributor credits and links to original projects in the README.
 - A plain-text third-party notices file for desktop, SDK, and Android packages.
-- Contributor Credits access and feature-specific acknowledgments in the desktop app.
+- A dedicated Credits tab in the desktop app.
 - Community Discord links for GZO, Scooter’s Garage, and Azalea Asvail’s Modding World in the README and desktop app.
 - Funk’s Borderlands Trading Hub in the community list and desktop links.
 - Restored README download counters for the Windows installer, portable ZIP, and Android APK.
 
 ### Changed
+
+- Consolidated in-app contributor acknowledgments, community links, and third-party notices into one Credits tab.
 
 - Excluded Python tests and test caches from desktop packages; ignored local research and capture folders.
 - SDK packaging now validates its input and replaces the previous package only after a successful build.
