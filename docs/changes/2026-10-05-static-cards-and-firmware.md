@@ -114,3 +114,9 @@ serials. Every staged image's content hash and manifest reference was verified;
 there are no extra files. The staged WebP browser test passed screenshot priority,
 GZO name preservation, exact serial identity, full view and 200% zoom. Website
 validation passed 21 HTML pages and both JavaScript and Python client checks.
+
+Published website commit `e44ff601c0f434e9a6e7a13f2d198d09bdfb7443` passed
+GitHub validation and Pages deployment. Verified the public community page's new
+preview script, final GZO title guard, all 2,831 live manifest entries with an
+exact manifest hash match, and a sampled image's content hash. Receipt:
+`output/card-followup/website-live-verification.json`. No app release was created.
