@@ -98,7 +98,7 @@ We aim to name the creator, explain the contribution, link to the original work,
 
 If we have missed you or described your contribution incorrectly, please [open an attribution issue](https://github.com/funkyoushift/MattsSDKBoostingTools/issues) with the relevant feature or source. We want the record to be accurate, useful, and respectful.
 
-[Contribution evidence and historical corrections](docs/ATTRIBUTION_REVIEW_2026-09-30.md) · [Third-party notices and permissions](docs/THIRD_PARTY_NOTICES.md) · [Fresh Mod Database review](docs/changes/2026-10-05-community-first-readme.md)
+[Third-party notices and permissions](docs/THIRD_PARTY_NOTICES.txt)
 
 ## Getting started
 
@@ -111,8 +111,8 @@ The toolkit includes boosting, item and serial workflows, save/editor tools, inv
 
 ## Development and license
 
-[Project map](docs/PROJECT_MAP.md) · [Desktop development](electron_poc/README.md) · [Build and packaging](docs/BUILD_AND_PACKAGE.md) · [Change notes](docs/PROJECT_CHANGE_NOTES.md)
+[Desktop source](electron_poc/) · [SDK source](mod_extracted/MattsSDKBoostingTools/) · [Build tools](tools/)
 
-Original project code is covered by [LICENSE](LICENSE). Bundled and adapted code, data, libraries, and artwork retain their respective licenses or permissions; see [Third-party notices](docs/THIRD_PARTY_NOTICES.md). Credit is not a substitute for those terms.
+Original project code is covered by [LICENSE](LICENSE). Bundled and adapted code, data, libraries, and artwork retain their respective licenses or permissions; see [Third-party notices](docs/THIRD_PARTY_NOTICES.txt). Credit is not a substitute for those terms.
 
 Borderlands and its game assets belong to Gearbox / 2K and their respective owners. This is an unofficial community project and is not affiliated with or endorsed by them.

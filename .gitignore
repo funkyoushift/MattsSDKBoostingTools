@@ -112,3 +112,7 @@ installer/obj/
 dist_setup/
 electron_poc/vendor/setup/
 
+
+# Keep working notes local; the public README is the Markdown exception.
+*.[mM][dD]
+!/README.md

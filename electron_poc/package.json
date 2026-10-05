@@ -116,8 +116,8 @@
         "to": "LICENSE.txt"
       },
       {
-        "from": "../docs/THIRD_PARTY_NOTICES.md",
-        "to": "THIRD_PARTY_NOTICES.md"
+        "from": "../docs/THIRD_PARTY_NOTICES.txt",
+        "to": "THIRD_PARTY_NOTICES.txt"
       },
       {
         "from": "../mod_extracted/MattsSDKBoostingTools/LICENSE_SQU1GGS_MIT.txt",

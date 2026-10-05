@@ -28,7 +28,7 @@ New-Item -ItemType Directory -Force $PackageDir | Out-Null
 
 Copy-Item -Recurse -Force (Join-Path $SourceDir "*") $PackageDir
 Copy-Item -Force (Join-Path $RepoRoot "LICENSE") (Join-Path $PackageDir "LICENSE")
-Copy-Item -Force (Join-Path $RepoRoot "docs\THIRD_PARTY_NOTICES.md") (Join-Path $PackageDir "THIRD_PARTY_NOTICES.md")
+Copy-Item -Force (Join-Path $RepoRoot "docs\THIRD_PARTY_NOTICES.txt") (Join-Path $PackageDir "THIRD_PARTY_NOTICES.txt")
 
 Get-ChildItem -Recurse -Directory $PackageDir -Filter "__pycache__" | Remove-Item -Recurse -Force
 Get-ChildItem -Recurse -File $PackageDir -Include "*.pyc", "*.pyo" | Remove-Item -Force

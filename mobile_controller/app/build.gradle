@@ -98,7 +98,7 @@ tasks.register('syncMobileCatalogAssets') {
             rename { 'MSBT-MIT.txt' }
         }
         copy {
-            from '../../docs/THIRD_PARTY_NOTICES.md'
+            from '../../docs/THIRD_PARTY_NOTICES.txt'
             into licenseDest
         }
         copy {

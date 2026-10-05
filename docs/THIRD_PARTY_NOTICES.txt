@@ -1,0 +1,66 @@
+THIRD-PARTY NOTICES
+
+MSBT's project license does not replace the licenses or permissions of the
+components below. Original copyright and license files remain with the software.
+Contributor acknowledgments and public project links are in the root README.
+
+Mattmab / Galoob: original MSBT and save/item editor foundation. Incorporated
+with direct permission. The editor's ISC notice remains in
+external_app/v22_parts_codes_fixed/matt_editor/LICENSE_MATTMAB_ISC.txt.
+
+RDP / Squ1ggs: documented movement, teleport, combat/resource/vehicle and
+spawn-helper adaptations; bookmark and spawner-layout inspiration. MIT notice:
+Copyright (c) 2026 Squ1ggs. Full LICENSE_SQU1GGS_MIT.txt is retained in both
+mod_extracted/MattsSDKBoostingTools and external_app/v22_parts_codes_fixed.
+Source: https://github.com/Squ1ggs/Bl4SDKmods
+
+Azalea Asvail: Azzy UVH Booster workflow and native-menu inspiration. Reviewed
+source metadata declares MIT. PyrexBLJ is credited for earlier UVHM discoveries;
+Matt for challenge-path discoveries. FunkYouSHiFT assisted with the UVHM work.
+Source: https://github.com/AzaleaAsvailAMW/amw-Uvhbooster
+
+Matt: Actor Script Deployer, the standard spawning backend. MIT notice remains
+in tools/third_party/sdk_mods/ActorScriptDeployer/LICENSE.
+
+Renil: Third Person Camera SDK controller; the incorporated archive also credits
+Epilow. Used under the author's public modification/redistribution permission.
+This component is not represented as MSBT-authored or relicensed as MIT.
+Source: https://www.nexusmods.com/borderlands4/mods/259
+
+Dominic / Cr4nkSt4r: previously supplied Nexus data and retained overrides.
+The received MIT notice remains in the editor's LegitItems/LICENSE_CR4NKST4R.txt.
+Current local game extractions are separately identified as game-owned data.
+Source: https://github.com/Cr4nkSt4r/Borderlands-4.NcsParser
+
+Ynot / GZO and Levin / Lootlemon: catalogs, references and linked images used
+with the respective owners' direct permission; not relicensed as MSBT code.
+Sources: https://save-editor.be/GZO/ and https://www.lootlemon.com/
+
+Glacierpiece: save encryption/decryption wrapper adapted through Mattmab's
+editor. MIT, Copyright (c) 2025 glacierpiece. Full notice remains in
+external_app/v22_parts_codes_fixed/LICENSE_GLACIERPIECE_MIT.txt.
+Source: https://github.com/glacierpiece/borderlands-4-save-utility
+
+bl-sdk contributors, including apple1417 and Faultz: oak2 Mod Manager,
+pyunrealsdk and unrealsdk. The bundled official SDK retains its LGPL/GPL texts,
+Python license, and component notices. Pinned sources and archive hash are in
+electron_poc/vendor/oak2/NOTICE.txt. These components are not relicensed as MIT.
+Source: https://github.com/bl-sdk/oak2-mod-manager
+
+juso and smugg: BLImGui, the historical in-game UI framework, declared MIT.
+Source: https://github.com/juso40/blimgui
+
+GridStack / Alain Dumesny: MIT notice beside electron_poc/vendor/gridstack.
+js-yaml, pako and Monaco: retained notices beside the editor's browser bundle
+in THIRD_PARTY_LICENSES.txt, including pako's identified zlib portions.
+Electron and Chromium: distribution notices beside the packaged executable.
+Python: original runtime license retained. npm dependency licenses remain in
+the packaged application.
+
+AndroidX, JourneyApps ZXing Android Embedded, and ZXing Core: Apache License 2.0;
+the Android build retains the complete license in its license assets.
+
+Borderlands game data, artwork and SHiFT resources belong to Gearbox / 2K and
+other respective owners. They are not original MSBT code or relicensed as MIT.
+The AFK SHiFT package's source hash remains in its manifest. This project is
+unofficial and claims no endorsement by these owners or credited contributors.
