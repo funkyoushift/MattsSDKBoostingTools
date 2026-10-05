@@ -51,7 +51,6 @@ MSBT_External_Beta.zip
 !releases/
 !releases/latest.json
 !releases/RELEASE_NOTES_*.md
-!releases/discord_media/**
 
 # Local scratch / probe / staging (Phase 1+)
 _inspect/
@@ -114,3 +113,12 @@ installer/bin/
 installer/obj/
 dist_setup/
 electron_poc/vendor/setup/
+
+# Local research, captures, and service caches
+/output/
+/work/
+/_tmp_*/
+.wrangler/
+/docs/media/
+/docs/releases/discord_media/
+/releases/discord_media/

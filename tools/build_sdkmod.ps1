@@ -11,7 +11,7 @@ function Assert-UnderRepo {
     param([string]$Path)
     $resolved = [System.IO.Path]::GetFullPath($Path)
     $root = [System.IO.Path]::GetFullPath($RepoRoot)
-    if (-not $resolved.StartsWith($root, [System.StringComparison]::OrdinalIgnoreCase)) {
+    if (-not $resolved.StartsWith($root.TrimEnd('\') + '\', [System.StringComparison]::OrdinalIgnoreCase)) {
         throw "Refusing to operate outside repo: $resolved"
     }
 }
@@ -32,8 +32,6 @@ Copy-Item -Force (Join-Path $RepoRoot "docs\THIRD_PARTY_NOTICES.txt") (Join-Path
 
 Get-ChildItem -Recurse -Directory $PackageDir -Filter "__pycache__" | Remove-Item -Recurse -Force
 Get-ChildItem -Recurse -File $PackageDir -Include "*.pyc", "*.pyo" | Remove-Item -Force
-
-Remove-Item -Force $Output -ErrorAction SilentlyContinue
 
 # Pack with CPython zipfile. .NET ZipFile.CreateFromDirectory can produce archives
 # that oak2 zipimport rejects with ZipImportError("bad local file header").

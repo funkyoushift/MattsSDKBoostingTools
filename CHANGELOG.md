@@ -13,6 +13,9 @@
 
 ### Changed
 
+- Excluded Python tests and test caches from desktop packages; ignored local research and capture folders.
+- SDK packaging now validates its input and replaces the previous package only after a successful build.
+
 - Clarified vehicle preset instructions and repaired references to removed documentation.
 - Corrected attribution for the desktop interface and bridge; retained Squ1ggs’ code and helper credits.
 - Expanded Mattmab’s credits to name the original gameplay modules, Python helpers, and retained editor components.
@@ -21,6 +24,8 @@
 - Updated packaging to use the plain-text notices file.
 
 ### Removed
+
+- Outdated screenshots and their obsolete capture script.
 
 - Retired BLImGui panel, its startup fallback, and unused panel synchronization code. The native F7 Quick Menu and desktop bridge remain the supported interfaces.
 - Superseded Quick Menu preview instructions, legacy Tkinter packaging scripts, internal attribution snapshot, and tracked editor-only guidance.
