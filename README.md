@@ -8,10 +8,17 @@ This project brings community mods, discoveries, editors, and game tools togethe
 
 [Download the current release](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest) · [Getting started](#getting-started) · [Report a problem or missing credit](https://github.com/funkyoushift/MattsSDKBoostingTools/issues)
 
+[![Installer downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Installer-v2.30.0.exe?label=Download%20Windows%20installer&color=2ea44f)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Installer-v2.30.0.exe)
+[![Portable downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Portable-v2.30.0-win-x64.zip?label=Download%20portable%20ZIP&color=0969da)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Portable-v2.30.0-win-x64.zip)
+[![Android APK downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Mobile-Controller.apk?label=Download%20Android%20APK&color=e8a23a)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Mobile-Controller.apk)
+
+These counters track the installer, portable ZIP, and Android APK on the latest release, excluding updater metadata.
+
 ## Credits
 
 ### Community Discords
 
+- [Funk’s Borderlands Trading Hub — FunkYouSHiFT](https://discord.gg/funksbth)
 - [GZO — Mattmab and Ynot](https://discord.gg/wgjX48bksj)
 - [Scooter’s Garage — Squ1ggs](https://discord.gg/sMUtqZG8Gt)
 - [Azalea Asvail’s Modding World — Azalea’s branch of GZO](https://discord.gg/CV8bc6z32E)

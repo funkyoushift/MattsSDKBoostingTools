@@ -13700,6 +13700,7 @@ function wireEvents() {
     ["communityCreditsBtn", "https://github.com/funkyoushift/MattsSDKBoostingTools#credits"],
     ["funkPoweredMark", "https://www.funkyoushift.com"],
     ["funkyoushiftSiteBtn", "https://www.funkyoushift.com"],
+    ["funkDiscordBtn", "https://discord.gg/funksbth"],
     ["gzoDiscordBtn", "https://discord.gg/wgjX48bksj"],
     ["scootersDiscordBtn", "https://discord.gg/sMUtqZG8Gt"],
     ["azaleaDiscordBtn", "https://discord.gg/CV8bc6z32E"],
