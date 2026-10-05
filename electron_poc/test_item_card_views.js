@@ -18,14 +18,33 @@ app.whenReady().then(async()=>{
   const uploaded=document.createElement('div');host.append(uploaded);
   fillBl4ItemCard(uploaded,{serial:'@UUpload',image_url:'https://msbt-community-library.screename53.workers.dev/images/abcdef-1234',image_serial_hash:await hash('@UUpload')});
   await wait(()=>uploaded.querySelector('img'));check(native.length===0&&lookups.length===0,'upload must bypass GZO and native');
-  const gzo=document.createElement('div');host.append(gzo);fillBl4ItemCard(gzo,{serial:'@UGzo'});
+  const gzo=document.createElement('div'),gzoTitle=document.createElement('span');host.append(gzo,gzoTitle);
+  bindSavedCardTitle(gzo,gzoTitle,{serial:'@UGzo',name:'Old GZO label'});fillBl4ItemCard(gzo,{serial:'@UGzo'});
   await wait(()=>gzo.querySelector('img'));check(native.length===0,'GZO must bypass native');
+  await wait(()=>gzoTitle.textContent==='GZO name');
+  check(gzoTitle.title.includes('Old GZO label'),'GZO keeps original label available');
   const generated=document.createElement('div');host.append(generated);fillBl4ItemCard(generated,{serial:'@UUnknown'});
   await wait(()=>generated.querySelector('img'));check(native.includes('@UUnknown'),'unknown uses native');
   // Real shared lazy tile used by both local saved folders and Community Folders.
   const community=savedItemCard({serial:'@UCommunity',source:'Community folder'});host.append(community);
   savedCardObserver.unobserve(community);savedCardPending.set('@UCommunity',[{host:community}]);await flushSavedCards();
   await wait(()=>community.querySelector('img'));check(native.includes('@UCommunity'),'community screenshot absence must generate');
+  // Saved names follow the actual resolved card without rewriting source data.
+  const original={id:'name-test',serial:'@UNameTest',name:'Old saved label',group:'Creator folder'};
+  const before=JSON.stringify(original);
+  state.bookmarks=[original];els.bookmarkSearch.value='';state.bookmarkFilterGroup='All';els.bookmarkGroupFilter.value='All';
+  renderBookmarks();
+  const namedMedia=document.querySelector('#bookmarkRows .saved-item-card');
+  savedCardObserver.unobserve(namedMedia);savedCardPending.set(original.serial,[{host:namedMedia}]);await flushSavedCards();
+  const namedTitle=document.querySelector('#bookmarkRows .bookmark-title');
+  await wait(()=>namedTitle.textContent.includes('Native @UNameTest'));
+  check(namedTitle.title.includes(original.name),'original label remains in tooltip');
+  check(JSON.stringify(original)===before,'card name must not rewrite saved data');
+  check(bookmarkSearchText(original).includes('native @unametest')&&bookmarkSearchText(original).includes('old saved label'),'search includes resolved and saved names');
+  namedMedia.dispatchEvent(new CustomEvent('msbt-card-name',{detail:{serial:'@Unametest',name:'Wrong case item',source:'Game card'}}));
+  check(namedTitle.textContent.includes('Native @UNameTest'),'another serial must not rename this tile');
+  renderBookmarks();
+  check(document.querySelector('#bookmarkRows .bookmark-title').textContent.includes('Native @UNameTest'),'resolved name survives rerender');
   const mismatch=document.createElement('div');host.append(mismatch);fillBl4ItemCard(mismatch,{serial:'@UDifferent',image_url:'https://msbt-community-library.screename53.workers.dev/images/abcdef-1234',image_serial_hash:await hash('@UUpload')});
   await wait(()=>mismatch.querySelector('img'));check(native.includes('@UDifferent'),'mismatched upload must not be reused');
   const stale=document.createElement('div');host.append(stale);fillBl4ItemCard(stale,{serial:'@UOld'});fillBl4ItemCard(stale,{serial:'@UGzo'});
@@ -48,7 +67,7 @@ app.whenReady().then(async()=>{
   const unavailable=document.createElement('div');host.append(unavailable);fillBl4ItemCard(unavailable,{serial:'@UUncached'});
   await wait(()=>unavailable.textContent.includes('No matching screenshot or cached card yet.'));
   check(!unavailable.textContent.includes('RuntimeError'),'raw solo exception leaked into card');
-  return {upload:true,gzo:true,native:true,community:true,mismatch:true,stale:true,serialMenus:6,clearUnavailableMessage:true,layoutToggle:true};
+  return {upload:true,gzo:true,native:true,community:true,mismatch:true,stale:true,serialMenus:6,clearUnavailableMessage:true,layoutToggle:true,savedCardNames:true};
  })()`);
  assert.equal(result.community,true);console.log(JSON.stringify(result));win.destroy();app.exit(0);
 }).catch(error=>{console.error(error);app.exit(1);});

@@ -147,6 +147,14 @@ app.whenReady().then(async()=>{
   check($('communityPreviewItems').querySelector('.saved-item-card').cardItem.image_url==='https://save-editor.be/GZO/fixture.png','community passes supplied screenshot to shared loader');
   check($('communityPreviewItems').textContent.includes('GZO fixture title'),'GZO title shown');
   check($('communityPreviewItems').querySelectorAll('.saved-item-card')[1].cardItem.serial==='@UAbCd','unmatched item retains original serial for generation');
+  const sourceBefore=JSON.stringify(folder);
+  const secondMedia=$('communityPreviewItems').querySelectorAll('.saved-item-card')[1];
+  secondMedia.dispatchEvent(new CustomEvent('msbt-card-name',{detail:{serial:'@UAbCd',name:'Flared Benefix Stellium',source:'Game card'}}));
+  check(secondMedia.closest('.community-item-row').querySelector('.saved-card-title').textContent.includes('Flared Benefix Stellium'),'community uses card name');
+  check(JSON.stringify(folder)===sourceBefore,'community source labels and serials preserved');
+  check(secondMedia.closest('.community-item-row').querySelector('input[type=checkbox]'),'name update retains selection');
+  $('communityResults').querySelector('button').click();await idle();
+  check($('communityPreviewItems').querySelector('.saved-card-title').textContent.includes('Flared Benefix Stellium'),'cached card name wins over old presentation on reopen');
   $('communityFoldersPanel').scrollIntoView({block:'start'});
   return {operations:calls.length,bookmarks:state.bookmarks.length};
  })()`);

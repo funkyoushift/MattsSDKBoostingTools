@@ -32,8 +32,12 @@
       const original=selected.folder.items[index],presentation=selected.presentations?.[index],item={...original,name:presentation?.title||original.name}, row=document.createElement('div'), label=document.createElement('label'), box=document.createElement('input'), details=document.createElement('details'), title=document.createElement('summary'), code=document.createElement('pre');
       row.className='community-item-row saved-card-tile';box.type='checkbox';box.dataset.itemIndex=String(index);box.checked=checked.has(index);box.disabled=selected.status!=='approved';
       box.addEventListener('change',()=>{box.checked?checked.add(index):checked.delete(index);selectionChanged();});
-      label.append(box,document.createTextNode((item.folder?item.folder+' / ':'')+item.name));title.textContent='Show item code';code.textContent=item.serial;
-      code.style.cssText='white-space:pre-wrap;overflow-wrap:anywhere;max-height:180px;overflow:auto';details.append(title,code);row.append(label);const media=savedItemCard({...item,source:'Community folder',image_url:presentation?.image_url||'',image_serial_hash:presentation?.serial_hash||'',image_source:presentation?.image_source||''});media.classList.add('community-item-photo');if(presentation?.title_source==='GZO exact code match'){const credit=document.createElement('small');credit.textContent='GZO title · exact code match'+(original.name!==item.name?' · Saved label: '+original.name:'');row.append(credit);}row.append(media,details);host.append(row);
+      const itemTitle=document.createElement('span');itemTitle.className='saved-card-title';
+      label.append(box,itemTitle);title.textContent='Show item code';code.textContent=item.serial;
+      code.style.cssText='white-space:pre-wrap;overflow-wrap:anywhere;max-height:180px;overflow:auto';details.append(title,code);row.append(label);const media=savedItemCard({...item,source:'Community folder',image_url:presentation?.image_url||'',image_serial_hash:presentation?.serial_hash||'',image_source:presentation?.image_source||''});media.classList.add('community-item-photo');
+      bindSavedCardTitle(media,itemTitle,original,item.folder?item.folder+' / ':'');
+      if(presentation?.title&&!savedCardNames.has(original.serial)){itemTitle.textContent=(item.folder?item.folder+' / ':'')+presentation.title;}
+      if(presentation?.title_source==='GZO exact code match'){const credit=document.createElement('small');credit.textContent='GZO title · exact code match'+(original.name!==item.name?' · Saved label: '+original.name:'');row.append(credit);}row.append(media,details);host.append(row);
     }
     shown=end;$('communityPreviewMore').hidden=shown>=selected.folder.items.length;
   }

@@ -4,6 +4,7 @@ Before re-researching a feature, read its entry below and any linked component n
 
 ## Changes
 
+- [2026-10-04: Saved item card names](changes/2026-10-04-saved-card-names.md) — local saved/community headings follow resolved card names; original labels, creator credits and serials retained.
 - [2026-10-04: Expanded item cards and hover previews](changes/2026-10-04-expanded-card-layout.md) — local readable layout for overflowing modded stats/skills, cropped thumbnails, full zoomable preview, compact switch and cached-data redraw after layout updates.
 - [2026-10-04: Cached cards during guest sessions](changes/2026-10-04-card-cache-solo-fallback.md) — local exact-serial previous-session fallback and readable unavailable message; generation safeguard retained.
 

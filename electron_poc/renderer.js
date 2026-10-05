@@ -5128,6 +5128,7 @@ function activeBookmark() {
 function bookmarkSearchText(row) {
   return [
     row.name,
+    savedCardNames.get(row.serial)?.name,
     row.group,
     row.serial
   ].filter(Boolean).join(" ").toLowerCase();
@@ -5287,6 +5288,21 @@ function filteredBookmarks() {
 
 // Saved folders share Inventory's resolver and card renderer. Resolve only visible tiles.
 const savedCardCache = new Map();
+const savedCardNames = new Map();
+function bindSavedCardTitle(media,title,item,prefix='') {
+  const original=String(item.name||'Untitled Serial');
+  const paint=resolved=>{
+    title.textContent=prefix+(resolved?.name||original);
+    title.title=resolved?`${resolved.source} name\nSaved label: ${original}`:`Saved label: ${original}`;
+  };
+  paint(savedCardNames.get(item.serial));
+  media.addEventListener('msbt-card-name',event=>{
+    const resolved=event.detail;
+    if(!media.isConnected||resolved?.serial!==item.serial||typeof resolved.name!=='string'||!resolved.name.trim())return;
+    savedCardNames.set(item.serial,{name:resolved.name.trim(),source:resolved.source});
+    paint(savedCardNames.get(item.serial));
+  });
+}
 const savedCardPending = new Map();
 let savedCardTimer = null;
 const savedCardObserver = new IntersectionObserver(entries => {
@@ -5360,7 +5376,7 @@ function renderBookmarks() {
     const main = document.createElement("span");
     const title = document.createElement("span");
     title.className = "bookmark-title";
-    title.textContent = `${row.id === state.bookmarkActiveId ? "> " : "  "}${checked ? "[X]" : "[ ]"} ${row.name || "Untitled Serial"}`;
+    const titlePrefix = `${row.id === state.bookmarkActiveId ? "> " : "  "}${checked ? "[X]" : "[ ]"} `;
     const serial = document.createElement("span");
     serial.className = "bookmark-serial";
     serial.textContent = bookmarkSummarySerial(row.serial);
@@ -5371,7 +5387,9 @@ function renderBookmarks() {
     group.textContent = row.group || "Default";
 
     button.setAttribute("aria-pressed", String(checked));
-    button.append(main, savedItemCard(row), group);
+    const media=savedItemCard(row);
+    bindSavedCardTitle(media,title,row,titlePrefix);
+    button.append(main, media, group);
     els.bookmarkRows.appendChild(button);
   });
 }

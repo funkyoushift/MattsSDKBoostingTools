@@ -43,6 +43,10 @@
     const marker=document.createElement('small');marker.textContent='Loading item card…';
     host.replaceChildren(marker);host.classList.remove('hidden','native-game-card');host.classList.add('bl4-item-card');
     const current=()=>host.isConnected&&host.contains(marker);
+    const publishName=(name,source)=>{
+      if(current()&&typeof name==='string'&&name.trim())
+        host.dispatchEvent(new CustomEvent('msbt-card-name',{detail:{serial:item.serial,name:name.trim(),source}}));
+    };
     const loadImage=(url,name)=>new Promise((resolve,reject)=>{
       const image=document.createElement('img');image.alt=name||item.name||'Item card';
       image.style.cssText='display:block;width:100%;height:auto';image.referrerPolicy='no-referrer';
@@ -58,12 +62,13 @@
       if(uploaded){try {await loadImage(uploaded.image);if(current())marker.textContent=uploaded.source;return;}catch {}}
       const existing=await catalogImage(item.serial);
       if(!current())return;
-      if(existing?.image){try{await loadImage(existing.image,existing.itemCard?.name);if(current())marker.textContent='GZO item card';return;}catch{}}
+      if(existing?.image){try{await loadImage(existing.image,existing.itemCard?.name);if(current())marker.textContent='GZO item card';publishName(existing.itemCard?.name,'GZO card');return;}catch{}}
       const reply=await root.msbt.nativeItemPreview(item.serial);
       if(!current())return;
       if(!reply?.ok||!reply.image?.base64)throw new Error(reply?.message||'Open a supported BL4 solo session to generate this card.');
       let displayed=await loadImage('data:image/png;base64,'+reply.image.base64,reply.widget.Name);
       if(!current())return;
+      publishName(reply.widget.Name,'Game card');
       const caption=reply.offline?'Cached game card · previous session':reply.image.warnings?.length?'Game card · some artwork unavailable':'Game card · standalone stats';
       marker.textContent=caption+(reply.image.layout==='expanded'?' · expanded layout':'');
       marker.title='Uses the game’s card builder. Equipped firmware counts and comparison context are not included.';
