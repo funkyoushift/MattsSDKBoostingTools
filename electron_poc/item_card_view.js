@@ -67,7 +67,12 @@
       marker.textContent=reply.offline?'Cached game card · previous session':reply.image.warnings?.length?'Game card · some artwork unavailable':'Game card · standalone stats';
       marker.title='Uses the game’s card builder. Equipped firmware counts and comparison context are not included.';
       host.dispatchEvent(new CustomEvent('msbt-card-ready',{detail:reply}));
-    }).catch(error=>{if(current())marker.textContent=error.message;});
+    }).catch(error=>{
+      if(!current())return;
+      marker.textContent=String(error.message).includes('New game cards require a solo session')
+        ? 'No matching screenshot or cached card yet. Generate this card in a solo session.'
+        : error.message;
+    });
     return host;
   }
   root.MSBTItemCards={show,catalogImage,clearCatalog:()=>images.clear()};

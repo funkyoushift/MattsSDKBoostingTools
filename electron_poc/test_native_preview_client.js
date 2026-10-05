@@ -35,6 +35,27 @@ test('serial case and new game sessions require separate cache entries',async t=
   await client.get('@UCode');await client.get('@Ucode');state.session='b'.repeat(32);
   await client.connect();await client.get('@UCode');assert.equal(state.builds,3);
 });
+
+test('guests may view an exact previous-session snapshot without bypassing generation guards',async t=>{
+  const {state,options,client}=await setup(t);await client.connect();
+  await client.get('@UCode');state.session='b'.repeat(32);
+  const request=options.request;
+  const guarded=createNativePreviewClient({...options,request:async args=>args.payload.action==='native_card_preview'
+    ?{ok:false,message:"RuntimeError('New game cards require a solo session; existing screenshots remain available')"}:request(args)});
+  await guarded.connect();
+  const card=await guarded.getWithSnapshot('@UCode');
+  assert.equal(card.offline,true);assert.equal(card.cached,true);assert.equal(card.session,'a'.repeat(32));
+  assert.equal(card.serial,'@UCode');assert.equal(state.builds,1);assert.equal(state.renders,1);
+  const data=await guarded.getWithSnapshot('@UCode',{image:false});assert.equal(data.image,undefined);
+  await assert.rejects(guarded.getWithSnapshot('@Ucode'),/solo session/);
+});
+
+test('snapshot fallback does not hide mismatched native responses',async t=>{
+  const {state,options,client}=await setup(t);await client.connect();await client.get('@UCode');
+  state.session='b'.repeat(32);const request=options.request;
+  const invalid=createNativePreviewClient({...options,request:async args=>{const reply=await request(args);if(reply.serial)reply.serial='@UOther';return reply;}});
+  await invalid.connect();await assert.rejects(invalid.getWithSnapshot('@UCode'),/does not match/);
+});
 test('failed generation is retryable and never cached as an image',async t=>{
   const {state,options}=await setup(t);const request=options.request;let fail=true;
   options.request=async args=>args.payload.action==='native_card_preview'&&fail?{ok:false,message:'Game unavailable'}:request(args);

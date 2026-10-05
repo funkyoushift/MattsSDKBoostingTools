@@ -117,6 +117,18 @@ function createNativePreviewClient({request,capture,cacheDirectory,renderRevisio
       return {...record,cached:true,offline:true};
     }catch{return null;}
   }
-  return {connect,get,snapshot};
+  async function getWithSnapshot(serial,options={}){
+    try{return await get(serial,options);}
+    catch(error){
+      // Guests prevent construction, not viewing an exact older snapshot.
+      // Preserve its previous-session label; never hide identity errors.
+      if(!String(error.message).includes('New game cards require a solo session'))throw error;
+      const saved=await snapshot(serial);
+      if(!saved)throw error;
+      if(options.image===false){const {image,...data}=saved;return data;}
+      return saved;
+    }
+  }
+  return {connect,get,getWithSnapshot,snapshot};
 }
 module.exports={createNativePreviewClient};

@@ -814,7 +814,7 @@ async function resolvedNativePreview(serial,wantImage=true){
     if(wantImage===false){const {image,...data}=saved;return data;}
     return saved;
   }
-  return localNativePreviewClient().get(serial,{image:wantImage!==false});
+  return localNativePreviewClient().getWithSnapshot(serial,{image:wantImage!==false});
 }
 ipcMain.handle('app:nativeItemPreview',async(_event,serial,wantImage=true)=>{
   try {
