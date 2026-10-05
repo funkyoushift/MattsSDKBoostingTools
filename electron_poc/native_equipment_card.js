@@ -6,8 +6,16 @@ function localized(value) {
   return String(value || "").replace(/^[^,]*,\s*[a-f0-9]{16,32},\s*/i,"");
 }
 function iconUrl(value) {
-  const asset = String(value || "").match(/'\/Game\/(uiresources\/[^']+)'/i)?.[1];
-  return asset ? "coui://" + asset.split(".")[0] + ".png" : "";
+  const raw = String(value || "");
+  const match = raw.match(/'\/Game\/((?:DLC\/([^/'']+)\/)?uiresources\/[^']+)'/i);
+  if (!match) return "";
+  const dlc = match[2] || "";
+  const relative = match[1].split(".")[0];
+  if (dlc) {
+    const uiPath = relative.replace(new RegExp(`^DLC/${dlc}/`, "i"), "");
+    return `${String(dlc).toLowerCase()}://${uiPath}.png`;
+  }
+  return `coui://${relative}.png`;
 }
 function buildEquipmentCard(card,data,api) {
   if (!data || !TYPES.has(card.item_type)) return null;

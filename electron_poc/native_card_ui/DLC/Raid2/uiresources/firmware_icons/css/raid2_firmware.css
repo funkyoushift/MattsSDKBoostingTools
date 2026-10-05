@@ -1,0 +1,7 @@
+.icon_bkg.fw_raid2_activefire {
+    background-image: url("raid2://uiresources/firmware_icons/assets/ico_firmware_activefire_big.png") !important;
+}
+
+.icon_bkg_sm.fw_raid2_activefire {
+    background-image: url("raid2://uiresources/firmware_icons/assets/ico_firmware_activefire_small.png") !important;
+}

@@ -1,0 +1,53 @@
+<firmware-segments name="Firmware Container"
+                   class="firmware_cntr">
+    <div name="Icon placeholder"
+         class="firmware_icon_cntr">
+        <div name="Icon"
+             data-bind-if="{{data_entry.firmwaretransfered}}"
+             class="firmware_icon_transfer"></div>
+        <div name="Icon"
+             data-bind-class="{{data_entry.firmwareident}}"
+             class="firmware_icon icon_bkg"></div>
+    </div>
+    <div name="Firmware"
+         class="firmware_section">
+        <div name="Text"
+             class="firmware_text_cntr">
+            <div name="Firmware name"
+                 data-bind-value="{{data_entry.firmware.loc_text}}"
+                 data-bind-class="{{data_entry.firmware.comparison}}"
+                 class="firmware_name_cntr"></div>
+            <div name="Firmware number"
+                 data-bind-value="{{data_entry.firmwarestring}}"
+                 data-bind-class="{{data_entry.firmware.comparison}}"
+                 class="firmware_number_cntr"></div>
+        </div>
+        <div name="Bonus pieces"
+             gue-comment="add .active class to the pieces when firmware\ngets filled"
+             class="firmware_bonus_pieces">
+            <div name="piece"
+                 data-bind-class-toggle="positive:{{data_entry.firmwarecount}} == 0 && {{data_entry.firmware.comparison}} == 'item_card_compare_better';negative:{{data_entry.firmwarecount}} == 1 && {{data_entry.firmware.comparison}} == 'item_card_compare_worse';empty:{{data_entry.firmwarecount}} < 1"
+                 class="firmware_bonus_piece"></div>
+            <div name="piece"
+                 data-bind-class-toggle="positive:{{data_entry.firmwarecount}} == 1 && {{data_entry.firmware.comparison}} == 'item_card_compare_better';negative:{{data_entry.firmwarecount}} == 2 && {{data_entry.firmware.comparison}} == 'item_card_compare_worse';empty:{{data_entry.firmwarecount}} < 2"
+                 class="firmware_bonus_piece"></div>
+            <div name="piece"
+                 data-bind-class-toggle="positive:{{data_entry.firmwarecount}} == 2 && {{data_entry.firmware.comparison}} == 'item_card_compare_better';negative:{{data_entry.firmwarecount}} == 3 && {{data_entry.firmware.comparison}} == 'item_card_compare_worse';empty:{{data_entry.firmwarecount}} < 3"
+                 class="firmware_bonus_piece"></div>
+        </div>
+    </div>
+</firmware-segments>
+<link href="coui://uiresources/components/firmware/css/firmware.css"
+      type="text/css"
+      rel="stylesheet" />
+<script src="coui://uiresources/components/firmware/js/firmware.js"></script>
+<script src="coui://uiresources/components/firmware/data/firmware.data"></script>
+<link href="raid1://uiresources/firmware_icons/css/raid1_firmware.css"
+      type="text/css"
+      rel="stylesheet" />
+<link href="raid2://uiresources/firmware_icons/css/raid2_firmware.css"
+      type="text/css"
+      rel="stylesheet" />
+<link href="tuba://uiresources/firmware_icons/css/tuba_firmware.css"
+      type="text/css"
+      rel="stylesheet" />

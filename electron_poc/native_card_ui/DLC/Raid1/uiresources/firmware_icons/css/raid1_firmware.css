@@ -1,0 +1,7 @@
+.icon_bkg.fw_raid1_skillcraft {
+    background-image: url("raid1://uiresources/firmware_icons/assets/ico_firmware_skillcraft_big.png") !important;
+}
+
+.icon_bkg_sm.fw_raid1_skillcraft {
+    background-image: url("raid1://uiresources/firmware_icons/assets/ico_firmware_skillcraft_small.png") !important;
+}

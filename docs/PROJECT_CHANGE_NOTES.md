@@ -4,6 +4,8 @@ Before re-researching a feature, read its entry below and any linked component n
 
 ## Changes
 
+- [2026-10-04: Shared native-card release candidate](changes/2026-10-04-shared-native-card-release.md) — Community Folders and serial-menu previews, GZO/upload priority, guarded packaged native service and offline snapshots; combined delivery/updater release validation in progress.
+
 - [2026-10-04: Updater checked and updated the wrong game installation](changes/2026-10-04-updater-game-target.md) — Steam/Epic target mismatch confirmed in installer receipt; local desktop/updater correction installed, Steam SDK repaired to bundled v2.28.0 with matching hash. Loaded-game identity support is source-only until a future SDK build.
 
 - [2026-10-04: Concurrent manual and AFK delivery methods](changes/2026-10-04-concurrent-delivery-methods.md) — local implementation; independent manual/AFK requests to different targets, shared progress, conversion target snapshots, recovery exclusivity and kick protection. Not installed or published; live mixed-method validation remains open.

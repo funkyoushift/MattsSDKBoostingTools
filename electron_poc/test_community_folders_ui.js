@@ -25,6 +25,8 @@ app.whenReady().then(async()=>{
   let sent,imported=false,presentations=[],calls=[],queries=[],releaseSearch=null,delaySearch=false,paginated=false,failPage=false,pageRequests=[];
   const folder={version:1,title:'Vex starter',creator:'Community tester',description:'Gun and shield drop list',folders:['','Shields'],items:[{name:'<img src=x onerror=alert(1)>',folder:'',serial:'@UAbCd'},{name:'Shield',folder:'Shields',serial:'@UAbCd'}]};
   window.msbt=window.msbt||{};
+  window.msbt.itemCardImages=async()=>({items:[]});
+  window.msbt.nativeItemPreview=async serial=>({ok:true,widget:{Name:'Native fixture'},image:{ok:true,base64:'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Wl6LksAAAAASUVORK5CYII='}});
   window.msbt.communityFolders=async(op,p)=>{calls.push(op);
    if(op==='info')return {ok:true,endpoint:'https://library.example'};
    if(op==='list'){
@@ -110,10 +112,9 @@ app.whenReady().then(async()=>{
   check(sent.items.length===2,'selected subtree only');check(sent.items[0].serial===sent.items[1].serial,'duplicates preserved');check(sent.items[1].folder==='Shields','subfolder preserved');check(!JSON.stringify(sent).includes('@UKeep'),'unselected bookmark not sent');
   $('communityMineBtn').click();await idle();$('communityResults').querySelector('button').click();await idle();check($('communityImportBtn').disabled,'pending cannot import');check($('communityCopyBtn').disabled,'pending has no public share');
   check(!calls.some(x=>/boost|deliver|afk/.test(x)),'no game actions');
-  // Local cards remain supported; community preview uses real screenshots and explicit missing-image text.
-  savedCardCache.set('@UAbCd', {meta_ok:true,display_name:'Resolved test shield',item_type:'Shield',level:70,rarity:'Legendary'});
+  // Local and Community folders both attach lazy shared card views.
   $('savedItemsLocalBtn').click();openBookmarkFolder('Builds / Vex');
-  check($('bookmarkRows').querySelectorAll('.saved-item-card.bl4-item-card').length===2,'local inventory cards');
+  check($('bookmarkRows').querySelectorAll('.saved-item-card').length===2,'local inventory cards');
   check(state.bookmarks.find(x=>x.id==='a').serial==='@UAbCd','card rendering preserves serial');
   const afkIdle=async()=>{for(let i=0;i<100&&$('afkCommunityPicker').getAttribute('aria-busy')==='true';i++)await new Promise(r=>setTimeout(r,10));};
   const beforeTab=state.activeTab;
@@ -142,10 +143,10 @@ app.whenReady().then(async()=>{
   paginated=false;$('communityOpenBtn').click();await idle();
   presentations=[{title:'GZO fixture title',title_source:'GZO exact code match',image_source:'GZO exact code match',image_url:'https://save-editor.be/GZO/fixture.png'},null];
   $('communitySearchBtn').click();await idle();$('communityResults').querySelector('button').click();await idle();
-  check($('communityPreviewItems').querySelectorAll('.saved-item-card.bl4-item-card').length===0,'community does not use generated cards');
-  check($('communityPreviewItems').querySelectorAll('img').length===1,'community uses supplied screenshot');
+  check($('communityPreviewItems').querySelectorAll('.saved-item-card').length===2,'community shares lazy card loader');
+  check($('communityPreviewItems').querySelector('.saved-item-card').cardItem.image_url==='https://save-editor.be/GZO/fixture.png','community passes supplied screenshot to shared loader');
   check($('communityPreviewItems').textContent.includes('GZO fixture title'),'GZO title shown');
-  check($('communityPreviewItems').textContent.includes('No screenshot available'),'unmatched item has honest fallback');
+  check($('communityPreviewItems').querySelectorAll('.saved-item-card')[1].cardItem.serial==='@UAbCd','unmatched item retains original serial for generation');
   $('communityFoldersPanel').scrollIntoView({block:'start'});
   return {operations:calls.length,bookmarks:state.bookmarks.length};
  })()`);
@@ -159,7 +160,7 @@ app.whenReady().then(async()=>{
  const out=path.join(__dirname,'..','output','community-folders-review');fs.mkdirSync(out,{recursive:true});fs.writeFileSync(path.join(out,'community-folders.png'),(await win.webContents.capturePage()).toPNG());
  await win.webContents.executeJavaScript(`document.getElementById('savedItemsLocalBtn').click();document.querySelector('[data-msbt-panel="serial-bookmarks"]').scrollIntoView({block:'start'});`);
  await new Promise(resolve=>setTimeout(resolve,200));
- const rendered=await win.webContents.executeJavaScript(`document.querySelectorAll('#bookmarkRows iframe[data-rendered="true"]').length`);assert.equal(rendered,2,'native cards actually render');
+ const rendered=await win.webContents.executeJavaScript(`document.querySelectorAll('#bookmarkRows .saved-item-card img').length`);assert.equal(rendered,2,'shared cards actually render');
  fs.writeFileSync(path.join(out,'saved-items.png'),(await win.webContents.capturePage()).toPNG());
  const heights=[];
  for (const [width,height] of [[2560,1440],[1920,1080],[1280,720],[800,600],[480,800]]) {

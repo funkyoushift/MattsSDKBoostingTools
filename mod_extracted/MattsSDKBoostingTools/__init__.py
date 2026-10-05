@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+__version__: str = "2.29.0"
+__version_info__: tuple[int, int, int] = (2, 29, 0)
+
 from mods_base import CoopSupport, Game, build_mod
 
 from .golden_chest_keybinds import CLOSE_GOLDEN_CHEST_KEY, OPEN_GOLDEN_CHEST_KEY
@@ -35,9 +38,6 @@ from .mobile_pairing import (
     mobile_pair_toggle,
     start_mobile_pairing,
 )
-
-__version__: str = "2.28.0"
-__version_info__: tuple[int, int, int] = (2, 12, 2)
 
 _panel_keybinds = []
 _panel_commands = []

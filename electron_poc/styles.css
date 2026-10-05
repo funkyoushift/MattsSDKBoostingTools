@@ -5326,7 +5326,10 @@ body.msbt-density-compact .activity-card {
 .saved-card-tile .bookmark-group { display: none; }
 #communityPreviewItems .saved-card-tile label { display: block; cursor: pointer; overflow-wrap: anywhere; }
 #communityPreviewItems .saved-card-tile input { margin-right: 8px; }
-.saved-item-card { min-height: 160px; width: 100%; margin-top: 8px; }
+.saved-item-card { min-height: 160px; width: 100%; margin-top: 8px; max-height: 560px; overflow: auto; }
+.serial-card-previews { margin: 10px 0; }
+.serial-card-previews > summary { cursor: pointer; padding: 8px 0; }
+.serial-card-previews > div { max-height: 600px; overflow: auto; }
 .saved-card-tile .native-game-card-frame { pointer-events: none; }
 .saved-card-tile details { font-size: 12px; }
 

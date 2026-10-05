@@ -1,0 +1,307 @@
+.firmware_section {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    flex: 1 1;
+    background-image: none;
+    position: relative;
+    background-repeat: repeat;
+    background-position: left top;
+    background-attachment: scroll;
+    background-size: auto;
+    margin: 0rem 0rem 0rem 1rem;
+}
+
+.firmware_bonus_pieces {
+    height: 1.2rem;
+    display: flex;
+    width: 100%;
+    position: relative;
+}
+
+.firmware_bonus_piece {
+    flex: 1 0;
+    position: relative;
+    margin: -1.1rem 0rem -1.1rem -1.1rem;
+    border-image-source: url("coui://uiresources/_shared/assets/ui_art_misc_assets/square_white_glow_9slice.png");
+    border-image-slice: 50% 50% 49% 49% fill;
+    border-image-width: 1.4rem 1.4rem 1.4rem 1.4rem;
+    filter: coh-color-matrix(0.10196078431372549, 0, 0, 0, 0, 0, 0.7294117647058823, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0);
+}
+
+.firmware_icon_cntr {
+    width: 5.5rem;
+    height: 4.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.firmware_cntr {
+    display: flex;
+    width: 100%;
+    height: 4.5rem;
+}
+
+.firmware_icon {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: none;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+}
+
+.firmware_name_cntr {
+    font-size: 2.2rem;
+    font-family: Industry-Medium;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    color: #a0aeb1;
+}
+
+.firmware_name_cntr.item_card_compare_better {
+    color: #1abaff;
+}
+
+.firmware_text_cntr {
+    font-size: 2.6rem;
+    font-family: Industry-Medium;
+    justify-content: space-between;
+    position: relative;
+    display: flex;
+    margin: 0rem 1rem 0rem 0rem;
+}
+
+.tooltip_content_body_text.disabled {
+    opacity: 0.5;
+    color: #808080;
+}
+
+.firmware_number_cntr.item_card_compare_better {
+    color: #1abaff;
+}
+
+.firmware_number_cntr {
+    font-family: Industry-DemiBold;
+    margin: 0rem 0rem 0rem 0.4rem;
+    font-size: 2.2rem;
+    color: #e4d9ce;
+}
+
+.firmware_bonus_piece.empty {
+    position: static;
+    background-image: url("coui://uiresources/_shared/assets/ui_art_misc_assets/large_diagonal_lines.png");
+    background-repeat: repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+    border-image-slice: 1 fill;
+    border-image-width: 2rem;
+    margin: 0rem 1rem 0rem 0rem;
+    filter: coh-color-matrix(0.6235294117647059, 0, 0, 0, 0, 0, 0.6784313725490196, 0, 0, 0, 0, 0, 0.6901960784313725, 0, 0, 0, 0, 0, 1, 0);
+    opacity: 0.3;
+}
+
+.firmware_bonus_piece.positive {
+    filter: coh-color-matrix(0.10196078431372549, 0, 0, 0, 0, 0, 0.7294117647058823, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0);
+    opacity: 0.6;
+}
+
+.firmware_icon_transfer {
+    width: 2.5rem;
+    height: 2.5rem;
+    position: absolute;
+    z-index: 1;
+    bottom: -0.5rem;
+    background-image: url("coui://uiresources/item_card/assets/UI_Art_Assets/ico_ui_art_firmware_lock.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    background-size: contain;
+    right: -0.5rem;
+}
+
+/*firmware icons big*/
+.icon_bkg.fw_action_fist {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_firmwares/item_card_size/ico_firmware_action_fist_big.png") !important;
+}
+
+.icon_bkg.fw_airstrike {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_firmwares/item_card_size/ico_firmware_airstrike_big.png") !important;
+}
+
+.icon_bkg.fw_atlas_ex {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_firmwares/item_card_size/ico_firmware_atlas_ex_big.png") !important;
+}
+
+.icon_bkg.fw_atlas_infinum {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_firmwares/item_card_size/ico_firmware_atlas_infinium_big.png") !important;
+}
+
+.icon_bkg.fw_baker {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_firmwares/item_card_size/ico_firmware_baker_big.png") !important;
+}
+
+.icon_bkg.fw_bullets_to_spare {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_firmwares/item_card_size/ico_firmware_bullets_to_spare_big.png") !important;
+}
+
+.icon_bkg.fw_daeddy_o {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_firmwares/item_card_size/ico_firmware_daedy_o_big.png") !important;
+}
+
+.icon_bkg.fw_deadeye {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_firmwares/item_card_size/ico_firmware_deadeye_big.png") !important;
+}
+
+.icon_bkg.fw_gadget_ahoy {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_firmwares/item_card_size/ico_firmware_gadget_ahoy_big.png") !important;
+}
+
+.icon_bkg.fw_get_throwin {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_firmwares/item_card_size/ico_firmware_get_throwd_big.png") !important;
+}
+
+.icon_bkg.fw_god_killer {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_firmwares/item_card_size/ico_firmware_god_killer_big.png") !important;
+}
+
+.icon_bkg.fw_goojfc {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_firmwares/item_card_size/ico_firmware_goojfc_big.png") !important;
+}
+
+.icon_bkg.fw_heating_up {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_firmwares/item_card_size/ico_firmware_heating_up_big.png") !important;
+}
+
+.icon_bkg.fw_high_caliber {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_firmwares/item_card_size/ico_firmware_high_caliber_big.png") !important;
+}
+
+.icon_bkg.fw_jacked {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_firmwares/item_card_size/ico_firmware_jacked_big.png") !important;
+}
+
+.icon_bkg.fw_lifeblood {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_firmwares/item_card_size/ico_firmware_lifeblood_big.png") !important;
+}
+
+.icon_bkg.fw_oscar_mike {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_firmwares/item_card_size/ico_firmware_oscar_mike_big.png") !important;
+}
+
+.icon_bkg.fw_reel_big_fist {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_firmwares/item_card_size/ico_firmware_reel_big_fist_big.png") !important;
+}
+
+.icon_bkg.fw_risky_boots {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_firmwares/item_card_size/ico_firmware_risky_boots_big.png") !important;
+}
+
+.icon_bkg.fw_rubberband_man {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_firmwares/item_card_size/ico_firmware_rubberband_man_big.png") !important;
+}
+
+.icon_bkg.fw_trickshot {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_firmwares/item_card_size/ico_firmware_trickshot_big.png") !important;
+}
+
+/*firmware icons big END*/
+/*firmware icons small*/
+.icon_bkg_sm.fw_action_fist {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_firmwares/item_cell_size/ico_firmware_action_fist_small.png") !important;
+}
+
+.icon_bkg_sm.fw_airstrike {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_firmwares/item_cell_size/ico_firmware_airstrike_small.png") !important;
+}
+
+.icon_bkg_sm.fw_atlas_ex {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_firmwares/item_cell_size/ico_firmware_atlas_ex_small.png") !important;
+}
+
+.icon_bkg_sm.fw_atlas_infinum {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_firmwares/item_cell_size/ico_firmware_atlas_infinium_small.png") !important;
+}
+
+.icon_bkg_sm.fw_baker {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_firmwares/item_cell_size/ico_firmware_baker_small.png") !important;
+}
+
+.icon_bkg_sm.fw_bullets_to_spare {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_firmwares/item_cell_size/ico_firmware_bullets_to_spare_small.png") !important;
+}
+
+.icon_bkg_sm.fw_daeddy_o {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_firmwares/item_cell_size/ico_firmware_daedy_o_small.png") !important;
+}
+
+.icon_bkg_sm.fw_deadeye {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_firmwares/item_cell_size/ico_firmware_deadeye_small.png") !important;
+}
+
+.icon_bkg_sm.fw_gadget_ahoy {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_firmwares/item_cell_size/ico_firmware_gadget_ahoy_small.png") !important;
+}
+
+.icon_bkg_sm.fw_get_throwin {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_firmwares/item_cell_size/ico_firmware_get_throwd_small.png") !important;
+}
+
+.icon_bkg_sm.fw_god_killer {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_firmwares/item_cell_size/ico_firmware_god_killer_small.png") !important;
+}
+
+.icon_bkg_sm.fw_goojfc {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_firmwares/item_cell_size/ico_firmware_goojfc_small.png") !important;
+}
+
+.icon_bkg_sm.fw_heating_up {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_firmwares/item_cell_size/ico_firmware_heating_up_small.png") !important;
+}
+
+.icon_bkg_sm.fw_high_caliber {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_firmwares/item_cell_size/ico_firmware_high_caliber_small.png") !important;
+}
+
+.icon_bkg_sm.fw_jacked {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_firmwares/item_cell_size/ico_firmware_jacked_small.png") !important;
+}
+
+.icon_bkg_sm.fw_lifeblood {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_firmwares/item_cell_size/ico_firmware_lifeblood_small.png") !important;
+}
+
+.icon_bkg_sm.fw_oscar_mike {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_firmwares/item_cell_size/ico_firmware_oscar_mike_small.png") !important;
+}
+
+.icon_bkg_sm.fw_reel_big_fist {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_firmwares/item_cell_size/ico_firmware_reel_big_fist_small.png") !important;
+}
+
+.icon_bkg_sm.fw_risky_boots {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_firmwares/item_cell_size/ico_firmware_risky_boots_small.png") !important;
+}
+
+.icon_bkg_sm.fw_rubberband_man {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_firmwares/item_cell_size/ico_firmware_rubberband_man_small.png") !important;
+}
+
+.icon_bkg_sm.fw_trickshot {
+    background-image: url("coui://uiresources/_shared/assets/ico_ui_art_firmwares/item_cell_size/ico_firmware_trickshot_small.png") !important;
+}
+
+/*firmware icons small END*/
+.trickshot {
+    background-image: none;
+    background-repeat: repeat;
+    background-position: left top;
+    background-attachment: scroll;
+    background-size: auto;
+}

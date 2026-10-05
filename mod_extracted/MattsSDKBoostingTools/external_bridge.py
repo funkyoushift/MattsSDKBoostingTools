@@ -195,6 +195,8 @@ _QUEUE_PRESERVING_ACTIONS = frozenset({
     "read_equipped_serials",
     "read_backpack_serials",
     "read_inventory",
+    "native_card_preview_status",
+    "native_card_preview",
     "afk_inventory_audit",
     "copy_read_serial",
     "copy_all_read_serials",
@@ -691,6 +693,8 @@ def _normalize_quick_menu_bridge_payload(action: str, payload: dict[str, Any]) -
 
 def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[str, Any]:
     payload = payload or {}
+    if action in ("native_card_preview_status", "native_card_preview"):
+        return backend_actions.run_quick_menu_action(action, payload, record=False)
     if action == "afk_inventory_audit":
         # The audit pins its own explicit guest identity. Do not change the
         # shared manual target through the generic target_player preamble.
@@ -1257,6 +1261,8 @@ def _register_tick_hook() -> None:
             _bridge_tick_last_at = now
             _bridge_tick_in_flight = True
             try:
+                from . import native_preview_service
+                native_preview_service.bind_game_thread()
                 _process_pending_actions(*args, _callback_generation=token, **kwargs)
             finally:
                 _bridge_tick_in_flight = False

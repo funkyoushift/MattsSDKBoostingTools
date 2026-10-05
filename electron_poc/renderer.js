@@ -725,6 +725,7 @@ function setOutput(node, value) {
 function setTextValue(node, value) {
   if (!node) return;
   node.value = typeof value === "string" ? value : pretty(value);
+  node.dispatchEvent(new Event('msbt-value-changed'));
 }
 
 function setLine(node, text, kind = "") {
@@ -5299,40 +5300,16 @@ const savedCardObserver = new IntersectionObserver(entries => {
   }
 }, {rootMargin: '200px'});
 async function flushSavedCards() {
-  const batch = [...savedCardPending.entries()].slice(0, 40);
-  batch.forEach(([serial]) => savedCardPending.delete(serial));
-  try {
-    const cards = await resolveOfflineCardMap(batch.map(([serial]) => serial));
-    for (const [serial, targets] of batch) {
-      const card = cards.get(serial);
-      if (card?.meta_ok) {
-        if (savedCardCache.size >= 2000) savedCardCache.delete(savedCardCache.keys().next().value);
-        savedCardCache.set(serial, card);
-      }
-      for (const {host} of targets) if (host.isConnected) {
-        if (card?.meta_ok) fillBl4ItemCard(host, card);
-        else host.textContent = 'Card unavailable · original code preserved';
-      }
-    }
-  } finally {
-    savedCardTimer = savedCardPending.size ? setTimeout(flushSavedCards, 30) : null;
-  }
+  const batch=[...savedCardPending.entries()].slice(0,40);
+  batch.forEach(([serial])=>savedCardPending.delete(serial));
+  for(const [serial,targets] of batch)for(const {host,name} of targets)
+    if(host.isConnected)fillBl4ItemCard(host,host.cardItem||{serial,name});
+  savedCardTimer=savedCardPending.size?setTimeout(flushSavedCards,30):null;
 }
 function savedItemCard(item) {
-  const host = document.createElement('div');
-  host.className = 'saved-item-card';
-  host.dataset.serial = item.serial;
-  host.dataset.name = item.name || 'Saved item';
-  if(item.image_url&&item.image_serial_hash){
-    host.textContent='Loading screenshot…';
-    crypto.subtle.digest('SHA-256',new TextEncoder().encode(item.serial)).then(bytes=>{const hash=Array.from(new Uint8Array(bytes),x=>x.toString(16).padStart(2,'0')).join('');const url=new URL(item.image_url);if(hash!==item.image_serial_hash||url.protocol!=='https:'||!((url.hostname==='save-editor.be'&&url.pathname.startsWith('/GZO/'))||(url.hostname==='msbt-community-library.screename53.workers.dev'&&/^\/images\/[0-9a-f-]+$/i.test(url.pathname)))){host.textContent='Screenshot does not match this code.';return;}const image=document.createElement('img');image.src=url.href;image.alt=item.name+' screenshot';image.loading='lazy';image.referrerPolicy='no-referrer';image.style.cssText='width:100%;max-height:380px;object-fit:contain';image.onerror=()=>{host.textContent='Screenshot unavailable.';};const credit=document.createElement('small');credit.textContent=item.image_source||'Item screenshot';host.replaceChildren(image,credit);}).catch(()=>{host.textContent='Screenshot unavailable.';});return host;
-  }
-  if(item.source==='Community folder'){host.textContent='No screenshot available for this exact code.';return host;}
-  const cached = savedCardCache.get(item.serial);
-  if (cached) fillBl4ItemCard(host, cached);
-  else if (item.serial.length > 8192) host.textContent = 'Code too large for card preview · original preserved';
-  else { host.textContent = 'Loading item card…'; savedCardObserver.observe(host); }
-  return host;
+  const host=document.createElement('div');host.className='saved-item-card';
+  host.dataset.serial=item.serial;host.dataset.name=item.name||'Item';host.cardItem={...item};
+  host.textContent='Loading item card…';savedCardObserver.observe(host);return host;
 }
 function discardSavedCards(host) {
   host.querySelectorAll('.saved-item-card').forEach(card => savedCardObserver.unobserve(card));
@@ -5584,10 +5561,8 @@ async function previewBookmarkCard() {
   if (serialValidationMessage(serial)) { status.textContent = 'Select one saved item to preview its card.'; return; }
   status.textContent = 'Resolving item with the inventory card system…';
   try {
-    const cards = await resolveOfflineCardMap([serial]);
+    const card = {serial};
     if (revision !== bookmarkCardRevision || serial !== getValue(els.bookmarkSerial)) return;
-    const card = cards.get(serial);
-    if (!card?.meta_ok) { status.textContent = 'The inventory resolver could not identify this item. Its code is unchanged.'; return; }
     bookmarkPreviewCard = card;
     fillBl4ItemCard(document.getElementById('bookmarkCardHost'), card);
     status.textContent = 'Inventory item-card preview. The original item code remains in the box above.';
@@ -6238,7 +6213,8 @@ function renderBl4Cards() {
   withBl4SearchFocusPreserved(() => {
     if (!state.bl4Entries.length) {
       state.bl4ShownCardIds = [];
-      els.bl4Cards.innerHTML = "";
+      discardSavedCards(els.bl4Cards);
+    els.bl4Cards.innerHTML = "";
       const empty = document.createElement("div");
       empty.className = "dev-empty-row";
       empty.textContent = "No BL4 catalog is loaded.";
@@ -6248,7 +6224,8 @@ function renderBl4Cards() {
     }
     if (!state.bl4FilteredEntries.length) {
       state.bl4ShownCardIds = [];
-      els.bl4Cards.innerHTML = "";
+      discardSavedCards(els.bl4Cards);
+    els.bl4Cards.innerHTML = "";
       const empty = document.createElement("div");
       empty.className = "dev-empty-row";
       empty.textContent = "No BL4 codes match the current filters. Use Search or loosen a dropdown filter.";
@@ -6289,6 +6266,7 @@ function renderBl4Cards() {
       return;
     }
 
+    discardSavedCards(els.bl4Cards);
     els.bl4Cards.innerHTML = "";
     shown.forEach((row) => {
       const id = bl4EntryId(row);
@@ -6316,22 +6294,7 @@ function renderBl4Cards() {
 
       const imageWrap = document.createElement("div");
       imageWrap.className = "bl4-card-image";
-      const imageUrl = bl4ImageUrl(row);
-      if (imageUrl) {
-        const img = document.createElement("img");
-        img.loading = "lazy";
-        img.decoding = "async";
-        img.alt = row.name || "BL4 item image";
-        img.src = imageUrl;
-        img.addEventListener("error", () => {
-          imageWrap.textContent = "Image unavailable";
-          imageWrap.classList.add("missing");
-        });
-        imageWrap.appendChild(img);
-      } else {
-        imageWrap.textContent = bl4IsGzoRow(row) ? "No GZO image" : "No image";
-        imageWrap.classList.add("missing");
-      }
+      imageWrap.appendChild(savedItemCard({...row,serial:row.serial||row.base85}));
 
       const title = document.createElement("div");
       title.className = "bl4-card-title";
@@ -6763,7 +6726,20 @@ async function generateGzoSubmitItemCard(options = {}) {
   }
   setLine(els.gzoSubmitStatus, "Generating item card from serial...", "warning");
   try {
-    const result = await window.msbt.serialCardResolve({ serials: [serialText] });
+    let result;
+    if(window.msbt.nativeItemPreview){
+      const known=await window.MSBTItemCards.catalogImage(serialText);
+      const card={serial:serialText,meta_ok:true};
+      if(known?.itemCard?.name)card.display_name=known.itemCard.name;
+      else {
+        const native=await window.msbt.nativeItemPreview(serialText,false);
+        if(native?.ok&&native.widget){
+          Object.assign(card,{display_name:native.widget.Name,item_type:native.widget.WhiteHeader,
+            rarity:native.widget.RarityLoc,manufacturer:native.widget.ManufacturerName,native_widget:native.widget});
+        }
+      }
+      result={ok:true,cards:[{ok:true,card}]};
+    } else result = await window.msbt.serialCardResolve({ serials: [serialText] });
     if (revision !== state.gzoSubmitRevision) return null;
     const cardRow = result && Array.isArray(result.cards) ? result.cards[0] : null;
     const card = cardRow && cardRow.card;
@@ -10672,6 +10648,9 @@ function applyOfflineCardToInventoryEntry(entry, card) {
 
 async function enrichInventoryEntriesOffline(entries) {
   const list = Array.isArray(entries) ? entries : [];
+  // Preserve inventory names and do not build hundreds of hidden cards on refresh.
+  // Visible cards are requested lazily through the shared loader.
+  if(window.msbt?.nativeItemPreview)return list;
   const cards = await resolveOfflineCardMap(list.map((e) => e && e.serial));
   if (!cards.size) {
     if (list.some((e) => String((e && e.serial) || "").startsWith("@U"))) {
@@ -10920,6 +10899,8 @@ window.addEventListener("message", event => {
 });
 
 function fillBl4ItemCard(host, entry) {
+  if(host && entry?.serial && window.msbt?.nativeItemPreview)
+    return window.MSBTItemCards.show(host,entry);
   const nativeWeaponType = entry && ["Assault Rifle","Pistol","Shotgun","SMG","Sniper","Heavy Weapon","Heavy Gun Ordnance","Shield","Ordnance","Repkit","Enhancement","Classmod","Class Mod"].includes(entry.item_type);
   if (host && nativeWeaponType && window.MSBTNativeCard && window.MSBTNativeCard.enabled !== false) {
     host.replaceChildren();

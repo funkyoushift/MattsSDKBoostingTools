@@ -1769,6 +1769,10 @@ def run_quick_menu_action(
     """Dispatch a Quick Menu / pin-friendly named action through backend handlers."""
     payload = dict(payload or {})
     key = str(action or "").strip()
+    if key in ("native_card_preview_status", "native_card_preview"):
+        from . import native_preview_service
+        return (native_preview_service.status() if key.endswith("_status")
+                else native_preview_service.preview(payload.get("serial")))
     label = str(payload.pop("_label", "") or key)
     # Resolve the named target in the same queued operation as the action.
     # A separate set-target request can race another controller's selection.

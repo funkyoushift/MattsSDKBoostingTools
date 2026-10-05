@@ -1,6 +1,9 @@
 const { contextBridge, ipcRenderer, webUtils } = require("electron");
 
 contextBridge.exposeInMainWorld("msbt", {
+  nativeItemPreview: (serial,wantImage=true) => ipcRenderer.invoke('app:nativeItemPreview',serial,wantImage),
+  beginNativePreview: () => ipcRenderer.invoke('app:beginNativePreview'),
+  itemCardImages: serials => ipcRenderer.invoke('app:itemCardImages',serials),
   communityFolders: (operation, payload) => ipcRenderer.invoke('app:communityFolders', operation, payload),
   openDeveloperPortal: () => ipcRenderer.invoke('app:openDeveloperPortal'),
   bridgeRequest: (args) => ipcRenderer.invoke("bridge:request", args),

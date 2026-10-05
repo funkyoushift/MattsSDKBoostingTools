@@ -765,6 +765,65 @@ async function requestBridge({ method = "GET", path: route = "/status", payload 
 
 ipcMain.handle("bridge:request", async (_event, args) => requestBridge(args || {}));
 
+const catalogCardImages=require('./catalog_card_images').createCatalogCardImages({
+  load:async()=>{
+    const catalog=await loadBl4Catalog(RESOURCE_DIR,await bl4CatalogLoadOptions());
+    let live=[];
+    try {const raw=JSON.parse(await fs.readFile(bl4GzoCacheFilePath(),'utf8'));live=Array.isArray(raw)?raw:raw.entries||[];}
+    catch(error){if(error.code!=='ENOENT')throw error;}
+    return [...(catalog.entries||[]),...live];
+  },
+  identify:serials=>runExternalPythonJson('import json,sys\nfrom item_image_identity import image_identities\nprint(json.dumps(image_identities(json.loads(sys.stdin.read()))))',JSON.stringify(serials),60000)
+});
+ipcMain.handle('app:itemCardImages',async(_event,serials)=>{
+  try {
+    if(!Array.isArray(serials)||serials.length>1000)throw new Error('Invalid image lookup batch');
+    return {ok:true,items:await catalogCardImages.lookup(serials)};
+  } catch(error){return {ok:false,items:[],message:error.message};}
+});
+let nativePreviewClient=null,nativePreviewCapture=null,nativePreviewConnection=null,nativePreviewCheckAt=0;
+function localNativePreviewClient() {
+  if(!nativePreviewClient){
+    const hash=require('node:crypto').createHash('sha256');
+    for(const file of ['native_card_ui/manifest.json','native_card_adapter.js','native_card_protocol.js','native_card_compat.css','native_widget_card_model.js','native_card_capture.js'])hash.update(fsSync.readFileSync(path.join(__dirname,file)));
+    nativePreviewCapture=require('./native_card_capture').createNativeWidgetCapture(BrowserWindow);
+    nativePreviewClient=require('./native_preview_client').createNativePreviewClient({
+      request:async args=>{const result=await requestBridge(args);return result.data;},
+      capture:widget=>nativePreviewCapture.capture(widget),renderRevision:hash.digest('hex'),
+      cacheDirectory:path.join(app.getPath('userData'),'native-card-cache')});
+  }
+  return nativePreviewClient;
+}
+async function connectNativePreview() {
+  if(!nativePreviewConnection || Date.now()-nativePreviewCheckAt>5000){
+    nativePreviewCheckAt=Date.now();
+    const job=localNativePreviewClient().connect();nativePreviewConnection=job;
+    job.catch(()=>{}); // Briefly share failures too; a whole folder must not poll a closed game.
+  }
+  return nativePreviewConnection;
+}
+ipcMain.handle('app:beginNativePreview',async()=>{
+  try {nativePreviewConnection=null;return await connectNativePreview();}
+  catch(error){return {ok:false,message:error.message};}
+});
+async function resolvedNativePreview(serial,wantImage=true){
+  try {await connectNativePreview();}
+  catch(error){
+    const saved=await localNativePreviewClient().snapshot(serial);
+    if(!saved)throw error;
+    if(wantImage===false){const {image,...data}=saved;return data;}
+    return saved;
+  }
+  return localNativePreviewClient().get(serial,{image:wantImage!==false});
+}
+ipcMain.handle('app:nativeItemPreview',async(_event,serial,wantImage=true)=>{
+  try {
+    return {ok:true,...await resolvedNativePreview(serial,wantImage)};
+  }
+  catch(error){return {ok:false,message:error.message};}
+});
+app.on('before-quit',()=>{if(nativePreviewCapture)nativePreviewCapture.close();});
+
 async function loadMobilePairingCode() {
   try {
     const raw = await fs.readFile(MOBILE_PAIRING_FILE(), "utf8");
@@ -1996,9 +2055,27 @@ ipcMain.handle("app:getTutorialCopy", async () => {
   }
 });
 
+async function captureResolvedItemCard(card) {
+  if(!card?.serial)throw new Error('An exact item serial is required');
+  let known;
+  try{[known]=await catalogCardImages.lookup([card.serial]);}catch{}
+  if(known?.image){
+    try {
+      const response=await fetch(known.image,{signal:AbortSignal.timeout(10000)});
+      if(!response.ok||!/^image\//.test(response.headers.get('content-type')||''))throw new Error('Catalog image unavailable');
+      const chunks=[];let size=0;
+      for await(const chunk of response.body){size+=chunk.length;if(size>16*1024*1024)throw new Error('Catalog image too large');chunks.push(chunk);}
+      const image=nativeImage.createFromBuffer(Buffer.concat(chunks));
+      if(image.isEmpty())throw new Error('Catalog image could not be decoded');
+      const png=image.toPNG();return {ok:true,base64:png.toString('base64'),width:png.readUInt32BE(16),height:png.readUInt32BE(20)};
+    }catch{/* A failed catalog attachment can still use a verified native card. */}
+  }
+  return (await resolvedNativePreview(card.serial)).image;
+}
+
 ipcMain.handle("app:saveNativeCardScreenshot", async (event, card) => {
   try {
-    const shot = await require("./native_card_capture").captureNativeCard(BrowserWindow, card);
+    const shot = await captureResolvedItemCard(card);
     if (!shot?.ok || !shot.base64) return {ok:false,message:shot?.message || 'Card capture failed.'};
     const choice = await dialog.showSaveDialog(BrowserWindow.fromWebContents(event.sender), {
       title:'Save item card screenshot', defaultPath:'MSBT-item-card.png',
@@ -2012,7 +2089,7 @@ ipcMain.handle("app:saveNativeCardScreenshot", async (event, card) => {
 
 ipcMain.handle("app:captureNativeCard", async (_event, card) => {
   try {
-    return await require("./native_card_capture").captureNativeCard(BrowserWindow, card);
+    return await captureResolvedItemCard(card);
   } catch (error) {
     return {ok:false, message:String(error.message || error)};
   }

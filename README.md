@@ -6,7 +6,7 @@
 
 **Borderlands 4 Modding Tools** is a free all-in-one BL4 modding toolkit for Windows, combining a standalone desktop app with an in-game SDK bridge. It includes Borderlands 4 boosting tools, item spawning, save and item workflows, inventory tools, serial delivery, BL4 item codes, Dev Spawner, map travel, player movement, AFK lobby tools, a mobile controller, and more.
 
-**Current release: [v2.28.0](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.28.0)** — Six interface languages on desktop and Android, reviewed game terminology, and optional Australian slang. [Release notes](docs/releases/RELEASE_NOTES_v2.28.0.md).
+**Current release: [v2.29.0](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.29.0)** — Item cards across desktop menus and Community Folders, concurrent delivery improvements, and game-targeted SDK updates. [Release notes](docs/releases/RELEASE_NOTES_v2.29.0.md).
 
 This project is **unofficial**. It is not affiliated with, endorsed by, or connected to Gearbox, 2K, or the Borderlands franchise owners.
 
@@ -18,20 +18,20 @@ This project is **unofficial**. It is not affiliated with, endorsed by, or conne
 
 ## Download & install (start here)
 
-**Windows installer (recommended): [Download `MSBT-Installer-v2.28.0.exe`](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Installer-v2.28.0.exe)**
+**Windows installer (recommended): [Download `MSBT-Installer-v2.29.0.exe`](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Installer-v2.29.0.exe)**
 
 On the [latest release page](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest), this is the exact file to click under **Assets**. Do not choose `latest.json`, `latest.yml`, or the `.blockmap` file; those are updater files.
 
-[![Installer downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Installer-v2.28.0.exe?label=Download%20Windows%20installer&color=2ea44f)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Installer-v2.28.0.exe)
-[![Portable downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Portable-v2.28.0-win-x64.zip?label=Download%20portable%20ZIP&color=0969da)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Portable-v2.28.0-win-x64.zip)
+[![Installer downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Installer-v2.29.0.exe?label=Download%20Windows%20installer&color=2ea44f)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Installer-v2.29.0.exe)
+[![Portable downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Portable-v2.29.0-win-x64.zip?label=Download%20portable%20ZIP&color=0969da)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Portable-v2.29.0-win-x64.zip)
 [![Android APK downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Mobile-Controller.apk?label=Download%20Android%20APK&color=e8a23a)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Mobile-Controller.apk)
 
 - [All GitHub releases](https://github.com/funkyoushift/MattsSDKBoostingTools/releases)
-- Exact installer file: `MSBT-Installer-v2.28.0.exe`
+- Exact installer file: `MSBT-Installer-v2.29.0.exe`
 
 **Portable option:** if you do not want an installer, download the portable ZIP instead (`MSBT-Portable-v…-win-x64.zip`), extract it, and run the app from that folder.
 
-**Android app v1.5.0:** use the full controller on the same Wi‑Fi, or pair **Remote AFK** in desktop v2.28.0 to manage AFK Lobby over cellular or another network. Remote AFK is limited to AFK controls; keep the PC, desktop app, and game running.
+**Android app v1.5.0:** use the full controller on the same Wi‑Fi, or pair **Remote AFK** in desktop v2.29.0 to manage AFK Lobby over cellular or another network. Remote AFK is limited to AFK controls; keep the PC, desktop app, and game running.
 
 - Install page (best on phone): [mobile-install.html](https://www.funkyoushift.com/MattsSDKBoostingTools/mobile-install.html)
 - Or desktop Support → **Mobile App** QR → same install page

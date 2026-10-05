@@ -1,0 +1,7 @@
+.icon_bkg.fw_tuba_bruiser {
+    background-image: url("tuba://uiresources/firmware_icons/assets/ico_firmware_bruiser_big.png") !important;
+}
+
+.icon_bkg_sm.fw_tuba_bruiser {
+    background-image: url("tuba://uiresources/firmware_icons/assets/ico_firmware_bruiser_small.png") !important;
+}
