@@ -13700,7 +13700,9 @@ function wireEvents() {
     ["communityCreditsBtn", "https://github.com/funkyoushift/MattsSDKBoostingTools#credits"],
     ["funkPoweredMark", "https://www.funkyoushift.com"],
     ["funkyoushiftSiteBtn", "https://www.funkyoushift.com"],
-    ["gzoDiscordBtn", "https://discord.gg/4hGKAHdvp6"],
+    ["gzoDiscordBtn", "https://discord.gg/wgjX48bksj"],
+    ["scootersDiscordBtn", "https://discord.gg/sMUtqZG8Gt"],
+    ["azaleaDiscordBtn", "https://discord.gg/CV8bc6z32E"],
     ["gzoToolsBtn", "https://save-editor.be/GZO/"],
     ["twitchBtn", "https://www.twitch.tv/funkyoushift/"],
     ["youtubeBtn", "https://www.youtube.com/@Funkyoushift"]
@@ -15879,7 +15881,7 @@ async function maybeStartWalkthrough() {
 }
 
 const BOOT_WELCOME_DISMISS_KEY = "msbt.bootWelcome.dismissed.v2";
-const BOOT_WELCOME_DISCORD_URL = "https://discord.gg/4hGKAHdvp6";
+const BOOT_WELCOME_DISCORD_URL = "https://discord.gg/wgjX48bksj";
 const BOOT_WELCOME_TIP_URL = "https://www.funkyoushift.com/donate.html";
 
 function isBootWelcomeDismissed() {

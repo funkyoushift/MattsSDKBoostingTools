@@ -10,6 +10,12 @@ This project brings community mods, discoveries, editors, and game tools togethe
 
 ## Credits
 
+### Community Discords
+
+- [GZO — Mattmab and Ynot](https://discord.gg/wgjX48bksj)
+- [Scooter’s Garage — Squ1ggs](https://discord.gg/sMUtqZG8Gt)
+- [Azalea Asvail’s Modding World — Azalea’s branch of GZO](https://discord.gg/CV8bc6z32E)
+
 ### Mattmab / Matt / Galoob — the original foundation and editor
 
 Mattmab created the original MSBT toolset and its in-game menu. His code remains part of our player economy and boosting, serial conversion and reward delivery, movement, inventory capacity, party helpers, travel, item-pool spawning, shiny spawning, and developer tools. Our Python Legit Builder and external serial helpers also build on his implementations. This is a substantial part of the project's foundation: moving these tools into new interfaces would not have been possible in the same form without the systems Matt built and shared.

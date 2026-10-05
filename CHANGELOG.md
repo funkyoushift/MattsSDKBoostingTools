@@ -7,6 +7,7 @@
 - Prominent contributor credits and links to original projects in the README.
 - A plain-text third-party notices file for desktop, SDK, and Android packages.
 - Contributor Credits access and feature-specific acknowledgments in the desktop app.
+- Community Discord links for GZO, Scooter’s Garage, and Azalea Asvail’s Modding World in the README and desktop app.
 
 ### Changed
 
