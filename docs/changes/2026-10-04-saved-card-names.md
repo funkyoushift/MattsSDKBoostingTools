@@ -23,3 +23,11 @@ preservation and unchanged checkbox selection. Existing image source priority,
 layout toggles, pagination, import and delivery tests passed.
 
 Local packaging and installed verification receipts: `output/saved-card-names/`.
+The packaged asset check passed for 3,243 files. Installed executable and ASAR
+hashes match the tested build; the prior pair is backed up in that receipt folder.
+The desktop was restarted without touching the game. In the installed Saved
+Items view, searching the old label `Zeroed` shows a resolved `Shiny War Paint`
+heading matching its card, confirming source-label search and the new heading
+together. GZO headings still depend on the catalog's supplied name metadata;
+this change does not transcribe text from screenshot pixels. The live bridge
+remained healthy and AFK enabled, waiting for guests.
