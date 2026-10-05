@@ -12,19 +12,23 @@ This project brings community mods, discoveries, editors, and game tools togethe
 
 ### Mattmab / Matt / Galoob — the original foundation and editor
 
-Mattmab created the original MSBT toolset and the editor foundation this project grew from. His work brought together boosting, item and serial tools, movement, travel, and an external control panel. The save/item editor and Legit Builder work remain important parts of the project. We also acknowledge Matt’s challenge-path discoveries, recorded in our project history.
+Mattmab created the original MSBT toolset and its in-game menu. His code remains part of our player economy and boosting, serial conversion and reward delivery, movement, inventory capacity, party helpers, travel, item-pool spawning, shiny spawning, and developer tools. Our Python Legit Builder and external serial helpers also build on his implementations. This is a substantial part of the project's foundation: moving these tools into new interfaces would not have been possible in the same form without the systems Matt built and shared.
 
-The **Actor Script Deployer** bundled with this project credits **Matt** in its author metadata. It provides the standard Dev Spawner backend; our controls and subsequent fixes build around that work. Its contribution deserves explicit recognition alongside the visible interface.
+Matt’s save/item editor and portable Legit Builder supplied the editor foundation, including retained interface styles, item parsing, part selection, data loading, and editor tabs. We also credit his challenge-path discoveries. The external control app and game bridge were developed by FunkYouSHiFT’s project; we later adopted Electron to match Matt’s editor.
+
+The **Actor Script Deployer** bundled with this project is **Matt’s spawning implementation**, including actor creation, spawn placement and spacing, actor tracking, and cleanup. Our Dev Spawner controls and subsequent fixes build around that work. Its contribution deserves explicit recognition alongside the visible interface.
 
 **Explore his work:** [Original MSBT](https://github.com/mattmab/MattsSDKBoostingTools) · [Legit Builder](https://github.com/mattmab/legit-builder) · [Bundled Actor Script Deployer and author metadata](tools/third_party/sdk_mods/ActorScriptDeployer/pyproject.toml)
 
-### RDP / Squ1ggs — movement, teleport, tuning, and spawn helpers
+### RDP / Squ1ggs — targeting, teleport, tuning, and spawn-helper additions
 
-Squ1ggs’ public mods and SDK research contributed code and patterns used in our movement, player-to-player teleport, combat/resource tuning, and vehicle tuning work. Our spawn-anchor and re-aggro helpers also draw on SQBT patterns. These contributions sit alongside Matt’s Actor Script Deployer backend and deserve their own recognition.
+Squ1ggs’ public mods and SDK research informed later additions for Local / All / Others player targeting, player-to-player teleport, combat/resource tuning, and vehicle tuning. His mob-spawner code also supplied references for the later nearest-NPC anchor selection and re-aggro controls around Matt’s ASD backend. This credit covers those additional helpers and references, not ASD’s spawning, placement, tracking, or cleanup. GZO, Lootlemon, and Nexus data retain their separate source credits.
 
-That work includes investigating game behavior, finding useful controls, and publishing implementations that others can learn from and build on. We thank Squ1ggs for those contributions and for sharing his tools with the community. Integrating that work into MSBT does not transfer its authorship to us.
+Our challenge-category filtering and non-UVHM completion behavior also used SQBT as a reference. Squ1ggs’ published implementations gave us concrete examples for expanding these controls and working with the SDK. We value the research, testing, and shared code behind those contributions, and credit both adapted material and documented inspiration.
 
 **Explore his work:** [Public mods and source](https://github.com/Squ1ggs/Bl4SDKmods) · [Player Movement](https://github.com/Squ1ggs/Bl4SDKmods/tree/main/bl4_player_movement) · [P2P Teleporter](https://github.com/Squ1ggs/Bl4SDKmods/tree/main/p2p_teleporter) · [Damage & More](https://github.com/Squ1ggs/Bl4SDKmods/tree/main/damage_and_more) · [Resources & Cooldowns](https://github.com/Squ1ggs/Bl4SDKmods/tree/main/resources_and_cooldowns) · [Vehicle Movement](https://github.com/Squ1ggs/Bl4SDKmods/tree/main/vehicle_movement) · [World Travel](https://github.com/Squ1ggs/Bl4SDKmods/tree/main/world_travel) · [Borderlands Mob Spawner](https://github.com/Squ1ggs/Bl4SDKmods/tree/main/mob_spawner)
+
+**Implementation references:** [MSBT's later helper additions](https://github.com/funkyoushift/MattsSDKBoostingTools/commit/a956860) · [Challenge filtering](mod_extracted/MattsSDKBoostingTools/backend_actions.py)
 
 ### Azalea Asvail / Azzy — UVH boosting and native-menu inspiration
 
@@ -34,11 +38,13 @@ FunkYouSHiFT assisted with the UVHM work, but Azalea’s workflow and interface 
 
 **Explore her work:** [Azzy UVH Booster — project, source, and downloads](https://github.com/AzaleaAsvailAMW/amw-Uvhbooster)
 
-### PyrexBLJ / Pyrex — UVHM discoveries and community research
+**Documented in our source:** [UVH workflow credit](mod_extracted/MattsSDKBoostingTools/backend_actions.py) · [Quick Menu inspiration](mod_extracted/MattsSDKBoostingTools/quick_menu.py)
 
-We credit PyrexBLJ for discovering earlier UVHM paths used by the boosting workflow. Discovering how the game exposes a capability is valuable work in its own right, separate from the later interface or implementation. Azalea’s public project also acknowledges Pyrex.
+### PyrexBLJ / Pyrex — Bonk Utilities and UVHM discoveries
 
-**Explore his work:** [Pyrex’s BL4 SDK mods](https://github.com/PyrexBLJ/BL4-SDK-Mods) · [Public projects](https://github.com/PyrexBLJ). These links showcase his work; they do not mean every mod in those repositories is bundled here.
+Pyrex created **Bonk Utilities**, a gameplay-utility reference for god/demigod mode, noclip, time controls, no-target, ground-item cleanup, and developer-perk actions. Publishing those controls made useful game and SDK behavior available for other modders to study. We acknowledge that utility work separately from his earlier UVHM-path discoveries used by the boosting workflow. Azalea’s public project also acknowledges Pyrex.
+
+**Explore his work:** [Bonk Utilities — source](https://github.com/PyrexBLJ/BL4-SDK-Mods/tree/main/BonkUtilities) · [Bonk Utilities — mod listing](https://bl-sdk.github.io/oak2-mod-db/mods/bonkutilities/) · [Pyrex’s BL4 SDK mods](https://github.com/PyrexBLJ/BL4-SDK-Mods). These acknowledgments do not mean every mod in his repository is bundled here.
 
 ### apple1417, Faultz, and the BL SDK contributors — the runtime that makes this possible
 
@@ -92,7 +98,7 @@ We also thank the maintainers of **Electron, Chromium, Python, GridStack, js-yam
 
 ## Our role and our responsibility
 
-Matt’s original in-game menu caused major frame drops, which led us to move the mod’s controls outside the game. We designed our own bridge and built an external app. We later moved that app to Electron to match Matt’s editor. That desktop interface and bridge were our development work.
+To address frame drops with the original in-game menu, we moved the mod’s controls outside the game. We designed our own bridge and built an external app. We later moved that app to Electron to match Matt’s editor. That desktop interface and bridge were our development work.
 
 FunkYouSHiFT maintains this version of the project. Our work includes bringing components together, building desktop and mobile workflows, updating integrations for SDK changes, improving reliability, testing, and packaging. That work sits alongside the original creators’ contributions. It does not replace them.
 

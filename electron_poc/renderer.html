@@ -56,6 +56,7 @@
         </div>
         <select data-language-selector aria-label="Language / Idioma" title="Interface language. Player names, item codes, saved names, and game logs stay unchanged."><option value="en">English</option><option value="es">Español</option><option value="fr">Français</option><option value="pt-BR">Português</option><option value="de">Deutsch</option><option value="nl">Nederlands</option><option value="en-AU">Australian slang (explicit)</option></select>
         <button id="walkthroughHeaderBtn" class="header-btn" type="button">Walkthroughs</button>
+        <button id="communityCreditsBtn" class="header-btn" type="button">Contributor Credits</button>
         <button id="developmentSupportBtn" class="header-btn support-link featured" type="button">Support Development</button>
         <button id="statusBtn" class="header-btn">Status</button>
         <button id="developerPortalHeaderBtn" class="header-btn" type="button">Developer portal</button>
@@ -69,6 +70,7 @@
         <div class="support-links">
           <button id="streamlabsBtn" class="support-link featured">Support Borderlands 4 Modding Tools Development</button>
           <button id="mattmabKofiBtn" class="support-link">Support Matt’s other work</button>
+          <button id="squ1ggsModsBtn" class="support-link">RDP / Squ1ggs — contributing mods &amp; source</button>
           <button id="funkyoushiftSiteBtn" class="support-link">Discord / Site</button>
           <button id="gzoDiscordBtn" class="support-link">GZO Discord</button>
           <button id="gzoToolsBtn" class="support-link">Other Tools</button>
@@ -402,6 +404,7 @@
       <div class="grid two">
         <section class="panel gold" data-msbt-panel="boost-uvh" data-msbt-span="8" data-msbt-title="UVH 1–7">
           <h2>UVH 1–7</h2>
+          <p class="version-detail">Workflow adapted from Azalea Asvail’s Azzy UVH Booster, with FunkYouSHiFT assistance. Earlier UVHM-path discoveries: PyrexBLJ.</p>
           <p class="muted-line">UVH N runs tiers 1 through N for the live lobby. Cancel pauses remaining steps; Resume continues them.</p>
           <div class="button-grid compact-buttons">
             <button data-action="uvh_boost_tier_1">UVH 1</button>
@@ -474,6 +477,7 @@
 
       <section class="panel gold" data-msbt-panel="boost-challenges" data-msbt-span="12" data-msbt-title="Challenges">
         <h2>Challenges</h2>
+        <p class="version-detail">Challenge-path discoveries: Mattmab. Category filtering and non-UVHM completion behavior reference SQBT.</p>
         <p class="muted-line">Writes permanent challenge progress. Host / solo only. Backup your save. Sends the non-UVH catalog; UVH 1–7 is separate. Queue progress is not verified in-game completion.</p>
         <div class="grid two compact">
           <label>
@@ -732,6 +736,7 @@
       <div class="section-heading">
         <div>
           <h2>Quick Menu Editor</h2>
+          <p class="version-detail">Move, resize and theme controls were inspired by Azalea Asvail’s Azzy UVH Booster interface.</p>
           <p>Edit the in-game Quick Menu (F7): <strong>5 pages, 21 slots each</strong>. Move, resize, and theme the panel below.</p>
         </div>
         <div class="button-row wrap">
@@ -793,6 +798,7 @@
     <section id="tab-serial-tools" class="tab-panel" data-msbt-layout-tab="serial-tools">
       <section class="panel cyan" data-msbt-panel="serial-tools-main" data-msbt-span="12" data-msbt-title="Serial Tools" data-msbt-resize="1">
         <h2>Serial Tools</h2>
+        <p class="version-detail">Serial conversion helpers build on Mattmab’s original MSBT implementation.</p>
         <p>Convert @U serials here. Works offline — no game connection needed.</p>
         <label for="serialToolsInput">Input</label>
         <textarea id="serialToolsInput" spellcheck="false" placeholder="@U... or decoded human serial"></textarea>
@@ -1535,6 +1541,7 @@
         </div>
       </div>
 
+      <p class="version-detail">Spawning, placement, tracking and cleanup: Matt’s Actor Script Deployer, with MSBT integration and fixes. Later nearest-NPC anchor and re-aggro controls reference RDP / Squ1ggs’ mob-spawner helpers.</p>
       <div class="dev-spawner-fixed" data-dev-shell="fixed">
         <header class="dev-spawner-header">
           <div class="dev-status-strip" aria-label="Dev Spawner status">
@@ -2122,6 +2129,7 @@
     <section id="tab-map-travel" class="tab-panel" data-msbt-layout-tab="map-travel">
       <section class="panel pink" data-msbt-panel="travel-main" data-msbt-span="12" data-msbt-title="Map Travel" data-msbt-resize="1">
         <h2>Map Travel</h2>
+        <p class="version-detail">Original travel implementation and supplied travel data: Mattmab, with later MSBT integration and extensions.</p>
         <p>Select a map first, then choose a travel station on that map. Favorites can hold maps or stations in one list. Party Reveal uncovers guest maps (including console). Host Clear Fog fills this machine's tiles. Hide Fog is overlay-only on this client.</p>
         <div class="button-row wrap travel-primary-actions">
           <button type="button" data-msbt-bridge-refresh class="secondary">Refresh Status</button>
@@ -2210,6 +2218,7 @@
     <section id="tab-player-movement" class="tab-panel" data-msbt-layout-tab="player-movement">
       <section class="panel green" data-msbt-panel="move-presets" data-msbt-span="12" data-msbt-title="Presets / Save / Apply">
         <h2>Presets / Save / Apply</h2>
+        <p class="version-detail">Original movement helpers: Mattmab. Later Local / All / Others targeting helpers draw on RDP / Squ1ggs’ work. Gameplay utility reference: Pyrex’s Bonk Utilities.</p>
         <p>Adjust movement here, then choose Apply Now to send the visible values to the game.</p>
         <div class="button-row wrap">
           <button data-movement-action="movement_apply_all">Apply Now</button>
@@ -2355,6 +2364,7 @@
 
       <section class="panel cyan" data-msbt-panel="move-teleport" data-msbt-span="12" data-msbt-title="Teleport Selected Player">
         <h2>Teleport Selected Player</h2>
+        <p class="version-detail">Player-to-player teleport controls include code and patterns adapted from RDP / Squ1ggs’ public mods.</p>
         <p>Slot buttons move the Boosting target to that party slot. The buttons below move players between you and the selected player.</p>
         <div class="button-row wrap">
           <button data-movement-teleport-slot="0">To P1</button>
@@ -2420,6 +2430,7 @@
 
       <section class="panel purple" data-msbt-panel="combat-tuning" data-msbt-span="6" data-msbt-title="Combat / Resource Tuning" data-msbt-resize="1">
         <h2>Combat / Resource Tuning</h2>
+        <p class="version-detail">Combat and resource tuning includes code and patterns adapted from RDP / Squ1ggs’ public mods.</p>
         <p>Adjust damage, ammo, and repair kits. Continuous reapply is off by default; use Reapply After Travel if values reset.</p>
         <div class="grid three compact">
           <label>
@@ -2466,6 +2477,7 @@
 
       <section class="panel cyan" data-msbt-panel="vehicle-tuning" data-msbt-span="6" data-msbt-title="Vehicle Presets / Spawn" data-msbt-resize="1">
         <h2>Vehicle Presets / Spawn</h2>
+        <p class="version-detail">Vehicle tuning includes code and patterns adapted from RDP / Squ1ggs’ public mods. Vehicle presets are credited to mattmab below.</p>
         <p>Presets from <strong>mattmab</strong> (OK to use). Catalog seeded for local testing with unlock tokens / Proto rows. Unlock-before-spawn is best-effort; host/solo is most reliable.</p>
         <div class="grid two compact">
           <label>

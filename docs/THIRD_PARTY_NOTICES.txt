@@ -4,22 +4,40 @@ MSBT's project license does not replace the licenses or permissions of the
 components below. Original copyright and license files remain with the software.
 Contributor acknowledgments and public project links are in the root README.
 
-Mattmab / Galoob: original MSBT and save/item editor foundation. Incorporated
-with direct permission. The editor's ISC notice remains in
+Mattmab / Galoob: original MSBT and in-game menu; player economy, serial
+conversion and reward delivery, movement, inventory, party, travel, item-pool
+and shiny spawning, developer tools, and Python Legit Builder implementations.
+His save/item editor and portable Legit Builder supplied retained editor styles,
+parsing, part selection, data loading and tab components. Incorporated with
+direct permission. The external control app and game bridge were developed by
+FunkYouSHiFT's project. The editor's ISC notice remains in
 external_app/v22_parts_codes_fixed/matt_editor/LICENSE_MATTMAB_ISC.txt.
 
-RDP / Squ1ggs: documented movement, teleport, combat/resource/vehicle and
-spawn-helper adaptations. MIT notice:
+RDP / Squ1ggs: later player-targeting, P2P teleport, combat/resource tuning,
+vehicle tuning, nearest-NPC anchor and re-aggro adaptations and references. This credit
+does not assign Matt's original gameplay modules or third-party catalogs to
+Squ1ggs. MIT notice:
 Copyright (c) 2026 Squ1ggs. Full LICENSE_SQU1GGS_MIT.txt is retained in both
 mod_extracted/MattsSDKBoostingTools and external_app/v22_parts_codes_fixed.
 Source: https://github.com/Squ1ggs/Bl4SDKmods
+
+SQBT also served as a behavior reference for challenge-category filtering and
+non-UVHM completion. This does not assign Matt's challenge-path discoveries to
+Squ1ggs or claim the complete Challenge Ticker implementation is bundled.
 
 Azalea Asvail: Azzy UVH Booster workflow and native-menu inspiration. Reviewed
 source metadata declares MIT. PyrexBLJ is credited for earlier UVHM discoveries;
 Matt for challenge-path discoveries. FunkYouSHiFT assisted with the UVHM work.
 Source: https://github.com/AzaleaAsvailAMW/amw-Uvhbooster
 
-Matt: Actor Script Deployer, the standard spawning backend. MIT notice remains
+Pyrex: Bonk Utilities, a gameplay-utility reference for god/demigod mode, noclip,
+time controls, no-target, ground-item cleanup and developer-perk actions.
+Public source metadata declares MIT. This reference credit is separate from
+Pyrex's UVHM discoveries and does not claim that the entire mod is bundled.
+Source: https://github.com/PyrexBLJ/BL4-SDK-Mods/tree/main/BonkUtilities
+
+Matt: Actor Script Deployer, including actor spawning, placement and spacing,
+tracking, and cleanup. It is the standard Dev Spawner backend. MIT notice remains
 in tools/third_party/sdk_mods/ActorScriptDeployer/LICENSE.
 
 Renil: Third Person Camera SDK controller; the incorporated archive also credits

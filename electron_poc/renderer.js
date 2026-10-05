@@ -13696,6 +13696,8 @@ function wireEvents() {
     ["developmentSupportBtn", "https://www.funkyoushift.com/donate.html"],
     ["streamlabsBtn", "https://www.funkyoushift.com/donate.html"],
     ["mattmabKofiBtn", "https://ko-fi.com/mattmab"],
+    ["squ1ggsModsBtn", "https://github.com/Squ1ggs/Bl4SDKmods"],
+    ["communityCreditsBtn", "https://github.com/funkyoushift/MattsSDKBoostingTools#credits"],
     ["funkPoweredMark", "https://www.funkyoushift.com"],
     ["funkyoushiftSiteBtn", "https://www.funkyoushift.com"],
     ["gzoDiscordBtn", "https://discord.gg/4hGKAHdvp6"],
