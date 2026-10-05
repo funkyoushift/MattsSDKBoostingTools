@@ -55,3 +55,21 @@ isolated app allowed the successful rebuild. Game and regular app were untouched
 Private evidence: `output/release-230-checks/editor-live.json`, `editor-live.png`,
 `asset-hashes.json`, and `output/card-followup/release-230-build-final.log`.
 Android 1.5.0 APKs are byte-identical to v2.29.1's published assets.
+
+## Publication and local installation
+
+Published stable v2.30.0 at tag commit `e5291962e70985f52642c2eeb56f82aa7a8e5d20`.
+Release CI and Pages completed successfully; the reviewed local-build policy
+skipped a duplicate CI build. All 11 public asset sizes and GitHub SHA256 digests
+match local files. The downloaded public `latest.json` matches the packaged and
+installed manifest. The legacy Windows PowerShell publisher could not parse its
+UTF-8 punctuation; PowerShell 7 passed preflight and published successfully.
+
+Installed the verified portable payload through the normal installer Engine,
+retaining the previous desktop for rollback. Installed executable, ASAR, bundled
+SDK and update-manifest hashes match the package. MSBT was restarted and its main
+window verified. The game was not restarted or its loaded SDK replaced while
+guests were present. Update the game mod and restart BL4 to activate the new
+multiplayer policy. Live multiplayer generation remains unverified as agreed.
+
+Private publication/install receipts: `output/release-230-checks/`.
