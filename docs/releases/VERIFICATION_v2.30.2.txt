@@ -1,0 +1,19 @@
+MSBT v2.30.2 - password and delivery dialog maintenance
+
+Authorization: Matt explicitly requested release on 2026-10-06 after reviewing the local fix summary. No extra gameplay behavior is included.
+
+Issue: Saved Items -> Send to me above 70 items reportedly produced a blank white popup or an input that would not accept typing. Matt also requested Item Catalog coverage.
+
+Evidence and limits: Saved Items used synchronous OS window.confirm before requesting the password. Item Catalog already avoided OS confirmation because its source records an earlier keyboard-focus failure. Saved Items now uses an in-app HTML dialog. The original blank-white state was not reproduced, so this removes an evidenced focus-risk path without claiming every reported occurrence is resolved.
+
+Files: electron_poc/renderer.js, styles.css and test_password_dialog_input.js. Coordinated Electron/SDK metadata, README download links, changelog and release notes move to 2.30.2. Android remains the identical 1.5.1 APK. No SDK gameplay changes.
+
+Behavior: Saved Items confirmation remains explicit and defaults focus to Cancel. Escape/Cancel decline delivery; repeated confirmation attempts cannot stack. Shared delivery/password styling has explicit theme colors, bounded width and scrolling. Password authorization and the 70-item gate remain enforced by the existing backend. Item Catalog retains its inline confirmation and shares the styled password dialog.
+
+Validation: source Saved Items and Item Catalog input/cancel/authorization checks passed in Workspace at 1100px and Classic at 640px. Tests use simulated serial data and bridge responses without a preload or game connection. Real serial parsing/game delivery is not claimed. Packaged Saved Items Workspace and Item Catalog Classic tests passed, including visible controls, pointer hit targets, focus, typing, Escape, Cancel, no resend on cancellation, one authorized retry, no password storage, and confirmation cancellation. Existing password target-pin/storage regression passed. Python syntax compilation and 19 release-import/no-BLImGui/publisher tests passed. Packaged settings survived save/exit/restore and a second exit/restore of unchecked values with network disabled.
+
+Rejected/failed checks: an early synthetic Enter-only test omitted the full key sequence and timed out; replaced with pointer input on Authorize and reran. No production change was attributed to this harness failure. Initial investigation checked AFK before Matt clarified Saved Items; AFK tests alone did not cover the reported route.
+
+Build identity: the release manifest records source commit c120bc1. Subsequent release metadata/verification commits do not change executable source. Full desktop build checks passed, including 31 installer checks, 480 responsive-layout measurements, 48 packaged runtime dependency checks, 3244 packaged file comparisons, packaged executable startup smoke and updater checks. Packaging and public artifact receipts are retained in work/release-2.30.2-* files in the isolated release checkout.
+
+Deployment: original installed app was not modified during diagnosis. The local source-run fix was opened after restarting only MSBT. Borderlands was not restarted and no inventory actions were performed by the investigation. Public release verification is recorded in the final receipt. Rollback uses the previous v2.30.1 installer/portable release; no inventory replay or rollback is performed. Live confirmation of the original reported failure remains pending.
