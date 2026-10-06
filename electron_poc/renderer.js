@@ -921,10 +921,45 @@ function humanActionLabel(action) {
     .join(" ");
 }
 
+function requestSavedDeliveryConfirmation(message) {
+  // Keep focus inside Electron, as the Item Catalog delivery confirmation does.
+  if (document.getElementById("savedDeliveryConfirmDialog")) return Promise.resolve(false);
+  return new Promise((resolve) => {
+    const dialog = document.createElement("dialog");
+    dialog.id = "savedDeliveryConfirmDialog";
+    dialog.className = "delivery-action-dialog";
+    const form = document.createElement("form");
+    form.method = "dialog";
+    const title = document.createElement("h3");
+    title.id = "savedDeliveryConfirmTitle";
+    title.textContent = "Confirm saved item delivery";
+    dialog.setAttribute("aria-labelledby", title.id);
+    const description = document.createElement("p");
+    description.textContent = message;
+    const submit = document.createElement("button");
+    submit.type = "submit";
+    submit.textContent = "Send items";
+    const cancel = document.createElement("button");
+    cancel.type = "button";
+    cancel.textContent = "Cancel";
+    let confirmed = false;
+    form.addEventListener("submit", event => {
+      event.preventDefault(); confirmed = true; dialog.close();
+    });
+    cancel.addEventListener("click", () => dialog.close());
+    dialog.addEventListener("close", () => {
+      dialog.remove(); resolve(confirmed);
+    }, {once: true});
+    form.append(title, description, submit, cancel);
+    dialog.append(form); document.body.append(dialog); dialog.showModal(); cancel.focus();
+  });
+}
+
 function requestBackpackPassword(kind = "backpack") {
   return new Promise((resolve) => {
     const dialog = document.createElement("dialog");
     dialog.id = "backpackPasswordDialog";
+    dialog.className = "delivery-action-dialog";
     const form = document.createElement("form");
     form.method = "dialog";
     const title = document.createElement("h3");
@@ -5777,7 +5812,7 @@ async function sendBookmarkSerial(mode) {
   const destination = deliveryWhoLabel(mode);
   const label = entries.length === 1 ? `"${entries[0].name || "selected bookmark"}"` : `${entries.length} bookmark row(s)`;
   const copiesNote = copies > 1 ? ` (${copies} copies each → ${expanded.totalCount} total)` : "";
-  if (!window.confirm(`Deliver ${serials.length} serial(s)${copiesNote} from ${label} to ${destination}?`)) {
+  if (!await requestSavedDeliveryConfirmation(`Deliver ${serials.length} serial(s)${copiesNote} from ${label} to ${destination}?`)) {
     setBookmarkStatus("Serial bookmark delivery cancelled.", "warning");
     return;
   }

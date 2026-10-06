@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.30.2 - 2026-10-06
+
+- Replaced Saved Items' native delivery confirmation with an in-app confirmation to avoid the previously observed native-dialog keyboard-focus failure path.
+- Added explicit theme colors and bounded sizing to delivery and password dialogs.
+- Verified Saved Items and Item Catalog password input, cancellation and authorization in Workspace and Classic layouts with simulated delivery responses. The originally reported blank-white popup was not reproduced.
+- Android remains 1.5.1; no gameplay behavior changes.
+
 ## 2.30.1 — 2026-10-05
 
 ### Added

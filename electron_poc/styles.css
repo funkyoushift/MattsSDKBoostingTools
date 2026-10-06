@@ -27,6 +27,25 @@
   box-sizing: border-box;
 }
 
+.delivery-action-dialog {
+  width: min(520px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  overflow: auto;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--text);
+}
+
+.delivery-action-dialog::backdrop { background: rgba(0, 0, 0, .6); }
+.delivery-action-dialog form { display: block; }
+.delivery-action-dialog h3,
+.delivery-action-dialog p,
+.delivery-action-dialog label { margin: 0 0 16px; }
+.delivery-action-dialog input { display: block; width: 100%; margin-top: 8px; }
+.delivery-action-dialog button { margin: 4px 8px 0 0; }
+
 html,
 body {
   width: 100%;
