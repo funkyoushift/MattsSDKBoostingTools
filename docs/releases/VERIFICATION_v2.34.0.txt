@@ -18,3 +18,28 @@ All controls ended OFF. Epic profile executable hashes and retained native spans
 were verified read-only. Epic live and actual guest gameplay are unverified.
 
 Release package, Android launch, public downloads and deployment results follow.
+
+Windows release builder passed: installer engine checks, full npm check,
+48 packaged runtime dependencies, 3,248 exact asset comparisons, all 3,261 GZO
+image references and actual packaged startup/updater smoke. Packaged player-target
+UI, ordinary farming controls, 100% Drop Rate UI and search passed. Search covered
+all 14 farming routes/13 queries in both layouts. Three independent packaged app
+processes passed save/restore/unchecked settings restart checks. Hidden renderer
+GPU shutdown diagnostics were nonfatal after assertions.
+
+All 79 SDK Python files are byte-identical to source; standalone and bundled SDK
+and latest.json match. No separate local Farming Lab or trainer executable is
+included in the SDK. Source build identity 351b42e is retained in the manifest.
+Eleven release asset hashes are in SHA256SUMS.txt and
+work/release-2.34.0-assets.json; package proof is work/release-2.34.0-package-proof.json.
+
+Android assembleRelease/lintRelease passed. APK version 1.6.2/code35, same signing
+certificate as 1.6.1, embedded renderer/workspace sources match Windows source.
+Owned read-only emulator-5560 installation succeeded, launch Status ok, PID 2536
+observed; installed package versionName/versionCode confirmed. The owned emulator
+was stopped after verification. No physical Android device was connected.
+
+Ready to publish: integrated controls, source/package checks and Android emulator
+launch completed. Epic live execution and actual guest gameplay remain unverified,
+as disclosed before Matt's current explicit release authorization. Public asset
+hash/CI/deployment results will be recorded after publication.

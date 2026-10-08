@@ -118,3 +118,14 @@ source desktop and launch the unchanged managed desktop. Remove the candidate
 subfolder only while the add-on/game is not using it. Preserve the native allocation
 until process exit; do not free it while callers may still return through it.
 The dirty primary checkout was preserved; work is isolated on codex/epic-player-farming.
+
+Release authorization and packaging: Matt subsequently requested "release it as a
+finished product" after the limitations above were reported. Prepared integrated
+v2.34.0 / Android 1.6.2 (code35), source identity 351b42e. Windows builder/full npm
+checks, packaged farming/party/drop-rate/search and three-process settings restart
+checks passed. All 79 SDK Python files match source; bundled SDK/manifest identities
+match. Android build/lint/signature/source checks and owned read-only emulator
+install/launch passed. No physical phone, Epic live or actual guest gameplay proof
+is claimed. Release/public/deployment details are tracked in
+../releases/VERIFICATION_v2.34.0.txt. Borderlands was observed closed during release
+packaging, permitting normal SDK deployment after public verification.
