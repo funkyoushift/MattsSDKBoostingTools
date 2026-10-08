@@ -51,3 +51,43 @@ Before publication: implemented feature, user-confirmed local farming trial,
 source checks, packaged UI/restarts and integrity all complete. Public upload,
 independent public download/hash checks and tag CI confirmation remain pending.
 Actual production travel/mod-disable and guest-save proof are not claimed.
+
+Published: https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.32.0
+Tag commit: e907c60dae7d28f3fed8d2152565a0ef9addb5ca. Latest stable, non-draft,
+non-prerelease; all 11 assets independently downloaded without authentication and
+matched by length/SHA256 against local artifacts and GitHub digests. Public receipt:
+work/release-2.32.0-public-verification.json. Electron Release 37818026370 succeeded
+(policy job; duplicate CI build intentionally skipped for reviewed local artifacts).
+Pages deployment 37818025147 succeeded. The bundled manifest was not restamped.
+
+Local deployment: installed the publicly verified portable via the existing
+managed installer Engine.Apply without invoking game integration while the game
+was running. Installed app.asar, manifest and bundled SDK match release staging.
+Installed executable --smoke passed at 2.32.0 with packaged updater enabled;
+desktop was reopened. Prior 2.31.0 app remains in managed previous, and the older
+2.30.2 previous was retained separately as previous-before-v2.32.0-20261008.
+A combined smoke/launch/read command was rejected by automatic review with only
+"blocked by policy"; separate bounded smoke and launch actions succeeded.
+
+A later process check found Borderlands4 no longer running and bridge unavailable;
+the exit cause was not observed. No game termination or restart command was issued.
+Only after fresh closed-game checks, installed SDK was backed up and replaced by
+the verified 2.32.0 archive (56e5452014013ea40b99cc9ba871622a6d341d91374579815f42490f8fb08422).
+The local MSBTFarmingDrops folder and loader were moved out of active sdk_mods to
+work/local-game-rollback-2.32.0, alongside the prior SDK. Trial settings/evidence
+remain. Integrated SDK startup/gameplay will occur on Matt's next normal launch;
+no integrated live-game/guest-save proof is claimed. App/source/package checks and
+the previously confirmed local gameplay trial remain distinct evidence.
+
+Public asset verification:
+10b5786d3900c0ac488e9469cd378b93c782a6c11ff9688a25136d3fbc3c042e  latest.json  1543 bytes
+b498fab696cecc631a9dc4adcecd8e17605dce328459fa0bb6f36a1e49f58705  latest.yml  350 bytes
+56e5452014013ea40b99cc9ba871622a6d341d91374579815f42490f8fb08422  MattsSDKBoostingTools.sdkmod  934541 bytes
+7cfafa5082d9da3c5a43639e8514351db489defbd42396c4f50429a1292202d3  mobile-version.json  494 bytes
+c7ae08005a1b10a96ac8f41ac461cbd3e2e1a4074e9889e8d6737cbaf171321b  MSBT-Installer-v2.32.0.exe  318742118 bytes
+8a5ec1a1838446d420caea31247ada413e7734fee54d8d791ce266ab7fb2aa42  MSBT-Installer-v2.32.0.exe.blockmap  319474 bytes
+bc69565627b3b135ecc549f08250b4af1ae76831698f6a0a0712bb1977a42b07  MSBT-Mobile-Controller-1.6.0.apk  28079842 bytes
+bc69565627b3b135ecc549f08250b4af1ae76831698f6a0a0712bb1977a42b07  MSBT-Mobile-Controller.apk  28079842 bytes
+108d8ff9e3bbd15bcfdc150e1495139cef16e4b3d10073dca992da7b3057d533  MSBT-Portable-v2.32.0-win-x64.zip  378959302 bytes
+78f1bd86d11119f22cf7392789666b504987953d2f625a9f5a4609af2d51c493  MSBT-Setup.exe  71599914 bytes
+7e70a15b703ce4c79c75f0189c4adf880e6978274fe4d962f3c85d12b007a9e1  SHA256SUMS.txt  914 bytes

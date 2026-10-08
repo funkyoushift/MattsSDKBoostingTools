@@ -4,7 +4,7 @@ Before re-researching a feature, read its entry below and any linked component n
 
 ## Changes
 
-- [2026-10-08: 100% Drop Rate farming control](changes/2026-10-08-trainer-drop-rate.md) — independent guarded native zero-roll override in Rarity Weights and F7; Matt confirmed the local farming trial works and requested release. Release validation follows below.
+- [2026-10-08: 100% Drop Rate farming control](changes/2026-10-08-trainer-drop-rate.md) — independent guarded native zero-roll override in Rarity Weights and F7; Matt confirmed the local farming trial works. Published v2.32.0; all 11 public download hashes verified; desktop reopened and SDK installed while game closed. Integrated next-launch/live travel and guest-save proof remain separate.
 
 - [2026-10-08: Combined v2.31.0 release](../docs/releases/VERIFICATION_v2.31.0.txt) — Epic cards, full Android workspace, persistent phone data, AFK phone controls and Catalog focus; published as stable; all 11 public downloads hash-verified, packaged restart checks passed, Android 1.6.0 installed and verified; Epic live confirmation pending.
 

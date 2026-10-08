@@ -248,3 +248,20 @@ remains available. A game exit discards the memory patch. The local trial helper
 starts off after a new process and is not included in public packages. A foreign
 patch is never overwritten. Build/package/public verification is recorded in
 `docs/releases/VERIFICATION_v2.32.0.txt`.
+
+## Publication and local deployment completed
+
+Published stable v2.32.0 at
+https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.32.0.
+All 11 public downloads independently match local SHA256/lengths and GitHub
+hashes; tag policy and Pages CI succeeded. The desktop 2.32.0 is installed and
+reopened, with installed-byte and startup/updater smoke checks passed.
+
+The game was subsequently found closed (exit cause unobserved; no termination
+command issued). With fresh closed-game checks, the production SDK was installed
+and hash-verified. The prior SDK and temporary helper/loader were retained under
+`work/local-game-rollback-2.32.0` outside active mods. The temporary helper is not
+part of the public release. The integrated feature starts OFF on the next normal
+game launch. Native activation/gameplay proof so far is the earlier local trial
+and Matt's confirmation, not a new production-session test. Full receipts and
+rollback locations are in `docs/releases/VERIFICATION_v2.32.0.txt`.
