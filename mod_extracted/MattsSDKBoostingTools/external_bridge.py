@@ -966,6 +966,10 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
         )
     if action in ("movement_save_preset", "movement_load_saved"):
         return {"ok": False, "message": f"{action} is local UI preset storage and is not handled by the SDK bridge."}
+    if action == "farming_lab":
+        result = backend_actions.farming_lab_action(payload)
+        _refresh_status_snapshot(force=True)
+        return result
     if action in ("drop_rate_on", "drop_rate_off", "drop_rate_status"):
         result = backend_actions.drop_rate_action(action)
         # Actions run on the game tick; publish their state before waking HTTP.
@@ -1111,6 +1115,7 @@ def _status() -> dict[str, Any]:
         "rarity_weights": backend_status.get("rarity_weights") or {},
         "rarity_revision": int(backend_status.get("rarity_revision") or 0),
         "drop_rate": backend_status.get("drop_rate") or {},
+        "farming_lab": backend_status.get("farming_lab") or {},
         "cxp": backend_status.get("cxp") or {},
         "instant_drops": backend_status.get("instant_drops") or {},
         "instant_holds": backend_status.get("instant_holds") or {},
@@ -1194,6 +1199,7 @@ def _process_pending_actions(
     except Exception as exc:
         _last_error = repr(exc)
     try:
+        backend_actions.farming_controls_tick()
         backend_actions.afk_lobby_tick()
     except Exception as exc:
         _last_error = repr(exc)

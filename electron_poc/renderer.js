@@ -2589,6 +2589,7 @@ function rarityWeightsToPercentPreset(weights) {
 }
 
 function syncDropRateStatus(data) {
+  syncFarmingLabStatus(data);
   const dropLine = document.getElementById("dropRateStatus");
   const drop = data && data.drop_rate && typeof data.drop_rate.active === "boolean" ? data.drop_rate : null;
   if (dropLine) {
@@ -2598,6 +2599,83 @@ function syncDropRateStatus(data) {
       `100% Drop Rate: ${drop.active ? "ON" : "OFF"}`;
     setLine(dropLine, note, drop && drop.active && !drop.conflict ? "ok" : "warning");
   }
+}
+
+const FARMING_LAB_FEATURES = {
+  infinite_ammo: {group:"Weapons",label:"Infinite Ammo",aliases:["inf ammo","unlimited ammo"]},
+  no_reload: {group:"Weapons",label:"No Reload",aliases:["infinite clip","unlimited magazine"]},
+  instant_reload: {group:"Weapons",label:"Instant Reload"},
+  no_recoil: {group:"Weapons",label:"No Recoil / Sway"},
+  super_accuracy: {group:"Weapons",label:"Super Accuracy"},
+  rapid_fire: {group:"Weapons",label:"Rapid Fire",aliases:["fire rate"]},
+  critical_hits: {group:"Weapons",label:"Critical Hit Boost",aliases:["crit boost"]},
+  god_mode: {group:"Player",label:"God Mode",aliases:["invincible","invulnerability"]},
+  skill_cooldown: {group:"Player",label:"Instant Skill Cooldown",aliases:["action skill cooldown","long press skill","skill cool down"]},
+  skill_duration: {group:"Player",label:"Unlimited Skill Duration",aliases:["action skill duration"]},
+  grenade_cooldown: {group:"Player",label:"Instant Grenade Cooldown",aliases:["grenade cool down"]},
+  glide_duration: {group:"Movement",label:"Unlimited Glide Duration",aliases:["glide power","infinite glide"]},
+  vendor_refresh: {group:"Vendor",label:"Vendor Refresh On Close",aliases:["shop refresh","vendor restock"]},
+  legendary_roll: {group:"",label:"Weighted Loot High Roll",aliases:["loot roll","legendary roll"]}
+};
+
+function syncFarmingLabStatus(data) {
+  const roots = document.querySelectorAll("[data-farming-controls]");
+  const lab = data && data.farming_lab;
+  if (!roots.length) return;
+  document.querySelectorAll("[data-farming-all-off]").forEach(button => {
+    if (!button.dataset.wired) {
+      button.addEventListener("click", () => runFarmingLabAction({op:"off"}));
+      button.dataset.wired = "1";
+    }
+    button.disabled = !lab || !lab.features;
+  });
+  if (!lab || !lab.features) {
+    roots.forEach(root => root.querySelectorAll("button").forEach(button => { button.disabled = true; }));
+    document.querySelectorAll("[data-farming-status]").forEach(line => setLine(line, "Local test connection is unavailable.", "warning"));
+    return;
+  }
+  Object.entries(lab.features).forEach(([feature, value]) => {
+    if (!/^[a-z_]+$/.test(feature) || !Object.hasOwn(FARMING_LAB_FEATURES,feature)) return;
+    const root = document.getElementById("farmingLab" + FARMING_LAB_FEATURES[feature].group + "Controls");
+    if (!root) return;
+    let row = document.getElementById("farmingLab_" + feature);
+    if (!row) {
+      row = document.createElement("div"); row.id = "farmingLab_" + feature;
+      row.className = "button-row wrap";
+      const label = document.createElement("strong"); label.textContent = value.label || feature;
+      row.appendChild(label);
+      [true, false].forEach(enabled => {
+        const button = document.createElement("button");
+        button.textContent = enabled ? "On" : "Off";
+        button.dataset.farmingFeature = feature; button.dataset.farmingEnabled = String(enabled);
+        button.addEventListener("click", () => runFarmingLabAction({ op: "set", feature, enabled }));
+        row.appendChild(button);
+      });
+      const note = document.createElement("span"); note.className = "muted-line"; row.appendChild(note);
+      root.appendChild(row);
+    }
+    row.querySelectorAll("button").forEach(button => { button.disabled = false; });
+    const actual = typeof value.actual_locked === "boolean" ? ` · game lock ${value.actual_locked ? "ON" : "OFF"}` : "";
+    const damage = typeof value.actual_invulnerable === "boolean" ? ` · damage ${value.actual_invulnerable ? "BLOCKED" : "ENABLED"}` : "";
+    const native = value.native && value.native.owned && !value.native.active ? " · RESTORE NEEDS ATTENTION" : "";
+    row.querySelector("span").textContent = `${value.enabled ? "ON" : "OFF"}${actual}${damage}${native}${value.error ? " · " + value.error : ""}`;
+    row.title = value.scope || "";
+  });
+  const active = Object.values(lab.features).filter(value => value.enabled).length;
+  const errors = Object.values(lab.features).filter(value => value.error).length;
+  document.querySelectorAll("[data-farming-status]").forEach(line => setLine(line, `Farming controls connected · ${active} active test${active === 1 ? "" : "s"}${errors ? " · check reported errors" : ""}.`, errors ? "warning" : "ok"));
+}
+
+async function runFarmingLabAction(payload) {
+  const lines = document.querySelectorAll("[data-farming-status]");
+  lines.forEach(line => setLine(line, "Applying farming control…", "warning"));
+  const result = await runAction("farming_lab", payload, els.boostOutput, 15000);
+  lines.forEach(line => setLine(line, resultMessage(result), actionSucceeded(result) ? "ok" : "warning"));
+  try {
+    const response = await window.msbt.bridgeRequest({ method: "GET", path: "/status", timeoutMs: 8000 });
+    syncFarmingLabStatus(response && response.data ? response.data : response);
+  } catch (_) { /* the next ordinary status poll will retry */ }
+  return result;
 }
 
 function syncBoostingRaritySlidersFromBridge(data, { force = false } = {}) {
@@ -13060,6 +13138,7 @@ function switchTab(tabId) {
 window.switchTab = switchTab;
 
 const APP_FINDER_ALIASES = {
+  combatRepairCooldown: ["repair kit cooldown", "repairkit cooldown", "repkit cooldown", "repkiit cooldown", "health kit cooldown", "repair kit cool down"],
   boosting: ["boost", "max all", "uvh", "cash", "eridium"],
   "quick-menu": ["qm", "f7", "quick menu editor", "slots"],
   "boost-essentials": ["instant drops", "instant holds", "third person", "tpc"],
@@ -13112,6 +13191,37 @@ function collectAppFinderEntries() {
       aliases: APP_FINDER_ALIASES[panel.dataset.msbtPanel] || []
     });
   });
+  // Search the actual controls, including sections hidden by the workspace.
+  // Ignore live values/options so player data and large lists are not indexed.
+  const seen = new Set();
+  document.querySelectorAll(".tab-panel button, .tab-panel label, .tab-panel summary, .tab-panel h3, .tab-panel h4, .tab-panel [aria-label], .tab-panel input[placeholder], .tab-panel textarea[placeholder]").forEach(node => {
+    if (node.matches("[data-farming-feature], [data-workspace-local-section], [data-workspace-tab]")) return;
+    const copy = node.cloneNode(true);
+    copy.querySelectorAll("input, select, textarea, button, output, .muted-line").forEach(child => child.remove());
+    const title = String(node.getAttribute("aria-label") || copy.textContent || node.getAttribute("placeholder") || "").replace(/\s+/g, " ").trim();
+    if (!title || title.length > 120 || /^(on|off|apply|reset|refresh|send|drop|delete|remove|copy|edit|save|cancel|close|clear|enable|disable|\+\s*qm|[+−–-])$/i.test(title)) return;
+    const tabRoot = node.closest(".tab-panel");
+    const tab = tabRoot.id.replace(/^tab-/, "");
+    const panel = node.closest("[data-msbt-panel]");
+    const panelId = panel?.dataset.msbtPanel;
+    const key = `${tab}:${panelId || ""}:${title.toLowerCase()}`;
+    if (seen.has(key)) return;
+    seen.add(key);
+    const control = node.matches("label") ? node.control || node.querySelector("input,select,textarea") : node;
+    entries.push({id:`control:${key}`,title,tab,panel:panelId,node,
+      hint:panel?.dataset.msbtTitle || tab.replace(/-/g," "),
+      aliases:APP_FINDER_ALIASES[control?.id || node.id] || []});
+  });
+  // These rows arrive with game status. Keep them discoverable while disconnected.
+  Object.entries(FARMING_LAB_FEATURES).forEach(([feature, value]) => {
+    const root = document.getElementById(`farmingLab${value.group}Controls`);
+    const panel = root?.closest("[data-msbt-panel]");
+    const tabRoot = panel?.closest(".tab-panel");
+    if (!tabRoot) return;
+    entries.push({id:`feature:${feature}`,title:value.label,tab:tabRoot.id.replace(/^tab-/,""),
+      panel:panel.dataset.msbtPanel,node:document.getElementById(`farmingLab_${feature}`) || root,
+      hint:panel.dataset.msbtTitle,aliases:[feature.replace(/_/g," "),...(value.aliases || [])]});
+  });
   return entries;
 }
 
@@ -13119,12 +13229,27 @@ function appFinderHaystack(entry) {
   return `${entry.title} ${entry.hint || ""} ${entry.tab || ""} ${(entry.aliases || []).join(" ")}`.toLowerCase();
 }
 
+function appFinderScore(entry, query) {
+  const normalize = text => String(text).toLowerCase().replace(/[^\p{L}\p{N}%]+/gu," ").trim();
+  const q = normalize(query), title = normalize(entry.title), haystack = normalize(appFinderHaystack(entry));
+  if (!q) return 0;
+  if (title === q) return 100;
+  if ((entry.aliases || []).some(alias => normalize(alias) === q)) return 90;
+  if (title.startsWith(q)) return 80;
+  if (title.includes(q)) return 60;
+  if (title.replace(/ /g,"").includes(q.replace(/ /g,""))) return 50;
+  return q.split(/\s+/).every(word => haystack.includes(word)) ? 20 : 0;
+}
+
 function renderElectronAppFinder(query) {
   const box = document.getElementById("appFinderResults");
   if (!box) return;
   const q = String(query || "").trim().toLowerCase();
   const hits = collectAppFinderEntries()
-    .filter((entry) => !q || appFinderHaystack(entry).includes(q))
+    .map(entry => ({entry,score:appFinderScore(entry,q)}))
+    .filter(hit => hit.score > 0)
+    .sort((a,b) => b.score-a.score)
+    .map(hit => hit.entry)
     .slice(0, 14);
   if (!q || !hits.length) {
     box.innerHTML = "";
@@ -13159,11 +13284,15 @@ function jumpElectronAppFinder(entry) {
   }
   if (entry.tab && typeof switchTab === "function") switchTab(entry.tab);
   window.setTimeout(() => {
-    const node = entry.panel
+    const panel = entry.panel
       ? document.querySelector(`[data-msbt-panel="${entry.panel}"]`)
       : document.getElementById(`tab-${entry.tab}`);
+    const node = entry.node?.isConnected ? entry.node : panel;
     if (!node) return;
-    window.MsbtWorkspace?.revealPanel?.(node);
+    window.MsbtWorkspace?.revealPanel?.(panel);
+    for (let parent = node.parentElement; parent && parent !== panel?.parentElement; parent = parent.parentElement) {
+      if (parent.tagName === "DETAILS") parent.open = true;
+    }
     try { node.scrollIntoView({ behavior: "smooth", block: "start" }); } catch (_) { node.scrollIntoView(); }
     node.classList.add("app-finder-flash");
     window.setTimeout(() => node.classList.remove("app-finder-flash"), 1400);

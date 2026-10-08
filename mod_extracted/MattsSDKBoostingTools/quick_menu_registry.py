@@ -360,6 +360,12 @@ for _tier in range(1, 8):
         "aliases": [f"UVH 1-{_tier}", f"UVH{_tier}"],
     }
 
+from .farming_definitions import FEATURES as _FARMING_FEATURES
+for _feature, (_label, _scope) in _FARMING_FEATURES.items():
+    for _mode in ("on", "off"):
+        ACTION_CATALOG[f"farming_{_feature}_{_mode}"] = {"basic":f"Farming: {_label} {_mode.title()}"}
+ACTION_CATALOG["farming_all_off"] = {"basic":"Turn All Farming Controls Off"}
+
 ASSIGNABLE_ACTIONS: tuple[str, ...] = tuple(sorted(ACTION_CATALOG.keys()))
 
 # Keep the native modal compact; the external editor exposes the full registry.

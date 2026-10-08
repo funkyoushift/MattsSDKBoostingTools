@@ -1,0 +1,20 @@
+MSBT 2.33.0 / Android 1.6.1 - farming controls and feature search
+
+Authorization: Matt requested "release it" and a detailed Discord announcement
+covering the preceding two weeks. He then confirmed "everything has been tested"
+and "it all works" while instructing release work to continue. This is owner
+gameplay confirmation for all local controls, including long-press skills/glide.
+Independent API/field/charge tests remain distinct evidence.
+
+Baseline: public v2.32.0 / 4251178, isolated farming-lab worktree. Dirty primary
+checkout and unrelated experiments preserved. Fourteen controls integrated into
+the normal SDK backend, HTTP/status, game-thread tick, F7 catalog/dispatch,
+immediate PRE-travel restoration and mod-disable cleanup. No local file bridge,
+developer probes, arbitrary execution or trainer executable bundled.
+
+UI features grouped by purpose; individual search results reveal controls in
+both layouts and remain discoverable before game status. Android 1.6.1/code34
+bundles the same updated desktop workspace with the existing signing identity.
+
+Source, package, device and public verification results will be appended as
+completed. Physical Android device availability is checked independently.

@@ -11,11 +11,17 @@ PKG = ROOT / "mod_extracted" / "MattsSDKBoostingTools"
 
 
 def _load_backend_actions():
+    # Each fake backend owns a fresh settings store; do not retain registry
+    # functions bound to a previous test's store.
+    sys.modules.pop("MattsSDKBoostingTools.quick_menu_registry", None)
     for name in ("unrealsdk", "unrealsdk.unreal", "mods_base"):
         sys.modules.setdefault(name, types.ModuleType(name))
     mb = sys.modules["mods_base"]
     mb.ENGINE = None
     mb.get_pc = lambda: None
+    mb.hook = lambda *a, **k: lambda f: f
+    hooks = sys.modules.setdefault("unrealsdk.hooks", types.ModuleType("unrealsdk.hooks"))
+    hooks.Type = types.SimpleNamespace(PRE="PRE", POST="POST")
 
     def _command(*_args, **_kwargs):
         def decorate(func):

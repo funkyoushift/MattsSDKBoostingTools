@@ -1,0 +1,4 @@
+[project]
+name = "MSBT Farming Lab (local test)"
+version = "0.0.0"
+description = "Separate local test controls; no public release."

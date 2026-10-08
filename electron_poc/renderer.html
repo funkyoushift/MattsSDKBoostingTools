@@ -394,6 +394,9 @@
             <button data-action="black_market_status">Black Market Status</button>
           </div>
           <p class="muted-line">Chest and black-market spawns are host-only. Status can be read by anyone.</p>
+          <h3>Vendor Refresh — Experimental</h3>
+          <div id="farmingLabVendorControls" data-farming-controls></div>
+          <div data-farming-status class="status-line warning compact-note">Waiting for the game connection.</div>
         </section>
       </div>
 
@@ -509,6 +512,15 @@
       </section>
 
       <div class="grid">
+        <section class="panel pink" data-msbt-panel="boost-weapon-tests" data-msbt-span="6" data-msbt-title="Weapons & Ammo — Farming Controls">
+          <h2>Weapons &amp; Ammo — Farming Controls</h2>
+          <p>Applies to your equipped weapons. Turn ammo and no-reload controls off before comparing reload speeds.</p>
+          <div id="farmingLabWeaponsControls" data-farming-controls></div>
+          <div class="button-row wrap">
+            <button data-farming-all-off>Turn All Farming Controls Off</button>
+          </div>
+          <div data-farming-status class="status-line warning compact-note">Waiting for the game connection.</div>
+        </section>
         <section class="panel pink" data-msbt-panel="boost-cheats" data-msbt-span="12" data-msbt-title="Combat & Cheats">
           <h2>Combat & Cheats</h2>
           <div class="button-grid">
@@ -661,6 +673,13 @@
             <button data-rarity-action="drop_rate_off">100% Drop Rate Off</button>
           </div>
           <div id="dropRateStatus" class="status-line warning compact-note">100% Drop Rate: awaiting game status.</div>
+          <details id="farmingLabPanel" open>
+            <summary><strong>Loot Rolls — Experimental</strong></summary>
+            <p>This weighted loot experiment affects the hosting process and is not a guarantee of legendary items. Travel turns experimental controls off.</p>
+            <div id="farmingLabControls" data-farming-controls></div>
+            <div class="button-row"><button id="farmingLabAllOff" data-farming-all-off>Turn All Farming Controls Off</button></div>
+            <div id="farmingLabStatus" data-farming-status class="status-line warning compact-note">Waiting for the game connection.</div>
+          </details>
           <div id="rarityStatus" class="status-line warning compact-note">Adjust weights, then Apply. Saved presets only change the visible sliders until you apply them.</div>
         </section>
       </div>
@@ -2330,6 +2349,9 @@
             <button data-movement-action="movement_apply_all">Apply Glide / Dash</button>
             <button data-movement-action="movement_zero_vault">Zero Vault Cooldown</button>
           </div>
+          <h3>Glide Duration — Experimental</h3>
+          <div id="farmingLabMovementControls" data-farming-controls></div>
+          <div data-farming-status class="status-line warning compact-note">Waiting for the game connection.</div>
         </section>
 
         <section class="panel purple" data-msbt-panel="move-world" data-msbt-span="4" data-msbt-title="World / Utility">
@@ -2422,6 +2444,13 @@
         <div class="status-line compact-note">Standalone StreamerChaos SDK mod also provides NumPad hotkeys for the local player (rebind in oak2).</div>
       </section>
 
+      <section class="panel pink" data-msbt-panel="combat-skill-tests" data-msbt-span="6" data-msbt-title="Survival & Skills — Farming Controls">
+        <h2>Survival &amp; Skills — Farming Controls</h2>
+        <p>Applies to your character. God Mode prevents normal damage. Repair-kit cooldown settings are in Combat / Resource Tuning.</p>
+        <div id="farmingLabPlayerControls" data-farming-controls></div>
+        <div class="button-row"><button data-farming-all-off>Turn All Farming Controls Off</button></div>
+        <div data-farming-status class="status-line warning compact-note">Waiting for the game connection.</div>
+      </section>
       <section class="panel purple" data-msbt-panel="combat-tuning" data-msbt-span="6" data-msbt-title="Combat / Resource Tuning" data-msbt-resize="1">
         <h2>Combat / Resource Tuning</h2>
         <p>Adjust damage, ammo, and repair kits. Continuous reapply is off by default; use Reapply After Travel if values reset.</p>

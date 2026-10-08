@@ -40,13 +40,13 @@
       ["loot", "Loot & Vendors", ["boost-ground-loot", "boost-farm"]],
       ["rarity", "Rarity", ["boost-rarity"]],
       ["camera", "Camera", ["boost-debug"]],
-      ["combat", "Combat", ["boost-cheats"]],
+      ["combat", "Combat", ["boost-weapon-tests", "boost-cheats"]],
       ["experimental", "Experimental", ["boost-late-join"]],
       ["all", "All Controls", null]
     ],
     "serial-tools": [["saved", "Saved Items", ["serial-bookmarks"]], ["convert", "Serial Converter", ["serial-tools-main"]], ["validate", "Validate Items", ["serial-validator"]], ["all", "All Controls", null]],
     "player-movement": [["movement", "Movement", ["move-presets", "move-speed", "move-jump", "move-infjump", "move-wall", "move-glide"]], ["world", "World & Teleport", ["move-world", "move-teleport"]], ["all", "All Controls", null]],
-    "combat-vehicle": [["chaos", "Party & Chaos", ["streamer-chaos"]], ["combat", "Combat Tuning", ["combat-tuning"]], ["vehicles", "Vehicles", ["vehicle-tuning"]], ["all", "All Controls", null]]
+    "combat-vehicle": [["chaos", "Party & Chaos", ["streamer-chaos"]], ["combat", "Combat Tuning", ["combat-skill-tests", "combat-tuning"]], ["vehicles", "Vehicles", ["vehicle-tuning"]], ["all", "All Controls", null]]
   };
   const selected = {};
   const shared = new Set(["boost-target", "boost-result", "move-result", "dev-target"]);

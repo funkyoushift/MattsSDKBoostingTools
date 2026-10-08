@@ -23,6 +23,7 @@ from typing import Any
 from mods_base import ENGINE, command, get_pc
 
 from . import player_economy, quick_menu_registry, serial_rewards, guaranteed_drops
+from . import farming_controls
 from .game_parameters import (
     CURRENCY_KINDS, EXP_TRACKS, MAX_ITEM_LEVEL, MAX_PLAYER_LEVEL,
     MAX_SPEC_LEVEL, MAX_VAULT_CARD_LEVEL, status_parameters,
@@ -2042,6 +2043,12 @@ def run_quick_menu_action(
         result = complete_challenges_cancel()
     elif key == "complete_challenges_status":
         result = complete_challenges_status()
+    elif key.startswith("farming_"):
+        if key == "farming_all_off":
+            result = farming_lab_action({"op":"off"})
+        else:
+            feature, mode = key.removeprefix("farming_").rsplit("_", 1)
+            result = farming_lab_action({"op":"set", "feature":feature, "enabled":mode == "on"})
     elif key in ("drop_rate_on", "drop_rate_off", "drop_rate_status"):
         result = drop_rate_action(key)
     elif key == "rarity_apply":
@@ -2268,6 +2275,7 @@ def get_status(*, include_extended: bool = True) -> dict[str, Any]:
         "rarity_weights": get_rarity_weights(),
         "rarity_revision": get_rarity_revision(),
         "drop_rate": guaranteed_drops.override.status(),
+        "farming_lab": farming_controls.status(),
         "cxp": _cxp.get_status_dict(),
         "instant_drops": _ich.get_status_dict(),
         "instant_holds": _ich.get_holds_status_dict(),
@@ -6643,6 +6651,14 @@ def _rarity_apply_current() -> dict[str, Any]:
 def get_rarity_weights() -> dict[str, float]:
     """Current rarity weight multipliers (1.0 = 100% vanilla)."""
     return {key: float(_rarity_weights.get(key, 1.0)) for key, _label, _fields in RARITY_ROWS}
+
+
+def farming_lab_action(payload: dict[str, Any]) -> dict[str, Any]:
+    return farming_controls.action(dict(payload or {}))
+
+
+def farming_controls_tick() -> None:
+    farming_controls.tick()
 
 
 def drop_rate_action(action: str) -> dict[str, Any]:

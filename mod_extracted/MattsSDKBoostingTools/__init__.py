@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-__version__: str = "2.32.0"
-__version_info__: tuple[int, int, int] = (2, 32, 0)
+__version__: str = "2.33.0"
+__version_info__: tuple[int, int, int] = (2, 33, 0)
 
 from mods_base import CoopSupport, Game, build_mod
 
@@ -14,6 +14,7 @@ from .player_economy import _cmd_givecurrency, _cmd_giveexperience
 from .serial_rewards import _cmd_give_serial
 from .runtime_cleanup import clear_travel_caches as _clear_travel_caches
 from .guaranteed_drops import clear_runtime_state as _clear_drop_rate
+from .farming_controls import clear_runtime_state as _clear_farming
 from .inventory_capacity import start_auto_inventory_worker
 from .external_bridge import start_bridge
 from .external_app_launcher import _cmd_msbt_external_app
@@ -63,6 +64,11 @@ _extra_commands = [
 if challenge_api_probe_enabled():
     _extra_commands.append(_cmd_msbt_probe_challenge_apis)
 
+def _disable_runtime_controls():
+    _clear_farming()
+    _clear_drop_rate()
+
+
 build_mod(
     name="Borderlands 4 Modding Tools — Powered by Funk",
     author="FunkYouSHiFT; original project by Mattmab (Matt)",
@@ -84,6 +90,6 @@ build_mod(
         *TPC_KEYBINDS,
     ],
     commands=_extra_commands,
-    on_disable=_clear_drop_rate,
+    on_disable=_disable_runtime_controls,
 )
 

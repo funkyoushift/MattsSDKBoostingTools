@@ -25,7 +25,7 @@ def _install_base_stubs() -> types.ModuleType:
     unrealsdk.hooks = types.SimpleNamespace(
         add_hook=lambda *a, **k: None,
         remove_hook=lambda *a, **k: None,
-        Type=types.SimpleNamespace(POST="POST"),
+        Type=types.SimpleNamespace(PRE="PRE", POST="POST"),
     )
     sys.modules["unrealsdk.hooks"].Type = unrealsdk.hooks.Type
 
@@ -254,7 +254,9 @@ def test_sdk_entrypoint_starts_supported_interfaces_without_legacy_panel(monkeyp
 
     install("mods_base", Game=types.SimpleNamespace(BL4=4),
             CoopSupport=types.SimpleNamespace(Unknown=0),
+            hook=lambda *a, **k: lambda f: f,
             build_mod=lambda **kwargs: registrations.append(kwargs))
+    install("unrealsdk.hooks", Type=types.SimpleNamespace(PRE="PRE",POST="POST"))
     siblings = {
         "golden_chest_keybinds": ["CLOSE_GOLDEN_CHEST_KEY", "OPEN_GOLDEN_CHEST_KEY"],
         "instant_click_holds": ["ICH_KEYBINDS"],
