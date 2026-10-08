@@ -1,0 +1,20 @@
+MSBT 2.34.0 / Android 1.6.2 - Epic farming and independent party targets
+
+Authorization: Matt explicitly requested "release it as a finished product"
+after the local candidate and the Epic/actual guest evidence limits were reported.
+He previously instructed best-effort completion without waiting for more testers.
+Release is the regular integrated product, not a separate lab package.
+
+Isolated branch codex/epic-player-farming; approved candidate source 262c8ed.
+Dirty primary checkout and running Borderlands process are preserved.
+Full implementation, failed probes and rollback evidence:
+docs/changes/2026-10-08-epic-player-farming.md.
+
+Already completed: 80 focused Python checks, syntax/import checks, source Electron
+party UI and all 14 search routes/13 queries in both layouts. Steam local HTTP
+On/status/Off restoration passed all 14 controls; missing guest rejected. Independent
+Windows native readback confirmed weighted original/jump/original restoration.
+All controls ended OFF. Epic profile executable hashes and retained native spans
+were verified read-only. Epic live and actual guest gameplay are unverified.
+
+Release package, Android launch, public downloads and deployment results follow.
