@@ -1,6 +1,6 @@
 """Opt-in research probe, invoked on the SDK game thread, never on import.
 
-Steam 25372571 only. Creates detached item/model storage, calls the recovered
+Steam 25372571 and Epic 4845623 candidate. Creates detached item/model storage, calls the recovered
 native builder, exports strings, then destroys native allocations. It never
 calls inventory insertion. See NATIVE_UI_ROW_PROJECTION.md for source receipts.
 Not a public API or a background-thread-safe renderer.
@@ -13,6 +13,7 @@ import time
 from pathlib import Path
 
 from .native_card_model_read import read_model, read_ui_rows
+from .native_card_builds import STEAM, card_rva, card_gates, require_card_profile
 
 GATES = (
     (0x56D3CCA, 0x56D3FCE, '5ce1aaa8933709a337c65faf40db6c17e45ec6bbc895296c8fc71b30d1a58802'),
@@ -50,10 +51,11 @@ def fill_default_price(native, identity, model, stage):
     if not container or native.read(container+0x1f8,1)!=b'\x01':
         raise RuntimeError('Native price container is not initialized')
     price=struct.unpack('<I',native.read(container+0x40,4))[0]
-    format_price=C.CFUNCTYPE(C.c_void_p,C.c_void_p,C.c_uint32,C.c_void_p,C.c_void_p)(native.base+0x5C4B4F8)
-    to_string=C.CFUNCTYPE(C.c_void_p,C.c_void_p)(native.base+0x479623A)
-    copy_string=C.CFUNCTYPE(None,C.c_void_p,C.c_void_p)(native.base+0x4994E1A)
-    release=C.CFUNCTYPE(None,C.c_void_p)(native.base+0x4774916)
+    address=lambda rva:native.base+card_rva(native.profile,rva)
+    format_price=C.CFUNCTYPE(C.c_void_p,C.c_void_p,C.c_uint32,C.c_void_p,C.c_void_p)(address(0x5C4B4F8))
+    to_string=C.CFUNCTYPE(C.c_void_p,C.c_void_p)(address(0x479623A))
+    copy_string=C.CFUNCTYPE(None,C.c_void_p,C.c_void_p)(address(0x4994E1A))
+    release=C.CFUNCTYPE(None,C.c_void_p)(address(0x4774916))
     text=C.create_string_buffer(16)
     culture=C.create_string_buffer(16)
     pointer=0
@@ -61,7 +63,7 @@ def fill_default_price(native, identity, model, stage):
     try:
         format_price(C.addressof(text),price,None,C.addressof(culture))
         pointer=native.u64(C.addressof(text))
-        if not pointer or native.u64(pointer)!=native.base+0x9E12790:
+        if not pointer or native.u64(pointer)!=address(0x9E12790):
             raise RuntimeError('Unexpected native formatted-text ownership')
         string=to_string(C.addressof(text))
         if not string:
@@ -69,7 +71,7 @@ def fill_default_price(native, identity, model, stage):
         copy_string(model+0x4b0,string)
         stage('price_copy_complete')
     finally:
-        if pointer and native.u64(pointer)==native.base+0x9E12790:
+        if pointer and native.u64(pointer)==address(0x9E12790):
             release(pointer)
             stage('price_text_release_complete')
     if native.read(C.addressof(culture),16)!=bytes(16):
@@ -95,18 +97,20 @@ def run(serial, output, *, expected_game_thread, include_price=False, include_wi
     if output is not None and output.exists():
         raise FileExistsError('Use a new evidence filename')
     native = NativeInventory()
-    if native.profile != 'steam-25372571':
-        raise RuntimeError('Game cards are not supported by this game build')
+    require_card_profile(native.profile)
+    if native.profile != STEAM and export_model:
+        raise RuntimeError('Epic research model export is not verified; use the widget preview')
     if include_widget:include_price=True
     active_gates=GATES+(PRICE_GATES if include_price else ())
     if not compare_self:active_gates+=EMPTY_COMPARISON_GATES
     if include_widget:
         from .native_sdk_widget_probe import WIDGET_GATES,project_default_widget
         active_gates+=WIDGET_GATES
+    active_gates=card_gates(native.profile,active_gates)
     for start, end, digest in active_gates:
         if hashlib.sha256(native.read(native.base + start, end - start)).hexdigest() != digest:
             raise RuntimeError(f'Native card function changed: {start:x}')
-    bind = lambda rva, *args: C.CFUNCTYPE(None, *args)(native.base + rva)
+    bind = lambda rva, *args: C.CFUNCTYPE(None, *args)(native.base + card_rva(native.profile,rva))
     model_ctor = bind(0x56D3CCA, C.c_void_p)
     model_bind = bind(0xBABBE2, C.c_void_p, C.c_void_p, C.c_uint8)
     model_fill = bind(0xBAF88E, C.c_void_p, C.c_void_p, C.c_uint8)

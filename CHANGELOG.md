@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.31.0 - 2026-10-08
+
+- Epic build 4845623 native item cards and Item Editor previews, with exact build/function checks.
+- Android 1.6.0 includes the shared Windows workspace, editor and file tools through existing pairing.
+- Persistent phone caching of unchanged large status lists; live players, AFK and command updates remain fresh.
+- Phone player selection and ordinary commands remain usable during AFK while delivery conflict checks remain enforced.
+- Item Catalog focus no longer exposes hidden card-rendering windows.
+- AFK host-test errors remain visible; vault-card readback follows track identity. Rank-setting failure remains a separate issue.
+- Epic passed executable comparison and offline validation; live Epic confirmation is pending.
+
 ## 2.30.2 - 2026-10-06
 
 - Replaced Saved Items' native delivery confirmation with an in-app confirmation to avoid the previously observed native-dialog keyboard-focus failure path.

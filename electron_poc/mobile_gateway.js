@@ -239,6 +239,15 @@ function createMobileGateway(options = {}) {
       return;
     }
 
+    if(method==='POST'&&pathname==='/desktop'){
+      try{
+        if(typeof options.desktopRequest!=='function')throw Error('Update the desktop app to use Windows tools on the phone');
+        const payload=JSON.parse((await readBody(req,2*1024*1024)).toString('utf8'));
+        const result=await options.desktopRequest(payload);
+        sendJson(res,result.status||200,result.data);return;
+      }catch(error){sendJson(res,400,{ok:false,message:String(error.message||error)});return;}
+    }
+
     if (method === "POST" && (pathname === "/mobile/gzo/prepare" || pathname === "/mobile/gzo/submit")) {
       try {
         const payload = JSON.parse((await readBody(req, 12 * 1024 * 1024)).toString("utf8"));

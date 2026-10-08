@@ -12,11 +12,13 @@ from .native_sdk_card_probe import run
 MAX_ENTRIES = 512
 MAX_BYTES = 32 * 1024 * 1024
 SCHEMA = 'native-standalone-widget-v1'
+PROFILE_REVISION = 'native-card-profiles-20261008'
 _thread = None
 _session = None
 _cache = OrderedDict()
 _bytes = 0
 _builds = 0
+_profile = None
 
 
 def thread_id():
@@ -27,13 +29,14 @@ def thread_id():
 
 def enable(*, expected_game_thread):
     """Call only from an independently verified SDK game-thread entry point."""
-    global _thread,_session,_bytes,_builds
+    global _thread,_session,_bytes,_builds,_profile
     if not expected_game_thread or thread_id()!=expected_game_thread:
         raise RuntimeError('Native preview must be enabled on the verified game thread')
     _thread=expected_game_thread
     _session=uuid.uuid4().hex
     _cache.clear()
     _bytes=_builds=0
+    _profile=None
     return status()
 
 
@@ -45,12 +48,14 @@ def bind_game_thread():
 
 def status():
     return dict(ok=True,enabled=_thread is not None,session=_session,schema=SCHEMA,
+                profile_revision=PROFILE_REVISION,
+                build_profile=_profile,
                 entries=len(_cache),bytes=_bytes,builds=_builds,
                 context='standalone; no loadout or comparison')
 
 
 def preview(serial):
-    global _bytes,_builds
+    global _bytes,_builds,_profile
     if _thread is None or thread_id()!=_thread:
         raise RuntimeError('Native preview is disabled or called from the wrong thread')
     if not isinstance(serial,str) or not serial.startswith('@U') or not serial.isascii() or len(serial)>8192:
@@ -64,6 +69,7 @@ def preview(serial):
                compare_self=False,export_model=False)
     widget=report['default_widget']
     encoded=json.dumps(widget,ensure_ascii=False,allow_nan=False).encode('utf-8')
+    _profile=report['profile']
     _builds+=1
     if len(encoded)<=MAX_BYTES:
         while _cache and (len(_cache)>=MAX_ENTRIES or _bytes+len(encoded)>MAX_BYTES):

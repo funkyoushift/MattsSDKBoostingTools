@@ -3,7 +3,7 @@
  const valid=value=>typeof value==='string'&&/^[a-f0-9]{64}$/.test(value);
  function validate(data){if(data.v!==3||data.relay!==endpoint||!valid(data.room)||!valid(data.token)||!valid(data.key))throw Error('Invalid remote pairing QR.');return {v:3,relay:endpoint,room:data.room,token:data.token,key:data.key,name:'Borderlands 4 Modding Tools Remote AFK'};}
  async function request(route,{payload=null,timeoutMs=40000}={}) {
-   const config=validate(state.connection.remote);if(!['/status','/action'].includes(route))throw Error('Remote connection supports AFK Lobby only.');
+   const config=validate(state.connection.remote);if(!['/status','/action','/quick_menu','/mobile/bookmarks','/desktop'].includes(route))throw Error('This feature requires a local desktop gateway connection.');
    const id=crypto.randomUUID(),packet=await msbtRemoteCrypto.seal(config.key,{id,time:Date.now(),route,payload},config.room+':request');
    const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),Math.max(40000,timeoutMs));
    try {const r=await fetch(`${config.relay}/room/${config.room}/request`,{method:'POST',headers:{Authorization:`Bearer ${config.token}`,'Content-Type':'application/json'},body:JSON.stringify(packet),signal:controller.signal});
@@ -30,7 +30,7 @@
        if(!result.ok||result.data?.ok===false)throw Error(result.data?.message||'Game unavailable');
        state.online=true;applyStatus(result.data);startStatusPolling();
        if(!automatic)showScreen('afk');
-       $('connectionStatus').textContent='Remote AFK connected. Keep the PC and game running.';return true;
+       $('connectionStatus').textContent=state.remoteCommandsSupported?'Remote controls connected. Other commands stay available while AFK runs.':'Remote AFK connected. Update the desktop app for other remote commands.';return true;
      }catch(error){
        if(active!==epoch||connection!==state.connection.remote)return false;
        state.online=false;state.bridgeOnline=false;updateConnectionChrome();

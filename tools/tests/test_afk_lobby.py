@@ -950,3 +950,25 @@ def test_vault_levels_selection_and_bounds():
     assert lobby.start({'vault_levels': True, 'vault_levels_amount': 50})['ok']
     assert not lobby.config['keys']
     assert lobby.config['vault_levels_amount'] == 50
+
+
+def test_experience_readback_resolves_reordered_card_identity():
+    params_spec = importlib.util.spec_from_file_location('afk_params', FILE.with_name('game_parameters.py'))
+    params = importlib.util.module_from_spec(params_spec)
+    params_spec.loader.exec_module(params)
+    rows = [SimpleNamespace(ExperienceId=SimpleNamespace(Name=name)) for name in
+            ('Character', 'Specialization', 'VaultCard05', 'VaultCard03', 'VaultCard01')]
+    levels = {'VaultCard01': 9999, 'VaultCard03': 300, 'VaultCard05': 25}
+    calls = []
+    economy = SimpleNamespace(
+        experience_row_for_track=params.experience_row_for_track,
+        _candidate_experience_tokens=lambda index, row: [row.ExperienceId.Name],
+        _make_experience_def_ptr=lambda token: token)
+    ps = SimpleNamespace(ExperienceState=rows, BP_GetExperienceLevel=lambda token: calls.append(token) or levels[token])
+    game = module.Game()
+    game.backend = lambda: SimpleNamespace(player_economy=economy)
+    assert game.experience_level(ps, 'vaultcard_xp_1') == 9999
+    assert game.experience_level(ps, 'vaultcard_xp_5') == 25
+    assert calls == ['VaultCard01', 'VaultCard05']
+    assert game.experience_level(ps, 'vaultcard_xp_2') is None
+    assert calls == ['VaultCard01', 'VaultCard05']

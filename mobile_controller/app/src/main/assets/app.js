@@ -47,7 +47,7 @@ function setLiveEnabled(){
     else if(!state.online)riskStatus.textContent='Enabled. Connect to the game (or desktop gateway) to fire spawn actions (buttons are tappable).';
     else riskStatus.textContent='Enabled and connected. Spawn actions are ready.';
   }
-  if(state.connection.remote){
+  if(state.connection.remote&&!state.remoteCommandsSupported){
     $$('[data-live],[data-live-optional],.player-target').forEach(node=>{node.disabled=true;});
     ['invRefresh','invEquipped','invBackpack','travelMapGo','travelStationGo','poolSpawn','invSendSelected','runSelectedMovement'].forEach(id=>{if($(id))$(id).disabled=true;});
   }
@@ -110,7 +110,7 @@ function updateConnectionChrome(){
   $('homeStatusText').textContent=state.online
     ? (state.bridgeOnline?'Live actions are enabled. The desktop app is optional.':'Reachable on this Wi‑Fi. Launch Borderlands 4 with the MSBT SDK mod for live game actions.')
     : 'Offline tools stay usable. Scan the in-game Pair QR (msbt_mobile_pair) or the desktop Mobile Gateway QR.';
-  if(state.connection.remote){$('homeStatusText').textContent='Remote AFK control. Keep the desktop app and Borderlands 4 running.';$('desktopStatus').textContent='Required for remote AFK';}
+  if(state.connection.remote){$('homeStatusText').textContent=state.remoteCommandsSupported?'Remote controls are ready. You can use other commands while AFK runs. Keep the desktop app and Borderlands 4 running.':'This desktop supports remote AFK only. Update the desktop app to use other phone commands remotely.';$('desktopStatus').textContent='Required for remote controls';}
   $('targetSummary').textContent=targetDisplay(state.selectedTarget);
   setLiveEnabled();
 }
@@ -871,13 +871,19 @@ function fillPlayerSelects(){
     rows.forEach((row,i)=>{
       let option=existing.get(row.value);
       if(!option){option=document.createElement('option');option.value=row.value;}
-      if(option.textContent!==row.label)option.textContent=row.label;
+      if(row.value)option.dataset.i18nSkip='';
+      const label=window.MsbtTranslateUi?.originalText(option)??option.textContent;
+      if(label!==row.label)option.textContent=row.label;
       if(select.options[i]!==option)select.insertBefore(option,select.options[i]||null);
       existing.delete(row.value);
     });
     existing.forEach(option=>option.remove());
-    select.disabled=!state.online||!state.players.length;
-    select.value=focused&&rows.some(r=>r.value===old)?old:(rows.some(r=>r.value===preferred)?preferred:'');
+    const disabled=!state.online||!state.players.length;
+    if(select.disabled!==disabled)select.disabled=disabled;
+    const value=focused&&rows.some(r=>r.value===old)?old:(rows.some(r=>r.value===preferred)?preferred:'');
+    // Android's native picker can be dismissed by assigning its value during
+    // polling, even when the assignment leaves the selection unchanged.
+    if(select.value!==value)select.value=value;
   });
   if(state.players.length){
     const matched=resolveTargetValue(preferred,state.players);
@@ -987,6 +993,7 @@ function applyLiveModsFromStatus(data){
   }
 }
 function applyStatus(data){
+  state.remoteCommandsSupported=data?.remote_commands_supported===true;
   if(data&&data.game_parameters)state.gameParameters=data.game_parameters;
   syncBoostXpLimit();
   state.bridgeOnline=Boolean(data&&data.ok!==false&&(data.started||data.players||data.name));

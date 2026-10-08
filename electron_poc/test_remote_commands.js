@@ -1,0 +1,38 @@
+const assert=require('node:assert/strict'),crypto=require('node:crypto'),fs=require('node:fs'),path=require('node:path');
+const {createRemoteAfk}=require('./remote_afk'),{ACTIONS}=require('./remote_commands');
+(async()=>{
+  const afk={enabled:true,config:{loot:true,random_count:500},active_guests:[{key:'Guest A',submitted:210}]};
+  const before=JSON.stringify(afk),calls=[];
+  let selected='0|Host';
+  const host=createRemoteAfk({load:async()=>null,save:async()=>{},getSerialBookmarks:async()=>[{serial:'@UAbCd',name:'Saved'}],bridge:async(route,payload)=>{
+    calls.push({route,payload});
+    if(route==='/status')return {ok:true,status:200,data:{ok:true,started:true,players:[{index:0,name:'Host'},{index:1,name:'Guest A'}],selected_player:selected.split('|')[1],selected_player_index:Number(selected[0]),host_player_index:0,player_readback:{available:true,level:70},game_parameters:{level_cap:70},afk_lobby:afk,serial_delivery:{busy:true},instant_drops:{enabled:true},last_command:{secret:'hidden'},mobile_lan:{token:'hidden'},diagnostics:{private:'hidden'}}};
+    if(route==='/quick_menu')return {ok:true,status:200,data:{layout:{pages:[]},catalog:{}}};
+    if(payload.action==='set_target_player')selected=payload.payload.target_player;
+    if(payload.action==='give_serial_selected')return {ok:true,status:200,data:{ok:false,message:'Serial queue busy with AFK delivery'}};
+    return {ok:true,status:200,data:{ok:true,message:'done'}};
+  }});
+  const req=(route,payload)=>host.dispatch({id:crypto.randomUUID(),time:Date.now(),route,payload});
+  let status=await req('/status');assert.equal(status.data.remote_commands_supported,true);assert.equal(status.data.afk_lobby.enabled,true);
+  for(const field of ['players','selected_player','selected_player_index','host_player_index','player_readback','game_parameters','serial_delivery','instant_drops'])assert.ok(field in status.data,field);
+  for(const field of ['last_command','mobile_lan','diagnostics'])assert.equal(status.data[field],undefined,field);
+  await req('/action',{action:'set_target_player',payload:{target_player:'1|Guest A'}});
+  await req('/action',{action:'movement_apply_all',payload:{target_player:'1|Guest A',speed_scale:1.5}});
+  assert.equal(calls.at(-1).payload.payload.target_player,'1|Guest A');
+  assert.equal(calls.at(-1).payload.timeout,8,'bounded wait fits existing relay deadline');
+  assert.equal((await req('/status')).data.selected_player,'Guest A');
+  assert.equal((await req('/quick_menu')).ok,true);
+  assert.equal((await req('/mobile/bookmarks')).data.bookmarks[0].serial,'@UAbCd');
+  const blocked=await req('/action',{action:'give_serial_selected',payload:{target_player:'1|Guest A',serials:['@UAbCd']}});
+  assert.equal(blocked.data.ok,false,'SDK busy rejection must pass through');
+  assert.equal(JSON.stringify(afk),before,'manual commands changed AFK config or progress');
+  assert.equal(calls.some(c=>/^afk_lobby_(start|stop)$/.test(c.payload?.action)),false);
+  const count=calls.length;
+  for(const [route,payload] of [['/action',{action:'empty_backpack'}],['/action',{action:'movement_apply_all',payload:[]}],['/action',{action:'shift_overlay_control',payload:{mode:'exec'}}],['/admin'],['/quick_menu?other=1']])await assert.rejects(req(route,payload));
+  assert.equal(calls.length,count,'invalid requests reached SDK');
+  const duplicate={id:crypto.randomUUID(),time:Date.now(),route:'/status'};await host.dispatch(duplicate);await assert.rejects(host.dispatch(duplicate),/already processed/);
+  await assert.rejects(host.dispatch({...duplicate,id:crypto.randomUUID(),time:0}),/Expired/);
+  const html=fs.readFileSync(path.resolve(__dirname,'../mobile_controller/app/src/main/assets/index.html'),'utf8');
+  for(const [,action] of html.matchAll(/data-action="([^"]+)"/g))assert.ok(ACTIONS.has(action),'phone button missing from remote contract: '+action);
+  console.log('PASS remote phone commands during AFK, explicit targets, status/read routes, SDK rejection, AFK independence and request guards');
+})().catch(e=>{console.error(e);process.exitCode=1});

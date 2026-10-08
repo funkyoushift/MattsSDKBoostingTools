@@ -16,6 +16,16 @@ app.whenReady().then(async () => {
       return {ok:true,data:{ok:true,afk_lobby:{enabled:action==='afk_lobby_start',message:action==='afk_lobby_start'?'Running':'Stopped',config:payload,history:[]}}};
     };
     bridgeStatus = async () => {};
+    window.msbtAfkRender({afk_lobby:{enabled:false,host_test_supported:true,message:'Stopped'}});
+    document.querySelector('[data-afk-boost="loot"]').checked = true;
+    document.getElementById('afkCodes').value = '';
+    document.getElementById('afkGuaranteedCodes').value = '';
+    document.getElementById('afkTestHost').click();
+    await new Promise(resolve=>setTimeout(resolve,30));
+    if (calls.length || !document.getElementById('afkStatus').textContent.includes('both loot lists are empty')) throw Error('Empty loot host test was not explained before dispatch');
+    for (let i=0;i<3;i++) window.msbtAfkRender({afk_lobby:{enabled:false,host_test_supported:true,message:'Stopped'}});
+    if (!document.getElementById('afkStatus').textContent.includes('both loot lists are empty')) throw Error('Polling hid host-test validation failure');
+    if (document.getElementById('afkTestHost').disabled) throw Error('Validation failure prevented retry');
     window.msbtAfkRender({afk_lobby:{enabled:false,message:'Stopped',loot_modes:['all','random70'],guaranteed_loot_supported:true,item_level_override_supported:true,history:[],shift_connected:true,shift_running:false}});
     document.getElementById('afkLoadBookmarks').click();
     await new Promise(resolve=>setTimeout(resolve,30));

@@ -2,11 +2,11 @@ const crypto=require('node:crypto');
 const WebSocket=require('ws');
 const envelope=require('./remote_crypto');
 const RELAY='https://msbt-afk-relay.screename53.workers.dev';
-const ALLOWED=new Set(['afk_lobby_start','afk_lobby_stop','shift_overlay_control']);
+const {ACTIONS:ALLOWED,phoneStatus}=require('./remote_commands');
 const hash=s=>crypto.createHash('sha256').update(s).digest('hex');
 const secret=()=>crypto.randomBytes(32).toString('hex');
 const valid=s=>typeof s==='string'&&/^[a-f0-9]{64}$/.test(s);
-function createRemoteAfk({load,save,bridge,relay=RELAY,onChange=()=>{},fetchImpl=(...args)=>fetch(...args),
+function createRemoteAfk({load,save,bridge,getSerialBookmarks,desktopRequest,relay=RELAY,onChange=()=>{},fetchImpl=(...args)=>fetch(...args),
   retryMs=5000,heartbeatMs=25000,heartbeatTimeoutMs=65000,renewMs=6*60*60*1000}) {
   let config=null,socket=null,timer=null,heartbeat=null,renewal=null,pendingFetch=null;
   let enabled=false,generation=0,intent=0,lastError='',operation=Promise.resolve();
@@ -25,10 +25,21 @@ function createRemoteAfk({load,save,bridge,relay=RELAY,onChange=()=>{},fetchImpl
     seen.set(request.id,Date.now());
     if(request.route==='/status'){
       const result=await bridge('/status'),d=result.data||{};
-      return {ok:result.ok,status:result.status,data:{ok:d.ok,name:d.name,started:d.started,message:d.message,players:d.players,afk_lobby:d.afk_lobby}};
+      return {ok:result.ok,status:result.status,data:{...phoneStatus(d),desktop_tools_supported:typeof desktopRequest==='function'}};
     }
-    if(request.route!=='/action'||!ALLOWED.has(request.payload?.action))throw Error('Remote access is limited to AFK Lobby');
+    if(request.route==='/desktop'){
+      if(typeof desktopRequest!=='function')throw Error('Update the desktop app to use Windows tools on the phone');
+      return desktopRequest(request.payload);
+    }
+    if(request.route==='/quick_menu')return bridge('/quick_menu');
+    if(request.route==='/mobile/bookmarks'){
+      if(typeof getSerialBookmarks!=='function')throw Error('Desktop bookmarks are unavailable');
+      const rows=await getSerialBookmarks(),bookmarks=Array.isArray(rows)?rows:[];
+      return {ok:true,status:200,data:{ok:true,bookmarks,count:bookmarks.length}};
+    }
+    if(request.route!=='/action'||!ALLOWED.has(request.payload?.action))throw Error('This command is not supported by the remote phone controller');
     const payload=request.payload.payload||{};
+    if(typeof payload!=='object'||Array.isArray(payload))throw Error('Invalid command payload');
     if(request.payload.action==='shift_overlay_control'&&!['open','close'].includes(payload.mode))throw Error('Unsupported SHiFT command');
     return bridge('/action',{action:request.payload.action,payload,timeout:8});
   }

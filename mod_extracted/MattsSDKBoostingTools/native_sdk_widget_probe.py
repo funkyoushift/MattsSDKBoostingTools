@@ -1,4 +1,4 @@
-"""Opt-in detached final-widget research for Steam 25372571.
+"""Detached final-widget preview with independently gated build profiles.
 
 The SDK owns and releases the reflected widget. A native default owner runs
 the original final consumer on a local model reference. No widget is attached
@@ -7,6 +7,7 @@ to the player's UI. This is not a player/loadout-context API.
 import ctypes as C
 import struct
 from .native_card_widget_read import read_widget
+from .native_card_builds import card_rva
 
 WIDGET_GATES=(
     (0x58CF8C4,0x58CF9AF,'ab40f436d65c9c3a2f61b79ead977c106d6d84e7fee392e8ef933aea2d8f2518'),
@@ -31,11 +32,12 @@ def project_default_widget(native, model, stage):
     if owner%16:raise RuntimeError('Widget owner storage alignment differs')
     guard=b'MSBT-owner-guard'
     C.memmove(owner+0x398,guard,len(guard))
-    constructor=C.CFUNCTYPE(C.c_void_p,C.c_void_p)(native.base+0x58CF8C4)
-    initialize=C.CFUNCTYPE(None,C.c_void_p,C.c_void_p)(native.base+0x167376E)
-    consume=C.CFUNCTYPE(None,C.c_void_p,C.c_void_p,C.c_void_p)(native.base+0x11FC6BA)
-    destroy=C.CFUNCTYPE(C.c_void_p,C.c_void_p,C.c_uint32)(native.base+0x575204C)
-    text_string=C.CFUNCTYPE(C.c_void_p,C.c_void_p)(native.base+0x479623A)
+    address=lambda rva:native.base+card_rva(native.profile,rva)
+    constructor=C.CFUNCTYPE(C.c_void_p,C.c_void_p)(address(0x58CF8C4))
+    initialize=C.CFUNCTYPE(None,C.c_void_p,C.c_void_p)(address(0x167376E))
+    consume=C.CFUNCTYPE(None,C.c_void_p,C.c_void_p,C.c_void_p)(address(0x11FC6BA))
+    destroy=C.CFUNCTYPE(C.c_void_p,C.c_void_p,C.c_uint32)(address(0x575204C))
+    text_string=C.CFUNCTYPE(C.c_void_p,C.c_void_p)(address(0x479623A))
     widget=None
     owner_ready=False
     try:
@@ -53,7 +55,7 @@ def project_default_widget(native, model, stage):
         stage('widget_owner_construct_begin')
         constructor(owner)
         owner_ready=True
-        if native.u64(owner)!=native.base+0xB9B7700:
+        if native.u64(owner)!=address(0xB9B7700):
             raise RuntimeError('Unexpected native default owner')
         stage('widget_owner_initialize_begin')
         initialize(owner,None)  # Original type/skill-tree maps; no attached UI.

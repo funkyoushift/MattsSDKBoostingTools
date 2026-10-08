@@ -1,12 +1,12 @@
 [project]
 name = "MattsSDKBoostingTools"
-version = "2.30.2"
+version = "2.31.0"
 authors = [{ name = "Matt" }]
 description = "Borderlands 4 Modding Tools — Powered by Funk. Original project by Mattmab (Matt). Boosting-focused SDK mod with native Quick Menu and external bridge."
 
 [tool.sdkmod]
 name = "Borderlands 4 Modding Tools — Powered by Funk"
 license = { name = "MIT", url = "https://opensource.org/license/mit" }
-version = "2.30.2"
+version = "2.31.0"
 coop_support = "Unknown"
 

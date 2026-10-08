@@ -88,6 +88,9 @@ public class MainActivity extends Activity {
     private WebView webView;
     private android.webkit.ValueCallback<android.net.Uri[]> imageChooserCallback;
     private static final int REQ_SUBMISSION_IMAGE = 1003;
+    private static final int REQ_EXPORT_DOCUMENT = 1004;
+    private String pendingDocumentId;
+    private byte[] pendingDocumentBytes;
     private PermissionRequest pendingWebPermission;
     private boolean pendingNativeQrScan;
     private final ExecutorService bg = Executors.newSingleThreadExecutor();
@@ -706,6 +709,41 @@ public class MainActivity extends Activity {
         webView.post(() -> webView.evaluateJavascript(js, null));
     }
 
+    public class PhoneFiles {
+        @JavascriptInterface
+        public void saveDocument(String id, String name, String mime, String base64) {
+            runOnUiThread(() -> {
+                try {
+                    if (webView == null || webView.getUrl() == null || !webView.getUrl().startsWith(ASSET_BASE)) return;
+                    if (pendingDocumentId != null) throw new IllegalStateException("Finish the current export first.");
+                    if (base64 == null || base64.length() > 90 * 1024 * 1024) throw new IllegalArgumentException("File is too large to export.");
+                    pendingDocumentBytes = android.util.Base64.decode(base64, android.util.Base64.DEFAULT);
+                    pendingDocumentId = id;
+                    Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    intent.setType(mime == null || mime.isEmpty() ? "application/octet-stream" : mime);
+                    intent.putExtra(Intent.EXTRA_TITLE, new File(name == null ? "MSBT-export" : name).getName());
+                    startActivityForResult(intent, REQ_EXPORT_DOCUMENT);
+                } catch (Exception error) {
+                    if (java.util.Objects.equals(id, pendingDocumentId)) {
+                        pendingDocumentId = null;
+                        pendingDocumentBytes = null;
+                    }
+                    notifyJs("__msbtDocumentSaved", "{\"id\":" + jsonQuote(id) + ",\"ok\":false,\"message\":" + jsonQuote(error.getMessage()) + "}");
+                }
+            });
+        }
+        @JavascriptInterface
+        public void openExternal(String rawUrl) {
+            runOnUiThread(() -> {
+                if (webView == null || webView.getUrl() == null || !webView.getUrl().startsWith(ASSET_BASE)) return;
+                Uri uri = Uri.parse(rawUrl);
+                if (!"https".equals(uri.getScheme()) && !"http".equals(uri.getScheme())) return;
+                try { startActivity(new Intent(Intent.ACTION_VIEW, uri)); } catch (Exception ignored) { }
+            });
+        }
+    }
+
     private void notifyJs(String functionName, String jsonPayload) {
         if (webView == null) {
             return;
@@ -1098,6 +1136,19 @@ public class MainActivity extends Activity {
     }
 
     @SuppressLint({"SetJavaScriptEnabled", "AddJavascriptInterface"})
+    private void updateDesktopInsets() {
+        if (webView == null) return;
+        android.view.WindowInsets insets = webView.getRootWindowInsets();
+        if (insets == null) return;
+        float density = getResources().getDisplayMetrics().density;
+        String script = "var s=document.documentElement.style;"
+                + "s.setProperty('--phone-safe-top','" + insets.getSystemWindowInsetTop() / density + "px');"
+                + "s.setProperty('--phone-safe-bottom','" + insets.getSystemWindowInsetBottom() / density + "px');"
+                + "s.setProperty('--phone-safe-left','" + insets.getSystemWindowInsetLeft() / density + "px');"
+                + "s.setProperty('--phone-safe-right','" + insets.getSystemWindowInsetRight() / density + "px');";
+        webView.evaluateJavascript(script, null);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -1107,7 +1158,10 @@ public class MainActivity extends Activity {
                 .build();
 
         webView = new WebView(this);
+        webView.setOnApplyWindowInsetsListener((view, insets) -> { view.post(this::updateDesktopInsets); return view.onApplyWindowInsets(insets); });
         webView.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onPageFinished(WebView view, String url) { updateDesktopInsets(); }
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
                 try {
@@ -1152,8 +1206,12 @@ public class MainActivity extends Activity {
                 imageChooserCallback = callback;
                 Intent chooser = new Intent(Intent.ACTION_OPEN_DOCUMENT);
                 chooser.addCategory(Intent.CATEGORY_OPENABLE);
-                chooser.setType("image/*");
-                chooser.putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"image/png", "image/jpeg", "image/webp"});
+                String[] accept = params.getAcceptTypes();
+                boolean imagesOnly = accept != null && accept.length > 0;
+                if (accept != null) for (String type : accept) if (!type.startsWith("image/")) imagesOnly = false;
+                chooser.setType(imagesOnly ? "image/*" : "*/*");
+                if (imagesOnly) chooser.putExtra(Intent.EXTRA_MIME_TYPES, accept);
+                chooser.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, params.getMode() == WebChromeClient.FileChooserParams.MODE_OPEN_MULTIPLE);
                 try { startActivityForResult(chooser, REQ_SUBMISSION_IMAGE); }
                 catch (Exception error) { imageChooserCallback.onReceiveValue(null); imageChooserCallback = null; }
                 return true;
@@ -1183,6 +1241,7 @@ public class MainActivity extends Activity {
         settings.setMediaPlaybackRequiresUserGesture(false);
 
         webView.addJavascriptInterface(new AssetBridge(), "MSBTAssets");
+        webView.addJavascriptInterface(new PhoneFiles(), "MSBTFiles");
         webView.loadUrl(ASSET_BASE + "index.html");
         setContentView(webView);
     }
@@ -1221,10 +1280,34 @@ public class MainActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQ_EXPORT_DOCUMENT) {
+            final String id = pendingDocumentId;
+            final byte[] bytes = pendingDocumentBytes;
+            pendingDocumentId = null;
+            pendingDocumentBytes = null;
+            final Uri uri = resultCode == RESULT_OK && data != null ? data.getData() : null;
+            if (uri == null || bytes == null) {
+                notifyJs("__msbtDocumentSaved", "{\"id\":" + jsonQuote(id) + ",\"ok\":false,\"canceled\":true}");
+            } else bg.execute(() -> {
+                try (java.io.OutputStream stream = getContentResolver().openOutputStream(uri, "w")) {
+                    if (stream == null) throw new java.io.IOException("Could not open the selected export file.");
+                    stream.write(bytes);
+                    notifyJs("__msbtDocumentSaved", "{\"id\":" + jsonQuote(id) + ",\"ok\":true,\"path\":" + jsonQuote(uri.toString()) + "}");
+                } catch (Exception error) {
+                    notifyJs("__msbtDocumentSaved", "{\"id\":" + jsonQuote(id) + ",\"ok\":false,\"message\":" + jsonQuote(error.getMessage()) + "}");
+                }
+            });
+            return;
+        }
         if (requestCode == REQ_SUBMISSION_IMAGE) {
             if (imageChooserCallback != null) {
                 android.net.Uri uri = resultCode == RESULT_OK && data != null ? data.getData() : null;
-                imageChooserCallback.onReceiveValue(uri == null ? null : new android.net.Uri[]{uri});
+                if (resultCode == RESULT_OK && data != null && data.getClipData() != null) {
+                    android.content.ClipData clip = data.getClipData();
+                    Uri[] values = new Uri[clip.getItemCount()];
+                    for (int i = 0; i < values.length; i++) values[i] = clip.getItemAt(i).getUri();
+                    imageChooserCallback.onReceiveValue(values);
+                } else imageChooserCallback.onReceiveValue(uri == null ? null : new android.net.Uri[]{uri});
                 imageChooserCallback = null;
             }
             return;
@@ -1263,6 +1346,14 @@ public class MainActivity extends Activity {
 
     @Override
     public void onBackPressed() {
+        if (webView != null) {
+            webView.evaluateJavascript("(function(){if(window.mobileDesktopBridge&&mobileDesktopBridge.isOpen()){mobileDesktopBridge.close();return true;}return false;})()", handled -> {
+                if ("true".equals(handled)) return;
+                if (webView.canGoBack()) webView.goBack();
+                else MainActivity.super.onBackPressed();
+            });
+            return;
+        }
         if (webView != null && webView.canGoBack()) {
             webView.goBack();
         } else {

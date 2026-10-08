@@ -37,6 +37,7 @@
   let running = false;
   let busy = false;
   let lastStatus = null;
+  let commandError = '';
   let edits = 0;
   let savedAt = 0;
 
@@ -103,7 +104,7 @@
     byId("afkTestHost").disabled = busy || running || !afk?.host_test_supported;
     byId("afkStop").disabled = busy || !running;
     panel.querySelectorAll("input,textarea,select,#afkAddBookmarks,#afkAddGuaranteedBookmarks,#afkLoadBookmarks,#afkAddFolder,#afkAddGuaranteedFolder").forEach((node) => { node.disabled = running || busy; });
-    byId("afkStatus").textContent = afk ? afk.message : "AFK lobby is not connected. Install the bundled game files and restart Borderlands 4.";
+    byId("afkStatus").textContent = commandError || (afk ? afk.message : "AFK lobby is not connected. Install the bundled game files and restart Borderlands 4.");
     byId("afkShiftStatus").textContent = afk && afk.shift_connected
       ? `SHiFT menu connected · Auto-accepter ${afk.shift_running ? "running" : "stopped"}`
       : "SHiFT menu not connected. Open the SHiFT menu after installing the bundled game files.";
@@ -156,10 +157,14 @@
 
   async function run(action, payload = {}) {
     if (busy) return;
+    commandError = '';
     busy = true;
     render({ afk_lobby: lastStatus });
     try {
       if (action === 'afk_lobby_start') {
+        if (payload.loot && !payload.codes?.trim() && !payload.guaranteed_codes?.trim()) {
+          throw new Error('Send selected loot is checked, but both loot lists are empty. Add items below or uncheck Send selected loot, then try again. No boosts have started.');
+        }
         for (const [key, maximum] of Object.entries(amountLimits)) {
           const value = payload[key + '_amount'];
           if (!Number.isInteger(value) || value < 1 || value > maximum) throw new Error(`${amountLabels[key]} must be a whole number from 1 to ${maximum.toLocaleString()}.`);
@@ -212,7 +217,8 @@
       if (result.afk_lobby) render({ afk_lobby: { ...lastStatus, ...result.afk_lobby } });
       await bridgeStatus({ quiet: true });
     } catch (error) {
-      byId("afkStatus").textContent = error.message;
+      commandError = error.message;
+      byId("afkStatus").textContent = commandError;
     } finally {
       busy = false;
       byId("afkStart").disabled = running || !lastStatus;

@@ -96,6 +96,11 @@ const {
 const oak2Install = require("./oak2_install");
 const { MAX_OUTPUT_BYTES, PersistentPythonWorker } = require("./python_worker");
 const { loadResolver: loadSerialCardResolver } = require("./serial_card_resolve");
+const mobileDesktopApi = require('./mobile_desktop_api').createMobileDesktopApi();
+function registerDesktopHandler(channel, handler) {
+  ipcMain['handle'](channel, handler);
+  mobileDesktopApi.register(channel, handler);
+}
 
 function reportFatalStartupError(kind, error) {
   const message = error && error.stack ? error.stack : String(error);
@@ -115,6 +120,7 @@ const DEFAULT_BRIDGE = "http://127.0.0.1:49774";
 const bridgeClient = require("./bridge_client").createBridgeClient();
 const MOBILE_PAIRING_FILE = () => path.join(app.getPath("userData"), "mobile_gateway_pairing.json");
 const mobileGateway = createMobileGateway({
+  desktopRequest: request => mobileDesktopApi.handle(request),
   port: MOBILE_GATEWAY_PORT,
   bridgeBase: DEFAULT_BRIDGE,
   bridgeInfo: () => bridgeClient.info(),
@@ -236,6 +242,7 @@ function dataCatalogOptions() {
 }
 
 function broadcastDataCatalogEvent(channel, payload) {
+  mobileDesktopApi.publish(channel,payload);
   for (const win of BrowserWindow.getAllWindows()) {
     if (win && !win.isDestroyed() && win.webContents) {
       win.webContents.send(channel, payload);
@@ -521,6 +528,7 @@ function saveWindowState(win, snapshot = {}) {
 
 function updateState(patch) {
   latestUpdateState = { ...latestUpdateState, ...patch };
+  mobileDesktopApi.publish('app:updateState',latestUpdateState);
   for (const win of BrowserWindow.getAllWindows()) {
     if (!win.isDestroyed() && win.webContents && !win.webContents.isDestroyed()) {
       win.webContents.send("app:updateState", latestUpdateState);
@@ -763,7 +771,14 @@ async function requestBridge({ method = "GET", path: route = "/status", payload 
   return bridgeClient.request({method, path:route, payload, timeoutMs});
 }
 
-ipcMain.handle("bridge:request", async (_event, args) => requestBridge(args || {}));
+registerDesktopHandler("bridge:request", async (event, args) => {
+  if(event.mobile){
+    const route=args?.path,method=String(args?.method||'GET').toUpperCase();
+    if(!((method==='GET'&&['/status','/quick_menu'].includes(route))||(method==='POST'&&route==='/action'&&typeof args?.payload?.action==='string')))throw Error('Unsupported game bridge route');
+    args={...args,timeoutMs:Math.min(190000,Math.max(8000,Number(args.timeoutMs)||8000))};
+  }
+  return requestBridge(args || {});
+});
 
 const catalogCardImages=require('./catalog_card_images').createCatalogCardImages({
   load:async()=>{
@@ -775,7 +790,7 @@ const catalogCardImages=require('./catalog_card_images').createCatalogCardImages
   },
   identify:serials=>runExternalPythonJson('import json,sys\nfrom item_image_identity import image_identities\nprint(json.dumps(image_identities(json.loads(sys.stdin.read()))))',JSON.stringify(serials),60000)
 });
-ipcMain.handle('app:itemCardImages',async(_event,serials)=>{
+registerDesktopHandler('app:itemCardImages',async(_event,serials)=>{
   try {
     if(!Array.isArray(serials)||serials.length>1000)throw new Error('Invalid image lookup batch');
     return {ok:true,items:await catalogCardImages.lookup(serials)};
@@ -802,7 +817,7 @@ async function connectNativePreview() {
   }
   return nativePreviewConnection;
 }
-ipcMain.handle('app:beginNativePreview',async()=>{
+registerDesktopHandler('app:beginNativePreview',async()=>{
   try {nativePreviewConnection=null;return await connectNativePreview();}
   catch(error){return {ok:false,message:error.message};}
 });
@@ -816,7 +831,7 @@ async function resolvedNativePreview(serial,wantImage=true){
   }
   return localNativePreviewClient().getWithSnapshot(serial,{image:wantImage!==false});
 }
-ipcMain.handle('app:nativeItemPreview',async(_event,serial,wantImage=true,layout='auto')=>{
+registerDesktopHandler('app:nativeItemPreview',async(_event,serial,wantImage=true,layout='auto')=>{
   try {
     if(!['auto','compact'].includes(layout))throw new Error('Unsupported card layout');
     const result=await resolvedNativePreview(serial,wantImage);
@@ -875,6 +890,7 @@ async function startMobileGateway() {
 const remoteBackground = require("./remote_background").createRemoteBackground({app,BrowserWindow,Tray,Menu,nativeImage,powerSaveBlocker,
   iconPath:path.join(__dirname,"branding","fu-logo.png"),onDisable:()=>remoteAfk.stop()});
 const remoteAfk = require("./remote_afk").createRemoteAfk({
+  desktopRequest: request => mobileDesktopApi.handle(request),
   onChange: info => remoteBackground.update(info),
   load: async () => {
     try { const bytes=await fs.readFile(path.join(app.getPath("userData"),"remote-afk.enc"));
@@ -890,22 +906,26 @@ const remoteAfk = require("./remote_afk").createRemoteAfk({
     await fs.writeFile(file+".tmp",safeStorage.encryptString(JSON.stringify(config)));
     await fs.rename(file+".tmp",file);
   },
+  getSerialBookmarks: async () => {
+    const result=await readBookmarks(bookmarksFilePath(app.getPath("userData")));
+    return result?.data?.bookmarks||[];
+  },
   bridge: (route,payload) => requestBridge({path:route,method:payload?'POST':'GET',payload,timeoutMs:25000})
 });
-ipcMain.handle("remoteAfk:info",()=>remoteAfk.info());
-ipcMain.handle("remoteAfk:start",async()=>{try{return await remoteAfk.start();}catch(error){return {enabled:false,lastError:error.message};}});
-ipcMain.handle("remoteAfk:stop",()=>remoteAfk.stop());
-ipcMain.handle("remoteAfk:qr",async()=>{const QRCode=require("qrcode");return QRCode.toDataURL(JSON.stringify(remoteAfk.pairing()),{width:280,margin:2});});
+registerDesktopHandler("remoteAfk:info",()=>remoteAfk.info());
+registerDesktopHandler("remoteAfk:start",async()=>{try{return await remoteAfk.start();}catch(error){return {enabled:false,lastError:error.message};}});
+registerDesktopHandler("remoteAfk:stop",()=>remoteAfk.stop());
+registerDesktopHandler("remoteAfk:qr",async()=>{const QRCode=require("qrcode");return QRCode.toDataURL(JSON.stringify(remoteAfk.pairing()),{width:280,margin:2});});
 
-ipcMain.handle("mobileGateway:getInfo", async () => mobileGateway.info());
-ipcMain.handle("mobileGateway:start", async () => startMobileGateway());
-ipcMain.handle("mobileGateway:stop", async () => mobileGateway.stop());
-ipcMain.handle("mobileGateway:rotateCode", async () => {
+registerDesktopHandler("mobileGateway:getInfo", async () => mobileGateway.info());
+registerDesktopHandler("mobileGateway:start", async () => startMobileGateway());
+registerDesktopHandler("mobileGateway:stop", async () => mobileGateway.stop());
+registerDesktopHandler("mobileGateway:rotateCode", async () => {
   const pairingCode = mobileGateway.rotatePairingCode();
   await saveMobilePairingCode(pairingCode);
   return mobileGateway.info();
 });
-ipcMain.handle("mobileGateway:makeQr", async (_event, text) => {
+registerDesktopHandler("mobileGateway:makeQr", async (_event, text) => {
   const payload = String(text || "").trim();
   if (!payload) {
     return { ok: false, message: "Missing pairing payload." };
@@ -1046,13 +1066,13 @@ function backupTimestamp() {
   return new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
 }
 
-async function exportUserDataBackup() {
+async function exportUserDataBackup(downloadToPhone=false) {
   const info = await getUserDataInfo();
   const defaultPath = path.join(
     app.getPath("documents"),
     `MSBT-Electron-User-Data-Backup-${backupTimestamp()}.json`
   );
-  const result = await dialog.showSaveDialog({
+  const result = downloadToPhone ? {filePath:defaultPath} : await dialog.showSaveDialog({
     title: "Export saved data backup",
     defaultPath,
     filters: [
@@ -1088,6 +1108,7 @@ async function exportUserDataBackup() {
     userDataPath: info.path,
     files
   };
+  if(downloadToPhone)return {ok:true,download:{name:path.basename(defaultPath),mime:'application/json',base64:Buffer.from(JSON.stringify(payload,null,2)+'\n').toString('base64')}};
   await fs.writeFile(result.filePath, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
   return {
     ok: true,
@@ -1251,7 +1272,7 @@ async function localVersionInfo(rawPath = '') {
   };
 }
 
-ipcMain.handle("app:getVersionInfo", async (_event, rawPath) => localVersionInfo(rawPath));
+registerDesktopHandler("app:getVersionInfo", async (_event, rawPath) => localVersionInfo(rawPath));
 
 async function isBorderlandsRunning() {
   if (process.platform !== "win32") return false;
@@ -1320,14 +1341,14 @@ async function autoDetectSdkModsPathInfo(options = {}) {
   return target.ok ? sdkModsPathInfo(target.path, (await bundledSdkmodInfo()).sha256, options) : target;
 }
 
-ipcMain.handle("app:detectSdkMods", async () => {
+registerDesktopHandler("app:detectSdkMods", async () => {
   return autoDetectSdkModsPathInfo();
 });
 
-ipcMain.handle("app:browseSdkMods", async () => {
+registerDesktopHandler("app:browseSdkMods", async (event, phonePath) => {
   const prefs = await loadMattEditorPrefsData();
   const remembered = prefs && prefs.data ? prefs.data.sdkModsPath : "";
-  const result = await dialog.showOpenDialog({
+  const result = event.mobile ? {filePaths:phonePath?[String(phonePath)]:[],canceled:!phonePath} : await dialog.showOpenDialog({
     title: "Choose the Borderlands 4 game folder, Win64 folder, or sdk_mods folder",
     defaultPath: remembered || undefined,
     properties: ["openDirectory"]
@@ -1501,19 +1522,19 @@ async function installOak2SdkManager(rawPath = "", options = {}) {
   };
 }
 
-ipcMain.handle("app:installSdkMod", async (_event, rawPath) => {
+registerDesktopHandler("app:installSdkMod", async (_event, rawPath) => {
   return installBundledSdkMods(rawPath, { allowMissing: true });
 });
 
-ipcMain.handle("app:detectOak2", async (_event, rawPath) => {
+registerDesktopHandler("app:detectOak2", async (_event, rawPath) => {
   return detectOak2Status(rawPath || "");
 });
 
-ipcMain.handle("app:installOak2", async (_event, rawPath, options = {}) => {
+registerDesktopHandler("app:installOak2", async (_event, rawPath, options = {}) => {
   return installOak2SdkManager(rawPath || "", options || {});
 });
 
-ipcMain.handle("app:enableRequiredSdkMods", async (_event, rawPath) => {
+registerDesktopHandler("app:enableRequiredSdkMods", async (_event, rawPath) => {
   const info = String(rawPath || "").trim()
     ? await sdkModsPathInfo(rawPath, "", { allowMissing: true })
     : await autoDetectSdkModsPathInfo({ allowMissing: true });
@@ -1524,11 +1545,11 @@ ipcMain.handle("app:enableRequiredSdkMods", async (_event, rawPath) => {
   return { ...enabled, requiredMods, path: info.path, gameRoot: info.gameRoot };
 });
 
-ipcMain.handle("app:recheckSdkStack", async (_event, rawPath) => {
+registerDesktopHandler("app:recheckSdkStack", async (_event, rawPath) => {
   return detectOak2Status(rawPath || "");
 });
 
-ipcMain.handle("app:readResourceJson", async (_event, resourceName) => {
+registerDesktopHandler("app:readResourceJson", async (_event, resourceName) => {
   const name = path.basename(String(resourceName || ""));
   if (!ALLOWED_RESOURCE_FILES.has(name)) {
     return { ok: false, message: `Resource is not allowlisted: ${name}` };
@@ -1547,7 +1568,7 @@ ipcMain.handle("app:readResourceJson", async (_event, resourceName) => {
   }
 });
 
-ipcMain.handle("app:readDevSpawnerCatalog", async () => {
+registerDesktopHandler("app:readDevSpawnerCatalog", async () => {
   try {
     const catalog = await readCatalogJson(
       app.getPath("userData"),
@@ -1570,18 +1591,18 @@ ipcMain.handle("app:readDevSpawnerCatalog", async () => {
   }
 });
 
-ipcMain.handle("app:getUserDataInfo", async () => getUserDataInfo());
+registerDesktopHandler("app:getUserDataInfo", async () => getUserDataInfo());
 
-ipcMain.handle("app:getDataCacheInfo", async () => getDataCacheInfo());
+registerDesktopHandler("app:getDataCacheInfo", async () => getDataCacheInfo());
 
-ipcMain.handle("app:openDataCacheFolder", async () => {
+registerDesktopHandler("app:openDataCacheFolder", async () => {
   const info = await getDataCacheInfo();
   const error = await shell.openPath(info.path);
   if (error) return { ...info, ok: false, message: error };
   return { ...info, message: "Opened downloaded catalog cache folder." };
 });
 
-ipcMain.handle("app:clearDataCatalogCache", async () => {
+registerDesktopHandler("app:clearDataCatalogCache", async () => {
   const userDataPath = app.getPath("userData");
   const cachePath = dataCacheDir(userDataPath);
   await fs.rm(cachePath, { recursive: true, force: true });
@@ -1593,16 +1614,16 @@ ipcMain.handle("app:clearDataCatalogCache", async () => {
   };
 });
 
-ipcMain.handle("app:openUserDataFolder", async () => {
+registerDesktopHandler("app:openUserDataFolder", async () => {
   const info = await getUserDataInfo();
   const error = await shell.openPath(info.path);
   if (error) return { ok: false, path: info.path, message: error };
   return { ok: true, path: info.path, message: "Opened saved data folder." };
 });
 
-ipcMain.handle("app:exportUserDataBackup", async () => exportUserDataBackup());
+registerDesktopHandler("app:exportUserDataBackup", async event => exportUserDataBackup(event.mobile===true));
 
-ipcMain.handle("app:getWindowSettings", async () => {
+registerDesktopHandler("app:getWindowSettings", async () => {
   const win = BrowserWindow.getFocusedWindow() || BrowserWindow.getAllWindows()[0];
   return {
     ok: true,
@@ -1610,9 +1631,12 @@ ipcMain.handle("app:getWindowSettings", async () => {
   };
 });
 
-ipcMain.handle("app:focusMainWindow", async () => {
-  const win = BrowserWindow.getAllWindows().find((candidate) => candidate && !candidate.isDestroyed());
-  if (!win) return { ok: false, message: "No BrowserWindow." };
+registerDesktopHandler("app:focusMainWindow", async (event) => {
+  // Hidden card-capture windows also appear in getAllWindows(). Focus the caller.
+  const win = BrowserWindow.fromWebContents(event.sender);
+  if (!win || win.isDestroyed() || win.webContents.isOffscreen()) {
+    return { ok: false, message: "No interactive requesting window." };
+  }
   if (win.isMinimized()) win.restore();
   win.show();
   win.focus();
@@ -1624,7 +1648,7 @@ ipcMain.handle("app:focusMainWindow", async () => {
   return { ok: true };
 });
 
-ipcMain.handle("app:setWindowOpacity", async (_event, rawOpacity) => {
+registerDesktopHandler("app:setWindowOpacity", async (_event, rawOpacity) => {
   const opacity = clampWindowOpacity(rawOpacity);
   for (const win of BrowserWindow.getAllWindows()) {
     if (win && !win.isDestroyed()) {
@@ -1635,12 +1659,12 @@ ipcMain.handle("app:setWindowOpacity", async (_event, rawOpacity) => {
   return { ok: true, opacity, message: `App opacity saved at ${Math.round(opacity * 100)}%.` };
 });
 
-ipcMain.handle("app:loadDevSpawnerFavorites", async () => {
+registerDesktopHandler("app:loadDevSpawnerFavorites", async () => {
   const filePath = favoritesFilePath(app.getPath("userData"));
   return readFavorites(filePath);
 });
 
-ipcMain.handle("app:saveDevSpawnerFavorites", async (_event, payload) => {
+registerDesktopHandler("app:saveDevSpawnerFavorites", async (_event, payload) => {
   const filePath = favoritesFilePath(app.getPath("userData"));
   try {
     return await writeFavorites(filePath, payload || {});
@@ -1649,12 +1673,12 @@ ipcMain.handle("app:saveDevSpawnerFavorites", async (_event, payload) => {
   }
 });
 
-ipcMain.handle("app:loadTravelFavorites", async () => {
+registerDesktopHandler("app:loadTravelFavorites", async () => {
   const filePath = travelFavoritesFilePath(app.getPath("userData"));
   return readTravelFavorites(filePath);
 });
 
-ipcMain.handle("app:saveTravelFavorites", async (_event, payload) => {
+registerDesktopHandler("app:saveTravelFavorites", async (_event, payload) => {
   const filePath = travelFavoritesFilePath(app.getPath("userData"));
   try {
     return await writeTravelFavorites(filePath, payload || {});
@@ -1663,13 +1687,13 @@ ipcMain.handle("app:saveTravelFavorites", async (_event, payload) => {
   }
 });
 
-ipcMain.handle("app:loadSerialBookmarks", async () => {
+registerDesktopHandler("app:loadSerialBookmarks", async () => {
   const filePath = bookmarksFilePath(app.getPath("userData"));
   return readBookmarks(filePath);
 });
 
-ipcMain.handle("app:loadInventorySnapshot", () => inventorySnapshotStore.loadSnapshot(app.getPath("userData")));
-ipcMain.handle("app:saveInventorySnapshot", (_event, payload) => inventorySnapshotStore.saveSnapshot(app.getPath("userData"), payload));
+registerDesktopHandler("app:loadInventorySnapshot", () => inventorySnapshotStore.loadSnapshot(app.getPath("userData")));
+registerDesktopHandler("app:saveInventorySnapshot", (_event, payload) => inventorySnapshotStore.saveSnapshot(app.getPath("userData"), payload));
 
 let bookmarkWriteQueue = Promise.resolve();
 function queueBookmarkWrite(action) {
@@ -1679,7 +1703,7 @@ function queueBookmarkWrite(action) {
 }
 let communityClient;
 let developerPortalWindow;
-ipcMain.handle('app:openDeveloperPortal', async () => {
+registerDesktopHandler('app:openDeveloperPortal', async () => {
   const origin = getCommunityClient().endpoint;
   if (developerPortalWindow && !developerPortalWindow.isDestroyed()) { developerPortalWindow.focus(); return {ok:true}; }
   developerPortalWindow = new BrowserWindow({width:1150,height:850,title:'Borderlands 4 Modding Tools — Developer Portal',
@@ -1697,7 +1721,7 @@ function getCommunityClient() {
   });
   return communityClient;
 }
-ipcMain.handle('app:communityFolders', async (_event, operation, payload = {}) => {
+registerDesktopHandler('app:communityFolders', async (_event, operation, payload = {}) => {
   try {
     if (operation === 'import') {
       // Re-fetch by ID from the fixed service; never import renderer-supplied remote contents.
@@ -1720,13 +1744,20 @@ ipcMain.handle('app:communityFolders', async (_event, operation, payload = {}) =
 });
 // Keep previews in the main process; commit only the selected, decoded snapshot.
 const saveItemPreviews = new Map();
-ipcMain.handle('app:previewSaveItems', async (event, payload = {}) => {
+registerDesktopHandler('app:previewSaveItems', async (event, payload = {}) => {
  try {
   let staged = saveItemPreviews.get(event.sender.id);
   if (!payload.retry) {
-   const pick = await dialog.showOpenDialog({title:'Import items from a character save',properties:['openFile'],filters:[{name:'BL4 character saves',extensions:['sav','yaml','yml']}]});
-   if(pick.canceled||!pick.filePaths.length)return {ok:false,canceled:true};
-   const file=await readSaveFilePayload(pick.filePaths[0]);if(!file.ok)return file;
+   let file;
+   if(event.mobile){
+    const supplied=payload.file;
+    if(!supplied||! /\.(sav|yaml|yml)$/i.test(supplied.name||'')||typeof supplied.base64!=='string'||Buffer.byteLength(supplied.base64,'base64')>MATT_EDITOR_SAVE_MAX_BYTES)throw Error('Choose a valid save file up to 48 MB.');
+    file={ok:true,name:path.basename(supplied.name),path:'mobile:'+path.basename(supplied.name),base64:supplied.base64};
+   }else{
+    const pick = await dialog.showOpenDialog({title:'Import items from a character save',properties:['openFile'],filters:[{name:'BL4 character saves',extensions:['sav','yaml','yml']}]});
+    if(pick.canceled||!pick.filePaths.length)return {ok:false,canceled:true};
+    file=await readSaveFilePayload(pick.filePaths[0]);if(!file.ok)return file;
+   }
    staged={file};saveItemPreviews.set(event.sender.id,staged);
   }
   if(!staged)throw Error('Choose a save file first.');
@@ -1749,7 +1780,7 @@ ipcMain.handle('app:previewSaveItems', async (event, payload = {}) => {
   return {ok:true,file:staged.file.name,...staged.preview,items:undefined};
  }catch(error){return {ok:false,message:error.message,needsAccount:saveItemPreviews.get(event.sender.id)?.file.name.toLowerCase().endsWith('.sav')};}
 });
-ipcMain.handle('app:commitSaveItems', async (event,payload={})=>queueBookmarkWrite(async()=>{
+registerDesktopHandler('app:commitSaveItems', async (event,payload={})=>queueBookmarkWrite(async()=>{
  try{
   const staged=saveItemPreviews.get(event.sender.id);if(!staged?.preview)throw Error('Preview a save before importing.');
   const file=bookmarksFilePath(app.getPath('userData')),previous=await readBookmarks(file);
@@ -1761,7 +1792,7 @@ ipcMain.handle('app:commitSaveItems', async (event,payload={})=>queueBookmarkWri
  }catch(error){return {ok:false,message:error.message};}
 }));
 
-ipcMain.handle("app:saveSerialBookmarks", async (_event, payload) => queueBookmarkWrite(async () => {
+registerDesktopHandler("app:saveSerialBookmarks", async (_event, payload) => queueBookmarkWrite(async () => {
   const filePath = bookmarksFilePath(app.getPath("userData"));
   try {
     return await writeBookmarks(filePath, payload || {});
@@ -1770,12 +1801,12 @@ ipcMain.handle("app:saveSerialBookmarks", async (_event, payload) => queueBookma
   }
 }));
 
-ipcMain.handle("app:loadMovementSettings", async () => {
+registerDesktopHandler("app:loadMovementSettings", async () => {
   const filePath = movementSettingsFilePath(app.getPath("userData"));
   return readMovementSettings(filePath);
 });
 
-ipcMain.handle("app:saveMovementSettings", async (_event, payload) => {
+registerDesktopHandler("app:saveMovementSettings", async (_event, payload) => {
   const filePath = movementSettingsFilePath(app.getPath("userData"));
   try {
     return await writeMovementSettings(filePath, payload || {});
@@ -1784,12 +1815,12 @@ ipcMain.handle("app:saveMovementSettings", async (_event, payload) => {
   }
 });
 
-ipcMain.handle("app:loadRaritySettings", async () => {
+registerDesktopHandler("app:loadRaritySettings", async () => {
   const filePath = raritySettingsFilePath(app.getPath("userData"));
   return readRaritySettings(filePath);
 });
 
-ipcMain.handle("app:saveRaritySettings", async (_event, payload) => {
+registerDesktopHandler("app:saveRaritySettings", async (_event, payload) => {
   const filePath = raritySettingsFilePath(app.getPath("userData"));
   try {
     return await writeRaritySettings(filePath, payload || {});
@@ -1798,12 +1829,12 @@ ipcMain.handle("app:saveRaritySettings", async (_event, payload) => {
   }
 });
 
-ipcMain.handle("app:loadWalkthroughSettings", async () => {
+registerDesktopHandler("app:loadWalkthroughSettings", async () => {
   const filePath = walkthroughSettingsFilePath(app.getPath("userData"));
   return readWalkthroughSettings(filePath);
 });
 
-ipcMain.handle("app:saveWalkthroughSettings", async (_event, payload) => {
+registerDesktopHandler("app:saveWalkthroughSettings", async (_event, payload) => {
   const filePath = walkthroughSettingsFilePath(app.getPath("userData"));
   try {
     return await writeWalkthroughSettings(filePath, payload || {});
@@ -1851,6 +1882,16 @@ function bl4ClientSaveFolderCandidates(steamId) {
   return folders;
 }
 
+const mobileDesktopFiles=require('./mobile_desktop_files').createMobileDesktopFiles({
+  roots:async()=>{
+    const {data={}}=await loadMattEditorPrefsData();
+    return [...bl4ClientSaveFolderCandidates(data.steamId),data.lastSaveFolder,data.lastProfileFolder,
+      folderFromFile(data.lastSaveFile),folderFromFile(data.lastProfileFile)].filter(Boolean);
+  },
+  readFile:async file=>withDetectedSteamId(await readSaveFilePayload(file),(await loadMattEditorPrefsData()).data?.steamId)
+});
+mobileDesktopApi.registerSpecial('$pcFiles',args=>mobileDesktopFiles.request(args[0]));
+
 async function readSaveFilePayload(filePath) {
   const resolved = normalizePathValue(filePath);
   if (!resolved) return { ok: false, message: "No file path." };
@@ -1885,11 +1926,11 @@ function withDetectedSteamId(payload, currentSteamId) {
   };
 }
 
-ipcMain.handle("app:loadMattEditorPrefs", async () => {
+registerDesktopHandler("app:loadMattEditorPrefs", async () => {
   return loadMattEditorPrefsData();
 });
 
-ipcMain.handle("app:saveMattEditorPrefs", async (_event, payload) => {
+registerDesktopHandler("app:saveMattEditorPrefs", async (_event, payload) => {
   try {
     return await rememberMattEditorPrefs(payload || {});
   } catch (error) {
@@ -1897,7 +1938,7 @@ ipcMain.handle("app:saveMattEditorPrefs", async (_event, payload) => {
   }
 });
 
-ipcMain.handle("app:mattEditorOpenFile", async (_event, kind) => {
+registerDesktopHandler("app:mattEditorOpenFile", async (_event, kind) => {
   const prefs = await loadMattEditorPrefsData();
   const data = prefs.data || {};
   const isProfile = String(kind || "save") === "profile";
@@ -1933,7 +1974,7 @@ ipcMain.handle("app:mattEditorOpenFile", async (_event, kind) => {
   return { ...payload, prefs: saved.data };
 });
 
-ipcMain.handle("app:mattEditorReopenFile", async (_event, kind) => {
+registerDesktopHandler("app:mattEditorReopenFile", async (_event, kind) => {
   const prefs = await loadMattEditorPrefsData();
   const data = prefs.data || {};
   const isProfile = String(kind || "save") === "profile";
@@ -1950,7 +1991,7 @@ ipcMain.handle("app:mattEditorReopenFile", async (_event, kind) => {
   return payload;
 });
 
-ipcMain.handle("app:mattEditorSaveFile", async (_event, payload) => {
+registerDesktopHandler("app:mattEditorSaveFile", async (event, payload) => {
   const body = payload && typeof payload === "object" ? payload : {};
   const overwritePath = normalizePathValue(body.overwritePath || "");
   const suggestedName = String(body.suggestedName || "save_encrypted.sav").trim() || "save_encrypted.sav";
@@ -1958,6 +1999,7 @@ ipcMain.handle("app:mattEditorSaveFile", async (_event, payload) => {
   const data = prefs.data || {};
   let target = "";
   if (body.overwrite && overwritePath) {
+    if(event.mobile)await mobileDesktopFiles.checked(overwritePath);
     target = overwritePath;
   } else {
     const defaultDir = await firstExistingPath([
@@ -2012,7 +2054,7 @@ ipcMain.handle("app:mattEditorSaveFile", async (_event, payload) => {
   };
 });
 
-ipcMain.handle("app:loadBl4Catalog", async () => {
+registerDesktopHandler("app:loadBl4Catalog", async () => {
   try {
     const options = await bl4CatalogLoadOptions();
     const catalog = await loadBl4Catalog(RESOURCE_DIR, options);
@@ -2022,7 +2064,7 @@ ipcMain.handle("app:loadBl4Catalog", async () => {
   }
 });
 
-ipcMain.handle("app:refreshGzoCatalog", async () => {
+registerDesktopHandler("app:refreshGzoCatalog", async () => {
   try {
     const options = await bl4CatalogLoadOptions();
     return await refreshGzoCatalog(RESOURCE_DIR, bl4GzoCacheFilePath(), {
@@ -2034,7 +2076,7 @@ ipcMain.handle("app:refreshGzoCatalog", async () => {
   }
 });
 
-ipcMain.handle("app:refreshDataCatalogs", async (_event, options = {}) => {
+registerDesktopHandler("app:refreshDataCatalogs", async (_event, options = {}) => {
   try {
     return await softRefreshDataCatalogs({
       quiet: Boolean(options && options.quiet),
@@ -2045,7 +2087,7 @@ ipcMain.handle("app:refreshDataCatalogs", async (_event, options = {}) => {
   }
 });
 
-ipcMain.handle("app:getDataCatalogStatus", async () => {
+registerDesktopHandler("app:getDataCatalogStatus", async () => {
   try {
     return await getDataCatalogStatus(app.getPath("userData"), dataCatalogOptions());
   } catch (error) {
@@ -2053,7 +2095,7 @@ ipcMain.handle("app:getDataCatalogStatus", async () => {
   }
 });
 
-ipcMain.handle("app:getTutorialCopy", async () => {
+registerDesktopHandler("app:getTutorialCopy", async () => {
   try {
     return await loadTutorialCopy(app.getPath("userData"), dataCatalogOptions());
   } catch (error) {
@@ -2079,7 +2121,7 @@ async function captureResolvedItemCard(card) {
   return (await resolvedNativePreview(card.serial)).image;
 }
 
-ipcMain.handle("app:saveNativeCardScreenshot", async (event, card) => {
+registerDesktopHandler("app:saveNativeCardScreenshot", async (event, card) => {
   try {
     const shot = await captureResolvedItemCard(card);
     if (!shot?.ok || !shot.base64) return {ok:false,message:shot?.message || 'Card capture failed.'};
@@ -2093,7 +2135,7 @@ ipcMain.handle("app:saveNativeCardScreenshot", async (event, card) => {
   } catch (error) { return {ok:false,message:String(error.message || error)}; }
 });
 
-ipcMain.handle("app:captureNativeCard", async (_event, card) => {
+registerDesktopHandler("app:captureNativeCard", async (_event, card) => {
   try {
     return await captureResolvedItemCard(card);
   } catch (error) {
@@ -2101,7 +2143,7 @@ ipcMain.handle("app:captureNativeCard", async (_event, card) => {
   }
 });
 
-ipcMain.handle("app:bl4PartsBreakdown", async (_event, serial) => {
+registerDesktopHandler("app:bl4PartsBreakdown", async (_event, serial) => {
   const code = [
     "import json, sys",
     "import external_serial_tools",
@@ -2241,7 +2283,7 @@ async function submitGzoCode(payload = {}) {
   }
 }
 
-ipcMain.handle("app:submitGzoCode", async (_event, payload) => submitGzoCode(payload || {}));
+registerDesktopHandler("app:submitGzoCode", async (_event, payload) => submitGzoCode(payload || {}));
 
 async function findSdkLogPath() {
   for (const candidate of SDK_LOG_CANDIDATES) {
@@ -2268,7 +2310,7 @@ async function readTextTail(filePath, maxBytes = 200000) {
   }
 }
 
-ipcMain.handle("app:readSdkLogTail", async (_event, options = {}) => {
+registerDesktopHandler("app:readSdkLogTail", async (_event, options = {}) => {
   const logPath = await findSdkLogPath();
   if (!logPath) {
     return {
@@ -2300,7 +2342,7 @@ ipcMain.handle("app:readSdkLogTail", async (_event, options = {}) => {
   }
 });
 
-ipcMain.handle("app:serialToolsConvert", async (_event, text) => {
+registerDesktopHandler("app:serialToolsConvert", async (_event, text) => {
   const code = [
     "import json, sys",
     "import external_serial_tools",
@@ -2469,7 +2511,7 @@ async function resolveSerialCardPayload(payload = {}) {
   };
 }
 
-ipcMain.handle("app:serialCardResolve", async (_event, payload) => {
+registerDesktopHandler("app:serialCardResolve", async (_event, payload) => {
   try {
     return await resolveSerialCardPayload(payload || {});
   } catch (error) {
@@ -2481,7 +2523,7 @@ ipcMain.handle("app:serialCardResolve", async (_event, payload) => {
   }
 });
 
-ipcMain.handle("app:serialDecodeCheck", async (_event, payload) => {
+registerDesktopHandler("app:serialDecodeCheck", async (_event, payload) => {
   const code = [
     "import json, sys",
     "import re",
@@ -2515,7 +2557,7 @@ ipcMain.handle("app:serialDecodeCheck", async (_event, payload) => {
   return runExternalPythonJson(code, typeof payload === "string" ? payload : JSON.stringify(payload || {}), 60000);
 });
 
-ipcMain.handle("app:validatorBasic", async (_event, text) => {
+registerDesktopHandler("app:validatorBasic", async (_event, text) => {
   const code = [
     "import json, sys",
     "import external_validator",
@@ -2525,7 +2567,7 @@ ipcMain.handle("app:validatorBasic", async (_event, text) => {
   return runExternalPythonJson(code, text, 20000);
 });
 
-ipcMain.handle("app:validatorBulk", async (_event, text) => {
+registerDesktopHandler("app:validatorBulk", async (_event, text) => {
   const code = [
     "import json, sys",
     "import external_validator",
@@ -2758,7 +2800,7 @@ async function startMattEditorHost() {
   throw new Error(errors.join("\n"));
 }
 
-ipcMain.handle("app:mattEditorUrl", async () => {
+registerDesktopHandler("app:mattEditorUrl", async () => {
   try {
     const url = await startMattEditorHost();
     return { ok: true, url, hosted: true, message: "Loaded bundled Matt editor with save/profile API routing and MSBT delivery adapter." };
@@ -2772,7 +2814,20 @@ ipcMain.handle("app:mattEditorUrl", async () => {
   }
 });
 
-ipcMain.handle("app:checkUpdates", async (_event, rawPath) => {
+mobileDesktopApi.registerSpecial('$editorFetch',async args=>{
+  const body=args[0]||{},route=String(body.route||''),method=String(body.method||'GET').toUpperCase();
+  if(!route.startsWith('/')||route.startsWith('//'))throw Error('Invalid editor route');
+  const pathname=new URL(route,'http://localhost').pathname;
+  const read=method==='GET'&&['/msbt/status','/LegitItems/nexus_data_proxy.php'].includes(pathname);
+  const write=method==='POST'&&['/api.php','/blcrypt/api.php','/msbt/target','/msbt/deliver'].includes(pathname);
+  if(!read&&!write)throw Error('Unsupported editor route');
+  const origin=new URL(await startMattEditorHost()).origin;
+  const response=await fetch(origin+route,{method,redirect:'error',headers:{'Content-Type':String(body.contentType||'application/json')},
+    body:method==='POST'?String(body.body||''):undefined,signal:AbortSignal.timeout(190000)});
+  return {status:response.status,contentType:response.headers.get('content-type')||'application/json',body:await response.text()};
+});
+
+registerDesktopHandler("app:checkUpdates", async (_event, rawPath) => {
   const versionInfo = await localVersionInfo(rawPath);
   const local = versionInfo.localManifest || {};
 
@@ -2853,7 +2908,7 @@ ipcMain.handle("app:checkUpdates", async (_event, rawPath) => {
   }
 });
 
-ipcMain.handle("app:downloadUpdate", async () => {
+registerDesktopHandler("app:downloadUpdate", async () => {
   if (!app.isPackaged) {
     return { ok: false, message: "Electron updater downloads are only available in an installed/package build." };
   }
@@ -2870,7 +2925,7 @@ ipcMain.handle("app:downloadUpdate", async () => {
   }
 });
 
-ipcMain.handle("app:quitAndInstallUpdate", async (_event, rawPath) => {
+registerDesktopHandler("app:quitAndInstallUpdate", async (_event, rawPath) => {
   if (latestUpdateState.status !== "downloaded") {
     return { ok: false, message: "No downloaded Electron update is ready to install." };
   }
@@ -2891,7 +2946,7 @@ ipcMain.handle("app:quitAndInstallUpdate", async (_event, rawPath) => {
   }
 });
 
-ipcMain.handle("app:saveReportFile", async (_event, text) => {
+registerDesktopHandler("app:saveReportFile", async (_event, text) => {
   const content = String(text || "").slice(0, 64000);
   if (!content.trim()) return { ok: false, message: "Report is empty." };
   const result = await dialog.showSaveDialog({
@@ -2909,7 +2964,7 @@ ipcMain.handle("app:saveReportFile", async (_event, text) => {
   return { ok: true, path: result.filePath, message: "Report saved." };
 });
 
-ipcMain.handle("app:openExternal", async (_event, url) => {
+registerDesktopHandler("app:openExternal", async (_event, url) => {
   await shell.openExternal(String(url || ""));
   return true;
 });

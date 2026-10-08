@@ -12,6 +12,17 @@ app.whenReady().then(async()=>{
     const host={index:0,name:'Host'},guest={index:1,name:'Guest'},replacement={index:1,name:'Replacement'};
     state.online=true;state.players=[host,guest];state.selectedTarget='1|Guest';fillPlayerSelects();
     const option=$('boostTarget').options[2];$('boostTarget').focus();fillPlayerSelects();check(option===$('boostTarget').options[2],'unchanged dropdown options replaced');
+    const picker=$('boostTarget'),valueProperty=Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value');
+    let pickerWrites=0;Object.defineProperty(picker,'value',{configurable:true,get(){return valueProperty.get.call(this)},set(v){pickerWrites++;valueProperty.set.call(this,v)}});
+    for(let i=0;i<4;i++)applyStatus({ok:true,players:[host,guest],selected_player:'Guest',selected_player_index:1});
+    check(pickerWrites===0,'status polling rewrote open Android picker value');
+    picker.blur();fillPlayerSelects();check(pickerWrites===0,'steady idle status rewrote picker value');
+    gatewayAction=async()=>({ok:true,data:{ok:true}});
+    picker.value='0|Host';picker.dispatchEvent(new Event('change'));
+    check(state.selectedTarget==='0|Host'&&$('invTarget').value==='0|Host','explicit player choice did not reach other selectors');
+    clearTimeout(targetPushTimer);delete picker.value;state.selectedTarget='1|Guest';state.pendingTarget='';fillPlayerSelects();
+    const labelBefore=option.textContent;window.msbtI18n.setLanguage('es');await new Promise(resolve=>setTimeout(resolve,0));
+    check(option.textContent===labelBefore,'localization rewrote player identity');window.msbtI18n.setLanguage('en');
     check(resolveTargetValue('1|Guest',[host,replacement])==='','departed name resolves to replacement');
     applyStatus({ok:true,players:[host,replacement],selected_player:'Replacement',selected_player_index:1});
     applyStatus({ok:true,players:[host,replacement],selected_player:'Replacement',selected_player_index:1});

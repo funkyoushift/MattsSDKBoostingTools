@@ -592,7 +592,11 @@ class Game:
         index = (int(step.rsplit("_", 1)[1]) + 1 if step.startswith("vaultcard_xp_")
                  else 0 if step == "level" else 1)
         states = getattr(ps, "ExperienceState", [])
-        row = states[index] if len(states) > index else None
+        # Use the same identity lookup as the setter. Vault-card rows can be
+        # reordered; reading a positional row can verify a different card.
+        row = economy.experience_row_for_track(states, index)
+        if row is None:
+            return None
         for token in economy._candidate_experience_tokens(index, row):
             ptr = economy._make_experience_def_ptr(token)
             if ptr is not None:

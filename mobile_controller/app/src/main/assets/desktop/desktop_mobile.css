@@ -1,0 +1,28 @@
+/* Keep the shared Windows workspace usable with touch and a narrow viewport. */
+html,body{min-width:0!important;max-width:100%;overscroll-behavior:contain}
+#msbtBootSplash{display:none!important}
+#boostMobileNotice,#mobileAnnounceModal,#mobileAnnounceOpenBtn{display:none!important}
+body{font-size:15px!important}
+button,input,select,textarea{font-size:16px!important;touch-action:manipulation}
+button{min-height:44px!important}
+.msbt-workspace .panel{padding:14px}
+.msbt-workspace .tab-shell{padding:12px}
+.msbt-workspace .workspace-section-nav{flex-wrap:wrap}
+.msbt-workspace .workspace-panels,.msbt-workspace .saved-items-shell,.msbt-workspace .bookmark-browser,.msbt-workspace .bl4-browser-workspace{grid-template-columns:minmax(0,1fr)!important}
+.workspace-sidebar button{min-height:44px!important}
+.msbt-workspace .header-brand{display:none!important}
+.msbt-workspace .header-actions,.msbt-workspace .header-main-actions{width:100%;max-width:100%}
+.msbt-workspace .header-main-actions .app-finder{flex:1 1 0!important;min-width:0}
+.phone-desktop-options{position:relative;flex:none}
+.phone-desktop-options>summary{min-height:44px;padding:10px;cursor:pointer;border:1px solid #354759;border-radius:7px;font-size:14px}
+.phone-desktop-options-body{display:flex;flex-wrap:wrap;gap:8px;position:absolute;right:0;top:100%;width:min(360px,calc(100vw - 28px));padding:12px;background:#151f33;border:1px solid #354759;z-index:4000;box-shadow:0 10px 30px #0009}
+.phone-desktop-options:not([open])>.phone-desktop-options-body{display:none}
+dialog{max-width:calc(100vw - 24px);max-height:85dvh;overflow:auto}
+#editorFrame{min-height:68dvh!important}
+@media(max-width:600px){
+  .msbt-workspace .header-actions{gap:6px}.msbt-workspace .header-main-actions{gap:6px}
+  .msbt-workspace .workspace-panels>.panel{width:100%;min-width:0}
+  .msbt-workspace .button-grid,.msbt-workspace .grid.two,.msbt-workspace .grid.three,.msbt-workspace .inline-fields{grid-template-columns:minmax(0,1fr)!important}
+  .msbt-workspace .bl4-card-grid,.msbt-workspace .inv-grid{grid-template-columns:minmax(0,1fr)!important}
+  .msbt-workspace .saved-items-settings,.msbt-workspace .bl4-detail-pane{position:static!important}
+}

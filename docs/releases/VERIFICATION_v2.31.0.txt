@@ -1,0 +1,11 @@
+MSBT 2.31.0 / Android 1.6.0 (33) combined release
+
+Authorization: Matt requested a combined release on 2026-10-08, explicitly directed inclusion of Epic despite the disclosed pending live test, and requested a normal release without an experimental label. Offline evidence is not described as live proof.
+
+Scope: changes from Fix AFK boost player targeting and Investigate password input were read and imported from the isolated remove-markdown checkout, plus the Epic card profile from commit 76724e9. Wolf/dragon/arcade research and unrelated primary-checkout changes are excluded. All imported files are recorded in output/release-2.31.0/source-imports.json.
+
+Evidence: source batch passed 107 Python tests and 130 subtests; Epic exact-file comparison passed 26 code sections/9221 normalized instructions, with card function, ownership, bounds and cleanup guards retained. Android 1.6.0 release build and lint passed. Paired desktop API, file isolation and remote command mocks passed. Shared mobile workspace tests exercised all 17 tabs, 76 method bindings, and persistent cache reopening. Catalog Send/Confirm/Cancel regression kept the hidden offscreen renderer hidden. The prior local phone checks are documented in the linked October 8 change entries; every game command and guest-save outcome is not claimed tested.
+
+Validation limitations/failures: the relay test initially targeted an absent local server. Automatic approval review rejected the combined deployed-relay/UI command without a reason; the earlier successful relay test in the source chat remains historical evidence. Two Electron UI tests were accidentally invoked with Node and could not initialize app; correct Electron invocations are tracked separately. Epic live rendering is pending. The vault-card rank setter issue is unresolved; this release only hardens readback identity.
+
+Packaging, install and publication receipts will be appended after completion. No game restart or inventory mutation is performed by release validation. Rollback uses v2.30.2 desktop/SDK and Android 1.5.1; preserve pairing and user data.
