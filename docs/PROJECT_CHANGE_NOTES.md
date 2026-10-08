@@ -4,11 +4,11 @@ Before re-researching a feature, read its entry below and any linked component n
 
 ## Changes
 
-- [2026-10-08: Farming/search release v2.33.0](releases/VERIFICATION_v2.33.0.txt) � 14 integrated controls, God Mode, skill charges/glide cost and individual feature search; Matt confirmed all gameplay tests passed. Windows/SDK/Android packaging and publication in progress.
+- [2026-10-08: Farming/search release v2.33.0](releases/VERIFICATION_v2.33.0.txt) — Published stable; 14 integrated controls and individual search; all 11 public hashes/CI passed; desktop installed/reopened. Game SDK update waits for game close. Matt confirmed all gameplay tests passed.
 
-- [2026-10-08: Search individual controls](changes/2026-10-08-feature-search.md) — individual controls and all 14 local test features are searchable; results reveal the right section/disclosures. Actual Electron search navigation passed in workspace and classic layouts. Local source desktop only; no release.
+- [2026-10-08: Search individual controls](changes/2026-10-08-feature-search.md) — All 14 controls plus existing features are searchable in both layouts; packaged search navigation passed. Published in v2.33.0 / Android 1.6.1.
 
-- [2026-10-08: Local Farming Lab](changes/2026-10-08-farming-lab.md) — 14 local test controls organized by purpose, native God Mode, owned action-skill charge refill and revised glide power cost; API/restoration, charge trial and desktop clicks verified. Long-press/sustained-glide gameplay and guest proof remain pending. No release/version change.
+- [2026-10-08: Local Farming Lab](changes/2026-10-08-farming-lab.md) — Purpose-based controls, native God Mode, owned skill charges and glide cost; owner confirmed all gameplay checks. Integrated into public v2.33.0; standalone local lab still loaded until game closes. Guest-save proof remains separate.
 
 - [2026-10-08: 100% Drop Rate farming control](changes/2026-10-08-trainer-drop-rate.md) — independent guarded native zero-roll override in Rarity Weights and F7; Matt confirmed the local farming trial works. Published v2.32.0; all 11 public download hashes verified; desktop reopened and SDK installed while game closed. Integrated next-launch/live travel and guest-save proof remain separate.
 

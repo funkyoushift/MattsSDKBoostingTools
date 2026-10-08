@@ -49,3 +49,34 @@ and DISCORD_MESSAGES_2026-10-08.txt. This prepares text; no Discord message is s
 Before publication: owner gameplay confirmation, implemented controls/search,
 source, package, Android build/signature and emulator launch checks complete.
 Public downloads/hashes and CI status will be verified after upload.
+
+Publication completed: stable, non-draft v2.33.0, tag commit
+2497de2a143cc8005617e84cf2b5e506257a8a64. All 11 unauthenticated public
+downloads match local SHA256/length and GitHub asset digests. Latest release and
+the public website's latest.json both report 2.33.0. Bundled source identity
+c739845 is unchanged. Release policy run 37841317797 succeeded (duplicate build
+intentionally skipped), Pages run 37841313042 and dependency run 37841320284
+succeeded. Public receipt: work/release-2.33.0-public-verification.json.
+Release: https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.33.0
+
+Local desktop deployed through the managed installer Engine.Apply from the
+independently downloaded/verified public portable ZIP. Existing previous backup
+retained as previous-before-v2.33.0-20261008; previous holds desktop v2.32.0.
+Setup registration updated. Installed startup/updater smoke passed at 2.33.0;
+installed app.asar, bundled SDK and latest.json match staging. The earlier
+integrity probe used an incorrect SDK path; it was corrected to resources/sdkmod
+and all three actual files then passed. Installed desktop reopened; native
+window inventory confirmed its executable/window. No game process was stopped.
+
+Deployment boundary: Borderlands PID 5604 remains running with SDK 2.32.0 plus
+the owner's tested local Farming Lab. Last API readback: all 14 lab controls OFF,
+zero owned scalar snapshots/errors and normal damage permission. SDK 2.33.0 is
+published and bundled with the installed desktop, but game-file installation
+is deferred until Borderlands closes. Before activating the integrated SDK,
+disable/remove the separate MSBTFarmingLab and loader to avoid duplicate workers.
+No integrated next-launch runtime or physical Android 1.6.1 proof is claimed.
+The owned read-only emulator was stopped after its successful install/launch.
+
+Discord drafts are complete (six messages, each below the standard 2,000-character
+limit); no Discord posting occurred. Rollback: managed previous desktop plus
+unchanged game SDK/local lab remain available. Primary dirty checkout preserved.
